@@ -209,7 +209,7 @@ class MediaElement : public FrameworkElement {
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetStreamSource (ManagedStreamCallbacks *stream);
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetDemuxerSource (IMediaDemuxer *demuxer);
+	IMediaDemuxer *SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Pause (); // Not thread-safe

@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using Mono;
 
 namespace System.Windows.Media
 {
@@ -44,16 +45,27 @@ namespace System.Windows.Media
 			this.media_attributes = mediaStreamAttributes;
 		}
 		
+		~MediaStreamDescription ()
+		{
+			if (NativeStream != IntPtr.Zero) {
+				NativeMethods.event_object_unref (NativeStream);
+				NativeStream = IntPtr.Zero;
+			}
+		}
+		
 		public IDictionary<MediaStreamAttributeKeys, string> MediaAttributes {
 			get { return media_attributes; }
 		}
 		
 		public int StreamId {
 			get { return stream_id; }
+			internal set { stream_id = value; }
 		}
 		
 		public MediaStreamType Type {
 			get { return type; }
 		}
+		
+		internal IntPtr NativeStream { get; set; }
 	}
 }

@@ -76,6 +76,16 @@ assembly_part_collection_new (void)
 
 
 /**
+ * AudioStream
+ **/
+AudioStream *
+audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate)
+{
+	return new AudioStream (media, codec_id, bits_per_sample, block_align, sample_rate, channels, bit_rate);
+}
+
+
+/**
  * BeginStoryboard
  **/
 BeginStoryboard *
@@ -1483,20 +1493,24 @@ event_trigger_new (void)
 /**
  * ExternalDemuxer
  **/
-ExternalDemuxer *
-external_demuxer_new (Media *media, IMediaSource *source, void *instance)
+gint32
+external_demuxer_add_stream (ExternalDemuxer *instance, IMediaStream *stream)
 {
-	return new ExternalDemuxer (media, source, instance);
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (gint32) 0;
+	
+	return instance->AddStream (stream);
 }
 
 
 void
-external_demuxer_set_callbacks (ExternalDemuxer *instance, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream)
+external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SetCallbacks (close_demuxer, get_diagnostic, get_sample, open_demuxer, seek, switch_media_stream);
+	instance->SetCanSeek (value);
 }
 
 
@@ -1773,6 +1787,19 @@ imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instance, IM
 		return;
 	
 	instance->ReportSwitchMediaStreamCompleted (stream);
+}
+
+
+/**
+ * IMediaObject
+ **/
+Media *
+imedia_object_get_media_reffed (IMediaObject *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetMediaReffed ();
 }
 
 
@@ -2088,13 +2115,13 @@ media_element_report_error_occurred (MediaElement *instance, const char *args)
 }
 
 
-void
-media_element_set_demuxer_source (MediaElement *instance, IMediaDemuxer *demuxer)
+IMediaDemuxer *
+media_element_set_demuxer_source (MediaElement *instance, void *context, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream)
 {
 	if (instance == NULL)
-		return;
+		return NULL;
 	
-	instance->SetDemuxerSource (demuxer);
+	return instance->SetDemuxerSource (context, close_demuxer, get_diagnostic, get_sample, open_demuxer, seek, switch_media_stream);
 }
 
 
@@ -2115,6 +2142,16 @@ media_element_stop (MediaElement *instance)
 		return;
 	
 	instance->Stop ();
+}
+
+
+/**
+ * MediaFrame
+ **/
+MediaFrame *
+media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts)
+{
+	return new MediaFrame (stream, buffer, buflen, pts);
 }
 
 
@@ -3720,6 +3757,16 @@ VideoBrush *
 video_brush_new (void)
 {
 	return new VideoBrush ();
+}
+
+
+/**
+ * VideoStream
+ **/
+VideoStream *
+video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration)
+{
+	return new VideoStream (media, codec_id, width, height, duration);
 }
 
 

@@ -92,6 +92,12 @@ AssemblyPart *assembly_part_new (void);
 AssemblyPartCollection *assembly_part_collection_new (void);
 
 /**
+ * AudioStream
+ **/
+/* @GeneratePInvoke */
+AudioStream *audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate);
+
+/**
  * BeginStoryboard
  **/
 /* @GeneratePInvoke */
@@ -642,10 +648,10 @@ EventTrigger *event_trigger_new (void);
  * ExternalDemuxer
  **/
 /* @GeneratePInvoke */
-ExternalDemuxer *external_demuxer_new (Media *media, IMediaSource *source, void *instance);
+gint32 external_demuxer_add_stream (ExternalDemuxer *instance, IMediaStream *stream);
 
 /* @GeneratePInvoke */
-void external_demuxer_set_callbacks (ExternalDemuxer *instance, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);
+void external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value);
 
 /**
  * FrameworkElement
@@ -772,6 +778,12 @@ void imedia_demuxer_report_seek_completed (IMediaDemuxer *instance, guint64 pts)
 
 /* @GeneratePInvoke */
 void imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instance, IMediaStream *stream);
+
+/**
+ * IMediaObject
+ **/
+/* @GeneratePInvoke */
+Media *imedia_object_get_media_reffed (IMediaObject *instance);
 
 /**
  * InkPresenter
@@ -936,13 +948,19 @@ void media_element_play (MediaElement *instance);
 void media_element_report_error_occurred (MediaElement *instance, const char *args);
 
 /* @GeneratePInvoke */
-void media_element_set_demuxer_source (MediaElement *instance, IMediaDemuxer *demuxer);
+IMediaDemuxer *media_element_set_demuxer_source (MediaElement *instance, void *context, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);
 
 /* @GeneratePInvoke */
 void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream);
 
 /* @GeneratePInvoke */
 void media_element_stop (MediaElement *instance);
+
+/**
+ * MediaFrame
+ **/
+/* @GeneratePInvoke */
+MediaFrame *media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts);
 
 /**
  * MoonWindow
@@ -1665,6 +1683,12 @@ UserControl *user_control_new (void);
  **/
 /* @GeneratePInvoke */
 VideoBrush *video_brush_new (void);
+
+/**
+ * VideoStream
+ **/
+/* @GeneratePInvoke */
+VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration);
 
 /**
  * VisualBrush

@@ -773,12 +773,18 @@ Media::SelectDemuxerAsync ()
 	
 	g_warn_if_fail (error_reported == false);
 	g_warn_if_fail (initialized == true);
-	g_return_val_if_fail (source != NULL, false);
 	
 	// Check if demuxer already is open
-	if (demuxer != NULL && demuxer->IsOpened ())
-		return true;
-
+	if (demuxer != NULL) {
+		if (demuxer->IsOpened ())
+			return true;
+		if (!demuxer->IsOpening ())
+			demuxer->OpenDemuxerAsync ();
+		return demuxer->IsOpened ();
+	}
+	
+	g_return_val_if_fail (source != NULL, false);
+	
 	// Check if we have an MmsDownloader, in which case there is already an ASFParser created there.
 	// and we just have to create the ASFDemuxer.
 	if (source->GetType () == MediaSourceTypeQueueMemory) {
@@ -1972,6 +1978,45 @@ IMediaStream::Dispose ()
 	IMediaObject::Dispose ();
 }
 
+char *
+IMediaStream::CreateCodec (int codec_id)
+{
+	switch (codec_id) {
+	case CODEC_MP3:   return g_strdup ("mp3");
+	case CODEC_WMAV1: return g_strdup ("wmav1");
+	case CODEC_WMAV2: return g_strdup ("wmav2");
+	default:
+		g_warning ("IMediaStream::CreateCodec (%i): Not implemented.\n", codec_id);
+		
+		/* This algorithm needs testing.
+		char *result;
+		int size, current;
+		int a = (codec_id & 0x000000FF);
+		int b = (codec_id & 0x0000FF00) >> 8;
+		int c = (codec_id & 0x00FF0000) >> 16;
+		int d = (codec_id & 0xFF000000) >> 24;
+		
+		size = (a != 0) + (b != 0) + (c != 0) + (d != 0);
+		
+		g_return_val_if_fail (size >= 0 && size <= 4, g_strdup (""));
+		
+		result = (char *) g_malloc (size);
+		current = 0;
+		if (a)
+			result [current++] = (char) a;
+		if (b)
+			result [current++] = (char) b;
+		if (c)
+			result [current++] = (char) c;
+		if (d)
+			result [current++] = (char) d;
+		*/
+		
+		return g_strdup ("<unknown>");
+	}
+	
+}
+
 bool
 IMediaStream::IsQueueEmpty ()
 {
@@ -2065,6 +2110,8 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 	queue.Lock ();
 	if (first_pts == G_MAXUINT64)
 		first_pts = frame->pts;
+
+	LOG_PIPELINE ("IMediaStream::EnqueueFrame (%p) %s %" G_GUINT64_FORMAT " ms\n", frame, frame ? frame->stream->GetStreamTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : 0);
 
 #if 0
 	if (last_enqueued_pts > frame->pts && last_enqueued_pts != G_MAXUINT64 && frame->event != FrameEventEOF && frame->buflen > 0) {
@@ -2173,6 +2220,16 @@ IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media, IMediaSource *sourc
 	opening = false;
 }
 
+IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media)
+	: IMediaObject (kind, media)
+{
+	source = NULL;
+	stream_count = 0;
+	streams = NULL;
+	opened = false;
+	opening = false;
+}
+
 void
 IMediaDemuxer::Dispose ()
 {
@@ -2255,8 +2312,11 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 {
 	IMediaDecoder *decoder;
 	
+	g_return_if_fail (frame == NULL || (frame != NULL && frame->stream != NULL));
+	
 	LOG_PIPELINE ("IMediaDemuxer::ReportGetFrameCompleted (%p) %s\n", frame, frame ? frame->stream->GetStreamTypeName () : "");
-		
+	
+	
 	if (frame == NULL) {
 		LOG_PIPELINE ("IMediaDemuxer::ReportGetFrameCompleted (%p): end signaled.\n", frame);
 		// No more data for this demuxer
@@ -2503,11 +2563,41 @@ IMediaDemuxer::GetStream (int index)
 MediaFrame::MediaFrame (IMediaStream *stream)
 	: EventObject (Type::MEDIAFRAME)
 {
-	decoder_specific_data = NULL;
+	Initialize ();
+	
+	g_return_if_fail (stream != NULL);
+	
 	this->stream = stream;
-	if (this->stream)
-		this->stream->ref ();
-	this->marker = NULL;
+	this->stream->ref ();
+}
+
+MediaFrame::MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts)
+	: EventObject (Type::MEDIAFRAME)
+{
+	Initialize ();
+	
+	g_return_if_fail (stream != NULL);
+	
+	this->stream = stream;
+	this->stream->ref ();
+	this->buffer = buffer;
+	this->buflen = buflen;
+	this->pts = pts;
+	
+	if (buflen > 4) {
+		printf ("MediaFrame::MediaFrame () buffer: ");
+		for (int i = 0; i < 4; i++)
+			printf (" 0x%x", buffer [i]);
+		printf ("\n");
+	}
+}
+
+void
+MediaFrame::Initialize ()
+{
+	decoder_specific_data = NULL;
+	stream = NULL;
+	marker = NULL;
 	
 	duration = 0;
 	pts = 0;
@@ -2574,6 +2664,15 @@ IMediaObject::Dispose ()
 		media = NULL;
 	}
 	EventObject::Dispose ();
+}
+
+Media *
+IMediaObject::GetMediaReffed ()
+{
+	Media *result = media;
+	if (result)
+		result->ref ();
+	return result;
 }
 
 void
@@ -2798,6 +2897,19 @@ IMediaDemuxer::SetStreams (IMediaStream** streams, int count)
 	this->stream_count = count;
 }
 
+gint32
+IMediaDemuxer::AddStream (IMediaStream *stream)
+{
+	g_return_val_if_fail (stream != NULL, -1);
+	
+	stream_count++;
+	streams = (IMediaStream **) g_realloc (streams, stream_count * sizeof (IMediaStream *));
+	streams [stream_count - 1] = stream;
+	stream->ref ();
+	
+	return stream_count - 1;
+}
+
 /*
  * IMediaDecoder
  */
@@ -2829,6 +2941,8 @@ IMediaDecoder::Dispose ()
 void
 IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 {
+	LOG_PIPELINE ("IMediaDecoder::ReportDecodeFrameCompleted (%p) %s\n", frame, frame ? frame->stream->GetStreamTypeName () : "");
+	
 	g_return_if_fail (frame != NULL);
 	g_return_if_fail (frame->stream != NULL);
 	
@@ -2839,6 +2953,8 @@ IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 void
 IMediaDecoder::DecodeFrameAsync (MediaFrame *frame)
 {
+	LOG_PIPELINE ("IMediaDecoder::DeocodeFrameAsync (%p)\n", frame);
+	
 	g_return_if_fail (frame != NULL);
 	
 	DecodeFrameAsyncInternal (frame);
@@ -2859,6 +2975,8 @@ IMediaDecoder::OpenDecoderAsync ()
 void
 IMediaDecoder::ReportOpenDecoderCompleted ()
 {
+	LOG_PIPELINE ("IMediaDecoder::ReportOpenDecoderCompleted ()\n");
+	
 	opening = false;
 	opened = true;
 	
@@ -2889,6 +3007,21 @@ VideoStream::VideoStream (Media *media) : IMediaStream (Type::VIDEOSTREAM, media
 	initial_pts = 0;
 	height = 0;
 	width = 0;
+}
+
+VideoStream::VideoStream (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration)
+	: IMediaStream (Type::VIDEOSTREAM, media)
+{
+	converter = NULL;
+	bits_per_sample = 0;
+	pts_per_frame = 0;
+	initial_pts = 0;
+	this->height = height;
+	this->width = width;
+	this->duration = duration;
+	this->codec_id = codec_id;
+	this->codec = CreateCodec (codec_id);
+	
 }
 
 VideoStream::~VideoStream ()
@@ -3242,18 +3375,26 @@ NullDecoder::OpenVideo ()
  * ExternalDemuxer
  */
 
-ExternalDemuxer::ExternalDemuxer (Media *media, IMediaSource *source, void *instance)
-	: IMediaDemuxer (Type::EXTERNALDEMUXER, media, source)
+ExternalDemuxer::ExternalDemuxer (Media *media, void *instance, CloseDemuxerCallback close_demuxer, 
+		GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, 
+		SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream)
+	: IMediaDemuxer (Type::EXTERNALDEMUXER, media)
 {
 	g_warn_if_fail (instance != NULL);
+	g_warn_if_fail (close_demuxer != NULL && get_diagnostic != NULL && get_sample != NULL && open_demuxer != NULL && seek != NULL && switch_media_stream != NULL);
 	
+	this->close_demuxer_callback = close_demuxer;
+	this->get_diagnostic_async_callback = get_diagnostic;
+	this->get_sample_async_callback = get_sample;
+	this->open_demuxer_async_callback = open_demuxer;
+	this->seek_async_callback = seek;
+	this->switch_media_stream_async_callback = switch_media_stream;
 	this->instance = instance;
 }
 	
 void
 ExternalDemuxer::Dispose ()
-{
-	IMediaDemuxer::Dispose ();
+{	
 	instance = NULL;
 	close_demuxer_callback = NULL;
 	get_diagnostic_async_callback = NULL;
@@ -3261,6 +3402,20 @@ ExternalDemuxer::Dispose ()
 	open_demuxer_async_callback = NULL;
 	seek_async_callback = NULL;
 	switch_media_stream_async_callback = NULL;
+	
+	IMediaDemuxer::Dispose ();
+}
+
+void
+ExternalDemuxer::SetCanSeek (bool value)
+{
+	g_warning ("TODO: ExternalDemuxer::SetCanSeek ()");
+}
+
+gint32
+ExternalDemuxer::AddStream (IMediaStream *stream)
+{
+	return IMediaDemuxer::AddStream (stream);
 }
 
 void 
@@ -3293,7 +3448,7 @@ ExternalDemuxer::OpenDemuxerAsyncInternal ()
 {
 	g_return_if_fail (open_demuxer_async_callback != NULL);
 	
-	open_demuxer_async_callback (instance);
+	open_demuxer_async_callback (instance, this);
 }
 
 void 
@@ -3321,6 +3476,18 @@ ExternalDemuxer::SwitchMediaStreamAsyncInternal (IMediaStream *mediaStreamDescri
 AudioStream::AudioStream (Media *media)
 	: IMediaStream (Type::AUDIOSTREAM, media)
 {
-	SetObjectType (Type::AUDIOSTREAM);
 }
+
+AudioStream::AudioStream (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate)
+	: IMediaStream (Type::AUDIOSTREAM, media)
+{
+	this->codec_id = codec_id;
+	this->codec = CreateCodec (codec_id);
+	this->bits_per_sample = bits_per_sample;
+	this->block_align = block_align;
+	this->sample_rate = sample_rate;
+	this->channels = channels;
+	this->bit_rate = bit_rate;
+}
+
 

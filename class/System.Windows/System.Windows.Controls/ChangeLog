@@ -1,3 +1,8 @@
+2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaElement.cs: Initial implementation of
+	  MediaStreamSource.
+
 2009-02-18  Alan McGovern  <amcgovern@novell.com>
 
 	* TextBox.cs: There are no HitTest methods on TextBox in the

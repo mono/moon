@@ -93,6 +93,14 @@ class TypeReference {
 			case "double":
 				managed_type = Value;
 				break;
+			case "guint32":
+			case "uint32_t":
+				managed_type = "uint";
+				break;
+			case "gint32":
+			case "int32_t":
+				managed_type = "int";
+				break;
 			case "int64_t":
 			case "gint64":
 				managed_type = "long";
@@ -140,6 +148,14 @@ class TypeReference {
 				break;
 			case "SetValueCallback":
 				managed_type = "Mono.SetValueCallback";
+				break;
+			case "CloseDemuxerCallback":
+			case "GetDiagnosticAsyncCallback":
+			case "GetFrameAsyncCallback":
+			case "OpenDemuxerAsyncCallback":
+			case "SeekAsyncCallback":
+			case "SwitchMediaStreamAsyncCallback":
+				managed_type = "System.Windows.Media.MediaStreamSource." + Value.Replace ("Callback", "Delegate");
 				break;
 			case "GDestroyNotify":
 				managed_type = "IntPtr"; // hack, because we never pass this from managed code

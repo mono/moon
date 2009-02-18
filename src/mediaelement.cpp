@@ -1156,19 +1156,29 @@ MediaElement::SetStreamSource (ManagedStreamCallbacks *callbacks)
 	playlist->GetCurrentEntry ()->InitializeWithStream (callbacks);
 }
 
-void
-MediaElement::SetDemuxerSource (IMediaDemuxer *demuxer)
+IMediaDemuxer *
+MediaElement::SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample,
+	OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream)
 {
+	ExternalDemuxer *demuxer;
+	Media *media;
+	
 	LOG_MEDIAELEMENT ("MediaElement::SetDemuxerSource (%p)\n", demuxer);
 	VERIFY_MAIN_THREAD;
 
 	Reinitialize ();
 	
-	g_return_if_fail (demuxer != NULL);
-	g_return_if_fail (playlist == NULL);
+	g_return_val_if_fail (context != NULL, NULL);
+	g_return_val_if_fail (close_demuxer != NULL && get_diagnostic != NULL && get_sample != NULL && open_demuxer != NULL && seek != NULL && switch_media_stream != NULL, NULL);
+	g_return_val_if_fail (playlist == NULL, NULL);
 	
 	CreatePlaylist ();
+	media = new Media (playlist);
+	demuxer = new ExternalDemuxer (media, context, close_demuxer, get_diagnostic, get_sample, open_demuxer, seek, switch_media_stream);
 	playlist->GetCurrentEntry ()->InitializeWithDemuxer (demuxer);
+	media->unref ();
+	
+	return demuxer;
 }
 
 void

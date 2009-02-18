@@ -242,12 +242,13 @@ PlaylistEntry::InitializeWithDemuxer (IMediaDemuxer *demuxer)
 	
 	g_return_if_fail (demuxer != NULL);
 	g_return_if_fail (root != NULL);
+	g_return_if_fail (demuxer->GetMedia () != NULL);
 	
-	media = new Media (root);
+	media = demuxer->GetMedia ();
+	
 	Initialize (media);
 	media->Initialize (demuxer);
 	media->OpenAsync ();
-	media->unref ();
 }
 
 void
@@ -280,7 +281,7 @@ PlaylistEntry::OpenCompletedHandler (Media *media, EventArgs *args)
 	g_return_if_fail (demuxer != NULL);
 	
 	// Check if we have a live stream
-	if (demuxer->GetSource ()->GetType () == MediaSourceTypeQueueMemory) {
+	if (demuxer->GetSource () != NULL && demuxer->GetSource ()->GetType () == MediaSourceTypeQueueMemory) {
 		MemoryQueueSource *psrc = (MemoryQueueSource *) demuxer->GetSource ();
 		Downloader *dl = psrc->GetDownloader ();
 		if (dl->GetHttpStreamingFeatures () & HttpStreamingBroadcast)

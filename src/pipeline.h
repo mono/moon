@@ -492,11 +492,16 @@ public:
 };
  
 class MediaFrame : public EventObject {
+private:
+	void Initialize ();
+	
 protected:
 	virtual ~MediaFrame ();
 	
 public:
 	MediaFrame (IMediaStream *stream);
+	/* @GenerateCBinding,GeneratePInvoke */
+	MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts);
 	void Dispose ();
 	
 	void AddState (guint16 state) { this->state |= state; } // There's no way of "going back" to an earlier state 
@@ -573,6 +578,8 @@ public:
 	
 	// TODO: media should be protected with a mutex, and GetMedia should return a refcounted media.
 	Media *GetMedia () { return media; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	Media *GetMediaReffed ();
 	void SetMedia (Media *value);
 
 	void ReportErrorOccurred (ErrorEventArgs *args);
@@ -598,6 +605,7 @@ protected:
 	virtual ~IMediaStream () {}
 	virtual void FrameEnqueued () {}
 
+	static char *CreateCodec (int codec_id); // converts fourcc int value into a string
 public:
 	class StreamNode : public List::Node {
 	 private:
@@ -691,9 +699,12 @@ protected:
 	IMediaSource *source;
 	
 	IMediaDemuxer (Type::Kind kind, Media *media, IMediaSource *source);
+	IMediaDemuxer (Type::Kind kind, Media *media);
+	
 	virtual ~IMediaDemuxer () {}
 	
 	void SetStreams (IMediaStream **streams, int count);
+	gint32 AddStream (IMediaStream *stream);
 	
 	virtual void CloseDemuxerInternal () {};
 	virtual void GetDiagnosticAsyncInternal (MediaStreamSourceDiagnosticKind diagnosticKind) {}
@@ -704,6 +715,7 @@ protected:
 	
 	void EnqueueOpen ();
 	void EnqueueGetFrame (IMediaStream *stream);
+	
 public:
 	virtual void Dispose ();
 
@@ -1068,6 +1080,9 @@ public:
 	
 	VideoStream (Media *media);
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	VideoStream (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration);
+	
 	virtual MediaStreamType GetType () { return MediaTypeVideo; } 
 	guint32 GetBitRate () { return (guint32) bit_rate; }
 };
@@ -1085,6 +1100,9 @@ public:
 	
 	AudioStream (Media *media);
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	AudioStream (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate);
+	
 	virtual MediaStreamType GetType () { return MediaTypeAudio; }
 	guint32 GetBitRate () { return (guint32) bit_rate; }
 };
@@ -1096,7 +1114,7 @@ public:
 typedef void (* CloseDemuxerCallback) (void *instance);
 typedef void (* GetDiagnosticAsyncCallback) (void *instance, MediaStreamSourceDiagnosticKind diagnosticKind);
 typedef void (* GetFrameAsyncCallback) (void *instance, MediaStreamType mediaStreamType);
-typedef void (* OpenDemuxerAsyncCallback) (void *instance);
+typedef void (* OpenDemuxerAsyncCallback) (void *instance, IMediaDemuxer *demuxer);
 typedef void (* SeekAsyncCallback) (void *instance, guint64 seekToTime);
 typedef void (* SwitchMediaStreamAsyncCallback) (void *instance, IMediaStream *mediaStreamDescription);
 		
@@ -1119,23 +1137,19 @@ protected:
 	virtual void OpenDemuxerAsyncInternal ();
 	virtual void SeekAsyncInternal (guint64 seekToTime);
 	virtual void SwitchMediaStreamAsyncInternal (IMediaStream *mediaStreamDescription);
+	
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
-	ExternalDemuxer (Media *media, IMediaSource *source, void *instance);
+	ExternalDemuxer (Media *media, void *instance, CloseDemuxerCallback close_demuxer, 
+		GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, 
+		SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);
 	
 	virtual void Dispose ();
+		
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetCanSeek (bool value);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetCallbacks (CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, 
-						SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream)
-	{
-		this->close_demuxer_callback = close_demuxer;
-		this->get_diagnostic_async_callback = get_diagnostic;
-		this->get_sample_async_callback = get_sample;
-		this->open_demuxer_async_callback = open_demuxer;
-		this->seek_async_callback = seek;
-		this->switch_media_stream_async_callback = switch_media_stream;
-	}
+	gint32 AddStream (IMediaStream *stream);
 	
 	virtual const char *GetName () { return "ExternalDemuxer"; }
 };

@@ -74,9 +74,8 @@ namespace System.Windows.Controls {
 		
 		public void SetSource (MediaStreamSource mediaStreamSource)
 		{
-			/*
 			if (media_stream_source != null) {
-				media_stream_source.Close ();
+				media_stream_source.CloseMediaInternal ();
 				media_stream_source = null;
 			}
 
@@ -84,9 +83,7 @@ namespace System.Windows.Controls {
 				throw new InvalidOperationException ();
 			
 			media_stream_source = mediaStreamSource;
-			media_stream_source.OpenMediaAsyncInternal ();
-			*/
-			Console.WriteLine ("WARNING: MediaElement.SetSource(MediaStreamSource) is unimplemented");
+			media_stream_source.SetMediaElement (this);
 		}
 		
 		public void Stop ()

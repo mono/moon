@@ -43,6 +43,10 @@ namespace Mono {
 		public extern static IntPtr assembly_part_collection_new ();
 
 		[DllImport ("moon")]
+		// AudioStream *audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate);
+		public extern static IntPtr audio_stream_new (IntPtr media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate);
+
+		[DllImport ("moon")]
 		// BeginStoryboard *begin_storyboard_new ();
 		public extern static IntPtr begin_storyboard_new ();
 
@@ -764,13 +768,12 @@ namespace Mono {
 		public extern static IntPtr event_trigger_new ();
 
 		[DllImport ("moon")]
-		// ExternalDemuxer *external_demuxer_new (Media *media, IMediaSource *source, void *instance);
-		public extern static IntPtr external_demuxer_new (IntPtr media, IntPtr source, IntPtr instance);
+		// gint32 external_demuxer_add_stream (ExternalDemuxer *instance, IMediaStream *stream);
+		public extern static int external_demuxer_add_stream (IntPtr instance, IntPtr stream);
 
-		// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in TypeReference.cs and add the missing case) and try again.
-		// [DllImport ("moon")]
-		// void external_demuxer_set_callbacks (ExternalDemuxer *instance, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);
-		// public extern static void external_demuxer_set_callbacks (IntPtr instance, /* Unknown: 'CloseDemuxerCallback' */ close_demuxer, /* Unknown: 'GetDiagnosticAsyncCallback' */ get_diagnostic, /* Unknown: 'GetFrameAsyncCallback' */ get_sample, /* Unknown: 'OpenDemuxerAsyncCallback' */ open_demuxer, /* Unknown: 'SeekAsyncCallback' */ seek, /* Unknown: 'SwitchMediaStreamAsyncCallback' */ switch_media_stream);
+		[DllImport ("moon")]
+		// void external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value);
+		public extern static void external_demuxer_set_can_seek (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
 
 		[DllImport ("moon")]
 		// Size framework_element_arrange_override (FrameworkElement *instance, Size finalSize);
@@ -880,6 +883,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instance, IMediaStream *stream);
 		public extern static void imedia_demuxer_report_switch_media_stream_completed (IntPtr instance, IntPtr stream);
+
+		[DllImport ("moon")]
+		// Media *imedia_object_get_media_reffed (IMediaObject *instance);
+		public extern static IntPtr imedia_object_get_media_reffed (IntPtr instance);
 
 		[DllImport ("moon")]
 		// InkPresenter *ink_presenter_new ();
@@ -1006,8 +1013,8 @@ namespace Mono {
 		public extern static void media_element_report_error_occurred (IntPtr instance, string args);
 
 		[DllImport ("moon")]
-		// void media_element_set_demuxer_source (MediaElement *instance, IMediaDemuxer *demuxer);
-		public extern static void media_element_set_demuxer_source (IntPtr instance, IntPtr demuxer);
+		// IMediaDemuxer *media_element_set_demuxer_source (MediaElement *instance, void *context, CloseDemuxerCallback close_demuxer, GetDiagnosticAsyncCallback get_diagnostic, GetFrameAsyncCallback get_sample, OpenDemuxerAsyncCallback open_demuxer, SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream);
+		public extern static IntPtr media_element_set_demuxer_source (IntPtr instance, IntPtr context, System.Windows.Media.MediaStreamSource.CloseDemuxerDelegate close_demuxer, System.Windows.Media.MediaStreamSource.GetDiagnosticAsyncDelegate get_diagnostic, System.Windows.Media.MediaStreamSource.GetFrameAsyncDelegate get_sample, System.Windows.Media.MediaStreamSource.OpenDemuxerAsyncDelegate open_demuxer, System.Windows.Media.MediaStreamSource.SeekAsyncDelegate seek, System.Windows.Media.MediaStreamSource.SwitchMediaStreamAsyncDelegate switch_media_stream);
 
 		[DllImport ("moon")]
 		// void media_element_set_stream_source (MediaElement *instance, ManagedStreamCallbacks *stream);
@@ -1016,6 +1023,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void media_element_stop (MediaElement *instance);
 		public extern static void media_element_stop (IntPtr instance);
+
+		[DllImport ("moon")]
+		// MediaFrame *media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts);
+		public extern static IntPtr media_frame_new (IntPtr stream, IntPtr buffer, uint buflen, ulong pts);
 
 		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
@@ -1696,6 +1707,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// VideoBrush *video_brush_new ();
 		public extern static IntPtr video_brush_new ();
+
+		[DllImport ("moon")]
+		// VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration);
+		public extern static IntPtr video_stream_new (IntPtr media, int codec_id, uint width, uint height, ulong duration);
 
 		[DllImport ("moon")]
 		// VisualBrush *visual_brush_new ();
