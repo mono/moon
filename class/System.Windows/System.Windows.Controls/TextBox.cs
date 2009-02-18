@@ -36,16 +36,6 @@ namespace System.Windows.Controls {
 			get; set;
 		}
 		
-		public IEnumerable<UIElement> HitTest (Point point)
-		{
-			return null;
-		}
-		
-		public IEnumerable<UIElement> HitTest (Rect rect)
-		{
-			return null;
-		}
-		
 		public void Select (int start, int length)
 		{
 			if (start < 0)
