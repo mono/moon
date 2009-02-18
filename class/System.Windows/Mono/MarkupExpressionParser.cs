@@ -138,7 +138,6 @@ namespace Mono.Xaml {
 				o = Application.Current.Resources [name];
 #endif
 
-			Console.WriteLine ("static resource:  '{0}'  is {1}", name, o);
 			return o;
 		}
 
