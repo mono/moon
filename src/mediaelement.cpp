@@ -67,7 +67,7 @@ MediaElement::MediaElement ()
 	marker_closure = NULL;
 	mplayer = NULL;
 	playlist = NULL;
-	flags = 0;
+	flags = UseMediaWidth | UseMediaHeight;
 		
 	mplayer = NULL;
 	

@@ -1,5 +1,9 @@
 2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: ctor: Initialize flags correctly.
+
+2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp:
 	* pipeline.cpp:
 	* pipeline-asf.cpp:
