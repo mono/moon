@@ -213,11 +213,8 @@ public:
 	virtual void Dispose ();
 
 	void Freeze ();
-
-	GHashTable *GetCurrentValues ();
-	void FreeCurrentValues (GHashTable *current_values);
 	
-	DependencyProperty **GetProperties ();
+	DependencyProperty **GetProperties (bool only_changed);
 	
 	GHashTable *GetLocalValues () { return local_values; }
 

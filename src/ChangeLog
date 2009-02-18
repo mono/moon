@@ -1,5 +1,9 @@
 2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
 
+	* dependencyobject.cpp: Now takes an only_changed argument; if
+	true, then only return the properties which have been
+	changed (plus any values which have been auto-created).
+
 	* mediaelement.cpp (MediaElement::MediaElement): Set
 	BufferingTimeProperty and PositionProperty in the ctor, we can't
 	use DefaultValue nor AutoCreateValue for these since they need to

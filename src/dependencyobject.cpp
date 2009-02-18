@@ -1638,43 +1638,6 @@ DependencyObject::Freeze()
 }
 
 static void
-copy_current_value (gpointer key, gpointer value, gpointer data)
-{
-	GHashTable *hash = (GHashTable*)data;
-	Value *v = (Value *) value;
-	
-	g_hash_table_insert (hash, key, new Value(*v));
-}
-
-GHashTable*
-DependencyObject::GetCurrentValues ()
-{
-	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
-
-	GHashTable *value_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
-
-	g_hash_table_foreach (local_values, copy_current_value, value_hash);
-	g_hash_table_foreach (autocreate->auto_values, copy_current_value, value_hash);
-
-	return value_hash;
-}
-
-static gboolean
-destroy_value (gpointer key, gpointer value, gpointer data)
-{
-	delete (Value *) value;
-	
-	return TRUE;
-}
-
-void
-DependencyObject::FreeCurrentValues (GHashTable *current_values)
-{
-	g_hash_table_foreach_remove (current_values, destroy_value, NULL);
-	g_hash_table_destroy (current_values);
-}
-
-static void
 free_listener (gpointer data, gpointer user_data)
 {
 	Listener* listener = (Listener*) data;
@@ -1726,29 +1689,42 @@ get_attached_props (gpointer key, gpointer value, gpointer user_data)
 }
 
 static void
-hash_to_array (gpointer key, gpointer value, gpointer user_data)
+hash_keys_to_array (gpointer key, gpointer value, gpointer user_data)
+{
+	g_ptr_array_add ((GPtrArray *) user_data, key);
+}
+
+static void
+hash_values_to_array (gpointer key, gpointer value, gpointer user_data)
 {
 	g_ptr_array_add ((GPtrArray *) user_data, value);
 }
 
 DependencyProperty **
-DependencyObject::GetProperties ()
+DependencyObject::GetProperties (bool only_changed)
 {
+	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
 	DependencyProperty **props;
 	GHashTable *table;
 	GPtrArray *array;
 	
-	// get our class/inherited DependencyProperties
-	table = GetType ()->CopyProperties (true);
-	
-	// find any attached properties that have been set
-	g_hash_table_foreach (local_values, get_attached_props, table);
-	
-	// dump them to an array
 	array = g_ptr_array_new ();
-	g_hash_table_foreach (table, hash_to_array, array);
-	g_ptr_array_add (array, NULL);
-	g_hash_table_destroy (table);
+	
+	if (!only_changed) {
+		// get our class/inherited DependencyProperties
+		table = GetType ()->CopyProperties (true);
+		
+		// find any attached properties that have been set
+		g_hash_table_foreach (local_values, get_attached_props, table);
+		
+		// dump them to an array
+		g_hash_table_foreach (table, hash_values_to_array, array);
+		g_ptr_array_add (array, NULL);
+		g_hash_table_destroy (table);
+	} else {
+		g_hash_table_foreach (local_values, hash_keys_to_array, array);
+		g_hash_table_foreach (autocreate->auto_values, hash_keys_to_array, array);
+	}
 	
 	props = (DependencyProperty **) array->pdata;
 	g_ptr_array_free (array, false);
