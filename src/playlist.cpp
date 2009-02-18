@@ -72,8 +72,8 @@ PlaylistEntry::PlaylistEntry (Playlist *parent)
 {
 	LOG_PLAYLIST ("PlaylistEntry::PlaylistEntry (%p)\n", parent);
 
-	g_warn_if_fail (parent != NULL);
 	Init (parent);
+	g_return_if_fail (parent != NULL); // should ge a g_warn..., but glib 2.10 doesn't have g_warn.
 }
 
 PlaylistEntry::PlaylistEntry (Type::Kind kind, Playlist *parent)
@@ -81,8 +81,8 @@ PlaylistEntry::PlaylistEntry (Type::Kind kind, Playlist *parent)
 {
 	LOG_PLAYLIST ("PlaylistEntry::PlaylistEntry (%p)\n", parent);
 
-	g_warn_if_fail (parent != NULL);
 	Init (parent);
+	g_return_if_fail (parent != NULL); // should ge a g_warn..., but glib 2.10 doesn't have g_warn.
 }
 
 

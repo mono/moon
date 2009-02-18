@@ -822,7 +822,7 @@ MediaElement::BufferingComplete ()
 void
 MediaElement::CreatePlaylist ()
 {
-	g_warn_if_fail (mplayer == NULL);
+	g_return_if_fail (mplayer == NULL);
 	
 	mplayer = new MediaPlayer (this);
 	SetPlaylist (new PlaylistRoot (this));

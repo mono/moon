@@ -1,5 +1,13 @@
 2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp:
+	* pipeline.cpp:
+	* pipeline-asf.cpp:
+	* mediaelement.cpp: g_warn_if_failed -> g_return_if_failed to
+	  make sled (glib 2.10) happy.
+
+2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.h:
 	* pipeline.cpp:
 	* playlist.cpp:

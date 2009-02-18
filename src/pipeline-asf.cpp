@@ -825,7 +825,7 @@ MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
 {
 	// We should never get here
 	// The MmsDownloader knowns about us and should call WritePacket.
-	g_warn_if_reached ();
+	g_return_if_fail (false);
 }
 
 void

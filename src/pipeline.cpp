@@ -507,7 +507,7 @@ Media::ReportOpenDecoderCompleted (IMediaDecoder *decoder)
 {
 	LOG_PIPELINE ("Media::ReportOpenDecoderCompleted (%p), id: %i\n", decoder, GET_OBJ_ID (this));
 	
-	g_warn_if_fail (decoder != NULL);
+	g_return_if_fail (decoder != NULL);
 	
 	OpenInternal ();
 }
@@ -563,12 +563,12 @@ Media::Initialize (Downloader *downloader, const char *PartName)
 	LOG_PIPELINE ("Media::Initialize (%p, '%s'), id: %i\n", downloader, PartName, GET_OBJ_ID (this));
 	
 	g_return_if_fail (downloader != NULL);
-	g_warn_if_fail (this->downloader == NULL);
-	g_warn_if_fail (file == NULL);
-	g_warn_if_fail (uri != NULL);
-	g_warn_if_fail (initialized == false);
-	g_warn_if_fail (error_reported == false);
-	g_warn_if_fail (this->source == NULL);
+	g_return_if_fail (this->downloader == NULL);
+	g_return_if_fail (file == NULL);
+	g_return_if_fail (uri != NULL);
+	g_return_if_fail (initialized == false);
+	g_return_if_fail (error_reported == false);
+	g_return_if_fail (this->source == NULL);
 	
 	if (downloader->Completed ()) {
 		file = downloader->GetDownloadedFilename (PartName);
@@ -610,7 +610,7 @@ Media::Initialize (IMediaSource *source)
 	
 	g_return_if_fail (source != NULL);
 	g_return_if_fail (this->source == NULL);
-	g_warn_if_fail (initialized == false);
+	g_return_if_fail (initialized == false);
 	
 	result = source->Initialize ();
 	if (!MEDIA_SUCCEEDED (result)) {
@@ -632,12 +632,12 @@ Media::Initialize (const char *uri)
 	LOG_PIPELINE ("Media::Initialize ('%s'), id: %i\n", uri, GET_OBJ_ID (this));	
 	
 	g_return_if_fail (uri != NULL);
-	g_warn_if_fail (this->downloader == NULL);
-	g_warn_if_fail (file == NULL);
-	g_warn_if_fail (uri != NULL);
-	g_warn_if_fail (initialized == false);
-	g_warn_if_fail (error_reported == false);
-	g_warn_if_fail (source == NULL);
+	g_return_if_fail (this->downloader == NULL);
+	g_return_if_fail (file == NULL);
+	g_return_if_fail (uri != NULL);
+	g_return_if_fail (initialized == false);
+	g_return_if_fail (error_reported == false);
+	g_return_if_fail (source == NULL);
 	
 	this->uri = g_strdup (uri);
 	
@@ -672,7 +672,7 @@ Media::Initialize (IMediaDemuxer *demuxer)
 	
 	g_return_if_fail (demuxer != NULL);
 	g_return_if_fail (this->demuxer == NULL);
-	g_warn_if_fail (initialized == false);
+	g_return_if_fail (initialized == false);
 	
 	this->demuxer = demuxer;
 	this->demuxer->ref ();
@@ -685,7 +685,7 @@ Media::OpenAsync ()
 {
 	LOG_PIPELINE ("Media::OpenAsync (), id: %i\n", GET_OBJ_ID (this));
 	
-	g_warn_if_fail (initialized == true);
+	g_return_if_fail (initialized == true);
 	
 	Emit (OpeningEvent);
 	
@@ -697,7 +697,7 @@ Media::OpenInternal ()
 {
 	LOG_PIPELINE ("Media::OpenInternal (), id: %i\n", GET_OBJ_ID (this));
 
-	g_warn_if_fail (initialized == true);
+	g_return_if_fail (initialized == true);
 
 	if (opened) {
 		// This may happen due to the recursion detection below
@@ -771,8 +771,8 @@ Media::SelectDemuxerAsync ()
 	
 	LOG_PIPELINE ("Media::SelectDemuxer () id: %i, demuxer: %p, IsOpened: %i, IsOpening: %i\n", GET_OBJ_ID (this), demuxer, demuxer ? demuxer->IsOpened () : -1, demuxer ? demuxer->IsOpening () : -1);
 	
-	g_warn_if_fail (error_reported == false);
-	g_warn_if_fail (initialized == true);
+	g_return_val_if_fail (error_reported == false, false);
+	g_return_val_if_fail (initialized == true, false);
 	
 	// Check if demuxer already is open
 	if (demuxer != NULL) {
@@ -895,8 +895,8 @@ Media::SelectDecodersAsync ()
 {	
 	LOG_PIPELINE ("Media::SelectDecodersAsync () id: %i.\n", GET_OBJ_ID (this));
 		
-	g_warn_if_fail (error_reported == false);
-	g_warn_if_fail (initialized == true);
+	g_return_val_if_fail (error_reported == false, false);
+	g_return_val_if_fail (initialized == true, false);
 	
 	if (demuxer == NULL) {
 		ReportErrorOccurred ("No demuxer to select decoders from.");
@@ -1552,7 +1552,7 @@ FileSource::Eof ()
 
 ProgressiveSource::ProgressiveSource (Media *media, Downloader *dl) : FileSource (media, true)
 {
-	g_warn_if_fail (dl != NULL);
+	g_return_if_fail (dl != NULL);
 
 	write_pos = 0;
 	size = -1;
@@ -1826,8 +1826,8 @@ MemorySource::PeekInternal (void *buffer, guint32 n)
 MediaClosure::MediaClosure (Media *media, MediaCallback *callback, MediaCallback *finished, EventObject *context)
 	: EventObject (Type::MEDIACLOSURE)
 {
-	g_warn_if_fail (callback != NULL);
-	g_warn_if_fail (media != NULL);
+	g_return_if_fail (callback != NULL);
+	g_return_if_fail (media != NULL);
 	
 	result = 0;
 	this->callback = callback;
@@ -1843,8 +1843,8 @@ MediaClosure::MediaClosure (Media *media, MediaCallback *callback, MediaCallback
 MediaClosure::MediaClosure (Media *media, MediaCallback *callback, EventObject *context)
 	: EventObject (Type::MEDIACLOSURE)
 {
-	g_warn_if_fail (callback != NULL);
-	g_warn_if_fail (media != NULL);
+	g_return_if_fail (callback != NULL);
+	g_return_if_fail (media != NULL);
 	
 	result = 0;
 	this->callback = callback;
@@ -1907,7 +1907,7 @@ MediaGetFrameClosure::MediaGetFrameClosure (Media *media, MediaCallback *callbac
 {
 	this->stream = NULL;
 	
-	g_warn_if_fail (context != NULL);
+	g_return_if_fail (context != NULL);
 	g_return_if_fail (stream != NULL);
 	
 	this->stream = stream;
@@ -2357,7 +2357,7 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 void
 IMediaDemuxer::OpenDemuxerAsync ()
 {
-	g_warn_if_fail (opened == false);
+	g_return_if_fail (opened == false);
 	
 	opening = true;
 	opened = false;
@@ -2653,7 +2653,7 @@ IMediaObject::IMediaObject (Type::Kind kind, Media *media)
 	this->media = media;
 	if (this->media)
 		this->media->ref ();
-	g_warn_if_fail (media != NULL);
+	g_return_if_fail (media != NULL);
 }
 
 void
@@ -2965,8 +2965,8 @@ IMediaDecoder::OpenDecoderAsync ()
 {
 	LOG_PIPELINE ("IMediaDecoder::OpenDecoderAsync ()\n");
 	
-	g_warn_if_fail (opening == false);
-	g_warn_if_fail (opened == false);
+	g_return_if_fail (opening == false);
+	g_return_if_fail (opened == false);
 	
 	opening = true;	
 	OpenDecoderAsyncInternal ();
@@ -3380,8 +3380,8 @@ ExternalDemuxer::ExternalDemuxer (Media *media, void *instance, CloseDemuxerCall
 		SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream)
 	: IMediaDemuxer (Type::EXTERNALDEMUXER, media)
 {
-	g_warn_if_fail (instance != NULL);
-	g_warn_if_fail (close_demuxer != NULL && get_diagnostic != NULL && get_sample != NULL && open_demuxer != NULL && seek != NULL && switch_media_stream != NULL);
+	g_return_if_fail (instance != NULL);
+	g_return_if_fail (close_demuxer != NULL && get_diagnostic != NULL && get_sample != NULL && open_demuxer != NULL && seek != NULL && switch_media_stream != NULL);
 	
 	this->close_demuxer_callback = close_demuxer;
 	this->get_diagnostic_async_callback = get_diagnostic;
