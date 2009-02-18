@@ -1422,7 +1422,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		changed = TextBoxModelChangedBrush;
 	} else if (args->GetId () == TextBox::TextProperty) {
 		if (setvalue) {
-			const char *str = args->new_value ? args->new_value->AsString () : "";
+			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString() : "";
 			gunichar *text;
 			glong textlen;
 			
