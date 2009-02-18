@@ -85,6 +85,11 @@ namespace Microsoft.Silverlight.Testing
             EnqueueWorkItem(conditionalTask);
         }
 
+        public virtual void EnqueueConditional (Func<bool> conditionalDelegate, TimeSpan timeout)
+        {
+            EnqueueWorkItem(new ConditionalWorkItem (conditionalDelegate, timeout));
+        }
+
         /// <summary>
         /// Enqueue a test task which calls the TestComplete method of 
         /// SilverlightTest.
