@@ -42,6 +42,7 @@ namespace DefaultValues {
 			sb.AppendLine ("using System.Windows.Media.Imaging;");
 			sb.AppendLine ("using System.Windows.Resources;");
 			sb.AppendLine ("using System.Windows.Shapes;");
+			sb.AppendLine ("using System.Windows.Threading;");
 			sb.AppendLine ();
 			sb.AppendLine ("using Microsoft.VisualStudio.TestTools.UnitTesting;");
 			sb.AppendLine ("using Mono.Moonlight.UnitTesting;");
@@ -99,6 +100,8 @@ namespace DefaultValues {
 		
 		string PrettyName (Type type)
 		{
+			int tick;
+			
 			if (type == typeof (bool))
 				return "bool";
 			
@@ -116,6 +119,9 @@ namespace DefaultValues {
 			
 			if (type == typeof (object))
 				return "object";
+			
+			if ((tick = type.Name.IndexOf ('`')) != -1)
+				return type.Name.Substring (0, tick);
 			
 			return type.Name;
 		}
@@ -169,10 +175,13 @@ namespace DefaultValues {
 			} else if (retval.GetType ().IsEnum) {
 				// serialize the enum value
 				expected = retval.GetType ().Name + "." + retval.ToString ();
-			} else if (retval.GetType () == typeof (System.Windows.Markup.XmlLanguage)) {
+			} else if (retval is XmlLanguage) {
 				// for XmlLanguages, compare the IetfLanguageTags
 				expected = "\"" + ((XmlLanguage) retval).IetfLanguageTag + "\"";
-				retvalName += ".IetfLanguageTag";
+				if (retvalName == "retval")
+					retvalName = "((XmlLanguage) " + retvalName + ").IetfLanguageTag";
+				else
+					retvalName += ".IetfLanguageTag";
 			} else if (IgnoreType (retval.GetType ())) {
 				// ignore these types
 				return;
@@ -220,7 +229,7 @@ namespace DefaultValues {
 						sb.AppendLine ();
 					}
 					
-					method = "ReadLocalValue(" + ctype.Name + "." + fields[i].Name + ")";
+					method = "ReadLocalValue(" + PrettyName (ctype) + "." + fields[i].Name + ")";
 					
 					try {
 						retval = widget.ReadLocalValue (property);
@@ -284,7 +293,7 @@ namespace DefaultValues {
 						sb.AppendLine ();
 					}
 					
-					method = "GetValue(" + ctype.Name + "." + fields[i].Name + ")";
+					method = "GetValue(" + PrettyName (ctype) + "." + fields[i].Name + ")";
 					
 					try {
 						retval = widget.GetValue (property);
