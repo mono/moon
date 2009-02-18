@@ -1,3 +1,7 @@
+2009-02-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* VSM/System/Windows/VisualStateGroup.cs: Default the name to "".
+
 2009-02-02  Chris Toshok  <toshok@ximian.com>
 
 	* VSM/System/Windows/VisualState.cs: use a hack to get around our

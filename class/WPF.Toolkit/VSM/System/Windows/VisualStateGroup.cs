@@ -26,8 +26,8 @@ namespace System.Windows
         /// </summary>
         public string Name
         {
-            get;
-            internal set;
+            get { return _name; }
+            internal set { _name = value; }
         }
 
         /// <summary>
@@ -191,5 +191,6 @@ namespace System.Windows
         private Collection<Storyboard> _currentStoryboards;
         private Collection<VisualState> _states;
         private Collection<VisualTransition> _transitions;
+        private string _name = String.Empty;
     }
 }
