@@ -1,3 +1,9 @@
+2009-02-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* geometry.h (class PathGeometry): Don't autocreate the
+	FiguresProperty until we can figure out why it breaks the PDC
+	site.
+
 2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.h: We always want OnPropertyChanged for
