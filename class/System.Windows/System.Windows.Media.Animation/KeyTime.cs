@@ -100,6 +100,8 @@ namespace System.Windows.Media.Animation {
 			switch (type) {
 			case KeyTimeType.TimeSpan:
 				return time_span.ToString ();
+			case KeyTimeType.Uniform:
+				return "Uniform";
 			default:
 				return "KeyTime";
 			}
