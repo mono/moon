@@ -43,7 +43,6 @@ class MultiScaleImage : public MediaBase {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	void DownloaderFailed ();
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
-	double GetViewportHeight ();
 
 	Downloader *downloader;
 	void RenderCollection (cairo_t *cr, Region *region);

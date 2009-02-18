@@ -12,10 +12,9 @@
 
 //TODO
 //
-//- drop the friends
 //- blend new layers
 //- animation for VP changes
-//- if opacity is not 1.0, stack the layers internally, then paint at once
+//- if opacity is not 1.0, stack the layers internally, then paint at once (use cairo_group for this)
 //- fix the leaks
 //- only invalidate regions
 //- only render changed regions
@@ -71,7 +70,7 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 
 	LOG_MSI ("zoomabout logical %f  (%f, %f)\n", zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
 	double width = GetViewportWidth () / zoomIncrementFactor;
-	double height = GetViewportHeight () / zoomIncrementFactor;
+	double height = GetViewportWidth () / (GetAspectRatio () * zoomIncrementFactor);
 	SetValue (MultiScaleImage::ViewportWidthProperty, Value (width));
 	if (!isnan(zoomCenterLogicalX) && !isnan(zoomCenterLogicalY))
 		SetValue (MultiScaleImage::ViewportOriginProperty, Value (Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0)));
@@ -82,7 +81,7 @@ Point
 MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 {
 	return Point (GetViewportOrigin()->x + (double)elementPoint.x * GetViewportWidth () / GetActualWidth (),
-		      GetViewportOrigin()->y + (double)elementPoint.y * GetViewportHeight () / GetActualHeight ());
+		      GetViewportOrigin()->y + (double)elementPoint.y * GetViewportWidth () / GetActualWidth ());
 }
 
 void
@@ -484,8 +483,7 @@ void
 MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 {
 //FIXME: only render region
-
-
+	LOG_MSI ("MSI::Render\n");
 	//if there's a downloaded file pending, cache it
 	if (filename) {
 		guchar *data;
@@ -530,11 +528,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		RenderCollection (cr, region);
 		return;
 	}
-	LOG_MSI ("MSI::Render\n");
-
-
-//	if (!surface)
-//		return;
 
 	if (!(source = GetSource ())) {
 		LOG_MSI ("no sources set, nothing to render\n");
@@ -559,7 +552,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	double w = GetActualWidth ();
 	double h = GetActualHeight ();
 	double vp_w = GetViewportWidth ();
-	double vp_h = GetViewportHeight ();
+	double vp_h = vp_w / GetAspectRatio ();
 	double im_w = (double) source->GetImageWidth ();
 	double im_h = (double) source->GetImageHeight ();
 	int tile_width = source->GetTileWidth ();
@@ -626,7 +619,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 				cairo_save (cr);
 
 				cairo_rectangle (cr, 0, 0, w, h);
-				cairo_clip (cr);
 				cairo_scale (cr, w / (vp_w * im_w), w / (vp_w * im_w)); //scale to viewport
 				cairo_translate (cr, -vp_ox * im_w + i * v_tile_w, -vp_oy * im_h+ j * v_tile_h);
 				//cairo_scale (cr, im_w / (double)*p_w, im_h / (double)*p_h); //scale to image size
@@ -643,7 +635,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_rectangle (cr, 0, 0, w, h);
 	cairo_clip (cr);
 	cairo_paint (cr);
-
 
 	if (downloading)
 		return;
@@ -756,10 +747,3 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	NotifyListenersOfPropertyChange (args);
 }
-
-double
-MultiScaleImage::GetViewportHeight ()
-{
-	return GetViewportWidth () / GetAspectRatio ();
-}
-
