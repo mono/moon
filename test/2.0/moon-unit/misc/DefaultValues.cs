@@ -20662,8 +20662,8 @@ namespace MoonTest.System.Windows.Controls
 		{
 			VisualStateGroup widget = new VisualStateGroup ();
 
-			//Assert.IsNotNull(widget.Name, "Name should not have returned null");
-			//Assert.AreEqual("", widget.Name, "Name does not match the default value");
+			Assert.IsNotNull(widget.Name, "Name should not have returned null");
+			Assert.AreEqual("", widget.Name, "Name does not match the default value");
 
 			Assert.IsNotNull(widget.States, "States should not have returned null");
 
