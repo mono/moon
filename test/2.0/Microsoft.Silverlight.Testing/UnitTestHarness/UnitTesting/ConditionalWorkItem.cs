@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Silverlight.Testing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Silverlight.Testing.UnitTesting
 {
@@ -14,18 +15,27 @@ namespace Microsoft.Silverlight.Testing.UnitTesting
     /// </summary>
     public class ConditionalWorkItem : WorkItem
     {
+        DateTime? start;
         /// <summary>
         /// The conditional delegate.
         /// </summary>
         private Func<bool> _delegate;
+        private TimeSpan timeout;
 
         /// <summary>
         /// Construct a new conditional work item.
         /// </summary>
         /// <param name="conditionalMethod">Conditional delegate.</param>
-        public ConditionalWorkItem(Func<bool> conditionalMethod) : base()
+        public ConditionalWorkItem(Func<bool> conditionalMethod) : this(conditionalMethod, TimeSpan.FromSeconds(5))
+        {
+
+        }
+
+        public ConditionalWorkItem (Func<bool> conditionalMethod, TimeSpan timeout)
+            : base ()
         {
             _delegate = conditionalMethod;
+            this.timeout = timeout;
         }
 
         /// <summary>
@@ -35,11 +45,17 @@ namespace Microsoft.Silverlight.Testing.UnitTesting
         /// <returns>Completes the invocation once the condition is true.</returns>
         public override bool Invoke()
         {
-            // BUG: test does not fail if an exception is thrown from a 
-            // conditional delegate
-            if (_delegate() == true) 
+            if (_delegate () == true)
             {
-                this.WorkItemComplete();
+                this.WorkItemComplete ();
+            }
+            else
+            {
+                if (!start.HasValue)
+                    start = DateTime.Now;
+
+                if ((DateTime.Now - start) > timeout)
+                    Assert.Fail ("Timeout exceeded on conditional wait");
             }
             return base.Invoke();
         }

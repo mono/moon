@@ -1,3 +1,8 @@
+2009-02-18  Alan McGovern <amcgovern@novell.com> 
+	* ConditionalWorkItem.cs: Add a timeout value so that waiting
+	on a conditional will never block indefinitely.
+	
+
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	
