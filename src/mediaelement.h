@@ -164,7 +164,7 @@ class MediaElement : public FrameworkElement {
 	const static int NaturalVideoHeightProperty;
  	/* @PropertyType=gint32,DefaultValue=0,ReadOnly,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int NaturalVideoWidthProperty;
- 	/* @PropertyType=TimeSpan,GenerateAccessors */
+ 	/* @PropertyType=TimeSpan,AlwaysChange,GenerateAccessors */
 	const static int PositionProperty;
  	/* @PropertyType=string,ManagedPropertyType=Uri,AlwaysChange,GenerateAccessors */
 	const static int SourceProperty;

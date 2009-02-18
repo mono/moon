@@ -1,5 +1,12 @@
 2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.h: We always want OnPropertyChanged for
+	  PositionProperty. Fixes seeking to start/0.
+
+	* dependencyproperty.g.cpp: Regenerated.	
+
+2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: ctor: Initialize flags correctly.
 
 2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
