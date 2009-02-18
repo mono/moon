@@ -1,6 +1,7 @@
 2009-02-18  Jeffrey Stedfast  <fejj@novell.com>
 
-	* DefaultValues/Page.xaml.cs: Generate property getter tests.
+	* DefaultValues/Page.xaml.cs: Generate property getter tests and
+	check RLV/GV for inherited properties as well.
 
 2009-02-13  Jeffrey Stedfast  <fejj@novell.com>
 

@@ -3,7 +3,9 @@ using System.Text;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Markup;
 using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace DefaultValues {
 	public partial class Page : Canvas {
@@ -15,7 +17,7 @@ namespace DefaultValues {
 			
 			sb = new StringBuilder ();
 			GenerateUnitTests ();
-			txtOutput.Text = sb.ToString ().Replace ("\t", "    ");
+			txtOutput.Text = sb.ToString ();
 		}
 		
 		void GenerateUnitTests ()
@@ -76,14 +78,23 @@ namespace DefaultValues {
 			}
 		}
 		
-		void EmitTestMethod (Type type, string test)
+		void EmitTestMethod (Type type, string test, bool retval)
 		{
 			sb.AppendLine ("\t\t[TestMethod]");
 			sb.AppendLine ("\t\tpublic void " + type.Name + "_" + test + " ()");
 			sb.AppendLine ("\t\t{");
 			sb.AppendLine ("\t\t\t" + type.Name + " widget = new " + type.Name + " ();");
-			sb.AppendLine ("\t\t\tobject retval;");
+			if (retval)
+				sb.AppendLine ("\t\t\tobject retval;");
 			sb.AppendLine ();
+		}
+		
+		bool IgnoreType (Type type)
+		{
+			if (type == typeof (System.Windows.Threading.Dispatcher))
+				return true;
+			
+			return false;
 		}
 		
 		string PrettyName (Type type)
@@ -109,27 +120,27 @@ namespace DefaultValues {
 			return type.Name;
 		}
 		
-		void AssertDependencyObjectEqual (DependencyObject widget, Type type, string test, object retval)
+		void AssertDependencyObjectEqual (DependencyObject widget, Type type, string method, string retvalName, object retval)
 		{
 		}
 		
-		void AssertValuesEqual (DependencyObject widget, Type type, string test, object retval)
+		void AssertValuesEqual (DependencyObject widget, Type type, string method, string retvalName, object retval)
 		{
 			string expected = null;
 			string special = null;
 			bool tostring = false;
 			
 			if (retval.GetType ().IsSubclassOf (typeof (DependencyObject))) {
-				sb.AppendLine ("\t\t\tAssert.IsTrue (retval is " + PrettyName (retval.GetType ()) + ", \"" +
-					       test + " is not of the correct type\");");
-				AssertDependencyObjectEqual (widget, type, test, retval);
+				sb.AppendLine (String.Format ("\t\t\tAssert.IsTrue({0} is {1}, \"{2} is not of the correct type\");",
+							      retvalName, PrettyName (retval.GetType ()), method));
+				AssertDependencyObjectEqual (widget, type, method, retvalName, retval);
 				return;
 			} else if (retval.GetType ().IsGenericType) {
 				return;
 			}
 			
-			sb.AppendLine ("\t\t\tAssert.IsTrue (retval is " + PrettyName (retval.GetType ()) + ", \"" + test +
-				       ") is not of the correct type\");");
+			sb.AppendLine (String.Format ("\t\t\tAssert.IsTrue({0} is {1}, \"{2} is not of the correct type\");",
+						      retvalName, PrettyName (retval.GetType ()), method));
 			
 			if (retval.GetType ().IsPrimitive) {
 				if (retval is double) {
@@ -137,11 +148,11 @@ namespace DefaultValues {
 					double d = (double) retval;
 					
 					if (Double.IsNegativeInfinity (d))
-						special = "Double.IsNegativeInfinity ((double) retval)";
+						special = "Double.IsNegativeInfinity((double) " + retvalName + ")";
 					else if (Double.IsPositiveInfinity (d))
-						special = "Double.IsPositiveInfinity ((double) retval)";
+						special = "Double.IsPositiveInfinity((double) " + retvalName + ")";
 					else if (Double.IsNaN (d))
-						special = "Double.IsNaN ((double) retval)";
+						special = "Double.IsNaN((double) " + retvalName + ")";
 					else if ((double) retval == -3.40282346638529E+38)
 						expected = "(double) 0";
 					else
@@ -158,6 +169,13 @@ namespace DefaultValues {
 			} else if (retval.GetType ().IsEnum) {
 				// serialize the enum value
 				expected = retval.GetType ().Name + "." + retval.ToString ();
+			} else if (retval.GetType () == typeof (System.Windows.Markup.XmlLanguage)) {
+				// for XmlLanguages, compare the IetfLanguageTags
+				expected = "\"" + ((XmlLanguage) retval).IetfLanguageTag + "\"";
+				retvalName += ".IetfLanguageTag";
+			} else if (IgnoreType (retval.GetType ())) {
+				// ignore these types
+				return;
 			} else {
 				// everything else serialize to a string for comparison
 				expected = "\"" + retval.ToString () + "\"";
@@ -165,62 +183,70 @@ namespace DefaultValues {
 			}
 			
 			if (special != null)
-				sb.AppendLine ("\t\t\tAssert.IsTrue (" + special + ", \"" + test +
-					       " does not match the default value\");");
+				sb.AppendLine (String.Format ("\t\t\tAssert.IsTrue({0}, \"{1} does not match the default value\");",
+							      special, method));
 			else
-				sb.AppendLine ("\t\t\tAssert.AreEqual (" + expected + ", retval" + (tostring ? ".ToString ()" : "") +
-					       ", \"" + test + " does not match the default value\");");
+				sb.AppendLine (String.Format ("\t\t\tAssert.AreEqual ({0}, {1}{2}, \"{3} does not match the default value\");",
+							      expected, retvalName, tostring ? ".ToString ()" : "", method));
 		}
 		
 		void GenerateReadLocalValueTest (DependencyObject widget, Type type)
 		{
-			FieldInfo[] fields = type.GetFields ();
 			DependencyProperty property;
 			bool testing = false;
+			FieldInfo[] fields;
+			Type ctype = type;
+			string method;
 			object retval;
 			
-			for (int i = 0; i < fields.Length; i++) {
-				if (!fields[i].IsPublic || !fields[i].IsStatic || fields[i].FieldType != typeof (DependencyProperty))
-					continue;
+			do {
+				fields = ctype.GetFields ();
 				
-				try {
-					if ((property = fields[i].GetValue (null) as DependencyProperty) == null)
+				for (int i = 0; i < fields.Length; i++) {
+					if (!fields[i].IsPublic || !fields[i].IsStatic || fields[i].FieldType != typeof (DependencyProperty))
 						continue;
-				} catch {
-					continue;
-				}
-				
-				if (!testing) {
-					EmitTestMethod (type, "ReadLocalValue");
-					testing = true;
-				} else {
-					sb.AppendLine ();
-				}
-				
-				try {
-					retval = widget.ReadLocalValue (property);
 					
-					sb.AppendLine ("\t\t\tretval = widget.ReadLocalValue (" + type.Name + "." + fields[i].Name + ");");
-					
-					if (retval != DependencyProperty.UnsetValue) {
-						if (retval != null) {
-							sb.AppendLine ("\t\t\tAssert.IsNotNull (retval, \"ReadLocalValue(" + fields[i].Name +
-								       ") should not have returned null\");");
-							AssertValuesEqual (widget, type, "ReadLocalValue(" + fields[i].Name + ")", retval);
-						} else {
-							sb.AppendLine ("\t\t\tAssert.IsNull (retval, \"ReadLocalValue(" + fields[i].Name +
-								       ") should have returned null\");");
-						}
-					} else {
-						sb.AppendLine ("\t\t\tAssert.AreEqual (DependencyProperty.UnsetValue, retval, \"ReadLocalValue(" +
-							       fields[i].Name + ") should not have a value by default\");");
+					try {
+						if ((property = fields[i].GetValue (null) as DependencyProperty) == null)
+							continue;
+					} catch {
+						continue;
 					}
-				} catch (Exception ex) {
-					sb.AppendLine ("\t\t\tAssert.Throws<" + ex.GetType ().Name + ">(delegate {");
-					sb.AppendLine ("\t\t\t\tretval = widget.ReadLocalValue (" + type.Name + "." + fields[i].Name + ");");
-					sb.AppendLine ("\t\t\t}, \"ReadLocalValue(" + fields[i].Name + ") should thow an exception\");");
+					
+					if (!testing) {
+						EmitTestMethod (type, "ReadLocalValue", true);
+						testing = true;
+					} else {
+						sb.AppendLine ();
+					}
+					
+					method = "ReadLocalValue(" + ctype.Name + "." + fields[i].Name + ")";
+					
+					try {
+						retval = widget.ReadLocalValue (property);
+						
+						sb.AppendLine ("\t\t\tretval = widget." + method + ";");
+						
+						if (retval != DependencyProperty.UnsetValue) {
+							if (retval != null) {
+								sb.AppendLine ("\t\t\tAssert.IsNotNull(retval, \"" + method + " should not have returned null\");");
+								AssertValuesEqual (widget, type, method, "retval", retval);
+							} else {
+								sb.AppendLine ("\t\t\tAssert.IsNull(retval, \"" + method + " should have returned null\");");
+							}
+						} else {
+							sb.AppendLine ("\t\t\tAssert.AreEqual(DependencyProperty.UnsetValue, retval, \"" + method + 
+								       " should not have a value by default\");");
+						}
+					} catch (Exception ex) {
+						sb.AppendLine ("\t\t\tAssert.Throws<" + ex.GetType ().Name + ">(delegate {");
+						sb.AppendLine ("\t\t\t\tretval = widget." + method + ";");
+						sb.AppendLine ("\t\t\t}, \"" + method + " should thow an exception\");");
+					}
 				}
-			}
+				
+				ctype = ctype.BaseType;
+			} while (ctype.IsSubclassOf (typeof (DependencyObject)));
 			
 			if (testing) {
 				sb.AppendLine ("\t\t}");
@@ -230,48 +256,56 @@ namespace DefaultValues {
 		
 		void GenerateGetValueTest (DependencyObject widget, Type type)
 		{
-			FieldInfo[] fields = type.GetFields ();
 			DependencyProperty property;
 			bool testing = false;
+			FieldInfo[] fields;
+			Type ctype = type;
+			string method;
 			object retval;
 			
-			for (int i = 0; i < fields.Length; i++) {
-				if (!fields[i].IsPublic || !fields[i].IsStatic || fields[i].FieldType != typeof (DependencyProperty))
-					continue;
+			do {
+				fields = ctype.GetFields ();
 				
-				try {
-					if ((property = fields[i].GetValue (null) as DependencyProperty) == null)
+				for (int i = 0; i < fields.Length; i++) {
+					if (!fields[i].IsPublic || !fields[i].IsStatic || fields[i].FieldType != typeof (DependencyProperty))
 						continue;
-				} catch {
-					continue;
-				}
-				
-				if (!testing) {
-					EmitTestMethod (type, "GetValue");
-					testing = true;
-				} else {
-					sb.AppendLine ();
-				}
-				
-				try {
-					retval = widget.GetValue (property);
 					
-					sb.AppendLine ("\t\t\tretval = widget.GetValue (" + type.Name + "." + fields[i].Name + ");");
-					
-					if (retval != null) {
-						sb.AppendLine ("\t\t\tAssert.IsNotNull (retval, \"GetValue(" + fields[i].Name +
-							       ") should not have returned null\");");
-						AssertValuesEqual (widget, type, "GetValue(" + fields[i].Name + ")", retval);
-					} else {
-						sb.AppendLine ("\t\t\tAssert.IsNull (retval, \"GetValue(" + fields[i].Name +
-							       ") should have returned null\");");
+					try {
+						if ((property = fields[i].GetValue (null) as DependencyProperty) == null)
+							continue;
+					} catch {
+						continue;
 					}
-				} catch (Exception ex) {
-					sb.AppendLine ("\t\t\tAssert.Throws<" + ex.GetType ().Name + ">(delegate {");
-					sb.AppendLine ("\t\t\t\tretval = widget.GetValue (" + type.Name + "." + fields[i].Name + ");");
-					sb.AppendLine ("\t\t\t}, \"GetValue(" + fields[i].Name + ") should thow an exception\");");
+					
+					if (!testing) {
+						EmitTestMethod (type, "GetValue", true);
+						testing = true;
+					} else {
+						sb.AppendLine ();
+					}
+					
+					method = "GetValue(" + ctype.Name + "." + fields[i].Name + ")";
+					
+					try {
+						retval = widget.GetValue (property);
+						
+						sb.AppendLine ("\t\t\tretval = widget." + method + ";");
+						
+						if (retval != null) {
+							sb.AppendLine ("\t\t\tAssert.IsNotNull(retval, \"" + method + " should not have returned null\");");
+							AssertValuesEqual (widget, type, method, "retval", retval);
+						} else {
+							sb.AppendLine ("\t\t\tAssert.IsNull(retval, \"" + method + " should have returned null\");");
+						}
+					} catch (Exception ex) {
+						sb.AppendLine ("\t\t\tAssert.Throws<" + ex.GetType ().Name + ">(delegate {");
+						sb.AppendLine ("\t\t\t\tretval = widget." + method + ";");
+						sb.AppendLine ("\t\t\t}, \"" + method + " should thow an exception\");");
+					}
 				}
-			}
+				
+				ctype = ctype.BaseType;
+			} while (ctype.IsSubclassOf (typeof (DependencyObject)));
 			
 			if (testing) {
 				sb.AppendLine ("\t\t}");
@@ -281,47 +315,57 @@ namespace DefaultValues {
 		
 		void GeneratePropertyGetterTest (DependencyObject widget, Type type)
 		{
-			PropertyInfo[] properties = type.GetProperties ();
+			Dictionary<string,bool> tested = new Dictionary<string,bool> ();
+			PropertyInfo[] properties;
 			bool testing = false;
-			MethodInfo method;
+			MethodInfo getter;
+			Type ctype = type;
+			string method;
 			object retval;
 			
-			for (int i = 0; i < properties.Length; i++) {
-				try {
-					method = properties[i].GetGetMethod ();
-				} catch {
-					method = null;
-				}
+			do {
+				properties = ctype.GetProperties ();
 				
-				if (method == null)
-					continue;
-				
-				if (!testing) {
-					EmitTestMethod (type, "PropertyGetter");
-					testing = true;
-				} else {
-					sb.AppendLine ();
-				}
-				
-				try {
-					retval = method.Invoke (widget, null);
+				for (int i = 0; i < properties.Length; i++) {
+					if (tested.ContainsKey (properties[i].Name))
+						continue;
 					
-					sb.AppendLine ("\t\t\tretval = widget." + properties[i].Name + ";");
-					
-					if (retval != null) {
-						sb.AppendLine ("\t\t\tAssert.IsNotNull (retval, \"" + properties[i].Name +
-							       " should not have returned null\");");
-						AssertValuesEqual (widget, type, properties[i].Name, retval);
-					} else {
-						sb.AppendLine ("\t\t\tAssert.IsNull (retval, \"" + properties[i].Name +
-							       " should have returned null\");");
+					try {
+						getter = properties[i].GetGetMethod ();
+					} catch {
+						getter = null;
 					}
-				} catch (Exception ex) {
-					sb.AppendLine ("\t\t\tAssert.Throws<" + ex.GetType ().Name + ">(delegate {");
-					sb.AppendLine ("\t\t\t\tretval = widget." + properties[i].Name + ";");
-					sb.AppendLine ("\t\t\t}, \"" + properties[i].Name + " should thow an exception\");");
+					
+					if (getter == null || getter.IsStatic || !getter.IsPublic)
+						continue;
+					
+					try {
+						retval = getter.Invoke (widget, null);
+						tested.Add (properties[i].Name, true);
+						method = properties[i].Name;
+						
+						if (!testing) {
+							EmitTestMethod (type, "PropertyGetter", false);
+							testing = true;
+						} else {
+							sb.AppendLine ();
+						}
+						
+						if (retval != null) {
+							sb.AppendLine ("\t\t\tAssert.IsNotNull(widget." + method + ", \"" +
+								       method + " should not have returned null\");");
+							AssertValuesEqual (widget, type, method, "widget." + method, retval);
+						} else {
+							sb.AppendLine ("\t\t\tAssert.IsNull(widget." + method + ", \"" +
+								       method + " should have returned null\");");
+						}
+					} catch {
+						// ignore
+					}
 				}
-			}
+				
+				ctype = ctype.BaseType;
+			} while (ctype.IsSubclassOf (typeof (DependencyObject)));
 			
 			if (testing) {
 				sb.AppendLine ("\t\t}");
