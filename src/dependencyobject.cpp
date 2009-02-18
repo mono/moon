@@ -1719,13 +1719,13 @@ DependencyObject::GetProperties (bool only_changed)
 		
 		// dump them to an array
 		g_hash_table_foreach (table, hash_values_to_array, array);
-		g_ptr_array_add (array, NULL);
 		g_hash_table_destroy (table);
 	} else {
 		g_hash_table_foreach (local_values, hash_keys_to_array, array);
 		g_hash_table_foreach (autocreate->auto_values, hash_keys_to_array, array);
 	}
 	
+	g_ptr_array_add (array, NULL);
 	props = (DependencyProperty **) array->pdata;
 	g_ptr_array_free (array, false);
 	
