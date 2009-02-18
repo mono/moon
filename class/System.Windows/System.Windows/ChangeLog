@@ -1,5 +1,7 @@
 2009-02-18  Jeffrey Stedfast  <fejj@novell.com>
 
+	* VisualStateGroup.cs (Name): Implemented.
+
 	* Duration.cs (ToString): Capitalize the first character to mimic
 	Silverlight.
 

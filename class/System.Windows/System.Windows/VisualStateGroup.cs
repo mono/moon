@@ -44,9 +44,10 @@ namespace System.Windows {
 													      typeof (IList),
 													      typeof (VisualStateGroup),
 													      null);
-
+		private static readonly DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
+		
 		public string Name {
-			get { throw new NotImplementedException (); }
+			get { return (string) GetValue (NameProperty); }
 		}
 
 		public IList States {
