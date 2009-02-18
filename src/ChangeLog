@@ -1,3 +1,9 @@
+2009-02-17  Chris Toshok  <toshok@ximian.com>
+
+	* textbox.cpp (TextBox::OnPropertyChanged): add the same hardening
+	to the SelectedText case, and also don't perform the remaining
+	operations if g_utf8_to_ucs4_fast fails.
+
 2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* dependencyobject.cpp: Now takes an only_changed argument; if

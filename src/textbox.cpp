@@ -1363,7 +1363,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		// no state changes needed
 	} else if (args->GetId () == TextBox::SelectedTextProperty) {
 		if (setvalue) {
-			const char *str = args->new_value ? args->new_value->AsString () : "";
+			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString () : "";
 			int length = abs (selection_cursor - selection_anchor);
 			int start = MIN (selection_anchor, selection_cursor);
 			gunichar *text;
@@ -1371,11 +1371,16 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			
 			// replace the currently selected text
 			text = g_utf8_to_ucs4_fast (str, -1, &textlen);
-			buffer->Replace (start, length, text, textlen);
-			g_free (text);
+			if (text) {
+				buffer->Replace (start, length, text, textlen);
+				g_free (text);
 			
-			ClearSelection (start + textlen);
-			SyncText ();
+				ClearSelection (start + textlen);
+				SyncText ();
+			}
+			else {
+				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
+			}
 		}
 		
 		emit |= SELECTION_CHANGED;
@@ -1427,10 +1432,15 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			glong textlen;
 			
 			text = g_utf8_to_ucs4_fast (str, -1, &textlen);
-			buffer->Replace (0, buffer->len, text, textlen);
-			g_free (text);
+			if (text) {
+				buffer->Replace (0, buffer->len, text, textlen);
+				g_free (text);
 			
-			ClearSelection (0);
+				ClearSelection (0);
+			}
+			else {
+				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
+			}
 		}
 		
 		changed = TextBoxModelChangedText;
