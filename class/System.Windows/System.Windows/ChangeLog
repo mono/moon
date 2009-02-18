@@ -1,3 +1,8 @@
+2009-02-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Duration.cs (ToString): Capitalize the first character to mimic
+	Silverlight.
+
 2009-02-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* FontStretchKind.cs: Get rid of Medium, no such value afaict in

@@ -142,7 +142,7 @@ namespace System.Windows {
 		public override string ToString ()
 		{
 			return kind == DurationKind.TimeSpan ?
-				time_span.ToString () : (kind == DurationKind.Automatic ? "automatic" : "forever");
+				time_span.ToString () : (kind == DurationKind.Automatic ? "Automatic" : "Forever");
 		}
 
 		public static implicit operator Duration (TimeSpan timeSpan)
