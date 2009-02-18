@@ -1,3 +1,7 @@
+2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.cpp: More glib-2.10 fixes.
+
 2009-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* asf.cpp: Update according to new pipeline api.

@@ -869,7 +869,8 @@ ASFReader::TryReadMore ()
 	g_return_val_if_fail (parser->GetMedia () != NULL, MEDIA_FAIL);
 	
 #if SANITY
-	g_warn_if_fail (parser->GetMedia ()->InMediaThread ());
+	if (!parser->GetMedia ()->InMediaThread ())
+		printf ("ASFReader::TryReadMore (): This method should only be called on the media thread.\n");
 #endif
 	
 	do {
@@ -1002,7 +1003,8 @@ ASFReader::Seek (guint64 pts)
 	ASF_LOG ("ASFReader::Seek (%" G_GUINT64_FORMAT "), CanSeek: %i, CanSeekToPts(): %i\n", pts, CanSeek (), source->CanSeekToPts ());
 	
 #if SANITY
-	g_warn_if_fail (parser->GetMedia ()->InMediaThread ());
+	if (!parser->GetMedia ()->InMediaThread ())
+		printf ("ASFReader::TryReadMore (): This method should only be called on the media thread.\n");
 #endif
 
 	if (!CanSeek ())
