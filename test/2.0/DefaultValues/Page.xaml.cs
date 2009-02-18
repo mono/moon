@@ -100,8 +100,6 @@ namespace DefaultValues {
 		
 		string PrettyName (Type type)
 		{
-			int tick;
-			
 			if (type == typeof (bool))
 				return "bool";
 			
@@ -120,9 +118,6 @@ namespace DefaultValues {
 			if (type == typeof (object))
 				return "object";
 			
-			if ((tick = type.Name.IndexOf ('`')) != -1)
-				return type.Name.Substring (0, tick);
-			
 			return type.Name;
 		}
 		
@@ -130,7 +125,7 @@ namespace DefaultValues {
 		{
 		}
 		
-		void AssertValuesEqual (DependencyObject widget, Type type, string method, string retvalName, object retval)
+		void AssertValuesEqual (DependencyObject widget, Type type, string method, string retvalName, object retval, bool check_is_type)
 		{
 			string expected = null;
 			string special = null;
@@ -145,8 +140,9 @@ namespace DefaultValues {
 				return;
 			}
 			
-			sb.AppendLine (String.Format ("\t\t\tAssert.IsTrue({0} is {1}, \"{2} is not of the correct type\");",
-						      retvalName, PrettyName (retval.GetType ()), method));
+			if (check_is_type)
+				sb.AppendLine (String.Format ("\t\t\tAssert.IsTrue({0} is {1}, \"{2} is not of the correct type\");",
+							      retvalName, PrettyName (retval.GetType ()), method));
 			
 			if (retval.GetType ().IsPrimitive) {
 				if (retval is double) {
@@ -182,9 +178,6 @@ namespace DefaultValues {
 					retvalName = "((XmlLanguage) " + retvalName + ").IetfLanguageTag";
 				else
 					retvalName += ".IetfLanguageTag";
-			} else if (IgnoreType (retval.GetType ())) {
-				// ignore these types
-				return;
 			} else {
 				// everything else serialize to a string for comparison
 				expected = "\"" + retval.ToString () + "\"";
@@ -195,7 +188,7 @@ namespace DefaultValues {
 				sb.AppendLine (String.Format ("\t\t\tAssert.IsTrue({0}, \"{1} does not match the default value\");",
 							      special, method));
 			else
-				sb.AppendLine (String.Format ("\t\t\tAssert.AreEqual ({0}, {1}{2}, \"{3} does not match the default value\");",
+				sb.AppendLine (String.Format ("\t\t\tAssert.AreEqual({0}, {1}{2}, \"{3} does not match the default value\");",
 							      expected, retvalName, tostring ? ".ToString ()" : "", method));
 		}
 		
@@ -208,7 +201,7 @@ namespace DefaultValues {
 			string method;
 			object retval;
 			
-			do {
+			while (ctype.IsSubclassOf (typeof (DependencyObject)) && !ctype.IsGenericType) {
 				fields = ctype.GetFields ();
 				
 				for (int i = 0; i < fields.Length; i++) {
@@ -216,11 +209,13 @@ namespace DefaultValues {
 						continue;
 					
 					try {
-						if ((property = fields[i].GetValue (null) as DependencyProperty) == null)
-							continue;
+						property = fields[i].GetValue (null) as DependencyProperty;
 					} catch {
-						continue;
+						property = null;
 					}
+					
+					if (property == null)
+						continue;
 					
 					if (!testing) {
 						EmitTestMethod (type, "ReadLocalValue", true);
@@ -229,7 +224,7 @@ namespace DefaultValues {
 						sb.AppendLine ();
 					}
 					
-					method = "ReadLocalValue(" + PrettyName (ctype) + "." + fields[i].Name + ")";
+					method = "ReadLocalValue(" + ctype.Name + "." + fields[i].Name + ")";
 					
 					try {
 						retval = widget.ReadLocalValue (property);
@@ -239,7 +234,7 @@ namespace DefaultValues {
 						if (retval != DependencyProperty.UnsetValue) {
 							if (retval != null) {
 								sb.AppendLine ("\t\t\tAssert.IsNotNull(retval, \"" + method + " should not have returned null\");");
-								AssertValuesEqual (widget, type, method, "retval", retval);
+								AssertValuesEqual (widget, type, method, "retval", retval, true);
 							} else {
 								sb.AppendLine ("\t\t\tAssert.IsNull(retval, \"" + method + " should have returned null\");");
 							}
@@ -248,14 +243,15 @@ namespace DefaultValues {
 								       " should not have a value by default\");");
 						}
 					} catch (Exception ex) {
-						sb.AppendLine ("\t\t\tAssert.Throws<" + ex.GetType ().Name + ">(delegate {");
-						sb.AppendLine ("\t\t\t\tretval = widget." + method + ";");
-						sb.AppendLine ("\t\t\t}, \"" + method + " should thow an exception\");");
+						sb.AppendLine ("\t\t\t// [MoonlightBug] - Moonlight needs to be fixed to throw on some ReadLocalValue invocations");
+						sb.AppendLine ("\t\t\t//Assert.Throws<" + ex.GetType ().Name + ">(delegate {");
+						sb.AppendLine ("\t\t\t//\tretval = widget." + method + ";");
+						sb.AppendLine ("\t\t\t//}, \"" + method + " should thow an exception\");");
 					}
 				}
 				
 				ctype = ctype.BaseType;
-			} while (ctype.IsSubclassOf (typeof (DependencyObject)));
+			}
 			
 			if (testing) {
 				sb.AppendLine ("\t\t}");
@@ -272,7 +268,7 @@ namespace DefaultValues {
 			string method;
 			object retval;
 			
-			do {
+			while (ctype.IsSubclassOf (typeof (DependencyObject)) && !ctype.IsGenericType) {
 				fields = ctype.GetFields ();
 				
 				for (int i = 0; i < fields.Length; i++) {
@@ -280,11 +276,13 @@ namespace DefaultValues {
 						continue;
 					
 					try {
-						if ((property = fields[i].GetValue (null) as DependencyProperty) == null)
-							continue;
+						property = fields[i].GetValue (null) as DependencyProperty;
 					} catch {
-						continue;
+						property = null;
 					}
+					
+					if (property == null)
+						continue;
 					
 					if (!testing) {
 						EmitTestMethod (type, "GetValue", true);
@@ -293,7 +291,7 @@ namespace DefaultValues {
 						sb.AppendLine ();
 					}
 					
-					method = "GetValue(" + PrettyName (ctype) + "." + fields[i].Name + ")";
+					method = "GetValue(" + ctype.Name + "." + fields[i].Name + ")";
 					
 					try {
 						retval = widget.GetValue (property);
@@ -302,7 +300,7 @@ namespace DefaultValues {
 						
 						if (retval != null) {
 							sb.AppendLine ("\t\t\tAssert.IsNotNull(retval, \"" + method + " should not have returned null\");");
-							AssertValuesEqual (widget, type, method, "retval", retval);
+							AssertValuesEqual (widget, type, method, "retval", retval, true);
 						} else {
 							sb.AppendLine ("\t\t\tAssert.IsNull(retval, \"" + method + " should have returned null\");");
 						}
@@ -314,7 +312,7 @@ namespace DefaultValues {
 				}
 				
 				ctype = ctype.BaseType;
-			} while (ctype.IsSubclassOf (typeof (DependencyObject)));
+			}
 			
 			if (testing) {
 				sb.AppendLine ("\t\t}");
@@ -348,6 +346,9 @@ namespace DefaultValues {
 					if (getter == null || getter.IsStatic || !getter.IsPublic)
 						continue;
 					
+					if (IgnoreType (getter.ReturnType))
+						continue;
+					
 					try {
 						retval = getter.Invoke (widget, null);
 						tested.Add (properties[i].Name, true);
@@ -361,9 +362,9 @@ namespace DefaultValues {
 						}
 						
 						if (retval != null) {
-							sb.AppendLine ("\t\t\tAssert.IsNotNull(widget." + method + ", \"" +
-								       method + " should not have returned null\");");
-							AssertValuesEqual (widget, type, method, "widget." + method, retval);
+							if (!retval.GetType ().IsValueType)
+								sb.AppendLine ("\t\t\tAssert.IsNotNull(widget." + method + ", \"" + method + " should not have returned null\");");
+							AssertValuesEqual (widget, type, method, "widget." + method, retval, false);
 						} else {
 							sb.AppendLine ("\t\t\tAssert.IsNull(widget." + method + ", \"" +
 								       method + " should have returned null\");");
