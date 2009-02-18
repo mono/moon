@@ -209,10 +209,6 @@ TextBlock::TextBlock ()
 	font->SetWeight (TEXTBLOCK_FONT_WEIGHT);
 	font->SetStyle (TEXTBLOCK_FONT_STYLE);
 	font->SetSize (TEXTBLOCK_FONT_SIZE);
-	
-	setvalue = false;
-	SetValue (TextBlock::ForegroundProperty, Value::CreateUnref (new SolidColorBrush ("black")));
-	setvalue = true;
 }
 
 TextBlock::~TextBlock ()
