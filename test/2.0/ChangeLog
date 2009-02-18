@@ -1,3 +1,7 @@
+2009-02-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* DefaultValues/Page.xaml.cs: Generate property getter tests.
+
 2009-02-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* DefaultValues/Page.xaml.cs: Fixed the code up a bit more...
