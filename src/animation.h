@@ -790,8 +790,6 @@ class Storyboard : public ParallelTimeline {
 	Clock *root_clock;
 	bool pending_begin;
 	
-	bool GetIsRootStoryboard ();
-	
  protected:
 	virtual ~Storyboard ();
 

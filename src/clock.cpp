@@ -1492,6 +1492,7 @@ Timeline::Timeline ()
 {
 	SetObjectType (Type::TIMELINE);
 
+	had_parent = false;
 	manual_target = NULL;
 	timeline_status = TIMELINE_STATUS_OK;
 }
@@ -1630,7 +1631,6 @@ void
 TimelineGroup::AddChild (Timeline *child)
 {
 	TimelineCollection *children = GetChildren ();
-	
 	children->Add (child);
 }
 
@@ -1646,6 +1646,18 @@ TimelineCollection::TimelineCollection ()
 {
 	SetObjectType (Type::TIMELINE_COLLECTION);
 }
+
+bool
+TimelineCollection::AddedToCollection (Value *value, MoonError *error)
+{
+	if (!DependencyObjectCollection::AddedToCollection (value, error))
+		return false;
+
+	if (value && !value->GetIsNull())
+		value->AsTimeline ()->SetHadParent (true);
+	return true;
+}
+
 
 TimelineCollection::~TimelineCollection ()
 {

@@ -577,16 +577,9 @@ Storyboard::Begin ()
 }
 
 bool
-Storyboard::GetIsRootStoryboard ()
-{
-	DependencyObject *parent = GetLogicalParent (true);
-	return !(parent && parent->Is(Type::STORYBOARD));
-}
-
-bool
 Storyboard::BeginWithError (MoonError *error)
 {
-	if (!GetIsRootStoryboard ()) {
+	if (GetHadParent ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Begin a Storyboard which is not the root Storyboard.");
 		return false;
 	}
@@ -610,7 +603,7 @@ Storyboard::Pause ()
 void
 Storyboard::PauseWithError (MoonError *error)
 {
-	if (!GetIsRootStoryboard ()) {
+	if (GetHadParent ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Pause a Storyboard which is not the root Storyboard.");
 		return;
 	}
@@ -627,7 +620,7 @@ Storyboard::Resume ()
 void
 Storyboard::ResumeWithError (MoonError *error)
 {
-	if (!GetIsRootStoryboard ()) {
+	if (GetHadParent ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Resume a Storyboard which is not the root Storyboard.");
 		return;
 	}
@@ -645,7 +638,7 @@ Storyboard::Seek (TimeSpan timespan)
 void
 Storyboard::SeekWithError (TimeSpan timespan, MoonError *error)
 {
-	if (!GetIsRootStoryboard ()) {
+	if (GetHadParent ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Seek a Storyboard which is not the root Storyboard.");
 		return;
 	}
@@ -666,7 +659,7 @@ Storyboard::Stop ()
 void
 Storyboard::StopWithError (MoonError *error)
 {
-	if (!GetIsRootStoryboard ()) {
+	if (GetHadParent ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Stop a Storyboard which is not the root Storyboard.");
 		return;
 	}

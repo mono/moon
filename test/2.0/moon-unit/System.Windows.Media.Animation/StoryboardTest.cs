@@ -214,6 +214,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void AddRunningStoryboard ()
 		{
 			Canvas c = CreateStoryboard ();

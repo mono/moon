@@ -541,6 +541,9 @@ class Timeline : public DependencyObject {
 	
 	FillBehavior GetFillBehavior ();
 	void SetFillBehavior (FillBehavior behavior);
+	
+	bool GetHadParent () { return this->had_parent; }
+	void SetHadParent (bool had_parent) { this->had_parent = had_parent; }
 
 	void SetRepeatBehavior (RepeatBehavior behavior);
 	RepeatBehavior *GetRepeatBehavior ();
@@ -572,8 +575,8 @@ class Timeline : public DependencyObject {
 
 
  private:
+ 	bool had_parent;
 	TimelineStatus timeline_status;
-
 };
 
 
@@ -586,6 +589,7 @@ class TimelineCollection : public DependencyObjectCollection {
  	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineCollection ();
 	
+	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
 };
 
