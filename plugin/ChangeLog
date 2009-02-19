@@ -1,8 +1,16 @@
-2009-02-17  Andreia Gaita  <avidigal@novell.com>
+2009-02-19  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.[cpp|h]: On [Get|Set]Property for scriptable objects,
+	use the property name instead of the handle to call back to the
+	property. This way we can reuse the virtual functions on
+	ScriptObject, and	it's one less GCHandle walking around.
+	Fix exception define to have a block.
+
+2009-02-19  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-class.cpp: Fix casing lookup
 
-2009-02-17  Andreia Gaita  <avidigal@novell.com>
+2009-02-19  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin.cpp: Implement returning values from Evaluate
 	* plugin-class.[cpp|h]: Expose variant_to_value so Evaluate can

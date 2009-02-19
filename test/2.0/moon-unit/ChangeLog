@@ -1,3 +1,10 @@
+2009-02-19  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: Add new tests for eval and
+	returning objects from js.
+	Add js-only and managed-only versions.
+	Add tests for method overloading.
+
 2009-02-19  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: Add a

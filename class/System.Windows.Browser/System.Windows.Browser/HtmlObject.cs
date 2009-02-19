@@ -205,6 +205,13 @@ namespace System.Windows.Browser {
 
 			if (res.k != Mono.Kind.INVALID) {
 				object o = ScriptableObjectWrapper.ObjectFromValue<T> (res);
+				if (o is int && typeof(T) == typeof(object)) {
+					// When the target type is object, SL converts ints to doubles to wash out
+					// browser differences. (Safari apparently always returns doubles, FF
+					// ints and doubles, depending on the value).
+					// See: http://msdn.microsoft.com/en-us/library/cc645079(VS.95).aspx
+					o = (double) (int) o;
+				}
 				return (T) o;
 			}
 

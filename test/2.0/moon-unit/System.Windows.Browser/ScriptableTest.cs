@@ -55,18 +55,21 @@ namespace MoonTest.System.Windows.Browser
 
 			//bool ispopupon = HtmlPage.IsPopupWindowAllowed;
 			//HtmlWindow popup = HtmlPage.PopupWindow (new Uri ("about:blank"), "_blank", new HtmlPopupWindowOptions ());
+			calc = new Calculator ();
+			scriptable = new Scriptable ();
+			scriptabletype = new ScriptableType ();
+
+			HtmlPage.RegisterScriptableObject ("calc", calc);
+			HtmlPage.RegisterScriptableObject ("scriptable", scriptable);
+			HtmlPage.RegisterScriptableObject ("scriptabletype", scriptabletype);
+			HtmlPage.RegisterCreateableType ("createable", typeof (CreateableType));
+
+			var c = content.GetProperty("calc") as ScriptObject;
+			Assert.AreEqual (calc, c.ManagedObject, "ManagedObject");
+
 			window.Eval (root);
 		}
 
-		[TestMethod]
-		public void AB_Register () {
-					
-			calc = new Calculator ();
-			HtmlPage.RegisterScriptableObject ("calc", calc);
-			var c = content.GetProperty("calc") as ScriptObject;
-			Assert.AreEqual (calc, c.ManagedObject, "ManagedObject");
-		}
-		
 		[TestMethod]
 		public void Casing () {
 			var c = content.GetProperty("Calc") as ScriptObject;
@@ -76,16 +79,73 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
+		public void CreateableTypeTest () {
+			window.Eval ("createabletype = plugin.content.services.createObject ('createable');");
+			window.Eval ("createabletype.MethodAdd ()");
+			window.Eval ("c = createabletype.GetCount();");
+			window.Eval ("plugin.content.scriptable.SetCount(c)");
+			Assert.AreEqual (1, scriptable.MethodCount, "D1");
+			window.Eval ("createabletype.Property = 'test test'");
+			window.Eval ("plugin.content.scriptable.Property = createabletype.Property");
+			Assert.AreEqual ("test test", scriptable.Property, "D2");
+			scriptable.MethodCount = 0;
+		}
+
+		[TestMethod]
 		public void Invoke () {
 			var calc = content.GetProperty ("calc") as ScriptObject;
 			var a = calc.Invoke ("Add", 5, 1);
-			Assert.AreEqual ("6", a.ToString(), "Add");
+			Assert.AreEqual (6.0, a, "Invoke");
+		}
+
+		[TestMethod]
+		public void InvokeJS () {
+			var o = window.Eval ("plugin.content.calc.Add (5, 1);");
+			Assert.IsNotNull (o, "InvokeJS 1");
+			Assert.AreEqual (6.0, o, "InvokeJS");
+		}
+
+		[TestMethod]
+		public void InvokeOverload () {
+			var calc = content.GetProperty ("calc") as ScriptObject;
+			var o = calc.Invoke ("AddOverload", 5);
+			Assert.AreEqual (6.0, o, "InvokeOverload 1");
+			o = calc.Invoke ("AddOverload", 10);
+			Assert.AreEqual (11.0, o, "InvokeOverload 2");
+		}
+
+		[TestMethod]
+		public void InvokeOverloadJS () {
+			var o = window.Eval ("plugin.content.calc.AddOverload (5, 1);");
+			Assert.AreEqual (6.0, o, "InvokeOverloadJS 1");
+			o = window.Eval ("plugin.content.calc.AddOverload (10);");
+			Assert.AreEqual (11.0, o, "InvokeOverloadJS 1");
+		}
+
+		[TestMethod]
+		public void Properties () {
+			var calc = content.GetProperty ("scriptable") as ScriptObject;
+			calc.SetProperty ("Property", "test");
+
+			Assert.AreEqual ("test", scriptable.Property, "Properties 1");
+
+			object o = calc.GetProperty ("Property");
+			Assert.AreEqual (scriptable.Property, (string)o, "Properties 2");
+
+			scriptable.Property = String.Empty;
+		}
+
+		[TestMethod]
+		public void PropertiesJS () {
+			window.Eval ("plugin.content.scriptable.Property = 'test';");
+			Assert.AreEqual ("test", scriptable.Property, "PropertiesJS 1");
+
+			object o = window.Eval ("function f(){return plugin.content.scriptable.Property;} f();");
+			Assert.AreEqual (scriptable.Property, (string) o, "PropertiesJS 2");
 		}
 
 		[TestMethod]
 		public void ScriptableMemberTest () {
-			scriptable = new Scriptable ();
-			HtmlPage.RegisterScriptableObject ("scriptable", scriptable);
 			window.Eval ("scriptable = plugin.content.scriptable;");
 			window.Eval ("scriptable.MethodAdd();");
 			Assert.AreEqual (1, scriptable.MethodCount, "B1");
@@ -100,8 +160,7 @@ namespace MoonTest.System.Windows.Browser
 
 		[TestMethod]
 		public void ScriptableTypeTest () {
-			scriptabletype = new ScriptableType ();
-			HtmlPage.RegisterScriptableObject ("scriptabletype", scriptabletype);
+
 			window.Eval ("scriptabletype = plugin.content.scriptabletype;");
 			window.Eval ("scriptabletype.MethodAdd();");
 			Assert.AreEqual (1, scriptabletype.MethodCount, "C1");
@@ -139,20 +198,13 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		public void CreateableTypeTest () {
-			scriptable = new Scriptable ();
-			HtmlPage.RegisterScriptableObject ("scriptable", scriptable);
-			HtmlPage.RegisterCreateableType ("createable", typeof (CreateableType));
-			window.Eval ("createabletype = plugin.content.services.createObject ('createable');");
-			window.Eval ("createabletype.MethodAdd ()");
-			window.Eval ("c = createabletype.GetCount();");
-			window.Eval ("plugin.content.scriptable.SetCount(c)");
-			Assert.AreEqual (1, scriptable.MethodCount, "D1");
-			window.Eval ("createabletype.Property = 'test test'");
-			window.Eval ("plugin.content.scriptable.Property = createabletype.Property");
-			Assert.AreEqual ("test test", scriptable.Property, "D2");
+		public void EvalTest () {
+			object o = window.Eval ("scriptabletype = plugin.content.scriptabletype;");
+			Assert.IsNotNull (o, "EvalTest 1");
+			Assert.IsInstanceOfType (o, typeof (ScriptObject), "EvalTest 2");
+			ScriptObject so = (ScriptObject) o;
+			Assert.AreSame (so.ManagedObject, scriptabletype, "EvalTest 3");
 		}
-		
 	}
 
 	public class Calculator {
@@ -161,6 +213,17 @@ namespace MoonTest.System.Windows.Browser
 		public int Add(int a, int b) {
 			return a + b;
 		}
+
+		[ScriptableMember]
+		public int AddOverload (int a, int b) {
+			return a + b;
+		}
+
+		[ScriptableMember]
+		public int AddOverload (int a) {
+			return a + 1;
+		}
+
 		// Not callable from script.
 		public int Subtract(int a, int b) {
 			return a - b;
@@ -216,4 +279,3 @@ namespace MoonTest.System.Windows.Browser
 	public class ReferencedType : Scriptable {
 	}
 }
-	  

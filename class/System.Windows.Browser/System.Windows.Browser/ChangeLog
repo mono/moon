@@ -1,4 +1,15 @@
-2009-02-17  Andreia Gaita  <avidigal@novell.com>
+2009-02-19  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs: Implement method overloading.
+	Use names to lookup properties instead of PropertyInfo.
+	Fix method return type code to be == 0 when it's void (because
+	typeof(void) == object, and the conversion code gets confused trying to
+	convert nothing to an object.
+
+	* HtmlObject.cs, HtmlWindow.cs: fix return types from int to double on
+	calls that are set to return objects
+
+2009-02-19  Andreia Gaita  <avidigal@novell.com>
 
 	* HtmlWindow.cs: Implement returning values from Eval
 

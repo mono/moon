@@ -42,8 +42,8 @@ namespace System.Windows.Browser
 								int arg_count,
 								ref Value return_value);
 
-	delegate void SetPropertyDelegate (IntPtr obj_handle, IntPtr property_handle, ref Value value);
-	delegate void GetPropertyDelegate (IntPtr obj_handle, IntPtr property_handle, ref Value value);
+	delegate void SetPropertyDelegate (IntPtr obj_handle, string name, ref Value value);
+	delegate void GetPropertyDelegate (IntPtr obj_handle, string name, ref Value value);
 	delegate void EventHandlerDelegate (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure);
 	
 	internal class ScriptableObjectWrapper : ScriptObject {
@@ -56,9 +56,10 @@ namespace System.Windows.Browser
 
 		static Dictionary<IntPtr, WeakReference> scriptableObjects;
 		Dictionary<IntPtr, Delegate> events;
+		Dictionary<string, List<MethodInfo>> methods;
+		Dictionary<string, PropertyInfo> properties;
 
-		List<GCHandle> handles; /* for methods, events, properties, as well as the object itself */
-
+		GCHandle obj_handle;
 		IntPtr moon_handle;
 		public IntPtr MoonHandle {
 			get { return moon_handle; }
@@ -81,17 +82,15 @@ namespace System.Windows.Browser
 
 		public ScriptableObjectWrapper (object obj, IntPtr parent) : base (obj)
 		{
-			this.handles = new List<GCHandle>();
 			this.events = new Dictionary<IntPtr, Delegate> ();
+			this.methods = new Dictionary<string, List<MethodInfo>> ();
+			this.properties = new Dictionary<string, PropertyInfo> ();
 
-			GCHandle obj_handle = GCHandle.Alloc (this);
-
-			handles.Add (obj_handle);
-
+			obj_handle = GCHandle.Alloc (this);
 			if (parent == IntPtr.Zero) {
 				moon_handle = ScriptableNativeMethods.wrapper_create_root (
 							WebApplication.Current.PluginHandle,
-							(IntPtr)obj_handle,
+							(IntPtr) obj_handle,
 							invoke,
 							set_prop,
 							get_prop,
@@ -99,7 +98,7 @@ namespace System.Windows.Browser
 							remove_event);
 			} else {
 				moon_handle = ScriptableNativeMethods.wrapper_create (parent,
-							(IntPtr)obj_handle,
+							(IntPtr) obj_handle,
 							invoke,
 							set_prop,
 							get_prop,
@@ -117,10 +116,6 @@ namespace System.Windows.Browser
 
 		public void AddProperty (PropertyInfo pi)
 		{
-			GCHandle prop_handle = GCHandle.Alloc (pi);
-
-			handles.Add (prop_handle);
-
 			TypeCode tc = Type.GetTypeCode (pi.PropertyType);
 
 			string name = pi.Name;
@@ -128,9 +123,11 @@ namespace System.Windows.Browser
 			    ScriptableMemberAttribute att = (ScriptableMemberAttribute) pi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false)[0];
 				name = (att.ScriptAlias ?? name);
 			}
+
+			properties[name] = pi;
 			ScriptableNativeMethods.add_property (WebApplication.Current.PluginHandle,
 									moon_handle,
-									(IntPtr)prop_handle,
+									IntPtr.Zero,
 									name,
 									tc,
 									pi.CanRead,
@@ -140,8 +137,6 @@ namespace System.Windows.Browser
 		public void AddEvent (EventInfo ei)
 		{
 			GCHandle event_handle = GCHandle.Alloc (ei);
-
-			handles.Add (event_handle);
 
 			string name = ei.Name;
 			if (ei.IsDefined (typeof(ScriptableMemberAttribute), false)) {
@@ -176,20 +171,22 @@ namespace System.Windows.Browser
 				tcs[p.Position] = pc;
 			}
 
-			GCHandle method_handle = GCHandle.Alloc (mi);
-
-			handles.Add (method_handle);
-
 			string name = mi.Name;
 			if (mi.IsDefined (typeof(ScriptableMemberAttribute), false)) {
 			    ScriptableMemberAttribute att = (ScriptableMemberAttribute) mi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false)[0];
 				name = (att.ScriptAlias ?? name);
 			}
+
+			if (!methods.ContainsKey (name)) {
+				methods[name] = new List<MethodInfo>();
+			}
+			methods[name].Add (mi);
+
 			ScriptableNativeMethods.add_method (WebApplication.Current.PluginHandle,
 								moon_handle,
-								(IntPtr)method_handle,
+								IntPtr.Zero,
 								name,
-								Type.GetTypeCode (mi.ReturnType),
+								mi.ReturnType == typeof(void) ? 0 : Type.GetTypeCode (mi.ReturnType),
 								tcs,
 								tcs.Length);
 		}
@@ -301,14 +298,36 @@ namespace System.Windows.Browser
 			}
 		}
 
-		void Invoke (string name, IntPtr[] uargs, int arg_count, ref Value ret)
+#region Methods
+
+		bool ValidateArguments (MethodInfo mi, object[] args)
 		{
+			if (mi.GetParameters().Length != args.Length)
+				return false;
+
+			ParameterInfo[] parms = mi.GetParameters ();
+			for (int i = 0; i < parms.Length; i++) {
+				if (parms[i].ParameterType != args[i].GetType())
+					return false;
+			}
+			return true;
+		}
+
+		void Invoke (string name, object[] args, ref Value ret)
+		{
+			if (methods.ContainsKey (name)) {
+				foreach (MethodInfo mi in methods[name]) {
+					if (ValidateArguments (mi, args)) {
+						Invoke (mi, args, ref ret);
+						return;
+					}
+				}
+			}
+
 			switch (name.ToLower ()) {
 				case "createmanagedobject":
-					if (arg_count == 1) {
-						Value v = (Value)Marshal.PtrToStructure (uargs[0], typeof (Value));
-						string o = (string)ObjectFromValue<string> (v);
-						ScriptableObjectWrapper wrapper = CreateObject (o);
+					if (args.Length == 1) {
+						ScriptableObjectWrapper wrapper = CreateObject ((string)args[0]);
 						ValueFromObject (ref ret, wrapper);
 					}
 				break;
@@ -339,9 +358,17 @@ namespace System.Windows.Browser
 			//Console.WriteLine ("Invoke " + name);
 
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
+			object[] args = new object[arg_count];
+			for (int i = 0; i < arg_count; i++) {
+				Value v = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
+				args[i] = ObjectFromValue<object> (v);
+			}
+
 			if (method_handle == IntPtr.Zero) {
-				obj.Invoke (name, uargs, arg_count, ref return_value);
+				obj.Invoke (name, args, ref return_value);
 			} else {
+				throw new Exception ("Invalid method invoke");
+/*
 				MethodInfo mi = (MethodInfo)((GCHandle)method_handle).Target;
 
 				object[] margs = new object[arg_count];
@@ -358,18 +385,24 @@ namespace System.Windows.Browser
 				}
 
 				obj.Invoke (mi, margs, ref return_value);
+*/
 			}
 		}
 
-		void SetProperty (PropertyInfo pi, object value)
+#endregion
+
+#region Properties
+
+		public override void SetProperty (string name, object value)
 		{
+			PropertyInfo pi = properties[name];
 			pi.SetValue (this.ManagedObject, value, null);
 		}
 
-		static void SetPropertyFromUnmanagedSafe (IntPtr obj_handle, IntPtr property_handle, ref Value value)
+		static void SetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, ref Value value)
 		{
 			try {
-				SetPropertyFromUnmanaged (obj_handle, property_handle, ref value);
+				SetPropertyFromUnmanaged (obj_handle, name, ref value);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.SetPropertyFromUnmanagedSafe: {0}", ex);
@@ -378,26 +411,23 @@ namespace System.Windows.Browser
 			}
 		}
 		
-		static void SetPropertyFromUnmanaged (IntPtr obj_handle, IntPtr property_handle, ref Value value)
+		static void SetPropertyFromUnmanaged (IntPtr obj_handle, string name, ref Value value)
 		{
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
-
-			PropertyInfo pi = (PropertyInfo)((GCHandle)property_handle).Target;
-
 			object v = ObjectFromValue<object> (value);
-
-			obj.SetProperty (pi, v);
+			obj.SetProperty (name, v);
 		}
 
-		object GetProperty (PropertyInfo pi)
+		public override object GetProperty (string name)
 		{
+			PropertyInfo pi = properties[name];
 			return pi.GetValue (this.ManagedObject, null);
 		}
 
-		static void GetPropertyFromUnmanagedSafe (IntPtr obj_handle, IntPtr property_handle, ref Value value)
+		static void GetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, ref Value value)
 		{
 			try {
-				GetPropertyFromUnmanaged (obj_handle, property_handle, ref value);
+				GetPropertyFromUnmanaged (obj_handle, name, ref value);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.GetPropertyFromUnmanagedSafe: {0}", ex);
@@ -406,20 +436,21 @@ namespace System.Windows.Browser
 			}
 		}
 		
-		static void GetPropertyFromUnmanaged (IntPtr obj_handle, IntPtr property_handle, ref Value value)
+		static void GetPropertyFromUnmanaged (IntPtr obj_handle, string name, ref Value value)
 		{
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
-			PropertyInfo pi = (PropertyInfo)((GCHandle)property_handle).Target;
+			object v = obj.GetProperty (name);
 
-			object v = obj.GetProperty (pi);
-
-			if (Type.GetTypeCode (pi.PropertyType) == TypeCode.Object) {
+			if (Type.GetTypeCode (v.GetType ()) == TypeCode.Object) {
 				v = ScriptableObjectGenerator.Generate (v, false); // the type has already been validated
 			}
 
 			ValueFromObject (ref value, v);
 		}
 
+#endregion
+
+#region Events
 		void AddEvent (EventInfo ei, IntPtr scriptable_handle, IntPtr closure)
 		{
 			Delegate d = new EventDelegate (ei.EventHandlerType, scriptable_handle, closure).Delegate;
@@ -507,6 +538,8 @@ namespace System.Windows.Browser
 								    closure);
 			}
 		}
+
+#endregion
 
 		class ScriptableNativeMethods {
 			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_wrapper_create_root")]

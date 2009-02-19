@@ -308,9 +308,11 @@ check_arg_list (const char *arglist, uint32_t argc, const NPVariant *argv)
 	} while (0);	\
 
 #define THROW_JS_EXCEPTION2(obj, meth)	\
-	char *message = g_strdup_printf ("Error calling method: %s", meth);	\
-	NPN_SetException (obj, message);	\
-	g_free (message);	\
+	do {	\
+		char *message = g_strdup_printf ("Error calling method: %s", meth);	\
+		NPN_SetException (obj, message);	\
+		g_free (message);	\
+	} while (0);	\
 
 /* for use with bsearch & qsort */
 static int
@@ -4103,17 +4105,15 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 	if (!prop)
 		return MoonlightObject::GetProperty (id, name, result);
 
-#if ds(!)0
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	printf ("getting scriptable object property %s\n", strname);
-	NPN_MemFree (strname);
-#endif
+	ds(printf ("getting scriptable object property %s\n", strname));
 
 	Value v;
 
-	getprop (managed_scriptable, prop->property_handle, &v);
+	getprop (managed_scriptable, strname, &v);
 
 	value_to_variant (this, &v, result);
+	NPN_MemFree (strname);
 
 	return true;
 }
@@ -4127,15 +4127,15 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 	
 	// first we try the property hash
 	if ((prop = (ScriptableProperty *) g_hash_table_lookup (properties, name))) {
-#if ds(!)0
+
 		NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-		printf ("setting scriptable object property %s\n", strname);
-		NPN_MemFree (strname);
-#endif
-		
+
+		ds(printf ("setting scriptable object property %s\n", strname));
+
 		variant_to_value (value, &v);
-		setprop (managed_scriptable, prop->property_handle, v);
+		setprop (managed_scriptable, strname, v);
 		delete v;
+		NPN_MemFree (strname);
 		
 		return true;
 	}
