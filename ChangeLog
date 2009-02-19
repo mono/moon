@@ -1,3 +1,8 @@
+2009-02-19 Rusty Howell <rhowell@novell.com>
+	* Bumped version to 1.0.1
+	* Ready to tag for minor release
+	r: kangaroo
+
 2008-12-20  Geoff Norton  <gnorton@novell.com>
 
 	* configure.ac: We work just fine on Firefox 3 so far, so lets
