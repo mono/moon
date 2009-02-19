@@ -1,5 +1,10 @@
 2009-02-19  Andreia Gaita  <avidigal@novell.com>
 
+	* System.Windows.Browser/ScriptableTest.cs: Disable the tests that
+	use js and Eval, the buildbot can't handle them.
+
+2009-02-19  Andreia Gaita  <avidigal@novell.com>
+
 	* System.Windows.Browser/ScriptableTest.cs: Fix test for buildbot
 
 2009-02-19  Andreia Gaita  <avidigal@novell.com>

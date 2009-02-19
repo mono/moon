@@ -81,6 +81,7 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void CreateableTypeTest () {
 			window.Eval ("createabletype = plugin.content.services.createObject ('createable');");
 			window.Eval ("createabletype.MethodAdd ()");
@@ -94,6 +95,7 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
+
 		public void Invoke () {
 			var calc = content.GetProperty ("calc") as ScriptObject;
 			var a = calc.Invoke ("Add", 5, 1);
@@ -101,6 +103,7 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void InvokeJS () {
 			var o = window.Eval ("plugin.content.calc.Add (5, 1);");
 			Assert.IsNotNull (o, "InvokeJS 1");
@@ -117,6 +120,7 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void InvokeOverloadJS () {
 			var o = window.Eval ("plugin.content.calc.AddOverload (5, 1);");
 			Assert.AreEqual (6.0, o, "InvokeOverloadJS 1");
@@ -138,6 +142,7 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void PropertiesJS () {
 			window.Eval ("plugin.content.scriptable.Property = 'test';");
 			Assert.AreEqual ("test", scriptable.Property, "PropertiesJS 1");
@@ -147,6 +152,7 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void ScriptableMemberTest () {
 			window.Eval ("scriptable = plugin.content.scriptable;");
 			window.Eval ("scriptable.MethodAdd();");
@@ -161,6 +167,7 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void ScriptableTypeTest () {
 
 			window.Eval ("scriptabletype = plugin.content.scriptabletype;");
@@ -200,6 +207,7 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void EvalTest () {
 			object o = window.Eval ("scriptabletype = plugin.content.scriptabletype;");
 			Assert.IsNotNull (o, "EvalTest 1");
