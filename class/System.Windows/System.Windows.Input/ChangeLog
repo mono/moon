@@ -1,5 +1,9 @@
 2009-02-19  Jeffrey Stedfast  <fejj@novell.com>
 
+	* StylusDevice.cs (Inverted): Implemented.
+
+	* StylusInfo.cs: Implemented.
+
 	* StylusPointCollection.cs (Add): Implemented.
 
 	* StylusPoint.cs: Implemented.

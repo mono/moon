@@ -19,6 +19,7 @@ namespace System.Windows.Input
 	public sealed partial class StylusDevice
 	{
 		private MouseEventArgs mouse_event_args;
+		private StylusInfo stylus;
 		
 		internal StylusDevice (MouseEventArgs args)
 		{
@@ -26,7 +27,14 @@ namespace System.Windows.Input
 		}
 		
 		public bool Inverted {
-			get { throw new NotImplementedException (); }
+			get {
+				if (stylus == null) {
+					IntPtr retval = NativeMethods.mouse_event_args_get_stylus_info (mouse_event_args.native);
+					stylus = (StylusInfo) NativeDependencyObjectHelper.Lookup (Kind.STYLUSINFO, retval);
+				}
+				
+				return stylus.IsInverted;
+			}
 		}
 		
 		public StylusPointCollection GetStylusPoints (UIElement relativeTo)
