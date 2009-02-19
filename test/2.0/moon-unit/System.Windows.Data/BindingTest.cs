@@ -699,14 +699,11 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 			SolidColorBrush brush = (SolidColorBrush) block.Foreground;
 			Assert.AreEqual (brush.Color, Colors.Blue, "#3");
 
-			TextBlock normal = new TextBlock ();
-			Assert.AreNotEqual (((SolidColorBrush) normal.Foreground).Color, brush.Color, "#4");
-
-			Assert.IsNull (block.DataContext, "#5");
+			Assert.IsNull (block.DataContext, "#4");
 			block.DataContext = new SolidColorBrush (Colors.Red);
 
 			brush = (SolidColorBrush) block.Foreground;
-			Assert.AreEqual (brush.Color, Colors.Blue, "#6");
+			Assert.AreEqual (brush.Color, Colors.Blue, "#5");
 		}
 
 		[TestMethod]
