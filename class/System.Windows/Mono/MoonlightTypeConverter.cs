@@ -56,7 +56,14 @@ namespace Mono {
 
 		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
 		{
-			return sourceType == typeof(string);
+			if (sourceType == typeof(string))
+				return true;
+
+			// allow specifying SolidColorBrushes using color literals
+			if (sourceType == typeof(Color) && destinationType.IsAssignableFrom(typeof(SolidColorBrush)))
+				return true;
+
+			return false;
 		}
 
 		public override object ConvertFrom (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
@@ -64,19 +71,27 @@ namespace Mono {
 			if (destinationType == typeof (object))
 				return value;
 
-			IntPtr unmanaged_value;
+			if (value is string) {
+				IntPtr unmanaged_value;
 
-			if (!NativeMethods.value_from_str (destinationKind,
-							   propertyName,
-							   (string)value,
-							   out unmanaged_value,
-							   true)) {
-				Console.WriteLine ("could not convert value {0} to type {1} (property {1})", value, destinationType, propertyName);
-				return null;
-			}
+				if (!NativeMethods.value_from_str (destinationKind,
+								   propertyName,
+								   (string)value,
+								   out unmanaged_value,
+								   true)) {
+					Console.WriteLine ("could not convert value {0} to type {1} (property {1})", value, destinationType, propertyName);
+					return null;
+				}
 			
-			return Value.ToObject (destinationType, unmanaged_value);
-			// XXX this leaks unmanaged_value?
+				return Value.ToObject (destinationType, unmanaged_value);
+				// XXX this leaks unmanaged_value?
+			}
+			else if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
+				return new SolidColorBrush ((Color)value);
+			}
+			else {
+				throw new InvalidOperationException (string.Format ("Cannot convert from type {0} to type {1}", value.GetType(), destinationType));
+			}
 		}
 	}
 

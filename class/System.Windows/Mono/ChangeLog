@@ -1,3 +1,10 @@
+2009-02-18  Chris Toshok  <toshok@ximian.com>
+
+	* MoonlightTypeConverter.cs: this can now convert from Colors to
+	Brushes (by creating a SolidColorBrush), so setters can specify
+	something like <Setter Property="Background" Value="Red" /> and
+	have it work.
+
 2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerated.
