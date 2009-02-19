@@ -3130,6 +3130,69 @@ stylus_info_new (void)
 /**
  * StylusPoint
  **/
+double
+stylus_point_get_pressure_factor (StylusPoint *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->GetPressureFactor ();
+}
+
+
+double
+stylus_point_get_x (StylusPoint *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->GetX ();
+}
+
+
+double
+stylus_point_get_y (StylusPoint *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->GetY ();
+}
+
+
+void
+stylus_point_set_pressure_factor (StylusPoint *instance, double factor)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetPressureFactor (factor);
+}
+
+
+void
+stylus_point_set_x (StylusPoint *instance, double x)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetX (x);
+}
+
+
+void
+stylus_point_set_y (StylusPoint *instance, double y)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetY (y);
+}
+
+
 StylusPoint *
 stylus_point_new (void)
 {

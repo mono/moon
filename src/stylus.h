@@ -70,13 +70,19 @@ class StylusPoint : public DependencyObject {
 	//
 	// Property Accessors
 	//
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetPressureFactor (double factor);
+	/* @GenerateCBinding,GeneratePInvoke */
 	double GetPressureFactor ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetX (double x);
+	/* @GenerateCBinding,GeneratePInvoke */
 	double GetX ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetY (double y);
+	/* @GenerateCBinding,GeneratePInvoke */
 	double GetY ();
 };
 

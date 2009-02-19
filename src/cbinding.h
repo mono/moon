@@ -1417,6 +1417,24 @@ StylusInfo *stylus_info_new (void);
  * StylusPoint
  **/
 /* @GeneratePInvoke */
+double stylus_point_get_pressure_factor (StylusPoint *instance);
+
+/* @GeneratePInvoke */
+double stylus_point_get_x (StylusPoint *instance);
+
+/* @GeneratePInvoke */
+double stylus_point_get_y (StylusPoint *instance);
+
+/* @GeneratePInvoke */
+void stylus_point_set_pressure_factor (StylusPoint *instance, double factor);
+
+/* @GeneratePInvoke */
+void stylus_point_set_x (StylusPoint *instance, double x);
+
+/* @GeneratePInvoke */
+void stylus_point_set_y (StylusPoint *instance, double y);
+
+/* @GeneratePInvoke */
 StylusPoint *stylus_point_new (void);
 
 /**

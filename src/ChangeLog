@@ -1,5 +1,9 @@
 2009-02-19  Jeffrey Stedfast  <fejj@novell.com>
 
+	* stylus.h (class StylusPoint): In managed-land, this class is
+	actually a struct, so until we find a better way, mark property
+	accessors for pinvoking.
+
 	* brush.cpp (VideoBrush::SetSource): Implemented.
 
 2009-02-19  Sebastien Pouliot  <sebastien@ximian.com>
