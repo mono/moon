@@ -324,6 +324,11 @@ namespace System.Windows.Input {
 		internal InputMethod (IntPtr raw) : base (raw) {}
 	}
 
+	partial class StylusInfo {
+		internal StylusInfo () : base (NativeMethods.stylus_info_new ()) {}
+		internal StylusInfo (IntPtr raw) : base (raw) {}
+	}
+
 	partial class StylusPointCollection {
 		public StylusPointCollection () : base (NativeMethods.stylus_point_collection_new ()) {}
 		internal StylusPointCollection (IntPtr raw) : base (raw) {}

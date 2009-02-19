@@ -139,6 +139,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.STROKE_COLLECTION));
 				t = typeof (System.Windows.Input.InputMethod); 
 				types.Add (t, new ManagedType (t, Kind.INPUTMETHOD));
+				t = typeof (System.Windows.Input.StylusInfo); 
+				types.Add (t, new ManagedType (t, Kind.STYLUSINFO));
 				t = typeof (System.Windows.Input.StylusPointCollection); 
 				types.Add (t, new ManagedType (t, Kind.STYLUSPOINT_COLLECTION));
 				t = typeof (System.Windows.Media.ArcSegment); 

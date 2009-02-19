@@ -1,7 +1,7 @@
 2009-02-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* NativeDependencyObjectHelper.cs (CreateObject): Handle
-	DrawingAttributes.
+	DrawingAttributes and StylusInfo.
 
 2009-02-18  Chris Toshok  <toshok@ximian.com>
 

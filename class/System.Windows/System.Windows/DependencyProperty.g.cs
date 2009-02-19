@@ -1119,6 +1119,21 @@ namespace System.Windows.Input {
 	partial class InputMethod {
 		public static readonly DependencyProperty IsInputMethodEnabledProperty = DependencyProperty.Lookup (Kind.INPUTMETHOD, "IsInputMethodEnabled", typeof (bool));
 	}
+
+	partial class StylusInfo {
+		public static readonly DependencyProperty DeviceTypeProperty = DependencyProperty.Lookup (Kind.STYLUSINFO, "DeviceType", typeof (int));
+		public static readonly DependencyProperty IsInvertedProperty = DependencyProperty.Lookup (Kind.STYLUSINFO, "IsInverted", typeof (bool));
+
+		public int DeviceType {
+			get { return (int) GetValue (DeviceTypeProperty); }
+			set { SetValue (DeviceTypeProperty, value); }
+		}
+
+		public bool IsInverted {
+			get { return (bool) GetValue (IsInvertedProperty); }
+			set { SetValue (IsInvertedProperty, value); }
+		}
+	}
 }
 
 namespace System.Windows.Media {

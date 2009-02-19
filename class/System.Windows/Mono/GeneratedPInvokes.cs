@@ -1050,6 +1050,10 @@ namespace Mono {
 		public extern static void mouse_event_args_get_position (IntPtr instance, IntPtr relative_to, out double x, out double y);
 
 		[DllImport ("moon")]
+		// StylusInfo *mouse_event_args_get_stylus_info (MouseEventArgs *instance);
+		public extern static IntPtr mouse_event_args_get_stylus_info (IntPtr instance);
+
+		[DllImport ("moon")]
 		// StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *instance, UIElement *ink_presenter);
 		public extern static IntPtr mouse_event_args_get_stylus_points (IntPtr instance, IntPtr ink_presenter);
 
