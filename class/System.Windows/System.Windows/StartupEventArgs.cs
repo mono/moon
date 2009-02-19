@@ -49,9 +49,10 @@ namespace System.Windows {
 					// Console.WriteLine ("params = {0}", param_string);
 					if (param_string != null) {
 						foreach (string val in param_string.Split (param_separator)) {
-							int split = val.IndexOf ('=');
+							string trimmed = val.Trim ();
+							int split = trimmed.IndexOf ('=');
 							if (split >= 0)
-								init_params.Add (val.Substring (0, split), val.Substring (split + 1));
+								init_params.Add (trimmed.Substring (0, split), trimmed.Substring (split + 1));
 						}
 					}
 				}

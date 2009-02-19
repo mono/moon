@@ -1,3 +1,8 @@
+2009-02-18  Geoff Norton  <gnorton@novell.com>
+
+	* StartupEventArgs.cs: initparms can be keyed with spaces after
+	the delimiting commas.
+
 2009-02-18  Chris Toshok  <toshok@ximian.com>
 
 	* Style.cs (ConvertSetterValue): be a little more descriptive in
