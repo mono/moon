@@ -215,6 +215,36 @@ namespace MoonTest.System.Windows.Browser
 			ScriptObject so = (ScriptObject) o;
 			Assert.AreSame (so.ManagedObject, scriptabletype, "EvalTest 3");
 		}
+
+		[ScriptableType]
+		public class TestButton : Button
+		{
+			public override void OnApplyTemplate ()
+			{
+				base.OnApplyTemplate ();
+				OnApplyTemplateCalled = true;
+			}
+
+			public bool OnApplyTemplateCalled;
+		}
+
+		[TestMethod]
+		public void RegisteringCallsLoaded ()
+		{
+			TestButton b = new TestButton ();
+			bool loaded = false;
+
+			b.Loaded += delegate { loaded = true; };
+
+			HtmlPage.RegisterScriptableObject("testButton", b);
+
+			Assert.IsFalse (loaded, "1");
+
+			b.ApplyTemplate ();
+
+			Assert.IsFalse (b.OnApplyTemplateCalled, "2");
+		}
+
 	}
 
 	public class Calculator {
