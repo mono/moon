@@ -1,4 +1,5 @@
 /Makefile.in
+/codec-version.h
 /demo
 /sizes
 /.libs
