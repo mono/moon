@@ -1227,9 +1227,8 @@ PluginInstance::Evaluate (const char *code)
 {
 	NPObject *object = GetHost ();
 	NPString string;
-	NPVariant output;
-	bool result;
-	
+	NPVariant npresult;
+
 	if (object == NULL)
 		return NULL;
 		
@@ -1237,13 +1236,17 @@ PluginInstance::Evaluate (const char *code)
 	string.utf8characters = code;
 	string.utf8length = strlen (code);
 		
-	result = NPN_Evaluate (instance, object, &string, &output);
+	bool ret = NPN_Evaluate (instance, object, &string, &npresult);
 	
-	// TODO: Return result to caller.
+	Value *res = NULL;
+	if (ret) {
+		if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult))
+			variant_to_value (&npresult, &res);
+	}
+
+	NPN_ReleaseVariantValue (&npresult);
 	
-	NPN_ReleaseVariantValue (&output);
-	
-	return NULL;
+	return (void*)res;
 }
 
 #define MOONLIGHT_1_0_LOADING_2_0_ERROR_XAML \

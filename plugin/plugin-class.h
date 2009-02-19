@@ -26,6 +26,7 @@ void plugin_destroy_classes (void);
 void event_object_add_xaml_listener (EventObject *obj, PluginInstance *instance, const char *event_name, const char *cb_name);
 
 void string_to_npvariant (const char *value, NPVariant *result);
+void variant_to_value (const NPVariant *v, Value **result);
 G_END_DECLS
 
 #define MAPPING_FLAG_SL1 0x01

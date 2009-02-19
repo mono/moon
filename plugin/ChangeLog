@@ -1,3 +1,9 @@
+2009-02-17  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin.cpp: Implement returning values from Evaluate
+	* plugin-class.[cpp|h]: Expose variant_to_value so Evaluate can
+	use it to convert values from js
+
 2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-debug.cpp: Pass true as the only_changed argument to

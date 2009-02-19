@@ -28,6 +28,8 @@
 
 using System;
 using System.Security;
+using Mono;
+using System.Runtime.InteropServices;
 
 namespace System.Windows.Browser
 {
@@ -49,11 +51,11 @@ namespace System.Windows.Browser
 			IntPtr result;
 			result = Mono.NativeMethods.plugin_instance_evaluate (WebApplication.Current.PluginHandle, code);
 			
-			if (result == IntPtr.Zero) {
-				return null;
-			} else {
-				throw new NotImplementedException ();
+			if (result != IntPtr.Zero) {
+				Value v = (Value)Marshal.PtrToStructure (result, typeof (Value));
+				return ScriptableObjectWrapper.ObjectFromValue<object> (v);
 			}
+			return null;
 		}
 		
 		public bool Confirm (string confirmText)

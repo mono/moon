@@ -474,7 +474,7 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 	}
 }
 
-static void
+void
 variant_to_value (const NPVariant *v, Value **result)
 {
 	switch (v->type) {
