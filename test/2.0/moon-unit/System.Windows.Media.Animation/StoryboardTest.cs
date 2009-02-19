@@ -397,15 +397,18 @@ namespace MoonTest.System.Windows.Media.Animation {
 			List<ManualResetEvent> handles = new List<ManualResetEvent> ();
 			Canvas c = new Canvas ();
 
-			Storyboard sb = new Storyboard { Duration = new Duration(TimeSpan.FromMilliseconds(500)) };
-			ManualResetEvent handle = new ManualResetEvent(false);
-			handles.Add(handle);
+			Storyboard sb = new Storyboard { Duration = new Duration (TimeSpan.FromMilliseconds (500)) };
+			ManualResetEvent handle = new ManualResetEvent (false);
+			handles.Add (handle);
+			bool fillingWhenComplete = false;
+			bool childrenNotSignalled = true;
 			sb.Completed += delegate {
-				handle.Set ();
-				Assert.AreEqual (ClockState.Filling, sb.GetCurrentState (), "#1");
-				Assert.AreEqual (sb.Duration.TimeSpan, sb.GetCurrentTime (), "#2");
+				fillingWhenComplete = ClockState.Filling == sb.GetCurrentState ();
+				//Assert.AreEqual (sb.Duration.TimeSpan, sb.GetCurrentTime (), "#2");
 				for (int i = 1; i < handles.Count; i++)
-					Assert.IsFalse (handles [i].WaitOne(0), "#3." + i);
+					if (handles [i].WaitOne (0))
+						childrenNotSignalled = false;
+				handle.Set ();
 			};
 			c.Resources.Add ("Storyboard", sb);
 
@@ -425,21 +428,28 @@ namespace MoonTest.System.Windows.Media.Animation {
 				sb.Children.Add (child);
 				Rectangle r = new Rectangle ();
 				Storyboard.SetTarget (child, r);
-				Storyboard.SetTargetProperty (child, new PropertyPath("Width"));
+				Storyboard.SetTargetProperty (child, new PropertyPath ("Width"));
 				c.Children.Add (r);
 			}
 
 			TestPanel.Children.Add (c);
-
-			Enqueue(() => sb.Begin ());
-			Enqueue(() => Assert.AreEqual(ClockState.Active, sb.GetCurrentState(), "#1"));
-			EnqueueConditional (() => handle.WaitOne (0));
-			Enqueue(() => {
+			for (int j = 0; j < 3; j++) {
+				int temp = j;
+				Enqueue (() => handles.ForEach (h => h.Reset ()));
+				Enqueue (() => sb.Begin ());
+				Enqueue (() => {
+					Assert.AreEqual ( ClockState.Active, sb.GetCurrentState (), "#1");
+				});
+				EnqueueConditional (() => handle.WaitOne (0));
+				Enqueue (() => Assert.IsTrue (fillingWhenComplete, "Filling when complete"));
+				Enqueue (() => Assert.IsTrue (childrenNotSignalled, "Children not signalled"));
+				Enqueue (() => {
 					for (int i = 0; i < handles.Count; i++)
-						Assert.IsTrue(handles [i].WaitOne (1000));
-				}
-			);
-			Enqueue(() => TestPanel.Children.Clear());
+						Assert.IsTrue (handles [i].WaitOne (1000));
+				});
+				Enqueue (() => Assert.AreEqual (ClockState.Filling, sb.GetCurrentState (), "Still filling"));
+			}
+			Enqueue (() => TestPanel.Children.Clear ());
 			EnqueueTestComplete ();
 		}
 
