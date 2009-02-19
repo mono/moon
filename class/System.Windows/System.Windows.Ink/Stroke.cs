@@ -35,9 +35,9 @@ namespace System.Windows.Ink
 {
 	public sealed partial class Stroke : DependencyObject
 	{
-		public Stroke (StylusPointCollection stylusPoints)
+		public Stroke (StylusPointCollection stylusPoints) : base ()
 		{
-			throw new NotImplementedException ();
+			StylusPoints = stylusPoints;
 		}
 		
 		public Rect GetBounds ()
