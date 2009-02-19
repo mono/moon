@@ -1,5 +1,10 @@
 2009-02-19  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add a
+	  few more tests.
+
+2009-02-19  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Make the
 	  test call Begin a few times and also check the order in
 	  which the Complete event fires in a way which causes the

@@ -258,8 +258,50 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
 			Storyboard child = (Storyboard) sb.Children [1];
 			sb.Children.RemoveAt (1);
+			c.Resources.Clear();
+			c.Resources.Add ("asdasd", child);
+			CreateAsyncTest (c, () =>
+				Assert.Throws<InvalidOperationException> (() => child.Begin ())
+			);
+		}
 
-			CreateAsyncTest (c, () => { Assert.Throws<InvalidOperationException> (() => child.Begin ()); });
+		[TestMethod]
+		[Asynchronous]
+		public void RemoveChildThenStart2 ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
+			Storyboard child = (Storyboard) sb.Children [1];
+			sb.Children.RemoveAt (1);
+			c.Resources.Clear ();
+
+			Storyboard storyboard = new Storyboard ();
+			storyboard.Children.Add (child);
+
+			c.Resources.Add ("asdasd", storyboard);
+			CreateAsyncTest (c,
+				() => storyboard.Begin (),
+				() => storyboard.Stop ()
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void RemoveChildThenStart3 ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard root = (Storyboard) c.Resources ["Storyboard"];
+			Timeline timeline = ((Storyboard) root.Children [0]).Children [0];
+			((Storyboard)root.Children[0]).Children.RemoveAt (0);
+			c.Resources.Clear ();
+			Storyboard storyboard = new Storyboard ();
+			storyboard.Children.Add (timeline);
+
+			c.Resources.Add ("asdasd", storyboard);
+			CreateAsyncTest (c,
+				() => storyboard.Begin (),
+				() => storyboard.Stop ()
+			);
 		}
 
 		[TestMethod]
