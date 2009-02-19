@@ -18,12 +18,12 @@ namespace System.Windows.Input
 	{
 		public static bool GetIsInputMethodEnabled (DependencyObject target)
 		{
-			throw new NotImplementedException ();
+			return (bool) target.GetValue (InputMethod.IsInputMethodEnabledProperty);
 		}
 
 		public static void SetIsInputMethodEnabled (DependencyObject target, bool value)
 		{
-			throw new NotImplementedException ();
+			target.SetValue (InputMethod.IsInputMethodEnabledProperty, value);
 		}
 	}
 }
