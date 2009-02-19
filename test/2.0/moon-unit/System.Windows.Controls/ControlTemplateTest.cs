@@ -265,5 +265,39 @@ namespace MoonTest.System.Windows.Controls
 </Canvas>");
 
 		}
+
+		class TestButton : Button {
+			public TestButton ()
+			{
+				this.ApplyTemplate ();
+			}
+
+			public override void OnApplyTemplate ()
+			{
+				// XXX note this depends on the
+				// generic.xaml name for Button's
+				// border element.
+				base.OnApplyTemplate();
+				NameFound = base.GetTemplateChild("Background") != null;
+			}
+
+			public bool NameFound;
+		}
+
+		[TestMethod]
+		public void ApplyTemplateTest ()
+		{
+			Button b = new Button ();
+
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (b), "1");
+
+			b.ApplyTemplate ();
+
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (b), "2");
+
+			TestButton tb = new TestButton ();
+
+			Assert.IsFalse (tb.NameFound, "3");
+		}
 	}
 }
