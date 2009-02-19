@@ -1,5 +1,9 @@
 2009-02-19  Andreia Gaita  <avidigal@novell.com>
 
+	* System.Windows.Browser/ScriptableTest.cs: Fix test for buildbot
+
+2009-02-19  Andreia Gaita  <avidigal@novell.com>
+
 	* System.Windows.Browser/ScriptableTest.cs: Add new tests for eval and
 	returning objects from js.
 	Add js-only and managed-only versions.

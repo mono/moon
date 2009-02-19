@@ -40,7 +40,6 @@ namespace MoonTest.System.Windows.Browser
 		HtmlElement plugin;
 		HtmlWindow window;
 		ScriptObject content;
-		string root = "var plugin = document.getElementById('silverlightControlHost').getElementsByTagName('object')[0];";
 
 		Scriptable scriptable;
 		ScriptableType scriptabletype;
@@ -67,7 +66,10 @@ namespace MoonTest.System.Windows.Browser
 			var c = content.GetProperty("calc") as ScriptObject;
 			Assert.AreEqual (calc, c.ManagedObject, "ManagedObject");
 
-			window.Eval (root);
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+				window.Eval ("var plugin = document.getElementById('silverlight');");
+			else
+				window.Eval ("var plugin = document.getElementById('silverlightControlHost').getElementsByTagName('object')[0];");
 		}
 
 		[TestMethod]
