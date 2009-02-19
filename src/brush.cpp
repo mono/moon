@@ -945,7 +945,7 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args)
 			media = NULL;
 		}
 		
-		if ((obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
+		if (name && (obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
 			obj->AddPropertyChangeListener (this);
 			media = (MediaElement *) obj;
 			obj->ref ();
@@ -972,6 +972,23 @@ VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *ob
 	*/
 
 	TileBrush::OnSubPropertyChanged (prop, obj, subobj_args);
+}
+
+void
+VideoBrush::SetSource (MediaElement *source)
+{
+	if (source)
+		source->ref ();
+	
+	SetSourceName ("");
+	
+	if (media != NULL) {
+		media->RemovePropertyChangeListener (this);
+		media->unref ();
+		media = NULL;
+	}
+	
+	media = source;
 }
 
 bool

@@ -1682,6 +1682,9 @@ UserControl *user_control_new (void);
  * VideoBrush
  **/
 /* @GeneratePInvoke */
+void video_brush_set_source (VideoBrush *instance, MediaElement *source);
+
+/* @GeneratePInvoke */
 VideoBrush *video_brush_new (void);
 
 /**

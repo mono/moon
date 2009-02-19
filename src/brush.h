@@ -374,6 +374,12 @@ class VideoBrush : public TileBrush {
 	virtual bool IsAnimating ();
 	
 	//
+	// Methods
+	//
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetSource (MediaElement *source);
+	
+	//
 	// Property Accessors
 	//
 	void SetSourceName (const char *name);

@@ -3753,6 +3753,16 @@ user_control_new (void)
 /**
  * VideoBrush
  **/
+void
+video_brush_set_source (VideoBrush *instance, MediaElement *source)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetSource (source);
+}
+
+
 VideoBrush *
 video_brush_new (void)
 {

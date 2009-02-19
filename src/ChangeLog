@@ -1,3 +1,7 @@
+2009-02-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* brush.cpp (VideoBrush::SetSource): Implemented.
+
 2009-02-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyobject.cpp|h: The parameter is not needed anymore
