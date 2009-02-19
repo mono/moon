@@ -1488,6 +1488,10 @@ namespace Mono {
 		public extern static IntPtr stylus_point_new ();
 
 		[DllImport ("moon")]
+		// double stylus_point_collection_add_stylus_points (StylusPointCollection *instance, StylusPointCollection *stylusPointCollection);
+		public extern static double stylus_point_collection_add_stylus_points (IntPtr instance, IntPtr stylusPointCollection);
+
+		[DllImport ("moon")]
 		// StylusPointCollection *stylus_point_collection_new ();
 		public extern static IntPtr stylus_point_collection_new ();
 

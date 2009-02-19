@@ -37,7 +37,7 @@ namespace System.Windows.Input
 		[SecuritySafeCritical]
 		public void Add (StylusPointCollection stylusPoints)
 		{
-			throw new NotImplementedException ();
+			NativeMethods.stylus_point_collection_add_stylus_points (this.native, stylusPoints.native);
 		}
 	}
 }
