@@ -1,3 +1,9 @@
+2009-02-18  Chris Toshok  <toshok@ximian.com>
+
+	* Style.cs (ConvertSetterValue): be a little more descriptive in
+	the exception message when the typeconverter returns false from
+	CanConvertFrom.
+
 2009-02-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VisualStateGroup.cs (Name): Implemented.

@@ -92,8 +92,7 @@ namespace System.Windows {
 				}
 
 				if (!tc.CanConvertFrom (val.GetType())) {
-					//					Console.WriteLine ("+ type converter can't convert from type {0}", val.GetType());
-					throw new XamlParseException ("foo5");
+					throw new XamlParseException (string.Format ("type converter {0} can't convert from type {1}", tc.GetType(), val.GetType()));
 				}
 
 				try {
