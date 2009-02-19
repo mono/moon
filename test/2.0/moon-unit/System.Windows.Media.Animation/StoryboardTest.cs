@@ -47,7 +47,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 	}
 	
 	[TestClass]
-	public class StoryboardTest : SilverlightTest {
+	public class ___StoryboardTest : SilverlightTest {
 
 		[TestMethod]
 		public void InvalidValues_NonTimeline ()
@@ -400,7 +400,13 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard sb = new Storyboard { Duration = new Duration(TimeSpan.FromMilliseconds(500)) };
 			ManualResetEvent handle = new ManualResetEvent(false);
 			handles.Add(handle);
-			sb.Completed += delegate { handle.Set (); };
+			sb.Completed += delegate {
+				handle.Set ();
+				Assert.AreEqual (ClockState.Filling, sb.GetCurrentState (), "#1");
+				Assert.AreEqual (sb.Duration.TimeSpan, sb.GetCurrentTime (), "#2");
+				for (int i = 1; i < handles.Count; i++)
+					Assert.IsFalse (handles [i].WaitOne(0), "#3." + i);
+			};
 			c.Resources.Add ("Storyboard", sb);
 
 			for (int i = 0; i < 5; i++) {
@@ -409,7 +415,11 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 				ManualResetEvent h = new ManualResetEvent (false);
 				handles.Add (h);
-				child.Completed += delegate { h.Set (); };
+				child.Completed += delegate {
+					int count = i;
+					h.Set ();
+					Assert.AreEqual (ClockState.Filling, child.GetCurrentState (), "#4." + count);
+				};
 
 				child.Children.Add (anim);
 				sb.Children.Add (child);
