@@ -277,7 +277,7 @@ public:
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetLogicalParent (DependencyObject *logical_parent, MoonError *error);
-	DependencyObject *GetLogicalParent (bool hide_collections = true);
+	DependencyObject *GetLogicalParent ();
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	

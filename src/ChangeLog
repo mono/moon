@@ -1,3 +1,9 @@
+2009-02-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyobject.cpp|h: The parameter is not needed anymore
+	since the xaml code was updated to work without using the
+	logical parent.
+
 2009-02-19  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Implement StaticResource element syntax.
