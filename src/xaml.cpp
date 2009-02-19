@@ -3558,7 +3558,7 @@ XamlElementInstanceStaticResource::SetAttributes (XamlParserInfo *p, const char 
 		if (!strcmp ("ResourceKey", attr [i])) {
 			Value *v = xaml_lookup_named_item (p, this, attr [i + 1]);
 			if (!v)
-				parser_error (p, item->element_name, attr_name, 2024,
+				parser_error (p, element_name, attr [i], 2024,
 					      "Could not locate StaticResource %s.", attr [i + 1]);
 			value = v;
 		}
