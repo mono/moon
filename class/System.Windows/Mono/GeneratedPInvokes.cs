@@ -1460,6 +1460,30 @@ namespace Mono {
 		public extern static IntPtr stylus_info_new ();
 
 		[DllImport ("moon")]
+		// double stylus_point_get_pressure_factor (StylusPoint *instance);
+		public extern static double stylus_point_get_pressure_factor (IntPtr instance);
+
+		[DllImport ("moon")]
+		// double stylus_point_get_x (StylusPoint *instance);
+		public extern static double stylus_point_get_x (IntPtr instance);
+
+		[DllImport ("moon")]
+		// double stylus_point_get_y (StylusPoint *instance);
+		public extern static double stylus_point_get_y (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void stylus_point_set_pressure_factor (StylusPoint *instance, double factor);
+		public extern static void stylus_point_set_pressure_factor (IntPtr instance, double factor);
+
+		[DllImport ("moon")]
+		// void stylus_point_set_x (StylusPoint *instance, double x);
+		public extern static void stylus_point_set_x (IntPtr instance, double x);
+
+		[DllImport ("moon")]
+		// void stylus_point_set_y (StylusPoint *instance, double y);
+		public extern static void stylus_point_set_y (IntPtr instance, double y);
+
+		[DllImport ("moon")]
 		// StylusPoint *stylus_point_new ();
 		public extern static IntPtr stylus_point_new ();
 

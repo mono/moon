@@ -34,31 +34,36 @@ namespace System.Windows.Input
 {
 	public struct StylusPoint
 	{
+		IntPtr native;
+		
 		internal StylusPoint (IntPtr raw)
 		{
 			// XXX this should go away, but doing so will
 			// require some changes elsewhere
 			// (DependencyObject.cs, for instance).
+			native = raw;
 		}
 		
 		public StylusPoint (double x, double y)
 		{
-			throw new NotImplementedException ();
+			native = NativeMethods.stylus_point_new ();
+			NativeMethods.stylus_point_set_x (native, x);
+			NativeMethods.stylus_point_set_y (native, y);
 		}
 
-		public float PressureFactor { 
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+		public float PressureFactor {
+			get { return (float) NativeMethods.stylus_point_get_pressure_factor (native); }
+			set { NativeMethods.stylus_point_set_pressure_factor (native, (double) value); }
 		}
 
 		public double X {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return NativeMethods.stylus_point_get_x (native); }
+			set { NativeMethods.stylus_point_set_x (native, value); }
 		}
 
 		public double Y {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get { return NativeMethods.stylus_point_get_y (native); }
+			set { NativeMethods.stylus_point_set_y (native, value); }
 		}
 	}
 }
