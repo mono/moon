@@ -3,6 +3,8 @@
 	* stylus.h (class StylusPoint): In managed-land, this class is
 	actually a struct, so until we find a better way, mark property
 	accessors for pinvoking.
+	(class StylusPointCollection): Add AddStylusPoints to the list of
+	methods to create pinvoke stubs for.
 
 	* brush.cpp (VideoBrush::SetSource): Implemented.
 

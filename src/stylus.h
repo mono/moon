@@ -100,6 +100,7 @@ class StylusPointCollection : public DependencyObjectCollection {
 
 	virtual Type::Kind GetElementType () { return Type::STYLUSPOINT; }
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	double AddStylusPoints (StylusPointCollection *stylusPointCollection);
 	
 	Rect GetBounds ();

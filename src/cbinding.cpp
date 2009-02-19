@@ -3203,6 +3203,17 @@ stylus_point_new (void)
 /**
  * StylusPointCollection
  **/
+double
+stylus_point_collection_add_stylus_points (StylusPointCollection *instance, StylusPointCollection *stylusPointCollection)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->AddStylusPoints (stylusPointCollection);
+}
+
+
 StylusPointCollection *
 stylus_point_collection_new (void)
 {

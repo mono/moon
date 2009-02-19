@@ -1441,6 +1441,9 @@ StylusPoint *stylus_point_new (void);
  * StylusPointCollection
  **/
 /* @GeneratePInvoke */
+double stylus_point_collection_add_stylus_points (StylusPointCollection *instance, StylusPointCollection *stylusPointCollection);
+
+/* @GeneratePInvoke */
 StylusPointCollection *stylus_point_collection_new (void);
 
 /**
