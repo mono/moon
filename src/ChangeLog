@@ -1,3 +1,7 @@
+2009-02-19  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Implement StaticResource element syntax.
+
 2009-02-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* geometry.h (class PathGeometry): Don't autocreate the

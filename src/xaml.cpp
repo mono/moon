@@ -75,6 +75,8 @@ class XamlElementInfoManaged;
 class XamlElementInstanceManaged;
 class XamlElementInfoImportedManaged;
 class XamlElementInstanceTemplate;
+class XamlElementInfoStaticResource;
+class XamlElementInstanceStaticResource;
 
 #define INTERNAL_IGNORABLE_ELEMENT "MoonlightInternalIgnorableElement"
 
@@ -111,6 +113,7 @@ static bool handle_markup_in_managed (const char* attr_value);
 static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, Value **value);
 static bool element_begins_buffering (const char* element);
 static bool is_managed_kind (Type::Kind kind);
+static bool is_static_resource_element (const char *el);
 static Value *lookup_resource_dictionary (ResourceDictionary *rd, const char *name, bool *exists);
 static void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *format, ...);
 
@@ -703,7 +706,6 @@ class XamlElementInfoEnum : public XamlElementInfo {
 	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name) { return NULL; }
 };
 
-
 class XamlElementInstanceEnum : public XamlElementInstance {
 
  public:
@@ -732,6 +734,34 @@ class XamlElementInstanceEnum : public XamlElementInstance {
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value) { return CreateEnumFromString (value); }
 };
 
+class XamlElementInfoStaticResource : public XamlElementInfo {
+ public:
+	XamlElementInfoStaticResource (const char *name) : XamlElementInfo (name, Type::INVALID)
+	{
+	}
+
+	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
+	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
+	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name) { return NULL; }
+};
+
+class XamlElementInstanceStaticResource : public XamlElementInstance {
+
+ public:
+	XamlElementInstanceStaticResource (XamlElementInfoStaticResource *element_info, const char *name, ElementType type);
+
+	virtual bool IsDependencyObject () { return false; }
+	virtual Value *GetAsValue () { return value; }
+
+	virtual DependencyObject *CreateItem () { return NULL; }
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) { return false; }
+	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value) { return false; }
+	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) { }
+	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
+
+	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value) { return false; }
+	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value) { return false; }
+};
 
 class XamlElementInstanceTemplate : public XamlElementInstanceNative {
 public:
@@ -772,6 +802,9 @@ class DefaultNamespace : public XamlNamespace {
 
 		if (enums_is_enum_name (el))
 			return new XamlElementInfoEnum (g_strdup (el));
+
+		if (is_static_resource_element (el))
+			return new XamlElementInfoStaticResource (g_strdup (el));
 
 		XamlElementInfo* managed_element = create_element_info_from_imported_managed_type (p, el, create);
 		if (managed_element)			
@@ -2839,6 +2872,12 @@ bool is_managed_kind (Type::Kind kind)
 	return false;
 }
 
+static bool
+is_static_resource_element (const char *el)
+{
+	return !strcmp (el, "StaticResource");
+}
+
 // NOTE: Keep definition in sync with class/System.Windows/Mono/NativeMethods.cs
 bool
 value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v, bool sl2)
@@ -3503,6 +3542,41 @@ XamlElementInfoEnum::CreateWrappedElementInstance (XamlParserInfo *p, Dependency
 	return res;
 }
 
+XamlElementInstanceStaticResource::XamlElementInstanceStaticResource (XamlElementInfoStaticResource *element_info, const char *name, ElementType type) :
+	XamlElementInstance (element_info, name, type)
+{
+}
+
+void
+XamlElementInstanceStaticResource::SetAttributes (XamlParserInfo *p, const char **attr)
+{
+	for (int i = 0; attr [i]; i += 2) {
+		// Skip empty attrs
+		if (attr[i + 1] == NULL || attr[i + 1][0] == '\0')
+			continue;
+
+		if (!strcmp ("ResourceKey", attr [i])) {
+			Value *v = xaml_lookup_named_item (p, this, attr [i + 1]);
+			if (!v)
+				parser_error (p, item->element_name, attr_name, 2024,
+					      "Could not locate StaticResource %s.", attr [i + 1]);
+			value = v;
+		}
+	}
+}
+
+XamlElementInstance *
+XamlElementInfoStaticResource::CreateElementInstance (XamlParserInfo *p)
+{
+	return new XamlElementInstanceStaticResource (this, name, XamlElementInstance::ELEMENT);
+}
+
+XamlElementInstance *
+XamlElementInfoStaticResource::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
+{
+	XamlElementInstance *res = new XamlElementInstanceStaticResource (this, name, XamlElementInstance::ELEMENT);
+	return res;
+}
 
 const char *
 XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)
