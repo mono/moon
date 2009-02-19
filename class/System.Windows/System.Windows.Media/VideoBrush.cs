@@ -35,7 +35,7 @@ namespace System.Windows.Media {
 	public sealed partial class VideoBrush : TileBrush {
 		public void SetSource (MediaElement source)
 		{
-			throw new System.NotImplementedException ();
+			NativeMethods.video_brush_set_source (this.native, source.native);
 		}
 	}
 }

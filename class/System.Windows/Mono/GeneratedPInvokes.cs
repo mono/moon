@@ -1705,6 +1705,10 @@ namespace Mono {
 		public extern static IntPtr user_control_new ();
 
 		[DllImport ("moon")]
+		// void video_brush_set_source (VideoBrush *instance, MediaElement *source);
+		public extern static void video_brush_set_source (IntPtr instance, IntPtr source);
+
+		[DllImport ("moon")]
 		// VideoBrush *video_brush_new ();
 		public extern static IntPtr video_brush_new ();
 
