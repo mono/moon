@@ -1,3 +1,7 @@
+2009-02-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* System.Windows.Media/VideoBrushTest.cs: Added SetMediaElement() test.
+
 2009-02-19  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Browser/ScriptableTest.cs: Disable the tests that

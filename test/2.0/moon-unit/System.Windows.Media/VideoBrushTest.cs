@@ -29,6 +29,7 @@
 using System;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Controls;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -81,6 +82,25 @@ namespace MoonTest.System.Windows.Media {
 		{
 			VideoBrush vb = new VideoBrush ();
 			BrushTest.Transform (vb);
+		}
+
+		[TestMethod]
+		public void SetMediaElement ()
+		{
+			MediaElement media = new MediaElement ();
+			VideoBrush brush = new VideoBrush ();
+			object retval;
+			
+			brush.SourceName = "iTube";
+			
+			media.Name = "YouTube";
+			brush.SetSource (media);
+			
+			Assert.AreEqual (String.Empty, brush.SourceName, "SourceName after SetSource");
+			
+			// since String.Empty is the default value, we also have to check RLV
+			retval = brush.ReadLocalValue (VideoBrush.SourceNameProperty);
+			Assert.AreNotEqual (DependencyProperty.UnsetValue, retval, "SourceName is not cleared after SetSource");
 		}
 	}
 }
