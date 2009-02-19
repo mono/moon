@@ -306,6 +306,35 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		public void RemoveChildThenStart4 ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
+			Storyboard child = (Storyboard) sb.Children [1];
+			sb.Children.RemoveAt (1);
+			c.Resources.Clear ();
+
+			TimelineCollection collection = new TimelineCollection();
+			Storyboard storyboard = new Storyboard ();
+			storyboard.Children.Add (child);
+			Storyboard.SetTargetName (child, null);
+			Storyboard.SetTarget (child, c.Children[0]);
+
+			CreateAsyncTest (c,
+				delegate { storyboard.Begin (); },
+				delegate { storyboard.Stop (); },
+				delegate { collection.Add (storyboard); },
+				delegate { storyboard.Begin (); },
+				delegate { storyboard.Stop (); },
+				delegate { collection.Remove (storyboard); },
+				delegate { sb.Children.Add (storyboard); },
+				delegate { sb.Children.Remove (storyboard); },
+				delegate { Assert.Throws<InvalidOperationException> (delegate { storyboard.Begin (); }); }
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		[MoonlightBug]
 		public void CurrentState ()
 		{
