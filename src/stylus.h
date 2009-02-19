@@ -25,18 +25,18 @@ enum TabletDeviceType {
 };
 
 
-/* @Namespace=None,ManagedDependencyProperties=None */
+/* @Namespace=System.Windows.Input */
 class StylusInfo : public DependencyObject {
  protected:
 	virtual ~StylusInfo () {}
 	
  public:
-	/* @PropertyType=TabletDeviceType,DefaultValue=TabletDeviceTypeMouse,GenerateAccessors */
+	/* @PropertyType=TabletDeviceType,ManagedPropertyType=int,DefaultValue=TabletDeviceTypeMouse,GenerateAccessors */
 	const static int DeviceTypeProperty;
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsInvertedProperty;
 	
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @ManagedAccess=Internal,GenerateCBinding,GeneratePInvoke */
 	StylusInfo () { SetObjectType (Type::STYLUSINFO); }
 	
 	//

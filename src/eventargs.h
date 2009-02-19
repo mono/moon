@@ -157,6 +157,7 @@ class MouseEventArgs : public RoutedEventArgs {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void GetPosition (UIElement *relative_to, double *x, double *y);
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	StylusInfo *GetStylusInfo ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */

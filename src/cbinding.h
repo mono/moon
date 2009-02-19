@@ -987,6 +987,9 @@ MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *p
 void mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to, double *x, double *y);
 
 /* @GeneratePInvoke */
+StylusInfo *mouse_event_args_get_stylus_info (MouseEventArgs *instance);
+
+/* @GeneratePInvoke */
 StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *instance, UIElement *ink_presenter);
 
 /* @GeneratePInvoke */

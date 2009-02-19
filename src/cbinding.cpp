@@ -2211,6 +2211,16 @@ mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to,
 }
 
 
+StylusInfo *
+mouse_event_args_get_stylus_info (MouseEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetStylusInfo ();
+}
+
+
 StylusPointCollection *
 mouse_event_args_get_stylus_points (MouseEventArgs *instance, UIElement *ink_presenter)
 {
