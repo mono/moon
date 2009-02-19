@@ -2351,9 +2351,7 @@ MoonlightContentObject::HasProperty (NPIdentifier name)
 	if (MoonlightObject::HasProperty (name))
 		return true;
 
-	char *key = npidentifier_to_downstr (name);
-	bool ret = g_hash_table_lookup (registered_scriptable_objects, NPID(key)) != NULL;
-	NPN_MemFree (key);
+	bool ret = g_hash_table_lookup (registered_scriptable_objects, name) != NULL;
 	return ret;
 }
 
