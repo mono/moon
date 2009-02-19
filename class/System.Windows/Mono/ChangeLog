@@ -1,3 +1,8 @@
+2009-02-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* NativeDependencyObjectHelper.cs (CreateObject): Handle
+	DrawingAttributes.
+
 2009-02-18  Chris Toshok  <toshok@ximian.com>
 
 	* MoonlightTypeConverter.cs: this can now convert from Colors to
