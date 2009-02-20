@@ -306,6 +306,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void RemoveChildThenStart4 ()
 		{
 			Canvas c = CreateStoryboard ();
