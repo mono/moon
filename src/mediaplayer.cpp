@@ -366,6 +366,9 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	media->AddHandler (Media::SeekCompletedEvent, SeekCompletedCallback, this);
 	media->SetBufferingTime (element->GetBufferingTime ());
 	
+	if (HasVideo ())
+		AddTickCallSafe (LoadVideoFrameCallback);
+	
 	return true;
 }
 

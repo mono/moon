@@ -1,3 +1,8 @@
+2009-02-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp: Open: Show the first frame upon opening a
+	  video.
+
 2009-02-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* size.cpp|h: Add FromStr (copied from Point)
