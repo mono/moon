@@ -1,3 +1,8 @@
+2009-02-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* System.Windows/PropertyPathTest.cs: Added new unit tests for
+	PropertyPath.
+
 2009-02-20  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/FrameworkElementTest.cs: We can't store an

@@ -177,6 +177,7 @@
     <Compile Include="System.Windows\FrameworkElementTest.cs" />
     <Compile Include="System.Windows\GridLengthTest.cs" />
     <Compile Include="System.Windows\PointTest.cs" />
+    <Compile Include="System.Windows\PropertyPathTest.cs" />
     <Compile Include="System.Windows\PresentationFrameworkCollectionTest.cs" />
     <Compile Include="System.Windows\RectTest.cs" />
     <Compile Include="System.Windows\ResourceDictionaryTest.cs" />
