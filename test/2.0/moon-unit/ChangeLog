@@ -1,3 +1,10 @@
+2009-02-20  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: We can't store an
+	  enum as an int unless the DependencyProperty.PropertyType ==
+	  typeof (ThatEnum). Otherwise we store an enum and get back
+	  an int. Adding test for this case.
+
 2009-02-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* System.Windows.Media/VideoBrushTest.cs: Added SetMediaElement() test.

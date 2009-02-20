@@ -284,5 +284,14 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual ("ouch^2", fe.Name, "again");
 			// no, the doc is not (always) right, i.e. other conditions applies
 		}
+		
+		[TestMethod]
+		[MoonlightBug]
+		public void TagTest ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			c.Tag = global::System.UriKind.Absolute;
+			Assert.IsTrue (c.Tag is global::System.UriKind, "Type was {0}, should be System.UriKind", c.Tag.GetType ().Name);
+		}
 	}
 }
