@@ -1,5 +1,9 @@
 2009-02-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBuffer::Resize): Return bool - true if we were
+	able to resize or false if we failed.
+	(TextBuffer::*): If Resize fails, return.
+
 	* moon-path.c (moon_path_ensure_space): New function to replace
 	the ENSURE_SPACE() macro and moon_path_expand(). Returns bool so
 	that callers can tell if they have enough space to add the data

@@ -42,9 +42,10 @@
 class TextBuffer {
 	int allocated;
 	
-	void Resize (int needed)
+	bool Resize (int needed)
 	{
 		bool resize = false;
+		void *buf;
 		
 		if (allocated >= needed + 128) {
 			while (allocated >= needed + 128)
@@ -56,8 +57,14 @@ class TextBuffer {
 			resize = true;
 		}
 		
-		if (resize)
-			text = (gunichar *) g_realloc (text, UNICODE_LEN (allocated));
+		if (resize) {
+			if (!(buf = g_try_realloc (text, UNICODE_LEN (allocated))))
+				return false;
+			
+			text = (gunichar *) buf;
+		}
+		
+		return true;
 	}
 	
  public:
@@ -107,7 +114,8 @@ class TextBuffer {
 	
 	void Append (gunichar c)
 	{
-		Resize (len + 2);
+		if (!Resize (len + 2))
+			return;
 		
 		text[len++] = c;
 		text[len] = 0;
@@ -115,7 +123,8 @@ class TextBuffer {
 	
 	void Append (const gunichar *str, int count)
 	{
-		Resize (len + count + 1);
+		if (!Resize (len + count + 1))
+			return;
 		
 		memcpy (UNICODE_OFFSET (text, len), str, UNICODE_LEN (count));
 		len += count;
@@ -143,7 +152,8 @@ class TextBuffer {
 	
 	void Insert (int index, gunichar c)
 	{
-		Resize (len + 2);
+		if (!Resize (len + 2))
+			return;
 		
 		if (index < len) {
 			// shift all chars beyond position @index down by 1 char
@@ -158,7 +168,8 @@ class TextBuffer {
 	
 	void Insert (int index, const gunichar *str, int count)
 	{
-		Resize (len + count + 1);
+		if (!Resize (len + count + 1))
+			return;
 		
 		if (index < len) {
 			// shift all chars beyond position @index down by @count chars
@@ -177,7 +188,8 @@ class TextBuffer {
 	
 	void Prepend (gunichar c)
 	{
-		Resize (len + 2);
+		if (!Resize (len + 2))
+			return;
 		
 		// shift the entire buffer down by 1 char
 		memmove (UNICODE_OFFSET (text, 1), text, UNICODE_LEN (len + 1));
@@ -187,7 +199,8 @@ class TextBuffer {
 	
 	void Prepend (const gunichar *str, int count)
 	{
-		Resize (len + count + 1);
+		if (!Resize (len + count + 1))
+			return;
 		
 		// shift the endtire buffer down by @count chars
 		memmove (UNICODE_OFFSET (text, count), text, UNICODE_LEN (len + 1));
@@ -220,7 +233,8 @@ class TextBuffer {
 			return;
 		}
 		
-		Resize ((len - length) + count + 1);
+		if (!Resize ((len - length) + count + 1))
+			return;
 		
 		// calculate the number of chars beyond @start that won't be cut
 		beyond = len - (start + length);
