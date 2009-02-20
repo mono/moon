@@ -1,5 +1,17 @@
 2009-02-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBox::TextBox): Init inkeypress state to false.
+	(TextBox::OnKeyDown): Set inkeypress to true at the beginning and
+	false at the end.
+	(TextBox::OnPropertyChanged): Check for inkeypress so we don't
+	syncronize things too early (we want to do it in SyncAndEmit() at
+	the end of OnKeyDown()). Also updated to keep proper emit state.
+	(TextBox::ClearSelection): Only sync selected text if we aren't in
+	OnKeyDown().
+	(TextBox::Select): Same.
+
+2009-02-20  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp (TextBuffer::Resize): Return bool - true if we were
 	able to resize or false if we failed.
 	(TextBuffer::*): If Resize fails, return.

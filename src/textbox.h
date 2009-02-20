@@ -89,6 +89,7 @@ class TextBox : public Control, public ITextSource {
 	TextBuffer *buffer;
 	TextBoxView *view;
 	
+	int inkeypress:1;
 	int selecting:1;
 	int setvalue:1;
 	int captured:1;

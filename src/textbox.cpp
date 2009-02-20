@@ -295,6 +295,7 @@ TextBox::TextBox ()
 	selection_anchor = 0;
 	selection_cursor = 0;
 	cursor_column = 0;
+	inkeypress = false;
 	selecting = false;
 	setvalue = true;
 	captured = false;
@@ -998,6 +999,7 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	// what has chanegd after applying the changes that this
 	// keypress will cause.
 	emit = NOTHING_CHANGED;
+	inkeypress = true;
 	
 	switch (key) {
 	case GDK_Return:
@@ -1120,6 +1122,7 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	
 	// FIXME: some of these may also require updating scrollbars?
 	
+	inkeypress = false;
 	SyncAndEmit ();
 	
 	// FIXME: register a key repeat timeout?
@@ -1384,20 +1387,19 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			glong textlen;
 			
 			// replace the currently selected text
-			text = g_utf8_to_ucs4_fast (str, -1, &textlen);
-			if (text) {
+			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
 				buffer->Replace (start, length, text, textlen);
+				emit |= TEXT_CHANGED;
 				g_free (text);
-			
+				
 				ClearSelection (start + textlen);
-				SyncText ();
-			}
-			else {
+				
+				if (!inkeypress)
+					SyncText ();
+			} else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
 		}
-		
-		emit |= SELECTION_CHANGED;
 	} else if (args->GetId () == TextBox::SelectionStartProperty) {
 		if (selection_cursor == selection_anchor) {
 			selection_anchor = args->new_value->AsInt32 ();
@@ -1407,13 +1409,17 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		}
 		
 		changed = TextBoxModelChangedSelection;
+		emit |= SELECTION_CHANGED;
 		cursor_column = -1;
 		
-		// update SelectedText
-		SyncSelectedText ();
+		if (!inkeypress) {
+			// update SelectedText
+			SyncSelectedText ();
+		}
 	} else if (args->GetId () == TextBox::SelectionLengthProperty) {
 		selection_cursor = selection_anchor + args->new_value->AsInt32 ();
 		changed = TextBoxModelChangedSelection;
+		emit |= SELECTION_CHANGED;
 		cursor_column = -1;
 		
 		// set some default selection brushes if unset
@@ -1433,32 +1439,32 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			}
 		}
 		
-		// update SelectedText
-		SyncSelectedText ();
+		if (!inkeypress) {
+			// update SelectedText
+			SyncSelectedText ();
+		}
 	} else if (args->GetId () == TextBox::SelectionBackgroundProperty) {
 		changed = TextBoxModelChangedBrush;
 	} else if (args->GetId () == TextBox::SelectionForegroundProperty) {
 		changed = TextBoxModelChangedBrush;
 	} else if (args->GetId () == TextBox::TextProperty) {
 		if (setvalue) {
-			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString() : "";
+			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString () : "";
 			gunichar *text;
 			glong textlen;
 			
-			text = g_utf8_to_ucs4_fast (str, -1, &textlen);
-			if (text) {
+			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
 				buffer->Replace (0, buffer->len, text, textlen);
+				emit |= TEXT_CHANGED;
 				g_free (text);
-			
+				
 				ClearSelection (0);
-			}
-			else {
+			} else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
 		}
 		
 		changed = TextBoxModelChangedText;
-		emit |= TEXT_CHANGED;
 	} else if (args->GetId () == TextBox::TextAlignmentProperty) {
 		changed = TextBoxModelChangedTextAlignment;
 	} else if (args->GetId () == TextBox::TextWrappingProperty) {
@@ -1541,7 +1547,9 @@ TextBox::ClearSelection (int start)
 {
 	SetSelectionStart (start);
 	SetSelectionLength (0);
-	SyncSelectedText ();
+	
+	if (!inkeypress)
+		SyncSelectedText ();
 }
 
 void
@@ -1558,7 +1566,9 @@ TextBox::Select (int start, int length)
 	
 	SetSelectionStart (start);
 	SetSelectionLength (length);
-	SyncSelectedText ();
+	
+	if (!inkeypress)
+		SyncSelectedText ();
 }
 
 void
