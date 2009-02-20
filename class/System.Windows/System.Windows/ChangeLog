@@ -1,3 +1,7 @@
+2009-02-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* PropertyPath.cs: Implemented ctor that takes only an object.
+
 2009-02-18  Geoff Norton  <gnorton@novell.com>
 
 	* StartupEventArgs.cs: initparms can be keyed with spaces after

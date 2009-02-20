@@ -39,7 +39,7 @@ namespace System.Windows
 		public PropertyPath (string path, params object [] pathParameters)
 		{
 			if (path == null)
-				throw new ArgumentNullException ("path");
+				throw new ArgumentOutOfRangeException ("path");
 			
 			this.path = path;
 			this.path_parameters = pathParameters;
@@ -47,7 +47,21 @@ namespace System.Windows
 
 		public PropertyPath (object parameter)
 		{
-			throw new NotImplementedException ();
+			if (parameter is DependencyProperty) {
+				//DependencyProperty property = parameter as DependencyProperty;
+				//
+				//if (property.IsAttached)
+				//	path = "(" + property.DeclaringType.Name + "." + property.Name + ")";
+				//else
+				//	path = property.Name;
+				
+				// Silverlight always sets "(0)" as the path no matter what DependencyProperty was passed in...
+				path = "(0)";
+			} else if (parameter is string) {
+				path = parameter as string;
+			} else {
+				path = null;
+			}
 		}
 		
 		public string Path {
