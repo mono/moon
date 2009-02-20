@@ -5,6 +5,9 @@
 	(TextBuffer::*): If Resize fails, return.
 	(TextBox::CursorPrevWord): Only nagivate back so long as i >
 	begin. Prevents us from returning -1 when begin is 0.
+	(TextBuffer::Cut): Fixed the logic - we don't want to memmove the
+	total number of bytes left after cutting, we only want to memmove
+	the bytes after the cut point.
 
 	* moon-path.c (moon_path_ensure_space): New function to replace
 	the ENSURE_SPACE() macro and moon_path_expand(). Returns bool so

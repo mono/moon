@@ -134,7 +134,7 @@ class TextBuffer {
 	void Cut (int start, int length)
 	{
 		char *dest, *src;
-		int left;
+		int beyond;
 		
 		if (length == 0 || start >= len)
 			return;
@@ -144,10 +144,10 @@ class TextBuffer {
 		
 		src = UNICODE_OFFSET (text, start + length);
 		dest = UNICODE_OFFSET (text, start);
-		left = len - length;
+		beyond = len - (start + length);
 		
-		memmove (dest, src, UNICODE_LEN (left + 1));
-		len = left;
+		memmove (dest, src, UNICODE_LEN (beyond + 1));
+		len -= length;
 	}
 	
 	void Insert (int index, gunichar c)
