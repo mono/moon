@@ -507,7 +507,7 @@ TextBox::CursorPrevWord (int cursor)
 	// if the cursor was at whitespace, skip back a word too
 	if (cc == CharClassWhitespace && i > begin) {
 		cc = char_class (buffer->text[i - 1]);
-		while (i > lf && char_class (buffer->text[i - 1]) == cc)
+		while (i > begin && char_class (buffer->text[i - 1]) == cc)
 			i--;
 	}
 	
