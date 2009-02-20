@@ -1,5 +1,11 @@
 2009-02-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (TextLayout::Layout*Wrap*): Always need to update
+	actual_width, segment->end, etc - even if all we had was
+	whitespace. Try to keep better track of this state as well.
+	(TextLayout::GetCursor): The cursor height is actually the same as
+	the line height.
+
 	* textbox.cpp (TextBox::TextBox): Init inkeypress state to false.
 	(TextBox::OnKeyDown): Set inkeypress to true at the beginning and
 	false at the end.

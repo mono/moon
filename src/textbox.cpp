@@ -1774,7 +1774,7 @@ TextBoxView::UpdateCursor (bool invalidate)
 		// we might not have any text runs (which the layout
 		// code requires to get font metrics).
 		TextFont *font = textbox->FontDescription ()->GetFont ();
-		cursor = Rect (0.0, 0.0, 1.0, font->Ascender ());
+		cursor = Rect (0.0, 0.0, 1.0, font->Height ());
 		font->unref ();
 	} else {
 		cursor = layout->GetCursor (Point (), cur);
