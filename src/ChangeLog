@@ -1,3 +1,13 @@
+2009-02-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* moon-path.c (moon_path_ensure_space): New function to replace
+	the ENSURE_SPACE() macro and moon_path_expand(). Returns bool so
+	that callers can tell if they have enough space to add the data
+	they want. Fixed callers to check the return value and return w/o
+	adding curves, lines, whatever. While this will mean that
+	Moonlight won't render the path correctly, at least we won't
+	crash.
+
 2009-02-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaplayer.cpp: Open: Show the first frame upon opening a

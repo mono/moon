@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * moon-path.c: Path-based API, similar to cairo but without requiring a cairo_context_t
  *
@@ -11,6 +12,7 @@
  */
 
 #include "moon-path.h"
+
 
 /**
  * moon_path_new:
@@ -122,22 +124,48 @@ moon_get_current_point (moon_path *path, double *x, double *y)
 	}
 }
 
-#define ENSURE_SPACE(path,size)		{ \
-						if (path->cairo.num_data + size > path->allocated) { \
-							moon_path_expand (path, size); \
-							g_return_if_fail (path->cairo.data != NULL); \
-						} \
-					}
-
-static void
-moon_path_expand (moon_path *path, int size)
+/* this is a total soptimization, but I don't care ;-) */
+static inline guint32
+nearest_pow2 (guint32 num)
 {
-	int pos = path->cairo.num_data;
-	int n = 1;
-	while (n < pos + size)
-		n <<= 1;
+	guint32 n;
+	
+	if (num == 0)
+		return 0;
+	
+	n = num - 1;
+#if defined (__GNUC__) && defined (__i386__)
+	__asm__("bsrl %1,%0\n\t"
+		"jnz 1f\n\t"
+		"movl $-1,%0\n"
+		"1:" : "=r" (n) : "rm" (n));
+	n = (1 << (n + 1));
+#else
+	n |= n >> 1;
+	n |= n >> 2;
+	n |= n >> 4;
+	n |= n >> 8;
+	n |= n >> 16;
+	n++;
+#endif
+	
+	return n;
+}
 
-	path->cairo.data = g_try_realloc (path->cairo.data, sizeof (cairo_path_data_t) * n);
+static inline gboolean
+moon_path_ensure_space (moon_path *path, int need)
+{
+	void *data;
+	guint32 n;
+	
+	if (path->cairo.num_data + need <= path->allocated)
+		return TRUE;
+	
+	n = nearest_pow2 (path->cairo.num_data + need);
+	if (!(data = g_try_realloc (path->cairo.data, sizeof (cairo_path_data_t) * n)))
+		return FALSE;
+	
+	path->cairo.data = (cairo_path_data_t *) data;
 	path->allocated = n;
 }
 
@@ -154,8 +182,9 @@ moon_move_to (moon_path *path, double x, double y)
 {
 	g_return_if_fail (path != NULL);
 	
-	ENSURE_SPACE (path, MOON_PATH_MOVE_TO_LENGTH);
-
+	if (!moon_path_ensure_space (path, MOON_PATH_MOVE_TO_LENGTH))
+		return;
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	
@@ -180,8 +209,9 @@ moon_line_to (moon_path *path, double x, double y)
 {
 	g_return_if_fail (path != NULL);
 	
-	ENSURE_SPACE (path, MOON_PATH_LINE_TO_LENGTH);
-
+	if (!moon_path_ensure_space (path, MOON_PATH_LINE_TO_LENGTH))
+		return;
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	
@@ -211,8 +241,9 @@ moon_curve_to (moon_path *path, double x1, double y1, double x2, double y2, doub
 {
 	g_return_if_fail (path != NULL);
 	
-	ENSURE_SPACE (path, MOON_PATH_CURVE_TO_LENGTH);
-
+	if (!moon_path_ensure_space (path, MOON_PATH_CURVE_TO_LENGTH))
+		return;
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	
@@ -416,9 +447,10 @@ moon_arc_to (moon_path *path, double width, double height, double angle, gboolea
 
 	double cos_theta1 = cos (theta1);
 	double sin_theta1 = sin (theta1);
-
-	ENSURE_SPACE (path, segments * MOON_PATH_CURVE_TO_LENGTH);
-
+	
+	if (!moon_path_ensure_space (path, segments * MOON_PATH_CURVE_TO_LENGTH))
+		return;
+	
 	int i;
 	for (i = 0; i < segments; ++i) {
 		// end angle (for this segment) = current + delta
@@ -473,8 +505,9 @@ moon_ellipse (moon_path *path, double x, double y, double w, double h)
 	double brx = ARC_TO_BEZIER * rx;
 	double bry = ARC_TO_BEZIER * ry;
 
-	ENSURE_SPACE (path, MOON_PATH_ELLIPSE_LENGTH);
-
+	if (!moon_path_ensure_space (path, MOON_PATH_ELLIPSE_LENGTH))
+		return;
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	
@@ -550,8 +583,9 @@ moon_rectangle (moon_path *path, double x, double y, double w, double h)
 {
 	g_return_if_fail (path != NULL);
 	
-	ENSURE_SPACE (path, MOON_PATH_RECTANGLE_LENGTH);
-
+	if (!moon_path_ensure_space (path, MOON_PATH_RECTANGLE_LENGTH))
+		return;
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	
@@ -602,8 +636,9 @@ moon_rounded_rectangle (moon_path *path, double x, double y, double w, double h,
 {
 	g_return_if_fail (path != NULL);
 	
-	ENSURE_SPACE (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH);
-
+	if (!moon_path_ensure_space (path, MOON_PATH_ROUNDED_RECTANGLE_LENGTH))
+		return;
+	
 	if (radius_x < 0.0)
 		radius_x = -radius_x;
 	if (radius_y < 0.0)
@@ -717,8 +752,9 @@ moon_close_path (moon_path *path)
 {
 	g_return_if_fail (path != NULL);
 	
-	ENSURE_SPACE (path, MOON_PATH_CLOSE_PATH_LENGTH);
-
+	if (!moon_path_ensure_space (path, MOON_PATH_CLOSE_PATH_LENGTH))
+		return;
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 	
@@ -795,8 +831,9 @@ moon_merge (moon_path *path, moon_path *subpath)
 	g_return_if_fail (path != NULL);
 	g_return_if_fail (subpath != NULL);
 	
-	ENSURE_SPACE (path, subpath->cairo.num_data);
-
+	if (!moon_path_ensure_space (path, subpath->cairo.num_data))
+		return;
+	
 	cairo_path_data_t *data = path->cairo.data;
 	int pos = path->cairo.num_data;
 
