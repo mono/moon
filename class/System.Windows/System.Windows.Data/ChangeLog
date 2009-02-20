@@ -1,3 +1,7 @@
+2009-02-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Binding.cs: Throw ArgumentNullException if path is null.
+
 2009-02-08  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows.Data/BindingExpressionBase.cs: clean this up a

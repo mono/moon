@@ -133,6 +133,9 @@ namespace System.Windows.Data {
 		public Binding (string path)
 			: this (NativeMethods.binding_new ())
 		{
+			if (path == null)
+				throw new ArgumentNullException ("path");
+			
 			Mode = BindingMode.OneWay;
 			Path = new PropertyPath (path);
 		}
