@@ -57,8 +57,12 @@ namespace MoonTest.System.Windows
 			prop = new PropertyPath (5);
 			Assert.IsNull (prop.Path, "numeric PropertyPath is null");
 			
-			prop = new PropertyPath (null);
-			Assert.IsNull (prop.Path, "null PropertyPath is null");
+			// FIXME:
+			// This test exposes a bug in Mono, it should be using the
+			// PropertyPath(object) ctor, but it's using the
+			// PropertyPath(string, params object[]) ctor instead.
+			//prop = new PropertyPath (null);
+			//Assert.IsNull (prop.Path, "null PropertyPath is null");
 		}
 	}
 }
