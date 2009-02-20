@@ -77,6 +77,13 @@ struct Size {
 	{
 		return !(*this == size);
 	}
+
+	//
+	// FromStr
+	//   Parses @s and return a new size in @size. Returns true if
+	//   this was successful, false otherwise.
+	//
+	static bool FromStr (const char *s, Size *size);
 };
 
 /* @SilverlightVersion="2" */

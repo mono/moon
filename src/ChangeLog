@@ -1,3 +1,8 @@
+2009-02-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* size.cpp|h: Add FromStr (copied from Point)
+	* xaml.cpp: Parse Type::SIZE
+
 2009-02-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* stylus.h (class StylusPoint): In managed-land, this class is

@@ -3065,6 +3065,15 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		*v = new Value (p);
 		break;
 	}
+	case Type::SIZE: {
+		Size s;
+
+		if (!Size::FromStr (str, &s))
+			return false;
+
+		*v = new Value (s);
+		break;
+	}
 	case Type::RECT: {
 		Rect rect;
 

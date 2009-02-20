@@ -13,6 +13,22 @@
 #endif
 
 #include "size.h"
+#include "utils.h"
+
+bool
+Size::FromStr (const char *s, Size *size)
+{
+	GArray *values = double_garray_from_str (s, 2);
+
+	if (!values)
+		return false;
+
+	*size = Size (g_array_index (values, double, 0), g_array_index (values, double, 1));
+
+	g_array_free (values, true);
+
+	return true;
+}
 
 SizeChangedEventArgs::SizeChangedEventArgs()
 {
