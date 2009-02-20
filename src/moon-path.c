@@ -167,6 +167,8 @@ moon_path_ensure_space (moon_path *path, int need)
 	
 	path->cairo.data = (cairo_path_data_t *) data;
 	path->allocated = n;
+	
+	return TRUE;
 }
 
 /**
