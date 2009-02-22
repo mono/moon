@@ -2056,8 +2056,10 @@ class Generator {
 				text.Append (tabs);
 				text.AppendLine ("\tstring s = Marshal.PtrToStringAnsi (result);\t// *copy* unmanaged string");
 				text.Append (tabs);
-				text.AppendLine ("\tMarshal.FreeHGlobal (result);\t\t\t// g_free the unmanaged string");
-				text.Append (tabs);
+				if (!method.ReturnType.IsConst) {
+					text.AppendLine ("\tMarshal.FreeHGlobal (result);\t\t\t// g_free the unmanaged string");
+					text.Append (tabs);
+				}
 				text.AppendLine ("\treturn s;");
 			} else if (!is_void) {
 				text.Append (tabs);
