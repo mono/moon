@@ -319,7 +319,13 @@ namespace System.Windows.Browser.Net
 		}
 
 		public override bool HaveResponse {
-			get { return response != null; }
+			get {
+				if (response != null)
+					return true;
+				if (async_result != null && async_result.Response != null)
+					return true;
+				return false;
+			}
 		}
 
 		public override WebHeaderCollection Headers {

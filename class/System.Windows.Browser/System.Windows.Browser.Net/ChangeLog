@@ -1,3 +1,8 @@
+2009-02-22 Geoff Norton  <gnorton@novell.com>
+
+	* BrowserHttpWebRequest.cs: Ensure that we can find the presnse of 
+	a response before calling EndGetResponse.
+
 2009-02-12  Alan McGovern  <amcgovern@novell.com>
 
 	* BrowserHttpWebRequest.cs: Fixed a race condition where
