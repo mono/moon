@@ -36,6 +36,7 @@ namespace System.Windows.Threading {
 	public class Dispatcher {
 		NativeMethods.TickCallHandler callback;
 		Queue<DispatcherOperation> queuedOperations;
+		Surface surface;
 		uint source;
 
 		static Dispatcher main;
@@ -51,6 +52,7 @@ namespace System.Windows.Threading {
 		internal Dispatcher ()
 		{
 			queuedOperations = new Queue<DispatcherOperation>();
+			surface = Deployment.Current.Surface;
 			source = 0;
 		}
 
@@ -61,7 +63,7 @@ namespace System.Windows.Threading {
 		void Dispose () {
 			lock (queuedOperations) {
 				if (callback != null)
-					NativeMethods.time_manager_remove_tick_call (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native), callback);
+					NativeMethods.time_manager_remove_tick_call (NativeMethods.surface_get_time_manager (surface.Native), callback);
 				source = 0;
 				if (queuedOperations.Count > 0) {
 					Console.WriteLine ("Dispatcher was destroyed with " + queuedOperations.Count + " call to be processed");
@@ -94,7 +96,7 @@ namespace System.Windows.Threading {
 				if (source == 0) {
 					if (callback == null)
 						callback = new NativeMethods.TickCallHandler (dispatcher_callback);
-					source = NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native), callback, IntPtr.Zero);
+					source = NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (surface.Native), callback, IntPtr.Zero);
 				}
 			}
 			return op;

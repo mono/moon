@@ -1,3 +1,8 @@
+2009-02-22  Geoff Norton  <gnorton@novell.com>
+
+	* Dispatcher.cs: Cache the surface when the dispatcher is created
+	to avoid unnecessary M->N's and possible cross-thread problems.
+
 2009-02-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Dispatcher.cs: Ensure no exceptions reach native code.
