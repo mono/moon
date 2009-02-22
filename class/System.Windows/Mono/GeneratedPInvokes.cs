@@ -133,7 +133,6 @@ namespace Mono {
 			if (result == IntPtr.Zero)
 				return null;
 			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
-			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
 			return s;
 		}
 
@@ -474,7 +473,6 @@ namespace Mono {
 			if (result == IntPtr.Zero)
 				return null;
 			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
-			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
 			return s;
 		}
 
@@ -572,7 +570,6 @@ namespace Mono {
 			if (result == IntPtr.Zero)
 				return null;
 			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
-			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
 			return s;
 		}
 
@@ -705,7 +702,6 @@ namespace Mono {
 			if (result == IntPtr.Zero)
 				return null;
 			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
-			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
 			return s;
 		}
 
@@ -743,7 +739,6 @@ namespace Mono {
 			if (result == IntPtr.Zero)
 				return null;
 			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
-			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
 			return s;
 		}
 
