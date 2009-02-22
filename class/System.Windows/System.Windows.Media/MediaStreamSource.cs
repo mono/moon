@@ -265,7 +265,9 @@ namespace System.Windows.Media
 			
 			buflen = (uint) mediaStreamSample.Count;
 			buf = new byte [buflen];
-			mediaStreamSample.Stream.Read (buf, (int) mediaStreamSample.Offset, (int) buflen);
+			mediaStreamSample.Stream.Seek (mediaStreamSample.Offset, System.IO.SeekOrigin.Begin);
+			mediaStreamSample.Stream.Read (buf, 0, (int) buflen);
+
 			
 			buffer = Marshal.AllocHGlobal ((int) buflen);
 			Marshal.Copy (buf, 0, buffer, (int) buflen);

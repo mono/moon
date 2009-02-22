@@ -1,3 +1,8 @@
+2009-02-22  Geoff Norton  <gnorton@novell.com>
+
+	* MediaStreamSource.cs: The sample offset is an offset in the stream,
+	not an offset in the buffer.
+
 2009-02-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VideoBrush.cs (SetSource): Implemented.
