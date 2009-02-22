@@ -360,6 +360,7 @@ ASFDemuxer::Open ()
 				case CODEC_MP3: stream->codec = g_strdup ("mp3"); break;
 				case CODEC_WMAV1: stream->codec = g_strdup ("wmav1"); break;
 				case CODEC_WMAV2: stream->codec = g_strdup ("wmav2"); break;
+				case CODEC_WMAV3: stream->codec = g_strdup ("wmav3"); break;
 				default:
 					char a = ((stream->codec_id & 0x000000FF));
 					char b = ((stream->codec_id & 0x0000FF00) >> 8);

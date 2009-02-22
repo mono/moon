@@ -1982,9 +1982,15 @@ char *
 IMediaStream::CreateCodec (int codec_id)
 {
 	switch (codec_id) {
-	case CODEC_MP3:   return g_strdup ("mp3");
+	case CODEC_WMV1: return g_strdup ("wmv1");
+	case CODEC_WMV2: return g_strdup ("wmv2");
+	case CODEC_WMV3: return g_strdup ("wmv3");
+	case CODEC_WMVA: return g_strdup ("wmva");
+	case CODEC_WVC1: return g_strdup ("vc1");
+	case CODEC_MP3: return g_strdup ("mp3");
 	case CODEC_WMAV1: return g_strdup ("wmav1");
 	case CODEC_WMAV2: return g_strdup ("wmav2");
+	case CODEC_WMAV3: return g_strdup ("wmav3");
 	default:
 		g_warning ("IMediaStream::CreateCodec (%i): Not implemented.\n", codec_id);
 		

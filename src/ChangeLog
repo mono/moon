@@ -1,3 +1,8 @@
+2009-02-22  Geoff Norton  <gnorton@novell.com>
+
+	* pipeline-asf.cpp:
+	* pipeline.cpp|h: Add some missing codecs.
+
 2009-02-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::Layout*Wrap*): Always need to update
