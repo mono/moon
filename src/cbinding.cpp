@@ -79,9 +79,9 @@ assembly_part_collection_new (void)
  * AudioStream
  **/
 AudioStream *
-audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate)
+audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, gpointer extra_data, guint32 extra_data_size)
 {
-	return new AudioStream (media, codec_id, bits_per_sample, block_align, sample_rate, channels, bit_rate);
+	return new AudioStream (media, codec_id, bits_per_sample, block_align, sample_rate, channels, bit_rate, extra_data, extra_data_size);
 }
 
 
@@ -3858,9 +3858,9 @@ video_brush_new (void)
  * VideoStream
  **/
 VideoStream *
-video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_len)
+video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size)
 {
-	return new VideoStream (media, codec_id, width, height, duration, extra_data, extra_data_len);
+	return new VideoStream (media, codec_id, width, height, duration, extra_data, extra_data_size);
 }
 
 

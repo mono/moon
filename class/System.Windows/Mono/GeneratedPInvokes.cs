@@ -43,8 +43,8 @@ namespace Mono {
 		public extern static IntPtr assembly_part_collection_new ();
 
 		[DllImport ("moon")]
-		// AudioStream *audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate);
-		public extern static IntPtr audio_stream_new (IntPtr media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate);
+		// AudioStream *audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, gpointer extra_data, guint32 extra_data_size);
+		public extern static IntPtr audio_stream_new (IntPtr media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, IntPtr extra_data, uint extra_data_size);
 
 		[DllImport ("moon")]
 		// BeginStoryboard *begin_storyboard_new ();
@@ -1740,8 +1740,8 @@ namespace Mono {
 		public extern static IntPtr video_brush_new ();
 
 		[DllImport ("moon")]
-		// VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_len);
-		public extern static IntPtr video_stream_new (IntPtr media, int codec_id, uint width, uint height, ulong duration, IntPtr extra_data, uint extra_data_len);
+		// VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size);
+		public extern static IntPtr video_stream_new (IntPtr media, int codec_id, uint width, uint height, ulong duration, IntPtr extra_data, uint extra_data_size);
 
 		[DllImport ("moon")]
 		// VisualBrush *visual_brush_new ();

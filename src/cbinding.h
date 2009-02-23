@@ -95,7 +95,7 @@ AssemblyPartCollection *assembly_part_collection_new (void);
  * AudioStream
  **/
 /* @GeneratePInvoke */
-AudioStream *audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate);
+AudioStream *audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, gpointer extra_data, guint32 extra_data_size);
 
 /**
  * BeginStoryboard
@@ -1715,7 +1715,7 @@ VideoBrush *video_brush_new (void);
  * VideoStream
  **/
 /* @GeneratePInvoke */
-VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_len);
+VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size);
 
 /**
  * VisualBrush
