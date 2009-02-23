@@ -96,7 +96,7 @@ namespace System.Windows.Browser {
 
 		public object GetProperty (int index)
 		{
-			throw new System.NotImplementedException ();
+			return GetProperty (index.ToString ());
 		}
 
 		protected virtual object ConvertTo (Type targetType, bool allowSerialization)
