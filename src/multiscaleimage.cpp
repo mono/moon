@@ -248,10 +248,13 @@ expand_rgb_to_argb (GdkPixbuf *pixbuf, int *stride)
 	return data;
 }
 
+//test if the cache contains a tile at the @filename key
+//if @empty_tiles is TRUE, it'll return TRUE even if the cached tile is NULL. if @empty_tiles is FALSE, a NULL tile will be treated as missing
 bool
 MultiScaleImage::cache_contains (const char* filename, bool empty_tiles)
 {
-	//empty_tiles = TRUE means that this will return true if a tile is present, but NULL
+	if (!filename)
+		return empty_tiles;
 	if (empty_tiles)
 		return g_hash_table_lookup_extended (cache, filename, NULL, NULL);
 	else
@@ -484,6 +487,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		cairo_surface_t *image = NULL;
 
 		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, &error);
+		g_free (filename);
 		filename = NULL;
 		if (error) {
 			printf (error->message);
@@ -499,8 +503,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 				data = expand_rgb_to_argb (pixbuf, &stride);
 				g_object_unref (pixbuf);
 			}
-
-			//printf ("pb %d %d\n", *p_width, *p_height);
 
 			image = cairo_image_surface_create_for_data (data,
 								     has_alpha ? MOON_FORMAT_ARGB : MOON_FORMAT_RGB,
@@ -541,10 +543,11 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	}
 
 
-	double w = GetActualWidth ();
-	double h = GetActualHeight ();
+	double msi_w = GetActualWidth ();
+	double msi_h = GetActualHeight ();
 	double vp_w = GetViewportWidth ();
-	double vp_h = vp_w / GetAspectRatio ();
+	//double vp_h = vp_w / GetAspectRatio ();
+	double msi_ar = GetAspectRatio ();
 	double im_w = (double) source->GetImageWidth ();
 	double im_h = (double) source->GetImageHeight ();
 	int tile_width = source->GetTileWidth ();
@@ -560,7 +563,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 
 	//optimal layer for this... aka "best viewed at"
 	int optimal_layer;
-	frexp (w / vp_w, &optimal_layer);
+	frexp (msi_w / vp_w, &optimal_layer);
 	optimal_layer = MIN (optimal_layer, layers);
 	LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
@@ -574,12 +577,14 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	while (from_layer >= 0) {
 		int count = 0;
 		int found = 0;
-		double v_tile_w = tile_width * ldexp (1.0, layers - from_layer);
-		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer);
-		int i, j;
 
-		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
-			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_w && j * v_tile_h < im_h; j++) {
+		//v_tile_X is the virtual tile size at this layer in relative coordinates
+		double v_tile_w = tile_width  * ldexp (1.0, layers - from_layer) / im_w;
+		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) / im_w;
+
+		int i, j;
+		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < 1.0; i++) {
+			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < vp_oy + vp_w / msi_ar && j * v_tile_h < 1.0 / msi_ar; j++) {
 				count++;
 				if (cache_contains ((const char*)source->get_tile_func (from_layer, i, j, source), false))
 					found ++;
@@ -598,11 +603,14 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	int layer_to_render = from_layer;
 	while (from_layer > 0 && layer_to_render <= to_layer) {
 		int i, j;
-		double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render);
-		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render);
-		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
-			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_w && j * v_tile_h < im_h; j++) {
-				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, (const char*)source->get_tile_func (layer_to_render, i, j, source));
+		double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render) / im_w;
+		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render) / im_w;
+		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < 1.0; i++) {
+			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < vp_oy + vp_w / msi_ar && j * v_tile_h < 1.0 / msi_ar; j++) {
+				const char* tile = (const char*)source->get_tile_func (layer_to_render, i, j, source);
+				if (!tile)
+					continue;
+				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
 				if (!image)
 					continue;
 				LOG_MSI ("rendering %d %d %d\n", layer_to_render, i, j);
@@ -610,9 +618,9 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 //				int *p_h = (int*)(cairo_surface_get_user_data (image, &height_key));
 				cairo_save (cr);
 
-				cairo_rectangle (cr, 0, 0, w, h);
-				cairo_scale (cr, w / (vp_w * im_w), w / (vp_w * im_w)); //scale to viewport
-				cairo_translate (cr, -vp_ox * im_w + i * v_tile_w, -vp_oy * im_h+ j * v_tile_h);
+				cairo_rectangle (cr, 0, 0, msi_w, msi_h);
+				cairo_scale (cr, msi_w / (vp_w * im_w), msi_w / (vp_w * im_w)); //scale to viewport
+				cairo_translate (cr, im_w *(-vp_ox + i * v_tile_w), im_w * (-vp_oy + j * v_tile_h));
 				//cairo_scale (cr, im_w / (double)*p_w, im_h / (double)*p_h); //scale to image size
 				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
 				cairo_set_source_surface (cr, image, 0, 0);
@@ -624,7 +632,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		layer_to_render++;
 	}
 	cairo_pop_group_to_source (cr);
-	cairo_rectangle (cr, 0, 0, w, h);
+	cairo_rectangle (cr, 0, 0, msi_w, msi_h);
 	cairo_clip (cr);
 	cairo_paint (cr);
 
@@ -635,24 +643,19 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	while (from_layer < optimal_layer) {
 		from_layer ++;
 
-		double v_tile_w = tile_width * ldexp (1.0, layers - from_layer);
-		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer);
+		double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) / im_w;
+		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) / im_w;
 		int i, j;
 
-
-		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
-			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_w && j * v_tile_h < im_h; j++) {
-				if (!cache_contains ((const char*)source->get_tile_func (from_layer, i, j, source), true)) {
-					context = g_strdup ((const char*)source->get_tile_func (from_layer, i, j, source));
+		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < 1.0; i++) {
+			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < vp_oy + vp_w / msi_ar && j * v_tile_h < 1.0 / msi_ar; j++) {
+				context = (char*)source->get_tile_func (from_layer, i, j, source);
+				if (!cache_contains (context, true))
 					if (context) {
 						downloading = true;
 						DownloadUri (context);
 						return;
-//					} else {
-//						LOG_MSI ("caching a NULL %s\n", context);
-//						g_hash_table_insert (cache, g_strdup(context), NULL);
 					}
-				}
 			}
 		}
 	}

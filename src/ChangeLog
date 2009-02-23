@@ -1,5 +1,9 @@
 2009-02-23  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp: Render () in relative coordinates
+
+2009-02-23  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.h|cpp: use filename as cache keys
 
 2009-02-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
