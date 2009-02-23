@@ -331,7 +331,7 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs
 		return NPERR_INCOMPATIBLE_VERSION_ERROR;
 
 	NPError err = NPERR_NO_ERROR;
-	NPBool supportsXEmbed = FALSE;
+	guint32 supportsXEmbed = FALSE; // NPBool + padding
 	NPNToolkitType toolkit = (NPNToolkitType) 0;
 
 	// XEmbed ?

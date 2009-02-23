@@ -396,7 +396,8 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	media_element_emit_ended_on_error = false;
 
 	windowless = false;
-	
+	xembed_supported = FALSE;
+
 	bridge = NULL;
 
 	// MSDN says the default is 24: http://msdn2.microsoft.com/en-us/library/bb979688.aspx
@@ -569,7 +570,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		}
 	}
 
-	NPBool supportsWindowless = FALSE;
+	guint32 supportsWindowless = FALSE; // NPBool + padding
 
 	int plugin_major, plugin_minor;
 	int netscape_major, netscape_minor;

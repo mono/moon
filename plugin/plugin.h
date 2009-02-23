@@ -137,7 +137,7 @@ class PluginInstance
 	NPWindow *window;      // Mozilla window object
 	NPP instance;          // Mozilla instance object
 	NPObject *rootobject;  // Mozilla jscript object wrapper
-	bool xembed_supported; // XEmbed Extension supported
+	guint32 xembed_supported; // XEmbed Extension supported
 
 	GHashTable *wrapped_objects; // wrapped object cache
 
