@@ -1,5 +1,10 @@
 2009-02-22  Geoff Norton  <gnorton@novell.com>
 
+	* MediaStreamSource.cs: The CodecPrivateData is extra_data to our pipeline
+	and codec implementation, parse and pass it.
+
+2009-02-22  Geoff Norton  <gnorton@novell.com>
+
 	* MediaStreamSource.cs: The sample offset is an offset in the stream,
 	not an offset in the buffer.
 

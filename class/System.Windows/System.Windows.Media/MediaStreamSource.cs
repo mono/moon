@@ -29,6 +29,7 @@
 
 using Mono;
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -368,10 +369,22 @@ namespace System.Windows.Media
 						throw new ArgumentException ("availableMediaStreams.MediaAttributes.Height");
 					}
 					
-					if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.CodecPrivateData, out str_codec_private_data)) 
-						throw new NotImplementedException ("availableMediaStreams.MediaAttributes.CodecPrivateData");
+					IntPtr extra_data = IntPtr.Zero;
+					uint extra_data_size = 0;
+
+					if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.CodecPrivateData, out str_codec_private_data)) {
+						extra_data_size = (uint) str_codec_private_data.Length / 2;
+						byte [] buf = new byte [extra_data_size]; 
+						
+						for (int i = 0; i < buf.Length; i++)
+							buf[i] = byte.Parse (str_codec_private_data.Substring (i*2, 2), NumberStyles.HexNumber);
+
+						extra_data = Marshal.AllocHGlobal ((int) extra_data_size);
+
+						Marshal.Copy (buf, 0, extra_data, buf.Length);
+					}
 					
-					stream = NativeMethods.video_stream_new (media, fourcc, width, height, (ulong) duration);
+					stream = NativeMethods.video_stream_new (media, fourcc, width, height, (ulong) duration, extra_data, extra_data_size);
 					break;
 					
 				case MediaStreamType.Audio:
