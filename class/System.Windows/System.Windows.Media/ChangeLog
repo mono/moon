@@ -1,5 +1,10 @@
 2009-02-22  Geoff Norton  <gnorton@novell.com>
 
+	* MediaStreamSource.cs: The CodecPrivateData needs to be pushed
+	down for audio as well as video.
+
+2009-02-22  Geoff Norton  <gnorton@novell.com>
+
 	* MediaStreamSource.cs: The CodecPrivateData is extra_data to our pipeline
 	and codec implementation, parse and pass it.
 

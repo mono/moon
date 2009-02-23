@@ -338,6 +338,8 @@ namespace System.Windows.Media
 				string str_fourcc, str_codec_private_data;
 				uint width, height;
 				int fourcc;
+				IntPtr extra_data = IntPtr.Zero;
+				uint extra_data_size = 0;
 				
 				if (stream_description == null)
 					throw new ArgumentNullException ("availableMediaStreams");
@@ -368,9 +370,6 @@ namespace System.Windows.Media
 					} else {
 						throw new ArgumentException ("availableMediaStreams.MediaAttributes.Height");
 					}
-					
-					IntPtr extra_data = IntPtr.Zero;
-					uint extra_data_size = 0;
 
 					if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.CodecPrivateData, out str_codec_private_data)) {
 						extra_data_size = (uint) str_codec_private_data.Length / 2;
@@ -396,12 +395,21 @@ namespace System.Windows.Media
 							throw new ArgumentOutOfRangeException ("availableMediaStreams.MediaAttributes.CodecPrivateData", str_codec_private_data);
 						
 						wave = new WAVEFORMATEX (str_codec_private_data);
+						extra_data_size = (uint) str_codec_private_data.Length / 2;
+						byte [] buf = new byte [extra_data_size]; 
+						
+						for (int i = 0; i < buf.Length; i++)
+							buf[i] = byte.Parse (str_codec_private_data.Substring (i*2, 2), NumberStyles.HexNumber);
+
+						extra_data = Marshal.AllocHGlobal ((int) extra_data_size);
+
+						Marshal.Copy (buf, 0, extra_data, buf.Length);
 					} else {
 						// CodecPrivateData is required for audio
 						throw new ArgumentException ("availableMediaStreams.MediaAttributes.CodecPrivateData");
 					}
 					
-					stream = NativeMethods.audio_stream_new (media, wave.FormatTag, wave.BitsPerSample, wave.BlockAlign, (int) wave.SamplesPerSec, wave.Channels, (int) wave.AvgBytesPerSec * 8);
+					stream = NativeMethods.audio_stream_new (media, wave.FormatTag, wave.BitsPerSample, wave.BlockAlign, (int) wave.SamplesPerSec, wave.Channels, (int) wave.AvgBytesPerSec * 8, extra_data, extra_data_size);
 					break;
 					
 				case MediaStreamType.Script:
