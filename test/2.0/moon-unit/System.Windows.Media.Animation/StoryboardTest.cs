@@ -609,7 +609,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			child = new Storyboard ();
 			animation = new DoubleAnimation { Duration = new Duration (TimeSpan.FromSeconds (2)), From = 10, To = 100 };
 			Storyboard.SetTargetName (animation, "B");
-			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
+			Storyboard.SetTargetProperty (animation, new PropertyPath (FrameworkElement.WidthProperty));
 
 			child.Children.Add (animation);
 			sb.Children.Add (child);
