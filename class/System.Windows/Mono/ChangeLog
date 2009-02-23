@@ -1,3 +1,7 @@
+2009-02-23  Jackson Harper  <jackson@ximian.com>
+
+	* MoonlightValueConverter.cs: Handle enums.
+
 2009-02-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* NativeDependencyObjectHelper.cs (CreateObject): Handle
