@@ -62,6 +62,8 @@ MultiScaleImage::MultiScaleImage ()
 MultiScaleImage::~MultiScaleImage ()
 {
 	DownloaderAbort ();
+	if (cache)
+		g_object_unref (cache);
 }
 
 void
@@ -246,22 +248,14 @@ expand_rgb_to_argb (GdkPixbuf *pixbuf, int *stride)
 	return data;
 }
 
-static char *
-to_key (int subimage_id, int layer, int x, int y)
-{
-	char key[32];
-	sprintf (key, "%dx%dx%dx%d", subimage_id, layer, x, y);
-	return g_strdup (key);
-}
-
 bool
-MultiScaleImage::cache_contains (int layer, int x, int y, int subimage_id ,bool empty_tiles)
+MultiScaleImage::cache_contains (const char* filename, bool empty_tiles)
 {
 	//empty_tiles = TRUE means that this will return true if a tile is present, but NULL
 	if (empty_tiles)
-		return g_hash_table_lookup_extended (cache, to_key (subimage_id, layer, x, y), NULL, NULL);
+		return g_hash_table_lookup_extended (cache, filename, NULL, NULL);
 	else
-		return g_hash_table_lookup (cache, to_key (subimage_id, layer, x, y)) != NULL;
+		return g_hash_table_lookup (cache, filename) != NULL;
 }
 
 void
@@ -383,7 +377,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				for (j = (int)((MAX(msi_y, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
 					//LOG_MSI ("TILE %d %d %d %d\n", sub_image->id, from_layer, i, j);
 					count++;
-					if (cache_contains (from_layer, i, j, sub_image->id, false))
+					if (cache_contains ((const char*)source->get_tile_func (from_layer, i, j, sub_image->source), false))
 						found ++;
 				}
 			}
@@ -405,7 +399,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			int i, j;
 			for (i = (int)((MAX(msi_x, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
 				for (j = (int)((MAX(msi_y, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
-					cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (sub_image->id, layer_to_render, i, j));
+					cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, (const char*)source->get_tile_func (layer_to_render, i, j, sub_image->source));
 					if (!image)
 						continue;
 					LOG_MSI ("rendering %d %d %d %d\n", sub_image->id, layer_to_render, i, j);
@@ -460,17 +454,15 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			int i, j;
 			for (i = (int)((MAX(msi_x, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
 				for (j = (int)((MAX(msi_y, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
-					if (!cache_contains (from_layer, i, j, sub_image->id, true)) {
-						context = to_key (sub_image->id, from_layer, i, j);
-
-						const char* ret = g_strdup ((const char*)source->get_tile_func (from_layer, i, j, sub_image->source));
-						if (ret) {
+					if (!cache_contains ((const char*)source->get_tile_func (from_layer, i, j, sub_image->source), true)) {
+						context = g_strdup ((const char*)source->get_tile_func (from_layer, i, j, sub_image->source));
+						if (context) {
 							downloading = true;
-							DownloadUri (ret);
+							DownloadUri (context);
 							return;
-						} else {
-							LOG_MSI ("caching a NULL %s\n", context);
-							g_hash_table_insert (cache, g_strdup(context), NULL);
+//						} else {
+//							LOG_MSI ("caching a NULL %s\n", context);
+//							g_hash_table_insert (cache, g_strdup(context), NULL);
 						}
 					}
 				}
@@ -589,7 +581,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
 			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_w && j * v_tile_h < im_h; j++) {
 				count++;
-				if (cache_contains (from_layer, i, j, 0, false))
+				if (cache_contains ((const char*)source->get_tile_func (from_layer, i, j, source), false))
 					found ++;
 			}
 		}
@@ -610,7 +602,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render);
 		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
 			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_w && j * v_tile_h < im_h; j++) {
-				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, to_key (0, layer_to_render, i, j));
+				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, (const char*)source->get_tile_func (layer_to_render, i, j, source));
 				if (!image)
 					continue;
 				LOG_MSI ("rendering %d %d %d\n", layer_to_render, i, j);
@@ -650,17 +642,15 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 
 		for (i = MAX(0, (int)((double)vp_ox * im_w / (double)v_tile_w)); i * v_tile_w < vp_ox * im_w + vp_w * im_w && i * v_tile_w < im_w; i++) {
 			for (j = MAX(0, (int)((double)vp_oy * im_h / (double)v_tile_h)); j * v_tile_h < vp_oy * im_h + vp_h * im_w && j * v_tile_h < im_h; j++) {
-				if (!cache_contains (from_layer, i, j, 0, true)) {
-					context = to_key (0, from_layer, i, j);
-				
-					const char* ret = g_strdup ((const char*)source->get_tile_func (from_layer, i, j, source));
-					if (ret) {
+				if (!cache_contains ((const char*)source->get_tile_func (from_layer, i, j, source), true)) {
+					context = g_strdup ((const char*)source->get_tile_func (from_layer, i, j, source));
+					if (context) {
 						downloading = true;
-						DownloadUri (ret);
+						DownloadUri (context);
 						return;
-					} else {
-						LOG_MSI ("caching a NULL %s\n", context);
-						g_hash_table_insert (cache, g_strdup(context), NULL);
+//					} else {
+//						LOG_MSI ("caching a NULL %s\n", context);
+//						g_hash_table_insert (cache, g_strdup(context), NULL);
 					}
 				}
 			}
