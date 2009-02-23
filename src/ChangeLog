@@ -1,3 +1,8 @@
+2009-02-23  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (value_from_str): handle Type::OBJECT here by just
+	assuming the value is a string.  Fixes Tag.htm.
+
 2009-02-23  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: Render () in relative coordinates

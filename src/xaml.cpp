@@ -2901,6 +2901,14 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	}
 	
 	switch (type) {
+	case Type::OBJECT: {
+		// not much more can do here, unless we want to try to
+		// probe str to see if it's actually meant to be a
+		// specific type.  just assume it's a string.
+		*v = new Value (str);
+		break;
+	}
+
 	case Type::BOOL: {
 		bool b;
 		if (!g_ascii_strcasecmp ("true", str))
