@@ -303,7 +303,7 @@ get_stack_trace_prefix (const char* prefix)
 
 		char* frame = addr2line (ip);
 		
-		if (frame == NULL)
+		if (frame == NULL && mono_domain_get ())
 			frame = get_managed_frame (ip);
 		
 		if (frame == NULL || strlen (frame) == 0 || frame [0] == '?') {

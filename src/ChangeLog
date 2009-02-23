@@ -11,6 +11,11 @@
 	* xaml.cpp (value_from_str): handle Type::OBJECT here by just
 	assuming the value is a string.  Fixes Tag.htm.
 
+2009-02-23  Geoff Norton  <gnorton@novell.com>
+
+	* debug.cpp: Don't go poking around in managed land if we don't have
+	a MonoDomain ()
+
 2009-02-23  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: Render () in relative coordinates
