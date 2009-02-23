@@ -1,3 +1,10 @@
+2009-02-23  Geoff Norton  <gnorton@novell.com>
+
+	* pipeline-ui.cpp: Don't blow up if we've created the codec installer
+	on a zombified surface.
+
+	r: toshok
+
 o2009-02-12  Aaron Bockover  <abockover@novell.com>
 
 	* mediaelement.cpp: if Surface::GetMediaElementEmitEndedOnError is

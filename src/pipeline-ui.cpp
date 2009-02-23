@@ -239,6 +239,11 @@ CodecDownloader::AcceptClicked ()
 
 	CreateDownloader ();
 	
+	if (dl == NULL) {
+		Close ();
+		return;
+	}
+
 	switch (state) {
 	case 0: // initial, waiting for user input
 		SetHeader ("Downloading license agreement...");
@@ -286,9 +291,11 @@ CodecDownloader::CreateDownloader ()
 {
 	if (dl == NULL) {
 		dl = surface->CreateDownloader ();
-		dl->AddHandler (Downloader::DownloadProgressChangedEvent, DownloadProgressChangedHandler, this);
-		dl->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedHandler, this);
-		dl->AddHandler (Downloader::CompletedEvent, DownloadCompletedHandler, this);
+		if (dl != NULL) {
+			dl->AddHandler (Downloader::DownloadProgressChangedEvent, DownloadProgressChangedHandler, this);
+			dl->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedHandler, this);
+			dl->AddHandler (Downloader::CompletedEvent, DownloadCompletedHandler, this);
+		}
 	}
 }
 
