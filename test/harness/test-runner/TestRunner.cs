@@ -62,6 +62,7 @@ namespace MoonlightTests {
 		private IList tests;
 		private bool run_complete;
 		private IEnumerator tests_enumerator;
+		private object tests_lock;
 
 		private string working_dir;
 		private string process_path;
@@ -76,6 +77,7 @@ namespace MoonlightTests {
 			this.working_dir = working_dir;
 
 			tests_enumerator = tests.GetEnumerator ();
+			tests_lock = new object ();
 		}
 
 		ObjectPath IDbusService.GetObjectPath ()
@@ -92,7 +94,8 @@ namespace MoonlightTests {
 
 		public void GetNextTest (out bool available, out string test_path, out int timeout)
 		{
-			lock (tests_enumerator) {
+			Log.WriteLine ("TestRunner.GetNextTest () entering lock");
+			lock (tests_lock) {
 				if (!tests_enumerator.MoveNext ()) {
 					Log.WriteLine ("TestRunner.GetNextTest (): run complete");
 					run_complete = true;
@@ -103,7 +106,9 @@ namespace MoonlightTests {
 				}
 
 				current_test = (Test) tests_enumerator.Current;
+				Log.WriteLine ("TestRunner.GetNextTest () Calling OnBeginTest");
 				OnBeginTest (current_test);
+				Log.WriteLine ("TestRunner.GetNextTest () OnBeginTest complete");
 				
 				test_path = current_test.InputFile;
 				if (!current_test.Remote)
@@ -112,6 +117,7 @@ namespace MoonlightTests {
 
 				available = true;
 			}
+			Log.WriteLine ("TestRunner.GetNextTest () done");
 		}
 
 		//
@@ -121,6 +127,7 @@ namespace MoonlightTests {
 		{
 			if (test_path != Path.GetFileName (current_test.InputFile))
 				Console.WriteLine ("Test complete path does not match current test path.  ({0} vs {1})", test_path, current_test.InputFile);
+			Log.WriteLine ("TestRunner.TestComplete ({0}, {1})", test_path, successful);
 			OnTestComplete (current_test, successful ? TestCompleteReason.Finished : TestCompleteReason.Timedout);
 		}
 
