@@ -244,10 +244,11 @@ protected:
 	virtual ~MediaDecodeFrameClosure () {}
 	
 public:
-	MediaDecodeFrameClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, MediaFrame *frame);
+	MediaDecodeFrameClosure (Media *media, MediaCallback *callback, IMediaDecoder *context, MediaFrame *frame);
 	virtual void Dispose ();
 	
 	MediaFrame *GetFrame () { return frame; }
+	IMediaDecoder *GetDecoder () { return (IMediaDecoder *) GetContext (); }
 };
 
 
@@ -768,6 +769,8 @@ private:
 	MoonPixelFormat pixel_format; // The pixel format this codec outputs. Open () should fill this in.
 	IMediaStream *stream;
 		
+	static MediaResult DecodeFrameCallback (MediaClosure *closure);
+	
 protected:
 	virtual ~IMediaDecoder () {}
 

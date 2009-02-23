@@ -1899,6 +1899,27 @@ MediaSeekClosure::MediaSeekClosure (Media *media, MediaCallback *callback, IMedi
 }
  
 /*
+ * MediaDecodeFrameClosure
+ */
+
+MediaDecodeFrameClosure::MediaDecodeFrameClosure (Media *media, MediaCallback *callback, IMediaDecoder *context, MediaFrame *frame)
+	: MediaClosure (media, callback, context)
+{
+	this->frame = frame;
+	this->frame->ref ();
+}
+
+void
+MediaDecodeFrameClosure::Dispose ()
+{
+	if (frame) {
+		frame->unref ();
+		frame = NULL;
+	}
+	MediaClosure::Dispose ();
+}
+
+/*
  * MediaGetFrameClosure
  */
 
@@ -2590,8 +2611,8 @@ MediaFrame::MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, gu
 	this->buflen = buflen;
 	this->pts = pts;
 	
-	if (buflen > 4) {
-		printf ("MediaFrame::MediaFrame () buffer: ");
+	if (buflen > 4 && false) {
+		printf ("MediaFrame::MediaFrame () %s buffer: ", stream->GetStreamTypeName ());
 		for (int i = 0; i < 4; i++)
 			printf (" 0x%x", buffer [i]);
 		printf ("\n");
@@ -2956,12 +2977,28 @@ IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 	frame->stream->DecPendingFrameCount ();
 }
 
+MediaResult
+IMediaDecoder::DecodeFrameCallback (MediaClosure *c)
+{
+	MediaDecodeFrameClosure *closure = (MediaDecodeFrameClosure *) c;
+	closure->GetDecoder ()->DecodeFrameAsync (closure->GetFrame ());
+	return MEDIA_SUCCESS;
+}
+
 void
 IMediaDecoder::DecodeFrameAsync (MediaFrame *frame)
 {
 	LOG_PIPELINE ("IMediaDecoder::DeocodeFrameAsync (%p)\n", frame);
 	
 	g_return_if_fail (frame != NULL);
+	g_return_if_fail (media != NULL);
+	
+	if (!media->InMediaThread ()) {
+		MediaClosure *closure = new MediaDecodeFrameClosure (media, DecodeFrameCallback, this, frame);
+		media->EnqueueWork (closure);
+		closure->unref ();
+		return;
+	}
 	
 	DecodeFrameAsyncInternal (frame);
 }
