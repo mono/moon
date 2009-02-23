@@ -245,6 +245,22 @@ namespace MoonTest.System.Windows.Browser
 			Assert.IsFalse (b.OnApplyTemplateCalled, "2");
 		}
 
+		[TestMethod]
+		public void TypeTest ()
+		{
+			object a;
+
+			a = window.Eval ("a = 1;");
+			Assert.IsInstanceOfType (a, typeof (Double), "should be  a Double");
+			a = window.Eval ("a = 'hmmm';");
+			Assert.IsInstanceOfType (a, typeof (String), "should be  a String");
+			a = window.Eval ("a = window;");
+			Assert.IsInstanceOfType (a, typeof (HtmlWindow), "should be a HtmlWindow");
+			a = window.Eval ("a = window.document;");
+			Assert.IsInstanceOfType (a, typeof (HtmlDocument), "should be a HtmlDocument");
+			a = window.Eval ("a = window.document.body;");
+			Assert.IsInstanceOfType (a, typeof (HtmlElement), "should be a HtmlElement");
+		}
 	}
 
 	public class Calculator {

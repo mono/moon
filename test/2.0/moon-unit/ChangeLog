@@ -1,3 +1,8 @@
+2009-02-23  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptableTypeTest.cs: Add tests for
+	special handling of js types.
+
 2009-02-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* System.Windows/PropertyPathTest.cs: Added new unit tests for
