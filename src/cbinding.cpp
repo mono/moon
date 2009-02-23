@@ -3858,9 +3858,9 @@ video_brush_new (void)
  * VideoStream
  **/
 VideoStream *
-video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration)
+video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_len)
 {
-	return new VideoStream (media, codec_id, width, height, duration);
+	return new VideoStream (media, codec_id, width, height, duration, extra_data, extra_data_len);
 }
 
 

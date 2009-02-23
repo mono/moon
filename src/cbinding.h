@@ -1715,7 +1715,7 @@ VideoBrush *video_brush_new (void);
  * VideoStream
  **/
 /* @GeneratePInvoke */
-VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration);
+VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_len);
 
 /**
  * VisualBrush

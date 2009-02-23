@@ -1082,7 +1082,7 @@ public:
 	VideoStream (Media *media);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	VideoStream (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration);
+	VideoStream (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size);
 	
 	virtual MediaStreamType GetType () { return MediaTypeVideo; } 
 	guint32 GetBitRate () { return (guint32) bit_rate; }

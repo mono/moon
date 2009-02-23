@@ -3015,7 +3015,7 @@ VideoStream::VideoStream (Media *media) : IMediaStream (Type::VIDEOSTREAM, media
 	width = 0;
 }
 
-VideoStream::VideoStream (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration)
+VideoStream::VideoStream (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size)
 	: IMediaStream (Type::VIDEOSTREAM, media)
 {
 	converter = NULL;
@@ -3027,7 +3027,8 @@ VideoStream::VideoStream (Media *media, int codec_id, guint32 width, guint32 hei
 	this->duration = duration;
 	this->codec_id = codec_id;
 	this->codec = CreateCodec (codec_id);
-	
+	this->extra_data = extra_data;
+	this->extra_data_size = extra_data_size;
 }
 
 VideoStream::~VideoStream ()
