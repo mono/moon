@@ -789,6 +789,7 @@ const char *html_get_element_text (PluginInstance *plugin, const char *element_i
 
 // These are meant to be called by System.Silverlight.dll
 
+bool html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name);
 void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result);
 void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
 void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, uint32_t arg_count, Value *result);

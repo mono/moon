@@ -1,3 +1,9 @@
+2009-02-23  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.[cpp|h]: Add html_object_has_property so managed code
+	can check for properties before trying to get them. Free scriptable
+	objects hashtables.
+
 2009-02-22  Larry Ewing  <lewing@novell.com>
 
 	* plugin-entry.cpp:

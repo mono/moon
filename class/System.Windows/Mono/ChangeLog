@@ -1,3 +1,8 @@
+2009-02-23  Andreia Gaita  <avidigal@novell.com>
+
+	* NativeMethods.cs: Add html_object_has_property so managed code
+	can check for properties before trying to get them.
+
 2009-02-23  Jackson Harper  <jackson@ximian.com>
 
 	* MoonlightValueConverter.cs: Handle enums.

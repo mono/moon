@@ -1,3 +1,7 @@
+2009-02-23  Andreia Gaita  <avidigal@novell.com>
+
+	* WebApplication.cs:  Keep a list of cached objects
+
 2009-02-11  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectGenerator.cs (ValidateType): Fix infinite recursion 

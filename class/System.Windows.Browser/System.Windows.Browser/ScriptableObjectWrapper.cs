@@ -54,7 +54,6 @@ namespace System.Windows.Browser
 		static EventHandlerDelegate add_event = new EventHandlerDelegate (AddEventFromUnmanagedSafe);
 		static EventHandlerDelegate remove_event = new EventHandlerDelegate (RemoveEventFromUnmanagedSafe);
 
-		static Dictionary<IntPtr, WeakReference> scriptableObjects;
 		Dictionary<IntPtr, Delegate> events;
 		Dictionary<string, List<MethodInfo>> methods;
 		Dictionary<string, PropertyInfo> properties;
@@ -69,7 +68,6 @@ namespace System.Windows.Browser
 
 		static ScriptableObjectWrapper ()
 		{
-			scriptableObjects = new Dictionary<IntPtr,WeakReference> ();
 		}
 
 		public ScriptableObjectWrapper () : this(null)
@@ -106,7 +104,7 @@ namespace System.Windows.Browser
 							remove_event);
 			}
 			handle = ScriptableNativeMethods.moonlight_object_to_npobject (moon_handle);
-			scriptableObjects [handle] = new WeakReference(this);
+			WebApplication.CachedObjects [handle] = new WeakReference (this);
 		}
 
 		public void Register (string scriptKey)
@@ -201,6 +199,16 @@ namespace System.Windows.Browser
 			return ScriptableObjectGenerator.Generate (o, false);
 		}
 
+		internal static T CreateInstance<T> (IntPtr ptr)
+		{
+			ConstructorInfo i = typeof(T).GetConstructor (BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
+			                          null, new Type[]{typeof(IntPtr)}, null);
+
+			object o = i.Invoke (new object[]{ptr});
+			WebApplication.CachedObjects[ptr] = o;
+			return (T) o;
+		}
+
 		internal static object ObjectFromValue<T> (Value v)
 		{
 			switch (v.k) {
@@ -219,12 +227,34 @@ namespace System.Windows.Browser
 			case Kind.NPOBJ:
 				// FIXME: Move all of this one caller up
 				Type type = typeof (T);
-				WeakReference reference;
-				if (scriptableObjects.TryGetValue (v.u.p, out reference)) {
-					return (T) reference.Target;
-				} else if (!type.Equals (typeof(object)) && typeof (ScriptObject).IsAssignableFrom (type)) {
-					System.Reflection.ConstructorInfo info = type.GetConstructor (BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new Type[]{typeof(IntPtr)}, null);
-					return (T) info.Invoke (new object[]{v.u.p});
+				if (type.Equals (typeof(IntPtr)))
+				    return v.u.p;
+
+				object reference;
+				if (WebApplication.CachedObjects.TryGetValue (v.u.p, out reference)) {
+					if (reference is WeakReference) {
+						if (((WeakReference)reference).IsAlive)
+							return (T) ((WeakReference)reference).Target;
+						else
+							WebApplication.CachedObjects.Remove (v.u.p);
+					} else {
+						return (T) reference;
+					}
+				}
+
+				if (!type.Equals (typeof(object)) && typeof (ScriptObject).IsAssignableFrom (type)) {
+					return CreateInstance<T> (v.u.p);
+				} else if (type.Equals (typeof(object))) {
+					if (NativeMethods.html_object_has_property (WebApplication.Current.PluginHandle, v.u.p, "nodeType")) {
+						Value val;
+						NativeMethods.html_object_get_property (WebApplication.Current.PluginHandle, v.u.p, "nodeType", out val);
+
+						if (v.u.i32 == 9) // HtmlDocument
+							return CreateInstance<HtmlDocument> (v.u.p);
+						else if (v.u.i32 == 1) //HtmlElement
+							return CreateInstance<HtmlElement> (v.u.p);
+					}
+					return CreateInstance<ScriptObject> (v.u.p);
 				} else
 					return v.u.p;
 			default:

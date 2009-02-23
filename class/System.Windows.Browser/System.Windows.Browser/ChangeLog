@@ -1,5 +1,11 @@
 2009-02-23  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptableObjectWrapper.cs: Add support for returning Html* objects
+	from js. Store all dynamically created objects in a cache, instead of
+	just the ones that are created via RegisterScriptableObject.
+
+2009-02-23  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptObject.cs: Implement GetProperty(int)
 
 2009-02-19  Andreia Gaita  <avidigal@novell.com>

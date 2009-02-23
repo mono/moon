@@ -4083,6 +4083,9 @@ MoonlightScriptableObjectObject::~MoonlightScriptableObjectObject ()
 	}
 	
 	// FIXME: free the properties, events, and methods hashes.
+	g_hash_table_destroy (properties);
+	g_hash_table_destroy (methods);
+	g_hash_table_destroy (events);
 }
 
 bool
@@ -4412,6 +4415,20 @@ enumerate_html_object (NPP npp, NPObject *npobj, int recurse, int initial_recurs
 	g_free (tab2);
 }
 #endif
+
+bool
+html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name)
+{
+	NPP npp = plugin->GetInstance ();
+	NPObject *window = NULL;
+	NPIdentifier identifier = NPN_GetStringIdentifier (name);
+	if (npobj == NULL) {
+		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+		npobj = window;
+	}
+
+	return NPN_HasProperty (npp, npobj, identifier);
+}
 
 void
 html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result)

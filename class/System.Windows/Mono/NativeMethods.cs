@@ -265,6 +265,9 @@ namespace Mono {
 			int /* System.Windows.Browser.MouseButtons */ mouse_button);
 
 		[DllImport ("moonplugin")]
+		public static extern bool html_object_has_property (IntPtr plugin, IntPtr obj, string name);
+
+		[DllImport ("moonplugin")]
 		public static extern void html_object_get_property (IntPtr plugin, IntPtr obj, string name, out Mono.Value result);
 
 		[DllImport ("moonplugin")]

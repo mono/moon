@@ -60,6 +60,11 @@ namespace System.Windows
 			get { return scriptableTypes;}
 		}
 
+		static Dictionary<IntPtr, object> cachedObjects;
+		static internal Dictionary<IntPtr, object> CachedObjects {
+			get { return cachedObjects;}
+		}
+
 		private WebApplication ()
 		{
 			plugin_handle = PluginHost.Handle;
@@ -81,6 +86,7 @@ namespace System.Windows
 			}
 
 			scriptableTypes = new Dictionary<string, Type>();
+			cachedObjects = new Dictionary<IntPtr, object>();
 		}
 
 		void Init ()
