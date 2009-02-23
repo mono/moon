@@ -1,3 +1,8 @@
+2009-02-23  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightContentObject::Invoke): add better
+	error messages on createFromXaml.
+
 2009-02-23  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-class.[cpp|h]: Add html_object_has_property so managed code

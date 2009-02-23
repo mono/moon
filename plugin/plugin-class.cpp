@@ -2504,22 +2504,26 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 
 	case MoonId_CreateFromXaml: {
 		if (!check_arg_list ("s[b]", argCount, args))
-			THROW_JS_EXCEPTION ("createFromXaml");
+			THROW_JS_EXCEPTION ("createFromXaml argException");
 		
 		bool create_namescope = argCount >= 2 ? NPVARIANT_TO_BOOLEAN (args[1]) : false;
 		char *xaml = STRDUP_FROM_VARIANT (args[0]);
 		
 		if (!xaml)
-			THROW_JS_EXCEPTION ("createFromXaml");
+			THROW_JS_EXCEPTION ("createFromXaml argNullException");
 		
 		Type::Kind element_type;
 		XamlLoader *loader = PluginXamlLoader::FromStr (xaml, plugin, plugin->GetSurface());
-		DependencyObject *dep = loader->CreateFromString (xaml, create_namescope, &element_type);
+		MoonError error;
+		DependencyObject *dep = loader->CreateFromStringWithError (xaml, create_namescope, &element_type, &error);
 		delete loader;
 		g_free (xaml);
 		
-		if (!dep)
-			THROW_JS_EXCEPTION ("createFromXaml");
+		if (!dep) {
+			char *msg = g_strdup_printf ("createFromXaml error: %s", error.message);
+			THROW_JS_EXCEPTION (msg);
+			g_free (msg);
+		}
 
 		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, dep);
 		dep->unref ();
