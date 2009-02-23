@@ -1351,6 +1351,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
 	DependencyProperty *prop;
 	bool invalidate = false;
+	int start, length;
 	
 	if (args->GetId () == Control::FontFamilyProperty) {
 		FontFamily *family = args->new_value ? args->new_value->AsFontFamily () : NULL;
@@ -1381,10 +1382,11 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->GetId () == TextBox::SelectedTextProperty) {
 		if (setvalue) {
 			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString () : "";
-			int length = abs (selection_cursor - selection_anchor);
-			int start = MIN (selection_anchor, selection_cursor);
 			gunichar *text;
 			glong textlen;
+			
+			length = abs (selection_cursor - selection_anchor);
+			start = MIN (selection_anchor, selection_cursor);
 			
 			// replace the currently selected text
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
@@ -1401,12 +1403,13 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			}
 		}
 	} else if (args->GetId () == TextBox::SelectionStartProperty) {
-		if (selection_cursor == selection_anchor) {
-			selection_anchor = args->new_value->AsInt32 ();
-			selection_cursor = selection_anchor;
-		} else {
-			selection_anchor = args->new_value->AsInt32 ();
-		}
+		length = abs (selection_cursor - selection_anchor);
+		start = args->new_value->AsInt32 ();
+		
+		// When set programatically, anchor is always the
+		// start and cursor is always the end
+		selection_cursor = start + length;
+		selection_anchor = start;
 		
 		changed = TextBoxModelChangedSelection;
 		emit |= SELECTION_CHANGED;
@@ -1417,7 +1420,14 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 			SyncSelectedText ();
 		}
 	} else if (args->GetId () == TextBox::SelectionLengthProperty) {
-		selection_cursor = selection_anchor + args->new_value->AsInt32 ();
+		start = MIN (selection_anchor, selection_cursor);
+		length = args->new_value->AsInt32 ();
+		
+		// When set programatically, anchor is always the
+		// start and cursor is always the end
+		selection_cursor = start + length;
+		selection_anchor = start;
+		
 		changed = TextBoxModelChangedSelection;
 		emit |= SELECTION_CHANGED;
 		cursor_column = -1;
@@ -1717,6 +1727,7 @@ TextBoxView::BeginCursorBlink ()
 {
 	if (blink_timeout == 0) {
 		ConnectBlinkTimeout (CURSOR_BLINK_ON_MULTIPLIER);
+		UpdateCursor (true);
 		ShowCursor ();
 	}
 }

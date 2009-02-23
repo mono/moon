@@ -1,3 +1,10 @@
+2009-02-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxView::BeginCursorBlink): Call
+	UpdateCursor().
+	(TextBox::OnPropertyChanged): Keep proper selection_anchor/cursor
+	state.
+
 2009-02-23  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: remove some debugs, clean the render loops,
