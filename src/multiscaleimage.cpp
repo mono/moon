@@ -44,6 +44,8 @@
 #define ENDTIMER(id,str)
 #endif
 
+void _cairo_surface_destroy (void* surface) {cairo_surface_destroy((cairo_surface_t*)surface);}
+
 MultiScaleImage::MultiScaleImage ()
 {
 //	static bool init = true;
@@ -55,7 +57,7 @@ MultiScaleImage::MultiScaleImage ()
 	source = NULL;
 	downloader = NULL;
 	filename = NULL;
-	cache = g_hash_table_new (g_str_hash, g_str_equal);
+	cache = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, _cairo_surface_destroy);
 	downloading = false;
 }
 
@@ -63,7 +65,8 @@ MultiScaleImage::~MultiScaleImage ()
 {
 	DownloaderAbort ();
 	if (cache)
-		g_object_unref (cache);
+		g_hash_table_destroy (cache);
+	cache = NULL;
 }
 
 void
@@ -463,9 +466,6 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 							downloading = true;
 							DownloadUri (context);
 							return;
-//						} else {
-//							LOG_MSI ("caching a NULL %s\n", context);
-//							g_hash_table_insert (cache, g_strdup(context), NULL);
 						}
 					}
 				}
@@ -477,7 +477,6 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 void
 MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 {
-//FIXME: only render region
 	LOG_MSI ("MSI::Render\n");
 	//if there's a downloaded file pending, cache it
 	if (filename) {
@@ -542,11 +541,9 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		return;
 	}
 
-
 	double msi_w = GetActualWidth ();
 	double msi_h = GetActualHeight ();
 	double vp_w = GetViewportWidth ();
-	//double vp_h = vp_w / GetAspectRatio ();
 	double msi_ar = GetAspectRatio ();
 	double im_w = (double) source->GetImageWidth ();
 	double im_h = (double) source->GetImageHeight ();
@@ -554,9 +551,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	int tile_height = source->GetTileHeight ();
 	double vp_ox = GetViewportOrigin()->x;
 	double vp_oy = GetViewportOrigin()->y;
-//printf ("vp %f %f %f %f\n", vp_ox, vp_oy, vp_w, vp_h);
-//printf ("image %f %f\n", im_w, im_h);
-//printf ("widget %f %f\n", w, h);
 
 	int layers;
 	frexp (MAX (im_w, im_h), &layers);
@@ -583,8 +577,9 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) / im_w;
 
 		int i, j;
-		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < 1.0; i++) {
-			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < vp_oy + vp_w / msi_ar && j * v_tile_h < 1.0 / msi_ar; j++) {
+		//This double loop iterate over the displayed part of the image and find all (i,j) being top-left corners of tiles
+		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
+			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_ar, 1.0 / msi_ar); j++) {
 				count++;
 				if (cache_contains ((const char*)source->get_tile_func (from_layer, i, j, source), false))
 					found ++;
@@ -605,8 +600,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		int i, j;
 		double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render) / im_w;
 		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render) / im_w;
-		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < 1.0; i++) {
-			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < vp_oy + vp_w / msi_ar && j * v_tile_h < 1.0 / msi_ar; j++) {
+		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
+			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_ar, 1.0 / msi_ar); j++) {
 				const char* tile = (const char*)source->get_tile_func (layer_to_render, i, j, source);
 				if (!tile)
 					continue;
@@ -621,12 +616,10 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 				cairo_rectangle (cr, 0, 0, msi_w, msi_h);
 				cairo_scale (cr, msi_w / (vp_w * im_w), msi_w / (vp_w * im_w)); //scale to viewport
 				cairo_translate (cr, im_w *(-vp_ox + i * v_tile_w), im_w * (-vp_oy + j * v_tile_h));
-				//cairo_scale (cr, im_w / (double)*p_w, im_h / (double)*p_h); //scale to image size
 				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
 				cairo_set_source_surface (cr, image, 0, 0);
 				cairo_fill (cr);
 				cairo_restore (cr);
-
 			}
 		}
 		layer_to_render++;
@@ -647,8 +640,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) / im_w;
 		int i, j;
 
-		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < vp_ox + vp_w && i * v_tile_w < 1.0; i++) {
-			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < vp_oy + vp_w / msi_ar && j * v_tile_h < 1.0 / msi_ar; j++) {
+		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
+			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_ar, 1.0 / msi_ar); j++) {
 				context = (char*)source->get_tile_func (from_layer, i, j, source);
 				if (!cache_contains (context, true))
 					if (context) {
@@ -703,7 +696,7 @@ void
 MultiScaleImage::DownloaderAbort ()
 {
 	if (downloader) {
-//		downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
+		downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
 		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
 		downloader->SetWriteFunc (NULL, NULL, NULL);
 		downloader->Abort ();

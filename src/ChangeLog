@@ -1,3 +1,8 @@
+2009-02-23  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: remove some debugs, clean the render loops,
+	cleanly dispose the hashtable and its components
+
 2009-02-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::GetCursor): Round the cursor's x
