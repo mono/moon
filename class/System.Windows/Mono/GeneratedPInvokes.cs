@@ -1740,8 +1740,8 @@ namespace Mono {
 		public extern static IntPtr video_brush_new ();
 
 		[DllImport ("moon")]
-		// VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration);
-		public extern static IntPtr video_stream_new (IntPtr media, int codec_id, uint width, uint height, ulong duration);
+		// VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_len);
+		public extern static IntPtr video_stream_new (IntPtr media, int codec_id, uint width, uint height, ulong duration, IntPtr extra_data, uint extra_data_len);
 
 		[DllImport ("moon")]
 		// VisualBrush *visual_brush_new ();
