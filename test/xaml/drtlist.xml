@@ -27,6 +27,8 @@
 	inputFile="test-animation-ellipse-stroke.xaml"
 	masterFile10="../harness/masters/test-animation-ellipse-strokeMaster.tif"
 	captureSpecifier="300,15"
+        knownFailure="True"
+        knownFailureReason="Random test flapping"
         categories="animation"
    />
    <Test id="8"
@@ -1008,6 +1010,8 @@
 	inputFile="test-event-argcount.html"
 	masterFile10="None"
 	categories="moonbuilder"
+        knownFailure="True"
+        knownFailureReason="Random test flapping"
 	timeout="120000"
    />
    <Test id="10210"
