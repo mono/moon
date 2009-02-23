@@ -1934,14 +1934,17 @@ TextBoxView::Layout (cairo_t *cr, Size constraint)
 void
 TextBoxView::Paint (cairo_t *cr)
 {
-	Brush *fg;
-	
 	layout->Render (cr, GetOriginPoint (), Point ());
 	
-	if (cursor_visible && (fg = textbox->GetForeground ())) {
-		fg->SetupBrush (cr, cursor);
+	if (cursor_visible) {
+		// set the color to black
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
+		
+		// draw the cursor rectangle
 		cairo_rectangle (cr, cursor.x, cursor.y, cursor.width, cursor.height);
-		fg->Fill (cr);
+		
+		// fill
+		cairo_fill (cr);
 	}
 }
 

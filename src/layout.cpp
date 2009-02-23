@@ -1722,5 +1722,5 @@ TextLayout::GetCursor (const Point &offset, int index)
 		}
 	}
 	
-	return Rect (x0, y0, 1.0, height);
+	return Rect (round (x0), y0, 1.0, height);
 }

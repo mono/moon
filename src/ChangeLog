@@ -1,3 +1,11 @@
+2009-02-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::GetCursor): Round the cursor's x
+	position to the nearest whole number (makes the cursor look
+	nicer).
+
+	* textbox.cpp (TextBoxView::Paint): Always paint the cursor black.
+
 2009-02-23  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (value_from_str): handle Type::OBJECT here by just
