@@ -1948,14 +1948,30 @@ TextBoxView::Paint (cairo_t *cr)
 	layout->Render (cr, GetOriginPoint (), Point ());
 	
 	if (cursor_visible) {
+		cairo_antialias_t alias = cairo_get_antialias (cr);
+		double h = round (cursor.height);
+		double x = cursor.x;
+		double y = cursor.y;
+		
+		// disable antialiasing
+		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+		
 		// set the color to black
 		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
 		
-		// draw the cursor rectangle
-		cairo_rectangle (cr, cursor.x, cursor.y, cursor.width, cursor.height);
+		// snap 'x' to the half-pixel grid (to try and get a sharp 1-pixel-wide line)
+		cairo_user_to_device (cr, &x, &y);
+		x = trunc (x) + 0.5; y = trunc (y);
+		cairo_device_to_user (cr, &x, &y);
 		
-		// fill
-		cairo_fill (cr);
+		// draw the cursor
+		cairo_set_line_width (cr, 1.0);
+		cairo_move_to (cr, x, y);
+		cairo_line_to (cr, x, y + h);
+		cairo_stroke (cr);
+		
+		// restore antialiasing
+		cairo_set_antialias (cr, alias);
 	}
 }
 

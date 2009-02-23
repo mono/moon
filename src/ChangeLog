@@ -1,5 +1,11 @@
 2009-02-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBoxView::Paint): Try to draw a crisp
+	1-pixel-wide line for the cursor... apparently cairo has forsaken
+	1-pixel-wide lines.
+
+2009-02-23  Jeffrey Stedfast  <fejj@novell.com>
+
 	* layout.cpp (TextLayout::GetCursor): Revert previous round()
 	change, this isn't the right way to do it.
 
