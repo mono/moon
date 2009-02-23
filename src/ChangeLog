@@ -1,5 +1,8 @@
 2009-02-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (TextLayout::GetCursor): Revert previous round()
+	change, this isn't the right way to do it.
+
 	* textbox.cpp (TextBoxView::BeginCursorBlink): Call
 	UpdateCursor().
 	(TextBox::OnPropertyChanged): Keep proper selection_anchor/cursor
