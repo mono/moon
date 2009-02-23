@@ -1,3 +1,8 @@
+2009-02-23  Jackson Harper  <jackson@ximian.com>
+
+	* BindingExpressionBase.cs: If the user supplied ValueConverter
+	doesn't work, try using our value converter.
+
 2009-02-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Binding.cs: Throw ArgumentNullException if path is null.

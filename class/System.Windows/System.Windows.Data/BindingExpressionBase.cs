@@ -172,15 +172,26 @@ namespace System.Windows.Data {
 			}
 
 			IValueConverter converter = Binding.Converter;
-
-			if (converter == null)
+			bool defined_converter = true;
+			if (converter == null) {
+				defined_converter = false;
 				converter = new MoonlightValueConverter();
+			}
 
 			cachedValue = converter.Convert (cachedValue,
 							 Property.PropertyType,
 							 Binding.ConverterParameter,
 							 Binding.ConverterCulture ?? enUS);
 
+			if (defined_converter && !cachedValue.GetType ().IsSubclassOf (Property.PropertyType)) {
+				converter = new MoonlightValueConverter ();
+
+				cachedValue = converter.Convert (cachedValue,
+							 Property.PropertyType,
+							 Binding.ConverterParameter,
+							 Binding.ConverterCulture ?? enUS);
+			}
+			
 			return cachedValue;
 		}
 
