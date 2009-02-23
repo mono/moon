@@ -1,3 +1,9 @@
+2009-02-23  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.h:
+	* dependencyproperty.g.cpp: Tag is a System.Object, not a
+	  string.
+
 2009-02-22  Geoff Norton  <gnorton@novell.com>
 
 	* pipeline.cpp|h: Add extra_data from managed for AudioStream too

@@ -409,7 +409,7 @@ public:
 	const static int CursorProperty;
  	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int ResourcesProperty;
- 	/* @PropertyType=string,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object,GenerateAccessors */
+ 	/* @PropertyType=object,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object */
 	const static int TagProperty;
  	/* @PropertyType=TriggerCollection,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int TriggersProperty;
@@ -441,9 +441,6 @@ public:
 
 	ResourceDictionary* GetResources();
 	void SetResources (ResourceDictionary *value);
-
-	const char *GetTag ();
-	void SetTag (const char *value);
 
 	TriggerCollection *GetTriggers ();
 	void SetTriggers (TriggerCollection* value);

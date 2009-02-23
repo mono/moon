@@ -322,7 +322,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::UIELEMENT, "Visibility", new Value (VisibilityVisible), Type::INT32);
 	DependencyProperty::Register (this, Type::UIELEMENT, "UseLayoutRounding", new Value (true), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::UIELEMENT, "Triggers", NULL, Type::TRIGGER_COLLECTION, true, false, false, false, NULL, NULL, false, false);
-	DependencyProperty::Register (this, Type::UIELEMENT, "Tag", Type::STRING);
+	DependencyProperty::Register (this, Type::UIELEMENT, "Tag", Type::OBJECT);
 	DependencyProperty::RegisterFull (this, Type::UIELEMENT, "Resources", NULL, Type::RESOURCE_DICTIONARY, true, false, false, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::UIELEMENT, "RenderTransform", new Value (new MatrixTransform ()), Type::TRANSFORM);
 	DependencyProperty::Register (this, Type::UIELEMENT, "RenderTransformOrigin", new Value (Point (0,0)), Type::POINT);
@@ -4019,19 +4019,6 @@ void
 UIElement::SetTriggers (TriggerCollection *value)
 {
 	SetValue (UIElement::TriggersProperty, Value (value));
-}
-
-const char *
-UIElement::GetTag ()
-{
-	Value *value = GetValue (UIElement::TagProperty);
-	return value ? value->AsString () : NULL;
-}
-
-void
-UIElement::SetTag (const char *value)
-{
-	SetValue (UIElement::TagProperty, Value (value));
 }
 
 ResourceDictionary *
