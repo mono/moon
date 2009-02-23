@@ -1,3 +1,7 @@
+2009-02-22  Geoff Norton  <gnorton@novell.com>
+
+	* pipeline.cpp|h: Add extra_data from managed for AudioStream too
+
 2009-02-22 Geoff Norton  <gnorton@novell.com>
 
 	* cbinding.cpp|h: Regen

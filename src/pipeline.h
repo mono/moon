@@ -1102,7 +1102,7 @@ public:
 	AudioStream (Media *media);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	AudioStream (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate);
+	AudioStream (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, gpointer extra_data, guint32 extra_data_size);
 	
 	virtual MediaStreamType GetType () { return MediaTypeAudio; }
 	guint32 GetBitRate () { return (guint32) bit_rate; }

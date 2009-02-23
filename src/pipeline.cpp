@@ -3485,7 +3485,7 @@ AudioStream::AudioStream (Media *media)
 {
 }
 
-AudioStream::AudioStream (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate)
+AudioStream::AudioStream (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, gpointer extra_data, guint32 extra_data_size)
 	: IMediaStream (Type::AUDIOSTREAM, media)
 {
 	this->codec_id = codec_id;
@@ -3495,6 +3495,8 @@ AudioStream::AudioStream (Media *media, int codec_id, int bits_per_sample, int b
 	this->sample_rate = sample_rate;
 	this->channels = channels;
 	this->bit_rate = bit_rate;
+	this->extra_data = extra_data;
+	this->extra_data_size = extra_data_size;
 }
 
 
