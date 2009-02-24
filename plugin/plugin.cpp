@@ -393,10 +393,9 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	background = NULL;
 	id = NULL;
 
-	media_element_emit_ended_on_error = false;
-
+	relaxed_media_mode = false;
 	windowless = false;
-	xembed_supported = FALSE;
+	xembed_supported = false;
 
 	bridge = NULL;
 
@@ -562,8 +561,9 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		else if (!g_ascii_strcasecmp (argn [i], "id")) {
 			id = g_strdup (argv [i]);
 		}
-		else if (!g_ascii_strcasecmp (argn [i], "__mediaElementEmitEndedOnError")) {
-			media_element_emit_ended_on_error = !g_ascii_strcasecmp (argv [i], "true");
+		else if (!g_ascii_strcasecmp (argn [i], "moonlight-relaxed-media-mode")) {
+			relaxed_media_mode = !g_ascii_strcasecmp (argv [i], "true");
+			g_debug ("Enabling relaxed mode");
 		} 
 		else {
 		  //fprintf (stderr, "unhandled attribute %s='%s' in PluginInstance::Initialize\n", argn[i], argv[i]);
@@ -828,7 +828,7 @@ PluginInstance::CreateWindow ()
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);
 	surface->SetDownloaderContext (this);
-	surface->SetMediaElementEmitEndedOnError (media_element_emit_ended_on_error);
+	surface->SetRelaxedMediaMode (relaxed_media_mode);
 	
 	//SetPageURL ();
 	UpdateSource ();

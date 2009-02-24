@@ -1031,16 +1031,7 @@ ASXDemuxer::ReadHeader ()
 MediaResult
 ASXDemuxerInfo::Supports (IMediaSource *source)
 {
-	char buffer[4];
-	bool result;
-	
-	if (!source->Peek ((guint8 *) buffer, 4))
-		return MEDIA_FAIL;
-	
-	result = !g_ascii_strncasecmp (buffer, "<asx", 4) ||
-		!g_ascii_strncasecmp (buffer, "[Ref", 4);
-
-	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
+	return PlaylistParser::IsValidPlaylist (source) ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
 
 IMediaDemuxer *

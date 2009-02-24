@@ -195,8 +195,8 @@ public:
 	Downloader *CreateDownloader ();
 	static Downloader *CreateDownloader (UIElement *element);
 
-	bool GetMediaElementEmitEndedOnError (void) { return media_element_emit_ended_on_error; }
-	void SetMediaElementEmitEndedOnError (bool value) { media_element_emit_ended_on_error = value; }
+	bool GetRelaxedMediaMode (void) { return relaxed_media_mode; }
+	void SetRelaxedMediaMode (bool value) { relaxed_media_mode = value; }
 
 	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data);
 	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data);
@@ -319,9 +319,9 @@ private:
 	
 	GdkEvent *mouse_event;
 
-	// Variable to determine whether MediaElement should emit Failed or Ended
-	// when a playlist entry is encountered that cannot be demuxed (abock)
-	bool media_element_emit_ended_on_error;
+	// Relaxed mode enables compatibility quirks for handling
+	// things like broken ASX playlists (Moonshine, abock)
+	bool relaxed_media_mode;
 	
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;

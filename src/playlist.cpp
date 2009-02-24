@@ -976,6 +976,18 @@ time_value_from_str (PlaylistParser *parser, const char *str, TimeSpan *res)
 	return true;
 }
 
+static bool
+is_valid_protocol (const char *proto)
+{
+	return proto != NULL && (
+		g_ascii_strncasecmp (proto, "http", 4) == 0 || 
+		g_ascii_strncasecmp (proto, "https", 5) == 0 ||
+		g_ascii_strncasecmp (proto, "mms", 3) == 0 ||
+		g_ascii_strncasecmp (proto, "rtsp", 4) == 0 ||
+		g_ascii_strncasecmp (proto, "rstpt", 5) == 0
+	);
+}
+
 void
 PlaylistParser::OnStartElement (const char *name, const char **attrs)
 {
@@ -1039,13 +1051,7 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 					uri = new Uri ();
 					if (!uri->Parse (attrs [i+1], true)) {
 						failed = true;
-					} else if (uri->protocol == NULL) {
-						failed = true;
-					} else if (g_ascii_strcasecmp (uri->protocol, "http") && 
-						   g_ascii_strcasecmp (uri->protocol, "https") && 
-						   g_ascii_strcasecmp (uri->protocol, "mms") &&
-						   g_ascii_strcasecmp (uri->protocol, "rtsp") && 
-						   g_ascii_strcasecmp (uri->protocol, "rstpt")) {
+					} else if (!is_valid_protocol (uri->protocol)) {
 						failed = true;
 					}
 
@@ -1208,13 +1214,20 @@ PlaylistParser::OnStartElement (const char *name, const char **attrs)
 	case PlaylistNode::Repeat:
 	case PlaylistNode::Param:
 	case PlaylistNode::Event:
-		ParsingError (new ErrorEventArgs (MediaError, 3006, "Unsupported ASX element"));
+		if (element->GetSurface ()->GetRelaxedMediaMode ()) {
+			LOG_PLAYLIST ("PlaylistParser::OnStartElement ('%s', %p): "
+				"Unsupported kind: %d, ignoring in relaxed mode\n", name, attrs, kind);
+		} else {
+			ParsingError (new ErrorEventArgs (MediaError, 3006, "Unsupported ASX element"));
+		}
 		break;
 	case PlaylistNode::Root:
 	case PlaylistNode::Unknown:
 	default:
 		LOG_PLAYLIST ("PlaylistParser::OnStartElement ('%s', %p): Unknown kind: %d\n", name, attrs, kind);
-		ParsingError (new ErrorEventArgs (MediaError, 3004, "Invalid ASX element"));
+		if (!element->GetSurface ()->GetRelaxedMediaMode ()) {
+			ParsingError (new ErrorEventArgs (MediaError, 3004, "Invalid ASX element"));
+		}
 		break;
 	}
 }
@@ -1305,6 +1318,12 @@ PlaylistParser::OnEndElement (const char *name)
 		}
 		break;
 	default:
+		if (kind == PlaylistNode::Param && element->GetSurface ()->GetRelaxedMediaMode ()) {
+			if (!AssertParentKind (PlaylistNode::Asx))
+				break;
+			break;		
+		}
+
 		LOG_PLAYLIST ("PlaylistParser::OnEndElement ('%s'): Unknown kind %d.\n", name, kind);
 		ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
 		break;
@@ -1359,7 +1378,7 @@ PlaylistParser::IsASX3 (IMediaSource *source)
 	if (!source->Peek (buffer, asx_header_length))
 		return false;
 		
-	return strncmp (asx_header, buffer, asx_header_length) == 0;
+	return g_ascii_strncasecmp (asx_header, buffer, asx_header_length) == 0;
 }
 
 bool
@@ -1372,7 +1391,29 @@ PlaylistParser::IsASX2 (IMediaSource *source)
 	if (!source->Peek (buffer, asx2_header_length))
 		return false;
 		
-	return strncmp (asx2_header, buffer, asx2_header_length) == 0;
+	return g_ascii_strncasecmp (asx2_header, buffer, asx2_header_length) == 0;
+}
+
+bool
+PlaylistParser::IsPossibleUrlList (IMediaSource *source)
+{
+	// This is a relaxed mode "format" that just covers a bunch of random
+	// awful corner cases found on the web for Moonshine/WMP compat, like
+	// 'ASF http://...' (seriously)
+
+	char buffer[20];
+	char *p;
+
+	memset (buffer, 0, sizeof (buffer));
+
+	if (!source->Peek (buffer, sizeof (buffer) - 1))
+		return false;
+	
+	// Ignore "IGNORE " from "IGNORE <proto>"
+	p = g_strstr_len (buffer, sizeof (buffer) - 8, " ");
+	p = p == NULL ? buffer : p + 1;
+
+	return is_valid_protocol (p);
 }
 
 bool
@@ -1502,6 +1543,15 @@ PlaylistParser::TryFixError (gint8 *current_buffer, int bytes_read)
 	return true;
 }
 
+bool
+PlaylistParser::IsValidPlaylist (IMediaSource *source)
+{
+	return PlaylistParser::IsASX3 (source) || 
+		PlaylistParser::IsASX2 (source) ||
+		(source->GetMedia ()->GetSurface ()->GetRelaxedMediaMode () && 
+			PlaylistParser::IsPossibleUrlList (source));
+}
+
 MediaResult
 PlaylistParser::Parse ()
 {
@@ -1520,9 +1570,11 @@ PlaylistParser::Parse ()
 		if (size != -1 && last_available_pos != -1 && size != last_available_pos)
 			return MEDIA_NOT_ENOUGH_DATA; 
 
-		if (!this->IsASX3 (source) && this->IsASX2 (source)) {
+		if (!PlaylistParser::IsASX3 (source) && PlaylistParser::IsASX2 (source)) {
 			/* Parse as a asx2 mms file */
 			result = this->ParseASX2 ();
+		} else if (element->GetSurface ()->GetRelaxedMediaMode () && PlaylistParser::IsPossibleUrlList (source)) {
+			result = this->ParsePossibleUrlList ();
 		} else {
 			result = this->ParseASX3 ();
 		}
@@ -1571,6 +1623,62 @@ PlaylistParser::ParseASX3 ()
 	}
 
 	return playlist != NULL;
+}
+
+bool
+PlaylistParser::ParsePossibleUrlList ()
+{
+	const int BUFFER_SIZE = 1024;
+	int bytes_read, i;
+	char buffer[BUFFER_SIZE];
+	char **lines;
+	
+	playlist_version = 3;
+
+	bytes_read = source->ReadSome (buffer, BUFFER_SIZE);
+	if (bytes_read <= 0) {
+		LOG_PLAYLIST_WARN ("Could not read possible playlist document for parsing.\n");
+		return false;
+	}
+
+	buffer[bytes_read] = 0;
+	lines = g_strsplit_set (buffer, "\r\n", -1);
+
+	current_entry = NULL;
+	playlist = NULL;
+
+	for (i = 0; lines[i]; i++) {
+		char *p = g_strstr_len (lines[i], 12, " ");
+		p = p == NULL ? lines[i] : p + 1;
+		if (is_valid_protocol (p)) {
+			Uri *uri = new Uri ();
+			if (uri->Parse (p)) {
+				if (playlist == NULL) {
+					playlist = new Playlist (element, source);
+				}
+
+				PlaylistEntry *entry = new PlaylistEntry (element, playlist);
+				entry->SetSourceName (uri);
+				playlist->AddEntry (entry);
+				
+				if (current_entry == NULL) {
+					current_entry = entry;
+				}
+			} else {
+				LOG_PLAYLIST_WARN ("Could not parse URI from possible playlist: %s.\n", p);
+				delete uri;
+			}
+		}
+	}
+
+	g_strfreev (lines);
+
+	if (playlist == NULL || current_entry == NULL) {
+		LOG_PLAYLIST_WARN ("No valid URIs in possible playlist\n");
+		return false;
+	}
+
+	return true;
 }
 
 PlaylistEntry *

@@ -274,8 +274,12 @@ public:
 	MediaResult Parse ();
 	bool ParseASX2 ();
 	bool ParseASX3 ();
-	bool IsASX2 (IMediaSource *source);
-	bool IsASX3 (IMediaSource *source);
+	bool ParsePossibleUrlList ();
+
+	static bool IsValidPlaylist (IMediaSource *source);
+	static bool IsASX2 (IMediaSource *source);
+	static bool IsASX3 (IMediaSource *source);
+	static bool IsPossibleUrlList (IMediaSource *source);
 
 	// This value determines if the data we parsed
 	// actually was a playlist. It may be true even

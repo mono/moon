@@ -1,3 +1,22 @@
+2009-02-23  Aaron Bockover  <abockover@novell.com>
+
+	* playlist.cpp:
+	* playlist.h: Support relaxed handling of ASX3 and implemented a relaxed
+	playlist parser that basically consists of reading URLs on a line; these
+	two modes are only supported when GetRelaxedMediaMode is true on surface,
+	so it only affects Moonshine, effectively; make the Is* playlist methods
+	static so they can be reused; added PlaylistParser::IsValidPlaylist that
+	is reused to reduce magic sniffing duplication
+
+	* pipeline.cpp: Reduce ASXDemuxerInfo::Supports to simply calling 
+	PlaylistParser::IsValidPlaylist to avoid duplicating magic sniffing
+
+	* mediaelement.cpp:
+	* runtime.cpp:
+	* runtime.h: Renamed MediaElementEmitEndedOnError to RelaxedMediaMode
+
+	r: kangaroo
+
 2009-02-23  Geoff Norton  <gnorton@novell.com>
 
 	* pipeline-ui.cpp: Don't blow up if we've created the codec installer

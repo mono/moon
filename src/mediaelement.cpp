@@ -691,11 +691,10 @@ MediaElement::MediaFailed (ErrorEventArgs *args)
 	SetDownloadProgress (0);
 
 	// Always terminate the downloader, even if we will transition
-	// to the next item in the playlist in case of 
-	// Surface::GetMediaElementEmitEndedOnError
+	// to the next item in the playlist in case of Surface::GetRelaxedMediaMode
 	DownloaderAbort ();
 
-	if (!GetSurface ()->GetMediaElementEmitEndedOnError () || 
+	if (!GetSurface ()->GetRelaxedMediaMode () || 
 		playlist == NULL || playlist->IsCurrentEntryLastEntry ()) {
 		// This will cause the entire playlist to stop playing, even if there
 		// are entries after the current item that may be consumable
