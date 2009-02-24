@@ -61,6 +61,8 @@ class MediaPlayer : public EventObject {
 	// rendering
 	cairo_surface_t *surface;
 	guint8 *rgb_buffer;
+	gint32 buffer_width;
+	gint32 buffer_height;
 	
 	MediaElement *element;
 	Media *media;
@@ -97,6 +99,7 @@ class MediaPlayer : public EventObject {
 	// Thread-safe
 	static void AudioFinishedCallback (EventObject *user_data);
 	
+	void SetVideoBufferSize (gint32 height, gint32 width);
 	void SetTimeout (gint32 interval /* set to 0 to clear */);
 	void AdvanceFrame ();
 	static gboolean AdvanceFrameCallback (void *user_data);

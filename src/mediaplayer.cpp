@@ -45,6 +45,8 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 	video_stream = NULL;
 	surface = NULL;
 	rgb_buffer = NULL;
+	buffer_width = 0;
+	buffer_height = 0;
 	advance_frame_timeout_id = 0;
 
 	media = NULL;
@@ -170,7 +172,6 @@ MediaPlayer::AudioFailed (AudioSource *source)
 bool
 MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 {
-	int stride;
 	IMediaDecoder *encoding;
 	IMediaStream *stream;
 	guint64 asx_duration;
@@ -244,23 +245,7 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 			height = video_stream->height;
 			width = video_stream->width;
 
-			stride = cairo_format_stride_for_width (MOON_FORMAT_RGB, width);
-			if (stride % 64) {
-				int remain = stride % 64;
-				stride += 64 - remain;
-			}
-			
-			// for conversion to rgb32 format needed for rendering with 16 byte alignment
-			if (posix_memalign ((void **)(&rgb_buffer), 16, height * stride)) {
-				g_warning ("Could not allocate memory for video RGB buffer");
-				return false;
-			}
-			
-			memset (rgb_buffer, 0, height * stride);
-			
-			// rendering surface
-			surface = cairo_image_surface_create_for_data (
-				rgb_buffer, MOON_FORMAT_RGB, width, height, stride);
+			SetVideoBufferSize (width, height);
 			
 			// printf ("video size: %i, %i\n", video_stream->width, video_stream->height);
 			break;
@@ -372,6 +357,46 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	return true;
 }
 
+void
+MediaPlayer::SetVideoBufferSize (gint32 width, gint32 height)
+{
+	gint32 stride;
+	
+	LOG_MEDIAPLAYER ("MediaPlayer::SetVideoBufferSize (%i, %i). buffer_width: %i, buffer_height: %i\n", width, height, buffer_width, buffer_height);
+	VERIFY_MAIN_THREAD;
+		
+	if (surface) {
+		cairo_surface_destroy (surface);
+		surface = NULL;
+	}
+		
+	stride = cairo_format_stride_for_width (MOON_FORMAT_RGB, MAX (width, buffer_width));
+	
+	if (stride % 64) {
+		int remain = stride % 64;
+		stride += 64 - remain;
+	}
+		
+	if (width > buffer_width || height > buffer_height) {
+		LOG_MEDIAPLAYER ("MediaPlayer::SetVideoBufferSize (): creating new buffer.\n");
+		free (rgb_buffer);
+		// for conversion to rgb32 format needed for rendering with 16 byte alignment
+		if (posix_memalign ((void **)(&rgb_buffer), 16, height * stride)) {
+			rgb_buffer = NULL;
+			g_warning ("Could not allocate memory for video RGB buffer");
+			return;
+		}	
+		memset (rgb_buffer, 0, height * stride);
+		
+		buffer_width = width;
+		buffer_height = height;
+	}
+		
+	// rendering surface
+	LOG_MEDIAPLAYER ("MediaPlayer::SetVideoBufferSize (): creating new surface, width: %i, height: %i, stride: %i\n", width, height, stride);
+	surface = cairo_image_surface_create_for_data (rgb_buffer, MOON_FORMAT_RGB, width, height, stride);
+}
+
 void 
 MediaPlayer::Initialize ()
 {
@@ -423,6 +448,8 @@ MediaPlayer::Close ()
 		free (rgb_buffer);
 		rgb_buffer = NULL;
 	}
+	buffer_width = 0;
+	buffer_height = 0;
 
 	if (surface != NULL) {
 		cairo_surface_destroy (surface);
@@ -458,6 +485,17 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 	if (!frame->IsDecoded ()) {
 		fprintf (stderr, "MediaPlayer::RenderFrame (): Trying to render a frame which hasn't been decoded yet.\n");
 		return;
+	}
+	
+	if ((frame->width > 0 && frame->width != width) || (frame->height > 0 && frame->height != height)) {
+		LOG_MEDIAPLAYER ("MediaPlayer::RenderFrame () frame width: %i, frame height: %i, stream width: %i, stream height: %i, previous frame width: %i, previous frame height: %i\n",
+			frame->width, frame->height, video_stream->width, video_stream->height, width, height);
+
+		if (frame->width > 0)
+			width = frame->width;
+		if (frame->height > 0)
+			height = frame->height;
+		SetVideoBufferSize (width, height);
 	}
 	
 	if (!frame->IsPlanar ()) {

@@ -1,5 +1,18 @@
 2009-02-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* codec-version.h.in: Bump abi version.
+
+	* mediaplayer.h:
+	* mediaplayer.cpp: Handle frames with width/height set, and
+	  change our cairo surface accordingly.
+
+	* pipeline.h:
+	* pipeline.cpp: Add width/height to MediaFrame, to support
+	  frames with different sizes than the initial size specified
+	  in the stream.
+
+2009-02-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: Emit: Add a null check.
 
 2009-02-23  Jeffrey Stedfast  <fejj@novell.com>

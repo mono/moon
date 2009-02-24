@@ -533,6 +533,11 @@ public:
 	int srcSlideY; // Set by the decoder
 	int srcSlideH; // Set by the decoder
 	int srcStride[4]; // Set by the decoder
+	
+	// The decoded size of the frame (might be bigger or smaller than the size of the stream).
+	// 0 = the size specified in the stream
+	gint32 width;
+	gint32 height;
 };
 
 class MediaMarker : public EventObject {
