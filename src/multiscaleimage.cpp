@@ -613,9 +613,9 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 //				int *p_h = (int*)(cairo_surface_get_user_data (image, &height_key));
 				cairo_save (cr);
 
-				cairo_rectangle (cr, 0, 0, msi_w, msi_h);
 				cairo_scale (cr, msi_w / (vp_w * im_w), msi_w / (vp_w * im_w)); //scale to viewport
 				cairo_translate (cr, im_w *(-vp_ox + i * v_tile_w), im_w * (-vp_oy + j * v_tile_h));
+				cairo_rectangle (cr, 0, 0, im_w, im_h);
 				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
 				cairo_set_source_surface (cr, image, 0, 0);
 				cairo_fill (cr);
