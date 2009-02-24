@@ -1,3 +1,7 @@
+2009-02-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: Emit: Add a null check.
+
 2009-02-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxView::Paint): Try to draw a crisp

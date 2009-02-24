@@ -680,7 +680,14 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 	}
 
 	if (!Surface::InMainThread ()) {
-		Surface *surface = GetDeployment ()->GetSurface ();
+		Deployment *deployment = GetDeployment ();
+		Surface *surface = deployment ? deployment->GetSurface () : NULL;
+		
+		if (surface == NULL) {
+			printf ("EventObject::Emit (): could not emit event, the deployment %p does not have a surface.\n", deployment);
+			return false;
+		}
+		
 		EmitData *data = new EmitData ();
 		data->sender = this;
 		data->sender->ref ();
