@@ -475,72 +475,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 }
 
 void
-MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
+MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 {
-	LOG_MSI ("MSI::Render\n");
-	//if there's a downloaded file pending, cache it
-	if (filename) {
-		guchar *data;
-		int stride;
-		GError *error = NULL;
-		cairo_surface_t *image = NULL;
-
-		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, &error);
-		g_free (filename);
-		filename = NULL;
-		if (error) {
-			printf (error->message);
-		} else {
-			int *p_width = new int (gdk_pixbuf_get_width (pixbuf));
-			int *p_height = new int (gdk_pixbuf_get_height (pixbuf));
-			bool has_alpha = gdk_pixbuf_get_n_channels (pixbuf) == 4;
-			if (has_alpha) {
-				unmultiply_rgba_in_place (pixbuf);
-				stride = gdk_pixbuf_get_rowstride (pixbuf);
-				data = gdk_pixbuf_get_pixels (pixbuf);
-			} else {
-				data = expand_rgb_to_argb (pixbuf, &stride);
-				g_object_unref (pixbuf);
-			}
-
-			image = cairo_image_surface_create_for_data (data,
-								     has_alpha ? MOON_FORMAT_ARGB : MOON_FORMAT_RGB,
-								     *p_width,
-								     *p_height, 
-								     stride);
-			cairo_surface_set_user_data (image, &width_key, p_width, g_free);
-			cairo_surface_set_user_data (image, &height_key, p_height, g_free);
-		}
-		LOG_MSI ("caching %s\n", context);
-		g_hash_table_insert (cache, g_strdup(context), image);
-	}
-
-	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
-	if (dzits && dzits->IsCollection() && GetSubImages ()) {
-		//Let's render collection in a different method to not break this one right now
-		RenderCollection (cr, region);
-		return;
-	}
-
-	if (!(source = GetSource ())) {
-		LOG_MSI ("no sources set, nothing to render\n");
-		return;
-	}
-
-	if (source->GetImageWidth () < 0) {
-		LOG_MSI ("nothing to render so far...\n");
-		//FIXME: check for null cast
-		((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
-		((DeepZoomImageTileSource*)source)->Download ();
-		return;
-	}
-
-
-	if (!source->get_tile_func) {
-		g_warning ("no get_tile_func set\n");
-		return;
-	}
-
 	double msi_w = GetActualWidth ();
 	double msi_h = GetActualHeight ();
 	double vp_w = GetViewportWidth ();
@@ -652,6 +588,76 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			}
 		}
 	}
+	
+}
+
+void
+MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
+{
+	LOG_MSI ("MSI::Render\n");
+	//if there's a downloaded file pending, cache it
+	if (filename) {
+		guchar *data;
+		int stride;
+		GError *error = NULL;
+		cairo_surface_t *image = NULL;
+
+		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, &error);
+		g_free (filename);
+		filename = NULL;
+		if (error) {
+			printf (error->message);
+		} else {
+			int *p_width = new int (gdk_pixbuf_get_width (pixbuf));
+			int *p_height = new int (gdk_pixbuf_get_height (pixbuf));
+			bool has_alpha = gdk_pixbuf_get_n_channels (pixbuf) == 4;
+			if (has_alpha) {
+				unmultiply_rgba_in_place (pixbuf);
+				stride = gdk_pixbuf_get_rowstride (pixbuf);
+				data = gdk_pixbuf_get_pixels (pixbuf);
+			} else {
+				data = expand_rgb_to_argb (pixbuf, &stride);
+				g_object_unref (pixbuf);
+			}
+
+			image = cairo_image_surface_create_for_data (data,
+								     has_alpha ? MOON_FORMAT_ARGB : MOON_FORMAT_RGB,
+								     *p_width,
+								     *p_height, 
+								     stride);
+			cairo_surface_set_user_data (image, &width_key, p_width, g_free);
+			cairo_surface_set_user_data (image, &height_key, p_height, g_free);
+		}
+		LOG_MSI ("caching %s\n", context);
+		g_hash_table_insert (cache, g_strdup(context), image);
+	}
+
+	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
+	bool is_collection = dzits && dzits->IsCollection () && GetSubImages ();
+	
+	if (!(source = GetSource ())) {
+		LOG_MSI ("no sources set, nothing to render\n");
+		return;
+	}
+
+	if (source->GetImageWidth () < 0 && !is_collection) {
+		LOG_MSI ("nothing to render so far...\n");
+		//FIXME: check for null cast
+		((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
+		((DeepZoomImageTileSource*)source)->Download ();
+		return;
+	}
+
+
+	if (!source->get_tile_func) {
+		g_warning ("no get_tile_func set\n");
+		return;
+	}
+
+	if (is_collection)
+		RenderCollection (cr, region);
+	else
+		RenderSingle (cr, region);
 }
 
 void

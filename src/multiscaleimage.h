@@ -45,6 +45,8 @@ class MultiScaleImage : public MediaBase {
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
 	Downloader *downloader;
+
+	void RenderSingle (cairo_t *cr, Region *region);
 	void RenderCollection (cairo_t *cr, Region *region);
 
  protected:
