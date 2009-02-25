@@ -77,7 +77,6 @@ protected:
 	List *list;
 	
 public:
-	
 	Queue ();
 	~Queue ();
 	

@@ -67,12 +67,8 @@ class TextBoxModelChangedEventArgs : public RoutedEventArgs {
 	}
 };
 
-
 class TextBuffer;
-
-struct TextSelection {
-	int start, length;
-};
+class TextBoxUndoStack;
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
@@ -82,6 +78,8 @@ class TextBox : public Control, public ITextSource {
 	DependencyObject *contentElement;
 	
 	TextFontDescription *font;
+	TextBoxUndoStack *undo;
+	TextBoxUndoStack *redo;
 	int selection_anchor;
 	int selection_cursor;
 	//Point select_start;
@@ -147,6 +145,11 @@ class TextBox : public Control, public ITextSource {
 	void SyncText ();
 	
 	void ClearSelection (int start);
+	
+	bool CanUndo ();
+	bool CanRedo ();
+	void Undo ();
+	void Redo ();
 	
 	void EmitSelectionChanged ();
 	void EmitTextChanged ();

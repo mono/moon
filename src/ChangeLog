@@ -1,3 +1,21 @@
+2009-02-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBuffer::Substring): New method to get a
+	substring.
+	(class TextBoxUndoAction*): New classes to represent different
+	types of Undo/Redo actions.
+	(class TextBoxUndoStack): New Undo/Redo stack class.
+	(TextBox::TextBox): Initialize undo/redo stacks.
+	(TextBox): Destroy undo/redo stacks.
+	(TextBox::KeyPressBackSpace): Record an undo action.
+	(TextBox::KeyPressDelete): Same.
+	(TextBox::KeyPressUnichar): Here too.
+	(TextBox::OnKeyDown): Call Undo() and Redo() when appropriate.
+	(TextBox::OnPropertyChanged): Record undo actions for setting
+	SelectedText and Text properties.
+	(TextBox::Undo): Undo the most recent action.
+	(TextBox::Redo): Redo the most recent action.
+
 2009-02-25  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.h|cpp: return the next tile to download

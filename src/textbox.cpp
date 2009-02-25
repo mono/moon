@@ -31,7 +31,6 @@
 #include "utils.h"
 
 
-
 //
 // TextBuffer
 //
@@ -70,6 +69,13 @@ class TextBuffer {
  public:
 	gunichar *text;
 	int len;
+	
+	TextBuffer (gunichar *text, int len)
+	{
+		this->allocated = len + 1;
+		this->text = text;
+		this->len = len;
+	}
 	
 	TextBuffer ()
 	{
@@ -249,7 +255,240 @@ class TextBuffer {
 		
 		len = (len - length) + count;
 	}
+	
+	gunichar *Substring (int start, int length = -1)
+	{
+		gunichar *substr;
+		size_t n_bytes;
+		
+		if (start < 0 || start > len || length == 0)
+			return NULL;
+		
+		if (length < 0)
+			length = len - start;
+		
+		n_bytes = sizeof (gunichar) * (length + 1);
+		substr = (gunichar *) g_malloc (n_bytes);
+		n_bytes -= sizeof (gunichar);
+		
+		memcpy (substr, text + start, n_bytes);
+		substr[length] = 0;
+		
+		return substr;
+	}
 };
+
+
+//
+// TextBoxUndoActions
+//
+
+enum TextBoxUndoActionType {
+	TextBoxUndoActionTypeInsert,
+	TextBoxUndoActionTypeDelete,
+	TextBoxUndoActionTypeReplace,
+};
+
+class TextBoxUndoAction : public List::Node {
+ public:
+	TextBoxUndoActionType type;
+	int selection_anchor;
+	int selection_cursor;
+	int length;
+	int start;
+};
+
+class TextBoxUndoActionInsert : public TextBoxUndoAction {
+ public:
+	TextBuffer *buffer;
+	bool growable;
+	
+	TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar c);
+	TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar *inserted, int length);
+	virtual ~TextBoxUndoActionInsert ();
+	
+	bool Insert (int start, gunichar c);
+};
+
+class TextBoxUndoActionDelete : public TextBoxUndoAction {
+ public:
+	gunichar *text;
+	
+	TextBoxUndoActionDelete (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length);
+	virtual ~TextBoxUndoActionDelete ();
+};
+
+class TextBoxUndoActionReplace : public TextBoxUndoAction {
+ public:
+	gunichar *inserted;
+	gunichar *deleted;
+	int inlen;
+	
+	TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, gunichar *inserted, int inlen);
+	TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, gunichar c);
+	virtual ~TextBoxUndoActionReplace ();
+};
+
+class TextBoxUndoStack {
+	int max_count;
+	List *list;
+	
+ public:
+	TextBoxUndoStack (int max_count);
+	~TextBoxUndoStack ();
+	
+	bool IsEmpty ();
+	void Clear ();
+	
+	void Push (TextBoxUndoAction *action);
+	TextBoxUndoAction *Peek ();
+	TextBoxUndoAction *Pop ();
+};
+
+TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar c)
+{
+	this->type = TextBoxUndoActionTypeInsert;
+	this->selection_anchor = selection_anchor;
+	this->selection_cursor = selection_cursor;
+	this->start = start;
+	this->length = 1;
+	
+	this->buffer = new TextBuffer ();
+	this->buffer->Append (c);
+	this->growable = true;
+}
+
+TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar *inserted, int length)
+{
+	this->type = TextBoxUndoActionTypeInsert;
+	this->selection_anchor = selection_anchor;
+	this->selection_cursor = selection_cursor;
+	this->length = length;
+	this->start = start;
+	
+	this->buffer = new TextBuffer (inserted, length);
+	this->growable = false;
+}
+
+TextBoxUndoActionInsert::~TextBoxUndoActionInsert ()
+{
+	delete buffer;
+}
+
+bool
+TextBoxUndoActionInsert::Insert (int start, gunichar c)
+{
+	if (!growable || start != (this->start + length))
+		return false;
+	
+	buffer->Append (c);
+	length++;
+	
+	return true;
+}
+
+TextBoxUndoActionDelete::TextBoxUndoActionDelete (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length)
+{
+	this->type = TextBoxUndoActionTypeDelete;
+	this->selection_anchor = selection_anchor;
+	this->selection_cursor = selection_cursor;
+	this->length = length;
+	this->start = start;
+	
+	this->text = buffer->Substring (start, length);
+}
+
+TextBoxUndoActionDelete::~TextBoxUndoActionDelete ()
+{
+	g_free (text);
+}
+
+TextBoxUndoActionReplace::TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, gunichar *inserted, int inlen)
+{
+	this->type = TextBoxUndoActionTypeReplace;
+	this->selection_anchor = selection_anchor;
+	this->selection_cursor = selection_cursor;
+	this->length = length;
+	this->start = start;
+	
+	this->deleted = buffer->Substring (start, length);
+	this->inserted = inserted;
+	this->inlen = inlen;
+}
+
+TextBoxUndoActionReplace::TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, gunichar c)
+{
+	this->type = TextBoxUndoActionTypeReplace;
+	this->selection_anchor = selection_anchor;
+	this->selection_cursor = selection_cursor;
+	this->length = length;
+	this->start = start;
+	
+	this->deleted = buffer->Substring (start, length);
+	this->inserted = g_new (gunichar, 2);
+	memcpy (inserted, &c, sizeof (gunichar));
+	inserted[1] = 0;
+	this->inlen = 1;
+}
+
+TextBoxUndoActionReplace::~TextBoxUndoActionReplace ()
+{
+	g_free (inserted);
+	g_free (deleted);
+}
+
+
+TextBoxUndoStack::TextBoxUndoStack (int max_count)
+{
+	this->max_count = max_count;
+	this->list = new List ();
+}
+
+TextBoxUndoStack::~TextBoxUndoStack ()
+{
+	delete list;
+}
+
+bool
+TextBoxUndoStack::IsEmpty ()
+{
+	return list->IsEmpty ();
+}
+
+void
+TextBoxUndoStack::Clear ()
+{
+	list->Clear (true);
+}
+
+void
+TextBoxUndoStack::Push (TextBoxUndoAction *action)
+{
+	if (list->Length () == max_count) {
+		List::Node *node = list->Last ();
+		list->Unlink (node);
+		delete node;
+	}
+	
+	list->Prepend (action);
+}
+
+TextBoxUndoAction *
+TextBoxUndoStack::Pop ()
+{
+	List::Node *node = list->First ();
+	
+	if (node)
+		list->Unlink (node);
+	
+	return (TextBoxUndoAction *) node;
+}
+
+TextBoxUndoAction *
+TextBoxUndoStack::Peek ()
+{
+	return (TextBoxUndoAction *) list->First ();
+}
 
 
 //
@@ -289,6 +528,8 @@ TextBox::TextBox ()
 	
 	contentElement = NULL;
 	
+	undo = new TextBoxUndoStack (10);
+	redo = new TextBoxUndoStack (10);
 	buffer = new TextBuffer ();
 	
 	emit = NOTHING_CHANGED;
@@ -316,6 +557,8 @@ TextBox::~TextBox ()
 	RemoveHandler (UIElement::KeyUpEvent, TextBox::key_up, this);
 	
 	delete buffer;
+	delete undo;
+	delete redo;
 	delete font;
 }
 
@@ -551,42 +794,40 @@ TextBox::KeyPressBackSpace (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
-	int cur;
+	TextBoxUndoAction *action;
+	int start = 0, length = 0;
 	
 	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
 		return;
 	
 	if (cursor != anchor) {
 		// BackSpace w/ active selection: delete the selected text
-		int length = abs (cursor - anchor);
-		int start = MIN (anchor, cursor);
+		length = abs (cursor - anchor);
+		start = MIN (anchor, cursor);
+	} else if ((modifiers & CONTROL_MASK) != 0) {
+		// Ctrl+BackSpace: delete the word ending at the cursor
+		start = CursorPrevWord (cursor);
+		length = cursor - start;
+	} else if (cursor > 0) {
+		// BackSpace: delete the char before the cursor position
+		if (cursor >= 2 && buffer->text[cursor - 1] == '\n' && buffer->text[cursor - 2] == '\r') {
+			start = cursor - 2;
+			length = 2;
+		} else {
+			start = cursor - 1;
+			length = 1;
+		}
+	}
+	
+	if (length > 0) {
+		action = new TextBoxUndoActionDelete (selection_anchor, selection_cursor, buffer, start, length);
+		undo->Push (action);
+		redo->Clear ();
 		
 		buffer->Cut (start, length);
 		emit |= TEXT_CHANGED;
 		anchor = start;
 		cursor = start;
-	} else if ((modifiers & CONTROL_MASK) != 0) {
-		// Ctrl+BackSpace: delete the word ending at the cursor
-		cur = CursorPrevWord (cursor);
-		
-		if (cur < cursor) {
-			buffer->Cut (cur, cursor - cur);
-			emit |= TEXT_CHANGED;
-		        anchor = cur;
-			cursor = cur;
-		}
-	} else if (cursor > 0) {
-		// BackSpace: delete the char before the cursor position
-		if (cursor >= 2 && buffer->text[cursor - 1] == '\n' && buffer->text[cursor - 2] == '\r') {
-			buffer->Cut (cursor - 2, 2);
-			cursor -= 2;
-		} else {
-			buffer->Cut (cursor - 1, 1);
-			cursor--;
-		}
-		
-		emit |= TEXT_CHANGED;
-		anchor = cursor;
 	}
 	
 	// check to see if selection has changed
@@ -604,35 +845,36 @@ TextBox::KeyPressDelete (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
-	int cur;
+	TextBoxUndoAction *action;
+	int start = 0, length = 0;
 	
 	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
 		return;
 	
 	if (cursor != anchor) {
 		// Delete w/ active selection: delete the selected text
-		int length = abs (cursor - anchor);
-		int start = MIN (anchor, cursor);
-		
-		buffer->Cut (start, length);
-		emit |= TEXT_CHANGED;
-		anchor = start;
-		cursor = start;
+		length = abs (cursor - anchor);
+		start = MIN (anchor, cursor);
 	} else if ((modifiers & CONTROL_MASK) != 0) {
 		// Ctrl+Delete: delete the word starting at the cursor
-		cur = CursorNextWord (cursor);
-		
-		if (cur > cursor) {
-			buffer->Cut (cursor, cur - cursor);
-			emit |= TEXT_CHANGED;
-		}
+		length = CursorNextWord (cursor) - cursor;
+		start = cursor;
 	} else if (cursor < buffer->len) {
 		// Delete: delete the char after the cursor position
 		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n')
-			buffer->Cut (cursor, 2);
+			length = 2;
 		else
-			buffer->Cut (cursor, 1);
+			length = 1;
 		
+		start = cursor;
+	}
+	
+	if (length > 0) {
+		action = new TextBoxUndoActionDelete (selection_anchor, selection_cursor, buffer, start, length);
+		undo->Push (action);
+		redo->Clear ();
+		
+		buffer->Cut (start, length);
 		emit |= TEXT_CHANGED;
 	}
 	
@@ -909,15 +1151,32 @@ TextBox::KeyPressUnichar (gunichar c)
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	int maxlen = GetMaxLength ();
+	TextBoxUndoAction *action;
 	
 	if ((maxlen > 0 && buffer->len >= maxlen) || ((c == '\r') && !GetAcceptsReturn ()))
 		return;
 	
 	if (length > 0) {
 		// replace the currently selected text
+		action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, c);
+		undo->Push (action);
+		redo->Clear ();
+		
 		buffer->Replace (start, length, &c, 1);
 	} else {
 		// insert the text at the cursor position
+		TextBoxUndoActionInsert *insert;
+		
+		if ((action = undo->Peek ()) && action->type == TextBoxUndoActionTypeInsert)
+			insert = (TextBoxUndoActionInsert *) action;
+		
+		if (!insert->Insert (start, c)) {
+			insert = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, c);
+			undo->Push (insert);
+		}
+		
+		redo->Clear ();
+		
 		buffer->Insert (start, c);
 	}
 	
@@ -1094,16 +1353,16 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 			case GDK_y:
 				// Ctrl+Y => Redo
 				if (!GetIsReadOnly ()) {
-					// FIXME: implement me
 					args->SetHandled (true);
+					Redo ();
 				}
 				break;
 			case GDK_Z:
 			case GDK_z:
 				// Ctrl+Z => Undo
 				if (!GetIsReadOnly ()) {
-					// FIXME: implement me
 					args->SetHandled (true);
+					Undo ();
 				}
 				break;
 			default:
@@ -1124,8 +1383,6 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	
 	inkeypress = false;
 	SyncAndEmit ();
-	
-	// FIXME: register a key repeat timeout?
 }
 
 void
@@ -1137,7 +1394,7 @@ TextBox::key_down (EventObject *sender, EventArgs *args, void *closure)
 void
 TextBox::OnKeyUp (KeyEventArgs *args)
 {
-	// FIXME: unregister the key repeat timeout?
+	// no-op
 }
 
 void
@@ -1382,17 +1639,30 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->GetId () == TextBox::SelectedTextProperty) {
 		if (setvalue) {
 			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString () : "";
+			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
 			
 			length = abs (selection_cursor - selection_anchor);
 			start = MIN (selection_anchor, selection_cursor);
 			
-			// replace the currently selected text
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
-				buffer->Replace (start, length, text, textlen);
+				if (length > 0) {
+					// replace the currently selected text
+					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, textlen);
+					
+					buffer->Replace (start, length, text, textlen);
+				} else {
+					// insert the text at the cursor
+					action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, textlen);
+					
+					buffer->Insert (start, text, textlen);
+				}
+				
+				undo->Push (action);
+				redo->Clear ();
+				
 				emit |= TEXT_CHANGED;
-				g_free (text);
 				
 				ClearSelection (start + textlen);
 				
@@ -1460,13 +1730,27 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	} else if (args->GetId () == TextBox::TextProperty) {
 		if (setvalue) {
 			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString () : "";
+			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
 			
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
-				buffer->Replace (0, buffer->len, text, textlen);
+				if (buffer->len > 0) {
+					// replace the current text
+					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, 0, buffer->len, text, textlen);
+					
+					buffer->Replace (0, buffer->len, text, textlen);
+				} else {
+					// insert the text
+					action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, 0, text, textlen);
+					
+					buffer->Insert (0, text, textlen);
+				}
+				
+				undo->Push (action);
+				redo->Clear ();
+				
 				emit |= TEXT_CHANGED;
-				g_free (text);
 				
 				ClearSelection (0);
 			} else {
@@ -1585,6 +1869,115 @@ void
 TextBox::SelectAll ()
 {
 	Select (0, buffer->len);
+}
+
+bool
+TextBox::CanUndo ()
+{
+	return !undo->IsEmpty ();
+}
+
+bool
+TextBox::CanRedo ()
+{
+	return !redo->IsEmpty ();
+}
+
+void
+TextBox::Undo ()
+{
+	TextBoxUndoActionReplace *replace;
+	TextBoxUndoActionInsert *insert;
+	TextBoxUndoActionDelete *dele;
+	TextBoxUndoAction *action;
+	int anchor, cursor;
+	
+	if (undo->IsEmpty ())
+		return;
+	
+	action = undo->Pop ();
+	redo->Push (action);
+	
+	switch (action->type) {
+	case TextBoxUndoActionTypeInsert:
+		insert = (TextBoxUndoActionInsert *) action;
+		
+		buffer->Cut (insert->start, insert->length);
+		anchor = action->selection_anchor;
+		cursor = action->selection_cursor;
+		break;
+	case TextBoxUndoActionTypeDelete:
+		dele = (TextBoxUndoActionDelete *) action;
+		
+		buffer->Insert (dele->start, dele->text, dele->length);
+		anchor = action->selection_anchor;
+		cursor = action->selection_cursor;
+		break;
+	case TextBoxUndoActionTypeReplace:
+		replace = (TextBoxUndoActionReplace *) action;
+		
+		buffer->Cut (replace->start, replace->inlen);
+		buffer->Insert (replace->start, replace->deleted, replace->length);
+		anchor = action->selection_anchor;
+		cursor = action->selection_cursor;
+		break;
+	}
+	
+	SetSelectionLength (abs (cursor - anchor));
+	SetSelectionStart (MIN (anchor, cursor));
+	emit = TEXT_CHANGED | SELECTION_CHANGED;
+	selection_anchor = anchor;
+	selection_cursor = cursor;
+	
+	if (!inkeypress)
+		SyncAndEmit ();
+}
+
+void
+TextBox::Redo ()
+{
+	TextBoxUndoActionReplace *replace;
+	TextBoxUndoActionInsert *insert;
+	TextBoxUndoActionDelete *dele;
+	TextBoxUndoAction *action;
+	int anchor, cursor;
+	
+	if (redo->IsEmpty ())
+		return;
+	
+	action = redo->Pop ();
+	undo->Push (action);
+	
+	switch (action->type) {
+	case TextBoxUndoActionTypeInsert:
+		insert = (TextBoxUndoActionInsert *) action;
+		
+		buffer->Insert (insert->start, insert->buffer->text, insert->buffer->len);
+		anchor = cursor = insert->start + insert->buffer->len;
+		break;
+	case TextBoxUndoActionTypeDelete:
+		dele = (TextBoxUndoActionDelete *) action;
+		
+		buffer->Cut (dele->start, dele->length);
+		anchor = cursor = dele->start;
+		break;
+	case TextBoxUndoActionTypeReplace:
+		replace = (TextBoxUndoActionReplace *) action;
+		
+		buffer->Cut (replace->start, replace->length);
+		buffer->Insert (replace->start, replace->inserted, replace->inlen);
+		anchor = cursor = replace->start + replace->inlen;
+		break;
+	}
+	
+	SetSelectionLength (abs (cursor - anchor));
+	SetSelectionStart (MIN (anchor, cursor));
+	emit = TEXT_CHANGED | SELECTION_CHANGED;
+	selection_anchor = anchor;
+	selection_cursor = cursor;
+	
+	if (!inkeypress)
+		SyncAndEmit ();
 }
 
 
