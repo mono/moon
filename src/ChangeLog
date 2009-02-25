@@ -1,3 +1,8 @@
+2009-02-25  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Remove some old code that was preventing non-dob
+	values from being set to native properties.
+
 2009-02-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBuffer::Substring): New method to get a
