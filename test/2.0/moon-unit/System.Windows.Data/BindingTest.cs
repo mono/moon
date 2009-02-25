@@ -143,7 +143,6 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void BindXaml ()
 		{
 			Mono.Moonlight.BindingConverter c = new Mono.Moonlight.BindingConverter ();

@@ -1,3 +1,7 @@
+2009-02-25  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows.Data/BindingTest.cs: Test is fixed.
+
 2009-02-25  Alan McGovern  <amcgovern@novell.com>
 
 	* Makefile.am:
