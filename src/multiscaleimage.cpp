@@ -59,6 +59,7 @@ MultiScaleImage::MultiScaleImage ()
 	filename = NULL;
 	cache = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, _cairo_surface_destroy);
 	downloading = false;
+	context = NULL;
 }
 
 MultiScaleImage::~MultiScaleImage ()
@@ -310,15 +311,17 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 {
 	LOG_MSI ("\nMSI::RenderCollection\n");
 
-	double msi_x = GetViewportOrigin()->x;
-	double msi_y = GetViewportOrigin()->y;
-	double msi_w = GetViewportWidth();
+	double msi_w = GetActualWidth ();
+	double msi_h = GetActualHeight ();
 	double msi_ar = GetAspectRatio();
+	double msivp_ox = GetViewportOrigin()->x;
+	double msivp_oy = GetViewportOrigin()->y;
+	double msivp_w = GetViewportWidth();
 
 	int tile_width = source->GetTileWidth ();
 	int tile_height = source->GetTileHeight ();
 
-	Rect viewport = Rect (msi_x, msi_y, msi_w, msi_w/msi_ar);
+	Rect viewport = Rect (msivp_ox, msivp_oy, msivp_w, msivp_w/msi_ar);
 
 	//FIXME: sort the subimages by ZIndex first
 	CollectionIterator *iter = GetSubImages ()->GetIterator();
@@ -335,35 +338,27 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 //			continue;
 //		}
 
-		double widget_w = GetActualWidth ();
-		double widget_h = GetActualHeight ();
-		double sub_x = sub_image->GetViewportOrigin()->x;
-		double sub_y = sub_image->GetViewportOrigin()->y;
-		double sub_w = sub_image->GetViewportWidth();
+		double subvp_ox = sub_image->GetViewportOrigin()->x;
+		double subvp_oy = sub_image->GetViewportOrigin()->y;
+		double subvp_w = sub_image->GetViewportWidth();
+		double sub_w = sub_image->source->GetImageWidth ();
+		double sub_h = sub_image->source->GetImageHeight ();
 		double sub_ar = sub_image->GetAspectRatio();
 
-		//render if the subimage viewport intersects with this viewport
-		LOG_MSI ("subimage #%d (%ld, %ld), vpo(%f %f) vpw %f\n", sub_image->id, sub_image->source->GetImageWidth (), sub_image->source->GetImageHeight (), 
-			sub_image->GetViewportOrigin ()->x, sub_image->GetViewportOrigin()->y, sub_image->GetViewportWidth ());
 
 		//expressing the subimage viewport in main viewport coordinates.
-		Rect sub_vp = Rect (-sub_x / sub_w, -sub_y / sub_w, 1.0/sub_w, 1.0/(sub_ar * sub_w));
+		Rect sub_vp = Rect (-subvp_ox / subvp_w, -subvp_oy / subvp_w, 1.0/subvp_w, 1.0/(sub_ar * subvp_w));
 
-		//NOTE, we could reuse the same routine to render single dz images, by setting the sub_vp to an appropriate value
-
-		LOG_MSI ("viewport\t%f\t%f\t%f\t%f\n", viewport.x, viewport.y, viewport.width, viewport.height);
-		LOG_MSI ("sub_vp  \t%f\t%f\t%f\t%f\n", sub_vp.x, sub_vp.y, sub_vp.width, sub_vp.height);
+		//render only if the subimage viewport intersects with this viewport
 		if (!sub_vp.IntersectsWith (viewport))
 			continue;
-
-
 		LOG_MSI ("Intersects with main viewport...rendering\n");
 
 		int layers;
-		frexp (MAX (sub_image->source->GetImageWidth(), sub_image->source->GetImageHeight()), &layers);
+		frexp (MAX (sub_w, sub_h), &layers);
 
 		int optimal_layer;
-		frexp (widget_w / (sub_w * msi_w), &optimal_layer); 
+		frexp (msi_w / (subvp_w * msivp_w), &optimal_layer); 
 		optimal_layer = MIN (optimal_layer, layers);
 		LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
@@ -374,13 +369,13 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			int found = 0;
 
 			//in msi relative coord
-			double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
-			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
+			double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) * sub_vp.width / sub_w;
+			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / sub_w;
 			//LOG_MSI ("virtual tile size at layer %d; %fx%f\n", from_layer, v_tile_w, v_tile_h);
 
 			int i, j;
-			for (i = (int)((MAX(msi_x, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
-				for (j = (int)((MAX(msi_y, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
+			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
+				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
 					//LOG_MSI ("TILE %d %d %d %d\n", sub_image->id, from_layer, i, j);
 					count++;
 					if (cache_contains ((const char*)source->get_tile_func (from_layer, i, j, sub_image->source), false))
@@ -399,22 +394,22 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 		int layer_to_render = from_layer;
 		while (from_layer > 0 && layer_to_render <= to_layer) {
-			double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
-			double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
+			double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render) * sub_vp.width / sub_w;
+			double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render) * sub_vp.width / sub_w;
 
 			int i, j;
-			for (i = (int)((MAX(msi_x, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
-				for (j = (int)((MAX(msi_y, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
+			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
+				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
 					cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, (const char*)source->get_tile_func (layer_to_render, i, j, sub_image->source));
 					if (!image)
 						continue;
 					LOG_MSI ("rendering %d %d %d %d\n", sub_image->id, layer_to_render, i, j);
 					cairo_save (cr);
 
-					cairo_rectangle (cr, 0, 0, widget_w, widget_h);
+					cairo_rectangle (cr, 0, 0, msi_w, msi_h);
 					cairo_clip (cr);
-					cairo_scale (cr, widget_w / msi_w, widget_w / msi_w); //scale to widget
-					cairo_translate (cr, -msi_x + sub_vp.x + i * v_tile_w, -msi_y + sub_vp.y + j* v_tile_h);
+					cairo_scale (cr, msi_w / msivp_w, msi_w / msivp_w); //scale to widget
+					cairo_translate (cr, -msivp_ox + sub_vp.x + i * v_tile_w, -msivp_oy + sub_vp.y + j* v_tile_h);
 					//cairo_scale (cr, v_tile_w / ldexp (1.0, layer_to_render), v_tile_w / ldexp (1.0, layer_to_render)); //scale to viewport
 
 					//scale to viewport
@@ -432,17 +427,17 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		}
 
 #if FALSE
-		LOG_MSI ("rendering from x = %f to %f\n", MAX(msi_x, sub_vp.x), MIN(msi_x + msi_w, sub_vp.x + sub_vp.width));
-		LOG_MSI ("rendering from y = %f to %f\n", MAX(msi_y, sub_vp.y), MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar));
+		LOG_MSI ("rendering from x = %f to %f\n", MAX(msivp_ox, sub_vp.x), MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width));
+		LOG_MSI ("rendering from y = %f to %f\n", MAX(msivp_oy, sub_vp.y), MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar));
 
 		cairo_save (cr);
 		cairo_set_source_rgba (cr, 1, 0, 0, .2);
 
 		cairo_rectangle (cr,
-			widget_w / msi_w * (-msi_x + MAX(msi_x, sub_vp.x)),
-			widget_w / msi_w * (-msi_y + MAX(msi_y, sub_vp.y)),
-			widget_w / msi_w * (MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - MAX(msi_x, sub_vp.x)),
-			widget_w / msi_w * (MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - MAX(msi_y, sub_vp.y)));
+			msi_w / msivp_w * (-msivp_ox + MAX(msivp_ox, sub_vp.x)),
+			msi_w / msivp_w * (-msivp_oy + MAX(msivp_oy, sub_vp.y)),
+			msi_w / msivp_w * (MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - MAX(msivp_ox, sub_vp.x)),
+			msi_w / msivp_w * (MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - MAX(msivp_oy, sub_vp.y)));
 		cairo_fill (cr);
 		cairo_restore (cr);
 #endif
@@ -454,12 +449,12 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		while (from_layer < optimal_layer) {
 			from_layer ++;
 
-			double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
-			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / (double)sub_image->source->GetImageWidth ();
+			double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) * sub_vp.width / sub_w;
+			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / sub_w;
 
 			int i, j;
-			for (i = (int)((MAX(msi_x, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
-				for (j = (int)((MAX(msi_y, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
+			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
+				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
 					if (context)
 						g_free (context);
 					context = (char*)source->get_tile_func (from_layer, i, j, sub_image->source);
