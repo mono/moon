@@ -536,7 +536,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render) / im_w;
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_ar, 1.0 / msi_ar); j++) {
-				const char* tile = (const char*)source->get_tile_func (layer_to_render, i, j, source);
+				char* tile = (char*)source->get_tile_func (layer_to_render, i, j, source);
 				if (!tile)
 					continue;
 				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
