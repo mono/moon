@@ -477,7 +477,6 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 {
 	double msi_w = GetActualWidth ();
 	double msi_h = GetActualHeight ();
-	double vp_w = GetViewportWidth ();
 	double msi_ar = GetAspectRatio ();
 	double im_w = (double) source->GetImageWidth ();
 	double im_h = (double) source->GetImageHeight ();
@@ -485,6 +484,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	int tile_height = source->GetTileHeight ();
 	double vp_ox = GetViewportOrigin()->x;
 	double vp_oy = GetViewportOrigin()->y;
+	double vp_w = GetViewportWidth ();
 
 	int layers;
 	frexp (MAX (im_w, im_h), &layers);
@@ -540,6 +540,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				if (!tile)
 					continue;
 				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
+				g_free (tile);
 				if (!image)
 					continue;
 				LOG_MSI ("rendering %d %d %d\n", layer_to_render, i, j);
