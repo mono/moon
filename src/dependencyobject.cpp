@@ -30,7 +30,6 @@
 struct EventList {
 	int current_token;
 	int emitting;
-	int event_count;
 	List *event_list;
 };
 
@@ -615,9 +614,8 @@ EventObject::FinishEmit (int event_id, EmitContext *ctx)
 		goto delete_ctx;
 	}
 
-	if (events == NULL || events->lists [event_id].event_list->IsEmpty ()) {
+	if (ctx->length == 0)
 		goto delete_ctx;
-	}
 
 	events->lists [event_id].emitting--;
 	events->emitting--;
@@ -634,7 +632,6 @@ EventObject::FinishEmit (int event_id, EmitContext *ctx)
 	}
 
  delete_ctx:
-	// make sure to pass false here, as the lists are shallow copied and the nodes are shared
 	delete ctx;
 }
 
