@@ -1791,6 +1791,8 @@ gboolean
 Surface::HandleUIKeyPress (GdkEventKey *event)
 {
 	Key key = Keyboard::MapKeyValToKey (event->keyval);
+	if (Keyboard::IsKeyPressed (key))
+		return true;
 	
 	if (FullScreenKeyHandled (event))
 		return true;

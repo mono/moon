@@ -1,8 +1,3 @@
-2009-02-24  Jeffrey Stedfast  <fejj@novell.com>
-
-	* runtime.cpp (Surface::HandleUIKeyPress): Don't block repeated
-	key events.
-
 2009-02-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* codec-version.h.in: Bump abi version.
