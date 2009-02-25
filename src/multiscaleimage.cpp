@@ -305,7 +305,7 @@ multi_scale_subimage_handle_parsed (void *userdata)
 	msi->Invalidate ();
 }
 
-void
+const char*
 MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 {
 	LOG_MSI ("\nMSI::RenderCollection\n");
@@ -460,21 +460,19 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			int i, j;
 			for (i = (int)((MAX(msi_x, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msi_x + msi_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
 				for (j = (int)((MAX(msi_y, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msi_y + msi_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
-					if (!cache_contains ((const char*)source->get_tile_func (from_layer, i, j, sub_image->source), true)) {
-						context = g_strdup ((const char*)source->get_tile_func (from_layer, i, j, sub_image->source));
-						if (context) {
-							downloading = true;
-							DownloadUri (context);
-							return;
-						}
-					}
+					if (context)
+						g_free (context);
+					context = (char*)source->get_tile_func (from_layer, i, j, sub_image->source);
+					if (context && !cache_contains (context, true))
+						return context;
 				}
 			}
 		}
 	}
+	return NULL;
 }
 
-void
+const char*
 MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 {
 	double msi_w = GetActualWidth ();
@@ -566,7 +564,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	cairo_paint (cr);
 
 	if (downloading)
-		return;
+		return NULL;
 
 	//Get the next tile...
 	while (from_layer < optimal_layer) {
@@ -578,17 +576,15 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_ar, 1.0 / msi_ar); j++) {
+				if (context)
+					g_free (context);
 				context = (char*)source->get_tile_func (from_layer, i, j, source);
-				if (!cache_contains (context, true))
-					if (context) {
-						downloading = true;
-						DownloadUri (context);
-						return;
-					}
+				if (context && !cache_contains (context, true))
+					return context;
 			}
 		}
 	}
-	
+	return NULL;	
 }
 
 void
@@ -654,10 +650,17 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		return;
 	}
 
+	const char* nexttile;
+
 	if (is_collection)
-		RenderCollection (cr, region);
+		nexttile = RenderCollection (cr, region);
 	else
-		RenderSingle (cr, region);
+		nexttile = RenderSingle (cr, region);
+
+	if (nexttile) {
+		downloading = true;
+		DownloadUri (nexttile);
+	}
 }
 
 void

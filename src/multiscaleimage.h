@@ -46,8 +46,8 @@ class MultiScaleImage : public MediaBase {
 
 	Downloader *downloader;
 
-	void RenderSingle (cairo_t *cr, Region *region);
-	void RenderCollection (cairo_t *cr, Region *region);
+	const char* RenderSingle (cairo_t *cr, Region *region);
+	const char* RenderCollection (cairo_t *cr, Region *region);
 
  protected:
 	virtual ~MultiScaleImage ();

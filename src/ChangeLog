@@ -1,5 +1,11 @@
 2009-02-25  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h|cpp: return the next tile to download
+	in RenderSingle, RenderCollection. so the download is triggered
+	from a single place.
+
+2009-02-25  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.h|cpp: split Render in RenderSingle,
 	RenderCollection.
 
