@@ -1,3 +1,8 @@
+2009-02-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add tests
+	for GetCurrentTime ()
+
 2009-02-23  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Browser/ScriptableTypeTest.cs: Add tests for

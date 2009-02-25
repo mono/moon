@@ -38,6 +38,7 @@ using Mono.Moonlight.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using System.Threading;
 using System.Collections.Generic;
+using Microsoft.Silverlight.Testing.UnitTesting;
 
 namespace MoonTest.System.Windows.Media.Animation {
 
@@ -47,7 +48,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 	}
 	
 	[TestClass]
-	public class StoryboardTest : SilverlightTest {
+	public class ___StoryboardTest : SilverlightTest {
 
 		[TestMethod]
 		public void InvalidValues_NonTimeline ()
@@ -586,6 +587,35 @@ namespace MoonTest.System.Windows.Media.Animation {
 			});
 
 			Enqueue (() => Assert.Throws<InvalidOperationException> (() => child.Resume (), "#4"));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void CurrentTime ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard storyboard = (Storyboard) c.Resources ["Storyboard"];
+			int start = Environment.TickCount;
+
+			Enqueue (() => TestPanel.Children.Add (c));
+			Enqueue (() => storyboard.Begin ());
+			EnqueueConditional (()=> Environment.TickCount - start > 300);
+			Enqueue (() => {
+				double ms = storyboard.GetCurrentTime ().TotalMilliseconds;
+				Assert.IsTrue (ms < 350, "Less than 350ms");
+				Assert.AreEqual (((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, ms, "#2");
+				Assert.AreEqual (((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, ms, "#3");
+			});
+			EnqueueConditional (() => Environment.TickCount - start > 1100);
+			Enqueue (() => {
+				double ms = storyboard.GetCurrentTime ().TotalMilliseconds;
+				Assert.IsTrue (ms > 1000, "More than 1000ms");
+				Assert.AreEqual (((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, 1000, "#4");
+				Assert.AreEqual (((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, ms, "#5");
+			});
+			Enqueue (() => TestPanel.Children.Clear ());
 			EnqueueTestComplete ();
 		}
 
