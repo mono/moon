@@ -14,6 +14,7 @@ using System.Windows.Data;
 using System.Globalization;
 using System.ComponentModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Data
 {
@@ -50,7 +51,7 @@ namespace MoonTest.System.Windows.Data
 	}
 
 	[TestClass]
-	public class BindingTest
+	public class BindingTest : SilverlightTest
 	{
 		class InternalData
 		{
@@ -140,6 +141,22 @@ namespace MoonTest.System.Windows.Data
 			}
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void BindXaml ()
+		{
+			Mono.Moonlight.BindingConverter c = new Mono.Moonlight.BindingConverter ();
+			Grid p = (Grid) c.LayoutRoot;
+			Canvas canvas = (Canvas) p.Children [0];
+			TextBlock block = (TextBlock) canvas.Children [0];
+			p.Children.Clear ();
+			TestPanel.Children.Add (canvas);
+			Enqueue (() => Assert.IsNotNull (block.DataContext, "Should not be null"));
+			//EnqueueSleep (5000);
+			EnqueueTestComplete ();
+		}
+		
 		[TestMethod]
 		public void ConstructorTest()
 		{

@@ -1,0 +1,19 @@
+<UserControl x:Class="Mono.Moonlight.BindingConverter"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:clr="clr-namespace:Mono.Moonlight"
+    Width="400" Height="300">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Canvas>
+            <Canvas.Resources>
+                <clr:DateConverter x:Name="dateconverter" />
+            </Canvas.Resources>
+            <TextBlock Text="{Binding Now}">
+            <TextBlock.DataContext>
+                <clr:DateConverter />
+            </TextBlock.DataContext>
+            </TextBlock>
+        </Canvas>
+    </Grid>
+</UserControl>
+
