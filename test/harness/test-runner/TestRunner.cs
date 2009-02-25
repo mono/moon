@@ -90,6 +90,7 @@ namespace MoonlightTests {
 			Log.WriteLine ("TestRunner.MarkTestAsCompleteAndGetNextTest ({0}, {1})", test, successful);
 			TestComplete (test, successful);
 			GetNextTest (out next_available, out next_test_path, out timeout);
+			Log.WriteLine ("TestRunner.MarkTestAsCompleteAndGetNextTest () completed");
 		}
 
 		public void GetNextTest (out bool available, out string test_path, out int timeout)

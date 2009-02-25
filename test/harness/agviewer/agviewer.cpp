@@ -282,6 +282,7 @@ main(int argc, char **argv)
 static void
 run_test (char* test_path, int timeout)
 {
+	log_output ("[agviewer]", "Entering run_test", "Debug");
 	if (timeout_id)
 		g_source_remove (timeout_id);
 	timeout_id = g_timeout_add (timeout, test_timeout, test_path);
@@ -293,6 +294,7 @@ run_test (char* test_path, int timeout)
 	set_current_dir (test_path);
 	log_output (test_path, "[Test start]", "Debug");
 	gtk_moz_embed_load_url (GTK_MOZ_EMBED (browser->moz_embed), test_path);
+	log_output ("[agviewer]", "Leaving run_test", "Debug");
 }
 
 
@@ -337,6 +339,7 @@ mark_test_as_complete_and_start_next_test (gboolean successful)
 	g_free (test_path);
 	test_path = NULL;
 
+	log_output ("[agviewer]", "Calling MarkTestAsCompleteAndGetNextTest", "Debug");
 	if (!dbus_g_proxy_call (dbus_proxy, "MarkTestAsCompleteAndGetNextTest", &error,
 			G_TYPE_STRING, test_name,
 			G_TYPE_BOOLEAN, successful,
@@ -351,11 +354,14 @@ mark_test_as_complete_and_start_next_test (gboolean successful)
 		available = false;
 	}
 	g_free (test_name);
+	log_output ("[agviewer]", "Called MarkTestAsCompleteAndGetNextTest", "Debug");
 
 	if (available)
 		run_test (test_path, timeout);
-	else
+	else {
+		log_output ("[agviewer]", "Calling gtk_main_quit ()", "Debug");
 		gtk_main_quit ();
+	}
 }
 
 
