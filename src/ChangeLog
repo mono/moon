@@ -1,3 +1,13 @@
+2009-02-24  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (EventObject::FinishEmit): if handlers are
+	added to the list during emission, we can end up doing the Finish
+	decrements when we didn't do the Start increments, leading to a
+	negative events->emitting count.  This causes us to spin in
+	unref_delayed on shutdown.  Fixes bug #479364.
+
+	r: kangaroo.
+
 2009-02-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* codec-version.h.in: Bump abi version.
