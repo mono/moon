@@ -1,5 +1,10 @@
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Don't run
+	  these tests first.
+
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs:
 	* System.Windows.Data/BindingConverter.xaml:
 	* System.Windows.Data/BindingConverter.xaml.cs: Add tests for
