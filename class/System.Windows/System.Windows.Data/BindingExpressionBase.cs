@@ -159,6 +159,7 @@ namespace System.Windows.Data {
 			cached = true;
 			if (DataSource == null) {
 				cachedValue = dp.DefaultValue;
+				return cachedValue;
 			}
 			else if (string.IsNullOrEmpty (Binding.Path.Path)) {
 				// If the path is empty, return the active DataSource
@@ -166,6 +167,7 @@ namespace System.Windows.Data {
 			}	
 			else if (PropertyInfo == null) {
 				cachedValue = dp.DefaultValue;
+				return cachedValue;
 			}
 			else {
 				cachedValue = PropertyInfo.GetValue (PropertySource, null);

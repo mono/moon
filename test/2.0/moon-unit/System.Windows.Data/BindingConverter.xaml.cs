@@ -22,6 +22,9 @@ namespace Mono.Moonlight
 
 		public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
+			if (value == null)
+				return "null-value";
+			
 			if (parameter is DateConverter)
 				return "converter-object";
 

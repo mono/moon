@@ -1,3 +1,8 @@
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: If the property path is invalid,
+	  we should bail out early and just return DP.DefaultValue.
+
 2009-02-23  Jackson Harper  <jackson@ximian.com>
 
 	* BindingExpressionBase.cs: If the user supplied ValueConverter

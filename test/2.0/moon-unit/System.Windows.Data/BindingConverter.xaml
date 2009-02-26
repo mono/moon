@@ -28,9 +28,14 @@
             </TextBlock>
             
             <TextBlock Canvas.Top="45" Text="{Binding Now,Converter={StaticResource dateconverter},ConverterParameter={StaticResource dateconverter}}">
-            <TextBlock.DataContext>
-                    <clr:DateConverter />
-            </TextBlock.DataContext>
+                <TextBlock.DataContext>
+                        <clr:DateConverter />
+                </TextBlock.DataContext>
+            </TextBlock>
+             <TextBlock Canvas.Top="60" Text="{Binding FakeOne,Converter={StaticResource dateconverter},ConverterParameter={StaticResource dateconverter}}">
+                <TextBlock.DataContext>
+                        <clr:DateConverter />
+                </TextBlock.DataContext>
             </TextBlock>
         </Canvas>
     </Grid>

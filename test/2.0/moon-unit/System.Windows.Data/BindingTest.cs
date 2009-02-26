@@ -155,6 +155,7 @@ namespace MoonTest.System.Windows.Data
 				Assert.AreEqual ("converter-string", ((TextBlock)canvas.Children[1]).Text, "#2");
 				Assert.AreEqual ("converter-string", ((TextBlock)canvas.Children[2]).Text, "#3");
 				Assert.AreEqual ("converter-object", ((TextBlock)canvas.Children[3]).Text, "#4");
+				Assert.AreEqual ("", ((TextBlock)canvas.Children[4]).Text, "#4");
 			});
 			EnqueueTestComplete ();
 		}

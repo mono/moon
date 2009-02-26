@@ -1,6 +1,14 @@
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Data/BindingConverter.xaml:
+	* System.Windows.Data/BindingConverter.xaml.cs: If the
+	  property path is invalid, we should bail out early and just
+	  return DP.DefaultValue.
+
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs:
 	* System.Windows.Data/BindingConverter.xaml.cs: When parsing
 	  bindings 'this is a string' is counted as a single string,
 	  so parse it as such.
