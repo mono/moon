@@ -37,10 +37,13 @@
                         <clr:DateConverter />
                 </TextBlock.DataContext>
             </TextBlock>
-            <TextBlock Canvas.Top="60" Text="{Binding NullNow,Converter={StaticResource dateconverter},ConverterParameter={StaticResource dateconverter}}">
+            <TextBlock Canvas.Top="75" Text="{Binding NullNow,Converter={StaticResource dateconverter},ConverterParameter={StaticResource dateconverter}}">
                 <TextBlock.DataContext>
                         <clr:DateConverter />
                 </TextBlock.DataContext>
+            </TextBlock>
+            <TextBlock Canvas.Top="90" Text="{Binding NullNow,Converter={StaticResource dateconverter},ConverterParameter={StaticResource dateconverter}}">
+                <!--No DataContext-->
             </TextBlock>
         </Canvas>
     </Grid>

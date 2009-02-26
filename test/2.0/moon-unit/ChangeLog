@@ -1,3 +1,9 @@
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Data/BindingConverter.xaml: Added another
+	  sanity check test.
+
 2009-02-26  Jackson Harper  <jackson@ximian.com>
 
 	* System.Windows/ResourceDictionaryTest.cs: Add tests for static
