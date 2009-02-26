@@ -79,6 +79,29 @@ namespace MoonTest.System.Windows.Media.Animation {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void MultipleStartStop ()
+		{
+			int count = 0;
+			
+			Rectangle target = new Rectangle ();
+			
+			Storyboard a = new Storyboard ();
+			DoubleAnimation animation = new DoubleAnimation { From = 5, To = 100, Duration = new Duration (TimeSpan.FromMilliseconds (100)) };
+			Storyboard.SetTarget (animation, target);
+			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
+			a.Children.Add (animation);
+
+			a.Completed += delegate { count++; a.Begin (); };
+
+			Enqueue (() => TestPanel.Children.Add (target));
+			Enqueue (() => a.Begin ());
+			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (1500));
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
 		public void NameAndKey()
 		{
 			Storyboard board = (Storyboard)XamlReader.Load(
