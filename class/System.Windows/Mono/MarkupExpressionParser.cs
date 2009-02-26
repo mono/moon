@@ -246,7 +246,6 @@ namespace Mono.Xaml {
 			}
 			
 			if (end == 0) {
-				Console.WriteLine ("At the end");
 				next = Char.MaxValue;
 				return null;
 			}

@@ -1,5 +1,9 @@
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
+	* MarkupExpressionParser.cs: Remove debug output
+
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
 	* MarkupExpressionParser.cs: When parsing bindings 'this is a
 	  string' is counted as a single string, so parse it as such.
 
