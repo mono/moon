@@ -77,8 +77,8 @@ glib_is_stupid (gpointer key,
 		gpointer value,
 		gpointer user_data)
 {
-	g_free (key);
-	delete ((Value*)value);
+	// according to g_hash_table_foreach_remove documentation the values are freed when (a) TRUE is returned and
+	// (b) free functions were provided when creating the hashtable. Fix a crash in moon-unit on SLED10 x86
 	return TRUE;
 }
 #endif
