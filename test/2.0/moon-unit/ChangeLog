@@ -2,6 +2,14 @@
 
 	* System.Windows.Data/BindingTest.cs:
 	* System.Windows.Data/BindingConverter.xaml:
+	* System.Windows.Data/BindingConverter.xaml.cs: Added
+	  additional test to ensure that nullable valuetypes are
+	  handled correctly.
+
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Data/BindingConverter.xaml:
 	* System.Windows.Data/BindingConverter.xaml.cs: If the
 	  property path is invalid, we should bail out early and just
 	  return DP.DefaultValue.

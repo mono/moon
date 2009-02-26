@@ -32,7 +32,12 @@
                         <clr:DateConverter />
                 </TextBlock.DataContext>
             </TextBlock>
-             <TextBlock Canvas.Top="60" Text="{Binding FakeOne,Converter={StaticResource dateconverter},ConverterParameter={StaticResource dateconverter}}">
+            <TextBlock Canvas.Top="60" Text="{Binding FakeOne,Converter={StaticResource dateconverter},ConverterParameter={StaticResource dateconverter}}">
+                <TextBlock.DataContext>
+                        <clr:DateConverter />
+                </TextBlock.DataContext>
+            </TextBlock>
+            <TextBlock Canvas.Top="60" Text="{Binding NullNow,Converter={StaticResource dateconverter},ConverterParameter={StaticResource dateconverter}}">
                 <TextBlock.DataContext>
                         <clr:DateConverter />
                 </TextBlock.DataContext>
