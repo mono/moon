@@ -1,5 +1,10 @@
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
+	* MarkupExpressionParser.cs: When parsing bindings 'this is a
+	  string' is counted as a single string, so parse it as such.
+
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
 	* DLRHost.cs: Nuke a dead file.
 
 2009-02-23  Andreia Gaita  <avidigal@novell.com>

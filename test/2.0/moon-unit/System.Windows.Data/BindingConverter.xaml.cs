@@ -23,10 +23,10 @@ namespace Mono.Moonlight
 		public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
 			if (parameter is DateConverter)
-				return "dateconverter-object";
+				return "converter-object";
 
 			if (((string) parameter) == "dateconverter")
-				return "dateconverter-string";
+				return "converter-string";
 
 			return  ((DateTime) value).ToString ((string) parameter);
 		}

@@ -211,8 +211,9 @@ namespace Mono.Xaml {
 				break;
 			case "ConverterParameter":
 				if (value == null)
-					throw new Exception ("A Binding ConverterParameter must be available as StaticResouce.");
-				b.ConverterParameter = value;
+					b.ConverterParameter = str_value;
+				else
+					b.ConverterParameter = value;
 				break;
 			case "NotifyValidationOnError":
 				bool bl;
@@ -234,19 +235,28 @@ namespace Mono.Xaml {
 		private static string GetNextPiece (ref string remaining, out char next)
 		{
 			int end = 0;
-
 			remaining = remaining.TrimStart ();
-
-			while (end < remaining.Length && !Char.IsWhiteSpace (remaining [end]) && remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '=')
-				end++;
-
+			if (remaining.Length > 1 && remaining [end] == '\'')
+				end = remaining.IndexOf ("'", end + 1, StringComparison.Ordinal) + 1;
+			
+			if (end == -1 || end == 0) {
+				end = 0;
+				while (end < remaining.Length && !Char.IsWhiteSpace (remaining [end]) && remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '=')
+					end++;
+			}
+			
 			if (end == 0) {
+				Console.WriteLine ("At the end");
 				next = Char.MaxValue;
 				return null;
 			}
 
 			next = remaining [end];
-			string res = remaining.Substring (0, end);
+			string res;
+			if (remaining [0] == '\'' && remaining [end - 1] == '\'')
+				res = remaining.Substring (1, end - 2);
+			else
+				res = remaining.Substring (0, end);
 			remaining = remaining.Substring (end + 1);
 
 			return res;

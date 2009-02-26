@@ -1,5 +1,12 @@
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Data/BindingConverter.xaml.cs: When parsing
+	  bindings 'this is a string' is counted as a single string,
+	  so parse it as such.
+
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingConverter.xaml: Move the
 	  datacontext to the correct place.
 
