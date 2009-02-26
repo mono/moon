@@ -275,23 +275,45 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 		// Moonlight addition
 		public static void Throws<TException> (TestCode code) where TException : Exception
 		{
-			Throws (code, typeof (TException), null);
+			Throws (code, typeof (TException), null, String.Empty);
+		}
+
+		// Moonlight addition
+		public static void Throws<TException, TInnerException> (TestCode code)
+			where TException : Exception
+			where TInnerException : Exception
+		{
+			Throws (code, typeof (TException), typeof (TInnerException), String.Empty);
 		}
 
 		// Moonlight addition
 		public static void Throws<TException> (TestCode code, string message) where TException : Exception
 		{
-			Throws (code, typeof (TException), message);
+			Throws (code, typeof (TException), null, message);
+		}
+
+		// Moonlight addition
+		public static void Throws<TException, TInnerException> (TestCode code, string message)
+			where TException : Exception
+			where TInnerException : Exception
+		{
+			Throws (code, typeof (TException), typeof (TInnerException), message);
 		}
 
 		// Moonlight addition
 		public static void Throws (TestCode code, Type expected_exception)
 		{
-			Throws (code, expected_exception, null);
+			Throws (code, expected_exception, null, String.Empty);
 		}
 		
  		// Moonlight addition
 		public static void Throws (TestCode code, Type expected_exception, string message)
+		{
+			Throws (code, expected_exception, null, message);
+		}
+
+		// Moonlight addition
+		public static void Throws (TestCode code, Type expected_exception, Type expected_inner_exception, string message)
 		{
 			bool failed = false;
 			try {
@@ -301,6 +323,11 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 				if (!(ex.GetType () == expected_exception))
 					throw new AssertFailedException (string.Format ("Expected '{0}', got '{1}'. {2}", expected_exception.FullName, ex.GetType ().FullName, message));
 				//System.Diagnostics.Debug.WriteLine (ex.ToString ());
+				if (expected_inner_exception != null) {
+					// we only check if the inner exception was supplied
+					if (ex.InnerException.GetType () != expected_inner_exception)
+						throw new AssertFailedException (string.Format ("Expected InnerException '{0}', got '{1}'. {2}", expected_inner_exception.FullName, ex.InnerException.GetType ().FullName, message));
+				}
 			}
 			if (failed)
 				throw new AssertFailedException (string.Format ("Expected '{0}', but got no exception. {1}", expected_exception.FullName, message));

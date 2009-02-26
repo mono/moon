@@ -1,3 +1,8 @@
+2009-02-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Assert.cs: Add new Assert.Throws<Exception,Exception> to look at
+	the inner exception type.
+
 2009-01-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Assert.cs: Add a few more Assert methods.
