@@ -1,3 +1,11 @@
+2009-02-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBuffer::Resize): If we fail to downsize, don't
+	return failure.
+	(TextBuffer::Replace): Don't call Resize() if the replacement text
+	is shorter than the old subtext because the realloc() would lose
+	data before we had a chance to shift things into place.
+
 2009-02-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* resources.cpp: Fix crash on SLED (old glib) when clearing the 

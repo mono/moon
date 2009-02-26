@@ -43,24 +43,28 @@ class TextBuffer {
 	
 	bool Resize (int needed)
 	{
+		int new_size = allocated;
 		bool resize = false;
 		void *buf;
 		
 		if (allocated >= needed + 128) {
-			while (allocated >= needed + 128)
-				allocated -= 128;
+			while (new_size >= needed + 128)
+				new_size -= 128;
 			resize = true;
 		} else if (allocated < needed) {
-			while (allocated < needed)
-				allocated += 128;
+			while (new_size < needed)
+				new_size += 128;
 			resize = true;
 		}
 		
 		if (resize) {
-			if (!(buf = g_try_realloc (text, UNICODE_LEN (allocated))))
-				return false;
+			if (!(buf = g_try_realloc (text, UNICODE_LEN (new_size)))) {
+				// if new_size is < allocated, then we can pretend like we succeeded
+				return new_size < allocated;
+			}
 			
 			text = (gunichar *) buf;
+			allocated = new_size;
 		}
 		
 		return true;
@@ -239,7 +243,7 @@ class TextBuffer {
 			return;
 		}
 		
-		if (!Resize ((len - length) + count + 1))
+		if (count > length && !Resize (len + (count - length) + 1))
 			return;
 		
 		// calculate the number of chars beyond @start that won't be cut
