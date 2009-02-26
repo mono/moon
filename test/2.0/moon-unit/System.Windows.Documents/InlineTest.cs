@@ -39,22 +39,6 @@ namespace MoonTest.System.Windows.Documents {
 	[TestClass]
 	public class InlineTest {
 
-		static public void CheckDefaults (Inline i)
-		{
-			Assert.AreEqual ("Portable User Interface", i.FontFamily.Source, "FontFamily");
-			Assert.AreEqual (11, i.FontSize, "FontSize");
-
-			Assert.AreEqual (FontStretches.Normal, i.FontStretch, "FontStretch");
-			Assert.AreEqual (FontStyles.Normal, i.FontStyle, "FontStyle");
-			Assert.AreEqual (FontWeights.Normal, i.FontWeight, "FontWeight");
-
-			Assert.IsNotNull (i.Foreground, "Foreground");
-			Assert.AreEqual (Colors.Black, (i.Foreground as SolidColorBrush).Color);
-			
-			Assert.AreEqual ("en-us", i.Language.IetfLanguageTag, "Language");
-			Assert.IsNull (i.TextDecorations, "TextDecorations");
-		}
-
 		static public void CheckTextBlockInherited (Inline i)
 		{
 			Assert.AreEqual ("Portable User Interface", i.FontFamily.Source, "FontFamily");
