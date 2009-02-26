@@ -1,5 +1,9 @@
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
+	* moon-unit.mdp: Add some missing files to the solution files
+
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ImageTest.cs: Spaces -> tabs for
 	  consistency. Also ensure the testpanel is cleared after the
 	  test.
