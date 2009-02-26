@@ -1,3 +1,8 @@
+2009-02-26  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows/ResourceDictionaryTest.cs: Add tests for static
+	resource element syntax.
+
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs:

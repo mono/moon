@@ -352,6 +352,24 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void TestStaticResourceElementSyntax ()
+		{
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child""><Rectangle.Fill><StaticResource ResourceKey=""FillBrush"" /></Rectangle.Fill></Rectangle></Canvas>");
+
+		}
+
+		[TestMethod]
+		public void TestStaticResourceMissingElementSyntax ()
+		{
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child""><Rectangle.Fill><StaticResource ResourceKey=""nope"" /></Rectangle.Fill></Rectangle></Canvas>"); }, "1");
+
+			/*
+			  Don't do this it crashes Silverlight
+			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child""><Rectangle.Fill><StaticResource /></Rectangle.Fill></Rectangle></Canvas>"); }, "1");
+			*/
+		}
+		
+		[TestMethod]
 		public void TestResourceFrozenState ()
 		{
 			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child"" Fill=""{StaticResource FillBrush}""/></Canvas>");
