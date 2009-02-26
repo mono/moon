@@ -15,28 +15,24 @@ namespace Mono.Moonlight
 {
 	public class DateConverter : IValueConverter
 	{
-		public DateConverter ()
-		{
-			Console.WriteLine ("I'm created");
-		}
 		public DateTime Now
 		{
-			get { return DateTime.Now; }
+			get { return new DateTime (2009, 2, 26); }
 		}
 
 		public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
-			Console.WriteLine ("**********");
-			Console.WriteLine ("Converting");
-			Console.WriteLine ("**********");
-			return ((DateTime) value).ToString ((string) parameter);
+			if (parameter is DateConverter)
+				return "dateconverter-object";
+
+			if (((string) parameter) == "dateconverter")
+				return "dateconverter-string";
+
+			return  ((DateTime) value).ToString ((string) parameter);
 		}
 
 		public object ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
-			Console.WriteLine ("**********");
-			Console.WriteLine ("Converting Back");
-			Console.WriteLine ("**********");
 			return DateTime.Parse ((string) value);
 		}
 		

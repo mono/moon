@@ -143,16 +143,20 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void BindXaml ()
 		{
 			Mono.Moonlight.BindingConverter c = new Mono.Moonlight.BindingConverter ();
 			Grid p = (Grid) c.LayoutRoot;
 			Canvas canvas = (Canvas) p.Children [0];
-			TextBlock block = (TextBlock) canvas.Children [0];
 			p.Children.Clear ();
 			TestPanel.Children.Add (canvas);
-			Enqueue (() => Assert.IsNotNull (block.DataContext, "Should not be null"));
-			//EnqueueSleep (5000);
+			Enqueue (() => {
+				Assert.AreEqual ("Thursday, February, 2009", ((TextBlock)canvas.Children[0]).Text, "#1");
+				Assert.AreEqual ("converter-string", ((TextBlock)canvas.Children[1]).Text, "#2");
+				Assert.AreEqual ("converter-string", ((TextBlock)canvas.Children[2]).Text, "#3");
+				Assert.AreEqual ("converter-object", ((TextBlock)canvas.Children[3]).Text, "#4");
+			});
 			EnqueueTestComplete ();
 		}
 		

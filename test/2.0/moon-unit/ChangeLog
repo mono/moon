@@ -1,5 +1,12 @@
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Data/BindingConverter.xaml:
+	* System.Windows.Data/BindingConverter.xaml.cs: Add tests for
+	  ConvertParameters in databinding.
+
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp: Add some missing files to the solution files
 
 2009-02-26  Alan McGovern  <amcgovern@novell.com>

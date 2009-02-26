@@ -8,10 +8,30 @@
             <Canvas.Resources>
                 <clr:DateConverter x:Name="dateconverter" />
             </Canvas.Resources>
-            <TextBlock Text="{Binding Now}">
             <TextBlock.DataContext>
-                <clr:DateConverter />
+                    <clr:DateConverter />
             </TextBlock.DataContext>
+                
+            <TextBlock Text="{Binding Now,Converter={StaticResource dateconverter},ConverterParameter='dddd, MMMM, yyyy'}">
+                <TextBlock.DataContext>
+                    <clr:DateConverter />
+                </TextBlock.DataContext>
+            </TextBlock>
+
+            <TextBlock Canvas.Top="15" Text="{Binding Now,Converter={StaticResource dateconverter},ConverterParameter='dateconverter'}">
+                <TextBlock.DataContext>
+                    <clr:DateConverter />
+                </TextBlock.DataContext>
+            </TextBlock>
+
+            <TextBlock Canvas.Top="30" Text="{Binding Now,Converter={StaticResource dateconverter},ConverterParameter=dateconverter}">
+                <TextBlock.DataContext>
+                    <clr:DateConverter />
+                </TextBlock.DataContext>
+            </TextBlock>
+            
+            <TextBlock Canvas.Top="45" Text="{Binding Now,Converter={StaticResource dateconverter},ConverterParameter={StaticResource dateconverter}}">
+
             </TextBlock>
         </Canvas>
     </Grid>
