@@ -40,13 +40,6 @@ namespace MoonTest.System.Windows.Documents {
 	public class LineBreakTest {
 
 		[TestMethod]
-		public void Defaults ()
-		{
-			LineBreak lb = new LineBreak ();
-			InlineTest.CheckDefaults (lb);
-		}
-
-		[TestMethod]
 		public void NullifyFontFamily ()
 		{
 			LineBreak lb = new LineBreak ();

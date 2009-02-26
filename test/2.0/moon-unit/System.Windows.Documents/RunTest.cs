@@ -41,15 +41,6 @@ namespace MoonTest.System.Windows.Documents {
 	public class RunTest {
 
 		[TestMethod]
-		public void Defaults ()
-		{
-			Run r = new Run ();
-			Assert.IsNull (r.Text, "Text");
-
-			InlineTest.CheckDefaults (r);
-		}
-
-		[TestMethod]
 		public void TextBlockInherited ()
 		{
 			TextBlock tb = new TextBlock ();
