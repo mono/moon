@@ -52,15 +52,12 @@ namespace Mono.Moonlight
 
 	public partial class BindingConverter : UserControl
 	{
-
-            internal System.Windows.Controls.Grid LayoutRoot;
-        
-            internal Mono.Moonlight.DateConverter dateconverter;
+        internal System.Windows.Controls.Grid Root;
 		public BindingConverter ()
 		{
 			System.Windows.Application.LoadComponent (this, new System.Uri ("/moon-unit;component/BindingConverter.xaml", System.UriKind.Relative));
-			this.LayoutRoot = ((System.Windows.Controls.Grid) (this.FindName ("LayoutRoot")));
-			this.dateconverter = ((Mono.Moonlight.DateConverter) (this.FindName ("dateconverter")));
+			System.Windows.Application.LoadComponent (this, new System.Uri ("/moon-unit;component/System.Windows.Data/BindingConverter.xaml", System.UriKind.Relative));
+			Root = ((System.Windows.Controls.Grid) (this.FindName ("LayoutRoot")));
 		}
 	}
 }

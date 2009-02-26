@@ -121,6 +121,9 @@
     <Compile Include="System.Windows.Controls\TextBoxTest.cs" />
     <Compile Include="System.Windows.Controls\UIElementCollectionTest.cs" />
     <Compile Include="System.Windows.Controls\UserControlTest.cs" />
+    <Compile Include="System.Windows.Data\BindingConverter.xaml.cs">
+      <DependentUpon>BindingConverter.xaml</DependentUpon>
+    </Compile>
     <Compile Include="System.Windows.Data\BindingTest.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
     <Compile Include="System.Windows.Documents\FontSourceTest.cs" />
@@ -385,6 +388,12 @@
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="System.Windows.Data\BindingConverter.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System.Windows.Ink\" />

@@ -146,7 +146,7 @@ namespace MoonTest.System.Windows.Data
 		public void BindXaml ()
 		{
 			Mono.Moonlight.BindingConverter c = new Mono.Moonlight.BindingConverter ();
-			Grid p = (Grid) c.LayoutRoot;
+			Grid p = (Grid) c.Root;
 			Canvas canvas = (Canvas) p.Children [0];
 			p.Children.Clear ();
 			TestPanel.Children.Add (canvas);
