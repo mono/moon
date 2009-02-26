@@ -1,5 +1,9 @@
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.mdp: Nuke a dead file.
+
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.mdp: Add some missing files to the solution
 	  files
 

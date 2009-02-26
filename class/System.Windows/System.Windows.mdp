@@ -425,7 +425,6 @@
     <File name="System.Windows.Controls/HitTestCollection.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/ApplicationLauncher.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="Mono/DLRHost.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/MarkupExpressionParser.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/MoonlightTypeConverter.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/MoonlightValueConverter.cs" subtype="Code" buildaction="Compile" />
