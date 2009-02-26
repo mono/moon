@@ -65,71 +65,73 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
-                public void LoadTest ()
-                {
-                        bool loaded = false;
+		public void LoadTest ()
+		{
+			bool loaded = false;
 			bool failed = false;
-                        double progress = 0.0;
+			double progress = 0.0;
 
 			Image image = new Image ();
-                        BitmapImage bit = new BitmapImage (new Uri ("http://planet.gnome.org/heads/miguel.png"));
+			BitmapImage bit = new BitmapImage (new Uri ("http://planet.gnome.org/heads/miguel.png"));
 			bit.DownloadProgress += (sender, args) => { progress = args.Progress; };
 			image.Source = bit;
 			
-                        image.Loaded += (sender, args) => { loaded = true; };
+			image.Loaded += (sender, args) => { loaded = true; };
 			image.ImageFailed += (sender, args) => { failed = true; };
 
-                        Enqueue (() => TestPanel.Children.Add (image));
-                        EnqueueConditional (() => loaded);
+			Enqueue (() => TestPanel.Children.Add (image));
+			EnqueueConditional (() => loaded);
 			Enqueue (() => {
-					Assert.IsFalse (failed, "failed");
-					Assert.AreEqual (100, progress, "progress");
-					//Assert.AreEqual (new Size (64, 96), new Size (image.ActualWidth, image.ActualHeight), "actual");
-					Assert.AreEqual (new Size (399, 598), image.DesiredSize, "desired");
-					Assert.AreEqual (new Size (Double.NaN, Double.NaN), new Size (image.Width, image.Height), "specified");
-				});
-
-                        EnqueueTestComplete ();
-                } 
-
+				Assert.IsFalse (failed, "failed");
+				Assert.AreEqual (100, progress, "progress");
+				//Assert.AreEqual (new Size (64, 96), new Size (image.ActualWidth, image.ActualHeight), "actual");
+				Assert.AreEqual (new Size (399, 598), image.DesiredSize, "desired");
+				Assert.AreEqual (new Size (Double.NaN, Double.NaN), new Size (image.Width, image.Height), "specified");
+			});
+			
+			Enqueue (() => TestPanel.Children.Clear ());
+			EnqueueTestComplete ();
+		} 
+		
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
-                public void LoadTestCanvas ()
-                {
-                        bool loaded = false;
+		public void LoadTestCanvas ()
+		{
+			bool loaded = false;
 			bool failed = false;
-                        double progress = 0.0;
-
+			double progress = 0.0;
+			
 			Image image = new Image ();
-                        BitmapImage bit = new BitmapImage (new Uri ("http://planet.gnome.org/heads/miguel.png"));
+			BitmapImage bit = new BitmapImage (new Uri ("http://planet.gnome.org/heads/miguel.png"));
 			bit.DownloadProgress += (sender, args) => { progress = args.Progress; };
 			image.Source = bit;
 			
-                        image.Loaded += (sender, args) => { loaded = true; };
+			image.Loaded += (sender, args) => { loaded = true; };
 			image.ImageFailed += (sender, args) => { failed = true; };
-
+			
 			Canvas c = new Canvas ();
 			c.Children.Add (image);
-
-                        Enqueue (() => TestPanel.Children.Add (c));
-                        EnqueueConditional (() => loaded);
+			
+			Enqueue (() => TestPanel.Children.Add (c));
+			EnqueueConditional (() => loaded);
 			Enqueue (() => {
-					Assert.IsFalse (failed, "failed");
-					Assert.AreEqual (100, progress, "progress");
-					Assert.AreEqual (new Size (64, 96), new Size (image.ActualWidth, image.ActualHeight), "actual");
-					Assert.AreEqual (new Size (0, 0), image.DesiredSize, "desired");
-					Assert.AreEqual (new Size (Double.NaN, Double.NaN), new Size (image.Width, image.Height), "specified");
-					
-					image.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
-
-					Assert.AreEqual (new Size (0, 0), image.DesiredSize, "desired");
-					Assert.AreEqual (new Size (64, 96), new Size (image.ActualWidth, image.ActualHeight), "actual");
-				});
-
-                        EnqueueTestComplete ();
-                } 
-
+				Assert.IsFalse (failed, "failed");
+				Assert.AreEqual (100, progress, "progress");
+				Assert.AreEqual (new Size (64, 96), new Size (image.ActualWidth, image.ActualHeight), "actual");
+				Assert.AreEqual (new Size (0, 0), image.DesiredSize, "desired");
+				Assert.AreEqual (new Size (Double.NaN, Double.NaN), new Size (image.Width, image.Height), "specified");
+				
+				image.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+				
+				Assert.AreEqual (new Size (0, 0), image.DesiredSize, "desired");
+				Assert.AreEqual (new Size (64, 96), new Size (image.ActualWidth, image.ActualHeight), "actual");
+			});
+			
+			Enqueue (() => TestPanel.Children.Clear ());
+			EnqueueTestComplete ();
+		} 
+		
 		[TestMethod]
 		public void ComputeActualWidth ()
 		{

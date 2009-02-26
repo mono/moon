@@ -1,3 +1,9 @@
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ImageTest.cs: Spaces -> tabs for
+	  consistency. Also ensure the testpanel is cleared after the
+	  test.
+
 2009-02-25  Jackson Harper  <jackson@ximian.com>
 
 	* System.Windows.Data/BindingTest.cs: Test is fixed.
