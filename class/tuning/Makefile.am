@@ -33,9 +33,11 @@ FILES = smcs.exe $(DLLFILES)
 WORKING_FILES = $(FILES:%=$(WORKING_DIR)/%)
 OUTPUT_FILES = $(FILES:%=$(OUTPUT_DIR)/%)
 
+TUNER_INSTALL_DIR = $(DESTDIR)$(prefix)/lib/mono/2.1
+
 all-local: $(WORKING_FILES) $(OUTPUT_FILES)
 
-install-data-local: end-install
+install-data-local: $(TUNER_INSTALL_DIR) end-install
 
 clean-local:
 	rm -f $(OUTPUT_FILES) tune.stamp tune.stampt
@@ -65,7 +67,8 @@ $(OUTPUT_FILES): $(WORKING_FILES)
 	MONO_PATH="../lib/tuner$(PLATFORM_PATH_SEPARATOR)$$MONO_PATH" mono --debug $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
 	for i in $(DLLFILES); do sn -q -R $(OUTPUT_DIR)/$$i ../mono.snk; done
 
-TUNER_INSTALL_DIR = $(DESTDIR)$(prefix)/lib/mono/2.1
+$(TUNER_INSTALL_DIR):
+	-mkdir -p $(TUNER_INSTALL_DIR)
 
 end-install:	\
 	inst-mscorlib.dll	\
