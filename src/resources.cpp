@@ -71,25 +71,13 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 	return true;
 }
 
-#if !GTK_CHECK_VERSION(2,12,0)
-static gboolean
-glib_is_stupid (gpointer key,
-		gpointer value,
-		gpointer user_data)
-{
-	// according to g_hash_table_foreach_remove documentation the values are freed when (a) TRUE is returned and
-	// (b) free functions were provided when creating the hashtable. Fix a crash in moon-unit on SLED10 x86
-	return TRUE;
-}
-#endif
-
 bool
 ResourceDictionary::Clear ()
 {
-#if GTK_CHECK_VERSION(2,12,0)
+#if GLIB_CHECK_VERSION(2,12,0)
 	g_hash_table_remove_all (hash);
 #else
-	g_hash_table_foreach_remove (hash, glib_is_stupid, NULL);
+	g_hash_table_foreach_remove (hash, (GHRFunc) gtk_true, NULL);
 #endif
 
 	return Collection::Clear ();
