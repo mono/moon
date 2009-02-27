@@ -1,5 +1,11 @@
 2009-02-26  Chris Toshok  <toshok@ximian.com>
 
+	* System.Windows.Controls/ControlTemplateTest.cs (ParentOfContent):
+	test to see what FWE.Parent returns for a content UIElement
+	subclass.
+
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
 	* System.Windows/FrameworkElementTest.cs (TagTest): this test
 	works now.
 

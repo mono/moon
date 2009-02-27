@@ -160,6 +160,38 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual ("hi", tb.Text, "3");
 		}
 
+		[TestMethod]
+		[MoonlightBug]
+		public void ParentOfContent ()
+		{
+			Canvas c = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Canvas.Resources>
+  <ControlTemplate x:Key=""ButtonTemplate"" TargetType=""Button"">
+      <ContentPresenter Content=""{TemplateBinding Content}"" />
+  </ControlTemplate>
+</Canvas.Resources>
+<Button x:Name=""button"" Template=""{StaticResource ButtonTemplate}"">
+  <Button.Content>
+    <TextBlock Text=""hi there"" />
+  </Button.Content>
+</Button>
+</Canvas>");
+
+			Button b = (Button)c.FindName ("button");
+
+			Assert.IsTrue (b.ApplyTemplate (), "1");
+
+			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (b), "2");
+			Assert.IsTrue (VisualTreeHelper.GetChild (b, 0) is ContentPresenter, "3");
+
+			ContentPresenter cp = (ContentPresenter)VisualTreeHelper.GetChild (b, 0);
+
+			Assert.IsTrue (object.ReferenceEquals (cp.Content, b.Content), "4");
+
+			Assert.AreEqual (b, ((TextBlock)cp.Content).Parent, "5");
+		}
+
 
 		[TestMethod]
 		public void TemplateBindingTest1 ()
