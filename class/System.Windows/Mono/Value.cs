@@ -293,11 +293,21 @@ namespace Mono {
 		//
 		// How do we support "null" values, should the caller take care of that?
 		//
-		public static Value FromObject (object v, bool as_managed_object)
+		public static Value FromObject (object v, bool box_value_types)
 		{
 			Value value = new Value ();
 			
 			unsafe {
+				// get rid of this case right away.
+				if (box_value_types && v.GetType().IsValueType) {
+					Console.WriteLine ("Boxing a value of type {0}:", v.GetType());
+
+					GCHandle handle = GCHandle.Alloc (v);
+					value.k = Kind.MANAGED;
+					value.u.p = Helper.GCHandleToIntPtr (handle);
+					return value;
+				}
+
 				if (v is DependencyObject) {
 					DependencyObject dov = (DependencyObject) v;
 
@@ -395,7 +405,7 @@ namespace Mono {
 				else if (v is Matrix) {
 					// hack around the fact that managed Matrix is a struct while unmanaged Matrix is a DO
 					// i.e. the unmanaged and managed structure layouts ARE NOT equal
-					return FromObject (new UnmanagedMatrix ((Matrix) v), as_managed_object);
+					return FromObject (new UnmanagedMatrix ((Matrix) v), box_value_types);
 				}
 				else if (v is Duration) {
 					Duration d = (Duration) v;
@@ -476,7 +486,9 @@ namespace Mono {
 					value.u.p = Helper.AllocHGlobal (sizeof (ManagedTypeInfo));
 					Marshal.StructureToPtr (mti, value.u.p, false);
 				}
-				else if (as_managed_object) {
+				else {
+					Console.WriteLine ("Do not know how to encode {0} yet, boxing it", v.GetType ());
+
 					// TODO: We probably need to marshal types that can animate as the 
 					// corresponding type (Point, Double, Color, etc).
 					// TODO: We need to store the GCHandle somewhere so that we can free it,
@@ -484,10 +496,6 @@ namespace Mono {
 					GCHandle handle = GCHandle.Alloc (v);
 					value.k = Kind.MANAGED;
 					value.u.p = Helper.GCHandleToIntPtr (handle);
-				}
-				else {
-					throw new Exception (
-						String.Format ("Do not know how to encode {0} yet", v.GetType ()));
 				}
 			}
 			return value;

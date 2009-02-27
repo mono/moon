@@ -1,3 +1,17 @@
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
+	* Setter.cs (static .ctor): set
+	ConvertedValueProperty.BoxValueTypes to false, since they need to
+	be fetched in unmanaged code (the resolved style hash lives in
+	unmanaged code, so we need to be able to get, say, WidthProperty,
+	and compare it to 0).
+
+	* DependencyProperty.cs (RegisterAny): when creating the default
+	value, don't box value types.
+	(BoxValueTypes): new internal property so classes can specify that
+	value types get boxed for this particular property.  Defaults to
+	true.
+
 2009-02-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* PropertyPath.cs: Implemented ctor that takes only an object.

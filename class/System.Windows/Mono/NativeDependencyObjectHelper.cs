@@ -104,7 +104,7 @@ namespace Mono {
 			if (!dp.PropertyType.IsAssignableFrom (object_type))
 				throw new ArgumentException (string.Format ("The DependencyProperty '{2}', whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName, dp.Name));
 				                     
-			v = Value.FromObject (value, (dp is CustomDependencyProperty) || (dp.PropertyType == typeof (object) || dp.PropertyType == typeof (Type)));
+			v = Value.FromObject (value, dp.PropertyType == typeof(object) && dp.BoxValueTypes);
 			try {
 				NativeMethods.dependency_object_set_marshalled_value (wrapper.NativeHandle, dp.Native, ref v);
 			} finally {

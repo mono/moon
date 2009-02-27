@@ -125,7 +125,7 @@ namespace System.Windows {
 			if (defaultVal == null)
 				v = new Value { k = Kind.INVALID };
 			else
-				v = Value.FromObject (defaultVal, true);
+				v = Value.FromObject (defaultVal, false);
 
 			IntPtr handle = NativeMethods.dependency_property_register_managed_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
 			NativeMethods.value_free_value (ref v);
@@ -327,7 +327,13 @@ namespace System.Windows {
 				return attached.Value;
 			}
 		}
-		
+
+		private bool boxValueTypes = true;
+		internal bool BoxValueTypes {
+			get { return boxValueTypes; }
+			set { boxValueTypes = value; }
+		}
+
 		internal bool IsNullable {
 			get { return NativeMethods.dependency_property_is_nullable (native); }
 		}

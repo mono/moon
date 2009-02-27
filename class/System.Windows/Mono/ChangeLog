@@ -1,3 +1,23 @@
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs (FromObject): get rid of as_managed_object and replace
+	it with box_value_types.  These are the only objects we should be
+	concerned about passing to unmanaged code as GCHandles.
+	Everything else we either marshal or pass the unmanaged peer.
+	Handle them explicitly, and add a warning in the fallback case of
+	a managed ref type we don't know how to marshal (and box those
+	too).
+
+	* NativeDependencyObjectHelper.cs (SetValue): we box the value if
+	DependencyProperty.PropertyType is "object" and
+	DependencyProperty.BoxValueTypes is true.
+
+	* ManagedXamlLoader.cs (LookupObject): pass false for
+	@box_value_types to Value.FromObject.
+	(LookupComponentFromName): same.
+	(TrySetEventReflection): use LookupObject instead of just calling
+	NativeDependencyObjectHelper.Lookup, which can fail for gchandles.
+
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
 	* MarkupExpressionParser.cs: Remove debug output

@@ -205,7 +205,7 @@ namespace Mono.Xaml
 					value = Value.Empty;
 					return false;
 				}
-				value = Value.FromObject (res, true);
+				value = Value.FromObject (res, false);
 			} else {
 				value = Value.Empty;
 				value.k = Deployment.Current.Types.Find (type).native_handle;
@@ -233,7 +233,7 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			value = Value.FromObject (obj, true);
+			value = Value.FromObject (obj, false);
 			return true;
 		}
 
@@ -403,7 +403,7 @@ namespace Mono.Xaml
 
 		private bool TrySetEventReflection (IntPtr top_level, string xmlns, object publisher, string type_name, string name, IntPtr value_ptr, out string error)
 		{
-			object subscriber = NativeDependencyObjectHelper.Lookup (top_level);
+			object subscriber = LookupObject (top_level);
 			EventInfo ie = publisher.GetType ().GetEvent (name);
 			string handler_name = Value.ToObject (null, value_ptr) as string;
 			
