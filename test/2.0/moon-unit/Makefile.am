@@ -107,4 +107,6 @@ site/ClientBin/moon-unit.xap: moon-unit.xap
 	@mkdir -p site/ClientBin
 	@cp moon-unit.xap site/ClientBin
 
+install:
+
 .PHONY: copy-xap-to-site
