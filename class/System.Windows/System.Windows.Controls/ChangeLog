@@ -1,5 +1,11 @@
 2009-02-26  Chris Toshok  <toshok@ximian.com>
 
+	* ItemsControl.cs: land some longstanding local changes.
+
+	* ItemsPresenter.cs: same.
+
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
 	* ContentControl.cs (InvokeOnApplyTemplate): override
 	FrameworkElement's implementation so we can walk our visual
 	subtree calling OnApplyTemplate and add the default

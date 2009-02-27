@@ -1,3 +1,7 @@
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
+	* Selector.cs (SelectedIndexProperty): the default of this is -1.
+
 2009-02-04  Chris Toshok  <toshok@ximian.com>
 
 	* Selector.cs: add a couple of missing methods, and stop with the

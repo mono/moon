@@ -33,7 +33,7 @@ namespace System.Windows.Controls.Primitives {
 		
 		public static readonly DependencyProperty SelectedIndexProperty =
 			DependencyProperty.Register ("SelectedIndex", typeof(int), typeof(Selector),
-						     new PropertyMetadata(new PropertyChangedCallback(OnSelectedIndexChanged)));
+						     new PropertyMetadata(-1, new PropertyChangedCallback(OnSelectedIndexChanged)));
 
 		static void OnSelectedIndexChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{

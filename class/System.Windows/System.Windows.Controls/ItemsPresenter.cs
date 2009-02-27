@@ -40,6 +40,15 @@ namespace System.Windows.Controls
 		internal override void InvokeLoaded ()
 		{
 			PreparePresenter ();
+
+			FrameworkElement parent = Parent as FrameworkElement;
+
+			while (parent != null && !(parent is ItemsControl)) {
+				parent = parent.Parent as FrameworkElement;
+			}
+
+			if (parent != null)
+				(parent as ItemsControl).SetItemsPresenter (this);
 		}
 
 		void PreparePresenter ()

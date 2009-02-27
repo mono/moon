@@ -178,6 +178,9 @@ namespace System.Windows.Controls {
 
 		void AddItemsToPresenter (IList newItems, int newIndex)
 		{
+			if (_presenter == null || _presenter._elementRoot == null)
+				return;
+
 			StackPanel panel = _presenter._elementRoot;
 			for (int i = 0; i < newItems.Count; i ++) {
 				object item = newItems[i];
@@ -205,6 +208,9 @@ namespace System.Windows.Controls {
 
 		void RemoveItemsFromPresenter (IList oldItems, int oldIndex)
 		{
+			if (_presenter == null || _presenter._elementRoot == null)
+				return;
+
 			StackPanel panel = _presenter._elementRoot;
 			for (int i = 0; i < oldItems.Count; i ++)
 				panel.Children.RemoveAt (oldIndex);
@@ -215,21 +221,25 @@ namespace System.Windows.Controls {
 			ContentPresenter presenter = element as ContentPresenter;
 
 			if (presenter != null && presenter != item) {
-				if (DisplayMemberPath != null) {
+
+				bool setContent = true;
+
+				if (ItemTemplate != null) {
+					presenter.ContentTemplate = ItemTemplate;
+				}
+				else if (!string.IsNullOrEmpty (DisplayMemberPath)) {
 					Binding binding = new Binding (DisplayMemberPath);
+					binding.Converter = new DisplayMemberValueConverter ();
 					// XXX I'm thinking this next line shouldn't be necessary.  The CP should be setting its DataContext
 					// property when DisplayMemberPath is in use, right?
 					binding.Source = item;
 					presenter.SetBinding (ContentPresenter.ContentProperty,
 							      binding);
+					setContent = false;
 				}
-				else {
+
+				if (setContent)
 					presenter.Content = item;
-				}
-					
-				if (ItemTemplate != null) {
-					presenter.ContentTemplate = ItemTemplate;
-				}
 			}
 		}
 

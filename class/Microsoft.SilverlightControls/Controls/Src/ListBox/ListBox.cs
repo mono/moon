@@ -10,97 +10,19 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized; 
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls; 
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media; 
  
-#if WPF
-using PropertyChangedCallback = System.Windows.FrameworkPropertyMetadata; 
-namespace System.Windows.Controls.Placeholders
-{
-    enum MouseButton { Left }; 
-    //public class ItemsControl : System.Windows.Controls.ItemsControl { }
-}
-#endif 
- 
-#if WPF
-namespace WPF 
-#else
 namespace System.Windows.Controls
-#endif 
 {
     /// <summary>
     /// Control that implements a list of selectable items. 
     /// </summary> 
     [TemplatePart(Name = ListBox.ElementScrollViewerName, Type = typeof(ScrollViewer))]
-    public class ListBox : System.Windows.Controls.Primitives.Selector
+    public class ListBox : Selector
     {
-        /// <summary>
-        /// Gets or sets the index of the first item in the current selection 
-        /// or returns negative one (-1) if the selection is empty.
-        /// </summary>
-        public int SelectedIndex 
-        { 
-            get { return (int)GetValue(SelectedIndexProperty); }
-            set { SetValue(SelectedIndexProperty, value); } 
-        }
-
-        /// <summary> 
-        /// Identifies the SelectedIndex dependency property.
-        /// </summary>
-        public static readonly DependencyProperty SelectedIndexProperty = DependencyProperty.Register( 
-                "SelectedIndex", typeof(int), typeof(ListBox), 
-                new PropertyMetadata(new PropertyChangedCallback(OnSelectedIndexChanged)));
- 
-        /// <summary>
-        /// Gets or sets the first item in the current selection or returns
-        /// null if the selection is empty. 
-        /// </summary>
-        public object SelectedItem
-        { 
-            get { return (object)GetValue(SelectedItemProperty); } 
-            set { SetValue(SelectedItemProperty, value); }
-        } 
-
-        /// <summary>
-        /// Identifies the SelectedItem dependency property. 
-        /// </summary>
-        public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register(
-                "SelectedItem", typeof(object), typeof(ListBox), 
-                new PropertyMetadata(new PropertyChangedCallback(OnSelectedItemChanged))); 
-
-        /// <summary> 
-        /// Gets the currently selected items.
-        /// </summary>
-        public IList SelectedItems 
-        {
-            get { return (IList)GetValue(SelectedItemsProperty); }
-        } 
- 
-        /// <summary>
-        /// Identifies the SelectedItems dependency property. 
-        /// </summary>
-        public static readonly DependencyProperty SelectedItemsProperty = DependencyProperty.Register(
-                "SelectedItems", typeof(IList), typeof(ListBox), 
-                new PropertyMetadata(new PropertyChangedCallback(OnSelectedItemsChanged)));
-#if false
-        /// <summary> 
-        /// Gets the selection behavior for a ListBox. 
-        /// </summary>
-        public SelectionMode SelectionMode 
-        {
-            get { return (SelectionMode)GetValue(SelectionModeProperty); }
-            private set { SetValue(SelectionModeProperty, value); } 
-        }
-
-        /// <summary> 
-        /// Identifies the SelectionMode dependency property. 
-        /// </summary>
-        public static readonly DependencyProperty SelectionModeProperty = DependencyProperty.Register( 
-                "SelectionMode", typeof(SelectionMode), typeof(ListBox),
-                new PropertyMetadata(new PropertyChangedCallback(OnSelectionModeChanged)));
-#endif
         /// <summary>
         /// Gets or sets the Style that is applied to the container element generated for each item.
         /// </summary> 
@@ -166,15 +88,6 @@ namespace System.Windows.Controls
         /// Tracks the ListBoxItem that just lost focus. 
         /// </summary>
         private ListBoxItem _listBoxItemOldFocus;
- 
-        /// <summary> 
-        /// Tracks the ListBoxItem that should get focus when the ListBox gets focus
-        /// </summary> 
-        /// <remarks>
-        /// Helps implement WPF's KeyboardNavigation.SetTabOnceActiveElement
-        /// which is not present in Silverlight. 
-        /// </remarks>
-        private ListBoxItem _tabOnceActiveElement;
  
         /// <summary> 
         /// Tracks whether to suppress the next "lost focus" event because it was self-caused.
@@ -251,8 +164,8 @@ namespace System.Windows.Controls
             }; 
             ObservableCollection<object> observableCollection = new ObservableCollection<object>(); 
             observableCollection.CollectionChanged += new NotifyCollectionChangedEventHandler(OnSelectedItemsCollectionChanged);
-            SetValue(SelectedItemsProperty, observableCollection); 
-            SelectedIndex = -1;
+	    //            SetValue(SelectedItemsProperty, observableCollection); 
+//            SelectedIndex = -1;
 //            SelectionMode = SelectionMode.Single;
             // Set default values for ScrollViewer attached properties 
             ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
@@ -557,7 +470,6 @@ namespace System.Windows.Controls
         /// <param name="listBoxItem">The ListBoxItem.</param> 
         internal void NotifyListItemClicked(ListBoxItem listBoxItem) 
         {
-            _tabOnceActiveElement = listBoxItem; 
             if (listBoxItem.IsSelected)
             {
                 if (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) 
@@ -579,23 +491,6 @@ namespace System.Windows.Controls
         /// <param name="listBoxItemNewFocus">ListBoxItem that got focus</param>
         internal void NotifyListItemGotFocus(ListBoxItem listBoxItemNewFocus)
         { 
-#if !WPF
-            // If _tabOnceActiveElement is not set or valid, set it to the first item
-            if (((null == _tabOnceActiveElement) || 
-                 (this != _tabOnceActiveElement.ParentListBox)) && 
-                (1 <= Items.Count))
-            { 
-                _tabOnceActiveElement = GetListBoxItemForObject(Items[0]);
-            }
-            // If getting focus for something other than a valid _tabOnceActiveElement, pass focus to it 
-            if ((null != _tabOnceActiveElement) &&
-                (listBoxItemNewFocus != _tabOnceActiveElement))
-            { 
-                _tabOnceActiveElement.Focus(); 
-                return;
-            } 
-#endif
-
             // Track the focused index 
             _focusedIndex = Items.IndexOf(listBoxItemNewFocus.Item ?? listBoxItemNewFocus);
 
@@ -744,7 +639,6 @@ namespace System.Windows.Controls
                     // A key press will change the focused ListBoxItem
                     ListBoxItem listBoxItem = GetListBoxItemForObject(Items[newFocusedIndex]);
                     Debug.Assert(null != listBoxItem); 
-                    _tabOnceActiveElement = listBoxItem; 
                     ScrollIntoView(listBoxItem.Item ?? listBoxItem);
                     _suppressNextLostFocus = true; 
                     listBoxItem.Focus();
@@ -782,20 +676,6 @@ namespace System.Windows.Controls
             } 
         } 
 
-        /// <summary> 
-        /// Implements the SelectedIndexProperty PropertyChangedCallback.
-        /// </summary>
-        /// <param name="d">The DependencyObject for which the property changed.</param> 
-        /// <param name="e">Provides data for DependencyPropertyChangedEventArgs.</param>
-        private static void OnSelectedIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        { 
-            ListBox listBox = d as ListBox; 
-            Debug.Assert(null != listBox);
-            Debug.Assert(typeof(int).IsInstanceOfType(e.OldValue)); 
-            Debug.Assert(typeof(int).IsInstanceOfType(e.NewValue));
-            listBox.OnSelectedIndexChanged((int)e.OldValue, (int)e.NewValue);
-        } 
-
         /// <summary>
         /// Called when the SelectedIndex property has changed. 
         /// </summary> 
@@ -809,18 +689,6 @@ namespace System.Windows.Controls
         } 
  
         /// <summary>
-        /// Implements the SelectedItemProperty PropertyChangedCallback. 
-        /// </summary>
-        /// <param name="d">The DependencyObject for which the property changed.</param>
-        /// <param name="e">Provides data for DependencyPropertyChangedEventArgs.</param> 
-        private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ListBox listBox = d as ListBox; 
-            Debug.Assert(null != listBox); 
-            listBox.OnSelectedItemChanged(e.OldValue, e.NewValue);
-        } 
-
-        /// <summary>
         /// Called when the SelectedItem property has changed. 
         /// </summary>
         /// <param name="oldValue">The value of the property before the change.</param>
@@ -830,20 +698,6 @@ namespace System.Windows.Controls
             ProcessSelectionPropertyChange(SelectedItemProperty, oldValue, newValue); 
         }
 
-        /// <summary> 
-        /// Implements the SelectedItemsProperty PropertyChangedCallback.
-        /// </summary>
-        /// <param name="d">The DependencyObject for which the property changed.</param> 
-        /// <param name="e">Provides data for DependencyPropertyChangedEventArgs.</param> 
-        private static void OnSelectedItemsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        { 
-            ListBox listBox = d as ListBox;
-            Debug.Assert(null != listBox);
-            Debug.Assert(typeof(IList).IsInstanceOfType(e.OldValue) || (null == e.OldValue)); 
-            Debug.Assert(typeof(IList).IsInstanceOfType(e.NewValue) || (null == e.NewValue));
-            listBox.OnSelectedItemsChanged((IList)e.OldValue, (IList)e.NewValue);
-        } 
- 
         /// <summary>
         /// Perform the actions necessary to handle a selection property change. 
         /// </summary>
@@ -898,10 +752,10 @@ namespace System.Windows.Controls
                     {
                         SelectedItem = newSelectedItem; 
                     } 
-                    SelectedItems.Clear();
+                    //SelectedItems.Clear();
                     if (-1 != newSelectedIndex) 
                     {
-                        SelectedItems.Add(newValue);
+			    //                        SelectedItems.Add(newValue);
                     } 
 
                     // Notify of SelectionChanged

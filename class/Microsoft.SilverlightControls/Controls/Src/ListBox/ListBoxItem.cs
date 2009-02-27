@@ -23,14 +23,14 @@ namespace System.Windows.Controls
     /// <summary>
     /// Represents a selectable item in a ListBox.
     /// </summary> 
-    [TemplatePart(Name = ListBoxItem.ElementRootName, Type = typeof(FrameworkElement))] 
-    [TemplatePart(Name = ListBoxItem.ElementFocusVisualName, Type = typeof(FrameworkElement))]
-    [TemplatePart(Name = ListBoxItem.StateNormalName, Type = typeof(Storyboard))] 
-    [TemplatePart(Name = ListBoxItem.StateSelectedName, Type = typeof(Storyboard))]
-    [TemplatePart(Name = ListBoxItem.StateSelectedFocusedName, Type = typeof(Storyboard))]
-    [TemplatePart(Name = ListBoxItem.StateMouseOverName, Type = typeof(Storyboard))] 
-    [TemplatePart(Name = ListBoxItem.StateMouseOverSelectedName, Type = typeof(Storyboard))]
-    [TemplatePart(Name = ListBoxItem.StateMouseOverSelectedFocusedName, Type = typeof(Storyboard))]
+    [TemplateVisualStateAttribute(Name = "Normal", GroupName = "CommonStates")]
+    [TemplateVisualStateAttribute(Name = "Focused", GroupName = "FocusStates")]
+    [TemplateVisualStateAttribute(Name = "MouseOver", GroupName = "CommonStates")]
+    [TemplateVisualStateAttribute(Name = "Disabled", GroupName = "CommonStates")]
+    [TemplateVisualStateAttribute(Name = "Unselected", GroupName = "SelectionStates")]
+    [TemplateVisualStateAttribute(Name = "Selected", GroupName = "SelectionStates")]
+    [TemplateVisualStateAttribute(Name = "SelectedUnfocused", GroupName = "SelectionStates")]
+    [TemplateVisualStateAttribute(Name = "Unfocused", GroupName = "FocusStates")]
     public class ListBoxItem : ContentControl 
     { 
         /// <summary>
@@ -64,88 +64,7 @@ namespace System.Windows.Controls
         /// </summary> 
         internal ListBox ParentListBox { get; set; }
 
-        /// <summary> 
-        /// Identifies the root visual element from the template.
-        /// </summary>
-        private FrameworkElement ElementRoot { get; set; } 
-        private const string ElementRootName = "RootElement"; 
-
-        /// <summary> 
-        /// Identifies the focus visual element from the template.
-        /// </summary>
-        private FrameworkElement ElementFocusVisual { get; set; } 
-        private const string ElementFocusVisualName = "FocusVisualElement";
-
-        /// <summary> 
-        /// Identifies the normal state. 
-        /// </summary>
-        private Storyboard StateNormal 
-        {
-            get { return _stateNormal; }
-            set { _stateNormal = value; } 
-        }
-        private Storyboard _stateNormal;
-        private const string StateNormalName = "Normal State"; 
- 
-        /// <summary>
-        /// Identifies the selected state (with fallback). 
-        /// </summary>
-        private Storyboard StateSelected
-        { 
-            get { return _stateSelected ?? StateSelectedFocused; }
-            set { _stateSelected = value; }
-        } 
-        private Storyboard _stateSelected; 
-        private const string StateSelectedName = "Unfocused Selected State";
- 
-        /// <summary>
-        /// Identifies the selected+focused state (with fallback).
-        /// </summary> 
-        private Storyboard StateSelectedFocused
-        {
-            get { return _stateSelectedFocused ?? StateNormal; } 
-            set { _stateSelectedFocused = value; } 
-        }
-        private Storyboard _stateSelectedFocused; 
-        private const string StateSelectedFocusedName = "Normal Selected State";
-
-        /// <summary> 
-        /// Identifies the normal+mouse state (with fallback).
-        /// </summary>
-        private Storyboard StateMouseOver 
-        { 
-            get { return _stateMouseOver ?? StateNormal; }
-            set { _stateMouseOver = value; } 
-        }
-        private Storyboard _stateMouseOver;
-        private const string StateMouseOverName = "MouseOver State"; 
-
-        /// <summary>
-        /// Identifies the selected+mouse state (with fallback). 
-        /// </summary> 
-        private Storyboard StateMouseOverSelected
-        { 
-            get { return _stateMouseOverSelected ?? StateMouseOverSelectedFocused; }
-            set { _stateMouseOverSelected = value; }
-        } 
-        private Storyboard _stateMouseOverSelected;
-        private const string StateMouseOverSelectedName = "MouseOver Unfocused Selected State";
- 
-        /// <summary> 
-        /// Identifies the selected+mouse+focused state (with fallback).
-        /// </summary> 
-        private Storyboard StateMouseOverSelectedFocused
-        {
-            get { return _stateMouseOverSelectedFocused ?? StateSelectedFocused; } 
-            set { _stateMouseOverSelectedFocused = value; }
-        }
-        private Storyboard _stateMouseOverSelectedFocused; 
-        private const string StateMouseOverSelectedFocusedName = "MouseOver Selected State"; 
-
-        /// <summary> 
-        /// Identifies the current state.
-        /// </summary>
-        private Storyboard CurrentState { get; set; } 
+	internal bool IsFocused { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the ListBoxItem class. 
@@ -161,51 +80,17 @@ namespace System.Windows.Controls
             TabNavigation = KeyboardNavigationMode.Local; 
 #endif 
             IsTabStop = true;
-            MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e) 
-            {
-                OnMouseLeftButtonDown(e);
-            }; 
-            MouseEnter += delegate(object sender, MouseEventArgs e)
-            {
-                OnMouseEnter(e); 
-            }; 
-            MouseLeave += delegate(object sender, MouseEventArgs e)
-            { 
-                OnMouseLeave(e);
-            };
-            GotFocus += delegate(object sender, RoutedEventArgs e) 
-            {
-                OnGotFocus(e);
-            }; 
-            LostFocus += delegate(object sender, RoutedEventArgs e) 
-            {
-                OnLostFocus(e); 
-            };
         }
  
-#if WPF
-        public override void OnApplyTemplate()
-#else 
         /// <summary> 
         /// Invoked whenever application code or internal processes call
         /// ApplyTemplate. 
         /// </summary>
         public override void OnApplyTemplate()
-#endif 
         {
             base.OnApplyTemplate();
- 
-            ElementRoot = GetTemplateChild(ElementRootName) as FrameworkElement; 
-            if (null != ElementRoot)
-            { 
-                StateNormal = ElementRoot.Resources[StateNormalName] as Storyboard;
-                StateSelected = ElementRoot.Resources[StateSelectedName] as Storyboard;
-                StateSelectedFocused = ElementRoot.Resources[StateSelectedFocusedName] as Storyboard; 
-                StateMouseOver = ElementRoot.Resources[StateMouseOverName] as Storyboard;
-                StateMouseOverSelected = ElementRoot.Resources[StateMouseOverSelectedName] as Storyboard;
-                StateMouseOverSelectedFocused = ElementRoot.Resources[StateMouseOverSelectedFocusedName] as Storyboard; 
-            } 
-            ElementFocusVisual = GetTemplateChild(ElementFocusVisualName) as FrameworkElement;
+
+	    // anything else here?
         } 
 
         /// <summary>
@@ -253,14 +138,13 @@ namespace System.Windows.Controls
         /// <param name="e">The event data.</param>
         protected virtual void OnGotFocus(RoutedEventArgs e) 
         {
-            if (null != ElementFocusVisual)
-            { 
-                ElementFocusVisual.Visibility = Visibility.Visible;
-            }
-            if (null != ParentListBox) 
-            { 
-                ParentListBox.NotifyListItemGotFocus(this);
-            } 
+		base.OnGotFocus(e);
+		IsFocused = true;
+		ChangeVisualState ();
+
+		if (null != ParentListBox) {
+			ParentListBox.NotifyListItemGotFocus(this);
+		} 
         }
 
         /// <summary> 
@@ -269,14 +153,12 @@ namespace System.Windows.Controls
         /// <param name="e">The event data.</param> 
         protected virtual void OnLostFocus(RoutedEventArgs e) 
         {
-            if (null != ElementFocusVisual) 
-            {
-                ElementFocusVisual.Visibility = Visibility.Collapsed;
-            } 
-            if (null != ParentListBox)
-            {
-                ParentListBox.NotifyListItemLostFocus(this); 
-            } 
+		base.OnLostFocus (e);
+		IsFocused = false;
+		ChangeVisualState ();
+		if (null != ParentListBox) {
+			ParentListBox.NotifyListItemLostFocus(this); 
+		}
         }
  
         /// <summary>
@@ -296,51 +178,20 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Changes the visual state by playing the appropriate Storyboard 
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "An invalid Storyboard or playing a Storyboard at the wrong time throws System.Exception.")] 
         internal void ChangeVisualState()
         {
-            if (null != ParentListBox) 
-            {
-                Storyboard newState = null;
-                if (IsSelected) 
-                { 
-                    newState = (ListBox.GetIsSelectionActive(ParentListBox) ?
-                        (IsMouseOver ? StateMouseOverSelectedFocused : StateSelectedFocused) : 
-                        (IsMouseOver ? StateMouseOverSelected : StateSelected));
-                }
-                else 
-                {
-                    newState = (IsMouseOver ? StateMouseOver : StateNormal);
-                } 
-                if ((null != newState) && (CurrentState != newState)) 
-                {
-                    // Begin the new state transition 
-                    try
-                    {
-                        newState.Begin( 
-#if WPF
-                            ElementRoot
-#endif 
-                        ); 
-                        // Update the current state
-                        Storyboard previousState = CurrentState; 
-                        CurrentState = newState;
-                        // Stop the old state transition (per Silverlight convention)
-                        if (null != previousState) 
-                        {
-                            previousState.Stop(
-#if WPF 
-                                ElementRoot 
-#endif
-                            ); 
-                        }
-                    }
-                    catch 
-                    {
-                        // Silverlight Storyboard.Begin must always be wrapped in try/catch
-                    } 
-                } 
-            }
-        } 
+		if (!IsEnabled) {
+			VisualStateManager.GoToState (this, "Disabled", true);
+		}
+		else if (IsSelected) {
+			VisualStateManager.GoToState (this, "Selected", true);
+		}
+		else if (IsMouseOver) {
+			VisualStateManager.GoToState (this, "MouseOver", true);
+		}
+		else {
+			VisualStateManager.GoToState (this, "Normal", true);
+		}
+	}
     }
 }
