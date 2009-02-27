@@ -1,3 +1,9 @@
+2009-02-27  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* security/ReflectionEmitTest.cs: New (very partial).
+	* security/ReflectionTest.cs: New.
+	* security/SecurityCriticalTest.cs: New.
+
 2009-02-27  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/ResourceDictionaryTest.cs: Add test case for Clear
