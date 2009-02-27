@@ -383,5 +383,15 @@ namespace MoonTest.System.Windows
 
 			Assert.AreEqual (Colors.Blue, ((SolidColorBrush)r.Fill).Color, "2");
 		}
+
+		[TestMethod]
+		public void Clear ()
+		{
+			ResourceDictionary rd = new ResourceDictionary ();
+			rd.Add ("key", new object ());
+			Assert.AreEqual (1, rd.Count, "Count-1");
+			rd.Clear ();
+			Assert.AreEqual (0, rd.Count, "Count-2");
+		}
 	}
 }
