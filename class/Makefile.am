@@ -1,7 +1,16 @@
-SUBDIRS = . System.Windows System.Windows.Browser System.Windows.Controls System.Windows.Controls.Data
+SUBDIRS = .
+if INCLUDE_BROWSER_MANAGED_CODE
+SUBDIRS += tuning
+endif
+SUBDIRS += System.Windows System.Windows.Browser System.Windows.Controls System.Windows.Controls.Data
 
 if INCLUDE_BROWSER_MANAGED_CODE
-noinst_SCRIPTS = lib/2.1/smcs.exe
+TUNER_ASSEMBLIES = monolinker.exe Mono.Tuner.dll Mono.Cecil.dll Mono.Cecil.Mdb.dll
+LOCAL_ASSEMBLIES = $(TUNER_ASSEMBLIES:%=lib/tuner/%)
+MCS_ASSEMBLIES = $(TUNER_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_1_1/%)
+
+noinst_SCRIPTS = $(LOCAL_ASSEMBLIES)
+
 endif
 
 EXTRA_DIST = mono.pub winfx3.pub msfinal.pub mono.snk silverlight.pub
@@ -12,9 +21,10 @@ all-local:
 endif
 
 if INCLUDE_BROWSER_MANAGED_CODE
-lib/2.1/smcs.exe: $(SMCS_ASM)
+$(LOCAL_ASSEMBLIES): $(MCS_ASSEMBLIES)
 	-mkdir -p lib/2.1
-	cp $(SMCS_ASM) lib/2.1
+	-mkdir -p lib/tuner
+	for i in $(MCS_ASSEMBLIES); do cp $$i lib/tuner/; done
 endif
 
 clean-local:

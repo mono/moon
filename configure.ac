@@ -167,17 +167,17 @@ if test x$managed_code = xyes; then
     PKG_CHECK_MODULES(MONO,mono >= 2.5)
     # browser assembly specific checks
     #
-    # the browser assemblies require smcs
-    if test x$browser_assemblies = xyes; then
-	if pkg-config --variable=Libraries smcs; then
-		PKG_CHECK_MODULES(SMCS,smcs,
-				  [SMCS_ASM=`pkg-config --variable=Libraries smcs`
-				  AC_SUBST(SMCS_ASM)])
-        else
-            browser_assemblies=no
-	    browser_reason="(reason: could not find smcs package, Mono >= 2.2 not installed)"
-	fi
+    AC_ARG_WITH(mcspath, [ --with-mcspath=<path>], [],[with_mcspath=../mcs])
+
+    if test "x$with_mcspath" = "xno"; then
+      AC_ERROR(You need to set the path to mcs)
     fi
+    if test ! -e "$with_mcspath" ; then
+      AC_ERROR(mcs_path doesn't exist)
+    fi
+
+    MCS_PATH=$(cd "$with_mcspath" && pwd)
+    AC_SUBST(MCS_PATH)
 
     # desktop assembly specific checks
     #
@@ -226,6 +226,7 @@ if test x$managed_code = xyes; then
     browser_reason="(reason: Mono >= 2.2 not installed)"
     desktop_reason="(reason: Mono >= 2.2 not installed)"
   fi
+
 fi
 AM_CONDITIONAL(INCLUDE_MANAGED_CODE,test x$managed_code = xyes)
 AM_CONDITIONAL(INCLUDE_BROWSER_MANAGED_CODE,test x$browser_assemblies = xyes)
@@ -670,6 +671,7 @@ Makefile
 src/Makefile
 src/codec-version.h
 class/Makefile
+class/tuning/Makefile
 class/System.Windows/Makefile
 class/System.Windows.Browser/Makefile
 class/System.Windows.Controls/Makefile
@@ -762,6 +764,7 @@ if test x$managed_code = xyes; then
 cat <<EOF
           Browser plugin assemblies: $browser_assemblies $browser_reason
           Desktop application assemblies: $desktop_assemblies $desktop_reason
+          Path to mcs: $with_mcspath
 EOF
 fi
 

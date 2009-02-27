@@ -1,3 +1,9 @@
+2009-02-27  Jb Evain  <jbevain@novell.com>
+
+	* Makefile.am: add new tuning directory, which is built before
+	the traditional moon assemblies, and does the actual tuning of
+	the mcs assemblies.
+
 2009-01-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Include System.Windows.Controls and
