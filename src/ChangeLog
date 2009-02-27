@@ -1,5 +1,12 @@
 2009-02-26  Chris Toshok  <toshok@ximian.com>
 
+	* provider.cpp (InheritedPropertyValueProvider::GetPropertyValue):
+	more tweaking of inheritance behavior.  if the parentProperty
+	exists, check the local value, and if it exists, return that.
+	otherwise return return GetValue.
+
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
 	* border.cpp (Border::OnPropertyChanged): robustificate this a
 	touch.
 

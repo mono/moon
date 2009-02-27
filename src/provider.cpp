@@ -247,12 +247,15 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	INHERIT2 (TextDecorationsProperty);
 	INHERIT2 (FontFilenameProperty);
 
-	if (parentProperty != -1)					\
-		parentValue = parent->ReadLocalValue (parentProperty);	\
+	if (parentProperty != -1) {
+		parentValue = parent->ReadLocalValue (parentProperty);
 
-	if (parentValue)
-		return parentValue;
-
+		if (parentValue)
+			return parentValue;
+		else
+			return parent->GetValue (parentProperty);
+	}
+	  
 	INHERIT3 (DataContextProperty);
 
 	return NULL;
