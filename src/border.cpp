@@ -169,10 +169,10 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 	
 	if (args->GetId () == Border::ChildProperty){
-		if (args->old_value) {
+		if (args->old_value && args->old_value->AsUIElement()) {
 			ElementRemoved (args->old_value->AsUIElement ());
 		}
-		if (args->new_value) {
+		if (args->new_value && args->new_value->AsUIElement()) {
 			ElementAdded (args->new_value->AsUIElement ());
 		}
 

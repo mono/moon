@@ -1,5 +1,10 @@
 2009-02-26  Chris Toshok  <toshok@ximian.com>
 
+	* border.cpp (Border::OnPropertyChanged): robustificate this a
+	touch.
+
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
 	* cbinding.h, cbinding.cpp: regen.
 
 	* frameworkelement.cpp (FrameworkElement::FrameworkElement):
