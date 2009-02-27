@@ -510,8 +510,11 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_ar, 1.0 / msi_ar); j++) {
 				count++;
-				if (cache_contains ((const char*)source->get_tile_func (from_layer, i, j, source), false))
+				char *tile = (char*)source->get_tile_func (from_layer, i, j, source);
+				if (cache_contains (tile, false))
 					found ++;
+				if (tile)
+					g_free (tile);
 			}
 		}
 		if (found > 0 && to_layer < from_layer)
