@@ -1,3 +1,25 @@
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows/FrameworkElementTest.cs (TagTest): this test
+	works now.
+
+	* misc/DefaultValues.cs (ComboBox_GetValue): enable the
+	SelectedIndexProperty portion of this test, since it passes now.
+
+	* System.Windows.Controls/ItemCollectionTest.cs (Methods_Int):
+	this test works now.
+	(IndexOf_IntConst): same.
+
+	* System.Windows.Controls/ComboBoxTest.cs (DefaultValues): this
+	test works now.
+	(InvalidValues): same.
+
+	* System.Windows.Controls/ListBoxTest.cs
+	(PrepareContainerForItemOverride_IsSelected): this test works now.
+
+	* System.Windows.Controls/ControlTemplateTest.cs
+	(TemplatePropertyValuePrecedence): this test works now.
+
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: Added test

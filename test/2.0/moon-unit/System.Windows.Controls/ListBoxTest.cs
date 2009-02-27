@@ -115,7 +115,6 @@ namespace MoonTest.System.Windows.Controls {
 
 
 		[TestMethod]
-		[MoonlightBug]
 		public void PrepareContainerForItemOverride_IsSelected ()
 		{
 			ListBoxPoker poker = new ListBoxPoker ();

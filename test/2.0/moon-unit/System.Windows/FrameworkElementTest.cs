@@ -286,7 +286,6 @@ namespace MoonTest.System.Windows {
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void TagTest ()
 		{
 			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();

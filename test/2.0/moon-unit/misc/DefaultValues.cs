@@ -14088,10 +14088,10 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is double, "GetValue(ComboBox.MaxDropDownHeightProperty) is not of the correct type");
 			Assert.IsTrue(Double.IsPositiveInfinity((double) retval), "GetValue(ComboBox.MaxDropDownHeightProperty) does not match the default value");
 
-			//retval = widget.GetValue(Selector.SelectedIndexProperty);
-			//Assert.IsNotNull(retval, "GetValue(Selector.SelectedIndexProperty) should not have returned null");
-			//Assert.IsTrue(retval is int, "GetValue(Selector.SelectedIndexProperty) is not of the correct type");
-			//Assert.AreEqual(-1, retval, "GetValue(Selector.SelectedIndexProperty) does not match the default value");
+			retval = widget.GetValue(Selector.SelectedIndexProperty);
+			Assert.IsNotNull(retval, "GetValue(Selector.SelectedIndexProperty) should not have returned null");
+			Assert.IsTrue(retval is int, "GetValue(Selector.SelectedIndexProperty) is not of the correct type");
+			Assert.AreEqual(-1, retval, "GetValue(Selector.SelectedIndexProperty) does not match the default value");
 
 			retval = widget.GetValue(Selector.SelectedItemProperty);
 			Assert.IsNull(retval, "GetValue(Selector.SelectedItemProperty) should have returned null");

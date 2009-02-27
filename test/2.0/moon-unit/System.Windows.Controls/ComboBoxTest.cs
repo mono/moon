@@ -114,7 +114,6 @@ namespace MoonTest.System.Windows.Controls {
 	public class ComboBoxTest {
 
 		[TestMethod]
-		[MoonlightBug]
 		public void DefaultValues ()
 		{
 			ComboBox b = new ComboBox ();
@@ -129,7 +128,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void InvalidValues ()
 		{
 			ComboBox b = new ComboBox ();
