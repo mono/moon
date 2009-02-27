@@ -1556,6 +1556,16 @@ framework_element_register_managed_overrides (FrameworkElement *instance, Measur
 }
 
 
+void
+framework_element_set_default_style (FrameworkElement *instance, Style *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetDefaultStyle (value);
+}
+
+
 /**
  * FrameworkTemplate
  **/

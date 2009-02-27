@@ -66,13 +66,19 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args)
 void
 Control::OnLoaded ()
 {
-	ManagedTypeInfo *key = GetDefaultStyleKey ();
-	if (key && !GetStyle())
-		Application::GetCurrent()->ApplyDefaultStyle (this, key);
+	// according to
+	// http://blogs.msdn.com/devdave/archive/2008/10/11/control-lifecycle.aspx
+	// when controls are created programmatically, their builtin
+	// style is applied when they're added to the tree (I hope
+	// this means "Loaded"...)
+
+	if (!GetStyle() && !default_style_applied) {
+		ManagedTypeInfo *key = GetDefaultStyleKey ();
+		if (key)
+			Application::GetCurrent()->ApplyDefaultStyle (this, key);
+	}
 
 	FrameworkElement::OnLoaded ();
-
-	ApplyTemplate ();
 }
 
 bool

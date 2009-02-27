@@ -1638,7 +1638,21 @@ end_element_handler (void *data, const char *el)
 	switch (p->current_element->element_type) {
 	case XamlElementInstance::ELEMENT:
 		flush_char_data (p);
-		if (!p->current_element->IsDependencyObject () && p->current_element->parent) {
+
+		// according to http://blogs.msdn.com/devdave/archive/2008/10/11/control-lifecycle.aspx
+		// default styles are apply when the end tag is read.
+		//
+		if (p->current_element->IsDependencyObject () &&
+		    p->current_element->GetAsDependencyObject() &&
+		    p->current_element->GetAsDependencyObject()->Is(Type::CONTROL)) {
+
+			Control *control = (Control*)p->current_element->GetAsDependencyObject();
+			ManagedTypeInfo *key = control->GetDefaultStyleKey ();
+
+			if (key)
+				Application::GetCurrent()->ApplyDefaultStyle (control, key);
+		}
+		else if (!p->current_element->IsDependencyObject () && p->current_element->parent) {
 			p->current_element->parent->AddChild (p, p->current_element);
 		}
 		break;

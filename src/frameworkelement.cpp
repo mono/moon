@@ -29,6 +29,7 @@ FrameworkElement::FrameworkElement ()
 {
 	SetObjectType (Type::FRAMEWORKELEMENT);
 
+	default_style_applied = false;
 	measure_cb = NULL;
 	arrange_cb = NULL;
 	bounds_with_children = Rect ();
@@ -271,6 +272,16 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 FrameworkElement::Measure (Size availableSize)
 {
+	if (Is(Type::CONTROL)) {
+		Control *control = (Control*)this;
+
+		if (control->GetTemplate() && !control->GetSubtreeObject()) {
+			control->ApplyTemplate();
+			// XXX loaded event?
+		}
+	}
+
+
 	Size *last = LayoutInformation::GetLastMeasure (this);
 	bool domeasure = this->dirty_flags & DirtyMeasure;
 	
@@ -537,4 +548,14 @@ FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, 
 {
 	this->measure_cb = measure_cb;
 	this->arrange_cb = arrange_cb;
+}
+
+void
+FrameworkElement::SetDefaultStyle (Style *style)
+{
+	if (!GetStyle()) {
+		Application::GetCurrent()->ApplyStyle (this, style);
+		((StylePropertyValueProvider*)providers[PropertyPrecedence_Style])->SealStyle (style);
+	}
+	default_style_applied = true;
 }

@@ -1,3 +1,30 @@
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
+	* cbinding.h, cbinding.cpp: regen.
+
+	* frameworkelement.cpp (FrameworkElement::FrameworkElement):
+	initialize default_style_appled to false.
+	(FrameworkElement::SetDefaultStyle): new method, so that the
+	managed code can set the default style without going through the
+	CLR property wrapper (and the DP system), since (stupidly, imo)
+	the default style isn't exposed by the Style property.
+	(FrameworkElement::Measure): I don't like doing this hear, but
+	according to dave relyea's blog, templates are applied when
+	Measure is called.  we could add an internal measure hook so that
+	this code could live in control.cpp, but for now this hack will
+	do.
+
+	* frameworkelement.h: expose SetDefaultStyle (GeneratePInvoke too)
+	and add the default_style_applied field.
+	
+	* control.cpp (Control::OnLoaded): only apply the default style
+	here if we haven't already (to handle the case where the object is
+	created programmatically).
+
+	* xaml.cpp (end_element_handler): according to the blog post in
+	the added comment, controls defined in XAML get their default
+	style applied when the end tag is seen.
+
 2009-02-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBuffer::Resize): If we fail to downsize, don't

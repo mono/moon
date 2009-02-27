@@ -144,10 +144,15 @@ public:
 	VerticalAlignment GetVerticalAlignment ();
 	void SetVerticalAlignment (VerticalAlignment value);
 
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetDefaultStyle (Style *value);
+
 protected:
 	Rect bounds_with_children;
 	GHashTable *styles;
-	
+
+	bool default_style_applied;
+
 	// Methods for accessing a binding expression on a property
 	void SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr);
 	BindingExpressionBase *GetBindingExpression (DependencyProperty *property);
