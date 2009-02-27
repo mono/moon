@@ -1,3 +1,7 @@
+2009-02-27  Jb Evain  <jbevain@novell.com>
+
+	* Makefile.am: update for the moon build.
+
 2009-01-19  Jb Evain  <jbevain@novell.com>
 
 	* Descriptors/System.ServiceModel.xml
