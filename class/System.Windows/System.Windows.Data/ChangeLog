@@ -1,3 +1,7 @@
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
+	* BindingExpressionBase.cs (GetValue): mark this an override.
+
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: If the property path is invalid,

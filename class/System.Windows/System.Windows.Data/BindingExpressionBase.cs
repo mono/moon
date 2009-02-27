@@ -151,7 +151,7 @@ namespace System.Windows.Data {
 			parsedPath = false;
 		}
 		
-		internal object GetValue (DependencyProperty dp)
+		internal override object GetValue (DependencyProperty dp)
 		{
 			if (cached)
 				return cachedValue;
