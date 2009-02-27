@@ -54,7 +54,7 @@ run-xephyr:
 	kill $$xephyr_pid)
 
 run-drtlist: all check-testing
-	(MONO_PATH=$(BUILDDIR_MONO_PATH):$(MONO_PATH); export MONO_PATH; GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono --debug harness/test-runner/test-runner.exe -drtlist $(DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -v -html-report -run-known-failures $(HARNESS_FLAGS))
+	(GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono --debug harness/test-runner/test-runner.exe -drtlist $(DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -v -html-report -run-known-failures $(HARNESS_FLAGS))
 
 run-tests:
 	DRTLIST=$(top_builddir)/test/xaml/drtlist.xml $(MAKE) run-drtlist
