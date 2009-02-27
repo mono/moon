@@ -53,6 +53,8 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
  public:
 	GList *subimages;
 	bool IsCollection () { return isCollection;}
+	int GetMaxLevel () { return maxLevel;}
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	DeepZoomImageTileSource ();
 
