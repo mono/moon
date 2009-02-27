@@ -25,6 +25,7 @@
 //
 
 using System.Windows;
+using System.Windows.Media;
 using Mono;
 
 namespace System.Windows.Controls {
@@ -87,6 +88,38 @@ namespace System.Windows.Controls {
 		protected virtual void OnContentChanged (object oldContent, object newContent)
 		{
 			// no-op
+		}
+
+
+		internal override void InvokeOnApplyTemplate ()
+		{
+			base.InvokeOnApplyTemplate ();
+
+			/* we need to hook up any ContentPresenters
+			   inside the template that lack a local value
+			   for ContentProperty */
+
+			DependencyObject obj = VisualTreeHelper.GetChild (this, 0);
+			WalkTreeForContentPresenters (this, obj);
+		}
+
+		void WalkTreeForContentPresenters (Control templateRoot, DependencyObject obj)
+		{
+			if (obj is ContentPresenter) {
+				if (DependencyProperty.UnsetValue == obj.ReadLocalValue (ContentPresenter.ContentProperty)) {
+					ContentPresenter cp = obj as ContentPresenter;
+					cp.SetTemplateBinding (templateRoot,
+							       ContentControl.ContentProperty,
+							       ContentPresenter.ContentProperty);
+				}
+			}
+			else if (!(obj is Control)) {
+				int count = VisualTreeHelper.GetChildrenCount (obj);
+				for (int i = 0; i < count; i ++) {
+					WalkTreeForContentPresenters (templateRoot, VisualTreeHelper.GetChild (obj, i));
+				}
+			}
+
 		}
 	}
 }

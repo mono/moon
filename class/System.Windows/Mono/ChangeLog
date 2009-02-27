@@ -1,5 +1,12 @@
 2009-02-26  Chris Toshok  <toshok@ximian.com>
 
+	* GeneratedPInvokes.cs: regen.
+
+	* Events.cs (template_applied_callback): call
+	c.InvokeOnApplyTemplate, not c.OnApplyTemplate directly.
+
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
 	* Value.cs (FromObject): get rid of as_managed_object and replace
 	it with box_value_types.  These are the only objects we should be
 	concerned about passing to unmanaged code as GCHandles.

@@ -1,5 +1,29 @@
 2009-02-26  Chris Toshok  <toshok@ximian.com>
 
+	* Application.cs (apply_default_style_cb): instead of setting the
+	Style property on the FrameworkElement, just call
+	framework_element_set_default_style.
+
+	* FrameworkElement.cs: biggest change is to rename the "bindings"
+	dictionary to "expressions", and change the value type of the
+	Dictionary from BindingExpressionBase to Expression.  We store
+	TemplateBindingExpressions in here now as well.
+	(SetTemplateBinding): similar to SetBinding.  used when we need to
+	explicitly create a templatebinding object (for the case of
+	ContentPresenters without a Content binding as template children
+	of a ContentControl.)  We don't actually hook up the property
+	change notifications yet, though.
+	(InvokeOnApplyTemplate): new virtual method so subclasses can
+	inject behavior before/after OnApplyTemplate is called.
+
+	* TemplateBindingExpression.cs: no need to follow MS's naming of
+	internal fields.
+	(GetValue): override Expression.GetValues.
+
+	* Expression.cs (GetValue): add this and make it abstract.
+
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
 	* Setter.cs (static .ctor): set
 	ConvertedValueProperty.BoxValueTypes to false, since they need to
 	be fetched in unmanaged code (the resolved style hash lives in

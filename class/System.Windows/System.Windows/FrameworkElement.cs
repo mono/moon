@@ -86,11 +86,17 @@ namespace System.Windows {
 
 		void InvalidateLocalBindings ()
 		{
-			Dictionary<DependencyProperty, BindingExpressionBase> old = bindings;
-			bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
+			if (expressions.Count == 0)
+				return;
+
+			Dictionary<DependencyProperty, Expression> old = expressions;
+			expressions = new Dictionary<DependencyProperty, Expression> ();
 			foreach (var keypair in old) {
-				keypair.Value.Invalidate ();
-				SetValue (keypair.Key, keypair.Value);
+				if (keypair.Value is BindingExpressionBase) {
+					BindingExpressionBase beb = (BindingExpressionBase)keypair.Value;
+					beb.Invalidate ();
+					SetValue (keypair.Key, beb);
+				}
 			}
 		}
 
@@ -102,7 +108,7 @@ namespace System.Windows {
 		internal ArrangeOverrideCallback arrange_cb;
 		internal PropertyChangedCallback datacontext_changed_cb;
 
-		Dictionary<DependencyProperty, BindingExpressionBase> bindings = new Dictionary<DependencyProperty, BindingExpressionBase> ();
+		Dictionary<DependencyProperty, Expression> expressions = new Dictionary<DependencyProperty, Expression> ();
 
 		private bool OverridesLayoutMethod (string name)
 		{
@@ -142,6 +148,21 @@ namespace System.Windows {
 			if (name == null)
 				throw new ArgumentNullException ("name");
 			return DepObjectFindName (name);
+		}
+
+		internal TemplateBindingExpression SetTemplateBinding (Control source, DependencyProperty sourceProperty,
+								       DependencyProperty targetProperty)
+		{
+			TemplateBindingExpression e = new TemplateBindingExpression {
+				Source = source,
+				SourceProperty = sourceProperty,
+				Target = this,
+				TargetProperty = targetProperty
+			};
+
+			SetValue (targetProperty, e);
+
+			return e;
 		}
 
 		public BindingExpressionBase SetBinding (DependencyProperty dp, Binding binding)
@@ -224,6 +245,11 @@ namespace System.Windows {
 			}
 		}
 
+		internal virtual void InvokeOnApplyTemplate ()
+		{
+			OnApplyTemplate ();
+		}
+
 		internal virtual void InvokeLoaded ()
 		{
 			InvalidateLocalBindings ();
@@ -293,33 +319,45 @@ namespace System.Windows {
 
 		internal override void ClearValueImpl (DependencyProperty dp)
 		{
-			if (bindings.ContainsKey (dp))
-				bindings.Remove (dp);
+			if (expressions.ContainsKey (dp)) {
+				expressions.Remove (dp);
+				// XXX detach template bindings here
+			}
 			base.ClearValueImpl (dp);
 		}
 
 		internal override void SetValueImpl (DependencyProperty dp, object value)
 		{
-			BindingExpressionBase existing;
-			BindingExpressionBase expression = value as BindingExpressionBase;
-			bindings.TryGetValue (dp, out existing);
+			Expression existing;
+			Expression expression = value as Expression;
+
+			expressions.TryGetValue (dp, out existing);
 			
 			if (expression != null) {
 				if (existing != null)
-					bindings.Remove (dp);
-				bindings.Add (dp, expression);
+					expressions.Remove (dp);
+				expressions.Add (dp, expression);
 
 				value = expression.GetValue (dp);
 			} else if (existing != null) {
-				if (existing.Binding.Mode == BindingMode.TwoWay)
-					existing.SetValue (value);
-				else
-					bindings.Remove (dp);
+				if (existing is BindingExpressionBase) {
+					BindingExpressionBase beb = (BindingExpressionBase)existing;
+
+					if (beb.Binding.Mode == BindingMode.TwoWay)
+						beb.SetValue (value);
+					else
+						expressions.Remove (dp);
+				}
+				else {
+					expressions.Remove (dp);
+
+					// XXX detach template binding here
+				}
 			}
 
 			base.SetValueImpl (dp, value);
 			
-			if (dp == FrameworkElement.DataContextProperty && bindings.Count > 0) {
+			if (dp == FrameworkElement.DataContextProperty) {
 				InvalidateLocalBindings ();
 				InvalidateSubtreeBindings ();
 			}
@@ -327,8 +365,8 @@ namespace System.Windows {
 
 		internal override object ReadLocalValueImpl (DependencyProperty dp)
 		{
-			BindingExpressionBase expression;
-			if (bindings.TryGetValue (dp, out expression))
+			Expression expression;
+			if (expressions.TryGetValue (dp, out expression))
 				return expression;
 			return base.ReadLocalValueImpl (dp);
 		}

@@ -85,7 +85,7 @@ namespace Mono {
 		static void template_applied_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			Control c = (Control) Helper.GCHandleFromIntPtr (closure).Target;
-			c.OnApplyTemplate ();
+			c.InvokeOnApplyTemplate ();
 		}
 
 

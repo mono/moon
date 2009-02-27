@@ -34,10 +34,19 @@ namespace System.Windows {
 	public class TemplateBindingExpression : Expression {
 		internal TemplateBindingExpression () { }
 
-		internal Control _source;
-		internal DependencyProperty _sourceProperty;
+		internal Control Source;
+		internal DependencyProperty SourceProperty;
 
-		internal FrameworkElement _target;
-		internal DependencyProperty _targetProperty;
+		internal FrameworkElement Target;
+		internal DependencyProperty TargetProperty;
+
+		internal override object GetValue (DependencyProperty dp)
+		{
+			// we don't bother using the passed in DP
+			// here, as we already have the source
+			// property
+
+			return Source.GetValue (SourceProperty);
+		}
 	}
 }

@@ -154,11 +154,7 @@ namespace System.Windows {
 			if (s == null)
 				return;
 
-			FrameworkElement fwe = NativeDependencyObjectHelper.FromIntPtr(fwe_ptr) as FrameworkElement;
-			if (fwe == null)
-				return;
-
-			fwe.Style = s;
+			NativeMethods.framework_element_set_default_style (fwe_ptr, s.native);
 		}
 
 		void apply_style_cb_safe (IntPtr fwe_ptr, IntPtr style_ptr)

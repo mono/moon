@@ -1,3 +1,12 @@
+2009-02-26  Chris Toshok  <toshok@ximian.com>
+
+	* ContentControl.cs (InvokeOnApplyTemplate): override
+	FrameworkElement's implementation so we can walk our visual
+	subtree calling OnApplyTemplate and add the default
+	TemplateBinding for ContentPresenter.ContentProperty (if there
+	isn't one already) on all ContentPresenters that are our
+	descendents (without an intervening control.)
+
 2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MediaElement.cs: Initial implementation of

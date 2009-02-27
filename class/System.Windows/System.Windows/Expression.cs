@@ -37,5 +37,7 @@ namespace System.Windows
 		{
 			
 		}
+
+		internal abstract object GetValue (DependencyProperty dp);
 	}
 }
