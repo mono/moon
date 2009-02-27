@@ -1,3 +1,5 @@
+SMCS = $(MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe
+
 noinst_DATA= Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 
 CLEANFILES=Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll \
@@ -11,4 +13,4 @@ EXTRA_DIST =			\
 	System.Data.Common
 
 Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: $(wildcard */*.cs)
-	smcs -recurse:$(srcdir)/*.cs -target:library -out:Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll -debug:full
+	$(SMCS) -recurse:$(srcdir)/*.cs -target:library -out:Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll -debug:full

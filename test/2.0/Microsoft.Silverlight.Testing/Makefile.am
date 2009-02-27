@@ -1,3 +1,4 @@
+SMCS = $(MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe
 
 SOURCES = \
     $(srcdir)/UnitTestHarness/AsynchronousAttribute.cs\
@@ -224,7 +225,7 @@ CLEANFILES= 			\
 	Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll.mdb
 
 Microsoft.Silverlight.Testing.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll UnitTestHarness/Properties/UnitTestMessage.resources $(SOURCES) System.Xml.Linq.dll Microsoft.Silverlight.Testing.g.resources
-	smcs $(SOURCES) $(RESOURCES) $(REFERENCES) $(BROWSER_ASSEMBLIES) -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full
+	$(SMCS) $(SOURCES) $(RESOURCES) $(REFERENCES) $(BROWSER_ASSEMBLIES) -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full
 
 Microsoft.Silverlight.Testing.g.resources: UnitTestHarness/UnitTesting/UI/TestPage.xaml
 	$(MONO) --debug $(top_builddir)/tools/respack/respack.exe Microsoft.Silverlight.Testing.g.resources UnitTestHarness/UnitTesting/UI/TestPage.xaml,unittesting/ui/testpage.xaml

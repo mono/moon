@@ -1,3 +1,8 @@
+2009-02-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Microsoft.Silverlight.Testing/Makefile.am: Fix smcs use
+	* Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Makefile.am: Fix smcs use
+
 2009-02-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* DefaultValues/Page.xaml.cs: Generate property getter tests and
