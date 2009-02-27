@@ -35,6 +35,8 @@
 #include "file-downloader.h"
 #include "multiscalesubimage.h"
 
+#include "morton-layout-table.inc"
+
 #if LOGGING
 #include "clock.h"
 #define MSI_STARTTIMER(id)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) TimeSpan id##_t_start = get_now()
@@ -321,6 +323,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	int tile_width = source->GetTileWidth ();
 	int tile_height = source->GetTileHeight ();
 
+	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*)source;
+
 	Rect viewport = Rect (msivp_ox, msivp_oy, msivp_w, msivp_w/msi_ar);
 
 	//FIXME: sort the subimages by ZIndex first
@@ -376,10 +380,23 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			int i, j;
 			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
 				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
-					//LOG_MSI ("TILE %d %d %d %d\n", sub_image->id, from_layer, i, j);
 					count++;
-					if (cache_contains ((const char*)source->get_tile_func (from_layer, i, j, sub_image->source), false))
+					char *tile = (char*)source->get_tile_func (from_layer, i, j, sub_image->source);
+					if (cache_contains (tile, false))
 						found ++;
+					else { //higher levels of collections have shared thumbnails
+						if (tile)
+							g_free (tile);
+						tile = (char*)source->get_tile_func (from_layer,
+							morton_x[sub_image->n] * ldexp (1.0, from_layer) / tile_width,
+							morton_y[sub_image->n] * ldexp (1.0, from_layer) / tile_height,
+							source);
+						if (from_layer <= dzits->GetMaxLevel () && cache_contains (tile, false))
+							found ++;
+					}
+
+					if (tile)
+						g_free (tile);
 				}
 			}
 			if (found > 0 && to_layer < from_layer)
@@ -400,9 +417,29 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			int i, j;
 			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
 				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
-					cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, (const char*)source->get_tile_func (layer_to_render, i, j, sub_image->source));
+					char *tile = (char*)source->get_tile_func (layer_to_render, i, j, sub_image->source);
+					cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
+
+					//Check in the shared levels
+					bool shared_tile = false;
+					if (!image && layer_to_render <= dzits->GetMaxLevel()) {
+						shared_tile = true;
+
+						if (tile)
+							g_free (tile);
+						tile = (char*)source->get_tile_func (layer_to_render,
+							morton_x[sub_image->n] * ldexp (1.0, layer_to_render) / tile_width,
+							morton_y[sub_image->n] * ldexp (1.0, layer_to_render) / tile_height,
+							source);
+						image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
+					}
+
+					if (tile)
+						g_free (tile);
+
 					if (!image)
 						continue;
+
 					LOG_MSI ("rendering %d %d %d %d\n", sub_image->id, layer_to_render, i, j);
 					cairo_save (cr);
 
@@ -410,12 +447,19 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					cairo_clip (cr);
 					cairo_scale (cr, msi_w / msivp_w, msi_w / msivp_w); //scale to widget
 					cairo_translate (cr, -msivp_ox + sub_vp.x + i * v_tile_w, -msivp_oy + sub_vp.y + j* v_tile_h);
-					//cairo_scale (cr, v_tile_w / ldexp (1.0, layer_to_render), v_tile_w / ldexp (1.0, layer_to_render)); //scale to viewport
 
 					//scale to viewport
 					cairo_scale (cr, 1.0/sub_image->source->GetImageWidth(), 1.0/sub_image->source->GetImageWidth());
 					cairo_scale (cr, sub_vp.width * ldexp(1.0, layers - layer_to_render), sub_vp.width * ldexp (1.0, layers - layer_to_render));
 
+					if (shared_tile) {
+						cairo_rectangle (cr, 0, 0, ldexp(1.0, layer_to_render), ldexp(1.0, layer_to_render));
+						cairo_clip (cr);
+						cairo_translate (cr,
+								(-morton_x[sub_image->n] * (int)ldexp (1.0, layer_to_render)) % tile_width,
+								(-morton_y[sub_image->n] * (int)ldexp (1.0, layer_to_render)) % tile_height);
+
+					}
 					cairo_set_source_surface (cr, image, 0, 0);
 //
 					cairo_paint_with_alpha (cr, sub_image->GetOpacity ());
@@ -457,7 +501,13 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
 					if (context)
 						g_free (context);
-					context = (char*)source->get_tile_func (from_layer, i, j, sub_image->source);
+					if (from_layer <= dzits->GetMaxLevel ())
+						context = (char*)source->get_tile_func (from_layer,
+							morton_x[sub_image->n] * ldexp (1.0, from_layer) / tile_width,
+							morton_y[sub_image->n] * ldexp (1.0, from_layer) / tile_height,
+							source);
+					else 
+						context = (char*)source->get_tile_func (from_layer, i, j, sub_image->source);
 					if (context && !cache_contains (context, true))
 						return context;
 				}

@@ -1,3 +1,8 @@
+2009-02-27  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: use the tiles containing the shared thumbs for
+	the highest levels of DZ collections. Saves a lot of network traffic.
+
 2009-02-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* resources.cpp: Simplify (old glib) Clear and use the "right" macro
