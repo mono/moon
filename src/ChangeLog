@@ -1,3 +1,8 @@
+2009-03-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* utils.h: Mark our g_ptr_array_insert*() symbols as internal, we
+	don't want to be exporting these symbols.
+
 2009-02-27  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: use the tiles containing the shared thumbs for

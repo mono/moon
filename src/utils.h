@@ -59,9 +59,9 @@ gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, Managed
 
 gboolean managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest);
 
-void g_ptr_array_insert (GPtrArray *array, guint index, void *item);
+G_GNUC_INTERNAL void g_ptr_array_insert (GPtrArray *array, guint index, void *item);
 
-void g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item);
+G_GNUC_INTERNAL void g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item);
 
 bool ExtractFile (unzFile zip, int fd);
 
