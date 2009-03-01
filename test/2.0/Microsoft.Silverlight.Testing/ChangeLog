@@ -1,3 +1,8 @@
+2009-03-01  Jb Evain  <jbevain@novell.com>
+
+	* Makefile.am: change reference to System.Xml.Linq to take the newly
+	tuned one in the local tree.
+
 2009-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Find xamlg.

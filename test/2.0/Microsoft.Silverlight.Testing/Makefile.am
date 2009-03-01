@@ -233,8 +233,7 @@ Microsoft.Silverlight.Testing.g.resources: UnitTestHarness/UnitTesting/UI/TestPa
 UnitTestHarness/Properties/UnitTestMessage.resources: $(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resx
 	resgen2 $(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resx
 
-# this desperately needs a better way
-SYSTEM_XML_LINQ_DLL = $(shell dirname $(shell dirname $(GACUTIL)))/lib/mono/gac/System.Xml.Linq/2.0.5.0__31bf3856ad364e35/System.Xml.Linq.dll
+SYSTEM_XML_LINQ_DLL = $(top_builddir)/class/lib/2.1/System.Xml.Linq.dll
 
 System.Xml.Linq.dll: $(SYSTEM_XML_LINQ_DLL)
 	$(MONO) --debug $(top_builddir)/tools/unsign/unsign.exe $(SYSTEM_XML_LINQ_DLL)
