@@ -1,3 +1,7 @@
+2009-03-02  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleTileSource.cs: chain the ctors.
+
 2009-02-22  Geoff Norton  <gnorton@novell.com>
 
 	* MediaStreamSource.cs: The CodecPrivateData needs to be pushed
