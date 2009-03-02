@@ -52,6 +52,14 @@ namespace MoonlightTests {
 
 		public AutoResetEvent ExitedEvent = new AutoResetEvent (false);
 
+		public System.Collections.Specialized.StringDictionary EnvironmentVariables {
+			get {
+				if (process == null)
+					process = new Process ();
+				return process.StartInfo.EnvironmentVariables;
+			}
+		}
+		
 		public void Dispose ()
 		{
 			if (process != null)
@@ -92,7 +100,8 @@ namespace MoonlightTests {
 
 		public void Run (bool wait)
 		{
-			process = new Process ();
+			if (process == null)
+				process = new Process ();
 
 			process.StartInfo.FileName = process_path;
 			process.StartInfo.Arguments = arguments;

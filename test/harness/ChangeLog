@@ -1,3 +1,13 @@
+2009-03-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* test-runner/ExternalProcess.cs: Expose the process'
+	  environment variables.
+
+	* test-runner/Agviewer.cs: If MOON_PATH is set, set agviewer's
+	  MONO_PATH to it. This should fix loading moonlight from the
+	  harness when mono and moonlight are installed into different
+	  prefixes (buildbots).
+
 2009-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* harness.mdp:

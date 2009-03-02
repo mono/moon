@@ -64,6 +64,8 @@ namespace MoonlightTests {
 						Path.GetFullPath (test.InputFile));
 
 				agviewer_process = new ExternalProcess (GetProcessPath (), args, timeout);
+				if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MOON_PATH")))
+					agviewer_process.EnvironmentVariables ["MONO_PATH"] = Environment.GetEnvironmentVariable ("MOON_PATH") + ":" + Environment.GetEnvironmentVariable ("MONO_PATH");
 				agviewer_process.Run (false);
 			} else {
 				Console.WriteLine ("agviewer process not shutdown:  {0}.", agviewer_process.IsRunning);
