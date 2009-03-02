@@ -1,3 +1,7 @@
+2009-03-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Add informational printf.
+
 2009-02-23  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (MoonlightContentObject::Invoke): add better

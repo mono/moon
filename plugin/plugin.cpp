@@ -1936,6 +1936,8 @@ PluginInstance::InitializePluginAppDomain ()
 
 		if (moon_load_xaml != NULL && moon_load_xap != NULL && moon_destroy_application != NULL)
 			result = true;
+	} else {
+		printf ("Plugin AppDomain Creation: could not find System.Windows.dll.\n");
 	}
 
 	printf ("Plugin AppDomain Creation: %s\n", result ? "OK" : "Failed");
