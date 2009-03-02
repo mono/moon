@@ -1352,6 +1352,7 @@ TextLayout::LayoutWrap ()
 	bool linebreak;
 	int offset = 0;
 	guint32 prev;
+	bool wrapped;
 	
 	if (!(attrs = (TextLayoutAttributes *) attributes->First ()) || attrs->start != 0)
 		return;
@@ -1385,6 +1386,7 @@ TextLayout::LayoutWrap ()
 		// layout until attrs change
 		while (inptr < inend) {
 			linebreak = false;
+			wrapped = false;
 			prev = 0;
 			
 			// layout until eoln or until we reach max_width
@@ -1411,7 +1413,7 @@ TextLayout::LayoutWrap ()
 				
 				layout_word_init (&word, line->advance, prev);
 				
-				linebreak = layout_word_wrap (&word, inptr, inend, max_width);
+				wrapped = layout_word_wrap (&word, inptr, inend, max_width);
 				
 				if (word.length > 0) {
 					// append the word to the run/line
@@ -1444,14 +1446,21 @@ TextLayout::LayoutWrap ()
 						line->width = line->advance;
 				}
 				
-				if (linebreak)
+				if (wrapped)
 					break;
 			}
 			
 			// the current run has ended
 			run->length = inptr - (text + run->start);
 			
-			if (linebreak || *inptr == '\0') {
+			// if we wrapped at the end of a run but
+			// there's still more text, let the next run
+			// decide whether or not to wrap (as it may
+			// start with lwsp).
+			if (wrapped && inptr == inend && *inptr != '\0')
+				wrapped = false;
+			
+			if (linebreak || wrapped || *inptr == '\0') {
 				// the current line has ended
 				line->length = inptr - (text + line->start);
 				
@@ -1461,13 +1470,21 @@ TextLayout::LayoutWrap ()
 				// update actual height extents
 				actual_height += line->height;
 				
-				if (*inptr != '\0') {
+				if (linebreak || wrapped) {
 					// more text to layout... which means we'll need a new line
 					line = new TextLayoutLine (this, inptr - text, offset);
-					if (OverrideLineHeight ())
+					
+					if (!OverrideLineHeight ()) {
+						if (*inptr == '\0' || inptr < inend) {
+							line->descend = font->Descender ();
+							line->height = font->Height ();
+						}
+					} else {
 						line->height = line_height;
+					}
 					
 					g_ptr_array_add (lines, line);
+					prev = 0;
 				}
 				
 				if (inptr < inend) {
