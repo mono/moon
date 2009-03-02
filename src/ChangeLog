@@ -1,5 +1,28 @@
 2009-03-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBoxView::TextBoxView): Init selection_changed
+	to false.
+	(TextBoxView::Render): If the selection has changed, update the
+	selection on the layout engine.
+	(append_runs): Removed; no longer needed.
+	(TextBoxView::Layout): Updated to use the new layout APIs.
+	(TextBoxView::OnModelChanged): When the selection changes, don't
+	set dirty to true. Instead, set selection_changed to true.
+	(TextBoxView::SetTextBox): Set the default text attributes on our
+	layout with the textbox as the source.
+
+	* text.cpp (TextBlock::Layout): Updated to use the new text layout
+	APIs.
+
+	* layout.cpp: All new layout/rendering engine.
+
+	* text.h: Temporarily change default TextBlock font size to 14.667
+	for use testing with the old 1.0 unit tests.
+
+=============== NEW TEXT LAYOUT ENGINE COMMITS START NOW ================
+
+2009-03-02  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp (TextBox::Paste): New method to paste the
 	contents. Since pasting text is asyncronous, we have to emit our
 	own events and can't rely on them happening inside OnKeyDown().

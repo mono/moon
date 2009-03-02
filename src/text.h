@@ -29,8 +29,8 @@
 #define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
 #define TEXTBLOCK_FONT_WEIGHT  FontWeightsNormal
 #define TEXTBLOCK_FONT_STYLE   FontStylesNormal
-//#define TEXTBLOCK_FONT_SIZE    14.666666984558105
-#define TEXTBLOCK_FONT_SIZE    11.0
+#define TEXTBLOCK_FONT_SIZE    14.666666984558105
+//#define TEXTBLOCK_FONT_SIZE    11.0
 
 /* @Namespace=System.Windows.Documents */
 class Inline : public DependencyObject, public ITextAttributes {

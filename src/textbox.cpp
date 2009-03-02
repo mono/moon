@@ -2041,6 +2041,7 @@ TextBoxView::TextBoxView ()
 	
 	cursor = Rect (0, 0, 0, 0);
 	layout = new TextLayout ();
+	selection_changed = false;
 	had_selected_text = false;
 	cursor_visible = false;
 	blink_timeout = 0;
@@ -2237,6 +2238,11 @@ TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 	if (dirty)
 		Layout (cr, GetRenderSize ());
 	
+	if (selection_changed) {
+		layout->Select (textbox->GetSelectionStart (), textbox->GetSelectionLength ());
+		selection_changed = false;
+	}
+	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	Paint (cr);
@@ -2248,54 +2254,6 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
 	*height = GetActualHeight ();
 	*width = GetActualWidth ();
-}
-
-static void
-append_runs (ITextAttributes *textbox, List *runs, const gunichar **text, int *length, bool selected)
-{
-	register const gunichar *inptr = *text;
-	const gunichar *inend = inptr + *length;
-	const gunichar *start = inptr;
-	TextRun *run;
-	int n;
-	
-	while (inptr < inend) {
-		start = inptr;
-		n = 0;
-		
-		while (inptr < inend && *inptr != '\r' && *inptr != '\n') {
-			inptr++;
-			n++;
-		}
-		
-		if (n > 0) {
-			// append the Run
-			run = new TextRun (start, n, textbox, selected);
-			runs->Append (run);
-		}
-		
-		if (inptr == inend) {
-			(*length) -= n;
-			break;
-		}
-		
-		// append the LineBreak
-		if (inptr[0] == '\r' && inptr[1] == '\n') {
-			run = new TextRun (inptr, 2, textbox, selected);
-			inptr += 2;
-			n += 2;
-		} else {
-			run = new TextRun (inptr, 1, textbox, selected);
-			inptr++;
-			n++;
-		}
-		
-		runs->Append (run);
-		
-		(*length) -= n;
-	}
-	
-	*text = inptr;
 }
 
 Size
@@ -2335,42 +2293,17 @@ TextBoxView::ArrangeOverride (Size finalSize)
 void
 TextBoxView::Layout (cairo_t *cr, Size constraint)
 {
-	int selection_length = textbox->GetSelectionLength ();
-	int selection_start = textbox->GetSelectionStart ();
-	TextBuffer *buffer = textbox->GetBuffer ();
-	const gunichar *text = buffer->text;
 	double width = constraint.width;
-	List *runs;
-	int left;
 	
 	if (isinf (width))
 		layout->SetMaxWidth (-1.0);
 	else
 		layout->SetMaxWidth (width);
 	
-	runs = new List ();
+	layout->SetText (textbox->GetText (), -1);
+	layout->Select (textbox->GetSelectionStart (), textbox->GetSelectionLength ());
+	selection_changed = false;
 	
-	if (selection_length > 0) {
-		left = selection_start;
-		
-		if (left > 0) {
-			// add text before the selected region
-			append_runs ((ITextAttributes *) textbox, runs, &text, &left, false);
-		}
-		
-		// add the selected region of text
-		left += selection_length;
-		append_runs ((ITextAttributes *) textbox, runs, &text, &left, true);
-		
-		left += buffer->len - (text - buffer->text);
-	} else {
-		left = buffer->len;
-	}
-	
-	// add the text after the selected region
-	append_runs ((ITextAttributes *) textbox, runs, &text, &left, false);
-	
-	layout->SetTextRuns (runs);
 	layout->Layout ();
 	dirty = false;
 	
@@ -2426,10 +2359,10 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 		break;
 	case TextBoxModelChangedSelection:
 		if (had_selected_text || textbox->HasSelectedText ()) {
-			// the selection has changed, need to recalculate layout
+			// the selection has changed, update the layout's selection
 			had_selected_text = textbox->HasSelectedText ();
+			selection_changed = true;
 			ResetCursorBlink (false);
-			dirty = true;
 		} else {
 			// cursor position changed
 			ResetCursorBlink (true);
@@ -2479,6 +2412,8 @@ TextBoxView::OnFocusIn ()
 void
 TextBoxView::SetTextBox (TextBox *textbox)
 {
+	TextLayoutAttributes *attrs;
+	
 	if (this->textbox == textbox)
 		return;
 	
@@ -2491,9 +2426,14 @@ TextBoxView::SetTextBox (TextBox *textbox)
 		textbox->AddHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
 		
 		// sync our state with the textbox
+		layout->SetTextAttributes (new List ());
+		attrs = new TextLayoutAttributes ((ITextAttributes *) textbox, 0);
+		layout->GetTextAttributes ()->Append (attrs);
+		
 		layout->SetTextAlignment (textbox->GetTextAlignment ());
 		layout->SetTextWrapping (textbox->GetTextWrapping ());
 		had_selected_text = textbox->HasSelectedText ();
+		selection_changed = true;
 	}
 	
 	this->textbox = textbox;

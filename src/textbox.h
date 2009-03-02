@@ -299,6 +299,7 @@ class TextBoxView : public FrameworkElement {
 	TextBox *textbox;
 	Rect cursor;
 	
+	int selection_changed:1;
 	int had_selected_text:1;
 	int cursor_visible:1;
 	int dirty:1;
