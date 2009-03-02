@@ -511,6 +511,7 @@ class Timeline : public DependencyObject {
 	DependencyObject *manual_target;
 	
  protected:
+ 	static void timeline_completed (EventObject *sender, EventArgs *calldata, gpointer data);
 	virtual ~Timeline ();
 
  public:
@@ -541,9 +542,6 @@ class Timeline : public DependencyObject {
 	
 	FillBehavior GetFillBehavior ();
 	void SetFillBehavior (FillBehavior behavior);
-	
-	bool GetHadParent () { return this->had_parent; }
-	void SetHadParent (bool had_parent) { this->had_parent = had_parent; }
 
 	void SetRepeatBehavior (RepeatBehavior behavior);
 	RepeatBehavior *GetRepeatBehavior ();
@@ -554,7 +552,9 @@ class Timeline : public DependencyObject {
 	Duration GetNaturalDuration (Clock *clock);
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 	
-	virtual Clock *AllocateClock () { return new Clock (this); }
+	virtual void AllocateClock ();
+	virtual void DeallocateClock ();
+	
 	virtual bool Validate ();
 
 	enum TimelineStatus {
@@ -572,10 +572,9 @@ class Timeline : public DependencyObject {
 
 	// events
 	const static int CompletedEvent;
-
+	Clock *clock;
 
  private:
- 	bool had_parent;
 	TimelineStatus timeline_status;
 };
 
@@ -588,8 +587,7 @@ class TimelineCollection : public DependencyObjectCollection {
  public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineCollection ();
-	
-	virtual bool AddedToCollection (Value *value, MoonError *error);
+
 	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
 };
 
@@ -606,7 +604,8 @@ class TimelineGroup : public Timeline {
  	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineGroup ();
 	
-	virtual Clock *AllocateClock ();
+	virtual void AllocateClock ();
+	virtual void DeallocateClock ();
 	virtual bool Validate ();
 	
 	void AddChild (Timeline *child);
@@ -668,7 +667,6 @@ TimeSpan get_now (void);
 
 /* @Namespace=Mono,Version=2 */
 class DispatcherTimer : public TimelineGroup {
-	Clock *root_clock;
 	static void OnTick (EventObject *sender, EventArgs *calldata, gpointer data);
 	TimelineGroup * timelinegroup;
 	bool stopped;
