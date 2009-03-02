@@ -1,3 +1,9 @@
+2009-03-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Threading/DispatcherTest.cs: Add test for
+	  starting/stopping a storyboard from a DispatcherTimer tick
+	  and also a test for starting/stopping a DispatcherTimer
+
 2009-02-27  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Hack to avoid rebuilding the xap file on "make install"

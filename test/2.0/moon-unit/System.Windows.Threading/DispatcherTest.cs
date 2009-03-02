@@ -31,12 +31,15 @@ using System.Diagnostics;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
+using Microsoft.Silverlight.Testing;
+using System.Windows.Shapes;
+using System.Windows.Media.Animation;
 
 
 namespace MoonTest.System.Windows.Threading
 {
 	[TestClass]
-	public class DispatcherTest
+	public class DispatcherTest : SilverlightTest
 	{
 		public static int count;
 
@@ -104,6 +107,51 @@ namespace MoonTest.System.Windows.Threading
 			});
 			timer.Change (0, Timeout.Infinite);
 			wait.WaitOne ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void RestartTimer ()
+		{
+			int count = 0;
+			DispatcherTimer timer = new DispatcherTimer ();
+			timer.Interval = TimeSpan.FromMilliseconds (5);
+			timer.Tick += delegate { count++; if (count == 5) timer.Stop (); };
+			Enqueue (() => {count = 0; timer.Start ();});
+			EnqueueConditional (() => count == 5);
+			Enqueue (() => { count = 0; timer.Start (); });
+			EnqueueConditional (() => count == 5);
+			Enqueue (() => { count = 0; timer.Start (); });
+			EnqueueConditional (() => count == 5);
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void RestartTimer2 ()
+		{
+			bool complete=false;
+			Rectangle r = new Rectangle();
+			Storyboard sb = new Storyboard ();
+			DoubleAnimation animation = new DoubleAnimation { Duration = new Duration(TimeSpan.FromMilliseconds(100)), From = 10, To = 100 };
+			Storyboard.SetTarget (animation, r);
+			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
+			sb.Children.Add (animation);
+			sb.Completed += delegate {complete = true;};
+			int count = 0;
+			DispatcherTimer timer = new DispatcherTimer ();
+			timer.Interval = TimeSpan.FromMilliseconds (5);
+			timer.Tick += delegate { if (count < 5) count++; };
+			Enqueue (() => { timer.Start (); });
+			Enqueue (() => { sb.Begin (); });
+			Enqueue (() => complete = true);
+			Enqueue (() => { timer.Stop (); complete = false; });
+			Enqueue (() => { sb.Begin (); });
+			Enqueue (() => complete = true);
+			Enqueue (() => {count =0; timer.Start (); complete = false; });
+			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (1000));
+			EnqueueTestComplete ();
 		}
 	}
 }
