@@ -3,6 +3,8 @@
 	* textbox.cpp (TextBox::Paste): New method to paste the
 	contents. Since pasting text is asyncronous, we have to emit our
 	own events and can't rely on them happening inside OnKeyDown().
+	(TextBoxView::OnModelChanged): Don't allow 'dirty' to get set to
+	false if updating the layout returns false.
 
 2009-03-01  Andrés G. Aragoneses  <aaragoneses@novell.com>
 

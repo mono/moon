@@ -2416,11 +2416,13 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 	switch (args->changed) {
 	case TextBoxModelChangedTextAlignment:
 		// text alignment changed, update our layout
-		dirty = layout->SetTextAlignment ((TextAlignment) args->property->new_value->AsInt32 ());
+		if (layout->SetTextAlignment ((TextAlignment) args->property->new_value->AsInt32 ()))
+			dirty = true;
 		break;
 	case TextBoxModelChangedTextWrapping:
 		// text wrapping changed, update our layout
-		dirty = layout->SetTextWrapping ((TextWrapping) args->property->new_value->AsInt32 ());
+		if (layout->SetTextWrapping ((TextWrapping) args->property->new_value->AsInt32 ()))
+			dirty = true;
 		break;
 	case TextBoxModelChangedSelection:
 		if (had_selected_text || textbox->HasSelectedText ()) {
