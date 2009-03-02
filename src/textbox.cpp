@@ -2213,7 +2213,7 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 }
 
 static void
-append_runs (ITextSource *textbox, List *runs, const gunichar **text, int *length, bool selected)
+append_runs (ITextAttributes *textbox, List *runs, const gunichar **text, int *length, bool selected)
 {
 	register const gunichar *inptr = *text;
 	const gunichar *inend = inptr + *length;
@@ -2317,12 +2317,12 @@ TextBoxView::Layout (cairo_t *cr, Size constraint)
 		
 		if (left > 0) {
 			// add text before the selected region
-			append_runs ((ITextSource *) textbox, runs, &text, &left, false);
+			append_runs ((ITextAttributes *) textbox, runs, &text, &left, false);
 		}
 		
 		// add the selected region of text
 		left += selection_length;
-		append_runs ((ITextSource *) textbox, runs, &text, &left, true);
+		append_runs ((ITextAttributes *) textbox, runs, &text, &left, true);
 		
 		left += buffer->len - (text - buffer->text);
 	} else {
@@ -2330,7 +2330,7 @@ TextBoxView::Layout (cairo_t *cr, Size constraint)
 	}
 	
 	// add the text after the selected region
-	append_runs ((ITextSource *) textbox, runs, &text, &left, false);
+	append_runs ((ITextAttributes *) textbox, runs, &text, &left, false);
 	
 	layout->SetTextRuns (runs);
 	layout->Layout ();

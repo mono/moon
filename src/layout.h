@@ -23,7 +23,7 @@
 #include <list.h>
 
 
-class ITextSource {
+class ITextAttributes {
  public:
 	virtual TextFontDescription *FontDescription () = 0;
 	virtual TextDecorations Decorations () = 0;
@@ -33,7 +33,7 @@ class ITextSource {
 
 class TextRun : public List::Node {
 	const gunichar *text;
-	ITextSource *source;
+	ITextAttributes *source;
 	TextFont *font;
 	gunichar *buf;
 	bool selected;
@@ -41,9 +41,9 @@ class TextRun : public List::Node {
 	
  public:
 	
-	TextRun (const gunichar *ucs4, int len, ITextSource *source, bool selected = false);
-	TextRun (const char *utf8, int len, ITextSource *source, bool selected = false);
-	TextRun (ITextSource *source);
+	TextRun (const gunichar *ucs4, int len, ITextAttributes *source, bool selected = false);
+	TextRun (const char *utf8, int len, ITextAttributes *source, bool selected = false);
+	TextRun (ITextAttributes *source);
 	
 	virtual ~TextRun ();
 	

@@ -439,12 +439,12 @@ TextBlock::Layout (cairo_t *cr)
 							inend++;
 						
 						if (inend > inptr)
-							runs->Append (new TextRun (inptr, inend - inptr, (ITextSource *) item));
+							runs->Append (new TextRun (inptr, inend - inptr, (ITextAttributes *) item));
 						
 						if (*inend == '\0')
 							break;
 						
-						runs->Append (new TextRun ((ITextSource *) item));
+						runs->Append (new TextRun ((ITextAttributes *) item));
 						
 						if (inend[0] == '\r' && inend[1] == '\n')
 							inptr = inend + 2;
@@ -455,7 +455,7 @@ TextBlock::Layout (cairo_t *cr)
 				
 				break;
 			case Type::LINEBREAK:
-				runs->Append (new TextRun ((ITextSource *) item));
+				runs->Append (new TextRun ((ITextAttributes *) item));
 				break;
 			default:
 				break;

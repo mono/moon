@@ -40,7 +40,7 @@
 // TextRun
 //
 
-TextRun::TextRun (const gunichar *ucs4, int len, ITextSource *source, bool selected)
+TextRun::TextRun (const gunichar *ucs4, int len, ITextAttributes *source, bool selected)
 {
 	TextFontDescription *font = source->FontDescription ();
 	
@@ -52,7 +52,7 @@ TextRun::TextRun (const gunichar *ucs4, int len, ITextSource *source, bool selec
 	this->buf = NULL;
 }
 
-TextRun::TextRun (const char *utf8, int len, ITextSource *source, bool selected)
+TextRun::TextRun (const char *utf8, int len, ITextAttributes *source, bool selected)
 {
 	TextFontDescription *font = source->FontDescription ();
 	register gunichar *s, *d;
@@ -80,7 +80,7 @@ TextRun::TextRun (const char *utf8, int len, ITextSource *source, bool selected)
 	this->source = source;
 }
 
-TextRun::TextRun (ITextSource *source)
+TextRun::TextRun (ITextAttributes *source)
 {
 	// This TextRun will represent a LineBreak
 	TextFontDescription *font = source->FontDescription ();

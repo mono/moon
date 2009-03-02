@@ -72,7 +72,7 @@ class TextBoxUndoStack;
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-class TextBox : public Control, public ITextSource {
+class TextBox : public Control, public ITextAttributes {
 	friend class TextBoxView;
 	
 	DependencyObject *contentElement;
@@ -222,7 +222,7 @@ class TextBox : public Control, public ITextSource {
 	void SelectAll ();
 	
 	//
-	// ITextSource Interface Methods
+	// ITextAttributes Interface Methods
 	//
 	virtual TextDecorations Decorations () { return TextDecorationsNone; }
 	virtual TextFontDescription *FontDescription () { return font; }
