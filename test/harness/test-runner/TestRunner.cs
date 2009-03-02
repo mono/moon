@@ -204,7 +204,8 @@ namespace MoonlightTests {
 				} else {
 					agviewer_process = new ExternalProcess (GetProcessPath (), args, -1);
 				}
-
+				if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MOON_PATH")))
+					agviewer_process.EnvironmentVariables ["MONO_PATH"] = Environment.GetEnvironmentVariable ("MOON_PATH") + ":" + Environment.GetEnvironmentVariable ("MONO_PATH");
 				agviewer_process.Run (false);
 			}
 		}
