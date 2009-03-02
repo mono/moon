@@ -565,7 +565,7 @@ Media::Initialize (Downloader *downloader, const char *PartName)
 	g_return_if_fail (downloader != NULL);
 	g_return_if_fail (this->downloader == NULL);
 	g_return_if_fail (file == NULL);
-	g_return_if_fail (uri != NULL);
+	g_return_if_fail (uri != NULL || PartName != NULL);
 	g_return_if_fail (initialized == false);
 	g_return_if_fail (error_reported == false);
 	g_return_if_fail (this->source == NULL);
