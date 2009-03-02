@@ -210,7 +210,7 @@ class Animation/*Timeline*/ : public Timeline {
 
 	Animation/*Timeline*/ () { };
 	
-	virtual void AllocateClock ();
+	virtual Clock *AllocateClock ();
 
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
@@ -786,7 +786,9 @@ class Storyboard : public ParallelTimeline {
 	void HookupAnimationsRecurse (Clock *clock);
 	void TeardownClockGroup ();
 	gboolean Tick ();
-	bool had_parent;
+	Clock *clock;
+	Clock *root_clock;
+	bool pending_begin;
 	
  protected:
 	virtual ~Storyboard ();
@@ -799,6 +801,8 @@ class Storyboard : public ParallelTimeline {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Storyboard ();
+	
+	virtual void SetSurface (Surface *surface);
 	
 	bool Begin ();
 	
@@ -828,13 +832,7 @@ class Storyboard : public ParallelTimeline {
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetCurrentState ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	TimeSpan GetCurrentTime ();
-
-	bool GetHadParent () { return this->had_parent; }
-	void SetHadParent (bool had_parent) { this->had_parent = had_parent; }
-
-	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+	virtual Clock *AllocateClock ();
 
 	static void SetTargetName (DependencyObject *o, const char *targetName);
 	static const char *GetTargetName (DependencyObject *o);

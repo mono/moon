@@ -128,6 +128,7 @@ namespace MoonTest.System.Windows.Threading
 		
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void RestartTimer2 ()
 		{
 			bool complete=false;

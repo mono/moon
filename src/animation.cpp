@@ -341,17 +341,17 @@ AnimationClock::~AnimationClock ()
 	}
 }
 
-void
+Clock*
 Animation/*Timeline*/::AllocateClock()
 {
-	clock = new AnimationClock (this);
+	Clock *clock = new AnimationClock (this);
 	char *name = g_strdup_printf ("AnimationClock for %s, targetobj = %p/%s, targetprop = %s", GetTypeName(),
 				      Storyboard::GetTargetName(this) == NULL ? NULL : FindName (Storyboard::GetTargetName(this)),
 				      Storyboard::GetTargetName(this),
 				      Storyboard::GetTargetProperty (this) == NULL ? NULL : Storyboard::GetTargetProperty (this)->path);
 	clock->SetValue (DependencyObject::NameProperty, name);
 	g_free (name);
-	clock->AddHandler (Clock::CompletedEvent, Timeline::timeline_completed, this);
+	return clock;
 }
 
 Value*
@@ -382,12 +382,15 @@ Animation/*Timeline*/::GetNaturalDurationCore (Clock* clock)
 Storyboard::Storyboard ()
 {
 	SetObjectType (Type::STORYBOARD);
-	had_parent = false;
+
+	clock = NULL;
+	root_clock = NULL;
+	pending_begin = false;
 }
 
 Storyboard::~Storyboard ()
 {
-	if (!GetHadParent () && clock) {
+	if (root_clock) {
 		//printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
 		Stop ();
 		TeardownClockGroup ();
@@ -398,12 +401,6 @@ int
 Storyboard::GetCurrentState ()
 {
 	return clock ? clock->GetClockState () : Clock::Stopped;
-}
-
-TimeSpan
-Storyboard::GetCurrentTime ()
-{
-	return clock ? clock->GetCurrentTime () : 0;
 }
 
 void
@@ -479,40 +476,31 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 }
 
 void
-Storyboard::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
-{
-	if (col == GetChildren () && args->new_value && !args->new_value->GetIsNull ()) {
-		if (args->new_value->Is (Type::STORYBOARD)) {
-			args->new_value->AsStoryboard ()->SetHadParent (true);
-		}
-	}
-}
-
-void
 Storyboard::TeardownClockGroup ()
 {
-	clock->RemoveHandler (clock->CompletedEvent, storyboard_completed, this);
-	if (!GetHadParent () && clock) {
-		ClockGroup *group = clock->GetParent();
+	if (root_clock) {
+		ClockGroup *group = root_clock->GetParent();
 		if (group)
-			group->RemoveChild (clock);
-		DeallocateClock ();
+			group->RemoveChild (root_clock);
+		root_clock->unref ();
+		root_clock = NULL;
 	}
+
+	clock = NULL;
 }
 
 void
 Storyboard::storyboard_completed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Storyboard *sb = (Storyboard *) closure;
-
+	
 	// Only teardown the clocks if the whole storyboard is stopped.
 	// Otherwise just remove from parent not be affected by it's 
 	// state changes
-	if (!sb->GetHadParent () && sb->clock && sb->clock->GetClockState () == Clock::Stopped)
+	if (sb->root_clock->GetClockState () == Clock::Stopped)
 		sb->TeardownClockGroup ();
-			
-	// Chain up to the timeline_completed event first
-	sb->timeline_completed (sender, calldata, closure);
+	
+	sb->Emit (sb->CompletedEvent);
 }
 
 bool
@@ -533,7 +521,8 @@ Storyboard::Begin ()
 	/* destroy the clock hierarchy and recreate it to restart.
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
-	if (!GetHadParent () && clock) {
+	if (root_clock) {
+		root_clock->RemoveHandler (root_clock->CompletedEvent, storyboard_completed, this);
 		TeardownClockGroup ();
     }
 #endif
@@ -541,31 +530,40 @@ Storyboard::Begin ()
 	if (Validate () == false)
 		return false;
 
-	if (!group)
-		group = Deployment::GetCurrent () ->GetSurface ()->GetTimeManager()->GetRootClock();
+	if (!group) {
+		if (GetSurface() == NULL) {
+			if (!Application::GetCurrent()->GetSurface()) {
+				pending_begin = true;
+				return false;
+			}
+
+			group = Application::GetCurrent()->GetSurface()->GetTimeManager()->GetRootClock();
+		}
+		else
+			group = GetSurface()->GetTimeManager()->GetRootClock();
+	}
 
 	// This creates the clock tree for the hierarchy.  if a
 	// Timeline A is a child of TimelineGroup B, then Clock cA
 	// will be a child of ClockGroup cB.
-	AllocateClock ();
+	root_clock = AllocateClock ();
 	char *name = g_strdup_printf ("Storyboard, named '%s'", GetName());
-	clock->SetValue (DependencyObject::NameProperty, name);
+	root_clock->SetValue (DependencyObject::NameProperty, name);
 	g_free (name);
-	clock->RemoveHandler (Clock::CompletedEvent, Timeline::timeline_completed, this);
-	clock->AddHandler (clock->CompletedEvent, storyboard_completed, this);
+	root_clock->AddHandler (root_clock->CompletedEvent, storyboard_completed, this);
 
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.
-	HookupAnimationsRecurse (clock);
+	HookupAnimationsRecurse (root_clock);
 
 	group->ComputeBeginTime ();
 
-	group->AddChild (clock);
+	group->AddChild (root_clock);
 
 	if (HasBeginTime ())
-		clock->ComputeBeginTime ();
+		root_clock->ComputeBeginTime ();
 	else
-		clock->BeginOnTick ();
+		root_clock->BeginOnTick ();
 
 	// we delay starting the surface's ClockGroup until the first
 	// child has been added.  otherwise we run into timing issues
@@ -589,11 +587,17 @@ Storyboard::BeginWithError (MoonError *error)
 	return Begin ();
 }
 
+Clock *
+Storyboard::AllocateClock ()
+{
+	return (clock = ParallelTimeline::AllocateClock ());
+}
+
 void
 Storyboard::Pause ()
 {
-	if (clock && !GetHadParent ())
-		clock->Pause ();
+	if (root_clock)
+		root_clock->Pause ();
 }
 
 void
@@ -609,8 +613,8 @@ Storyboard::PauseWithError (MoonError *error)
 void
 Storyboard::Resume ()
 {
-	if (clock && !GetHadParent ())
-		clock->Resume ();
+	if (root_clock)
+		root_clock->Resume ();
 }
 
 void
@@ -620,15 +624,15 @@ Storyboard::ResumeWithError (MoonError *error)
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Resume a Storyboard which is not the root Storyboard.");
 		return;
 	}
-	if (clock && !GetHadParent ())
-		clock->Resume ();
+	if (root_clock)
+		root_clock->Resume ();
 }
 
 void
 Storyboard::Seek (TimeSpan timespan)
 {
-	if (clock && !GetHadParent ())
-		clock->Seek (timespan);
+	if (root_clock)
+		root_clock->Seek (timespan);
 }
 
 void
@@ -638,16 +642,16 @@ Storyboard::SeekWithError (TimeSpan timespan, MoonError *error)
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Seek a Storyboard which is not the root Storyboard.");
 		return;
 	}
-	if (clock && !GetHadParent ())
-		clock->Seek (timespan);
+	if (root_clock)
+		root_clock->Seek (timespan);
 }
 
 void
 Storyboard::Stop ()
 {
-
-	if (clock && !GetHadParent ()) {
-		clock->Stop ();
+	if (root_clock) {
+		root_clock->RemoveHandler (root_clock->CompletedEvent, storyboard_completed, this);
+		root_clock->Stop ();
 		TeardownClockGroup ();
 	}
 }
@@ -660,6 +664,35 @@ Storyboard::StopWithError (MoonError *error)
 		return;
 	}
 	Stop ();
+}
+
+void
+Storyboard::SetSurface (Surface *surface)
+{
+	if (GetSurface() == surface)
+		return;
+
+	if (GetSurface() && surface == NULL && root_clock && root_clock->GetClockState() == Clock::Active) {
+		/* we're being detached from a surface, so pause clock */
+		Pause ();
+		root_clock->OnSurfaceDetach ();
+	}
+ 	else if (!GetSurface() && surface) {
+		/* we're being (re-)attached to a surface, so
+		   1. resume clock if we were paused.
+		   2. start clock if we had Begin called before being attached 
+		*/
+		if (root_clock) {
+			if (root_clock->GetIsPaused() && GetLogicalParent()) {
+				Resume ();
+				root_clock->OnSurfaceReAttach ();
+			}
+		}
+		else if (pending_begin && GetLogicalParent ()) {
+			Begin ();
+		}
+ 	}
+	DependencyObject::SetSurface (surface);
 }
 
 BeginStoryboard::BeginStoryboard ()
