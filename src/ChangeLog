@@ -1,3 +1,7 @@
+2009-03-01  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* runtime.cpp: Add an EOL at the end of a printf.
+
 2009-03-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* utils.h: Mark our g_ptr_array_insert*() symbols as internal, we

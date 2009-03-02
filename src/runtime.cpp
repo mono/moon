@@ -1974,7 +1974,7 @@ runtime_init (guint64 flags)
 	}
 
 	if (running_on_nvidia ()) {
-		printf ("Moonlight: Forcing client-side rendering because we detected binary drivers which are known to suffer performance problems.");
+		printf ("Moonlight: Forcing client-side rendering because we detected binary drivers which are known to suffer performance problems.\n");
 		flags &= ~RUNTIME_INIT_USE_BACKEND_XLIB;
 	}
 
