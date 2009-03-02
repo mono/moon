@@ -1,3 +1,7 @@
+2009-03-01  NativeMethods  <sdelcroix@novell.com>
+
+	* NativeMethods.cs: fix a delegate signature to match native side
+
 2009-02-26  Chris Toshok  <toshok@ximian.com>
 
 	* GeneratedPInvokes.cs: regen.
