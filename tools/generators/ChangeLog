@@ -1,3 +1,7 @@
+2009-03-02  Andreia Gaita  <avidigal@novell.com>
+
+	* Generator.cs: Fix parsing
+
 2009-02-22  Geoff Norton  <gnorton@novell.com>
 
 	* Generator.cs: Don't free constant values.

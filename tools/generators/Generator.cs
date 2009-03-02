@@ -1039,6 +1039,10 @@ class Generator {
 					continue;
 				}
 
+				if (tokenizer.Accept (Token2Type.Identifier, "G_GNUC_INTERNAL")) {
+					continue;
+				}
+
 			    break;
 			} while (true);
 
