@@ -565,6 +565,7 @@ agviewer_add_signal_handler ()
 	sa.sa_flags = 0;
 
 	g_assert (sigaction (SIGSEGV, &sa, NULL) != -1);
+	g_assert (sigaction (SIGFPE, &sa, NULL) != -1);
 	g_assert (sigaction (SIGQUIT, &sa, NULL) != -1);
 }
 
@@ -582,6 +583,7 @@ agviewer_handle_native_sigsegv (int signal)
 	const char *signal_str = (signal == SIGSEGV) ? "SIGSEGV" : "SIGABRT";
 	switch (signal) {
 	case SIGSEGV: signal_str = "SIGSEGV"; break;
+	case SIGFPE: signal_str = "SIGFPE"; break;
 	case SIGABRT: signal_str = "SIGABRT"; break;
 	case SIGQUIT: signal_str = "SIGQUIT"; break;
 	default:
