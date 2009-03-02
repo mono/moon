@@ -119,6 +119,7 @@ class TextBox : public Control, public ITextAttributes {
 	void OnKeyUp (KeyEventArgs *args);
 	
 	static void paste (GtkClipboard *clipboard, const char *text, gpointer closure);
+	void Paste (GtkClipboard *clipboard, const char *text);
 	
 	int CursorDown (int cursor, int n_lines);
 	int CursorUp (int cursor, int n_lines);

@@ -1240,11 +1240,49 @@ GetClipboard (TextBox *textbox, GdkAtom atom)
 }
 
 void
+TextBox::Paste (GtkClipboard *clipboard, const char *str)
+{
+	TextBoxUndoAction *action;
+	int start, length;
+	gunichar *text;
+	glong textlen;
+	
+	length = abs (selection_cursor - selection_anchor);
+	start = MIN (selection_anchor, selection_cursor);
+	
+	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &textlen)))
+		return;
+	
+	if (length > 0) {
+		// replace the currently selected text
+		action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, textlen);
+		
+		buffer->Replace (start, length, text, textlen);
+	} else {
+		// insert the text at the cursor
+		action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, textlen);
+		
+		buffer->Insert (start, text, textlen);
+	}
+	
+	undo->Push (action);
+	redo->Clear ();
+	
+	emit |= TEXT_CHANGED;
+	start += textlen;
+	
+	inkeypress = true;
+	SetSelectionStart (start);
+	SetSelectionLength (0);
+	inkeypress = false;
+	
+	SyncAndEmit ();
+}
+
+void
 TextBox::paste (GtkClipboard *clipboard, const char *text, gpointer closure)
 {
-	TextBox *textbox = (TextBox *) closure;
-	
-	textbox->SetSelectedText (text);
+	((TextBox *) closure)->Paste (clipboard, text);
 }
 
 void

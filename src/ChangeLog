@@ -1,3 +1,9 @@
+2009-03-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::Paste): New method to paste the
+	contents. Since pasting text is asyncronous, we have to emit our
+	own events and can't rely on them happening inside OnKeyDown().
+
 2009-03-01  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* runtime.cpp: Add an EOL at the end of a printf.
