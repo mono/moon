@@ -1,3 +1,7 @@
+2009-03-02  Geoff Norton  <gnorton@novell.com>
+
+	* deployment.cpp: Enable signal chaning
+
 2009-03-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::Paste): New method to paste the

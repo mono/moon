@@ -68,6 +68,7 @@ Deployment::Initialize()
 		mono_jit_set_trace_options (trace_options);
 	}
        
+	mono_set_signal_chaining (true);
 	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
 	root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");
 
