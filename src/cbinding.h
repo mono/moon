@@ -1372,6 +1372,9 @@ bool storyboard_begin_with_error (Storyboard *instance, MoonError *error);
 int storyboard_get_current_state (Storyboard *instance);
 
 /* @GeneratePInvoke */
+TimeSpan storyboard_get_current_time (Storyboard *instance);
+
+/* @GeneratePInvoke */
 void storyboard_pause_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */

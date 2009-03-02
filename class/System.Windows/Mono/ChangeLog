@@ -1,3 +1,8 @@
+2009-03-02  Alan McGovern  <alan.mcgovern@gmail.com>
+
+	* GeneratedPInvokes.cs: Add a P/Invoke for
+	  Storyboard.GetCurrentTime. Allows two tests to pass now.
+
 2009-03-01  NativeMethods  <sdelcroix@novell.com>
 
 	* NativeMethods.cs: fix a delegate signature to match native side

@@ -1385,6 +1385,10 @@ namespace Mono {
 		// int storyboard_get_current_state (Storyboard *instance);
 		public extern static int storyboard_get_current_state (IntPtr instance);
 
+		[DllImport ("moon")]
+		// TimeSpan storyboard_get_current_time (Storyboard *instance);
+		public extern static long storyboard_get_current_time (IntPtr instance);
+
 		[DllImport ("moon", EntryPoint="storyboard_pause_with_error")]
 		// void storyboard_pause_with_error (Storyboard *instance, MoonError *error);
 		private extern static void storyboard_pause_with_error_ (IntPtr instance, out MoonError error);

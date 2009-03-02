@@ -400,6 +400,12 @@ Storyboard::GetCurrentState ()
 	return clock ? clock->GetClockState () : Clock::Stopped;
 }
 
+TimeSpan
+Storyboard::GetCurrentTime ()
+{
+	return clock ? clock->GetCurrentTime () : 0;
+}
+
 void
 Storyboard::HookupAnimationsRecurse (Clock *clock)
 {

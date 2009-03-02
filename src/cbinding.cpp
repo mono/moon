@@ -3022,6 +3022,17 @@ storyboard_get_current_state (Storyboard *instance)
 }
 
 
+TimeSpan
+storyboard_get_current_time (Storyboard *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (TimeSpan) 0;
+	
+	return instance->GetCurrentTime ();
+}
+
+
 void
 storyboard_pause_with_error (Storyboard *instance, MoonError *error)
 {

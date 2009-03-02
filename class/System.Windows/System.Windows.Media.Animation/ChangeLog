@@ -1,3 +1,8 @@
+2009-03-02  Alan McGovern  <alan.mcgovern@gmail.com>
+
+	* Storyboard.cs: Add a P/Invoke for Storyboard.GetCurrentTime.
+	  Allows two tests to pass now.
+
 2009-02-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* KeyTime.cs (ToString): If the type is Uniform, return

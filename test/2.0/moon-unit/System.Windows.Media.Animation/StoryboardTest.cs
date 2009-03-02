@@ -674,7 +674,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void CurrentTime ()
 		{
 			Canvas c = CreateStoryboard ();
@@ -686,14 +685,16 @@ namespace MoonTest.System.Windows.Media.Animation {
 			EnqueueConditional (()=> Environment.TickCount - start > 300);
 			Enqueue (() => {
 				double ms = storyboard.GetCurrentTime ().TotalMilliseconds;
-				Assert.IsTrue (ms < 350, "Less than 350ms");
+				Assert.IsTrue (ms >= 250, "More than 300ms");
+				Assert.IsTrue (ms <= 350, "Less than 350ms");
 				Assert.AreEqual (((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, ms, "#2");
 				Assert.AreEqual (((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, ms, "#3");
 			});
 			EnqueueConditional (() => Environment.TickCount - start > 1100);
 			Enqueue (() => {
 				double ms = storyboard.GetCurrentTime ().TotalMilliseconds;
-				Assert.IsTrue (ms > 1000, "More than 1000ms");
+				Assert.IsTrue (ms >= 1000, "More than 1100ms: " + ms);
+				Assert.IsTrue (ms <= 1200, "Less than 1200ms: " + ms);
 				Assert.AreEqual (((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, 1000, "#4");
 				Assert.AreEqual (((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, ms, "#5");
 			});

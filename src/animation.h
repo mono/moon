@@ -828,6 +828,9 @@ class Storyboard : public ParallelTimeline {
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetCurrentState ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	TimeSpan GetCurrentTime ();
+
 	bool GetHadParent () { return this->had_parent; }
 	void SetHadParent (bool had_parent) { this->had_parent = had_parent; }
 

@@ -129,7 +129,7 @@ namespace System.Windows.Media.Animation {
 
 		public TimeSpan GetCurrentTime ()
 		{
-			throw new NotImplementedException ();
+			return TimeSpan.FromTicks (NativeMethods.storyboard_get_current_time (native));
 		}
 		
 		public ClockState GetCurrentState ()

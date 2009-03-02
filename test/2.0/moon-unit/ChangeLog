@@ -1,3 +1,10 @@
+2009-03-02  Alan McGovern  <alan.mcgovern@gmail.com>
+
+	* System.Windows.Threading/DispatcherTest.cs:
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add a
+	  P/Invoke for Storyboard.GetCurrentTime. Allows two tests to
+	  pass now.
+
 2009-03-02  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: Refactor

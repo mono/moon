@@ -1,3 +1,11 @@
+2009-03-02  Alan McGovern  <alan.mcgovern@gmail.com>
+
+	* cbinding.h:
+	* animation.h:
+	* cbinding.cpp:
+	* animation.cpp: Add a P/Invoke for Storyboard.GetCurrentTime.
+	  Allows two tests to pass now.
+
 2009-03-02  Alan McGovern  <amcgovern@novell.com>
 
 	* clock.h:
