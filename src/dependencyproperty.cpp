@@ -262,8 +262,11 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 {
 	g_return_val_if_fail (o != NULL, NULL);
 	g_return_val_if_fail (propertypath != NULL, NULL);
-	g_return_val_if_fail (propertypath->path != NULL, NULL);
+	g_return_val_if_fail (propertypath->path != NULL || propertypath->property != NULL, NULL);
 	
+	if (propertypath->property)
+		return propertypath->property;
+
 	const char *path = propertypath->path;
 	const char *inend = path + strlen (path);
 	register const char *inptr = path;

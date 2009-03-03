@@ -1,3 +1,9 @@
+2009-03-03  Alan McGovern  <amcgovern@novell.com>
+
+	* Value.cs: Complete the implementation of PropertyPath. If it
+	  is constructed with a DependencyProperty in managed,
+	  propagate this to native.
+
 2009-03-01  NativeMethods  <sdelcroix@novell.com>
 
 	* NativeMethods.cs: fix a delegate signature to match native side

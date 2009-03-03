@@ -42,7 +42,8 @@ namespace Mono {
 
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct UnmanagedPropertyPath {
-		public IntPtr path;
+		public IntPtr pathString;
+		public IntPtr property;
 	}
 
 	internal struct UnmanagedColor {
@@ -185,7 +186,11 @@ namespace Mono {
 
 				case Kind.PROPERTYPATH: {
 					UnmanagedPropertyPath *propertypath = (UnmanagedPropertyPath *) val->u.p;
-					return new PropertyPath (propertypath == null ? null : Helper.PtrToStringAuto (propertypath->path));
+					if (propertypath == null)
+						return new PropertyPath (null);
+					if (propertypath->property != null)
+						return new PropertyPath (DependencyProperty.Lookup (propertypath->property));
+					return new PropertyPath (Helper.PtrToStringAuto (propertypath->pathString));
 				}
 
 				case Kind.POINT: {
@@ -438,7 +443,8 @@ namespace Mono {
 
 					UnmanagedPropertyPath *upp = (UnmanagedPropertyPath *) value.u.p;
 
-					upp->path = StringToIntPtr (propertypath.Path);
+					upp->pathString = StringToIntPtr (propertypath.Path);
+					upp->property = propertypath.NativeDP;
 				}
 				else if (v is Uri) {
 					Uri uri = (Uri) v;

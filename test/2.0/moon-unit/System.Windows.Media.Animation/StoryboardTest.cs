@@ -373,7 +373,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("This relies on property paths being fully implemented")]
 		public void RemoveChildThenStart2 ()
 		{
 			Canvas c = CreateStoryboard ();
@@ -765,7 +764,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("This relies on property paths being fully implemented")]
 		public void StopChildStoryboard ()
 		{
 			Canvas c = CreateStoryboard ();

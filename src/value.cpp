@@ -109,6 +109,7 @@ Value::Value (const Value& v)
 		if (v.u.propertypath) {
 			u.propertypath = g_new (PropertyPath, 1);
 			u.propertypath->path = g_strdup (v.u.propertypath->path);
+			u.propertypath->property = v.u.propertypath->property;
 		}
 		break;
 	case Type::COLOR:
@@ -255,6 +256,7 @@ Value::Value (PropertyPath propertypath)
 	k = Type::PROPERTYPATH;
 	u.propertypath = g_new (PropertyPath, 1);
 	u.propertypath->path = g_strdup (propertypath.path);
+	u.propertypath->property = propertypath.property;
 	SetIsNull (false);
 }
 

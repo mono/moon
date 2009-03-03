@@ -35,6 +35,7 @@ namespace System.Windows
 	{
 		private string path;
 		private object [] path_parameters;
+		private DependencyProperty property;
 		
 		public PropertyPath (string path, params object [] pathParameters)
 		{
@@ -57,6 +58,7 @@ namespace System.Windows
 				
 				// Silverlight always sets "(0)" as the path no matter what DependencyProperty was passed in...
 				path = "(0)";
+				property = (DependencyProperty) parameter;
 			} else if (parameter is string) {
 				path = parameter as string;
 			} else {
@@ -64,6 +66,9 @@ namespace System.Windows
 			}
 		}
 		
+		internal IntPtr NativeDP {
+			get { return property == null ? IntPtr.Zero : property.Native;  }
+		}
 		public string Path {
 			get { return path; }
 		}

@@ -19,9 +19,16 @@
 /* @IncludeInKinds */
 struct PropertyPath {
 public:
+	PropertyPath (DependencyProperty *property)
+	{
+		this->path = g_strdup ("(0)");
+		this->property = property;
+	}
+	
 	PropertyPath (const char *path)
 	{
 		this->path = g_strdup (path);
+		this->property = NULL;
 	}
 
 	~PropertyPath ()
@@ -31,10 +38,11 @@ public:
 
 	bool operator== (const PropertyPath &v) const
 	{
-		return !strcmp (v.path, path);
+		return v.property == property || !strcmp (v.path, path);
 	}
 
 	char *path;
+	DependencyProperty *property;
 };
 
 #endif

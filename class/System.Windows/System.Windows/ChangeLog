@@ -1,3 +1,9 @@
+2009-03-03  Alan McGovern  <amcgovern@novell.com>
+
+	* PropertyPath.cs: Complete the implementation of
+	  PropertyPath. If it is constructed with a DependencyProperty
+	  in managed, propagate this to native.
+
 2009-02-26  Chris Toshok  <toshok@ximian.com>
 
 	* Application.cs (apply_default_style_cb): instead of setting the

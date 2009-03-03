@@ -1,5 +1,16 @@
 2009-03-03  Alan McGovern  <amcgovern@novell.com>
 
+	* value.cpp:
+	* propertypath.h: Complete the implementation of PropertyPath.
+	  If it is constructed with a DependencyProperty in managed,
+	  propagate this to native.
+
+	* dependencyproperty.cpp: If the property path instance was
+	  constructed with a DependencyProperty *, immediately return
+	  it.
+
+2009-03-03  Alan McGovern  <amcgovern@novell.com>
+
 	* animation.h:
 	* animation.cpp: Implement the required exceptions for managed
 	  code when starting storyboards which are missing properties
