@@ -1,6 +1,22 @@
 2009-03-03  Jeffrey Stedfast  <fejj@novell.com>
 
-	Fixes LineBreakBasic2.htm and some parts of LineBreakClases.htm
+	Fixes a few more cases in LineBreakClasses.htm
+
+	* layout.cpp (utf8_find_last_word): If a zero-width space follows
+	a combining mark, treat the zws as part of a word and not lwsp.
+	(layout_word_lwsp): Do NOT ignore zero-width characters, let the
+	font metrics do the talking.
+	(TextLayout::LayoutNoWrap): Same.
+	(layout_word_overflow): Same combining-mark fix as above.
+	(layout_word_wrap): Same. Also changed the way we keep track of
+	break opportunities. After discoverign that we need to wrap, get
+	the break-type for the follwoing character before working
+	backwards. Try to return false if we manage to squeeze the entire
+	word onto the line anyway.
+
+2009-03-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes LineBreakBasic2.htm and some parts of LineBreakClasses.htm
 
 	* layout.cpp (BreakSpace): Treat tab as a BREAK_SPACE.
 	(utf8_find_last_word): Use BreakSpace() instead of
