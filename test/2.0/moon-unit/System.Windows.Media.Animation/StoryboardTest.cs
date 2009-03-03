@@ -373,6 +373,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("This relies on property paths being fully implemented")]
 		public void RemoveChildThenStart2 ()
 		{
 			Canvas c = CreateStoryboard ();
@@ -438,6 +439,97 @@ namespace MoonTest.System.Windows.Media.Animation {
 				delegate { sb.Children.Remove (storyboard); },
 				delegate { Assert.Throws<InvalidOperationException> (delegate { storyboard.Begin (); }); }
 			);
+		}
+		
+		// If this test executes before BeginParentHasNameAttached2, then BeginParentHasNameAttached2
+		// will fail with a "cannot find 'rect'" error even though rect should definitely be findable.
+		// Looks like a SL bug.
+		[TestMethod]
+		[Asynchronous]
+		public void zBeginInvalidTargetProperty ()
+		{
+			Rectangle target = new Rectangle { Name = "TA" };
+			Storyboard sb = new Storyboard ();
+			sb.Children.Add (new DoubleAnimation { From = 5, To = 100 });
+			Storyboard.SetTargetName (sb, "TA");
+			Storyboard.SetTargetProperty (sb, new PropertyPath ("FakeProp"));
+
+			Enqueue (() => { TestPanel.Children.Add (target); TestPanel.Resources.Add ("b", sb); });
+			Enqueue (() => Assert.Throws<InvalidOperationException> (() => sb.Begin ()));
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+
+
+		[TestMethod]
+		public void BeginNoNameOrTarget ()
+		{
+			Storyboard sb = new Storyboard ();
+			sb.Begin ();
+			Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState ());
+		}
+
+		[TestMethod]
+		public void BeginNoNameOrTarget2 ()
+		{
+			Assert.Throws <InvalidOperationException> (() => {
+				Storyboard sb = new Storyboard ();
+				sb.Children.Add (new DoubleAnimation { From = 5, To = 100 });
+				sb.Begin ();
+			});
+		}
+
+		[TestMethod]
+		public void BeginParentHasNameNotAttached ()
+		{
+			Assert.Throws <InvalidOperationException> (() => {
+				Storyboard sb = new Storyboard ();
+				Storyboard.SetTargetName (sb, "TARGET");
+				sb.Children.Add (new DoubleAnimation { From = 5, To = 100 });
+				sb.Begin ();
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void BeginParentHasNameAttached ()
+		{
+			Rectangle target = new Rectangle { Name = "TARGET" };
+			Storyboard sb = new Storyboard ();
+			sb.Children.Add (new DoubleAnimation { From = 5, To = 100 });
+			Storyboard.SetTargetName (sb, "TARGET");
+			Storyboard.SetTargetProperty (sb, new PropertyPath ("Width"));
+
+			Enqueue (() => TestPanel.Children.Add (target));
+			Enqueue (() => Assert.Throws <InvalidOperationException> (() => sb.Begin ()));
+			Enqueue (() => TestPanel.Children.Clear ());
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void BeginParentHasNameAttached2 ()
+		{
+			Rectangle target = new Rectangle { Name = "rect" };
+			Storyboard sb = new Storyboard ();
+			sb.Children.Add (new DoubleAnimation { From = 5, To = 100 });
+			Storyboard.SetTargetName (sb, "rect");
+			Storyboard.SetTargetProperty (sb, new PropertyPath ("Width"));
+
+			Enqueue (() => { TestPanel.Children.Add (target); TestPanel.Resources.Add ("a", sb); });
+			Enqueue (() => sb.Begin ());
+			Enqueue (() => Assert.AreNotEqual (target.Width, 0));
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		public void BeginNameNotAttached2 ()
+		{
+			Storyboard sb = new Storyboard ();
+			Storyboard.SetTargetName (sb, "TARGET");
+			sb.Begin ();
+			Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState ());
 		}
 
 		[TestMethod]
@@ -566,7 +658,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 			EnqueueTestComplete ();
 		}
-
+		
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
@@ -673,6 +765,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("This relies on property paths being fully implemented")]
 		public void StopChildStoryboard ()
 		{
 			Canvas c = CreateStoryboard ();
@@ -712,6 +805,9 @@ namespace MoonTest.System.Windows.Media.Animation {
 				Assert.IsTrue (ms < 350, "Less than 350ms");
 				Assert.AreEqual (((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, ms, "#2");
 				Assert.AreEqual (((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, ms, "#3");
+				double width = ((Rectangle) c.Children [0]).Width;
+				Assert.IsTrue (width > 20 && width < 50, "#width1");
+				Assert.IsTrue (((Rectangle)c.Children[1]).Width - width < 0.001, "#width2");
 			});
 			EnqueueConditional (() => Environment.TickCount - start > 1100);
 			Enqueue (() => {
@@ -719,6 +815,9 @@ namespace MoonTest.System.Windows.Media.Animation {
 				Assert.IsTrue (ms > 1000, "More than 1000ms");
 				Assert.AreEqual (((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, 1000, "#4");
 				Assert.AreEqual (((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, ms, "#5");
+				double width = ((Rectangle) c.Children [0]).Width;
+				Assert.IsTrue (width == 100, "#width1");
+				Assert.IsTrue (((Rectangle)c.Children[1]).Width - width < 0.001, "#width2");
 			});
 			Enqueue (() => TestPanel.Children.Clear ());
 			EnqueueTestComplete ();

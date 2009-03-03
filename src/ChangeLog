@@ -1,5 +1,12 @@
 2009-03-03  Alan McGovern  <amcgovern@novell.com>
 
+	* animation.h:
+	* animation.cpp: Implement the required exceptions for managed
+	  code when starting storyboards which are missing properties
+	  or can't find the target element/property.
+
+2009-03-03  Alan McGovern  <amcgovern@novell.com>
+
 	* src.mdp: Add propertypath.h to the MD solution
 
 2009-03-03  Alan McGovern  <amcgovern@novell.com>

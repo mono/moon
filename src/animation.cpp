@@ -402,8 +402,8 @@ Storyboard::GetCurrentState ()
 	return clock ? clock->GetClockState () : Clock::Stopped;
 }
 
-void
-Storyboard::HookupAnimationsRecurse (Clock *clock)
+bool
+Storyboard::HookupAnimationsRecurse (Clock *clock, MoonError *error)
 {
 	switch (clock->GetObjectType ()) {
 	case Type::ANIMATIONCLOCK: {
@@ -422,8 +422,9 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		}
 
 		if (!targetProperty) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Target Property has not been specified.");
 			g_warning ("No target property!");
-			return;
+			return false;
 		}
 
 		for (Clock *c = ac; c; c = c->GetParent()) {
@@ -443,35 +444,40 @@ Storyboard::HookupAnimationsRecurse (Clock *clock)
 		}
 
 		if (!o) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "No Target or TargetName has been specified");
 			g_warning ("No object named %s!", targetName);
-			return;
+			return false;
 		}
 
 		real_target_o = o;
 		prop = resolve_property_path (&real_target_o, targetProperty);
 
 		if (!prop || !real_target_o) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "TargetProperty could not be resolved");
 			g_warning ("No property named %s on object %s, which has type %s!", targetProperty->path, targetName, o->GetTypeName());
-			return;
+			return false;
 		}
 
 		((Animation*)ac->GetTimeline())->Resolve ();
 
 		if (! ac->HookupStorage (real_target_o, prop))
-			return;
+			return false;
 
 		break;
 	}
 	case Type::CLOCKGROUP: {
 		ClockGroup *cg = (ClockGroup*)clock;
 		for (GList *l = cg->child_clocks; l; l = l->next)
-			HookupAnimationsRecurse ((Clock*)l->data);
+			if (!HookupAnimationsRecurse ((Clock*)l->data, error))
+				return false;
 		break;
 	}
 	default:
 		g_warning ("Invalid object type (%d) for the specified clock", clock->GetObjectType ());
 		break;
 	}
+	
+	return true;
 }
 
 void
@@ -503,9 +509,14 @@ Storyboard::storyboard_completed (EventObject *sender, EventArgs *calldata, gpoi
 }
 
 bool
-Storyboard::Begin ()
+Storyboard::BeginWithError (MoonError *error)
 {
 	ClockGroup *group = NULL;
+
+	if (GetHadParent ()) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Begin a Storyboard which is not the root Storyboard.");
+		return false;
+	}
 	
 #if 0
 	if (root_clock && root_clock->GetClockState() == Clock::Stopped) {
@@ -543,7 +554,8 @@ Storyboard::Begin ()
 
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.
-	HookupAnimationsRecurse (root_clock);
+	if (!HookupAnimationsRecurse (root_clock, error))
+		return false;
 
 	group->ComputeBeginTime ();
 
@@ -566,14 +578,12 @@ Storyboard::Begin ()
 }
 
 bool
-Storyboard::BeginWithError (MoonError *error)
+Storyboard::Begin ()
 {
-	if (GetHadParent ()) {
-		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Begin a Storyboard which is not the root Storyboard.");
-		return false;
-	}
-	
-	return Begin ();
+	MoonError error;
+	bool ret = Storyboard::BeginWithError (&error);
+	error.Clear ();
+	return ret;
 }
 
 Clock *

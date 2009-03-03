@@ -783,7 +783,7 @@ class Storyboard : public ParallelTimeline {
 	static void storyboard_completed (EventObject *sender, EventArgs *calldata, gpointer data);
 	static gboolean storyboard_tick (gpointer data);
 	
-	void HookupAnimationsRecurse (Clock *clock);
+	bool HookupAnimationsRecurse (Clock *clock, MoonError *error);
 	void TeardownClockGroup ();
 	gboolean Tick ();
 	Clock *clock;

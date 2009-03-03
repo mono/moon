@@ -1,5 +1,12 @@
 2009-03-03  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Implement
+	  the required exceptions for managed code when starting
+	  storyboards which are missing properties or can't find the
+	  target element/property.
+
+2009-03-03  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs:
 	  Storyboards should always use the surface in the current
 	  deployment when starting. They don't have to be explicitly
