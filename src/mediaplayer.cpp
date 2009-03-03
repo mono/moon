@@ -687,7 +687,7 @@ MediaPlayer::AdvanceFrame ()
 		dropped_frames++;
 	
 		//LOG_RS ("[SKIPPED]");
-		frame->Dispose ();
+		media->DisposeObject (frame);
 		frame->unref ();
 		frame = NULL;
 	}
@@ -700,7 +700,7 @@ MediaPlayer::AdvanceFrame ()
 	}
 	
 	if (frame) {
-		frame->Dispose ();
+		media->DisposeObject (frame);
 		frame->unref ();
 		frame = NULL;
 	}
@@ -773,7 +773,7 @@ MediaPlayer::LoadVideoFrame ()
 		AddTickCall (LoadVideoFrameCallback);
 	}
 	
-	frame->Dispose ();
+	media->DisposeObject (frame);
 	frame->unref ();
 	
 	return;

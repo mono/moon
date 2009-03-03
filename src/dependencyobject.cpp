@@ -163,7 +163,7 @@ EventObject::SetSurfaceLock ()
 void
 EventObject::SetSurface (Surface *surface)
 {
-	if (!Surface::InMainThread ()) {
+	if (!Surface::InMainThread () && surface != this->surface) {
 		g_warning ("EventObject::SetSurface (): This method must not be called on any other than the main thread!\n");
 #if DEBUG
 		if (debug_flags & RUNTIME_DEBUG_DP)

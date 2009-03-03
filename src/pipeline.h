@@ -395,6 +395,7 @@ private:
 	// This method is supposed to be called multiple times, until the media has been successfully opened or an error occurred.
 	void OpenInternal ();
 	static MediaResult OpenInternal (MediaClosure *closure);
+	static MediaResult DisposeObjectInternal (MediaClosure *closure);
 
 protected:
 	virtual ~Media ();
@@ -406,6 +407,9 @@ public:
 	
 	bool InMediaThread ();
 	void EnqueueWork (MediaClosure *closure, bool wakeup = true);
+	
+	// Calls obj->Dispose on the media thread.
+	void DisposeObject (EventObject *obj);
 	
 	// Initialize the Media.
 	// These methods may raise MediaError events.

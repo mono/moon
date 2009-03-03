@@ -1169,6 +1169,20 @@ Media::EnqueueWork (MediaClosure *closure, bool wakeup)
 	pthread_mutex_unlock (&queue_mutex);
 }
 
+MediaResult
+Media::DisposeObjectInternal (MediaClosure *closure)
+{
+	closure->GetContext ()->Dispose ();
+}
+
+void
+Media::DisposeObject (EventObject *obj)
+{
+	MediaClosure *closure = new MediaClosure (this, DisposeObjectInternal, obj);
+	EnqueueWork (closure, true);
+	closure->unref ();
+}
+
 void
 Media::WakeUp ()
 {
@@ -2653,6 +2667,19 @@ void
 MediaFrame::Dispose ()
 {
 	IMediaDecoder *decoder;
+	
+#if SANITY
+	// We can be called either on the main thread just before destruction
+	// (in which case there are no races since the code which unreffed us
+	// is the only code which knows about us), or at any time from the
+	// media thread.
+	if (GetRefCount () != 0 && stream != NULL && stream->GetMedia () != NULL && !stream->GetMedia ()->InMediaThread ()) {
+		// if refcount != 0 we're not being called just before destruction, in which case we should
+		// only be on the media thread.
+		printf ("MediaFrame::Dispose (): this method should only be called from the media thread.\n");
+	}
+#endif
+	
 	if (decoder_specific_data != NULL && stream != NULL) {
 		decoder = stream->GetDecoder ();
 		if (decoder != NULL)

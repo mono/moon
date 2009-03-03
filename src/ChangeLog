@@ -1,5 +1,17 @@
 2009-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: EventObject::SetSurface: only warn
+	  about wrong thread if we're actually change something.
+
+	* mediaplayer.cpp: Call DisposeObject on the media to dispose
+	  the frames.
+
+	* pipeline.h:
+	* pipeline.cpp: Add Media::DisposeObject to have objects
+	  disposed on the media thread.
+
+2009-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Add a missing base call to Dispose.
 
 2009-03-02  Geoff Norton  <gnorton@novell.com>
