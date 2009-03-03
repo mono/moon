@@ -100,12 +100,12 @@ LINKER_STEPS =	\
 
 LINKER_FLAGS =	\
 	-o .	\
-	-a ../lib/2.1/System.Windows.dll	\
+	-a ../lib/2.1/System.Windows.Browser.dll	\
 	-b true	\
 	-m secattrs ../tuning/SecurityAttributes
 
 post-process:
 	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
-	sn -q -R System.Windows.dll ../mono.snk
-	mv System.Windows.dll ../lib/2.1
-	mv System.Windows.dll.mdb ../lib/2.1
+	sn -q -R System.Windows.Browser.dll ../mono.snk
+	mv System.Windows.Browser.dll ../lib/2.1
+	mv System.Windows.Browser.dll.mdb ../lib/2.1
