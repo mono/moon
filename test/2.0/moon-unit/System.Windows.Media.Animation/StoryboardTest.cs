@@ -80,7 +80,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void MultipleStartStop ()
 		{
 			int count = 0;
@@ -103,7 +102,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void MultipleStartStop2 ()
 		{
 			int count = 0;
@@ -127,7 +125,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void NotAttached ()
 		{
 			int count = 0;
@@ -139,8 +136,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard.SetTarget (animation, target);
 			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
 			a.Children.Add (animation);
-			TestPanel.Children.Add (target);
-			TestPanel.Resources.Add ("SSSSS", a);
+
 			a.Completed += delegate { Console.WriteLine ("Completed: {0}", count+1); count++; if(count != 5) a.Begin (); };
 
 			Enqueue (() => {Console.WriteLine ("Starting our one"); a.Begin (); });

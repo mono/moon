@@ -385,7 +385,6 @@ Storyboard::Storyboard ()
 
 	clock = NULL;
 	root_clock = NULL;
-	pending_begin = false;
 }
 
 Storyboard::~Storyboard ()
@@ -530,18 +529,8 @@ Storyboard::Begin ()
 	if (Validate () == false)
 		return false;
 
-	if (!group) {
-		if (GetSurface() == NULL) {
-			if (!Application::GetCurrent()->GetSurface()) {
-				pending_begin = true;
-				return false;
-			}
-
-			group = Application::GetCurrent()->GetSurface()->GetTimeManager()->GetRootClock();
-		}
-		else
-			group = GetSurface()->GetTimeManager()->GetRootClock();
-	}
+	if (!group)
+		group = Deployment::GetCurrent()->GetSurface()->GetTimeManager()->GetRootClock();
 
 	// This creates the clock tree for the hierarchy.  if a
 	// Timeline A is a child of TimelineGroup B, then Clock cA
@@ -664,35 +653,6 @@ Storyboard::StopWithError (MoonError *error)
 		return;
 	}
 	Stop ();
-}
-
-void
-Storyboard::SetSurface (Surface *surface)
-{
-	if (GetSurface() == surface)
-		return;
-
-	if (GetSurface() && surface == NULL && root_clock && root_clock->GetClockState() == Clock::Active) {
-		/* we're being detached from a surface, so pause clock */
-		Pause ();
-		root_clock->OnSurfaceDetach ();
-	}
- 	else if (!GetSurface() && surface) {
-		/* we're being (re-)attached to a surface, so
-		   1. resume clock if we were paused.
-		   2. start clock if we had Begin called before being attached 
-		*/
-		if (root_clock) {
-			if (root_clock->GetIsPaused() && GetLogicalParent()) {
-				Resume ();
-				root_clock->OnSurfaceReAttach ();
-			}
-		}
-		else if (pending_begin && GetLogicalParent ()) {
-			Begin ();
-		}
- 	}
-	DependencyObject::SetSurface (surface);
 }
 
 BeginStoryboard::BeginStoryboard ()
