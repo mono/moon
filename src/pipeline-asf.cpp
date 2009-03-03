@@ -435,6 +435,8 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	MediaFrame *frame;
 	MediaResult result;
 	
+	g_return_if_fail (reader != NULL);
+	
 	result = reader->Advance ();
 	
 	if (result == MEDIA_NO_MORE_DATA) {
