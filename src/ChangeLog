@@ -1,5 +1,10 @@
 2009-03-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (layout_word_wrap): Oops, need to keep op.inptr and
+	op.prev up-to-date if we combine chars.
+
+2009-03-03  Jeffrey Stedfast  <fejj@novell.com>
+
 	Fixes a few more cases in LineBreakClasses.htm
 
 	* layout.cpp (utf8_find_last_word): If a zero-width space follows
