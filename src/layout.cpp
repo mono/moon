@@ -1303,6 +1303,20 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		else
 			printf ("\tunichar = 0x%.4X; btype = %s; i = %d\n", op.c, unicode_break_types[op.btype], i);
 		
+		if (op.index == 0) {
+			// Silverlight ignores breaking rules for glyphs that
+			// the font doesn't contain.
+			word->length = (op.inptr - in);
+			word->advance = op.advance;
+			word->count = op.count;
+			word->prev = op.prev;
+			
+			// if the following break-type is SPACE, then return
+			// false; otherwise let our caller know to wrap.
+			g_string_free (debug, true);
+			return !BreakSpace (c, btype);
+		}
+		
 		switch (op.btype) {
 		case G_UNICODE_BREAK_NEXT_LINE:
 		case G_UNICODE_BREAK_UNKNOWN:
