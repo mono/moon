@@ -1,5 +1,18 @@
 2009-03-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	Fixes LineBreakBasic2.htm and some parts of LineBreakClases.htm
+
+	* layout.cpp (BreakSpace): Treat tab as a BREAK_SPACE.
+	(utf8_find_last_word): Use BreakSpace() instead of
+	g_unichar_isspace() since that's how the rest of our breaking
+	logic works.
+	(FindLastWord): Same.
+	(layout_word_lwsp): Don't canonicalize all LWSP as a SPACE, just
+	do it for tabs.
+	(LayoutNoWrap): Same.
+
+2009-03-03  Jeffrey Stedfast  <fejj@novell.com>
+
 	* layout.cpp (TextLayout::SetTextWrapping): Default unknown values
 	to Wrap here so that we can avoid a re-layout if the old wrapping
 	mode was 'Wrap'.
