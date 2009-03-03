@@ -30,21 +30,38 @@
 	var failed = false;
 	var download_progressed_count = 0;
 	var buffering_progressed_count = 0;
+	var buffering_progress = 0;
+	var download_progress = 0;
 	var download_progress_after_buffering_progress = false;
 	var buffering_progress_after_download_progress = false;
 	
 	function EndTest ()
 	{
+		var possibly_not_done = download_progress != 1.0 || buffering_progress != 1.0;
+
 		TestLogger.LogDebug ("EndTest");
+
+		if (ShutdownRequested)
+			return;
+	
+		if (buffering_progressed_count == 0 && download_progress != 1.0) {
+			TestLogger.LogDebug ("DownloadProgress: " + download_progress + ", BufferingProgress: " + buffering_progress + " - not done, no buffering progress events yet.");
+			return;
+		}
 
 		if (download_progressed_count == 0) {
 			TestLogger.LogError ("We didn't get any DownloadProgressChanged events.");
 			failed = true;
 		}
+
 		if (buffering_progressed_count > 0) {
 			// We can only check this if we got any BufferingProgressChanged events, since the entire file
 			// might have been cached in the browser, in which case we won't get any BufferingProgressChanged events at all.
 			if (download_progress_after_buffering_progress == false && buffering_progress_after_download_progress) {
+				if (possibly_not_done) {
+					TestLogger.LogDebug ("DownloadProgress: " + download_progress + ", BufferingProgress: " + buffering_progress + " - not done.");
+					return;
+				}
 				TestLogger.LogError ("We only got BufferingProgressChanged after DownloadProgressChanged events (or vice versa)");
 				failed = true;
 			}
@@ -61,7 +78,7 @@
 		mediaElement = plugin.content.findName ("TestVideo");
 		// The biggest media file I could find on the server.
 		mediaElement.Source = "http://moonlightmedia:81/mediaDrop0123/testsource/ski.wmv";
-		setTimeout ("EndTest ();", 5000);
+		setInterval ("EndTest ();", 1000);
 	}
 
 	function OnMediaOpened (obj, args)
@@ -90,6 +107,7 @@
 		TestLogger.LogDebug ("OnBufferingProgressChanged: " + obj.BufferingProgress);
 		buffering_progressed_count++;
 		buffering_progress_after_download_progress = download_progressed_count > 0;
+		buffering_progress = obj.BufferingProgress;
 	}
 
 	function OnDownloadProgressChanged (obj, args)
@@ -97,6 +115,7 @@
 		TestLogger.LogDebug ("OnDownloadProgressChanged: " + obj.DownloadProgress);
 		download_progressed_count++;
 		download_progress_after_buffering_progress = buffering_progressed_count > 0;
+		download_progress = obj.DownloadProgress;
 	}
 </script>
 

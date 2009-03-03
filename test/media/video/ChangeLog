@@ -1,3 +1,9 @@
+2009-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* test-download-and-buffering-progress-on-big-files.html: Make
+	  this test not depend on a fast network (and make it succeed
+	  faster when the network is fast).
+
 2009-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* drtlist.xml: test-dns-failure.html needs xsp running.
