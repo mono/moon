@@ -1,5 +1,14 @@
 2009-03-03  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs:
+	  Storyboards should always use the surface in the current
+	  deployment when starting. They don't have to be explicitly
+	  attached to a surface - SL2 has different semantics as
+	  compared to SL1 which caused some of the 1.0 tests to flag
+	  this as a regression.
+
+2009-03-03  Alan McGovern  <amcgovern@novell.com>
+
 	* ChangeLog:
 	* System.Windows.Media.Animation/StoryboardTest.cs: Revert
 	  last change. I have the test failing locally now.

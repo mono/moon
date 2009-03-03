@@ -39,6 +39,7 @@ using Microsoft.Silverlight.Testing;
 using System.Threading;
 using System.Collections.Generic;
 using Microsoft.Silverlight.Testing.UnitTesting;
+using System.Windows.Media;
 
 namespace MoonTest.System.Windows.Media.Animation {
 
@@ -49,7 +50,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 	
 	[TestClass]
 	public class StoryboardTest : SilverlightTest {
-
+		
 		[TestMethod]
 		public void InvalidValues_NonTimeline ()
 		{
@@ -80,7 +81,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void MultipleStartStop ()
 		{
 			int count = 0;
@@ -103,7 +103,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void MultipleStartStop2 ()
 		{
 			int count = 0;
@@ -127,7 +126,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void NotAttached ()
 		{
 			int count = 0;
@@ -139,8 +137,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard.SetTarget (animation, target);
 			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
 			a.Children.Add (animation);
-			TestPanel.Children.Add (target);
-			TestPanel.Resources.Add ("SSSSS", a);
+
 			a.Completed += delegate { Console.WriteLine ("Completed: {0}", count+1); count++; if(count != 5) a.Begin (); };
 
 			Enqueue (() => {Console.WriteLine ("Starting our one"); a.Begin (); });
@@ -319,6 +316,43 @@ namespace MoonTest.System.Windows.Media.Animation {
 				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#2");
 			});
 
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void RemoveAnimationWhileRunning ()
+		{
+			int start = Environment.TickCount;
+			double width = 0;
+			Rectangle target = new Rectangle { Fill = new SolidColorBrush (Colors.Red) };
+
+			Storyboard sb = new Storyboard ();
+			DoubleAnimation animation = new DoubleAnimation { From = 5, To = 100, Duration = new Duration (TimeSpan.FromMilliseconds (1000)) };
+			Storyboard.SetTarget (animation, target);
+			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
+			sb.Children.Add (animation);
+
+			Enqueue (() => TestPanel.Children.Add (target));
+			Enqueue (() => TestPanel.Resources.Add ("SB", sb));
+
+			Enqueue (() => {
+				sb.Begin ();
+				start = Environment.TickCount;
+			});
+
+			EnqueueConditional (() => Environment.TickCount - start > 100);
+			Enqueue (() => {
+				width = target.Width;
+				Assert.IsTrue (width > 5);
+				TestPanel.Resources.Clear();
+				start = Environment.TickCount;
+			});
+
+			EnqueueConditional(() => Environment.TickCount - start > 100);
+			Enqueue (() => {
+				Assert.IsTrue (target.Width - width > 10);
+			});
 			EnqueueTestComplete ();
 		}
 
