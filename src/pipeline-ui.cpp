@@ -209,8 +209,6 @@ CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
 			SetHeader ("Software successfully downloaded and installed!");
 			SetMessage ("Please refresh the web page you were viewing to allow the new software to take effect.");
 
-			configuration.SetStringValue ("Codecs", "MSCodecsPath", codec_path);
-			configuration.Save ();
 			Media::RegisterMSCodecs ();
 		}
 		

@@ -191,9 +191,9 @@ Media::RegisterMSCodecs (void)
 {
 	register_codec reg;
 	void *dl;
-	MoonlightConfiguration config;
-	char *libmscodecs_path = config.GetStringValue ("Codecs", "MSCodecsPath");
+	char *libmscodecs_path = NULL;
 	const char *functions [] = {"register_mswma", "register_mswmv", "register_msmp3"};
+	const gchar *home = g_get_home_dir ();
 	registering_ms_codecs = true;
 
 	if (!(moonlight_flags & RUNTIME_INIT_ENABLE_MS_CODECS)) {
@@ -201,14 +201,12 @@ Media::RegisterMSCodecs (void)
 		return;
 	}
 
-	if (libmscodecs_path == NULL || !(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR))) {
-		const gchar *home = g_get_home_dir ();
-		if (home != NULL)
-			libmscodecs_path = g_build_filename (g_get_home_dir (), ".mozilla", "plugins", "moonlight", CODEC_LIBRARY_NAME, NULL);
-	}
+	if (home != NULL)
+		libmscodecs_path = g_build_filename (g_get_home_dir (), ".mozilla", "plugins", "moonlight", CODEC_LIBRARY_NAME, NULL);
 
-	if (libmscodecs_path == NULL || !(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR))) {
-		g_free (libmscodecs_path);
+	if (!(g_file_test (libmscodecs_path, G_FILE_TEST_EXISTS) && g_file_test (libmscodecs_path, G_FILE_TEST_IS_REGULAR))) {
+		if (libmscodecs_path)
+			g_free (libmscodecs_path);
 		libmscodecs_path = g_strdup (CODEC_LIBRARY_NAME);
 	}
 

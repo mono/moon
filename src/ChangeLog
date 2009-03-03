@@ -1,3 +1,9 @@
+2009-03-03  Geoff Norton  <gnorton@novell.com>
+
+	* pipeline.cpp:
+	* pipeline-ui.cpp: Stop storing the mscodec path in the configuration
+	file.
+
 2009-03-03  Alan McGovern  <amcgovern@novell.com>
 
 	* value.cpp:
