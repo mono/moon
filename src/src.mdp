@@ -246,6 +246,7 @@
     <File name="codec-version.h.in" subtype="Code" buildaction="Nothing" />
     <File name="fontfamily.h" subtype="Code" buildaction="Nothing" />
     <File name="mkcolor.cs" subtype="Code" buildaction="Nothing" />
+    <File name="propertypath.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
