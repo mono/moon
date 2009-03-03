@@ -1,3 +1,7 @@
+2009-03-03  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: Update signature of SetProperty.
+
 2009-03-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Add informational printf.

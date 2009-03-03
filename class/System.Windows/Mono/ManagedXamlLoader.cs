@@ -479,8 +479,6 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			Console.WriteLine ("Found event handler: {1}::{0}", candidate.Name, candidate.DeclaringType.FullName);
-			
 			d = Delegate.CreateDelegate (ie.EventHandlerType, subscriber, candidate, false);
 			
 			if (d == null) {
@@ -499,10 +497,10 @@ namespace Mono.Xaml
 		private bool SetProperty (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target_ptr, IntPtr target_data, IntPtr target_parent_ptr, string name, IntPtr value_ptr, IntPtr value_data)
 		{
 			string error;
-			object target = LookupObject (target_ptr);
+			object target = Value.ToObject (null, target_ptr);
 
 			if (target == null) {
-				Console.Error.WriteLine ("target is null");
+				Console.Error.WriteLine ("target is null:  {0} {1} {2}", target_ptr, name, xmlns);
 				return false;
 			}
 

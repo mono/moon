@@ -1812,7 +1812,7 @@ PluginXamlLoader::TryLoad (int *error)
 }
 
 bool
-PluginXamlLoader::SetProperty (void *parser, void *top_level, const char *xmlns, void* target, void* target_data, void *target_parent, const char *name, Value* value, void* value_data)
+PluginXamlLoader::SetProperty (void *parser, void *top_level, const char *xmlns, Value* target, void* target_data, void *target_parent, const char *name, Value* value, void* value_data)
 {
 	if (XamlLoader::SetProperty (parser, top_level, xmlns, target, target_data, target_parent, name, value, value_data))
 		return true;
@@ -1828,7 +1828,7 @@ PluginXamlLoader::SetProperty (void *parser, void *top_level, const char *xmlns,
 	if (!strncmp (function_name, "javascript:", strlen ("javascript:")))
 		return false;
 
-	event_object_add_xaml_listener ((EventObject *) target, plugin, name, function_name);
+	event_object_add_xaml_listener ((EventObject *) target->AsDependencyObject (), plugin, name, function_name);
 	
 	return true;
 }

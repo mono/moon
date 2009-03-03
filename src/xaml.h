@@ -24,7 +24,7 @@ class XamlLoader;
 
 typedef bool (*xaml_lookup_object_callback) (void *parser, void *top_level, const char *xmlns, const char *name, bool create, Value *value);
 typedef void (*xaml_create_gchandle_callback) ();
-typedef bool (*xaml_set_property_callback) (void *parser, void *top_level, const char* xmlns, void *target, void *target_data, void *target_parent, const char *name, Value *value, void *value_data);
+typedef bool (*xaml_set_property_callback) (void *parser, void *top_level, const char* xmlns, Value *target, void *target_data, void *target_parent, const char *name, Value *value, void *value_data);
 typedef void (*xaml_import_xaml_xmlns_callback) (void *parser, const char* xmlns);
 typedef const char* (*xaml_get_content_property_name_callback) (void *parser, Type::Kind kind);
 
@@ -138,7 +138,7 @@ class XamlLoader {
 	virtual bool LoadVM ();
 
 	virtual bool LookupObject (void *p, void *top_element, const char* xmlns, const char* name, bool create, Value *value);
-	virtual bool SetProperty (void *p, void *top_level, const char* xmlns, void *target, void *target_data, void *target_parent, const char *name, Value *value, void *value_data);
+	virtual bool SetProperty (void *p, void *top_level, const char* xmlns, Value *target, void *target_data, void *target_parent, const char *name, Value *value, void *value_data);
 
 	virtual const char *GetContentPropertyName (void *p, Type::Kind kind);
 
