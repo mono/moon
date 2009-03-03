@@ -1676,10 +1676,17 @@ TextFont::GetGlyphInfo (gunichar unichar, guint32 index)
 	return slot;
 }
 
+static GlyphInfo ZeroWidthNoBreakSpace = {
+	0xFEFF, 0, { 0.0, 0.0, 0.0, 0.0, 0.0 }, NULL, 0
+};
+
 GlyphInfo *
 TextFont::GetGlyphInfo (gunichar unichar)
 {
 	guint32 index;
+	
+	if (unichar == 0xFEFF)
+		return &ZeroWidthNoBreakSpace;
 	
 	index = face->GetCharIndex (unichar);
 	
