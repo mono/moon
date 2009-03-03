@@ -517,3 +517,20 @@ check-dynamic:
 	mono --debug check-static.exe generate-test-code > tester.cs
 	gmcs tester.cs -r:../lib/3.0/System.Windows.dll -debug:full -nowarn:219
 	MONO_PATH=../lib/3.0:$$MONO_PATH mono --debug tester.exe
+
+LINKER = ../lib/tuner/monolinker.exe
+
+LINKER_STEPS =	\
+	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
+
+LINKER_FLAGS =	\
+	-o .	\
+	-a ../lib/2.1/System.Windows.dll	\
+	-b true	\
+	-m secattrs ../tuning/SecurityAttributes
+
+post-process:
+	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
+	sn -q -R System.Windows.dll ../mono.snk
+	mv System.Windows.dll ../lib/2.1
+	mv System.Windows.dll.mdb ../lib/2.1
