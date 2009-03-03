@@ -288,9 +288,9 @@ namespace Moonlight {
 			if (desktop)
 				return RunProcess ("gmcs", compiler_args.ToString());
 			else
-				return RunTool ("smcs",
-						"class/lib/2.1/smcs.exe",
-						compiler_args.ToString());
+				return Run21Tool ("smcs",
+						   "class/lib/2.1/smcs.exe",
+						   compiler_args.ToString());
 		}
 
 		public bool CreateXap ()
@@ -336,6 +336,29 @@ namespace Moonlight {
 					"tools/xaml2html/xaml2html.exe",
 					xaml2html_args.ToString ());
 		}
+
+		private bool Run21Tool (string filename, string builddir_exe, string args)
+		{
+			string old_mono_path = Environment.GetEnvironmentVariable ("MONO_PATH");
+			if (TopBuildDir != null) {
+				string new_mono_path = Path.Combine (
+							     Path.Combine (
+								   Path.Combine (TopBuildDir, "class"),
+								   "lib"),
+							     "2.1");
+				if (!string.IsNullOrEmpty (old_mono_path))
+					new_mono_path = string.Format ("{0}:{1}", new_mono_path, old_mono_path);
+				Environment.SetEnvironmentVariable ("MONO_PATH", new_mono_path);
+			}
+
+			bool rv = RunTool (filename, builddir_exe, args);
+
+			if (TopBuildDir != null)
+				Environment.SetEnvironmentVariable ("MONO_PATH", old_mono_path);
+
+			return rv;
+		}
+	
 
 		private bool RunTool (string filename, string builddir_exe, string args)
 		{

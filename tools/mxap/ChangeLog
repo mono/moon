@@ -1,3 +1,8 @@
+2009-03-02  Chris Toshok  <toshok@ximian.com>
+
+	* mxap.cs: if we're running a 2.1 tool from the builddir (if
+	builddirhack is enabled), we need to set our MONO_PATH properly.
+
 2009-01-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mxap.cs: Add support for adding resources.
