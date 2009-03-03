@@ -1,3 +1,8 @@
+2009-03-03  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: SetProperty now takes a Value instead of a
+	dependency object.
+
 2009-03-03  Alan McGovern  <amcgovern@novell.com>
 
 	* Value.cs: Complete the implementation of PropertyPath. If it
