@@ -788,6 +788,7 @@ class Storyboard : public ParallelTimeline {
 	gboolean Tick ();
 	Clock *clock;
 	Clock *root_clock;
+	bool pending_begin;
 	
  protected:
 	virtual ~Storyboard ();
@@ -800,6 +801,8 @@ class Storyboard : public ParallelTimeline {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Storyboard ();
+	
+	virtual void SetSurface (Surface *surface);
 	
 	bool Begin ();
 	

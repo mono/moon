@@ -1,3 +1,10 @@
+2009-03-03  Alan McGovern  <amcgovern@novell.com>
+
+	* ChangeLog:
+	* animation.h:
+	* animation.cpp: Revert last change. I have the test failing
+	  locally now.
+
 2009-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline-asf.cpp: Add a null check.
