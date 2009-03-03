@@ -3102,6 +3102,7 @@ MediaMarkerFoundClosure::Dispose ()
 		marker->unref ();
 		marker = NULL;
 	}
+	MediaClosure::Dispose ();
 }
 
 void
