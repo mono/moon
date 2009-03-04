@@ -1,3 +1,8 @@
+2009-03-04  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleImage.cs: use the native setters instead of the
+	SetValue for ViewportOrigin and Width
+
 2009-02-26  Chris Toshok  <toshok@ximian.com>
 
 	* ItemsControl.cs: land some longstanding local changes.

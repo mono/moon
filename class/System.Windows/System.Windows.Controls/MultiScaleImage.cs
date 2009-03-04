@@ -67,12 +67,12 @@ namespace System.Windows.Controls {
 		
 		public Point ViewportOrigin {
 			get { return (Point) GetValue (ViewportOriginProperty); }
-			set { SetValue (ViewportOriginProperty, value); }
+			set { NativeMethods.multi_scale_image_set_viewport_origin (this.native, value); }
 		}
 		
 		public double ViewportWidth {
 			get { return (double) GetValue (ViewportWidthProperty); }
-			set { SetValue (ViewportWidthProperty, value); }
+			set { NativeMethods.multi_scale_image_set_viewport_width (this.native, value); }
 		}
 		
 		[SecuritySafeCritical]
