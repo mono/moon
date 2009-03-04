@@ -247,6 +247,7 @@
     <File name="fontfamily.h" subtype="Code" buildaction="Nothing" />
     <File name="mkcolor.cs" subtype="Code" buildaction="Nothing" />
     <File name="propertypath.h" subtype="Code" buildaction="Nothing" />
+    <File name="multiscalesubimage.cpp" subtype="Code" buildaction="Compile" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

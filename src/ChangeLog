@@ -1,3 +1,7 @@
+2009-03-04  Alan McGovern  <amcgovern@novell.com>
+
+	* src.mdp: Add missing files to the MD solution
+
 2009-03-03  Chris Toshok  <toshok@ximian.com>
 
 	* collection.cpp (DependencyObjectCollection::AddedToCollection):
