@@ -1,5 +1,11 @@
 2009-03-04  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Use the
+	  new overloads for IsGreater, IsLess and IsBetween to get
+	  better information out of the tests in the event of failure.
+
+2009-03-04  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: I believe
 	  this test was randomly failing because the origianal 100ms
 	  wait was only long enough to allow the shape to move 9.5

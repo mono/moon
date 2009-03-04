@@ -343,14 +343,14 @@ namespace MoonTest.System.Windows.Media.Animation {
 			EnqueueConditional (() => Environment.TickCount - start > 100, "100ms");
 			Enqueue (() => {
 				width = target.Width;
-				Assert.IsTrue (width > 5, "1: Width: " + width);
+				Assert.IsGreater(5, width, "1");
 				TestPanel.Resources.Clear();
 				start = Environment.TickCount;
 			});
 
 			EnqueueConditional(() => Environment.TickCount - start > 300, "300ms");
 			Enqueue (() => {
-				Assert.IsTrue (target.Width - width > 10, "2: Diff: " + (target.Width - width));
+				Assert.IsGreater (width + 10, target.Width, "2");
 			});
 			EnqueueTestComplete ();
 		}
@@ -547,7 +547,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 300; }, TimeSpan.FromMilliseconds (600));
 			Enqueue (delegate {
 				// Animation1: 300/1000, Animation2: 300/2000
-				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds < 1, "#Sanity1");
+				Assert.IsLess (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity1");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#2");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [0]).GetCurrentState (), "#3");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#4");
@@ -556,7 +556,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1250; }, TimeSpan.FromMilliseconds (1200));
 			Enqueue (delegate {
 				// Animation1: 1250/1000, Animation2: 1250/2000
-				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity2");
+				Assert.IsGreater (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity2");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#5");
 				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#6");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#7");
@@ -565,7 +565,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1350; }, TimeSpan.FromMilliseconds (300));
 			Enqueue (delegate {
 				// Animation1: 1350/1000, Animation2: 1350/2000
-				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity3");
+				Assert.IsGreater (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity3");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#8");
 				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#9");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#10");
@@ -573,7 +573,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			});
 
 			Enqueue (delegate {
-				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity4");
+				Assert.IsGreater (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity4");
 				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#11");
 				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#12");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#13");
@@ -581,7 +581,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 			Enqueue (delegate {
 				// Animation1: 1450/1000, Animation2: 1450/2000
-				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity5");
+				Assert.IsGreater (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity5");
 				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#14");
 				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#15");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#16");
@@ -607,7 +607,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 300; });
 			Enqueue (delegate {
 				// Animation1: 300/1000, Animation2: 300/2000
-				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds < 1, "#Sanity1");
+				Assert.IsLess (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity1");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#2");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [0]).GetCurrentState (), "#3");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#4");
@@ -616,7 +616,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1250; });
 			Enqueue (delegate {
 				// Animation1: 1250/1000, Animation2: 1250/2000
-				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity2");
+				Assert.IsGreater (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity2");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#5");
 				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#6");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#7");
@@ -632,7 +632,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1350; });
 			Enqueue (delegate {
 				// Animation1: 1350/1000, Animation2: 1350/2000
-				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity3");
+				Assert.IsGreater (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity3");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#8");
 				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#9");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#10");
@@ -640,7 +640,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			});
 
 			Enqueue (delegate {
-				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity4");
+				Assert.IsGreater (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity4");
 				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#11");
 				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#12");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#13");
@@ -648,7 +648,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 			Enqueue (delegate {
 				// Animation1: 1450/1000, Animation2: 1450/2000
-				Assert.IsTrue (sb.GetCurrentTime ().TotalSeconds > 1, "#Sanity5");
+				Assert.IsGreater (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity5");
 				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#14");
 				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#15");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#16");
@@ -799,22 +799,22 @@ namespace MoonTest.System.Windows.Media.Animation {
 			EnqueueConditional (()=> Environment.TickCount - start > 300);
 			Enqueue (() => {
 				double ms = storyboard.GetCurrentTime ().TotalMilliseconds;
-				Assert.IsTrue (ms < 350, "Less than 350ms");
+				Assert.IsLess(350, ms, "Less than 350ms");
 				Assert.AreEqual (((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, ms, "#2");
 				Assert.AreEqual (((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, ms, "#3");
 				double width = ((Rectangle) c.Children [0]).Width;
-				Assert.IsTrue (width > 20 && width < 50, "#width1");
-				Assert.IsTrue (((Rectangle)c.Children[1]).Width - width < 0.001, "#width2");
+				Assert.IsBetween (20, 50, width, "#width1");
+				Assert.IsLess (0.001, ((Rectangle)c.Children[1]).Width - width, "#width2");
 			});
 			EnqueueConditional (() => Environment.TickCount - start > 1100);
 			Enqueue (() => {
 				double ms = storyboard.GetCurrentTime ().TotalMilliseconds;
-				Assert.IsTrue (ms > 1000, "More than 1000ms");
+				Assert.IsGreater (1000, ms, "More than 1000ms");
 				Assert.AreEqual (((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, 1000, "#4");
 				Assert.AreEqual (((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, ms, "#5");
 				double width = ((Rectangle) c.Children [0]).Width;
-				Assert.IsTrue (width == 100, "#width1");
-				Assert.IsTrue (((Rectangle)c.Children[1]).Width - width < 0.001, "#width2");
+				Assert.AreEqual (100, width, "#width2");
+				Assert.IsLess (0.001, ((Rectangle)c.Children[1]).Width - width, "#width3");
 			});
 			Enqueue (() => TestPanel.Children.Clear ());
 			EnqueueTestComplete ();
