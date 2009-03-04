@@ -320,6 +320,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
+		[Ignore]
 		public void RemoveAnimationWhileRunning ()
 		{
 			int start = Environment.TickCount;
