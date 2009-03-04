@@ -1,5 +1,18 @@
 2009-03-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	Fixes for AdobeFonts.htm
+
+	* layout.cpp (TextLayoutGlyphCluster::Render): Give the underline
+	its own Fill() so that if any glyphs have a tail that descends
+	below the baseline into the underline, the fill doesn't negate
+	itself where the paths overlap.
+	(GenerateGlyphCluster): Use the font->Ascender() to get the
+	baseline offset from the top. Height() + Descender() isn't quite
+	right. Should probably fix other places that use that strategy as
+	well, but one step at a time.
+
+2009-03-02  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp (TextBoxView::TextBoxView): Init selection_changed
 	to false.
 	(TextBoxView::Render): If the selection has changed, update the

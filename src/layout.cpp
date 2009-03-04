@@ -1606,8 +1606,8 @@ GenerateGlyphCluster (TextFont *font, guint32 *kern, const char *text, int start
 	int size = 0;
 	gunichar c;
 	
-	// set y0 to the baseline (descend is a negative value)
-	y0 = font->Height () + font->Descender ();
+	// set y0 to the baseline
+	y0 = font->Ascender ();
 	x0 = 0.0;
 	
 	// count how many path data items we'll need to allocate
@@ -1754,17 +1754,20 @@ TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttr
 	if (path && path->cairo.data)
 		cairo_append_path (cr, &path->cairo);
 	
+	brush->Fill (cr);
+	
 	if (attrs->IsUnderlined ()) {
 		double thickness = font->UnderlineThickness ();
 		double pos = y0 + font->UnderlinePosition ();
 		
 		cairo_set_line_width (cr, thickness);
 		
+		cairo_new_path (cr);
 		Rect underline = Rect (0.0, pos - thickness * 0.5, advance, thickness);
 		underline.Draw (cr);
+		
+		brush->Fill (cr);
 	}
-	
-	brush->Fill (cr);
 }
 
 void
