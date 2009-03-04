@@ -87,6 +87,7 @@ char*       xaml_uri_for_prefix (void *parser, char* prefix);
 Value*      xaml_lookup_named_item (void *parser, void *element_instance, const char* name);
 void*       xaml_get_template_parent (void *parser, void *element_instance);
 char*       xaml_get_element_key (void *parser, void *element_instance);
+char*       xaml_get_element_name (void *parser, void *element_instance);
 
 G_END_DECLS
 

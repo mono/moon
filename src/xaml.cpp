@@ -4872,6 +4872,13 @@ xaml_get_element_key (void *parser, void *element_instance)
 	return g_strdup (item->GetKey ());
 }
 
+char *
+xaml_get_element_name (void *parser, void *element_instance)
+{
+	XamlElementInstance *item = (XamlElementInstance *) element_instance;
+	return g_strdup (item->element_name);
+}
+
 void
 xaml_init (void)
 {

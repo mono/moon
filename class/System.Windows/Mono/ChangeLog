@@ -1,3 +1,7 @@
+2009-03-04  Jackson Harper  <jackson@ximian.com>
+
+	* NativeMethods.cs: Add method for grabbing an element's name.
+
 2009-03-04  Alan McGovern  <amcgovern@novell.com>
 
 	* Value.cs: Don't compare IntPtr against null, compare against

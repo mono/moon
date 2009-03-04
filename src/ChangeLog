@@ -1,3 +1,8 @@
+2009-03-04  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Add a new method for grabbing the element_name of a
+	xaml element instance from managed.
+
 2009-03-04  Alan McGovern  <amcgovern@novell.com>
 
 	* src.mdp: Add missing files to the MD solution

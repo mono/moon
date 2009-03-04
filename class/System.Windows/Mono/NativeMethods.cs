@@ -95,6 +95,9 @@ namespace Mono {
 		[DllImport ("moon")]
 		public extern static string xaml_get_element_key (IntPtr parser, IntPtr element_instance);
 
+		[DllImport ("moon")]
+		public extern static string xaml_get_element_name (IntPtr parser, IntPtr element_instance);
+
 		[DllImport("moon")]
 		public extern static void value_free_value (ref Value val);
 		
