@@ -1,5 +1,16 @@
 2009-03-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (GenerateGlyphCluster): Don't crash if glyph->path is
+	NULL.
+
+	* font.cpp (TextFont::GetGlyphInfo): If unichar is
+	0xFEFF (zero-width no-break space), then return a global
+	GlyphInfo. We do this because at least some fonts won't have this
+	glyph and we don't want to render an empty box (the default
+	glyph).
+
+2009-03-03  Jeffrey Stedfast  <fejj@novell.com>
+
 	* layout.cpp (layout_word_wrap): Silverlight ignores breaking
 	rules for glyphs that the font doesn't contain.
 

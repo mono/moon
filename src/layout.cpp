@@ -1753,7 +1753,8 @@ GenerateGlyphCluster (TextFont *font, guint32 *kern, const char *text, int start
 		if (!(glyph = font->GetGlyphInfo (c)))
 			continue;
 		
-		size += glyph->path->cairo.num_data + 1;
+		if (glyph->path)
+			size += glyph->path->cairo.num_data + 1;
 	}
 	
 	if (size > 0) {
