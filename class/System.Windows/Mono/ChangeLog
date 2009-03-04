@@ -1,3 +1,8 @@
+2009-03-04  Alan McGovern  <amcgovern@novell.com>
+
+	* Value.cs: Don't compare IntPtr against null, compare against
+	  IntPtr.Zero.
+
 2009-03-03  Chris Toshok  <toshok@ximian.com>
 
 	* ManagedXamlLoader.cs (TrySetAttachedProperty): fixed a missing

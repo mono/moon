@@ -188,7 +188,7 @@ namespace Mono {
 					UnmanagedPropertyPath *propertypath = (UnmanagedPropertyPath *) val->u.p;
 					if (propertypath == null)
 						return new PropertyPath (null);
-					if (propertypath->property != null)
+					if (propertypath->property != IntPtr.Zero)
 						return new PropertyPath (DependencyProperty.Lookup (propertypath->property));
 					return new PropertyPath (Helper.PtrToStringAuto (propertypath->pathString));
 				}
