@@ -908,7 +908,13 @@ TextLayout::LayoutWrapWithOverflow ()
 				line->length = inptr - (text + line->start);
 				
 				// update actual width extents
-				actual_width = MAX (actual_width, line->width);
+				if (*inptr == '\0') {
+					// ActualWidth extents only include trailing lwsp on the last line
+					actual_width = MAX (actual_width, line->advance);
+				} else {
+					// not the last line, so don't include trailing lwsp
+					actual_width = MAX (actual_width, line->width);
+				}
 				
 				// update actual height extents
 				actual_height += line->height;
@@ -1044,7 +1050,13 @@ TextLayout::LayoutNoWrap ()
 				line->length = inptr - (text + line->start);
 				
 				// update actual width extents
-				actual_width = MAX (actual_width, line->width);
+				if (*inptr == '\0') {
+					// ActualWidth extents only include trailing lwsp on the last line
+					actual_width = MAX (actual_width, line->advance);
+				} else {
+					// not the last line, so don't include trailing lwsp
+					actual_width = MAX (actual_width, line->width);
+				}
 				
 				// update actual height extents
 				actual_height += line->height;
@@ -1576,7 +1588,13 @@ TextLayout::LayoutWrap ()
 				line->length = inptr - (text + line->start);
 				
 				// update actual width extents
-				actual_width = MAX (actual_width, line->width);
+				if (*inptr == '\0') {
+					// ActualWidth extents only include trailing lwsp on the last line
+					actual_width = MAX (actual_width, line->advance);
+				} else {
+					// not the last line, so don't include trailing lwsp
+					actual_width = MAX (actual_width, line->width);
+				}
 				
 				// update actual height extents
 				actual_height += line->height;

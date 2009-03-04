@@ -1,3 +1,13 @@
+2009-03-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes ActualWidth/Height extents for LineBreakBasic1.htm
+
+	* layout.cpp (TextLayout::LayoutWrapWithOverflow): ActualWidth
+	extents include trailing LWSP if-and-only-if that trailing LWSP is
+	on the last line.
+	(TextLayout::LayoutNoWrap): Same.
+	(TextLayout::LayoutWrap): Same.
+
 2009-03-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (GenerateGlyphCluster): Don't crash if glyph->path is
