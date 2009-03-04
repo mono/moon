@@ -52,22 +52,6 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
 	NotifyListenersOfPropertyChange (args);
 }
 
-void
-UserControl::FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uielement_list)
-{
-	Value *v = GetValue (UserControl::ContentProperty);
-	if (v && !v->GetIsNull ()) {
-		UIElement *element = v->AsUIElement ();
-		
-		List::Node *us = uielement_list->Prepend (new UIElementNode (this));
-		
-		element->FindElementsInHostCoordinates (cr, p, uielement_list);
-		
-		if (us == uielement_list->First ())
-			uielement_list->Remove (us);
-	}
-}
-
 Size
 UserControl::MeasureOverride (Size availableSize)
 {

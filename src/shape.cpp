@@ -1038,9 +1038,6 @@ Rectangle::DrawShape (cairo_t *cr, bool do_op)
 void
 Rectangle::BuildPath ()
 {
-	if (IsEmpty ())
-		return;
-
 	Stretch stretch = GetStretch ();
 	double t = IsStroked () ? GetStrokeThickness () : 0.0;
 	

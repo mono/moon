@@ -213,53 +213,47 @@ FrameworkElement::HitTest (cairo_t *cr, Point p, List *uielement_list)
 }
 
 void
-FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uielement_list)
+FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *uielement_list)
 {
+	Point p = host.Transform (&absolute_xform);
+
 	if (!GetRenderVisible ())
 		return;
 
 	if (!GetHitTestVisible ())
 		return;
 	
-	// first a quick bounds check
-	Rect r(0, 0, GetActualWidth (), GetActualHeight ());
-	
-	// FIXME: This is a horrible hack to work around an issue with panels inside panels
-	if (r.IsEmpty (true))
-		r = bounds_with_children;
-	else
-		r = r.Transform (&absolute_xform);
-	if (r.IsEmpty (true) || !r.GrowBy (1, 1, 1, 0).PointInside (p.x, p.y))
-		return;
-
 	cairo_save (cr);
 	cairo_new_path (cr);
 	
 	if (GetClip ()) {
 		RenderClipPath (cr, true);
-		if (!cairo_in_stroke (cr, p.x, p.y) && ! cairo_in_fill (cr, p.x, p.y)) {
+		if (!cairo_in_fill (cr, host.x, host.y)) {
 			cairo_restore (cr);
 			return;
 		}
 	}
-	
-	cairo_new_path (cr);
-	Region all(extents);
-	Render (cr, &all, true);
-	
-	cairo_restore (cr);
-	if (!cairo_in_stroke (cr, p.x, p.y) && ! cairo_in_fill (cr, p.x, p.y))
-		return;
 
 	/* create our node and stick it on front */
 	List::Node *us = uielement_list->Prepend (new UIElementNode (this));
 
 	VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
 	while (UIElement *child = walker.Step ())
-		child->FindElementsInHostCoordinates (cr, p, uielement_list);
+		child->FindElementsInHostCoordinates (cr, host, uielement_list);
 
-	if (us == uielement_list->First () && !CanFindElement ())
-		uielement_list->Remove (us);
+	bool hit = false;
+	if (us == uielement_list->First ()) {
+		cairo_new_path (cr);
+		Region all(extents);
+		cairo_set_matrix (cr, &absolute_xform);
+		Render (cr, &all, true);
+		cairo_identity_matrix (cr);
+
+		if (!CanFindElement () || 
+		    !cairo_in_fill (cr, host.x, host.y))
+				uielement_list->Remove (us);
+	}
+	cairo_restore (cr);
 }
 
 void

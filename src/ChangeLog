@@ -1,3 +1,16 @@
+2009-03-04  Larry Ewing  <lewing@novell.com>
+
+	* border.cpp, border.h: clean up the path_only drawing a
+	little. set CanFindElement more appropriately.
+
+	* panel.cpp: undo the path_only logic a bit.
+
+	* frameworkelement.cpp: make FindElementInHostCoordinates a little
+	simpler.
+
+	* uielement.cpp, uielement.h: Make the CanFindElement default be
+	false, and remove the broken in_stroke check.
+
 2009-03-04  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.h|cpp: generate PInvoke for Setters so the

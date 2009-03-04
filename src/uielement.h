@@ -252,7 +252,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void FindElementsInHostCoordinates_r (Rect p, HitTestCollection *uielement_list);
 	
-	virtual bool CanFindElement () { return true; }
+	virtual bool CanFindElement () { return false; }
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point P, List *uielement_list);
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uielement_list);
 	

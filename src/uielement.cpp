@@ -554,7 +554,7 @@ UIElement::InsideClip (cairo_t *cr, double x, double y)
 	cairo_save (cr);
 	clip->Draw (cr);
 
-	if (cairo_in_stroke (cr, nx, ny) || (clip->IsFilled () && cairo_in_fill (cr, nx, ny)))
+	if (cairo_in_fill (cr, nx, ny))
 		ret = true;
 	
 	cairo_new_path (cr);

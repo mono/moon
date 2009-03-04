@@ -98,8 +98,9 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 	Brush *border_brush = GetBorderBrush ();
 
 	cairo_set_matrix (cr, &absolute_xform);
+	cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
 
-	Geometry *clip = path_only ? NULL : LayoutInformation::GetLayoutClip (this);
+	Geometry *clip = LayoutInformation::GetLayoutClip (this);
 	if (clip) {
 		cairo_save (cr);
 		clip->Draw (cr);
@@ -125,35 +126,24 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 	 * but some simple inspection of the ms results make me think that is what happens there
 	 * too.
 	 */
-	if (path_only) {
-		cairo_new_path (cr);
-		paint_border.Draw (cr, round);
-		paint_background.Draw (cr, round ? &adjusted : NULL);
-		return;
-	}
-	
-	if (border_brush && paint_border != paint_background) {
+	cairo_new_path (cr);
+	if (border_brush) {
 		border_brush->SetupBrush (cr, paint_border);
 
-		cairo_new_path (cr);
-
-		cairo_fill_rule_t old = cairo_get_fill_rule (cr);
-		cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
-
 		paint_border.Draw (cr, round);
 		paint_background.Draw (cr, round ? &adjusted : NULL);
-		border_brush->Fill (cr);
 
-		cairo_set_fill_rule (cr, old);
+		if (!path_only)
+			border_brush->Fill (cr);
 	}
 
 	if (background) {
 		background->SetupBrush (cr, paint_background);
 
-		cairo_new_path (cr);
 		paint_background.Draw (cr, round ? &adjusted : NULL);
 
-		background->Fill (cr);
+		if (!path_only)
+			background->Fill (cr);
 	}
 	
 	if (clip)

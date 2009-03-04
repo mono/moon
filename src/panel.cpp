@@ -123,30 +123,17 @@ Panel::ShiftPosition (Point p)
 void
 Panel::Render (cairo_t *cr, Region *region, bool path_only)
 {
-	Brush *background;
+	Brush *background = GetBackground ();
 	
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	if (path_only) {
-		Rect area = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
-		
-		// FIXME: This is a horrible hack to work around an issue with panels inside panels
-		if (area.IsEmpty (true)) {
-			cairo_matrix_t inverse = absolute_xform;
-			cairo_matrix_invert (&inverse);
-			area = bounds_with_children.Transform (&inverse);
-		}
-		cairo_new_path (cr);
-		area.Draw (cr);
-	} else if ((background = GetBackground ())) {
-		Rect area = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
-		if (area.width > 0 && area.height > 0) {
-			background->SetupBrush (cr, area);
-			
-			cairo_new_path (cr);
-			area.Draw (cr);
-			background->Fill (cr);
-		}
+	Rect area = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
+	cairo_new_path (cr);
+	area.Draw (cr);
+
+	if (background && area.width > 0 && area.height > 0 && !path_only) {
+		background->SetupBrush (cr, area);
+		background->Fill (cr);
 	}
 }
 

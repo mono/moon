@@ -1,3 +1,9 @@
+2009-03-04  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: rework some of the
+	hit tests to avoid edge/corner cases in most tests and add a few
+	new ones.
+
 2009-03-04  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: Use the
