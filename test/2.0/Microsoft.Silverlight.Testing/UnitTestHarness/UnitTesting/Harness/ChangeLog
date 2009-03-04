@@ -1,3 +1,11 @@
+2009-03-04  Alan McGovern  <amcgovern@novell.com>
+
+	* TestMethodManager.cs: If there is an async moon-unit test,
+	  all the async tasks are executed even if an exception is
+	  thrown in the first one. This means that if assertion 1
+	  fails and then assertion 2 fails, the information from
+	  assertion 1 is lost.
+
 2009-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* TestMethodManager.cs: Add a Platforms field to BugAttribute so that we

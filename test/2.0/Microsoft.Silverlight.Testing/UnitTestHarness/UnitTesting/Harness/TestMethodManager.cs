@@ -262,7 +262,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
             }
 
             // Create the result
-            _result = new ScenarioResult(_testMethod, _testClass, res, excp);
+            _result =  _result ?? new ScenarioResult(_testMethod, _testClass, res, excp);
             SetResultTimes();
         }
 
