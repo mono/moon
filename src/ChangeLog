@@ -1,5 +1,16 @@
 2009-03-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	Fixes some wrapping issues in LineBreakBasic1.htm
+
+	* layout.cpp (TextLayout::LayoutWrap): Use a new 'wrapped' state
+	variable to keep track of whether or not the layout_word_wrap()
+	function returned. We want to keep 'linebreak' as a separate
+	state. If we were told to wrap, but we've reached the end of the
+	run, postpone wrapping until the next run (which might start with
+	lwsp).
+
+2009-03-02  Jeffrey Stedfast  <fejj@novell.com>
+
 	Fixes for AdobeFonts.htm
 
 	* layout.cpp (TextLayoutGlyphCluster::Render): Give the underline
