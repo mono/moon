@@ -288,7 +288,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool TrySetAttachedProperty (IntPtr top_level, string xmlns, IntPtr target_ptr, string type_name, string name, IntPtr value_ptr)
+		private bool TrySetAttachedProperty (IntPtr top_level, string xmlns, object target, string type_name, string name, IntPtr value_ptr)
 		{
 			if (type_name == null)
 				return false;
@@ -298,13 +298,6 @@ namespace Mono.Xaml
 
 			if (assembly_name == null && !TryGetDefaultAssemblyName (top_level, out assembly_name)) {
 				Console.Error.WriteLine ("Unable to find an assembly to load type from.");
-				return false;
-			}
-
-			object target = LookupObject (target_ptr);
-
-			if (target == null) {
-				Console.Error.WriteLine ("target is null");
 				return false;
 			}
 
@@ -525,7 +518,7 @@ namespace Mono.Xaml
 			if (TrySetEventReflection (top_level, xmlns, target, type_name, name, value_ptr, out error))
 				return true;
 
-			if (TrySetAttachedProperty (top_level, xmlns, target_ptr, type_name, name, value_ptr))
+			if (TrySetAttachedProperty (top_level, xmlns, target, type_name, name, value_ptr))
 				return true;
 
 			return false;

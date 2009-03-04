@@ -1,5 +1,10 @@
 2009-03-03  Chris Toshok  <toshok@ximian.com>
 
+	* DependencyProperty.cs (Lookup): we can't just index into a
+	generic dictionary, as it throws exceptions if the key is missing.
+
+2009-03-03  Chris Toshok  <toshok@ximian.com>
+
 	* FrameworkElement.cs (get_Parent): we want the logical parent,
 	not the visual one.  This fixes a number of unit tests and
 	smoothhd.com-shown behavior wrt the Parent of

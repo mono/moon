@@ -220,7 +220,9 @@ namespace System.Windows {
 
 		internal static DependencyProperty Lookup (IntPtr native)
 		{
-			return properties [native];
+			if (properties.ContainsKey(native))
+				return properties [native];
+			return null;
 		}
 
 		internal static DependencyProperty Lookup (Kind declaring_kind, string name)
