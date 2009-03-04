@@ -1,5 +1,13 @@
 2009-03-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	Fixes the last failing case in LineBreakBasic1.htm
+
+	* layout.cpp (layout_word_wrap): When checking for last_word, use
+	<= instead of < because inptr, at this point, is at the first byte
+	*after* the character just gobbled up.
+
+2009-03-04  Jeffrey Stedfast  <fejj@novell.com>
+
 	Fixes ActualWidth/Height extents for LineBreakBasic1.htm
 
 	* layout.cpp (TextLayout::LayoutWrapWithOverflow): ActualWidth

@@ -1209,7 +1209,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		if (max_width > 0.0 && word->line_advance >= max_width) {
 			printf ("\tjust exceeded max width: %s\n", debug->str);
 			
-			if (inptr < word->last_word) {
+			if (inptr <= word->last_word) {
 				// not the last word, safe to break apart
 				printf ("\tnot last word, so applying wrap logic...\n");
 				wrap = true;
