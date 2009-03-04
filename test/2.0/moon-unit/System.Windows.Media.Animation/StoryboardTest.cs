@@ -320,7 +320,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
-		[Ignore]
 		public void RemoveAnimationWhileRunning ()
 		{
 			int start = Environment.TickCount;
@@ -341,17 +340,17 @@ namespace MoonTest.System.Windows.Media.Animation {
 				start = Environment.TickCount;
 			});
 
-			EnqueueConditional (() => Environment.TickCount - start > 100);
+			EnqueueConditional (() => Environment.TickCount - start > 100, "100ms");
 			Enqueue (() => {
 				width = target.Width;
-				Assert.IsTrue (width > 5, "1");
+				Assert.IsTrue (width > 5, "1: Width: " + width);
 				TestPanel.Resources.Clear();
 				start = Environment.TickCount;
 			});
 
-			EnqueueConditional(() => Environment.TickCount - start > 100);
+			EnqueueConditional(() => Environment.TickCount - start > 300, "300ms");
 			Enqueue (() => {
-				Assert.IsTrue (target.Width - width > 10, "2");
+				Assert.IsTrue (target.Width - width > 10, "2: Diff: " + (target.Width - width));
 			});
 			EnqueueTestComplete ();
 		}

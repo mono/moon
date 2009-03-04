@@ -1,5 +1,15 @@
 2009-03-04  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: I believe
+	  this test was randomly failing because the origianal 100ms
+	  wait was only long enough to allow the shape to move 9.5
+	  pixels, not 10. Add extra logging and increase the delay
+	  between first and second test. Remove the ignore to see if
+	  it'll pass on the build bots now. It works locally on x86
+	  and x64 for me.
+
+2009-03-04  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp: Add missing files to the MD solution
 
 2009-03-03  Chris Toshok  <toshok@ximian.com>
