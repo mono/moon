@@ -96,6 +96,12 @@
 
 	* layout.cpp: All new layout/rendering engine.
 
+2009-03-04  Geoff Norton  <gnorton@novell.com>
+
+	* deployment.cpp: When we dispose the domain, we force a full GC
+	run to happen, otherwise objects could retain a ref to the deployment
+	causing ~Deployment to never be called.
+
 2009-03-04  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Add a new method for grabbing the element_name of a

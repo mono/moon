@@ -296,6 +296,8 @@ Deployment::Dispose ()
 	LOG_DEPLOYMENT ("Deployment::Dispose (): %p\n", this);
 	
 	AbortAllDownloaders ();
+	
+	mono_domain_finalize (domain, -1);
 
 	if (current_app != NULL)
 		current_app->Dispose ();
