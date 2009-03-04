@@ -13,4 +13,4 @@ EXTRA_DIST =			\
 	System.Data.Common
 
 Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: $(wildcard */*.cs)
-	MONO_PATH="$(top_builddir)/class/lib/2.1:$$(MONO_PATH)" $(SMCS) -recurse:$(srcdir)/*.cs -target:library -out:Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll -debug:full
+	MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(SMCS) -recurse:$(srcdir)/*.cs -target:library -out:Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll -debug:full
