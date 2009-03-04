@@ -14,6 +14,7 @@
 #include <config.h>
 #endif
 
+#include <ctype.h>
 #include <math.h>
 
 #include "moon-path.h"
@@ -21,7 +22,7 @@
 #include "debug.h"
 
 
-#if 0
+#if DEBUG
 static const char *unicode_break_types[] = {
 	"G_UNICODE_BREAK_MANDATORY",
 	"G_UNICODE_BREAK_CARRIAGE_RETURN",
@@ -137,10 +138,10 @@ utf8_strlen (const char *str, int length)
 static inline const char *
 utf8_find_last_word (const char *str, int len)
 {
+	GUnicodeBreakType btype = G_UNICODE_BREAK_UNKNOWN;
 	const char *last_word = str;
 	const char *inend = str + len;
 	const char *inptr = str;
-	GUnicodeBreakType btype;
 	bool in_word = false;
 	const char *pchar;
 	gunichar c;
@@ -150,7 +151,14 @@ utf8_find_last_word (const char *str, int len)
 		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
 			continue;
 		
-		btype = g_unichar_break_type (c);
+		if (btype == G_UNICODE_BREAK_COMBINING_MARK) {
+			// ignore zero-width spaces
+			if ((btype = g_unichar_break_type (c)) == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
+				btype = G_UNICODE_BREAK_COMBINING_MARK;
+		} else {
+			btype = g_unichar_break_type (c);
+		}
+		
 		if (!BreakSpace (c, btype)) {
 			if (!in_word) {
 				last_word = pchar;
@@ -651,6 +659,8 @@ layout_word_lwsp (LayoutWord *word, const char *in, const char *inend)
 	double advance;
 	gunichar c;
 	
+	printf ("\nlayout_word_lwsp():\n");
+	
 	word->advance = 0.0;
 	word->count = 0;
 	
@@ -670,11 +680,12 @@ layout_word_lwsp (LayoutWord *word, const char *in, const char *inend)
 			break;
 		}
 		
-		word->count++;
+		if (c < 128 && isprint ((int) c))
+			printf ("\tunichar = %c; btype = %s, isspace = %s\n", (char) c, unicode_break_types[btype], g_unichar_isspace (c) ? "true" : "false");
+		else
+			printf ("\tunichar = 0x%.4X; btype = %s, isspace = %s\n", c, unicode_break_types[btype], g_unichar_isspace (c) ? "true" : "false");
 		
-		// ignore zero-width glyphs for layout metrics
-		if (g_unichar_iszerowidth (c))
-			continue;
+		word->count++;
 		
 		// treat tab as a single space
 		if (c == '\t')
@@ -685,9 +696,7 @@ layout_word_lwsp (LayoutWord *word, const char *in, const char *inend)
 			continue;
 		
 		// calculate total glyph advance
-		if ((advance = glyph->metrics.horiAdvance) <= 0.0)
-			continue;
-		
+		advance = glyph->metrics.horiAdvance;
 		if ((prev != 0) && APPLY_KERNING (c))
 			advance += word->font->Kerning (prev, glyph->index);
 		else if (glyph->metrics.horiBearingX < 0)
@@ -717,9 +726,9 @@ layout_word_lwsp (LayoutWord *word, const char *in, const char *inend)
 static bool
 layout_word_overflow (LayoutWord *word, const char *in, const char *inend, double max_width)
 {
+	GUnicodeBreakType btype = G_UNICODE_BREAK_UNKNOWN;
 	bool line_start = word->line_advance == 0.0;
 	guint32 prev = word->prev;
-	GUnicodeBreakType btype;
 	const char *inptr = in;
 	const char *start;
 	GlyphInfo *glyph;
@@ -738,7 +747,14 @@ layout_word_overflow (LayoutWord *word, const char *in, const char *inend, doubl
 		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
 			continue;
 		
-		btype = g_unichar_break_type (c);
+		if (btype == G_UNICODE_BREAK_COMBINING_MARK) {
+			// ignore zero-width spaces
+			if ((btype = g_unichar_break_type (c)) == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
+				btype = G_UNICODE_BREAK_COMBINING_MARK;
+		} else {
+			btype = g_unichar_break_type (c);
+		}
+		
 		if (BreakSpace (c, btype)) {
 			inptr = start;
 			break;
@@ -751,9 +767,7 @@ layout_word_overflow (LayoutWord *word, const char *in, const char *inend, doubl
 			continue;
 		
 		// calculate total glyph advance
-		if ((advance = glyph->metrics.horiAdvance) <= 0.0)
-			continue;
-		
+		advance = glyph->metrics.horiAdvance;
 		if ((prev != 0) && APPLY_KERNING (c))
 			advance += word->font->Kerning (prev, glyph->index);
 		else if (glyph->metrics.horiBearingX < 0)
@@ -996,10 +1010,6 @@ TextLayout::LayoutNoWrap ()
 				run->count++;
 				offset++;
 				
-				// ignore zero-width glyphs for layout metrics
-				if (g_unichar_iszerowidth (c))
-					continue;
-				
 				// treat tab as a single space
 				if (c == '\t')
 					c = ' ';
@@ -1009,9 +1019,7 @@ TextLayout::LayoutNoWrap ()
 					continue;
 				
 				// calculate total glyph advance
-				if ((advance = glyph->metrics.horiAdvance) <= 0.0)
-					continue;
-				
+				advance = glyph->metrics.horiAdvance;
 				if ((prev != 0) && APPLY_KERNING (c))
 					advance += font->Kerning (prev, glyph->index);
 				else if (glyph->metrics.horiBearingX < 0)
@@ -1090,9 +1098,9 @@ TextLayout::LayoutNoWrap ()
 static bool
 layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double max_width)
 {
+	GUnicodeBreakType btype = G_UNICODE_BREAK_UNKNOWN;
 	bool line_start = word->line_advance == 0.0;
 	guint32 prev = word->prev;
-	GUnicodeBreakType btype;
 	WordBreakOpportunity op;
 	const char *inptr = in;
 	const char *start;
@@ -1100,11 +1108,16 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	GlyphInfo *glyph;
 	double advance;
 	int glyphs = 0;
+	bool new_glyph;
 	gunichar c;
+	int cc;
 	
 	g_array_set_size (word->break_ops, 0);
 	word->advance = 0.0;
 	word->count = 0;
+	
+	printf ("\nlayout_word_wrap():\n");
+	GString *debug = g_string_new ("");
 	
 	while (inptr < inend) {
 		if (*inptr == '\r' || *inptr == '\n')
@@ -1115,111 +1128,150 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
 			continue;
 		
-		btype = g_unichar_break_type (c);
+		if (btype == G_UNICODE_BREAK_COMBINING_MARK) {
+			// ignore zero-width spaces
+			if ((btype = g_unichar_break_type (c)) == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
+				btype = G_UNICODE_BREAK_COMBINING_MARK;
+		} else {
+			btype = g_unichar_break_type (c);
+		}
+		
 		if (BreakSpace (c, btype)) {
 			inptr = start;
 			break;
 		}
 		
+		g_string_append_unichar (debug, c);
 		word->count++;
 		
-		if (g_unichar_combining_class (c) != 0 && glyphs > 0) {
+		if ((cc = g_unichar_combining_class (c)) != 0 && glyphs > 0) {
 			// this char gets combined with the previous glyph
-			g_array_remove_index (word->break_ops, word->break_ops->len - 1);
-			op.count = word->count;
-			g_array_append_val (word->break_ops, op);
-			continue;
+			new_glyph = false;
 		} else {
+			new_glyph = true;
 			glyphs++;
 		}
 		
-		// ignore glyphs the font doesn't contain...
-		if (!(glyph = word->font->GetGlyphInfo (c)))
-			continue;
+		if (c < 128 && isprint ((int) c))
+			printf ("\tunichar = %c; btype = %s, new glyph = %s; cc = %d\n", (char) c, unicode_break_types[btype], new_glyph ? "true" : "false", cc);
+		else
+			printf ("\tunichar = 0x%.4X; btype = %s, new glyph = %s; cc = %d\n", c, unicode_break_types[btype], new_glyph ? "true" : "false", cc);
 		
-		// calculate total glyph advance
-		if ((advance = glyph->metrics.horiAdvance) > 0.0) {
+		if ((glyph = word->font->GetGlyphInfo (c))) {
+			// calculate total glyph advance
+			advance = glyph->metrics.horiAdvance;
 			if ((prev != 0) && APPLY_KERNING (c))
 				advance += word->font->Kerning (prev, glyph->index);
 			else if (glyph->metrics.horiBearingX < 0)
 				advance -= glyph->metrics.horiBearingX;
+			
+			word->line_advance += advance;
+			word->advance += advance;
+			prev = glyph->index;
 		} else {
 			advance = 0.0;
 		}
 		
-		word->line_advance += advance;
-		word->advance += advance;
-		prev = glyph->index;
-		
-		op.advance = word->advance;
-		op.count = word->count;
-		op.inptr = inptr;
-		op.btype = btype;
-		op.c = c;
+		if (new_glyph) {
+			op.advance = word->advance;
+			op.count = word->count;
+			op.inptr = inptr;
+			op.btype = btype;
+			op.c = c;
+		} else {
+			g_array_remove_index (word->break_ops, word->break_ops->len - 1);
+			op.advance += advance;
+			op.count++;
+		}
 		
 		g_array_append_val (word->break_ops, op);
 		
 		if (max_width > 0.0 && word->line_advance >= max_width) {
+			printf ("\tjust exceeded max width: %s\n", debug->str);
+			
 			if (inptr < word->last_word) {
 				// not the last word, safe to break apart
+				printf ("\tnot last word, so applying wrap logic...\n");
 				wrap = true;
 				break;
 			} else if (!line_start) {
 				// last word, but not located at the beginning of the line...
-				word->advance = 0.0;
-				word->length = 0;
-				return true;
+				//printf ("\tlast word, but going to wrap at the beginning\n");
+				//g_string_free (debug, true);
+				//word->advance = 0.0;
+				//word->length = 0;
+				//return true;
+				wrap = true;
+				break;
 			} else {
 				// last word, at the beginning of the line - DO NOT BREAK
+				printf ("\tthis is the last word, so no wrapping allowed\n");
 			}
 		}
 	}
 	
 	if (!wrap) {
+		g_string_free (debug, true);
 		word->length = (inptr - in);
 		word->prev = prev;
 		return false;
 	}
 	
-	// glyphs should always be > 0, but just in case...
-	if (glyphs > 0) {
-		// keep going until we reach a new distinct glyph
-		while (inptr < inend) {
-			if (*inptr == '\r' || *inptr == '\n')
-				break;
-			
-			// ignore invalid chars
-			start = inptr;
-			if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
-				continue;
-			
-			btype = g_unichar_break_type (c);
-			if (BreakSpace (c, btype) || g_unichar_combining_class (c) == 0) {
-				inptr = start;
-				break;
-			}
-			
-			word->count++;
-			
-			g_array_remove_index (word->break_ops, word->break_ops->len - 1);
-			op.count = word->count;
-			g_array_append_val (word->break_ops, op);
+	printf ("\tcollecting any/all decomposed chars and figuring out the break-type for the next glyph\n");
+	
+	// pretend btype is SPACE here in case inptr is at the end of the run
+	btype = G_UNICODE_BREAK_SPACE;
+	
+	// keep going until we reach a new distinct glyph. we also
+	// need to know the btype of the char after the char that
+	// exceeded the width limit.
+	while (inptr < inend) {
+		if (*inptr == '\r' || *inptr == '\n')
+			break;
+		
+		// ignore invalid chars
+		start = inptr;
+		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
+			continue;
+		
+		btype = g_unichar_break_type (c);
+		if (BreakSpace (c, btype) || g_unichar_combining_class (c) == 0) {
+			inptr = start;
+			break;
 		}
+		
+		g_string_append_unichar (debug, c);
+		word->count++;
+		
+		g_array_remove_index (word->break_ops, word->break_ops->len - 1);
+		op.count = word->count;
+		g_array_append_val (word->break_ops, op);
 	}
+	
+	printf ("\tok, at this point we have: %s\n", debug->str);
+	printf ("\tnext break-type is %s\n", unicode_break_types[btype]);
 	
 	// at this point, we're going to break the word so we can reset kerning
 	word->prev = 0;
 	
 	// we can't break any smaller than a single glyph
 	if (line_start && glyphs == 1) {
+		printf ("\tsince this is the first glyph on the line, can't break any smaller than that...\n");
+		g_string_free (debug, true);
 		word->length = (inptr - in);
 		word->prev = prev;
 		return true;
 	}
 	
 	// search backwards for the best break point
+	printf ("\tscanning over %d break opportunities...\n", word->break_ops->len);
 	for (guint i = word->break_ops->len; i > 0; i--) {
 		op = g_array_index (word->break_ops, WordBreakOpportunity, i - 1);
+		
+		if (op.c < 128 && isprint ((int) op.c))
+			printf ("\tunichar = %c; btype = %s; i = %d\n", (char) op.c, unicode_break_types[op.btype], i);
+		else
+			printf ("\tunichar = 0x%.4X; btype = %s; i = %d\n", op.c, unicode_break_types[op.btype], i);
 		
 		switch (op.btype) {
 		case G_UNICODE_BREAK_NEXT_LINE:
@@ -1228,16 +1280,25 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			word->length = (op.inptr - in);
 			word->advance = op.advance;
 			word->count = op.count;
-			return true;
+			
+			// if the following break-type is SPACE, then return
+			// false; otherwise let our caller know to wrap.
+			g_string_free (debug, true);
+			return !BreakSpace (c, btype);
 		case G_UNICODE_BREAK_BEFORE_AND_AFTER:
 		case G_UNICODE_BREAK_EXCLAMATION:
 			//case G_UNICODE_BREAK_AFTER:
 			// only break after this char if there are chars before it
 			if (line_start && i > 1) {
+				
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				return true;
+				
+				// if the following break-type is SPACE, then return
+				// false; otherwise let our caller know to wrap.
+				g_string_free (debug, true);
+				return !BreakSpace (c, btype);
 			}
 			break;
 		case G_UNICODE_BREAK_BEFORE:
@@ -1248,6 +1309,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				word->advance = op.advance;
 				word->count = op.count;
 				
+				g_string_free (debug, true);
 				return true;
 			}
 			break;
@@ -1257,7 +1319,11 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				return true;
+				
+				// if the following break-type is SPACE, then return
+				// false; otherwise let our caller know to wrap.
+				g_string_free (debug, true);
+				return !BreakSpace (c, btype);
 			}
 			break;
 		default:
@@ -1265,6 +1331,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			if (line_start) {
 				if (i > 1) {
 					// break after the previous glyph
+					btype = op.btype;
 					op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
 				} else {
 					// break after this char
@@ -1274,12 +1341,21 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				word->advance = op.advance;
 				word->count = op.count;
 				
-				return true;
+				// if the following break-type is SPACE, then return
+				// false; otherwise let our caller know to wrap.
+				g_string_free (debug, true);
+				return !BreakSpace (c, btype);
 			}
 			break;
 		}
+		
+		btype = op.btype;
+		c = op.c;
 	}
 	
+	printf ("\tcouldn't find a good place to break, defaulting to breaking before the word start\n");
+	
+	g_string_free (debug, true);
 	word->advance = 0.0;
 	word->length = 0;
 	word->count = 0;
