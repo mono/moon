@@ -87,7 +87,18 @@ namespace Microsoft.Silverlight.Testing
 
         public virtual void EnqueueConditional (Func<bool> conditionalDelegate, TimeSpan timeout)
         {
-            EnqueueWorkItem(new ConditionalWorkItem (conditionalDelegate, timeout));
+            EnqueueWorkItem(new ConditionalWorkItem (conditionalDelegate, timeout, ""));
+        }
+        
+        public virtual void EnqueueConditional(Func<bool> conditionalDelegate, string message)
+        {
+            ConditionalWorkItem conditionalTask = new ConditionalWorkItem(conditionalDelegate, message);
+            EnqueueWorkItem(conditionalTask);
+        }
+
+        public virtual void EnqueueConditional (Func<bool> conditionalDelegate, TimeSpan timeout, string message)
+        {
+            EnqueueWorkItem(new ConditionalWorkItem (conditionalDelegate, timeout, message));
         }
 
         /// <summary>

@@ -1,3 +1,10 @@
+2009-03-04  Alan McGovern  <amcgovern@novell.com>
+
+	* ConditionalWorkItem.cs: Add the ability to append a failure
+	  message to EnqueueConditional to make it easy to tell which
+	  EnqueueConditional fails when a test uses this multiple
+	  times.
+
 2009-02-18  Alan McGovern <amcgovern@novell.com> 
 	* ConditionalWorkItem.cs: Add a timeout value so that waiting
 	on a conditional will never block indefinitely.

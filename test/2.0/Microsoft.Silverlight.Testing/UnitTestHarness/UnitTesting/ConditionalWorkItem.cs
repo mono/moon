@@ -20,21 +20,33 @@ namespace Microsoft.Silverlight.Testing.UnitTesting
         /// The conditional delegate.
         /// </summary>
         private Func<bool> _delegate;
+        private string _message;
         private TimeSpan timeout;
 
         /// <summary>
         /// Construct a new conditional work item.
         /// </summary>
         /// <param name="conditionalMethod">Conditional delegate.</param>
-        public ConditionalWorkItem(Func<bool> conditionalMethod) : this(conditionalMethod, TimeSpan.FromSeconds(5))
+        public ConditionalWorkItem(Func<bool> conditionalMethod) : this(conditionalMethod, TimeSpan.FromSeconds(5), "")
+        {
+
+        }
+        
+        public ConditionalWorkItem(Func<bool> conditionalMethod, TimeSpan timeout) : this(conditionalMethod, timeout, "")
+        {
+
+        }
+        
+        public ConditionalWorkItem(Func<bool> conditionalMethod, string message) : this(conditionalMethod, TimeSpan.FromSeconds(5), message)
         {
 
         }
 
-        public ConditionalWorkItem (Func<bool> conditionalMethod, TimeSpan timeout)
+        public ConditionalWorkItem (Func<bool> conditionalMethod, TimeSpan timeout, string message)
             : base ()
         {
             _delegate = conditionalMethod;
+            _message = message ?? "";
             this.timeout = timeout;
         }
 
@@ -54,8 +66,8 @@ namespace Microsoft.Silverlight.Testing.UnitTesting
                 if (!start.HasValue)
                     start = DateTime.Now;
 
-                if ((DateTime.Now - start) > timeout)
-                    Assert.Fail ("Timeout exceeded on conditional wait");
+                if ((DateTime.Now - start) > timeout) 
+                    Assert.Fail ("Timeout exceeded on conditional wait. " + _message);
             }
             return base.Invoke();
         }
