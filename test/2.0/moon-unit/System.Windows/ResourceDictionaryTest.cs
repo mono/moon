@@ -190,6 +190,39 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void Parse_InternalStaticResourceReference1 ()
+		{
+			ResourceDictionary rd = (ResourceDictionary)XamlReader.Load (@"<ResourceDictionary xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""> <Color x:Key=""colorTest"">#FFA52A2A</Color> <SolidColorBrush x:Key=""brush"" Color=""{StaticResource colorTest}"" /> </ResourceDictionary>");
+
+			Assert.IsNotNull (rd["colorTest"], "1");
+			Assert.IsNotNull (rd["brush"], "2");
+
+			SolidColorBrush scb = (SolidColorBrush)rd["brush"];
+
+			Assert.AreEqual (Colors.Brown, scb.Color, "3");
+		}
+
+		[TestMethod]
+		public void Parse_InternalStaticResourceReference2 ()
+		{
+			Canvas canvas = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Key=""colorTest"">#FFA52A2A</Color> <Style TargetType=""Button"" x:Key=""ButtonStyle""> <Setter Property=""Template""><Setter.Value> <ControlTemplate TargetType=""Button""> <Canvas><Canvas.Background><SolidColorBrush Color=""{StaticResource colorTest}"" /></Canvas.Background></Canvas> </ControlTemplate></Setter.Value></Setter> </Style> </Canvas.Resources> <Button Style=""{StaticResource ButtonStyle}"" /> </Canvas>");
+
+			
+			Button b = (Button)canvas.Children[0];
+
+			b.ApplyTemplate ();
+
+			Canvas c = (Canvas)VisualTreeHelper.GetChild (b, 0);
+
+			Assert.IsTrue (c.Background is SolidColorBrush, "1");
+
+			SolidColorBrush scb = (SolidColorBrush)c.Background;
+
+			Assert.AreEqual (Colors.Brown, scb.Color, "2");
+		}
+
+
+		[TestMethod]
 		public void TestIntegerIndex ()
 		{
 			Canvas b = (Canvas)
