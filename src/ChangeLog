@@ -1,5 +1,10 @@
 2009-03-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp: Disable debug printfs unless layout debugging is
+	enabled.
+
+2009-03-04  Jeffrey Stedfast  <fejj@novell.com>
+
 	Fixes the last failing case in LineBreakBasic1.htm
 
 	* layout.cpp (layout_word_wrap): When checking for last_word, use
