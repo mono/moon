@@ -36,103 +36,108 @@
 #define APPLY_KERNING(uc)	((uc != 0x002E) && (uc != 0x06D4) && (uc != 3002))
 
 
-//
-// TextRun
-//
-
-TextRun::TextRun (const gunichar *ucs4, int len, ITextAttributes *source, bool selected)
+static inline gunichar
+utf8_getc (const char **in, size_t inlen)
 {
-	TextFontDescription *font = source->FontDescription ();
+	register const unsigned char *inptr = (const unsigned char *) *in;
+	const unsigned char *inend = inptr + inlen;
+	register unsigned char c, r;
+	register gunichar m, u = 0;
 	
-	this->font = font->GetFont ();
-	this->selected = selected;
-	this->source = source;
-	this->length = len;
-	this->text = ucs4;
-	this->buf = NULL;
+	if (inlen == 0)
+		return 0;
+	
+	r = *inptr++;
+	if (r < 0x80) {
+		*in = (const char *) inptr;
+		u = r;
+	} else if (r < 0xfe) { /* valid start char? */
+		u = r;
+		m = 0x7f80;    /* used to mask out the length bits */
+		do {
+			if (inptr >= inend)
+				return 0;
+			
+			c = *inptr++;
+			if ((c & 0xc0) != 0x80)
+				goto error;
+			
+			u = (u << 6) | (c & 0x3f);
+			r <<= 1;
+			m <<= 5;
+		} while (r & 0x40);
+		
+		*in = (const char *) inptr;
+		
+		u &= ~m;
+	} else {
+	 error:
+		u = (gunichar) -1;
+		*in = (*in) + 1;
+	}
+	
+	return u;
 }
 
-TextRun::TextRun (const char *utf8, int len, ITextAttributes *source, bool selected)
+static inline int
+utf8_strlen (const char *str, int length)
 {
-	TextFontDescription *font = source->FontDescription ();
-	register gunichar *s, *d;
+	const char *inend = str + length;
+	const char *inptr = str;
+	int count = 0;
 	
-	this->buf = g_utf8_to_ucs4_fast (utf8, len, NULL);
-	this->text = this->buf;
+	while (inptr < inend) {
+		// invalid chars do not count toward our total
+		if (utf8_getc (&inptr, inend - inptr) != (gunichar) -1)
+			count++;
+	}
 	
-	// convert all ascii lwsp into a SPACE
-	for (s = d = this->buf; *s; s++) {
-		if (g_unichar_isspace (*s)) {
-			if (*s < 128)
-				*d++ = ' ';
-			else
-				*d++ = *s;
+	return count;
+}
+
+static inline const char *
+utf8_find_last_word (const char *str, int len)
+{
+	const char *last_word = str;
+	const char *inend = str + len;
+	const char *inptr = str;
+	bool in_word = false;
+	const char *pchar;
+	gunichar c;
+	
+	while (inptr < inend) {
+		pchar = inptr;
+		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
+			continue;
+		
+		if (!g_unichar_isspace (c)) {
+			if (!in_word) {
+				last_word = pchar;
+				in_word = true;
+			}
 		} else {
-			*d++ = *s;
+			in_word = false;
 		}
 	}
 	
-	*d = 0;
-	
-	this->font = font->GetFont ();
-	this->selected = selected;
-	this->length = d - buf;
-	this->source = source;
-}
-
-TextRun::TextRun (ITextAttributes *source)
-{
-	// This TextRun will represent a LineBreak
-	TextFontDescription *font = source->FontDescription ();
-	
-	this->font = font->GetFont ();
-	this->selected = false;
-	this->source = source;
-	this->text = NULL;
-	this->buf = NULL;
-	this->length = 0;
-}
-
-TextRun::~TextRun ()
-{
-	font->unref ();
-	g_free (buf);
+	return last_word;
 }
 
 
 //
-// TextSegment
+// TextLayoutGlyphCluster
 //
 
-class TextSegment : public List::Node {
- public:
-	moon_path *path;
-	double advance;
-	double width;
-	TextRun *run;
-	int start;
-	int end;
-	
-	TextSegment (TextRun *run, int start);
-	~TextSegment ();
-	
-	TextDecorations Decorations () { return run->Decorations (); }
-	Brush *Background () { return run->Background (); }
-	Brush *Foreground () { return run->Foreground (); }
-	TextFont *Font () { return run->Font (); }
-};
-
-TextSegment::TextSegment (TextRun *run, int start)
+TextLayoutGlyphCluster::TextLayoutGlyphCluster (int _start, int _length)
 {
-	this->advance = 0.0;
-	this->width = 0.0;
-	this->start = start;
-	this->end = start;
-	this->path = NULL;
-	this->run = run;
+	length = _length;
+	start = _start;
+	selected = false;
+	advance = 0.0;
+	path = NULL;
 }
 
-TextSegment::~TextSegment ()
+TextLayoutGlyphCluster::~TextLayoutGlyphCluster ()
 {
 	if (path)
 		moon_path_destroy (path);
@@ -140,39 +145,63 @@ TextSegment::~TextSegment ()
 
 
 //
-// TextLine
+// TextLayoutRun
 //
 
-class TextLine : public List::Node {
- public:
-	List *segments;
-	double descend;
-	double height;
-	double width;
-	int start;
-	short crlf_selected;
-	short crlf;
+TextLayoutRun::TextLayoutRun (TextLayoutLine *_line, TextLayoutAttributes *_attrs, int _start)
+{
+	clusters = g_ptr_array_new ();
+	attrs = _attrs;
+	start = _start;
+	line = _line;
+	advance = 0.0;
+	length = 0;
+	count = 0;
+}
+
+TextLayoutRun::~TextLayoutRun ()
+{
+	for (guint i = 0; i < clusters->len; i++)
+		delete (TextLayoutGlyphCluster *) clusters->pdata[i];
 	
-	TextLine ();
-	~TextLine ();
-};
+	g_ptr_array_free (clusters, true);
+}
 
-TextLine::TextLine ()
+void
+TextLayoutRun::ClearCache ()
 {
-	segments = new List ();
-	crlf_selected = false;
+	for (guint i = 0; i < clusters->len; i++)
+		delete (TextLayoutGlyphCluster *) clusters->pdata[i];
+	
+	g_ptr_array_set_size (clusters, 0);
+}
+
+
+//
+// TextLayoutLine
+//
+
+TextLayoutLine::TextLayoutLine (TextLayout *_layout, int _start, int _offset)
+{
+	runs = g_ptr_array_new ();
+	layout = _layout;
+	offset = _offset;
+	start = _start;
+	advance = 0.0;
 	descend = 0.0;
-	height = -1.0;
+	height = 0.0;
 	width = 0.0;
-	start = 0;
-	crlf = 0;
+	length = 0;
 }
 
-TextLine::~TextLine ()
+TextLayoutLine::~TextLayoutLine ()
 {
-	segments->Clear (true);
-	delete segments;
+	for (guint i = 0; i < runs->len; i++)
+		delete (TextLayoutRun *) runs->pdata[i];
+	
+	g_ptr_array_free (runs, true);
 }
+
 
 
 //
@@ -185,36 +214,50 @@ TextLayout::TextLayout ()
 	strategy = LineStackingStrategyMaxHeight;
 	alignment = TextAlignmentLeft;
 	wrapping = TextWrappingNoWrap;
+	selection_length = 0;
+	selection_start = 0;
+	last_word = NULL;
+	actual_height = -1.0;
+	actual_width = -1.0;
 	line_height = NAN;
 	max_height = -1.0;
 	max_width = -1.0;
-	
-	runs = NULL;
-	
-	lines = new List ();
-	
-	actual_height = -1.0;
-	actual_width = -1.0;
+	attributes = NULL;
+	lines = g_ptr_array_new ();
+	text = NULL;
+	length = 0;
+	count = 0;
 }
 
 TextLayout::~TextLayout ()
 {
-	if (runs) {
-		runs->Clear (true);
-		delete runs;
+	if (attributes) {
+		attributes->Clear (true);
+		delete attributes;
 	}
 	
-	lines->Clear (true);
-	delete lines;
+	ClearLines ();
+	g_ptr_array_free (lines, true);
+	
+	g_free (text);
+}
+
+void
+TextLayout::ClearLines ()
+{
+	for (guint i = 0; i < lines->len; i++)
+		delete (TextLayoutLine *) lines->pdata[i];
+	
+	g_ptr_array_set_size (lines, 0);
 }
 
 bool
-TextLayout::SetLineStackingStrategy (LineStackingStrategy strategy)
+TextLayout::SetLineStackingStrategy (LineStackingStrategy mode)
 {
-	if (this->strategy == strategy)
+	if (strategy == mode)
 		return false;
 	
-	this->strategy = strategy;
+	strategy = mode;
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
@@ -223,23 +266,23 @@ TextLayout::SetLineStackingStrategy (LineStackingStrategy strategy)
 }
 
 bool
-TextLayout::SetTextAlignment (TextAlignment alignment)
+TextLayout::SetTextAlignment (TextAlignment align)
 {
-	if (this->alignment == alignment)
+	if (alignment == align)
 		return false;
 	
-	this->alignment = alignment;
+	alignment = align;
 	
 	return false;
 }
 
 bool
-TextLayout::SetTextWrapping (TextWrapping wrapping)
+TextLayout::SetTextWrapping (TextWrapping mode)
 {
-	if (this->wrapping == wrapping)
+	if (wrapping == mode)
 		return false;
 	
-	this->wrapping = wrapping;
+	wrapping = mode;
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
@@ -250,10 +293,10 @@ TextLayout::SetTextWrapping (TextWrapping wrapping)
 bool
 TextLayout::SetLineHeight (double height)
 {
-	if (this->line_height == height)
+	if (line_height == height)
 		return false;
 	
-	this->line_height = height;
+	line_height = height;
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
@@ -262,12 +305,12 @@ TextLayout::SetLineHeight (double height)
 }
 
 bool
-TextLayout::SetMaxHeight (double max)
+TextLayout::SetMaxHeight (double height)
 {
-	if (max_height == max)
+	if (max_height == height)
 		return false;
 	
-	max_height = max;
+	max_height = height;
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
@@ -276,12 +319,12 @@ TextLayout::SetMaxHeight (double max)
 }
 
 bool
-TextLayout::SetMaxWidth (double max)
+TextLayout::SetMaxWidth (double width)
 {
-	if (max_width == max)
+	if (max_width == width)
 		return false;
 	
-	max_width = max;
+	max_width = width;
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
@@ -290,19 +333,203 @@ TextLayout::SetMaxWidth (double max)
 }
 
 bool
-TextLayout::SetTextRuns (List *runs)
+TextLayout::SetTextAttributes (List *attrs)
 {
-	if (this->runs) {
-		this->runs->Clear (true);
-		delete this->runs;
+	if (attributes) {
+		attributes->Clear (true);
+		delete attributes;
 	}
 	
-	this->runs = runs;
+	attributes = attrs;
 	
 	actual_height = -1.0;
 	actual_width = -1.0;
 	
 	return true;
+}
+
+bool
+TextLayout::SetText (const char *str, int len)
+{
+	g_free (text);
+	
+	length = len == -1 ? strlen (str) : len;
+	text = (char *) g_malloc (length + 1);
+	memcpy (text, str, length);
+	text[length] = '\0';
+	last_word = NULL;
+	count = -1;
+	
+	actual_height = -1.0;
+	actual_width = -1.0;
+	
+	return true;
+}
+
+void
+TextLayout::ClearCache ()
+{
+	TextLayoutLine *line;
+	TextLayoutRun *run;
+	
+	for (guint i = 0; i < lines->len; i++) {
+		line = (TextLayoutLine *) lines->pdata[i];
+		
+		for (guint j = 0; j < line->runs->len; j++) {
+			run = (TextLayoutRun *) line->runs->pdata[j];
+			run->ClearCache ();
+		}
+	}
+}
+
+struct TextRegion {
+	int start, length;
+	bool select;
+};
+
+static void
+UpdateSelection (GPtrArray *lines, TextRegion *pre, TextRegion *post)
+{
+	TextLayoutGlyphCluster *cluster;
+	TextLayoutLine *line;
+	TextLayoutRun *run;
+	guint i, j;
+	
+	// first update pre-region
+	for (i = 0; i < lines->len; i++) {
+		line = (TextLayoutLine *) lines->pdata[i];
+		
+		if (pre->start >= line->start + line->length) {
+			// pre-region not on this line...
+			continue;
+		}
+		
+		for (j = 0; j < line->runs->len; j++) {
+			run = (TextLayoutRun *) line->runs->pdata[j];
+			
+			if (pre->start >= run->start + run->length) {
+				// pre-region not in this run...
+				continue;
+			}
+			
+			if (pre->start <= run->start) {
+				if (pre->start + pre->length >= run->start + run->length) {
+					// run is fully contained within the pre-region
+					if (run->clusters->len == 1) {
+						cluster = (TextLayoutGlyphCluster *) run->clusters->pdata[0];
+						cluster->selected = pre->select;
+					} else {
+						run->ClearCache ();
+					}
+				} else {
+					run->ClearCache ();
+				}
+			} else {
+				run->ClearCache ();
+			}
+			
+			if (pre->start + pre->length <= run->start + run->length)
+				break;
+		}
+	}
+	
+	// now update the post region...
+	for ( ; i < lines->len; i++, j = 0) {
+		line = (TextLayoutLine *) lines->pdata[i];
+		
+		if (post->start >= line->start + line->length) {
+			// pre-region not on this line...
+			continue;
+		}
+		
+		for ( ; j < line->runs->len; j++) {
+			run = (TextLayoutRun *) line->runs->pdata[j];
+			
+			if (post->start >= run->start + run->length) {
+				// post-region not in this run...
+				continue;
+			}
+			
+			if (post->start <= run->start) {
+				if (post->start + post->length >= run->start + run->length) {
+					// run is fully contained within the pre-region
+					if (run->clusters->len == 1) {
+						cluster = (TextLayoutGlyphCluster *) run->clusters->pdata[0];
+						cluster->selected = post->select;
+					} else {
+						run->ClearCache ();
+					}
+				} else {
+					run->ClearCache ();
+				}
+			} else {
+				run->ClearCache ();
+			}
+			
+			if (post->start + post->length <= run->start + run->length)
+				break;
+		}
+	}
+}
+
+void
+TextLayout::Select (int start, int length, bool byte_offsets)
+{
+	int new_selection_length;
+	int new_selection_start;
+	int new_selection_end;
+	int selection_end;
+	TextRegion pre, post;
+	const char *inptr;
+	const char *inend;
+	
+	if (!text) {
+		selection_length = 0;
+		selection_start = 0;
+		return;
+	}
+	
+	if (!byte_offsets) {
+		inptr = g_utf8_offset_to_pointer (text, start);
+		new_selection_start = inptr - text;
+		
+		inend = g_utf8_offset_to_pointer (inptr, length);
+		new_selection_length = inend - inptr;
+	} else {
+		new_selection_length = length;
+		new_selection_start = start;
+	}
+	
+	if (selection_start == new_selection_start &&
+	    selection_length == new_selection_length) {
+		// no change in selection...
+		return;
+	}
+	
+#if true
+	// compute the region between the 2 starts
+	pre.length = abs (new_selection_start - selection_start);
+	pre.start = MIN (selection_start, new_selection_start);
+	pre.select = new_selection_start < selection_start;
+	
+	// compute the region between the 2 ends
+	new_selection_end = new_selection_start + new_selection_length;
+	selection_end = selection_start + selection_length;
+	post.length = abs (new_selection_end - selection_end);
+	post.start = MIN (selection_end, new_selection_end);
+	post.select = new_selection_end > selection_end;
+	
+	UpdateSelection (lines, &pre, &post);
+	
+	selection_length = new_selection_length;
+	selection_start = new_selection_start;
+#else
+	if (selection_length || new_selection_length)
+		ClearCache ();
+	
+	selection_length = new_selection_length;
+	selection_start = new_selection_start;
+#endif
 }
 
 /**
@@ -321,41 +548,6 @@ TextLayout::GetActualExtents (double *width, double *height)
 }
 
 #if 0
-/**
- * TextLayout::GetLayoutExtents:
- * @width:
- * @height:
- *
- * Gets the width and height extents suitable for rendering the text
- * w/ the current wrapping model.
- **/
-void
-TextLayout::GetLayoutExtents (double *width, double *height)
-{
-	*height = bbox_height;
-	*width = bbox_width;
-}
-#endif
-
-
-#if DEBUG
-static void
-print_run_text (TextRun *run)
-{
-	register const gunichar *inptr = run->Text ();
-	const gunichar *inend = inptr + run->Length ();
-	GString *str = g_string_new ("");
-	
-	while (inptr < inend) {
-		g_string_append_unichar (str, *inptr == 0xA0 ? '_' : *inptr);
-		inptr++;
-	}
-	
-	printf ("\"%s\"", str->str);
-	
-	g_string_free (str, true);
-}
-
 static const char *unicode_break_types[] = {
 	"G_UNICODE_BREAK_MANDATORY",
 	"G_UNICODE_BREAK_CARRIAGE_RETURN",
@@ -394,29 +586,6 @@ static const char *unicode_break_types[] = {
 	"G_UNICODE_BREAK_HANGUL_LV_SYLLABLE",
 	"G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE"
 };
-
-static void
-print_break_info (TextRun *run)
-{
-	register const gunichar *inptr = run->Text ();
-	const gunichar *inend = inptr + run->Length ();
-	GUnicodeBreakType btype;
-	char c[7];
-	int i;
-	
-	printf ("Unicode break info:\n");
-	
-	while (inptr < inend) {
-		btype = g_unichar_break_type (*inptr);
-		i = g_unichar_to_utf8 (*inptr, c);
-		c[i] = '\0';
-		
-		printf ("\t%u %s: break type = %s\n", *inptr, c,
-			unicode_break_types[btype]);
-		
-		inptr++;
-	}
-}
 #endif
 
 
@@ -424,876 +593,947 @@ print_break_info (TextRun *run)
 #define BreakAfter(btype) (btype == G_UNICODE_BREAK_AFTER || btype == G_UNICODE_BREAK_NEXT_LINE)
 #define BreakBefore(btype) (btype == G_UNICODE_BREAK_BEFORE || btype == G_UNICODE_BREAK_PREFIX)
 
+struct WordBreakOpportunity {
+	GUnicodeBreakType btype;
+	const char *inptr;
+	double advance;
+	gunichar c;
+	int count;
+};
+
+struct LayoutWord {
+	// <internal use>
+	GArray *break_ops;     // TextWrappingWrap only
+	
+	// <input>
+	const char *last_word; // TextWrappingWrap only
+	double line_advance;
+	TextFont *font;
+	
+	// <input/output>
+	guint32 prev;
+	
+	// <output>
+	double advance;
+	int length;
+	int count;
+};
+
+static inline void
+layout_word_init (LayoutWord *word, double line_advance, guint32 prev)
+{
+	word->line_advance = line_advance;
+	word->prev = prev;
+}
+
+/**
+ * layout_word_lwsp:
+ * @word: #LayoutWord context
+ * @in: input text
+ * @inend: end of input text
+ *
+ * Measures a word containing nothing but LWSP.
+ **/
+static void
+layout_word_lwsp (LayoutWord *word, const char *in, const char *inend)
+{
+	guint32 prev = word->prev;
+	GUnicodeBreakType btype;
+	const char *inptr = in;
+	const char *start;
+	GlyphInfo *glyph;
+	double advance;
+	gunichar c;
+	
+	word->advance = 0.0;
+	word->count = 0;
+	
+	while (inptr < inend) {
+		// check for line-breaks
+		if (*inptr == '\r' || *inptr == '\n')
+			break;
+		
+		// ignore invalid chars
+		start = inptr;
+		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
+			continue;
+		
+		btype = g_unichar_break_type (c);
+		if (!BreakSpace (btype)) {
+			inptr = start;
+			break;
+		}
+		
+		word->count++;
+		
+		// ignore zero-width glyphs for layout metrics
+		if (g_unichar_iszerowidth (c))
+			continue;
+		
+		// canonicalize whitespace
+		if (g_unichar_isspace (c))
+			c = ' ';
+		
+		// ignore glyphs the font doesn't contain...
+		if (!(glyph = word->font->GetGlyphInfo (c)))
+			continue;
+		
+		// calculate total glyph advance
+		if ((advance = glyph->metrics.horiAdvance) <= 0.0)
+			continue;
+		
+		if ((prev != 0) && APPLY_KERNING (c))
+			advance += word->font->Kerning (prev, glyph->index);
+		else if (glyph->metrics.horiBearingX < 0)
+			advance -= glyph->metrics.horiBearingX;
+		
+		word->line_advance += advance;
+		word->advance += advance;
+		prev = glyph->index;
+	}
+	
+	word->length = (inptr - in);
+	word->prev = prev;
+}
+
+/**
+ * layout_word_overflow:
+ * @word: #LayoutWord context
+ * @in: input text
+ * @inend = end of input text
+ * @max_width: max allowable width for a line
+ *
+ * Calculates the advance of the current word.
+ *
+ * Returns: %true if the caller should create a new line for this word
+ * or %false otherwise.
+ **/
+static bool
+layout_word_overflow (LayoutWord *word, const char *in, const char *inend, double max_width)
+{
+	bool line_start = word->line_advance == 0.0;
+	guint32 prev = word->prev;
+	GUnicodeBreakType btype;
+	const char *inptr = in;
+	const char *start;
+	GlyphInfo *glyph;
+	double advance;
+	gunichar c;
+	
+	word->advance = 0.0;
+	word->count = 0;
+	
+	while (inptr < inend) {
+		if (*inptr == '\r' || *inptr == '\n')
+			break;
+		
+		// ignore invalid chars
+		start = inptr;
+		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
+			continue;
+		
+		btype = g_unichar_break_type (c);
+		if (BreakSpace (btype)) {
+			inptr = start;
+			break;
+		}
+		
+		word->count++;
+		
+		// ignore glyphs the font doesn't contain...
+		if (!(glyph = word->font->GetGlyphInfo (c)))
+			continue;
+		
+		// calculate total glyph advance
+		if ((advance = glyph->metrics.horiAdvance) <= 0.0)
+			continue;
+		
+		if ((prev != 0) && APPLY_KERNING (c))
+			advance += word->font->Kerning (prev, glyph->index);
+		else if (glyph->metrics.horiBearingX < 0)
+			advance -= glyph->metrics.horiBearingX;
+		
+		// WrapWithOverflow never breaks in the middle of a word...
+		//
+		// If this word starts the line, then we must allow it to
+		// overflow. Otherwise, return %true to our caller so it
+		// can create a new line to layout this word into.
+		if (!line_start && max_width > 0.0 && (word->line_advance + advance) >= max_width) {
+			word->advance = 0.0;
+			word->length = 0;
+			return true;
+		}
+		
+		word->line_advance += advance;
+		word->advance += advance;
+		prev = glyph->index;
+	}
+	
+	word->length = (inptr - in);
+	word->prev = prev;
+	
+	return false;
+}
+
 void
 TextLayout::LayoutWrapWithOverflow ()
 {
-	double x0 = 0.0, x1 = 0.0, wx = 0.0, dy = 0.0;
-	register const gunichar *start, *inptr;
-	const gunichar *text, *word, *inend;
-	GUnicodeBreakType btype;
-	bool underlined = false;
-	TextRun *nextrun, *run;
-	TextSegment *segment;
-	double descend = 0.0;
-	double height = 0.0;
-	double width = 0.0;
-	bool blank = true;
-	GlyphInfo *glyph;
-	TextLine *line;
+	TextLayoutAttributes *attrs, *nattrs;
+	const char *inptr, *inend;
+	TextLayoutLine *line;
+	TextLayoutRun *run;
+	LayoutWord word;
 	TextFont *font;
-	double advance;
-	int cursor = 0;
+	bool linebreak;
+	int offset = 0;
 	guint32 prev;
-	double kern;
 	
+	if (!(attrs = (TextLayoutAttributes *) attributes->First ()) || attrs->start != 0)
+		return;
+	
+	line = new TextLayoutLine (this, 0, 0);
 	if (OverrideLineHeight ())
-		height = line_height;
+		line->height = line_height;
 	
-	line = new TextLine ();
-	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
-		font = run->Font ();
+	g_ptr_array_add (lines, line);
+	inptr = text;
+	
+	while (*inptr != '\0') {
+		nattrs = (TextLayoutAttributes *) attrs->next;
+		inend = text + (nattrs ? nattrs->start : length);
+		run = new TextLayoutRun (line, attrs, inptr - text);
+		g_ptr_array_add (line->runs, run);
 		
-		if (run->IsLineBreak ()) {
-			// LineBreak
-			if (blank && !OverrideLineHeight ()) {
-				descend = font->Descender ();
-				height = font->Height ();
-			}
-			
-			line->descend = descend;
-			line->height = height;
-			line->width = width;
-			dy += height;
-			
-			line->crlf_selected = run->IsSelected ();
-			line->crlf = run->Length ();
-			
-			cursor += run->Length ();
-			
-			lines->Append (line);
-			
-			if (run->next) {
-				line = new TextLine ();
-				line->start = cursor;
-			} else {
-				dy += height;
-				line = NULL;
-			}
-			
-			actual_height = dy;
-			underlined = false;
-			blank = true;
-			
-			if (!OverrideLineHeight ()) {
-				descend = 0.0;
-				height = 0.0;
-			}
-			
-			width = 0.0;
-			x0 = 0.0;
-			x1 = 0.0;
-			
-			continue;
-		}
-		
-		if (!underlined)
-			underlined = run->IsUnderlined ();
+		word.font = font = attrs->Font ();
 		
 		if (!OverrideLineHeight ()) {
-			descend = MIN (descend, font->Descender ());
-			height = MAX (height, font->Height ());
+			line->descend = MIN (line->descend, font->Descender ());
+			line->height = MAX (line->height, font->Height ());
 		}
 		
-		segment = new TextSegment (run, 0);
-		inptr = start = text = run->Text ();
-		inend = text + run->Length ();
-		prev = 0;
-		x1 = x0;
-		
-		do {
-			// always include the lwsp, it is allowed to go past max_width
-			btype = g_unichar_break_type (*inptr);
-			while (BreakSpace (btype)) {
-				if ((glyph = font->GetGlyphInfo (*inptr))) {
-					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
-						if ((prev != 0) && APPLY_KERNING (*inptr))
-							advance += font->Kerning (prev, glyph->index);
-						else if (glyph->metrics.horiBearingX < 0)
-							advance -= glyph->metrics.horiBearingX;
-					}
-					
-					prev = glyph->index;
-					x1 += advance;
-				}
-				
-				cursor++;
-				inptr++;
-				
-				if (inptr == inend)
-					break;
-				
-				btype = g_unichar_break_type (*inptr);
-			}
+		// layout until attrs change
+		while (inptr < inend) {
+			linebreak = false;
+			prev = 0;
 			
-			// trailing lwsp only counts toward 'ActualWidth' extents if underlined
-			if (run->IsUnderlined ()) {
-				actual_width = MAX (actual_width, x1);
-				segment->width = x1 - x0;
-				width = x1;
-			}
-			
-			segment->advance = x1 - x0;
-			segment->end = inptr - text;
-			word = inptr;
-			wx = x1;
-			
-			if (max_width > 0.0 && x1 >= max_width) {
-			linebreak:
-				if (segment->start < (word - text)) {
-					line->segments->Append (segment);
-					
-					segment = new TextSegment (run, word - text);
-					start = word;
-				} else {
-					// reuse the segment
-				}
-				
-				line->descend = descend;
-				line->height = height;
-				line->width = width;
-				dy += height;
-				
-				lines->Append (line);
-				actual_height = dy;
-				
-				line = new TextLine ();
-				line->start = cursor;
-				blank = true;
-				
-				underlined = run->IsUnderlined ();
-				
-				if (!OverrideLineHeight ()) {
-					descend = font->Descender ();
-					height = font->Height ();
-				}
-				
-				width = 0.0;
-				prev = 0;
-				x0 = 0.0;
-				x1 = 0.0;
-				wx = 0.0;
-			}
-			
-			if (inptr < inend) {
-				// append this word onto the line
-				inptr = word;
-				btype = g_unichar_break_type (*inptr);
-				while (!BreakSpace (btype)) {
-					if ((glyph = font->GetGlyphInfo (*inptr))) {
-						if ((advance = glyph->metrics.horiAdvance) > 0.0) {
-							if ((prev != 0) && APPLY_KERNING (*inptr))
-								advance += font->Kerning (prev, glyph->index);
-							else if (glyph->metrics.horiBearingX < 0)
-								advance -= glyph->metrics.horiBearingX;
-						}
-						
-						prev = glyph->index;
-						x1 += advance;
-						width = x1;
-						
-						if (max_width > 0.0 && x1 >= max_width && wx > 0.0)
-							goto linebreak;
-					}
-					
-					cursor++;
+			// layout until eoln or until we reach max_width
+			while (inptr < inend) {
+				// check for line-breaks
+				if (*inptr == '\r') {
+					linebreak = true;
+					run->count++;
+					offset++;
 					inptr++;
-					
-					if (inptr == inend)
-						break;
-					
-					btype = g_unichar_break_type (*inptr);
+					if (*inptr == '\n') {
+						run->count++;
+						offset++;
+						inptr++;
+					}
+					break;
+				} else if (*inptr == '\n') {
+					linebreak = true;
+					run->count++;
+					offset++;
+					inptr++;
+					break;
 				}
 				
-				actual_width = MAX (actual_width, x1);
-				segment->width = x1 - x0;
+				layout_word_init (&word, line->advance, prev);
+				
+				if (layout_word_overflow (&word, inptr, inend, max_width)) {
+					// force a line wrap...
+					linebreak = true;
+					break;
+				}
+				
+				if (word.length > 0) {
+					// append the word to the run/line
+					line->advance += word.advance;
+					line->width = line->advance;
+					run->advance += word.advance;
+					run->count += word.count;
+					offset += word.count;
+					
+					inptr += word.length;
+					prev = word.prev;
+				}
+				
+				// now append any trailing lwsp
+				layout_word_init (&word, line->advance, prev);
+				
+				layout_word_lwsp (&word, inptr, inend);
+				
+				if (word.length > 0) {
+					line->advance += word.advance;
+					run->advance += word.advance;
+					run->count += word.count;
+					offset += word.count;
+					
+					inptr += word.length;
+					prev = word.prev;
+					
+					// LWSP only counts toward line width if it is underlined
+					if (attrs->IsUnderlined ())
+						line->width = line->advance;
+				}
 			}
 			
-			segment->end = inptr - text;
-			blank = false;
-		} while (inptr < inend);
-		
-		// kern with the beginning of the next run
-		nextrun = (TextRun *) run->next;
-		kern = 0.0;
-		
-		if (nextrun && !nextrun->IsLineBreak () && nextrun->Font () == font) {
-			inptr = nextrun->Text ();
-			if ((glyph = font->GetGlyphInfo (*inptr))) {
-				if (glyph->metrics.horiBearingX < 0)
-					kern = -glyph->metrics.horiBearingX;
+			// the current run has ended
+			run->length = inptr - (text + run->start);
+			
+			if (linebreak || *inptr == '\0') {
+				// the current line has ended
+				line->length = inptr - (text + line->start);
+				
+				// update actual width extents
+				actual_width = MAX (actual_width, line->width);
+				
+				// update actual height extents
+				actual_height += line->height;
+				
+				if (*inptr != '\0') {
+					// more text to layout... which means we'll need a new line
+					line = new TextLayoutLine (this, inptr - text, offset);
+					if (OverrideLineHeight ())
+						line->height = line_height;
+					
+					g_ptr_array_add (lines, line);
+				}
+				
+				if (inptr < inend) {
+					// more text to layout with the current attrs...
+					if (!OverrideLineHeight ()) {
+						line->descend = font->Descender ();
+						line->height = font->Height ();
+					}
+					
+					run = new TextLayoutRun (line, attrs, inptr - text);
+					g_ptr_array_add (line->runs, run);
+				}
 			}
 		}
 		
-		segment->advance = (x1 - x0) - kern;
-		line->segments->Append (segment);
-		
-		x0 = x1;
+		attrs = nattrs;
 	}
 	
-	if (line) {
-		line->descend = descend;
-		line->height = height;
-		line->width = width;
-		dy += height;
-		
-		lines->Append (line);
-		actual_height = dy;
-	}
+	count = offset;
 }
 
 void
 TextLayout::LayoutNoWrap ()
 {
-	double x0 = 0.0, x1 = 0.0, dy = 0.0;
-	register const gunichar *inptr;
-	const gunichar *text, *inend;
-	GUnicodeBreakType btype;
-	bool underlined = false;
-	bool clipped = false;
-	TextRun *nextrun, *run;
-	TextSegment *segment;
-	double descend = 0.0;
-	double height = 0.0;
-	double width = 0.0;
-	bool blank = true;
+	TextLayoutAttributes *attrs, *nattrs;
+	const char *inptr, *inend;
+	TextLayoutLine *line;
+	TextLayoutRun *run;
 	GlyphInfo *glyph;
-	TextLine *line;
 	TextFont *font;
+	bool linebreak;
 	double advance;
-	int cursor = 0;
+	int offset = 0;
 	guint32 prev;
-	double kern;
+	gunichar c;
 	
+	if (!(attrs = (TextLayoutAttributes *) attributes->First ()) || attrs->start != 0)
+		return;
+	
+	line = new TextLayoutLine (this, 0, 0);
 	if (OverrideLineHeight ())
-		height = line_height;
+		line->height = line_height;
 	
-	line = new TextLine ();
-	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
-		font = run->Font ();
+	g_ptr_array_add (lines, line);
+	inptr = text;
+	
+	while (*inptr != '\0') {
+		nattrs = (TextLayoutAttributes *) attrs->next;
+		inend = text + (nattrs ? nattrs->start : length);
+		run = new TextLayoutRun (line, attrs, inptr - text);
+		g_ptr_array_add (line->runs, run);
 		
-		if (run->IsLineBreak ()) {
-			// LineBreak
-			if (blank && !OverrideLineHeight ()) {
-				descend = font->Descender ();
-				height = font->Height ();
-			}
-			
-			line->descend = descend;
-			line->height = height;
-			line->width = width;
-			dy += height;
-			
-			line->crlf_selected = run->IsSelected ();
-			line->crlf = run->Length ();
-			
-			cursor += run->Length ();
-			
-			lines->Append (line);
-			
-			if (run->next) {
-				line = new TextLine ();
-				line->start = cursor;
-			} else {
-				dy += height;
-				line = NULL;
-			}
-			
-			actual_height = dy;
-			underlined = false;
-			clipped = false;
-			blank = true;
-			
-			if (!OverrideLineHeight ()) {
-				descend = 0.0;
-				height = 0.0;
-			}
-			
-			width = 0.0;
-			x0 = 0.0;
-			x1 = 0.0;
-			
-			continue;
-		} else if (clipped) {
-			// once we've clipped, we cannot append anymore text to the line
-			// FIXME: Silverlight 2.0 doesn't seem to clip
-			continue;
-		}
-		
-		if (!underlined)
-			underlined = run->IsUnderlined ();
-		
+		font = attrs->Font ();
 		if (!OverrideLineHeight ()) {
-			descend = MIN (descend, font->Descender ());
-			height = MAX (height, font->Height ());
+			line->descend = MIN (line->descend, font->Descender ());
+			line->height = MAX (line->height, font->Height ());
 		}
 		
-		segment = new TextSegment (run, 0);
-		inptr = text = run->Text ();
-		inend = text + run->Length ();
-		prev = 0;
-		x1 = x0;
-		
-		do {
-			// always include the lwsp, it is allowed to go past max_width
-			btype = g_unichar_break_type (*inptr);
-			while (BreakSpace (btype)) {
-				if ((glyph = font->GetGlyphInfo (*inptr))) {
-					if ((advance = glyph->metrics.horiAdvance) > 0.0) {
-						if ((prev != 0) && APPLY_KERNING (*inptr))
-							advance += font->Kerning (prev, glyph->index);
-						else if (glyph->metrics.horiBearingX < 0)
-							advance -= glyph->metrics.horiBearingX;
-					}
-					
-					prev = glyph->index;
-					x1 += advance;
-				}
-				
-				cursor++;
-				inptr++;
-				
-				if (inptr == inend)
-					break;
-				
-				btype = g_unichar_break_type (*inptr);
-			}
+		// layout until attrs change
+		while (inptr < inend) {
+			linebreak = false;
+			prev = 0;
 			
-			// trailing lwsp only counts toward 'ActualWidth' extents if underlined
-			if (run->IsUnderlined ()) {
-				actual_width = MAX (actual_width, x1);
-				segment->width = x1 - x0;
-				width = x1;
-			}
-			
-			if (inptr < inend) {
-				// append this word onto the line
-				btype = g_unichar_break_type (*inptr);
-				while (!BreakSpace (btype)) {
-					if ((glyph = font->GetGlyphInfo (*inptr))) {
-						if ((advance = glyph->metrics.horiAdvance) > 0.0) {
-							if ((prev != 0) && APPLY_KERNING (*inptr))
-								advance += font->Kerning (prev, glyph->index);
-							else if (glyph->metrics.horiBearingX < 0)
-								advance -= glyph->metrics.horiBearingX;
-						}
-						
-						prev = glyph->index;
-						x1 += advance;
-						width = x1;
-					}
-					
-					cursor++;
+			// layout until eoln
+			while (inptr < inend) {
+				// check for line-breaks
+				if (*inptr == '\r') {
+					linebreak = true;
+					run->count++;
+					offset++;
 					inptr++;
-					
-					if (inptr == inend)
-						break;
-					
-					btype = g_unichar_break_type (*inptr);
-				}
-				
-				actual_width = MAX (actual_width, x1);
-				segment->width = x1 - x0;
-			}
-			
-			segment->end = inptr - text;
-			blank = false;
-			
-			if (max_width > 0.0 && x1 >= max_width) {
-				// cut the remainder of the run unless it is underlined
-				// (in which case we need to underline trailing lwsp).
-				if (!run->IsUnderlined ()) {
-					clipped = true;
+					if (*inptr == '\n') {
+						run->count++;
+						offset++;
+						inptr++;
+					}
+					break;
+				} else if (*inptr == '\n') {
+					linebreak = true;
+					run->count++;
+					offset++;
+					inptr++;
 					break;
 				}
+				
+				// ignore invalid chars
+				if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
+					continue;
+				
+				run->count++;
+				offset++;
+				
+				// ignore zero-width glyphs for layout metrics
+				if (g_unichar_iszerowidth (c))
+					continue;
+				
+				// canonicalize whitespace
+				if (g_unichar_isspace (c))
+					c = ' ';
+				
+				// ignore glyphs the font doesn't contain...
+				if (!(glyph = font->GetGlyphInfo (c)))
+					continue;
+				
+				// calculate total glyph advance
+				if ((advance = glyph->metrics.horiAdvance) <= 0.0)
+					continue;
+				
+				if ((prev != 0) && APPLY_KERNING (c))
+					advance += font->Kerning (prev, glyph->index);
+				else if (glyph->metrics.horiBearingX < 0)
+					advance -= glyph->metrics.horiBearingX;
+				
+				line->advance += advance;
+				run->advance += advance;
+				prev = glyph->index;
+				
+				// LWSP only counts toward line width if it is underlined
+				if (c != ' ' || attrs->IsUnderlined ())
+					line->width = line->advance;
 			}
-		} while (inptr < inend);
-		
-		// kern with the beginning of the next run
-		nextrun = (TextRun *) run->next;
-		kern = 0.0;
-		
-		if (nextrun && !nextrun->IsLineBreak () && nextrun->Font () == font) {
-			inptr = nextrun->Text ();
-			if ((glyph = font->GetGlyphInfo (*inptr))) {
-				if (glyph->metrics.horiBearingX < 0)
-					kern = -glyph->metrics.horiBearingX;
+			
+			// the current run has ended
+			run->length = inptr - (text + run->start);
+			
+			if (linebreak || *inptr == '\0') {
+				// the current line has ended
+				line->length = inptr - (text + line->start);
+				
+				// update actual width extents
+				actual_width = MAX (actual_width, line->width);
+				
+				// update actual height extents
+				actual_height += line->height;
+				
+				if (linebreak) {
+					// more text to layout... which means we'll need a new line
+					line = new TextLayoutLine (this, inptr - text, offset);
+					
+					if (!OverrideLineHeight ()) {
+						if (*inptr == '\0' || inptr < inend) {
+							line->descend = font->Descender ();
+							line->height = font->Height ();
+						}
+					} else {
+						line->height = line_height;
+					}
+					
+					g_ptr_array_add (lines, line);
+					prev = 0;
+				}
+				
+				if (inptr < inend) {
+					// more text to layout with the current attrs...
+					if (!OverrideLineHeight ()) {
+						line->descend = font->Descender ();
+						line->height = font->Height ();
+					}
+					
+					run = new TextLayoutRun (line, attrs, inptr - text);
+					g_ptr_array_add (line->runs, run);
+				}
 			}
 		}
 		
-		segment->advance = (x1 - x0) - kern;
-		line->segments->Append (segment);
-		
-		x0 = x1;
+		attrs = nattrs;
 	}
 	
-	if (line) {
-		line->descend = descend;
-		line->height = height;
-		line->width = width;
-		dy += height;
-		
-		lines->Append (line);
-		actual_height = dy;
-	}
+	count = offset;
 }
 
+/**
+ * layout_word_wrap:
+ * @word: word state
+ * @in: start of word
+ * @inend = end of word
+ * @max_width: max allowable width for a line
+ *
+ * Calculates the advance of the current word, breaking if needed.
+ *
+ * Returns: %true if the caller should create a new line for the
+ * remainder of the word or %false otherwise.
+ **/
 static bool
-isLastWord (TextRun *run, const gunichar *word, bool *include_lwsp)
+layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double max_width)
 {
-	const gunichar *inend = run->Text () + run->Length ();
-	register const gunichar *inptr = word;
+	bool line_start = word->line_advance == 0.0;
+	guint32 prev = word->prev;
+	GUnicodeBreakType btype;
+	WordBreakOpportunity op;
+	const char *inptr = in;
+	const char *start;
+	bool wrap = false;
+	GlyphInfo *glyph;
+	double advance;
+	bool log = false;
+	int glyphs = 0;
+	gunichar c;
 	
-	// skip to the end of this word
-	while (inptr < inend && *inptr != ' ')
-		inptr++;
+	g_array_set_size (word->break_ops, 0);
+	word->advance = 0.0;
+	word->count = 0;
 	
-	// skip over trailing lwsp
-	while (inptr < inend && *inptr == ' ')
-		inptr++;
+	if (!strncmp (inptr, "bbb?", 4))
+		log = true;
 	
-	if (inptr != inend)
-		return false;
-	
-	// now we need to check following Runs
-	while (run->next) {
-		run = (TextRun *) run->next;
+	while (inptr < inend) {
+		if (*inptr == '\r' || *inptr == '\n')
+			break;
 		
-		if (run->IsLineBreak ())
-			return true;
+		// ignore invalid chars
+		start = inptr;
+		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
+			continue;
 		
-		inend = run->Text () + run->Length ();
-		inptr = run->Text ();
+		btype = g_unichar_break_type (c);
+		if (BreakSpace (btype)) {
+			inptr = start;
+			break;
+		}
 		
-		// skip over lwsp
-		while (inptr < inend && *inptr == ' ')
-			inptr++;
+		word->count++;
 		
-		if (inptr != inend)
-			return false;
+		if (g_unichar_combining_class (c) != 0 && glyphs > 0) {
+			// this char gets combined with the previous glyph
+			g_array_remove_index (word->break_ops, word->break_ops->len - 1);
+			op.count = word->count;
+			g_array_append_val (word->break_ops, op);
+			continue;
+		} else {
+			glyphs++;
+		}
+		
+		// ignore glyphs the font doesn't contain...
+		if (!(glyph = word->font->GetGlyphInfo (c)))
+			continue;
+		
+		// calculate total glyph advance
+		if ((advance = glyph->metrics.horiAdvance) > 0.0) {
+			if ((prev != 0) && APPLY_KERNING (c))
+				advance += word->font->Kerning (prev, glyph->index);
+			else if (glyph->metrics.horiBearingX < 0)
+				advance -= glyph->metrics.horiBearingX;
+		} else {
+			advance = 0.0;
+		}
+		
+		word->line_advance += advance;
+		word->advance += advance;
+		prev = glyph->index;
+		
+		op.advance = word->advance;
+		op.count = word->count;
+		op.inptr = inptr;
+		op.btype = btype;
+		op.c = c;
+		
+		g_array_append_val (word->break_ops, op);
+		
+		if (max_width > 0.0 && word->line_advance >= max_width) {
+			if (inptr < word->last_word) {
+				// not the last word, safe to break apart
+				wrap = true;
+				break;
+			} else if (!line_start) {
+				// last word, but not located at the beginning of the line...
+				word->advance = 0.0;
+				word->length = 0;
+				return true;
+			} else {
+				// last word, at the beginning of the line - DO NOT BREAK
+			}
+		}
 	}
 	
-	*include_lwsp = true;
+	if (!wrap) {
+		word->length = (inptr - in);
+		word->prev = prev;
+		return false;
+	}
+	
+	// glyphs should always be > 0, but just in case...
+	if (glyphs > 0) {
+		// keep going until we reach a new distinct glyph
+		while (inptr < inend) {
+			if (*inptr == '\r' || *inptr == '\n')
+				break;
+			
+			// ignore invalid chars
+			start = inptr;
+			if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
+				continue;
+			
+			btype = g_unichar_break_type (c);
+			if (BreakSpace (btype) || g_unichar_combining_class (c) == 0) {
+				inptr = start;
+				break;
+			}
+			
+			word->count++;
+			
+			g_array_remove_index (word->break_ops, word->break_ops->len - 1);
+			op.count = word->count;
+			g_array_append_val (word->break_ops, op);
+		}
+	}
+	
+	if (log)
+		printf ("measure for %.*s is %f, time to work back...\n", inptr - in, in, word->advance);
+	
+	// at this point, we're going to break the word so we can reset kerning
+	word->prev = 0;
+	
+	// we can't break any smaller than a single glyph
+	if (line_start && glyphs == 1) {
+		word->length = (inptr - in);
+		word->prev = prev;
+		return true;
+	}
+	
+	// search backwards for the best break point
+	for (guint i = word->break_ops->len; i > 0; i--) {
+		op = g_array_index (word->break_ops, WordBreakOpportunity, i - 1);
+		
+		switch (op.btype) {
+		case G_UNICODE_BREAK_NEXT_LINE:
+		case G_UNICODE_BREAK_UNKNOWN:
+			// break after this char
+			if (log)
+				printf ("break next-line\n");
+			word->length = (op.inptr - in);
+			word->advance = op.advance;
+			word->count = op.count;
+			return true;
+		case G_UNICODE_BREAK_BEFORE_AND_AFTER:
+		case G_UNICODE_BREAK_EXCLAMATION:
+			//case G_UNICODE_BREAK_AFTER:
+			// only break after this char if there are chars before it
+			if (line_start && i > 1) {
+				if (log)
+					printf ("break before-and-after\n");
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				return true;
+			}
+			break;
+		case G_UNICODE_BREAK_BEFORE:
+			if (i > 1) {
+				if (log)
+					printf ("break before\n");
+				
+				// break after the previous glyph
+				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				
+				return true;
+			}
+			break;
+		case G_UNICODE_BREAK_WORD_JOINER:
+			// only break if there is nothing before it
+			if (i == 1) {
+				if (log)
+					printf ("break word-joiner\n");
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				return true;
+			}
+			break;
+		default:
+			// only break if we have no choice...
+			if (line_start) {
+				if (log)
+					printf ("break default\n");
+				if (i > 1) {
+					// break after the previous glyph
+					op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
+				} else {
+					// break after this char
+				}
+				
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				
+				return true;
+			}
+			break;
+		}
+	}
+	
+	if (log)
+		printf ("breaking before the word...\n");
+	
+	word->advance = 0.0;
+	word->length = 0;
+	word->count = 0;
 	
 	return true;
 }
 
+static const char *
+FindLastWord (List *attributes, const char *text, int length)
+{
+	TextLayoutAttributes *attrs = (TextLayoutAttributes *) attributes->Last ();
+	const char *inend = text + length;
+	const char *inptr, *pchar;
+	const char *last_word;
+	gunichar c;
+	
+	// get a rough iea of where the last 'word' starts
+	last_word = utf8_find_last_word (text, length);
+	
+	// we now need to scan backwards through the attribute runs... if
+	// the word is split between attribute runs (aka TextBlock Runs),
+	// then the we must treat the last run with a portion of the word
+	// as the starting location of the last word.
+	while (attrs && last_word < text + attrs->start) {
+		pchar = inptr = text + attrs->start;
+		
+		// find the first valid unichar
+		while (inptr < inend) {
+			if ((c = utf8_getc (&inptr, inend - inptr)) != (gunichar) -1)
+				break;
+			pchar = inptr;
+		}
+		
+		if (inptr < inend && !g_unichar_isspace (c)) {
+			// woot, we found the beginning of the last word segment
+			last_word = pchar;
+			break;
+		}
+		
+		attrs = (TextLayoutAttributes *) attrs->next;
+	}
+	
+	return last_word;
+}
 
-struct WordChar {
-	GUnicodeBreakType btype;
-	const gunichar *c;
-	double x1;
-};
-
-
-/**
- * Notes: The last 'word' of any line must not be broken (bug in
- * Silverlight's text layout)
- **/
 void
 TextLayout::LayoutWrap ()
 {
-	double x0 = 0.0, x1 = 0.0, wx = 0.0, dy = 0.0;
-	register const gunichar *start, *word, *inptr;
-	const gunichar *text, *inend;
-	GUnicodeBreakType btype;
-	bool include_lwsp = false;
-	bool underlined = false;
-	bool last_word = false;
-	bool in_word = false;
-	TextRun *nextrun, *run;
-	TextSegment *segment;
-	double word_end = 0.0;
-	double descend = 0.0;
-	double height = 0.0;
-	double width = 0.0;
-	bool blank = true;
-	GlyphInfo *glyph;
-	TextLine *line;
+	TextLayoutAttributes *attrs, *nattrs;
+	const char *inptr, *inend;
+	TextLayoutLine *line;
+	TextLayoutRun *run;
+	LayoutWord word;
 	TextFont *font;
-	double advance;
-	int cursor = 0;
-	GArray *array;
+	bool linebreak;
+	int offset = 0;
 	guint32 prev;
-	double kern;
-	WordChar wc;
-	bool after;
-	guint i;
 	
-	array = g_array_new (false, false, sizeof (WordChar));
+	if (!(attrs = (TextLayoutAttributes *) attributes->First ()) || attrs->start != 0)
+		return;
 	
+	if (last_word == NULL)
+		last_word = FindLastWord (attributes, text, length);
+	
+	word.break_ops = g_array_new (false, false, sizeof (WordBreakOpportunity));
+	word.last_word = last_word;
+	
+	line = new TextLayoutLine (this, 0, 0);
 	if (OverrideLineHeight ())
-		height = line_height;
+		line->height = line_height;
 	
-	line = new TextLine ();
-	for (run = (TextRun *) runs->First (); run; run = (TextRun *) run->next) {
-		font = run->Font ();
+	g_ptr_array_add (lines, line);
+	inptr = text;
+	
+	while (*inptr != '\0') {
+		nattrs = (TextLayoutAttributes *) attrs->next;
+		inend = text + (nattrs ? nattrs->start : length);
+		run = new TextLayoutRun (line, attrs, inptr - text);
+		g_ptr_array_add (line->runs, run);
 		
-		if (run->IsLineBreak ()) {
-			// LineBreak
-			if (blank && !OverrideLineHeight ()) {
-				descend = font->Descender ();
-				height = font->Height ();
-			}
-			
-			line->descend = descend;
-			line->height = height;
-			line->width = width;
-			dy += height;
-			
-			line->crlf_selected = run->IsSelected ();
-			line->crlf = run->Length ();
-			
-			cursor += run->Length ();
-			
-			lines->Append (line);
-			
-			if (run->next) {
-				line = new TextLine ();
-				line->start = cursor;
-			} else {
-				dy += height;
-				line = NULL;
-			}
-			
-			actual_height = dy;
-			underlined = false;
-			last_word = false;
-			in_word = false;
-			blank = true;
-			
-			if (!OverrideLineHeight ()) {
-				descend = 0.0;
-				height = 0.0;
-			}
-			
-			word_end = 0.0;
-			width = 0.0;
-			x0 = 0.0;
-			x1 = 0.0;
-			
-			continue;
-		}
-		
-		if (!underlined)
-			underlined = run->IsUnderlined ();
+		word.font = font = attrs->Font ();
 		
 		if (!OverrideLineHeight ()) {
-			descend = MIN (descend, font->Descender ());
-			height = MAX (height, font->Height ());
+			line->descend = MIN (line->descend, font->Descender ());
+			line->height = MAX (line->height, font->Height ());
 		}
 		
-		segment = new TextSegment (run, 0);
-#if DEBUG
-		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
-			printf ("Laying out Run.Text: ");
-			print_run_text (run);
-			printf ("\n");
-			print_break_info (run);
-		}
-#endif
-		inptr = text = run->Text ();
-		inend = text + run->Length ();
-		prev = 0;
-		x1 = x0;
-		
-		double bearing_adj = 0.0;
-		do {
-			// always include the lwsp, it is allowed to go past max_width
-			start = inptr;
-			btype = g_unichar_break_type (*inptr);
-			if (in_word && BreakSpace (btype)) {
-				in_word = false;
-				word_end = x1;
-			}
+		// layout until attrs change
+		while (inptr < inend) {
+			linebreak = false;
+			prev = 0;
 			
-			while (BreakSpace (btype)) {
-				if ((glyph = font->GetGlyphInfo (*inptr))) {
-					advance = glyph->metrics.horiAdvance;
-					if ((prev != 0) && APPLY_KERNING (*inptr))
-						advance += font->Kerning (prev, glyph->index);
-					else if (glyph->metrics.horiBearingX < 0) {
-						bearing_adj = glyph->metrics.horiBearingX;
-						advance += bearing_adj;
-					}
-					
-					prev = glyph->index;
-					x1 += advance - bearing_adj;
-					bearing_adj = 0.0;
-				}
-				
-				cursor++;
-				inptr++;
-				
-				if (inptr == inend)
-					break;
-				
-				btype = g_unichar_break_type (*inptr);
-			}
-			
-			// trailing lwsp only counts toward 'ActualWidth' extents if underlined
-			if (run->IsUnderlined () || include_lwsp) {
-				actual_width = MAX (actual_width, x1);
-				segment->width = x1 - x0;
-				word_end = x1;
-				width = x1;
-			}
-			
-			segment->advance = x1 - x0;
-			segment->end = inptr - text;
-			word = inptr;
-			wx = x1;
-			
-			// check to see if this is the last word of the line
-			last_word = isLastWord (run, word, &include_lwsp);
-			
-			if (max_width > 0.0 && x1 >= max_width) {
-			linebreak:
-				if (segment->advance > 0.0) {
-					line->segments->Append (segment);
-					
-					segment = new TextSegment (run, word - text);
-					start = word;
-				} else {
-					// reuse the segment
-				}
-				
-				line->descend = descend;
-				line->height = height;
-				line->width = width;
-				dy += height;
-				
-				lines->Append (line);
-				actual_height = dy;
-				
-				line = new TextLine ();
-				line->start = cursor;
-				blank = true;
-				
-				underlined = run->IsUnderlined ();
-				
-				if (!OverrideLineHeight ()) {
-					descend = font->Descender ();
-					height = font->Height ();
-				}
-				
-				in_word = false;
-				word_end = 0.0;
-				
-				width = 0.0;
-				prev = 0;
-				x0 = 0.0;
-				x1 = 0.0;
-				wx = 0.0;
-			}
-			
-			if (inptr < inend) {
-				// append this word onto the line
-				inptr = word;
-				segment->end = inptr - text;
-				g_array_set_size (array, 0);
-				btype = g_unichar_break_type (*inptr);
-				while (btype != G_UNICODE_BREAK_SPACE) {
-					if (!(glyph = font->GetGlyphInfo (*inptr)))
-						goto next;
-					
-					advance = glyph->metrics.horiAdvance;
-					if ((prev != 0) && APPLY_KERNING (*inptr))
-						advance += font->Kerning (prev, glyph->index);
-					else if (glyph->metrics.horiBearingX < 0) {
-						bearing_adj = glyph->metrics.horiBearingX;
-						advance += bearing_adj;
-					}
-					
-					if (max_width > 0.0 && (x1 + advance) > max_width) {
-						if (wx == 0.0 && inptr > word && !last_word) {
-							// break in the middle of a word
-							// FIXME: need to respect unicode breaking
-							actual_width = MAX (actual_width, x1);
-							segment->end = inptr - text;
-							segment->advance = x1 - x0;
-							segment->width = x1 - x0;
-							cursor += (inptr - word);
-							blank = false;
-							word = inptr;
-							goto linebreak;
-						} else if (wx > 0.0) {
-							// scan backwards for a char to break after
-							i = array->len;
-							after = false;
-							
-							while (i > 0 && !after) {
-								wc = g_array_index (array, WordChar, i - 1);
-								
-								switch (wc.btype) {
-								case G_UNICODE_BREAK_NEXT_LINE:
-								case G_UNICODE_BREAK_UNKNOWN:
-									after = true;
-									break;
-								case G_UNICODE_BREAK_BEFORE_AND_AFTER:
-								case G_UNICODE_BREAK_EXCLAMATION:
-									//case G_UNICODE_BREAK_AFTER:
-									// only break after if there are chars before
-									after = (i > 1);
-									break;
-								case G_UNICODE_BREAK_BEFORE:
-									if (i > 1) {
-										// break after the previous char
-										wc = g_array_index (array, WordChar, i - 2);
-										after = true;
-									}
-									break;
-								case G_UNICODE_BREAK_WORD_JOINER:
-									// only break if there is nothing before it
-									after = (i == 1);
-									break;
-								default:
-									// don't break here
-									break;
-								}
-								
-								i--;
-							}
-							
-							if (after) {
-								// break after a previous char in the word
-								inptr = wc.c + 1;
-								width = wc.x1;
-								x1 = wc.x1;
-								
-								actual_width = MAX (actual_width, x1);
-								segment->end = inptr - text;
-								segment->advance = x1 - x0;
-								segment->width = x1 - x0;
-								cursor += (inptr - word);
-								blank = false;
-								word = inptr;
-								goto linebreak;
-							} else {
-								// break before this word
-								segment->advance = wx - x0;
-								segment->width = wx - x0;
-								width = word_end;
-								
-								goto linebreak;
-							}
-						}
-					}
-					
-					x1 += advance - bearing_adj;
-					bearing_adj = 0.0;
-					
-				next:
-					
-					if (!font->HasGlyph (*inptr))
-						wc.btype = G_UNICODE_BREAK_UNKNOWN;
-					else
-						wc.btype = btype;
-					
-					in_word = true;
-					wc.c = inptr;
-					wc.x1 = x1;
-					width = x1;
-					
-					g_array_append_val (array, wc);
-					
+			// layout until eoln or until we reach max_width
+			while (inptr < inend) {
+				// check for line-breaks
+				if (*inptr == '\r') {
+					linebreak = true;
+					run->count++;
+					offset++;
 					inptr++;
-					
-					if (inptr == inend)
-						break;
-					
-					btype = g_unichar_break_type (*inptr);
+					if (*inptr == '\n') {
+						run->count++;
+						offset++;
+						inptr++;
+					}
+					break;
+				} else if (*inptr == '\n') {
+					linebreak = true;
+					run->count++;
+					offset++;
+					inptr++;
+					break;
 				}
 				
-				actual_width = MAX (actual_width, x1);
-				segment->width = x1 - x0;
+				layout_word_init (&word, line->advance, prev);
+				
+				linebreak = layout_word_wrap (&word, inptr, inend, max_width);
+				
+				if (word.length > 0) {
+					// append the word to the run/line
+					line->advance += word.advance;
+					line->width = line->advance;
+					run->advance += word.advance;
+					run->count += word.count;
+					offset += word.count;
+					
+					inptr += word.length;
+					prev = word.prev;
+				}
+				
+				// now append any trailing lwsp
+				layout_word_init (&word, line->advance, prev);
+				
+				layout_word_lwsp (&word, inptr, inend);
+				
+				if (word.length > 0) {
+					line->advance += word.advance;
+					run->advance += word.advance;
+					run->count += word.count;
+					offset += word.count;
+					
+					inptr += word.length;
+					prev = word.prev;
+					
+					// LWSP only counts toward line width if it is underlined
+					if (attrs->IsUnderlined ())
+						line->width = line->advance;
+				}
+				
+				if (linebreak)
+					break;
 			}
 			
-			segment->end = inptr - text;
-			cursor += (inptr - word);
-			blank = false;
-		} while (inptr < inend);
-		
-		// kern with the beginning of the next run
-		nextrun = (TextRun *) run->next;
-		kern = 0.0;
-		
-		if (nextrun && !nextrun->IsLineBreak () && nextrun->Font () == font) {
-			inptr = nextrun->Text ();
-			if ((glyph = font->GetGlyphInfo (*inptr))) {
-				if (glyph->metrics.horiBearingX < 0)
-					kern = -glyph->metrics.horiBearingX;
+			// the current run has ended
+			run->length = inptr - (text + run->start);
+			
+			if (linebreak || *inptr == '\0') {
+				// the current line has ended
+				line->length = inptr - (text + line->start);
+				
+				// update actual width extents
+				actual_width = MAX (actual_width, line->width);
+				
+				// update actual height extents
+				actual_height += line->height;
+				
+				if (*inptr != '\0') {
+					// more text to layout... which means we'll need a new line
+					line = new TextLayoutLine (this, inptr - text, offset);
+					if (OverrideLineHeight ())
+						line->height = line_height;
+					
+					g_ptr_array_add (lines, line);
+				}
+				
+				if (inptr < inend) {
+					if (!OverrideLineHeight ()) {
+						line->descend = font->Descender ();
+						line->height = font->Height ();
+					}
+					
+					// more text to layout with the current attrs...
+					run = new TextLayoutRun (line, attrs, inptr - text);
+					g_ptr_array_add (line->runs, run);
+				}
 			}
 		}
 		
-		segment->advance = (x1 - x0) - kern;
-		line->segments->Append (segment);
-		
-		x0 = x1;
+		attrs = nattrs;
 	}
 	
-	if (line) {
-		line->descend = descend;
-		line->height = height;
-		line->width = width;
-		dy += height;
-		
-		lines->Append (line);
-		actual_height = dy;
-	}
+	g_array_free (word.break_ops, true);
 	
-	g_array_free (array, true);
+	count = offset;
 }
 
-#if DEBUG
 static void
-print_lines (List *lines)
+print_lines (GPtrArray *lines)
 {
-	const gunichar *text;
-	TextSegment *segment;
-	TextLine *line;
-	GString *str;
-	int ln = 0;
-	int i;
+	TextLayoutLine *line;
+	TextLayoutRun *run;
+	const char *text;
+	double y = 0.0;
 	
-	printf ("layout results:\n");
-	
-	str = g_string_new ("");
-	line = (TextLine *) lines->First ();
-	
-	while (line) {
-		printf ("\tline #%d: ", ln);
+	for (guint i = 0; i < lines->len; i++) {
+		line = (TextLayoutLine *) lines->pdata[i];
 		
-		segment = (TextSegment *) line->segments->First ();
-		
-		while (segment) {
-			text = segment->run->Text ();
+		printf ("Line (top=%f, height=%f, advance=%f, offset=%d):\n", y, line->height, line->advance, line->offset);
+		for (guint j = 0; j < line->runs->len; j++) {
+			run = (TextLayoutRun *) line->runs->pdata[j];
 			
-			for (i = segment->start; i < segment->end; i++)
-				g_string_append_unichar (str, text[i] == 0xA0 ? '_' : text[i]);
+			text = line->layout->GetText () + run->start;
 			
-			printf ("\"%s\", ", str->str);
-			g_string_truncate (str, 0);
-			
-			segment = (TextSegment *) segment->next;
+			printf ("\tRun (advance=%f): \"", run->advance);
+			for (const char *s = text; s < text + run->length; s++) {
+				switch (*s) {
+				case '\r':
+					fputs ("\\r", stdout);
+					break;
+				case '\n':
+					fputs ("\\n", stdout);
+					break;
+				case '\t':
+					fputs ("\\t", stdout);
+					break;
+				case '"':
+					fputs ("\\\"", stdout);
+					break;
+				default:
+					fputc (*s, stdout);
+					break;
+				}
+			}
+			printf ("\"\n");
 		}
 		
-		printf ("\n");
-		
-		line = (TextLine *) line->next;
-		ln++;
+		y += line->height;
 	}
 }
-#endif
 
 void
 TextLayout::Layout ()
@@ -1301,11 +1541,11 @@ TextLayout::Layout ()
 	if (actual_width != -1.0)
 		return;
 	
-	lines->Clear (true);
 	actual_height = 0.0;
 	actual_width = 0.0;
+	ClearLines ();
 	
-	if (!runs || runs->IsEmpty ())
+	if (text == NULL)
 		return;
 	
 	switch (wrapping) {
@@ -1352,129 +1592,216 @@ TextLayout::Layout ()
 		printf ("actualWidth = %f, actualHeight = %f\n", actual_width, actual_height);
 	}
 #endif
-	
-	//bbox_height = actual_height;
-	//bbox_width = actual_width;
 }
 
-static inline void
-RenderSegment (cairo_t *cr, const Point &origin, double x0, double y0, TextSegment *segment, bool extend_selection)
+static inline TextLayoutGlyphCluster *
+GenerateGlyphCluster (TextFont *font, guint32 *kern, const char *text, int start, int length)
 {
-	TextDecorations deco = segment->Decorations ();
-	const gunichar *text = segment->run->Text ();
-	Brush *bg = segment->Background ();
-	Brush *fg = segment->Foreground ();
-	TextFont *font = segment->Font ();
+	TextLayoutGlyphCluster *cluster = new TextLayoutGlyphCluster (start, length);
+	const char *inend = text + start + length;
+	const char *inptr = text + start;
+	guint32 prev = *kern;
 	GlyphInfo *glyph;
-	double x1, y1;
-	guint32 prev;
-	int size, i;
-	Rect area;
+	double x0, y0;
+	int size = 0;
+	gunichar c;
 	
-	cairo_translate (cr, x0, y0 - font->Ascender ());
+	// set y0 to the baseline (descend is a negative value)
+	y0 = font->Height () + font->Descender ();
+	x0 = 0.0;
 	
-	// set y1 to the baseline relative to the translation matrix
-	y1 = font->Ascender ();
-	x1 = 0.0;
-	
-	area = Rect (origin.x, origin.y, segment->advance, font->Height ());
-	
-	if (bg != NULL) {
-		// render the selection background
-		if (extend_selection) {
-			glyph = font->GetGlyphInfo (' ');
-			area.width += glyph->metrics.horiAdvance;
-		}
+	// count how many path data items we'll need to allocate
+	while (inptr < inend) {
+		if (*inptr == '\r' || *inptr == '\n')
+			break;
 		
-		bg->SetupBrush (cr, area);
-		cairo_new_path (cr);
-		cairo_rectangle (cr, area.x, area.y, area.width, area.height);
-		bg->Fill (cr);
+		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
+			continue;
 		
-		if (extend_selection)
-			area.width -= glyph->metrics.horiAdvance;
+		// canonicalize lwsp
+		if (g_unichar_isspace (c) && !g_unichar_iszerowidth (c))
+			c = ' ';
+		
+		if (!(glyph = font->GetGlyphInfo (c)))
+			continue;
+		
+		size += glyph->path->cairo.num_data + 1;
 	}
 	
-	fg->SetupBrush (cr, area);
-	cairo_new_path (cr);
-	
-	if (segment->path) {
-		// it is an error to append a path with no data
-		if (segment->path->cairo.data)
-			cairo_append_path (cr, &segment->path->cairo);
-	} else if (segment->start < segment->end) {
-		moon_path *path = NULL;
+	if (size > 0) {
+		// generate the cached path for the cluster
+		cluster->path = moon_path_new (size);
+		inptr = text + start;
 		
-		// count how many path data items we'll need to allocate
-		for (size = 0, i = segment->start; i < segment->end; i++) {
-			if (!(glyph = font->GetGlyphInfo (text[i])))
+		while (inptr < inend) {
+			if (*inptr == '\r' || *inptr == '\n')
+				break;
+			
+			if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
 				continue;
 			
-			size += glyph->path->cairo.num_data + 1;
-		}
-		
-		path = moon_path_new (size);
-		cairo_new_path (cr);
-		
-		for (i = segment->start, prev = 0; i < segment->end; i++) {
-			gunichar c = text[i];
+			// canonicalize lwsp
+			if (g_unichar_isspace (c) && !g_unichar_iszerowidth (c))
+				c = ' ';
 			
 			if (!(glyph = font->GetGlyphInfo (c)))
 				continue;
 			
 			if ((prev != 0) && APPLY_KERNING (c))
-				x1 += font->Kerning (prev, glyph->index);
+				x0 += font->Kerning (prev, glyph->index);
 			else if (glyph->metrics.horiBearingX < 0)
-				x1 += glyph->metrics.horiBearingX;
+				x0 += glyph->metrics.horiBearingX;
 			
+			font->AppendPath (cluster->path, glyph, x0, y0);
+			x0 += glyph->metrics.horiAdvance;
 			prev = glyph->index;
-			
-			font->AppendPath (path, glyph, x1, y1);
-			
-			x1 += glyph->metrics.horiAdvance;
 		}
 		
-		moon_close_path (path);
-		segment->path = path;
-		
-		if (segment->path->cairo.data)
-			cairo_append_path (cr, &segment->path->cairo);
+		moon_close_path (cluster->path);
 	}
 	
-	if ((deco & TextDecorationsUnderline) && segment->width > 0.0) {
+	cluster->advance = x0;
+	
+	*kern = prev;
+	
+	return cluster;
+}
+
+void
+TextLayoutRun::GenerateCache ()
+{
+	int selection_length = line->layout->GetSelectionLength ();
+	int selection_start = line->layout->GetSelectionStart ();
+	const char *text = line->layout->GetText ();
+	const char *inend = text + start + length;
+	const char *inptr = text + start;
+	TextFont *font = attrs->Font ();
+	TextLayoutGlyphCluster *cluster;
+	const char *selection_end;
+	guint32 prev = 0;
+	int len;
+	
+	// cache the glyph cluster leading up to the selection
+	if (selection_length == 0 || start < selection_start) {
+		if (selection_length > 0)
+			len = MIN (selection_start - start, length);
+		else
+			len = length;
+		
+		cluster = GenerateGlyphCluster (font, &prev, text, start, len);
+		g_ptr_array_add (clusters, cluster);
+		inptr += len;
+	}
+	
+	// cache the selected glyph cluster
+	selection_end = text + selection_start + selection_length;
+	if (inptr < inend && inptr < selection_end) {
+		len = MIN (inend, selection_end) - inptr;
+		cluster = GenerateGlyphCluster (font, &prev, text, inptr - text, len);
+		g_ptr_array_add (clusters, cluster);
+		cluster->selected = true;
+		inptr += len;
+	}
+	
+	// cache the glyph cluster following the selection
+	if (inptr < inend) {
+		cluster = GenerateGlyphCluster (font, &prev, text, inptr - text, inend - inptr);
+		g_ptr_array_add (clusters, cluster);
+		inptr = inend;
+	}
+}
+
+void
+TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttributes *attrs, const char *text, double x, double y)
+{
+	TextFont *font = attrs->Font ();
+	GlyphInfo *glyph;
+	Brush *brush;
+	double y0;
+	Rect area;
+	int crlf;
+	
+	// y is the baseline, set the origin to the top-left
+	cairo_translate (cr, x, y - font->Ascender ());
+	
+	// set y0 to the baseline relative to the translation matrix
+	y0 = font->Ascender ();
+	
+	if (selected) {
+		area = Rect (origin.x, origin.y, advance, font->Height ());
+		
+		// extend the selection bg by the width of a SPACE if it includes CRLF
+		crlf = start + length - 1;
+		if (text[crlf] == '\r' || text[crlf] == '\n') {
+			if ((glyph = font->GetGlyphInfo (' ')))
+				area.width += glyph->metrics.horiAdvance;
+		}
+		
+		// render the selection background
+		brush = attrs->Background (true);
+		brush->SetupBrush (cr, area);
+		cairo_new_path (cr);
+		cairo_rectangle (cr, area.x, area.y, area.width, area.height);
+		brush->Fill (cr);
+	}
+	
+	// setup the foreground brush
+	area = Rect (origin.x, origin.y, advance, font->Height ());
+	brush = attrs->Foreground (selected);
+	brush->SetupBrush (cr, area);
+	cairo_new_path (cr);
+	
+	if (path && path->cairo.data)
+		cairo_append_path (cr, &path->cairo);
+	
+	if (attrs->IsUnderlined ()) {
 		double thickness = font->UnderlineThickness ();
-		double pos = y1 + font->UnderlinePosition ();
+		double pos = y0 + font->UnderlinePosition ();
 		
 		cairo_set_line_width (cr, thickness);
-		x1 = segment->width;
 		
-		Rect underline = Rect (0.0, pos - thickness * 0.5, x1, thickness);
+		Rect underline = Rect (0.0, pos - thickness * 0.5, advance, thickness);
 		underline.Draw (cr);
 	}
 	
-	fg->Fill (cr);
+	brush->Fill (cr);
 }
 
-static inline void
-RenderLine (cairo_t *cr, const Point &origin, const Point &position, TextLine *line)
+void
+TextLayoutRun::Render (cairo_t *cr, const Point &origin, double x, double y)
 {
-	bool crlf_selected = line->crlf && line->crlf_selected;
-	TextSegment *segment;
+	const char *text = line->layout->GetText ();
+	TextLayoutGlyphCluster *cluster;
+	double x0 = x;
+	
+	if (clusters->len == 0)
+		GenerateCache ();
+	
+	for (guint i = 0; i < clusters->len; i++) {
+		cluster = (TextLayoutGlyphCluster *) clusters->pdata[i];
+		
+		cairo_save (cr);
+		cluster->Render (cr, origin, attrs, text, x0, y);
+		cairo_restore (cr);
+		
+		x0 += cluster->advance;
+	}
+}
+
+void
+TextLayoutLine::Render (cairo_t *cr, const Point &origin, double left, double top)
+{
+	TextLayoutRun *run;
 	double x0, y0;
 	
 	// set y0 to the line's baseline (descend is a negative value)
-	y0 = position.y + line->height + line->descend;
-	x0 = position.x;
+	y0 = top + height + descend;
+	x0 = left;
 	
-	segment = (TextSegment *) line->segments->First ();
-	
-	while (segment) {
-		cairo_save (cr);
-		RenderSegment (cr, origin, x0, y0, segment, !segment->next && crlf_selected);
-		x0 += segment->advance;
-		cairo_restore (cr);
-		
-		segment = (TextSegment *) segment->next;
+	for (guint i = 0; i < runs->len; i++) {
+		run = (TextLayoutRun *) runs->pdata[i];
+		run->Render (cr, origin, x0, y0);
+		x0 += run->advance;
 	}
 }
 
@@ -1507,111 +1834,113 @@ TextLayout::HorizontalAlignment (double line_width)
 void
 TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 {
-	TextLine *line;
-	Point position;
+	TextLayoutLine *line;
+	double x, y;
 	
-	position.y = offset.y;
+	y = offset.y;
 	
 	Layout ();
 	
-	line = (TextLine *) lines->First ();
-	
-	while (line) {
-		position.x = offset.x + HorizontalAlignment (line->width);
-		RenderLine (cr, origin, position, line);
-		position.y += (double) line->height;
+	for (guint i = 0; i < lines->len; i++) {
+		line = (TextLayoutLine *) lines->pdata[i];
 		
-		line = (TextLine *) line->next;
+		x = offset.x + HorizontalAlignment (line->advance);
+		line->Render (cr, origin, x, y);
+		y += (double) line->height;
 	}
 }
 
-TextLine *
-TextLayout::GetLineFromY (const Point &offset, double y, int *index)
+TextLayoutLine *
+TextLayout::GetLineFromY (const Point &offset, double y)
 {
-	TextSegment *segment;
-	TextLine *line;
+	TextLayoutLine *line = NULL;
 	double y0, y1;
-	int cur = 0;
 	
 	//printf ("TextLayout::GetLineFromY (%.2g)\n", y);
 	
-	line = (TextLine *) lines->First ();
 	y0 = offset.y;
 	
-	while (line) {
-		if (line->start != cur)
-			printf ("oops, Line start not what we expected: %d instead of %d\n", cur, line->start);
+	for (guint i = 0; i < lines->len; i++) {
+		line = (TextLayoutLine *) lines->pdata[i];
 		
 		// set y1 the top of the next line
 		y1 = y0 + line->height;
 		
 		if (y < y1) {
 			// we found the line that the point is located on
-			break;
+			return line;
 		}
 		
-		if (index) {
-			// keep track of character indexes
-			segment = (TextSegment *) line->segments->First ();
-			while (segment) {
-				cur += (segment->end - segment->start);
-				
-				segment = (TextSegment *) segment->next;
-			}
-			
-			cur += line->crlf;
-		}
-		
-		line = (TextLine *) line->next;
 		y0 = y1;
 	}
 	
-	if (index)
-		*index = cur;
-	
-	return line;
+	return NULL;
 }
 
 int
 TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 {
-	const gunichar *text;
-	TextSegment *segment;
+	const char *inend, *ch, *inptr;
+	TextLayoutRun *run = NULL;
+	TextLayoutLine *line;
 	GlyphInfo *glyph;
 	guint32 prev = 0;
-	TextLine *line;
 	TextFont *font;
-	int cur = 0;
+	int cursor;
 	gunichar c;
 	double x0;
 	double m;
-	int i;
+	guint i;
 	
 	//printf ("TextLayout::GetCursorFromXY (%.2g, %.2g)\n", x, y);
 	
-	if (!(line = GetLineFromY (offset, y, &cur)))
-		return cur;
+	if (y < offset.y)
+		return 0;
 	
-	segment = (TextSegment *) line->segments->First ();
+	if (!(line = GetLineFromY (offset, y)))
+		return count;
 	
 	// adjust x0 for horizontal alignment
-	x0 = offset.x + HorizontalAlignment (line->width);
+	x0 = offset.x + HorizontalAlignment (line->advance);
 	
-	while (segment && (x >= x0 + segment->advance)) {
-		// not in this segment... maybe the next one
-		cur += (segment->end - segment->start);
-		x0 += segment->advance;
+	inptr = text + line->start;
+	cursor = line->offset;
+	
+	for (i = 0; i < line->runs->len; i++) {
+		run = (TextLayoutRun *) line->runs->pdata[i];
 		
-		segment = (TextSegment *) segment->next;
+		if (x < x0 + run->advance) {
+			// x is in somewhere inside this run
+			break;
+		}
+		
+		// x is beyond this run
+		cursor += run->count;
+		inptr += run->length;
+		x0 += run->advance;
+		run = NULL;
 	}
 	
-	if (segment && x < x0 + segment->advance) {
-		// we'll find the cursor index we're looking for in this segment
-		text = segment->run->Text ();
-		font = segment->Font ();
+	if (run != NULL) {
+		inptr = text + run->start;
+		inend = inptr + run->length;
+		font = run->attrs->Font ();
 		
-		for (i = segment->start; i < segment->end && x0 < x; cur++, i++) {
-			c = text[i];
+		while (inptr < inend) {
+			if (*inptr == '\r' || *inptr == '\n')
+				break;
+			
+			ch = inptr;
+			if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
+				continue;
+			
+			cursor++;
+			
+			if (g_unichar_iszerowidth (c))
+				continue;
+			
+			if (g_unichar_isspace (c))
+				c = ' ';
 			
 			if (!(glyph = font->GetGlyphInfo (c)))
 				continue;
@@ -1624,32 +1953,49 @@ TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 			// calculate midpoint of the character
 			m = glyph->metrics.horiAdvance / 2.0;
 			
-			// if x is <= the midpoint, then cursor is
-			// considered to be at this character.
-			if (x <= x0 + m)
+			// if x is <= the midpoint, then the cursor is
+			// considered to be at the start of this character.
+			if (x <= x0 + m) {
+				inptr = ch;
+				cursor--;
 				break;
+			}
 			
 			x0 += glyph->metrics.horiAdvance;
 			prev = glyph->index;
 		}
+	} else if (i > 0) {
+		// x is beyond the end of the last run
+		run = (TextLayoutRun *) line->runs->pdata[i - 1];
+		inend = text + run->start + run->length;
+		inptr = text + run->start;
+		
+		if (inend > inptr && inend[-1] == '\n') {
+			cursor--;
+			inend--;
+		}
+		
+		if (inend > inptr && inend[-1] == '\r') {
+			cursor--;
+			inend--;
+		}
 	}
 	
-	return cur;
+	return cursor;
 }
 
 Rect
 TextLayout::GetCursor (const Point &offset, int index)
 {
+	const char *cursor = g_utf8_offset_to_pointer (text, index);
 	double height, x0, y0, y1;
-	const gunichar *text;
-	TextSegment *segment;
+	const char *inptr, *inend;
+	TextLayoutLine *line;
+	TextLayoutRun *run;
 	GlyphInfo *glyph;
-	TextLine *line;
 	TextFont *font;
 	guint32 prev;
-	int cur = 0;
 	gunichar c;
-	int i, n;
 	
 	//printf ("TextLayout::GetCursor (%d)\n", index);
 	
@@ -1658,11 +2004,12 @@ TextLayout::GetCursor (const Point &offset, int index)
 	height = 0.0;
 	y1 = 0.0;
 	
-	line = (TextLine *) lines->First ();
-	
-	while (line) {
+	for (guint i = 0; i < lines->len; i++) {
+		line = (TextLayoutLine *) lines->pdata[i];
+		inend = text + line->start + line->length;
+		
 		// adjust x0 for horizontal alignment
-		x0 = offset.x + HorizontalAlignment (line->width);
+		x0 = offset.x + HorizontalAlignment (line->advance);
 		
 		// set y1 to the baseline (descend is a negative value)
 		y1 = y0 + line->height + line->descend;
@@ -1670,56 +2017,69 @@ TextLayout::GetCursor (const Point &offset, int index)
 		
 		//printf ("\tline: left=%.2g, top=%.2g, baseline=%.2g, start index=%d\n", x0, y0, y1, cur);
 		
-		if (cur >= index)
-			break;
-		
-		segment = (TextSegment *) line->segments->First ();
-		while (segment && cur < index) {
-			n = segment->end - segment->start;
-			text = segment->run->Text ();
-			font = segment->Font ();
-			
-			//printf ("\t\tsegment: n=%d, cur=%d\n", n, cur);
-			
-			if (index < (cur + n)) {
-				//printf ("\t\t\tscanning segment...\n");
-				for (i = segment->start, prev = 0; cur < index; cur++, i++) {
-					c = text[i];
-					
-					if (!(glyph = font->GetGlyphInfo (c)))
-						continue;
-					
-					if ((prev != 0) && APPLY_KERNING (c))
-						x0 += font->Kerning (prev, glyph->index);
-					else if (glyph->metrics.horiBearingX < 0)
-						x0 += glyph->metrics.horiBearingX;
-					
-					x0 += glyph->metrics.horiAdvance;
-					prev = glyph->index;
+		if (cursor >= inend) {
+			// maybe the cursor is on the next line...
+			if ((i + 1) == lines->len) {
+				// we are on the last line...
+				if ((inend > text + line->start) &&
+				    (inend[-1] == '\r' || inend[-1] == '\n')) {
+					// cursor is on the next line by itself
+					x0 = offset.x + HorizontalAlignment (0.0);
+					y0 += line->height;
+				} else {
+					// cursor at the end of the last line
+					x0 += line->advance;
 				}
 				
 				break;
-			} else {
-				//printf ("\t\t\tadvancing over entire segment...\n");
-				x0 += segment->advance;
-				cur += n;
 			}
 			
-			segment = (TextSegment *) segment->next;
+			y0 += line->height;
+			continue;
 		}
 		
-		if (cur == index)
-			break;
-		
-		y0 += line->height;
-		cur += line->crlf;
-		
-		line = (TextLine *) line->next;
-		
-		if (cur >= index) {
-			x0 = HorizontalAlignment (line ? line->width : 0.0);
+		// cursor is on this line...
+		for (guint j = 0; j < line->runs->len; j++) {
+			run = (TextLayoutRun *) line->runs->pdata[j];
+			inend = text + run->start + run->length;
+			
+			if (cursor >= inend) {
+				// maybe the cursor is in the next run...
+				x0 += run->advance;
+				continue;
+			}
+			
+			// cursor is in this run...
+			font = run->attrs->Font ();
+			inptr = text + run->start;
+			prev = 0;
+			
+			while (inptr < cursor) {
+				if ((c = utf8_getc (&inptr, cursor - inptr)) == (gunichar) -1)
+					continue;
+				
+				if (g_unichar_iszerowidth (c))
+					continue;
+				
+				if (g_unichar_isspace (c))
+					c = ' ';
+				
+				if (!(glyph = font->GetGlyphInfo (c)))
+					continue;
+				
+				if ((prev != 0) && APPLY_KERNING (c))
+					x0 += font->Kerning (prev, glyph->index);
+				else if (glyph->metrics.horiBearingX < 0)
+					x0 += glyph->metrics.horiBearingX;
+				
+				x0 += glyph->metrics.horiAdvance;
+				prev = glyph->index;
+			}
+			
 			break;
 		}
+		
+		break;
 	}
 	
 	return Rect (x0, y0, 1.0, height);

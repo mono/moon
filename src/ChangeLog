@@ -1,3 +1,21 @@
+2009-03-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxView::TextBoxView): Init selection_changed
+	to false.
+	(TextBoxView::Render): If the selection has changed, update the
+	selection on the layout engine.
+	(append_runs): Removed; no longer needed.
+	(TextBoxView::Layout): Updated to use the new layout APIs.
+	(TextBoxView::OnModelChanged): When the selection changes, don't
+	set dirty to true. Instead, set selection_changed to true.
+	(TextBoxView::SetTextBox): Set the default text attributes on our
+	layout with the textbox as the source.
+
+	* text.cpp (TextBlock::Layout): Updated to use the new text layout
+	APIs.
+
+	* layout.cpp: All new layout/rendering engine.
+
 2009-03-04  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Add a new method for grabbing the element_name of a

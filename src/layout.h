@@ -22,6 +22,7 @@
 #include <font.h>
 #include <list.h>
 
+class TextLayout;
 
 class ITextAttributes {
  public:
@@ -31,75 +32,112 @@ class ITextAttributes {
 	virtual Brush *Foreground (bool selected) = 0;
 };
 
-class TextRun : public List::Node {
-	const gunichar *text;
-	ITextAttributes *source;
-	TextFont *font;
-	gunichar *buf;
-	bool selected;
-	int length;
-	
+class TextLayoutAttributes : public List::Node {
  public:
+	ITextAttributes *source;
+	int start;
 	
-	TextRun (const gunichar *ucs4, int len, ITextAttributes *source, bool selected = false);
-	TextRun (const char *utf8, int len, ITextAttributes *source, bool selected = false);
-	TextRun (ITextAttributes *source);
+	TextLayoutAttributes (ITextAttributes *source, int start)
+	{
+		this->source = source;
+		this->start = start;
+	}
 	
-	virtual ~TextRun ();
+	Brush *Background (bool selected)
+	{
+		return source->Background (selected);
+	}
 	
-	//
-	// Property Accessors
-	//
-	TextDecorations Decorations () { return source->Decorations (); }
-	Brush *Background () { return source->Background (selected); }
-	Brush *Foreground () { return source->Foreground (selected); }
-	bool IsSelected () { return selected; }
-	const gunichar *Text () { return text; }
-	int Length () { return length; }
-	TextFont *Font () { return font; }
+	Brush *Foreground (bool selected)
+	{
+		return source->Foreground (selected);
+	}
+	
+	TextFont *Font ()
+	{
+		return source->FontDescription ()->GetFont ();
+	}
 	
 	bool IsUnderlined ()
 	{
-		return (Decorations () & TextDecorationsUnderline);
-	}
-	
-	bool IsLineBreak ()
-	{
-		return !text || text[0] == '\r' || text[0] == '\n';
+		return (source->Decorations () & TextDecorationsUnderline);
 	}
 };
 
-class TextLine;
+struct TextLayoutGlyphCluster {
+	int start, length;
+	moon_path *path;
+	double advance;
+	bool selected;
+	
+	TextLayoutGlyphCluster (int start, int length);
+	~TextLayoutGlyphCluster ();
+	
+	void Render (cairo_t *cr, const Point &origin, TextLayoutAttributes *attrs, const char *text, double x, double y);
+};
+
+struct TextLayoutLine {
+	int start, length, offset;
+	TextLayout *layout;
+	GPtrArray *runs;
+	double advance;
+	double descend;
+	double height;
+	double width;
+	
+	TextLayoutLine (TextLayout *layout, int start, int offset);
+	~TextLayoutLine ();
+	
+	void Render (cairo_t *cr, const Point &origin, double left, double top);
+};
+
+struct TextLayoutRun {
+	TextLayoutAttributes *attrs;
+	int start, length, count;
+	TextLayoutLine *line;
+	GPtrArray *clusters;
+	double advance;
+	
+	TextLayoutRun (TextLayoutLine *line, TextLayoutAttributes *attrs, int start);
+	~TextLayoutRun ();
+	
+	void Render (cairo_t *cr, const Point &origin, double x, double y);
+	void GenerateCache ();
+	void ClearCache ();
+};
 
 class TextLayout {
-	// User-set data
 	LineStackingStrategy strategy;
 	TextAlignment alignment;
 	TextWrapping wrapping;
+	const char *last_word;
+	int selection_length;
+	int selection_start;
 	double line_height;
 	double max_height;
 	double max_width;
-	List *runs;
+	List *attributes;
+	char *text;
+	int length;
+	int count;
 	
-	// Internal representation
-	List *lines;
-	
-	// cached info
+	// cached data
 	double actual_height;
 	double actual_width;
+	GPtrArray *lines;
 	
 	bool OverrideLineHeight () { return (strategy == LineStackingStrategyBlockLineHeight && !isnan (line_height)); }
 	
 	double HorizontalAlignment (double line_width);
 	
-	TextLine *GetLineFromY (const Point &origin, double y, int *index);
+	void ClearCache ();
+	void ClearLines ();
 	
 	void LayoutWrapWithOverflow ();
 	void LayoutNoWrap ();
 	void LayoutWrap ();
 	
  public:
-	
 	TextLayout ();
 	~TextLayout ();
 	
@@ -110,14 +148,20 @@ class TextLayout {
 	// changed or %false otherwise.
 	//
 	
+	int GetSelectionLength () { return selection_length; }
+	int GetSelectionStart () { return selection_start; }
+	
 	LineStackingStrategy GetLineStackingStrtegy () { return strategy; }
-	bool SetLineStackingStrategy (LineStackingStrategy strategy);
+	bool SetLineStackingStrategy (LineStackingStrategy mode);
+	
+	List *GetTextAttributes () { return attributes; }
+	bool SetTextAttributes (List *attrs);
 	
 	TextAlignment GetTextAlignment () { return alignment; }
-	bool SetTextAlignment (TextAlignment alignment);
+	bool SetTextAlignment (TextAlignment align);
 	
 	TextWrapping GetTextWrapping () { return wrapping; }
-	bool SetTextWrapping (TextWrapping wrapping);
+	bool SetTextWrapping (TextWrapping mode);
 	
 	double GetLineHeight () { return line_height; }
 	bool SetLineHeight (double height);
@@ -128,20 +172,23 @@ class TextLayout {
 	double GetMaxWidth () { return max_width; }
 	bool SetMaxWidth (double width);
 	
-	List *GetTextRuns () { return runs; }
-	bool SetTextRuns (List *runs);
+	bool SetText (const char *str, int len = -1);
+	const char *GetText () { return text; }
 	
 	//
 	// Methods
 	//
 	
 	void Render (cairo_t *cr, const Point &origin, const Point &offset);
-	int GetCursorFromXY (const Point &offset, double x, double y);
-	Rect GetCursor (const Point &offset, int pos);
+	void Select (int start, int length, bool byte_offsets = false);
 	void Layout ();
 	
+	TextLayoutLine *GetLineFromY (const Point &offset, double y);
+	int GetCursorFromXY (const Point &offset, double x, double y);
+	Rect GetCursor (const Point &offset, int pos);
+	
 	void GetActualExtents (double *width, double *height);
-	//void GetLayoutExtents (double *width, double *height);
 };
 
 #endif /* __LAYOUT_H__ */
+

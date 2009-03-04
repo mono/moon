@@ -375,8 +375,9 @@ TextBlock::Layout (cairo_t *cr)
 	InlineCollection *inlines = GetInlines ();
 	double width = constraint.width;
 	const char *text;
+	int length = 0;
 	List *runs;
-
+	
 	/* 
 	 *  in the layout case this should already be handled
 	 *  but we do it anyway to help
@@ -403,7 +404,8 @@ TextBlock::Layout (cairo_t *cr)
 		double pad = padding->left + padding->right;
 		
 		if (pad >= width) {
-			layout->SetTextRuns (runs);
+			layout->SetTextAttributes (runs);
+			layout->SetText ("", 0);
 			actual_height = 0.0;
 			actual_width = 0.0;
 			goto done;
@@ -415,8 +417,8 @@ TextBlock::Layout (cairo_t *cr)
 	}
 	
 	if (inlines != NULL) {
+		TextLayoutAttributes *attrs;
 		Inline *item;
-		Run *run;
 		
 		for (int i = 0; i < inlines->GetCount (); i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
@@ -424,38 +426,21 @@ TextBlock::Layout (cairo_t *cr)
 			
  			switch (item->GetObjectType ()) {
 			case Type::RUN:
-				run = (Run *) item;
-				
-				text = run->GetText ();
+				text = ((Run *) item)->GetText ();
 				
 				if (text && text[0]) {
-					const char *inptr, *inend;
+					attrs = new TextLayoutAttributes ((ITextAttributes *) item, length);
+					runs->Append (attrs);
 					
-					inptr = text;
-					
-					do {
-						inend = inptr;
-						while (*inend && *inend != '\r' && *inend != '\n')
-							inend++;
-						
-						if (inend > inptr)
-							runs->Append (new TextRun (inptr, inend - inptr, (ITextAttributes *) item));
-						
-						if (*inend == '\0')
-							break;
-						
-						runs->Append (new TextRun ((ITextAttributes *) item));
-						
-						if (inend[0] == '\r' && inend[1] == '\n')
-							inptr = inend + 2;
-						else
-							inptr = inend + 1;
-					} while (*inptr);
+					length += strlen (text);
 				}
 				
 				break;
 			case Type::LINEBREAK:
-				runs->Append (new TextRun ((ITextAttributes *) item));
+				attrs = new TextLayoutAttributes ((ITextAttributes *) item, length);
+				runs->Append (attrs);
+				
+				length++;
 				break;
 			default:
 				break;
@@ -463,7 +448,9 @@ TextBlock::Layout (cairo_t *cr)
 		}
 	}
 	
-	layout->SetTextRuns (runs);
+	layout->SetText (GetText (), length);
+	layout->SetTextAttributes (runs);
+	
 	layout->Layout ();
 	
 	layout->GetActualExtents (&actual_width, &actual_height);
