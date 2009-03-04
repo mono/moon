@@ -51,6 +51,25 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 				throw new AssertFailedException (string.Format (message, parameters));
 		}
 
+
+		public static void IsBetween (double min, double max, double actual)
+		{
+			if (actual > max || actual < min)
+				throw new AssertFailedException (string.Format ("Actual value '{0}' is not between '{1}' and '{2}'). ", actual, min, max));
+		}
+
+		public static void IsBetween (double min, double max, double actual, string message)
+		{
+			if (actual > max || actual < min)
+				throw new AssertFailedException (string.Format ("Actual value '{0}' is not between '{1}' and '{2}'). " + message, actual, min, max));
+		}
+
+		public static void IsBetween (double min, double max, double actual, string message, params object [ ] parameters)
+		{
+			if (actual > max || actual < min)
+				throw new AssertFailedException (string.Format ("Actual value '{0}' is not between '{1}' and '{2}'). {3}", actual, min, max, string.Format (message, parameters)));
+		}
+
 		public static void IsFalse (bool condition)
 		{
 			if (condition)
@@ -67,6 +86,54 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 		{
 			if (condition)
 				throw new AssertFailedException (string.Format (message, parameters));
+		}
+
+		public static void IsGreater (double expected, double actual)
+		{
+			if (expected >= actual) {
+				string msg = String.Format ("Actual value '{0}' is not greater than expected value '{1}'.", actual, expected);
+				throw new AssertFailedException (msg);
+			}
+		}
+
+		public static void IsGreater (double expected, double actual, string message)
+		{
+			if (expected >= actual) {
+				string msg = String.Format ("Actual value '{0}' is not greater than expected value '{1}'. {2}", actual, expected, message);
+				throw new AssertFailedException (msg);
+			}
+		}
+
+		public static void IsGreater (double expected, double actual, string message, params object [ ] parameters)
+		{
+			if (expected >= actual) {
+				string msg = String.Format ("Actual value '{0}' is not greater than expected value '{1}'.", actual, expected, string.Format (message, parameters));
+				throw new AssertFailedException (msg);
+			}
+		}
+
+		public static void IsLess (double expected, double actual)
+		{
+			if (expected <= actual) {
+				string msg = String.Format ("Actual value '{0}' is not less than expected value '{1}'.", actual, expected);
+				throw new AssertFailedException (msg);
+			}
+		}
+
+		public static void IsLess (double expected, double actual, string message)
+		{
+			if (expected <= actual) {
+				string msg = String.Format ("Actual value '{0}' is not less than expected value '{1}'. {2}", actual, expected, message);
+				throw new AssertFailedException (msg);
+			}
+		}
+
+		public static void IsLess (int expected, int actual, string message, params object [ ] parameters)
+		{
+			if (expected <= actual) {
+				string msg = String.Format ("Actual value '{0}' is not less than expected value '{1}'.", actual, expected, string.Format (message, parameters));
+				throw new AssertFailedException (msg);
+			}
 		}
 
 		public static void IsTrue (bool condition)

@@ -1,3 +1,7 @@
+2009-03-04  Alan McGovern  <amcgovern@novell.com>
+
+	* Assert.cs: Add overloads for IsGreater, IsLess and IsBetween.
+
 2009-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Microsoft.VisualStudio.QualityTools.UnitTesting.mdp:
