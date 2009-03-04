@@ -1108,24 +1108,11 @@ MultiScaleImage::GetViewportWidth ()
 	return value->AsDouble ();
 }
 
-void
-MultiScaleImage::SetViewportWidth (double value)
-{
-	SetValue (MultiScaleImage::ViewportWidthProperty, Value (value));
-}
-
 Point *
 MultiScaleImage::GetViewportOrigin ()
 {
 	Value *value = GetValue (MultiScaleImage::ViewportOriginProperty);
 	return value ? value->AsPoint () : NULL;
-}
-
-void
-MultiScaleImage::SetViewportOrigin (Point *value)
-{
-	if (!value) return;
-	SetValue (MultiScaleImage::ViewportOriginProperty, Value (*value));
 }
 
 bool
