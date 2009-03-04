@@ -21,9 +21,48 @@
 #include "debug.h"
 
 
+#if 0
+static const char *unicode_break_types[] = {
+	"G_UNICODE_BREAK_MANDATORY",
+	"G_UNICODE_BREAK_CARRIAGE_RETURN",
+	"G_UNICODE_BREAK_LINE_FEED",
+	"G_UNICODE_BREAK_COMBINING_MARK",
+	"G_UNICODE_BREAK_SURROGATE",
+	"G_UNICODE_BREAK_ZERO_WIDTH_SPACE",
+	"G_UNICODE_BREAK_INSEPARABLE",
+	"G_UNICODE_BREAK_NON_BREAKING_GLUE",
+	"G_UNICODE_BREAK_CONTINGENT",
+	"G_UNICODE_BREAK_SPACE",
+	"G_UNICODE_BREAK_AFTER",
+	"G_UNICODE_BREAK_BEFORE",
+	"G_UNICODE_BREAK_BEFORE_AND_AFTER",
+	"G_UNICODE_BREAK_HYPHEN",
+	"G_UNICODE_BREAK_NON_STARTER",
+	"G_UNICODE_BREAK_OPEN_PUNCTUATION",
+	"G_UNICODE_BREAK_CLOSE_PUNCTUATION",
+	"G_UNICODE_BREAK_QUOTATION",
+	"G_UNICODE_BREAK_EXCLAMATION",
+	"G_UNICODE_BREAK_IDEOGRAPHIC",
+	"G_UNICODE_BREAK_NUMERIC",
+	"G_UNICODE_BREAK_INFIX_SEPARATOR",
+	"G_UNICODE_BREAK_SYMBOL",
+	"G_UNICODE_BREAK_ALPHABETIC",
+	"G_UNICODE_BREAK_PREFIX",
+	"G_UNICODE_BREAK_POSTFIX",
+	"G_UNICODE_BREAK_COMPLEX_CONTEXT",
+	"G_UNICODE_BREAK_AMBIGUOUS",
+	"G_UNICODE_BREAK_UNKNOWN",
+	"G_UNICODE_BREAK_NEXT_LINE",
+	"G_UNICODE_BREAK_WORD_JOINER",
+	"G_UNICODE_BREAK_HANGUL_L_JAMO",
+	"G_UNICODE_BREAK_HANGUL_V_JAMO",
+	"G_UNICODE_BREAK_HANGUL_T_JAMO",
+	"G_UNICODE_BREAK_HANGUL_LV_SYLLABLE",
+	"G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE"
+};
+#endif
 
-#define BBOX_MARGIN 1.0
-#define BBOX_PADDING 2.0
+#define BreakSpace(c, btype) (c == '\t' || btype == G_UNICODE_BREAK_SPACE || btype == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
 
 /*
  * Silverlight does not apply any kerning on a DOT, so we exclude them
@@ -101,6 +140,7 @@ utf8_find_last_word (const char *str, int len)
 	const char *last_word = str;
 	const char *inend = str + len;
 	const char *inptr = str;
+	GUnicodeBreakType btype;
 	bool in_word = false;
 	const char *pchar;
 	gunichar c;
@@ -110,7 +150,8 @@ utf8_find_last_word (const char *str, int len)
 		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
 			continue;
 		
-		if (!g_unichar_isspace (c)) {
+		btype = g_unichar_break_type (c);
+		if (!BreakSpace (c, btype)) {
 			if (!in_word) {
 				last_word = pchar;
 				in_word = true;
@@ -558,52 +599,6 @@ TextLayout::GetActualExtents (double *width, double *height)
 	*width = actual_width;
 }
 
-#if 0
-static const char *unicode_break_types[] = {
-	"G_UNICODE_BREAK_MANDATORY",
-	"G_UNICODE_BREAK_CARRIAGE_RETURN",
-	"G_UNICODE_BREAK_LINE_FEED",
-	"G_UNICODE_BREAK_COMBINING_MARK",
-	"G_UNICODE_BREAK_SURROGATE",
-	"G_UNICODE_BREAK_ZERO_WIDTH_SPACE",
-	"G_UNICODE_BREAK_INSEPARABLE",
-	"G_UNICODE_BREAK_NON_BREAKING_GLUE",
-	"G_UNICODE_BREAK_CONTINGENT",
-	"G_UNICODE_BREAK_SPACE",
-	"G_UNICODE_BREAK_AFTER",
-	"G_UNICODE_BREAK_BEFORE",
-	"G_UNICODE_BREAK_BEFORE_AND_AFTER",
-	"G_UNICODE_BREAK_HYPHEN",
-	"G_UNICODE_BREAK_NON_STARTER",
-	"G_UNICODE_BREAK_OPEN_PUNCTUATION",
-	"G_UNICODE_BREAK_CLOSE_PUNCTUATION",
-	"G_UNICODE_BREAK_QUOTATION",
-	"G_UNICODE_BREAK_EXCLAMATION",
-	"G_UNICODE_BREAK_IDEOGRAPHIC",
-	"G_UNICODE_BREAK_NUMERIC",
-	"G_UNICODE_BREAK_INFIX_SEPARATOR",
-	"G_UNICODE_BREAK_SYMBOL",
-	"G_UNICODE_BREAK_ALPHABETIC",
-	"G_UNICODE_BREAK_PREFIX",
-	"G_UNICODE_BREAK_POSTFIX",
-	"G_UNICODE_BREAK_COMPLEX_CONTEXT",
-	"G_UNICODE_BREAK_AMBIGUOUS",
-	"G_UNICODE_BREAK_UNKNOWN",
-	"G_UNICODE_BREAK_NEXT_LINE",
-	"G_UNICODE_BREAK_WORD_JOINER",
-	"G_UNICODE_BREAK_HANGUL_L_JAMO",
-	"G_UNICODE_BREAK_HANGUL_V_JAMO",
-	"G_UNICODE_BREAK_HANGUL_T_JAMO",
-	"G_UNICODE_BREAK_HANGUL_LV_SYLLABLE",
-	"G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE"
-};
-#endif
-
-
-#define BreakSpace(btype) (btype == G_UNICODE_BREAK_SPACE || btype == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
-#define BreakAfter(btype) (btype == G_UNICODE_BREAK_AFTER || btype == G_UNICODE_BREAK_NEXT_LINE)
-#define BreakBefore(btype) (btype == G_UNICODE_BREAK_BEFORE || btype == G_UNICODE_BREAK_PREFIX)
-
 struct WordBreakOpportunity {
 	GUnicodeBreakType btype;
 	const char *inptr;
@@ -670,7 +665,7 @@ layout_word_lwsp (LayoutWord *word, const char *in, const char *inend)
 			continue;
 		
 		btype = g_unichar_break_type (c);
-		if (!BreakSpace (btype)) {
+		if (!BreakSpace (c, btype)) {
 			inptr = start;
 			break;
 		}
@@ -681,8 +676,8 @@ layout_word_lwsp (LayoutWord *word, const char *in, const char *inend)
 		if (g_unichar_iszerowidth (c))
 			continue;
 		
-		// canonicalize whitespace
-		if (g_unichar_isspace (c))
+		// treat tab as a single space
+		if (c == '\t')
 			c = ' ';
 		
 		// ignore glyphs the font doesn't contain...
@@ -744,7 +739,7 @@ layout_word_overflow (LayoutWord *word, const char *in, const char *inend, doubl
 			continue;
 		
 		btype = g_unichar_break_type (c);
-		if (BreakSpace (btype)) {
+		if (BreakSpace (c, btype)) {
 			inptr = start;
 			break;
 		}
@@ -1005,8 +1000,8 @@ TextLayout::LayoutNoWrap ()
 				if (g_unichar_iszerowidth (c))
 					continue;
 				
-				// canonicalize whitespace
-				if (g_unichar_isspace (c))
+				// treat tab as a single space
+				if (c == '\t')
 					c = ' ';
 				
 				// ignore glyphs the font doesn't contain...
@@ -1104,16 +1099,12 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	bool wrap = false;
 	GlyphInfo *glyph;
 	double advance;
-	bool log = false;
 	int glyphs = 0;
 	gunichar c;
 	
 	g_array_set_size (word->break_ops, 0);
 	word->advance = 0.0;
 	word->count = 0;
-	
-	if (!strncmp (inptr, "bbb?", 4))
-		log = true;
 	
 	while (inptr < inend) {
 		if (*inptr == '\r' || *inptr == '\n')
@@ -1125,7 +1116,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			continue;
 		
 		btype = g_unichar_break_type (c);
-		if (BreakSpace (btype)) {
+		if (BreakSpace (c, btype)) {
 			inptr = start;
 			break;
 		}
@@ -1203,7 +1194,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				continue;
 			
 			btype = g_unichar_break_type (c);
-			if (BreakSpace (btype) || g_unichar_combining_class (c) == 0) {
+			if (BreakSpace (c, btype) || g_unichar_combining_class (c) == 0) {
 				inptr = start;
 				break;
 			}
@@ -1215,9 +1206,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			g_array_append_val (word->break_ops, op);
 		}
 	}
-	
-	if (log)
-		printf ("measure for %.*s is %f, time to work back...\n", inptr - in, in, word->advance);
 	
 	// at this point, we're going to break the word so we can reset kerning
 	word->prev = 0;
@@ -1237,8 +1225,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_NEXT_LINE:
 		case G_UNICODE_BREAK_UNKNOWN:
 			// break after this char
-			if (log)
-				printf ("break next-line\n");
 			word->length = (op.inptr - in);
 			word->advance = op.advance;
 			word->count = op.count;
@@ -1248,8 +1234,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			//case G_UNICODE_BREAK_AFTER:
 			// only break after this char if there are chars before it
 			if (line_start && i > 1) {
-				if (log)
-					printf ("break before-and-after\n");
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
@@ -1258,9 +1242,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			break;
 		case G_UNICODE_BREAK_BEFORE:
 			if (i > 1) {
-				if (log)
-					printf ("break before\n");
-				
 				// break after the previous glyph
 				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
 				word->length = (op.inptr - in);
@@ -1273,8 +1254,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_WORD_JOINER:
 			// only break if there is nothing before it
 			if (i == 1) {
-				if (log)
-					printf ("break word-joiner\n");
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
@@ -1284,8 +1263,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		default:
 			// only break if we have no choice...
 			if (line_start) {
-				if (log)
-					printf ("break default\n");
 				if (i > 1) {
 					// break after the previous glyph
 					op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
@@ -1303,9 +1280,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		}
 	}
 	
-	if (log)
-		printf ("breaking before the word...\n");
-	
 	word->advance = 0.0;
 	word->length = 0;
 	word->count = 0;
@@ -1319,6 +1293,7 @@ FindLastWord (List *attributes, const char *text, int length)
 	TextLayoutAttributes *attrs = (TextLayoutAttributes *) attributes->Last ();
 	const char *inend = text + length;
 	const char *inptr, *pchar;
+	GUnicodeBreakType btype;
 	const char *last_word;
 	gunichar c;
 	
@@ -1339,7 +1314,8 @@ FindLastWord (List *attributes, const char *text, int length)
 			pchar = inptr;
 		}
 		
-		if (inptr < inend && !g_unichar_isspace (c)) {
+		btype = g_unichar_break_type (c);
+		if (inptr < inend && !BreakSpace (c, btype)) {
 			// woot, we found the beginning of the last word segment
 			last_word = pchar;
 			break;
@@ -1646,8 +1622,8 @@ GenerateGlyphCluster (TextFont *font, guint32 *kern, const char *text, int start
 		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
 			continue;
 		
-		// canonicalize lwsp
-		if (g_unichar_isspace (c) && !g_unichar_iszerowidth (c))
+		// treat tab as a single space
+		if (c == '\t')
 			c = ' ';
 		
 		if (!(glyph = font->GetGlyphInfo (c)))
@@ -1668,8 +1644,8 @@ GenerateGlyphCluster (TextFont *font, guint32 *kern, const char *text, int start
 			if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
 				continue;
 			
-			// canonicalize lwsp
-			if (g_unichar_isspace (c) && !g_unichar_iszerowidth (c))
+			// treat tab as a single space
+			if (c == '\t')
 				c = ' ';
 			
 			if (!(glyph = font->GetGlyphInfo (c)))
@@ -1970,7 +1946,8 @@ TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 			if (g_unichar_iszerowidth (c))
 				continue;
 			
-			if (g_unichar_isspace (c))
+			// we treat tabs as a single space
+			if (c == '\t')
 				c = ' ';
 			
 			if (!(glyph = font->GetGlyphInfo (c)))
@@ -2092,7 +2069,8 @@ TextLayout::GetCursor (const Point &offset, int index)
 				if (g_unichar_iszerowidth (c))
 					continue;
 				
-				if (g_unichar_isspace (c))
+				// we treat tabs as a single space
+				if (c == '\t')
 					c = ' ';
 				
 				if (!(glyph = font->GetGlyphInfo (c)))
