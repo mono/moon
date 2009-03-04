@@ -280,7 +280,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetLogicalParent ();
 	DependencyObject *GetLogicalParentIncludingCollections () { return logical_parent; }
-	
+
+	virtual bool PermitsMultipleParents () { return true; }
+
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
 	
 	// See the comment below about AddPropertyChangeListener for

@@ -1,5 +1,22 @@
 2009-03-03  Chris Toshok  <toshok@ximian.com>
 
+	* collection.cpp (DependencyObjectCollection::AddedToCollection):
+	add a check for PermitsMultipleParents here.
+
+	* collection.h (UIElementCollection::AddWithError): remove.
+
+	* dependencyobject.h (DependencyObject::PermitsMultipleParents):
+	return true by default.
+
+	* style.h (class Setter): setters don't permit multiple parents.
+
+	* uielement.h (class UIElement): neither do uielements.
+
+	* dependencyobject.cpp (DependencyObject::ProviderValueChanged):
+	change the UIElement test to a PermitsMultipleParents test.
+
+2009-03-03  Chris Toshok  <toshok@ximian.com>
+
 	* cbinding.h, cbinding.cpp: regen.
 	
 	* collection.h,	collection.cpp (DependencyObjectCollection::AddedToCollection): if

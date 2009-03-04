@@ -73,7 +73,9 @@ public:
 	};
 	
 	virtual TimeManager *GetTimeManager ();
-	
+
+	virtual bool PermitsMultipleParents () { return false; }
+
 	void SetVisualParent (UIElement *visual_parent);
 	/* @GenerateCBinding,GeneratePInvoke */
 	UIElement *GetVisualParent () { return visual_parent; }

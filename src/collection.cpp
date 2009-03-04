@@ -254,7 +254,6 @@ Collection::SetValueAt (int index, Value *value)
 bool
 Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 {
-
 	Value *added, *removed;
 	
 	// Check that the value can be added to our collection
@@ -332,7 +331,7 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 	obj->SetSurface (GetSurface ());
 
 	if (parent) {
-		if (parent->Is(Type::COLLECTION)) {
+		if (parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
 			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is already a child of another element.");
 			return false;
 		}
@@ -488,17 +487,6 @@ UIElementCollection::ResortByZIndex ()
 	
 	if (array->len > 1)
 		g_ptr_array_sort (z_sorted, UIElementZIndexComparer);
-}
-
-int
-UIElementCollection::AddWithError (Value *value, MoonError *error)
-{
-	if (IndexOf (value) >= 0) {
-		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Duplicated UIElement");
-		return -1;
-	}
-
-	return Collection::AddWithError (value, error);
 }
 
 bool

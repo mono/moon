@@ -243,7 +243,6 @@ class UIElementCollection : public DependencyObjectCollection {
 	
 	virtual Type::Kind GetElementType () { return Type::UIELEMENT; }
 	
-	virtual int AddWithError (Value *value, MoonError *error);
 	virtual bool Clear ();
 	
 	void ResortByZIndex ();

@@ -135,6 +135,8 @@ class Setter : public SetterBase {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Setter ();
+
+	virtual bool PermitsMultipleParents () { return false; }
 };
 
 #endif /* __MOON_STYLE_H__ */

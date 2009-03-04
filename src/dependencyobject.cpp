@@ -1466,7 +1466,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			new_as_dep->SetSurface (GetSurface ());
 
 			// set its logical parent
-			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this && new_as_dep->Is(Type::UIELEMENT)) {
+			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this && !new_as_dep->PermitsMultipleParents()) {
 				MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is a child of another element");
 				return;
 			}
