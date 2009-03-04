@@ -1,3 +1,13 @@
+2009-03-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pipeline.cpp (Media::DisposeObjectInternal): Return
+	MEDIA_SUCCESS so that control doesn't reach the end of a non-void
+	function.
+
+	* layout.cpp (TextLayout::GetCursorFromXY): Don't use
+	g_unichar_iszerowidth().
+	(TextLayout::GetCursor): Same.
+
 2009-03-04  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp, border.h: clean up the path_only drawing a

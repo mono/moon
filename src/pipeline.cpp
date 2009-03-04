@@ -1171,6 +1171,7 @@ MediaResult
 Media::DisposeObjectInternal (MediaClosure *closure)
 {
 	closure->GetContext ()->Dispose ();
+	return MEDIA_SUCCESS;
 }
 
 void

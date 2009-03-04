@@ -2104,9 +2104,6 @@ TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 			
 			cursor++;
 			
-			if (g_unichar_iszerowidth (c))
-				continue;
-			
 			// we treat tabs as a single space
 			if (c == '\t')
 				c = ' ';
@@ -2225,9 +2222,6 @@ TextLayout::GetCursor (const Point &offset, int index)
 			
 			while (inptr < cursor) {
 				if ((c = utf8_getc (&inptr, cursor - inptr)) == (gunichar) -1)
-					continue;
-				
-				if (g_unichar_iszerowidth (c))
 					continue;
 				
 				// we treat tabs as a single space
