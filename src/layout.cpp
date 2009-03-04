@@ -279,6 +279,17 @@ TextLayout::SetTextAlignment (TextAlignment align)
 bool
 TextLayout::SetTextWrapping (TextWrapping mode)
 {
+	switch (mode) {
+	case TextWrappingWrapWithOverflow:
+	case TextWrappingNoWrap:
+	case TextWrappingWrap:
+		break;
+	default:
+		// Silverlight defaults to Wrap for unknown values
+		mode = TextWrappingWrap;
+		break;
+	}
+	
 	if (wrapping == mode)
 		return false;
 	

@@ -1,3 +1,9 @@
+2009-03-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::SetTextWrapping): Default unknown values
+	to Wrap here so that we can avoid a re-layout if the old wrapping
+	mode was 'Wrap'.
+
 2009-03-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes some wrapping issues in LineBreakBasic1.htm
