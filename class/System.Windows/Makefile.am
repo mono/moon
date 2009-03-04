@@ -33,6 +33,8 @@ system_windows_sources =							\
 	$(srcdir)/../Consts.cs							\
 	$(srcdir)/Microsoft.Internal/IManagedFrameworkInternalHelper.cs		\
 	$(srcdir)/Microsoft.Internal/TextBoxView.cs				\
+	$(srcdir)/MS.Internal/Dummy.cs	\
+	$(srcdir)/System.Windows.Hosting/Dummy.cs	\
 	$(srcdir)/System.IO/SimpleUnmanagedMemoryStream.cs			\
 	$(srcdir)/Mono/ApplicationLauncher.cs					\
 	$(srcdir)/Mono/DispatcherTimer.cs					\

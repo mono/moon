@@ -1,3 +1,12 @@
+2009-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MS.Internal:
+	* Makefile.am:
+	* MS.Internal/Dummy.cs:
+	* System.Windows.Hosting:
+	* System.Windows.Hosting/Dummy.cs: Added dummy internal
+	  classes to namespaces where MS has internal classes.
+
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.mdp: Nuke a dead file.
