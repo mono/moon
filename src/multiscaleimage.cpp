@@ -62,6 +62,8 @@ MultiScaleImage::MultiScaleImage ()
 	cache = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, _cairo_surface_destroy);
 	downloading = false;
 	context = NULL;
+	zoom_sb = NULL;
+	pan_sb = NULL;
 }
 
 MultiScaleImage::~MultiScaleImage ()
@@ -75,14 +77,18 @@ MultiScaleImage::~MultiScaleImage ()
 void
 MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 {
+	LOG_MSI ("\nzoomabout logical %f  (%f, %f)\n", zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
 
-	LOG_MSI ("zoomabout logical %f  (%f, %f)\n", zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
+	if (zoom_sb)
+		zoom_sb->Pause ();
+	if (pan_sb)
+		pan_sb->Pause ();
+	
 	double width = GetViewportWidth () / zoomIncrementFactor;
 	double height = GetViewportWidth () / (GetAspectRatio () * zoomIncrementFactor);
-	SetValue (MultiScaleImage::ViewportWidthProperty, Value (width));
+	SetViewportWidth (width);
 	if (!isnan(zoomCenterLogicalX) && !isnan(zoomCenterLogicalY))
-		SetValue (MultiScaleImage::ViewportOriginProperty, Value (Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0)));
-	Invalidate ();
+		SetViewportOrigin (new Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0));
 }
 
 Point
@@ -773,6 +779,7 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 
 	if (args->GetId () == MultiScaleImage::ViewportWidthProperty) {
+		LOG_MSI ("ViewportWidth set to %f\n", args->new_value->AsDouble ());
 		Invalidate ();
 	}
 
@@ -791,3 +798,60 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	NotifyListenersOfPropertyChange (args);
 }
+
+void
+MultiScaleImage::SetViewportWidth (double value)
+{
+	if (!GetUseSprings ()) {
+		SetValue (MultiScaleImage::ViewportWidthProperty, Value (value));
+		return;
+	}
+	if (!zoom_sb) {
+		zoom_sb = new Storyboard ();
+		zoom_sb->SetManualTarget (this);
+		zoom_sb->SetTargetProperty (zoom_sb, new PropertyPath ("MultiScaleImage.ViewportWidth"));
+		zoom_animation = new DoubleAnimation ();
+		zoom_animation->SetDuration (Duration::FromSecondsFloat (.4));
+		TimelineCollection *tlc = new TimelineCollection ();
+		tlc->Add (zoom_animation);
+		zoom_sb->SetChildren(tlc);
+	} else {
+		zoom_sb->Pause ();
+	}
+
+	LOG_MSI ("animating zoom from %f to %f\n\n", GetViewportWidth(), value)	
+	zoom_animation->SetFrom (GetViewportWidth ());
+	zoom_animation->SetTo (value);
+
+	zoom_sb->Begin();
+}
+
+void
+MultiScaleImage::SetViewportOrigin (Point *value)
+{
+	if (!value)
+		return;
+	if (!GetUseSprings ()) {
+		SetValue (MultiScaleImage::ViewportOriginProperty, Value (*value));
+		return;
+	}
+
+	if (!pan_sb) {
+		pan_sb = new Storyboard ();
+		pan_sb->SetManualTarget (this);
+		pan_sb->SetTargetProperty (pan_sb, new PropertyPath ("MultiScaleImage.ViewportOrigin"));
+		pan_animation = new PointAnimation ();
+		pan_animation->SetDuration (Duration::FromSecondsFloat (.4));
+		TimelineCollection *tlc = new TimelineCollection ();
+		tlc->Add (pan_animation);
+		pan_sb->SetChildren(tlc);
+	} else
+		pan_sb->Pause ();
+
+	pan_animation->SetFrom (GetViewportOrigin());
+	pan_animation->SetTo (value);
+
+	pan_sb->Begin ();
+}
+
+

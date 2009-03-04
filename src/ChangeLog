@@ -1,3 +1,8 @@
+2009-03-04  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h|cpp: pan and zoom animation in
+	Viewport[Origin|Width] properties Setters
+
 2009-03-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp: Disable debug printfs unless layout debugging is

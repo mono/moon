@@ -21,6 +21,7 @@
 #include "eventargs.h"
 #include "control.h"
 #include "media.h"
+#include "animation.h"
 
 void multi_scale_image_handle_parsed (void *userdata);
 
@@ -49,6 +50,11 @@ class MultiScaleImage : public MediaBase {
 	const char* RenderSingle (cairo_t *cr, Region *region);
 	const char* RenderCollection (cairo_t *cr, Region *region);
 
+	Storyboard *zoom_sb;
+	Storyboard *pan_sb;
+	DoubleAnimation *zoom_animation;
+	PointAnimation *pan_animation;
+
  protected:
 	virtual ~MultiScaleImage ();
 
@@ -63,9 +69,9 @@ class MultiScaleImage : public MediaBase {
 	const static int SubImagesProperty;
 	/* @PropertyType=bool,DefaultValue=true,Version=2.0,GenerateAccessors */
 	const static int UseSpringsProperty;
-	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
+	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateGetter */
 	const static int ViewportOriginProperty;
-	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
 	const static int ViewportWidthProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
