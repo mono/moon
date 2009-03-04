@@ -343,14 +343,14 @@ namespace MoonTest.System.Windows.Media.Animation {
 			EnqueueConditional (() => Environment.TickCount - start > 100);
 			Enqueue (() => {
 				width = target.Width;
-				Assert.IsTrue (width > 5);
+				Assert.IsTrue (width > 5, "1");
 				TestPanel.Resources.Clear();
 				start = Environment.TickCount;
 			});
 
 			EnqueueConditional(() => Environment.TickCount - start > 100);
 			Enqueue (() => {
-				Assert.IsTrue (target.Width - width > 10);
+				Assert.IsTrue (target.Width - width > 10, "2");
 			});
 			EnqueueTestComplete ();
 		}
