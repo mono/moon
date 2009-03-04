@@ -88,7 +88,7 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 	double height = GetViewportWidth () / (GetAspectRatio () * zoomIncrementFactor);
 	SetViewportWidth (width);
 	if (!isnan(zoomCenterLogicalX) && !isnan(zoomCenterLogicalY))
-		SetViewportOrigin (new Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0));
+		SetViewportOrigin (Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0));
 }
 
 Point
@@ -827,12 +827,10 @@ MultiScaleImage::SetViewportWidth (double value)
 }
 
 void
-MultiScaleImage::SetViewportOrigin (Point *value)
+MultiScaleImage::SetViewportOrigin (Point value)
 {
-	if (!value)
-		return;
 	if (!GetUseSprings ()) {
-		SetValue (MultiScaleImage::ViewportOriginProperty, Value (*value));
+		SetValue (MultiScaleImage::ViewportOriginProperty, Value (value));
 		return;
 	}
 

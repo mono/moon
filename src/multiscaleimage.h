@@ -103,9 +103,11 @@ class MultiScaleImage : public MediaBase {
 	void SetUseSprings (bool spring);
 
 	Point* GetViewportOrigin ();
-	void SetViewportOrigin (Point* p);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetViewportOrigin (Point p);
 
 	double GetViewportWidth ();
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetViewportWidth (double width);
 
 	MultiScaleSubImageCollection *GetSubImages ();

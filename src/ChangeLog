@@ -1,5 +1,10 @@
 2009-03-04  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h|cpp: generate PInvoke for Setters so the
+	animations are used from managed Set() too
+
+2009-03-04  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.h|cpp: pan and zoom animation in
 	Viewport[Origin|Width] properties Setters
 
