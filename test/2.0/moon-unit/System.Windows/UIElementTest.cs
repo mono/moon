@@ -52,34 +52,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		public void DefaultProperties ()
-		{
-			ConcreteUIElement ui = new ConcreteUIElement ();
-
-			// default properties on UIElement...
-			CheckDefaultProperties (ui);
-		}
-
-		static public void CheckDefaultProperties (UIElement ui)
-		{
-			// default properties on UIElement
-			Assert.IsNull (ui.Clip, "Clip");
-			Assert.AreEqual (new Size (0, 0), ui.DesiredSize, "DesiredSize");
-			Assert.IsTrue (ui.IsHitTestVisible, "IsHitTestVisible");
-			Assert.AreEqual (1.0d, ui.Opacity, "Opacity");
-			Assert.IsNull (ui.OpacityMask, "OpacityMask");
-			Assert.AreEqual (new Size (0, 0), ui.RenderSize, "RenderSize");
-			Assert.IsTrue (ui.RenderTransform is MatrixTransform, "RenderTransform");
-			Assert.IsTrue ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/Identity");
-			Assert.AreEqual (new Point (0, 0), ui.RenderTransformOrigin, "RenderTransformOrigin");
-			Assert.IsTrue (ui.UseLayoutRounding, "UseLayoutRounding");
-			Assert.AreEqual (Visibility.Visible, ui.Visibility, "Visibility");
-
-			// default properties on DependencyObject
-			DependencyObjectTest.CheckDefaultProperties (ui);
-		}
-
-		[TestMethod]
 		public void DefaultMethods ()
 		{
 			ConcreteUIElement ui = new ConcreteUIElement ();

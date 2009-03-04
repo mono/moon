@@ -416,6 +416,9 @@ DependencyObject *dependency_object_new (void);
 DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind);
 
 /* @GeneratePInvoke */
+DependencyObject *dependency_object_get_logical_parent (DependencyObject *instance);
+
+/* @GeneratePInvoke */
 const char *dependency_object_get_name (DependencyObject *instance);
 
 /* @GeneratePInvoke */

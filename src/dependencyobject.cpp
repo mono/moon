@@ -1466,17 +1466,15 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			new_as_dep->SetSurface (GetSurface ());
 
 			// set its logical parent
-			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this) {
-				/*g_warning ("DependencyObject (%s) already has a logical parent of type %s. Setting logical parent to a %s.",
-					   new_as_dep->GetType ()->GetName (),
-					   new_as_dep->GetLogicalParent ()->GetType ()->GetName (),
-					   GetType ()->GetName ());*/
+			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this && new_as_dep->Is(Type::UIELEMENT)) {
+				MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is a child of another element");
+				return;
 			}
 			
 			MoonError error;
 			new_as_dep->SetLogicalParent (this, &error);
  			if (error.number)
- 				return /*XXX false*/;
+ 				return;
 			
 			// listen for property changes on the new object
 			new_as_dep->AddPropertyChangeListener (this, property);

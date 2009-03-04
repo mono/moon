@@ -45,25 +45,6 @@ namespace MoonTest.System.Windows.Controls {
 	public class SliderTest {
 
 		[TestMethod]
-		[MoonlightBug]
-		public void DefaultProperties ()
-		{
-			Slider s = new Slider ();
-			// default properties on Slider
-			CheckDefaultProperties (s, 1.0);
-		}
-
-		public static void CheckDefaultProperties (Slider s, double maximum)
-		{
-			Assert.IsFalse (s.IsDirectionReversed, "IsDirectionReversed");
-			Assert.IsFalse (s.IsFocused, "IsFocused");
-			Assert.AreEqual (Orientation.Horizontal, s.Orientation, "Orientation");
-
-			// default properties on RangeBase...
-			RangeBaseTest.CheckDefaultProperties (s, maximum);
-		}
-
-		[TestMethod]
 		public void Properties ()
 		{
 			Slider s = new Slider ();
@@ -194,7 +175,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("should work once templates are applied")]
 		public void MinimalXaml ()
 		{
 			Canvas c = (Canvas) XamlReader.Load (@"
@@ -205,30 +185,6 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsFalse (s.IsDirectionReversed, "IsDirectionReversed");
 			Assert.IsFalse (s.IsFocused, "IsFocused");
 			Assert.AreEqual (Orientation.Horizontal, s.Orientation, "Orientation");
-
-			// default properties on Control
-			Assert.IsNull (s.Background, "Background");
-			Assert.IsNotNull (s.BorderBrush, "BorderBrush");
-			Assert.IsTrue (s.BorderBrush is LinearGradientBrush, "BorderBrush/LinearGradientBrush");
-			Assert.AreEqual (new Thickness (1, 1, 1, 1), s.BorderThickness, "BorderThickness");
-			Assert.IsNotNull (s.FontFamily, "FontFamily");
-			Assert.AreEqual (FontStretches.Normal, s.FontStretch, "FontStretch");
-			Assert.AreEqual (FontStyles.Normal, s.FontStyle, "FontStyle");
-			Assert.AreEqual (FontWeights.Normal, s.FontWeight, "FontWeight");
-			Assert.IsNotNull (s.Foreground, "Foreground");
-			Assert.IsTrue (s.Foreground is SolidColorBrush, "Foreground/SolidColorBrush");
-			Assert.AreEqual (Colors.Black, (s.Foreground as SolidColorBrush).Color, "Foreground.Color");
-			Assert.AreEqual (HorizontalAlignment.Center, s.HorizontalContentAlignment, "HorizontalContentAlignment");
-			Assert.IsTrue (s.IsEnabled, "IsEnabled");
-			Assert.IsFalse (s.IsTabStop, "IsTabStop");
-			Assert.AreEqual (new Thickness (0, 0, 0, 0), s.Padding, "Padding");
-			Assert.AreEqual (Int32.MaxValue, s.TabIndex, "AreEqual");
-			Assert.AreEqual (KeyboardNavigationMode.Local, s.TabNavigation, "TabNavigation");
-			Assert.IsNotNull (s.Template, "Template");
-			Assert.AreEqual (typeof (Slider), (s.Template as ControlTemplate).TargetType, "Template/TargetType");
-			Assert.AreEqual (VerticalAlignment.Center, s.VerticalContentAlignment, "VerticalContentAlignment");
-
-			FrameworkElementTest.CheckDefaultProperties (s, c);
 		}
 	}
 }

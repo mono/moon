@@ -38,14 +38,5 @@ namespace MoonTest.System.Windows.Shapes {
 
 	[TestClass]
 	public class PolylineTest {
-
-		[TestMethod]
-		public void DefaultValues ()
-		{
-			Polyline p = new Polyline ();
-			Assert.AreEqual (FillRule.EvenOdd, p.FillRule, "FillRule");
-			Assert.IsNotNull (p.Points, "Points");
-			ShapeTest.CheckDefaultValues (p, Stretch.None);
-		}
 	}
 }

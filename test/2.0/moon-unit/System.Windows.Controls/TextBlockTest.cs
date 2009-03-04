@@ -39,18 +39,6 @@ namespace MoonTest.System.Windows.Controls {
 	public class TextBlockTest {
 
 		[TestMethod]
-		[MoonlightBug]
-		public void Defaults ()
-		{
-			TextBlock tb = new TextBlock ();
-			// TODO
-			Assert.AreEqual (11, tb.FontSize, "FontSize");
-			Assert.AreEqual ("Portable User Interface", tb.FontFamily.ToString (), "FontFamily");
-			Assert.AreEqual (FontStretches.Normal, tb.FontStretch, "FontStretch");
-			FrameworkElementTest.CheckDefaultProperties (tb);
-		}
-
-		[TestMethod]
 		public void NullifyFontFamily ()
 		{
 			TextBlock tb = new TextBlock ();

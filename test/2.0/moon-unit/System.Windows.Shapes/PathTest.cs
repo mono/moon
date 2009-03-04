@@ -16,14 +16,6 @@ namespace MoonTest.System.Windows.Shapes
 	public class PathTest
 	{
 		[TestMethod]
-		public void DefaultValues ()
-		{
-			Path p = new Path ();
-			Assert.IsNull (p.Data, "Data");
-			ShapeTest.CheckDefaultValues (p, Stretch.None);
-		}
-
-		[TestMethod]
 		public void MeasureRectangleTest1 ()
 		{
 			Path p = new Path ();

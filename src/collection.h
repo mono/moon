@@ -112,7 +112,6 @@ public:
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 	
 protected:
-	virtual bool CanAdd (Value *value);
 	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual void RemovedFromCollection (Value *value);
 	
@@ -234,8 +233,6 @@ class InlineCollection : public DependencyObjectCollection {
 /* @Namespace=System.Windows.Controls */
 class UIElementCollection : public DependencyObjectCollection {
  protected:
-	virtual bool CanAdd (Value *value);
-
 	virtual ~UIElementCollection ();
 	
  public:
@@ -280,7 +277,6 @@ protected:
 /* @Namespace=System.Windows.Controls */
 class HitTestCollection : public UIElementCollection {
  protected:
-	virtual bool CanAdd (Value *value);
 	virtual bool AddedToCollection (Value *value, MoonError *error) { return true; }
 	
  public:

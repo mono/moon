@@ -65,21 +65,6 @@ namespace MoonTest.System.Windows.Shapes {
 			}
 		}
 
-		public static void CheckDefaultValues (Shape s, Stretch stretch)
-		{
-			Assert.IsNull (s.Fill, "Fill");
-			Assert.IsNull (s.Stroke, "Stroke");
-			Assert.AreEqual (0, s.StrokeDashArray.Count, "StrokeDashArray");
-			Assert.AreEqual (PenLineCap.Flat, s.StrokeDashCap, "StrokeDashCap");
-			Assert.AreEqual (PenLineCap.Flat, s.StrokeEndLineCap, "StrokeEndLineCap");
-			Assert.AreEqual (PenLineCap.Flat, s.StrokeStartLineCap, "StrokeStartLineCap");
-			Assert.AreEqual (PenLineJoin.Miter, s.StrokeLineJoin, "StrokeLineJoin");
-			Assert.AreEqual (stretch, s.Stretch, "Stretch");
-			Assert.AreEqual (0.0d, s.StrokeDashOffset, "StrokeDashOffset");
-			Assert.AreEqual (10.0d, s.StrokeMiterLimit, "StrokeMiterLimit");
-			Assert.AreEqual (1.0d, s.StrokeThickness, "StrokeThickness");
-		}
-
 		[TestMethod]
 		public void MeasureTest ()
 		{

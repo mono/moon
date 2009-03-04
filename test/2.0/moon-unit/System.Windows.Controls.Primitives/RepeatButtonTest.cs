@@ -41,19 +41,6 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 	public class RepeatButtonTest {
 
 		[TestMethod]
-		[MoonlightBug]
-		public void DefaultProperties ()
-		{
-			RepeatButton rb = new RepeatButton ();
-			// default properties on RepeatButton
-			Assert.AreEqual (500, rb.Delay, "Delay");
-			Assert.AreEqual (33, rb.Interval, "Interval");
-
-			// default properties on ButtonBase...
-			ButtonBaseTest.CheckDefaultProperties (rb, ClickMode.Press);
-		}
-
-		[TestMethod]
 		public void Delay ()
 		{
 			RepeatButton rb = new RepeatButton ();

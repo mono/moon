@@ -1,3 +1,94 @@
+2009-03-03  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs (AddRunningStoryboard):
+	mark this as passing, but it's likely not passing for the right
+	reason.  the collection stuff is throwing IOE.
+
+	* System.Windows/FrameworkElementTest.cs: remove defaults tests -
+	they're in DefaultValues now.
+	(LogicalParentTest[1-6]): new tests.
+
+	* System.Windows/SetterTest.cs (ReuseSetter): mark this as
+	working.
+
+	* System.Windows/StyleTest.cs (UseSetterTwice): mark this as
+	working.
+
+	* System.Windows/UIElementTest.cs: remove defaults tests - they're
+	in DefaultValues now.
+
+	* System.Windows.Controls.Primitives/RangeBaseTest.cs: remove
+	defaults tests - they're in DefaultValues now.
+
+	* System.Windows.Controls.Primitives/ButtonBaseTest.cs: remove
+	defaults tests - they're in DefaultValues now.
+
+	* System.Windows.Controls.Primitives/ThumbTest.cs: remove defaults
+	tests - they're in DefaultValues now.
+	(MinimalXaml): mark this as working now.
+
+	* System.Windows.Controls.Primitives/RepeatButtonTest.cs: remove
+	defaults tests - they're in DefaultValues now.
+
+	* System.Windows.Shapes/PolygonTest.cs: remove defaults tests -
+	they're in DefaultValues now.
+
+	* System.Windows.Shapes/LineTest.cs: remove defaults tests -
+	they're in DefaultValues now.
+
+	* System.Windows.Shapes/RectangleTest.cs: remove defaults tests -
+	they're in DefaultValues now.
+
+	* System.Windows.Shapes/ShapeTest.cs: remove defaults tests -
+	they're in DefaultValues now.
+
+	* System.Windows.Shapes/EllipseTest.cs: remove defaults tests -
+	they're in DefaultValues now.
+
+	* System.Windows.Shapes/PathTest.cs: remove defaults tests -
+	they're in DefaultValues now.
+
+	* System.Windows.Shapes/PolylineTest.cs: remove defaults
+	tests - they're in DefaultValues now.
+
+	* System.Windows.Controls/ContentPresenterTest.cs: remove defaults
+	tests - they're in DefaultValues now.
+
+	* System.Windows.Controls/TextBlockTest.cs: remove defaults tests
+	- they're in DefaultValues now.
+
+	* System.Windows.Controls/MediaElementTest.cs: remove defaults
+	tests - they're in DefaultValues now.
+
+	* System.Windows.Controls/ProgressBarTest.cs: remove defaults
+	tests - they're in DefaultValues now.
+
+	* System.Windows.Controls/SliderTest.cs: remove defaults tests -
+	they're in DefaultValues now.
+	(MinimalXaml): mark as working now.
+
+	* System.Windows.Controls/ControlTest.cs: remove defaults tests -
+	they're in DefaultValues now.
+
+	* System.Windows.Controls/ScrollViewerTest.cs: remove defaults
+	tests - they're in DefaultValues now.
+
+	* System.Windows.Controls/UserControlTest.cs: remove defaults
+	tests - they're in DefaultValues now.
+
+	* System.Windows.Controls/BorderTest.cs: remove defaults tests -
+	they're in DefaultValues now.
+
+	* System.Windows.Controls/ControlTemplateTest.cs (ParentOfContent):
+	fixed.
+
+	* System.Windows.Controls/ContentControlTest.cs: remove defaults
+	tests - they're in DefaultValues now.
+	(ContentShareFrameworkElement): mark as working now.
+
+	* System.Windows.Controls/ButtonTest.cs: remove defaults tests -
+	they're in DefaultValues now.
+
 2009-03-03  Jackson Harper  <jackson@ximian.com>
 
 	* misc/Parsing/EnumsTest.cs: New test for parsing managed enums.

@@ -38,16 +38,5 @@ namespace MoonTest.System.Windows.Shapes {
 
 	[TestClass]
 	public class LineTest {
-
-		[TestMethod]
-		public void DefaultValues ()
-		{
-			Line l = new Line ();
-			Assert.AreEqual (0.0d, l.X1, "X1");
-			Assert.AreEqual (0.0d, l.Y1, "Y1");
-			Assert.AreEqual (0.0d, l.X2, "X2");
-			Assert.AreEqual (0.0d, l.Y2, "Y2");
-			ShapeTest.CheckDefaultValues (l, Stretch.None);
-		}
 	}
 }

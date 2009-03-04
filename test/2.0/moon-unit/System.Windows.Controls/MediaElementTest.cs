@@ -25,49 +25,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[MoonlightBug]
-		public void NonWorkingDefaults()
-		{
-			MediaElement m = new MediaElement ();
-			// Should never get an abstract class from unmanaged code MEDIAATTRIBUTE_COLLECTION
-			Assert.IsNotNull (m.Attributes, "Attributes");
-			// NotImplementedException
-			Assert.IsNotNull (m.LicenseAcquirer, "LicenseAcquirer");
-		}
-
-		[TestMethod]
-		public void TestDefaults()
-		{
-			MediaElement m = new MediaElement ();
-//			Assert.IsNotNull (m.Attributes, "Attributes");
-			Assert.AreEqual (0, m.AudioStreamCount, "AudioStreamCount");
-			Assert.IsNull (m.AudioStreamIndex, "AudioStreamIndex");
-			Assert.IsTrue (m.AutoPlay, "AutoPlay");
-			Assert.AreEqual (0, m.Balance, "Balance");
-			Assert.AreEqual (0, m.BufferingProgress, "BufferingProgress");
-			Assert.IsFalse (m.CanPause, "CanPause");
-			Assert.IsFalse (m.CanSeek, "CanSeek");
-			Assert.AreEqual(MediaElementState.Closed, m.CurrentState, "CurrentState");
-			Assert.AreEqual (0, m.DownloadProgress, "DownloadProgress");
-			Assert.AreEqual (0, m.DownloadProgressOffset, "DownloadProgressOffset");
-			Assert.AreEqual (0, m.DroppedFramesPerSecond, "DroppedFramesPerSecond");
-			Assert.IsFalse (m.IsMuted, "IsMuted");
-//			Assert.IsNotNull (m.LicenseAcquirer, "LicenseAcquirer");
-			Assert.IsNotNull (m.Markers, "Markers");
-			Assert.AreEqual (0, m.Markers.Count, "Markers.Count");
-			Assert.AreEqual (new Duration(TimeSpan.Zero), m.NaturalDuration, "NaturalDuration");
-			Assert.AreEqual (0, m.NaturalVideoHeight, "NaturalVideoHeight");
-			Assert.AreEqual (0, m.NaturalVideoWidth, "NaturalVideoWidth");
-			Assert.AreEqual (TimeSpan.Zero, m.Position, "Position");
-			Assert.AreEqual (0, m.RenderedFramesPerSecond, "RenderedFramesPerSecond");
-			Assert.IsNull (m.Source, "Source");
-			Assert.AreEqual (Stretch.Uniform, m.Stretch, "Stretch");
-			Assert.AreEqual (0.5, m.Volume, "Volume");
-
-			FrameworkElementTest.CheckDefaultProperties (m);
-		}
-
-		[TestMethod]
-		[MoonlightBug]
 		public void TestInvalidValues()
 		{
 			MediaElement m = new MediaElement();

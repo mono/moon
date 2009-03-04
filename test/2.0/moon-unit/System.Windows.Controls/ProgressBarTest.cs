@@ -41,18 +41,6 @@ namespace MoonTest.System.Windows.Controls {
 	public class ProgressBarTest {
 
 		[TestMethod]
-		[MoonlightBug]
-		public void DefaultProperties ()
-		{
-			ProgressBar pb = new ProgressBar ();
-			// default properties on ProgressBar
-			Assert.IsFalse (pb.IsIndeterminate, "IsIndeterminate");
-
-			// default properties on RangeBase...
-			RangeBaseTest.CheckDefaultProperties (pb);
-		}
-
-		[TestMethod]
 		public void ToStringTest ()
 		{
 			ProgressBar pb = new ProgressBar ();

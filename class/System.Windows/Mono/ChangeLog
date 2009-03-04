@@ -1,3 +1,7 @@
+2009-03-03  Chris Toshok  <toshok@ximian.com>
+
+	* GeneratedPInvokes.cs: regen.
+
 2009-03-03  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: SetProperty now takes a Value instead of a

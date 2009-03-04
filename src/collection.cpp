@@ -324,14 +324,25 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 {
 	DependencyObject *obj = value->AsDependencyObject ();
 	
+	DependencyObject *parent = obj->GetLogicalParentIncludingCollections();
+	
 	// Call SetSurface() /before/ setting the logical parent
 	// because Storyboard::SetSurface() needs to be able to
 	// distinguish between the two cases.
-	
 	obj->SetSurface (GetSurface ());
-	obj->SetLogicalParent (this, error);
-	if (error->number)
-		return false;
+
+	if (parent) {
+		if (parent->Is(Type::COLLECTION)) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is already a child of another element.");
+			return false;
+		}
+	}
+	else {
+		obj->SetLogicalParent (this, error);
+		if (error->number)
+			return false;
+	}
+
 	obj->AddPropertyChangeListener (this);
 	
 	return Collection::AddedToCollection (value, error);
@@ -406,13 +417,6 @@ DependencyObjectCollection::RegisterAllNamesRootedAt (NameScope *to_ns, MoonErro
 	
 	Collection::RegisterAllNamesRootedAt (to_ns, error);
 }
-
-bool
-DependencyObjectCollection::CanAdd (Value *value)
-{
-	return Collection::CanAdd (value) && value->AsDependencyObject ()->GetLogicalParent () == NULL;
-}
-
 
 //
 // InlineCollection
@@ -504,24 +508,12 @@ UIElementCollection::Clear ()
 	return DependencyObjectCollection::Clear ();
 }
 
-bool
-UIElementCollection::CanAdd (Value *value)
-{
-	return Collection::CanAdd (value) && value->AsUIElement ()->GetVisualParent () == NULL;
-}
-
 //
 // HitTestCollection
 //
 
 HitTestCollection::HitTestCollection ()
 {
-}
-
-bool
-HitTestCollection::CanAdd (Value *value)
-{
-	return Collection::CanAdd (value);
 }
 
 //

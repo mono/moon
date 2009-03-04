@@ -37,14 +37,5 @@ namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
 	public class ContentPresenterTest {
-
-		[TestMethod]
-		public void DefaultValues ()
-		{
-			ContentPresenter cp = new ContentPresenter ();
-			Assert.IsNull (cp.Content, "Content");
-			Assert.IsNull (cp.ContentTemplate, "ContentTemplate");
-			FrameworkElementTest.CheckDefaultProperties (cp);
-		}
 	}
 }

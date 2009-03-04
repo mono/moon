@@ -926,6 +926,16 @@ dependency_object_find_name (DependencyObject *instance, const char *name, Type:
 }
 
 
+DependencyObject *
+dependency_object_get_logical_parent (DependencyObject *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetLogicalParent ();
+}
+
+
 const char *
 dependency_object_get_name (DependencyObject *instance)
 {

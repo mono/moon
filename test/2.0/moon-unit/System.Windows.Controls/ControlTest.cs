@@ -179,46 +179,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
-		public void DefaultProperties ()
-		{
-			ConcreteControl c = new ConcreteControl ();
-			Assert.IsNull (c.DefaultStyleKey_, "DefaultStyleKey");
-			CheckDefaultProperties (c);
-		}
-
-		static public void CheckDefaultProperties (Control c)
-		{
-			CheckDefaultProperties (c, true, null);
-		}
-
-		static public void CheckDefaultProperties (Control c, bool tabStop, DependencyObject parent)
-		{
-			// default properties on Control
-			Assert.IsNull (c.Background, "Background");
-			Assert.IsNull (c.BorderBrush, "BorderBrush");
-			Assert.AreEqual (new Thickness (0, 0, 0, 0), c.BorderThickness, "BorderThickness");
-			Assert.IsNotNull (c.FontFamily, "FontFamily");
-			Assert.AreEqual (11, c.FontSize, "FontSize");
-			Assert.AreEqual (FontStretches.Normal, c.FontStretch, "FontStretch");
-			Assert.AreEqual (FontStyles.Normal, c.FontStyle, "FontStyle");
-			Assert.AreEqual (FontWeights.Normal, c.FontWeight, "FontWeight");
-			Assert.IsNotNull (c.Foreground, "Foreground");
-			Assert.IsTrue (c.Foreground is global::System.Windows.Media.SolidColorBrush, "Foreground/SolidColorBrush");
-			Assert.AreEqual (global::System.Windows.Media.Colors.Black, (c.Foreground as global::System.Windows.Media.SolidColorBrush).Color, "Foreground.Color");
-			Assert.AreEqual (HorizontalAlignment.Center, c.HorizontalContentAlignment, "HorizontalContentAlignment");
-			Assert.IsTrue (c.IsEnabled, "IsEnabled");
-			Assert.AreEqual (tabStop, c.IsTabStop, "IsTabStop");
-			Assert.AreEqual (new Thickness (0, 0, 0, 0), c.Padding, "Padding");
-			Assert.AreEqual (Int32.MaxValue, c.TabIndex, "AreEqual");
-			Assert.AreEqual (KeyboardNavigationMode.Local, c.TabNavigation, "TabNavigation");
-			Assert.IsNull (c.Template, "Template");
-			Assert.AreEqual (VerticalAlignment.Center, c.VerticalContentAlignment, "VerticalContentAlignment");
-
-			FrameworkElementTest.CheckDefaultProperties (c, parent);
-		}
-
-		[TestMethod]
 		public void InvalidValues()
 		{
 			ConcreteControl c = new ConcreteControl();

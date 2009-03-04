@@ -1,3 +1,23 @@
+2009-03-03  Chris Toshok  <toshok@ximian.com>
+
+	* cbinding.h, cbinding.cpp: regen.
+	
+	* collection.h,	collection.cpp (DependencyObjectCollection::AddedToCollection): if
+	the parent of the DO is a collection, throw an exception.
+	(UIElementCollection::CanAdd): remove.
+	(DependencyObjectCollection::CanAdd): remove.
+	(HitTestCollection::CanAdd): remove.
+
+	* dependencyobject.cpp (DependencyObject::ProviderValueChanged):
+	reinstate the multiple parents warning, but make it a MoonError,
+	and make it only apply to visual elements (UIElement subclasses,
+	specifically).
+
+	* dependencyobject.h (GetLogicalParentIncludingCollections): add a
+	new getter for just the logical_parent field, which is horribly
+	named.
+	(GetLogicalParent): add a pinvoke for this.
+
 2009-03-03  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: SetProperty now takes a Value instead of a

@@ -57,24 +57,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
-		public void DefaultProperties ()
-		{
-			ContentControl cc = new ContentControl ();
-			// default properties on ContentControl
-			CheckDefaultProperties (cc);
-		}
-
-		static public void CheckDefaultProperties (ContentControl cc)
-		{
-			Assert.IsNull (cc.Content, "Content");
-			Assert.IsNull (cc.ContentTemplate, "ContentTemplate");
-
-			// default properties on Control...
-			ControlTest.CheckDefaultProperties (cc);
-		}
-
-		[TestMethod]
 		public void PeekProperties ()
 		{
 			ContentControlPoker cc = new ContentControlPoker ();
@@ -166,7 +148,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ContentShareFrameworkElement ()
 		{
 			CanNotShare (new ConcreteFrameworkElement ());

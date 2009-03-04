@@ -56,13 +56,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		public void DefaultProperties ()
-		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			CheckDefaultProperties (fe);
-		}
-
-		[TestMethod]
 		public void BrokenProperties ()
 		{
 			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
@@ -70,38 +63,6 @@ namespace MoonTest.System.Windows {
 			Assert.IsTrue (Double.IsNaN (fe.Height), "Height");
 			Assert.AreEqual (String.Empty, fe.Name, "Name");
 			Assert.IsTrue (Double.IsNaN (fe.Width), "Width");
-		}
-
-		static public void CheckDefaultProperties (FrameworkElement fe)
-		{
-			CheckDefaultProperties (fe, null);
-		}
-
-		static public void CheckDefaultProperties (FrameworkElement fe, DependencyObject parent)
-		{
-			// default properties on FrameworkElement
-			Assert.AreEqual (0.0, fe.ActualHeight, "ActualHeight");
-			Assert.AreEqual (0.0, fe.ActualWidth, "ActualWidth");
-//			Assert.IsNull (fe.Cursor, "Cursor");
-			Assert.IsNull (fe.DataContext, "DataContext");
-//			Assert.IsTrue (Double.IsNaN (fe.Height), "Height");
-			Assert.AreEqual (HorizontalAlignment.Stretch, fe.HorizontalAlignment, "HorizontalAlignment");
-			Assert.IsNotNull (fe.Language, "Language");
-			Assert.AreEqual (new Thickness (0, 0, 0, 0), fe.Margin, "Margin");
-			Assert.IsTrue (Double.IsInfinity (fe.MaxHeight), "MaxHeight");
-			Assert.IsTrue (Double.IsInfinity (fe.MaxWidth), "MaxWidth");
-			Assert.AreEqual (0.0, fe.MinHeight, "MinHeight");
-			Assert.AreEqual (0.0, fe.MinWidth, "MinWidth");
-//			Assert.AreEqual (String.Empty, fe.Name, "Name");
-			Assert.AreEqual (parent, fe.Parent, "Parent");
-			Assert.IsNotNull (fe.Resources, "Resources");
-			Assert.IsNull (fe.Style, "Style");
-			Assert.IsNull (fe.Tag, "Tag");
-			Assert.IsNotNull (fe.Triggers, "Triggers");
-			Assert.AreEqual (VerticalAlignment.Stretch, fe.VerticalAlignment, "VerticalAlignment");
-//			Assert.IsTrue (Double.IsNaN (fe.Width), "Width");
-
-			UIElementTest.CheckDefaultProperties (fe);
 		}
 
 		[TestMethod]
@@ -292,5 +253,91 @@ namespace MoonTest.System.Windows {
 			c.Tag = global::System.UriKind.Absolute;
 			Assert.IsTrue (c.Tag is global::System.UriKind, "Type was {0}, should be System.UriKind", c.Tag.GetType ().Name);
 		}
+
+
+		[TestMethod]
+		public void LogicalParentTest1 ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			Canvas canvas = new Canvas ();
+
+			canvas.Children.Add (c);
+
+			Assert.AreEqual (canvas, c.Parent);
+		}
+
+		[TestMethod]
+		public void LogicalParentTest2 ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			Canvas canvas1 = new Canvas ();
+			Canvas canvas2 = new Canvas ();
+
+			canvas1.Children.Add (c);
+			Assert.Throws<InvalidOperationException> (delegate { canvas2.Children.Add (c); }, "1");
+
+			Assert.AreEqual (canvas1, c.Parent, "2");
+
+			Assert.AreEqual (1, canvas1.Children.Count, "3");
+			Assert.AreEqual (0, canvas2.Children.Count, "4");
+		}
+
+		[TestMethod]
+		public void LogicalParentTest3 ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			ContentControl contentControl = new ContentControl ();
+
+			contentControl.Content = c;
+
+			Assert.AreEqual (contentControl, c.Parent);
+		}
+
+		[TestMethod]
+		public void LogicalParentTest4 ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			ContentControl contentControl1 = new ContentControl ();
+			ContentControl contentControl2 = new ContentControl ();
+
+			contentControl1.Content = c;
+			Assert.Throws<InvalidOperationException> (delegate { contentControl2.Content = c; }, "1");
+
+			Assert.AreEqual (c, contentControl1.Content, "2");
+			Assert.AreEqual (c, contentControl2.Content, "3");
+
+			Assert.AreEqual (contentControl1, c.Parent, "4");
+		}
+
+		[TestMethod]
+		public void LogicalParentTest5 ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			ContentControl contentControl = new ContentControl ();
+			Canvas canvas = new Canvas ();
+
+			contentControl.Content = c;
+			canvas.Children.Add (c);
+
+			Assert.AreEqual (contentControl, c.Parent, "1");
+			Assert.AreEqual (1, canvas.Children.Count, "2");
+		}
+
+		[TestMethod]
+		public void LogicalParentTest6 ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			ContentControl contentControl = new ContentControl ();
+			Canvas canvas = new Canvas ();
+
+			canvas.Children.Add (contentControl);
+
+			contentControl.Content = c;
+
+			Assert.AreEqual (contentControl, c.Parent, "1");
+			Assert.AreEqual (1, canvas.Children.Count, "2");
+		}
+
+		// XXX missing some template/contentpresenter love wrt the logical parent tests
 	}
 }

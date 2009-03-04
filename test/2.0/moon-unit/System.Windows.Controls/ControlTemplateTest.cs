@@ -161,7 +161,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ParentOfContent ()
 		{
 			Canvas c = (Canvas)XamlReader.Load (@"

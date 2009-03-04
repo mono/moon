@@ -38,12 +38,5 @@ namespace MoonTest.System.Windows.Shapes {
 
 	[TestClass]
 	public class EllipseTest {
-
-		[TestMethod]
-		public void DefaultValues ()
-		{
-			Ellipse e = new Ellipse ();
-			ShapeTest.CheckDefaultValues (e, Stretch.Fill);
-		}
 	}
 }

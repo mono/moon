@@ -14,15 +14,6 @@ namespace MoonTest.System.Windows.Shapes
 	public class RectangleTest
 	{
 		[TestMethod]
-		public void DefaultValues ()
-		{
-			Rectangle r = new Rectangle ();
-			Assert.AreEqual (0.0d, r.RadiusX, "RadiusX");
-			Assert.AreEqual (0.0d, r.RadiusY, "RadiusY");
-			ShapeTest.CheckDefaultValues (r, Stretch.Fill);
-		}
-
-		[TestMethod]
 		public void MeasureTest1 ()
 		{
 			Rectangle r = new Rectangle ();

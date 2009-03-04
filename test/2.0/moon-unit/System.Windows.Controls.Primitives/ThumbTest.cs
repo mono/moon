@@ -43,19 +43,6 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 	public class ThumbTest {
 
 		[TestMethod]
-		[MoonlightBug]
-		public void DefaultProperties ()
-		{
-			Thumb t = new Thumb ();
-			// default properties on Thumb
-			Assert.IsFalse (t.IsDragging, "IsDragging");
-			Assert.IsFalse (t.IsFocused, "IsFocused");
-
-			// default properties on Control...
-			ControlTest.CheckDefaultProperties (t);
-		}
-
-		[TestMethod]
 		public void ReadOnlyProperties ()
 		{
 			Thumb t = new Thumb ();
@@ -93,7 +80,6 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("should work once templates are applied")]
 		public void MinimalXaml ()
 		{
 			Canvas c = (Canvas) XamlReader.Load (@"
@@ -107,26 +93,6 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			Assert.AreEqual ("#FF1F3B53", (t.Background as SolidColorBrush).Color.ToString (), "Background.Color");
 			Assert.IsNotNull (t.BorderBrush, "BorderBrush");
 			Assert.IsTrue (t.BorderBrush is LinearGradientBrush, "BorderBrush/LinearGradientBrush");
-
-			Assert.AreEqual (new Thickness (1, 1, 1, 1), t.BorderThickness, "BorderThickness");
-			Assert.IsNotNull (t.FontFamily, "FontFamily");
-			Assert.AreEqual (FontStretches.Normal, t.FontStretch, "FontStretch");
-			Assert.AreEqual (FontStyles.Normal, t.FontStyle, "FontStyle");
-			Assert.AreEqual (FontWeights.Normal, t.FontWeight, "FontWeight");
-			Assert.IsNotNull (t.Foreground, "Foreground");
-			Assert.IsTrue (t.Foreground is SolidColorBrush, "Foreground/SolidColorBrush");
-			Assert.AreEqual (Colors.Black, (t.Foreground as SolidColorBrush).Color, "Foreground.Color");
-			Assert.AreEqual (HorizontalAlignment.Center, t.HorizontalContentAlignment, "HorizontalContentAlignment");
-			Assert.IsTrue (t.IsEnabled, "IsEnabled");
-			Assert.IsFalse (t.IsTabStop, "IsTabStop");
-			Assert.AreEqual (new Thickness (0, 0, 0, 0), t.Padding, "Padding");
-			Assert.AreEqual (Int32.MaxValue, t.TabIndex, "AreEqual");
-			Assert.AreEqual (KeyboardNavigationMode.Local, t.TabNavigation, "TabNavigation");
-			Assert.IsNotNull (t.Template, "Template");
-			Assert.AreEqual (typeof (Thumb), (t.Template as ControlTemplate).TargetType, "Template/TargetType");
-			Assert.AreEqual (VerticalAlignment.Center, t.VerticalContentAlignment, "VerticalContentAlignment");
-
-			FrameworkElementTest.CheckDefaultProperties (t, c);
 		}
 	}
 }

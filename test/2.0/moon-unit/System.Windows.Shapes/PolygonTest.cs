@@ -38,14 +38,5 @@ namespace MoonTest.System.Windows.Shapes {
 
 	[TestClass]
 	public class PolygonTest {
-
-		[TestMethod]
-		public void DefaultValues ()
-		{
-			Polygon p = new Polygon ();
-			Assert.AreEqual (FillRule.EvenOdd, p.FillRule, "FillRule");
-			Assert.IsNotNull (p.Points, "Points");
-			ShapeTest.CheckDefaultValues (p, Stretch.None);
-		}
 	}
 }

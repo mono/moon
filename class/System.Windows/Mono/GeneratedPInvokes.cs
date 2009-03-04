@@ -463,6 +463,10 @@ namespace Mono {
 		// DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind);
 		public extern static IntPtr dependency_object_find_name (IntPtr instance, string name, out Kind element_kind);
 
+		[DllImport ("moon")]
+		// DependencyObject *dependency_object_get_logical_parent (DependencyObject *instance);
+		public extern static IntPtr dependency_object_get_logical_parent (IntPtr instance);
+
 		[DllImport ("moon", EntryPoint="dependency_object_get_name")]
 		// const char *dependency_object_get_name (DependencyObject *instance);
 		private extern static IntPtr dependency_object_get_name_ (IntPtr instance);

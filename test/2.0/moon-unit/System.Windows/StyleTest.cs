@@ -311,7 +311,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("known issue, fix requires xaml parser fix + patch to style.cpp")]
 		public void UseSetterTwice()
 		{
 			Style s1 = new Style(typeof(Rectangle));

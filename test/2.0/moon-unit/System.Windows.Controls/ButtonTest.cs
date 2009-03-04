@@ -41,15 +41,5 @@ namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
 	public class ButtonTest {
-
-		[TestMethod]
-		[MoonlightBug]
-		public void DefaultProperties ()
-		{
-			Button b = new Button ();
-			// TODO
-			// default properties on ButtonBase
-			ButtonBaseTest.CheckDefaultProperties (b, ClickMode.Release);
-		}
 	}
 }

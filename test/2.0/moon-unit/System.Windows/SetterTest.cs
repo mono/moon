@@ -171,7 +171,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("attached logic not executed thru xaml parser ?")]
 		public void ReuseSetter ()
 		{
 			Style style = (Style) XamlReader.Load (@"

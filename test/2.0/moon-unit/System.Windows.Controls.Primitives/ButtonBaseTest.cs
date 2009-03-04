@@ -70,26 +70,6 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
-		public void DefaultProperties ()
-		{
-			ConcreteButtonBase bb = new ConcreteButtonBase ();
-			// default properties on ButtonBase
-			CheckDefaultProperties (bb, ClickMode.Release);
-		}
-
-		static public void CheckDefaultProperties (ButtonBase bb, ClickMode mode)
-		{
-			Assert.IsFalse (bb.IsFocused, "IsFocused");
-			Assert.IsFalse (bb.IsMouseOver, "IsMouseOver");
-			Assert.IsFalse (bb.IsPressed, "IsPressed");
-			Assert.AreEqual (mode, bb.ClickMode, "ClickMode");
-
-			// default properties on ContentControl...
-			ContentControlTest.CheckDefaultProperties (bb);
-		}
-
-		[TestMethod]
 		public void CheckReadOnlyProperties ()
 		{
 			// <quote>There are some read-only dependency properties that are part

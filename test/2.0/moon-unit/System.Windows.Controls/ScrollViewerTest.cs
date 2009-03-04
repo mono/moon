@@ -39,26 +39,6 @@ namespace MoonTest.System.Windows.Controls {
 	public class ScrollViewerTest {
 
 		[TestMethod]
-		[MoonlightBug]
-		public void DefaultProperties ()
-		{
-			ScrollViewer cp = new ScrollViewer ();
-			Assert.AreEqual (Visibility.Visible, cp.ComputedHorizontalScrollBarVisibility, "ComputedHorizontalScrollBarVisibility");
-			Assert.AreEqual (Visibility.Visible, cp.ComputedVerticalScrollBarVisibility, "ComputedVerticalScrollBarVisibility");
-			Assert.AreEqual (0.0, cp.ExtentHeight, "ExtentHeight");
-			Assert.AreEqual (0.0, cp.ExtentWidth, "ExtentWidth");
-			Assert.AreEqual (0.0, cp.HorizontalOffset, "HorizontalOffset");
-			Assert.AreEqual (0.0, cp.VerticalOffset, "VerticalOffset");
-			Assert.AreEqual (ScrollBarVisibility.Disabled, cp.HorizontalScrollBarVisibility, "HorizontalScrollBarVisibility");
-			Assert.AreEqual (ScrollBarVisibility.Disabled, cp.VerticalScrollBarVisibility, "VerticalScrollBarVisibility");
-			Assert.AreEqual (0.0, cp.ViewportHeight, "ViewportHeight");
-			Assert.AreEqual (0.0, cp.ViewportWidth, "ViewportWidth");
-
-			// default properties on ContentControl
-			ContentControlTest.CheckDefaultProperties (cp);
-		}
-
-		[TestMethod]
 		public void ReadOnlyProperties ()
 		{
 			ScrollViewer cp = new ScrollViewer ();

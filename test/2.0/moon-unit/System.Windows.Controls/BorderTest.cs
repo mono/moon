@@ -20,21 +20,6 @@ namespace MoonTest.System.Windows.Controls
 	public class BorderTest
 	{
 		[TestMethod]
-		public void Defaults ()
-		{
-			Border c = new Border ();
-
-			Assert.AreEqual(null, c.Background);
-			Assert.AreEqual(null, c.BorderBrush);
-			Assert.AreEqual(new Thickness(0), c.BorderThickness);
-			Assert.AreEqual(null, c.Child);
-			Assert.AreEqual(new CornerRadius(0, 0, 0, 0), c.CornerRadius);
-			Assert.AreEqual (new Thickness(0), c.Padding);
-
-			FrameworkElementTest.CheckDefaultProperties (c);
-		}
-
-		[TestMethod]
 		public void InvalidValues()
 		{
 			Border c = new Border();
