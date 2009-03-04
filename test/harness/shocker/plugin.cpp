@@ -30,6 +30,9 @@
  */
 
 #include <strings.h>
+#define Visual _XVisual
+#include <X11/X.h>
+#undef Visual
 #include "browser.h"
 #include "plugin.h"
 #include "logging.h"
@@ -53,6 +56,9 @@ PluginObject::PluginObject (NPP npp, int argc, char *argn[], char *argv[])
 	shocker_control = NULL;
 	auto_capture = NULL;
 	instance = npp;
+	x = 0;
+	y = 0;
+	has_coordinates = false;
 	
 	for (int i = 0; i < argc; i++) {
 		if (argn[i] == NULL)
@@ -140,6 +146,22 @@ PluginObject::SetWindow (NPWindow* window)
 {
 	if (!window)
 		return NPERR_NO_ERROR;
+
+	// SetWindow does not get called when size = 0,0 (default in 1.0 tests)
+	// for 2.0 tests we set size = 1,1.
+
+	Display *display = XOpenDisplay (NULL);
+	Window root = XDefaultRootWindow (display);
+	Window src = (Window) window->window;
+	Window dummy;
+	XTranslateCoordinates (display, src, root, -window->x, -window->y, &x, &y, &dummy);
+	XCloseDisplay (display);
+
+#if SHOCKER_DEBUG
+	printf ("[Shocker] PluginObject::SetWindow (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %i, y: %i)\n", window->window, window->x, window->y, window->width, window->height, x, y);
+#endif
+
+	has_coordinates = true;
 
 	return NPERR_NO_ERROR;
 }

@@ -4,6 +4,8 @@
 #ifndef __PLUGIN_H__
 #define __PLUGIN_H__
 
+class PluginObject;
+
 #include "netscape.h"
 #include "shocker.h"
 
@@ -21,10 +23,16 @@ public:
 
 	NPError SetWindow (NPWindow* window);
 
+	bool HasCoordinates () { return has_coordinates; }
+	int GetX () { return x; }
+	int GetY () { return y; }
+	
 private:	  
 	NPP instance;
 	AutoCapture* auto_capture;
-
+	bool has_coordinates;
+	int x, y;
+	
 	ShockerScriptableControlObject* shocker_control;
 	ShockerScriptableControlObject* GetShockerControl ();
 

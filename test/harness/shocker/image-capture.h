@@ -29,6 +29,8 @@
 #ifndef __IMAGE_CAPTURE_H___
 #define __IMAGE_CAPTURE_H__
 
+class AutoCapture;
+
 #include "glib.h"
 
 #define Visual _XVisual
@@ -38,6 +40,8 @@
 #include "gdk/gdk.h"
 #include "gdk/gdkx.h"
 #undef Visual
+
+#include "plugin.h"
 
 class ScreenCaptureData {
 private:
@@ -57,9 +61,11 @@ public:
 };
 
 class ImageCaptureProvider {
-
+private:
+	PluginObject *plugin;
+	
 public:
-	ImageCaptureProvider ();
+	ImageCaptureProvider (PluginObject *plugin);
 	virtual ~ImageCaptureProvider ();
 
 	void CaptureSingleImage (const char* image_dir, const char* file_name, int x, int y, int width, int height);
@@ -93,6 +99,10 @@ private:
 	int capture_height;
 
 };
+
+G_BEGIN_DECLS
+void shocker_capture_image (const char *filename, int x, int y, int width, int height);
+G_END_DECLS
 
 #endif  // __IMAGE_CAPTURE_H__
 

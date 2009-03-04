@@ -421,7 +421,7 @@ ShockerScriptableControlObject::ShockerScriptableControlObject (NPP instance) : 
 {	
 	log_provider = new LogProvider (GetTestPath ());
 	input_provider = new InputProvider ();
-	image_capture = new ImageCaptureProvider ();
+	image_capture = new ImageCaptureProvider (GetPluginObject ());
 }
 
 ShockerScriptableControlObject::~ShockerScriptableControlObject ()
@@ -445,7 +445,7 @@ ImageCaptureProvider *
 ShockerScriptableControlObject::GetImageCaptureProvider ()
 {
 	if (!image_capture)
-		image_capture = new ImageCaptureProvider ();
+		image_capture = new ImageCaptureProvider (GetPluginObject ());
 	return image_capture;
 }
 

@@ -60,22 +60,41 @@ get_now (void)
 	return 0;
 }
 
-ImageCaptureProvider::ImageCaptureProvider ()
+ImageCaptureProvider::ImageCaptureProvider (PluginObject *plugin)
 {
+	this->plugin = plugin;
 }
 
 ImageCaptureProvider::~ImageCaptureProvider ()
 {
 }
 
+static char *moonlight_harness_output_dir = NULL;
 
 void
 ImageCaptureProvider::CaptureSingleImage (const char* image_dir, const char* file_name, int x, int y, int width, int height)
 {
+	char *image_path;
 #ifdef SHOCKER_DEBUG
 	printf ("CaptureSingleImage (%s, %s, %d, %d, %d, %d)\n", image_dir, file_name, x, y, width, height);
 #endif
-	char* image_path = g_build_filename (image_dir, file_name, NULL);
+
+	if (!(image_dir == NULL || image_dir [0] == 0))
+		printf ("[Shocker]: CaptureSingleImage ('%s', '%s', %d, %d, %d, %d): Should not be called with an image dir.\n", image_dir, file_name, x, y, width, height);
+	
+	// get the directory where to put the images.
+	if (moonlight_harness_output_dir == NULL) {
+		moonlight_harness_output_dir = getenv ("MOONLIGHT_HARNESS_OUTPUT_DIR");
+		if (moonlight_harness_output_dir == NULL || moonlight_harness_output_dir [0] == 0)
+			moonlight_harness_output_dir = g_get_current_dir ();
+	}
+		
+	image_path = g_build_filename (moonlight_harness_output_dir, file_name, NULL);
+	
+	if (plugin->HasCoordinates ()) {
+		x = plugin->GetX ();
+		y = plugin->GetY ();
+	}
 
 	ScreenCaptureData sc (x, y, width, height);
 	sc.Capture (image_path);
@@ -299,4 +318,11 @@ ScreenCaptureData::Capture (const char *filename)
 	XDestroyImage (image);
 
 	return true;
+}
+
+
+void shocker_capture_image (const char *filename, int x, int y, int width, int height)
+{
+	ScreenCaptureData sc (x, y, width, height);
+	sc.Capture (filename);
 }

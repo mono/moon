@@ -1,3 +1,19 @@
+2009-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker/plugin.h:
+	* shocker/plugin.cpp: Calculate the x,y screen coordinates of
+	  the html page when the plugin has a non-zero size.
+
+	* shocker/shocker.h:
+	* shocker/shocker.cpp: Pass on the plugin object to
+	  ImageCaptureProvider.
+
+	* shocker/image-capture.h:
+	* shocker/image-capture.cpp: Add support for
+	  MOONLIGHT_HARNESS_OUTPUT_DIR, putting screenshots in that
+	  directory. Also offset the screenshot using the coordinates
+	  the plugin found.
+
 2009-03-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* test-runner/TestRunner.cs: Need to set MONO_PATH here too.
