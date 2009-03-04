@@ -1011,6 +1011,12 @@ Point multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Poi
 MultiScaleImage *multi_scale_image_new (void);
 
 /* @GeneratePInvoke */
+void multi_scale_image_set_viewport_origin (MultiScaleImage *instance, Point p);
+
+/* @GeneratePInvoke */
+void multi_scale_image_set_viewport_width (MultiScaleImage *instance, double width);
+
+/* @GeneratePInvoke */
 void multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
 
 /**
