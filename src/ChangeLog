@@ -1,3 +1,11 @@
+2009-03-04  Geoff Norton  <gnorton@novell.com>
+
+	* deployment.cpp: Finalizing the domain destroys all objects
+	immediately.  Its possible that we might end up invoking more
+	finalizers in the unref drain thta begins after dispose, so 
+	we're going to force a full gc and finalizer run of the collected
+	objects here and allow ~Deployment to finalize the entire domain.
+
 2009-03-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pipeline.cpp (Media::DisposeObjectInternal): Return

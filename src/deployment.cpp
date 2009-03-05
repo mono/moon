@@ -27,6 +27,7 @@ G_BEGIN_DECLS
 #include <mono/metadata/mono-debug.h>
 G_END_DECLS
 #include <mono/metadata/mono-config.h>
+#include <mono/metadata/mono-gc.h>
 #include <mono/metadata/threads.h>
 
 /*
@@ -297,7 +298,8 @@ Deployment::Dispose ()
 	
 	AbortAllDownloaders ();
 	
-	mono_domain_finalize (domain, -1);
+	mono_gc_collect (mono_gc_max_generation ());
+	mono_gc_invoke_finalizers ();
 
 	if (current_app != NULL)
 		current_app->Dispose ();
