@@ -189,7 +189,7 @@ namespace Mono {
 					if (propertypath == null)
 						return new PropertyPath (null);
 					if (propertypath->property != IntPtr.Zero)
-						return new PropertyPath (DependencyProperty.Lookup (propertypath->property));
+						return null;
 					return new PropertyPath (Helper.PtrToStringAuto (propertypath->pathString));
 				}
 

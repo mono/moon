@@ -33,6 +33,7 @@ using System.Windows.Controls;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows.Media.Animation;
 
 namespace MoonTest.System.Windows
 {
@@ -56,13 +57,128 @@ namespace MoonTest.System.Windows
 			
 			prop = new PropertyPath (5);
 			Assert.IsNull (prop.Path, "numeric PropertyPath is null");
-			
-			// FIXME:
-			// This test exposes a bug in Mono, it should be using the
-			// PropertyPath(object) ctor, but it's using the
-			// PropertyPath(string, params object[]) ctor instead.
-			//prop = new PropertyPath (null);
-			//Assert.IsNull (prop.Path, "null PropertyPath is null");
+
+			Assert.Throws<NullReferenceException> (delegate {
+				prop = new PropertyPath (null, null);
+			}, "Both null");
+
+			Assert.Throws<NullReferenceException> (delegate {
+				prop = new PropertyPath ("pathstring", null);
+			}, "second null");
+
+			prop = new PropertyPath ((string) null);
+			Assert.IsNull (prop.Path, "null PropertyPath is null");
+		}
+
+		[TestMethod]
+		public void SetName ()
+		{
+			Storyboard sb = new Storyboard ();
+			PropertyPath path = new PropertyPath ("Width");
+			Storyboard.SetTargetProperty (sb, path);
+			PropertyPath native = Storyboard.GetTargetProperty (sb);
+
+			Assert.AreNotEqual (path, native, "#1");
+			Assert.IsFalse (path == native, "#2");
+			Assert.AreEqual(path.Path, native.Path, "#3");
+			Assert.AreEqual (path.Path, "Width", "#4");
+		}
+
+
+		[TestMethod]
+		public void SetToStoryboard ()
+		{
+			Storyboard sb = new Storyboard ();
+			PropertyPath path = new PropertyPath ("Width");
+			Storyboard.SetTargetProperty (sb, path);
+			PropertyPath native = Storyboard.GetTargetProperty (sb);
+
+			Assert.AreNotEqual (path, native, "#1");
+			Assert.IsFalse (path == native, "#2");
+			Assert.AreEqual (path.Path, native.Path, "#3");
+			Assert.AreEqual (path.Path, "Width", "#4");
+		}
+
+		[TestMethod]
+		public void SetToStoryboard2 ()
+		{
+			Storyboard sb = new Storyboard ();
+			PropertyPath path = new PropertyPath (null);
+			Assert.Throws<NullReferenceException> (delegate {
+				Storyboard.SetTargetProperty (sb, path);
+			}, "#A");
+		}
+
+		[TestMethod]
+		public void SetToStoryboard3 ()
+		{
+			Storyboard sb = new Storyboard ();
+			PropertyPath path = new PropertyPath (Storyboard.FillBehaviorProperty);
+			Storyboard.SetTargetProperty (sb, path);
+			PropertyPath native = Storyboard.GetTargetProperty (sb);
+
+			Assert.AreEqual (path.Path, "(0)", "#1");
+			Assert.IsNull (native, "#2");
+		}
+
+		[TestMethod]
+		public void SetToStoryboard4 ()
+		{
+			Storyboard sb = new Storyboard ();
+			PropertyPath path = new PropertyPath (Rectangle.WidthProperty);
+			Storyboard.SetTargetProperty (sb, path);
+			PropertyPath native = Storyboard.GetTargetProperty (sb);
+
+			Assert.AreEqual (path.Path, "(0)", "#1");
+			Assert.IsNull (native, "#2");
+		}
+
+		[TestMethod]
+		public void SetToTimeline ()
+		{
+			DoubleAnimation sb = new DoubleAnimation ();
+			PropertyPath path = new PropertyPath ("Width");
+			Storyboard.SetTargetProperty (sb, path);
+			PropertyPath native = Storyboard.GetTargetProperty (sb);
+
+			Assert.AreNotEqual (path, native, "#1");
+			Assert.IsFalse (path == native, "#2");
+			Assert.AreEqual (path.Path, native.Path, "#3");
+			Assert.AreEqual (path.Path, "Width", "#4");
+		}
+
+		[TestMethod]
+		public void SetToTimeline2 ()
+		{
+			DoubleAnimation sb = new DoubleAnimation ();
+			PropertyPath path = new PropertyPath (null);
+			Assert.Throws<NullReferenceException> (delegate {
+				Storyboard.SetTargetProperty (sb, path);
+			}, "#A");
+		}
+
+		[TestMethod]
+		public void SetToTimeline3 ()
+		{
+			DoubleAnimation sb = new DoubleAnimation ();
+			PropertyPath path = new PropertyPath (Storyboard.FillBehaviorProperty);
+			Storyboard.SetTargetProperty (sb, path);
+			PropertyPath native = Storyboard.GetTargetProperty (sb);
+
+			Assert.AreEqual (path.Path, "(0)", "#1");
+			Assert.IsNull (native, "#2");
+		}
+
+		[TestMethod]
+		public void SetToTimeline4 ()
+		{
+			DoubleAnimation sb = new DoubleAnimation ();
+			PropertyPath path = new PropertyPath (Rectangle.WidthProperty);
+			Storyboard.SetTargetProperty (sb, path);
+			PropertyPath native = Storyboard.GetTargetProperty (sb);
+
+			Assert.AreEqual (path.Path, "(0)", "#1");
+			Assert.IsNull (native, "#2");
 		}
 	}
 }

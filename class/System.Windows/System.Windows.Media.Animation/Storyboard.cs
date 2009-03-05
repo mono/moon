@@ -40,6 +40,15 @@ namespace System.Windows.Media.Animation {
 		// This check needs to go in native co
 		private static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.TIMELINEGROUP, "Children", typeof (TimelineCollection));
 
+		static Storyboard ()
+		{
+			TargetPropertyProperty.Validate += delegate (DependencyObject target, DependencyProperty property, object value) {
+				PropertyPath path = (PropertyPath) value;
+				if (path.Path == null && path.NativeDP == IntPtr.Zero)
+					throw new NullReferenceException ();
+			};
+		}
+		
 		[SecuritySafeCritical ()]
 		public void Begin ()
 		{

@@ -39,8 +39,10 @@ namespace System.Windows
 		
 		public PropertyPath (string path, params object [] pathParameters)
 		{
-			if (path == null)
-				throw new ArgumentOutOfRangeException ("path");
+			if (pathParameters == null)
+				throw new NullReferenceException ();
+			else if (path == null && pathParameters.Length > 0)
+				throw new ArgumentOutOfRangeException ();
 			
 			this.path = path;
 			this.path_parameters = pathParameters;
