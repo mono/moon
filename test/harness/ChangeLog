@@ -1,3 +1,8 @@
+2009-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker/image-capture.cpp: shocker_capture_image: call
+	  g_type_init.
+
 2009-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker/plugin.h:

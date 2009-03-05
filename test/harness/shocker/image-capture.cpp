@@ -320,9 +320,9 @@ ScreenCaptureData::Capture (const char *filename)
 	return true;
 }
 
-
 void shocker_capture_image (const char *filename, int x, int y, int width, int height)
 {
+	g_type_init (); // when invoked from managed code we need this.
 	ScreenCaptureData sc (x, y, width, height);
 	sc.Capture (filename);
 }
