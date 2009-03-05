@@ -34,18 +34,16 @@ namespace System.Windows
 	public sealed class PropertyPath
 	{
 		private string path;
-		private object [] path_parameters;
 		private DependencyProperty property;
 		
 		public PropertyPath (string path, params object [] pathParameters)
 		{
 			if (pathParameters == null)
 				throw new NullReferenceException ();
-			else if (path == null && pathParameters.Length > 0)
+			else if (pathParameters.Length > 0)
 				throw new ArgumentOutOfRangeException ();
 			
 			this.path = path;
-			this.path_parameters = pathParameters;
 		}
 
 		public PropertyPath (object parameter)
@@ -59,10 +57,6 @@ namespace System.Windows
 		}
 		public string Path {
 			get { return property == null ? path : "(0)"; }
-		}
-
-		internal IList<object> PathParameters {
-			get { return path_parameters; }
 		}
 	}
 }

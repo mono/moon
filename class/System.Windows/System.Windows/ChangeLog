@@ -1,5 +1,11 @@
 2009-03-05  Alan McGovern  <amcgovern@novell.com>
 
+	* PropertyPath.cs: The PathParameters supplied to PropertyPath
+	  are always guaranteed to be of length 0. There is no point
+	  in storing them, exposing them or comparing them.
+
+2009-03-05  Alan McGovern  <amcgovern@novell.com>
+
 	* PropertyPath.cs: If we set a propertypath with a
 	  DependencyProperty, set the 'path' string to null. This
 	  avoids extra marshalling when it's not needed.

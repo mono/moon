@@ -707,26 +707,10 @@ namespace System.Windows
 
             public bool Equals(TimelineDataToken other)
             {
-                if ((other._targetName == _targetName) &&
-                    (other._targetProperty.Path == _targetProperty.Path) &&
-                    (other._targetProperty.PathParameters.Count == _targetProperty.PathParameters.Count))
-                {
-                    bool paramsEqual = true;
-
-                    for (int i = 0, count = _targetProperty.PathParameters.Count; i < count; i++)
-                    {
-                        if (other._targetProperty.PathParameters[i] != _targetProperty.PathParameters[i])
-                        {
-                            paramsEqual = false;
-                            break;
-                        }
-                    }
-
-                    return paramsEqual;
-                }
-
-                return false;
-            }
+				return other._targetName == _targetName && 
+						other._targetProperty.Path == _targetProperty.Path &&
+						other._targetProperty.NativeDP == _targetProperty.NativeDP;
+			}
 
             public override int GetHashCode()
             {

@@ -45,6 +45,10 @@ namespace MoonTest.System.Windows
 		{
 			PropertyPath prop;
 			
+			Assert.Throws <ArgumentOutOfRangeException>(() =>
+				prop = new PropertyPath ("first", "second")
+			, "#1");
+			
 			Assert.Throws<ArgumentOutOfRangeException>(delegate {
 				prop = new PropertyPath (null, "arg1");
 			}, "null path throws ArgumentOutOfRangeException");
