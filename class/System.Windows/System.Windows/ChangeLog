@@ -1,5 +1,11 @@
 2009-03-05  Alan McGovern  <amcgovern@novell.com>
 
+	* PropertyPath.cs: If we set a propertypath with a
+	  DependencyProperty, set the 'path' string to null. This
+	  avoids extra marshalling when it's not needed.
+
+2009-03-05  Alan McGovern  <amcgovern@novell.com>
+
 	* PropertyPath.cs: Add a bunch of additional tests for
 	  PropertyPath. Ensure that the correct exceptions are thrown
 	  when a propertypath is used on a storyboard.

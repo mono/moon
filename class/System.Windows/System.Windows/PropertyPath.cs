@@ -50,29 +50,15 @@ namespace System.Windows
 
 		public PropertyPath (object parameter)
 		{
-			if (parameter is DependencyProperty) {
-				//DependencyProperty property = parameter as DependencyProperty;
-				//
-				//if (property.IsAttached)
-				//	path = "(" + property.DeclaringType.Name + "." + property.Name + ")";
-				//else
-				//	path = property.Name;
-				
-				// Silverlight always sets "(0)" as the path no matter what DependencyProperty was passed in...
-				path = "(0)";
-				property = (DependencyProperty) parameter;
-			} else if (parameter is string) {
-				path = parameter as string;
-			} else {
-				path = null;
-			}
+			property = parameter as DependencyProperty;
+			path = parameter as string;
 		}
 		
 		internal IntPtr NativeDP {
 			get { return property == null ? IntPtr.Zero : property.Native;  }
 		}
 		public string Path {
-			get { return path; }
+			get { return property == null ? path : "(0)"; }
 		}
 
 		internal IList<object> PathParameters {

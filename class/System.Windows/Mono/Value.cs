@@ -442,9 +442,11 @@ namespace Mono {
 					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedPropertyPath));
 
 					UnmanagedPropertyPath *upp = (UnmanagedPropertyPath *) value.u.p;
-
-					upp->pathString = StringToIntPtr (propertypath.Path);
 					upp->property = propertypath.NativeDP;
+					if (upp->property == IntPtr.Zero)
+						upp->pathString = StringToIntPtr (propertypath.Path);
+					else
+						upp->pathString = IntPtr.Zero;
 				}
 				else if (v is Uri) {
 					Uri uri = (Uri) v;

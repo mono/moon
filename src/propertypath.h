@@ -21,7 +21,7 @@ struct PropertyPath {
 public:
 	PropertyPath (DependencyProperty *property)
 	{
-		this->path = g_strdup ("(0)");
+		this->path = NULL;
 		this->property = property;
 	}
 	
