@@ -224,6 +224,11 @@ namespace Mono {
 		{
 			return GCHandle.ToIntPtr (handle);
 		}
+
+		public static object ObjectFromIntPtr (IntPtr ptr)
+		{
+			return NativeDependencyObjectHelper.Lookup (ptr);
+		}
 		
 		public static void FreeHGlobal (IntPtr ptr)
 		{

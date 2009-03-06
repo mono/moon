@@ -46,10 +46,8 @@ namespace Mono
 		}
 		
 		public void Initialize () {
-#if false
 			NativeMethods.event_object_add_toggle_ref_notifier (handle, ToggleNotifyCallback);
 			NativeMethods.event_object_unref (handle);
-#endif
 		}
 
 		public bool IsAlive {
@@ -83,10 +81,7 @@ namespace Mono
 
 		public void Free ()
 		{
-#if false
 			NativeMethods.event_object_remove_toggle_ref_notifier (handle);
-			g_object_unref (handle);
-#endif
 			reference = null;
 			gch.Free ();
 		}
@@ -108,11 +103,7 @@ namespace Mono
 		{
 			try {
 				ToggleRef tref = null;
-#if false
-				lock (NativeDependencyObjectHelper.objects) {
-					NativeDependencyObjectHelper.objects.TryGetValue (obj, out tref);
-				}
-#endif
+				NativeDependencyObjectHelper.objects.TryGetValue (obj, out tref);
 				if (tref != null)
 					tref.Toggle (isLastRef);
 			} catch (Exception e) {

@@ -175,7 +175,7 @@ namespace System.Windows.Controls {
 
 		private static void buffering_progress_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.GCHandleFromIntPtr (closure).Target).InvokeBufferingProgressChanged ();
+			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeBufferingProgressChanged ();
 		}
 		
 		private void InvokeBufferingProgressChanged ()
@@ -187,7 +187,7 @@ namespace System.Windows.Controls {
 		
 		private static void current_state_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.GCHandleFromIntPtr (closure).Target).InvokeCurrentStateChanged ();
+			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeCurrentStateChanged ();
 		}
 		
 		private void InvokeCurrentStateChanged ()
@@ -199,7 +199,7 @@ namespace System.Windows.Controls {
 		
 		private static void download_progress_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.GCHandleFromIntPtr (closure).Target).InvokeDownloadProgressChanged ();
+			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeDownloadProgressChanged ();
 		}
 		
 		private void InvokeDownloadProgressChanged ()
@@ -211,7 +211,7 @@ namespace System.Windows.Controls {
 
 		private static void marker_reached_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.GCHandleFromIntPtr (closure).Target).InvokeMarkerReached (calldata);
+			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeMarkerReached (calldata);
 		}
 		
 		private void InvokeMarkerReached (IntPtr calldata)
@@ -228,7 +228,7 @@ namespace System.Windows.Controls {
 		
 		private static void media_opened_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.GCHandleFromIntPtr (closure).Target).InvokeMediaOpened ();
+			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeMediaOpened ();
 		}
 		
 		private void InvokeMediaOpened ()
@@ -240,7 +240,7 @@ namespace System.Windows.Controls {
 		
 		private static void media_ended_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.GCHandleFromIntPtr (closure).Target).InvokeMediaEnded ();
+			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeMediaEnded ();
 		}
 		
 		private void InvokeMediaEnded ()
@@ -252,7 +252,7 @@ namespace System.Windows.Controls {
 		
 		private static void media_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.GCHandleFromIntPtr (closure).Target).InvokeMediaFailed ();
+			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeMediaFailed ();
 		}
 		
 		private void InvokeMediaFailed ()

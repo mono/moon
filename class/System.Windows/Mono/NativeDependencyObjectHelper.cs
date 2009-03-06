@@ -136,7 +136,7 @@ namespace Mono {
 #endregion
 
 
-		internal static Dictionary<IntPtr, INativeDependencyObjectWrapper> objects = new Dictionary<IntPtr, INativeDependencyObjectWrapper> ();
+		internal static Dictionary<IntPtr, ToggleRef> objects = new Dictionary<IntPtr, ToggleRef> ();
 
 
 		public static void AddNativeMapping (IntPtr native, INativeDependencyObjectWrapper wrapper)
@@ -149,8 +149,9 @@ namespace Mono {
 				return;
 			}
 
-			objects[native] = wrapper;
-
+			ToggleRef tref = new ToggleRef (wrapper);
+			objects[native] = tref;
+			tref.Initialize ();
 		}
 
 		//
@@ -165,9 +166,9 @@ namespace Mono {
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			INativeDependencyObjectWrapper reference;
+			ToggleRef reference;
 			if (objects.TryGetValue (ptr, out reference))
-				return reference;
+				return reference.Target;
 
 			INativeDependencyObjectWrapper wrapper = (INativeDependencyObjectWrapper) CreateObject (k, ptr);
 			if (wrapper == null){
@@ -197,13 +198,12 @@ namespace Mono {
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			INativeDependencyObjectWrapper obj;
-			if (!objects.TryGetValue (ptr, out obj))
-				return null;
-
-			return obj;
+			ToggleRef tref;
+			if (objects.TryGetValue (ptr, out tref))
+				return tref.Target;
+			return null;
 		}
-		
+
 		static object CreateObject (Kind k, IntPtr raw)
 		{
 			NativeMethods.event_object_ref (raw);

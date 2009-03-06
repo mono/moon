@@ -51,14 +51,6 @@ namespace System.Windows {
 		}
 
 		[ThreadStatic] static private Dispatcher dispatcher;
-		private GCHandle _handle;
-		internal GCHandle GCHandle {
-			get {
-				if (!_handle.IsAllocated)
-					_handle = GCHandle.Alloc (this);
-				return _handle;
-			}
-		}
 
 		IntPtr INativeDependencyObjectWrapper.NativeHandle {
 			get { return native; }
@@ -75,9 +67,8 @@ namespace System.Windows {
 					throw new InvalidOperationException ("DependencyObject.native is already set");
 				}
 
-				NativeDependencyObjectHelper.AddNativeMapping (value, this);
-
 				_native = value;
+				NativeDependencyObjectHelper.AddNativeMapping (value, this);
 			}
 		}
 		
@@ -97,21 +88,25 @@ namespace System.Windows {
 			native = raw;
 			NativeMethods.event_object_set_object_type (native, GetKind ());
 		}
-		
+
 		internal void Free ()
 		{
 			if (this.native != IntPtr.Zero) {
-				NativeMethods.event_object_unref(this.native);
+				ToggleRef tref;
+				lock (NativeDependencyObjectHelper.objects) {
+					if (NativeDependencyObjectHelper.objects.TryGetValue (this.native, out tref))
+						NativeDependencyObjectHelper.objects.Remove (this.native);
+				}
+				if (tref != null)
+					tref.Free ();
 				this.native = IntPtr.Zero;
+				GC.SuppressFinalize (this);
 			}
 		}
-		
+
 		~DependencyObject ()
 		{
 			Free ();
-			if (_handle.IsAllocated) {
-				_handle.Free();
-			}
 		}
 
 		public object GetValue (DependencyProperty dp)

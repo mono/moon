@@ -1,3 +1,19 @@
+2009-03-06  Andreia Gaita  <avidigal@novell.com>
+
+	* Helper.cs: Add ObjectFromIntPtr method, to lookup ToggleRef
+	instances and return the actual object that it stores. The closure
+	parameter is now the original native handle, and not a GCHandle.
+
+	* Events.cs: Events are now registered with the native handle as
+	the key to lookup objects on callback, instead of using GCHandles.
+	Switch to using ObjectFromIntPtr to lookup objects.
+
+	* NativeDependencyObjectHelper.cs: Switch to using ToggleRef to
+	wrap DOs
+
+	* DispatcherTimer.cs: Switch to using ObjectFromIntPtr to lookup
+	objects.
+
 2009-03-06  Alan McGovern  <amcgovern@novell.com>
 
 	* GeneratedPInvokes.cs: If the PropertyPath supplied to the

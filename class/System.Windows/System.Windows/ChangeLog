@@ -1,3 +1,9 @@
+2009-03-06  Andreia Gaita  <avidigal@novell.com>
+
+	* DependencyObject.cs: Get rid of the GCHandle. Remove ToggleRef
+	objects from the list and free them appropriately when the DO is
+	destroyed
+
 2009-03-05  Alan McGovern  <amcgovern@novell.com>
 
 	* PropertyPath.cs: The PathParameters supplied to PropertyPath

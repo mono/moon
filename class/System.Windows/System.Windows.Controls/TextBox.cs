@@ -72,7 +72,7 @@ namespace System.Windows.Controls {
 		
 		static void selection_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			TextBox textbox = (TextBox) Helper.GCHandleFromIntPtr (closure).Target;
+			TextBox textbox = (TextBox) Helper.ObjectFromIntPtr (closure);
 			RoutedEventArgs args = new RoutedEventArgs (calldata);
 			
 			textbox.InvokeSelectionChanged (args);

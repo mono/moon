@@ -84,7 +84,7 @@ namespace Mono {
 
 		static void template_applied_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			Control c = (Control) Helper.GCHandleFromIntPtr (closure).Target;
+			Control c = (Control) Helper.ObjectFromIntPtr (closure);
 			c.InvokeOnApplyTemplate ();
 		}
 
@@ -97,43 +97,43 @@ namespace Mono {
 
 		static void current_state_changing_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			VisualStateGroup e = (VisualStateGroup) Helper.GCHandleFromIntPtr (closure).Target;
+			VisualStateGroup e = (VisualStateGroup) Helper.ObjectFromIntPtr (closure);
 			e.RaiseCurrentStateChanging (new VisualStateChangedEventArgs (calldata));
 		}
 		
 		static void current_state_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			VisualStateGroup e = (VisualStateGroup) Helper.GCHandleFromIntPtr (closure).Target;
+			VisualStateGroup e = (VisualStateGroup) Helper.ObjectFromIntPtr (closure);
 			e.RaiseCurrentStateChanged (new VisualStateChangedEventArgs (calldata));
 		}
 		
 		static void got_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
+			UIElement e = (UIElement)Helper.ObjectFromIntPtr (closure);
 			e.InvokeGotFocus (new RoutedEventArgs (calldata));
 		}
 
 		static void lost_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
+			UIElement e = (UIElement)Helper.ObjectFromIntPtr (closure);
 			e.InvokeLostFocus (new RoutedEventArgs (calldata));
 		}
 
 		static void lost_mouse_capture_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
 			e.InvokeLostMouseCapture (new MouseEventArgs (calldata));
 		}
 		
 		static void layout_updated_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
+			FrameworkElement e = (FrameworkElement)Helper.ObjectFromIntPtr (closure);
 			e.InvokeLayoutUpdated ();
 		}
 
 		static void loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
+			FrameworkElement e = (FrameworkElement)Helper.ObjectFromIntPtr (closure);
 			e.InvokeLoaded ();
 			
 			Content.InvokeResize ();
@@ -141,49 +141,49 @@ namespace Mono {
 
 		static void mouse_leave_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement)Helper.GCHandleFromIntPtr (closure).Target;
+			UIElement e = (UIElement)Helper.ObjectFromIntPtr (closure);
 			e.InvokeMouseLeave (new MouseEventArgs (calldata));
 		}
 
 		static void key_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
 			e.InvokeKeyUp (new KeyEventArgs (calldata));
 		}
 
 		static void key_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
 			e.InvokeKeyDown (new KeyEventArgs (calldata));
 		}
 
 		static void mouse_motion_notify_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
 			e.InvokeMouseMove (new MouseEventArgs (calldata));
 		}
 		
 		static void mouse_button_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
 			e.InvokeMouseButtonDown (new MouseButtonEventArgs (calldata));
 		}
 		
 		static void mouse_button_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
 			e.InvokeMouseButtonUp (new MouseButtonEventArgs (calldata));
 		}
 		
 		static void mouse_enter_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.GCHandleFromIntPtr (closure).Target;
+			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
 			e.InvokeMouseEnter (new MouseEventArgs (calldata));
 		}
 
 		static void size_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			FrameworkElement e = (FrameworkElement)Helper.GCHandleFromIntPtr (closure).Target;
+			FrameworkElement e = (FrameworkElement)Helper.ObjectFromIntPtr (closure);
 			e.InvokeSizeChanged (new SizeChangedEventArgs (calldata));
 		}
 
@@ -205,12 +205,12 @@ namespace Mono {
 
 		internal static void AddHandler (DependencyObject obj, string eventName, UnmanagedEventHandler handler)
 		{
-			NativeMethods.event_object_add_handler (obj.native, eventName, handler, (IntPtr) obj.GCHandle, IntPtr.Zero);
+			NativeMethods.event_object_add_handler (obj.native, eventName, handler, obj.native, IntPtr.Zero);
 		}
 
 		internal static void RemoveHandler (DependencyObject obj, string eventName, UnmanagedEventHandler handler)
 		{
-			NativeMethods.event_object_remove_handler (obj.native, eventName, handler, (IntPtr) obj.GCHandle);
+			NativeMethods.event_object_remove_handler (obj.native, eventName, handler, obj.native);
 		}
 
 		internal static bool IsPlugin () {

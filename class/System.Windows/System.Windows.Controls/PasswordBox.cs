@@ -61,7 +61,7 @@ namespace System.Windows.Controls
 		
 		static void password_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((PasswordBox) Helper.GCHandleFromIntPtr (closure).Target).InvokePasswordChanged ();
+			((PasswordBox) Helper.ObjectFromIntPtr (closure)).InvokePasswordChanged ();
 		}
 		
 

@@ -37,7 +37,7 @@ namespace Mono
 
 		private static void UnmanagedTick (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			Mono.DispatcherTimer timer = (Mono.DispatcherTimer) Helper.GCHandleFromIntPtr (closure).Target;
+			Mono.DispatcherTimer timer = (Mono.DispatcherTimer) Helper.ObjectFromIntPtr (closure);
 			timer.OnTick ();
 		}
 

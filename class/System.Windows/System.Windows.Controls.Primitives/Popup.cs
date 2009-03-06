@@ -39,7 +39,7 @@ namespace System.Windows.Controls.Primitives {
 	{
 		static UnmanagedEventHandler DoNothing = delegate { };
 		static UnmanagedEventHandler isopen_changed = Events.CreateSafeHandler (delegate (IntPtr a, IntPtr b, IntPtr closure) {
-			((Popup) Helper.GCHandleFromIntPtr (closure).Target).InvokeIsOpenChanged ();
+			((Popup) Helper.ObjectFromIntPtr (closure)).InvokeIsOpenChanged ();
 		});
 		
 		EventHandler closed_event;

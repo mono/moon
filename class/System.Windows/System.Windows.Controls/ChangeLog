@@ -1,3 +1,9 @@
+2009-03-06  Andreia Gaita  <avidigal@novell.com>
+
+	* ContentControl.cs, Image.cs, MediaElement.cs,
+	  MultiScaleImage.cs, PasswordBox.cs,
+	  TextBox.cs: Switch to using ObjectFromIntPtr to lookup objects.
+
 2009-03-04  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* MultiScaleImage.cs: use the native setters instead of the
