@@ -47,7 +47,7 @@ namespace Mono
 		
 		public void Initialize () {
 #if false
-			NativeMethods.event_object_add_toggle_ref_notifier (handle, ToggleNotifyCallback, (IntPtr) gch);
+			NativeMethods.event_object_add_toggle_ref_notifier (handle, ToggleNotifyCallback);
 			NativeMethods.event_object_unref (handle);
 #endif
 		}
@@ -84,7 +84,7 @@ namespace Mono
 		public void Free ()
 		{
 #if false
-			NativeMethods.event_object_remove_toggle_ref_notifier ((IntPtr) gch);
+			NativeMethods.event_object_remove_toggle_ref_notifier (handle);
 			g_object_unref (handle);
 #endif
 			reference = null;

@@ -1,5 +1,10 @@
 2009-03-06  Andreia Gaita  <avidigal@novell.com>
 
+	* ToggleRef.cs: fix event signatures
+	* GeneratedPInvokes.cs: regen for new toggleref event registration
+
+2009-03-06  Andreia Gaita  <avidigal@novell.com>
+
 	* ToggleRef.cs: Added. This class helps manage object references.
 	Instead of keeping GCHandles around for each object that gets passed
 	to native, we keep an instance of ToggleRef, which keeps a (strong or

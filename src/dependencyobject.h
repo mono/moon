@@ -54,6 +54,25 @@ class EventLists;
 
 #define GET_OBJ_ID(x) (x ? x->GetId () : 0)
 
+typedef void (* ToggleNotifyHandler) (EventObject *sender, bool isLastRef);
+class ToggleNotifyListener {
+public:
+	ToggleNotifyListener (EventObject *sender, ToggleNotifyHandler callback)
+	{
+		this->callback = callback;
+		this->sender = sender;
+	}
+
+	virtual void Invoke (bool isLastRef)
+	{
+		callback (sender, isLastRef);
+	}
+
+private:
+	EventObject *sender;
+	ToggleNotifyHandler callback;
+};
+
 class EventObject {
 private:
 	enum Flags {
@@ -162,6 +181,11 @@ public:
 	Deployment *GetUnsafeDeployment () { return deployment; } // a public deployment getter for sanity checking without the warnings in GetDeployment.
 #endif
 
+	/* @GenerateCBinding,GeneratePInvoke */
+	void AddToggleRefNotifier (ToggleNotifyHandler tr);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void RemoveToggleRefNotifier ();
+
 protected:
 	virtual ~EventObject ();
 	EventObject ();
@@ -185,6 +209,7 @@ private:
 	gint32 flags; // Don't define as Flags, we need to keep this reliably at 32 bits.
 
 	Type::Kind object_type;
+	ToggleNotifyListener *toggleNotifyListener;
 };
 
 

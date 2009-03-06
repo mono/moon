@@ -1409,6 +1409,16 @@ event_object_add_handler (EventObject *instance, const char *event_name, EventHa
 }
 
 
+void
+event_object_add_toggle_ref_notifier (EventObject *instance, ToggleNotifyHandler tr)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->AddToggleRefNotifier (tr);
+}
+
+
 int
 event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
@@ -1467,6 +1477,16 @@ event_object_remove_handler (EventObject *instance, const char *event_name, Even
 		return;
 	
 	instance->RemoveHandler (event_name, handler, data);
+}
+
+
+void
+event_object_remove_toggle_ref_notifier (EventObject *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->RemoveToggleRefNotifier ();
 }
 
 

@@ -619,6 +619,9 @@ EllipseGeometry *ellipse_geometry_new (void);
 int event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
 
 /* @GeneratePInvoke */
+void event_object_add_toggle_ref_notifier (EventObject *instance, ToggleNotifyHandler tr);
+
+/* @GeneratePInvoke */
 int event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
 
 /* @GeneratePInvoke */
@@ -634,6 +637,9 @@ void event_object_ref (EventObject *instance);
 
 /* @GeneratePInvoke */
 void event_object_remove_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
+
+/* @GeneratePInvoke */
+void event_object_remove_toggle_ref_notifier (EventObject *instance);
 
 /* @GeneratePInvoke */
 void event_object_set_object_type (EventObject *instance, Type::Kind value);

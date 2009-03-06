@@ -105,7 +105,8 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	flags = g_atomic_int_exchange_and_add (&current_id, 1);
 	refcount = 1;
 	events = NULL;
-	
+	toggleNotifyListener = NULL;
+
 #if OBJECT_TRACKING
 	Track ("Created", "");
 	if (object_type != Type::DEPLOYMENT)
@@ -377,6 +378,27 @@ EventObject::unref ()
 	if (refcount == 0)
 		delete this;
 	
+}
+
+void
+EventObject::AddToggleRefNotifier (ToggleNotifyHandler tr)
+{
+	if (toggleNotifyListener)
+		return;
+
+	this->ref ();
+	toggleNotifyListener = new ToggleNotifyListener (this, tr);
+}
+
+void
+EventObject::RemoveToggleRefNotifier ()
+{
+	if (!toggleNotifyListener)
+		return;
+
+	delete toggleNotifyListener;
+	toggleNotifyListener = NULL;
+	this->unref ();
 }
 
 #if OBJECT_TRACKING
