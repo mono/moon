@@ -1,5 +1,11 @@
 2009-03-06  Alan McGovern  <amcgovern@novell.com>
 
+	* VSM/System/Windows/VisualStateManager.cs: Update VSM so that
+	  it doesn't crash and burn with PropertyPaths created from
+	  DependencyProperties.
+
+2009-03-06  Alan McGovern  <amcgovern@novell.com>
+
 	* ChangeLog:
 	* VSM/System/Windows/VisualStateManager.cs: Revert - I didn't
 	  mean to commit that yet. It's not complete.

@@ -1,5 +1,14 @@
 2009-03-06  Alan McGovern  <amcgovern@novell.com>
 
+	* GeneratedPInvokes.cs: If the PropertyPath supplied to the
+	  TargetPropertyProperty is a DependencyProperty, we need a
+	  special method to retrieve it. Normally PropertyPaths which
+	  are instantiated with a DependencyProperty are returned as
+	  'null' from native. Also add method for getting the manual
+	  target.
+
+2009-03-06  Alan McGovern  <amcgovern@novell.com>
+
 	* ChangeLog:
 	* GeneratedPInvokes.cs: Revert - I didn't mean to commit that
 	  yet. It's not complete.

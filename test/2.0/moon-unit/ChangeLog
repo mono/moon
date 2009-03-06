@@ -1,5 +1,11 @@
 2009-03-06  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/VisualStateManagerTest.cs:
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add more
+	  tests for VSM and Storyboard.
+
+2009-03-06  Alan McGovern  <amcgovern@novell.com>
+
 	* ChangeLog:
 	* System.Windows/VisualStateManagerTest.cs:
 	* System.Windows.Media.Animation/StoryboardTest.cs: Revert - I
