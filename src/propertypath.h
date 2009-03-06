@@ -38,7 +38,11 @@ public:
 
 	bool operator== (const PropertyPath &v) const
 	{
-		return v.property == property || !strcmp (v.path, path);
+		if (!v.path)
+			return !path;
+		if (!path)
+			return false;
+		return v.property == property && !strcmp (v.path, path);
 	}
 
 	char *path;
