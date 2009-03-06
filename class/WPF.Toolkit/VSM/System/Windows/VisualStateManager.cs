@@ -699,23 +699,26 @@ namespace System.Windows
         // specifies a token to uniquely identify a Timeline object
         private struct TimelineDataToken : IEquatable<TimelineDataToken>
         {
-            object property;
-            object target;
             public TimelineDataToken(Timeline timeline)
             {
-                target = (object)timeline.ManualTarget ?? Storyboard.GetTargetName(timeline);
-                property = (object)Storyboard.GetTargetDependencyProperty (timeline) ?? Storyboard.GetTargetProperty(timeline);
+                _targetName = Storyboard.GetTargetName(timeline);
+                _targetProperty = Storyboard.GetTargetProperty(timeline);
             }
 
             public bool Equals(TimelineDataToken other)
             {
-                return other.property.Equals (property) && other.target.Equals (target);
-            }
+				return other._targetName == _targetName && 
+						other._targetProperty.Path == _targetProperty.Path &&
+						other._targetProperty.NativeDP == _targetProperty.NativeDP;
+			}
 
             public override int GetHashCode()
             {
-                return property.GetHashCode () ^ target.GetHashCode ();
+                return _targetName.GetHashCode() ^ _targetProperty.Path.GetHashCode();
             }
+
+            private string _targetName;
+            private PropertyPath _targetProperty;
         }
 
         #endregion

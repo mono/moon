@@ -43,11 +43,6 @@ namespace System.Windows.Media.Animation {
 			sb.InvokeCompleted ();
 		}
 
-		internal DependencyObject ManualTarget {
-			get { NativeMethods.timeline_get_manual_target (native); }
-			set { NativeMethods.timeline_set_manual_target (native, value == null ? IntPtr.Zero : value.native); }
-		}
-		
 		private void InvokeCompleted ()
 		{
 			EventHandler h = (EventHandler) EventList [CompletedEvent];

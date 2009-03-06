@@ -1,11 +1,9 @@
 2009-03-06  Alan McGovern  <amcgovern@novell.com>
 
-	* System.Windows.Media.Animation/StoryboardTest.cs: Add tests
-	  to see what happens if you specify both a Target and a
-	  TargetName
-
-	* System.Windows/VisualStateManagerTest.cs: Add some tests for
-	  VisualStates which are defined entirely in managed code.
+	* ChangeLog:
+	* System.Windows/VisualStateManagerTest.cs:
+	* System.Windows.Media.Animation/StoryboardTest.cs: Revert - I
+	  didn't mean to commit that yet. It's not complete.
 
 2009-03-06  Alan McGovern  <amcgovern@novell.com>
 

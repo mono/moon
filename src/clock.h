@@ -565,8 +565,6 @@ class Timeline : public DependencyObject {
 	TimelineStatus GetTimelineStatus () { return timeline_status; }
 
 	bool HasManualTarget () { return manual_target != NULL; }
-	
-	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject* GetManualTarget () { return manual_target; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */

@@ -830,10 +830,7 @@ class Storyboard : public ParallelTimeline {
 	int GetCurrentState ();
 	
 	virtual Clock *AllocateClock ();
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyProperty *GetTargetDependencyProperty ();
-	
+
 	static void SetTargetName (DependencyObject *o, const char *targetName);
 	static const char *GetTargetName (DependencyObject *o);
 	static void SetTargetProperty (DependencyObject *o, PropertyPath *targetProperty);

@@ -102,7 +102,7 @@ namespace System.Windows.Media.Animation {
 			if (target == null)
 				throw new ArgumentNullException ("target");
 			// FIXME Exception if setting on running
-			timeline.ManualTarget = target;
+			NativeMethods.timeline_set_manual_target (timeline.native, target.native);
 		}
 
 		public static void SetTargetName (Timeline element, string name)
@@ -136,14 +136,6 @@ namespace System.Windows.Media.Animation {
 			return (PropertyPath) element.GetValue (TargetPropertyProperty);
 		}
 
-		internal static DependencyProperty GetTargetDependencyProperty (Timeline element)
-		{
-			if (element == null)
-				throw new ArgumentNullException ("element");
-			IntPtr ptr = NativeMethods.storyboard_get_target_dependency_property (element.native);
-			return ptr == IntPtr.Zero ? null : DependencyProperty.Lookup (ptr);
-		}
-		
 		public TimeSpan GetCurrentTime ()
 		{
 			throw new NotImplementedException ();

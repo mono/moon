@@ -1,14 +1,12 @@
 2009-03-06  Alan McGovern  <amcgovern@novell.com>
 
 	* clock.h:
+	* ChangeLog:
 	* cbinding.h:
 	* animation.h:
 	* cbinding.cpp:
-	* animation.cpp: If the target property is a
-	  DependencyProperty, we need a special method to retrieve it.
-	  Normally PropertyPaths which are instantiated with a
-	  DependencyProperty are returned as 'null' from native. Also
-	  add method for getting the manual target.
+	* animation.cpp: Revert - I didn't mean to commit that yet.
+	  It's not complete.
 
 2009-03-06  Alan McGovern  <amcgovern@novell.com>
 
