@@ -1454,7 +1454,7 @@ FindLastWord (List *attributes, const char *text, int length)
 	
 	// we now need to scan backwards through the attribute runs... if
 	// the word is split between attribute runs (aka TextBlock Runs),
-	// then the we must treat the last run with a portion of the word
+	// then we must treat the last run with a portion of the word
 	// as the starting location of the last word.
 	while (attrs && last_word < text + attrs->start) {
 		pchar = inptr = text + attrs->start;
@@ -1473,7 +1473,7 @@ FindLastWord (List *attributes, const char *text, int length)
 			break;
 		}
 		
-		attrs = (TextLayoutAttributes *) attrs->next;
+		attrs = (TextLayoutAttributes *) attrs->prev;
 	}
 	
 	return last_word;
