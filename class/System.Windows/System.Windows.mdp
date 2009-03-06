@@ -428,6 +428,7 @@
     <File name="Mono/MarkupExpressionParser.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/MoonlightTypeConverter.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/MoonlightValueConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/ToggleRef.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="../lib/2.1/System.Windows.Browser.dll" />

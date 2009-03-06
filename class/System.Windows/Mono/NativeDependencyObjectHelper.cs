@@ -136,7 +136,7 @@ namespace Mono {
 #endregion
 
 
-		static Dictionary<IntPtr, INativeDependencyObjectWrapper> objects = new Dictionary<IntPtr, INativeDependencyObjectWrapper> ();
+		internal static Dictionary<IntPtr, INativeDependencyObjectWrapper> objects = new Dictionary<IntPtr, INativeDependencyObjectWrapper> ();
 
 
 		public static void AddNativeMapping (IntPtr native, INativeDependencyObjectWrapper wrapper)

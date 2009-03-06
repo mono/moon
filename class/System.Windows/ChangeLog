@@ -1,3 +1,7 @@
+2009-03-06  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am, System.Windows.mdp: Added ToggleRef class.
+
 2009-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MS.Internal:
