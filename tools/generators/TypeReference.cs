@@ -225,6 +225,9 @@ class TypeReference {
 			case "BindingMode":
 				managed_type = "int";
 				break;
+			case "ToggleNotifyHandler":
+				managed_type = "Mono.ToggleRef.ToggleNotifyHandler";
+				break;
 			default:
 				if (Value.Contains ("*"))
 					managed_type = "IntPtr";

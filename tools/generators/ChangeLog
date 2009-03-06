@@ -1,3 +1,7 @@
+2009-03-06  Andreia Gaita  <avidigal@novell.com>
+
+	* TypeReference.cs: Add toggleref handler
+
 2009-03-02  Andreia Gaita  <avidigal@novell.com>
 
 	* Generator.cs: Fix parsing
