@@ -1,3 +1,11 @@
+2009-03-06  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: If the target property is a
+	  DependencyProperty, we need a special method to retrieve it.
+	  Normally PropertyPaths which are instantiated with a
+	  DependencyProperty are returned as 'null' from native. Also
+	  add method for getting the manual target.
+
 2009-03-06  Andreia Gaita  <avidigal@novell.com>
 
 	* ToggleRef.cs: fix event signatures

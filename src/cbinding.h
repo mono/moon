@@ -1387,6 +1387,9 @@ bool storyboard_begin_with_error (Storyboard *instance, MoonError *error);
 int storyboard_get_current_state (Storyboard *instance);
 
 /* @GeneratePInvoke */
+DependencyProperty *storyboard_get_target_dependency_property (Storyboard *instance);
+
+/* @GeneratePInvoke */
 void storyboard_pause_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */
@@ -1544,6 +1547,9 @@ TileBrush *tile_brush_new (void);
 /**
  * Timeline
  **/
+/* @GeneratePInvoke */
+DependencyObject *timeline_get_manual_target (Timeline *instance);
+
 /* @GeneratePInvoke */
 void timeline_set_manual_target (Timeline *instance, DependencyObject *o);
 

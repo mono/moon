@@ -1405,6 +1405,10 @@ namespace Mono {
 		// int storyboard_get_current_state (Storyboard *instance);
 		public extern static int storyboard_get_current_state (IntPtr instance);
 
+		[DllImport ("moon")]
+		// DependencyProperty *storyboard_get_target_dependency_property (Storyboard *instance);
+		public extern static IntPtr storyboard_get_target_dependency_property (IntPtr instance);
+
 		[DllImport ("moon", EntryPoint="storyboard_pause_with_error")]
 		// void storyboard_pause_with_error (Storyboard *instance, MoonError *error);
 		private extern static void storyboard_pause_with_error_ (IntPtr instance, out MoonError error);
@@ -1592,6 +1596,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// TileBrush *tile_brush_new ();
 		public extern static IntPtr tile_brush_new ();
+
+		[DllImport ("moon")]
+		// DependencyObject *timeline_get_manual_target (Timeline *instance);
+		public extern static IntPtr timeline_get_manual_target (IntPtr instance);
 
 		[DllImport ("moon")]
 		// void timeline_set_manual_target (Timeline *instance, DependencyObject *o);

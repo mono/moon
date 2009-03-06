@@ -3072,6 +3072,16 @@ storyboard_get_current_state (Storyboard *instance)
 }
 
 
+DependencyProperty *
+storyboard_get_target_dependency_property (Storyboard *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetTargetDependencyProperty ();
+}
+
+
 void
 storyboard_pause_with_error (Storyboard *instance, MoonError *error)
 {
@@ -3481,6 +3491,16 @@ tile_brush_new (void)
 /**
  * Timeline
  **/
+DependencyObject *
+timeline_get_manual_target (Timeline *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetManualTarget ();
+}
+
+
 void
 timeline_set_manual_target (Timeline *instance, DependencyObject *o)
 {

@@ -1,5 +1,17 @@
 2009-03-06  Alan McGovern  <amcgovern@novell.com>
 
+	* clock.h:
+	* cbinding.h:
+	* animation.h:
+	* cbinding.cpp:
+	* animation.cpp: If the target property is a
+	  DependencyProperty, we need a special method to retrieve it.
+	  Normally PropertyPaths which are instantiated with a
+	  DependencyProperty are returned as 'null' from native. Also
+	  add method for getting the manual target.
+
+2009-03-06  Alan McGovern  <amcgovern@novell.com>
+
 	* propertypath.h: Need to null check the path before passing
 	  to strcmp - It is possible for the path to be null now.
 

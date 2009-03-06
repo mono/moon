@@ -1,5 +1,14 @@
 2009-03-06  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add tests
+	  to see what happens if you specify both a Target and a
+	  TargetName
+
+	* System.Windows/VisualStateManagerTest.cs: Add some tests for
+	  VisualStates which are defined entirely in managed code.
+
+2009-03-06  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Threading/DispatcherTest.cs: Add comment to
 	  the test
 

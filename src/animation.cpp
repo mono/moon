@@ -402,6 +402,13 @@ Storyboard::GetCurrentState ()
 	return clock ? clock->GetClockState () : Clock::Stopped;
 }
 
+DependencyProperty *
+Storyboard::GetTargetDependencyProperty ()
+{
+	PropertyPath *path = GetTargetProperty (this);
+	return path ? path->property : NULL;
+}
+
 bool
 Storyboard::HookupAnimationsRecurse (Clock *clock, MoonError *error)
 {
