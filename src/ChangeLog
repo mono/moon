@@ -1,3 +1,7 @@
+2009-03-06  Larry Ewing  <lewing@novell.com>
+
+	* layout.cpp (SetText): handle null text here.
+
 2009-03-06  Geoff Norton  <gnorton@novell.com>
 
 	* codec-version.h.in: When we change the layout of 

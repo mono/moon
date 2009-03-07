@@ -418,8 +418,12 @@ bool
 TextLayout::SetText (const char *str, int len)
 {
 	g_free (text);
-	
-	length = len == -1 ? strlen (str) : len;
+
+	if (str)
+		length = len == -1 ? strlen (str) : len;
+	else
+		length = 0;
+
 	text = (char *) g_malloc (length + 1);
 	memcpy (text, str, length);
 	text[length] = '\0';
