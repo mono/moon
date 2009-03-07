@@ -375,7 +375,7 @@ namespace System.Windows {
 			if (NullCheck (NotifyCollectionChangedAction.Add, value))
 				throw new ArgumentNullException ();
 
-			Value v = Value.FromObject (value, true);
+			Value v = Value.FromObject (value, false);
 			int index = NativeMethods.collection_add (native, ref v);
 			NativeMethods.value_free_value (ref v);
 
@@ -389,7 +389,7 @@ namespace System.Windows {
 			if (index < 0)
 				throw new ArgumentOutOfRangeException ();
 
-			Value v = Value.FromObject (value, true);
+			Value v = Value.FromObject (value, false);
 			NativeMethods.collection_insert (native, index, ref v);
 			NativeMethods.value_free_value (ref v);
 
@@ -428,7 +428,7 @@ namespace System.Windows {
 		internal void SetItemImpl (int index, T value)
 		{
 			T old = GetItemImpl (index);
-			Value v = Value.FromObject (value, true);
+			Value v = Value.FromObject (value, false);
 			NativeMethods.collection_set_value_at (native, index, ref v);
 			NativeMethods.value_free_value (ref v);
 
@@ -440,6 +440,13 @@ namespace System.Windows {
 			if (value == null)
 				return -1;
 
+			// this isn't a typo.  SL2 apparently boxes
+			// value types here, which causes things like:
+			//
+			// ItemCollection ic;
+			// ic.Add (5);
+			// ic.IndexOf (5) == -1
+			//
 			Value v = Value.FromObject (value, true);
 			int rv = NativeMethods.collection_index_of (native, ref v);
 			NativeMethods.value_free_value (ref v);

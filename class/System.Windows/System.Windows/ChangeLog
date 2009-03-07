@@ -1,3 +1,12 @@
+2009-03-06  Chris Toshok  <toshok@ximian.com>
+
+	* PresentationFrameworkCollection.cs (AddImpl): pass false to
+	Value.FromObject.
+	(InsertImpl): same.
+	(SetItemImpl): same.
+	(IndexOfImpl): no change here, but notable because this call site
+	of Value.FromObject *keeps* its true second parameter.
+	
 2009-03-06  Andreia Gaita  <avidigal@novell.com>
 
 	* DependencyObject.cs: Get rid of the GCHandle. Remove ToggleRef
