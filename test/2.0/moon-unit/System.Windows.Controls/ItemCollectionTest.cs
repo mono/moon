@@ -223,6 +223,40 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void Methods_Point()
+		{
+			Point a = new Point { X = 5, Y = 5 };
+			Point b = new Point { X = 15, Y = 15 };
+			Point c = new Point { X = 25, Y = 25 };
+
+			ItemCollection ic = GetCollection();
+			ic.Add(a);
+			Assert.AreEqual(1, ic.Count, "Count-1");
+
+			ic.Insert(0, ic);
+			Assert.AreEqual(2, ic.Count, "Count-2");
+
+			ic.Insert(0, b);
+			Assert.AreEqual(3, ic.Count, "Count-3");
+
+			Assert.AreEqual(1, ic.IndexOf(ic), "IndexOf");
+			Assert.AreEqual(-1, ic.IndexOf(c), "IndexOf-not in collection");
+
+			Assert.IsFalse(ic.IndexOf(a) >= 0, "IndexOf(point)");
+			Assert.IsFalse(ic.Contains(a), "Contains(point)");
+			Assert.IsFalse(ic.Contains(c), "Contains(point)");
+
+			ic.Remove(a);
+			Assert.AreEqual(3, ic.Count, "Count-4");
+
+			ic.RemoveAt(0);
+			Assert.AreEqual(2, ic.Count, "Count-5");
+
+			ic.Clear();
+			Assert.AreEqual(0, ic.Count, "Count-6");
+		}
+
+		[TestMethod]
 		public void CustomEquals()
 		{
 			ItemCollection c = GetCollection();
