@@ -446,7 +446,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					if (!image)
 						continue;
 
-					LOG_MSI ("rendering %d %d %d %d\n", sub_image->id, layer_to_render, i, j);
+					LOG_MSI ("rendering subimage %d %d %d %d\n", sub_image->id, layer_to_render, i, j);
 					cairo_save (cr);
 
 					cairo_rectangle (cr, 0, 0, msi_w, msi_h);
@@ -468,7 +468,11 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					}
 					cairo_set_source_surface (cr, image, 0, 0);
 //
-					cairo_paint_with_alpha (cr, sub_image->GetOpacity ());
+					if (IS_TRANSLUCENT (sub_image->GetOpacity ()))
+						cairo_paint_with_alpha (cr, sub_image->GetOpacity ());
+					else
+						cairo_paint (cr);
+						    
 					cairo_restore (cr);
 
 				}
@@ -652,6 +656,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		int stride;
 		GError *error = NULL;
 		cairo_surface_t *image = NULL;
+		cairo_surface_t *similar = NULL;
 
 		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, &error);
 		g_free (filename);
@@ -676,11 +681,24 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 								     *p_width,
 								     *p_height, 
 								     stride);
+
 			cairo_surface_set_user_data (image, &width_key, p_width, g_free);
 			cairo_surface_set_user_data (image, &height_key, p_height, g_free);
+
+			similar = cairo_surface_create_similar (cairo_get_target (cr),
+								has_alpha ? CAIRO_CONTENT_COLOR_ALPHA : CAIRO_CONTENT_COLOR, 
+								*p_width, *p_height);
+
+			cairo_t *temp_cr = cairo_create (similar);
+			cairo_set_source_surface (temp_cr, image, 0, 0);
+			cairo_pattern_set_filter (cairo_get_source (temp_cr), CAIRO_FILTER_FAST);
+			cairo_paint (temp_cr);
+			cairo_destroy (temp_cr);
+			cairo_surface_destroy (image);
+			g_free (data);
 		}
 		LOG_MSI ("caching %s\n", context);
-		g_hash_table_insert (cache, g_strdup(context), image);
+		g_hash_table_insert (cache, g_strdup(context), similar);
 	}
 
 	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
