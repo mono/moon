@@ -50,7 +50,8 @@ bool
 Deployment::Initialize()
 {
 	const gchar *trace_options;
-
+	const gchar *moon_path;
+	
 	if (initialized)
 		return true;
 #if DEBUG
@@ -68,7 +69,13 @@ Deployment::Initialize()
 		printf ("Setting trace options to: %s\n", trace_options);
 		mono_jit_set_trace_options (trace_options);
 	}
-       
+	
+	moon_path = g_getenv ("MOON_PATH");
+	if (moon_path != NULL && moon_path [0] != 0) {
+		printf ("Setting moonlight root directory to: %s\n", moon_path);
+		mono_assembly_setrootdir (moon_path);
+	}
+	
 	mono_set_signal_chaining (true);
 	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
 	root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");

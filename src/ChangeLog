@@ -1,3 +1,8 @@
+2009-03-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.cpp: Add support for setting the root directory
+	  using MOON_PATH.
+
 2009-03-06  Larry Ewing  <lewing@novell.com>
 
 	* multiscaleimage.cpp (Render): cache the surface type as a
