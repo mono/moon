@@ -1,3 +1,8 @@
+2009-03-04  Geoff Norton  <gnorton@novell.com>
+
+	* CompositeWorkItem.cs: In the case that an async test throws
+	an exception, ensure we continue running the harness.
+
 2009-03-04  Alan McGovern  <amcgovern@novell.com>
 
 	* ConditionalWorkItem.cs: Add the ability to append a failure

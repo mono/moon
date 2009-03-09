@@ -115,7 +115,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
             catch (Exception exp)
             {
                 taskStillRunning = false;
-                OnUnhandledException(exp);
+                WorkItemException(exp);
             }
             finally
             {
