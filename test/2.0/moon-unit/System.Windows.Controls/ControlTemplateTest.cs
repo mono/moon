@@ -16,6 +16,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls
 {
+	
+	internal class ControlTemplateTestPage : Canvas {
+
+		public ControlTemplateTestPage ()
+		{
+			Application.LoadComponent (this, new Uri ("/moon-unit;component/System.Windows.Controls/ControlTemplateTest.xaml", UriKind.Relative));
+		}
+
+		public void MouseHandler (object sender, MouseButtonEventArgs e)
+		{
+		}
+	}
+
 	[TestClass]
 	public class ControlTemplateTest
 	{
@@ -328,6 +341,19 @@ namespace MoonTest.System.Windows.Controls
 			TestButton tb = new TestButton ();
 
 			Assert.IsFalse (tb.NameFound, "3");
+		}
+
+		[TestMethod]
+		public void HandlerInPageTest ()
+		{
+			ControlTemplateTestPage page = new ControlTemplateTestPage ();
+
+			Assert.IsNotNull (page, "1");
+			
+			Button button = (Button) page.FindName ("button");
+			Assert.IsNotNull (button, "2");
+
+			button.ApplyTemplate ();
 		}
 	}
 }
