@@ -1,3 +1,9 @@
+2009-03-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (unichar_combining_class): New function to protect
+	against using Glib's g_unichar_combining_class() if the API isn't
+	available.
+
 2009-03-09  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Store the top element in the xaml context so we can

@@ -617,6 +617,20 @@ TextLayout::GetActualExtents (double *width, double *height)
 	*width = actual_width;
 }
 
+
+static int
+unichar_combining_class (gunichar c)
+{
+#if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 14)
+	static gboolean glib_has_api = GLIB_CHECK_VERSION (2, 14, 0);
+	
+	if (glib_has_api)
+		return g_unichar_combining_class (c);
+#endif
+	
+	return 0;
+}
+
 struct WordBreakOpportunity {
 	GUnicodeBreakType btype;
 	const char *inptr;
@@ -1177,7 +1191,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		d(g_string_append_unichar (debug, c));
 		word->count++;
 		
-		if ((cc = g_unichar_combining_class (c)) != 0 && glyphs > 0) {
+		if ((cc = unichar_combining_class (c)) != 0 && glyphs > 0) {
 			// this char gets combined with the previous glyph
 			new_glyph = false;
 		} else {
@@ -1282,7 +1296,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			continue;
 		
 		btype = g_unichar_break_type (c);
-		if (BreakSpace (c, btype) || g_unichar_combining_class (c) == 0) {
+		if (BreakSpace (c, btype) || unichar_combining_class (c) == 0) {
 			inptr = start;
 			break;
 		}
@@ -2022,6 +2036,61 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 	}
 }
 
+#ifdef USE_BINARY_SEARCH
+/**
+ * MID:
+ * @lo: the low bound
+ * @hi: the high bound
+ *
+ * Finds the midpoint between positive integer values, @lo and @hi.
+ *
+ * Notes: Typically expressed as '(@lo + @hi) / 2', this is incorrect
+ * when @lo and @hi are sufficiently large enough that combining them
+ * would overflow their integer type. To work around this, we use the
+ * formula, '@lo + ((@hi - @lo) / 2)', thus preventing this problem
+ * from occuring.
+ *
+ * Returns the midpoint between @lo and @hi (rounded down).
+ **/
+#define MID(lo, hi) (lo + ((hi - lo) >> 1))
+
+TextLayoutLine *
+TextLayout::GetLineFromY (const Point &offset, double y)
+{
+	register guint lo, hi;
+	TextLayoutLine *line;
+	double y0;
+	guint m;
+	
+	if (lines->len == 0)
+		return NULL;
+	
+	lo = 0, hi = lines->len;
+	y0 = y - offset.y;
+	
+	do {
+		m = MID (lo, hi);
+		
+		line = (TextLayoutLine *) lines->pdata[m];
+		
+		if (m > 0 && y0 < line->top) {
+			// y is on some line above us
+			hi = m;
+		} else if (y0 > line->top + line->height) {
+			// y is on some line below us
+			lo = m + 1;
+			m = lo;
+		} else {
+			// y is on this line
+			break;
+		}
+		
+		line = NULL;
+	} while (lo < hi);
+	
+	return line;
+}
+#else /* linear search */
 TextLayoutLine *
 TextLayout::GetLineFromY (const Point &offset, double y)
 {
@@ -2048,6 +2117,7 @@ TextLayout::GetLineFromY (const Point &offset, double y)
 	
 	return NULL;
 }
+#endif
 
 int
 TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
