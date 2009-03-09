@@ -100,7 +100,10 @@ namespace Mono {
 
 		[DllImport("moon")]
 		public extern static void value_free_value (ref Value val);
-		
+
+		[DllImport("moon")]
+		public extern static void value_free_value (IntPtr val);
+
 #region Transforms
 		[DllImport("moon")]
 		public extern static void general_transform_transform_point (IntPtr handle, ref Point p, ref Point r);

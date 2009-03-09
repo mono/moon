@@ -1,3 +1,10 @@
+2009-03-09  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Method for creating enums from string
+	content data.
+	* NativeMethods.cs: Add a signature so I can free values with an
+	IntPtr.
+
 2009-03-06  Andreia Gaita  <avidigal@novell.com>
 
 	* Helper.cs: Add ObjectFromIntPtr method, to lookup ToggleRef

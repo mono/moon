@@ -487,6 +487,39 @@ namespace Mono.Xaml
 			return true;
 		}
 
+		private bool TrySetEnumContentProperty (IntPtr parser, IntPtr top_level, string xmlns, object target, IntPtr target_ptr, IntPtr target_data, IntPtr value_ptr, IntPtr value_data)
+		{
+			object obj_value = Value.ToObject (null, value_ptr);
+			string str_value = obj_value as string;
+
+			if (str_value == null)
+				return false;
+			
+			string assembly_name = AssemblyNameFromXmlns (xmlns);
+			string clr_namespace = ClrNamespaceFromXmlns (xmlns);
+			string type_name = NativeMethods.xaml_get_element_name (parser, target_data);
+			string full_name = String.IsNullOrEmpty (clr_namespace) ? type_name : clr_namespace + "." + type_name;
+
+			Type type = LookupType (top_level, assembly_name, full_name);
+
+			if (type == null || !type.IsEnum)
+				return false;
+
+			object e = Enum.Parse (type, str_value);
+
+			NativeMethods.value_free_value (target_ptr);
+
+			unsafe {
+				Value *val = (Value *) target_ptr;
+
+				GCHandle handle = GCHandle.Alloc (e);
+				val->k = Kind.MANAGED;
+				val->u.p = Helper.GCHandleToIntPtr (handle);
+			}
+
+			return true;
+		}
+
 		private bool SetProperty (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target_ptr, IntPtr target_data, IntPtr target_parent_ptr, string name, IntPtr value_ptr, IntPtr value_data)
 		{
 			string error;
@@ -497,6 +530,13 @@ namespace Mono.Xaml
 				return false;
 			}
 
+			if (name == null) {
+				if (TrySetEnumContentProperty (parser, top_level, xmlns, target, target_ptr, target_data, value_ptr, value_data))
+					return true;
+				Console.Error.WriteLine ("no property name supplied");
+				return false;
+			}
+			
 			int dot = name.IndexOf ('.');
 			string type_name = null;
 
