@@ -97,7 +97,7 @@ namespace System.Windows.Controls {
 		
 		static void text_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			TextBox textbox = (TextBox) Helper.GCHandleFromIntPtr (closure).Target;
+			TextBox textbox = (TextBox) Helper.ObjectFromIntPtr (closure);
 			TextChangedEventArgs args = new TextChangedEventArgs (calldata);
 			
 			textbox.InvokeTextChanged (args);

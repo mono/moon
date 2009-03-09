@@ -1,3 +1,7 @@
+2009-03-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBox.cs: Use ObjectFromIntPtr instead of GCHandle. Doh.
+
 2009-03-06  Andreia Gaita  <avidigal@novell.com>
 
 	* ContentControl.cs, Image.cs, MediaElement.cs,
