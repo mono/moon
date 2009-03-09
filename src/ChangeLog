@@ -1,3 +1,8 @@
+2009-03-09  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: fix the loop ending conditions for images
+	with extreme aspect ratios.
+
 2009-03-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: Add support for setting the root directory
