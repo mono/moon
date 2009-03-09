@@ -24,7 +24,7 @@ if INCLUDE_BROWSER_MANAGED_CODE
 $(LOCAL_ASSEMBLIES): $(MCS_ASSEMBLIES)
 	-mkdir -p lib/2.1
 	-mkdir -p lib/tuner
-	for i in $(MCS_ASSEMBLIES); do cp $$i lib/tuner/; done
+	for i in $(MCS_ASSEMBLIES); do cp $$i $$i.mdb lib/tuner/; done
 endif
 
 clean-local:
