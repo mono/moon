@@ -1153,12 +1153,16 @@ TextBox::KeyPressUnichar (gunichar c)
 		buffer->Replace (start, length, &c, 1);
 	} else {
 		// insert the text at the cursor position
-		TextBoxUndoActionInsert *insert;
+		TextBoxUndoActionInsert *insert = NULL;
 		
-		if ((action = undo->Peek ()) && action->type == TextBoxUndoActionTypeInsert)
+		if ((action = undo->Peek ()) && action->type == TextBoxUndoActionTypeInsert) {
 			insert = (TextBoxUndoActionInsert *) action;
+			
+			if (!insert->Insert (start, c))
+				insert = NULL;
+		}
 		
-		if (!insert->Insert (start, c)) {
+		if (!insert) {
 			insert = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, c);
 			undo->Push (insert);
 		}
