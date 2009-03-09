@@ -18,7 +18,6 @@ namespace MoonTest.Misc
 	{
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ParseManagedEnum3 ()
 		{
 			Canvas c;
