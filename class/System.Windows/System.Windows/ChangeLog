@@ -1,3 +1,8 @@
+2009-03-09  Alan McGovern  <amcgovern@novell.com>
+
+	* ResourceDictionary.cs: Add tests for the explicit
+	  implementation and fix bugs revealed by those.
+
 2009-03-06  Chris Toshok  <toshok@ximian.com>
 
 	* PresentationFrameworkCollection.cs (AddImpl): pass false to

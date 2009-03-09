@@ -286,6 +286,44 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void InterfaceTest ()
+		{
+			IDictionary<object, object> d = new ResourceDictionary ();
+			Assert.Throws<ArgumentException> (delegate {
+				d.Add (new KeyValuePair<object, object> (new object (), new object ()));
+			}, "#1");
+			d.Add (new KeyValuePair<object, object> ("bob", new object ()));
+			Assert.Throws<NotImplementedException> (delegate {
+				int a = d.Count;
+			}, "#2");
+			Assert.AreEqual (1, ((ResourceDictionary) d).Count, "#3");
+			Assert.Throws<ArgumentException> (delegate {
+				d.Add (new object (), new object ());
+			}, "#4");
+			d.Add ("str", new object ());
+			Assert.AreEqual (2, ((ResourceDictionary) d).Count, "#5");
+			Assert.Throws<ArgumentException> (delegate {
+				d.ContainsKey (new object ());
+			}, "#6");
+			Assert.IsTrue (d.Contains (new KeyValuePair<object, object> ("str", new object ())), "#7");
+			d.Clear ();
+			Assert.AreEqual (0, ((ResourceDictionary) d).Count, "#8");
+			Assert.Throws<NotImplementedException> (delegate {
+				d.GetEnumerator ();
+			}, "#9");
+			Assert.Throws<NotImplementedException> (delegate {
+				var v = d.Keys;
+			}, "#10");
+			Assert.Throws<NotImplementedException> (delegate {
+				var v = d.Values;
+			}, "#11");
+			Assert.IsFalse (d.IsReadOnly, "#12");
+			Assert.Throws<NotImplementedException> (delegate {
+				d.CopyTo (new KeyValuePair<object, object> [10], 0);
+			}, "#13");
+		}
+		
+		[TestMethod]
 		public void TestFindName ()
 		{
 			Canvas b = (Canvas)

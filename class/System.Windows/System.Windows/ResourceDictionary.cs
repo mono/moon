@@ -143,7 +143,7 @@ namespace System.Windows {
 		//
 		void IDictionary<object, object>.Add(object key, object value)
 		{
-			Add ((string)key, value);
+			Add (ToStringKey (key), value);
 		}
 
 		bool IDictionary<object, object>.ContainsKey(object key)
@@ -180,7 +180,7 @@ namespace System.Windows {
 
 		bool ICollection<KeyValuePair<object, object>>.Contains (KeyValuePair<object, object> item)
 		{
-			throw new NotImplementedException();
+			return Contains (item.Key);
 		}
 
 		void ICollection<KeyValuePair<object, object>>.CopyTo(KeyValuePair<object, object>[] array, int arrayIndex)
@@ -189,7 +189,7 @@ namespace System.Windows {
 		}
 
 		int ICollection<KeyValuePair<object, object>>.Count {
-			get { return Count; }
+			get { throw new NotImplementedException (); }
 		}
 
 		bool ICollection<KeyValuePair<object, object>>.IsReadOnly {
