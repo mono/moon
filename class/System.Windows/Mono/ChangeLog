@@ -1,3 +1,9 @@
+2009-03-09  Geoff Norton  <gnorton@novell.com>
+
+	* ManagedXamlLoader.cs: Its possible for a bool to be passed in 
+	here with a NullableBool target, so we need to use the 2.1 converter
+	in System.Windows.
+
 2009-03-09  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Method for creating enums from string

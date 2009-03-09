@@ -798,6 +798,7 @@ namespace Mono.Xaml
 			Attribute[] attrs = (Attribute []) type.GetCustomAttributes (true);
 			TypeConverterAttribute at = null;
 			TypeConverter converter = null;
+			Type t = null;
 
 			foreach (Attribute attr in attrs) {
 				if (attr is TypeConverterAttribute) {
@@ -806,10 +807,16 @@ namespace Mono.Xaml
 				}
 			}
 
-			if (at == null)
-				return null;
+			if (at == null) {
+				if (type == typeof (bool?)) {
+					t = typeof (NullableBoolConverter);
+				} else {
+					return null;
+				}
+			} else {
+				t = Type.GetType (at.ConverterTypeName);
+			}
 
-			Type t = Type.GetType (at.ConverterTypeName);
 			if (t == null)
 				return null;
 
