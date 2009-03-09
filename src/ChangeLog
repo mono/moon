@@ -1,4 +1,9 @@
 2009-03-09  Andreia Gaita  <avidigal@novell.com>
+    
+        * dependencyobject.cpp: revert r128895 (toggleref changes) for now,
+        needs more tests
+
+2009-03-09  Andreia Gaita  <avidigal@novell.com>
 
 	* dependencyobject.cpp: do the toggleref callbacks so the managed
 	side can dispose of things properly
