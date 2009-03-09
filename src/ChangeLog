@@ -1,3 +1,8 @@
+2009-03-09  Andreia Gaita  <avidigal@novell.com>
+
+	* dependencyobject.cpp: do the toggleref callbacks so the managed
+	side can dispose of things properly
+
 2009-03-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (unichar_combining_class): New function to protect

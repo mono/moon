@@ -335,16 +335,17 @@ EventObject::ref ()
 		// an object with refcount = 0. Use a warning instead of error until the mixed usage is
 		// gone.
 		g_warning ("Ref was called on an object with a refcount of 0.\n");
-	}
-	
+
+	} else if (v == 1 && toggleNotifyListener)
+		toggleNotifyListener->Invoke (false);
+
+
 	OBJECT_TRACK ("Ref", GetTypeName ());
 }
 
 void 
 EventObject::unref ()
 {
-	bool delete_me;
-
 #if DEBUG
 	if (GetObjectType () != object_type)
 		printf ("EventObject::unref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
@@ -360,18 +361,19 @@ EventObject::unref ()
 		return;
 	}
 
-	delete_me = g_atomic_int_dec_and_test (&refcount);
+	int v = g_atomic_int_exchange_and_add (&refcount, -1) -1;
 
 	OBJECT_TRACK ("Unref", (deployment == NULL && Deployment::GetCurrent () == NULL) ? "<unknown>" : GetTypeName ());
 
-	if (delete_me) {
+	if (v == 0) {
 		Dispose ();
 		
 #if DEBUG
 		if ((flags & Disposed) == 0)
 			printf ("EventObject::unref (): the type '%s' (or any of its parent types) forgot to call its base class' Dispose method.\n", GetTypeName ());
 #endif
-	}
+	} else if (v == 1 && toggleNotifyListener)
+		toggleNotifyListener->Invoke (true);
 	
 	// We need to check again the the refcount really is zero,
 	// the object might have resurrected in the Dispose.
