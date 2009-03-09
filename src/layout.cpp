@@ -2055,7 +2055,7 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 #define MID(lo, hi) (lo + ((hi - lo) >> 1))
 
 TextLayoutLine *
-TextLayout::GetLineFromY (const Point &offset, double y)
+TextLayout::GetLineFromY (const Point &offset, double y, int *index)
 {
 	register guint lo, hi;
 	TextLayoutLine *line;
@@ -2088,11 +2088,14 @@ TextLayout::GetLineFromY (const Point &offset, double y)
 		line = NULL;
 	} while (lo < hi);
 	
+	if (line && index)
+		*index = m;
+	
 	return line;
 }
 #else /* linear search */
 TextLayoutLine *
-TextLayout::GetLineFromY (const Point &offset, double y)
+TextLayout::GetLineFromY (const Point &offset, double y, int *index)
 {
 	TextLayoutLine *line = NULL;
 	double y0, y1;
@@ -2109,6 +2112,9 @@ TextLayout::GetLineFromY (const Point &offset, double y)
 		
 		if (y < y1) {
 			// we found the line that the point is located on
+			if (index)
+				*index = (int) i;
+			
 			return line;
 		}
 		
@@ -2119,12 +2125,20 @@ TextLayout::GetLineFromY (const Point &offset, double y)
 }
 #endif
 
-int
-TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
+TextLayoutLine *
+TextLayout::GetLineFromIndex (int index)
 {
-	const char *inend, *ch, *inptr;
+	if (index >= (int) lines->len || index < 0)
+		return NULL;
+	
+	return (TextLayoutLine *) lines->pdata[index];
+}
+
+int
+TextLayoutLine::GetCursorFromX (const Point &offset, double x)
+{
+	const char *text, *inend, *ch, *inptr;
 	TextLayoutRun *run = NULL;
-	TextLayoutLine *line;
 	GlyphInfo *glyph;
 	guint32 prev = 0;
 	TextFont *font;
@@ -2134,22 +2148,15 @@ TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 	double m;
 	guint i;
 	
-	//printf ("TextLayout::GetCursorFromXY (%.2g, %.2g)\n", x, y);
-	
-	if (y < offset.y)
-		return 0;
-	
-	if (!(line = GetLineFromY (offset, y)))
-		return count;
-	
 	// adjust x0 for horizontal alignment
-	x0 = offset.x + HorizontalAlignment (line->advance);
+	x0 = offset.x + layout->HorizontalAlignment (advance);
 	
-	inptr = text + line->start;
-	cursor = line->offset;
+	text = layout->GetText ();
+	inptr = text + start;
+	cursor = this->offset;
 	
-	for (i = 0; i < line->runs->len; i++) {
-		run = (TextLayoutRun *) line->runs->pdata[i];
+	for (i = 0; i < runs->len; i++) {
+		run = (TextLayoutRun *) runs->pdata[i];
 		
 		if (x < x0 + run->advance) {
 			// x is in somewhere inside this run
@@ -2206,7 +2213,7 @@ TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 		}
 	} else if (i > 0) {
 		// x is beyond the end of the last run
-		run = (TextLayoutRun *) line->runs->pdata[i - 1];
+		run = (TextLayoutRun *) runs->pdata[i - 1];
 		inend = text + run->start + run->length;
 		inptr = text + run->start;
 		
@@ -2222,6 +2229,22 @@ TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 	}
 	
 	return cursor;
+}
+
+int
+TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
+{
+	TextLayoutLine *line;
+	
+	//printf ("TextLayout::GetCursorFromXY (%.2g, %.2g)\n", x, y);
+	
+	if (y < offset.y)
+		return 0;
+	
+	if (!(line = GetLineFromY (offset, y)))
+		return count;
+	
+	return line->GetCursorFromX (offset, x);
 }
 
 Rect

@@ -89,6 +89,8 @@ struct TextLayoutLine {
 	~TextLayoutLine ();
 	
 	void Render (cairo_t *cr, const Point &origin, double left, double top);
+	
+	int GetCursorFromX (const Point &offset, double x);
 };
 
 struct TextLayoutRun {
@@ -127,8 +129,6 @@ class TextLayout {
 	GPtrArray *lines;
 	
 	bool OverrideLineHeight () { return (strategy == LineStackingStrategyBlockLineHeight && !isnan (line_height)); }
-	
-	double HorizontalAlignment (double line_width);
 	
 	void ClearCache ();
 	void ClearLines ();
@@ -183,7 +183,12 @@ class TextLayout {
 	void Select (int start, int length, bool byte_offsets = false);
 	void Layout ();
 	
-	TextLayoutLine *GetLineFromY (const Point &offset, double y);
+	double HorizontalAlignment (double line_width);
+	
+	TextLayoutLine *GetLineFromY (const Point &offset, double y, int *index = NULL);
+	TextLayoutLine *GetLineFromIndex (int index);
+	int GetLineCount () { return lines->len; }
+	
 	int GetCursorFromXY (const Point &offset, double x, double y);
 	Rect GetCursor (const Point &offset, int pos);
 	

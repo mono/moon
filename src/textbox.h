@@ -82,11 +82,11 @@ class TextBox : public Control, public ITextAttributes {
 	TextBoxUndoStack *redo;
 	int selection_anchor;
 	int selection_cursor;
-	//Point select_start;
-	int cursor_column;
+	double cursor_offset;
 	TextBuffer *buffer;
 	TextBoxView *view;
 	
+	int have_offset:1;
 	int inkeypress:1;
 	int selecting:1;
 	int setvalue:1;
@@ -121,8 +121,8 @@ class TextBox : public Control, public ITextAttributes {
 	static void paste (GtkClipboard *clipboard, const char *text, gpointer closure);
 	void Paste (GtkClipboard *clipboard, const char *text);
 	
-	int CursorDown (int cursor, int n_lines);
-	int CursorUp (int cursor, int n_lines);
+	int CursorDown (int cursor, bool page);
+	int CursorUp (int cursor, bool page);
 	int CursorLineBegin (int cursor);
 	int CursorLineEnd (int cursor, bool include = false);
 	int CursorNextWord (int cursor);
@@ -141,6 +141,8 @@ class TextBox : public Control, public ITextAttributes {
 	void KeyPressLeft (GdkModifierType modifiers);
 	void KeyPressDown (GdkModifierType modifiers);
 	void KeyPressUp (GdkModifierType modifiers);
+	
+	double GetCursorOffset ();
 	
 	void SyncSelectedText ();
 	void SyncText ();
@@ -343,7 +345,13 @@ class TextBoxView : public FrameworkElement {
 	//
 	// Methods
 	//
+	int GetLineCount () { return layout->GetLineCount (); }
+	TextLayoutLine *GetLineFromY (double y, int *index = NULL);
+	TextLayoutLine *GetLineFromIndex (int index);
+	
 	int GetCursorFromXY (double x, double y);
+	Rect GetCursor () { return cursor; }
+	
 	void OnFocusOut ();
 	void OnFocusIn ();
 	

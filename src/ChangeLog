@@ -1,5 +1,23 @@
 2009-03-09  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBox::TextBox): Initialize have_offset to false
+	and cursor_offset to 0.0. Silverlight doesn't use character column
+	when moving the cursor up/down, it uses the cursor's x-offset.
+	(TextBox::CursorDown): Implement using TextLayoutLines.
+	(TextBox::CursorUp): Same.
+	(TextBoxView::GetLineFromY): New convenience method.
+	(TextBoxView::GetLineFromIndex): Another new method.
+
+	* layout.cpp (TextLayoutLine::GetCursorFromX): New convenience
+	method.
+	(TextLayout::GetCursorFromXY): Moved the remaining logic into
+	TextLayoutLine::GetCursorFromX().
+	(TextLayout::GetLineFromY): Provide the line index to our caller,
+	if requested.
+	(TextLayout::GetLineFromIndex): New convenience method.
+
+2009-03-09  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp (TextBoxView::UpdateCursor): We shouldn't need the
 	cursor == 0 hack anymore.
 

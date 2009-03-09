@@ -539,7 +539,9 @@ TextBox::TextBox ()
 	emit = NOTHING_CHANGED;
 	selection_anchor = 0;
 	selection_cursor = 0;
-	cursor_column = 0;
+	cursor_offset = 0.0;
+	
+	have_offset = false;
 	inkeypress = false;
 	selecting = false;
 	setvalue = true;
@@ -572,101 +574,83 @@ TextBox::~TextBox ()
 
 #define IsEOL(c) ((c) == '\r' || (c) == '\n')
 
-int
-TextBox::CursorDown (int cursor, int n_lines)
+double
+TextBox::GetCursorOffset ()
 {
-	int line_start = CursorLineBegin (cursor);
-	int cur, n = 0;
-	
-	// first find out what our character offset is in the current line
-	if (cursor_column == -1)
-		cursor_column = cursor - line_start;
-	
-	cur = cursor;
-	
-	// skip ahead the number of requested lines
-	while (n < n_lines) {
-		while (cur < buffer->len && !IsEOL (buffer->text[cur]))
-			cur++;
-		
-		if (cur == buffer->len)
-			break;
-		
-		if (buffer->text[cur] == '\r' && buffer->text[cur + 1] == '\n')
-			cur += 2;
-		else
-			cur++;
-		
-		line_start = cur;
-		n++;
+	if (!have_offset && view) {
+		cursor_offset = view->GetCursor ().x;
+		have_offset = true;
 	}
 	
-	// if we are doing a PageDown and didn't manage to go down any
-	// lines, go to the end of the buffer and update our
-	// cursor_column as well.
-	if (n == 0 && n_lines > 1) {
-		cursor_column = cur - line_start;
-		return cur;
-	}
-	
-	// go forward until we're at the same character offset
-	cur = line_start;
-	for (n = 0; n < cursor_column && cur < buffer->len; n++) {
-		if (IsEOL (buffer->text[cur]))
-			break;
-		cur++;
-	}
-	
-	return cur;
+	return cursor_offset;
 }
 
 int
-TextBox::CursorUp (int cursor, int n_lines)
+TextBox::CursorDown (int cursor, bool page)
 {
-	int line_start = CursorLineBegin (cursor);
-	int cur, n = 0;
+	double y = view->GetCursor ().y;
+	double x = GetCursorOffset ();
+	TextLayoutLine *line;
+	TextLayoutRun *run;
+	int index, cur, n;
+	guint i;
 	
-	// first find out what our character offset is in the current line
-	if (cursor_column == -1)
-		cursor_column = cursor - line_start;
+	if (!(line = view->GetLineFromY (y, &index)))
+		return cursor;
 	
-	cur = line_start;
+	if (page) {
+		// calculate the number of lines to skip over
+		n = GetActualHeight () / line->height;
+	} else {
+		n = 1;
+	}
 	
-	// go back the number of requested lines
-	do {
-		if (cur == 0)
-			break;
+	if (index + n >= view->GetLineCount ()) {
+		// go to the end of the last line
+		line = view->GetLineFromIndex (view->GetLineCount () - 1);
 		
-		if (cur >= 2 && buffer->text[cur - 2] == '\r' && buffer->text[cur - 1] == '\n')
-			cur -= 2;
-		else
-			cur--;
+		for (cur = line->offset, i = 0; i < line->runs->len; i++) {
+			run = (TextLayoutRun *) line->runs->pdata[i];
+			cur += run->count;
+		}
 		
-		n++;
+		have_offset = false;
 		
-		while (cur > 0 && !IsEOL (buffer->text[cur - 1]))
-			cur--;
-		
-		line_start = cur;
-	} while (n < n_lines);
+		return cur;
+	}
 	
-	// if we are doing a PageUp and didn't manage to go up any
-	// lines, go to position 0 and update our cursor_column as
-	// well.
-	if (n == 0 && n_lines > 1) {
-		cursor_column = 0;
+	line = view->GetLineFromIndex (index + 1);
+	
+	return line->GetCursorFromX (Point (), x);
+}
+
+int
+TextBox::CursorUp (int cursor, bool page)
+{
+	double y = view->GetCursor ().y;
+	double x = GetCursorOffset ();
+	TextLayoutLine *line;
+	int index, n;
+	
+	if (!(line = view->GetLineFromY (y, &index)))
+		return cursor;
+	
+	if (page) {
+		// calculate the number of lines to skip over
+		n = GetActualHeight () / line->height;
+	} else {
+		n = 1;
+	}
+	
+	if (index < n) {
+		// go to the beginning of the first line
+		have_offset = false;
 		return 0;
 	}
 	
-	// go forward until we're at the same character column
-	cur = line_start;
-	for (n = 0; n < cursor_column && cur < buffer->len; n++) {
-		if (IsEOL (buffer->text[cur]))
-			break;
-		cur++;
-	}
+	line = view->GetLineFromIndex (index - 1);
 	
-	return cur;
+	return line->GetCursorFromX (Point (), x);
 }
 
 enum CharClass {
@@ -897,14 +881,14 @@ TextBox::KeyPressPageDown (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
-	int column;
+	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
 		return;
 	
 	// move the cursor down one page from its current position
-	cursor = CursorDown (cursor, 8);
-	column = cursor_column;
+	cursor = CursorDown (cursor, true);
+	have = have_offset;
 	
 	if ((modifiers & SHIFT_MASK) == 0) {
 		// clobber the selection
@@ -918,7 +902,7 @@ TextBox::KeyPressPageDown (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
-		cursor_column = column;
+		have_offset = have;
 	}
 }
 
@@ -927,14 +911,14 @@ TextBox::KeyPressPageUp (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
-	int column;
+	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
 		return;
 	
 	// move the cursor up one page from its current position
-	cursor = CursorUp (cursor, 8);
-	column = cursor_column;
+	cursor = CursorUp (cursor, true);
+	have = have_offset;
 	
 	if ((modifiers & SHIFT_MASK) == 0) {
 		// clobber the selection
@@ -948,7 +932,7 @@ TextBox::KeyPressPageUp (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
-		cursor_column = column;
+		have_offset = have;
 	}
 }
 
@@ -957,14 +941,14 @@ TextBox::KeyPressDown (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
-	int column;
+	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
 		return;
 	
 	// move the cursor down by one line from its current position
-	cursor = CursorDown (cursor, 1);
-	column = cursor_column;
+	cursor = CursorDown (cursor, false);
+	have = have_offset;
 	
 	if ((modifiers & SHIFT_MASK) == 0) {
 		// clobber the selection
@@ -978,7 +962,7 @@ TextBox::KeyPressDown (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
-		cursor_column = column;
+		have_offset = have;
 	}
 }
 
@@ -987,14 +971,14 @@ TextBox::KeyPressUp (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
-	int column;
+	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
 		return;
 	
 	// move the cursor up by one line from its current position
-	cursor = CursorUp (cursor, 1);
-	column = cursor_column;
+	cursor = CursorUp (cursor, false);
+	have = have_offset;
 	
 	if ((modifiers & SHIFT_MASK) == 0) {
 		// clobber the selection
@@ -1008,7 +992,7 @@ TextBox::KeyPressUp (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
-		cursor_column = column;
+		have_offset = have;
 	}
 }
 
@@ -1041,7 +1025,7 @@ TextBox::KeyPressHome (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
-		cursor_column = 0;
+		have_offset = false;
 	}
 }
 
@@ -1725,7 +1709,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		changed = TextBoxModelChangedSelection;
 		emit |= SELECTION_CHANGED;
-		cursor_column = -1;
+		have_offset = false;
 		
 		if (!inkeypress) {
 			// update SelectedText
@@ -1742,7 +1726,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		
 		changed = TextBoxModelChangedSelection;
 		emit |= SELECTION_CHANGED;
-		cursor_column = -1;
+		have_offset = false;
 		
 		// set some default selection brushes if unset
 		if (selection_cursor != selection_anchor) {
@@ -2059,6 +2043,18 @@ TextBoxView::~TextBoxView ()
 	DisconnectBlinkTimeout ();
 	
 	delete layout;
+}
+
+TextLayoutLine *
+TextBoxView::GetLineFromY (double y, int *index)
+{
+	return layout->GetLineFromY (Point (), y, index);
+}
+
+TextLayoutLine *
+TextBoxView::GetLineFromIndex (int index)
+{
+	return layout->GetLineFromIndex (index);
 }
 
 int
