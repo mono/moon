@@ -1,3 +1,8 @@
+2009-03-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxView::UpdateCursor): We shouldn't need the
+	cursor == 0 hack anymore.
+
 2009-03-09  Andreia Gaita  <avidigal@novell.com>
     
         * dependencyobject.cpp: revert r128895 (toggleref changes) for now,

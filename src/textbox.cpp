@@ -2216,16 +2216,7 @@ TextBoxView::UpdateCursor (bool invalidate)
 		Invalidate (cursor);
 	
 	// calculate the new cursor rect
-	if (cur == 0) {
-		// Manually set cursor rect if position is 0 because
-		// we might not have any text runs (which the layout
-		// code requires to get font metrics).
-		TextFont *font = textbox->FontDescription ()->GetFont ();
-		cursor = Rect (0.0, 0.0, 1.0, font->Height ());
-		font->unref ();
-	} else {
-		cursor = layout->GetCursor (Point (), cur);
-	}
+	cursor = layout->GetCursor (Point (), cur);
 	
 	// invalidate the new cursor rect
 	if (invalidate && cursor_visible)
