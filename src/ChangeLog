@@ -1,3 +1,10 @@
+2009-03-09  Chris Toshok  <toshok@ximian.com>
+
+	* enums.cpp (cursors_map): add the missing Size* members here.
+	gets the
+	http://www.adefwebserver.com/DotNetNukeHELP/Misc/Silverlight/GanttChart/Default.aspx
+	gallery site to the point where it's displaying a UI.
+
 2009-03-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::KeyPressUnichar): Fixed a logic goof that

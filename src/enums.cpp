@@ -82,6 +82,8 @@ static enum_map_t cursors_map [] = {
 	MAP_ENUM (MouseCursor, IBeam),
 	MAP_ENUM (MouseCursor, Stylus),
 	MAP_ENUM (MouseCursor, Eraser),
+	MAP_ENUM (MouseCursor, SizeNS),
+	MAP_ENUM (MouseCursor, SizeWE),
 	MAP_ENUM (MouseCursor, None),
 	END_MAPPING
 };
