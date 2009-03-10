@@ -699,16 +699,10 @@ namespace System.Windows.Controls {
 
 	partial class PasswordBox {
 		public static readonly DependencyProperty PasswordCharProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "PasswordChar", typeof (char));
-		internal static readonly DependencyProperty PasswordProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "Password", typeof (string));
 
 		public char PasswordChar {
 			get { return (char) GetValue (PasswordCharProperty); }
 			set { SetValue (PasswordCharProperty, value); }
-		}
-
-		public string Password {
-			get { return (string) GetValue (PasswordProperty); }
-			set { SetValue (PasswordProperty, value); }
 		}
 	}
 

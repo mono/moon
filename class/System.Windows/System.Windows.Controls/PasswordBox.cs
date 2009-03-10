@@ -44,6 +44,7 @@ namespace System.Windows.Controls
 	{
 		public static readonly DependencyProperty SelectionBackgroundProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionBackground", typeof (Brush));
 		public static readonly DependencyProperty SelectionForegroundProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionForeground", typeof (Brush));
+		internal static readonly DependencyProperty PasswordProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "Password", typeof (string));
 		public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "MaxLength", typeof (int));
 		
 		public Brush SelectionBackground {
@@ -54,6 +55,16 @@ namespace System.Windows.Controls
 		public Brush SelectionForeground {
 			get { return (Brush) GetValue (SelectionForegroundProperty); }
 			set { SetValue (SelectionForegroundProperty, value); }
+		}
+		
+		public string Password {
+			get { return (string) GetValue (PasswordProperty); }
+			set {
+				if (value == null)
+					throw new ArgumentNullException ("Value cannot be null");
+				
+				SetValue (PasswordProperty, value);
+			}
 		}
 		
 		public int MaxLength {
