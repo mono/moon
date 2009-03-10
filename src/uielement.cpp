@@ -1022,6 +1022,14 @@ TimeManager *
 UIElement::GetTimeManager ()
 {
 	Surface *surface = GetSurface ();
+	Deployment *deployment;
+	
+	if (surface == NULL) {
+		deployment = GetDeployment ();
+		if (deployment != NULL)
+			surface = deployment->GetSurface ();
+	}
+		
 	return surface ? surface->GetTimeManager() : NULL;
 }
 
