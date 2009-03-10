@@ -1,3 +1,9 @@
+2009-03-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-ui.cpp:
+	* pipeline-nocodec-ui.cpp: Set current deployment in
+	  ResponseEvent.
+
 2009-03-09  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp (Render): set the fill rule after drawing the clip

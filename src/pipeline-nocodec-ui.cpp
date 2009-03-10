@@ -72,6 +72,7 @@ void
 CodecDownloader::ResponseEvent (GtkDialog *dialog, GtkResponseType response)
 {
 	LOG_UI ("CodecDownloader::ResponseEvent (%d)\n", response);
+	SetCurrentDeployment ();
 
 	switch (response) {
 	case GTK_RESPONSE_DELETE_EVENT:
