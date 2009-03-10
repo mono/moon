@@ -30,7 +30,7 @@
 
 	<StackPanel Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center">
 		<TextBlock Foreground="Green" Text="ItemsControl (non-databound)" />
-		<Button Content="Add Button" Click="button_Click" />
+		<Button Foreground="Green" Content="Add Button" Click="button_Click" />
 		<Border BorderBrush="Black" BorderThickness="2" Width="100" Height="200">
 		    <ItemsControl x:Name="itemsControl">
  	    	    	<Button Content="Button1" />
