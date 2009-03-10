@@ -701,8 +701,6 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "MaxLength", typeof (int));
 		public static readonly DependencyProperty PasswordCharProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "PasswordChar", typeof (char));
 		internal static readonly DependencyProperty PasswordProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "Password", typeof (string));
-		public static readonly DependencyProperty SelectionBackgroundProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionBackground", typeof (Brush));
-		public static readonly DependencyProperty SelectionForegroundProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionForeground", typeof (Brush));
 
 		public int MaxLength {
 			get { return (int) GetValue (MaxLengthProperty); }
@@ -717,16 +715,6 @@ namespace System.Windows.Controls {
 		public string Password {
 			get { return (string) GetValue (PasswordProperty); }
 			set { SetValue (PasswordProperty, value); }
-		}
-
-		public Brush SelectionBackground {
-			get { return (Brush) GetValue (SelectionBackgroundProperty); }
-			set { SetValue (SelectionBackgroundProperty, value); }
-		}
-
-		public Brush SelectionForeground {
-			get { return (Brush) GetValue (SelectionForegroundProperty); }
-			set { SetValue (SelectionForegroundProperty, value); }
 		}
 	}
 

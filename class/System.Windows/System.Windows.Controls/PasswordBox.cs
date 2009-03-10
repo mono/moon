@@ -25,6 +25,7 @@
 //
 using System;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Documents;
 using Mono;
 
@@ -41,45 +42,61 @@ namespace System.Windows.Controls
 	[TemplateVisualStateAttribute(Name = "Unfocused", GroupName = "FocusStates")]
 	public sealed partial class PasswordBox : Control
 	{
-		static readonly UnmanagedEventHandler password_changed = Events.CreateSafeHandler (password_changed_cb);
-		static readonly object PasswordChangedEvent = new object ();
+		public static readonly DependencyProperty SelectionBackgroundProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionBackground", typeof (Brush));
+		public static readonly DependencyProperty SelectionForegroundProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionForeground", typeof (Brush));
 		
 		public PasswordBox (string s)
 			: base (NativeMethods.password_box_new ())
 		{
 			
 		}
-
-		public event RoutedEventHandler PasswordChanged {
-			add {
-				RegisterEvent (PasswordChangedEvent, "PasswordChanged", password_changed, value);
-			}
-			remove {
-				UnregisterEvent (PasswordChangedEvent, "PasswordChanged", password_changed, value);
-			}
+		
+		public Brush SelectionBackground {
+			get { return (Brush) GetValue (SelectionBackgroundProperty); }
+			set { SetValue (SelectionBackgroundProperty, value); }
 		}
 		
-		static void password_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			((PasswordBox) Helper.ObjectFromIntPtr (closure)).InvokePasswordChanged ();
+		public Brush SelectionForeground {
+			get { return (Brush) GetValue (SelectionForegroundProperty); }
+			set { SetValue (SelectionForegroundProperty, value); }
 		}
 		
-
-		void InvokePasswordChanged ()
-		{
-			RoutedEventHandler h = (RoutedEventHandler) EventList [PasswordChangedEvent];
-			if (h != null)
-				h (this, new RoutedEventArgs (native));
-		}
-
 		public FontSource FontSource {
 			get { throw new NotImplementedException (); }
 			set { throw new NotImplementedException (); }
 		}
-
+		
 		public void SelectAll ()
 		{
 			NativeMethods.text_box_select_all (native);
+		}
+		
+		static UnmanagedEventHandler password_changed = Events.CreateSafeHandler (password_changed_cb);
+		static object PasswordChangedEvent = new object ();
+		
+		void InvokePasswordChanged (RoutedEventArgs args)
+		{
+			RoutedEventHandler h = (RoutedEventHandler) EventList [PasswordChangedEvent];
+			
+			if (h != null)
+				h (this, args);
+		}
+		
+		static void password_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			PasswordBox passwordbox = (PasswordBox) Helper.ObjectFromIntPtr (closure);
+			RoutedEventArgs args = new RoutedEventArgs (calldata);
+			
+			passwordbox.InvokePasswordChanged (args);
+		}
+		
+		public event RoutedEventHandler PasswordChanged {
+			add {
+				RegisterEvent (PasswordChangedEvent, "TextChanged", password_changed, value);
+			}
+			remove {
+				UnregisterEvent (PasswordChangedEvent, "TextChanged", password_changed, value);
+			}
 		}
 	}
 }

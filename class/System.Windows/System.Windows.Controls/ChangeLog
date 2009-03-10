@@ -1,3 +1,11 @@
+2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* PasswordBox.cs: Connect to TextChanged instead of
+	PasswordChanged events on the unmanaged side, since the unmanaged
+	code subclasses TextBox we'll just reuse the same event. Also, map
+	SelectionBackground and SelectionForeground properties to the
+	TextBox properties manually.
+
 2009-03-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TextBox.cs: Use ObjectFromIntPtr instead of GCHandle. Doh.
