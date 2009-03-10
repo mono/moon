@@ -2525,5 +2525,10 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 	if (args->GetId () == PasswordBox::PasswordCharProperty)
 		Invalidate ();
 	
-	TextBox::OnPropertyChanged (args);	
+	if (args->GetProperty ()->GetOwnerType () != Type::PASSWORDBOX) {
+		TextBox::OnPropertyChanged (args);
+		return;
+	}
+	
+	NotifyListenersOfPropertyChange (args);
 }

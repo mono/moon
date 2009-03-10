@@ -1,5 +1,7 @@
 2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (PasswordBox::OnPropertyChanged): Fixed.
+
 	* validators.cpp (Validators::PasswordValidator):
 	Removed. PasswordBox::PasswordProperty is internal, so we map it
 	to TextBox::TextProperty and manually implement the
