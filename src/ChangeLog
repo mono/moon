@@ -3,6 +3,8 @@
 	* textbox.cpp (PasswordBox::OnPropertyChanged): Keep the Text and
 	Password properties in sync. Don't emit a PasswordChanged event,
 	that's mapped to TextChanged on the managed side.
+	(TextBox::OnApplyTemplate): Handle Border and Panel
+	ContentElements as well.
 
 	* textbox.h (class PasswordBox): Get rid of the
 	PasswordChangedEvent and also some of the properties that it

@@ -27,6 +27,8 @@
 #include "contentcontrol.h"
 #include "runtime.h"
 #include "textbox.h"
+#include "border.h"
+#include "panel.h"
 #include "clock.h"
 #include "utils.h"
 
@@ -1849,7 +1851,6 @@ void
 TextBox::OnApplyTemplate ()
 {
 	DependencyProperty *prop;
-	ContentControl *control;
 	
 	contentElement = GetTemplateChild ("ContentElement");
 	
@@ -1858,13 +1859,27 @@ TextBox::OnApplyTemplate ()
 		Control::OnApplyTemplate ();
 		return;
 	}
-
+	
+	view = new TextBoxView ();
+	view->SetTextBox (this);
+	
+	// Insert our TextBoxView
 	if (contentElement->Is (Type::CONTENTCONTROL)) {
-		// Insert our TextBoxView
-		control = (ContentControl *) contentElement;
-		view = new TextBoxView ();
-		view->SetTextBox (this);
+		ContentControl *control = (ContentControl *) contentElement;
+		
 		control->SetValue (ContentControl::ContentProperty, Value (view));
+	} else if (contentElement->Is (Type::BORDER)) {
+		Border *border = (Border *) contentElement;
+		
+		border->SetValue (Border::ChildProperty, Value (view));
+	} else if (contentElement->Is (Type::PANEL)) {
+		DependencyObjectCollection *children = ((Panel *) contentElement)->GetChildren ();
+		
+		children->Add (view);
+	} else {
+		g_warning ("TextBox::OnApplyTemplate: don't know how to handle a ContentELement of type %s",
+			   contentElement->GetType ()->GetName ());
+		delete view;
 	}
 	
 	// XXX LAME these should be template bindings in the textbox template.
