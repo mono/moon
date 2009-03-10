@@ -40,6 +40,11 @@ namespace Mono {
 
 	internal static class Helper {
 
+		public static TypeConverter GetConverterFor (Type target_type)
+		{
+			return GetConverterFor (null, target_type);
+		}
+
 		public static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
 		{
 			Attribute[] attrs;
@@ -85,7 +90,7 @@ namespace Mono {
 			return converter;
 		}
 
-		static bool IsAssignableToIConvertible (Type type)
+		public static bool IsAssignableToIConvertible (Type type)
 		{
 			return typeof (IConvertible).IsAssignableFrom (type);
 		}
@@ -264,10 +269,10 @@ namespace Mono {
 			return buf;
 		}
 
-		private static object ValueFromConvertible (Type type, string value)
+		public static object ValueFromConvertible (Type type, IConvertible value)
 		{
 			if (type == typeof (string))
-				return value;
+				return Convert.ToString (value);
 			if (type == typeof (bool))
 				return Convert.ToBoolean (value);
 			if (type == typeof (byte))
