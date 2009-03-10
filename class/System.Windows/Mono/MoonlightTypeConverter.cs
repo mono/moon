@@ -63,7 +63,10 @@ namespace Mono {
 			if (sourceType == typeof(Color) && destinationType.IsAssignableFrom(typeof(SolidColorBrush)))
 				return true;
 
-			return false;
+			if (Helper.IsAssignableToIConvertible (sourceType) && Helper.IsAssignableToIConvertible (destinationType))
+				return true;
+
+			return base.CanConvertFrom (context, sourceType);
 		}
 
 		public override object ConvertFrom (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
@@ -80,7 +83,7 @@ namespace Mono {
 								   out unmanaged_value,
 								   true)) {
 					Console.WriteLine ("could not convert value {0} to type {1} (property {1})", value, destinationType, propertyName);
-					return null;
+					return base.ConvertFrom (context, culture, value);
 				}
 			
 				return Value.ToObject (destinationType, unmanaged_value);
@@ -89,9 +92,13 @@ namespace Mono {
 			else if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
 				return new SolidColorBrush ((Color)value);
 			}
-			else {
-				throw new InvalidOperationException (string.Format ("Cannot convert from type {0} to type {1}", value.GetType(), destinationType));
+			else if (Helper.IsAssignableToIConvertible (value.GetType ()) && Helper.IsAssignableToIConvertible (destinationType))
+				return Helper.ValueFromConvertible (destinationType, (IConvertible) value);
+			else if (!base.CanConvertFrom (context, value.GetType ())) {
+				Console.Error.WriteLine ("MoonlightTypeConverter: Cannot convert from type {0} to type {1}", value.GetType(), destinationType);
 			}
+
+			return base.ConvertFrom (context, culture, value);
 		}
 	}
 

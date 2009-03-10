@@ -1,3 +1,11 @@
+2009-03-10  Jackson Harper  <jackson@ximian.com>
+
+	* Helper.cs: Expose some of the conversion methods, change
+	signatures to make a little easier to use.
+	* MoonlightTypeConverter.cs: Use the base converter when possible,
+	this will pickup types converter attributes.
+	- Use Helper's methods for converting IConvertible objects.
+
 2009-03-09  Geoff Norton  <gnorton@novell.com>
 
 	* ManagedXamlLoader.cs: Its possible for a bool to be passed in 
