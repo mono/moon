@@ -44,7 +44,7 @@ namespace System.Windows.Controls
 	{
 		public static readonly DependencyProperty SelectionBackgroundProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionBackground", typeof (Brush));
 		public static readonly DependencyProperty SelectionForegroundProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionForeground", typeof (Brush));
-		internal static readonly DependencyProperty PasswordProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "Password", typeof (string));
+		internal static readonly DependencyProperty PasswordProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "Text", typeof (string));
 		public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "MaxLength", typeof (int));
 		
 		public Brush SelectionBackground {
