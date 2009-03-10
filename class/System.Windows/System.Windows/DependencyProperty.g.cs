@@ -698,14 +698,8 @@ namespace System.Windows.Controls {
 	}
 
 	partial class PasswordBox {
-		public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "MaxLength", typeof (int));
 		public static readonly DependencyProperty PasswordCharProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "PasswordChar", typeof (char));
 		internal static readonly DependencyProperty PasswordProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "Password", typeof (string));
-
-		public int MaxLength {
-			get { return (int) GetValue (MaxLengthProperty); }
-			set { SetValue (MaxLengthProperty, value); }
-		}
 
 		public char PasswordChar {
 			get { return (char) GetValue (PasswordCharProperty); }
