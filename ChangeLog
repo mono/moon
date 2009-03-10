@@ -1,3 +1,8 @@
+2008-03-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* configure.ac: Add class/tuning/SecurityAttributes/Makefile to
+	AC_OUTPUT
+
 2009-02-27  Jb Evain  <jbevain@novell.com>
 
 	* configure.ac: change configure script to take mcs path

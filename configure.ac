@@ -672,6 +672,7 @@ src/Makefile
 src/codec-version.h
 class/Makefile
 class/tuning/Makefile
+class/tuning/SecurityAttributes/Makefile
 class/System.Windows/Makefile
 class/System.Windows.Browser/Makefile
 class/System.Windows.Controls/Makefile
