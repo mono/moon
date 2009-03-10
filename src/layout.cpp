@@ -850,7 +850,7 @@ TextLayout::LayoutWrapWithOverflow ()
 	g_ptr_array_add (lines, line);
 	inptr = text;
 	
-	while (*inptr != '\0') {
+	do {
 		nattrs = (TextLayoutAttributes *) attrs->next;
 		inend = text + (nattrs ? nattrs->start : length);
 		run = new TextLayoutRun (line, attrs, inptr - text);
@@ -972,7 +972,7 @@ TextLayout::LayoutWrapWithOverflow ()
 		}
 		
 		attrs = nattrs;
-	}
+	} while (*inptr != '\0');
 	
 	count = offset;
 }
@@ -1002,7 +1002,7 @@ TextLayout::LayoutNoWrap ()
 	g_ptr_array_add (lines, line);
 	inptr = text;
 	
-	while (*inptr != '\0') {
+	do {
 		nattrs = (TextLayoutAttributes *) attrs->next;
 		inend = text + (nattrs ? nattrs->start : length);
 		run = new TextLayoutRun (line, attrs, inptr - text);
@@ -1122,7 +1122,7 @@ TextLayout::LayoutNoWrap ()
 		}
 		
 		attrs = nattrs;
-	}
+	} while (*inptr != '\0');
 	
 	count = offset;
 }
@@ -1527,7 +1527,7 @@ TextLayout::LayoutWrap ()
 	g_ptr_array_add (lines, line);
 	inptr = text;
 	
-	while (*inptr != '\0') {
+	do {
 		nattrs = (TextLayoutAttributes *) attrs->next;
 		inend = text + (nattrs ? nattrs->start : length);
 		run = new TextLayoutRun (line, attrs, inptr - text);
@@ -1664,7 +1664,7 @@ TextLayout::LayoutWrap ()
 		}
 		
 		attrs = nattrs;
-	}
+	} while (*inptr != '\0');
 	
 	g_array_free (word.break_ops, true);
 	
@@ -2278,7 +2278,7 @@ TextLayout::GetCursor (const Point &offset, int index)
 		y1 = y0 + line->height + line->descend;
 		height = line->height;
 		
-		//printf ("\tline: left=%.2g, top=%.2g, baseline=%.2g, start index=%d\n", x0, y0, y1, cur);
+		//printf ("\tline: left=%.2f, top=%.2f, baseline=%.2f, start index=%d\n", x0, y0, y1, line->offset);
 		
 		if (cursor >= inend) {
 			// maybe the cursor is on the next line...

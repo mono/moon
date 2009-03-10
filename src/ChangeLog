@@ -1,3 +1,10 @@
+2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::Layout*Wrap*): Changed the outer while
+	loops into do-while loops so that the line->height and
+	line->descent get set properly. Needed to fix
+	TextLayout::GetCursor().
+
 2009-03-10  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Do some basic type conversion for resources, this
