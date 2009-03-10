@@ -1879,7 +1879,7 @@ TextBox::OnApplyTemplate ()
 	} else {
 		g_warning ("TextBox::OnApplyTemplate: don't know how to handle a ContentELement of type %s",
 			   contentElement->GetType ()->GetName ());
-		delete view;
+		view->unref ();
 	}
 	
 	// XXX LAME these should be template bindings in the textbox template.
