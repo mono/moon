@@ -1,3 +1,7 @@
+2009-03-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* brush.cpp: ImageBrush::image_failed: propagate event args.
+
 2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::Layout*Wrap*): Changed the outer while
