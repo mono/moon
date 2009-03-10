@@ -773,7 +773,7 @@ namespace Mono.Xaml
 			if (value.GetType () == t)
 				return value;
 
-			TypeConverter converter = GetConverterFor (t);
+			TypeConverter converter = Helper.GetConverterFor (t);
 
 			if (converter != null && converter.CanConvertFrom (value.GetType ()))
 				return converter.ConvertFrom (value);
@@ -791,37 +791,6 @@ namespace Mono.Xaml
 			
 			// This will just let things fail
 			return value;
-		}
-
-		private static TypeConverter GetConverterFor (Type type)
-		{
-			Attribute[] attrs = (Attribute []) type.GetCustomAttributes (true);
-			TypeConverterAttribute at = null;
-			TypeConverter converter = null;
-			Type t = null;
-
-			foreach (Attribute attr in attrs) {
-				if (attr is TypeConverterAttribute) {
-					at = (TypeConverterAttribute) attr;
-					break;
-				}
-			}
-
-			if (at == null) {
-				if (type == typeof (bool?)) {
-					t = typeof (NullableBoolConverter);
-				} else {
-					return null;
-				}
-			} else {
-				t = Type.GetType (at.ConverterTypeName);
-			}
-
-			if (t == null)
-				return null;
-
-			converter = (TypeConverter) Activator.CreateInstance (t);
-			return converter;
 		}
 
 		private static string ClrNamespaceFromXmlns (string xmlns)

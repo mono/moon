@@ -1,5 +1,9 @@
 2009-03-10  Jackson Harper  <jackson@ximian.com>
 
+	* ManagedXamlLoader.cs: Remove some duplicated code.
+
+2009-03-10  Jackson Harper  <jackson@ximian.com>
+
 	* Helper.cs: Expose some of the conversion methods, change
 	signatures to make a little easier to use.
 	* MoonlightTypeConverter.cs: Use the base converter when possible,
