@@ -383,10 +383,6 @@ class PasswordBox : public TextBox {
 	const static int PasswordProperty;
 	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
 	const static int PasswordCharProperty;
-	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
-	const static int SelectionBackgroundProperty;
-	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
-	const static int SelectionForegroundProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	PasswordBox ();
@@ -404,17 +400,6 @@ class PasswordBox : public TextBox {
 	
 	void SetPasswordChar (int passwordChar);
 	int GetPasswordChar ();
-	
-	void SetSelectionBackground (Brush *brush);
-	Brush *GetSelectionBackground ();
-	
-	void SetSelectionForeground (Brush *brush);
-	Brush *GetSelectionForeground ();
-	
-	//
-	// Events
-	//
-	const static int PasswordChangedEvent;
 };
 
 #endif /* __TEXTBOX_H__ */

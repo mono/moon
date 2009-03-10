@@ -2494,8 +2494,12 @@ PasswordBox::CursorPrevWord (int cursor)
 void
 PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->GetId () == PasswordBox::PasswordProperty)
-		Emit (PasswordBox::PasswordChangedEvent);
+	// keep TextBox::TextProperty and PasswordBox::PasswordProperty in sync
+	if (args->GetId () == PasswordBox::PasswordProperty) {
+		SetValue (TextBox::TextProperty, args->new_value);
+	} else if (args->GetId () == TextBox::TextProperty) {
+		SetValue (PasswordBox::PasswordProperty, args->new_value);
+	}
 	
 	TextBox::OnPropertyChanged (args);	
 }

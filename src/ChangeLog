@@ -1,5 +1,15 @@
 2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (PasswordBox::OnPropertyChanged): Keep the Text and
+	Password properties in sync. Don't emit a PasswordChanged event,
+	that's mapped to TextChanged on the managed side.
+
+	* textbox.h (class PasswordBox): Get rid of the
+	PasswordChangedEvent and also some of the properties that it
+	shares with TextBox.
+
+2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
+
 	* contentcontrol.cpp (ContentControl::ContentControl): Use the
 	nice new ManagedTypeInfo ctor.
 
