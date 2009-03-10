@@ -33,8 +33,8 @@ using System.Collections.Generic;
 namespace System.Windows.Controls {
 	public partial class TextBox : Control {
 		public FontSource FontSource {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			// FIXME: throw new NotImplementedException ();
+			get; set;
 		}
 		
 		public void Select (int start, int length)
