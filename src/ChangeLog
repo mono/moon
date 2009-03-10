@@ -1,28 +1,5 @@
 2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
 
-	* textbox.cpp (PasswordBox::OnPropertyChanged): Fixed.
-	(TextBox::TextBox): New protected ctor that PasswordBox's ctor can
-	chain up to.
-	(PasswordBox::PasswordBox): Chain up to the TextBox ctor we want,
-	so that we don't register event callbacks twice. Doh.
-
-2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
-
-	* validators.cpp (Validators::PasswordValidator):
-	Removed. PasswordBox::PasswordProperty is internal, so we map it
-	to TextBox::TextProperty and manually implement the
-	getter/setter (which si where we manually throw an
-	ArgumentNullException if set to null).
-
-	* textbox.cpp (PasswordBox::OnPropertyChanged): Manually syncing
-	Password and Text properties sucks, let's not do it. Instead,
-	we'll map PasswordProperty to TextProperty on the managed
-	side. Also need to Invalidate() if PasswordChar changes.
-	(TextBoxView::Layout): Mask the text with PasswordChars if we are
-	rendering a PasswordBox's content.
-
-2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
-
 	* textbox.cpp (PasswordBox::OnPropertyChanged): Keep the Text and
 	Password properties in sync. Don't emit a PasswordChanged event,
 	that's mapped to TextChanged on the managed side.

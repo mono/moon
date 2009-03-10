@@ -105,6 +105,17 @@ Validators::NotNullOrEmptyValidator (DependencyObject* instance, DependencyPrope
 }
 
 bool
+Validators::PasswordValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (!value || value->GetIsNull ()) {
+		MoonError::FillIn (error, MoonError::ARGUMENT_NULL, 1001, "Value cannot be null");
+		return false;
+	}
+	
+	return true;
+}
+
+bool
 Validators::MediaAttributeCollectionValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull ()) {

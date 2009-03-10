@@ -552,11 +552,6 @@ TextBox::Initialize (Type::Kind type, const char *type_name)
 	view = NULL;
 }
 
-TextBox::TextBox (Type::Kind type, const char *type_name)
-{
-	Initialize (type, type_name);
-}
-
 TextBox::TextBox ()
 {
 	Initialize (Type::TEXTBOX, "System.Windows.Controls.TextBox");
@@ -2322,20 +2317,7 @@ TextBoxView::Layout (cairo_t *cr, Size constraint)
 	else
 		layout->SetMaxWidth (width);
 	
-	if (textbox->Is (Type::PASSWORDBOX)) {
-		gunichar c = (gunichar) ((PasswordBox *) textbox)->GetPasswordChar ();
-		TextBuffer *buffer = textbox->GetBuffer ();
-		GString *passwd = g_string_new ("");
-		
-		for (int i = 0; i < buffer->len; i++)
-			g_string_append_unichar (passwd, c);
-		
-		layout->SetText (passwd->str, passwd->len);
-		g_string_free (passwd, true);
-	} else {
-		layout->SetText (textbox->GetText (), -1);
-	}
-	
+	layout->SetText (textbox->GetText (), -1);
 	layout->Select (textbox->GetSelectionStart (), textbox->GetSelectionLength ());
 	selection_changed = false;
 	
@@ -2483,9 +2465,9 @@ TextBoxView::SetTextBox (TextBox *textbox)
 // PasswordBox
 //
 
-PasswordBox::PasswordBox () : TextBox (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox")
+PasswordBox::PasswordBox ()
 {
-	
+	Initialize (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox");
 }
 
 int
@@ -2527,13 +2509,12 @@ PasswordBox::CursorPrevWord (int cursor)
 void
 PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	if (args->GetId () == PasswordBox::PasswordCharProperty)
-		Invalidate ();
-	
-	if (args->GetProperty ()->GetOwnerType () != Type::PASSWORDBOX) {
-		TextBox::OnPropertyChanged (args);
-		return;
+	// keep TextBox::TextProperty and PasswordBox::PasswordProperty in sync
+	if (args->GetId () == PasswordBox::PasswordProperty) {
+		SetValue (TextBox::TextProperty, args->new_value);
+	} else if (args->GetId () == TextBox::TextProperty) {
+		SetValue (PasswordBox::PasswordProperty, args->new_value);
 	}
 	
-	NotifyListenersOfPropertyChange (args);
+	TextBox::OnPropertyChanged (args);	
 }

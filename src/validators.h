@@ -36,6 +36,7 @@ public:
 	static ValueValidator NonNullStringValidator;
 	static ValueValidator NotNullOrEmptyValidator;
 	static ValueValidator MediaAttributeCollectionValidator;
+	static ValueValidator PasswordValidator;
 	static ValueValidator StyleValidator;
 	static ValueValidator TemplateValidator;
 	static ValueValidator IsTimelineValidator;
