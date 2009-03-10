@@ -1,5 +1,11 @@
 2009-03-10  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Do some basic type conversion for resources, this
+	allows you to do things like store a font family as
+	<clr:String>Arial</clr:String>.
+
+2009-03-10  Jackson Harper  <jackson@ximian.com>
+
 	* value.h:
 	* value.h.in: Consistentify method name.
 	

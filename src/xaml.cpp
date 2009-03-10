@@ -110,7 +110,7 @@ static void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance 
 static void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 static void value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 static bool handle_markup_in_managed (const char* attr_value);
-static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, Value **value);
+static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, DependencyProperty *prop, Value **value);
 static bool element_begins_buffering (const char* element);
 static bool is_managed_kind (Type::Kind kind);
 static bool is_static_resource_element (const char *el);
@@ -3240,6 +3240,47 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	return true;
 }
 
+void
+convert_value_type (Type::Kind desired_kind, const char *prop_name, Value **value, bool sl2)
+{
+	Value *v = *value;
+
+	if (desired_kind != Type::STRING && v->GetKind () == Type::STRING) {
+		if (value_from_str (desired_kind, prop_name, v->AsString (), value, sl2)) {
+			delete v;
+			return;
+		}
+		*value = v;
+	}
+
+	if (desired_kind == Type::DOUBLE) {
+		switch (v->GetKind ()) {
+		case Type::INT32:
+			*value = new Value ((double) v->AsInt32 ());
+			delete v;
+			break;
+		case Type::INT64:
+			*value = new Value ((double) v->AsInt64 ());
+			delete v;
+			break;
+		case Type::UINT32:
+			*value = new Value ((double) v->AsUInt32 ());
+			delete v;
+			break;
+		case Type::UINT64:
+			*value = new Value ((double) v->AsUInt64 ());
+			delete v;
+			break;
+		default:
+			break;
+		}
+	}
+
+	//
+	// To be continued
+	//
+}
+
 bool
 XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value)
 {
@@ -4264,7 +4305,7 @@ start_parse:
 			bool need_setvalue = true;
 			bool need_managed = false;
 			if (attr[i+1][0] == '{' && attr[i+1][strlen(attr[i+1]) - 1] == '}') {
-				need_setvalue = handle_xaml_markup_extension (p, item, attr [i], attr [i+1], &v);
+				need_setvalue = handle_xaml_markup_extension (p, item, attr [i], attr [i+1], prop, &v);
 
 				if (p->error_args)
 					return;
@@ -4699,7 +4740,7 @@ handle_markup_in_managed (const char* attr_value)
 // return value = do we need to SetValue with the [Out] Value* ?
 //
 static bool
-handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char *attr_name, const char *attr_value, Value **value)
+handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char *attr_name, const char *attr_value, DependencyProperty *prop, Value **value)
 {
 	const char *inptr, *start = attr_value + 1; // skip the initial '{'
 	XamlMarkupExtensionType type = XamlMarkupExtensionNone;
@@ -4747,7 +4788,9 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 				g_free (argument);
 				return false;
 			}
-			
+
+			convert_value_type (prop->GetPropertyType (), attr_name, value, true);
+
 			g_free (argument);
 			return true;
 		}
