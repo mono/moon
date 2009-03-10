@@ -1,6 +1,12 @@
 2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (PasswordBox::OnPropertyChanged): Fixed.
+	(TextBox::TextBox): New protected ctor that PasswordBox's ctor can
+	chain up to.
+	(PasswordBox::PasswordBox): Chain up to the TextBox ctor we want,
+	so that we don't register event callbacks twice. Doh.
+
+2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* validators.cpp (Validators::PasswordValidator):
 	Removed. PasswordBox::PasswordProperty is internal, so we map it

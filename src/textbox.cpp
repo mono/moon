@@ -552,6 +552,11 @@ TextBox::Initialize (Type::Kind type, const char *type_name)
 	view = NULL;
 }
 
+TextBox::TextBox (Type::Kind type, const char *type_name)
+{
+	Initialize (type, type_name);
+}
+
 TextBox::TextBox ()
 {
 	Initialize (Type::TEXTBOX, "System.Windows.Controls.TextBox");
@@ -2478,9 +2483,9 @@ TextBoxView::SetTextBox (TextBox *textbox)
 // PasswordBox
 //
 
-PasswordBox::PasswordBox ()
+PasswordBox::PasswordBox () : TextBox (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox")
 {
-	Initialize (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox");
+	
 }
 
 int

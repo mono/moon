@@ -94,6 +94,8 @@ class TextBox : public Control, public ITextAttributes {
 	int focused:1;
 	int emit:2;
 	
+	void Initialize (Type::Kind type, const char *type_name);
+	
 	// focus in/out events
 	static void focus_out (EventObject *sender, EventArgs *args, gpointer closure);
 	static void focus_in (EventObject *sender, EventArgs *args, gpointer closure);
@@ -122,8 +124,6 @@ class TextBox : public Control, public ITextAttributes {
 	void Paste (GtkClipboard *clipboard, const char *text);
 	
  protected:
-	void Initialize (Type::Kind type, const char *type_name);
-	
 	virtual int CursorDown (int cursor, bool page);
 	virtual int CursorUp (int cursor, bool page);
 	virtual int CursorLineBegin (int cursor);
@@ -177,6 +177,7 @@ class TextBox : public Control, public ITextAttributes {
 	//
 	const static int ModelChangedEvent;
 	
+	TextBox (Type::Kind type, const char *type_name);
 	virtual ~TextBox ();
 	
  public:
