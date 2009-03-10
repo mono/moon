@@ -1,3 +1,11 @@
+2009-03-10  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am:
+	* moon-unit.mdp:
+	* System.Windows.Controls/TabControlTests.cs: Add some tests
+	  for TabControl. Currently failing due to bad handling of the
+	  Parent property.
+
 2009-03-10  Jackson Harper  <jackson@ximian.com>
 
 	* System.Windows/ResourceDictionaryTest.cs: New test for type
