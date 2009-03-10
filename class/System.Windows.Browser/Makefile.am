@@ -100,6 +100,7 @@ LINKER_STEPS =	\
 
 LINKER_FLAGS =	\
 	-o .	\
+	-d ../lib/2.1/	\
 	-a ../lib/2.1/System.Windows.Browser.dll	\
 	-b true	\
 	-m secattrs ../tuning/SecurityAttributes
