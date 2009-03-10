@@ -1177,7 +1177,7 @@ class ManagedNamespace : public XamlNamespace {
 
 		if (p->loader) {
 			Value v = Value (value);
-			return p->loader->SetProperty (p, p->GetTopElementPtr (), xmlns, instance->GetAsValue (), instance, instance->GetAsDependencyObject ()->GetLogicalParent (), attr, &v, NULL);
+			return p->loader->SetProperty (p, p->GetTopElementPtr (), xmlns, instance->GetAsValue (), instance, instance->GetParentPointer (), attr, &v, NULL);
 		}
 		return false;
 	}

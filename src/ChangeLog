@@ -1,3 +1,9 @@
+2009-03-10  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Don't use GetLogicalParent here because the parenting
+	hasn't been setup yet. Wse the XamlElementInstance tree for
+	figuring out who our parent is.
+
 2009-03-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* brush.cpp: ImageBrush::image_failed: propagate event args.
