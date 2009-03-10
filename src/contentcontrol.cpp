@@ -15,12 +15,9 @@
 
 ContentControl::ContentControl ()
 {
-	SetObjectType (Type::CONTENTCONTROL);
-
-	ManagedTypeInfo *type_info = new ManagedTypeInfo ();
-	type_info->assembly_name = g_strdup ("System.Windows");
-	type_info->full_name = g_strdup ("System.Windows.Controls.ContentControl");
+	ManagedTypeInfo *type_info = new ManagedTypeInfo ("System.Windows", "System.Windows.Controls.ContentControl");
 	
+	SetObjectType (Type::CONTENTCONTROL);
 	SetDefaultStyleKey (type_info);
 }
 

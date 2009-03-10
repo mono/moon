@@ -394,6 +394,12 @@ bool type_is_dependency_object (Type::Kind type);
 struct ManagedTypeInfo {
 	char *assembly_name;
 	char *full_name;
+	
+	ManagedTypeInfo (const char *assembly_name, const char *full_name)
+	{
+		this->assembly_name = g_strdup (assembly_name);
+		this->full_name = g_strdup (full_name);
+	}
 };
 
 G_END_DECLS

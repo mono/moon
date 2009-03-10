@@ -504,13 +504,13 @@ TextBoxUndoStack::Peek ()
 #define SELECTION_CHANGED       (1 << 0)
 #define TEXT_CHANGED            (1 << 1)
 
-TextBox::TextBox ()
+
+void
+TextBox::Initialize (Type::Kind type, const char *type_name)
 {
-	SetObjectType (Type::TEXTBOX);
-	ManagedTypeInfo *type_info = new ManagedTypeInfo ();
-	type_info->assembly_name = g_strdup ("System.Windows");
-	type_info->full_name = g_strdup ("System.Windows.Controls.TextBox");
+	ManagedTypeInfo *type_info = new ManagedTypeInfo ("System.Windows", type_name);
 	
+	SetObjectType (type);
 	SetDefaultStyleKey (type_info);
 	
 	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBox::mouse_left_button_down, this);
@@ -548,6 +548,11 @@ TextBox::TextBox ()
 	captured = false;
 	focused = false;
 	view = NULL;
+}
+
+TextBox::TextBox ()
+{
+	Initialize (Type::TEXTBOX, "System.Windows.Controls.TextBox");
 }
 
 TextBox::~TextBox ()
@@ -2447,12 +2452,43 @@ TextBoxView::SetTextBox (TextBox *textbox)
 
 PasswordBox::PasswordBox ()
 {
-	SetObjectType (Type::PASSWORDBOX);
-	ManagedTypeInfo *type_info = new ManagedTypeInfo ();
-	type_info->assembly_name = g_strdup ("System.Windows");
-	type_info->full_name = g_strdup ("System.Windows.Controls.PasswordBox");
+	Initialize (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox");
+}
 
-	SetDefaultStyleKey (type_info);
+int
+PasswordBox::CursorDown (int cursor, bool page)
+{
+	return GetBuffer ()->len;
+}
+
+int
+PasswordBox::CursorUp (int cursor, bool page)
+{
+	return 0;
+}
+
+int
+PasswordBox::CursorLineBegin (int cursor)
+{
+	return 0;
+}
+
+int
+PasswordBox::CursorLineEnd (int cursor, bool include)
+{
+	return GetBuffer ()->len;
+}
+
+int
+PasswordBox::CursorNextWord (int cursor)
+{
+	return GetBuffer ()->len;
+}
+
+int
+PasswordBox::CursorPrevWord (int cursor)
+{
+	return 0;
 }
 
 void

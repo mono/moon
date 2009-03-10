@@ -1,3 +1,18 @@
+2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* contentcontrol.cpp (ContentControl::ContentControl): Use the
+	nice new ManagedTypeInfo ctor.
+
+	* type.h.in (struct ManagedTypeInfo): Added a nice ctor.
+
+	* textbox.cpp (TextBox::Initialize): New protected method; all of
+	the old ctor logic was moved here so that PasswordBox could reuse
+	it.
+	(TextBox::TextBox): Call Initialize() with out type info.
+	(PasswordBox::PasswordBox): Call Initialize() with out type info.
+	(PasswordBox::Cursor*): Override some of TextBox's cursor
+	navigation because we don't "see" whitespace or lines.
+
 2009-03-10  Larry Ewing  <lewing@novell.com>
 
 	* textbox.cpp (OnApplyTemplate): don't crash it ContentElement

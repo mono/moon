@@ -121,14 +121,16 @@ class TextBox : public Control, public ITextAttributes {
 	static void paste (GtkClipboard *clipboard, const char *text, gpointer closure);
 	void Paste (GtkClipboard *clipboard, const char *text);
 	
-	int CursorDown (int cursor, bool page);
-	int CursorUp (int cursor, bool page);
-	int CursorLineBegin (int cursor);
-	int CursorLineEnd (int cursor, bool include = false);
-	int CursorNextWord (int cursor);
-	int CursorPrevWord (int cursor);
-	
  protected:
+	void Initialize (Type::Kind type, const char *type_name);
+	
+	virtual int CursorDown (int cursor, bool page);
+	virtual int CursorUp (int cursor, bool page);
+	virtual int CursorLineBegin (int cursor);
+	virtual int CursorLineEnd (int cursor, bool include = false);
+	virtual int CursorNextWord (int cursor);
+	virtual int CursorPrevWord (int cursor);
+	
 	void KeyPressUnichar (gunichar c);
 	
 	void KeyPressBackSpace (GdkModifierType modifiers);
@@ -175,7 +177,7 @@ class TextBox : public Control, public ITextAttributes {
 	//
 	const static int ModelChangedEvent;
 	
- 	virtual ~TextBox ();
+	virtual ~TextBox ();
 	
  public:
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
@@ -366,6 +368,14 @@ class TextBoxView : public FrameworkElement {
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class PasswordBox : public TextBox {
+ protected:
+	virtual int CursorDown (int cursor, bool page);
+	virtual int CursorUp (int cursor, bool page);
+	virtual int CursorLineBegin (int cursor);
+	virtual int CursorLineEnd (int cursor, bool include = false);
+	virtual int CursorNextWord (int cursor);
+	virtual int CursorPrevWord (int cursor);
+	
  public:
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int MaxLengthProperty;
