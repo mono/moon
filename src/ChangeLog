@@ -1,3 +1,8 @@
+2009-03-10  Jackson Harper  <jackson@ximian.com>
+
+	* value.h:
+	* value.h.in: Consistentify method name.
+	
 2009-03-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* uielement.cpp: GetTimeManager: if we don't have a surface,

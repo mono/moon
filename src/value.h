@@ -333,7 +333,7 @@ public:
 
 	bool		AsBool ()	{ checked_get_exact (Type::BOOL, false, (bool)u.i32); }
 	double 		AsDouble ()	{ checked_get_exact (Type::DOUBLE, 0.0, u.d); }
-	guint64		AsUint64 ()	{ checked_get_exact (Type::UINT64, 0, u.ui64); }
+	guint64		AsUInt64 ()	{ checked_get_exact (Type::UINT64, 0, u.ui64); }
 	gint64		AsInt64 ()	{ checked_get_exact (Type::INT64, 0, u.i64); }
 	TimeSpan	AsTimeSpan ()	{ checked_get_exact (Type::TIMESPAN, 0, (TimeSpan)u.i64); }
 	guint32		AsUInt32 ()	{ checked_get_exact (Type::UINT32, 0, u.ui32); }

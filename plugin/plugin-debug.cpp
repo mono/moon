@@ -108,7 +108,7 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 			break;
 		}
 		case Type::UINT64:
-			str = buf = g_strdup_printf ("<b>%llu</b>", value->AsUint64 ());
+			str = buf = g_strdup_printf ("<b>%llu</b>", value->AsUInt64 ());
 			break;
 		case Type::STRING:
 			str = buf = g_strdup_printf ("<b>%s</b>", value->AsString ());
