@@ -1,0 +1,112 @@
+securitymodel_sources = CecilRocks.cs PlatformCode.cs
+
+CECIL=-r:$(MCS_PATH)/class/lib/net_1_1/Mono.Cecil.dll
+LIBS=$(CECIL) -r:Moonlight.SecurityModel.dll
+MONO_PLATFORM_CODE=$(MCS_PATH)/class/lib/net_2_1/
+MOONLIGHT_PLATFORM_CODE=../../../../moon/class/lib/2.1/
+SILVERLIGHT_PLATFORM_CODE="/cygdrive/c/Program\ Files/Microsoft\ Silverlight/2.0.31005.0/"
+
+SECURITY_ATTRIBUTES_AUTOMATIC_INFO= \
+	automatic/mscorlib.auto.sc \
+	automatic/mscorlib.auto.ssc \
+	automatic/System.auto.sc \
+	automatic/System.auto.ssc \
+	automatic/System.Core.auto.sc \
+	automatic/System.Core.auto.ssc \
+	automatic/System.Net.auto.sc \
+	automatic/System.Net.auto.ssc \
+	automatic/System.Runtime.Serialization.auto.sc \
+	automatic/System.Runtime.Serialization.auto.ssc \
+	automatic/System.ServiceModel.auto.sc \
+	automatic/System.ServiceModel.auto.ssc \
+	automatic/System.ServiceModel.Web.auto.sc \
+	automatic/System.ServiceModel.Web.auto.ssc \
+	automatic/System.Windows.Browser.auto.sc \
+	automatic/System.Windows.Browser.auto.ssc \
+	automatic/System.Windows.auto.sc \
+	automatic/System.Windows.auto.ssc \
+	automatic/System.Xml.auto.sc \
+	automatic/System.Xml.auto.ssc
+
+SECURITY_ATTRIBUTES_MANUAL_INFO= \
+	overrides/mscorlib.manual \
+	overrides/System.manual \
+	overrides/System.Core.manual \
+	overrides/System.Net.manual \
+	overrides/System.Runtime.Serialization.manual \
+	overrides/System.ServiceModel.manual \
+	overrides/System.ServiceModel.Web.manual \
+	overrides/System.Windows.Browser.manual \
+	overrides/System.Windows.manual \
+	overrides/System.Xml.manual \
+	overrides/Microsoft.VisualBasic.manual
+
+SECURITY_ATTRIBUTES_COMPATIBILITY_INFO= \
+	compatibility/mscorlib.compat.sc \
+	compatibility/System.compat.sc \
+	compatibility/System.Core.compat.sc \
+	compatibility/System.Net.compat.sc \
+	compatibility/System.Runtime.Serialization.compat.sc \
+	compatibility/System.ServiceModel.compat.sc \
+	compatibility/System.ServiceModel.Web.compat.sc \
+	compatibility/System.Windows.Browser.compat.sc \
+	compatibility/System.Windows.compat.sc \
+	compatibility/System.Xml.compat.sc \
+	compatibility/Microsoft.VisualBasic.compat.sc
+
+SECATTRS = $(SECURITY_ATTRIBUTES_AUTOMATIC_INFO) $(SECURITY_ATTRIBUTES_MANUAL_INFO) $(SECURITY_ATTRIBUTES_COMPATIBILITY_INFO)
+
+EXTRA_DIST = $(SECATTRS) $(securitymodel_sources) find-sc.cs detect-sc.cs detect-ssc.cs merge.cs
+
+MERGED_SECURITY_ATTRIBUTES_INFO = \
+	mscorlib.secattr \
+	System.secattr \
+	System.Core.secattr \
+	System.Net.secattr \
+	System.Runtime.Serialization.secattr \
+	System.ServiceModel.secattr \
+	System.ServiceModel.Web.secattr \
+	System.Windows.Browser.secattr \
+	System.Windows.secattr \
+	System.Xml.secattr \
+	Microsoft.VisualBasic.secattr
+
+all: merge.exe $(MERGED_SECURITY_ATTRIBUTES_INFO)
+
+Moonlight.SecurityModel.dll: $(securitymodel_sources)
+	gmcs $(CECIL) -r:System.Core.dll -t:library -out:$@ $(securitymodel_sources)
+
+find-sc.exe: find-sc.cs Moonlight.SecurityModel.dll
+	gmcs find-sc.cs -out:$@ $(LIBS)
+
+compat: find-sc.exe
+	mkdir -p compatibility
+	mono find-sc.exe $(SILVERLIGHT_PLATFORM_CODE) compatibility
+
+detect-sc.exe: detect-sc.cs Moonlight.SecurityModel.dll
+	gmcs detect-sc.cs -out:$@ $(LIBS)
+
+detect-ssc.exe: detect-ssc.cs Moonlight.SecurityModel.dll
+	gmcs detect-ssc.cs -out:$@ $(LIBS)
+
+detect: detect-sc.exe detect-ssc.exe
+	mkdir -p automatic
+	mono detect-sc.exe $(MONO_PLATFORM_CODE) $(MOONLIGHT_PLATFORM_CODE) automatic
+	mono detect-ssc.exe $(MONO_PLATFORM_CODE) $(MOONLIGHT_PLATFORM_CODE) automatic
+
+merge.exe: merge.cs Moonlight.SecurityModel.dll
+	gmcs merge.cs -out:$@ $(LIBS)
+
+$(MERGED_SECURITY_ATTRIBUTES_INFO):
+	mono merge.exe . .
+
+validate: find-sc.exe
+	mkdir -p moonlight
+	mono find-sc.exe $(MOONLIGHT_PLATFORM_CODE) moonlight
+	diff compatibility/*.compat.sc moonlight/*.compat.sc
+
+clean-data:
+	rm -f *.secattr
+
+clean: clean-data
+	rm -f find-sc.exe detect-sc.exe detect-ssc.exe merge.exe Moonlight.SecurityModel.dll
