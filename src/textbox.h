@@ -377,8 +377,6 @@ class PasswordBox : public TextBox {
 	virtual int CursorPrevWord (int cursor);
 	
  public:
-	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PasswordValidator */
-	const static int PasswordProperty;
 	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
 	const static int PasswordCharProperty;
 	
@@ -390,10 +388,7 @@ class PasswordBox : public TextBox {
 	//
 	// Property Accesors
 	//
-	void SetPassword (const char *password);
-	const char *GetPassword ();
-	
-	void SetPasswordChar (int passwordChar);
+	void SetPasswordChar (int c);
 	int GetPasswordChar ();
 };
 

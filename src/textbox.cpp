@@ -2317,7 +2317,20 @@ TextBoxView::Layout (cairo_t *cr, Size constraint)
 	else
 		layout->SetMaxWidth (width);
 	
-	layout->SetText (textbox->GetText (), -1);
+	if (textbox->Is (Type::PASSWORDBOX)) {
+		gunichar c = (gunichar) ((PasswordBox *) textbox)->GetPasswordChar ();
+		TextBuffer *buffer = textbox->GetBuffer ();
+		GString *passwd = g_string_new ("");
+		
+		for (int i = 0; i < buffer->len; i++)
+			g_string_append_unichar (passwd, c);
+		
+		layout->SetText (passwd->str, passwd->len);
+		g_string_free (passwd, true);
+	} else {
+		layout->SetText (textbox->GetText (), -1);
+	}
+	
 	layout->Select (textbox->GetSelectionStart (), textbox->GetSelectionLength ());
 	selection_changed = false;
 	
@@ -2509,12 +2522,8 @@ PasswordBox::CursorPrevWord (int cursor)
 void
 PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 {
-	// keep TextBox::TextProperty and PasswordBox::PasswordProperty in sync
-	if (args->GetId () == PasswordBox::PasswordProperty) {
-		SetValue (TextBox::TextProperty, args->new_value);
-	} else if (args->GetId () == TextBox::TextProperty) {
-		SetValue (PasswordBox::PasswordProperty, args->new_value);
-	}
+	if (args->GetId () == PasswordBox::PasswordCharProperty)
+		Invalidate ();
 	
 	TextBox::OnPropertyChanged (args);	
 }
