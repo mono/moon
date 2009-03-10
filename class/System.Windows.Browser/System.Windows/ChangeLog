@@ -1,3 +1,7 @@
+2009-03-10  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectGenerator.cs: Add generic type support
+	
 2009-02-23  Andreia Gaita  <avidigal@novell.com>
 
 	* WebApplication.cs:  Keep a list of cached objects

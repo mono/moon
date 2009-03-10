@@ -127,8 +127,18 @@ namespace System.Windows
 		public static bool ValidateType (Type t)
 		{
 			if (!t.IsDefined (typeof(ScriptableTypeAttribute), true)) {
-				if (ValidateProperties (t) | ValidateMethods (t) | ValidateEvents (t))
+				if (t.IsGenericType) {
+					foreach (Type type in t.GetGenericArguments ()) {
+						if (!ValidateType (type))
+							return false;
+					}
 					return true;
+				} else if (t.IsArray) {
+					return ValidateType (t.GetElementType ());
+				} else {
+					if (ValidateProperties (t) | ValidateMethods (t) | ValidateEvents (t))
+						return true;
+				}
 			} else
 				return true;
 			return false;
