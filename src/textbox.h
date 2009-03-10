@@ -377,8 +377,6 @@ class PasswordBox : public TextBox {
 	virtual int CursorPrevWord (int cursor);
 	
  public:
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
-	const static int MaxLengthProperty;
 	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PasswordValidator */
 	const static int PasswordProperty;
 	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
@@ -392,9 +390,6 @@ class PasswordBox : public TextBox {
 	//
 	// Property Accesors
 	//
-	void SetMaxLength (int length);
-	int GetMaxLength ();
-	
 	void SetPassword (const char *password);
 	const char *GetPassword ();
 	
