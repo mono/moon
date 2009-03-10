@@ -1,3 +1,9 @@
+2009-03-10  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows/ResourceDictionaryTest.cs: New test for type
+	conversion of static resources.  Just Fontfamily and Double for
+	now.
+
 2009-03-09  Jackson Harper  <jackson@ximian.com>
 
 	* Makefile.am: Add ControlTemplateTest.xaml

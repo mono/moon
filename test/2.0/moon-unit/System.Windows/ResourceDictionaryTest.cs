@@ -434,10 +434,10 @@ namespace MoonTest.System.Windows
 		{
 			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child""><Rectangle.Fill><StaticResource ResourceKey=""nope"" /></Rectangle.Fill></Rectangle></Canvas>"); }, "1");
 
-			/*
-			  Don't do this it crashes Silverlight
-			Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child""><Rectangle.Fill><StaticResource /></Rectangle.Fill></Rectangle></Canvas>"); }, "1");
-			*/
+			
+			///  Don't do this it crashes Silverlight
+			/// Assert.Throws<XamlParseException>(delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><SolidColorBrush x:Key=""FillBrush"" Color=""Black""/></Canvas.Resources><Rectangle x:Name=""child""><Rectangle.Fill><StaticResource /></Rectangle.Fill></Rectangle></Canvas>"); }, "1");
+			///
 		}
 		
 		[TestMethod]
@@ -463,6 +463,19 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual (1, rd.Count, "Count-1");
 			rd.Clear ();
 			Assert.AreEqual (0, rd.Count, "Count-2");
+		}
+
+		[TestMethod]
+		public void TypeConversionOfStaticResources ()
+		{
+			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:sys=""clr-namespace:System;assembly=mscorlib"">
+<Canvas.Resources><sys:Int32 x:Key=""an_int"">300</sys:Int32><sys:String x:Key=""a_str"">Arial</sys:String></Canvas.Resources>
+<Rectangle x:Name=""rect"" Width=""{StaticResource an_int}""/><TextBlock x:Name=""block"" FontFamily=""{StaticResource a_str}""/></Canvas>");
+			Rectangle r = (Rectangle)c.FindName ("rect");
+			TextBlock tb = (TextBlock) c.FindName ("block");
+
+			Assert.AreEqual (r.Width, 300, "1");
+			Assert.AreEqual (tb.FontFamily, new FontFamily ("Arial"), "2");
 		}
 	}
 }
