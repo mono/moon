@@ -1,3 +1,8 @@
+2009-03-09  Larry Ewing  <lewing@novell.com>
+
+	* border.cpp (Render): set the fill rule after drawing the clip
+	geometry since it will set the fill rule for itself.
+
 2009-03-09  Chris Toshok  <toshok@ximian.com>
 
 	* enums.cpp (cursors_map): add the missing Size* members here.

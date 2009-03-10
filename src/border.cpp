@@ -98,9 +98,9 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 	Brush *border_brush = GetBorderBrush ();
 
 	cairo_set_matrix (cr, &absolute_xform);
-	cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
+	cairo_new_path (cr);
 
-	Geometry *clip = LayoutInformation::GetLayoutClip (this);
+	Geometry *clip = path_only ? NULL : LayoutInformation::GetLayoutClip (this);
 	if (clip) {
 		cairo_save (cr);
 		clip->Draw (cr);
@@ -127,8 +127,11 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 	 * too.
 	 */
 	cairo_new_path (cr);
+	cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
+
 	if (border_brush) {
 		border_brush->SetupBrush (cr, paint_border);
+
 
 		paint_border.Draw (cr, round);
 		paint_background.Draw (cr, round ? &adjusted : NULL);
