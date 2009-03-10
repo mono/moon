@@ -1848,6 +1848,12 @@ TextBox::OnApplyTemplate ()
 	
 	contentElement = GetTemplateChild ("ContentElement");
 	
+	if (contentElement == NULL) {
+		g_warning ("TextBox::OnApplyTemplate: no ContentElement found");
+		Control::OnApplyTemplate ();
+		return;
+	}
+
 	if (contentElement->Is (Type::CONTENTCONTROL)) {
 		// Insert our TextBoxView
 		control = (ContentControl *) contentElement;

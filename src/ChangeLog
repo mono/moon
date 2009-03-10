@@ -1,3 +1,8 @@
+2009-03-10  Larry Ewing  <lewing@novell.com>
+
+	* textbox.cpp (OnApplyTemplate): don't crash it ContentElement
+	isn't found in the template.
+
 2009-03-10  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Don't use GetLogicalParent here because the parenting
