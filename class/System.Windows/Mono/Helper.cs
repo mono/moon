@@ -74,8 +74,15 @@ namespace Mono {
 				}
 			}
 
-			if (at == null)
-				return null;
+			if (at == null) {
+				if (type == typeof (bool?)) {
+					t = typeof (NullableBoolConverter);
+				} else {
+					return null;
+				}
+			} else {
+				t = Type.GetType (at.ConverterTypeName);
+			}
 
 			Type t = Type.GetType (at.ConverterTypeName);
 			if (t == null)

@@ -1,3 +1,8 @@
+2009-03-10  Geoff Norton  <gnorton@novell.com>
+
+	* Helper.cs: This code got lost when moving from ManagedXamlLoader.cs
+	to Helper.cs in r129030.  I'm bringing sexy back.
+
 2009-03-10  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Amazingly you can specify the wrong
