@@ -767,7 +767,7 @@ namespace Mono.Xaml
 					string expression = str_value;
 					obj_value = p.ParseExpression (ref expression);
 
-					if (!obj_value is Binding)
+					if (!(obj_value is Binding))
 						return false;
 
 					pi.SetValue (target, obj_value, null);
