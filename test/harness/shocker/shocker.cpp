@@ -344,18 +344,43 @@ shocker_scriptable_control_has_method (NPObject *npobj, NPIdentifier id)
 }
 
 static bool
-shocker_scriptable_control_has_property (NPObject *npobj, NPIdentifier name)
+shocker_scriptable_control_has_property (NPObject *npobj, NPIdentifier id)
 {
+	char *name = Browser::Instance ()->UTF8FromIdentifier (id);
+	bool res = false;
+	
+	res = !strcmp (name, "X") || !strcmp (name, "Y");
+	
+	free (name);
+		
 #ifdef SHOCKER_DEBUG
 	printf ("scriptable control has property:  %s\n", Browser::Instance ()->UTF8FromIdentifier (name));
 #endif
-	return false;
+
+	return res;
 }
 
 static bool
-shocker_scriptable_control_get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
+shocker_scriptable_control_get_property (NPObject *npobj, NPIdentifier id, NPVariant *result)
 {
-	return false;
+	char *name = Browser::Instance ()->UTF8FromIdentifier (id);
+	bool res = false;
+	ShockerScriptableControlObject * ssco = (ShockerScriptableControlObject *) npobj;
+	PluginObject *plugin = ssco->GetPluginObject ();
+
+#if SHOCKER_DEBUG
+	printf ("[Shocker] shocker_scriptable_control_get_property ('%s') x: %i, y: %i\n", name, plugin->GetX (), plugin->GetY ());
+#endif
+
+	if (!strcmp (name, "X")) {
+		INT32_TO_NPVARIANT (plugin->GetX (), *result);
+		res = true;
+	} else if (!strcmp (name, "Y")) {
+		INT32_TO_NPVARIANT (plugin->GetY (), *result);
+		res = true;
+	}
+	
+	return res;
 }
 
 static bool
@@ -421,7 +446,7 @@ ShockerScriptableControlObject::ShockerScriptableControlObject (NPP instance) : 
 {	
 	log_provider = new LogProvider (GetTestPath ());
 	input_provider = new InputProvider ();
-	image_capture = new ImageCaptureProvider (GetPluginObject ());
+	image_capture = new ImageCaptureProvider ();
 }
 
 ShockerScriptableControlObject::~ShockerScriptableControlObject ()
@@ -445,7 +470,7 @@ ImageCaptureProvider *
 ShockerScriptableControlObject::GetImageCaptureProvider ()
 {
 	if (!image_capture)
-		image_capture = new ImageCaptureProvider (GetPluginObject ());
+		image_capture = new ImageCaptureProvider ();
 	return image_capture;
 }
 

@@ -60,9 +60,8 @@ get_now (void)
 	return 0;
 }
 
-ImageCaptureProvider::ImageCaptureProvider (PluginObject *plugin)
+ImageCaptureProvider::ImageCaptureProvider ()
 {
-	this->plugin = plugin;
 }
 
 ImageCaptureProvider::~ImageCaptureProvider ()
@@ -91,11 +90,6 @@ ImageCaptureProvider::CaptureSingleImage (const char* image_dir, const char* fil
 		
 	image_path = g_build_filename (moonlight_harness_output_dir, file_name, NULL);
 	
-	if (plugin->HasCoordinates ()) {
-		x = plugin->GetX ();
-		y = plugin->GetY ();
-	}
-
 	ScreenCaptureData sc (x, y, width, height);
 	sc.Capture (image_path);
 	g_free (image_path);

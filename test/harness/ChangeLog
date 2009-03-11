@@ -1,3 +1,20 @@
+2009-03-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker/shocker.cpp: Add support for getting the x,y
+	  coordinates of the html page from the plugin by js.
+
+	* shocker/netscape.cpp: Install signal handler upon startup.
+
+	* shocker/image-capture.h:
+	* shocker/image-capture.cpp: Remove the origin translation,
+	  it's done in js now.
+
+	* shocker/Makefile.am: Updated with new files.
+
+	* shocker/signal-handler.h:
+	* shocker/signal-handler.cpp: Added signal handler for crash
+	  reporting.
+
 2009-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker/image-capture.cpp: shocker_capture_image: call

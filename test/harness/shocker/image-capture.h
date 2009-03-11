@@ -61,11 +61,8 @@ public:
 };
 
 class ImageCaptureProvider {
-private:
-	PluginObject *plugin;
-	
 public:
-	ImageCaptureProvider (PluginObject *plugin);
+	ImageCaptureProvider ();
 	virtual ~ImageCaptureProvider ();
 
 	void CaptureSingleImage (const char* image_dir, const char* file_name, int x, int y, int width, int height);
