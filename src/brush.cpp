@@ -515,6 +515,8 @@ ImageBrush::image_progress_changed (EventObject *sender, EventArgs *calldata, gp
 void
 ImageBrush::image_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
+	if (calldata)
+		calldata->ref ();
 	((ImageBrush*)closure)->Emit (ImageBrush::ImageFailedEvent, calldata);
 }
 

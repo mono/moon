@@ -1,3 +1,8 @@
+2009-03-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* brush.cpp: ImageBrush::image_failed: we need to ref the
+	  eventargs when we do emit chaining.
+
 2009-03-11  Chris Toshok  <toshok@ximian.com>
 
 	* border.cpp (Border::OnPropertyChanged): Border is ever the red
