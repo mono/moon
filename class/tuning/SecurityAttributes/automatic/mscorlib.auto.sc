@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 601 methods needs to be decorated.
+# 602 methods needs to be decorated.
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::FindProxy(System.IntPtr)
@@ -78,6 +78,9 @@
 
 # using 'System.Threading.NativeOverlapped*' as a parameter type
 +SC-M: System.Boolean System.Threading.ThreadPool::UnsafeQueueNativeOverlapped(System.Threading.NativeOverlapped*)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.Boolean System.Threading.WaitHandle::SignalAndWait_Internal(System.IntPtr,System.IntPtr,System.Int32,System.Boolean)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Boolean System.Threading.WaitHandle::WaitOne_internal(System.IntPtr,System.Int32,System.Boolean)

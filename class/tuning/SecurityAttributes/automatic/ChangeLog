@@ -1,3 +1,7 @@
+2009-03-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* *.auto.[sc|scc]: Update
+
 2009-02-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows[.Browser].auto.[sc|scc]: New data files

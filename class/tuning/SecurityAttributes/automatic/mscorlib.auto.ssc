@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 361 methods
+# 364 methods
 
 +SSC-M: System.Void Microsoft.Win32.KeyHandler::.ctor(Microsoft.Win32.RegistryKey,System.String)
 +SSC-M: System.Void Microsoft.Win32.KeyHandler::Load()
@@ -236,7 +236,6 @@
 +SSC-M: System.Resources.MissingManifestResourceException System.Resources.ResourceManager::AssemblyResourceMissing(System.String)
 +SSC-M: System.Void System.Resources.ResourceReader::.ctor(System.String)
 +SSC-M: System.IO.UnmanagedMemoryStream System.Resources.ResourceReader::ResourceValueAsStream(System.String,System.Int32)
-+SSC-M: System.Void System.Resources.ResourceReader/<ResourceValueAsStream>c__AnonStorey1::<>m__0(System.Object,System.EventArgs)
 +SSC-M: System.Void System.Resources.ResourceWriter::.ctor(System.String)
 +SSC-M: System.Void System.Resources.RuntimeResourceSet::.ctor(System.IO.Stream)
 +SSC-M: System.Void System.Resources.RuntimeResourceSet::.ctor(System.String)
@@ -244,6 +243,8 @@
 +SSC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunClassConstructor(System.RuntimeTypeHandle)
 +SSC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunModuleConstructor(System.ModuleHandle)
 +SSC-M: System.Runtime.Remoting.ObjectHandle System.Runtime.Hosting.ApplicationActivator::CreateInstanceHelper(System.AppDomainSetup)
++SSC-M: System.IntPtr System.Runtime.InteropServices.Marshal::AllocHGlobal(System.Int32)
++SSC-M: System.Int32 System.Runtime.InteropServices.Marshal::Release(System.IntPtr)
 +SSC-M: System.Int32 System.Runtime.InteropServices.Marshal::SizeOf(System.Object)
 +SSC-M: System.Void System.Runtime.InteropServices.SafeHandle::DangerousAddRef(System.Boolean&)
 +SSC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.AsyncResult::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
@@ -348,12 +349,14 @@
 +SSC-M: System.Void System.Threading.Thread::Finalize()
 +SSC-M: System.Boolean System.Threading.Timer::Dispose(System.Threading.WaitHandle)
 +SSC-M: System.Void System.Threading.WaitHandle::.cctor()
++SSC-M: System.Boolean System.Threading.WaitHandle::SignalAndWait(System.Threading.WaitHandle,System.Threading.WaitHandle,System.Int32,System.Boolean)
 +SSC-M: System.Boolean System.Threading.WaitHandle::WaitOne()
 +SSC-M: System.Boolean System.Threading.WaitHandle::WaitOne(System.Int32,System.Boolean)
 +SSC-M: System.Boolean System.Threading.WaitHandle::WaitOne(System.TimeSpan,System.Boolean)
 +SSC-M: System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)
 +SSC-M: System.Int32 System.Type::GetHashCode()
 +SSC-M: System.Boolean System.Type::get_IsSystemType()
++SSC-M: System.Boolean System.Type::get_IsUserType()
 +SSC-M: System.Int32 System.TypedReference::GetHashCode()
 +SSC-M: System.Void System.Variant::SetValue(System.Object)
 +SSC-M: System.Object System.Variant::GetValue()

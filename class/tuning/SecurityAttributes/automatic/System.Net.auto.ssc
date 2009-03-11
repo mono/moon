@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Net to call all [SecurityCritical] methods
-# 40 methods
+# 39 methods
 
 +SSC-M: System.Void System.Net.NetworkInformation.LinuxIPInterfaceProperties::ParseResolvConf()
 +SSC-M: System.Boolean System.Net.NetworkInformation.LinuxIPv4InterfaceProperties::get_IsForwardingEnabled()
@@ -11,7 +11,6 @@
 +SSC-M: System.Boolean System.Net.NetworkInformation.LinuxNetworkInterface::get_SupportsMulticast()
 +SSC-M: System.String System.Net.NetworkInformation.NetworkInterface::ReadLine(System.String)
 +SSC-M: System.Net.NetworkInformation.Win32_FIXED_INFO System.Net.NetworkInformation.Win32_FIXED_INFO::GetInstance()
-+SSC-M: System.Net.IPAddress System.Net.NetworkInformation.Win32_SOCKET_ADDRESS::GetIPAddress()
 +SSC-M: System.Void System.Net.NetworkInformation.Win32GatewayIPAddressInformationCollection::.ctor(System.Net.NetworkInformation.Win32_IP_ADDR_STRING[])
 +SSC-M: System.Void System.Net.NetworkInformation.Win32IPAddressCollection::.ctor(System.IntPtr[])
 +SSC-M: System.Void System.Net.NetworkInformation.Win32IPAddressCollection::.ctor(System.Net.NetworkInformation.Win32_IP_ADDR_STRING[])

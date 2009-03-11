@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 830 methods needs to be decorated.
+# 862 methods needs to be decorated.
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: Mono.INativeDependencyObjectWrapper Mono.NativeDependencyObjectHelper::FromIntPtr(System.IntPtr)
@@ -101,6 +101,9 @@
 +SC-M: System.Boolean Mono.NativeMethods::downloader_request_is_aborted(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::html_object_has_property(System.IntPtr,System.IntPtr,System.String)
+
+# p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::managed_unzip_stream_to_stream(Mono.ManagedStreamCallbacks&,Mono.ManagedStreamCallbacks&,System.String)
 
 # p/invoke declaration
@@ -200,7 +203,10 @@
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TryGetDefaultAssemblyName(System.IntPtr,System.String&)
 
 # using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetAttachedProperty(System.IntPtr,System.String,System.IntPtr,System.String,System.String,System.IntPtr)
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetAttachedProperty(System.IntPtr,System.String,System.Object,System.String,System.String,System.IntPtr)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetEnumContentProperty(System.IntPtr,System.IntPtr,System.String,System.Object,System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetEventReflection(System.IntPtr,System.String,System.Object,System.String,System.String,System.IntPtr,System.String&)
@@ -222,6 +228,18 @@
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::row_definition_get_actual_height(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::stylus_point_collection_add_stylus_points(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::stylus_point_get_pressure_factor(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::stylus_point_get_x(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::stylus_point_get_y(System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.IAsyncResult Mono.ApplyDefaultStyleCallback::BeginInvoke(System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
@@ -249,6 +267,9 @@
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.IAsyncResult Mono.NativeMethods/HeaderVisitor::BeginInvoke(System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.IAsyncResult Mono.NativeMethods/ImageUriFunc::BeginInvoke(System.Int32,System.Int32,System.Int32,System.IntPtr,System.AsyncCallback,System.Object)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.IAsyncResult Mono.NativeMethods/TickCallHandler::BeginInvoke(System.IntPtr,System.AsyncCallback,System.Object)
@@ -288,6 +309,9 @@
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.IAsyncResult Mono.Stream_Write::BeginInvoke(System.IntPtr,System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.IAsyncResult Mono.ToggleRef/ToggleNotifyHandler::BeginInvoke(System.IntPtr,System.Boolean,System.AsyncCallback,System.Object)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.IAsyncResult Mono.UnmanagedEventHandler::BeginInvoke(System.IntPtr,System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
@@ -458,7 +482,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::assembly_part_new()
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::audio_stream_new(System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)
++SC-M: System.IntPtr Mono.NativeMethods::audio_stream_new(System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.IntPtr,System.UInt32)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::begin_storyboard_new()
@@ -692,6 +716,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::event_trigger_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::framework_element_get_logical_parent(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::framework_element_new()
 
 # p/invoke declaration
@@ -828,6 +855,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_window_gtk_new(System.Boolean,System.Int32,System.Int32,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::mouse_event_args_get_stylus_info(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::mouse_event_args_get_stylus_points(System.IntPtr,System.IntPtr)
@@ -1007,6 +1037,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::spline_point_key_frame_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::storyboard_get_target_dependency_property(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::storyboard_new()
 
 # p/invoke declaration
@@ -1059,6 +1092,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::timeline_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::timeline_get_manual_target(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::timeline_group_new()
@@ -1124,7 +1160,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::video_brush_new()
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::video_stream_new(System.IntPtr,System.Int32,System.UInt32,System.UInt32,System.UInt64)
++SC-M: System.IntPtr Mono.NativeMethods::video_stream_new(System.IntPtr,System.Int32,System.UInt32,System.UInt32,System.UInt64,System.IntPtr,System.UInt32)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::visual_brush_new()
@@ -1161,6 +1197,9 @@
 
 # using 'System.IntPtr' as return type
 +SC-M: System.IntPtr Mono.Surface::get_Native()
+
+# using 'System.IntPtr' as return type
++SC-M: System.IntPtr Mono.ToggleRef::get_Handle()
 
 # using 'System.IntPtr' as return type
 +SC-M: System.IntPtr Mono.Types::get_Native()
@@ -1222,6 +1261,12 @@
 # using 'System.IntPtr' as return type
 +SC-M: System.IntPtr System.Windows.Media.MediaStreamDescription::get_NativeStream()
 
+# using 'System.IntPtr' as return type
++SC-M: System.IntPtr System.Windows.PropertyPath::get_NativeDP()
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.Object Mono.Helper::ObjectFromIntPtr(System.IntPtr)
+
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Object Mono.NativeDependencyObjectHelper::CreateObject(Mono.Kind,System.IntPtr)
 
@@ -1236,6 +1281,9 @@
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.String Mono.Helper::PtrToStringAuto(System.IntPtr)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.String Mono.NativeMethods/ImageUriFunc::Invoke(System.Int32,System.Int32,System.Int32,System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.String Mono.NativeMethods::binding_expression_base_get_converter_culture(System.IntPtr)
@@ -1262,6 +1310,9 @@
 +SC-M: System.String Mono.NativeMethods::xaml_get_element_key(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.String Mono.NativeMethods::xaml_get_element_name(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.String Mono.NativeMethods::xaml_uri_for_prefix(System.IntPtr,System.String)
 
 # using 'System.IntPtr' as a parameter type
@@ -1269,6 +1320,9 @@
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.String Mono.Xaml.ManagedXamlLoader::cb_get_content_property_name(System.IntPtr,Mono.Kind)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.String System.Windows.Media.MultiScaleTileSource::GetImageUriSafe(System.Int32,System.Int32,System.Int32,System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Type Mono.Xaml.ManagedXamlLoader::LookupType(System.IntPtr,System.String,System.String)
@@ -1477,14 +1531,14 @@
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_clear_value_(System.IntPtr,System.IntPtr,System.Boolean,Mono.MoonError&)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods::dependency_object_set_logical_parent(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::dependency_object_set_logical_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)
-
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_set_name(System.IntPtr,System.String)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.Void Mono.NativeMethods::dependency_object_set_parent(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::dependency_object_set_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_property_set_is_nullable(System.IntPtr,System.Boolean)
@@ -1535,10 +1589,16 @@
 +SC-M: System.Void Mono.NativeMethods::downloader_want_events(System.IntPtr,Mono.NativeMethods/UpdateFunction,System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::event_object_add_toggle_ref_notifier(System.IntPtr,Mono.ToggleRef/ToggleNotifyHandler)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_ref(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_remove_handler(System.IntPtr,System.String,Mono.UnmanagedEventHandler,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::event_object_remove_toggle_ref_notifier(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_set_object_type(System.IntPtr,Mono.Kind)
@@ -1551,6 +1611,15 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::framework_element_register_managed_overrides(System.IntPtr,Mono.MeasureOverrideCallback,Mono.ArrangeOverrideCallback)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::framework_element_set_default_style(System.IntPtr,System.IntPtr)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.Void Mono.NativeMethods::framework_element_set_logical_parent(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::framework_element_set_logical_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::framework_template_add_xaml_binding(System.IntPtr,System.IntPtr,System.String,System.String)
@@ -1586,9 +1655,6 @@
 +SC-M: System.Void Mono.NativeMethods::imedia_demuxer_report_switch_media_stream_completed(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::item_collection_set_parent(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::media_base_set_source(System.IntPtr,System.String)
 
 # p/invoke declaration
@@ -1611,6 +1677,12 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::mouse_event_args_get_position(System.IntPtr,System.IntPtr,System.Double&,System.Double&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::multi_scale_image_set_viewport_origin(System.IntPtr,System.Windows.Point)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::multi_scale_image_set_viewport_width(System.IntPtr,System.Double)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::multi_scale_image_zoom_about_logical_point(System.IntPtr,System.Double,System.Double,System.Double)
@@ -1700,6 +1772,15 @@
 +SC-M: System.Void Mono.NativeMethods::style_seal(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::stylus_point_set_pressure_factor(System.IntPtr,System.Double)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::stylus_point_set_x(System.IntPtr,System.Double)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::stylus_point_set_y(System.IntPtr,System.Double)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::surface_attach(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
@@ -1763,6 +1844,12 @@
 +SC-M: System.Void Mono.NativeMethods::value_free_value(Mono.Value&)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::value_free_value(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::video_brush_set_source(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::xaml_loader_add_missing(System.IntPtr,System.String)
 
 # p/invoke declaration
@@ -1800,6 +1887,12 @@
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Void Mono.Surface::.ctor(System.IntPtr)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.Void Mono.ToggleRef/ToggleNotifyHandler::Invoke(System.IntPtr,System.Boolean)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.Void Mono.ToggleRef::RefToggled(System.IntPtr,System.Boolean)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Void Mono.Types::.ctor(System.IntPtr)
@@ -1979,10 +2072,10 @@
 +SC-M: System.Void System.Windows.Controls.Primitives.Popup::.ctor(System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.Primitives.Popup::<Popup>m__1E(System.IntPtr,System.IntPtr,System.IntPtr)
++SC-M: System.Void System.Windows.Controls.Primitives.Popup::<Popup>m__19(System.IntPtr,System.IntPtr,System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.Primitives.Popup::<Popup>m__1F(System.IntPtr,System.IntPtr,System.IntPtr)
++SC-M: System.Void System.Windows.Controls.Primitives.Popup::<Popup>m__1A(System.IntPtr,System.IntPtr,System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Void System.Windows.Controls.RowDefinition::.ctor(System.IntPtr)
@@ -2094,6 +2187,9 @@
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Void System.Windows.Input.MouseEventArgs::.ctor(System.IntPtr)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.Void System.Windows.Input.StylusInfo::.ctor(System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Void System.Windows.Input.StylusPoint::.ctor(System.IntPtr)
