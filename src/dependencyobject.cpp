@@ -1594,8 +1594,8 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	delete old_local_value;
 }
 
-static gboolean
-dispose_value (gpointer key, gpointer value, gpointer data)
+gboolean
+DependencyObject::dispose_value (gpointer key, gpointer value, gpointer data)
 {
 	DependencyObject *_this = (DependencyObject*)data;
 
@@ -1618,8 +1618,8 @@ dispose_value (gpointer key, gpointer value, gpointer data)
 			dob->RemovePropertyChangeListener ((DependencyObject*)data, NULL);
 
 			if (dob->Is(Type::COLLECTION)) {
-				dob->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
-				dob->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+				dob->RemoveHandler (Collection::ChangedEvent, collection_changed, _this);
+				dob->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, _this);
 			}
 		}
 	}

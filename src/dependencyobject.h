@@ -394,6 +394,8 @@ private:
 	static void collection_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	static void collection_item_changed (EventObject *sender, EventArgs *args, gpointer closure);
 
+	static gboolean dispose_value (gpointer key, gpointer value, gpointer data);
+
 	GHashTable        *local_values;
 	GSList            *listener_list;
 	DependencyObject  *parent;
