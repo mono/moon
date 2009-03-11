@@ -1,3 +1,8 @@
+2009-03-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Fix issues
+	  in 
+
 2009-03-11  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows.Documents/RunTest.cs: add a test for multiply

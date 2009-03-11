@@ -277,8 +277,9 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 	Collection *collection;
 	char *p, *name = NULL;
 	Value *value;
-	Type *type;
+	Type *type = NULL;
 	int index;
+	
 	
 	while (inptr < inend) {
 		switch (*inptr++) {
@@ -362,13 +363,16 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 			
 			inptr = p + 2;
 			prop = inptr;
-			
-			if (!(value = lu->GetValue (res)))
-				goto error;
+
+			if (expression_found) {
+				expression_found = false;
+				if (!(value = lu->GetValue (res)))
+					goto error;
+			}
 			
 			if (!(collection = value->AsCollection ()))
 				goto error;
-			
+				
 			if (!(value = collection->GetValueAt (index)))
 				goto error;
 			
@@ -376,11 +380,29 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 				goto error;
 			
 			break;
+			
+		default:
+			start = inptr - 1;
+			while (inptr < inend && *inptr != '[' && *inptr != '.')
+				inptr++;
+			
+			name = g_strndup (start, inptr - start);
+			if (!(res = DependencyProperty::GetDependencyProperty (lu->GetType ()->GetKind (), name))) {
+				g_free (name);
+				goto error;
+			}
+			g_free (name);
+			
+			if (inptr < inend) {
+				if (!(value = lu->GetValue (res)))
+					goto error;
+					
+				if (!(lu = value->AsDependencyObject ()))
+					goto error;
+			}
+			break;
 		}
 	}
-	
-	if (!expression_found)
-		res = DependencyProperty::GetDependencyProperty (lu->GetObjectType (), prop);
 	
 	*o = lu;
 	
