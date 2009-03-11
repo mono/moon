@@ -183,7 +183,7 @@ namespace Mono.Xaml
 
 			Type type = LookupType (top_level, assembly_name, full_name);
 			if (type == null) {
-				Console.Error.WriteLine ("ManagedXamlLoader::LookupObject: GetType ({0}) failed using assembly: {1}.", name, clientlib);
+				Console.Error.WriteLine ("ManagedXamlLoader::LookupObject: GetType ({0}) failed using assembly: {1} ({2}).", name, assembly_name, xmlns);
 				value = Value.Empty;
 				return false;
 			}
@@ -582,6 +582,14 @@ namespace Mono.Xaml
 				}
 
 				res = assembly.GetType (full_name);
+
+				if (res == null && explicit_assembly && TryGetDefaultAssemblyName (top_level, out assembly_name)) {
+					if (LoadAssembly (assembly_name, out assembly) != AssemblyLoadResult.Success) {
+						Console.Error.WriteLine ("unable to load default assembly for target type.");
+						break;
+					}
+					res = assembly.GetType (full_name);
+				}
 
 				if (res == null && !explicit_assembly) {
 					assembly = typeof (DependencyObject).Assembly;

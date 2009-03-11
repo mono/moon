@@ -1,5 +1,12 @@
 2009-03-10  Jackson Harper  <jackson@ximian.com>
 
+	* ManagedXamlLoader.cs: Amazingly you can specify the wrong
+	assembly on a xaml type and it will be looked up correctly if that
+	type happens to be in the default assembly. See the Shock demo for
+	an example.
+
+2009-03-10  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs: Fix error message.
 
 2009-03-10  Jackson Harper  <jackson@ximian.com>
