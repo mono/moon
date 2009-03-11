@@ -536,7 +536,7 @@ namespace Mono.Xaml
 				Console.Error.WriteLine ("no property name supplied");
 				return false;
 			}
-			
+
 			int dot = name.IndexOf ('.');
 			string type_name = null;
 
@@ -759,6 +759,19 @@ namespace Mono.Xaml
 						pi.SetValue (target, dp, null);
 						return true;
 					}
+				}
+
+				if (typeof (System.Windows.Data.Binding).IsAssignableFrom (pi.PropertyType) && MarkupExpressionParser.IsBinding (str_value)) {
+					MarkupExpressionParser p = new MarkupExpressionParser (null, pi.Name,  parser, target_data);
+
+					string expression = str_value;
+					obj_value = p.ParseExpression (ref expression);
+
+					if (!obj_value is Binding)
+						return false;
+
+					pi.SetValue (target, obj_value, null);
+					return true;
 				}
 
 				Helper.SetPropertyFromString (target, pi, str_value, out error, out unmanaged_value);

@@ -1,3 +1,10 @@
+2009-03-11  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: It's possible to set a property with a
+	type of System.Windows.Data.Binding to a Binding expression.  In
+	this case we don't actually bind the property we just create the
+	binding and set the value.
+
 2009-03-10  Chris Toshok  <toshok@ximian.com>
 
 	* ManagedXamlLoader.cs: s/logical_parent/parent.
