@@ -50,6 +50,7 @@ namespace Mono {
 			Attribute[] attrs;
 			TypeConverterAttribute at = null;
 			TypeConverter converter = null;
+			Type t = null;
 
 			// first check for a TypeConverter attribute on the property
 			if (info != null) {
@@ -75,7 +76,7 @@ namespace Mono {
 			}
 
 			if (at == null) {
-				if (type == typeof (bool?)) {
+				if (target_type == typeof (bool?)) {
 					t = typeof (NullableBoolConverter);
 				} else {
 					return null;
@@ -84,7 +85,7 @@ namespace Mono {
 				t = Type.GetType (at.ConverterTypeName);
 			}
 
-			Type t = Type.GetType (at.ConverterTypeName);
+			t = Type.GetType (at.ConverterTypeName);
 			if (t == null)
 					return null;
 
