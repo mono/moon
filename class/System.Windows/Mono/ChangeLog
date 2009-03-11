@@ -1,5 +1,9 @@
 2009-03-10  Jackson Harper  <jackson@ximian.com>
 
+	* ManagedXamlLoader.cs: Fix error message.
+
+2009-03-10  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs: Remove some duplicated code.
 
 2009-03-10  Jackson Harper  <jackson@ximian.com>

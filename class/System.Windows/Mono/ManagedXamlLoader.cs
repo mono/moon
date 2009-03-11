@@ -183,7 +183,7 @@ namespace Mono.Xaml
 
 			Type type = LookupType (top_level, assembly_name, full_name);
 			if (type == null) {
-				Console.Error.WriteLine ("ManagedXamlLoader::LoadObject: GetType ({0}) failed using assembly: {1}.", name, clientlib);
+				Console.Error.WriteLine ("ManagedXamlLoader::LookupObject: GetType ({0}) failed using assembly: {1}.", name, clientlib);
 				value = Value.Empty;
 				return false;
 			}
@@ -194,13 +194,13 @@ namespace Mono.Xaml
 					res = Activator.CreateInstance (type);
 				} catch (TargetInvocationException ex) {
 					Console.WriteLine (ex);
-					Console.Error.WriteLine ("ManagedXamlLoader::LoadObject: CreateInstance ({0}) failed: {1}", name, ex.InnerException);
+					Console.Error.WriteLine ("ManagedXamlLoader::LookupObject: CreateInstance ({0}) failed: {1}", name, ex.InnerException);
 					value = Value.Empty;
 					return false;
 				}
 
 				if (res == null) {
-					Console.Error.WriteLine ("ManagedXamlLoader::LoadObject ({0}, {1}, {2}): unable to create object instance: '{3}', the object was of type '{4}'",
+					Console.Error.WriteLine ("ManagedXamlLoader::LookupObject ({0}, {1}, {2}): unable to create object instance: '{3}', the object was of type '{4}'",
 								 assembly_name, xmlns, name, full_name, type.FullName);
 					value = Value.Empty;
 					return false;
@@ -837,7 +837,7 @@ namespace Mono.Xaml
 			try {
 				return LookupObject (top_level, xmlns, name, create, out value);
 			} catch (Exception ex) {
-				Console.Error.WriteLine ("ManagedXamlLoader::LoadObject ({0}, {1}, {2}, {3}) failed: {3} ({4}).", top_level, xmlns, create, name, ex.Message, ex.GetType ().FullName);
+				Console.Error.WriteLine ("ManagedXamlLoader::LookupObject ({0}, {1}, {2}, {3}) failed: {3} ({4}).", top_level, xmlns, create, name, ex.Message, ex.GetType ().FullName);
 				value = Value.Empty;
 				return false;
 			}
