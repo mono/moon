@@ -85,6 +85,33 @@ class ViewXaml : ViewText {
 	public ViewXaml (ZipContent content) : base (content) {}
 }
 
+class ViewImage : View {
+	ScrolledWindow scrolled_window;
+	Gdk.Pixbuf pixbuf;
+	Gtk.Image image;
+
+	public ViewImage (ZipContent content) : base (content)
+	{
+	}
+
+	public ViewImage (System.IO.Stream stream) : base (null)
+	{
+		pixbuf = new Gdk.Pixbuf (stream);
+	}
+
+	public override Widget GetView ()
+	{
+		if (scrolled_window != null)
+			return scrolled_window;
+
+		image = new Gtk.Image (pixbuf);
+		scrolled_window = new ScrolledWindow ();
+		scrolled_window.AddWithViewport (image);
+
+		return scrolled_window;
+	}
+}
+
 class ViewCode : View {
 	ListStore store;
 	TreeView tree;
@@ -223,6 +250,10 @@ class ViewResource : View {
 						view = new ViewText (t.ReadToEnd ());
 					}
 				}
+			} else if (name.EndsWith (".png") || name.EndsWith (".jpg")) { 
+				using (MemoryStream clone = new MemoryStream (stream.ToArray ())) {
+						view = new ViewImage (clone);
+				}			
 			} else {
 				Console.WriteLine ("Don't know what to do with a {0} in a {1}", name, type);
 			}
