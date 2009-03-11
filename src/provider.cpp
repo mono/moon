@@ -15,7 +15,7 @@
 #include "provider.h"
 #include "control.h"
 #include "frameworkelement.h"
-#include "text.h"
+#include "textblock.h"
 #include "style.h"
 
 Value*

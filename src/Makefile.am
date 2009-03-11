@@ -44,6 +44,7 @@ libmoon_include_headers = 	\
 	frameworkelement.h 	\
 	fullscreen.h		\
 	geometry.h		\
+	glyphs.h		\
 	grid.h			\
 	http-streaming.h	\
 	internal-downloader.h	\
@@ -81,8 +82,8 @@ libmoon_include_headers = 	\
 	style.h			\
 	stylus.h		\
 	template.h		\
+	textblock.h		\
 	textbox.h		\
-	text.h			\
 	thickness.h		\
 	tilesource.h		\
 	transform.h		\
@@ -139,6 +140,7 @@ libmoon_la_SOURCES = 		\
 	font.cpp		\
 	frameworkelement.cpp	\
 	geometry.cpp		\
+	glyphs.cpp		\
 	grid.cpp		\
 	http-streaming.cpp	\
 	keyboard.cpp		\
@@ -173,8 +175,8 @@ libmoon_la_SOURCES = 		\
 	style.cpp		\
 	stylus.cpp		\
 	template.cpp		\
+	textblock.cpp		\
 	textbox.cpp		\
-	text.cpp		\
 	thickness.cpp		\
 	tilesource.cpp		\
 	transform.cpp		\

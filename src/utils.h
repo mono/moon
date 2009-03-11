@@ -11,8 +11,8 @@
  */
 
 
-#ifndef __MOON_GARRAY_EXT_H__
-#define __MOON_GARRAY_EXT_H__
+#ifndef __UTILS_H__
+#define __UTILS_H__
 
 #include <glib.h>
 #include <cairo.h>
@@ -110,4 +110,4 @@ public:
 	ssize_t Read (char *buf, size_t n);
 };
 
-#endif /* __MOON_GARRAY_EXT_H__ */
+#endif /* __UTILS_H__ */

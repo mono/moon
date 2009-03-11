@@ -50,6 +50,7 @@
 #include "utils.h"
 #include "error.h"
 #include "debug.h"
+#include "font.h"
 #include "uri.h"
 
 //
@@ -963,4 +964,57 @@ downloader_init (void)
 				  dummy_downloader_header,
 				  dummy_downloader_body,
 				  dummy_downloader_create_web_request, true);
+}
+
+
+const char *
+downloader_deobfuscate_font (Downloader *downloader, const char *path)
+{
+	char *filename, guid[16];
+	const char *str;
+	GString *name;
+	Uri *uri;
+	int fd;
+	
+	if (!(str = downloader->GetUri ()))
+		return NULL;
+	
+	uri = new Uri ();
+	if (!uri->Parse (str) || !uri->path) {
+		delete uri;
+		return NULL;
+	}
+	
+	if (!(str = strrchr (uri->path, '/')))
+		str = uri->path;
+	else
+		str++;
+	
+	if (!DecodeObfuscatedFontGUID (str, guid)) {
+		delete uri;
+		return NULL;
+	}
+	
+	name = g_string_new (str);
+	g_string_append (name, ".XXXXXX");
+	delete uri;
+	
+	filename = g_build_filename (g_get_tmp_dir (), name->str, NULL);
+	g_string_free (name, true);
+	
+	if ((fd = g_mkstemp (filename)) == -1) {
+		g_free (filename);
+		return NULL;
+	}
+	
+	if (CopyFileTo (path, fd) == -1 || !DeobfuscateFontFileWithGUID (filename, guid, NULL)) {
+		unlink (filename);
+		g_free (filename);
+		return NULL;
+	}
+	
+	downloader->getFileDownloader ()->SetDeobfuscatedFile (filename);
+	g_free (filename);
+	
+	return downloader->getFileDownloader ()->GetDownloadedFile ();
 }

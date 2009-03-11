@@ -1,5 +1,12 @@
 2009-03-11  Jeffrey Stedfast  <fejj@novell.com>
 
+	* text.cpp|h: Split into textblock.cpp|h and glyphs.cpp|h
+
+	* downloader.cpp (downloader_deobfuscate_font): Moved here from
+	text.cpp and made public.
+
+2009-03-11  Jeffrey Stedfast  <fejj@novell.com>
+
 	* layout.cpp (TextLayoutGlyphCluster::Render): If we have nothing
 	to render, no-op.
 

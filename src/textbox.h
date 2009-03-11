@@ -26,6 +26,19 @@
 #include "font.h"
 
 
+/* @Namespace=System.Windows.Input */
+class InputMethod : public DependencyObject {
+ protected:
+	virtual ~InputMethod () {}
+	
+ public:
+	/* @PropertyType=bool,Attached */
+	const static int IsInputMethodEnabledProperty;
+	
+ 	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
+	InputMethod () { SetObjectType (Type::INPUTMETHOD); }
+};
+
 /* @SilverlightVersion="2" */
 /* @Namespace=None */
 class TextChangedEventArgs : public RoutedEventArgs {

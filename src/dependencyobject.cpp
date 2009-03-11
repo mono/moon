@@ -19,12 +19,12 @@
 #include "list.h"
 #include "collection.h"
 #include "dependencyobject.h"
+#include "textblock.h"
 #include "clock.h"
 #include "runtime.h"
 #include "uielement.h"
 #include "animation.h"
 #include "deployment.h"
-#include "text.h"
 
 struct EventList {
 	int current_token;

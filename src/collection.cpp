@@ -18,7 +18,7 @@
 #include "transform.h"
 #include "frameworkelement.h"
 #include "namescope.h"
-#include "text.h"
+#include "textblock.h"
 #include "utils.h"
 #include "error.h"
 

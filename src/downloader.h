@@ -305,6 +305,8 @@ void downloader_request_set_body (DownloaderRequest *dr, void *body, int size);
 
 void downloader_response_set_header_visitor (DownloaderResponse *dr, DownloaderResponseHeaderVisitorCallback visitor);
 
+const char *downloader_deobfuscate_font (Downloader *downloader, const char *path);
+
 G_END_DECLS
 
 #endif
