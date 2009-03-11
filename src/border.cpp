@@ -164,9 +164,26 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetId () == Border::ChildProperty){
 		if (args->old_value && args->old_value->AsUIElement()) {
 			ElementRemoved (args->old_value->AsUIElement ());
+			if (args->old_value->Is(Type::FRAMEWORKELEMENT)) {
+				args->old_value->AsFrameworkElement()->SetLogicalParent (NULL, error);
+				if (error->number)
+					return;
+			}
+				
 		}
 		if (args->new_value && args->new_value->AsUIElement()) {
 			ElementAdded (args->new_value->AsUIElement ());
+			if (args->new_value->Is(Type::FRAMEWORKELEMENT)) {
+				FrameworkElement *fwe = args->new_value->AsFrameworkElement ();
+				if (fwe->GetLogicalParent() && fwe->GetLogicalParent() != this) {
+					MoonError::FillIn (error, MoonError::ARGUMENT, "Content is already a child of another element");
+					return;
+				}
+
+				args->new_value->AsFrameworkElement()->SetLogicalParent (this, error);
+				if (error->number)
+					return;
+			}
 		}
 
 		SetSubtreeObject (args->new_value ? args->new_value->AsUIElement() : NULL);

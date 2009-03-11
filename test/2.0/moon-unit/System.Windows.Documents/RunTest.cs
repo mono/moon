@@ -64,5 +64,18 @@ namespace MoonTest.System.Windows.Documents {
 			Run r = new Run ();
 			r.FontFamily = null;
 		}
+
+		[TestMethod]
+		[MoonlightBug ("moonlight permits runs to be in multiple textblocks.")]
+		public void RunMultipleParents ()
+		{
+			TextBlock tb1 = new TextBlock ();
+			TextBlock tb2 = new TextBlock ();
+
+			Run r = new Run();
+
+			tb1.Inlines.Add (r);
+			Assert.Throws<InvalidOperationException>(delegate { tb2.Inlines.Add (r); }, "1");
+		}
 	}
 }

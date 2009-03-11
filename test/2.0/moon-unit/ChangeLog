@@ -1,3 +1,10 @@
+2009-03-11  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Documents/RunTest.cs: add a test for multiply
+	parented Runs (which SL disallows but ML allows).
+
+	* System.Windows/LogicalTreeTest.cs: add a test for border's ChildProperty.
+
 2009-03-10  Alan McGovern  <amcgovern@novell.com>
 
 	* Makefile.am:

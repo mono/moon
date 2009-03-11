@@ -1,5 +1,12 @@
 2009-03-11  Chris Toshok  <toshok@ximian.com>
 
+	* border.cpp (Border::OnPropertyChanged): Border is ever the red
+	headed stepchild.  It has its own validation wrt SetLogicalParent,
+	that behaves like the InvalidOperationException case in
+	FrameworkElement, but throws ArgumentException instead of IOE.
+
+2009-03-11  Chris Toshok  <toshok@ximian.com>
+
 	* canvas.h, canvas.cpp (Canvas::OnCollectionItemChanged): move the
 	Top/Left property changed handling from OnSubPropertyChanged to
 	here, and remove OnSubPropertyChanged.  Basically property changes

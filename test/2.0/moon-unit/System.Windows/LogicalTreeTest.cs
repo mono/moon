@@ -310,6 +310,25 @@ namespace MoonTest.System.Windows {
 			Assert.IsNull (cp.oldParent, "1");
 			Assert.AreEqual (cp, cp.newParent, "2");
 		}
+
+		[TestMethod]
+		public void BorderChild ()
+		{
+			Border b1 = new Border ();
+			Border b2 = new Border ();
+			ConcreteFrameworkElement cf = new ConcreteFrameworkElement ();
+
+			b1.Child = cf;
+
+			Assert.AreEqual (b1, cf.Parent, "1");
+
+			Assert.Throws<ArgumentException> (delegate { b2.Child = cf; }, "2");
+
+			Assert.AreEqual (b1, cf.Parent, "2");
+
+			Assert.AreEqual (cf, b1.Child, "3");
+			Assert.AreEqual (cf, b1.Child, "4");
+		}
 	}
 
 }
