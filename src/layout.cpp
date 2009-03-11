@@ -1904,6 +1904,9 @@ TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttr
 	Rect area;
 	int crlf;
 	
+	if (length == 0)
+		return;
+	
 	// y is the baseline, set the origin to the top-left
 	cairo_translate (cr, x, y - font->Ascender ());
 	
