@@ -82,10 +82,12 @@ class TextBoxModelChangedEventArgs : public RoutedEventArgs {
 
 class TextBuffer;
 class TextBoxUndoStack;
+class TextBoxDynamicPropertyValueProvider;
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class TextBox : public Control, public ITextAttributes {
+	friend class TextBoxDynamicPropertyValueProvider;
 	friend class TextBoxView;
 	
 	DependencyObject *contentElement;

@@ -498,6 +498,49 @@ TextBoxUndoStack::Peek ()
 
 
 //
+// TextBlockDynamicPropertyValueProvider
+//
+
+class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
+	Value *selection_background;
+	Value *selection_foreground;
+	
+ public:
+	TextBoxDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj)
+	{
+		selection_background = NULL;
+		selection_foreground = NULL;
+	}
+	
+	virtual ~TextBoxDynamicPropertyValueProvider ()
+	{
+		delete selection_background;
+		delete selection_foreground;
+	}
+	
+	virtual Value *GetPropertyValue (DependencyProperty *property)
+	{
+		if (property->GetId () == TextBox::SelectionBackgroundProperty) {
+			return selection_background;
+		} else if (property->GetId () == TextBox::SelectionForegroundProperty) {
+			return selection_foreground;
+		}
+		
+		return NULL;
+	}
+	
+	void InitializeSelectionBrushes ()
+	{
+		if (!selection_background)
+			selection_background = Value::CreateUnrefPtr (new SolidColorBrush ("#FF444444"));
+		
+		if (!selection_foreground)
+			selection_foreground = Value::CreateUnrefPtr (new SolidColorBrush ("#FFFFFFFF"));
+	}
+};
+
+
+//
 // TextBox
 //
 
@@ -514,6 +557,8 @@ TextBox::Initialize (Type::Kind type, const char *type_name)
 	
 	SetObjectType (type);
 	SetDefaultStyleKey (type_info);
+	
+	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this);
 	
 	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBox::mouse_left_button_down, this);
 	AddHandler (UIElement::MouseLeftButtonUpEvent, TextBox::mouse_left_button_up, this);
@@ -1744,23 +1789,6 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		emit |= SELECTION_CHANGED;
 		have_offset = false;
 		
-		// set some default selection brushes if unset
-		if (selection_cursor != selection_anchor) {
-			Brush *brush;
-			
-			if (!GetSelectionBackground ()) {
-				brush = new SolidColorBrush ("#FF444444");
-				SetSelectionBackground (brush);
-				brush->unref ();
-			}
-			
-			if (!GetSelectionForeground ()) {
-				brush = new SolidColorBrush ("#FFFFFFFF");
-				SetSelectionForeground (brush);
-				brush->unref ();
-			}
-		}
-		
 		if (!inkeypress) {
 			// update SelectedText
 			SyncSelectedText ();
@@ -2257,6 +2285,10 @@ TextBoxView::UpdateCursor (bool invalidate)
 void
 TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 {
+	TextBoxDynamicPropertyValueProvider *dynamic = (TextBoxDynamicPropertyValueProvider *) textbox->providers[PropertyPrecedence_DynamicValue];
+	
+	dynamic->InitializeSelectionBrushes ();
+	
 	if (dirty)
 		Layout (cr, GetRenderSize ());
 	
