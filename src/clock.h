@@ -252,7 +252,7 @@ class Clock : public DependencyObject {
  public:
 	Clock (Timeline *timeline);
 	
-	ClockGroup* GetParent ()          { return parent_clock; }
+	ClockGroup* GetParentClock ()     { return parent_clock; }
 	double      GetCurrentProgress () { return progress; }
 	virtual TimeSpan    GetCurrentTime ()     { return current_time; }
 	virtual TimeSpan    GetLastTime ()        { return last_time; }
@@ -303,7 +303,7 @@ class Clock : public DependencyObject {
 	virtual void RaiseAccumulatedCompleted ();
 	virtual void ExtraRepeatAction () {};
 	virtual bool Tick ();
-	void SetParent (ClockGroup *parent) { parent_clock = parent; }
+	void SetParentClock (ClockGroup *parent) { parent_clock = parent; }
 	virtual void SetTimeManager (TimeManager *manager) { time_manager = manager; }
 	virtual void Reset ();
 

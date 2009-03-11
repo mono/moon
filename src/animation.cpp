@@ -422,7 +422,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, MoonError *error)
 		DependencyObject *real_target_o = NULL;
 		DependencyProperty *prop = NULL;
 
-		for (Clock *c = ac; c; c = c->GetParent()) {
+		for (Clock *c = ac; c; c = c->GetParentClock()) {
 			targetProperty = Storyboard::GetTargetProperty (c->GetTimeline());
 			if (targetProperty)
 				break;
@@ -434,7 +434,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, MoonError *error)
 			return false;
 		}
 
-		for (Clock *c = ac; c; c = c->GetParent()) {
+		for (Clock *c = ac; c; c = c->GetParentClock()) {
 
 			Timeline *tl = c->GetTimeline ();
 
@@ -491,7 +491,7 @@ void
 Storyboard::TeardownClockGroup ()
 {
 	if (root_clock) {
-		ClockGroup *group = root_clock->GetParent();
+		ClockGroup *group = root_clock->GetParentClock();
 		if (group)
 			group->RemoveChild (root_clock);
 		root_clock->unref ();
@@ -529,8 +529,8 @@ Storyboard::BeginWithError (MoonError *error)
 	if (root_clock && root_clock->GetClockState() == Clock::Stopped) {
 		group->ComputeBeginTime ();
 		root_clock->Begin();
-		if (root_clock->GetParent()->GetClockState() != Clock::Active) {
-			root_clock->GetParent()->Begin();
+		if (root_clock->GetParentClock()->GetClockState() != Clock::Active) {
+			root_clock->GetParentClock()->Begin();
 		}
 		return false;
 	}

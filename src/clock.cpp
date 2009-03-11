@@ -1263,7 +1263,7 @@ ClockGroup::AddChild (Clock *clock)
 
 	child_clocks = g_list_append (child_clocks, clock);
 	clock->ref ();
-	clock->SetParent (this);
+	clock->SetParentClock (this);
 	clock->SetTimeManager (GetTimeManager());
 
 	idle_hint = false;
@@ -1283,7 +1283,7 @@ void
 ClockGroup::RemoveChild (Clock *clock)
 {
 	child_clocks = g_list_remove (child_clocks, clock);
-	clock->SetParent (NULL);
+	clock->SetParentClock (NULL);
 	clock->unref ();
 }
 
@@ -1310,7 +1310,7 @@ ClockGroup::Begin ()
 void
 ClockGroup::ComputeBeginTime ()
 {
-	if (GetParent () && GetParent () != GetTimeManager ()->GetRootClock ())
+	if (GetParentClock () && GetParentClock () != GetTimeManager ()->GetRootClock ())
 		begin_time = (timeline->HasBeginTime() ? timeline->GetBeginTime() : 0);
 	else
 		begin_time = GetParentTime () + (timeline->HasBeginTime() ? timeline->GetBeginTime() : 0);
@@ -1477,7 +1477,7 @@ ClockGroup::~ClockGroup ()
 	
 	while (node != NULL) {
 		Clock *clock = (Clock *) node->data;
-		clock->SetParent (NULL);
+		clock->SetParentClock (NULL);
 		clock->unref ();
 
 		next = node->next;
@@ -1804,7 +1804,7 @@ DispatcherTimer::~DispatcherTimer ()
 {
 	if (root_clock) {
 		Stop ();
-		ClockGroup *group = root_clock->GetParent();
+		ClockGroup *group = root_clock->GetParentClock();
 		if (group)
 			group->RemoveChild (root_clock);
 		root_clock->unref ();

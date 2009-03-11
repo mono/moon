@@ -990,9 +990,6 @@ DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *arg
 {
 	g_return_if_fail (args);
 
-	DependencyObject *logical_parent = GetParent ();
-	bool notified_parent = false;
-
 	listeners_notified = true;
 
 	for (GSList *l = listener_list; l != NULL; l = l->next){
@@ -1000,17 +997,6 @@ DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *arg
 
 		if (listener->Matches (args))
 			listener->Invoke (this, args);
-
-		if (listener->GetListener() == logical_parent)
-			notified_parent = true;
-	}
-
-	// attached properties are implicitly listened to by the
-	// object's logical parent.  Notify them, but sure not to do
-	// it twice.
-	if (args->GetProperty ()->IsAttached() && !notified_parent) {
-		if (logical_parent /*&& args->property->GetOwnerType() == logical_parent->GetObjectType ()*/)
-			logical_parent->OnSubPropertyChanged (NULL, this, args);
 	}
 }
 

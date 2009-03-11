@@ -50,7 +50,6 @@ class Canvas : public Panel {
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);
 
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);

@@ -49,19 +49,6 @@ Grid::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 }
 
 void
-Grid::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
-{
-	if (subobj_args->GetId () == Grid::ColumnProperty
-	    || subobj_args->GetId () == Grid::RowProperty
-	    || subobj_args->GetId () == Grid::ColumnSpanProperty
-	    || subobj_args->GetId () == Grid::RowSpanProperty) {
-		InvalidateMeasure ();
-	}
-	
-	Panel::OnSubPropertyChanged (prop, obj, subobj_args);
-}
-
-void
 Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	if (col == GetColumnDefinitions () ||
@@ -72,6 +59,22 @@ Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 	}
 	
 	InvalidateMeasure ();
+}
+
+void
+Grid::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	if (col == GetChildren ()) {
+		if (args->GetId () == Grid::ColumnProperty
+		    || args->GetId () == Grid::RowProperty
+		    || args->GetId () == Grid::ColumnSpanProperty
+		    || args->GetId () == Grid::RowSpanProperty) {
+			InvalidateMeasure ();
+			return;
+		}
+	}
+	
+	Panel::OnCollectionItemChanged (col, obj, args);
 }
 
 Size

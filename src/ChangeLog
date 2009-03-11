@@ -1,3 +1,22 @@
+2009-03-11  Chris Toshok  <toshok@ximian.com>
+
+	* canvas.h, canvas.cpp (Canvas::OnCollectionItemChanged): move the
+	Top/Left property changed handling from OnSubPropertyChanged to
+	here, and remove OnSubPropertyChanged.  Basically property changes
+	on items in collections are never communicated back using
+	OnSubPropertyChanged.  That is reserved for direct children of the
+	object (fill/stroke brushes, etc.)
+
+	* grid.h, grid.cpp: same.
+
+	* dependencyobject.cpp (DependencyObject::NotifyListenersOfPropertyChange):
+	remove this use of GetParent (yay!) since we don't implicitly
+	notify our logical parent if an attached property was changed.  we
+	just notify all listeners.
+
+	* clock.h, clock.cpp, animation.cpp: in an effort to disambiguate,
+	rename GetParent/SetParent to GetParentClock/SetParentClock.
+
 2009-03-10  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (DependencyObject::ProviderValueChanged):

@@ -63,28 +63,6 @@ Canvas::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 }
 
 void
-Canvas::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
-{
-	if (subobj_args->GetId () == Canvas::TopProperty ||
-	    subobj_args->GetId () == Canvas::LeftProperty) {
-		//
-		// Technically the canvas cares about Visuals, but we cant do much
-		// with them, all the logic to relayout is in UIElement
-		//
-		if (!Type::Find (obj->GetObjectType ())->IsSubclassOf (Type::UIELEMENT)){
-			printf ("Child %s is not a UIELEMENT\n", obj ? obj->GetName () : NULL);
-			return;
-		}
-		UIElement *ui = (UIElement *) obj;
-
-		ui->UpdateTransform ();
-		ui->InvalidateArrange ();
-	}
-	else
-		Panel::OnSubPropertyChanged (prop, obj, subobj_args);
-}
-
-void
 Canvas::OnLoaded ()
 {
 	UIElement::OnLoaded ();
@@ -167,8 +145,18 @@ Canvas::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Propert
 				// queue a resort based on ZIndex
 				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
 			}
+			return;
 		}
-	} else {
-		FrameworkElement::OnCollectionItemChanged (col, obj, args);
+		else if (args->GetId () == Canvas::TopProperty ||
+			 args->GetId () == Canvas::LeftProperty) {
+
+			UIElement *ui = (UIElement *) obj;
+
+			ui->UpdateTransform ();
+			ui->InvalidateArrange ();
+			return;
+		}
 	}
+
+	Panel::OnCollectionItemChanged (col, obj, args);
 }
