@@ -1,3 +1,75 @@
+2009-03-10  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (DependencyObject::ProviderValueChanged):
+	hook up (and unhook) the collection events if the dob is a
+	Type::COLLECTION.  Remove the stupid parent check that was
+	breaking everything.  Pass in our MoonError parameter to
+	OnPropertyChanged so we can communicate it back.
+	(DependencyObject::ClearValue): unhook from the collection events.
+
+	* dependencyobject.h (SetLogicalParent, GetLogicalParent): remove.
+	these methods are now in FrameworkElement.
+	(SetParent, GetParent): their replacements.  Hopefully these are
+	not long for this world, and I'm working on getting rid of them.
+	they are used in very few places now (basically collection.cpp and
+	provider.cpp).
+	(collection_changed, collection_item_changed): two new
+	EventHandlers so we can make collection stop calling directly into
+	its parent.
+	(OnPropertyChanged): add a MoonError* arg here so we can transmit
+	errors back from the various OnPropertyChanged overrides.
+	
+	* validators.h,
+	validators.cpp (Validators::ContentControlContentValidator): add
+	half of the "multiple parents for .Content" checks here.  This
+	runs before the value is actually set and checks to see if the
+	logical parent is a Panel subclass.  If it is it throws an
+	ArgumentException instead of an InvalidOperationException (don't
+	ask me.)
+
+	* collection.cpp, collection.h: remove the assumption that we can
+	just call into our parent to notify of collection/collection item
+	changes.  instead just emit an event.
+
+	* eventargs.h: define CollectionItemChangedEventArgs for the new
+	Collection::ItemChangedEvent.
+	
+	* contentcontrol.h,
+	contentcontrol.cpp (ContentControl::OnPropertyChanged): call
+	SetLogicalParent on the old/new contents if they're
+	FrameworkElements, and if either returns an error, return
+	immediately.
+
+	* usercontro.h, usercontrol.cpp (UserControl::OnPropertyChanged):
+	same.
+
+	
+	* frameworkelement.cpp, frameworkelement.h: move
+	Set/GetLogicalParent here, and make the InvalidOperationException
+	on multiple parents unconditional.
+	
+	* panel.cpp (Panel::OnCollectionChanged): if the new/old child is
+	a FrameworkElement, set its logical parent.
+
+	* animations.*, bitmapimage.*, border.*, brush.*, canvas.*,
+	control.*, deepzoomimagetilesource.*, geometry.*, grid.*, media.*,
+	mediaelement.*, multiscaleimage.*, popup*, shape.*, stylus.*,
+	textbox.*, text.*, transform.*, uielement.*: change all the
+	OnPropertyChanged signatures to include MoonError*
+
+	* cbinding.*, dependencyproperty.g.cpp, type-generated.cpp,
+	type.h, value.h: regen.
+
+	* resources.cpp: s/LogicaParent/Parent.
+	
+	* provider.h, provider.cpp (StylePropertyValueProvider::unlink_converted_value):
+	not really part of this larger change, but needed for the
+	toggleref stuff.  we need to call SetParent on all the
+	DO-subclassed converted values so they never reference a trashed
+	parent pointer.
+	(get_parent): add more cases here, none of which I'm sure are
+	correct.
+
 2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (PasswordBox::OnPropertyChanged): Fixed.

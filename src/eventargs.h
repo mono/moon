@@ -87,6 +87,26 @@ public:
 };
 
 /* @Namespace=None */
+class CollectionItemChangedEventArgs : public EventArgs {
+public:
+	CollectionItemChangedEventArgs (DependencyObject *collectionItem,
+					DependencyProperty *property,
+					Value *oldValue,
+					Value *newValue)
+	{
+		this->collectionItem = collectionItem;
+		this->property = property;
+		this->oldValue = oldValue;
+		this->newValue = newValue;
+	}
+
+	DependencyObject *collectionItem;
+	DependencyProperty *property;
+	Value *oldValue;
+	Value *newValue;
+};
+
+/* @Namespace=None */
 class RoutedEventArgs : public EventArgs {
 	DependencyObject *source;
 	bool handled;

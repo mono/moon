@@ -122,7 +122,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void LogicalParentTest6 ()
 		{
 			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
@@ -135,11 +134,11 @@ namespace MoonTest.System.Windows {
 
 			Assert.AreEqual (canvas, c.Parent, "1");
 			Assert.AreEqual (1, canvas.Children.Count, "2");
-			Assert.IsNull (contentControl.Content);
+			Assert.IsNull (contentControl.Content, "3");
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("contentPresenter.Content's logical (and visual) parent is currently the grid we create internally")]
 		public void LogicalParentTest7 ()
 		{
 			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
@@ -224,7 +223,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void CustomPropertyParent ()
 		{
 			ConcreteFrameworkElement cf1 = new ConcreteFrameworkElement ();
@@ -278,6 +276,39 @@ namespace MoonTest.System.Windows {
 			uc.SetContent (cf);
 
 			Assert.AreEqual (uc, cf.Parent, "1");
+		}
+
+		class ContentControlPoker : ContentControl
+		{
+			protected override void OnContentChanged (object oldContent, object newContent)
+			{
+				if (getParents) {
+					oldParent = ((FrameworkElement)oldContent).Parent;
+					newParent = ((FrameworkElement)newContent).Parent;
+				}
+			}
+
+			public bool getParents;
+
+			public DependencyObject oldParent;
+			public DependencyObject newParent;
+		}
+
+		[TestMethod]
+		public void ContentControlOldNewContent ()
+		{
+			ContentControlPoker cp = new ContentControlPoker ();
+			ConcreteFrameworkElement cf1 = new ConcreteFrameworkElement ();
+			ConcreteFrameworkElement cf2 = new ConcreteFrameworkElement ();
+
+			cp.Content = cf1;
+
+			cp.getParents = true;
+
+			cp.Content = cf2;
+
+			Assert.IsNull (cp.oldParent, "1");
+			Assert.AreEqual (cp, cp.newParent, "2");
 		}
 	}
 

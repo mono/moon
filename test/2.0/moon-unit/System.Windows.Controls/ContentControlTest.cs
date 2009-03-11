@@ -154,7 +154,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ContentShareWithCanvas ()
 		{
 			ConcreteFrameworkElement cfe = new ConcreteFrameworkElement ();
@@ -181,7 +180,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void OverrideContentShareControl ()
 		{
 			ContentControlSharer cc1 = new ContentControlSharer ();

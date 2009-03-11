@@ -1645,7 +1645,7 @@ TextBox::SyncText ()
 }
 
 void
-TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
+TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
 	DependencyProperty *prop;
@@ -1830,7 +1830,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args)
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed, args));
 	
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBOX) {
-		Control::OnPropertyChanged (args);
+		Control::OnPropertyChanged (args, error);
 		return;
 	}
 	
@@ -2525,15 +2525,15 @@ PasswordBox::CursorPrevWord (int cursor)
 }
 
 void
-PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args)
+PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
-	if (args->GetId () == PasswordBox::PasswordCharProperty)
-		Invalidate ();
-	
 	if (args->GetProperty ()->GetOwnerType () != Type::PASSWORDBOX) {
-		TextBox::OnPropertyChanged (args);
+		TextBox::OnPropertyChanged (args, error);
 		return;
 	}
+	
+	if (args->GetId () == PasswordBox::PasswordCharProperty)
+		Invalidate ();
 	
 	NotifyListenersOfPropertyChange (args);
 }

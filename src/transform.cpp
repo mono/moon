@@ -21,10 +21,10 @@
 //
 
 void
-GeneralTransform::OnPropertyChanged (PropertyChangedEventArgs *args)
+GeneralTransform::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() == Type::DEPENDENCY_OBJECT) {
-		DependencyObject::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args, error);
 		return;
 	}
 
@@ -211,10 +211,10 @@ Matrix::Matrix(cairo_matrix_t *m)
 }
 
 void
-Matrix::OnPropertyChanged (PropertyChangedEventArgs *args)
+Matrix::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::MATRIX) {
-		DependencyObject::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args, error);
 		return;
 	}
 	
@@ -274,10 +274,10 @@ TransformGroup::TransformGroup ()
 }
 
 void
-TransformGroup::OnPropertyChanged (PropertyChangedEventArgs *args)
+TransformGroup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::TRANSFORMGROUP) {
-		Transform::OnPropertyChanged (args);
+		Transform::OnPropertyChanged (args, error);
 		return;
 	}
 

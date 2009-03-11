@@ -790,7 +790,7 @@ MultiScaleImage::DownloaderAbort ()
 }
 
 void
-MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
+MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
 		Invalidate ();
@@ -810,7 +810,7 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 
 	if (args->GetProperty ()->GetOwnerType () != Type::MULTISCALEIMAGE) {
-		DependencyObject::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args, error);
 		return;
 	}
 	

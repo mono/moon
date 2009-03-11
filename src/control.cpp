@@ -44,10 +44,10 @@ Control::HitTest (cairo_t *cr, Rect r, List *uielement_list)
 }
 
 void
-Control::OnPropertyChanged (PropertyChangedEventArgs *args)
+Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::CONTROL) {
-		FrameworkElement::OnPropertyChanged (args);
+		FrameworkElement::OnPropertyChanged (args, error);
 		return;
 	}
 

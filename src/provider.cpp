@@ -59,8 +59,23 @@ StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj)
 					    (GDestroyNotify)event_object_unref);
 }
 
+void
+StylePropertyValueProvider::unlink_converted_value (gpointer key, gpointer value, gpointer data)
+{
+	StylePropertyValueProvider *provider = (StylePropertyValueProvider*)data;
+	Setter *s = (Setter*)value;
+
+	Value *v = s->GetValue(Setter::ConvertedValueProperty);
+	if (v->Is(Type::DEPENDENCY_OBJECT)) {
+		DependencyObject *dob = v->AsDependencyObject();
+		if (dob->GetParent() == provider->obj)
+			dob->SetParent(NULL, NULL);
+	}
+}
+
 StylePropertyValueProvider::~StylePropertyValueProvider ()
 {
+	g_hash_table_foreach (style_hash, StylePropertyValueProvider::unlink_converted_value, this);
 	g_hash_table_destroy (style_hash);
 }
 
@@ -173,14 +188,19 @@ get_parent (DependencyObject *obj)
 {
 	DependencyObject *parent = NULL;
 
-	if (obj->Is (Type::UIELEMENT)) {
-		UIElement *ui = (UIElement*)obj;
-		if (ui->GetVisualParent() != NULL)
-			parent = ui->GetVisualParent();
-	}
+	if (obj->Is (Type::UIELEMENT))
+		parent = ((UIElement*)obj)->GetVisualParent ();
 
-	if (!parent)
-		parent = obj->GetLogicalParent();
+	if (!parent && obj->Is (Type::FRAMEWORKELEMENT))
+		parent = ((FrameworkElement*)obj)->GetLogicalParent ();
+
+	// skip collections
+	if (!parent) {
+		DependencyObject *new_parent = obj->GetParent();
+		while (new_parent && new_parent->Is(Type::COLLECTION))
+			new_parent = new_parent->GetParent ();
+		parent = new_parent;
+	}
 
 	return parent;
 }
@@ -291,9 +311,9 @@ dispose_value (gpointer key, gpointer value, gpointer data)
 		DependencyObject *dob = v->AsDependencyObject ();
 		
 		if (dob != NULL) {
-			if (obj == dob->GetLogicalParent ()) {
+			if (obj == dob->GetParent ()) {
 				// unset its logical parent
-				dob->SetLogicalParent (NULL, NULL);
+				dob->SetParent (NULL, NULL);
 			}
 			
 			// unregister from the existing value

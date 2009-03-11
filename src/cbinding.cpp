@@ -926,16 +926,6 @@ dependency_object_find_name (DependencyObject *instance, const char *name, Type:
 }
 
 
-DependencyObject *
-dependency_object_get_logical_parent (DependencyObject *instance)
-{
-	if (instance == NULL)
-		return NULL;
-	
-	return instance->GetLogicalParent ();
-}
-
-
 const char *
 dependency_object_get_name (DependencyObject *instance)
 {
@@ -982,18 +972,6 @@ dependency_object_read_local_value_with_error (DependencyObject *instance, Depen
 }
 
 
-void
-dependency_object_set_logical_parent (DependencyObject *instance, DependencyObject *logical_parent, MoonError *error)
-{
-	if (instance == NULL)
-		return;
-	
-	if (error == NULL)
-		g_warning ("Moonlight: Called dependency_object_set_logical_parent () with error == NULL.");
-	instance->SetLogicalParent (logical_parent, error);
-}
-
-
 bool
 dependency_object_set_marshalled_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
 {
@@ -1013,6 +991,18 @@ dependency_object_set_name (DependencyObject *instance, const char *name)
 		return;
 	
 	instance->SetName (name);
+}
+
+
+void
+dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error)
+{
+	if (instance == NULL)
+		return;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called dependency_object_set_parent () with error == NULL.");
+	instance->SetParent (parent, error);
 }
 
 
@@ -1565,6 +1555,16 @@ framework_element_new (void)
 }
 
 
+DependencyObject *
+framework_element_get_logical_parent (FrameworkElement *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetLogicalParent ();
+}
+
+
 Size
 framework_element_measure_override (FrameworkElement *instance, Size availableSize)
 {
@@ -1593,6 +1593,18 @@ framework_element_set_default_style (FrameworkElement *instance, Style *value)
 		return;
 	
 	instance->SetDefaultStyle (value);
+}
+
+
+void
+framework_element_set_logical_parent (FrameworkElement *instance, DependencyObject *logical_parent, MoonError *error)
+{
+	if (instance == NULL)
+		return;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called framework_element_set_logical_parent () with error == NULL.");
+	instance->SetLogicalParent (logical_parent, error);
 }
 
 

@@ -123,14 +123,14 @@ Geometry::ComputePathBounds()
 }
 
 void
-Geometry::OnPropertyChanged (PropertyChangedEventArgs *args)
+Geometry::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	// no need to clear the path for Geometry itself as FillRule and Transform properties are 
 	// only used when drawing, i.e. they do not affect the path itself
 	if (args->GetProperty ()->GetOwnerType() != Type::GEOMETRY && 
 		args->GetId () != PathGeometry::FillRuleProperty && 
 		args->GetId () != GeometryGroup::FillRuleProperty) {
-		DependencyObject::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args, error);
 
 		// not sure why we're doing this inside this block.. seems like it should happen outside it?
 		InvalidateCache ();
@@ -528,10 +528,10 @@ PathFigure::~PathFigure ()
 }
 
 void
-PathFigure::OnPropertyChanged (PropertyChangedEventArgs *args)
+PathFigure::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::PATHFIGURE) {
-		DependencyObject::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args, error);
 		return;
 	}
 

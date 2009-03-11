@@ -312,7 +312,7 @@ DeepZoomImageTileSource::downloader_complete (EventObject *sender, EventArgs *ca
 }
 
 void
-DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args)
+DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == DeepZoomImageTileSource::UriSourceProperty) {
 		if (!nested) {
@@ -322,7 +322,7 @@ DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 
 	if (args->GetProperty ()->GetOwnerType () != Type::DEEPZOOMIMAGETILESOURCE) {
-		DependencyObject::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args, error);
 		return;
 	}
 	

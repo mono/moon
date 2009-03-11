@@ -46,7 +46,7 @@ class BitmapImage : public ImageSource {
 	void        SetUriSource (const char *value);
 	const char* GetUriSource ();
 	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 };
 
 #endif /* __BITMAPIMAGE_H__ */

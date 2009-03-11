@@ -94,7 +94,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBOX, "HorizontalScrollBarVisibility", new Value (ScrollBarVisibilityHidden), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBOX, "AcceptsReturn", new Value (false), Type::BOOL);
 	DependencyProperty::Register (this, Type::CONTENTCONTROL, "ContentTemplate", Type::DATATEMPLATE);
-	DependencyProperty::Register (this, Type::CONTENTCONTROL, "Content", Type::OBJECT);
+	DependencyProperty::RegisterFull (this, Type::CONTENTCONTROL, "Content", NULL, Type::OBJECT, false, false, false, false, NULL, Validators::ContentControlContentValidator, false, false);
 	DependencyProperty::Register (this, Type::GRID, "ShowGridLines", new Value (true), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::GRID, "RowSpan", new Value (1), Type::INT32, false, true, false, false, NULL, Validators::IntGreaterThanZeroValidator, false, false);
 	DependencyProperty::RegisterFull (this, Type::GRID, "Row", new Value (0), Type::INT32, false, true, false, false, NULL, Validators::PositiveIntValidator, false, false);

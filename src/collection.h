@@ -79,11 +79,15 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	virtual bool RemoveAtWithError (int index, MoonError *error);
 
+	const static int ChangedEvent;
+	const static int ItemChangedEvent;
+
 protected:
 	GPtrArray *array;
 	int generation;
 	
 	void EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, int index);
+	void EmitItemChanged (DependencyObject *object, DependencyProperty *property, Value *newValue, Value *oldValue);
 	
 	virtual bool CanAdd (Value *value);
 	virtual bool AddedToCollection (Value *value, MoonError *error) { return true; }

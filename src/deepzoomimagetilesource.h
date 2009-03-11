@@ -62,7 +62,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	void Download ();
 	gpointer GetTileLayer (int level, int x, int y);
 
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	void set_parsed_cb (parsed_cb callback, void *userdata)
 	{
 		parsed_callback = callback;

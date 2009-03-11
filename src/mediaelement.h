@@ -202,7 +202,7 @@ class MediaElement : public FrameworkElement {
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	void SetSource (Downloader *downloader, const char *PartName);
 	void SetUriSource (const char *uri); // This is called from OnPropertyChanged

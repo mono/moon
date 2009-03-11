@@ -1345,7 +1345,7 @@ MediaElement::Seek (TimeSpan to)
 }
 
 void
-MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
+MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == MediaElement::SourceProperty) {
 		flags |= RecalculateMatrix;
@@ -1409,7 +1409,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args)
 	
 	if (args->GetProperty ()->GetOwnerType() != Type::MEDIAELEMENT) {
 		// propagate to parent class
-		FrameworkElement::OnPropertyChanged (args);
+		FrameworkElement::OnPropertyChanged (args, error);
 		flags |= RecalculateMatrix;
 		return;
 	}

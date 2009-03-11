@@ -26,14 +26,24 @@ ContentControl::~ContentControl ()
 }
 
 void
-ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args)
+ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType () != Type::CONTENTCONTROL) {
-		Control::OnPropertyChanged (args);
+		Control::OnPropertyChanged (args, error);
 		return;
 	}
 	
 	if (args->GetId () == ContentControl::ContentProperty) {
+		if (args->old_value && args->old_value->Is(Type::FRAMEWORKELEMENT)) {
+			args->old_value->AsFrameworkElement()->SetLogicalParent (NULL, error);
+			if (error->number)
+				return;
+		}
+		if (args->new_value && args->new_value->Is(Type::FRAMEWORKELEMENT)) {
+			args->new_value->AsFrameworkElement()->SetLogicalParent (this, error);
+			if (error->number)
+				return;
+		}
 		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->old_value, args->new_value));
 	}
 	

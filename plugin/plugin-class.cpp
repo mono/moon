@@ -2896,7 +2896,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		DependencyObject *ns_dob = dob;
 		NameScope *ns;
 		while (!(ns = NameScope::GetNameScope(ns_dob)))
-			ns_dob = ns_dob->GetLogicalParent();
+			ns_dob = ns_dob->GetParent();
 		if (ns_dob == NULL)
 			fprintf (stderr, " no namescope in logical hierarchy!\n");
 		else {
@@ -2976,10 +2976,10 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 	}
 
 	case MoonId_GetParent: {
-		if (argCount != 0 || !dob->GetType ()->IsSubclassOf (Type::UIELEMENT))
+		if (argCount != 0 || !dob->GetType ()->IsSubclassOf (Type::FRAMEWORKELEMENT))
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_GETPARENT");
 		
-		DependencyObject *parent = dob->GetLogicalParent ();
+		DependencyObject *parent = ((FrameworkElement*)dob)->GetLogicalParent ();
 		if (parent)
 			OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, parent), *result);
 		else

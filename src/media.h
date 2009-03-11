@@ -163,7 +163,7 @@ class MediaBase : public FrameworkElement {
 	void SetAllowDownloads (bool allow);
 	bool AllowDownloads () { return allow_downloads; }
 	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	virtual void OnLoaded ();
 	
@@ -245,7 +245,7 @@ class Image : public MediaBase {
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
 	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	int GetImageHeight () { return surface ? surface->height : 0; };
 	int GetImageWidth  () { return surface ? surface->width : 0; };

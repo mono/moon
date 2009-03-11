@@ -15,9 +15,6 @@
 
 #include "value.h"
 #include "error.h"
-#include "thickness.h"
-#include "cornerradius.h"
-#include "style.h"
 
 typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
 
@@ -40,6 +37,7 @@ public:
 	static ValueValidator TemplateValidator;
 	static ValueValidator IsTimelineValidator;
 	static ValueValidator IsSetterSealedValidator;
+	static ValueValidator ContentControlContentValidator;
 };
 
 #endif /* __VALIDATORS_H__ */

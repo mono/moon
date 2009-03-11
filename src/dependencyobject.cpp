@@ -968,7 +968,7 @@ unregister_depobj_values (gpointer  key,
 		//printf ("unregistering from property %s\n", prop->name);
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->RemovePropertyChangeListener (this_obj);
-		obj->SetLogicalParent (NULL, NULL);
+		obj->SetParent (NULL, NULL);
 	}
 }
 
@@ -990,7 +990,7 @@ DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *arg
 {
 	g_return_if_fail (args);
 
-	DependencyObject *logical_parent = GetLogicalParent ();
+	DependencyObject *logical_parent = GetParent ();
 	bool notified_parent = false;
 
 	listeners_notified = true;
@@ -1473,8 +1473,8 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			new_as_dep = new_value->AsDependencyObject ();
 
 		if (old_as_dep) {
-			// unset its logical parent
-			old_as_dep->SetLogicalParent (NULL, NULL);
+			// unset its parent
+			old_as_dep->SetParent (NULL, NULL);
 			
 			// remove ourselves as a target
 			old_as_dep->RemoveTarget (this);
@@ -1482,25 +1482,28 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			// unregister from the existing value
 			old_as_dep->RemovePropertyChangeListener (this, property);
 			old_as_dep->SetSurface (NULL);
+			if (old_as_dep->Is(Type::COLLECTION)) {
+				old_as_dep->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
+				old_as_dep->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+			}
 		}
 
 		if (new_as_dep) {
 			new_as_dep->SetSurface (GetSurface ());
 
-			// set its logical parent
-			if (new_as_dep->GetLogicalParent() != NULL && new_as_dep->GetLogicalParent() != this && !new_as_dep->PermitsMultipleParents()) {
-				MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is a child of another element");
-				return;
-			}
-			
 			MoonError error;
-			new_as_dep->SetLogicalParent (this, &error);
+			new_as_dep->SetParent (this, &error);
  			if (error.number)
  				return;
+
+			if (new_as_dep->Is(Type::COLLECTION)) {
+				new_as_dep->AddHandler (Collection::ChangedEvent, collection_changed, this);
+				new_as_dep->AddHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+			}
 			
 			// listen for property changes on the new object
 			new_as_dep->AddPropertyChangeListener (this, property);
-			
+
 			// add ourselves as a target
 			new_as_dep->AddTarget (this);
 		}
@@ -1514,7 +1517,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		
 			PropertyChangedEventArgs args (property, property->GetId (), old_value, new_value);
 
-			OnPropertyChanged (&args);
+			OnPropertyChanged (&args, error);
 
 			if (!listeners_notified)
 				g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
@@ -1562,12 +1565,16 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 		DependencyObject *dob = old_local_value->AsDependencyObject();
 
 		if (dob != NULL) {
-			// unset its logical parent
-			dob->SetLogicalParent (NULL, NULL);
+			// unset its parent
+			dob->SetParent (NULL, NULL);
 
 			// unregister from the existing value
 			dob->RemovePropertyChangeListener (this, property);
 			dob->SetSurface (NULL);
+			if (dob->Is(Type::COLLECTION)) {
+				dob->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
+				dob->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+			}
 		}
 	}
 	
@@ -1596,25 +1603,53 @@ dispose_value (gpointer key, gpointer value, gpointer data)
 	
 	if (!value)
 		return TRUE;
-	
+
 	// detach from the existing value
 	if (v->Is (Type::DEPENDENCY_OBJECT)){
 		DependencyObject *dob = v->AsDependencyObject();
 		
 		if (dob != NULL) {
-			if (_this == dob->GetLogicalParent()) {
+			if (_this == dob->GetParent()) {
 				// unset its logical parent
-				dob->SetLogicalParent (NULL, NULL);
+				dob->SetParent (NULL, NULL);
 			}
 
 			// unregister from the existing value
 			dob->RemovePropertyChangeListener ((DependencyObject*)data, NULL);
+
+			if (dob->Is(Type::COLLECTION)) {
+				dob->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
+				dob->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+			}
 		}
 	}
 	
 	delete (Value *) value;
 	
 	return TRUE;
+}
+
+void
+DependencyObject::collection_changed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	DependencyObject *obj = (DependencyObject*)closure;
+	obj->OnCollectionChanged ((Collection*)sender, (CollectionChangedEventArgs*)args);
+}
+
+void
+DependencyObject::collection_item_changed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	DependencyObject *obj = (DependencyObject*)closure;
+	CollectionItemChangedEventArgs* itemArgs = (CollectionItemChangedEventArgs*)args;
+
+	PropertyChangedEventArgs propChangedArgs (itemArgs->property,
+						  itemArgs->property->GetId (),
+						  itemArgs->oldValue,
+						  itemArgs->newValue);
+
+	obj->OnCollectionItemChanged ((Collection*)sender,
+				      itemArgs->collectionItem,
+				      &propChangedArgs);
 }
 
 DependencyObject::DependencyObject ()
@@ -1651,7 +1686,7 @@ DependencyObject::Initialize ()
 	
 	local_values = g_hash_table_new (g_direct_hash, g_direct_equal);
 	listener_list = NULL;
-	logical_parent = NULL;
+	parent = NULL;
 	is_frozen = false;
 }
 
@@ -1828,8 +1863,8 @@ DependencyObject::FindName (const char *name)
 	if (scope && (rv = scope->FindName (name)))
 		return rv;
 	
-	if (logical_parent)
-		return logical_parent->FindName (name);
+	if (parent)
+		return parent->FindName (name);
 	
 	Surface *surface = GetSurface ();
 	if (surface) {
@@ -1849,8 +1884,8 @@ DependencyObject::FindNameScope ()
 	if (scope)
 		return scope;
 
-	if (logical_parent)
-		return logical_parent->FindNameScope ();
+	if (parent)
+		return parent->FindNameScope ();
 
 	return NULL;
 }
@@ -1928,24 +1963,24 @@ DependencyObject::SetSurface (Surface *s)
 }
 
 void
-DependencyObject::SetLogicalParent (DependencyObject *logical_parent, MoonError *error)
+DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 {
 #if DEBUG
 	// Check for circular families
-	DependencyObject *current = logical_parent;
+	DependencyObject *current = parent;
 	while (current != NULL) {
 		if (current == this) {
 			g_warning ("cycle found in logical tree.  bailing out");
 			return;
 		}
-		current = current->GetLogicalParent ();
+		current = current->GetParent ();
 	}
 #endif
 	
-	if (logical_parent != this->logical_parent) {
-		if (logical_parent) {
+	if (parent != this->parent) {
+		if (parent) {
 			NameScope *this_scope = NameScope::GetNameScope(this);
-			NameScope *parent_scope = logical_parent->FindNameScope();
+			NameScope *parent_scope = parent->FindNameScope();
 			if (this_scope) {
 				if (this_scope->GetTemporary()) {
 					// if we have a temporary name scope, merge it into the
@@ -1963,8 +1998,7 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 				} else {
 					// A managed UserControl being added to a parent element will
 					// have a local namescope, but also needs to exist in its parent
-					// namescope so that this.FindName ("theName") works in its logical
-					// parent
+					// namescope so that this.FindName ("theName") works in its parent.
 					if (Is(Type::USERCONTROL) && parent_scope)
 						parent_scope->RegisterName (this->GetName (), this);
 				}
@@ -1998,8 +2032,8 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 		// registration, in order to make sure
 		// namescope-corner-cases.html (test1) passes.  don't
 		// ask me, it's crazy.
-		if (this->logical_parent) {
-			NameScope *parent_scope = this->logical_parent->FindNameScope ();
+		if (this->parent) {
+			NameScope *parent_scope = this->parent->FindNameScope ();
 			if (parent_scope) {
 				// A managed UserControl being added to a parent element will
 				// have a local namescope, but also needs to exist in its parent
@@ -2012,17 +2046,8 @@ DependencyObject::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 		}
 
 		if (!error || error->number == 0)
-			this->logical_parent = logical_parent;
+			this->parent = parent;
 	}
-}
-
-DependencyObject *
-DependencyObject::GetLogicalParent ()
-{
-	DependencyObject *res = logical_parent;
-	while (res && Type::Find (res->GetObjectType ())->IsSubclassOf (Type::COLLECTION))
-		res = res->GetLogicalParent ();
-	return res;
 }
 
 Value *
@@ -2053,7 +2078,7 @@ dependency_object_set_value (DependencyObject *object, DependencyProperty *prop,
 }
 
 void
-DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args)
+DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (DependencyObject::NameProperty == args->GetId ()) {
 		NameScope *scope = FindNameScope ();

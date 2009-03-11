@@ -32,18 +32,28 @@ user_control_get_content (UserControl *user_control)
 }
 
 void
-UserControl::OnPropertyChanged (PropertyChangedEventArgs *args)
+UserControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::USERCONTROL) {
-		Control::OnPropertyChanged (args);
+		Control::OnPropertyChanged (args, error);
 		return;
 	}
 	
 	if (args->GetId () == UserControl::ContentProperty){
 		if (args->old_value) {
+			if (args->old_value->Is(Type::FRAMEWORKELEMENT)) {
+				args->old_value->AsFrameworkElement()->SetLogicalParent (NULL, error);
+				if (error->number)
+					return;
+			}
 			ElementRemoved (args->old_value->AsUIElement ());
 		}
 		if (args->new_value) {
+			if (args->new_value->Is(Type::FRAMEWORKELEMENT)) {
+				args->new_value->AsFrameworkElement()->SetLogicalParent (this, error);
+				if (error->number)
+					return;
+			}
 			ElementAdded (args->new_value->AsUIElement ());
 		}
 

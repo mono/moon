@@ -650,10 +650,10 @@ Stroke::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Propert
 }
 
 void
-Stroke::OnPropertyChanged (PropertyChangedEventArgs *args)
+Stroke::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::STROKE) {
-		DependencyObject::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args, error);
 	}
 
 	if (args->GetId () == Stroke::DrawingAttributesProperty) {
@@ -700,7 +700,7 @@ StrokeCollection::AddedToCollection (Value *value, MoonError *error)
 	// distinguish between the two cases.
 	
 	obj->SetSurface (GetSurface ());
-	obj->SetLogicalParent (this, error);
+	obj->SetParent (this, error);
 	obj->AddPropertyChangeListener (this);
 	
 	// Bypass DependencyObjectCollection::AddedToCollection(), we
@@ -864,10 +864,10 @@ InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 
 	
 void
-InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args)
+InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::INKPRESENTER) {
-		Canvas::OnPropertyChanged (args);
+		Canvas::OnPropertyChanged (args, error);
 		return;
 	}
 

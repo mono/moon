@@ -42,7 +42,7 @@ public:
 
 	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
 	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);

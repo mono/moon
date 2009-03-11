@@ -599,12 +599,12 @@ TextBlock::SetTextInternal (const char *text)
 }
 
 void
-TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args)
+TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	bool invalidate = true;
 	
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBLOCK) {
-		FrameworkElement::OnPropertyChanged (args);
+		FrameworkElement::OnPropertyChanged (args, error);
 		if (args->GetId () == FrameworkElement::WidthProperty) {
 			if (layout->GetTextWrapping () != TextWrappingNoWrap)
 				dirty = true;
@@ -1547,12 +1547,12 @@ Glyphs::SetSurface (Surface *surface)
 }
 
 void
-Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args)
+Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	bool invalidate = true;
 	
 	if (args->GetProperty ()->GetOwnerType() != Type::GLYPHS) {
-		FrameworkElement::OnPropertyChanged (args);
+		FrameworkElement::OnPropertyChanged (args, error);
 		return;
 	}
 	

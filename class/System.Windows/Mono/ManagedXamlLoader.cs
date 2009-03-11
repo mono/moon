@@ -357,7 +357,7 @@ namespace Mono.Xaml
 						the_list.Add (o_value);
 
 						if (o_value is DependencyObject && target is DependencyObject && !(the_list is DependencyObject)) {
-							NativeMethods.dependency_object_set_logical_parent (((DependencyObject)o_value).native, ((DependencyObject)target).native);
+							NativeMethods.dependency_object_set_parent (((DependencyObject)o_value).native, ((DependencyObject)target).native);
 						}
 
 						return true;
@@ -688,7 +688,7 @@ namespace Mono.Xaml
 					the_list.Add (obj_value);
 
 					if (obj_value is DependencyObject && target is DependencyObject && !(the_list is DependencyObject)) {
-						NativeMethods.dependency_object_set_logical_parent (((DependencyObject)obj_value).native, ((DependencyObject)target).native);
+						NativeMethods.dependency_object_set_parent (((DependencyObject)obj_value).native, ((DependencyObject)target).native);
 					}
 
 					return true;
@@ -727,7 +727,7 @@ namespace Mono.Xaml
 
 					the_dict.Add (key, obj_value);
 					if (obj_value is DependencyObject && target is DependencyObject && !(the_dict is DependencyObject)) {
-						NativeMethods.dependency_object_set_logical_parent (((DependencyObject)obj_value).native, ((DependencyObject) target).native);
+						NativeMethods.dependency_object_set_parent (((DependencyObject)obj_value).native, ((DependencyObject) target).native);
 					}
 
 					return true;

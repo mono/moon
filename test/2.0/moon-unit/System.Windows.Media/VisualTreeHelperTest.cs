@@ -90,7 +90,7 @@ namespace MoonTest.System.Windows.Media
 		}
 
 		[TestMethod]
-		public void GetParent ()
+		public void GetParent1 ()
 		{
 			Canvas p = new Canvas ();
 			Canvas p2 = new Canvas ();
@@ -102,13 +102,60 @@ namespace MoonTest.System.Windows.Media
 
 			p.Background = scb;
 
-			Assert.AreEqual (p, VisualTreeHelper.GetParent (p2));
+			Assert.AreEqual (p, VisualTreeHelper.GetParent (p2), "1");
 			//Assert.AreEqual (p, VisualTreeHelper.GetParent (p3));
-			Assert.AreEqual (null, VisualTreeHelper.GetParent (p));
+			Assert.AreEqual (null, VisualTreeHelper.GetParent (p), "2");
 
 			Assert.Throws (delegate { VisualTreeHelper.GetParent (scb); }, typeof (InvalidOperationException));
 		}
-		
+
+		class ConcreteFrameworkElement : FrameworkElement
+		{
+		}
+
+		[TestMethod]
+		public void GetParent2 ()
+		{
+			Canvas canvas = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Button />
+</Canvas>
+");
+
+			Button b = (Button)canvas.Children[0];
+			Assert.AreEqual (canvas, VisualTreeHelper.GetParent (b), "1");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("ContentControl.Content's visual parent should be null")]
+		public void GetParent3 ()
+		{
+			Console.WriteLine(-1);
+
+			Root.Children.Add((Button)XamlReader.Load(@"
+<Button xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" />"));
+
+			Console.WriteLine(0);
+
+			CreateAsyncTest(Root, delegate {
+					Console.WriteLine (1);
+					ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			
+					Console.WriteLine (2);
+					Button b = (Button)Root.Children[Root.Children.Count - 1];
+
+					Console.WriteLine (3);
+					b.ApplyTemplate ();
+
+					Console.WriteLine (4);
+					b.Content = c;
+
+					Console.WriteLine (5);
+					Assert.IsNull (VisualTreeHelper.GetParent (c), "1");
+			});
+		}
+
 		[TestMethod]
 		[Asynchronous]
 		public void HitTest1()

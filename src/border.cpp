@@ -154,10 +154,10 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 }
 
 void
-Border::OnPropertyChanged (PropertyChangedEventArgs *args)
+Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::BORDER) {
-		FrameworkElement::OnPropertyChanged (args);
+		FrameworkElement::OnPropertyChanged (args, error);
 		return;
 	}
 	

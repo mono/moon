@@ -463,10 +463,6 @@ namespace Mono {
 		// DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind);
 		public extern static IntPtr dependency_object_find_name (IntPtr instance, string name, out Kind element_kind);
 
-		[DllImport ("moon")]
-		// DependencyObject *dependency_object_get_logical_parent (DependencyObject *instance);
-		public extern static IntPtr dependency_object_get_logical_parent (IntPtr instance);
-
 		[DllImport ("moon", EntryPoint="dependency_object_get_name")]
 		// const char *dependency_object_get_name (DependencyObject *instance);
 		private extern static IntPtr dependency_object_get_name_ (IntPtr instance);
@@ -519,17 +515,6 @@ namespace Mono {
 			return result;
 		}
 
-		[DllImport ("moon", EntryPoint="dependency_object_set_logical_parent")]
-		// void dependency_object_set_logical_parent (DependencyObject *instance, DependencyObject *logical_parent, MoonError *error);
-		private extern static void dependency_object_set_logical_parent_ (IntPtr instance, IntPtr logical_parent, out MoonError error);
-		public static void dependency_object_set_logical_parent (IntPtr instance, IntPtr logical_parent)
-		{
-					MoonError error;
-			dependency_object_set_logical_parent_ (instance, logical_parent, out error);
-			if (error.Number != 0)
-				throw CreateManagedException (error);
-		}
-
 		[DllImport ("moon", EntryPoint="dependency_object_set_marshalled_value_with_error")]
 		[return: MarshalAs (UnmanagedType.U1)]
 		// bool dependency_object_set_marshalled_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
@@ -547,6 +532,17 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void dependency_object_set_name (DependencyObject *instance, const char *name);
 		public extern static void dependency_object_set_name (IntPtr instance, string name);
+
+		[DllImport ("moon", EntryPoint="dependency_object_set_parent")]
+		// void dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error);
+		private extern static void dependency_object_set_parent_ (IntPtr instance, IntPtr parent, out MoonError error);
+		public static void dependency_object_set_parent (IntPtr instance, IntPtr parent)
+		{
+					MoonError error;
+			dependency_object_set_parent_ (instance, parent, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
 
 		[DllImport ("moon")]
 		// DependencyObjectCollection *dependency_object_collection_new ();
@@ -791,6 +787,10 @@ namespace Mono {
 		public extern static IntPtr framework_element_new ();
 
 		[DllImport ("moon")]
+		// DependencyObject *framework_element_get_logical_parent (FrameworkElement *instance);
+		public extern static IntPtr framework_element_get_logical_parent (IntPtr instance);
+
+		[DllImport ("moon")]
 		// Size framework_element_measure_override (FrameworkElement *instance, Size availableSize);
 		public extern static Size framework_element_measure_override (IntPtr instance, Size availableSize);
 
@@ -801,6 +801,17 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void framework_element_set_default_style (FrameworkElement *instance, Style *value);
 		public extern static void framework_element_set_default_style (IntPtr instance, IntPtr value);
+
+		[DllImport ("moon", EntryPoint="framework_element_set_logical_parent")]
+		// void framework_element_set_logical_parent (FrameworkElement *instance, DependencyObject *logical_parent, MoonError *error);
+		private extern static void framework_element_set_logical_parent_ (IntPtr instance, IntPtr logical_parent, out MoonError error);
+		public static void framework_element_set_logical_parent (IntPtr instance, IntPtr logical_parent)
+		{
+					MoonError error;
+			framework_element_set_logical_parent_ (instance, logical_parent, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
 
 		[DllImport ("moon")]
 		// void framework_template_add_xaml_binding (FrameworkTemplate *instance, FrameworkElement *target, const char *target_prop_name, const char *source_prop_name);

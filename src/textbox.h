@@ -214,7 +214,7 @@ class TextBox : public Control, public ITextAttributes {
 	//
 	// Overrides
 	//
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnApplyTemplate ();
 	
@@ -384,7 +384,7 @@ class PasswordBox : public TextBox {
 	/* @GenerateCBinding,GeneratePInvoke */
 	PasswordBox ();
 	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	//
 	// Property Accesors

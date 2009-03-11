@@ -331,7 +331,7 @@ class ImageBrush : public TileBrush {
 	ImageBrush ();
 	
 	void SetSource (Downloader *downloader, const char *PartName);
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 	virtual void RemoveTarget (DependencyObject *obj);
 	virtual void AddTarget (DependencyObject *obj);
@@ -366,7 +366,7 @@ class VideoBrush : public TileBrush {
 	/* @GenerateCBinding,GeneratePInvoke */
 	VideoBrush ();
 	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 
@@ -405,7 +405,7 @@ class VisualBrush : public TileBrush {
 	VisualBrush ();
 	
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	virtual bool IsOpaque ();
 	

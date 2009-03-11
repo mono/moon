@@ -141,10 +141,10 @@ UIElement::RenderClipPath (cairo_t *cr, bool path_only)
 }
 
 void
-UIElement::OnPropertyChanged (PropertyChangedEventArgs *args)
+UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::UIELEMENT) {
-		DependencyObject::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args, error);
 		return;
 	}
 	  

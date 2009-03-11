@@ -77,6 +77,7 @@ class ClockGroup;
 class CodecDownloader;
 class Collection;
 class CollectionChangedEventArgs;
+class CollectionItemChangedEventArgs;
 class ColorAnimation;
 class ColorAnimationUsingKeyFrames;
 class ColorKeyFrame;
@@ -391,6 +392,7 @@ public:
 	CodecDownloader*               AsCodecDownloader () { checked_get_subclass (Type::CODECDOWNLOADER, CodecDownloader) }
 	Collection*                    AsCollection () { checked_get_subclass (Type::COLLECTION, Collection) }
 	CollectionChangedEventArgs*    AsCollectionChangedEventArgs () { checked_get_subclass (Type::COLLECTIONCHANGEDEVENTARGS, CollectionChangedEventArgs) }
+	CollectionItemChangedEventArgs*AsCollectionItemChangedEventArgs () { checked_get_subclass (Type::COLLECTIONITEMCHANGEDEVENTARGS, CollectionItemChangedEventArgs) }
 	ColorAnimation*                AsColorAnimation () { checked_get_subclass (Type::COLORANIMATION, ColorAnimation) }
 	ColorAnimationUsingKeyFrames*  AsColorAnimationUsingKeyFrames () { checked_get_subclass (Type::COLORANIMATIONUSINGKEYFRAMES, ColorAnimationUsingKeyFrames) }
 	ColorKeyFrame*                 AsColorKeyFrame () { checked_get_subclass (Type::COLORKEYFRAME, ColorKeyFrame) }

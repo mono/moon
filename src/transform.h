@@ -33,7 +33,7 @@ class GeneralTransform : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	GeneralTransform () : need_update (true) { SetObjectType (Type::GENERALTRANSFORM); }
 	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	virtual void GetTransform (cairo_matrix_t *value);
 
@@ -210,7 +210,7 @@ class Matrix : public DependencyObject {
 	Matrix ();
 	Matrix (cairo_matrix_t *m);
 	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	cairo_matrix_t GetUnderlyingMatrix ();
 
@@ -307,7 +307,7 @@ class TransformGroup : public Transform {
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	//
 	// Property Accessors

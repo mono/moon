@@ -76,6 +76,7 @@ public:
 
 private:
 	GHashTable *style_hash;
+	static void unlink_converted_value (gpointer key, gpointer value, gpointer data);
 };
 
 class InheritedPropertyValueProvider : public PropertyValueProvider {

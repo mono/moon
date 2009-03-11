@@ -33,7 +33,7 @@ public:
 	UserControl ();
 	
 	virtual bool IsLayoutContainer () { return true; }
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);

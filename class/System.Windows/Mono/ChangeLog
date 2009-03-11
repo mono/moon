@@ -1,3 +1,13 @@
+2009-03-10  Chris Toshok  <toshok@ximian.com>
+
+	* ManagedXamlLoader.cs: s/logical_parent/parent.
+
+	* Types.cs (Types.Find): if the type is a generic instantiation,
+	look up the ManagedType info for the generic type definition.
+	I.e. if we're passed PFC<int> look up PFC<>.
+
+	* GeneratedPInvokes.cs, Kind: regen.
+
 2009-03-10  Geoff Norton  <gnorton@novell.com>
 
 	* Helper.cs: This code got lost when moving from ManagedXamlLoader.cs

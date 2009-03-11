@@ -33,6 +33,11 @@ FrameworkElement::FrameworkElement ()
 	measure_cb = NULL;
 	arrange_cb = NULL;
 	bounds_with_children = Rect ();
+	logical_parent = NULL;
+}
+
+FrameworkElement::~FrameworkElement ()
+{
 }
 
 Point
@@ -47,8 +52,15 @@ FrameworkElement::GetTransformOrigin ()
 		      height * user_xform_origin->y);
 }
 
-FrameworkElement::~FrameworkElement ()
+void
+FrameworkElement::SetLogicalParent (DependencyObject *logical_parent, MoonError *error)
 {
+	if (logical_parent && this->logical_parent && this->logical_parent != logical_parent) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is a child of another element");
+		return;
+	}			
+
+	this->logical_parent = logical_parent;
 }
 
 void
@@ -81,10 +93,10 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 
 
 void
-FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args)
+FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::FRAMEWORKELEMENT) {
-		UIElement::OnPropertyChanged (args);
+		UIElement::OnPropertyChanged (args, error);
 		return;
 	}
 
@@ -241,7 +253,6 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *
 	while (UIElement *child = walker.Step ())
 		child->FindElementsInHostCoordinates (cr, host, uielement_list);
 
-	bool hit = false;
 	if (us == uielement_list->First ()) {
 		cairo_new_path (cr);
 		Region all(extents);

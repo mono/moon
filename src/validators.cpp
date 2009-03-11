@@ -15,6 +15,10 @@
 #endif
 
 #include "validators.h"
+#include "thickness.h"
+#include "cornerradius.h"
+#include "style.h"
+#include "frameworkelement.h"
 
 bool
 Validators::StyleValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error) {
@@ -203,3 +207,18 @@ Validators::IsSetterSealedValidator (DependencyObject* instance, DependencyPrope
 	return true;
 }
 
+
+bool
+Validators::ContentControlContentValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (value->Is (Type::FRAMEWORKELEMENT)) {
+		FrameworkElement *fwe = value->AsFrameworkElement();
+
+		if (fwe->GetLogicalParent () && fwe->GetLogicalParent ()->Is (Type::PANEL)) {
+			MoonError::FillIn (error, MoonError::ARGUMENT, "Content is already a child of another element");
+			return false;
+		}
+	}
+
+	return true;
+}

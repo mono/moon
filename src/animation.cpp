@@ -750,10 +750,10 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 }
 
 void
-DoubleAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
+DoubleAnimation::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::DOUBLEANIMATION) {
-		DependencyObject::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args, error);
 		return;
 	}
 
@@ -826,10 +826,10 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 }
 
 void
-ColorAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
+ColorAnimation::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::COLORANIMATION) {
-		DependencyObject::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args, error);
 		return;
 	}
 
@@ -906,10 +906,10 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 }
 
 void
-PointAnimation::OnPropertyChanged (PropertyChangedEventArgs *args)
+PointAnimation::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::POINTANIMATION) {
-		DependencyObject::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args, error);
 		return;
 	}
 
@@ -980,10 +980,10 @@ KeySpline::RegenerateQuadratics ()
 }
 
 void
-KeySpline::OnPropertyChanged (PropertyChangedEventArgs *args)
+KeySpline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::KEYSPLINE) {
-		DependencyObject::OnPropertyChanged (args);
+		DependencyObject::OnPropertyChanged (args, error);
 		return;
 	}
 

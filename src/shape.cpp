@@ -693,7 +693,7 @@ Shape::CacheInvalidateHint (void)
 }
 
 void
-Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
+Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::SHAPE) {
 		if ((args->GetId () == FrameworkElement::HeightProperty) || (args->GetId () == FrameworkElement::WidthProperty))
@@ -711,7 +711,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args)
 			}
 		}
 
-		FrameworkElement::OnPropertyChanged (args);
+		FrameworkElement::OnPropertyChanged (args, error);
 		return;
 	}
 
@@ -904,7 +904,7 @@ Ellipse::BuildPath ()
 }
 
 void
-Ellipse::OnPropertyChanged (PropertyChangedEventArgs *args)
+Ellipse::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	DependencyProperty *prop = args->GetProperty ();
 
@@ -915,7 +915,7 @@ Ellipse::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 
 	// Ellipse has no property of it's own
-	Shape::OnPropertyChanged (args);
+	Shape::OnPropertyChanged (args, error);
 }
 
 //
@@ -1084,10 +1084,10 @@ Rectangle::BuildPath ()
 }
 
 void
-Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args)
+Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::RECTANGLE) {
-		Shape::OnPropertyChanged (args);
+		Shape::OnPropertyChanged (args, error);
 		return;
 	}
 
@@ -1364,10 +1364,10 @@ Line::ComputeShapeBounds (bool logical)
 }
 
 void
-Line::OnPropertyChanged (PropertyChangedEventArgs *args)
+Line::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::LINE) {
-		Shape::OnPropertyChanged (args);
+		Shape::OnPropertyChanged (args, error);
 		return;
 	}
 
@@ -1515,10 +1515,10 @@ Polygon::BuildPath ()
 }
 
 void
-Polygon::OnPropertyChanged (PropertyChangedEventArgs *args)
+Polygon::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::POLYGON) {
-		Shape::OnPropertyChanged (args);
+		Shape::OnPropertyChanged (args, error);
 		return;
 	}
 
@@ -1649,10 +1649,10 @@ Polyline::BuildPath ()
 }
 
 void
-Polyline::OnPropertyChanged (PropertyChangedEventArgs *args)
+Polyline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::POLYLINE) {
-		Shape::OnPropertyChanged (args);
+		Shape::OnPropertyChanged (args, error);
 		return;
 	}
 
@@ -1801,10 +1801,10 @@ Path::Draw (cairo_t *cr)
 }
 
 void
-Path::OnPropertyChanged (PropertyChangedEventArgs *args)
+Path::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::PATH) {
-		Shape::OnPropertyChanged (args);
+		Shape::OnPropertyChanged (args, error);
 		return;
 	}
 

@@ -416,9 +416,6 @@ DependencyObject *dependency_object_new (void);
 DependencyObject *dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind);
 
 /* @GeneratePInvoke */
-DependencyObject *dependency_object_get_logical_parent (DependencyObject *instance);
-
-/* @GeneratePInvoke */
 const char *dependency_object_get_name (DependencyObject *instance);
 
 /* @GeneratePInvoke */
@@ -431,13 +428,13 @@ Value *dependency_object_get_value_with_error (DependencyObject *instance, Type:
 Value *dependency_object_read_local_value_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
-void dependency_object_set_logical_parent (DependencyObject *instance, DependencyObject *logical_parent, MoonError *error);
-
-/* @GeneratePInvoke */
 bool dependency_object_set_marshalled_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
 
 /* @GeneratePInvoke */
 void dependency_object_set_name (DependencyObject *instance, const char *name);
+
+/* @GeneratePInvoke */
+void dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error);
 
 /**
  * DependencyObjectCollection
@@ -672,6 +669,9 @@ Size framework_element_arrange_override (FrameworkElement *instance, Size finalS
 FrameworkElement *framework_element_new (void);
 
 /* @GeneratePInvoke */
+DependencyObject *framework_element_get_logical_parent (FrameworkElement *instance);
+
+/* @GeneratePInvoke */
 Size framework_element_measure_override (FrameworkElement *instance, Size availableSize);
 
 /* @GeneratePInvoke */
@@ -679,6 +679,9 @@ void framework_element_register_managed_overrides (FrameworkElement *instance, M
 
 /* @GeneratePInvoke */
 void framework_element_set_default_style (FrameworkElement *instance, Style *value);
+
+/* @GeneratePInvoke */
+void framework_element_set_logical_parent (FrameworkElement *instance, DependencyObject *logical_parent, MoonError *error);
 
 /**
  * FrameworkTemplate

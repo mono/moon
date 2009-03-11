@@ -48,7 +48,7 @@ class Popup : public FrameworkElement {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetActiveSurface (Surface *surface);
 
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	const static int IsOpenChangedEvent;
  private:

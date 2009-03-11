@@ -32,10 +32,10 @@ Grid::~Grid ()
 }
 
 void
-Grid::OnPropertyChanged (PropertyChangedEventArgs *args)
+Grid::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::GRID) {
-		Panel::OnPropertyChanged (args);
+		Panel::OnPropertyChanged (args, error);
 		return;
 	}
 

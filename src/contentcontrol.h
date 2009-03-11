@@ -44,7 +44,7 @@ class ContentControl : public Control {
 	virtual ~ContentControl ();
 	
  public:
- 	/* @PropertyType=object */
+ 	/* @PropertyType=object,Validator=ContentControlContentValidator */
 	const static int ContentProperty;
  	/* @PropertyType=DataTemplate,GenerateAccessors */
 	const static int ContentTemplateProperty;
@@ -52,7 +52,7 @@ class ContentControl : public Control {
 	/* @GenerateCBinding,GeneratePInvoke */
 	ContentControl ();
 	
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	//
 	// Property Accessors

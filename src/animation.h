@@ -40,7 +40,7 @@ class KeySpline : public DependencyObject {
 	KeySpline (Point controlPoint1, Point controlPoint2);
 	KeySpline (double x1, double y1, double x2, double y2);
 
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	void RegenerateQuadratics ();
 
@@ -251,7 +251,7 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 	
 	virtual Type::Kind GetValueKind () { return Type::DOUBLE; };
 
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	virtual Value *GetTargetValue (Value *defaultOriginValue);
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
@@ -300,7 +300,7 @@ class ColorAnimation : public Animation/*Timeline*/ {
 	
 	virtual Type::Kind GetValueKind () { return Type::COLOR; };
 
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	virtual Value *GetTargetValue (Value *defaultOriginValue);
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
@@ -349,7 +349,7 @@ class PointAnimation : public Animation/*Timeline*/ {
  	
 	virtual Type::Kind GetValueKind () { return Type::POINT; };
 
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	virtual Value *GetTargetValue (Value *defaultOriginValue);
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,

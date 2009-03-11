@@ -230,7 +230,7 @@ class TextBlock : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
@@ -346,7 +346,7 @@ class Glyphs : public FrameworkElement {
 	virtual Point GetTransformOrigin ();
 	virtual Point GetOriginPoint ();
 	virtual void SetSurface (Surface *surface);
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	
 	//

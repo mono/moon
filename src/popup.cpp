@@ -18,13 +18,12 @@ Popup::Popup ()
 }
 
 void
-Popup::OnPropertyChanged (PropertyChangedEventArgs *args)
+Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
-	printf ("This: %p, New: %p. Old: %p", this, args->new_value, args->old_value);
 	if (args->GetId () == Popup::IsOpenProperty) {
 		Emit (Popup::IsOpenChangedEvent);
 	}
-	DependencyObject::OnPropertyChanged (args);
+	DependencyObject::OnPropertyChanged (args, error);
 }
 
 void

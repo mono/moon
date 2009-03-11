@@ -194,7 +194,7 @@ namespace System.Windows {
 
 		public DependencyObject Parent {
 			get {
-				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.dependency_object_get_logical_parent (native)) as DependencyObject;
+				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.framework_element_get_logical_parent (native)) as DependencyObject;
 			}
 		}
 

@@ -63,13 +63,18 @@ public:
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point P, List *uielement_list);
 	
 	//virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual Point GetTransformOrigin ();
-	
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetLogicalParent (DependencyObject *logical_parent, MoonError *error);
+	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyObject *GetLogicalParent () { return logical_parent; }
+
 	//
 	// Property Accessors
 	//
@@ -167,6 +172,8 @@ protected:
 private:
 	MeasureOverrideCallback measure_cb;
 	ArrangeOverrideCallback arrange_cb;
+
+	DependencyObject  *logical_parent;
 };
 
 #endif /* __FRAMEWORKELEMENT_H__ */

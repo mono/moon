@@ -1,3 +1,11 @@
+2009-03-10  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightDependencyObjectObject::Invoke): for
+	DumpNameScope, s/LogicalParent/Parent.
+	(MoonlightDependencyObjectObject::Invoke): for GetParent, make
+	sure the dob is a frameworkelement subclass, and call
+	GetLogicalParent on it.
+
 2009-03-10  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-debug.cpp: COnsistentify method name.

@@ -289,13 +289,13 @@ Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 void
 Collection::EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, int index)
 {
-	CollectionChangedEventArgs *args;
-	
-	if (GetLogicalParent()) {
-		args = new CollectionChangedEventArgs (action, new_value, old_value, index);
-		GetLogicalParent()->OnCollectionChanged (this, args);
-		args->unref ();
-	}
+	Emit (Collection::ChangedEvent, new CollectionChangedEventArgs (action, new_value, old_value, index));
+}
+
+void
+Collection::EmitItemChanged (DependencyObject *object, DependencyProperty *property, Value *newValue, Value *oldValue)
+{
+	Emit (Collection::ItemChangedEvent, new CollectionItemChangedEventArgs (object, property, oldValue, newValue));
 }
 
 bool
@@ -323,7 +323,7 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 {
 	DependencyObject *obj = value->AsDependencyObject ();
 	
-	DependencyObject *parent = obj->GetLogicalParentIncludingCollections();
+	DependencyObject *parent = obj->GetParent();
 	
 	// Call SetSurface() /before/ setting the logical parent
 	// because Storyboard::SetSurface() needs to be able to
@@ -337,7 +337,7 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 		}
 	}
 	else {
-		obj->SetLogicalParent (this, error);
+		obj->SetParent (this, error);
 		if (error->number)
 			return false;
 	}
@@ -353,7 +353,7 @@ DependencyObjectCollection::RemovedFromCollection (Value *value)
 	DependencyObject *obj = value->AsDependencyObject ();
 	
 	obj->RemovePropertyChangeListener (this);
-	obj->SetLogicalParent (NULL, NULL);
+	obj->SetParent (NULL, NULL);
 	obj->SetSurface (NULL);
 	
 	Collection::RemovedFromCollection (value);
@@ -380,8 +380,7 @@ DependencyObjectCollection::SetSurface (Surface *surface)
 void
 DependencyObjectCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	if (GetLogicalParent())
-		GetLogicalParent()->OnCollectionItemChanged (this, obj, subobj_args);
+	EmitItemChanged (obj, subobj_args->GetProperty(), subobj_args->new_value, subobj_args->old_value);
 }
 
 void

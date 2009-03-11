@@ -301,14 +301,12 @@ public:
 	virtual void SetSurface (Surface *surface);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetLogicalParent (DependencyObject *logical_parent, MoonError *error);
-	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyObject *GetLogicalParent ();
-	DependencyObject *GetLogicalParentIncludingCollections () { return logical_parent; }
+	void SetParent (DependencyObject *parent, MoonError *error);
+	DependencyObject* GetParent () { return parent; }
 
 	virtual bool PermitsMultipleParents () { return true; }
 
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args);
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	// See the comment below about AddPropertyChangeListener for
 	// the meaning of the @prop arg in this method.  it's not what
@@ -393,9 +391,12 @@ private:
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
 	void Initialize ();
 
+	static void collection_changed (EventObject *sender, EventArgs *args, gpointer closure);
+	static void collection_item_changed (EventObject *sender, EventArgs *args, gpointer closure);
+
 	GHashTable        *local_values;
 	GSList            *listener_list;
-	DependencyObject  *logical_parent;
+	DependencyObject  *parent;
 
 	bool is_frozen;
 };

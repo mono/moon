@@ -101,7 +101,6 @@ namespace Mono.Moonlight
 		}
 
 		[TestMethod]  
-		[MoonlightBug ("Bad parenting")]
 		public void TestIndexChanging ()
 		{
 			// This is really just testing the Selector class.

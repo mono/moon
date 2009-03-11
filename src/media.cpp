@@ -204,7 +204,7 @@ MediaBase::SetSource (Downloader *downloader, const char *PartName)
 }
 
 void
-MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
+MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == MediaBase::SourceProperty) {
 		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
@@ -229,7 +229,7 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 	
 	if (args->GetProperty ()->GetOwnerType() != Type::MEDIABASE) {
-		FrameworkElement::OnPropertyChanged (args);
+		FrameworkElement::OnPropertyChanged (args, error);
 		return;
 	}
 	
@@ -481,8 +481,9 @@ Image::UpdateSize ()
 		// gross.
 		PropertyChangedEventArgs args (GetDeployment ()->GetTypes ()->GetProperty (ImageBrush::DownloadProgressProperty), ImageBrush::DownloadProgressProperty, NULL, 
 					       brush->GetValue (ImageBrush::DownloadProgressProperty));
-		
-		brush->OnPropertyChanged (&args);
+		MoonError error;
+
+		brush->OnPropertyChanged (&args, &error /* XXX ignored */);
 	} else
 		Invalidate ();
 }
@@ -991,7 +992,7 @@ Image::GetCairoSurface ()
 }
 
 void
-Image::OnPropertyChanged (PropertyChangedEventArgs *args)
+Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == FrameworkElement::HeightProperty) {
 		if (!updating_size_from_media)
@@ -1022,7 +1023,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args)
 	}
 
 	if (args->GetProperty ()->GetOwnerType() != Type::IMAGE) {
-		MediaBase::OnPropertyChanged (args);
+		MediaBase::OnPropertyChanged (args, error);
 		return;
 	}
 	

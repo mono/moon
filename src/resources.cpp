@@ -163,7 +163,7 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 		// distinguish between the two cases.
 	
 		obj->SetSurface (GetSurface ());
-		obj->SetLogicalParent (this, error);
+		obj->SetParent (this, error);
 		if (error->number)
 			return false;
 
@@ -181,7 +181,7 @@ ResourceDictionary::RemovedFromCollection (Value *value)
 		DependencyObject *obj = value->AsDependencyObject ();
 		
 		obj->RemovePropertyChangeListener (this);
-		obj->SetLogicalParent (NULL, NULL);
+		obj->SetParent (NULL, NULL);
 		obj->SetSurface (NULL);
 		
 		Collection::RemovedFromCollection (value);

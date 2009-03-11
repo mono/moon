@@ -180,10 +180,10 @@ Panel::MeasureOverride (Size availableSize)
 // own variable
 //
 void
-Panel::OnPropertyChanged (PropertyChangedEventArgs *args)
+Panel::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::PANEL) {
-		FrameworkElement::OnPropertyChanged (args);
+		FrameworkElement::OnPropertyChanged (args, error);
 		return;
 	}
 
@@ -227,19 +227,31 @@ void
 Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	if (col == GetChildren ()) {
+		MoonError error;
+
 		switch (args->action) {
 		case CollectionChangedActionReplace:
+			if (args->old_value->Is(Type::FRAMEWORKELEMENT))
+				args->old_value->AsFrameworkElement()->SetLogicalParent (NULL, &error /* XXX unused */);
 			ElementRemoved (args->old_value->AsUIElement ());
 			// now fall thru to Add
 		case CollectionChangedActionAdd:
 			ElementAdded (args->new_value->AsUIElement ());
+			if (args->new_value->Is(Type::FRAMEWORKELEMENT))
+				args->new_value->AsFrameworkElement()->SetLogicalParent (this, &error /* XXX unused */);
 			break;
 		case CollectionChangedActionRemove:
+			if (args->old_value->Is(Type::FRAMEWORKELEMENT))
+				args->old_value->AsFrameworkElement()->SetLogicalParent (NULL, &error /* XXX unused */);
 			ElementRemoved (args->old_value->AsUIElement ());
 			break;
 		case CollectionChangedActionClearing:
-			for (int i = 0; i < col->GetCount (); i++)
-				ElementRemoved (col->GetValueAt (i)->AsUIElement ());
+			for (int i = 0; i < col->GetCount (); i++) {
+				UIElement *ui = col->GetValueAt (i)->AsUIElement ();
+				if (ui->Is(Type::FRAMEWORKELEMENT))
+					((FrameworkElement*)ui)->SetLogicalParent (NULL, &error /* XXX unused */);
+				ElementRemoved (ui);
+			}
 			break;
 		case CollectionChangedActionCleared:
 			// nothing needed here.

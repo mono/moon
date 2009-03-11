@@ -48,7 +48,7 @@ BitmapImage::SetBuffer (gpointer buffer, int size)
 }
 
 void
-BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args)
+BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == BitmapImage::UriSourceProperty) {
 		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
