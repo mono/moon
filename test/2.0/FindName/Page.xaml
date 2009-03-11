@@ -1,0 +1,14 @@
+<UserControl x:Class="FindName.Page"
+	     xmlns="http://schemas.microsoft.com/client/2007"
+	     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	     xmlns:moon="clr-namespace:FindName;assembly=FindName"
+	     Width="400" Height="300" x:Name="the_page">
+
+	     <Canvas>
+		<moon:MyCanvas x:Name="my_canvas" />
+		<TextBlock x:Name="debug_text1" />
+		<TextBlock x:Name="debug_text2" Canvas.Top="25" />
+		<TextBlock x:Name="debug_text3" Canvas.Top="50" />
+	     </Canvas>
+	     
+</UserControl>
