@@ -1,3 +1,8 @@
+2009-03-11  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs: fix argument validation for method 
+	overloading, it should be as flexible as the js binder
+
 2009-02-23  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectWrapper.cs: Add support for returning Html* objects

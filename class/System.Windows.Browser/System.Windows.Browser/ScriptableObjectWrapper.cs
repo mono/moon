@@ -335,10 +335,24 @@ namespace System.Windows.Browser
 			if (mi.GetParameters().Length != args.Length)
 				return false;
 
+			// TODO: refactor this, the js binder is doing this work already
 			ParameterInfo[] parms = mi.GetParameters ();
 			for (int i = 0; i < parms.Length; i++) {
-				if (parms[i].ParameterType != args[i].GetType())
+				if (parms[i].ParameterType != args[i].GetType()) {
+					TypeCode tc = Type.GetTypeCode (args[i].GetType());
+					Type type = parms[i].ParameterType;
+					switch (tc) {
+						case TypeCode.Int32:
+							if (type.IsPrimitive || (type == typeof(object)))
+								continue;
+							break;
+						case TypeCode.String:
+							if (type == typeof(char) || type == typeof(object) || type == typeof(Guid))
+								continue;
+							break;
+					}
 					return false;
+				}
 			}
 			return true;
 		}
