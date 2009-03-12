@@ -827,7 +827,7 @@ MultiScaleImage::SetViewportWidth (double value)
 	if (!zoom_sb) {
 		zoom_sb = new Storyboard ();
 		zoom_sb->SetManualTarget (this);
-		zoom_sb->SetTargetProperty (zoom_sb, new PropertyPath ("MultiScaleImage.ViewportWidth"));
+		zoom_sb->SetTargetProperty (zoom_sb, new PropertyPath ("(MultiScaleImage.ViewportWidth)"));
 		zoom_animation = new DoubleAnimation ();
 		zoom_animation->SetDuration (Duration::FromSecondsFloat (.4));
 		TimelineCollection *tlc = new TimelineCollection ();
@@ -855,7 +855,7 @@ MultiScaleImage::SetViewportOrigin (Point value)
 	if (!pan_sb) {
 		pan_sb = new Storyboard ();
 		pan_sb->SetManualTarget (this);
-		pan_sb->SetTargetProperty (pan_sb, new PropertyPath ("MultiScaleImage.ViewportOrigin"));
+		pan_sb->SetTargetProperty (pan_sb, new PropertyPath ("(MultiScaleImage.ViewportOrigin)"));
 		pan_animation = new PointAnimation ();
 		pan_animation->SetDuration (Duration::FromSecondsFloat (.4));
 		TimelineCollection *tlc = new TimelineCollection ();
