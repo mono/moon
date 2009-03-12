@@ -54,7 +54,7 @@ AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream
 	this->stream->ref ();
 	this->player = player;
 	
-	stream->AddHandler (IMediaStream::FirstFrameEnqueuedEvent, FirstFrameEnqueuedCallback, this);
+	stream->AddSafeHandler (IMediaStream::FirstFrameEnqueuedEvent, FirstFrameEnqueuedCallback, this, false);
 	
 	current_frame = NULL;
 	

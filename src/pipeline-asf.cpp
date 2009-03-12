@@ -59,13 +59,23 @@ ASFDemuxer::UpdateSelected (IMediaStream *stream)
 void
 ASFDemuxer::SeekAsyncInternal (guint64 pts)
 {
+	MediaResult result;
+	
 	LOG_PIPELINE ("ASFDemuxer::Seek (%" G_GUINT64_FORMAT ")\n", pts);
 	
 	g_return_if_fail (reader != NULL);
+	g_return_if_fail (media != NULL);
+	g_return_if_fail (media->InMediaThread ());
 	
-	reader->Seek (pts);
+	result = reader->Seek (pts);
 	
-	ReportSeekCompleted (pts);
+	if (MEDIA_SUCCEEDED (result)) {
+		ReportSeekCompleted (pts);
+	} else if (result == MEDIA_NOT_ENOUGH_DATA) {
+		EnqueueSeek (pts);
+	} else {
+		ReportErrorOccurred (result);
+	}
 }
 
 void
@@ -445,6 +455,11 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	}
 
 	if (result == MEDIA_BUFFER_UNDERFLOW) {
+		EnqueueGetFrame (stream);
+		return;
+	}
+	
+	if (result == MEDIA_NOT_ENOUGH_DATA) {
 		EnqueueGetFrame (stream);
 		return;
 	}

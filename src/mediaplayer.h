@@ -87,7 +87,7 @@ class MediaPlayer : public EventObject {
 	guint32 dropped_frames;
 	guint32 rendered_frames;
 
-	static void LoadVideoFrameCallback (EventObject *user_data); 
+	static void LoadVideoFrameCallback (EventObject *object);
 	void LoadVideoFrame ();
 	void Initialize ();
 	void CheckFinished ();
@@ -95,6 +95,7 @@ class MediaPlayer : public EventObject {
 	void RenderFrame (MediaFrame *frame);
 	
 	EVENTHANDLER (MediaPlayer, SeekCompleted, Media, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaPlayer, FirstFrameEnqueued, EventObject, EventArgs); // Not thread-safe
 	
 	// Thread-safe
 	static void AudioFinishedCallback (EventObject *user_data);

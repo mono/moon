@@ -69,7 +69,7 @@ ConverterInfo *Media::registered_converters = NULL;
 Queue *Media::media_objects = NULL;
 
 Media::Media (PlaylistRoot *root)
-	: EventObject (Type::MEDIA)
+	: IMediaObject (Type::MEDIA, this)
 {
 	pthread_attr_t attribs;
 	
@@ -134,7 +134,7 @@ Media::Dispose ()
 	pthread_cond_signal (&queue_condition);
 	pthread_mutex_unlock (&queue_mutex);
 	
-	if (!stopped)
+	if (!stopped && !InMediaThread ())
 		pthread_join (queue_thread, NULL);
 	
 	if (downloader) {
@@ -177,7 +177,7 @@ Media::Dispose ()
 		media_objects->Unlock ();
 	}
 	
-	EventObject::Dispose ();
+	IMediaObject::Dispose ();
 }
 
 bool
@@ -447,7 +447,7 @@ Media::ReportBufferingProgress (double progress)
 	progress = MAX (progress, 1.0);
 	
 	if (progress > buffering_progress && (progress > buffering_progress + 0.005 || progress == 1.0)) {
-		Emit (BufferingProgressChangedEvent);
+		EmitSafe (BufferingProgressChangedEvent);
 		buffering_progress = progress;
 	}
 }
@@ -459,7 +459,7 @@ Media::ReportDownloadProgress (double progress)
 	
 	if (progress != download_progress) {
 		download_progress = progress;
-		Emit (DownloadProgressChangedEvent);
+		EmitSafe (DownloadProgressChangedEvent);
 	}
 }
 
@@ -481,7 +481,7 @@ Media::ReportSeekCompleted (guint64 pts)
 {
 	LOG_PIPELINE ("Media::ReportSeekCompleted (%llu), id: %i\n", pts, GET_OBJ_ID (this));
 	
-	Emit (SeekCompletedEvent);
+	EmitSafe (SeekCompletedEvent);
 }
 
 void
@@ -489,7 +489,7 @@ Media::ReportOpenCompleted ()
 {
 	LOG_PIPELINE ("Media::ReportOpenCompleted (), id: %i\n", GET_OBJ_ID (this));
 	
-	Emit (OpenCompletedEvent);
+	EmitSafe (OpenCompletedEvent);
 }
 
 void
@@ -516,7 +516,7 @@ Media::ReportErrorOccurred (ErrorEventArgs *args)
 	LOG_PIPELINE ("Media::ReportErrorOccurred (%p)\n", args);
 	
 	error_reported = true;
-	Emit (MediaErrorEvent, args);
+	EmitSafe (MediaErrorEvent, args);
 }
 
 void
@@ -685,7 +685,7 @@ Media::OpenAsync ()
 	
 	g_return_if_fail (initialized == true);
 	
-	Emit (OpeningEvent);
+	EmitSafe (OpeningEvent);
 	
 	OpenInternal ();
 }
@@ -741,7 +741,7 @@ Media::OpenInternal ()
 	
 	LOG_PIPELINE ("Media::OpenInteral (): opened successfully.\n");
 	
-	Emit (OpenCompletedEvent);
+	EmitSafe (OpenCompletedEvent);
 
 cleanup:
 	in_open_internal = false;
@@ -2170,7 +2170,7 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 	SetLastAvailablePts (frame->pts);
 
 	if (first)
-		Emit (FirstFrameEnqueuedEvent);
+		EmitSafe (FirstFrameEnqueuedEvent);
 	
 	FrameEnqueued ();
 
@@ -2387,6 +2387,7 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 			continue;
 		
 		stream->ClearQueue ();
+		stream->GetDecoder ()->CleanState ();
 	}
 	
 	media->ReportSeekCompleted (pts);
@@ -2454,14 +2455,22 @@ IMediaDemuxer::SeekCallback (MediaClosure *closure)
 }
 
 void
+IMediaDemuxer::EnqueueSeek (guint64 pts)
+{
+	MediaSeekClosure *closure = new MediaSeekClosure (media, SeekCallback, this, pts);
+	media->EnqueueWork (closure, true);
+	closure->unref ();
+}
+
+void
 IMediaDemuxer::SeekAsync (guint64 pts)
 {
 	g_return_if_fail (media != NULL);
 
+	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (%llu)\n", pts);
+
 	if (!media->InMediaThread ()) {
-		MediaSeekClosure *closure = new MediaSeekClosure (media, SeekCallback, this, pts);
-		media->EnqueueWork (closure);
-		closure->unref ();
+		EnqueueSeek (pts);
 		return;
 	}
 	
@@ -2699,6 +2708,50 @@ MediaFrame::Dispose ()
 }
 
 /*
+ * IMediaObject.EventData
+ */
+
+IMediaObject::EventData::EventData (int event_id, EventHandler handler, EventObject *context, bool invoke_on_main_thread)
+{
+	this->event_id = event_id;
+	this->handler = handler;
+	this->context = context;
+	this->context->ref ();
+	this->invoke_on_main_thread = invoke_on_main_thread;
+}
+
+IMediaObject::EventData::~EventData ()
+{
+	context->unref ();
+	context = NULL;
+}
+
+/*
+ * IMediaObject.EmitData
+ */
+
+IMediaObject::EmitData::EmitData (int event_id, EventHandler handler, EventObject *context, EventArgs *args)
+{
+	this->event_id = event_id;
+	this->handler = handler;
+	this->context = context;
+	this->context->ref ();
+	this->args = args;
+	if (this->args)
+		this->args->ref ();
+}
+
+IMediaObject::EmitData::~EmitData ()
+{
+	context->unref ();
+	context = NULL;
+	if (args) {
+		args->unref ();
+		args = NULL;
+	}
+}
+
+/*
  * IMediaObject
  */
  
@@ -2709,16 +2762,155 @@ IMediaObject::IMediaObject (Type::Kind kind, Media *media)
 	if (this->media)
 		this->media->ref ();
 	g_return_if_fail (media != NULL);
+	events = NULL;
+	emit_on_main_thread = NULL;
 }
 
 void
 IMediaObject::Dispose ()
 {
+
+#if SANITY
+	// We can be called either on the main thread just before destruction
+	// (in which case there are no races since the code which unreffed us
+	// is the only code which knows about us), or at any time from the
+	// media thread.
+	if (GetRefCount () != 0 && media != NULL && !media->InMediaThread ()) {
+		// if refcount != 0 we're not being called just before destruction, in which case we should
+		// only be on the media thread.
+		printf ("IMediaObject::Dispose (): this method should only be called from the media thread.\n");
+	}
+#endif
+
 	if (media) {
 		media->unref ();
 		media = NULL;
 	}
+	
+	event_mutex.Lock ();
+	delete events;
+	events = NULL;
+	event_mutex.Unlock ();
+	
 	EventObject::Dispose ();
+}
+
+void
+IMediaObject::AddSafeHandler (int event_id, EventHandler handler, EventObject *context, bool invoke_on_main_thread)
+{
+	LOG_PIPELINE ("IMediaObject::AddSafeHandler (%i, %p, %p, %i)\n", event_id, handler, context, invoke_on_main_thread);
+	EventData *ed = new EventData (event_id, handler, context, invoke_on_main_thread);
+	
+	event_mutex.Lock ();
+	if (events == NULL)
+		events = new List ();
+	events->Append (ed);
+	event_mutex.Unlock ();
+}
+
+void
+IMediaObject::RemoveSafeHandlers (EventObject *context)
+{
+	EventData *ed;
+	EventData *next;
+	
+	event_mutex.Lock ();
+	ed = (EventData *) events->First ();
+	while (ed != NULL) {
+		next = (EventData *) ed->next;
+		if (ed->context == context)
+			events->Remove (ed);
+		ed = next;
+	}
+	event_mutex.Unlock ();
+}
+
+void
+IMediaObject::EmitSafe (int event_id, EventArgs *args)
+{
+	List *emits = NULL; // The events to emit on this thread.
+	EventData *ed;
+	EmitData *emit;
+		
+	if (events == NULL)
+		return;
+		
+	// Create a list of all the events to emit
+	// don't keep the lock while emitting.
+	event_mutex.Lock ();
+	if (events != NULL) {
+		ed = (EventData *) events->First ();
+		while (ed != NULL) {
+			if (ed->event_id == event_id) {
+				emit = new EmitData (event_id, ed->handler, ed->context, args);
+				if (ed->invoke_on_main_thread) {
+					if (emit_on_main_thread == NULL)
+						emit_on_main_thread = new List ();
+					emit_on_main_thread->Append (emit);
+				} else {
+					if (emits == NULL)
+						emits = new List ();
+					emits->Append (emit);
+				}
+			}
+			ed = (EventData *) ed->next;
+		}
+	}
+	event_mutex.Unlock ();
+	
+	// emit the events to be emitted on this thread
+	EmitList (emits);
+	
+	if (Surface::InMainThread ()) {
+		// if we're already on the main thread, 
+		// we can the events to be emitted
+		// on the main thread
+		List *tmp;
+		event_mutex.Lock ();
+		tmp = emit_on_main_thread;
+		emit_on_main_thread = NULL;
+		event_mutex.Unlock ();
+		EmitList (tmp);
+	} else {
+		AddTickCallSafe (EmitListCallback);
+	}	
+}
+
+void
+IMediaObject::EmitListMain ()
+{
+	VERIFY_MAIN_THREAD;
+	
+	List *list;
+	event_mutex.Lock ();
+	list = emit_on_main_thread;
+	emit_on_main_thread = NULL;
+	event_mutex.Unlock ();
+	EmitList (list);
+}
+
+void
+IMediaObject::EmitListCallback (EventObject *obj)
+{
+	IMediaObject *media_obj = (IMediaObject *) obj;
+	media_obj->EmitListMain ();
+}
+
+void
+IMediaObject::EmitList (List *list)
+{
+	EmitData *emit;
+	
+	if (list == NULL)
+		return;
+	
+	emit = (EmitData *) list->First ();
+	while (emit != NULL) {
+		emit->handler (this, emit->args, emit->context);
+		emit = (EmitData *) emit->next;
+	}
+	
+	delete list;
 }
 
 Media *

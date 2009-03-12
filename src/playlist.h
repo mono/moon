@@ -274,6 +274,7 @@ public:
 class PlaylistRoot : public Playlist {
 private:
 	MediaElement *element;
+	MediaPlayer *mplayer;
 
 	static void EmitStopEvent (EventObject *obj);
 protected:
@@ -287,6 +288,7 @@ public:
 	virtual void StopAsync ();
 	
 	Media *GetCurrentMedia ();
+	MediaPlayer *GetMediaPlayer ();
 	
 	// Events
 	const static int OpeningEvent;

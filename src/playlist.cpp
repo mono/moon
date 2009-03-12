@@ -100,10 +100,11 @@ PlaylistEntry::Dispose ()
 	LOG_PLAYLIST ("PlaylistEntry::Dispose () id: %i media: %i\n", GET_OBJ_ID (this), GET_OBJ_ID (media));
 	
 	if (media) {
-		media->RemoveAllHandlers (this);
-		media->Dispose ();
-		media->unref ();
+		Media *tmp = media;
 		media = NULL;
+		tmp->RemoveSafeHandlers (this);
+		tmp->DisposeObject (this);
+		tmp->unref ();
 	}
 	
 	delete source_name;
@@ -164,14 +165,14 @@ PlaylistEntry::Initialize (Media *media)
 	g_return_if_fail (media != NULL);
 	g_return_if_fail (this->media == NULL);
 	
-	media->AddHandler (Media::OpenCompletedEvent, OpenCompletedCallback, this);
-	media->AddHandler (Media::OpeningEvent, OpeningCallback, this);
-	media->AddHandler (Media::SeekingEvent, SeekingCallback, this);
-	media->AddHandler (Media::SeekCompletedEvent, SeekCompletedCallback, this);
-	media->AddHandler (Media::CurrentStateChangedEvent, CurrentStateChangedCallback, this);
-	media->AddHandler (Media::DownloadProgressChangedEvent, DownloadProgressChangedCallback, this);
-	media->AddHandler (Media::BufferingProgressChangedEvent, BufferingProgressChangedCallback, this);
-	media->AddHandler (Media::MediaErrorEvent, MediaErrorCallback, this);
+	media->AddSafeHandler (Media::OpenCompletedEvent, OpenCompletedCallback, this);
+	media->AddSafeHandler (Media::OpeningEvent, OpeningCallback, this);
+	media->AddSafeHandler (Media::SeekingEvent, SeekingCallback, this);
+	media->AddSafeHandler (Media::SeekCompletedEvent, SeekCompletedCallback, this);
+	media->AddSafeHandler (Media::CurrentStateChangedEvent, CurrentStateChangedCallback, this);
+	media->AddSafeHandler (Media::DownloadProgressChangedEvent, DownloadProgressChangedCallback, this);
+	media->AddSafeHandler (Media::BufferingProgressChangedEvent, BufferingProgressChangedCallback, this);
+	media->AddSafeHandler (Media::MediaErrorEvent, MediaErrorCallback, this);
 		
 	this->media = media;
 	this->media->ref ();
@@ -581,11 +582,11 @@ PlaylistEntry::ClearMedia ()
 MediaPlayer *
 PlaylistEntry::GetMediaPlayer ()
 {
-	MediaElement *element = GetElement ();
+	PlaylistRoot *root = GetRoot ();
 	
-	g_return_val_if_fail (element != NULL, NULL);
+	g_return_val_if_fail (root != NULL, NULL);
 	
-	return element->GetMediaPlayer ();
+	return root->GetMediaPlayer ();
 }
 
 static void
@@ -1163,22 +1164,21 @@ Playlist::MergeWith (PlaylistEntry *entry)
 PlaylistRoot::PlaylistRoot (MediaElement *element)
 	: Playlist (Type::PLAYLISTROOT)
 {
-	MediaPlayer *mplayer;
-	
 	this->element = element;
 	
-	mplayer = GetMediaPlayer ();
+	mplayer = element->GetMediaPlayer ();
 	mplayer->AddHandler (MediaPlayer::MediaEndedEvent, MediaEndedCallback, this);
+	mplayer->ref ();
 }
 
 void
 PlaylistRoot::Dispose ()
 {
-	MediaPlayer *mplayer;
-	
-	mplayer = GetMediaPlayer ();
-	if (mplayer != NULL)
+	if (mplayer != NULL) {
 		mplayer->RemoveAllHandlers (this);
+		mplayer->unref ();
+		mplayer = NULL;
+	}
 		
 	Playlist::Dispose ();
 }
@@ -1211,6 +1211,12 @@ PlaylistRoot::EmitStopEvent (EventObject *obj)
 {
 	PlaylistRoot *root = (PlaylistRoot *) obj;
 	root->Emit (StopEvent);
+}
+
+MediaPlayer *
+PlaylistRoot::GetMediaPlayer ()
+{
+	return mplayer;
 }
 
 Media *

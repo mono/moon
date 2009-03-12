@@ -348,11 +348,11 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	
 	SetBit (LoadFramePending);
 	
-	media->AddHandler (Media::SeekCompletedEvent, SeekCompletedCallback, this);
+	media->AddSafeHandler (Media::SeekCompletedEvent, SeekCompletedCallback, this);
 	media->SetBufferingTime (element->GetBufferingTime ());
 	
 	if (HasVideo ())
-		AddTickCallSafe (LoadVideoFrameCallback);
+		video_stream->AddSafeHandler (IMediaStream::FirstFrameEnqueuedEvent, FirstFrameEnqueuedCallback, this);
 	
 	return true;
 }
@@ -457,6 +457,7 @@ MediaPlayer::Close ()
 	}
 	
 	if (video_stream) {
+		video_stream->RemoveSafeHandlers (this);
 		video_stream->unref ();
 		video_stream = NULL;
 	}
@@ -727,9 +728,15 @@ MediaPlayer::AdvanceFrame ()
 }
 
 void
-MediaPlayer::LoadVideoFrameCallback (EventObject *user_data)
+MediaPlayer::FirstFrameEnqueuedHandler (EventObject *sender, EventArgs *args)
 {
-	((MediaPlayer *) user_data)->LoadVideoFrame ();
+	LoadVideoFrame ();	
+}
+
+void
+MediaPlayer::LoadVideoFrameCallback (EventObject *object)
+{
+	((MediaPlayer *) object)->LoadVideoFrame ();
 }
 
 void
@@ -749,13 +756,8 @@ MediaPlayer::LoadVideoFrame ()
 	
 	frame = video_stream->PopFrame ();
 
-	if (frame == NULL) {
-		if (video_stream->GetEnded ())
-			return;
-			
-		AddTickCall (LoadVideoFrameCallback);
+	if (frame == NULL)
 		return;
-	}
 	
 	target_pts = GetTargetPts ();
 
@@ -770,7 +772,7 @@ MediaPlayer::LoadVideoFrame ()
 		RenderFrame (frame);
 		element->Invalidate ();
 	} else {
-		AddTickCall (LoadVideoFrameCallback);
+		AddTickCallSafe (LoadVideoFrameCallback);
 	}
 	
 	media->DisposeObject (frame);

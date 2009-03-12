@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <pthread.h>
 #include "utils.h"
+#include "mutex.h"
 
 #define MAKE_CODEC_ID(a, b, c, d) (a | (b << 8) | (c << 16) | (d << 24))
 
@@ -338,6 +339,35 @@ public:
  * IMediaObject
  */
 class IMediaObject : public EventObject {
+private:
+	// Media event handling
+	// media needs to support event handling on all threads, and EventObject isn't thread-safe
+	class EventData : public List::Node {
+	public:
+		int event_id;
+		EventHandler handler;
+		EventObject *context;
+		bool invoke_on_main_thread;
+		EventData (int event_id, EventHandler handler, EventObject *context, bool invoke_on_main_thread);
+		virtual ~EventData ();
+	};
+	class EmitData : public List::Node {
+	public:
+		int event_id;
+		EventHandler handler;
+		EventObject *context;
+		EventArgs *args;
+		EmitData (int event_id, EventHandler handler, EventObject *context, EventArgs *args);
+		virtual ~EmitData ();
+	};
+	List *events; // list of event handlers
+	List *emit_on_main_thread; // list of emit calls to emit on main thread
+	Mutex event_mutex;
+	
+	void EmitList (List *list);
+	void EmitListMain ();
+	static void EmitListCallback (EventObject *obj);
+	
 protected:
 	Media *media;
 	virtual ~IMediaObject () {}
@@ -355,6 +385,11 @@ public:
 	void ReportErrorOccurred (ErrorEventArgs *args);
 	void ReportErrorOccurred (const char *message);
 	void ReportErrorOccurred (MediaResult result);
+	
+	// All the event methods are thread-safe
+	void AddSafeHandler (int event_id, EventHandler handler, EventObject *context, bool invoke_on_main_thread = true);
+	void RemoveSafeHandlers (EventObject *context);
+	void EmitSafe (int event_id, EventArgs *args = NULL);
 };
 
 class IMediaStream : public IMediaObject {
@@ -454,7 +489,7 @@ public:
 /*
  * Media
  */
-class Media : public EventObject {
+class Media : public IMediaObject {
 private:	
 	static ConverterInfo *registered_converters;
 	static DemuxerInfo *registered_demuxers;
@@ -729,6 +764,7 @@ protected:
 	
 	void EnqueueOpen ();
 	void EnqueueGetFrame (IMediaStream *stream);
+	void EnqueueSeek (guint64 pts);
 	
 public:
 	virtual void Dispose ();

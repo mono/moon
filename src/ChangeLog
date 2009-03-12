@@ -1,5 +1,30 @@
 2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio.cpp: Use media's thread-safe event handling.
+
+	* playlist.h:
+	* playlist.cpp: PlaylistRoot: keep a reference to our media
+	  player (i.e. don't use MediaElement's media player, it may
+	  change). Use the thread-safe event support in media.
+
+	* mediaplayer.h:
+	* mediaplayer.cpp: Use media's thread-safe event handling.
+	  Don't tick while waiting for the media to get the first
+	  frame, just attach an event handler to
+	  FirstFrameEnqueuedEvent.
+
+	* pipeline.h:
+	* pipeline.cpp: IMediaObject: Add thread-safe event support.
+	  Media: inherit from IMediaObject to get the thread-safe
+	  event support.
+
+	* pipeline-asf.cpp: ASFDemuxer::SeekAsyncInternal: don't
+	  ignore ASFReader::Seek's result, handle it correctly.
+	  EnqueueGetFrame: requeue a get frame request if we don't
+	  have enough data yet.
+
+2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.h: Move IMediaObject above Media so that Media can
 	  inherit from IMediaObject.
 
