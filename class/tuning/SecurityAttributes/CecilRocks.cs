@@ -67,9 +67,9 @@ namespace Moonlight.SecurityModel {
 
 		public static bool IsSecurityCritical (this MethodDefinition self)
 		{
-			if (!self.HasCustomAttributes)
-				return IsSecurityCritical (self.DeclaringType);
-			return HasAttribute (self.CustomAttributes, SecurityCritical);
+			if (self.HasCustomAttributes && HasAttribute (self.CustomAttributes, SecurityCritical))
+				return true;
+			return IsSecurityCritical (self.DeclaringType);
 		}
 
 		public static bool IsSecurityCritical (this TypeDefinition self)
@@ -93,9 +93,9 @@ namespace Moonlight.SecurityModel {
 
 		public static bool IsSecuritySafeCritical (this MethodDefinition self)
 		{
-			if (!self.HasCustomAttributes)
-				return IsSecuritySafeCritical (self.DeclaringType);
-			return HasAttribute (self.CustomAttributes, SecuritySafeCritical);
+			if (self.HasCustomAttributes && HasAttribute (self.CustomAttributes, SecuritySafeCritical))
+				return true;
+			return IsSecuritySafeCritical (self.DeclaringType);
 		}
 
 		public static bool IsSecuritySafeCritical (this TypeDefinition self)

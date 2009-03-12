@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 364 methods
+# 359 methods
 
 +SSC-M: System.Void Microsoft.Win32.KeyHandler::.ctor(Microsoft.Win32.RegistryKey,System.String)
 +SSC-M: System.Void Microsoft.Win32.KeyHandler::Load()
@@ -7,10 +7,7 @@
 +SSC-M: System.Void Microsoft.Win32.KeyHandler::Save()
 +SSC-M: System.String Microsoft.Win32.KeyHandler::get_UserStore()
 +SSC-M: System.Void Microsoft.Win32.RegistryKey::.ctor(Microsoft.Win32.RegistryHive)
-+SSC-M: System.Void Microsoft.Win32.SafeHandles.CriticalHandleMinusOneIsInvalid::.ctor()
 +SSC-M: System.Boolean Microsoft.Win32.SafeHandles.SafeFileHandle::ReleaseHandle()
-+SSC-M: System.Void Microsoft.Win32.SafeHandles.SafeHandleMinusOneIsInvalid::.ctor(System.Boolean)
-+SSC-M: System.Void Microsoft.Win32.SafeHandles.SafeHandleZeroOrMinusOneIsInvalid::.ctor(System.Boolean)
 +SSC-M: System.Int32 Microsoft.Win32.UnixRegistryApi::SubKeyCount(Microsoft.Win32.RegistryKey)
 +SSC-M: System.Void Microsoft.Win32.UnixRegistryApi::DeleteKey(Microsoft.Win32.RegistryKey,System.String,System.Boolean)
 +SSC-M: System.String[] Microsoft.Win32.UnixRegistryApi::GetSubKeyNames(Microsoft.Win32.RegistryKey)
@@ -236,6 +233,7 @@
 +SSC-M: System.Resources.MissingManifestResourceException System.Resources.ResourceManager::AssemblyResourceMissing(System.String)
 +SSC-M: System.Void System.Resources.ResourceReader::.ctor(System.String)
 +SSC-M: System.IO.UnmanagedMemoryStream System.Resources.ResourceReader::ResourceValueAsStream(System.String,System.Int32)
++SSC-M: System.Void System.Resources.ResourceReader/<ResourceValueAsStream>c__AnonStorey1::<>m__0(System.Object,System.EventArgs)
 +SSC-M: System.Void System.Resources.ResourceWriter::.ctor(System.String)
 +SSC-M: System.Void System.Resources.RuntimeResourceSet::.ctor(System.IO.Stream)
 +SSC-M: System.Void System.Resources.RuntimeResourceSet::.ctor(System.String)
@@ -243,10 +241,6 @@
 +SSC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunClassConstructor(System.RuntimeTypeHandle)
 +SSC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunModuleConstructor(System.ModuleHandle)
 +SSC-M: System.Runtime.Remoting.ObjectHandle System.Runtime.Hosting.ApplicationActivator::CreateInstanceHelper(System.AppDomainSetup)
-+SSC-M: System.IntPtr System.Runtime.InteropServices.Marshal::AllocHGlobal(System.Int32)
-+SSC-M: System.Int32 System.Runtime.InteropServices.Marshal::Release(System.IntPtr)
-+SSC-M: System.Int32 System.Runtime.InteropServices.Marshal::SizeOf(System.Object)
-+SSC-M: System.Void System.Runtime.InteropServices.SafeHandle::DangerousAddRef(System.Boolean&)
 +SSC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.AsyncResult::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
 +SSC-M: System.Void System.Runtime.Remoting.Metadata.SoapTypeAttribute::SetReflectionObject(System.Object)
 +SSC-M: System.Void System.Runtime.Remoting.Proxies.RealProxy::.ctor(System.Type)
@@ -349,6 +343,7 @@
 +SSC-M: System.Void System.Threading.Thread::Finalize()
 +SSC-M: System.Boolean System.Threading.Timer::Dispose(System.Threading.WaitHandle)
 +SSC-M: System.Void System.Threading.WaitHandle::.cctor()
++SSC-M: System.Void System.Threading.WaitHandle::Dispose(System.Boolean)
 +SSC-M: System.Boolean System.Threading.WaitHandle::SignalAndWait(System.Threading.WaitHandle,System.Threading.WaitHandle,System.Int32,System.Boolean)
 +SSC-M: System.Boolean System.Threading.WaitHandle::WaitOne()
 +SSC-M: System.Boolean System.Threading.WaitHandle::WaitOne(System.Int32,System.Boolean)

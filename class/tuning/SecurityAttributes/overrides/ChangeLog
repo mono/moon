@@ -1,3 +1,10 @@
+2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.manual: Turn GCHandle::op_Explicitfrom SC to SSC
+	* System.Windows.Browser.manual: Turn HtmlObject::GetPropertyInternal
+	from SC to SSC. Make ScriptableObjectWrapper SSC since it creates
+	delegates to SC decorated methods.
+
 2008-03-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* *.manual: Empty files (for the makefile dependencies)
