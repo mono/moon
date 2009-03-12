@@ -335,6 +335,123 @@ public:
 };
 
 /*
+ * IMediaObject
+ */
+class IMediaObject : public EventObject {
+protected:
+	Media *media;
+	virtual ~IMediaObject () {}
+
+public:
+	IMediaObject (Type::Kind kind, Media *media);
+	virtual void Dispose ();
+	
+	// TODO: media should be protected with a mutex, and GetMedia should return a refcounted media.
+	Media *GetMedia () { return media; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	Media *GetMediaReffed ();
+	void SetMedia (Media *value);
+
+	void ReportErrorOccurred (ErrorEventArgs *args);
+	void ReportErrorOccurred (const char *message);
+	void ReportErrorOccurred (MediaResult result);
+};
+
+class IMediaStream : public IMediaObject {
+private:
+	void *context;
+	bool enabled;
+	bool selected;
+	bool ended; // end of stream reached.
+	gint32 get_frame_pending_count;
+	guint64 first_pts; // The first pts in the stream, initialized to G_MAXUINT64
+	guint64 last_popped_pts; // The pts of the last frame returned, initialized to G_MAXUINT64
+	guint64 last_enqueued_pts; // The pts of the last frae enqueued, initialized to G_MAXUINT64
+	guint64 last_available_pts; // The last pts available, initialized to 0. Note that this field won't be correct for streams which CanSeekToPts.
+	Queue queue; // Our queue of demuxed frames
+	IMediaDecoder *decoder;
+
+protected:
+	virtual ~IMediaStream () {}
+	virtual void FrameEnqueued () {}
+
+	static char *CreateCodec (int codec_id); // converts fourcc int value into a string
+public:
+	class StreamNode : public List::Node {
+	 private:
+	 	MediaFrame *frame;
+	 public:
+		StreamNode (MediaFrame *frame);
+		virtual ~StreamNode ();
+		MediaFrame *GetFrame () { return frame; }
+	};
+	
+	IMediaStream (Type::Kind kind, Media *media);
+	virtual void Dispose ();
+	
+	//	Video, Audio, Markers, etc.
+	virtual MediaStreamType GetType () = 0; // TODO: This should be removed, it clashes with GetType in EventObject.
+	virtual MediaStreamType GetStreamType () { return GetType (); }
+	const char *GetStreamTypeName ();
+	
+	IMediaDecoder *GetDecoder ();
+	void SetDecoder (IMediaDecoder *value);
+	
+	//	If this stream is enabled (producing output). 
+	//	A file might have several audio streams, 
+	//	and live streams might have several video streams with different bitrates.
+	bool IsEnabled () { return enabled; }
+	const char *GetCodec () { return codec; }
+	
+	//	User defined context value.
+	void *GetContext () { return context; }
+	void  SetContext (void *context) { this->context = context; }
+	
+	bool GetSelected () { return selected; }
+	void SetSelected (bool value);
+
+	guint32 GetBitrate ();
+
+	void *extra_data;
+	int extra_data_size;
+	int codec_id;
+	guint64 duration; // 100-nanosecond units (pts)
+	char *codec; // freed upon destruction
+	// The minimum amount of padding any other part of the pipeline needs for frames from this stream.
+	// Used by the demuxer when reading frames, ensures that there are at least min_padding extra bytes
+	// at the end of the frame data (all initialized to 0).
+	int min_padding;
+	// 0-based index of the stream in the media
+	// set by the demuxer, until then its value must be -1
+	int index; 
+	
+	void EnqueueFrame (MediaFrame *frame);
+	MediaFrame *PopFrame ();
+	bool IsQueueEmpty ();
+	void ClearQueue ();
+	guint64 GetFirstPts () { return first_pts; }
+	guint64 GetLastPoppedPts () { return last_popped_pts; }
+	guint64 GetLastEnqueuedPts () { return last_enqueued_pts; }
+	void SetLastAvailablePts (guint64 value) { last_available_pts = MAX (value, last_available_pts); }
+	guint64 GetLastAvailablePts () { return last_available_pts; }
+	guint64 GetBufferedSize (); // Returns the time between the last frame returned and the last frame available (buffer time)
+	
+	bool GetPendingFrameCount () { return get_frame_pending_count; }
+	void IncPendingFrameCount () { g_atomic_int_inc (&get_frame_pending_count); }
+	void DecPendingFrameCount () { g_atomic_int_dec_and_test (&get_frame_pending_count); }
+	
+	bool GetEnded () { return ended; }
+	void SetEnded (bool value) { ended = value; }
+	
+	IMediaDemuxer *GetDemuxer ();
+	
+#if DEBUG
+	void PrintBufferInformation ();
+#endif
+	const static int FirstFrameEnqueuedEvent;
+};
+
+/*
  * Media
  */
 class Media : public EventObject {
@@ -577,120 +694,6 @@ public:
 };
 
 // Interfaces
-
-class IMediaObject : public EventObject {
-protected:
-	Media *media;
-	virtual ~IMediaObject () {}
-
-public:
-	IMediaObject (Type::Kind kind, Media *media);
-	virtual void Dispose ();
-	
-	// TODO: media should be protected with a mutex, and GetMedia should return a refcounted media.
-	Media *GetMedia () { return media; }
-	/* @GenerateCBinding,GeneratePInvoke */
-	Media *GetMediaReffed ();
-	void SetMedia (Media *value);
-
-	void ReportErrorOccurred (ErrorEventArgs *args);
-	void ReportErrorOccurred (const char *message);
-	void ReportErrorOccurred (MediaResult result);
-};
-
-class IMediaStream : public IMediaObject {
-private:
-	void *context;
-	bool enabled;
-	bool selected;
-	bool ended; // end of stream reached.
-	gint32 get_frame_pending_count;
-	guint64 first_pts; // The first pts in the stream, initialized to G_MAXUINT64
-	guint64 last_popped_pts; // The pts of the last frame returned, initialized to G_MAXUINT64
-	guint64 last_enqueued_pts; // The pts of the last frae enqueued, initialized to G_MAXUINT64
-	guint64 last_available_pts; // The last pts available, initialized to 0. Note that this field won't be correct for streams which CanSeekToPts.
-	Queue queue; // Our queue of demuxed frames
-	IMediaDecoder *decoder;
-
-protected:
-	virtual ~IMediaStream () {}
-	virtual void FrameEnqueued () {}
-
-	static char *CreateCodec (int codec_id); // converts fourcc int value into a string
-public:
-	class StreamNode : public List::Node {
-	 private:
-	 	MediaFrame *frame;
-	 public:
-		StreamNode (MediaFrame *frame);
-		virtual ~StreamNode ();
-		MediaFrame *GetFrame () { return frame; }
-	};
-	
-	IMediaStream (Type::Kind kind, Media *media);
-	virtual void Dispose ();
-	
-	//	Video, Audio, Markers, etc.
-	virtual MediaStreamType GetType () = 0; // TODO: This should be removed, it clashes with GetType in EventObject.
-	virtual MediaStreamType GetStreamType () { return GetType (); }
-	const char *GetStreamTypeName ();
-	
-	IMediaDecoder *GetDecoder ();
-	void SetDecoder (IMediaDecoder *value);
-	
-	//	If this stream is enabled (producing output). 
-	//	A file might have several audio streams, 
-	//	and live streams might have several video streams with different bitrates.
-	bool IsEnabled () { return enabled; }
-	const char *GetCodec () { return codec; }
-	
-	//	User defined context value.
-	void *GetContext () { return context; }
-	void  SetContext (void *context) { this->context = context; }
-	
-	bool GetSelected () { return selected; }
-	void SetSelected (bool value);
-
-	guint32 GetBitrate ();
-
-	void *extra_data;
-	int extra_data_size;
-	int codec_id;
-	guint64 duration; // 100-nanosecond units (pts)
-	char *codec; // freed upon destruction
-	// The minimum amount of padding any other part of the pipeline needs for frames from this stream.
-	// Used by the demuxer when reading frames, ensures that there are at least min_padding extra bytes
-	// at the end of the frame data (all initialized to 0).
-	int min_padding;
-	// 0-based index of the stream in the media
-	// set by the demuxer, until then its value must be -1
-	int index; 
-	
-	void EnqueueFrame (MediaFrame *frame);
-	MediaFrame *PopFrame ();
-	bool IsQueueEmpty ();
-	void ClearQueue ();
-	guint64 GetFirstPts () { return first_pts; }
-	guint64 GetLastPoppedPts () { return last_popped_pts; }
-	guint64 GetLastEnqueuedPts () { return last_enqueued_pts; }
-	void SetLastAvailablePts (guint64 value) { last_available_pts = MAX (value, last_available_pts); }
-	guint64 GetLastAvailablePts () { return last_available_pts; }
-	guint64 GetBufferedSize (); // Returns the time between the last frame returned and the last frame available (buffer time)
-	
-	bool GetPendingFrameCount () { return get_frame_pending_count; }
-	void IncPendingFrameCount () { g_atomic_int_inc (&get_frame_pending_count); }
-	void DecPendingFrameCount () { g_atomic_int_dec_and_test (&get_frame_pending_count); }
-	
-	bool GetEnded () { return ended; }
-	void SetEnded (bool value) { ended = value; }
-	
-	IMediaDemuxer *GetDemuxer ();
-	
-#if DEBUG
-	void PrintBufferInformation ();
-#endif
-	const static int FirstFrameEnqueuedEvent;
-};
 
 class IMediaDemuxer : public IMediaObject {
 private:

@@ -1,3 +1,8 @@
+2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.h: Move IMediaObject above Media so that Media can
+	  inherit from IMediaObject.
+
 2009-03-12  Andreia Gaita  <avdigal@novell.com>
 
 	* clock.[h|cpp]: Fix DispatcherTimer when the timer is stopped and
