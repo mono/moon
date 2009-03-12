@@ -128,7 +128,6 @@ namespace MoonTest.System.Windows.Threading
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("This test must be run first in the testsuite otherwise it may (incorrectly) pass")]
 		public void RestartTimer2 ()
 		{
 			bool complete=false;

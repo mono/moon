@@ -1,3 +1,7 @@
+2009-03-12  Andreia Gaita  <avidigal@novell.com>
+
+	* DispatcherTest.cs: Re-enable, RestartTimer2
+
 2009-03-11  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: Fix issues
