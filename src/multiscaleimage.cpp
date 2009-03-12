@@ -584,7 +584,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		}
 		if (found > 0 && to_layer < from_layer)
 			to_layer = from_layer;
-		if (!partial && found == count)
+		if (found == count && (!partial || from_layer == 0))
 			break;
 		from_layer --;
 	}
@@ -593,7 +593,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	cairo_push_group (cr);
 	LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 	int layer_to_render = from_layer;
-	while (from_layer > 0 && layer_to_render <= to_layer) {
+	while (from_layer >= 0 && layer_to_render <= to_layer) {
 		int i, j;
 		double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render) / im_w;
 		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render) / im_w;
