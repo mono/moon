@@ -2815,12 +2815,14 @@ IMediaObject::RemoveSafeHandlers (EventObject *context)
 	EventData *next;
 	
 	event_mutex.Lock ();
-	ed = (EventData *) events->First ();
-	while (ed != NULL) {
-		next = (EventData *) ed->next;
-		if (ed->context == context)
-			events->Remove (ed);
-		ed = next;
+	if (events != NULL) {
+		ed = (EventData *) events->First ();
+		while (ed != NULL) {
+			next = (EventData *) ed->next;
+			if (ed->context == context)
+				events->Remove (ed);
+			ed = next;
+		}
 	}
 	event_mutex.Unlock ();
 }

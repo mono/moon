@@ -1,5 +1,9 @@
 2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Add a null check.
+
+2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.cpp: Use media's thread-safe event handling.
 
 	* playlist.h:
