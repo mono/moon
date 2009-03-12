@@ -39,6 +39,8 @@ class MultiScaleImage : public MediaBase {
 
 	cairo_user_data_key_t width_key;
 	cairo_user_data_key_t height_key;
+	cairo_user_data_key_t opacity_key;
+	cairo_user_data_key_t full_opacity_at_key;
 
 	void DownloaderComplete ();
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -52,8 +54,10 @@ class MultiScaleImage : public MediaBase {
 
 	Storyboard *zoom_sb;
 	Storyboard *pan_sb;
+	Storyboard *fadein_sb;
 	DoubleAnimation *zoom_animation;
 	PointAnimation *pan_animation;
+	DoubleAnimation *fadein_animation;
 
  protected:
 	virtual ~MultiScaleImage ();
@@ -73,6 +77,9 @@ class MultiScaleImage : public MediaBase {
 	const static int ViewportOriginProperty;
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
 	const static int ViewportWidthProperty;
+
+	/* @PropertyType=double,DefaultValue=0.0,Version=2.0 */
+	const static int TileFadeProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleImage ();

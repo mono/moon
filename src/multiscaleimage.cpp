@@ -64,6 +64,7 @@ MultiScaleImage::MultiScaleImage ()
 	context = NULL;
 	zoom_sb = NULL;
 	pan_sb = NULL;
+	fadein_sb = NULL;
 }
 
 MultiScaleImage::~MultiScaleImage ()
@@ -560,6 +561,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	while (from_layer >= 0) {
 		int count = 0;
 		int found = 0;
+		bool partial = FALSE; //partial means at least a tile is not yet fully blended
 
 		//v_tile_X is the virtual tile size at this layer in relative coordinates
 		double v_tile_w = tile_width  * ldexp (1.0, layers - from_layer) / im_w;
@@ -571,15 +573,18 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
 				count++;
 				char *tile = (char*)source->get_tile_func (from_layer, i, j, source);
-				if (cache_contains (tile, false))
+				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
+				if (image)
 					found ++;
+				if (image && *(double*)(cairo_surface_get_user_data (image, &opacity_key)) < 1.0)
+					partial = TRUE;
 				if (tile)
 					g_free (tile);
 			}
 		}
 		if (found > 0 && to_layer < from_layer)
 			to_layer = from_layer;
-		if (found == count)
+		if (!partial && found == count)
 			break;
 		from_layer --;
 	}
@@ -611,7 +616,11 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				cairo_rectangle (cr, 0, 0, im_w, im_h);
 				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
 				cairo_set_source_surface (cr, image, 0, 0);
-				cairo_fill (cr);
+				double *opacity = (double*)(cairo_surface_get_user_data (image, &opacity_key));
+				if (opacity && *opacity < 1.0)
+					cairo_paint_with_alpha (cr, *opacity);
+				else
+					cairo_paint (cr);
 				cairo_restore (cr);
 			}
 		}
@@ -666,6 +675,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		} else {
 			int *p_width = new int (gdk_pixbuf_get_width (pixbuf));
 			int *p_height = new int (gdk_pixbuf_get_height (pixbuf));
+
 			bool has_alpha = gdk_pixbuf_get_n_channels (pixbuf) == 4;
 			if (has_alpha) {
 				unmultiply_rgba_in_place (pixbuf);
@@ -682,12 +692,38 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 								     *p_height, 
 								     stride);
 
-			cairo_surface_set_user_data (image, &width_key, p_width, g_free);
-			cairo_surface_set_user_data (image, &height_key, p_height, g_free);
+			//cairo_surface_set_user_data (image, &width_key, p_width, g_free);
+			//cairo_surface_set_user_data (image, &height_key, p_height, g_free);
+			//FIXME: set it to 1.0 if the tile doesn't intersect with viewport, and do not start the fadein animation
+			if (!fadein_sb) {
+				fadein_sb = new Storyboard ();
+				fadein_sb->SetManualTarget (this);
+				fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("MultiScaleImage.TileFade"));
+				fadein_animation = new DoubleAnimation ();
+				fadein_animation->SetDuration (Duration::FromSecondsFloat (2.0));
+				TimelineCollection *tlc = new TimelineCollection ();
+				tlc->Add (fadein_animation);
+				fadein_sb->SetChildren(tlc);
+			} else {
+				fadein_sb->Pause ();
+			}
+
+			//LOG_MSI ("animating Fade from %f to %f\n\n", GetValue(MultiScaleImage::TileFadeProperty)->AsDouble(), GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
+			double *opacity = new double (0.1);
+			double *to = new double (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
+			fadein_animation->SetFrom (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble());
+			fadein_animation->SetTo (*to);
+
+			fadein_sb->Begin();
+
+
 
 			similar = cairo_surface_create_similar (cairo_get_target (cr),
 								has_alpha ? CAIRO_CONTENT_COLOR_ALPHA : CAIRO_CONTENT_COLOR, 
 								*p_width, *p_height);
+
+			cairo_surface_set_user_data (similar, &opacity_key, opacity, g_free);
+			cairo_surface_set_user_data (similar, &full_opacity_at_key, to, g_free);
 
 			cairo_t *temp_cr = cairo_create (similar);
 			cairo_set_source_surface (temp_cr, image, 0, 0);
@@ -798,6 +834,25 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 
 	if (args->GetId () == MultiScaleImage::ViewportWidthProperty) {
 		LOG_MSI ("ViewportWidth set to %f\n", args->new_value->AsDouble ());
+		Invalidate ();
+	}
+
+	if (args->GetId () == MultiScaleImage::TileFadeProperty) {
+
+		//Iterate over the cached tiles, bump opacity
+		GHashTableIter iter;
+		gpointer key, value;
+		g_hash_table_iter_init (&iter, cache);
+		while (g_hash_table_iter_next (&iter, &key, &value)) {
+			cairo_surface_t *image = (cairo_surface_t*)value;
+			if (!image)
+				continue;
+			double *full = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
+			if (!full)
+				continue;
+			double *op = new double (MIN (1.0, 1 - *full + args->new_value->AsDouble()));
+			cairo_surface_set_user_data (image, &opacity_key, op, g_free);
+		}
 		Invalidate ();
 	}
 
