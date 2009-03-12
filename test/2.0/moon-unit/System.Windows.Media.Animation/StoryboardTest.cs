@@ -910,8 +910,8 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard sb = (Storyboard) XamlReader.Load (
 @"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-	<DoubleAnimation Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(UIElement.RenderTransform).Children[0].(RotateTransform.Angle)"" To=""50"" />
-	<ColorAnimation Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(Control.Background).(SolidColorBrush.Color)"" To=""Blue"" />
+	<DoubleAnimation Duration=""0:0:0.05"" Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(UIElement.RenderTransform).Children[0].(RotateTransform.Angle)"" To=""50"" />
+	<ColorAnimation Duration=""0:0:0.05"" Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(Control.Background).(SolidColorBrush.Color)"" To=""Blue"" />
 </Storyboard>");
 			sb.Completed += delegate { complete = true; };
 			Button b = new Button { Name="target" };
@@ -936,7 +936,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard sb = (Storyboard) XamlReader.Load (
 @"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-	<ColorAnimation Storyboard.TargetProperty=""(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)"" To=""Red"" />
+	<ColorAnimation Duration=""0:0:0.05"" Storyboard.TargetProperty=""(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)"" To=""Red"" />
 </Storyboard>");
 			sb.Completed += delegate { complete = true; };
 
@@ -963,7 +963,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard sb = (Storyboard) XamlReader.Load (
 @"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-	<ColorAnimation Storyboard.TargetProperty=""Content.(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)"" To=""Red"" />
+	<ColorAnimation Duration=""0:0:0.05"" Storyboard.TargetProperty=""Content.(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)"" To=""Red"" />
 </Storyboard>");
 			sb.Completed += delegate { complete = true; };
 
@@ -991,7 +991,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard sb = (Storyboard) XamlReader.Load (
 @"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-	<ColorAnimation Storyboard.TargetProperty=""(Content).(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)"" To=""Red"" />
+	<ColorAnimation Duration=""0:0:0.05"" Storyboard.TargetProperty=""(Content).(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)"" To=""Red"" />
 </Storyboard>");
 			sb.Completed += delegate { complete = true; };
 
@@ -1022,7 +1022,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard sb = (Storyboard) XamlReader.Load (
 @"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-	<ColorAnimation Storyboard.TargetProperty=""(ContentControl.Content).(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)"" To=""Red"" />
+	<ColorAnimation Duration=""0:0:0.05"" Storyboard.TargetProperty=""(ContentControl.Content).(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)"" To=""Red"" />
 </Storyboard>");
 			sb.Completed += delegate { complete = true; };
 
@@ -1104,7 +1104,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard sb = (Storyboard) XamlReader.Load (
 @"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-	<DoubleAnimation Storyboard.TargetProperty=""Canvas.Left"" To=""50"" />
+	<DoubleAnimation Duration=""0:0:0.05"" Storyboard.TargetProperty=""Canvas.Left"" To=""50"" />
 </Storyboard>");
 			Button b = new Button { Name="target" };
 			Storyboard.SetTarget (sb, b);
@@ -1140,7 +1140,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard sb = (Storyboard) XamlReader.Load (
 @"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-	<DoubleAnimation Storyboard.TargetName=""target"" Storyboard.TargetProperty=""Rectangle.RadiusX"" To=""50"" />
+	<DoubleAnimation Duration=""0:0:0.05"" Storyboard.TargetName=""target"" Storyboard.TargetProperty=""Rectangle.RadiusX"" To=""50"" />
 </Storyboard>");
 			sb.Completed += delegate { complete = true; };
 			Rectangle r = new Rectangle ();
@@ -1161,7 +1161,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard sb = (Storyboard) XamlReader.Load (
 @"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-	<DoubleAnimation Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(Rectangle.RadiusX)"" To=""50"" />
+	<DoubleAnimation Duration=""0:0:0.05"" Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(Rectangle.RadiusX)"" To=""50"" />
 </Storyboard>");
 			sb.Completed += delegate { complete = true; };
 			Rectangle r = new Rectangle ();

@@ -1,5 +1,11 @@
 2009-03-12  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add a
+	  duration to all the ComplexPath* tests so they don't take as
+	  long to run.
+
+2009-03-12  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Add more
 	  tests for parsing propertypaths for both attached and
 	  non-attached properties.
