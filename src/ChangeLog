@@ -1,3 +1,8 @@
+2009-03-12  Larry Ewing  <lewing@novell.com>
+
+	* canvas.cpp: don't chain up the FE in the overides that is very
+	wrong these days.
+
 2009-03-12  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::CreateArgsForEvent): fix crash in the rich

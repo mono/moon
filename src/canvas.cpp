@@ -108,17 +108,27 @@ Canvas::MeasureOverride (Size availableSize)
 		child->Measure (childSize);
 	}
 
-	return FrameworkElement::MeasureOverride (availableSize);
+	Size desired = Size (0,0);
+	Size specified = Size (GetWidth (), GetHeight ());
+	
+	desired = desired.Max (specified);
+	desired = desired.Min (specified);
+
+	return desired.Min (availableSize);
 }
 
 Size 
 Canvas::ArrangeOverride (Size finalSize)
 {
-	Size result = FrameworkElement::ArrangeOverride (finalSize);
+	Size specified = Size (GetWidth (), GetHeight ());
+	Size arranged = finalSize;
+
+	arranged = arranged.Max (specified);
+	arranged = arranged.Min (specified);
 
 	// XXX ugly hack to maintain compat
 	if (!GetVisualParent() && !GetSurface ())
-		return result;
+		return arranged;
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
@@ -131,7 +141,7 @@ Canvas::ArrangeOverride (Size finalSize)
 		child->Arrange (child_final);
 	}
 
-	return result;
+	return arranged;
 }
 
 void
