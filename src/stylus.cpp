@@ -695,10 +695,6 @@ StrokeCollection::AddedToCollection (Value *value, MoonError *error)
 {
 	DependencyObject *obj = value->AsDependencyObject ();
 	
-	// Call SetSurface() /before/ setting the logical parent
-	// because Storyboard::SetSurface() needs to be able to
-	// distinguish between the two cases.
-	
 	obj->SetSurface (GetSurface ());
 	obj->SetParent (this, error);
 	obj->AddPropertyChangeListener (this);
