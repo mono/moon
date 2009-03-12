@@ -279,64 +279,16 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 	Value *value;
 	Type *type = NULL;
 	int index;
+	bool paren_open = false;
 	
 	
 	while (inptr < inend) {
 		switch (*inptr++) {
 		case '(':
-			expression_found = true;
-			
-			start = inptr;
-			while (inptr < inend && *inptr != '.' && *inptr != ')')
-				inptr++;
-			
-			if (inptr == start)
-				goto error;
-			
-			if (*inptr == '.') {
-				// we found a type name, now we need to find the property name
-				if ((inptr - start) == 11 && !g_ascii_strncasecmp (start, "TextElement", 11)) {
-					// Some Beta versions of Blend had a bug where they would save the TextBlock
-					// properties as TextElement instead. Since Silverlight 1.0 works around this
-					// bug, we should too. Fixes http://silverlight.timovil.com and
-					// http://election.msn.com/podium08.aspx.
-					type = Type::Find ("TextBlock");
-				} else {
-					name = g_strndup (start, inptr - start);
-					type = Type::Find (name);
-					g_free (name);
-				}
-				
-				inptr++;
-				start = inptr;
-				while (inptr < inend && *inptr != ')')
-					inptr++;
-				
-				if (inptr == start)
-					goto error;
-			} else {
-				type = Type::Find (lu->GetObjectType ());
-			}
-			
-			if (*inptr != ')' || !type)
-				goto error;
-			
-			name = g_strndup (start, inptr - start);
-			if (!(res = DependencyProperty::GetDependencyProperty (type->GetKind (), name))) {
-				g_free (name);
-				goto error;
-			}
-			
-			if (!res->IsAttached () && !lu->Is (type->GetKind ())) {
-				// We try to be gracefull here and do something smart...
-				if (!(res = DependencyProperty::GetDependencyProperty (lu->GetObjectType (), name))) {
-					g_free (name);
-					goto error;
-				}
-			}
-			
-			g_free (name);
-			inptr++;
+			paren_open = true;
+			break;
+		case ')':
+			paren_open = false;
 			break;
 		case '.':
 			// resolve the dependency property
@@ -380,26 +332,63 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 				goto error;
 			
 			break;
-			
+		
 		default:
+			expression_found = true;
 			start = inptr - 1;
-			while (inptr < inend && *inptr != '[' && *inptr != '.')
+
+			while (inptr < inend && *inptr != '.' && (!paren_open || *inptr != ')') && *inptr != '[')
 				inptr++;
 			
+			if (inptr == start)
+				goto error;
+
+			if (*inptr == '.') {
+				// we found a type name, now we need to find the property name
+				if ((inptr - start) == 11 && !g_ascii_strncasecmp (start, "TextElement", 11)) {
+					// Some Beta versions of Blend had a bug where they would save the TextBlock
+					// properties as TextElement instead. Since Silverlight 1.0 works around this
+					// bug, we should too. Fixes http://silverlight.timovil.com and
+					// http://election.msn.com/podium08.aspx.
+					type = Type::Find ("TextBlock");
+				} else {
+					name = g_strndup (start, inptr - start);
+					type = Type::Find (name);
+					g_free (name);
+				}
+				
+				inptr++;
+				start = inptr;
+				while (inptr < inend && (!paren_open || *inptr != ')') && *inptr != '.')
+					inptr++;
+				
+				if (inptr == start)
+					goto error;
+			} else {
+				type = Type::Find (lu->GetObjectType ());
+			}
+			
+			if ((*inptr != ')' && paren_open) || !type)
+				goto error;
+
 			name = g_strndup (start, inptr - start);
-			if (!(res = DependencyProperty::GetDependencyProperty (lu->GetType ()->GetKind (), name))) {
+			if (!(res = DependencyProperty::GetDependencyProperty (type->GetKind (), name))) {
 				g_free (name);
 				goto error;
 			}
-			g_free (name);
 			
-			if (inptr < inend) {
-				if (!(value = lu->GetValue (res)))
+			if (!res->IsAttached () && !lu->Is (type->GetKind ())) {
+				// We try to be gracefull here and do something smart...
+				if (!(res = DependencyProperty::GetDependencyProperty (lu->GetObjectType (), name))) {
+					g_free (name);
 					goto error;
-					
-				if (!(lu = value->AsDependencyObject ()))
-					goto error;
+				}
 			}
+			
+			if (res->IsAttached () && !paren_open)
+				goto error;
+			
+			g_free (name);
 			break;
 		}
 	}

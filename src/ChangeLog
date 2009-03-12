@@ -1,3 +1,14 @@
+2009-03-12  Alan McGovern  <amcgovern@novell.com>
+
+	* dependencyproperty.cpp: 1) Refactor the code so that
+	  open/closing parens are parsed in a separate step to
+	  typename/property name. Then merge the codepaths for the
+	  default and '(' case.
+	2) Attached properties can only be specified inside parens. So
+	  "Canvas.Left" is invalid but "(Canvas.Left)" is valid.
+	3) For non-attached properties both "Rectangle.RadiusX" and
+	  "(Rectangle.RadiusX)" are acceptable.
+
 2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: Add a null check.
