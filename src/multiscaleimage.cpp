@@ -698,7 +698,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			if (!fadein_sb) {
 				fadein_sb = new Storyboard ();
 				fadein_sb->SetManualTarget (this);
-				fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("MultiScaleImage.TileFade"));
+				fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("(MultiScaleImage.TileFade)"));
 				fadein_animation = new DoubleAnimation ();
 				fadein_animation->SetDuration (Duration::FromSecondsFloat (2.0));
 				TimelineCollection *tlc = new TimelineCollection ();
