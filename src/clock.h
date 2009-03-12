@@ -674,6 +674,7 @@ class DispatcherTimer : public TimelineGroup {
 	static void OnTick (EventObject *sender, EventArgs *calldata, gpointer data);
 	TimelineGroup * timelinegroup;
 	bool stopped;
+	bool started;
 
  protected:
 	virtual ~DispatcherTimer ();
@@ -691,6 +692,9 @@ class DispatcherTimer : public TimelineGroup {
 	const static int TickEvent;
 
 	bool IsStopped () { return stopped; }
+	bool IsStarted () { return started; }
+	void SetStarted (bool s) { started = s; }
+	void Run ();
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 };

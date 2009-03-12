@@ -1739,19 +1739,23 @@ DispatcherTimer::DispatcherTimer ()
 
 	root_clock = NULL;
 	stopped = false;
+	started = false;
 }
 
 void
 DispatcherTimer::Start ()
 {
+	started = true;
+	stopped = false;
+
+	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+	ClockGroup * group = surface->GetTimeManager()->GetRootClock();
+
 	if (root_clock) {
-		if (!stopped)
-			Stop ();
-		stopped = false;
+		root_clock->Reset ();
 		root_clock->AddHandler (root_clock->CompletedEvent, OnTick, this);
 		root_clock->BeginOnTick ();
 	} else {
-	    Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 
 	    root_clock = TimelineGroup::AllocateClock ();
 	    char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
@@ -1759,39 +1763,45 @@ DispatcherTimer::Start ()
 	    g_free (name);
 	    root_clock->AddHandler (root_clock->CompletedEvent, OnTick, this);
 
-	    ClockGroup * group = surface->GetTimeManager()->GetRootClock();
-
 	    group->ComputeBeginTime ();
 	    group->AddChild (root_clock);
 
 	    root_clock->BeginOnTick ();
-
-	    if (group->GetClockState() != Clock::Active)
-		    group->Begin ();
 	}
 
+	if (group->GetClockState() != Clock::Active)
+		group->Begin ();
 }
 
 void
 DispatcherTimer::Stop ()
 {
-	if (root_clock) {
-		root_clock->RemoveHandler (root_clock->CompletedEvent, OnTick, this);
-		root_clock->Reset ();
-	}
 	stopped = true;
+	started = false;
+
+	if (root_clock)
+		root_clock->RemoveHandler (root_clock->CompletedEvent, OnTick, this);
+}
+
+void
+DispatcherTimer::Run ()
+{
+	started = false;
+	stopped = false;
+	root_clock->Reset ();
+	root_clock->Begin ();
 }
 
 void
 DispatcherTimer::OnTick (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	DispatcherTimer *obj = (DispatcherTimer *) closure;
+
+	obj->SetStarted (false);
 	obj->Emit (obj->TickEvent);
 
-	obj->root_clock->Reset ();
-
-	if (!obj->IsStopped ())
-		obj->root_clock->Begin ();
+	if (!obj->IsStopped () && !obj->IsStarted ())
+		obj->Run ();
 }
 
 Duration

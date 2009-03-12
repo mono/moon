@@ -1,3 +1,13 @@
+2009-03-12  Andreia Gaita  <avdigal@novell.com>
+
+	* clock.[h|cpp]: Fix DispatcherTimer when the timer is stopped and
+	started during the tick event; in some cases the time between these
+	two calls was enough to have an extra tick on the time manager, and
+	the DispatcherTimer would be advanced again even though it was
+	stopped, and this would happen after the Completed handler was
+	removed and before it was added again.
+	Fixes the RestartTimer2 test and SilverlightChess.
+
 2009-03-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::OnPropertyChanged): Don't create selection
