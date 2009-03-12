@@ -1,3 +1,9 @@
+2009-03-12  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs: make the method overload validator
+	more flexible by checking for TypeCode equivalents if the type
+	comparison fails
+
 2009-03-11  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectWrapper.cs: fix argument validation for method 
