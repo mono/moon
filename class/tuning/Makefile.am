@@ -1,3 +1,4 @@
+SUBDIRS=SecurityAttributes
 
 LINKER = ../lib/tuner/monolinker.exe
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib /package 2.1
@@ -7,6 +8,19 @@ TUNER_DESCS =	\
 	Descriptors/smcs.xml	\
 	Descriptors/System.xml	\
 	Descriptors/System.ServiceModel.xml
+
+SECURITY_ATTRIBUTES_INFO = \
+	SecurityAttributes/mscorlib.secattr \
+	SecurityAttributes/System.secattr \
+	SecurityAttributes/System.Core.secattr \
+	SecurityAttributes/System.Net.secattr \
+	SecurityAttributes/System.Runtime.Serialization.secattr \
+	SecurityAttributes/System.ServiceModel.secattr \
+	SecurityAttributes/System.ServiceModel.Web.secattr \
+	SecurityAttributes/System.Windows.Browser.secattr \
+	SecurityAttributes/System.Windows.secattr \
+	SecurityAttributes/System.Xml.secattr \
+	SecurityAttributes/Microsoft.VisualBasic.secattr
 
 TUNER_ASSEMBLIES =	\
 	mscorlib	\
@@ -63,8 +77,8 @@ TUNER_STEPS = \
 	Mono.Tuner.PrintStatus,Mono.Tuner:OutputStep	\
 	Mono.Tuner.RemoveSerialization,Mono.Tuner:OutputStep
 
-$(OUTPUT_FILES): $(WORKING_FILES)
-	MONO_PATH="../lib/tuner$(PLATFORM_PATH_SEPARATOR)$$MONO_PATH" mono --debug $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
+$(OUTPUT_FILES): $(WORKING_FILES) $(SECURITY_ATTRIBUTES_INFO)
+	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
 	for i in $(DLLFILES); do sn -q -R $(OUTPUT_DIR)/$$i ../mono.snk; done
 
 $(TUNER_INSTALL_DIR):

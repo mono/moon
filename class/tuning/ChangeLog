@@ -1,3 +1,8 @@
+2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add SecurityAttributes to SUBDIRS and re-tune all
+	assemblies if one of the .secattr (merged) file has been updated
+
 2009-02-27  Jb Evain  <jbevain@novell.com>
 
 	* Makefile.am: update for the moon build.
