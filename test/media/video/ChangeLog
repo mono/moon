@@ -1,5 +1,9 @@
 2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* drtlist.xml: Disable test-mms-with-markers.html again.
+
+2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* drtlist.xml: Mark test-seek-race.html as known failure for
 	  now.
 
