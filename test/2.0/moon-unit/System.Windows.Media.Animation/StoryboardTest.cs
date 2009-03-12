@@ -49,7 +49,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 	}
 	
 	[TestClass]
-	public class StoryboardTest : SilverlightTest {
+	public class ___StoryboardTest : SilverlightTest {
 		
 		[TestMethod]
 		public void InvalidValues_NonTimeline ()
@@ -1041,6 +1041,57 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Enqueue (() => sb.Begin ());
 			EnqueueConditional (() => complete);
 			Enqueue (() => Assert.AreEqual (Colors.Red.ToString (), ((GradientBrush) r.Fill).GradientStops [0].GetValue (GradientStop.ColorProperty).ToString (), "#1"));
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void ComplexTarget6 ()
+		{
+			bool complete = false;
+			Storyboard sb = (Storyboard) XamlReader.Load (
+@"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ColorAnimation Duration=""0:0:0.05"" Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(Control.Background).Color"" To=""Blue"" />
+</Storyboard>");
+			
+			sb.Completed += delegate { complete = true; };
+			Button b = new Button { Name = "target" };
+			b.RenderTransform = new TransformGroup ();
+			((TransformGroup) b.RenderTransform).Children.Add (new RotateTransform ());
+			b.Background = new SolidColorBrush (Colors.Black);
+			Storyboard.SetTarget (sb, b);
+			Enqueue (() => { TestPanel.Children.Add (b); TestPanel.Resources.Add ("a", sb); });
+			Enqueue (() => sb.Begin ());
+			EnqueueConditional (() => complete);
+			Enqueue (() => Assert.AreEqual (Colors.Blue.ToString (), ((SolidColorBrush) b.Background).Color.ToString (), "#1"));
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+		
+
+		[TestMethod]
+		[Asynchronous]
+		public void ComplexTarget7 ()
+		{
+			bool complete = false;
+			Storyboard sb = (Storyboard) XamlReader.Load (
+@"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ColorAnimation Duration=""0:0:0.05"" Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(Control.Background).(Color)"" To=""Blue"" />
+</Storyboard>");
+
+			sb.Completed += delegate { complete = true; };
+			Button b = new Button { Name = "target" };
+			b.RenderTransform = new TransformGroup ();
+			((TransformGroup) b.RenderTransform).Children.Add (new RotateTransform ());
+			b.Background = new SolidColorBrush (Colors.Black);
+			Storyboard.SetTarget (sb, b);
+			Enqueue (() => { TestPanel.Children.Add (b); TestPanel.Resources.Add ("a", sb); });
+			Enqueue (() => sb.Begin ());
+			EnqueueConditional (() => complete);
+			Enqueue (() => Assert.AreEqual (Colors.Blue.ToString (), ((SolidColorBrush) b.Background).Color.ToString (), "#1"));
 			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
 			EnqueueTestComplete ();
 		}

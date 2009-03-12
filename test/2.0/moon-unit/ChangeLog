@@ -1,5 +1,11 @@
 2009-03-12  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add two
+	  more tests which are passing. I think it's safe to say this
+	  code is pretty solid now.
+
+2009-03-12  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Add three
 	  more tests for complex property paths. They all pass
 	  already.
