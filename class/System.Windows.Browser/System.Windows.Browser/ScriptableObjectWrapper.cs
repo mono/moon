@@ -440,7 +440,7 @@ namespace System.Windows.Browser
 		public override void SetProperty (string name, object value)
 		{
 			PropertyInfo pi = properties[name];
-			pi.SetValue (this.ManagedObject, value, null);
+			pi.SetValue (this.ManagedObject, value, BindingFlags.SetProperty, new JSFriendlyMethodBinder (), null, CultureInfo.InvariantCulture);
 		}
 
 		static void SetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, ref Value value)
