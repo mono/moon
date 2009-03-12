@@ -957,6 +957,96 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
+		public void ComplexTarget3 ()
+		{
+			bool complete = false;
+			Storyboard sb = (Storyboard) XamlReader.Load (
+@"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ColorAnimation Storyboard.TargetProperty=""Content.(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)"" To=""Red"" />
+</Storyboard>");
+			sb.Completed += delegate { complete = true; };
+
+			ContentControl c = new ContentControl();
+
+			Rectangle r = new Rectangle ();
+			GradientBrush brush = new LinearGradientBrush ();
+			brush.GradientStops.Add (new GradientStop { Color = Colors.Blue });
+			r.Fill = brush;
+			c.Content = r;
+
+			Storyboard.SetTarget (sb, c);
+			Storyboard.SetTarget (sb.Children [0], c);
+
+			Enqueue (() => { TestPanel.Children.Add (c); TestPanel.Resources.Add ("a", sb); });
+			Enqueue (() => Assert.Throws<InvalidOperationException> (() => sb.Begin ()));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ComplexTarget4 ()
+		{
+			bool complete = false;
+			Storyboard sb = (Storyboard) XamlReader.Load (
+@"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ColorAnimation Storyboard.TargetProperty=""(Content).(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)"" To=""Red"" />
+</Storyboard>");
+			sb.Completed += delegate { complete = true; };
+
+			ContentControl c = new ContentControl ();
+
+			Rectangle r = new Rectangle ();
+			GradientBrush brush = new LinearGradientBrush ();
+			brush.GradientStops.Add (new GradientStop { Color = Colors.Blue });
+			r.Fill = brush;
+			c.Content = r;
+
+			Storyboard.SetTarget (sb, c);
+			Storyboard.SetTarget (sb.Children [0], c);
+
+			Enqueue (() => { TestPanel.Children.Add (c); TestPanel.Resources.Add ("a", sb); });
+			Enqueue (() => sb.Begin ());
+			EnqueueConditional (() => complete);
+			Enqueue (() => Assert.AreEqual (Colors.Red.ToString (), ((GradientBrush) r.Fill).GradientStops [0].GetValue (GradientStop.ColorProperty).ToString (), "#1"));
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ComplexTarget5 ()
+		{
+			bool complete = false;
+			Storyboard sb = (Storyboard) XamlReader.Load (
+@"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ColorAnimation Storyboard.TargetProperty=""(ContentControl.Content).(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)"" To=""Red"" />
+</Storyboard>");
+			sb.Completed += delegate { complete = true; };
+
+			ContentControl c = new ContentControl ();
+
+			Rectangle r = new Rectangle ();
+			GradientBrush brush = new LinearGradientBrush ();
+			brush.GradientStops.Add (new GradientStop { Color = Colors.Blue });
+			r.Fill = brush;
+			c.Content = r;
+
+			Storyboard.SetTarget (sb, c);
+			Storyboard.SetTarget (sb.Children [0], c);
+
+			Enqueue (() => {TestPanel.Children.Add (c); TestPanel.Resources.Add ("a", sb); });
+			Enqueue (() => sb.Begin ());
+			EnqueueConditional (() => complete);
+			Enqueue (() => Assert.AreEqual (Colors.Red.ToString (), ((GradientBrush) r.Fill).GradientStops [0].GetValue (GradientStop.ColorProperty).ToString (), "#1"));
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
 		[MoonlightBug]
 		public void CurrentTime ()
 		{
