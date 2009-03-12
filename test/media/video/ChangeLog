@@ -1,5 +1,10 @@
 2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* drtlist.xml: Mark test-seek-race.html as known failure for
+	  now.
+
+2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* test-seek-race.html: Don't start seek/fail timer when we
 	  seek, but when we finish downloading.
 

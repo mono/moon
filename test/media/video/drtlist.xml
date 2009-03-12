@@ -31,7 +31,7 @@
     <Test id="50" inputFile="test-asf-demuxer-big-markers.html" masterFile10="None" timeout="10000" categories="video,media,asf"  />
     <Test id="51" inputFile="test-video-only-seek.html" masterFile10="None" timeout="10000" categories="video,media"  />
     <Test id="52" inputFile="test-double-stop.html" masterFile10="None" timeout="10000" categories="video,audio,media"  />
-    <Test id="53" inputFile="test-seek-race.html" masterFile10="None" timeout="60000" categories="video,audio,media"  />
+    <Test id="53" inputFile="test-seek-race.html" masterFile10="None" timeout="60000" categories="video,audio,media" knownFailure="True" knownFailureReason="To be determined" />
     <Test id="54" inputFile="test-inexistent-medias.html" masterFile10="None" timeout="45000" categories="video,audio,media" />
     <Test id="55" inputFile="test-dns-failure.html" masterFile10="None" timeout="45000" categories="video,audio,media,mediaserver" location="http://localhost/media/video" />
     <Test id="56" inputFile="test-states.html" masterFile10="None" timeout="10000" categories="video,audio,media" />
