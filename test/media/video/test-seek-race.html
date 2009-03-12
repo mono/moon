@@ -41,6 +41,7 @@
 				} else {
 					TestLogger.LogDebug ("CheckPosition: Succeeded. Trying again.");
 					setTimeout ("DoTest ();", 1);
+					seek_time = 0;
 				}
 			} else if (now - seek_time > 1000) {
 				TestLogger.LogError ("CheckPosition: Failed. Position didn't change (tried " + runs + " times before reproducing this issue)");
@@ -57,7 +58,6 @@
 			
 			runs++;
 			downloaded = false;
-			seek_time = new Date ().getTime ();
 			mediaElement.Source = "elephants-dream-320x180-first-minute.wmv";
 		}
 		
@@ -70,13 +70,15 @@
 		function OnDownloadProgressChanged (sender, args)
 		{
 			TestLogger.LogDebug ("OnDownloadProgressChanged: " + sender.DownloadProgress);
-			if (sender.DownloadProgress == 1.0)
+			if (sender.DownloadProgress == 1.0) {
+				seek_time = new Date ().getTime ();
 				downloaded = true;
+			}
 		}
 
 		function OnMediaEnded (sender, args)
 		{
-			TestLogger.LogDebug ("OnMediaEnded");
+			TestLogger.LogError ("OnMediaEnded");
 			TestLogger.LogResult (-1);
 			SignalShutdown ();
 		}

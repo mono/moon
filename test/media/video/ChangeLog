@@ -1,5 +1,13 @@
 2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* test-seek-race.html: Don't start seek/fail timer when we
+	  seek, but when we finish downloading.
+
+	* drtlist.xml: Remove known failure from test-mms-failure.html
+	  and up test-seek-race.html's timeout to 1 minute.
+
+2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* test-seek-race.html: Don't verify that the mediaelement has
 	  seeked successfully until the entire file has been
 	  downloaded. This way we don't fail the test due to the
