@@ -910,8 +910,8 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard sb = (Storyboard) XamlReader.Load (
 @"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-	<ColorAnimation Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(Control.Background).(SolidColorBrush.Color)"" To=""Blue"" />
 	<DoubleAnimation Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(UIElement.RenderTransform).Children[0].(RotateTransform.Angle)"" To=""50"" />
+	<ColorAnimation Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(Control.Background).(SolidColorBrush.Color)"" To=""Blue"" />
 </Storyboard>");
 			sb.Completed += delegate { complete = true; };
 			Button b = new Button { Name="target" };
@@ -1092,6 +1092,84 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Enqueue (() => sb.Begin ());
 			EnqueueConditional (() => complete);
 			Enqueue (() => Assert.AreEqual (Colors.Blue.ToString (), ((SolidColorBrush) b.Background).Color.ToString (), "#1"));
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void ComplexTarget8 ()
+		{
+			bool complete = false;
+			Storyboard sb = (Storyboard) XamlReader.Load (
+@"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<DoubleAnimation Storyboard.TargetProperty=""Canvas.Left"" To=""50"" />
+</Storyboard>");
+			Button b = new Button { Name="target" };
+			Storyboard.SetTarget (sb, b);
+			Enqueue (() => Assert.Throws<InvalidOperationException>(() => sb.Begin()));
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void ComplexTarget9 ()
+		{
+			bool complete = false;
+			Storyboard sb = (Storyboard) XamlReader.Load (
+@"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<DoubleAnimation Duration=""0:0:0.05"" Storyboard.TargetProperty=""(Canvas.Left)"" From=""5"" To=""50"" />
+</Storyboard>");
+			sb.Completed += delegate { complete = true; };
+			Rectangle b = new Rectangle ();
+			Storyboard.SetTarget (sb, b);
+			Enqueue (() => { TestPanel.Children.Add (b); TestPanel.Resources.Add ("a", sb); });
+			Enqueue (() => sb.Begin ());
+			EnqueueConditional (() => complete);
+			Enqueue (() => Assert.AreEqual (50, Canvas.GetLeft (b), "#1"));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ComplexTarget10 ()
+		{
+			bool complete = false;
+			Storyboard sb = (Storyboard) XamlReader.Load (
+@"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<DoubleAnimation Storyboard.TargetName=""target"" Storyboard.TargetProperty=""Rectangle.RadiusX"" To=""50"" />
+</Storyboard>");
+			sb.Completed += delegate { complete = true; };
+			Rectangle r = new Rectangle ();
+			Storyboard.SetTarget (sb, r);
+			Enqueue (() => { TestPanel.Children.Add (r); TestPanel.Resources.Add ("a", sb); });
+			Enqueue (() => sb.Begin ());
+			EnqueueConditional (() => complete);
+			Enqueue (() => Assert.AreEqual (50, r.RadiusX));
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void ComplexTarget11 ()
+		{
+			bool complete = false;
+			Storyboard sb = (Storyboard) XamlReader.Load (
+@"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<DoubleAnimation Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(Rectangle.RadiusX)"" To=""50"" />
+</Storyboard>");
+			sb.Completed += delegate { complete = true; };
+			Rectangle r = new Rectangle ();
+			Storyboard.SetTarget (sb, r);
+			Enqueue (() => { TestPanel.Children.Add (r); TestPanel.Resources.Add ("a", sb); });
+			Enqueue (() => sb.Begin ());
+			EnqueueConditional (() => complete);
+			Enqueue (() => Assert.AreEqual (50, r.RadiusX));
 			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
 			EnqueueTestComplete ();
 		}
