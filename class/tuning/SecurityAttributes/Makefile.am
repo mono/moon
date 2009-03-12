@@ -3,7 +3,7 @@ securitymodel_sources = CecilRocks.cs PlatformCode.cs
 CECIL=-r:$(MCS_PATH)/class/lib/net_1_1/Mono.Cecil.dll
 LIBS=$(CECIL) -r:Moonlight.SecurityModel.dll
 MONO_PLATFORM_CODE=$(MCS_PATH)/class/lib/net_2_1/
-MOONLIGHT_PLATFORM_CODE=../../../../moon/class/lib/2.1/
+MOONLIGHT_PLATFORM_CODE=${prefix}/lib/mono/2.1/
 SILVERLIGHT_PLATFORM_CODE="/cygdrive/c/Program\ Files/Microsoft\ Silverlight/2.0.31005.0/"
 
 SECURITY_ATTRIBUTES_AUTOMATIC_INFO= \
@@ -91,13 +91,13 @@ detect-ssc.exe: detect-ssc.cs Moonlight.SecurityModel.dll
 
 detect: detect-sc.exe detect-ssc.exe
 	mkdir -p automatic
-	mono detect-sc.exe $(MONO_PLATFORM_CODE) $(MOONLIGHT_PLATFORM_CODE) automatic
-	mono detect-ssc.exe $(MONO_PLATFORM_CODE) $(MOONLIGHT_PLATFORM_CODE) automatic
+	mono detect-sc.exe $(MOONLIGHT_PLATFORM_CODE) automatic
+	mono detect-ssc.exe $(MOONLIGHT_PLATFORM_CODE) automatic
 
 merge.exe: merge.cs Moonlight.SecurityModel.dll
 	gmcs merge.cs -out:$@ $(LIBS)
 
-$(MERGED_SECURITY_ATTRIBUTES_INFO):
+$(MERGED_SECURITY_ATTRIBUTES_INFO): $(SECATTRS)
 	mono merge.exe . .
 
 validate: find-sc.exe

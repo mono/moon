@@ -1,3 +1,9 @@
+2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Adjust detect target to look at a single directory
+	since all assemblies are now available from a single location.
+	Make the stored data files a dependency to re-merge the attributes
+
 2008-03-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile: Remove. Replacedby Makefile.am
