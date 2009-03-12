@@ -93,6 +93,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.UI
         {
             if (_testPage != null && _testPage.TestPanel != null)
             {
+				_testPage.TestPanel.Resources.Clear ();
                 _testPage.TestPanel.Children.Clear();
             }
 
