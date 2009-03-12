@@ -614,6 +614,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				cairo_scale (cr, msi_w / (vp_w * im_w), msi_w / (vp_w * im_w)); //scale to viewport
 				cairo_translate (cr, im_w *(-vp_ox + i * v_tile_w), im_w * (-vp_oy + j * v_tile_h));
 				cairo_rectangle (cr, 0, 0, im_w, im_h);
+				cairo_clip(cr);
 				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
 				cairo_set_source_surface (cr, image, 0, 0);
 				double *opacity = (double*)(cairo_surface_get_user_data (image, &opacity_key));
@@ -700,7 +701,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 				fadein_sb->SetManualTarget (this);
 				fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("(MultiScaleImage.TileFade)"));
 				fadein_animation = new DoubleAnimation ();
-				fadein_animation->SetDuration (Duration::FromSecondsFloat (2.0));
+				fadein_animation->SetDuration (Duration::FromSecondsFloat (.5));
 				TimelineCollection *tlc = new TimelineCollection ();
 				tlc->Add (fadein_animation);
 				fadein_sb->SetChildren(tlc);
