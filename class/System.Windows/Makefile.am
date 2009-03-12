@@ -5,6 +5,8 @@ NET_3_0_ASSEMBLY_DEPS=
 
 if INCLUDE_BROWSER_MANAGED_CODE
 assemblysl = ../lib/2.1/$(assembly).dll
+assemblysl_raw = ../lib/2.1_raw/$(assembly).dll
+sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
 endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
@@ -476,9 +478,26 @@ $(assembly).g.resources: $(XAML_RESOURCES_DEPS)
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
 	resgen2 $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
 
-$(assemblysl): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+$(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	-mkdir -p ../lib/2.1_raw
 	$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
 		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
+	sn -q -R $@ $(srcdir)/../mono.snk
+
+LINKER = ../lib/tuner/monolinker.exe
+
+LINKER_STEPS =	\
+	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
+
+LINKER_FLAGS =	\
+	-o ../lib/2.1/	\
+	-d ../lib/2.1/	\
+	-a $(assemblysl_raw)	\
+	-b true	\
+	-m secattrs ../tuning/SecurityAttributes
+
+$(assemblysl): $(assemblysl_raw) $(sl_secattr)
+	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources
@@ -520,21 +539,3 @@ check-dynamic:
 	mono --debug check-static.exe generate-test-code > tester.cs
 	gmcs tester.cs -r:../lib/3.0/System.Windows.dll -debug:full -nowarn:219
 	MONO_PATH=../lib/3.0:$$MONO_PATH mono --debug tester.exe
-
-LINKER = ../lib/tuner/monolinker.exe
-
-LINKER_STEPS =	\
-	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
-
-LINKER_FLAGS =	\
-	-o .	\
-	-d ../lib/2.1/	\
-	-a ../lib/2.1/System.Windows.dll	\
-	-b true	\
-	-m secattrs ../tuning/SecurityAttributes
-
-post-process:
-	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
-	sn -q -R System.Windows.dll ../mono.snk
-	mv System.Windows.dll ../lib/2.1
-	mv System.Windows.dll.mdb ../lib/2.1

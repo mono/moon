@@ -1,3 +1,8 @@
+2009-03-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add security attributes using the linker after the
+	raw build (a bit modified patch from JB).
+
 2009-03-06  Andreia Gaita  <avidigal@novell.com>
 
 	* Makefile.am, System.Windows.mdp: Added ToggleRef class.

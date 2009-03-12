@@ -2,6 +2,8 @@ assembly = System.Windows.Browser
 
 if INCLUDE_BROWSER_MANAGED_CODE
 assemblysl = ../lib/2.1/$(assembly).dll
+assemblysl_raw = ../lib/2.1_raw/$(assembly).dll
+sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
 endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
@@ -63,8 +65,25 @@ CLEANFILES =			\
 	TestResult-net_3_0.log	\
 	TestResult-net_3_0.xml
 
-$(assemblysl): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll
+$(assemblysl_raw): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll
+	-mkdir -p ../lib/2.1_raw
 	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../silverlight.pub -delaysign+
+	sn -q -R $@ $(srcdir)/../mono.snk
+
+LINKER = ../lib/tuner/monolinker.exe
+
+LINKER_STEPS =	\
+	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
+
+LINKER_FLAGS =	\
+	-o ../lib/2.1/	\
+	-d ../lib/2.1/	\
+	-a $(assemblysl_raw)	\
+	-b true	\
+	-m secattrs ../tuning/SecurityAttributes
+
+$(assemblysl): $(assemblysl_raw) $(sl_secattr)
+	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/3.0/System.Windows.dll
@@ -92,21 +111,3 @@ install-data-local: install-sl install-desktop
 
 uninstall-local:
 	$(GACUTIL) /u $(assembly)
-
-LINKER = ../lib/tuner/monolinker.exe
-
-LINKER_STEPS =	\
-	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
-
-LINKER_FLAGS =	\
-	-o .	\
-	-d ../lib/2.1/	\
-	-a ../lib/2.1/System.Windows.Browser.dll	\
-	-b true	\
-	-m secattrs ../tuning/SecurityAttributes
-
-post-process:
-	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
-	sn -q -R System.Windows.Browser.dll ../mono.snk
-	mv System.Windows.Browser.dll ../lib/2.1
-	mv System.Windows.Browser.dll.mdb ../lib/2.1
