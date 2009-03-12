@@ -899,6 +899,13 @@ ASFReader::TryReadMore ()
 			return MEDIA_FAIL;
 		}
 
+		if (read_result == MEDIA_NOT_ENOUGH_DATA) {
+			ASF_LOG ("ASFReader::ReadMore (): Not enough data.\n");
+			if (packet)
+				packet->unref ();
+			return read_result;
+		}
+
 		current_packet_index = next_packet_index;		
 		next_packet_index++;
 

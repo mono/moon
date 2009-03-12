@@ -1,3 +1,8 @@
+2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.cpp: ASFReader: don't advance next_packet_index if we
+	  couldn't read the current packet.
+
 2009-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* asf.cpp: More glib-2.10 fixes.
