@@ -1136,7 +1136,7 @@ Surface::CreateArgsForEvent (int event_id, GdkEvent *event)
 	    || event_id ==UIElement::InvalidatedEvent
 	    || event_id ==UIElement::GotFocusEvent
 	    || event_id ==UIElement::LostFocusEvent)
-		return new EventArgs ();
+		return new RoutedEventArgs ();
 	else if (event_id == UIElement::MouseMoveEvent
 		 || event_id ==UIElement::MouseLeftButtonDownEvent
 		 || event_id ==UIElement::MouseLeftButtonUpEvent
