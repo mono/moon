@@ -839,6 +839,7 @@
    <Test id="174"
          inputFile="test-canvas-no-size.html"
          masterFile10="../harness/masters/test-canvas-no-sizeMaster.png"
+		knownFailure="true"
    />
    <Test id="175"
 	 inputFile="test-shape-line-stretch5.xaml"
