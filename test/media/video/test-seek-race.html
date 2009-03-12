@@ -6,6 +6,7 @@
 			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
 				<MediaElement x:Name="media" Canvas.Left="10" Canvas.Top="10" Volume="1.0"
 					MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded"
+					DownloadProgressChanged="OnDownloadProgressChanged"
 				/>
 				<TextBlock x:Name="subtitle" Text="Elephant's Dream" Canvas.Top="200" Canvas.Left="10" />
 			</Canvas>
@@ -20,6 +21,7 @@
 		var current_step = 0;
 		var failures = 0;
 		var seek_time = 0;
+		var downloaded = false;
 		
 		function CheckPosition ()
 		{
@@ -28,7 +30,7 @@
 			
 			TestLogger.LogDebug ("CheckPosition, seek_time: " + seek_time + ", now: " + now + ", diff: " + (now - seek_time) + " position: " + seconds);
 			
-			if (seek_time == 0 || seconds == 0)
+			if (seek_time == 0 || seconds == 0 || !downloaded)
 				return;
 				
 			if (seconds > 15.05 || seconds < 14.95) {
@@ -54,6 +56,7 @@
 			TestLogger.LogDebug ("DoTest, runs: " + runs);
 			
 			runs++;
+			downloaded = false;
 			seek_time = new Date ().getTime ();
 			mediaElement.Source = "elephants-dream-320x180-first-minute.wmv";
 		}
@@ -62,6 +65,13 @@
 		{
 			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
 			mediaElement.Position = "00:00:15.000";
+		}
+
+		function OnDownloadProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnDownloadProgressChanged: " + sender.DownloadProgress);
+			if (sender.DownloadProgress == 1.0)
+				downloaded = true;
 		}
 
 		function OnMediaEnded (sender, args)

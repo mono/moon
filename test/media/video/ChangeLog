@@ -1,3 +1,11 @@
+2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* test-seek-race.html: Don't verify that the mediaelement has
+	  seeked successfully until the entire file has been
+	  downloaded. This way we don't fail the test due to the
+	  mediaelement not having seeked successfully when downloading
+	  the file took too long.
+
 2009-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* test-download-and-buffering-progress-on-big-files.html: Make
