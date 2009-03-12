@@ -1403,6 +1403,9 @@ void storyboard_resume_with_error (Storyboard *instance, MoonError *error);
 void storyboard_seek_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error);
 
 /* @GeneratePInvoke */
+void storyboard_skip_to_fill (Storyboard *instance);
+
+/* @GeneratePInvoke */
 void storyboard_stop_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */

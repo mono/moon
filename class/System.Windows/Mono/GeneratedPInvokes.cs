@@ -1453,6 +1453,10 @@ namespace Mono {
 				throw CreateManagedException (error);
 		}
 
+		[DllImport ("moon")]
+		// void storyboard_skip_to_fill (Storyboard *instance);
+		public extern static void storyboard_skip_to_fill (IntPtr instance);
+
 		[DllImport ("moon", EntryPoint="storyboard_stop_with_error")]
 		// void storyboard_stop_with_error (Storyboard *instance, MoonError *error);
 		private extern static void storyboard_stop_with_error_ (IntPtr instance, out MoonError error);

@@ -86,7 +86,7 @@ namespace System.Windows.Media.Animation {
 		
 		public void SkipToFill ()
 		{
-			throw new NotImplementedException ();
+			NativeMethods.storyboard_skip_to_fill (native);
 		}
 
 		[SecuritySafeCritical ()]

@@ -304,7 +304,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MARKERSTREAM] = new Type (Type::MARKERSTREAM, Type::IMEDIASTREAM, false, "MarkerStream", "MARKERSTREAM", 0, 2, NULL, NULL, NULL);
 	types [(int) Type::MATRIX] = new Type (Type::MATRIX, Type::DEPENDENCY_OBJECT, false, "Matrix", "MATRIX", 0, 1, NULL, (create_inst_func *) matrix_new, NULL);
 	types [(int) Type::MATRIXTRANSFORM] = new Type (Type::MATRIXTRANSFORM, Type::TRANSFORM, false, "MatrixTransform", "MATRIXTRANSFORM", 0, 1, NULL, (create_inst_func *) matrix_transform_new, NULL);
-	types [(int) Type::MEDIA] = new Type (Type::MEDIA, Type::EVENTOBJECT, false, "Media", "MEDIA", 8, 9, Media_Events, NULL, NULL);
+	types [(int) Type::MEDIA] = new Type (Type::MEDIA, Type::IMEDIAOBJECT, false, "Media", "MEDIA", 8, 9, Media_Events, NULL, NULL);
 	types [(int) Type::MEDIAATTRIBUTE] = new Type (Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT, false, "MediaAttribute", "MEDIAATTRIBUTE", 0, 1, NULL, (create_inst_func *) media_attribute_new, NULL);
 	types [(int) Type::MEDIAATTRIBUTE_COLLECTION] = new Type (Type::MEDIAATTRIBUTE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "MediaAttributeCollection", "MEDIAATTRIBUTE_COLLECTION", 0, 3, NULL, (create_inst_func *) media_attribute_collection_new, NULL);
 	types [(int) Type::MEDIABASE] = new Type (Type::MEDIABASE, Type::FRAMEWORKELEMENT, false, "MediaBase", "MEDIABASE", 1, 17, MediaBase_Events, (create_inst_func *) media_base_new, NULL);

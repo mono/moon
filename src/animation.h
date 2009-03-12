@@ -829,6 +829,9 @@ class Storyboard : public ParallelTimeline {
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetCurrentState ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SkipToFill ();
+	
 	virtual Clock *AllocateClock ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */

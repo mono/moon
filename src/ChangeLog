@@ -1,3 +1,17 @@
+2009-03-12  Geoff Norton  <gnorton@novell.com>
+
+	* src/runtime.cpp: MouseLeaveEvent is a MouseEventArgs
+
+2009-03-12  Geoff Norton  <gnorton@novell.com>
+
+	* deepzoomimagetilesource.cpp: Ensure we dont override default values
+	if nothing has been provided in the XML
+
+2009-03-12  Geoff Norton  <gnorton@novell.com>
+
+	* animation.cpp:
+	* animation.h: Implement SkipToFill
+
 2009-03-12  Larry Ewing  <lewing@novell.com>
 
 	* canvas.cpp: don't chain up the FE in the overides that is very

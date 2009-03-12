@@ -52,9 +52,14 @@ class SubImage
 	double vp_y;
 	double vp_w;
 
+	bool has_viewport;
+	bool has_size;
+
 	SubImage ()
 	{
 		source = NULL;
+		has_viewport = false;
+		has_size = false;
 	}
 };
 
@@ -468,6 +473,9 @@ start_element (void *data, const char *el, const char **attr)
 					info->error = true;
 					break;
 				}
+
+				info->current_subimage->has_size = true;
+
 				int i;
 				for (i = 0; attr [i]; i+=2)
 					if (!g_ascii_strcasecmp ("Width", attr[i]))
@@ -481,6 +489,9 @@ start_element (void *data, const char *el, const char **attr)
 					info->error = true;
 					break;
 				}
+
+				info->current_subimage->has_viewport = true;
+
 				int i;
 				for (i = 0; attr [i]; i+=2)
 					if (!g_ascii_strcasecmp ("X", attr[i]))
@@ -522,9 +533,14 @@ DeepZoomImageTileSource::EndElement (void *data, const char *el)
 					subsource->SetImageWidth (info->current_subimage->width);
 					subsource->SetImageHeight (info->current_subimage->height);
 					subsource->format = info->format;
-					subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
-					subi->SetViewportWidth (info->current_subimage->vp_w);
-					subi->SetValue (MultiScaleSubImage::AspectRatioProperty, Value ((double)info->current_subimage->width/(double)info->current_subimage->height));
+					if (info->current_subimage->has_viewport) {
+						subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
+						subi->SetViewportWidth (info->current_subimage->vp_w);
+					}
+
+					if (info->current_subimage->has_size) {
+						subi->SetValue (MultiScaleSubImage::AspectRatioProperty, Value ((double)info->current_subimage->width/(double)info->current_subimage->height));
+					}
 					info->sub_images = g_list_append (info->sub_images, subi);
 					info->current_subimage = NULL;
 				}

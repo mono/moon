@@ -1,3 +1,7 @@
+2009-03-12  Geoff Norton  <gnorton@novell.com>
+
+	* Storyboard.cs: Implement SkipToFill
+
 2009-03-06  Andreia Gaita  <avidigal@novell.com>
 
 	* Timeline.cs: Switch to using ObjectFromIntPtr to lookup objects.

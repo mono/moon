@@ -1132,12 +1132,12 @@ Surface::SetMouseCapture (UIElement *capture)
 EventArgs*
 Surface::CreateArgsForEvent (int event_id, GdkEvent *event)
 {
-	if (event_id == UIElement::MouseLeaveEvent
-	    || event_id ==UIElement::InvalidatedEvent
+	if (event_id ==UIElement::InvalidatedEvent
 	    || event_id ==UIElement::GotFocusEvent
 	    || event_id ==UIElement::LostFocusEvent)
 		return new RoutedEventArgs ();
-	else if (event_id == UIElement::MouseMoveEvent
+	else if (event_id == UIElement::MouseLeaveEvent
+		 || event_id ==UIElement::MouseMoveEvent
 		 || event_id ==UIElement::MouseLeftButtonDownEvent
 		 || event_id ==UIElement::MouseLeftButtonUpEvent
 		 || event_id ==UIElement::MouseEnterEvent)

@@ -653,6 +653,14 @@ Storyboard::SeekWithError (TimeSpan timespan, MoonError *error)
 }
 
 void
+Storyboard::SkipToFill ()
+{
+	if (root_clock) {
+		root_clock->SkipToFill ();
+	}
+}
+
+void
 Storyboard::Stop ()
 {
 	if (root_clock) {

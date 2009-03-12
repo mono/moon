@@ -3131,6 +3131,16 @@ storyboard_seek_with_error (Storyboard *instance, TimeSpan timespan, MoonError *
 
 
 void
+storyboard_skip_to_fill (Storyboard *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SkipToFill ();
+}
+
+
+void
 storyboard_stop_with_error (Storyboard *instance, MoonError *error)
 {
 	if (instance == NULL)
