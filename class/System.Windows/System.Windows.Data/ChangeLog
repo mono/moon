@@ -1,3 +1,7 @@
+2009-03-13  Geoff Norton  <gnorton@novell.com>
+
+	* Binding.cs: Ensure we ref, if we're going to unref
+
 2009-02-26  Chris Toshok  <toshok@ximian.com>
 
 	* BindingExpressionBase.cs (GetValue): mark this an override.

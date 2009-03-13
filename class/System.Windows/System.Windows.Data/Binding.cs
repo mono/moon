@@ -143,6 +143,7 @@ namespace System.Windows.Data {
 		internal Binding (IntPtr native)
 		{
 			Native = native;
+			Mono.NativeMethods.event_object_ref (native);
 		}
 
 		~Binding ()
