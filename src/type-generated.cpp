@@ -220,6 +220,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::CONTROL] = new Type (Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 1, 17, Control_Events, (create_inst_func *) control_new, NULL);
 	types [(int) Type::CONTROLTEMPLATE] = new Type (Type::CONTROLTEMPLATE, Type::FRAMEWORKTEMPLATE, false, "ControlTemplate", "CONTROLTEMPLATE", 0, 1, NULL, (create_inst_func *) control_template_new, NULL);
 	types [(int) Type::CORNERRADIUS] = new Type (Type::CORNERRADIUS, Type::OBJECT, true, "CornerRadius", "CORNERRADIUS", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::CURSOR] = new Type (Type::CURSOR, Type::OBJECT, false, "System.Windows.Input.Cursor", "CURSOR", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::DATATEMPLATE] = new Type (Type::DATATEMPLATE, Type::FRAMEWORKTEMPLATE, false, "DataTemplate", "DATATEMPLATE", 0, 1, NULL, (create_inst_func *) data_template_new, NULL);
 	types [(int) Type::DEEPZOOMIMAGETILESOURCE] = new Type (Type::DEEPZOOMIMAGETILESOURCE, Type::MULTISCALETILESOURCE, false, "DeepZoomImageTileSource", "DEEPZOOMIMAGETILESOURCE", 0, 1, NULL, (create_inst_func *) deep_zoom_image_tile_source_new, NULL);
 	types [(int) Type::DEPENDENCY_OBJECT] = new Type (Type::DEPENDENCY_OBJECT, Type::EVENTOBJECT, false, "DependencyObject", "DEPENDENCY_OBJECT", 0, 1, NULL, (create_inst_func *) dependency_object_new, NULL);
@@ -254,6 +255,8 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::FILESOURCE] = new Type (Type::FILESOURCE, Type::IMEDIASOURCE, false, "FileSource", "FILESOURCE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::FONTFAMILY] = new Type (Type::FONTFAMILY, Type::OBJECT, true, "FontFamily", "FONTFAMILY", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::FONTSTRETCH] = new Type (Type::FONTSTRETCH, Type::OBJECT, false, "System.Windows.FontStretch", "FONTSTRETCH", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::FONTSTYLE] = new Type (Type::FONTSTYLE, Type::OBJECT, false, "System.Windows.FontStyle", "FONTSTYLE", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::FONTWEIGHT] = new Type (Type::FONTWEIGHT, Type::OBJECT, false, "System.Windows.FontWeight", "FONTWEIGHT", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::FRAMEWORKELEMENT] = new Type (Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, "FrameworkElement", "FRAMEWORKELEMENT", 3, 16, FrameworkElement_Events, (create_inst_func *) framework_element_new, NULL);
 	types [(int) Type::FRAMEWORKTEMPLATE] = new Type (Type::FRAMEWORKTEMPLATE, Type::DEPENDENCY_OBJECT, false, "FrameworkTemplate", "FRAMEWORKTEMPLATE", 0, 1, NULL, (create_inst_func *) framework_template_new, NULL);
 	types [(int) Type::GENERALTRANSFORM] = new Type (Type::GENERALTRANSFORM, Type::DEPENDENCY_OBJECT, false, "GeneralTransform", "GENERALTRANSFORM", 0, 1, NULL, (create_inst_func *) general_transform_new, NULL);

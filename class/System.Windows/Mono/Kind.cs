@@ -53,6 +53,7 @@ namespace Mono {
 		CONTROL,// Silverlight 2.0 only
 		CONTROLTEMPLATE,// Silverlight 2.0 only
 		CORNERRADIUS,// Silverlight 2.0 only
+		CURSOR,
 		DATATEMPLATE,// Silverlight 2.0 only
 		DEEPZOOMIMAGETILESOURCE,
 		DEPENDENCY_OBJECT,
@@ -87,6 +88,8 @@ namespace Mono {
 		FILESOURCE,
 		FONTFAMILY,
 		FONTSTRETCH,
+		FONTSTYLE,
+		FONTWEIGHT,
 		FRAMEWORKELEMENT,
 		FRAMEWORKTEMPLATE,// Silverlight 2.0 only
 		GENERALTRANSFORM,

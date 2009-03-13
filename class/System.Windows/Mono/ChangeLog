@@ -1,3 +1,15 @@
+2009-03-13  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs: remove the "as INativeDependencyObjectWrapper", since
+	NativeDependencyObjectHelper.Lookup already returns that type.
+
+	* Kind.cs, Types.g.cs: regen.
+
+	* MoonlightTypeConverter.cs: for the types that are represented as
+	structs in managed code and enums in unmanaged, we need to pass
+	INT32 as the kind to value_from_str, and then create the Value
+	using the proper (managed) destinationType.
+
 2009-03-13  Geoff Norton  <gnorton@novell.com>
 
 	* Value.cs: Implement the Binding converter

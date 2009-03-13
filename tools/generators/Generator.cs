@@ -825,6 +825,9 @@ class Generator {
 		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true, true, true));
 		all.Children.Add (new TypeInfo ("char", "CHAR", "OBJECT", true, true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.FontStretch", "FONTSTRETCH", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("System.Windows.FontWeight", "FONTWEIGHT", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("System.Windows.FontStyle", "FONTSTYLE", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("System.Windows.Input.Cursor", "CURSOR", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
 
 		// Set IncludeInKinds for all types which inherit from EventObject
@@ -1402,6 +1405,9 @@ class Generator {
 		f ("System.Windows.Point", "POINT");
 		f ("System.Windows.Size", "SIZE");
 		f ("System.Windows.FontStretch", "FONTSTRETCH");
+		f ("System.Windows.FontWeight", "FONTWEIGHT");
+		f ("System.Windows.FontStyle", "FONTSTYLE");
+		f ("System.Windows.Input.Cursor", "CURSOR");
 		f ("System.Windows.Media.FontFamily", "FONTFAMILY");
 		f ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE");
 

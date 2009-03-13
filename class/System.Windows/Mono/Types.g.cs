@@ -353,6 +353,12 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.SIZE));
 				t = typeof (System.Windows.FontStretch);
 				types.Add (t, new ManagedType (t, Kind.FONTSTRETCH));
+				t = typeof (System.Windows.FontWeight);
+				types.Add (t, new ManagedType (t, Kind.FONTWEIGHT));
+				t = typeof (System.Windows.FontStyle);
+				types.Add (t, new ManagedType (t, Kind.FONTSTYLE));
+				t = typeof (System.Windows.Input.Cursor);
+				types.Add (t, new ManagedType (t, Kind.CURSOR));
 				t = typeof (System.Windows.Media.FontFamily);
 				types.Add (t, new ManagedType (t, Kind.FONTFAMILY));
 				t = typeof (System.Windows.Markup.XmlLanguage);

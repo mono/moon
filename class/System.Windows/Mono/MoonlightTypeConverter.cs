@@ -46,7 +46,7 @@ namespace Mono {
 			this.propertyName = propertyName;
 			this.destinationType = destinationType;
 
-			if (destinationType.IsEnum || destinationType == typeof (Cursor))
+			if (destinationType.IsEnum)
 				destinationType = typeof (Int32);
 
 			destinationKind = Deployment.Current.Types.TypeToKind (destinationType);
@@ -75,9 +75,21 @@ namespace Mono {
 				return value;
 
 			if (value is string) {
+				Kind k = destinationKind;
+
+				/* ugh.  our desire to use enums in
+				   unmanaged code when the managed
+				   code has structs is painful all
+				   over. */
+				if (k == Kind.FONTSTRETCH ||
+				    k == Kind.FONTWEIGHT ||
+				    k == Kind.FONTSTYLE ||
+				    k == Kind.CURSOR)
+					k = Kind.INT32;
+
 				IntPtr unmanaged_value;
 
-				if (!NativeMethods.value_from_str (destinationKind,
+				if (!NativeMethods.value_from_str (k,
 								   propertyName,
 								   (string)value,
 								   out unmanaged_value,
