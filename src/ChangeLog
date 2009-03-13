@@ -1,5 +1,12 @@
 2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp: SetTimeout: Add null-checks to prevent
+	  crashes when we can't find a time manager. Also if we can't
+	  remove a timeout, we have to leak ourselves, otherwise the
+	  timeout might get called after we're destroyed.
+
+2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.h:
 	* deployment.cpp:
 	* type-generated.cpp: Added Deployment::ShuttingDownEvent.

@@ -803,15 +803,25 @@ MediaPlayer::SetTimeout (gint32 timeout /* set to 0 to clear */)
 	TimeManager *time_manager = element->GetTimeManager ();
 	bool clear = timeout == 0 || advance_frame_timeout_id != 0;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::SetTimeout (%i)\n", timeout);
-	
+	LOG_MEDIAPLAYER ("MediaPlayer::SetTimeout (%i) time_manager: %p id: %i\n", timeout, time_manager, GET_OBJ_ID (time_manager));
+
 	if (clear && advance_frame_timeout_id != 0) {
-		time_manager->RemoveTimeout (advance_frame_timeout_id);
+		if (time_manager != NULL) {
+			time_manager->RemoveTimeout (advance_frame_timeout_id);
+		} else {
+			g_warning ("MediaPlayer::SetTimeout (): Could not clear timeout. Leaking ourselves to not crash.\n");
+			ref (); // This will prevent us from getting destroyed.
+		}
 		advance_frame_timeout_id = 0;
 	}
 	
-	if (timeout != 0)
-		advance_frame_timeout_id = time_manager->AddTimeout (G_PRIORITY_DEFAULT - 10, timeout, AdvanceFrameCallback, this);
+	if (timeout != 0) {
+		if (time_manager == NULL) {
+			g_warning ("MediaPlayer::SetTimeout (): Could not set timeout (no time manager).\n");
+		} else {
+			advance_frame_timeout_id = time_manager->AddTimeout (G_PRIORITY_DEFAULT - 10, timeout, AdvanceFrameCallback, this);
+		}
+	}
 }
 
 void
