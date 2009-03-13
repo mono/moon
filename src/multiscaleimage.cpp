@@ -487,7 +487,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					cairo_scale (cr, sub_vp.width * ldexp(1.0, layers - layer_to_render), sub_vp.width * ldexp (1.0, layers - layer_to_render));
 
 					if (shared_tile) {
-						cairo_rectangle (cr, 0, 0, ldexp(1.0, layer_to_render), ldexp(1.0, layer_to_render));
+						cairo_rectangle (cr, 0, 0, ldexp(1.0, layer_to_render) * sub_w / ldexp (1.0, layers), ldexp(1.0, layer_to_render) * sub_h / ldexp (1.0, layers));
 						cairo_clip (cr);
 						cairo_translate (cr,
 								(-morton_x(sub_image->n) * (int)ldexp (1.0, layer_to_render)) % tile_width,
