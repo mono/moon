@@ -1,3 +1,7 @@
+2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* xaml/drtlist.xml: Reenable test-canvas-no-size.html
+
 2009-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* sizes/sizes.cpp: Remove Playlist and PlaylistEntry from

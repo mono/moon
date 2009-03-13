@@ -351,8 +351,12 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	media->AddSafeHandler (Media::SeekCompletedEvent, SeekCompletedCallback, this);
 	media->SetBufferingTime (element->GetBufferingTime ());
 	
-	if (HasVideo ())
+	if (HasVideo ()) {
 		video_stream->AddSafeHandler (IMediaStream::FirstFrameEnqueuedEvent, FirstFrameEnqueuedCallback, this);
+		// We may attach the handler above after the first frame has been queued, 
+		// so just execute LoadVideoFrame once right away
+		LoadVideoFrame ();
+	}
 	
 	return true;
 }

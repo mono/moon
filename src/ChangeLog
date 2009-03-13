@@ -1,3 +1,10 @@
+2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp: Open: when we add an event handler to the
+	  video stream's FirstFrameEnqueued event, the first frame
+	  might already be in the queue, so just call LoadVideoFrame
+	  once always. Fixes test-canvas-no-size.html.
+
 2009-03-12  Geoff Norton  <gnorton@novell.com>
 
 	* src/runtime.cpp: MouseLeaveEvent is a MouseEventArgs
