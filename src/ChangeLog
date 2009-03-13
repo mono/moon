@@ -1,5 +1,10 @@
 2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: Dispose: We need to dispose the media
+	  player too.
+
+2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* downloader.h: DownloaderResponse: Add virtual ref/unref
 	  methods.
 

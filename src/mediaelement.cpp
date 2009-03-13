@@ -336,6 +336,7 @@ MediaElement::Reinitialize ()
 	VERIFY_MAIN_THREAD;
 	
 	if (mplayer) {
+		mplayer->Dispose ();
 		mplayer->unref ();
 		mplayer = NULL;
 	}
