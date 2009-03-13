@@ -41,6 +41,7 @@ EXTRA_DIST = $(TUNER_DESCS) $(TUNER_MASTERS)
 
 WORKING_DIR = $(MCS_PATH)/class/lib/net_2_1_raw
 OUTPUT_DIR = ../lib/2.1
+MCS_OUTPUT_DIR = $(MCS_PATH)/class/lib/net_2_1
 
 DLLFILES = $(TUNER_ASSEMBLIES:%=%.dll)
 
@@ -81,6 +82,8 @@ TUNER_STEPS = \
 $(OUTPUT_FILES): $(WORKING_FILES) $(SECURITY_ATTRIBUTES_INFO)
 	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
 	for i in $(DLLFILES); do sn -q -R $(OUTPUT_DIR)/$$i ../mono.snk; done
+	-mkdir -p $(MCS_OUTPUT_DIR)
+	for i in $(OUTPUT_FILES); do cp $$i $(MCS_OUTPUT_DIR) && cp $$i.mdb $(MCS_OUTPUT_DIR); done
 
 $(TUNER_INSTALL_DIR):
 	-mkdir -p $(TUNER_INSTALL_DIR)
