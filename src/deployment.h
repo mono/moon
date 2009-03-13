@@ -100,6 +100,8 @@ class Deployment : public DependencyObject {
 	void TrackObjectCreated (EventObject *obj);
 	void TrackObjectDestroyed (EventObject *obj);
 
+	const static int ShuttingDownEvent;
+
 private:	
 	void AbortAllDownloaders ();
 	void DrainUnrefs ();

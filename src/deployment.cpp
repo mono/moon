@@ -303,6 +303,8 @@ Deployment::Dispose ()
 {
 	LOG_DEPLOYMENT ("Deployment::Dispose (): %p\n", this);
 	
+	Emit (ShuttingDownEvent);
+	
 	AbortAllDownloaders ();
 	
 	mono_gc_collect (mono_gc_max_generation ());

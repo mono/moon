@@ -1,3 +1,12 @@
+2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.h:
+	* deployment.cpp:
+	* type-generated.cpp: Added Deployment::ShuttingDownEvent.
+	  This will be used by MediaElement to ensure that all media
+	  threads are cleaned up even if the MediaElement itself is
+	  leaked.
+
 2009-03-13  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: check for null tiles uri returned by
