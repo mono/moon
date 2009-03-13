@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<linker>
+	<assembly fullname="System.Xml">
+		<type fullname="System.Xml.XmlConvert">
+			<method signature="System.String ToBinHexString(System.Byte[])" />
+			<method signature="System.Byte[] FromBinHexString(System.String)" />
+		</type>
+	</assembly>
+</linker>

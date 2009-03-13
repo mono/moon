@@ -1,3 +1,10 @@
+2009-03-13  Jb Evain  <jbevain@novell.com>
+
+	* Descriptors/System.Xml.xml
+	* Makefile.am:
+		add a protection descriptor file for System.Xml.
+		Protect System.Xml.XmlConvert.To/FromBinHexString.
+
 2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Add SecurityAttributes to SUBDIRS and re-tune all

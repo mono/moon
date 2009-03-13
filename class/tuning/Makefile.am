@@ -7,6 +7,7 @@ TUNER_DESCS =	\
 	Descriptors/mscorlib.xml	\
 	Descriptors/smcs.xml	\
 	Descriptors/System.xml	\
+	Descriptors/System.Xml.xml	\
 	Descriptors/System.ServiceModel.xml
 
 SECURITY_ATTRIBUTES_INFO = \
