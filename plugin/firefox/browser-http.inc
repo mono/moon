@@ -89,6 +89,16 @@ class GECKO_SYM(DownloaderResponse) : public DownloaderResponse, public nsIStrea
 	{
 	}
 
+	virtual void ref ()
+	{
+		AddRef ();
+	}
+	
+	virtual void unref ()
+	{
+		Release ();
+	}
+
 	void Abort ();
 	void SetHeaderVisitor (DownloaderResponseHeaderVisitorCallback visitor);
 	int GetResponseStatus ();

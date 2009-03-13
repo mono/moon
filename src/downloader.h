@@ -229,6 +229,9 @@ class DownloaderResponse : public IDownloader {
 	virtual const char * GetResponseStatusText () = 0;
 	DownloaderRequest *GetDownloaderRequest () { return request; }
 	void SetDownloaderRequest (DownloaderRequest *value) { request = value; }
+	
+	virtual void ref () = 0;
+	virtual void unref () = 0;
 };
 
 class DownloaderRequest : public IDownloader {

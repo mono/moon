@@ -1,5 +1,10 @@
 2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* downloader.h: DownloaderResponse: Add virtual ref/unref
+	  methods.
+
+2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaplayer.cpp: SetTimeout: Add null-checks to prevent
 	  crashes when we can't find a time manager. Also if we can't
 	  remove a timeout, we have to leak ourselves, otherwise the

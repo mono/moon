@@ -183,8 +183,7 @@ PluginDownloader::Abort ()
 	}
 	if (this->response) {
 		this->response->Abort ();
-		// NOTE: Firefox will make some callbacks after aborting so
-		// we cannot delete this object here, currently we leak it :(
+		this->response->unref ();
 		this->response = NULL;
 	}
 }
@@ -223,6 +222,27 @@ void
 PluginDownloader::Started ()
 {
 	d (printf ("PluginDownloader::Started (), this: %p, dl: %p\n", this, dl));
+}
+
+void 
+PluginDownloader::setResponse (DownloaderResponse *response)
+{
+	d (printf ("PluginDownloader::setResponse (%p)\n", response));
+	
+	if (this->response == response)
+		return;
+		
+	if (this->response != NULL)
+		this->response->unref ();
+	this->response = response;
+	if (this->response != NULL)
+		this->response->ref ();
+}
+
+DownloaderRequest *
+PluginDownloader::getRequest ()
+{
+	return this->request;
 }
 
 uint32_t

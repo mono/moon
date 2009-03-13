@@ -59,8 +59,8 @@ class PluginDownloader {
 	
 	PluginInstance *GetPlugin ();
 
-	void setResponse (DownloaderResponse *response) { this->response = response; }
-	DownloaderRequest *getRequest () { return this->request; }
+	void setResponse (DownloaderResponse *response);
+	DownloaderRequest *getRequest ();
 	
 	Downloader *dl;
 };

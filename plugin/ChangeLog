@@ -1,3 +1,12 @@
+2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-downloader.h:
+	* plugin-downloader.cpp: PluginDownloader: follow refcounting
+	  laws and ref/unref the response.This fixes a crash where
+	  firefox would unref FFxDownloaderResponse causing its
+	  destruction, and then PluginDownloader would attempt to use
+	  (abort) that response later on.
+
 2009-03-10  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (MoonlightDependencyObjectObject::Invoke): for

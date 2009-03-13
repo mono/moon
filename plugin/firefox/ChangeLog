@@ -1,3 +1,8 @@
+2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* browser-http.inc: FF2/3DownloaderResponse: propagate the
+	  ref/unref to the AddRef/Release implementation
+
 2009-01-21  Geoff Norton  <gnorton@novell.com>
 
 	* browser-http.inc: Ensure the DownloaderResponse is aware of the DownloaderRequest
