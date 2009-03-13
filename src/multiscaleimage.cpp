@@ -539,8 +539,6 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
 					if (context)
 						g_free (context);
-					if (sub_image->n > 256)
-						g_critical ("you asshole");
 					if (from_layer <= dzits->GetMaxLevel ())
 						context = (char*)source->get_tile_func (from_layer,
 							morton_x(sub_image->n) * ldexp (1.0, from_layer) / tile_width,
