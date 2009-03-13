@@ -1,5 +1,12 @@
 2009-03-13  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (value_from_str): in the int32 and int64 case, we need
+	to parse until we get an invalid character, and return the value
+	parsed up to that point.  it's only an error if there's no valid
+	characters.
+
+2009-03-13  Chris Toshok  <toshok@ximian.com>
+
 	* textblock.h (class Inline): inlines don't permit multiple
 	parents (Fixes RunTest.RunMultipleParents).
 

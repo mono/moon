@@ -1,5 +1,12 @@
 2009-03-13  Chris Toshok  <toshok@ximian.com>
 
+	* System.Windows.Controls/CanvasTest.cs (DoublesForZIndex): add
+	some tests for double (and invalid) values.  turns out that we
+	should be parsing permissively and just stop when we hit an
+	invalid character.
+
+2009-03-13  Chris Toshok  <toshok@ximian.com>
+
 	* System.Windows.Documents/RunTest.cs: enable RunMultipleParents.
 
 2009-03-13  Alan McGovern  <amcgovern@novell.com>

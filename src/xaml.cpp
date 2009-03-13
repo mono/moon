@@ -2996,7 +2996,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		errno = 0;
 		l = strtol (str, &endptr, 10);
 
-		if (errno || endptr == str || *endptr)
+		if (errno || endptr == str)
 			return false;
 
 		*v = new Value (l, Type::INT64);
@@ -3024,7 +3024,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 			errno = 0;
 			long l = strtol (str, &endptr, 10);
 
-			if (errno || endptr == str || *endptr)
+			if (errno || endptr == str)
 				return false;
 
 			i = (int) l;

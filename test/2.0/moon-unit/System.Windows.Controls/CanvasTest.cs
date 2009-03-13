@@ -485,6 +485,40 @@ namespace MoonTest.System.Windows.Controls
 			
 			Assert.AreEqual (new Rect (0,0,0,0), LayoutInformation.GetLayoutSlot (b));
 		}
+
+		[TestMethod]
+		public void DoublesForZIndex ()
+		{
+		        Canvas c = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Rectangle Canvas.ZIndex=""5.0"" />
+</Canvas>");
+
+			Rectangle r = (Rectangle)VisualTreeHelper.GetChild (c, 0);
+			Assert.AreEqual (5, Canvas.GetZIndex (r), "1");
+
+
+		        c = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Rectangle Canvas.ZIndex=""5.0E03"" />
+</Canvas>");
+
+			r = (Rectangle)VisualTreeHelper.GetChild (c, 0);
+			Assert.AreEqual (5, Canvas.GetZIndex (r), "2");
+
+		        c = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Rectangle Canvas.ZIndex=""5V"" />
+</Canvas>");
+
+			r = (Rectangle)VisualTreeHelper.GetChild (c, 0);
+			Assert.AreEqual (5, Canvas.GetZIndex (r), "3");
+
+		        Assert.Throws<XamlParseException> (delegate { XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Rectangle Canvas.ZIndex=""V"" />
+</Canvas>"); });
+		}
 	}
 
 }
