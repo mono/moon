@@ -1,0 +1,36 @@
+<UserControl x:Class="MoonTest.System.Windows.XamlStyle"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows">
+    <UserControl.Resources>
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <vsm:VisualStateManager.VisualStateGroups>
+                                <vsm:VisualStateGroup>
+                                    <vsm:VisualState x:Name="Normal">
+                                        <Storyboard>
+                                            <ColorAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="target" Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)">
+                                                <SplineColorKeyFrame KeyTime="00:00:00" Value="Black"/>
+                                            </ColorAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </vsm:VisualState>
+                                </vsm:VisualStateGroup>
+                            </vsm:VisualStateManager.VisualStateGroups>
+                            <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}">
+                                <Rectangle x:Name="target" Height="50" Width="100" Fill="Green"/>
+                            </ContentPresenter>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Button Style="{StaticResource ButtonStyle}" />
+        <TextBlock Text="The rectangle fill should be black, not green" />
+    </Grid>
+</UserControl>
+

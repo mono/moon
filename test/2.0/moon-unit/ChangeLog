@@ -1,5 +1,13 @@
 2009-03-13  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/XamlStyle.xaml: Commit a xaml testcase which
+	  demonstrates a namescope issue. Note: I can't actually hook
+	  this into a moon-unit test as i don't think it's possible to
+	  programmatically check whether the target rectangle is
+	  rendering green or black. It has to be a visual inspection.
+
+2009-03-13  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: +- 5 isn't
 	  a large enough delta. Increase delta to +- 10 to avoid
 	  flapping.
