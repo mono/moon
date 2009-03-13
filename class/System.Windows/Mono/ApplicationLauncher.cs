@@ -29,7 +29,6 @@
 #if NET_2_1
 
 using System;
-using System.Security;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -63,7 +62,6 @@ namespace Mono {
 		/// <summary>
 		///   Loads the Application contained in the XAP file into the current AppDomain
 		/// </summary>
-		[SecurityCritical]
 		public static bool InitializeDeployment (IntPtr plugin, string xapFile)
 		{
 			try {

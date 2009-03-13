@@ -11,24 +11,20 @@
  */
 
 using System;
-using System.Security;
 using System.Windows.Shapes;
 
 namespace System.Windows.Media.Imaging
 {
 	public sealed class RenderTargetBitmap
 	{
-		[SecurityCritical ()]
 		public RenderTargetBitmap (int width, int height, IntPtr bitmap)
 		{
 			throw new NotImplementedException ();
 		}
 
-		[SecuritySafeCritical ()]
 		public Rect? Render (UIElement visual)
 		{
 			throw new NotImplementedException ();
 		}
-
 	}
 }

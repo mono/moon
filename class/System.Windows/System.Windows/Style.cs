@@ -28,7 +28,6 @@
 
 using System.ComponentModel;
 using System.Reflection;
-using System.Security;
 using System.Windows.Markup;
 
 using Mono;

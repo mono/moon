@@ -23,7 +23,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
-using System.Security;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Input;
@@ -34,7 +33,6 @@ namespace System.Windows.Input
 {
 	public sealed partial class StylusPointCollection : PresentationFrameworkCollection <StylusPoint>
 	{
-		[SecuritySafeCritical]
 		public void Add (StylusPointCollection stylusPoints)
 		{
 			NativeMethods.stylus_point_collection_add_stylus_points (this.native, stylusPoints.native);

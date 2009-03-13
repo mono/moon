@@ -27,7 +27,6 @@
 //
 
 using System;
-using System.Security;
 using Mono;
 
 namespace System.Windows.Interop {
@@ -40,32 +39,25 @@ namespace System.Windows.Interop {
 		//FIXME: this should enable the fps counter in the browser status bar
 		public bool EnableFrameRateCounter
 		{
-			[SecuritySafeCritical]
 			get { return false; }
-			[SecuritySafeCritical]
 			set {}
 		}
 
 		//FIXME
 		public bool EnableHTMLAccess {
-			[SecuritySafeCritical]
 			get { return false ;}
 		}
 
 		//FIXME
 		public bool EnableRedrawRegions {
-			[SecuritySafeCritical]
 			get { return false; }
-			[SecuritySafeCritical]
 			set {}
 		}
 		
 		public int MaxFrameRate {
-			[SecuritySafeCritical]
 			get {
 				return NativeMethods.time_manager_get_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native));
 			}
-			[SecuritySafeCritical]
 			set {
 				NativeMethods.time_manager_set_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native), value);
 			}
@@ -73,7 +65,6 @@ namespace System.Windows.Interop {
 
 		//FIXME
 		public bool Windowless {
-			[SecuritySafeCritical]
 			get { return false; }
 		}
 	}

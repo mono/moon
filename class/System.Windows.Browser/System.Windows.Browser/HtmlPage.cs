@@ -28,7 +28,6 @@
 
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Security;
 
 using Mono;
 
@@ -58,14 +57,12 @@ namespace System.Windows.Browser{
 		
 		[MonoTODO ("This method should return false when we're not running in a browser.")]
 		public static bool IsEnabled {		
-			[SecuritySafeCritical]
 			get {
 				return true;
 			}
 		}
 		
 		public static HtmlDocument Document {
-			[SecuritySafeCritical]
 			get {
 				if (document == null)
 					document = HtmlObject.GetPropertyInternal<HtmlDocument> (IntPtr.Zero, "document");
@@ -99,7 +96,6 @@ namespace System.Windows.Browser{
 		}
 
 		public static HtmlElement Plugin {
-			[SecuritySafeCritical]
 			get {
 				if (plugin == null)
 					plugin = new HtmlElement (NativeMethods.plugin_instance_get_host (Mono.Xaml.XamlLoader.PluginInDomain));

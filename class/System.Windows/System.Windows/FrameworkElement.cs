@@ -34,7 +34,6 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
-using System.Security;
 
 namespace System.Windows {
 	public abstract partial class FrameworkElement : UIElement {
@@ -199,7 +198,6 @@ namespace System.Windows {
 		}
 
 		internal DependencyObject SubtreeObject {
-			[SecuritySafeCritical]
 			get {
 				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.uielement_get_subtree_object (native)) as DependencyObject;
 			}
@@ -310,7 +308,6 @@ namespace System.Windows {
 			return new Size ();
 		}
 		
-		[SecuritySafeCritical]
 		public virtual void OnApplyTemplate ()
 		{
 			// according to doc this is not fully implemented since SL templates applies

@@ -24,7 +24,6 @@
 //
 
 using System;
-using System.Security;
 using Mono;
 using System.Windows.Interop;
 
@@ -47,7 +46,6 @@ namespace System.Windows.Threading {
 			internalTimer = null;
 		}
 
-		[SecuritySafeCritical]
 		public void Start ()
 		{
 			if (!started) {
@@ -57,7 +55,6 @@ namespace System.Windows.Threading {
 
 		}
 
-		[SecuritySafeCritical]
 		public void Stop ()
 		{
 			if (started) {
@@ -67,10 +64,7 @@ namespace System.Windows.Threading {
 		}
 
 		public TimeSpan Interval {
-			[SecuritySafeCritical]
 			get { return internalTimer.Duration.TimeSpan; }
-
-			[SecuritySafeCritical]
 			set {  internalTimer.Duration = new Duration (value); }
 		}
 

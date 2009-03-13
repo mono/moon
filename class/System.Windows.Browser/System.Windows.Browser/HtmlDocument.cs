@@ -27,7 +27,6 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Security;
 
 namespace System.Windows.Browser
 {
@@ -53,13 +52,11 @@ namespace System.Windows.Browser
 			}
 		}
 
-		[SecuritySafeCritical ()]
 		public HtmlElement CreateElement (string tagName)
 		{
 			return new HtmlElement (InvokeInternal<IntPtr> (Handle, "createElement", tagName));
 		}
 
-		[SecuritySafeCritical ()]
 		public HtmlElement GetElementById (string id)
 		{
 			var handle = InvokeInternal<IntPtr> (Handle, "getElementById", id);
@@ -69,7 +66,6 @@ namespace System.Windows.Browser
 			return new HtmlElement (handle);
 		}
 
-		[SecuritySafeCritical ()]
 		public ScriptObjectCollection GetElementsByTagName (string tagName)
 		{
 			return new ScriptObjectCollection (InvokeInternal<IntPtr> (Handle, "getElementsByTagName", tagName));

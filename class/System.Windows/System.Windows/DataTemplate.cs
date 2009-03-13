@@ -27,7 +27,6 @@
 //
 using Mono;
 using System;
-using System.Security;
 
 namespace System.Windows {
 

@@ -27,7 +27,6 @@
 //
 
 using System;
-using System.Security;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.Internal
@@ -37,7 +36,6 @@ namespace Microsoft.Internal
 	[InterfaceType(ComInterfaceType.InterfaceIsDual)]
 	public interface IManagedFrameworkInternalHelper
 	{
-		[SecurityCritical ()]
 		void SetContextEx (System.IntPtr context);
 	}
 }

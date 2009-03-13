@@ -30,7 +30,6 @@ using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
-using System.Security;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Interop;
@@ -47,25 +46,21 @@ namespace System.Windows {
 		string xap_dir;
 
 		public static Deployment Current {
-			[SecuritySafeCritical]
 			get {
 				IntPtr dep = NativeMethods.deployment_get_current ();
 				return NativeDependencyObjectHelper.Lookup (Kind.DEPLOYMENT, dep) as Deployment;
 			}
 
-			[SecuritySafeCritical]
 			internal set {
 				NativeMethods.deployment_set_current (value == null ? IntPtr.Zero : value.native);
 			}
 		}
 	
-		[SecurityCritical]
 		public static void RegisterAssembly (Assembly assembly)
 		{
 			throw new System.NotImplementedException ();
 		}
 		
-		[SecurityCritical]
 		public static void SetCurrentApplication (Application application)
 		{
 			NativeMethods.deployment_set_current_application (Current.native, application.NativeHandle);
@@ -103,13 +98,11 @@ namespace System.Windows {
 			}
 		}
 		
-		[SecurityCritical]
 		internal void InitializePluginHost (IntPtr plugin) {
 			if (plugin != IntPtr.Zero)
 				PluginHost.SetPluginHandle (plugin);
 		}
 
-		[SecurityCritical]
 		internal bool ExtractXap (string xapPath) {
 			xap_dir = NativeMethods.xap_unpack (xapPath);
 			if (xap_dir == null){
@@ -119,7 +112,6 @@ namespace System.Windows {
 			return true;
 		}
 
-		[SecurityCritical]
 		internal bool ReadManifest () {
 			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Surface.Native, PluginHost.Handle);
 			string app_manifest = Path.Combine (XapDir, "AppManifest.xaml");
@@ -154,7 +146,6 @@ namespace System.Windows {
 			return true;
 		}
 			
-		[SecurityCritical]
 		internal bool InitializeDeployment (IntPtr plugin, string xapPath) {
 			InitializePluginHost (plugin);
 			if (!ExtractXap (xapPath))

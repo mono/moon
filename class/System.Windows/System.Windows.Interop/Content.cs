@@ -28,7 +28,6 @@
 
 using Mono;
 using System;
-using System.Security;
 
 namespace System.Windows.Interop {
 
@@ -41,7 +40,6 @@ namespace System.Windows.Interop {
 		}
 
 		public double ActualHeight {
-			[SecuritySafeCritical ()]
 			get {
 				if (PluginHost.Handle != IntPtr.Zero) {
 					int n = NativeMethods.plugin_instance_get_actual_height (PluginHost.Handle);
@@ -52,7 +50,6 @@ namespace System.Windows.Interop {
 		}
 
 		public double ActualWidth {
-			[SecuritySafeCritical ()]
 			get {
 				if (PluginHost.Handle != IntPtr.Zero) {
 					int n = NativeMethods.plugin_instance_get_actual_width (PluginHost.Handle);
@@ -63,12 +60,10 @@ namespace System.Windows.Interop {
 		}
 
 		public bool IsFullScreen {
-			[SecuritySafeCritical ()]
 			get {
 				return NativeMethods.surface_get_full_screen (Deployment.Current.Surface.Native);
 			}
 			[MonoTODO ()]
-			[SecuritySafeCritical ()]
 			set {
 				// FIXME: Stack walk here to ensure this is in response to a user generated event
 				NativeMethods.surface_set_full_screen (Deployment.Current.Surface.Native, value);

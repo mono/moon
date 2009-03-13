@@ -30,7 +30,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security;
 
 namespace System.Windows.Media
 {
@@ -43,7 +42,6 @@ namespace System.Windows.Media
 		private Stream stream;
 		private long timestamp;
 		
-		[SecuritySafeCritical ()]
 		public MediaStreamSample (MediaStreamDescription mediaStreamDescription, Stream stream, long offset, long count, long timestamp, IDictionary<MediaSampleAttributeKeys, string> attributes)
 		{
 			this.media_stream_description = mediaStreamDescription;

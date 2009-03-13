@@ -27,7 +27,6 @@
 using Mono;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
-using System.Security;
 
 namespace System.Windows.Controls {
 
@@ -75,7 +74,6 @@ namespace System.Windows.Controls {
 			set { NativeMethods.multi_scale_image_set_viewport_width (this.native, value); }
 		}
 		
-		[SecuritySafeCritical]
 		public void ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 		{
 			NativeMethods.multi_scale_image_zoom_about_logical_point (this.native, zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);

@@ -27,7 +27,6 @@
 //
 
 using System;
-using System.Security;
 using System.Collections.Generic;
 using System.Windows.Automation.Provider;
 
@@ -45,7 +44,6 @@ namespace System.Windows.Automation.Peers {
 			set { throw new NotImplementedException (); }
 		}
 
-		[SecuritySafeCritical]
 		public void RaiseAutomationEvent (AutomationEvents events)
 		{
 			throw new NotImplementedException ();
@@ -222,7 +220,6 @@ namespace System.Windows.Automation.Peers {
 			return provider.AutomationPeer;
 		}
 	
-		[SecuritySafeCritical]
 		public void RaisePropertyChangedEvent (AutomationProperty property, object oldValue, object newValue)
 		{
 			throw new NotImplementedException ();

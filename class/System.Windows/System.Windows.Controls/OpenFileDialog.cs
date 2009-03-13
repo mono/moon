@@ -29,7 +29,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Security;
 
 namespace System.Windows.Controls
 {
@@ -48,7 +47,6 @@ namespace System.Windows.Controls
 		}
 
 		// it's not clear from doc or tests when this can return null
-		[SecuritySafeCritical]
 		public bool? ShowDialog ()
 		{
 			IntPtr result = open_file_dialog_show ("Open",

@@ -28,7 +28,6 @@
 //
 
 using System;
-using System.Security;
 
 namespace System.Windows.Media
 {

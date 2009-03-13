@@ -29,7 +29,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Security;
 using System.Windows.Interop;
 using System.Reflection;
 using Mono.Xaml;
@@ -50,7 +49,6 @@ namespace System.Windows.Markup
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Never)]
-		[SecurityCritical ()]
 		public static object LoadWithInitialTemplateValidation (string xaml)
 		{
 			throw new NotImplementedException ();

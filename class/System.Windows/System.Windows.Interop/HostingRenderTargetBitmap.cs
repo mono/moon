@@ -11,13 +11,11 @@
  */
 
 using System;
-using System.Security;
 
 namespace System.Windows.Interop
 {
 	public sealed class HostingRenderTargetBitmap
 	{
-		[SecurityCritical ()]
 		public HostingRenderTargetBitmap (int width, int height, IntPtr bitmap)
 		{
 			throw new NotImplementedException ();

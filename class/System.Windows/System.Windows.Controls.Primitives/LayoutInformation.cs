@@ -28,7 +28,6 @@
 
 using Mono;
 using System;
-using System.Security;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -44,7 +43,6 @@ namespace System.Windows.Controls.Primitives {
 			return (Rect) element.GetValue (LayoutInformation.LayoutSlotProperty);
 		}
 
-		[SecuritySafeCritical]
 		public static Geometry GetLayoutClip (FrameworkElement element)
 		{
 			return (Geometry) element.GetValue (LayoutInformation.LayoutClipProperty);

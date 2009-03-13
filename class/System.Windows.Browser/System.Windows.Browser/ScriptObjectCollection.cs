@@ -13,7 +13,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Security;
 
 namespace System.Windows.Browser
 {
@@ -27,7 +26,6 @@ namespace System.Windows.Browser
 		}
 
 		public int Count {
-			[SecuritySafeCritical]
 			get {
 				return HtmlObject.GetPropertyInternal<int> (node_list, "length");
 			}
@@ -35,7 +33,6 @@ namespace System.Windows.Browser
 
 		public ScriptObject this [int i] {
 			// is this approach (creating HtmlElement every time) bogus?
-			[SecuritySafeCritical]
 			get {
 				return new HtmlElement (HtmlObject.InvokeInternal<IntPtr> (node_list, "item", i));
 			}

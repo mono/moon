@@ -29,7 +29,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Media;

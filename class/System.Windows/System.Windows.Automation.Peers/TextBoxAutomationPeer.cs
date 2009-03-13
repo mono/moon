@@ -11,7 +11,6 @@
  */
 
 using System;
-using System.Security;
 using System.Windows.Automation;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
@@ -20,7 +19,6 @@ namespace System.Windows.Automation.Peers
 {	
 	public class TextBoxAutomationPeer : FrameworkElementAutomationPeer, IValueProvider
 	{
-		[SecuritySafeCritical]
 		public TextBoxAutomationPeer (TextBox owner)
 			: base (owner)
 		{

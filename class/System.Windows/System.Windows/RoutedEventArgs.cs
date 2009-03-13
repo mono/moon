@@ -23,7 +23,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Security;
 using Mono;
 
 namespace System.Windows {
@@ -60,7 +59,6 @@ namespace System.Windows {
 				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.routed_event_args_get_source (native));
 			}
 
-			[SecuritySafeCritical]
 			internal set {
 				if (value == null) {
 					NativeMethods.routed_event_args_set_source (native, IntPtr.Zero);

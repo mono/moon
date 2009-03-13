@@ -24,7 +24,6 @@
 //
 
 using System;
-using System.Security;
 using System.Threading;
 
 namespace System.Windows.Threading {
@@ -41,7 +40,6 @@ namespace System.Windows.Threading {
 			this.dispatcher = dispatcher;
 		}
 
-		[SecuritySafeCritical]
 		public DispatcherSynchronizationContext () : this (Dispatcher.Main)
 		{
 		}
@@ -51,7 +49,6 @@ namespace System.Windows.Threading {
 			dispatcher.BeginInvoke (d, new object[] {state});
 		}
 
-		[SecuritySafeCritical]
 		public override void Post (SendOrPostCallback d, object state)
 		{
 			dispatcher.Invoke (d, new object[] {state});

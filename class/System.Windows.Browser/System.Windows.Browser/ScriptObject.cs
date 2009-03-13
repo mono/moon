@@ -27,7 +27,6 @@
 //
 
 using System.ComponentModel;
-using System.Security;
 using System.Windows.Threading;
 using System.Collections.Generic;
 
@@ -61,7 +60,6 @@ namespace System.Windows.Browser {
 			// FIXME: same as .ctor().
 		}
 
-		[SecuritySafeCritical ()]
 		public virtual void SetProperty (string name, object value)
 		{
 			HtmlObject.SetPropertyInternal (handle, name, value);
@@ -72,7 +70,6 @@ namespace System.Windows.Browser {
 			throw new System.NotImplementedException ();
 		}
 
-		[SecuritySafeCritical ()]
 		public virtual object GetProperty (string name)
 		{
 			object result;
@@ -112,13 +109,11 @@ namespace System.Windows.Browser {
 			return (T) ConvertTo (typeof(T), true);
 		}
 
-		[SecuritySafeCritical ()]
 		public virtual object Invoke (string name, params object [] args)
 		{
 			return HtmlObject.InvokeInternal <object> (handle, name, args);
 		}
 
-		[SecuritySafeCritical ()]
 		public virtual object InvokeSelf (params object [] args)
 		{
 			throw new System.NotImplementedException ();

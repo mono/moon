@@ -26,7 +26,6 @@
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Resources;
-using System.Security;
 using System.IO;
 using System.Threading;
 using System.Net;
@@ -41,7 +40,6 @@ namespace System.Windows.Media.Imaging
 			UriSource = uriSource;
 		}
 
-		[SecuritySafeCritical]
 		public void SetSource (Stream streamSource)
 		{
 			if (streamSource == null)

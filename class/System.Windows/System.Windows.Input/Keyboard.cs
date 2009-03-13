@@ -28,7 +28,6 @@
 
 using System;
 using System.Windows;
-using System.Security;
 using Mono;
 
 namespace System.Windows.Input {

@@ -7,7 +7,6 @@
 using System; 
 using System.Diagnostics; 
 using System.Windows; 
-using System.Security;
 using System.Windows.Input;
 using System.Windows.Markup; 
 using System.Windows.Media.Animation;
@@ -422,7 +421,6 @@ namespace System.Windows.Controls.Primitives
         /// as a parameter to let the handler know what triggered this event.
         /// </summary> 
         /// <param name="scrollEventType">ScrollEventType</param>
-        [SecuritySafeCritical]
         internal void RaiseScrollEvent(ScrollEventType scrollEventType) 
         {
             ScrollEventArgs newEvent = new ScrollEventArgs(scrollEventType, Value);

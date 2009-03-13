@@ -30,7 +30,6 @@
 
 using Mono;
 using System.Collections.Generic;
-using System.Security;
 using System.Windows;
 using System.Runtime.InteropServices;
 using System.Windows.Threading;

@@ -29,7 +29,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Collections.Generic;
-using System.Security;
 using Mono;
 
 namespace System.Windows.Media {
@@ -79,7 +78,6 @@ namespace System.Windows.Media {
 			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.uielement_get_visual_parent (fw.native)) as DependencyObject;
 		}
 
-		[SecuritySafeCritical]
 		public static IEnumerable<UIElement> FindElementsInHostCoordinates (Point intersectingPoint, UIElement subtree)
 		{
 			HitTestCollection collection = new HitTestCollection ();
@@ -87,7 +85,6 @@ namespace System.Windows.Media {
 			return new List<UIElement> (collection);
 		}
 
-		[SecuritySafeCritical]
 		public static IEnumerable<UIElement> FindElementsInHostCoordinates (Rect intersectingRect, UIElement subtree)
 		{
 			HitTestCollection collection = new HitTestCollection ();

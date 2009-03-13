@@ -26,7 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
-using System.Security;
 
 namespace System.Windows.Browser
 {
@@ -64,13 +63,11 @@ namespace System.Windows.Browser
 			event_type = eventType;
 		}
 
-		[SecuritySafeCritical ()]
 		public void PreventDefault ()
 		{
 			throw new NotImplementedException ();
 		}
 		
-		[SecuritySafeCritical ()]
 		public void StopPropagation ()
 		{
 			throw new NotImplementedException ();

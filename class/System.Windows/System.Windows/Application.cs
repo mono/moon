@@ -32,7 +32,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security;
 using System.Windows.Controls;
 using System.Windows.Resources;
 using System.Windows.Interop;
@@ -231,7 +230,6 @@ namespace System.Windows {
 			return rd[type.FullName] as Style;
 		}
 
-		[SecuritySafeCritical]
 		public static void LoadComponent (object component, Uri resourceLocator)
 		{
 			INativeDependencyObjectWrapper wrapper = component as INativeDependencyObjectWrapper;
@@ -382,13 +380,11 @@ namespace System.Windows {
 		}
 
 		public static Application Current {
-			[SecuritySafeCritical]
 			get {
 				IntPtr app = NativeMethods.application_get_current ();
 				return NativeDependencyObjectHelper.Lookup (Kind.APPLICATION, app) as Application;
 			}
 
-			[SecuritySafeCritical]
 			private set {
 				NativeMethods.application_set_current (value == null ? IntPtr.Zero : value.NativeHandle);
 			}

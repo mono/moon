@@ -24,7 +24,6 @@
 // THE SOFTWARE.
 //
 
-using System.Security;
 using System.Windows;
 
 using Mono;

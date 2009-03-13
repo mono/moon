@@ -26,7 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
-using System.Security;
 using System.Windows;
 using System.Windows.Media;
 using System.Runtime.InteropServices;
@@ -49,25 +48,21 @@ namespace System.Windows.Media.Animation {
 			};
 		}
 		
-		[SecuritySafeCritical ()]
 		public void Begin ()
 		{
 			NativeMethods.storyboard_begin (native);
 		}
 
-		[SecuritySafeCritical ()]
 		public void Pause ()
 		{
 			NativeMethods.storyboard_pause (native);
 		}
 
-		[SecuritySafeCritical ()]
 		public void Resume ()
 		{
 			NativeMethods.storyboard_resume (native);
 		}
 
-		[SecuritySafeCritical ()]
 		public void Seek (TimeSpan timespan)
 		{
 			NativeMethods.storyboard_seek (native, timespan.Ticks);
@@ -89,7 +84,6 @@ namespace System.Windows.Media.Animation {
 			NativeMethods.storyboard_skip_to_fill (native);
 		}
 
-		[SecuritySafeCritical ()]
 		public void Stop ()
 		{
 			NativeMethods.storyboard_stop (native);

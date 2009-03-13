@@ -26,7 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
-using System.Security;
 
 namespace System.Windows.Browser
 {
@@ -42,19 +41,16 @@ namespace System.Windows.Browser
 		{
 		}
 
-		[SecuritySafeCritical ()]
 		public void AppendChild (HtmlElement element)
 		{
 			InvokeInternal<object> (Handle, "appendChild", element);
 		}
 
-		[SecuritySafeCritical ()]
 		public void AppendChild (HtmlElement element, HtmlElement referenceElement)
 		{
 			InvokeInternal<object> (Handle, "insertBefore", element, referenceElement);
 		}
 
-		[SecuritySafeCritical ()]
 		public void Focus ()
 		{
 			InvokeInternal<object> (Handle, "focus");
@@ -87,7 +83,6 @@ namespace System.Windows.Browser
 			InvokeInternal<object> (Handle, "removeAttribute", name);
 		}
 
-		[SecuritySafeCritical ()]
 		public void RemoveChild (HtmlElement element)
 		{
 			InvokeInternal<object> (Handle, "removeChild", element);
@@ -113,7 +108,6 @@ namespace System.Windows.Browser
 		}
 
 		public ScriptObjectCollection Children {
-			[SecuritySafeCritical]
 			get { return new ScriptObjectCollection (GetPropertyInternal<IntPtr> (Handle, "childNodes")); }
 		}
 
@@ -128,7 +122,6 @@ namespace System.Windows.Browser
 		}
 
 		public HtmlElement Parent {
-			[SecuritySafeCritical]
 			get { return new HtmlElement (GetPropertyInternal<IntPtr> (Handle, "parentNode")); }
 		}
 

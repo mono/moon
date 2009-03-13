@@ -25,7 +25,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Security;
 using System.Threading;
 using System.Collections.Generic;
 using Mono;
@@ -76,7 +75,6 @@ namespace System.Windows.Threading {
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Never)]
-		[SecuritySafeCritical]
 		public bool CheckAccess ()
 		{
 			return NativeMethods.surface_in_main_thread ();

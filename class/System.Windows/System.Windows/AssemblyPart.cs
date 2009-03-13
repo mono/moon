@@ -28,7 +28,6 @@
 using System;
 using System.IO;
 using System.Windows;
-using System.Security;
 using System.Reflection;
 using Mono;
 
@@ -41,7 +40,6 @@ namespace System.Windows {
 			SourceProperty = DependencyProperty.Lookup (Kind.ASSEMBLYPART, "Source", typeof (string));
 		}
 
-		[SecuritySafeCritical]
 		public Assembly Load (Stream assemblyStream)
 		{
 			var buffer = new byte [assemblyStream.Length];

@@ -25,7 +25,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System.Collections.Generic;
-using System.Security;
 using System.Windows.Interop;
 using System.Runtime.InteropServices;
 using Mono;

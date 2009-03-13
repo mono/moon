@@ -25,7 +25,6 @@
 
 using System;
 using System.Windows;
-using System.Security;
 using System.Collections.Generic;
 
 namespace System.Windows.Automation.Peers {
@@ -35,7 +34,6 @@ namespace System.Windows.Automation.Peers {
 
 		private UIElement owner;
 
-		[SecuritySafeCritical]
 		public FrameworkElementAutomationPeer (FrameworkElement owner)
 		{
 			this.owner = owner;

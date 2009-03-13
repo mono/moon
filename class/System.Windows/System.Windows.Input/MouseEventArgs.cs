@@ -27,7 +27,6 @@
 //
 
 using Mono;
-using System.Security;
 
 namespace System.Windows.Input {
 	
@@ -49,7 +48,6 @@ namespace System.Windows.Input {
 		}
 
 		public StylusDevice StylusDevice {
-			[SecuritySafeCritical]
 			get {
 				if (stylus_device == null)
 					stylus_device = new StylusDevice (this);

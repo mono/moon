@@ -27,7 +27,6 @@
 //
 
 using System;
-using System.Security;
 using Mono;
 using System.Runtime.InteropServices;
 
@@ -45,7 +44,6 @@ namespace System.Windows.Browser
 			return InvokeInternal<string> (HtmlPage.Window.Handle, "prompt", promptText);
 		}
 		
-		[SecuritySafeCritical ()]
 		public object Eval (string code)
 		{
 			IntPtr result;

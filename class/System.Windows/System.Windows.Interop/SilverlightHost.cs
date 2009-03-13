@@ -28,7 +28,6 @@
 
 using System;
 using System.Windows.Media;
-using System.Security;
 using System.Runtime.InteropServices;
 using Mono;
 
@@ -41,14 +40,12 @@ namespace System.Windows.Interop {
 		public SilverlightHost ()
 		{}
 
-		[SecuritySafeCritical ()]
 		public bool IsVersionSupported (string versionStr)
 		{
 			throw new NotImplementedException ();
 		}
 
 		public Color Background {
-			[SecuritySafeCritical ()]
 			get { throw new NotImplementedException (); }
 		}
 
@@ -57,7 +54,6 @@ namespace System.Windows.Interop {
 		}
 
 		public bool IsLoaded {
-			[SecuritySafeCritical ()]
 			get { throw new NotImplementedException (); }
 		}
 
@@ -66,7 +62,6 @@ namespace System.Windows.Interop {
 		}
 
 		public Uri Source {
-			[SecuritySafeCritical ()]
 			get {
 				if (PluginHost.Handle == IntPtr.Zero)
 					return null;

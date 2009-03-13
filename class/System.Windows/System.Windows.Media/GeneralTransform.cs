@@ -27,13 +27,11 @@
 //
 
 using Mono;
-using System.Security;
 
 namespace System.Windows.Media {
 
 	public abstract partial class GeneralTransform : DependencyObject {
 
-		[SecuritySafeCritical]
 		public Point Transform (Point point)
 		{
 			Point retPoint = new Point (0,0);
