@@ -56,6 +56,9 @@ Xap::Unpack (const char *fname)
 		
 		unzGetCurrentFileInfo (zipfile, NULL, fname, finfo.size_filename+1, NULL, 0, NULL, 0);
 		
+		if (finfo.external_fa & (1 << 4))
+			continue; 
+
 		output = g_build_filename (xap_dir, fname, NULL);
 		len = strlen (output);
 		

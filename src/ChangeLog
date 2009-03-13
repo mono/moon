@@ -10,6 +10,11 @@
 	* textblock.h (class Inline): inlines don't permit multiple
 	parents (Fixes RunTest.RunMultipleParents).
 
+2009-03-13  Geoff Norton  <gnorton@novell.com>
+
+	* xap.cpp: Zip files can contain directory entires, we shouldn't
+	try to open them as files.
+
 2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml.cpp:
