@@ -248,7 +248,7 @@ namespace Mono.Xaml
 			}
 			catch {
 				Kind k = NativeMethods.event_object_get_object_type (target_ptr); 
-				return NativeDependencyObjectHelper.Lookup (k, target_ptr) as DependencyObject;
+				return NativeDependencyObjectHelper.Lookup (k, target_ptr) as INativeDependencyObjectWrapper;
 			}
 		}
 
@@ -400,7 +400,7 @@ namespace Mono.Xaml
 			EventInfo ie = publisher.GetType ().GetEvent (name);
 			string handler_name = Value.ToObject (null, value_ptr) as string;
 			
-			// Console.WriteLine ("TrySetEventReflection ({0}, {1}, {2}, {3}, {4}, {5}) handler_name: {6}", top_level, xmlns, publisher, type_name, name, value_ptr, handler_name);
+			 Console.WriteLine ("TrySetEventReflection ({0}, {1}, {2}, {3}, {4}, {5}) handler_name: {6}", top_level, xmlns, publisher, type_name, name, value_ptr, handler_name);
 			
 			if (ie == null) {
 				error = "Event does not exist.";
@@ -526,7 +526,7 @@ namespace Mono.Xaml
 			object target = Value.ToObject (null, target_ptr);
 
 			if (target == null) {
-				Console.Error.WriteLine ("target is null:  {0} {1} {2}", target_ptr, name, xmlns);
+				Console.Error.WriteLine ("target is null: {0} {1} {2}", target_ptr, name, xmlns);
 				return false;
 			}
 

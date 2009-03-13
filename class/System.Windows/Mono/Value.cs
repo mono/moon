@@ -283,7 +283,7 @@ namespace Mono {
  					if (val->u.p == IntPtr.Zero)
  						return null;
 					
- 					return NativeDependencyObjectHelper.Lookup (val->k, val->u.p) as DependencyObject;
+ 					return NativeDependencyObjectHelper.Lookup (val->k, val->u.p) as INativeDependencyObjectWrapper;
 				}
 
 				throw new Exception (String.Format ("Do not know how to convert {0}  {1}", val->k, (int) val->k));

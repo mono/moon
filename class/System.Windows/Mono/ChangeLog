@@ -1,3 +1,9 @@
+2009-03-13  Geoff Norton  <gnorton@novell.com>
+
+	* ManagedXamlLoader.cs:
+	* Value.cs: Lookup should cast to INativeDependencyObjectWrapper
+	so we can work on Application as well
+
 2009-03-11  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: It's possible to set a property with a
