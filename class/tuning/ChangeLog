@@ -1,3 +1,8 @@
+2009-03-13  Atsushi Enomoto  <atsushi@ximian.com>
+
+	* Descriptors/System.Xml.xml: add more types and methods
+	  for System.Xml.Serialization.dll use.
+
 2009-03-13  Jb Evain  <jbevain@novell.com>
 
 	* Descriptors/System.Xml.xml
