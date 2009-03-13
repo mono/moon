@@ -74,8 +74,12 @@ Control::OnLoaded ()
 
 	if (!GetStyle() && !default_style_applied) {
 		ManagedTypeInfo *key = GetDefaultStyleKey ();
-		if (key)
-			Application::GetCurrent()->ApplyDefaultStyle (this, key);
+		if (key) {
+			if (Application::GetCurrent () == NULL)
+				g_warning ("attempting to use a null application.");
+			else
+				Application::GetCurrent()->ApplyDefaultStyle (this, key);
+		}
 	}
 
 	FrameworkElement::OnLoaded ();

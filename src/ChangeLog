@@ -1,5 +1,10 @@
 2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml.cpp:
+	* control.cpp: Added a null check to prevent crashes.
+
+2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.h:
 	* mediaelement.cpp: Attach to Deployment::ShuttingDownEvent
 	  and clean up upon shutdown.

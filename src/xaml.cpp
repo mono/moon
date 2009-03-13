@@ -1664,8 +1664,12 @@ end_element_handler (void *data, const char *el)
 			Control *control = (Control*)p->current_element->GetAsDependencyObject();
 			ManagedTypeInfo *key = control->GetDefaultStyleKey ();
 
-			if (key)
-				Application::GetCurrent()->ApplyDefaultStyle (control, key);
+			if (key) {
+				if (Application::GetCurrent () == NULL)
+					g_warning ("attempting to use a null application.");
+				else
+					Application::GetCurrent()->ApplyDefaultStyle (control, key);
+			}
 		}
 		else if (!p->current_element->IsDependencyObject () && p->current_element->parent) {
 			p->current_element->parent->AddChild (p, p->current_element);
