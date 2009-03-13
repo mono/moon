@@ -68,6 +68,11 @@
 
 2009-03-13  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp: no longer use precompiled table for morton
+	layout, but use short and fast function in place.
+
+2009-03-13  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: check for null tiles uri returned by
 	get_tile_func
 

@@ -35,8 +35,6 @@
 #include "file-downloader.h"
 #include "multiscalesubimage.h"
 
-#include "morton-layout-table.inc"
-
 #if LOGGING
 #include "clock.h"
 #define MSI_STARTTIMER(id)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) TimeSpan id##_t_start = get_now()
@@ -47,6 +45,35 @@
 #endif
 
 void _cairo_surface_destroy (void* surface) {cairo_surface_destroy((cairo_surface_t*)surface);}
+
+void morton (int n, int *x, int *y) {
+	n = (n & 0x99999999) + ((n & 0x22222222) << 1) + ((n & 0x44444444) >> 1);
+	n = (n & 0xc3c3c3c3) + ((n & 0x0c0c0c0c) << 2) + ((n & 0x30303030) >> 2);
+	n = (n & 0xf00ff00f) + ((n & 0x00f000f0) << 4) + ((n & 0x0f000f00) >> 4);
+	n = (n & 0xff0000ff) + ((n & 0x0000ff00) << 8) + ((n & 0x00ff0000) >> 8);
+	*x = n & 0x0000ffff;
+	*y = n >> 16;
+}
+
+inline int
+morton_x (int n)
+{
+	n = (n & 0x11111111) + ((n & 0x44444444) >> 1);
+	n = (n & 0x03030303) + ((n & 0x30303030) >> 2);
+	n = (n & 0x000f000f) + ((n & 0x0f000f00) >> 4);
+	return  (n & 0x000000ff) + ((n & 0x00ff0000) >> 8);
+}
+
+inline int
+morton_y (int n)
+{
+	n = (n & 0x88888888) + ((n & 0x22222222) << 1);
+	n = (n & 0xc0c0c0c0) + ((n & 0x0c0c0c0c) << 2);
+	n = (n & 0xf000f000) + ((n & 0x00f000f0) << 4);
+	n = (n & 0xff000000) + ((n & 0x0000ff00) << 8);
+
+	return n >> 16;
+}
 
 MultiScaleImage::MultiScaleImage ()
 {
@@ -395,8 +422,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						if (tile)
 							g_free (tile);
 						tile = (char*)source->get_tile_func (from_layer,
-							morton_x[sub_image->n] * ldexp (1.0, from_layer) / tile_width,
-							morton_y[sub_image->n] * ldexp (1.0, from_layer) / tile_height,
+							morton_x(sub_image->n) * ldexp (1.0, from_layer) / tile_width,
+							morton_y(sub_image->n) * ldexp (1.0, from_layer) / tile_height,
 							source);
 						if (from_layer <= dzits->GetMaxLevel () && cache_contains (tile, false))
 							found ++;
@@ -435,8 +462,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						if (tile)
 							g_free (tile);
 						tile = (char*)source->get_tile_func (layer_to_render,
-							morton_x[sub_image->n] * ldexp (1.0, layer_to_render) / tile_width,
-							morton_y[sub_image->n] * ldexp (1.0, layer_to_render) / tile_height,
+							morton_x(sub_image->n) * ldexp (1.0, layer_to_render) / tile_width,
+							morton_y(sub_image->n) * ldexp (1.0, layer_to_render) / tile_height,
 							source);
 						image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
 					}
@@ -463,8 +490,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						cairo_rectangle (cr, 0, 0, ldexp(1.0, layer_to_render), ldexp(1.0, layer_to_render));
 						cairo_clip (cr);
 						cairo_translate (cr,
-								(-morton_x[sub_image->n] * (int)ldexp (1.0, layer_to_render)) % tile_width,
-								(-morton_y[sub_image->n] * (int)ldexp (1.0, layer_to_render)) % tile_height);
+								(-morton_x(sub_image->n) * (int)ldexp (1.0, layer_to_render)) % tile_width,
+								(-morton_y(sub_image->n) * (int)ldexp (1.0, layer_to_render)) % tile_height);
 
 					}
 					cairo_set_source_surface (cr, image, 0, 0);
@@ -512,10 +539,12 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
 					if (context)
 						g_free (context);
+					if (sub_image->n > 256)
+						g_critical ("you asshole");
 					if (from_layer <= dzits->GetMaxLevel ())
 						context = (char*)source->get_tile_func (from_layer,
-							morton_x[sub_image->n] * ldexp (1.0, from_layer) / tile_width,
-							morton_y[sub_image->n] * ldexp (1.0, from_layer) / tile_height,
+							morton_x(sub_image->n) * ldexp (1.0, from_layer) / tile_width,
+							morton_y(sub_image->n) * ldexp (1.0, from_layer) / tile_height,
 							source);
 					else 
 						context = (char*)source->get_tile_func (from_layer, i, j, sub_image->source);
