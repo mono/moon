@@ -41,7 +41,7 @@ namespace System.Windows.Media
 				events.RemoveHandler (RenderingEvent, value);
 				if (events[RenderingEvent] == null) {
 					IntPtr t = NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native);
-					NativeMethods.event_object_remove_handler (t, "Render", rendering_proxy, (IntPtr) Helper.GCHandleFromIntPtr (t));
+					NativeMethods.event_object_remove_handler (t, "Render", rendering_proxy, t);
 				}
 			}
 		}

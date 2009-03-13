@@ -1,3 +1,8 @@
+2009-03-13  Alan McGovern  <amcgovern@novell.com>
+
+	* CompositionTarget.cs: 't' is not a GCHandle. Fixes
+	  silverlight metronome.
+
 2009-03-02  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* MultiScaleTileSource.cs: chain the ctors.
