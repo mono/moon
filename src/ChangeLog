@@ -1,5 +1,10 @@
 2009-03-13  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp: check for null tiles uri returned by
+	get_tile_func
+
+2009-03-13  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: compute the tie opacity on rendering, avoid
 	having to loop over all the tiles on every tick.
 

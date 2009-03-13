@@ -573,13 +573,14 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
 				count++;
 				char *tile = (char*)source->get_tile_func (from_layer, i, j, source);
+				if (!tile)
+					continue;
 				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
 				if (image)
 					found ++;
 				if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
 					blending = TRUE;
-				if (tile)
-					g_free (tile);
+				g_free (tile);
 			}
 		}
 		if (found > 0 && to_layer < from_layer)
