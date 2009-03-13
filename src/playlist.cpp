@@ -352,9 +352,14 @@ PlaylistEntry::MediaErrorHandler (Media *media, ErrorEventArgs *args)
 void
 PlaylistEntry::DownloadProgressChangedHandler (Media *media, EventArgs *args)
 {
-	PlaylistRoot *root = GetRoot ();
+	PlaylistRoot *root;
 	
-	LOG_PLAYLIST ("PlaylistEntry::DownloadProgressChanged (%p, %p)\n", media, args);
+	LOG_PLAYLIST ("PlaylistEntry::DownloadProgressChanged (%p, %p). Disposed: %i\n", media, args, IsDisposed ());
+	
+	if (IsDisposed ())
+		return;
+	
+	root = GetRoot ();
 	
 	g_return_if_fail (root != NULL);
 	
