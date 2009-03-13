@@ -103,7 +103,7 @@ PlaylistEntry::Dispose ()
 		Media *tmp = media;
 		media = NULL;
 		tmp->RemoveSafeHandlers (this);
-		tmp->DisposeObject (this);
+		tmp->DisposeObject (tmp);
 		tmp->unref ();
 	}
 	

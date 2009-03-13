@@ -1,5 +1,10 @@
 2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp: Dispose: fix a typo - dispose the media not
+	  ourselves.
+
+2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp: DownloadProgressChangedHandler: Don't do
 	  anything if we've been disposed. Fixes a warning. 
 
