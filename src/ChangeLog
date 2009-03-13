@@ -1,3 +1,8 @@
+2009-03-13  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: compute the tie opacity on rendering, avoid
+	having to loop over all the tiles on every tick.
+
 2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp: Surface::Dispose: call SetSurface (NULL) on the

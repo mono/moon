@@ -39,7 +39,6 @@ class MultiScaleImage : public MediaBase {
 
 	cairo_user_data_key_t width_key;
 	cairo_user_data_key_t height_key;
-	cairo_user_data_key_t opacity_key;
 	cairo_user_data_key_t full_opacity_at_key;
 
 	void DownloaderComplete ();

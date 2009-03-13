@@ -552,8 +552,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
 	//We have to figure all the layers that we'll have to render:
-	//- from_layer is the highest COMPLETE layer that we can display
-	//- to_layer is the highest PARTIAL layer that we can display
+	//- from_layer is the highest COMPLETE layer that we can display (all tiles are there and blended (except for level 0, where it might not be blended yet))
+	//- to_layer is the highest PARTIAL layer that we can display (contains at least 1 tiles partially blended)
 
 	int to_layer = -1;
 	int from_layer = optimal_layer;
@@ -561,7 +561,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	while (from_layer >= 0) {
 		int count = 0;
 		int found = 0;
-		bool partial = FALSE; //partial means at least a tile is not yet fully blended
+		bool blending = FALSE; //means at least a tile is not yet fully blended
 
 		//v_tile_X is the virtual tile size at this layer in relative coordinates
 		double v_tile_w = tile_width  * ldexp (1.0, layers - from_layer) / im_w;
@@ -576,15 +576,15 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
 				if (image)
 					found ++;
-				if (image && *(double*)(cairo_surface_get_user_data (image, &opacity_key)) < 1.0)
-					partial = TRUE;
+				if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
+					blending = TRUE;
 				if (tile)
 					g_free (tile);
 			}
 		}
 		if (found > 0 && to_layer < from_layer)
 			to_layer = from_layer;
-		if (found == count && (!partial || from_layer == 0))
+		if (found == count && (!blending || from_layer == 0))
 			break;
 		from_layer --;
 	}
@@ -617,10 +617,10 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				cairo_clip(cr);
 				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
 				cairo_set_source_surface (cr, image, 0, 0);
-				double *opacity = (double*)(cairo_surface_get_user_data (image, &opacity_key));
-				if (opacity && *opacity < 1.0)
-					cairo_paint_with_alpha (cr, *opacity);
-				else
+				double *opacity = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
+				if (opacity && *opacity > GetValue (MultiScaleImage::TileFadeProperty)->AsDouble()) {
+					cairo_paint_with_alpha (cr, MIN(1.0 - *opacity + GetValue(MultiScaleImage::TileFadeProperty)->AsDouble (), 1.0));
+				} else
 					cairo_paint (cr);
 				cairo_restore (cr);
 			}
@@ -701,7 +701,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 				fadein_sb->SetManualTarget (this);
 				fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("(MultiScaleImage.TileFade)"));
 				fadein_animation = new DoubleAnimation ();
-				fadein_animation->SetDuration (Duration::FromSecondsFloat (.5));
+				fadein_animation->SetDuration (Duration::FromSecondsFloat (0.5));
 				TimelineCollection *tlc = new TimelineCollection ();
 				tlc->Add (fadein_animation);
 				fadein_sb->SetChildren(tlc);
@@ -710,7 +710,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			}
 
 			//LOG_MSI ("animating Fade from %f to %f\n\n", GetValue(MultiScaleImage::TileFadeProperty)->AsDouble(), GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
-			double *opacity = new double (0.1);
 			double *to = new double (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
 			fadein_animation->SetFrom (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble());
 			fadein_animation->SetTo (*to);
@@ -723,7 +722,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 								has_alpha ? CAIRO_CONTENT_COLOR_ALPHA : CAIRO_CONTENT_COLOR, 
 								*p_width, *p_height);
 
-			cairo_surface_set_user_data (similar, &opacity_key, opacity, g_free);
 			cairo_surface_set_user_data (similar, &full_opacity_at_key, to, g_free);
 
 			cairo_t *temp_cr = cairo_create (similar);
@@ -839,21 +837,11 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	}
 
 	if (args->GetId () == MultiScaleImage::TileFadeProperty) {
-
-		//Iterate over the cached tiles, bump opacity
-		GHashTableIter iter;
-		gpointer key, value;
-		g_hash_table_iter_init (&iter, cache);
-		while (g_hash_table_iter_next (&iter, &key, &value)) {
-			cairo_surface_t *image = (cairo_surface_t*)value;
-			if (!image)
-				continue;
-			double *full = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
-			if (!full)
-				continue;
-			double *op = new double (MIN (1.0, 1 - *full + args->new_value->AsDouble()));
-			cairo_surface_set_user_data (image, &opacity_key, op, g_free);
-		}
+		//There's 2 options here,
+		// - loop all the tiles, update their opacity, and only invalidate a subregion
+		// - Invalidate all, and compute the new opacity on the tiles that needs to be rendered.
+		//Both options are unfortunately quite expensive :(
+		LOG_MSI ("TileFade changed to %f", args->new_value->AsDouble ());
 		Invalidate ();
 	}
 
