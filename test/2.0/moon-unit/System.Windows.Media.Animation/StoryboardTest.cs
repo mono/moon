@@ -49,7 +49,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 	}
 	
 	[TestClass]
-	public class StoryboardTest : SilverlightTest {
+	public class ___StoryboardTest : SilverlightTest {
 		
 		[TestMethod]
 		public void InvalidValues_NonTimeline ()
@@ -79,6 +79,28 @@ namespace MoonTest.System.Windows.Media.Animation {
 			t.SetValue (Storyboard.TargetPropertyProperty, null);
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void MultipleComplete ()
+		{
+			int count = 0;
+
+			Rectangle target = new Rectangle { Width = 0 };
+			Storyboard a = new Storyboard ();
+			DoubleAnimation animation = new DoubleAnimation { By = 10, Duration = new Duration (TimeSpan.FromMilliseconds (100)) };
+			Storyboard.SetTarget (animation, target);
+			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
+			a.Children.Add (animation);
+
+			a.Completed += delegate { count++; a.Begin (); };
+
+			Enqueue (() => TestPanel.Children.Add (target));
+			Enqueue (() => a.Begin ());
+			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (2000));
+			Enqueue (() => Assert.IsBetween (45, 55, target.Width, "#1"));
+			EnqueueTestComplete ();
+		}
+		
 		[TestMethod]
 		[Asynchronous]
 		public void MultipleStartStop ()

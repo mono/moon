@@ -1,3 +1,8 @@
+2009-03-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Just add a
+	  test to ensure that 'By' is working correctly.
+
 2009-03-12  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* security/SecurityCriticalTest.cs: Fix some test cases not to 
