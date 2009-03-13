@@ -1,3 +1,8 @@
+2009-03-13  Chris Toshok  <toshok@ximian.com>
+
+	* textblock.h (class Inline): inlines don't permit multiple
+	parents (Fixes RunTest.RunMultipleParents).
+
 2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml.cpp:

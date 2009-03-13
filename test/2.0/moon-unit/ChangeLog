@@ -1,3 +1,7 @@
+2009-03-13  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Documents/RunTest.cs: enable RunMultipleParents.
+
 2009-03-13  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/XamlStyle.xaml: Commit a xaml testcase which

@@ -66,6 +66,8 @@ class Inline : public DependencyObject, public ITextAttributes {
 	Inline ();
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+
+	virtual bool PermitsMultipleParents () { return false; }
 	
 	//
 	// Property Accessors

@@ -66,7 +66,6 @@ namespace MoonTest.System.Windows.Documents {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("moonlight permits runs to be in multiple textblocks.")]
 		public void RunMultipleParents ()
 		{
 			TextBlock tb1 = new TextBlock ();
