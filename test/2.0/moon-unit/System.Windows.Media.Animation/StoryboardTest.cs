@@ -97,7 +97,9 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Enqueue (() => TestPanel.Children.Add (target));
 			Enqueue (() => a.Begin ());
 			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (2000));
-			Enqueue (() => Assert.IsBetween (45, 55, target.Width, "#1"));
+			
+			// We should move exactly 50 pixels but can overshoot the target by > 10%.
+			Enqueue (() => Assert.IsBetween (40, 60, target.Width, "#1"));
 			EnqueueTestComplete ();
 		}
 		

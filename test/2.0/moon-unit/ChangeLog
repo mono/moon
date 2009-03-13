@@ -1,5 +1,11 @@
 2009-03-13  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: +- 5 isn't
+	  a large enough delta. Increase delta to +- 10 to avoid
+	  flapping.
+
+2009-03-13  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Just add a
 	  test to ensure that 'By' is working correctly.
 
