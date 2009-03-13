@@ -44,19 +44,6 @@
 #include "deployment.h"
 
 /*
- * MediaNode
- */
-
-class MediaNode : public List::Node {
-public:
-	Media *media;
-	MediaNode (Media *media)
-	{
-		this->media = media;
-	}
-};
-
-/*
  * Media
  */
 
@@ -66,7 +53,7 @@ bool Media::registered_ms_codecs = false;
 DemuxerInfo *Media::registered_demuxers = NULL;
 DecoderInfo *Media::registered_decoders = NULL;
 ConverterInfo *Media::registered_converters = NULL;
-Queue *Media::media_objects = NULL;
+gint32 Media::media_thread_count = 0;
 
 Media::Media (PlaylistRoot *root)
 	: IMediaObject (Type::MEDIA, this)
@@ -74,9 +61,6 @@ Media::Media (PlaylistRoot *root)
 	pthread_attr_t attribs;
 	
 	LOG_PIPELINE ("Media::Media (), id: %i\n", GET_OBJ_ID (this));
-
-	// Add ourselves to the global list of medias
-	media_objects->Push (new MediaNode (this));
 
 	queued_requests = new List ();
 	
@@ -121,8 +105,6 @@ Media::~Media ()
 void
 Media::Dispose ()
 {
-	MediaNode *node;
-
 	LOG_PIPELINE ("Media::~Dispose (), id: %i\n", GET_OBJ_ID (this));
 
 	pthread_mutex_lock (&queue_mutex);
@@ -161,21 +143,6 @@ Media::Dispose ()
 	
 	delete markers;
 	markers = NULL;
-
-	// Remove ourselves from the global list of medias
-	// media_objects might be NULL if Media::Shutdown has been called already
-	if (media_objects) {
-		media_objects->Lock ();
-		node = (MediaNode *) media_objects->LinkedList ()->First ();
-		while (node != NULL) {
-			if (node->media == this) {
-				media_objects->LinkedList ()->Remove (node);
-				break;
-			}
-			node = (MediaNode *) node->next;
-		}
-		media_objects->Unlock ();
-	}
 	
 	IMediaObject::Dispose ();
 }
@@ -336,8 +303,6 @@ Media::Initialize ()
 {
 	LOG_PIPELINE ("Media::Initialize ()\n");
 	
-	media_objects = new Queue ();	
-	
 	// demuxers
 	Media::RegisterDemuxer (new ASFDemuxerInfo ());
 	Media::RegisterDemuxer (new Mp3DemuxerInfo ());
@@ -368,7 +333,6 @@ Media::Shutdown ()
 
 	MediaInfo *current;
 	MediaInfo *next;
-	MediaNode *node;
 	
 	current = registered_decoders;
 	while (current != NULL) {
@@ -396,22 +360,6 @@ Media::Shutdown ()
 
 	// Make sure all threads are stopped
 	AudioPlayer::Shutdown ();
-
-	media_objects->Lock ();
-	node = (MediaNode *) media_objects->LinkedList ()->First ();
-	while (node != NULL) {
-		node->media->SetCurrentDeployment ();
-		node->media->ref ();
-		node->media->StopThread ();
-		node->media->unref ();
-		Deployment::SetCurrent (NULL);
-		node = (MediaNode *) node->next;
-	}
-	
-	media_objects->Unlock ();
-
-	delete media_objects;
-	media_objects = NULL;
 
 	LOG_PIPELINE ("Media::Shutdown () [Done]\n");
 }
@@ -1084,7 +1032,15 @@ Media::WorkerLoop (void *data)
 {
 	Media *media = (Media *) data;
 	
+	g_atomic_int_exchange_and_add (&media_thread_count, 1);
+	
+	LOG_PIPELINE ("Media::WorkerLoop (%p id: %i). New media thread. Current media thread count: %i\n", media, GET_OBJ_ID (media), media_thread_count);
+	
 	media->WorkerLoop ();
+	
+	g_atomic_int_dec_and_test (&media_thread_count);
+	
+	LOG_PIPELINE ("Media::WorkerLoop (%p id: %i). Stopped media thread. Current media thread count: %i\n", media, GET_OBJ_ID (media), media_thread_count);
 	
 	return NULL;
 }

@@ -92,6 +92,8 @@ class MediaElement : public FrameworkElement {
 	EVENTHANDLER (MediaElement, Pause, PlaylistRoot, EventArgs); // Not thread-safe
 	EVENTHANDLER (MediaElement, Stop, PlaylistRoot, EventArgs); // Not thread-safe
 	
+	EVENTHANDLER (MediaElement, ShuttingDown, Deployment, EventArgs); // Not thread-safe
+	
 	// Fill in information to/from the media, mediaplayer, etc.
 	// Does not change any state
 	void SetProperties (Media *media);

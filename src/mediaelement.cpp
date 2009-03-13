@@ -79,6 +79,8 @@ MediaElement::MediaElement ()
 	// so that ReadLocalValue() will get these values.
 	SetValue (MediaElement::BufferingTimeProperty, Value (TimeSpan_FromSeconds (5), Type::TIMESPAN));
 	SetValue (MediaElement::PositionProperty, Value (TimeSpan_FromSeconds (0), Type::TIMESPAN));
+	
+	GetDeployment ()->AddHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
 }
 
 void
@@ -87,7 +89,17 @@ MediaElement::Dispose ()
 	LOG_MEDIAELEMENT ("MediaElement::Dispose ()\n");
 	VERIFY_MAIN_THREAD;
 	
+	GetDeployment ()->RemoveHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
+
+	Reinitialize ();
 	FrameworkElement::Dispose ();
+}
+
+void
+MediaElement::ShuttingDownHandler (Deployment *sender, EventArgs *args)
+{
+	LOG_MEDIAELEMENT ("MediaElement::ShuttingDownHandler ()\n");
+	
 	Reinitialize ();
 }
 

@@ -1,5 +1,15 @@
 2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.h:
+	* mediaelement.cpp: Attach to Deployment::ShuttingDownEvent
+	  and clean up upon shutdown.
+
+	* pipeline.h:
+	* pipeline.cpp: Remove a broken attempt to ensure that we
+	  don't leave Media threads running after having shut down.
+
+2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp: Dispose: fix a typo - dispose the media not
 	  ourselves.
 

@@ -645,8 +645,7 @@ public:
 	static void Initialize ();
 	static void Shutdown ();
 
-	static Queue* media_objects;
-	static int media_thread_count;
+	static gint32 media_thread_count;
 };
  
 class MediaFrame : public EventObject {
