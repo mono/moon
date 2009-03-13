@@ -112,7 +112,7 @@ namespace System.Windows {
 
 		private bool OverridesLayoutMethod (string name)
 		{
-			MethodInfo method = GetType().GetMethod ("MeasureOverride", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+			MethodInfo method = GetType().GetMethod (name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 			if (method != null) {
 				if (method.DeclaringType != typeof (FrameworkElement)
 				    && method.IsFamily && method.IsVirtual

@@ -1,3 +1,8 @@
+2009-03-13  Jb Evain  <jbevain@novell.com>
+
+	* FrameworkElement.cs (OverridesLayoutMethod): fix typo and actually
+	use the name argument instead of a hard-coded name.
+
 2009-03-10  Chris Toshok  <toshok@ximian.com>
 
 	* FrameworkElement.cs (get_Parent): track the move of
