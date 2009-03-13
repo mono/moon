@@ -1,5 +1,9 @@
 2009-03-13  Geoff Norton  <gnorton@novell.com>
 
+	* Value.cs: Implement the Binding converter
+
+2009-03-13  Geoff Norton  <gnorton@novell.com>
+
 	* ManagedXamlLoader.cs:
 	* Value.cs: Lookup should cast to INativeDependencyObjectWrapper
 	so we can work on Application as well

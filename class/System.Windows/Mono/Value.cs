@@ -27,6 +27,7 @@
 //
 using System;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
@@ -153,6 +154,9 @@ namespace Mono {
 					IntPtr managed_object = val->u.p;
 					GCHandle handle = Helper.GCHandleFromIntPtr (managed_object);
 					return handle.Target;
+
+				case Kind.BINDING:
+					return new Binding (val->u.p);
 
 				case Kind.BINDINGEXPRESSION:
 				case Kind.STRING: {
