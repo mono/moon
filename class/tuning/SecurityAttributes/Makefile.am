@@ -97,7 +97,7 @@ detect: detect-sc.exe detect-ssc.exe
 merge.exe: merge.cs Moonlight.SecurityModel.dll
 	gmcs merge.cs -out:$@ $(LIBS)
 
-$(MERGED_SECURITY_ATTRIBUTES_INFO): $(SECATTRS)
+$(MERGED_SECURITY_ATTRIBUTES_INFO): $(SECATTRS) merge.exe
 	mono merge.exe . .
 
 validate: find-sc.exe
