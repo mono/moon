@@ -383,8 +383,10 @@ Surface::~Surface ()
 void
 Surface::Dispose ()
 {
-	if (toplevel)
+	if (toplevel) {
+		toplevel->SetSurface (NULL);
 		toplevel->Dispose ();
+	}
 	
 	EventObject::Dispose ();
 }
