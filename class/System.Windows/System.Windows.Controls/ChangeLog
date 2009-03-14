@@ -1,3 +1,8 @@
+2009-03-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleSubImage: do not SetValue directly, so the DP can be
+	animated
+
 2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* PasswordBox.cs: Manually bind the PasswordProperty and the
