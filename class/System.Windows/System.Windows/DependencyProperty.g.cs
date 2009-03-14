@@ -650,38 +650,6 @@ namespace System.Windows.Controls {
 		}
 	}
 
-	partial class MultiScaleSubImage {
-		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "AspectRatio", typeof (double));
-		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "Opacity", typeof (double));
-		public static readonly DependencyProperty ViewportOriginProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "ViewportOrigin", typeof (Point));
-		public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "ViewportWidth", typeof (double));
-		public static readonly DependencyProperty ZIndexProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "ZIndex", typeof (int));
-
-		public double AspectRatio {
-			get { return (double) GetValue (AspectRatioProperty); }
-		}
-
-		public double Opacity {
-			get { return (double) GetValue (OpacityProperty); }
-			set { SetValue (OpacityProperty, value); }
-		}
-
-		public Point ViewportOrigin {
-			get { return (Point) GetValue (ViewportOriginProperty); }
-			set { SetValue (ViewportOriginProperty, value); }
-		}
-
-		public double ViewportWidth {
-			get { return (double) GetValue (ViewportWidthProperty); }
-			set { SetValue (ViewportWidthProperty, value); }
-		}
-
-		public int ZIndex {
-			get { return (int) GetValue (ZIndexProperty); }
-			set { SetValue (ZIndexProperty, value); }
-		}
-	}
-
 	partial class Panel {
 		public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Lookup (Kind.PANEL, "Background", typeof (Brush));
 		internal static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.PANEL, "Children", typeof (UIElementCollection));
