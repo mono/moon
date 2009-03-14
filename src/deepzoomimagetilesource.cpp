@@ -534,7 +534,7 @@ DeepZoomImageTileSource::EndElement (void *data, const char *el)
 					subsource->SetImageHeight (info->current_subimage->height);
 					subsource->format = info->format;
 					if (info->current_subimage->has_viewport) {
-						subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
+						subi->SetViewportOrigin (Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
 						subi->SetViewportWidth (info->current_subimage->vp_w);
 					}
 
