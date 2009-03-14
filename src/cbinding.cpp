@@ -2350,6 +2350,26 @@ multi_scale_sub_image_new (void)
 }
 
 
+void
+multi_scale_sub_image_set_viewport_origin (MultiScaleSubImage *instance, Point point)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetViewportOrigin (point);
+}
+
+
+void
+multi_scale_sub_image_set_viewport_width (MultiScaleSubImage *instance, double width)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetViewportWidth (width);
+}
+
+
 /**
  * MultiScaleSubImageCollection
  **/
