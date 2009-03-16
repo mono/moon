@@ -554,7 +554,7 @@ namespace System.Windows.Controls.Data.Test
             {
                 Assert.AreEqual(1, _rowDetailsChangedCount, "RowDetailsChanged was not raised from default selection");
                 
-                if (dataSource.Count() > 1)
+                if (System.Windows.Controls.Data.Test.DataClassSources.Extensions.Count (dataSource) > 1)
                 {
                     _rowDetailsChangedCount = 0;
                     dataGrid.SelectedIndex = 1;
