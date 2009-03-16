@@ -1,3 +1,8 @@
+2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* SDKControls/Data/test/AppManifest.xaml: Added (VS generated,
+	  we now use it in our build).
+
 2009-02-26  Chris Toshok  <toshok@ximian.com>
 
 	* Controls/Src/ListBox/ListBox.cs: land some longstanding local

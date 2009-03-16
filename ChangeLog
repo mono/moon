@@ -1,3 +1,8 @@
+2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* configure.ac: Include support for building MS' toolkit tests
+	  in our build.
+
 2008-03-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* configure.ac: Add class/tuning/SecurityAttributes/Makefile to

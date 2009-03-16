@@ -1,0 +1,8 @@
+2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ChangeLog:
+	* Makefile.am:
+	* Controls.Data.Test.html:
+	* ControlsExtended.Test.html: Include support for building MS'
+	  toolkit tests in our build.
+

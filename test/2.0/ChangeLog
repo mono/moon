@@ -1,3 +1,9 @@
+2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am:
+	* Microsoft.SilverlightControls: Include support for building
+	  MS' toolkit tests in our build.
+
 2009-02-27  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Microsoft.Silverlight.Testing/Makefile.am: Fix smcs use
