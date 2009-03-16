@@ -41,17 +41,23 @@ system_windows_controls_sources =						\
 	$(MSSDKCONTROLS)/Calendar/DateTimeTypeConverter.cs			\
 	$(MSSDKCONTROLS)/Calendar/KeyboardHelper.cs				\
 	$(MSSDKCONTROLS)/Calendar/SelectedDatesCollection.cs			\
+	$(MSSDKCONTROLS)/Calendar/TestHooks/CalendarInternalTestHook.cs	\
+	$(MSSDKCONTROLS)/Calendar/TestHooks/MonthInternalTestHook.cs	\
 	$(MSSDKCONTROLS)/DatePicker/DatePicker.cs				\
 	$(MSSDKCONTROLS)/DatePicker/DatePickerDateValidationErrorEventArgs.cs	\
 	$(MSSDKCONTROLS)/DatePicker/DatePickerFormat.cs				\
 	$(MSSDKCONTROLS)/DatePicker/DatePickerTextBox.cs			\
+	$(MSSDKCONTROLS)/DatePicker/TestHooks/DatePickerInternalTestHook.cs	\
 	$(MSSDKCONTROLS)/GridSplitter/DragValidator.cs				\
 	$(MSSDKCONTROLS)/GridSplitter/GridSplitter.cs				\
 	$(MSSDKCONTROLS)/GridSplitter/PreviewControl.cs				\
+	$(MSSDKCONTROLS)/GridSplitter/TestHooks/GridSplitterInternalTestHook.cs	\
 	$(MSSDKCONTROLS)/TabControl/Dock.cs					\
 	$(MSSDKCONTROLS)/TabControl/TabControl.cs				\
 	$(MSSDKCONTROLS)/TabControl/TabItem.cs					\
 	$(MSSDKCONTROLS)/TabControl/TabPanel.cs					\
+	$(MSSDKCONTROLS)/TabControl/TestHooks/TabControlInternalTestHook.cs	\
+	$(MSSDKCONTROLS)/TabControl/TestHooks/TabItemInternalTestHook.cs	\
 	$(MSSDKCONTROLS)/Automation/CalendarAutomationPeer.cs			\
 	$(MSSDKCONTROLS)/Automation/CalendarButtonAutomationPeer.cs		\
 	$(MSSDKCONTROLS)/Automation/CalendarDayButtonAutomationPeer.cs		\
@@ -64,9 +70,19 @@ system_windows_controls_sources =						\
 EXTRA_DIST = $(system_windows_controls_sources) 			\
 	ChangeLog
 
-$(assemblysl): $(system_windows_controls_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll
-	$(SMCS) -target:library -out:$@ $(system_windows_controls_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../silverlight.pub -delaysign+
-	sn -q -R $@ $(srcdir)/../mono.snk
+XAML_RESOURCES = \
+	$(MSSDKCONTROLS)/App.xaml,app.xaml	\
+	$(MSSDKCONTROLS)/themes/generic.xaml,themes/generic.xaml
+
+$(assembly).Resource.resources: $(MSSDKCONTROLS)/Resource.resx
+	resgen2 $(MSSDKCONTROLS)/Resource.resx $(assembly).Resource.resources
+	
+$(assembly).g.resources: $(MSSDKCONTROLS)/App.xaml $(MSSDKCONTROLS)/themes/generic.xaml
+	mono $(top_builddir)/tools/respack/respack.exe $@ $(XAML_RESOURCES)
+
+$(assemblysl): $(system_windows_controls_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll $(assembly).g.resources $(assembly).Resource.resources
+	$(SMCS) -target:library -out:$@ $(system_windows_controls_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../silverlight.pub -delaysign+ -res:$(assembly).g.resources -res:$(assembly).Resource.resources
+	sn -q -R $@ $(srcdir)/../mono.snk 
 
 $(assemblydesktop): $(system_windows_controls_sources) Makefile $(top_builddir)/class/lib/3.0/System.Windows.dll
 	$(GMCS) -target:library -out:$@ $(system_windows_controls_sources) -keyfile:$(srcdir)/../mono.snk
