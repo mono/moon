@@ -511,9 +511,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				
 					double *opacity = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
 					if (opacity && *opacity > GetValue (MultiScaleImage::TileFadeProperty)->AsDouble()) 
-						cairo_paint_with_alpha (cr, MIN(1.0 - *opacity + GetValue(MultiScaleImage::TileFadeProperty)->AsDouble (), 1.0));
-					//if (IS_TRANSLUCENT (sub_image->GetOpacity ()))
-					//	cairo_paint_with_alpha (cr, sub_image->GetOpacity ());
+						cairo_paint_with_alpha (cr, sub_image->GetOpacity() * MIN(1.0 - *opacity + GetValue(MultiScaleImage::TileFadeProperty)->AsDouble (), 1.0));
 					else
 						cairo_paint (cr);
 						    
