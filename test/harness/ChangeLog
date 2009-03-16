@@ -1,3 +1,8 @@
+2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker/logging.cpp: LogProvider::LogResult: implement
+	  logging to a file.
+
 2009-03-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker/shocker.cpp: Add support for getting the x,y

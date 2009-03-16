@@ -123,6 +123,24 @@ LogProvider::LogDebug (const char* str)
 void
 LogProvider::LogResult (TestResult result)
 {
+	char *result_filename = getenv ("MOONLIGHT_HARNESS_RESULT_FILE");
+	
+	if (result_filename != NULL && result_filename [0] != 0) {
+		FILE *result_fd = fopen (result_filename, "a");
+		if (result_fd == NULL) {
+			if (result != PASS) {
+				// this is kinda rude, but if we can't log a failure,
+				// just exit, since this is a test plugin after all.
+				// this way the harness won't miss the failure.
+				exit (1);
+			}
+		} else {
+			gint8 res = TestResultToInt (result);
+			fwrite (&res, 1, 1, result_fd);
+			fclose (result_fd);
+		}
+	}
+	
 #ifdef DBUS_ENABLED
 	g_return_if_fail (dbus_proxy);
 
