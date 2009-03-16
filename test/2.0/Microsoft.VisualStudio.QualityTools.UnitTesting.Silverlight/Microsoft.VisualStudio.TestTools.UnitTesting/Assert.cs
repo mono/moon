@@ -303,9 +303,32 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 				string msg = String.Format ("Expected value and actual value were both the same. {0}", string.Format (message, parameters));
 				throw new AssertFailedException (msg);
 			}
-
 		}
 
+		public static void AreNotSame (object expected, object actual)
+		{
+			if (expected == actual) {
+				string msg = String.Format ("Expected value and actual value were both the same");
+				throw new AssertFailedException (msg);
+			}
+		}
+		
+		public static void AreNotSame (object expected, object actual, string message)
+		{
+			if (expected == actual) {
+				string msg = String.Format ("Expected value and actual value were both the same. {0}", message);
+				throw new AssertFailedException (msg);
+			}
+		}
+		
+		public static void AreNotSame (object expected, object actual, string message, params object [] parameters)
+		{
+			if (expected == actual) {
+				string msg = String.Format ("Expected value and actual value were both the same. {0}", string.Format (message, parameters));
+				throw new AssertFailedException (msg);
+			}
+		}
+		
 		public static void IsInstanceOfType (object value, Type expectedType)
 		{
 			IsInstanceOfType (value, expectedType, null);
