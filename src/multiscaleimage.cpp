@@ -320,6 +320,7 @@ multi_scale_image_handle_parsed (void *userdata)
 				msi->SetValue (MultiScaleImage::SubImagesProperty, new MultiScaleSubImageCollection ());
 
 			msi->GetSubImages ()->Add (si);
+			si->parent = msi;
 		}
 	}
 	msi->Invalidate ();

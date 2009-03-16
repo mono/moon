@@ -19,6 +19,7 @@
 /* @Version=2,Namespace=System.Windows.Controls,ManagedDependencyProperties=Manual */
 class MultiScaleSubImage : public DependencyObject {
 	friend class MultiScaleImage;
+	friend void multi_scale_image_handle_parsed (void *userdata);
 
 	MultiScaleTileSource *source;
 
@@ -31,6 +32,7 @@ class MultiScaleSubImage : public DependencyObject {
 	DoubleAnimation *zoom_animation;
 	PointAnimation *pan_animation;
 
+	MultiScaleImage *parent;
 
  protected:
 	virtual ~MultiScaleSubImage () {}
@@ -50,6 +52,8 @@ class MultiScaleSubImage : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleSubImage ();
 	MultiScaleSubImage (const char* parent_uri, MultiScaleTileSource *source, int id, int n);
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	double GetAspectRatio ();
 	void SetAspectRatio (double ratio);

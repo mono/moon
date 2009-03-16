@@ -63,6 +63,28 @@ MultiScaleSubImage::GetViewportHeight ()
 }
 
 void
+MultiScaleSubImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+{
+	if (args->GetId () == MultiScaleSubImage::ViewportOriginProperty) {
+		Point *p = args->new_value->AsPoint();
+		if (parent)
+			parent->Invalidate ();
+	}
+
+	if (args->GetId () == MultiScaleSubImage::ViewportWidthProperty) {
+		if (parent)
+			parent->Invalidate ();
+	}
+
+	if (args->GetProperty ()->GetOwnerType () != Type::MULTISCALESUBIMAGE) {
+		DependencyObject::OnPropertyChanged (args, error);
+		return;
+	}
+	
+	NotifyListenersOfPropertyChange (args);
+}
+
+void
 MultiScaleSubImage::SetViewportOrigin (Point value)
 {
 	//SetValue (MultiScaleSubImage::ViewportOriginProperty, Value (*value));
