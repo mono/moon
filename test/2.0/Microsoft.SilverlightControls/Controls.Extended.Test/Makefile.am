@@ -57,4 +57,4 @@ $(assembly).xap: $(assembly).dll
 		$(top_builddir)/class/lib/2.1/System.Windows.Controls.Data.dll	\
 		$(top_builddir)/class/lib/2.1/System.Xml.Linq.dll
 	
-test: $(assembly).xap
+all-local: $(assembly).xap

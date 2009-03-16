@@ -1,5 +1,9 @@
 2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Makefile.am: Fix dependencies and clean and install targets.
+
+2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* ChangeLog:
 	* Makefile.am:
 	* Controls.Data.Test.html:

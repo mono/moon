@@ -2,6 +2,10 @@ assembly = Controls.Test.Common
 
 SDK_SRCDIR=$(srcdir)/../../../../class/Microsoft.SilverlightControls/SDKControls/Test/Controls.Test.Common
 
+CLEANFILES = \
+	$(assembly).dll	\
+	$(assembly).dll.mdb
+
 REFERENCES = \
 	-r:$(srcdir)/../Microsoft.Silverlight.Testing.dll	\
 	-r:$(srcdir)/../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
@@ -25,7 +29,7 @@ sources =							\
 
 KEYFILE = $(SDK_SRCDIR)/../../MixControls.snk
 
-$(assembly).dll: $(sources) Makefile
+$(assembly).dll: $(sources)
 	$(SMCS) -target:library -out:$@ $(sources) -keyfile:$(KEYFILE)
 
-test: $(assembly).dll
+all-local: $(assembly).dll

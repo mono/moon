@@ -39,10 +39,10 @@ $(assembly).sources: $(SOURCES)
 test.g.resources:
 	$(MONO) --debug $(top_builddir)/tools/respack/respack.exe test.g.resources $(SDK_SRCDIR)/App.xaml,app.xaml
 
-$(assembly).dll: test.g.resources
+test.dll: test.g.resources
 	$(SMCS) -out:test.dll $(SOURCES) -keyfile:$(KEYFILE) -res:test.g.resources
 
-$(assembly).xap: $(assembly).dll
+$(assembly).xap: test.dll
 	rm -f $(assembly).xap
 	zip -j -MM $(assembly).xap \
 		test.dll \
@@ -53,4 +53,6 @@ $(assembly).xap: $(assembly).dll
 		$(top_builddir)/class/lib/2.1/System.Windows.Controls.Data.dll	\
 		$(top_builddir)/class/lib/2.1/System.Xml.Linq.dll
 	
-test: $(assembly).xap
+all-local: $(assembly).xap
+
+install:
