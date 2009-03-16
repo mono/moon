@@ -196,10 +196,37 @@ namespace MoonTest.Security {
 		public void ReflectCriticalPublicClass_PublicProperty ()
 		{
 			X509Certificate cert = new X509Certificate ();
-			MethodInfo mi = typeof (X509Certificate).GetProperty ("Handle").GetGetMethod ();
+
+			PropertyInfo pi = typeof (X509Certificate).GetProperty ("Handle");
+			Assert.Throws<MethodAccessException> (delegate {
+				pi.GetValue (cert, null);
+			}, "X509Certificate.Handle-GetValue");
+
+			MethodInfo mi = pi.GetGetMethod ();
 			Assert.Throws<MethodAccessException> (delegate {
 				mi.Invoke (cert, new object [0]);
-			}, "X509Certificate.Handle");
+			}, "X509Certificate.Handle-Invoke-Getter");
+		}
+
+		[TestMethod]
+		public void ReflectCriticalPublicClass_PublicStaticProperty ()
+		{
+			PropertyInfo pi = typeof (Environment).GetProperty ("CurrentDirectory");
+			Assert.Throws<MethodAccessException> (delegate {
+				pi.GetValue (null, null);
+			}, "Environment.CurrentDirectory-GetValue");
+			Assert.Throws<MethodAccessException> (delegate {
+				pi.SetValue (null, null, null);
+			}, "Environment.CurrentDirectory-SetValue");
+
+			MethodInfo mi = pi.GetGetMethod ();
+			Assert.Throws<MethodAccessException> (delegate {
+				mi.Invoke (null, new object [0]);
+			}, "Environment.CurrentDirectory-Invoke-Getter");
+			mi = pi.GetSetMethod ();
+			Assert.Throws<MethodAccessException> (delegate {
+				mi.Invoke (null, new object [1]);
+			}, "Environment.CurrentDirectory-Invoke-Setter");
 		}
 
 		[TestMethod]
@@ -208,7 +235,48 @@ namespace MoonTest.Security {
 			FieldInfo fi = typeof (Marshal).GetField ("SystemDefaultCharSize");
 			Assert.Throws<FieldAccessException> (delegate {
 				fi.GetValue (null);
+			}, "Marshal.SystemDefaultCharSize-GetValue");
+			Assert.Throws<FieldAccessException> (delegate {
+				fi.SetValue (null, null);
+			}, "Marshal.SystemDefaultCharSize-SetValue");
+			Assert.Throws<FieldAccessException> (delegate {
+				fi.SetValue (null, null, BindingFlags.Default, null, null);
+			}, "Marshal.SystemDefaultCharSize-SetValue-2");
+		}
+
+		[TestMethod]
+		public void ReflectCriticalPublicClass_GetFields ()
+		{
+			FieldInfo[] fis = typeof (Marshal).GetFields ();
+			Assert.AreEqual (1, fis.Length, "Length");
+			Assert.Throws<FieldAccessException> (delegate {
+				fis [0].GetValue (null);
 			}, "Marshal.SystemDefaultCharSize");
+		}
+
+		[TestMethod]
+		public void ReflectCriticalPublicClass_PublicEvent ()
+		{
+			AppDomain ad = AppDomain.CurrentDomain;
+			EventInfo ei = typeof (AppDomain).GetEvent ("UnhandledException");
+			Assert.Throws<MethodAccessException> (delegate {
+				ei.AddEventHandler (ad, null);
+			}, "AppDomain.UnhandledException-AddEventHandler");
+			Assert.Throws<MethodAccessException> (delegate {
+				ei.RemoveEventHandler (ad, null);
+			}, "AppDomain.UnhandledException-RemoveEventHandler");
+
+			MethodInfo mi = ei.GetAddMethod ();
+			Assert.Throws<MethodAccessException> (delegate {
+				mi.Invoke (ad, new object [1]);
+			}, "AppDomain.UnhandledException-GetAddMethod-Invoke");
+			mi = ei.GetRaiseMethod ();
+			// C# and VB do not generate this method
+			Assert.IsNull (mi, "GetRaiseMethod");
+			mi = ei.GetRemoveMethod ();
+			Assert.Throws<MethodAccessException> (delegate {
+				mi.Invoke (ad, new object [1]);
+			}, "AppDomain.UnhandledException-GetRemoveMethod-Invoke");
 		}
 
 		[TestMethod]

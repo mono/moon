@@ -1,3 +1,8 @@
+2009-03-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/ReflectionTest.cs: Add test cases suggested by Rogrido 
+	Kumpera (where Invoke is not called).
+
 2009-03-13  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows.Controls/CanvasTest.cs (DoublesForZIndex): add
