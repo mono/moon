@@ -537,7 +537,11 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			int i, j;
 			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
+				if (downloading)
+					break;
 				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
+					if (downloading)
+						break;
 					if (context)
 						g_free (context);
 					if (from_layer <= dzits->GetMaxLevel ())
@@ -547,8 +551,10 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 							source);
 					else 
 						context = (char*)source->get_tile_func (from_layer, i, j, sub_image->source);
-					if (context && !cache_contains (context, true))
-						return context;
+					if (context && !cache_contains (context, true)) {
+						DownloadUri (context);
+						downloading = true;
+					}
 				}
 			}
 		}
