@@ -13,13 +13,14 @@ REFERENCES = \
 	-r:$(srcdir)/../Microsoft.Silverlight.Testing.dll 								\
 	-r:$(srcdir)/../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
 	-r:$(srcdir)/../Controls.Test.Common/Controls.Test.Common.dll							\
-	-r:System.Windows.Controls	\
+	-r:$(srcdir)/../System.Windows.Controls.Data	\
+	-r:$(srcdir)/../System.Windows.Controls	\
+	-r:$(srcdir)/../System.Xml.Linq.dll	\
 	-r:System.Core	\
 	-r:System	\
 	-r:System.Xml	\
 	-r:System.Net	\
-	-r:System.Windows	\
-	-r:System.Windows.Controls.Data
+	-r:System.Windows
 
 CSCFLAGS = /codepage:65001 -d:SILVERLIGHT -target:library -debug+ -noconfig $(REFERENCES)
 
@@ -47,11 +48,11 @@ $(assembly).xap: test.dll
 	zip -j -MM $(assembly).xap \
 		test.dll \
 		$(MANIFEST)	\
-		../Controls.Test.Common/Controls.Test.Common.dll	\
-		../Microsoft.Silverlight.Testing.dll	\
-		../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
-		$(top_builddir)/class/lib/2.1/System.Windows.Controls.Data.dll	\
-		$(top_builddir)/class/lib/2.1/System.Xml.Linq.dll
+		$(srcdir)/../Controls.Test.Common/Controls.Test.Common.dll	\
+		$(srcdir)/../Microsoft.Silverlight.Testing.dll	\
+		$(srcdir)/../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
+		$(srcdir)/../System.Windows.Controls.Data.dll	\
+		$(srcdir)/../System.Xml.Linq.dll
 	
 all-local: $(assembly).xap
 

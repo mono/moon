@@ -1,5 +1,11 @@
 2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Makefile.am: Resign System.Windows.Controls[.Data].dll and
+	  System.Xml.Linq.dll with a key for which we have the private
+	  key (so that SL loads the assemblies).
+
+2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am: Fix dependencies and clean and install targets.
 
 2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
