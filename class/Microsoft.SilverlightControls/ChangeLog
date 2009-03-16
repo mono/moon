@@ -1,5 +1,11 @@
 2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Controls/Makefile.am: Remove old makefiles.
+
+	* Makefile.am: Remove old/unused makefiles.
+
+2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* SDKControls/Data/test/AppManifest.xaml: Added (VS generated,
 	  we now use it in our build).
 
