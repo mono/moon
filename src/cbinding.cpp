@@ -2343,6 +2343,17 @@ multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zo
 /**
  * MultiScaleSubImage
  **/
+gint32
+multi_scale_sub_image_get_zindex (MultiScaleSubImage *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (gint32) 0;
+	
+	return instance->GetZIndex ();
+}
+
+
 MultiScaleSubImage *
 multi_scale_sub_image_new (void)
 {

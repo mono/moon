@@ -1032,6 +1032,8 @@ void multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, doub
 /**
  * MultiScaleSubImage
  **/
+gint32 multi_scale_sub_image_get_zindex (MultiScaleSubImage *instance);
+
 /* @GeneratePInvoke */
 MultiScaleSubImage *multi_scale_sub_image_new (void);
 

@@ -62,6 +62,7 @@ class MultiScaleSubImage : public DependencyObject {
 	double GetViewportWidth ();
 	void SetViewportWidth (double width);
 
+	/* @GenerateCBinding */
 	gint32 GetZIndex ();
 	void SetZIndex (gint32 zindex);
 
