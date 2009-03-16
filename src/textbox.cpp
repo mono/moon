@@ -676,7 +676,7 @@ TextBox::CursorDown (int cursor, bool page)
 		return cur;
 	}
 	
-	line = view->GetLineFromIndex (index + 1);
+	line = view->GetLineFromIndex (index + n);
 	
 	return line->GetCursorFromX (Point (), x);
 }
@@ -705,7 +705,7 @@ TextBox::CursorUp (int cursor, bool page)
 		return 0;
 	}
 	
-	line = view->GetLineFromIndex (index - 1);
+	line = view->GetLineFromIndex (index - n);
 	
 	return line->GetCursorFromX (Point (), x);
 }
