@@ -1035,12 +1035,6 @@ void multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, doub
 /* @GeneratePInvoke */
 MultiScaleSubImage *multi_scale_sub_image_new (void);
 
-/* @GeneratePInvoke */
-void multi_scale_sub_image_set_viewport_origin (MultiScaleSubImage *instance, Point point);
-
-/* @GeneratePInvoke */
-void multi_scale_sub_image_set_viewport_width (MultiScaleSubImage *instance, double width);
-
 /**
  * MultiScaleSubImageCollection
  **/

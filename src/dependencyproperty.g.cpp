@@ -3488,11 +3488,24 @@ MultiScaleSubImage::GetViewportWidth ()
 	return value->AsDouble ();
 }
 
+void
+MultiScaleSubImage::SetViewportWidth (double value)
+{
+	SetValue (MultiScaleSubImage::ViewportWidthProperty, Value (value));
+}
+
 Point *
 MultiScaleSubImage::GetViewportOrigin ()
 {
 	Value *value = GetValue (MultiScaleSubImage::ViewportOriginProperty);
 	return value ? value->AsPoint () : NULL;
+}
+
+void
+MultiScaleSubImage::SetViewportOrigin (Point *value)
+{
+	if (!value) return;
+	SetValue (MultiScaleSubImage::ViewportOriginProperty, Value (*value));
 }
 
 double

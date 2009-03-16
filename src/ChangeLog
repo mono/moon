@@ -4,10 +4,6 @@
 	* multiscalesubimage.h|cpp: keep a ref to the parent MSI, Invalidate
 	it on VP origin or width changed.
 
-2009-03-14  Stephane Delcroix  <sdelcroix@novell.com>
-
-	* multiscalesubimage.h|cpp: add animations for vp width and origin
-
 2009-03-13  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: fix the clipping issue for collections

@@ -24,45 +24,10 @@
 //
 
 using System;
-using Mono;
-using System.Collections.ObjectModel;
-using System.Windows.Media;
-
 
 namespace System.Windows.Controls
 {	
 	public partial class MultiScaleSubImage : DependencyObject
 	{
-		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "AspectRatio", typeof (double));
-		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "Opacity", typeof (double));
-		public static readonly DependencyProperty ViewportOriginProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "ViewportOrigin", typeof (Point));
-		public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "ViewportWidth", typeof (double));
-		public static readonly DependencyProperty ZIndexProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "ZIndex", typeof (int));
-
-		public double AspectRatio {
-			get { return (double) GetValue (AspectRatioProperty); }
-		}
-
-		public double Opacity {
-			get { return (double) GetValue (OpacityProperty); }
-			set { SetValue (OpacityProperty, value); }
-		}
-
-		public Point ViewportOrigin {
-			get { return (Point) GetValue (ViewportOriginProperty); }
-			set { NativeMethods.multi_scale_sub_image_set_viewport_origin (this.native, value); }
-		}
-
-		public double ViewportWidth {
-			get { return (double) GetValue (ViewportWidthProperty); }
-			set { NativeMethods.multi_scale_sub_image_set_viewport_width (this.native, value); }
-		}
-
-		public int ZIndex {
-			get { return (int) GetValue (ZIndexProperty); }
-			set { SetValue (ZIndexProperty, value); }
-		}
-
 	}
-
 }

@@ -5,7 +5,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007-2009 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -16,7 +16,7 @@
 
 #include "dependencyobject.h"
 
-/* @Version=2,Namespace=System.Windows.Controls,ManagedDependencyProperties=Manual */
+/* @Version=2,Namespace=System.Windows.Controls */
 class MultiScaleSubImage : public DependencyObject {
 	friend class MultiScaleImage;
 	friend void multi_scale_image_handle_parsed (void *userdata);
@@ -26,12 +26,6 @@ class MultiScaleSubImage : public DependencyObject {
 	int id, n;
 
 	double GetViewportHeight ();
-
-	Storyboard *zoom_sb;
-	Storyboard *pan_sb;
-	DoubleAnimation *zoom_animation;
-	PointAnimation *pan_animation;
-
 	MultiScaleImage *parent;
 
  protected:
@@ -42,13 +36,14 @@ class MultiScaleSubImage : public DependencyObject {
 	const static int AspectRatioProperty;
  	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
 	const static int OpacityProperty;
-	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateGetter */
+	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
 	const static int ViewportOriginProperty;
-	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
+	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
 	const static int ViewportWidthProperty;
 	/* @PropertyType=gint32,Version=2.0,GenerateAccessors */
 	const static int ZIndexProperty;
 
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleSubImage ();
 	MultiScaleSubImage (const char* parent_uri, MultiScaleTileSource *source, int id, int n);
@@ -62,11 +57,9 @@ class MultiScaleSubImage : public DependencyObject {
 	void SetOpacity (double ratio);
 
 	Point* GetViewportOrigin ();
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetViewportOrigin (Point point);
+	void SetViewportOrigin (Point* point);
 
 	double GetViewportWidth ();
-	/* @GenerateCBinding,GeneratePInvoke */
 	void SetViewportWidth (double width);
 
 	gint32 GetZIndex ();
