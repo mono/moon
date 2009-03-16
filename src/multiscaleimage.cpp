@@ -406,6 +406,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		while (from_layer >= 0) {
 			int count = 0;
 			int found = 0;
+			bool blending = FALSE; //means at least a tile is not yet fully blended
 
 			//in msi relative coord
 			double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) * sub_vp.width / sub_w;
@@ -417,26 +418,37 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
 					count++;
 					char *tile = (char*)source->get_tile_func (from_layer, i, j, sub_image->source);
-					if (cache_contains (tile, false))
+					if (!tile)
+						continue;
+					cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
+					if (image)
 						found ++;
-					else { //higher levels of collections have shared thumbnails
+					if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
+						blending = TRUE;
+
+					else if (from_layer <= dzits->GetMaxLevel ()) { //higher levels of collections have shared thumbnails
+
 						if (tile)
 							g_free (tile);
 						tile = (char*)source->get_tile_func (from_layer,
 							morton_x(sub_image->n) * ldexp (1.0, from_layer) / tile_width,
 							morton_y(sub_image->n) * ldexp (1.0, from_layer) / tile_height,
 							source);
-						if (from_layer <= dzits->GetMaxLevel () && cache_contains (tile, false))
+						if (!tile)
+							continue;
+						image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
+						if (image)
 							found ++;
+						if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
+							blending = TRUE;
 					}
-
 					if (tile)
 						g_free (tile);
 				}
 			}
 			if (found > 0 && to_layer < from_layer)
 				to_layer = from_layer;
-			if (found == count)
+			if (found == count && (!blending || from_layer == 0))
 				break;
 
 			from_layer --;
@@ -496,9 +508,12 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 					}
 					cairo_set_source_surface (cr, image, 0, 0);
-//
-					if (IS_TRANSLUCENT (sub_image->GetOpacity ()))
-						cairo_paint_with_alpha (cr, sub_image->GetOpacity ());
+				
+					double *opacity = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
+					if (opacity && *opacity > GetValue (MultiScaleImage::TileFadeProperty)->AsDouble()) 
+						cairo_paint_with_alpha (cr, MIN(1.0 - *opacity + GetValue(MultiScaleImage::TileFadeProperty)->AsDouble (), 1.0));
+					//if (IS_TRANSLUCENT (sub_image->GetOpacity ()))
+					//	cairo_paint_with_alpha (cr, sub_image->GetOpacity ());
 					else
 						cairo_paint (cr);
 						    
