@@ -224,8 +224,11 @@ CLEANFILES= 			\
 	Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
 	Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll.mdb
 
+KEYFILE=$(srcdir)/../moonlight.snk
+
 Microsoft.Silverlight.Testing.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll UnitTestHarness/Properties/UnitTestMessage.resources $(SOURCES) System.Xml.Linq.dll Microsoft.Silverlight.Testing.g.resources
-	MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(SMCS) $(SOURCES) $(RESOURCES) $(REFERENCES) $(BROWSER_ASSEMBLIES) -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full
+	MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(SMCS) $(SOURCES) $(RESOURCES) $(REFERENCES) $(BROWSER_ASSEMBLIES) -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full -delaysign+ -keyfile:$(KEYFILE)
+	sn -q -R $@ $(KEYFILE)
 
 Microsoft.Silverlight.Testing.g.resources: UnitTestHarness/UnitTesting/UI/TestPage.xaml
 	$(MONO) --debug $(top_builddir)/tools/respack/respack.exe Microsoft.Silverlight.Testing.g.resources UnitTestHarness/UnitTesting/UI/TestPage.xaml,unittesting/ui/testpage.xaml
@@ -236,7 +239,7 @@ UnitTestHarness/Properties/UnitTestMessage.resources: $(srcdir)/UnitTestHarness/
 SYSTEM_XML_LINQ_DLL = $(top_builddir)/class/lib/2.1/System.Xml.Linq.dll
 
 System.Xml.Linq.dll: $(SYSTEM_XML_LINQ_DLL)
-	$(MONO) --debug $(top_builddir)/tools/unsign/unsign.exe $(SYSTEM_XML_LINQ_DLL)
+	$(MONO) --debug $(top_builddir)/tools/unsign/unsign.exe $(SYSTEM_XML_LINQ_DLL) --resign $(KEYFILE)
 	mv System.Xml.Linq.dll.Unsigned System.Xml.Linq.dll
 	-cp $(SYSTEM_XML_LINQ_DLL).mdb .
 

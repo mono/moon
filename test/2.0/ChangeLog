@@ -1,5 +1,10 @@
 2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* moonlight.snk: Added. We use this key for assemblies which
+	  need to be signed, but it doesn't matter which key we use.
+
+2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am:
 	* Microsoft.SilverlightControls: Include support for building
 	  MS' toolkit tests in our build.
