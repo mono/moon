@@ -1453,45 +1453,57 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		DependencyObject *old_as_dep = NULL;
 		DependencyObject *new_as_dep = NULL;
 
+		// XXX this flag should be part of the DP metadata.
+		// we also need to audit other "typeof (object)" DP's
+		// to make sure they set parent when they should (and
+		// don't when they shouldn't.)
+		bool setsParent = property->GetId() != UIElement::TagProperty;
+
 		if (old_value && old_value->Is (Type::DEPENDENCY_OBJECT))
 			old_as_dep = old_value->AsDependencyObject ();
 		if (new_value && new_value->Is (Type::DEPENDENCY_OBJECT))
 			new_as_dep = new_value->AsDependencyObject ();
 
 		if (old_as_dep) {
-			// unset its parent
-			old_as_dep->SetParent (NULL, NULL);
-			
-			// remove ourselves as a target
-			old_as_dep->RemoveTarget (this);
-			
-			// unregister from the existing value
-			old_as_dep->RemovePropertyChangeListener (this, property);
 			old_as_dep->SetSurface (NULL);
-			if (old_as_dep->Is(Type::COLLECTION)) {
-				old_as_dep->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
-				old_as_dep->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+
+			if (setsParent) {
+				// unset its parent
+				old_as_dep->SetParent (NULL, NULL);
+
+				// remove ourselves as a target
+				old_as_dep->RemoveTarget (this);
+			
+				// unregister from the existing value
+				old_as_dep->RemovePropertyChangeListener (this, property);
+
+				if (old_as_dep->Is(Type::COLLECTION)) {
+					old_as_dep->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
+					old_as_dep->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+				}
 			}
 		}
 
 		if (new_as_dep) {
 			new_as_dep->SetSurface (GetSurface ());
 
-			MoonError error;
-			new_as_dep->SetParent (this, &error);
- 			if (error.number)
- 				return;
+			if (setsParent) {
+				MoonError error;
+				new_as_dep->SetParent (this, &error);
+				if (error.number)
+					return;
 
-			if (new_as_dep->Is(Type::COLLECTION)) {
-				new_as_dep->AddHandler (Collection::ChangedEvent, collection_changed, this);
-				new_as_dep->AddHandler (Collection::ItemChangedEvent, collection_item_changed, this);
-			}
+				if (new_as_dep->Is(Type::COLLECTION)) {
+					new_as_dep->AddHandler (Collection::ChangedEvent, collection_changed, this);
+					new_as_dep->AddHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+				}
 			
-			// listen for property changes on the new object
-			new_as_dep->AddPropertyChangeListener (this, property);
+				// listen for property changes on the new object
+				new_as_dep->AddPropertyChangeListener (this, property);
 
-			// add ourselves as a target
-			new_as_dep->AddTarget (this);
+				// add ourselves as a target
+				new_as_dep->AddTarget (this);
+			}
 		}
 
 

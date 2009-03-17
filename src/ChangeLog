@@ -1,3 +1,13 @@
+2009-03-17  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (DependencyObject::ProviderValueChanged):
+	don't do the SetParent stuff (even when the value is a
+	DependencyObject) if the property is UIElement::TagProperty.  This
+	fixes the cyclic tree warning in RichTextBox.  Right now it's
+	hardcoded to check for that property, but we need to move it to
+	the DP metadata, and do an audit of other "typeof(object)" DP's to
+	make sure we aren't setting parent where we shouldn't be.
+
 2009-03-17  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* collection.h|cpp: allow MSISICollections to be sorted by ZIndex
