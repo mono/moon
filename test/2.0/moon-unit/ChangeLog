@@ -1,3 +1,16 @@
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am:
+	* App.xaml.cs:
+	* moon-unit.mdp:
+	* site/moon-unit-log.xsl:
+	* site/MoonLogProvider.aspx:
+	* site/MoonLogProvider.aspx.cs:
+	* Mono.Moonlight.UnitTesting/MoonLogProvider.cs:
+	* Mono.Moonlight.UnitTesting/MoonlightBugAttribute.cs:
+	* Mono.Moonlight.UnitTesting/SilverlightBugAttribute.cs:
+	  Updated to use Mono.Moonlight.UnitTesting.dll.
+
 2009-03-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/ReflectionTest.cs: Add test cases suggested by Rogrido 
