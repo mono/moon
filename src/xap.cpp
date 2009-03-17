@@ -1,5 +1,6 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * xaml.cpp: xaml parser
+ * xap.cpp:
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -44,36 +45,36 @@ Xap::Unpack (const char *fname)
 		goto exception1;
 
 	do {
-		char *fname, *output, *dirname;
+		char *filename, *path, *dirname, *s;
 		unz_file_info finfo;
-		size_t len, i;
 		int fd;
 		
 		unzGetCurrentFileInfo (zipfile, &finfo, NULL, 0, NULL, 0, NULL, 0);
-		fname = (char *) malloc (finfo.size_filename + 2);
-		if (fname == 0)
+		filename = (char *) g_malloc (finfo.size_filename + 2);
+		if (filename == 0)
 			goto exception1;
 		
-		unzGetCurrentFileInfo (zipfile, NULL, fname, finfo.size_filename+1, NULL, 0, NULL, 0);
+		unzGetCurrentFileInfo (zipfile, NULL, filename, finfo.size_filename+1, NULL, 0, NULL, 0);
 		
-		if (finfo.external_fa & (1 << 4))
-			continue; 
-
-		output = g_build_filename (xap_dir, fname, NULL);
-		len = strlen (output);
-		
-		for (i = 0; i < len; i++) {
-			if (output[i] == '\\')
-				output[i] = '/';
+		if (finfo.external_fa & (1 << 4)) {
+			g_free (filename);
+			continue;
 		}
 		
-		dirname = g_path_get_dirname (output);
+		for (s = filename; *s; s++) {
+			if (*s == '\\')
+				*s = '/';
+		}
+		
+		path = g_build_filename (xap_dir, filename, NULL);
+		g_free (filename);
+		
+		dirname = g_path_get_dirname (path);
 		g_mkdir_with_parents (dirname, 0700);
 		g_free (dirname);
 		
-		fd = open (output, O_CREAT | O_WRONLY, 0644);
-		g_free (output);
-		g_free (fname);
+		fd = open (path, O_CREAT | O_WRONLY, 0644);
+		g_free (path);
 		
 		if (fd == -1)
 			goto exception1;

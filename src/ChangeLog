@@ -1,3 +1,9 @@
+2009-03-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xap.cpp (Xap::Unpack): Don't mix & match malloc/g_free, don't
+	shadow the fname method argument, and don't leak if
+	finfo.external_fa has the 4th bit set.
+
 2009-03-17  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (DependencyObject::ProviderValueChanged):
