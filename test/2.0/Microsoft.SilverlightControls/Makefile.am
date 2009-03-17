@@ -10,6 +10,8 @@ CLEANFILES = \
 	Microsoft.Silverlight.Testing.dll.mdb	\
 	Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
 	Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll.mdb	\
+	Mono.Moonlight.UnitTesting.dll	\
+	Mono.Moonlight.UnitTesting.dll.mdb	\
 	System.Xml.Linq.dll	\
 	System.Xml.Linq.dll.mdb	\
 	System.Windows.Controls.dll	\

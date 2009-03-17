@@ -52,14 +52,14 @@ $(assembly).dll: System.Windows.Controls.Extended.Test.Resource.resources $(asse
 $(assembly).xap: $(assembly).dll
 	rm -f $(assembly).xap
 	zip -j -MM $(assembly).xap \
-		$(assembly).dll \
+		$(assembly).dll* \
 		$(MANIFEST)	\
-		$(srcdir)/../Controls.Test.Common/Controls.Test.Common.dll	\
-		$(srcdir)/../Microsoft.Silverlight.Testing.dll	\
-		$(srcdir)/../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
-		$(srcdir)/../System.Windows.Controls.dll	\
-		$(srcdir)/../System.Windows.Controls.Data.dll	\
-		$(srcdir)/../System.Xml.Linq.dll	\
-		$(srcdir)/../Mono.Moonlight.UnitTesting.dll
+		$(srcdir)/../Controls.Test.Common/Controls.Test.Common.dll*	\
+		$(srcdir)/../Microsoft.Silverlight.Testing.dll*	\
+		$(srcdir)/../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll*	\
+		$(srcdir)/../System.Windows.Controls.dll*	\
+		$(srcdir)/../System.Windows.Controls.Data.dll*	\
+		$(srcdir)/../System.Xml.Linq.dll*	\
+		$(srcdir)/../Mono.Moonlight.UnitTesting.dll*
 	
 all-local: $(assembly).xap

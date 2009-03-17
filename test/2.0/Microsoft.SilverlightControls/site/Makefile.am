@@ -4,6 +4,9 @@ EXTENDED_XAP=ControlsExtended.Test.xap
 EXTENDED_XAP_FILE=$(srcdir)/../Controls.Extended.Test/$(EXTENDED_XAP)
 
 CLEANFILES = \
+	MoonLogProvider.aspx	\
+	MoonLogProvider.aspx.cs	\
+	moon-unit-log.xsl	\
 	$(DATA_XAP)	\
 	$(EXTENDED_XAP)
 
