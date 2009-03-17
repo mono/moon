@@ -1,0 +1,41 @@
+SMCS = $(MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe
+
+noinst_DATA= Mono.Moonlight.UnitTesting.dll
+
+SOURCES = \
+	$(srcdir)/AssemblyInfo.cs										\
+	$(srcdir)/Mono.Moonlight.UnitTesting/MoonlightBugAttribute.cs	\
+	$(srcdir)/Mono.Moonlight.UnitTesting/MoonLogProvider.cs			\
+	$(srcdir)/Mono.Moonlight.UnitTesting/SilverlightBugAttribute.cs	\
+	$(srcdir)/Mono.Moonlight.UnitTesting/Testing.cs
+	
+CLEANFILES = \
+	$(wildcard *.dll)	\
+	$(wildcard *.mdb)
+	
+KEYFILE = $(srcdir)/../moonlight.snk
+
+REFERENCES = \
+	-r:$(builddir)/Microsoft.Silverlight.Testing.dll							\
+	-r:$(builddir)/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight	
+
+Mono.Moonlight.UnitTesting.dll: $(SOURCES) Makefile.am Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
+	$(SMCS) $(SOURCES) $(REFERENCES) -delaysign+ -keyfile:$(KEYFILE) -target:library -out:$@ -debug:full
+	sn -q -R $@ $(KEYFILE)
+
+Microsoft.Silverlight.Testing.dll: ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll
+	cp ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll* .
+
+System.Xml.Linq.dll: ../Microsoft.Silverlight.Testing/System.Xml.Linq.dll
+	cp ../Microsoft.Silverlight.Testing/System.Xml.Linq.dll* .
+
+Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
+	cp ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll* .
+
+../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll ../Microsoft.Silverlight.Testing/System.Xml.Linq.dll:
+	$(MAKE) -C ../Microsoft.Silverlight.Testing
+
+../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll:
+	$(MAKE) -C ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight
+
+all: Mono.Moonlight.UnitTesting.dll

@@ -684,6 +684,7 @@ data/Makefile
 test/Makefile
 test/2.0/Makefile
 test/2.0/moon-unit/Makefile
+test/2.0/Mono.Moonlight.UnitTesting/Makefile
 test/2.0/Microsoft.Silverlight.Testing/Makefile
 test/2.0/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Makefile
 test/2.0/Microsoft.SilverlightControls/Makefile

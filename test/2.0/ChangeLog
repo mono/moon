@@ -1,3 +1,11 @@
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Mono.Moonlight.UnitTesting: Move classes used by several
+	  unit test assembles into a separate
+	  Mono.Moonlight.UnitTesting.dll.
+
+	* Makefile.am: Updated.
+
 2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* moonlight.snk: Added. We use this key for assemblies which

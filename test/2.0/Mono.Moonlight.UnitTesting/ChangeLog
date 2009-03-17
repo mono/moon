@@ -1,0 +1,14 @@
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* site:
+	* ChangeLog:
+	* Makefile.am:
+	* AssemblyInfo.cs:
+	* Mono.Moonlight.mdp:
+	* site/moon-unit-log.xsl:
+	* site/MoonLogProvider.aspx:
+	* Mono.Moonlight.UnitTesting:
+	* site/MoonLogProvider.aspx.cs: Move classes used by several
+	  unit test assembles into a separate
+	  Mono.Moonlight.UnitTesting.dll.
+

@@ -1,0 +1,10 @@
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ChangeLog:
+	* Testing.cs:
+	* MoonLogProvider.cs:
+	* MoonlightBugAttribute.cs:
+	* SilverlightBugAttribute.cs: Move classes used by several
+	  unit test assembles into a separate
+	  Mono.Moonlight.UnitTesting.dll.
+
