@@ -1,3 +1,8 @@
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* test-runner/ComparisonReport.cs: If an exception is thrown
+	  don't crash the entire harness.
+
 2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* harness.mdp: Updated with new files.

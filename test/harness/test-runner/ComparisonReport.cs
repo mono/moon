@@ -100,8 +100,13 @@ namespace MoonlightTests {
 			tcd.CurrentResult = result;
 			tcd.CurrentResultFile = test.ResultFile;
 
-			SetPreviousResultData (test, tcd);
-			compare_data.Add (tcd);
+			try {
+				SetPreviousResultData (test, tcd);
+				compare_data.Add (tcd);
+			} catch (Exception ex) {
+				Console.WriteLine ("ComparisonReport: unexpected exception (ignored):");
+				Console.WriteLine (ex);
+			}
 		}
 
 		private void LoadRunData (string dir)
