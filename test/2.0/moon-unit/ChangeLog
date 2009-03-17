@@ -1,3 +1,7 @@
+2009-03-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/DelegateTest.cs: Add coreclr tests on delegate creation
+
 2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* moon-unit.csproj: Re-include moved files.
