@@ -1,3 +1,7 @@
+2009-03-17  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* security/DelegateTest.cs: Add visibility test cases
+
 2009-03-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/DelegateTest.cs: Add coreclr tests on delegate creation

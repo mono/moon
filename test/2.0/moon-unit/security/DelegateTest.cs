@@ -221,5 +221,39 @@ namespace MoonTest.Security {
 			dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), typeof (X509Certificate), "get_issuer", true, false);
 			Assert.IsNull (dget, "Delegate.CreateDelegate(Type,Type,MethodInfo,bool,bool)");
 		}
+
+		delegate void Caller ();
+
+		[TestMethod]
+		public void Delegate_CreateDelegate_PrivateMethod ()
+		{
+			PrivateType pt = new PrivateType (1.0, 2.0);
+			MethodInfo mi = typeof (PrivateType).GetMethod ("Reset", BindingFlags.NonPublic | BindingFlags.Instance);
+			Assert.IsNotNull (mi, "Reset");
+
+			Assert.Throws<MethodAccessException> (delegate {
+				Caller dcall = (Caller) Delegate.CreateDelegate (typeof (Caller), pt, mi);
+			}, "Delegate.CreateDelegate(Type,object,MethodInfo)");
+
+			Assert.Throws<MethodAccessException> (delegate {
+				Caller dcall = (Caller) Delegate.CreateDelegate (typeof (Caller), pt, "Reset");
+			}, "Delegate.CreateDelegate(Type,object,string)");
+		}
+
+		delegate double DoubleGetter ();
+
+		[TestMethod]
+		public void Delegate_CreateDelegate_InternalMethod ()
+		{
+			PrivateType pt = new PrivateType (1.0, 2.0);
+			MethodInfo mi = typeof (PrivateType).GetMethod ("Add", BindingFlags.NonPublic | BindingFlags.Instance);
+			Assert.IsNotNull (mi, "Add");
+
+			DoubleGetter dget = (DoubleGetter) Delegate.CreateDelegate (typeof (DoubleGetter), pt, mi);
+			Assert.IsNotNull (dget, "Delegate.CreateDelegate(Type,object,string)");
+
+			dget = (DoubleGetter) Delegate.CreateDelegate (typeof (DoubleGetter), pt, "Add");
+			Assert.IsNotNull (dget, "Delegate.CreateDelegate(Type,object,string)");
+		}
 	}
 }
