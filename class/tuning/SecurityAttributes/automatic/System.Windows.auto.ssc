@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 386 methods
+# 387 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -227,6 +227,7 @@
 +SSC-M: System.Void System.Windows.Media.Animation.Storyboard::Pause()
 +SSC-M: System.Void System.Windows.Media.Animation.Storyboard::Resume()
 +SSC-M: System.Void System.Windows.Media.Animation.Storyboard::Seek(System.TimeSpan)
++SSC-M: System.Void System.Windows.Media.Animation.Storyboard::SkipToFill()
 +SSC-M: System.Void System.Windows.Media.Animation.Storyboard::Stop()
 +SSC-M: System.Windows.DependencyProperty System.Windows.Media.Animation.Storyboard::GetTargetDependencyProperty(System.Windows.Media.Animation.Timeline)
 +SSC-M: System.Windows.Media.Animation.ClockState System.Windows.Media.Animation.Storyboard::GetCurrentState()

@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 359 methods
+# 360 methods
 
 +SSC-M: System.Void Microsoft.Win32.KeyHandler::.ctor(Microsoft.Win32.RegistryKey,System.String)
 +SSC-M: System.Void Microsoft.Win32.KeyHandler::Load()
@@ -241,6 +241,7 @@
 +SSC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunClassConstructor(System.RuntimeTypeHandle)
 +SSC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunModuleConstructor(System.ModuleHandle)
 +SSC-M: System.Runtime.Remoting.ObjectHandle System.Runtime.Hosting.ApplicationActivator::CreateInstanceHelper(System.AppDomainSetup)
++SSC-M: System.IntPtr System.Runtime.InteropServices.GCHandle::op_Explicit(System.Runtime.InteropServices.GCHandle)
 +SSC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.AsyncResult::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
 +SSC-M: System.Void System.Runtime.Remoting.Metadata.SoapTypeAttribute::SetReflectionObject(System.Object)
 +SSC-M: System.Void System.Runtime.Remoting.Proxies.RealProxy::.ctor(System.Type)

@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 862 methods needs to be decorated.
+# 863 methods needs to be decorated.
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: Mono.INativeDependencyObjectWrapper Mono.NativeDependencyObjectHelper::FromIntPtr(System.IntPtr)
@@ -1755,6 +1755,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::storyboard_seek_with_error_(System.IntPtr,System.Int64,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::storyboard_skip_to_fill(System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Void Mono.NativeMethods::storyboard_stop(System.IntPtr)

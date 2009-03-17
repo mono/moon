@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 602 methods needs to be decorated.
+# 603 methods needs to be decorated.
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::FindProxy(System.IntPtr)
@@ -1683,6 +1683,9 @@
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Void System.Security.Principal.WindowsImpersonationContext::.ctor(System.IntPtr)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.Void System.Security.SecurityManager::FieldAccessException(System.IntPtr,System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Void System.Security.SecurityManager::InternalDemand(System.IntPtr,System.Int32)

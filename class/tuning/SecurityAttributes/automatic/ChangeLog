@@ -1,3 +1,7 @@
+2009-03-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.s[s]c, System.Windows.auto.s[s]c: Update
+
 2009-03-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Browser.auto.ssc, System.Net.auto.ssc, 
