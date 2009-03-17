@@ -1,3 +1,7 @@
+2009-03-17  Jb Evain  <jbevain@novell.com>
+
+	* Grid.cs: override and seal ArrangeOverride and MeasureOverride.
+
 2009-03-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* PasswordBox.cs: Manually bind the PasswordProperty and the

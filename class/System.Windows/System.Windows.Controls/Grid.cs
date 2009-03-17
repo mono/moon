@@ -69,5 +69,15 @@ namespace System.Windows.Controls {
 		{
 			element.SetValue (RowSpanProperty, value);
 		}
+
+		protected sealed override Size ArrangeOverride (Size arrangeSize)
+		{
+			return base.ArrangeOverride (arrangeSize);
+		}
+
+		protected sealed override Size MeasureOverride (Size constraint)
+		{
+			return base.MeasureOverride (constraint);
+		}
 	}
 }
