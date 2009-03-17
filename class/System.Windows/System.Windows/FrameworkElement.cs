@@ -109,23 +109,33 @@ namespace System.Windows {
 
 		Dictionary<DependencyProperty, Expression> expressions = new Dictionary<DependencyProperty, Expression> ();
 
+		private static bool UseNativeLayoutMethod (Type type)
+		{
+			return type == typeof (FrameworkElement)
+				|| type == typeof (Canvas)
+				|| type == typeof (Grid);
+		}
+
 		private bool OverridesLayoutMethod (string name)
 		{
-			MethodInfo method = GetType().GetMethod (name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-			if (method != null) {
-				if (method.DeclaringType != typeof (FrameworkElement)
-				    && method.IsFamily && method.IsVirtual
-				    && method.ReturnType == typeof (Size)) {
+			var method = GetType ().GetMethod (name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+			if (method == null)
+				return false;
 
-					ParameterInfo[] ps = method.GetParameters();
-					if (ps.Length == 1
-					    && ps[0].ParameterType == typeof (Size)) {
+			if (!method.IsVirtual || !method.IsFamily)
+				return false;
 
-						return true;
-					}
-				}
-			}
-			return false;
+			if (method.ReturnType != typeof (Size))
+				return false;
+
+			if (UseNativeLayoutMethod (method.DeclaringType))
+				return false;
+
+			var parameters = method.GetParameters ();
+			if (parameters.Length != 1 || parameters [0].ParameterType != typeof (Size))
+				return false;
+
+			return true;
 		}
 
 		private void Initialize ()
