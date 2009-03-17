@@ -1,3 +1,9 @@
+2009-03-16  Jackson Harper  <jackson@ximian.com>
+
+	* template.cpp: It doesn't really change anything because
+	templates are never parented, but technically they should be in non
+	temporary namescopes.
+
 2009-03-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::CursorDown, TextBox::CursorUp): Fixed to
