@@ -36,7 +36,6 @@ namespace MoonlightTests {
 
 		private Process process;
 		private bool process_running;
-		private Thread stdout_thread;
 		private Thread stderr_thread;
 		private bool redirect_stdout;
 
@@ -119,21 +118,17 @@ namespace MoonlightTests {
 			if (Driver.SwallowStreams || RedirectStdOut) {
 				process.StartInfo.RedirectStandardOutput = true;
 				stdout = new StringBuilder ();
-				stdout_thread = new Thread (delegate ()
-					{
-						string line;
-						try {
-							while (null != (line = process.StandardOutput.ReadLine ())) {
-								stdout.AppendLine (line);
-								Console.WriteLine (line);
-							}
-						} catch (Exception ex) {
-							Console.WriteLine ("Stdout tee for '{0}' threw an exception: {1}", process_path, ex.Message);
-							Console.WriteLine (ex.StackTrace);
-						}
+				process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
+					try {
+						if (e.Data == null)
+							return;
+						stdout.AppendLine (e.Data);
+						Console.WriteLine (e.Data);
+					} catch (Exception ex) {
+						Console.WriteLine ("Stdout tee for '{0}' threw an exception: {1}", process_path, ex.Message);
+						Console.WriteLine (ex.StackTrace);
 					}
-					);
-				stdout_thread.IsBackground = true;
+				};
 			}
 			
 			try {
@@ -151,7 +146,7 @@ namespace MoonlightTests {
 					stderr_thread.Start ();
 
 				if (Driver.SwallowStreams || RedirectStdOut)
-					stdout_thread.Start ();
+					process.BeginOutputReadLine ();
 
 				if (wait && !process.WaitForExit (timeout))
 					process_timed_out = true;
@@ -176,7 +171,6 @@ namespace MoonlightTests {
 			process.Dispose ();
 
 			if (Driver.SwallowStreams) {
-				stdout_thread.Abort ();
 				stderr_thread.Abort ();
 			}
 		}

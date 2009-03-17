@@ -1,3 +1,8 @@
+2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* test-runner/ExternalProcess.cs: Try another way of getting
+	  stdout, hopefully this one doesn't cause weird exceptions.
+
 2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* test-runner/ComparisonReport.cs: If an exception is thrown
