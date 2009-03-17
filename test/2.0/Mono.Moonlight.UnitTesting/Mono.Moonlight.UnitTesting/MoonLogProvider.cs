@@ -26,7 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
