@@ -1,5 +1,12 @@
 2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Makefile.am:
+	* ControlsExtended.Test.sources: Add a .sources file which
+	  doesn't include VS-generated files. Use xamlg to generate
+	  App.xaml.g.cs.
+
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am: Use Mono.Moonlight.UnitTesting.dll when
 	  building with Moonlight so the test results gets logged.
 

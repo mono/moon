@@ -1,0 +1,12 @@
+App.xaml.cs
+Calendar/CalendarTest.cs
+ControlsTest.cs
+DatePicker/DatePickerTest.cs
+GlobalSuppressions.cs
+GridSplitter/GridSplitterTest.cs
+GridSplitter/PreviewControlTest.cs
+Properties/AssemblyInfo.cs
+Resource.Designer.cs
+TabControl/TabControlTest.cs
+TabControl/TabItemTest.cs
+TabControl/TabPanelTest.cs

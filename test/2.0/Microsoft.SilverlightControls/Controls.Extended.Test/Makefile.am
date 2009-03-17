@@ -3,6 +3,7 @@ assembly = ControlsExtended.Test
 SDK_SRCDIR=$(srcdir)/../../../../class/Microsoft.SilverlightControls/SDKControls/Extended/Test
 
 CLEANFILES = \
+	App.xaml.g.cs	\
 	$(assembly).dll	\
 	$(assembly).dll.mdb	\
 	$(assembly).xap	\
@@ -26,10 +27,9 @@ CSCFLAGS = /codepage:65001 -d:SILVERLIGHT -d:MOONLIGHT -target:library -debug+ -
 
 SMCS = MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe  $(CSCFLAGS)
 
-SOURCES = \
-	$(wildcard $(SDK_SRCDIR)/*.cs)	\
-	$(wildcard $(SDK_SRCDIR)/*/*.cs)	\
-	$(wildcard $(SDK_SRCDIR)/*/*/*.cs) 
+FILES = $(shell cat $(srcdir)/ControlsExtended.Test.sources)
+SOURCES = $(foreach file,$(FILES),$(SDK_SRCDIR)/$(file))
+SOURCES += $(srcdir)/App.xaml.g.cs
 
 KEYFILE = $(SDK_SRCDIR)/../../MixControls.snk
 MANIFEST = $(SDK_SRCDIR)/AppManifest.xaml
@@ -37,13 +37,16 @@ MANIFEST = $(SDK_SRCDIR)/AppManifest.xaml
 $(assembly).sources: $(SOURCES)
 	ls $(SOURCES) | grep -v aspx > $@
 
+App.xaml.g.cs:
+	$(MONO) --debug $(top_builddir)/tools/xamlg/xamlg.exe $(SDK_SRCDIR)/App.xaml,$(srcdir)/App.xaml.g.cs
+
 $(assembly).g.resources:
 	$(MONO) --debug $(top_builddir)/tools/respack/respack.exe $(assembly).g.resources $(SDK_SRCDIR)/App.xaml,app.xaml
 
 System.Windows.Controls.Extended.Test.Resource.resources:
 	resgen2 $(SDK_SRCDIR)/Resource.resx System.Windows.Controls.Extended.Test.Resource.resources
 
-$(assembly).dll: System.Windows.Controls.Extended.Test.Resource.resources $(assembly).g.resources
+$(assembly).dll: System.Windows.Controls.Extended.Test.Resource.resources $(assembly).g.resources $(SOURCES)
 	$(SMCS) -out:$(assembly).dll $(SOURCES) -keyfile:$(KEYFILE) -res:$(assembly).g.resources -res:System.Windows.Controls.Extended.Test.Resource.resources
 
 $(assembly).xap: $(assembly).dll
