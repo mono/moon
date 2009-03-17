@@ -1,5 +1,10 @@
 2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Makefile.am: Define Moonlight so that we get proper
+	  reporting.
+
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am:
 	* Controls.Data.Test.sources: Add a .sources file which
 	  doesn't include VS-generated files. Use xamlg to generate

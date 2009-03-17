@@ -23,7 +23,7 @@ REFERENCES = \
 	-r:System.Net	\
 	-r:System.Windows
 
-CSCFLAGS = /codepage:65001 -d:SILVERLIGHT -target:library -debug+ -noconfig $(REFERENCES)
+CSCFLAGS = /codepage:65001 -d:SILVERLIGHT -d:MOONLIGHT -target:library -debug+ -noconfig $(REFERENCES)
 
 SMCS = MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe  $(CSCFLAGS)
 
