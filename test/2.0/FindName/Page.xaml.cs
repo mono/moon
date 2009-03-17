@@ -19,9 +19,14 @@ namespace FindName
 		{
 			InitializeComponent();
 
-			Console.WriteLine ("finding the canvas:  {0}", FindName ("my_canvas"));
+//			Console.WriteLine ("finding the canvas:  {0}", FindName ("_canvas"));
 
-			debug_text1.Text = "Find name is null?  " + (FindName ("my_canvas") == null);
+			debug_text1.Text = "my_canvas: " + (FindName ("my_canvas"));
+			debug_text2.Text = "sub_element: " + (FindName ("sub_element"));
+
+			FrameworkElement se = (FrameworkElement) my_canvas.FindName ("sub_element");
+			debug_text3.Text = "my_canvas.sub_element: " + se;
+			debug_text4.Text = "my_canvas.sub_element.sub_element: " + se.FindName ("sub_element");
 		}
 	}
 }

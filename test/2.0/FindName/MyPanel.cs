@@ -13,9 +13,9 @@ using System.Windows.Shapes;
 
 namespace FindName
 {
-	public partial class MyCanvas : Canvas
+	public partial class MyPanel : Panel
 	{
-		public MyCanvas ()
+		public MyPanel ()
 		{
 			InitializeComponent();
 		}
