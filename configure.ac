@@ -595,10 +595,10 @@ case "$host" in
 esac
 
 if test ${MOONLIGHT_CODEC_ARCH} = unknown; then
-        AC_WARNING(The codecs have not been configured to build on this architecture yet)
+        AC_WARN([The codecs have not been configured to build on this architecture yet])
 fi
 if test ${MOONLIGHT_CODEC_OSTYPE} = unknown; then
-        AC_WARNING(The codecs have not been configured to build on this operating system yet)
+        AC_WARN([The codecs have not been configured to build on this operating system yet])
 fi
 
 if test x$CODECS_ARCH_SUPPORTED = xyes; then
