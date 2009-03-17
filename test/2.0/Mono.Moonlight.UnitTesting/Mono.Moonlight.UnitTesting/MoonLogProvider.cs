@@ -121,6 +121,11 @@ namespace Mono.Moonlight.UnitTesting
 				request.httprequest.Method = "POST";
 				request.httprequest.ContentType = "text/xml";// "application/x-www-form-urlencoded";
 				request.message = msg + Environment.NewLine;
+				
+				// This cwl is required, the test harness looks for it in stdout to find
+				// the filename we write to.
+				Console.WriteLine ("MoonLogProvider: sending request to: {0}", request.uri);
+				
 				request.httprequest.BeginGetRequestStream (RequestCallback, request);
 
 				on_completed = onCompleted;
