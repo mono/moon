@@ -1,5 +1,9 @@
 2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Makefile.am: Give MONO_PATH to smcs.
+
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* site:
 	* ChangeLog:
 	* Makefile.am:

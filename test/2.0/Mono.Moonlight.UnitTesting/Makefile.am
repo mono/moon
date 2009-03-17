@@ -20,7 +20,7 @@ REFERENCES = \
 	-r:$(builddir)/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight	
 
 Mono.Moonlight.UnitTesting.dll: $(SOURCES) Makefile.am Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
-	$(SMCS) $(SOURCES) $(REFERENCES) -delaysign+ -keyfile:$(KEYFILE) -target:library -out:$@ -debug:full
+	MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(SMCS) $(SOURCES) $(REFERENCES) -delaysign+ -keyfile:$(KEYFILE) -target:library -out:$@ -debug:full
 	sn -q -R $@ $(KEYFILE)
 
 Microsoft.Silverlight.Testing.dll: ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll
