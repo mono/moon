@@ -625,9 +625,9 @@ TextBox::~TextBox ()
 	delete font;
 }
 
-#define ALT_MASK (GDK_MOD1_MASK | GDK_MOD2_MASK | GDK_MOD3_MASK | GDK_MOD4_MASK | GDK_MOD5_MASK)
 #define CONTROL_MASK GDK_CONTROL_MASK
-#define SHIFT_MASK GDK_SHIFT_MASK
+#define SHIFT_MASK   GDK_SHIFT_MASK
+#define ALT_MASK     GDK_MOD1_MASK
 
 #define IsEOL(c) ((c) == '\r' || (c) == '\n')
 
