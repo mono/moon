@@ -25,6 +25,8 @@ class ResourcePacker {
 		Environment.Exit (0);
 	}
 	
+	static bool verbose = false;
+
 	public static int Main (string [] args)
 	{
 		bool help = false;
@@ -34,7 +36,8 @@ class ResourcePacker {
 		var p = new OptionSet () {
 			{ "h|?|help", v => help = v != null },
 			{ "d|decomress", "Decompress the supplied assembly.", v => decompress = v != null  },
-			{ "p|pattern=", "Only decompress the resources that match supplied pattern. By default only .xaml files will be decompressed.", v => pattern = v  }
+			{ "p|pattern=", "Only decompress the resources that match supplied pattern. By default only .xaml files will be decompressed.", v => pattern = v  },
+			{ "v|verbose", v=> verbose = v != null }
 		};
 
 		List<string> files = null;
@@ -110,35 +113,42 @@ class ResourcePacker {
 		string [] resources = asm.GetManifestResourceNames ();
 	
 		foreach (string resource in resources) {
+			if (verbose)
+				Console.WriteLine ("decompressing '{0}'", resource);
+
 			ResourceReader reader = null;
 
-			using (reader = new ResourceReader (asm.GetManifestResourceStream (resource))) {
+			try {
+				using (reader = new ResourceReader (asm.GetManifestResourceStream (resource))) {
 				
-				IDictionaryEnumerator id = reader.GetEnumerator (); 
+					IDictionaryEnumerator id = reader.GetEnumerator (); 
 
-				while (id.MoveNext ()) {
-					string key = (string) id.Key;
-					if (!Regex.IsMatch (key, pattern))
-						continue;
+					while (id.MoveNext ()) {
+						string key = (string) id.Key;
+						if (!Regex.IsMatch (key, pattern))
+							continue;
 
-					MemoryStream stream = id.Value as MemoryStream;
-					if (stream == null) {
-						Console.Error.WriteLine ("Item not stored as a MemoryStream. {0}", key);
-						continue;
-					}
+						MemoryStream stream = id.Value as MemoryStream;
+						if (stream == null) {
+							Console.Error.WriteLine ("Item not stored as a MemoryStream. {0}", key);
+							continue;
+						}
 
-					byte [] data = new byte [stream.Length];
-					stream.Read (data, 0, data.Length);
+						byte [] data = new byte [stream.Length];
+						stream.Read (data, 0, data.Length);
 
-					string dir = Path.GetDirectoryName (key);
-					if (!String.IsNullOrEmpty (dir))
-						Directory.CreateDirectory (dir);
+						string dir = Path.GetDirectoryName (key);
+						if (!String.IsNullOrEmpty (dir))
+							Directory.CreateDirectory (dir);
 
-					using (FileStream fs = File.OpenWrite (key)) {
-						fs.Write (data, 0, data.Length);
-					}
+						using (FileStream fs = File.OpenWrite (key)) {
+							fs.Write (data, 0, data.Length);
+						}
 									      
+					}
 				}
+			} catch (Exception e) {
+				Console.WriteLine ("failed to decompress {0}, exception '{1}'.. skipping", e.Message);
 			}
 		}
 
