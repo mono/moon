@@ -1,5 +1,9 @@
 2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* moon-unit.csproj: Re-include moved files.
+
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am:
 	* App.xaml.cs:
 	* moon-unit.mdp:
