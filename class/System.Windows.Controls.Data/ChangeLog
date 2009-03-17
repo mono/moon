@@ -1,3 +1,8 @@
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Include resources in
+	  System.Windows.Controls.Data.dll
+
 2009-02-27  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ChangeLog:to please 'make dist'

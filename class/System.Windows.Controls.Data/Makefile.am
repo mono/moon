@@ -98,8 +98,19 @@ system_windows_controls_data_sources =						\
 EXTRA_DIST = $(system_windows_controls_data_sources) 			\
 	ChangeLog
 
-$(assemblysl): $(system_windows_controls_data_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll
-	$(SMCS) -target:library -out:$@ $(system_windows_controls_data_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../silverlight.pub -delaysign+
+System.Windows.Controls.Resource.resources: $(MSSDKCONTROLS)/Resource.resx
+	resgen2 $(MSSDKCONTROLS)/Resource.resx System.Windows.Controls.Resource.resources
+	
+$(assembly).g.resources: $(MSSDKCONTROLS)/themes/generic.xaml
+	mono $(top_builddir)/tools/respack/respack.exe $@ $(MSSDKCONTROLS)/themes/generic.xaml,themes/generic.xaml
+
+RESOURCES = 	\
+	-res:$(MSSDKCONTROLS)/DataGrid/DataGridTextColumn.xaml,System.Windows.Controls.DataGrid.DataGridTextColumn.xaml	\
+	-res:$(assembly).g.resources	\
+	-res:System.Windows.Controls.Resource.resources
+
+$(assemblysl): $(system_windows_controls_data_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll $(assembly).g.resources System.Windows.Controls.Resource.resources
+	$(SMCS) -target:library -out:$@ $(system_windows_controls_data_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../silverlight.pub -delaysign+ $(RESOURCES)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_controls_data_sources) Makefile $(top_builddir)/class/lib/3.0/System.Windows.dll
@@ -108,6 +119,7 @@ $(assemblydesktop): $(system_windows_controls_data_sources) Makefile $(top_build
 clean-local:
 	-rm -rf $(assemblies) 
 	-rm -rf *.dll *.mdb
+	-rm -rf *.resources
 
 if INCLUDE_BROWSER_MANAGED_CODE
 install-sl:
