@@ -12,6 +12,7 @@
 #include <glib.h>
 #include <errno.h>
 
+#include "cbinding.h"
 #include "canvas.h"
 #include "collection.h"
 #include "geometry.h"
@@ -616,10 +617,44 @@ TriggerActionCollection::~TriggerActionCollection ()
 MultiScaleSubImageCollection::MultiScaleSubImageCollection ()
 {
 	SetObjectType (Type::MULTISCALESUBIMAGE_COLLECTION);
+	z_sorted = g_ptr_array_new ();
 }
 
 MultiScaleSubImageCollection::~MultiScaleSubImageCollection ()
 {
+	g_ptr_array_free (z_sorted, true);
+}
+
+static int
+MultiScaleSubImageZIndexComparer (gconstpointer msisi1, gconstpointer msisi2)
+{
+	int z1 = multi_scale_sub_image_get_zindex ((MultiScaleSubImage*)msisi1);
+	int z2 = multi_scale_sub_image_get_zindex ((MultiScaleSubImage*)msisi2);
+	
+	return z1 - z2;
+}
+
+
+void
+MultiScaleSubImageCollection::ResortByZIndex ()
+{
+	g_ptr_array_set_size (z_sorted, array->len);
+	
+	if (array->len == 0)
+		return;
+	
+	for (guint i = 0; i < array->len; i++)
+		z_sorted->pdata[i] = ((Value *) array->pdata[i])->AsMultiScaleSubImage ();
+	
+	if (array->len > 1)
+		g_ptr_array_sort (z_sorted, MultiScaleSubImageZIndexComparer);
+}
+
+bool
+MultiScaleSubImageCollection::Clear ()
+{
+	g_ptr_array_set_size (z_sorted, 0);
+	return DependencyObjectCollection::Clear ();
 }
 
 

@@ -1,3 +1,7 @@
+2009-03-17  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* collection.h|cpp: allow MSISICollections to be sorted by ZIndex
+
 2009-03-16  Jackson Harper  <jackson@ximian.com>
 
 	* template.cpp: It doesn't really change anything because

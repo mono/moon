@@ -265,13 +265,18 @@ class ItemCollection : public Collection {
 };
 
 /* @Namespace=System.Windows.Controls */
-class MultiScaleSubImageCollection : public Collection {
+class MultiScaleSubImageCollection : public DependencyObjectCollection {
 public:
+	GPtrArray *z_sorted;
+
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	MultiScaleSubImageCollection ();
 	
 	virtual Type::Kind GetElementType () { return Type::MULTISCALESUBIMAGE; }
 
+	virtual bool Clear ();
+
+	void ResortByZIndex ();
 
 protected:
 	virtual ~MultiScaleSubImageCollection ();
