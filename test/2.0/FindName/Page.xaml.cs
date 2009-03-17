@@ -19,14 +19,24 @@ namespace FindName
 		{
 			InitializeComponent();
 
-//			Console.WriteLine ("finding the canvas:  {0}", FindName ("_canvas"));
+			// debug_text.Text = "Doing lookups";
+			DoLookups (this);
+			DoLookups (my_canvas);
+			DoLookups ((FrameworkElement) my_canvas.FindName ("sub_element"));
+			DoLookups ((FrameworkElement) my_canvas.FindName ("component_element"));
 
-			debug_text1.Text = "my_canvas: " + (FindName ("my_canvas"));
-			debug_text2.Text = "sub_element: " + (FindName ("sub_element"));
+		}
 
-			FrameworkElement se = (FrameworkElement) my_canvas.FindName ("sub_element");
-			debug_text3.Text = "my_canvas.sub_element: " + se;
-			debug_text4.Text = "my_canvas.sub_element.sub_element: " + se.FindName ("sub_element");
+		private void DoLookups (FrameworkElement elem)
+		{
+			debug_panel.Children.Add (new TextBlock () { Text =  String.Format ("Lookups from {0} ({1})", elem.Name, elem) });
+
+			
+			debug_panel.Children.Add (new TextBlock () { Text = String.Format ("{0}.my_canvas: {1}", elem, elem.FindName ("my_canvas")) });
+			debug_panel.Children.Add (new TextBlock () { Text = String.Format ("{0}.sub_element: {1}", elem, elem.FindName ("sub_element")) });
+			debug_panel.Children.Add (new TextBlock () { Text = String.Format ("{0}.component_element: {1}", elem, elem.FindName ("component_element")) });
+			debug_panel.Children.Add (new Canvas () { Height = 20 });
+
 		}
 	}
 }

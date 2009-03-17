@@ -9,10 +9,9 @@
 		    <Border x:Name="sub_element" />
 		</moon:MyPanel>
 		<Rectangle x:Name="sub_element" />
-		<TextBlock x:Name="debug_text1" />
-		<TextBlock x:Name="debug_text2" Canvas.Top="20" Width="400" />
-		<TextBlock x:Name="debug_text3" Canvas.Top="40" Width="400" />
-		<TextBlock x:Name="debug_text4" Canvas.Top="60" Width="400" />
+
+		<TextBlock x:Name="debug_text" />
+		<StackPanel x:Name="debug_panel" />
 	     </Canvas>
 	     
 </UserControl>
