@@ -63,9 +63,9 @@ struct KeyTime {
  public:
 	enum KeyTimeType {
 		UNIFORM,
-		PACED,
 		PERCENT,
-		TIMESPAN
+		TIMESPAN,
+		PACED
 	};
 
 	KeyTime (const KeyTime &keytime)
