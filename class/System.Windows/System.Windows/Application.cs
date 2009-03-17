@@ -284,7 +284,7 @@ namespace System.Windows {
 			int p = loc.IndexOf (';');
 
 			/* We have a resource of the format /assembly;component/resourcename */
-			/* It looks like the / is options tho.  *SIGH* */
+			/* It looks like the / is optional tho.  *SIGH* */
 			if (p > 0) {
 				int l = loc [0] == '/' ? 1 : 0;
 				assembly_name = loc.Substring (l, p - l);
