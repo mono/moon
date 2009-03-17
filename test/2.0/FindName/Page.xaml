@@ -4,11 +4,41 @@
 	     xmlns:moon="clr-namespace:FindName;assembly=FindName"
 	     Width="400" Height="300" x:Name="the_page">
 
+	     <UserControl.Resources>
+		<Style TargetType="moon:MyTextBox" x:Key="TextBoxStyle1">
+		       <Setter Property="Template">
+		       	       <Setter.Value>
+			             <ControlTemplate TargetType="moon:MyTextBox">
+				       <Border>
+				         <moon:MyPanel x:Name="textboxCanvas">
+					   <Border x:Name="ContentElement" />
+					 </moon:MyPanel>
+				       </Border>
+				     </ControlTemplate>
+		       	       </Setter.Value>
+		       </Setter>
+		</Style>
+		<Style TargetType="moon:MyTextBox" x:Key="TextBoxStyle2">
+		       <Setter Property="Template">
+		       	       <Setter.Value>
+			             <ControlTemplate TargetType="moon:MyTextBox">
+				       <moon:MyPanel x:Name="textboxCanvas">
+					 <Border x:Name="ContentElement" />
+				       </moon:MyPanel>
+				     </ControlTemplate>
+		       	       </Setter.Value>
+		       </Setter>
+		</Style>
+	     </UserControl.Resources>
+
 	     <Canvas>
 		<moon:MyPanel x:Name="my_canvas">
 		    <Border x:Name="sub_element" />
 		</moon:MyPanel>
 		<Rectangle x:Name="sub_element" />
+
+		<moon:MyTextBox x:Name="my_textbox1" Style="{StaticResource TextBoxStyle1}" />
+		<moon:MyTextBox x:Name="my_textbox2" Style="{StaticResource TextBoxStyle2}" />
 
 		<TextBlock x:Name="debug_text" />
 		<StackPanel x:Name="debug_panel" />
