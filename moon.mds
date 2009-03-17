@@ -1,7 +1,7 @@
-<Combine name="moon" fileversion="2.0">
+<Combine fileversion="2.0" name="moon">
   <Policies>
     <ChangeLogPolicy UpdateMode="Nearest" VcsIntegration="RequireEntry" inheritsSet="Mono" />
-    <DotNetNamingPolicy DirectoryNamespaceAssociation="None" VSStyleResourceNames="False" />
+    <DotNetNamingPolicy DirectoryNamespaceAssociation="None" ResourceNamePolicy="FileFormatDefault" />
     <VersionControlPolicy inheritsSet="Mono">
       <CommitMessageStyle Header="${Date:yyyy-MM-dd}  ${AuthorName}  &lt;${AuthorEmail}&gt;&#xA;&#xA;" Indent="	" />
     </VersionControlPolicy>
@@ -18,6 +18,7 @@
       <Entry build="True" name="Moonlight Unit Tests" configuration="Debug" />
       <Entry build="False" name="Microsoft.Silverlight.Testing" configuration="Debug" />
       <Entry build="True" name="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" configuration="Debug" />
+      <Entry build="True" name="Mono.Moonlight.UnitTesting" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="src" configuration="Release" />
@@ -30,6 +31,7 @@
       <Entry build="True" name="Moonlight Unit Tests" configuration="Release" />
       <Entry build="False" name="Microsoft.Silverlight.Testing" configuration="Release" />
       <Entry build="True" name="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" configuration="Release" />
+      <Entry build="True" name="Mono.Moonlight.UnitTesting" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="src" single="True">
@@ -43,6 +45,7 @@
     <Execute type="None" entry="Moonlight Unit Tests" />
     <Execute type="None" entry="Microsoft.Silverlight.Testing" />
     <Execute type="None" entry="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" />
+    <Execute type="None" entry="Mono.Moonlight.UnitTesting" />
   </StartMode>
   <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="UpdateNearestChangeLog" />
   <Entries>
@@ -55,6 +58,7 @@
     <Entry filename="tools/tools.mdp" />
     <Entry filename="test/2.0/moon-unit/moon-unit.mdp" />
     <Entry filename="test/2.0/Microsoft.Silverlight.Testing/UnitTestHarness/UnitTestHarness.mdp" />
-    <Entry filename="test/2.0/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.mdp" />
+    <Entry filename="test/2.0/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.csproj" />
+    <Entry filename="test/2.0/Mono.Moonlight.UnitTesting/Mono.Moonlight.mdp" />
   </Entries>
 </Combine>

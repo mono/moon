@@ -13,15 +13,16 @@ REFERENCES = \
 	-r:$(srcdir)/../Microsoft.Silverlight.Testing.dll 								\
 	-r:$(srcdir)/../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
 	-r:$(srcdir)/../Controls.Test.Common/Controls.Test.Common.dll							\
-	-r:$(srcdir)/../System.Windows.Controls	\
-	-r:$(srcdir)/../System.Windows.Controls.Data	\
+	-r:$(srcdir)/../System.Windows.Controls.dll	\
+	-r:$(srcdir)/../System.Windows.Controls.Data.dll	\
+	-r:$(srcdir)/../Mono.Moonlight.UnitTesting.dll	\
 	-r:System.Core	\
 	-r:System	\
 	-r:System.Xml	\
 	-r:System.Net	\
 	-r:System.Windows
 
-CSCFLAGS = /codepage:65001 -d:SILVERLIGHT -target:library -debug+ -noconfig $(REFERENCES)
+CSCFLAGS = /codepage:65001 -d:SILVERLIGHT -d:MOONLIGHT -target:library -debug+ -noconfig $(REFERENCES)
 
 SMCS = MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe  $(CSCFLAGS)
 
@@ -55,6 +56,7 @@ $(assembly).xap: $(assembly).dll
 		$(srcdir)/../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
 		$(srcdir)/../System.Windows.Controls.dll	\
 		$(srcdir)/../System.Windows.Controls.Data.dll	\
-		$(srcdir)/../System.Xml.Linq.dll
+		$(srcdir)/../System.Xml.Linq.dll	\
+		$(srcdir)/../Mono.Moonlight.UnitTesting.dll
 	
 all-local: $(assembly).xap

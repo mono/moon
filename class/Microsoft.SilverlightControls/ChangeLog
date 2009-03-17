@@ -1,3 +1,10 @@
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* SDKControls/Data/test/App.xaml.cs:
+	* SDKControls/Extended/Test/App.xaml.cs: Use
+	  Mono.Moonlight.UnitTesting.dll when building with Moonlight
+	  so the test results gets logged.
+
 2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Controls/Makefile.am: Remove old makefiles.

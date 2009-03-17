@@ -1,3 +1,11 @@
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am:
+	* Controls.Data.Test.html:
+	* ControlsExtended.Test.html: Use
+	  Mono.Moonlight.UnitTesting.dll when building with Moonlight
+	  so the test results gets logged.
+
 2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Fix dependencies and clean and install targets.

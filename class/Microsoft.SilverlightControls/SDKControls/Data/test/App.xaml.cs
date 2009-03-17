@@ -23,7 +23,11 @@ namespace System.Windows.Controls.Data.Test
         private void OnStartup(object sender, EventArgs e)
         {
             // Initialize and start the test framework
+#if MOONLIGHT
+			this.RootVisual = Mono.Moonlight.UnitTesting.Testing.CreateTestPage (this);
+#else
             this.RootVisual = UnitTestSystem.CreateTestPage();
+#endif
         }
 
         private void OnExit(object sender, EventArgs e)

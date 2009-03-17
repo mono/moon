@@ -15,5 +15,6 @@ $(EXTENDED_XAP): $(EXTENDED_XAP_FILE)
 
 
 all-local: $(EXTENDED_XAP) $(DATA_XAP) 
+	cp $(srcdir)/../../Mono.Moonlight.UnitTesting/site/* .
 
 install:

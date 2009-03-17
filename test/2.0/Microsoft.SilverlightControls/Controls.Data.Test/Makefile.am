@@ -16,6 +16,7 @@ REFERENCES = \
 	-r:$(srcdir)/../System.Windows.Controls.Data	\
 	-r:$(srcdir)/../System.Windows.Controls	\
 	-r:$(srcdir)/../System.Xml.Linq.dll	\
+	-r:$(srcdir)/../Mono.Moonlight.UnitTesting.dll	\
 	-r:System.Core	\
 	-r:System	\
 	-r:System.Xml	\
@@ -52,7 +53,8 @@ $(assembly).xap: test.dll
 		$(srcdir)/../Microsoft.Silverlight.Testing.dll	\
 		$(srcdir)/../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
 		$(srcdir)/../System.Windows.Controls.Data.dll	\
-		$(srcdir)/../System.Xml.Linq.dll
+		$(srcdir)/../System.Xml.Linq.dll	\
+		$(srcdir)/../Mono.Moonlight.UnitTesting.dll
 	
 all-local: $(assembly).xap
 

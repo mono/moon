@@ -1,3 +1,8 @@
+2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Use Mono.Moonlight.UnitTesting.dll when
+	  building with Moonlight so the test results gets logged.
+
 2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Resign System.Windows.Controls[.Data].dll and

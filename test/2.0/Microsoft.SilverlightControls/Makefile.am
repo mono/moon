@@ -21,13 +21,16 @@ SYSTEM_XML_LINQ_DLL = $(top_builddir)/class/lib/2.1/System.Xml.Linq.dll
 SYSTEM_WINDOWS_CONTROLS_DLL = $(top_builddir)/class/lib/2.1/System.Windows.Controls.dll
 SYSTEM_WINDOWS_CONTROLS_DATA_DLL = $(top_builddir)/class/lib/2.1/System.Windows.Controls.Data.dll
 
-all-local: Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll System.Windows.Controls.dll System.Windows.Controls.Data.dll
+all-local: Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll System.Windows.Controls.dll System.Windows.Controls.Data.dll Mono.Moonlight.UnitTesting.dll
 	
 Microsoft.Silverlight.Testing.dll:
 	-cp $(srcdir)/../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll* .
 
 Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll:
 	-cp $(srcdir)/../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll* .
+
+Mono.Moonlight.UnitTesting.dll:
+	-cp $(srcdir)/../Mono.Moonlight.UnitTesting/Mono.Moonlight.UnitTesting.dll* .
 
 System.Xml.Linq.dll:
 	RESIGN_DLL=$(SYSTEM_XML_LINQ_DLL) $(MAKE) resign
