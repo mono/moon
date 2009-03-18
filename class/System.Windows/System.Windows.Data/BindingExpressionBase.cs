@@ -171,27 +171,8 @@ namespace System.Windows.Data {
 			else {
 				cachedValue = PropertyInfo.GetValue (PropertySource, null);
 			}
-
-			IValueConverter converter = Binding.Converter;
-			bool defined_converter = true;
-			if (converter == null) {
-				defined_converter = false;
-				converter = new MoonlightValueConverter();
-			}
-
-			cachedValue = converter.Convert (cachedValue,
-							 Property.PropertyType,
-							 Binding.ConverterParameter,
-							 Binding.ConverterCulture ?? enUS);
-
-			if (defined_converter && !cachedValue.GetType ().IsSubclassOf (Property.PropertyType)) {
-				converter = new MoonlightValueConverter ();
-
-				cachedValue = converter.Convert (cachedValue,
-							 Property.PropertyType,
-							 Binding.ConverterParameter,
-							 Binding.ConverterCulture ?? enUS);
-			}
+			
+			cachedValue = ConvertToDestType (cachedValue);
 			
 			return cachedValue;
 		}
@@ -222,19 +203,35 @@ namespace System.Windows.Data {
 		void PropertyChanged (object sender, PropertyChangedEventArgs e)
 		{
 			if (PropertyInfo.Name.Equals (e.PropertyName)) {
-				object value = PropertyInfo.GetValue (PropertySource, null);
-
-				if (Binding.Converter != null)
-					value = Binding.Converter.Convert (value,
-					                                   Property.PropertyType,
-					                                   Binding.ConverterParameter,
-					                                   Binding.ConverterCulture ?? enUS);
-				
-				if (Property.PropertyType.IsValueType && value.GetType () != Property.PropertyType)
-					value = Convert.ChangeType (value, Property.PropertyType, null);
-				
+				object value = ConvertToDestType (PropertyInfo.GetValue (PropertySource, null));
 				Target.SetValueImpl (Property, value);
 			}
+		}
+		
+		object ConvertToDestType (object value)
+		{
+			IValueConverter converter = Binding.Converter;
+			bool defined_converter = true;
+			if (converter == null) {
+				defined_converter = false;
+				converter = new MoonlightValueConverter();
+			}
+			
+			value = converter.Convert (value,
+			                           Property.PropertyType,
+			                           Binding.ConverterParameter,
+			                           Binding.ConverterCulture ?? enUS);
+			
+			if (defined_converter && !value.GetType ().IsSubclassOf (Property.PropertyType)) {
+				converter = new MoonlightValueConverter ();
+				
+				value = converter.Convert (value,
+				                           Property.PropertyType,
+				                           Binding.ConverterParameter,
+				                           Binding.ConverterCulture ?? enUS);
+			}
+			
+			return value;
 		}
 	}
 }

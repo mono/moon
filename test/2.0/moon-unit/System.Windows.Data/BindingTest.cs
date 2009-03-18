@@ -142,6 +142,41 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void BindToText ()
+		{
+			Binding binding = new Binding ("");
+
+			TextBox box = new TextBox ();
+			box.SetBinding (TextBox.TextProperty, binding);
+			box.DataContext = 0.5f;
+			Assert.AreEqual ("0.5", box.Text, "#1");
+			box.DataContext = 0.0;
+			Assert.AreEqual ("0", box.Text, "#2");
+			box.DataContext = new object ();
+			Assert.AreEqual ("System.Object", box.Text, "#3");
+		}
+		
+		[TestMethod]
+		public void BindToText2 ()
+		{try {
+			PropertyUpdater data = new PropertyUpdater { Opacity = 0 };
+			Binding binding = new Binding ("Opacity");
+			
+			TextBox box = new TextBox ();
+			box.DataContext = data;
+			box.SetBinding (TextBox.TextProperty, binding);
+
+			data.Opacity = 0.5f;
+			Assert.AreEqual ("0.5", box.Text, "#1");
+			data.Opacity = 0.0f;
+			Assert.AreEqual ("0", box.Text, "#2");
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+				Console.ReadLine ();
+			}
+		}
+
+		[TestMethod]
 		[Asynchronous]
 		public void BindXaml ()
 		{

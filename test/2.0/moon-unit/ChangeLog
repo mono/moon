@@ -1,3 +1,6 @@
+* System.Windows.Data/BindingTest.cs: When updating from a two-way
+binding, ensure we properly typeconvert from source type to dest type.
+
 * moon-unit.mdp: Add missing files to the solution
 
 * System.Windows.Controls/PasswordBoxTest.cs: Add some more tests for
