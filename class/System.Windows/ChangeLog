@@ -1,3 +1,7 @@
+2009-03-18  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* System.Windows.mdp: Update.
+
 2009-03-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Add security attributes using the linker after the

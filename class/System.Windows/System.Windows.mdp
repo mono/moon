@@ -68,7 +68,6 @@
     <File name="System.Windows.Input/MouseEventHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Input/StylusPoint.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Input/StylusPointCollection.cs" subtype="Code" buildaction="Compile" />
-    <File name="System.Windows.Interop/BrowserHost.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Markup/XamlParseException.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/AlignmentX.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/AlignmentY.cs" subtype="Code" buildaction="Compile" />
@@ -429,6 +428,7 @@
     <File name="Mono/MoonlightTypeConverter.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/MoonlightValueConverter.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/ToggleRef.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls.Primitives/IScrollInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="../lib/2.1/System.Windows.Browser.dll" />
