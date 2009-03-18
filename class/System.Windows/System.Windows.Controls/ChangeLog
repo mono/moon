@@ -1,3 +1,8 @@
+2009-03-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Control.cs: Use NativeMethods.control_focus() instead of
+	NativeMethods.surface_focus_element().
+
 2009-03-17  Jb Evain  <jbevain@novell.com>
 
 	* Grid.cs: override and seal ArrangeOverride and MeasureOverride.

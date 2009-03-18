@@ -416,6 +416,11 @@ namespace Mono {
 		public extern static IntPtr control_new ();
 
 		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool control_focus (Control *instance);
+		public extern static bool control_focus (IntPtr instance);
+
+		[DllImport ("moon")]
 		// DependencyObject *control_get_template_child (Control *instance, const char *name);
 		public extern static IntPtr control_get_template_child (IntPtr instance, string name);
 
@@ -1544,11 +1549,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Downloader *surface_create_downloader (Surface *instance);
 		public extern static IntPtr surface_create_downloader (IntPtr instance);
-
-		[DllImport ("moon")]
-		[return: MarshalAs (UnmanagedType.U1)]
-		// bool surface_focus_element (Surface *instance, UIElement *element);
-		public extern static bool surface_focus_element (IntPtr instance, IntPtr element);
 
 		[DllImport ("moon")]
 		// UIElement *surface_get_focused_element (Surface *instance);
