@@ -1,3 +1,6 @@
+* System.Windows.Media.Animation/StoryboardTest.cs: Remove underscores
+again :)
+
 2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Copy preserving timestamps, this way we won't
