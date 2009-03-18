@@ -46,7 +46,8 @@
 
 void _cairo_surface_destroy (void* surface) {cairo_surface_destroy((cairo_surface_t*)surface);}
 
-void morton (int n, int *x, int *y) {
+void
+morton (int n, int *x, int *y) {
 	n = (n & 0x99999999) + ((n & 0x22222222) << 1) + ((n & 0x44444444) >> 1);
 	n = (n & 0xc3c3c3c3) + ((n & 0x0c0c0c0c) << 2) + ((n & 0x30303030) >> 2);
 	n = (n & 0xf00ff00f) + ((n & 0x00f000f0) << 4) + ((n & 0x0f000f00) >> 4);
@@ -73,6 +74,18 @@ morton_y (int n)
 	n = (n & 0xff000000) + ((n & 0x0000ff00) << 8);
 
 	return n >> 16;
+}
+
+/*
+ * don't use frexp for integers, as it returns a value in [0.5, 1[, thus returns a number of layer reduced by 1 for images with a size 2^n
+ */
+int
+L2 (int v)
+{
+	int n = 0;
+	while (v >>= 1)
+		n++;
+	return n;
 }
 
 MultiScaleImage::MultiScaleImage ()
@@ -393,8 +406,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			continue;
 		LOG_MSI ("Intersects with main viewport...rendering\n");
 
-		int layers;
-		frexp (MAX (sub_w, sub_h), &layers);
+		int layers = L2(MAX (sub_w, sub_h));
 
 		int optimal_layer;
 		frexp (msi_w / (subvp_w * msivp_w), &optimal_layer); 
@@ -589,8 +601,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	double vp_oy = GetViewportOrigin()->y;
 	double vp_w = GetViewportWidth ();
 
-	int layers;
-	frexp (MAX (im_w, im_h), &layers);
+	int layers = L2 (MAX (im_w, im_h));
 
 	//optimal layer for this... aka "best viewed at"
 	int optimal_layer;
