@@ -1,3 +1,8 @@
+2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.cpp: ASFFrameReader::Reset: delete any payloads we may
+	  have.
+
 2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* asf.cpp: ASFReader: don't advance next_packet_index if we

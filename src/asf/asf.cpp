@@ -1341,6 +1341,12 @@ ASFFrameReader::Reset ()
 {
 	key_frames_only = true;
 	first_pts = 0;
+	if (payloads != NULL) {
+		for (int i = 0; payloads [i]; i++) {
+			delete payloads [i];
+			payloads [i] = NULL;
+		}
+	}
 	RemoveAll ();
 }
 
