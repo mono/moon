@@ -76,18 +76,6 @@ morton_y (int n)
 	return n >> 16;
 }
 
-/*
- * don't use frexp for integers, as it returns a value in [0.5, 1[, thus returns a number of layer reduced by 1 for images with a size 2^n
- */
-int
-L2 (int v)
-{
-	int n = 0;
-	while (v >>= 1)
-		n++;
-	return n;
-}
-
 MultiScaleImage::MultiScaleImage ()
 {
 //	static bool init = true;
@@ -406,7 +394,9 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			continue;
 		LOG_MSI ("Intersects with main viewport...rendering\n");
 
-		int layers = L2(MAX (sub_w, sub_h));
+		int layers;
+		if (frexp (MAX (sub_w, sub_h), &layers) == 0.5)
+			layers --;
 
 		int optimal_layer;
 		frexp (msi_w / (subvp_w * msivp_w), &optimal_layer); 
@@ -601,7 +591,9 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	double vp_oy = GetViewportOrigin()->y;
 	double vp_w = GetViewportWidth ();
 
-	int layers = L2 (MAX (im_w, im_h));
+	int layers;
+	if (frexp (MAX (im_w, im_h), &layers) == 0.5)
+		layers --;
 
 	//optimal layer for this... aka "best viewed at"
 	int optimal_layer;
