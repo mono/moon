@@ -29,6 +29,7 @@ G_END_DECLS
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/mono-gc.h>
 #include <mono/metadata/threads.h>
+#include <mono/metadata/profiler.h>
 
 /*
  * Deployment
@@ -51,7 +52,8 @@ Deployment::Initialize()
 {
 	const gchar *trace_options;
 	const gchar *moon_path;
-	
+	const gchar *profiler;
+
 	if (initialized)
 		return true;
 		
@@ -84,7 +86,13 @@ Deployment::Initialize()
 		printf ("Setting moonlight root directory to: %s\n", moon_path);
 		mono_assembly_setrootdir (moon_path);
 	}
-	
+
+	profiler = g_getenv ("MOON_PROFILER");
+	if (profiler != NULL) {
+		printf ("Setting profiler to: %s\n", profiler);
+		mono_profiler_load (profiler);
+	}
+
 	mono_set_signal_chaining (true);
 	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
 	root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");
