@@ -672,9 +672,9 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 
 				cairo_scale (cr, msi_w / (vp_w * im_w), msi_w / (vp_w * im_w)); //scale to viewport
 				cairo_translate (cr, im_w *(-vp_ox + i * v_tile_w), im_w * (-vp_oy + j * v_tile_h));
-				cairo_rectangle (cr, 0, 0, im_w, im_h);
-				cairo_clip(cr);
 				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
+				cairo_rectangle (cr, 0, 0, tile_width, tile_height);
+				cairo_clip(cr);
 				cairo_set_source_surface (cr, image, 0, 0);
 				double *opacity = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
 				if (opacity && *opacity > GetValue (MultiScaleImage::TileFadeProperty)->AsDouble()) {
@@ -900,7 +900,7 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 		// - loop all the tiles, update their opacity, and only invalidate a subregion
 		// - Invalidate all, and compute the new opacity on the tiles that needs to be rendered.
 		//Both options are unfortunately quite expensive :(
-		LOG_MSI ("TileFade changed to %f", args->new_value->AsDouble ());
+		//LOG_MSI ("TileFade changed to %f\n", args->new_value->AsDouble ());
 		Invalidate ();
 	}
 
