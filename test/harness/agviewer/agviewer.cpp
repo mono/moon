@@ -34,7 +34,6 @@
 #include <gdk/gdkkeysyms.h>
 #include <dbus/dbus-glib.h>
 #include <dbus/dbus-glib-bindings.h>
-#include <signal.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
 #include <dlfcn.h>
@@ -93,8 +92,6 @@ static void mark_test_as_complete_and_start_next_test (gboolean successful);
 static void log_message (const char* test_name, const char* message);
 static void log_output (const char* test_name, const char* message, const char* level);
 static void set_current_dir (const char* test_path);
-static void agviewer_handle_native_sigsegv (int signal);
-static void agviewer_add_signal_handler ();
 static void print_stack_traces ();
 
 static gpointer
@@ -223,8 +220,6 @@ main(int argc, char **argv)
 {
 	int frame_width = 800;
 	int frame_height = 800;
-
-	agviewer_add_signal_handler ();
 	
 	gtk_init (&argc, &argv);
 
@@ -555,77 +550,7 @@ log_output (const char* test_name, const char* message, const char* level)
 	dbus_g_proxy_call_no_reply (dbus_proxy, "Log", G_TYPE_STRING, test_name, G_TYPE_STRING, level, G_TYPE_STRING, message, G_TYPE_INVALID);
 }
 
-static void
-agviewer_add_signal_handler ()
-{
-	struct sigaction sa;
-
-	sa.sa_handler = agviewer_handle_native_sigsegv;
-	sigemptyset (&sa.sa_mask);
-	sa.sa_flags = 0;
-
-	g_assert (sigaction (SIGSEGV, &sa, NULL) != -1);
-	g_assert (sigaction (SIGFPE, &sa, NULL) != -1);
-	g_assert (sigaction (SIGQUIT, &sa, NULL) != -1);
-}
-
-/*
- * agviewer_handle_native_sigsegv: 
- *   (this is a slightly modified version of mono_handle_native_sigsegv from mono/mono/mini/mini-exceptions.c)
- *
- */
-
 typedef void void_method ();
-
-void
-agviewer_handle_native_sigsegv (int signal)
-{
-	const char *signal_str = (signal == SIGSEGV) ? "SIGSEGV" : "SIGABRT";
-	switch (signal) {
-	case SIGSEGV: signal_str = "SIGSEGV"; break;
-	case SIGFPE: signal_str = "SIGFPE"; break;
-	case SIGABRT: signal_str = "SIGABRT"; break;
-	case SIGQUIT: signal_str = "SIGQUIT"; break;
-	default:
-		signal_str = "UNKNOWN"; break;
-	}
-	
-	if (handling_sigsegv) {
-		/*
-		 * In our normal sigsegv handling we do signal-unsafe things to provide better 
-		 * output to what actually happened. If we get another one, do only signal-safe
-		 * things
-		 */
-		_exit (1);
-		return;
-	}
-
-	/* To prevent infinite loops when the stack walk causes a crash */
-	handling_sigsegv = true;
-
-	/*
-	 * A SIGSEGV indicates something went very wrong so we can no longer depend
-	 * on anything working. So try to print out lots of diagnostics, starting 
-	 * with ones which have a greater chance of working.
-	 */
-	fprintf (stderr,
-			 "\n"
-			 "=============================================================\n"
-			 "Got a %s while executing native code.                        \n"
-			 " We'll first ask gdb for a stack trace, then try our own     \n"
-			 " stack walking method (usually not as good as gdb, but it    \n"
-			 " can do managed and native stack traces together)            \n"
-			 "=============================================================\n"
-			 "\n", signal_str);
-
-	print_stack_traces ();		
-
-	if (signal != SIGQUIT) {
-		abort ();
-	} else {
-		handling_sigsegv = false;
-	}
-}
 
 static void
 print_stack_traces ()

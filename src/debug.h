@@ -29,8 +29,6 @@
 
 #if DEBUG
 
-#define MAX_STACK_FRAMES 30
-
 char* get_stack_trace_prefix (const char* prefix);
 void print_stack_trace_prefix (const char* prefix); 
 
@@ -39,14 +37,12 @@ G_BEGIN_DECLS
 char* get_stack_trace ();
 void print_stack_trace ();
 void enable_vm_stack_trace ();
-void print_gdb_trace ();
 
 G_END_DECLS
 
 #else
 
 #define print_stack_trace()
-#define print_gdb_trace()
 #define enable_vm_stack_trace()
 
 #endif /* DEBUG */
@@ -132,6 +128,14 @@ G_END_DECLS
 #define LOG_MP3(...)
 
 #endif /* LOGGING */
+
+#if SANITY && DEBUG
+G_BEGIN_DECLS
+void moonlight_install_signal_handlers ();
+G_END_DECLS
+#else
+#define moonlight_install_signal_handlers() 
+#endif
 
 #endif /* __MOONLIGHT_DEBUG_H */
 

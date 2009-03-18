@@ -1,5 +1,17 @@
 2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* debug.h:
+	* debug.cpp:
+	* deployment.cpp: Add signal handlers for crash detection in
+	  libmoon instead of libshocker, this way there's not a race
+	  condition between loading mono and installing a signal
+	  handler in libshocker (the signal handler has to get
+	  installed before loading mono, otherwise we'll crash for
+	  real due to managed exceptions getting caught by the signal
+	  handler).
+
+2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: More asserts.
 
 2009-03-17  Jeffrey Stedfast  <fejj@novell.com>

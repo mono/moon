@@ -20,9 +20,7 @@ libshocker_la_SOURCES = 	\
 	image-capture.h		\
 	image-capture.cpp	\
 	shutdown-manager.h	\
-	shutdown-manager.cpp	\
-	signal-handler.cpp	\
-	signal-handler.h
+	shutdown-manager.cpp
 
 libshocker_la_LDFLAGS = \
 	-avoid-version -module

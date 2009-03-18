@@ -1,5 +1,15 @@
 2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* harness.mdp:
+	* shocker/Makefile.am:
+	* shocker/netscape.cpp:
+	* agviewer/agviewer.cpp:
+	* shocker/signal-handler.h:
+	* shocker/signal-handler.cpp: Move signal handler into
+	  libmoon.
+
+2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* test-runner/ExternalProcess.cs: Try another way of getting
 	  stdout, hopefully this one doesn't cause weird exceptions.
 

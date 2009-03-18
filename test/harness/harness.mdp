@@ -74,8 +74,6 @@
     <File name="test-runner/ExocortexDSP/src/FourierDirection.cs" subtype="Code" buildaction="Compile" />
     <File name="test-runner/Log.cs" subtype="Code" buildaction="Compile" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="shocker/signal-handler.cpp" subtype="Code" buildaction="Compile" />
-    <File name="shocker/signal-handler.h" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

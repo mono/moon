@@ -34,8 +34,6 @@
 #include "plugin.h"
 #include "browser.h"
 #include "shutdown-manager.h"
-#include "signal-handler.h"
-
 
 //
 // These are the functions that mozilla looks up and is going to call to figure out
@@ -49,7 +47,6 @@ NP_Initialize (NPNetscapeFuncs* mozilla_funcs, NPPluginFuncs* plugin_funcs)
 	printf ("NP_Initialize\n");
 #endif
 
-	shocker_install_signal_handlers ();
 	shutdown_manager_init ();
 
 	Browser_Initialize (mozilla_funcs);

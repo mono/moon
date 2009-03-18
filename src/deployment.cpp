@@ -54,6 +54,15 @@ Deployment::Initialize()
 	
 	if (initialized)
 		return true;
+		
+#if DEBUG && SANITY
+	// Install signal handlers for crash reporting
+	// Note that this only works if mono hasn't been 
+	// initialized yet (i.e. this must not be done
+	// for mopen, etc).
+	moonlight_install_signal_handlers ();
+#endif
+
 #if DEBUG
 	printf ("Moonlight: Enabling MONO_DEBUG=keep-delegates.\n");
 	g_setenv ("MONO_DEBUG", "keep-delegates", false);

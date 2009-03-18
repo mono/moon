@@ -22,6 +22,12 @@ G_END_DECLS
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/threads.h>
  
+#include <signal.h>
+#include <sys/syscall.h>
+#include <sys/wait.h>
+ 
+#define MAX_STACK_FRAMES 30
+
 #if DEBUG
 
 #if SL_2_0
@@ -343,30 +349,156 @@ print_stack_trace_prefix (const char* prefix)
 	g_free (st);
 }
 
-void
+#if SANITY
+
+/*
+ * moonlight_handle_native_sigsegv: 
+ *   (this is a slightly modified version of mono_handle_native_sigsegv from mono/mono/mini/mini-exceptions.c)
+ *
+ */
+
+
+static bool handlers_installed = false;
+static bool handling_sigsegv = false;
+
+static void
 print_gdb_trace ()
 {
+	/* Try to get more meaningful information using gdb */
+#if !defined(PLATFORM_WIN32)
+	/* From g_spawn_command_line_sync () in eglib */
+	int res;
+	int stdout_pipe [2] = { -1, -1 };
+	pid_t pid;
+	const char *argv [16];
+	char buf1 [128];
+	int status;
+	char buffer [1024];
+
+	res = pipe (stdout_pipe);
+	g_assert (res != -1);
+		
 	/*
+	 * glibc fork acquires some locks, so if the crash happened inside malloc/free,
+	 * it will deadlock. Call the syscall directly instead.
+	 */
+	pid = syscall (SYS_fork);
+	if (pid == 0) {
+		close (stdout_pipe [0]);
+		dup2 (stdout_pipe [1], STDOUT_FILENO);
 
-Put this in your ~/.gdbinit file and then do "gdb --eval-command=gdb_trace whatever.exe"
-then it will print stacktraces whenever you call print_gdb_trace in the code. 
+		for (int i = getdtablesize () - 1; i >= 3; i--)
+			close (i);
 
-////////////////////////////
-define mono_run
-    pst
-    run
-end
+		argv [0] = g_find_program_in_path ("gdb");
+		if (argv [0] == NULL) {
+			close (STDOUT_FILENO);
+			exit (1);
+		}
 
-define gdb_trace
-        break print_gdb_trace
-        commands
-                bt 40
-                c
-        end
-end
-////////////////////////////
+		argv [1] = "-ex";
+		sprintf (buf1, "attach %ld", (long)getpid ());
+		argv [2] = buf1;
+		argv [3] = "--ex";
+		argv [4] = "info threads";
+		argv [5] = "--ex";
+		argv [6] = "thread apply all bt";
+		argv [7] = "--batch";
+		argv [8] = 0;
+
+		execv (argv [0], (char**)argv);
+		exit (1);
+	}
+
+	close (stdout_pipe [1]);
+
+	fprintf (stderr, "\nDebug info from gdb:\n\n");
+
+	while (1) {
+		int nread = read (stdout_pipe [0], buffer, 1024);
+
+		if (nread <= 0)
+			break;
+		write (STDERR_FILENO, buffer, nread);
+	}		
+
+	waitpid (pid, &status, WNOHANG);
 	
-	*/
+#endif
 }
 
-#endif
+void
+static moonlight_handle_native_sigsegv (int signal)
+{
+	const char *signal_str;
+	
+	switch (signal) {
+	case SIGSEGV: signal_str = "SIGSEGV"; break;
+	case SIGFPE: signal_str = "SIGFPE"; break;
+	case SIGABRT: signal_str = "SIGABRT"; break;
+	case SIGQUIT: signal_str = "SIGQUIT"; break;
+	default: signal_str = "UNKNOWN"; break;
+	}
+	
+	if (handling_sigsegv) {
+		/*
+		 * In our normal sigsegv handling we do signal-unsafe things to provide better 
+		 * output to what actually happened. If we get another one, do only signal-safe
+		 * things
+		 */
+		_exit (1);
+		return;
+	}
+
+	/* To prevent infinite loops when the stack walk causes a crash */
+	handling_sigsegv = true;
+
+	/*
+	 * A SIGSEGV indicates something went very wrong so we can no longer depend
+	 * on anything working. So try to print out lots of diagnostics, starting 
+	 * with ones which have a greater chance of working.
+	 */
+	fprintf (stderr,
+			 "\n"
+			 "=============================================================\n"
+			 "Got a %s while executing native code.                        \n"
+			 " We'll first ask gdb for a stack trace, then try our own     \n"
+			 " stack walking method (usually not as good as gdb, but it    \n"
+			 " can do managed and native stack traces together)            \n"
+			 "=============================================================\n"
+			 "\n", signal_str);
+
+	print_gdb_trace ();		
+
+	fprintf (stderr, "\nDebug info from libmoon:\n\n");
+	print_stack_trace ();	
+	
+	if (signal != SIGQUIT) {
+		abort ();
+	} else {
+		handling_sigsegv = false;
+	}
+}
+
+void
+moonlight_install_signal_handlers ()
+{
+	struct sigaction sa;
+
+	if (handlers_installed)
+		return;
+	handlers_installed = true;
+
+	printf ("Moonlight: Installing signal handlers for crash reporting.\n");
+	
+	sa.sa_handler = moonlight_handle_native_sigsegv;
+	sigemptyset (&sa.sa_mask);
+	sa.sa_flags = 0;
+
+	g_assert (sigaction (SIGSEGV, &sa, NULL) != -1);
+	g_assert (sigaction (SIGFPE, &sa, NULL) != -1);
+	g_assert (sigaction (SIGQUIT, &sa, NULL) != -1);
+}
+#endif /* SANITY */
+
+#endif /* DEBUG */
