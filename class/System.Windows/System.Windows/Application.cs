@@ -428,7 +428,7 @@ namespace System.Windows {
 		}
 
 		internal static Dictionary<XmlnsDefinitionAttribute,Assembly> xmlns_definitions = new Dictionary<XmlnsDefinitionAttribute, Assembly> ();
-		internal static HashSet<string> imported_namespaces = new HashSet<string> ();
+		internal static List<string> imported_namespaces = new List<string> ();
 		
 		internal static void LoadXmlnsDefinitionMappings (Assembly a)
 		{
