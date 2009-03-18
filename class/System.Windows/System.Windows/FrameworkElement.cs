@@ -83,10 +83,17 @@ namespace System.Windows {
 			}
 		}
 
+		bool invalidatingLocalBindings;
+
 		void InvalidateLocalBindings ()
 		{
 			if (expressions.Count == 0)
 				return;
+
+			if (invalidatingLocalBindings)
+				return;
+
+			invalidatingLocalBindings = true;
 
 			Dictionary<DependencyProperty, Expression> old = expressions;
 			expressions = new Dictionary<DependencyProperty, Expression> ();
@@ -97,6 +104,8 @@ namespace System.Windows {
 					SetValue (keypair.Key, beb);
 				}
 			}
+
+			invalidatingLocalBindings = false;
 		}
 
 		/* 
