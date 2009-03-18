@@ -138,7 +138,8 @@ look_for_duplicates (gpointer key, gpointer value, gpointer user_data)
 		return;
 
 	char *name = (char*)key;
-	if (data->ns->FindName (name)) {
+	void *o = data->ns->FindName (name);
+	if (o && o != value) {
 		data->duplicate_found = true;
 		data->duplicate_name = g_strdup (name);
 	}

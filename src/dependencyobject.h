@@ -298,6 +298,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetName (const char *name);
 
+	void SetName (const char *name, NameScope *scope);
+
 	virtual void SetSurface (Surface *surface);
 
 	/* @GenerateCBinding,GeneratePInvoke */

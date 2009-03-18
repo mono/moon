@@ -341,6 +341,7 @@ class XamlElementInstance : public List::Node {
 
 	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value);
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
+	virtual NameScope *GetParentNameScope (XamlParserInfo *p);
 	
 	void SetKey (const char *key) { this->x_key = g_strdup (key); }
 	char *GetKey () { return x_key; }
@@ -926,7 +927,8 @@ class XNamespace : public XamlNamespace {
 			item->SetName (value);
 
 			if (item->IsDependencyObject ()) {
-				item->GetAsDependencyObject ()->SetValue (DependencyObject::NameProperty, Value (value));
+				NameScope *scope = item->GetParentNameScope (p);
+				item->GetAsDependencyObject ()->SetName (value, scope);
 				return true;
 			}
 
@@ -3413,6 +3415,22 @@ XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, c
 	return true;
 }
 
+NameScope *
+XamlElementInstance::GetParentNameScope (XamlParserInfo *p)
+{
+	XamlElementInstance *walk = parent;
+	while (walk) {
+		if (walk->element_type == XamlElementInstance::ELEMENT && walk->IsDependencyObject ()) {
+			NameScope *ns = walk->GetAsDependencyObject ()->FindNameScope ();
+			if (ns)
+				return ns;
+		}
+		walk = walk->parent;
+	}
+	
+	return p->namescope;
+}
+
 static XamlElementInfo *
 create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name, bool create)
 {
@@ -4344,6 +4362,7 @@ start_parse:
 			}
 
 			MoonError err;
+//			printf ("settng:  %s  %s  value type:  %s\n", attr [i], attr [i+1], v ? Type::Find (v->GetKind ())->GetName () : "--null--");
 			if (!dep->SetValueWithError (prop, v, &err))
 				parser_error (p, item->element_name, attr [i], err.code, err.message);
 			else

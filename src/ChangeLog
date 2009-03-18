@@ -1,3 +1,13 @@
+2009-03-18  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: When we use x:Name to set an elements name, make sure
+	that it gets set in the namescope of it's containing element.
+	* dependencyobject.cpp|h: New method that allows setting objects
+	name in a different namescope, this will also result in the name
+	being set in the objects namescope.
+	- Allow duplicate objects if they are the same object
+	* namescope.cpp: Allow duplicates if they are the same object.
+	
 2009-03-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::Initialize): Don't bother connecting to

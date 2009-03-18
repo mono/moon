@@ -1070,8 +1070,8 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 			DependencyObject *o = scope->FindName (value->AsString ());
 			if (o && o != this) {
 				MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
-						   g_strdup_printf ("The name already exists in the tree: %s.",
-								    value->AsString ()));
+						   g_strdup_printf ("The name already exists in the tree: %s (%p %p).",
+								    value->AsString (), o, this));
 				return false;
 			}
 		}
@@ -1234,12 +1234,14 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 	const char *n = GetName();
 		
 	if (n && *n) {
-		if (to_ns->FindName (n)) {
+		DependencyObject *o = to_ns->FindName (n);
+		if (o && o != this) {
 			MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
 					   g_strdup_printf ("The name already exists in the tree: %s.",
 							    n));
 			return;
-		}
+		} else if (o == this)
+			return;
 		to_ns->RegisterName (n, this);
 	}
 
@@ -1284,6 +1286,16 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 		g_hash_table_foreach (autocreate->auto_values, unregister_depobj_names, from_ns);
 	
 	g_hash_table_foreach (local_values, unregister_depobj_names, from_ns);
+}
+
+void
+DependencyObject::SetName (const char* name, NameScope *scope)
+{
+	DependencyProperty *property = GetDeployment ()->GetTypes ()->GetProperty (NameProperty);
+	Value *new_value = new Value (name);
+
+	SetValue (property, new_value);
+	scope->RegisterName (name, this);
 }
 
 Value *
