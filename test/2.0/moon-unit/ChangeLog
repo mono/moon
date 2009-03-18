@@ -1,3 +1,6 @@
+* System.Windows.Controls/GridTest.cs: Add test to ensure children are
+being found
+
 * System.Windows.Data/BindingTest.cs: When updating from a two-way
 binding, ensure we properly typeconvert from source type to dest type.
 

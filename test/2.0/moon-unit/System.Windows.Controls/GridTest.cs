@@ -12,12 +12,12 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Controls
 {
 	[TestClass]
-	public class GridTest
+	public class GridTest : SilverlightTest
 	{
 		class LayoutPoker : Panel
 		{
@@ -61,6 +61,15 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual(0, Grid.GetColumn(r2), "#7");
 			Assert.AreEqual(0, Grid.GetRow(r1), "#8");
 			Assert.AreEqual(0, Grid.GetRow(r2), "#9");
+		}
+		
+		[TestMethod]
+		public void FindChildren ()
+		{
+			Grid grid = new Grid ();
+			grid.Children.Add (new UserControl { Name = "a" });
+			TestPanel.Children.Add (grid);
+			Assert.IsNotNull (grid.FindName ("a"), "#1");
 		}
 
 		[TestMethod]
