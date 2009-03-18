@@ -428,7 +428,7 @@ namespace System.Windows {
 		}
 
 		internal static Dictionary<XmlnsDefinitionAttribute,Assembly> xmlns_definitions = new Dictionary<XmlnsDefinitionAttribute, Assembly> ();
-		internal static List<string> imported_namespaces = new List<string> ();
+		internal static HashSet<string> imported_namespaces = new HashSet<string> ();
 		
 		internal static void LoadXmlnsDefinitionMappings (Assembly a)
 		{
@@ -444,15 +444,24 @@ namespace System.Windows {
 			imported_namespaces.Add (xmlns);
 		}
 
+		static Type GetType (Assembly assembly, string ns, string name)
+		{
+			var fullname = string.IsNullOrEmpty (ns) ? name : ns + "." + name;
+			return assembly.GetType (fullname);
+		}
+
 		internal static Type GetComponentTypeFromName (string name)
 		{
-			return (from def in xmlns_definitions
-				where imported_namespaces.Contains (def.Key.XmlNamespace)
-				let clr_namespace = def.Key.ClrNamespace
-				let assembly = def.Value
-				from type in assembly.GetTypes ()
-					where type.Namespace == clr_namespace && type.Name == name /* && type.IsSubclassOf (typeof (DependencyObject)) */
-				select type).FirstOrDefault ();
+			foreach (var pair in xmlns_definitions) {
+				if (!imported_namespaces.Contains (pair.Key.XmlNamespace))
+					continue;
+
+				var type = GetType (pair.Value, pair.Key.ClrNamespace, name);
+				if (type != null)
+					return type;
+			}
+
+			return null;
 		}
 
 		//

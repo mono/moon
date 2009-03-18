@@ -1,3 +1,7 @@
+2009-03-18  Jb Evain  <jbevain@novell.com>
+
+	* Application.cs: simplify complex linq query.
+
 2009-03-17  Jb Evain  <jbevain@novell.com>
 
 	* FrameworkElement.cs (OverridesLayoutMethod): make sure we
