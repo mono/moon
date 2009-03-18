@@ -120,13 +120,9 @@ class TextBox : public Control, public ITextAttributes {
 	// mouse events
 	static void mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure);
 	static void mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure);
-	static void mouse_enter (EventObject *sender, EventArgs *args, gpointer closure);
-	static void mouse_leave (EventObject *sender, EventArgs *args, gpointer closure);
 	static void mouse_move (EventObject *sender, EventArgs *args, gpointer closure);
 	void OnMouseLeftButtonDown (MouseEventArgs *args);
 	void OnMouseLeftButtonUp (MouseEventArgs *args);
-	void OnMouseEnter (MouseEventArgs *args);
-	void OnMouseLeave (EventArgs *args);
 	void OnMouseMove (MouseEventArgs *args);
 	
 	// keypress events
@@ -323,6 +319,12 @@ class TextBoxView : public FrameworkElement {
 	int had_selected_text:1;
 	int cursor_visible:1;
 	int dirty:1;
+	
+	// mouse events
+	static void mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure);
+	static void mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnMouseLeftButtonDown (MouseEventArgs *args);
+	void OnMouseLeftButtonUp (MouseEventArgs *args);
 	
 	// TextBox events
 	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);

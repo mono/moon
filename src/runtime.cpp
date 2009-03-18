@@ -1343,22 +1343,8 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		if (emit_enter)
 			handled = EmitEventOnList (UIElement::MouseEnterEvent, new_input_list, event, new_index) || handled;
 
-		if (event_id != NO_EVENT_ID && ((surface_index == 0 && new_index == 0) || force_emit)) {
+		if (event_id != NO_EVENT_ID && ((surface_index == 0 && new_index == 0) || force_emit))
 			handled = EmitEventOnList (event_id, new_input_list, event, -1) || handled;
-
-			if (silverlight2 && event_id == UIElement::MouseLeftButtonDownEvent) {
-				UIElementNode *node = (UIElementNode *) new_input_list->First ();
-				UIElement *element;
-				
-				while (node) {
-					element = node->uielement;
-					if (FocusElement (element))
-						break;
-					
-					node = (UIElementNode *) node->next;
-				}
-			}
-		}
 		
 		// We need to remove from the new_input_list the events which have just 
 		// became invisible/unhittable as the result of the event. 
@@ -1753,22 +1739,10 @@ Surface::FocusElement (UIElement *focused)
 
 	if (focused == focused_element)
 		return true;
-
-	/* according to msdn, these three things must be true for an element to be focusable:
-
-	   1. the element must be visible
-	   2. the element must have IsTabStop = true
-	   3. the element must be part of the plugin's visual tree, and must have had its Loaded event fired.
-	*/
-	if (!focused->GetRenderVisible()
-	    || (!focused->Is(Type::CONTROL) || !((Control*)focused)->GetIsTabStop())
-	    || !focused->IsLoaded()
-	    || focused->GetSurface () != this)
-		return false;
-
-	if (!focus_tick_call_added) {
+	
+	if (!focus_tick_call_added)
 		prev_focused_element = focused_element;
-	}
+	
 	focused_element = focused;
 	if ((focused_element || prev_focused_element) && !focus_tick_call_added) {
 		time_manager->AddTickCall (generate_focus_change_events, this);

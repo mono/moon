@@ -178,7 +178,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	UIElement *GetFocusedElement () { return focused_element; }
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	bool FocusElement (UIElement *element);
 
 	bool IsLoaded () { return toplevel != NULL; }

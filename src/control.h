@@ -50,7 +50,10 @@ public:
 	virtual void OnLoaded ();
 
 	virtual void OnApplyTemplate ();
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool Focus ();
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool ApplyTemplate ();
 

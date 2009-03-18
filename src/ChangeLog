@@ -1,3 +1,20 @@
+2009-03-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::Initialize): Don't bother connecting to
+	MouseEnter/Leave, we don't care.
+	(TextBoxView::TextBoxView): Connect to MouseLeftButtonDown/Up.
+	(TextBoxView::OnMouseLeftButtonDown): Proxy the event to our
+	parent TextBox control.
+	(TextBoxView::OnMouseLeftButtonUp): Same.
+
+	* runtime.cpp (Surface::FocusElement): Don't do all the checks
+	here, they are now done in Control::Focus().
+	(Surface::HandleMouseEvent): Don't loop to FocusElement() here, we
+	now expect this to be done in the MouseLeftButtonDown event
+	callback.
+
+	* control.cpp (Control::Focus): New method to focus a control.
+
 2009-03-18  Jb Evain  <jbevain@novell.com>
 
 	* deployment.cpp: add a MOON_PROFILER environment variable
@@ -27,6 +44,11 @@
 2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: More asserts.
+
+2009-03-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xap.cpp (Xap::Unpack): Canonicalize the extracted filename to
+	lowercase.
 
 2009-03-17  Jeffrey Stedfast  <fejj@novell.com>
 

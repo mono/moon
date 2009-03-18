@@ -381,6 +381,9 @@ bool control_apply_template (Control *instance);
 Control *control_new (void);
 
 /* @GeneratePInvoke */
+bool control_focus (Control *instance);
+
+/* @GeneratePInvoke */
 DependencyObject *control_get_template_child (Control *instance, const char *name);
 
 /**
@@ -1487,9 +1490,6 @@ void surface_attach (Surface *instance, UIElement *toplevel);
 
 /* @GeneratePInvoke */
 Downloader *surface_create_downloader (Surface *instance);
-
-/* @GeneratePInvoke */
-bool surface_focus_element (Surface *instance, UIElement *element);
 
 /* @GeneratePInvoke */
 UIElement *surface_get_focused_element (Surface *instance);

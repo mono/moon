@@ -167,3 +167,24 @@ Control::GetTemplateChild (const char *name)
 	
 	return NULL;
 }
+
+bool
+Control::Focus ()
+{
+	Surface *surface;
+	
+	/* according to msdn, these three things must be true for an element to be focusable:
+	 *
+	 * 1. the element must be visible
+	 * 2. the element must have IsTabStop = true
+	 * 3. the element must be part of the plugin's visual tree, and must have had its Loaded event fired.
+	 */
+	
+	if (!IsLoaded () || !GetRenderVisible () || !GetIsTabStop ())
+		return false;
+	
+	if (!(surface = GetSurface ()))
+		return false;
+	
+	return surface->FocusElement (this);
+}

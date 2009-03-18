@@ -562,8 +562,6 @@ TextBox::Initialize (Type::Kind type, const char *type_name)
 	
 	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBox::mouse_left_button_down, this);
 	AddHandler (UIElement::MouseLeftButtonUpEvent, TextBox::mouse_left_button_up, this);
-	AddHandler (UIElement::MouseEnterEvent, TextBox::mouse_enter, this);
-	AddHandler (UIElement::MouseLeaveEvent, TextBox::mouse_leave, this);
 	AddHandler (UIElement::MouseMoveEvent, TextBox::mouse_move, this);
 	AddHandler (UIElement::LostFocusEvent, TextBox::focus_out, this);
 	AddHandler (UIElement::GotFocusEvent, TextBox::focus_in, this);
@@ -611,8 +609,6 @@ TextBox::~TextBox ()
 {
 	RemoveHandler (UIElement::MouseLeftButtonDownEvent, TextBox::mouse_left_button_down, this);
 	RemoveHandler (UIElement::MouseLeftButtonUpEvent, TextBox::mouse_left_button_up, this);
-	RemoveHandler (UIElement::MouseEnterEvent, TextBox::mouse_enter, this);
-	RemoveHandler (UIElement::MouseLeaveEvent, TextBox::mouse_leave, this);
 	RemoveHandler (UIElement::MouseMoveEvent, TextBox::mouse_move, this);
 	RemoveHandler (UIElement::LostFocusEvent, TextBox::focus_out, this);
 	RemoveHandler (UIElement::GotFocusEvent, TextBox::focus_in, this);
@@ -1497,9 +1493,11 @@ TextBox::OnMouseLeftButtonDown (MouseEventArgs *args)
 	int cursor, start, end;
 	double x, y;
 	
+	args->SetHandled (true);
+	Focus ();
+	
 	if (view) {
 		args->GetPosition (view, &x, &y);
-		args->SetHandled (true);
 		
 		cursor = view->GetCursorFromXY (x, y);
 		
@@ -1563,30 +1561,6 @@ void
 TextBox::mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure)
 {
 	((TextBox *) closure)->OnMouseLeftButtonUp ((MouseEventArgs *) args);
-}
-
-void
-TextBox::OnMouseEnter (MouseEventArgs *args)
-{
-	//printf ("TextBox::OnMouseEnter()\n");
-}
-
-void
-TextBox::mouse_enter (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBox *) closure)->OnMouseEnter ((MouseEventArgs *) args);
-}
-
-void
-TextBox::OnMouseLeave (EventArgs *args)
-{
-	//printf ("TextBox::OnMouseLeave()\n");
-}
-
-void
-TextBox::mouse_leave (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBox *) closure)->OnMouseLeave (args);
 }
 
 void
@@ -2084,6 +2058,9 @@ TextBoxView::TextBoxView ()
 {
 	SetObjectType (Type::TEXTBOXVIEW);
 	
+	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBoxView::mouse_left_button_down, this);
+	AddHandler (UIElement::MouseLeftButtonUpEvent, TextBoxView::mouse_left_button_up, this);
+	
 	SetCursor (MouseCursorIBeam);
 	
 	cursor = Rect (0, 0, 0, 0);
@@ -2098,6 +2075,9 @@ TextBoxView::TextBoxView ()
 
 TextBoxView::~TextBoxView ()
 {
+	RemoveHandler (UIElement::MouseLeftButtonDownEvent, TextBoxView::mouse_left_button_down, this);
+	RemoveHandler (UIElement::MouseLeftButtonUpEvent, TextBoxView::mouse_left_button_up, this);
+	
 	if (textbox) {
 		textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
 		textbox->view = NULL;
@@ -2474,6 +2454,32 @@ void
 TextBoxView::OnFocusIn ()
 {
 	ResetCursorBlink (false);
+}
+
+void
+TextBoxView::OnMouseLeftButtonDown (MouseEventArgs *args)
+{
+	// proxy to our parent TextBox control
+	textbox->OnMouseLeftButtonDown (args);
+}
+
+void
+TextBoxView::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBoxView *) closure)->OnMouseLeftButtonDown ((MouseEventArgs *) args);
+}
+
+void
+TextBoxView::OnMouseLeftButtonUp (MouseEventArgs *args)
+{
+	// proxy to our parent TextBox control
+	textbox->OnMouseLeftButtonUp (args);
+}
+
+void
+TextBoxView::mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBoxView *) closure)->OnMouseLeftButtonUp ((MouseEventArgs *) args);
 }
 
 void

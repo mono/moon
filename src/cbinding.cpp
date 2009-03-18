@@ -842,6 +842,16 @@ control_new (void)
 }
 
 
+bool
+control_focus (Control *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->Focus ();
+}
+
+
 DependencyObject *
 control_get_template_child (Control *instance, const char *name)
 {
@@ -3354,16 +3364,6 @@ surface_create_downloader (Surface *instance)
 		return NULL;
 	
 	return instance->CreateDownloader ();
-}
-
-
-bool
-surface_focus_element (Surface *instance, UIElement *element)
-{
-	if (instance == NULL)
-		return false;
-	
-	return instance->FocusElement (element);
 }
 
 
