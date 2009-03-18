@@ -115,7 +115,7 @@ test: copy-xap-to-site
 	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs firefox site/index.html -P MoonTest --no-remote
 
 copy-xap-to-site: site/ClientBin/moon-unit.xap
-	cp $(srcdir)/../Mono.Moonlight.UnitTesting/site/* site/
+	cp -p $(srcdir)/../Mono.Moonlight.UnitTesting/site/* site/
 
 site/ClientBin/moon-unit.xap: moon-unit.xap
 	@mkdir -p site/ClientBin
