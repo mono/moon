@@ -520,7 +520,6 @@ private:
 	double download_progress;
 	double buffering_progress;
 	
-	Downloader *downloader;
 	PlaylistRoot *playlist;
 
 	//	Called on another thread, loops the queue of requested frames 
@@ -611,7 +610,6 @@ public:
 	// This is the list of markers found in the metadata/headers (not as a separate stream).
 	// Will never return NULL.
 	List *GetMarkers ();
-	Downloader *GetDownloader () { return downloader; }
 	double GetDownloadProgress () { return download_progress; }
 	double GetBufferingProgress () { return buffering_progress; }
 	

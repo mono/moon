@@ -1,5 +1,10 @@
 2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.h:
+	* pipeline.cpp: Remove unused field.
+
+2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp: Fix visitmix.
 
 2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>

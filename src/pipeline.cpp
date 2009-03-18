@@ -83,8 +83,6 @@ Media::Media (PlaylistRoot *root)
 	download_progress = 0.0;
 	buffering_progress = 0.0;
 
-	downloader = NULL;
-
 	// Last thing we do is to start up the media thread.
 	// TODO: only start up if we actually get work.
 	pthread_attr_init (&attribs);
@@ -118,12 +116,7 @@ Media::Dispose ()
 	
 	if (!stopped && !InMediaThread ())
 		pthread_join (queue_thread, NULL);
-	
-	if (downloader) {
-		downloader->unref ();
-		downloader = NULL;
-	}
-	
+		
 	g_free (file);
 	file = NULL;
 	g_free (uri);
@@ -509,7 +502,6 @@ Media::Initialize (Downloader *downloader, const char *PartName)
 	LOG_PIPELINE ("Media::Initialize (%p, '%s'), id: %i\n", downloader, PartName, GET_OBJ_ID (this));
 	
 	g_return_if_fail (downloader != NULL);
-	g_return_if_fail (this->downloader == NULL);
 	g_return_if_fail (file == NULL);
 	g_return_if_fail (uri != NULL || PartName != NULL);
 	g_return_if_fail (initialized == false);
@@ -578,7 +570,6 @@ Media::Initialize (const char *uri)
 	LOG_PIPELINE ("Media::Initialize ('%s'), id: %i\n", uri, GET_OBJ_ID (this));	
 	
 	g_return_if_fail (uri != NULL);
-	g_return_if_fail (this->downloader == NULL);
 	g_return_if_fail (file == NULL);
 	g_return_if_fail (uri != NULL);
 	g_return_if_fail (initialized == false);
