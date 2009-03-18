@@ -2103,6 +2103,9 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 {
 	bool first = false;
 	
+	g_return_if_fail (media != NULL);
+	g_return_if_fail (media->InMediaThread ());
+	
 	queue.Lock ();
 	if (first_pts == G_MAXUINT64)
 		first_pts = frame->pts;
@@ -2335,6 +2338,7 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%llu)\n", pts);
 	
 	g_return_if_fail (media != NULL);
+	g_return_if_fail (media->InMediaThread ());
 	
 	for (int i = 0; i < GetStreamCount (); i++) {
 		IMediaStream *stream = GetStream (i);

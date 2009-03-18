@@ -1,3 +1,7 @@
+2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: More asserts.
+
 2009-03-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* xap.cpp (Xap::Unpack): Don't mix & match malloc/g_free, don't
