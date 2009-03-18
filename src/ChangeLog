@@ -1,5 +1,9 @@
 2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp: Fix visitmix.
+
+2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.h:
 	* debug.cpp:
 	* deployment.cpp: Add signal handlers for crash detection in

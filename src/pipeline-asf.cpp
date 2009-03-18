@@ -945,15 +945,7 @@ MemoryQueueSource::SeekToPts (guint64 pts)
 
 	if (queue) {
 		queue->Clear (true);
-		Downloader *dl = media->GetDownloader ();
-		InternalDownloader *idl = dl->GetInternalDownloader ();
-		MmsDownloader *mms;
-		if (idl->GetType () == InternalDownloader::MmsDownloader) {
-			mms = (MmsDownloader *) idl;
-			mms->SetRequestedPts (pts);
-		} else {
-			fprintf (stderr, "Moonlight: media assert failure (downloader's internal downloader isn't a mms downloader)\n");
-		}
+		mms_downloader->SetRequestedPts (pts);
 		finished = false;
 		result = MEDIA_SUCCESS;
 	} else {
