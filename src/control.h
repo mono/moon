@@ -133,7 +133,7 @@ public:
 	const static int FontStyleProperty;
 	/* @PropertyType=FontWeight,DefaultValue=CONTROL_FONT_WEIGHT,GenerateAccessors */
 	const static int FontWeightProperty;
-	/* @PropertyType=Brush,GenerateAccessors */
+	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
 	const static int ForegroundProperty;
 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentCenter,GenerateAccessors */
 	const static int HorizontalContentAlignmentProperty;

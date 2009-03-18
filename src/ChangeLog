@@ -1,3 +1,13 @@
+2009-03-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes a crash in the Microsoft.SilverlightControls
+	ControlsExtended unit tests (specifically the DatePickerTest).
+
+	* control.h (class Control): Set a DefaultValue for the Foreground
+	property.
+
+	* textblock.h (class TextBlock): Same.
+
 2009-03-18  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: When we use x:Name to set an elements name, make sure
@@ -7,7 +17,7 @@
 	being set in the objects namescope.
 	- Allow duplicate objects if they are the same object
 	* namescope.cpp: Allow duplicates if they are the same object.
-	
+
 2009-03-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::Initialize): Don't bother connecting to

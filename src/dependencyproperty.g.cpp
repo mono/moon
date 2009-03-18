@@ -50,8 +50,6 @@
 void
 Types::RegisterNativeProperties ()
 {
-	DependencyProperty::Register (this, Type::PASSWORDBOX, "PasswordChar", new Value (9679), Type::CHAR);
-	DependencyProperty::RegisterFull (this, Type::INKPRESENTER, "Strokes", NULL, Type::STROKE_COLLECTION, true, false, false, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::VISUALBRUSH, "Visual", Type::UIELEMENT);
 	DependencyProperty::Register (this, Type::VIDEOBRUSH, "SourceName", new Value (""), Type::STRING);
 	DependencyProperty::Register (this, Type::IMAGEBRUSH, "ImageSource", Type::BITMAPIMAGE);
@@ -62,6 +60,20 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::RADIALGRADIENTBRUSH, "Center", new Value (Point (0.5, 0.5)), Type::POINT);
 	DependencyProperty::Register (this, Type::LINEARGRADIENTBRUSH, "StartPoint", Type::POINT);
 	DependencyProperty::Register (this, Type::LINEARGRADIENTBRUSH, "EndPoint", new Value (Point(1,1)), Type::POINT);
+	DependencyProperty::Register (this, Type::SOLIDCOLORBRUSH, "Color", new Value (Color (0x00000000)), Type::COLOR);
+	DependencyProperty::Register (this, Type::TILEBRUSH, "Stretch", new Value (StretchFill), Type::INT32);
+	DependencyProperty::Register (this, Type::TILEBRUSH, "AlignmentY", new Value (AlignmentYCenter), Type::INT32);
+	DependencyProperty::Register (this, Type::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter), Type::INT32);
+	DependencyProperty::Register (this, Type::GRADIENTBRUSH, "SpreadMethod", new Value (GradientSpreadMethodPad), Type::INT32);
+	DependencyProperty::Register (this, Type::GRADIENTBRUSH, "MappingMode", new Value (BrushMappingModeRelativeToBoundingBox), Type::INT32);
+	DependencyProperty::RegisterFull (this, Type::GRADIENTBRUSH, "GradientStops", NULL, Type::GRADIENTSTOP_COLLECTION, true, false, false, false, NULL, NULL, false, false);
+	DependencyProperty::Register (this, Type::GRADIENTBRUSH, "ColorInterpolationMode", new Value (ColorInterpolationModeSRgbLinearInterpolation), Type::INT32);
+	DependencyProperty::Register (this, Type::PASSWORDBOX, "PasswordChar", new Value (9679), Type::CHAR);
+	DependencyProperty::RegisterFull (this, Type::INKPRESENTER, "Strokes", NULL, Type::STROKE_COLLECTION, true, false, false, false, NULL, NULL, false, false);
+	DependencyProperty::Register (this, Type::BRUSH, "Transform", new Value (new MatrixTransform ()), Type::TRANSFORM);
+	DependencyProperty::Register (this, Type::BRUSH, "RelativeTransform", new Value (new MatrixTransform ()), Type::TRANSFORM);
+	DependencyProperty::Register (this, Type::BRUSH, "Opacity", new Value (1.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::BRUSH, "Changed", Type::BOOL);
 	DependencyProperty::Register (this, Type::RECTANGLE, "RadiusY", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::RECTANGLE, "RadiusX", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::POLYLINE, "Points", NULL, Type::POINT_COLLECTION, true, false, false, false, NULL, NULL, false, false);
@@ -107,14 +119,6 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::CANVAS, "ZIndex", new Value (0), Type::INT32, false, true, false, false, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::CANVAS, "Top", new Value (0.0), Type::DOUBLE, false, true, false, false, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::CANVAS, "Left", new Value (0.0), Type::DOUBLE, false, true, false, false, NULL, NULL, false, false);
-	DependencyProperty::Register (this, Type::SOLIDCOLORBRUSH, "Color", new Value (Color (0x00000000)), Type::COLOR);
-	DependencyProperty::Register (this, Type::TILEBRUSH, "Stretch", new Value (StretchFill), Type::INT32);
-	DependencyProperty::Register (this, Type::TILEBRUSH, "AlignmentY", new Value (AlignmentYCenter), Type::INT32);
-	DependencyProperty::Register (this, Type::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter), Type::INT32);
-	DependencyProperty::Register (this, Type::GRADIENTBRUSH, "SpreadMethod", new Value (GradientSpreadMethodPad), Type::INT32);
-	DependencyProperty::Register (this, Type::GRADIENTBRUSH, "MappingMode", new Value (BrushMappingModeRelativeToBoundingBox), Type::INT32);
-	DependencyProperty::RegisterFull (this, Type::GRADIENTBRUSH, "GradientStops", NULL, Type::GRADIENTSTOP_COLLECTION, true, false, false, false, NULL, NULL, false, false);
-	DependencyProperty::Register (this, Type::GRADIENTBRUSH, "ColorInterpolationMode", new Value (ColorInterpolationModeSRgbLinearInterpolation), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "TextWrapping", new Value (TextWrappingNoWrap), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "Text", new Value (""), Type::STRING);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "TextDecorations", new Value (TextDecorationsNone), Type::INT32);
@@ -123,7 +127,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "LineStackingStrategy", new Value (LineStackingStrategyMaxHeight), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "LineHeight", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::TEXTBLOCK, "Inlines", NULL, Type::INLINE_COLLECTION, true, false, false, false, NULL, NULL, false, false);
-	DependencyProperty::Register (this, Type::TEXTBLOCK, "Foreground", Type::BRUSH);
+	DependencyProperty::Register (this, Type::TEXTBLOCK, "Foreground", new Value (new SolidColorBrush("black")), Type::BRUSH);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
@@ -186,7 +190,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::CONTROL, "Padding", new Value (Thickness(0.0)), Type::THICKNESS);
 	DependencyProperty::Register (this, Type::CONTROL, "IsTabStop", new Value (true), Type::BOOL);
 	DependencyProperty::Register (this, Type::CONTROL, "HorizontalContentAlignment", new Value (HorizontalAlignmentCenter), Type::INT32);
-	DependencyProperty::Register (this, Type::CONTROL, "Foreground", Type::BRUSH);
+	DependencyProperty::Register (this, Type::CONTROL, "Foreground", new Value (new SolidColorBrush("black")), Type::BRUSH);
 	DependencyProperty::Register (this, Type::CONTROL, "FontWeight", new Value (CONTROL_FONT_WEIGHT), Type::INT32);
 	DependencyProperty::Register (this, Type::CONTROL, "FontStyle", new Value (CONTROL_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::CONTROL, "FontStretch", new Value (CONTROL_FONT_STRETCH), Type::INT32);
@@ -209,10 +213,6 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::SETTER, "Property", NULL, Type::DEPENDENCYPROPERTY, false, false, false, false, NULL, Validators::IsSetterSealedValidator, false, false);
 	DependencyProperty::Register (this, Type::SETTER, "ConvertedValue", Type::OBJECT);
 	DependencyProperty::Register (this, Type::RUN, "Text", Type::STRING);
-	DependencyProperty::Register (this, Type::BRUSH, "Transform", new Value (new MatrixTransform ()), Type::TRANSFORM);
-	DependencyProperty::Register (this, Type::BRUSH, "RelativeTransform", new Value (new MatrixTransform ()), Type::TRANSFORM);
-	DependencyProperty::Register (this, Type::BRUSH, "Opacity", new Value (1.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::BRUSH, "Changed", Type::BOOL);
 	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "Rect", Type::RECT);
 	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "RadiusY", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "RadiusX", new Value (0.0), Type::DOUBLE);
@@ -396,169 +396,169 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::ARCSEGMENT, "IsLargeArc", new Value (false), Type::BOOL);
 }
 
-const int PasswordBox::PasswordCharProperty = 0;
-const int InkPresenter::StrokesProperty = 1;
-const int VisualBrush::VisualProperty = 2;
-const int VideoBrush::SourceNameProperty = 3;
-const int ImageBrush::ImageSourceProperty = 4;
-const int ImageBrush::DownloadProgressProperty = 5;
-const int RadialGradientBrush::RadiusYProperty = 6;
-const int RadialGradientBrush::RadiusXProperty = 7;
-const int RadialGradientBrush::GradientOriginProperty = 8;
-const int RadialGradientBrush::CenterProperty = 9;
-const int LinearGradientBrush::StartPointProperty = 10;
-const int LinearGradientBrush::EndPointProperty = 11;
-const int Rectangle::RadiusYProperty = 12;
-const int Rectangle::RadiusXProperty = 13;
-const int Polyline::PointsProperty = 14;
-const int Polyline::FillRuleProperty = 15;
-const int Polygon::PointsProperty = 16;
-const int Polygon::FillRuleProperty = 17;
-const int Path::DataProperty = 18;
-const int Line::Y2Property = 19;
-const int Line::Y1Property = 20;
-const int Line::X2Property = 21;
-const int Line::X1Property = 22;
-const int MultiScaleImage::ViewportWidthProperty = 23;
-const int MultiScaleImage::ViewportOriginProperty = 24;
-const int MultiScaleImage::UseSpringsProperty = 25;
-const int MultiScaleImage::TileFadeProperty = 26;
-const int MultiScaleImage::SubImagesProperty = 27;
-const int MultiScaleImage::SourceProperty = 28;
-const int MultiScaleImage::AspectRatioProperty = 29;
-const int Image::SourceProperty = 30;
-const int UserControl::ContentProperty = 31;
-const int TextBox::VerticalScrollBarVisibilityProperty = 32;
-const int TextBox::TextWrappingProperty = 33;
-const int TextBox::TextProperty = 34;
-const int TextBox::TextAlignmentProperty = 35;
-const int TextBox::SelectionStartProperty = 36;
-const int TextBox::SelectionLengthProperty = 37;
-const int TextBox::SelectionForegroundProperty = 38;
-const int TextBox::SelectionBackgroundProperty = 39;
-const int TextBox::SelectedTextProperty = 40;
-const int TextBox::MaxLengthProperty = 41;
-const int TextBox::IsReadOnlyProperty = 42;
-const int TextBox::HorizontalScrollBarVisibilityProperty = 43;
-const int TextBox::AcceptsReturnProperty = 44;
-const int ContentControl::ContentTemplateProperty = 45;
-const int ContentControl::ContentProperty = 46;
-const int Grid::ShowGridLinesProperty = 47;
-const int Grid::RowSpanProperty = 48;
-const int Grid::RowProperty = 49;
-const int Grid::RowDefinitionsProperty = 50;
-const int Grid::ColumnSpanProperty = 51;
-const int Grid::ColumnProperty = 52;
-const int Grid::ColumnDefinitionsProperty = 53;
-const int Canvas::ZIndexProperty = 54;
-const int Canvas::TopProperty = 55;
-const int Canvas::LeftProperty = 56;
-const int SolidColorBrush::ColorProperty = 57;
-const int TileBrush::StretchProperty = 58;
-const int TileBrush::AlignmentYProperty = 59;
-const int TileBrush::AlignmentXProperty = 60;
-const int GradientBrush::SpreadMethodProperty = 61;
-const int GradientBrush::MappingModeProperty = 62;
-const int GradientBrush::GradientStopsProperty = 63;
-const int GradientBrush::ColorInterpolationModeProperty = 64;
-const int TextBlock::TextWrappingProperty = 65;
-const int TextBlock::TextProperty = 66;
-const int TextBlock::TextDecorationsProperty = 67;
-const int TextBlock::TextAlignmentProperty = 68;
-const int TextBlock::PaddingProperty = 69;
-const int TextBlock::LineStackingStrategyProperty = 70;
-const int TextBlock::LineHeightProperty = 71;
-const int TextBlock::InlinesProperty = 72;
-const int TextBlock::ForegroundProperty = 73;
-const int TextBlock::FontWeightProperty = 74;
-const int TextBlock::FontStyleProperty = 75;
-const int TextBlock::FontStretchProperty = 76;
-const int TextBlock::FontSizeProperty = 77;
-const int TextBlock::FontFilenameProperty = 78;
-const int TextBlock::FontFamilyProperty = 79;
-const int Popup::VerticalOffsetProperty = 80;
-const int Popup::IsOpenProperty = 81;
-const int Popup::HorizontalOffsetProperty = 82;
-const int Popup::ChildProperty = 83;
-const int MediaElement::VolumeProperty = 84;
-const int MediaElement::StretchProperty = 85;
-const int MediaElement::SourceProperty = 86;
-const int MediaElement::RenderedFramesPerSecondProperty = 87;
-const int MediaElement::PositionProperty = 88;
-const int MediaElement::NaturalVideoWidthProperty = 89;
-const int MediaElement::NaturalVideoHeightProperty = 90;
-const int MediaElement::NaturalDurationProperty = 91;
-const int MediaElement::MarkersProperty = 92;
-const int MediaElement::IsMutedProperty = 93;
-const int MediaElement::DroppedFramesPerSecondProperty = 94;
-const int MediaElement::DownloadProgressProperty = 95;
-const int MediaElement::DownloadProgressOffsetProperty = 96;
-const int MediaElement::CurrentStateProperty = 97;
-const int MediaElement::CanSeekProperty = 98;
-const int MediaElement::CanPauseProperty = 99;
-const int MediaElement::BufferingTimeProperty = 100;
-const int MediaElement::BufferingProgressProperty = 101;
-const int MediaElement::BalanceProperty = 102;
-const int MediaElement::AutoPlayProperty = 103;
-const int MediaElement::AudioStreamIndexProperty = 104;
-const int MediaElement::AudioStreamCountProperty = 105;
-const int MediaElement::AttributesProperty = 106;
-const int Shape::StrokeThicknessProperty = 107;
-const int Shape::StrokeStartLineCapProperty = 108;
-const int Shape::StrokeProperty = 109;
-const int Shape::StrokeMiterLimitProperty = 110;
-const int Shape::StrokeLineJoinProperty = 111;
-const int Shape::StrokeEndLineCapProperty = 112;
-const int Shape::StrokeDashOffsetProperty = 113;
-const int Shape::StrokeDashCapProperty = 114;
-const int Shape::StrokeDashArrayProperty = 115;
-const int Shape::StretchProperty = 116;
-const int Shape::FillProperty = 117;
-const int MediaBase::StretchProperty = 118;
-const int MediaBase::SourceProperty = 119;
-const int MediaBase::DownloadProgressProperty = 120;
-const int Glyphs::UnicodeStringProperty = 121;
-const int Glyphs::StyleSimulationsProperty = 122;
-const int Glyphs::OriginYProperty = 123;
-const int Glyphs::OriginXProperty = 124;
-const int Glyphs::IndicesProperty = 125;
-const int Glyphs::FontUriProperty = 126;
-const int Glyphs::FontRenderingEmSizeProperty = 127;
-const int Glyphs::FillProperty = 128;
-const int Control::VerticalContentAlignmentProperty = 129;
-const int Control::TemplateProperty = 130;
-const int Control::TabNavigationProperty = 131;
-const int Control::TabIndexProperty = 132;
-const int Control::PaddingProperty = 133;
-const int Control::IsTabStopProperty = 134;
-const int Control::HorizontalContentAlignmentProperty = 135;
-const int Control::ForegroundProperty = 136;
-const int Control::FontWeightProperty = 137;
-const int Control::FontStyleProperty = 138;
-const int Control::FontStretchProperty = 139;
-const int Control::FontSizeProperty = 140;
-const int Control::FontFamilyProperty = 141;
-const int Control::DefaultStyleKeyProperty = 142;
-const int Control::BorderThicknessProperty = 143;
-const int Control::BorderBrushProperty = 144;
-const int Control::BackgroundProperty = 145;
-const int Panel::ChildrenProperty = 146;
-const int Panel::BackgroundProperty = 147;
-const int Border::PaddingProperty = 148;
-const int Border::CornerRadiusProperty = 149;
-const int Border::ChildProperty = 150;
-const int Border::BorderThicknessProperty = 151;
-const int Border::BorderBrushProperty = 152;
-const int Border::BackgroundProperty = 153;
-const int TimelineGroup::ChildrenProperty = 154;
-const int Setter::ValueProperty = 155;
-const int Setter::PropertyProperty = 156;
-const int Setter::ConvertedValueProperty = 157;
-const int Run::TextProperty = 158;
-const int Brush::TransformProperty = 159;
-const int Brush::RelativeTransformProperty = 160;
-const int Brush::OpacityProperty = 161;
-const int Brush::ChangedProperty = 162;
+const int VisualBrush::VisualProperty = 0;
+const int VideoBrush::SourceNameProperty = 1;
+const int ImageBrush::ImageSourceProperty = 2;
+const int ImageBrush::DownloadProgressProperty = 3;
+const int RadialGradientBrush::RadiusYProperty = 4;
+const int RadialGradientBrush::RadiusXProperty = 5;
+const int RadialGradientBrush::GradientOriginProperty = 6;
+const int RadialGradientBrush::CenterProperty = 7;
+const int LinearGradientBrush::StartPointProperty = 8;
+const int LinearGradientBrush::EndPointProperty = 9;
+const int SolidColorBrush::ColorProperty = 10;
+const int TileBrush::StretchProperty = 11;
+const int TileBrush::AlignmentYProperty = 12;
+const int TileBrush::AlignmentXProperty = 13;
+const int GradientBrush::SpreadMethodProperty = 14;
+const int GradientBrush::MappingModeProperty = 15;
+const int GradientBrush::GradientStopsProperty = 16;
+const int GradientBrush::ColorInterpolationModeProperty = 17;
+const int PasswordBox::PasswordCharProperty = 18;
+const int InkPresenter::StrokesProperty = 19;
+const int Brush::TransformProperty = 20;
+const int Brush::RelativeTransformProperty = 21;
+const int Brush::OpacityProperty = 22;
+const int Brush::ChangedProperty = 23;
+const int Rectangle::RadiusYProperty = 24;
+const int Rectangle::RadiusXProperty = 25;
+const int Polyline::PointsProperty = 26;
+const int Polyline::FillRuleProperty = 27;
+const int Polygon::PointsProperty = 28;
+const int Polygon::FillRuleProperty = 29;
+const int Path::DataProperty = 30;
+const int Line::Y2Property = 31;
+const int Line::Y1Property = 32;
+const int Line::X2Property = 33;
+const int Line::X1Property = 34;
+const int MultiScaleImage::ViewportWidthProperty = 35;
+const int MultiScaleImage::ViewportOriginProperty = 36;
+const int MultiScaleImage::UseSpringsProperty = 37;
+const int MultiScaleImage::TileFadeProperty = 38;
+const int MultiScaleImage::SubImagesProperty = 39;
+const int MultiScaleImage::SourceProperty = 40;
+const int MultiScaleImage::AspectRatioProperty = 41;
+const int Image::SourceProperty = 42;
+const int UserControl::ContentProperty = 43;
+const int TextBox::VerticalScrollBarVisibilityProperty = 44;
+const int TextBox::TextWrappingProperty = 45;
+const int TextBox::TextProperty = 46;
+const int TextBox::TextAlignmentProperty = 47;
+const int TextBox::SelectionStartProperty = 48;
+const int TextBox::SelectionLengthProperty = 49;
+const int TextBox::SelectionForegroundProperty = 50;
+const int TextBox::SelectionBackgroundProperty = 51;
+const int TextBox::SelectedTextProperty = 52;
+const int TextBox::MaxLengthProperty = 53;
+const int TextBox::IsReadOnlyProperty = 54;
+const int TextBox::HorizontalScrollBarVisibilityProperty = 55;
+const int TextBox::AcceptsReturnProperty = 56;
+const int ContentControl::ContentTemplateProperty = 57;
+const int ContentControl::ContentProperty = 58;
+const int Grid::ShowGridLinesProperty = 59;
+const int Grid::RowSpanProperty = 60;
+const int Grid::RowProperty = 61;
+const int Grid::RowDefinitionsProperty = 62;
+const int Grid::ColumnSpanProperty = 63;
+const int Grid::ColumnProperty = 64;
+const int Grid::ColumnDefinitionsProperty = 65;
+const int Canvas::ZIndexProperty = 66;
+const int Canvas::TopProperty = 67;
+const int Canvas::LeftProperty = 68;
+const int TextBlock::TextWrappingProperty = 69;
+const int TextBlock::TextProperty = 70;
+const int TextBlock::TextDecorationsProperty = 71;
+const int TextBlock::TextAlignmentProperty = 72;
+const int TextBlock::PaddingProperty = 73;
+const int TextBlock::LineStackingStrategyProperty = 74;
+const int TextBlock::LineHeightProperty = 75;
+const int TextBlock::InlinesProperty = 76;
+const int TextBlock::ForegroundProperty = 77;
+const int TextBlock::FontWeightProperty = 78;
+const int TextBlock::FontStyleProperty = 79;
+const int TextBlock::FontStretchProperty = 80;
+const int TextBlock::FontSizeProperty = 81;
+const int TextBlock::FontFilenameProperty = 82;
+const int TextBlock::FontFamilyProperty = 83;
+const int Popup::VerticalOffsetProperty = 84;
+const int Popup::IsOpenProperty = 85;
+const int Popup::HorizontalOffsetProperty = 86;
+const int Popup::ChildProperty = 87;
+const int MediaElement::VolumeProperty = 88;
+const int MediaElement::StretchProperty = 89;
+const int MediaElement::SourceProperty = 90;
+const int MediaElement::RenderedFramesPerSecondProperty = 91;
+const int MediaElement::PositionProperty = 92;
+const int MediaElement::NaturalVideoWidthProperty = 93;
+const int MediaElement::NaturalVideoHeightProperty = 94;
+const int MediaElement::NaturalDurationProperty = 95;
+const int MediaElement::MarkersProperty = 96;
+const int MediaElement::IsMutedProperty = 97;
+const int MediaElement::DroppedFramesPerSecondProperty = 98;
+const int MediaElement::DownloadProgressProperty = 99;
+const int MediaElement::DownloadProgressOffsetProperty = 100;
+const int MediaElement::CurrentStateProperty = 101;
+const int MediaElement::CanSeekProperty = 102;
+const int MediaElement::CanPauseProperty = 103;
+const int MediaElement::BufferingTimeProperty = 104;
+const int MediaElement::BufferingProgressProperty = 105;
+const int MediaElement::BalanceProperty = 106;
+const int MediaElement::AutoPlayProperty = 107;
+const int MediaElement::AudioStreamIndexProperty = 108;
+const int MediaElement::AudioStreamCountProperty = 109;
+const int MediaElement::AttributesProperty = 110;
+const int Shape::StrokeThicknessProperty = 111;
+const int Shape::StrokeStartLineCapProperty = 112;
+const int Shape::StrokeProperty = 113;
+const int Shape::StrokeMiterLimitProperty = 114;
+const int Shape::StrokeLineJoinProperty = 115;
+const int Shape::StrokeEndLineCapProperty = 116;
+const int Shape::StrokeDashOffsetProperty = 117;
+const int Shape::StrokeDashCapProperty = 118;
+const int Shape::StrokeDashArrayProperty = 119;
+const int Shape::StretchProperty = 120;
+const int Shape::FillProperty = 121;
+const int MediaBase::StretchProperty = 122;
+const int MediaBase::SourceProperty = 123;
+const int MediaBase::DownloadProgressProperty = 124;
+const int Glyphs::UnicodeStringProperty = 125;
+const int Glyphs::StyleSimulationsProperty = 126;
+const int Glyphs::OriginYProperty = 127;
+const int Glyphs::OriginXProperty = 128;
+const int Glyphs::IndicesProperty = 129;
+const int Glyphs::FontUriProperty = 130;
+const int Glyphs::FontRenderingEmSizeProperty = 131;
+const int Glyphs::FillProperty = 132;
+const int Control::VerticalContentAlignmentProperty = 133;
+const int Control::TemplateProperty = 134;
+const int Control::TabNavigationProperty = 135;
+const int Control::TabIndexProperty = 136;
+const int Control::PaddingProperty = 137;
+const int Control::IsTabStopProperty = 138;
+const int Control::HorizontalContentAlignmentProperty = 139;
+const int Control::ForegroundProperty = 140;
+const int Control::FontWeightProperty = 141;
+const int Control::FontStyleProperty = 142;
+const int Control::FontStretchProperty = 143;
+const int Control::FontSizeProperty = 144;
+const int Control::FontFamilyProperty = 145;
+const int Control::DefaultStyleKeyProperty = 146;
+const int Control::BorderThicknessProperty = 147;
+const int Control::BorderBrushProperty = 148;
+const int Control::BackgroundProperty = 149;
+const int Panel::ChildrenProperty = 150;
+const int Panel::BackgroundProperty = 151;
+const int Border::PaddingProperty = 152;
+const int Border::CornerRadiusProperty = 153;
+const int Border::ChildProperty = 154;
+const int Border::BorderThicknessProperty = 155;
+const int Border::BorderBrushProperty = 156;
+const int Border::BackgroundProperty = 157;
+const int TimelineGroup::ChildrenProperty = 158;
+const int Setter::ValueProperty = 159;
+const int Setter::PropertyProperty = 160;
+const int Setter::ConvertedValueProperty = 161;
+const int Run::TextProperty = 162;
 const int RectangleGeometry::RectProperty = 163;
 const int RectangleGeometry::RadiusYProperty = 164;
 const int RectangleGeometry::RadiusXProperty = 165;
@@ -741,32 +741,6 @@ const int ArcSegment::RotationAngleProperty = 341;
 const int ArcSegment::PointProperty = 342;
 const int ArcSegment::IsLargeArcProperty = 343;
 
-gint32
-PasswordBox::GetPasswordChar ()
-{
-	Value *value = GetValue (PasswordBox::PasswordCharProperty);
-	return value->AsInt32 ();
-}
-
-void
-PasswordBox::SetPasswordChar (gint32 value)
-{
-	SetValue (PasswordBox::PasswordCharProperty, Value (value));
-}
-
-StrokeCollection *
-InkPresenter::GetStrokes ()
-{
-	Value *value = GetValue (InkPresenter::StrokesProperty);
-	return value ? value->AsStrokeCollection () : NULL;
-}
-
-void
-InkPresenter::SetStrokes (StrokeCollection *value)
-{
-	SetValue (InkPresenter::StrokesProperty, Value (value));
-}
-
 UIElement *
 VisualBrush::GetVisual ()
 {
@@ -899,6 +873,176 @@ LinearGradientBrush::SetEndPoint (Point *value)
 {
 	if (!value) return;
 	SetValue (LinearGradientBrush::EndPointProperty, Value (*value));
+}
+
+Color *
+SolidColorBrush::GetColor ()
+{
+	Value *value = GetValue (SolidColorBrush::ColorProperty);
+	return value ? value->AsColor () : NULL;
+}
+
+void
+SolidColorBrush::SetColor (Color *value)
+{
+	if (!value) return;
+	SetValue (SolidColorBrush::ColorProperty, Value (*value));
+}
+
+Stretch
+TileBrush::GetStretch ()
+{
+	Value *value = GetValue (TileBrush::StretchProperty);
+	return (Stretch) value->AsInt32 ();
+}
+
+void
+TileBrush::SetStretch (Stretch value)
+{
+	SetValue (TileBrush::StretchProperty, Value (value));
+}
+
+AlignmentY
+TileBrush::GetAlignmentY ()
+{
+	Value *value = GetValue (TileBrush::AlignmentYProperty);
+	return (AlignmentY) value->AsInt32 ();
+}
+
+void
+TileBrush::SetAlignmentY (AlignmentY value)
+{
+	SetValue (TileBrush::AlignmentYProperty, Value (value));
+}
+
+AlignmentX
+TileBrush::GetAlignmentX ()
+{
+	Value *value = GetValue (TileBrush::AlignmentXProperty);
+	return (AlignmentX) value->AsInt32 ();
+}
+
+void
+TileBrush::SetAlignmentX (AlignmentX value)
+{
+	SetValue (TileBrush::AlignmentXProperty, Value (value));
+}
+
+GradientSpreadMethod
+GradientBrush::GetSpreadMethod ()
+{
+	Value *value = GetValue (GradientBrush::SpreadMethodProperty);
+	return (GradientSpreadMethod) value->AsInt32 ();
+}
+
+void
+GradientBrush::SetSpreadMethod (GradientSpreadMethod value)
+{
+	SetValue (GradientBrush::SpreadMethodProperty, Value (value));
+}
+
+BrushMappingMode
+GradientBrush::GetMappingMode ()
+{
+	Value *value = GetValue (GradientBrush::MappingModeProperty);
+	return (BrushMappingMode) value->AsInt32 ();
+}
+
+void
+GradientBrush::SetMappingMode (BrushMappingMode value)
+{
+	SetValue (GradientBrush::MappingModeProperty, Value (value));
+}
+
+GradientStopCollection *
+GradientBrush::GetGradientStops ()
+{
+	Value *value = GetValue (GradientBrush::GradientStopsProperty);
+	return value ? value->AsGradientStopCollection () : NULL;
+}
+
+void
+GradientBrush::SetGradientStops (GradientStopCollection *value)
+{
+	SetValue (GradientBrush::GradientStopsProperty, Value (value));
+}
+
+ColorInterpolationMode
+GradientBrush::GetColorInterpolationMode ()
+{
+	Value *value = GetValue (GradientBrush::ColorInterpolationModeProperty);
+	return (ColorInterpolationMode) value->AsInt32 ();
+}
+
+void
+GradientBrush::SetColorInterpolationMode (ColorInterpolationMode value)
+{
+	SetValue (GradientBrush::ColorInterpolationModeProperty, Value (value));
+}
+
+gint32
+PasswordBox::GetPasswordChar ()
+{
+	Value *value = GetValue (PasswordBox::PasswordCharProperty);
+	return value->AsInt32 ();
+}
+
+void
+PasswordBox::SetPasswordChar (gint32 value)
+{
+	SetValue (PasswordBox::PasswordCharProperty, Value (value));
+}
+
+StrokeCollection *
+InkPresenter::GetStrokes ()
+{
+	Value *value = GetValue (InkPresenter::StrokesProperty);
+	return value ? value->AsStrokeCollection () : NULL;
+}
+
+void
+InkPresenter::SetStrokes (StrokeCollection *value)
+{
+	SetValue (InkPresenter::StrokesProperty, Value (value));
+}
+
+Transform *
+Brush::GetTransform ()
+{
+	Value *value = GetValue (Brush::TransformProperty);
+	return value ? value->AsTransform () : NULL;
+}
+
+void
+Brush::SetTransform (Transform *value)
+{
+	SetValue (Brush::TransformProperty, Value (value));
+}
+
+Transform *
+Brush::GetRelativeTransform ()
+{
+	Value *value = GetValue (Brush::RelativeTransformProperty);
+	return value ? value->AsTransform () : NULL;
+}
+
+void
+Brush::SetRelativeTransform (Transform *value)
+{
+	SetValue (Brush::RelativeTransformProperty, Value (value));
+}
+
+double
+Brush::GetOpacity ()
+{
+	Value *value = GetValue (Brush::OpacityProperty);
+	return value->AsDouble ();
+}
+
+void
+Brush::SetOpacity (double value)
+{
+	SetValue (Brush::OpacityProperty, Value (value));
 }
 
 double
@@ -1435,111 +1579,6 @@ Canvas::SetLeft (DependencyObject *obj, double value)
 {
 	if (!obj) return;
 	obj->SetValue (Canvas::LeftProperty, Value (value));
-}
-
-Color *
-SolidColorBrush::GetColor ()
-{
-	Value *value = GetValue (SolidColorBrush::ColorProperty);
-	return value ? value->AsColor () : NULL;
-}
-
-void
-SolidColorBrush::SetColor (Color *value)
-{
-	if (!value) return;
-	SetValue (SolidColorBrush::ColorProperty, Value (*value));
-}
-
-Stretch
-TileBrush::GetStretch ()
-{
-	Value *value = GetValue (TileBrush::StretchProperty);
-	return (Stretch) value->AsInt32 ();
-}
-
-void
-TileBrush::SetStretch (Stretch value)
-{
-	SetValue (TileBrush::StretchProperty, Value (value));
-}
-
-AlignmentY
-TileBrush::GetAlignmentY ()
-{
-	Value *value = GetValue (TileBrush::AlignmentYProperty);
-	return (AlignmentY) value->AsInt32 ();
-}
-
-void
-TileBrush::SetAlignmentY (AlignmentY value)
-{
-	SetValue (TileBrush::AlignmentYProperty, Value (value));
-}
-
-AlignmentX
-TileBrush::GetAlignmentX ()
-{
-	Value *value = GetValue (TileBrush::AlignmentXProperty);
-	return (AlignmentX) value->AsInt32 ();
-}
-
-void
-TileBrush::SetAlignmentX (AlignmentX value)
-{
-	SetValue (TileBrush::AlignmentXProperty, Value (value));
-}
-
-GradientSpreadMethod
-GradientBrush::GetSpreadMethod ()
-{
-	Value *value = GetValue (GradientBrush::SpreadMethodProperty);
-	return (GradientSpreadMethod) value->AsInt32 ();
-}
-
-void
-GradientBrush::SetSpreadMethod (GradientSpreadMethod value)
-{
-	SetValue (GradientBrush::SpreadMethodProperty, Value (value));
-}
-
-BrushMappingMode
-GradientBrush::GetMappingMode ()
-{
-	Value *value = GetValue (GradientBrush::MappingModeProperty);
-	return (BrushMappingMode) value->AsInt32 ();
-}
-
-void
-GradientBrush::SetMappingMode (BrushMappingMode value)
-{
-	SetValue (GradientBrush::MappingModeProperty, Value (value));
-}
-
-GradientStopCollection *
-GradientBrush::GetGradientStops ()
-{
-	Value *value = GetValue (GradientBrush::GradientStopsProperty);
-	return value ? value->AsGradientStopCollection () : NULL;
-}
-
-void
-GradientBrush::SetGradientStops (GradientStopCollection *value)
-{
-	SetValue (GradientBrush::GradientStopsProperty, Value (value));
-}
-
-ColorInterpolationMode
-GradientBrush::GetColorInterpolationMode ()
-{
-	Value *value = GetValue (GradientBrush::ColorInterpolationModeProperty);
-	return (ColorInterpolationMode) value->AsInt32 ();
-}
-
-void
-GradientBrush::SetColorInterpolationMode (ColorInterpolationMode value)
-{
-	SetValue (GradientBrush::ColorInterpolationModeProperty, Value (value));
 }
 
 TextWrapping
@@ -2742,45 +2781,6 @@ void
 Run::SetText (const char *value)
 {
 	SetValue (Run::TextProperty, Value (value));
-}
-
-Transform *
-Brush::GetTransform ()
-{
-	Value *value = GetValue (Brush::TransformProperty);
-	return value ? value->AsTransform () : NULL;
-}
-
-void
-Brush::SetTransform (Transform *value)
-{
-	SetValue (Brush::TransformProperty, Value (value));
-}
-
-Transform *
-Brush::GetRelativeTransform ()
-{
-	Value *value = GetValue (Brush::RelativeTransformProperty);
-	return value ? value->AsTransform () : NULL;
-}
-
-void
-Brush::SetRelativeTransform (Transform *value)
-{
-	SetValue (Brush::RelativeTransformProperty, Value (value));
-}
-
-double
-Brush::GetOpacity ()
-{
-	Value *value = GetValue (Brush::OpacityProperty);
-	return value->AsDouble ();
-}
-
-void
-Brush::SetOpacity (double value)
-{
-	SetValue (Brush::OpacityProperty, Value (value));
 }
 
 Rect *

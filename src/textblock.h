@@ -195,7 +195,7 @@ class TextBlock : public FrameworkElement {
 	const static int FontStyleProperty;
  	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT,GenerateAccessors */
 	const static int FontWeightProperty;
- 	/* @PropertyType=Brush,GenerateAccessors */
+ 	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
 	const static int ForegroundProperty;
  	/* @PropertyType=InlineCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int InlinesProperty;
