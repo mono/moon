@@ -44,10 +44,8 @@ namespace MoonTest.System.Windows.Browser
 		Scriptable scriptable;
 		ScriptableType scriptabletype;
 
-		[TestMethod]
-		public void AA_PropertiesTest () {	
-			HtmlDocument document = HtmlPage.Document;
-			bool isenabled = HtmlPage.IsEnabled;
+		public ScriptableTest () 
+		{	
 			plugin = HtmlPage.Plugin;
 			window = HtmlPage.Window;
 			content = plugin.GetProperty ("Content") as ScriptObject;
@@ -62,6 +60,11 @@ namespace MoonTest.System.Windows.Browser
 			HtmlPage.RegisterScriptableObject ("scriptable", scriptable);
 			HtmlPage.RegisterScriptableObject ("scriptabletype", scriptabletype);
 			HtmlPage.RegisterCreateableType ("createable", typeof (CreateableType));
+		}
+
+		[TestMethod]
+		public void AA_PropertiesTest () {	
+			HtmlDocument document = HtmlPage.Document;
 
 			var c = content.GetProperty("calc") as ScriptObject;
 			Assert.AreEqual (calc, c.ManagedObject, "ManagedObject");
