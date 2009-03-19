@@ -456,72 +456,98 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			from_layer --;
 		}
 	
-		//render here
-		LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
-		int layer_to_render = from_layer;
-		while (from_layer > 0 && layer_to_render <= to_layer) {
-			double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render) * sub_vp.width / sub_w;
-			double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render) * sub_vp.width / sub_w;
+		if (from_layer > 0) {
+			cairo_save (cr);
+			cairo_rectangle (cr, 0, 0, msi_w, msi_h);
+			cairo_clip (cr);
+			cairo_scale (cr, msi_w / msivp_w, msi_w / msivp_w); //scale to widget
 
-			int i, j;
-			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
-				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
-					char *tile = (char*)source->get_tile_func (layer_to_render, i, j, sub_image->source);
-					cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
+			cairo_translate (cr, 
+					 -msivp_ox + sub_vp.x,
+					 -msivp_oy + sub_vp.y);
 
-					//Check in the shared levels
-					bool shared_tile = false;
-					if (!image && layer_to_render <= dzits->GetMaxLevel()) {
-						shared_tile = true;
+			cairo_scale (cr, 
+				     sub_vp.width/sub_w, 
+				     sub_vp.width/sub_w);
 
-						if (tile)
+			cairo_rectangle (cr, 0, 0, sub_w, sub_h);
+			cairo_clip (cr);
+
+			if (IS_TRANSLUCENT (sub_image->GetOpacity ()))
+				cairo_push_group (cr);
+
+			//render here
+			LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
+			int layer_to_render = from_layer;
+			while (layer_to_render <= to_layer) {
+				double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render) * sub_vp.width / sub_w;
+				double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render) * sub_vp.width / sub_w;
+
+				int i, j;
+				for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
+					for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
+						char *tile = (char*)source->get_tile_func (layer_to_render, i, j, sub_image->source);
+						cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
+
+						//Check in the shared levels
+						bool shared_tile = false;
+						if (!image && layer_to_render <= dzits->GetMaxLevel()) {
+							shared_tile = true;
+
 							g_free (tile);
-						tile = (char*)source->get_tile_func (layer_to_render,
-							morton_x(sub_image->n) * ldexp (1.0, layer_to_render) / tile_width,
-							morton_y(sub_image->n) * ldexp (1.0, layer_to_render) / tile_height,
-							source);
-						image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
-					}
 
-					if (tile)
+							tile = (char*)source->get_tile_func (layer_to_render,
+											     morton_x(sub_image->n) * ldexp (1.0, layer_to_render) / tile_width,
+											     morton_y(sub_image->n) * ldexp (1.0, layer_to_render) / tile_height,
+											     source);
+
+							image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
+						}
+
 						g_free (tile);
 
-					if (!image)
-						continue;
+						if (!image)
+							continue;
 
-					LOG_MSI ("rendering subimage %d %d %d %d\n", sub_image->id, layer_to_render, i, j);
-					cairo_save (cr);
+						LOG_MSI ("rendering subimage %d %d %d %d\n", sub_image->id, layer_to_render, i, j);
+						cairo_save (cr);
 
-					cairo_rectangle (cr, 0, 0, msi_w, msi_h);
-					cairo_clip (cr);
-					cairo_scale (cr, msi_w / msivp_w, msi_w / msivp_w); //scale to widget
-					cairo_translate (cr, -msivp_ox + sub_vp.x + i * v_tile_w, -msivp_oy + sub_vp.y + j* v_tile_h);
+						cairo_scale (cr,
+							     ldexp (1.0, layers - layer_to_render),
+							     ldexp (1.0, layers - layer_to_render));
 
-					//scale to viewport
-					cairo_scale (cr, 1.0/sub_image->source->GetImageWidth(), 1.0/sub_image->source->GetImageWidth());
-					cairo_scale (cr, sub_vp.width * ldexp(1.0, layers - layer_to_render), sub_vp.width * ldexp (1.0, layers - layer_to_render));
-
-					if (shared_tile) {
-						cairo_rectangle (cr, 0, 0, ldexp(1.0, layer_to_render) * sub_w / ldexp (1.0, layers), ldexp(1.0, layer_to_render) * sub_h / ldexp (1.0, layers));
-						cairo_clip (cr);
 						cairo_translate (cr,
-								(-morton_x(sub_image->n) * (int)ldexp (1.0, layer_to_render)) % tile_width,
-								(-morton_y(sub_image->n) * (int)ldexp (1.0, layer_to_render)) % tile_height);
+								 i * tile_width,
+								 j * tile_height);
 
-					}
-					cairo_set_source_surface (cr, image, 0, 0);
-				
-					double *opacity = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
-					if (opacity && *opacity > GetValue (MultiScaleImage::TileFadeProperty)->AsDouble()) 
-						cairo_paint_with_alpha (cr, sub_image->GetOpacity() * MIN(1.0 - *opacity + GetValue(MultiScaleImage::TileFadeProperty)->AsDouble (), 1.0));
-					else
-						cairo_paint (cr);
+						if (shared_tile) {
+							cairo_translate (cr,
+									 (-morton_x(sub_image->n) * (int)ldexp (1.0, layer_to_render)) % tile_width,
+									 (-morton_y(sub_image->n) * (int)ldexp (1.0, layer_to_render)) % tile_height);
+
+						}
+
+						cairo_set_source_surface (cr, image, 0, 0);
+						
+						double *opacity = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
+
+						if (opacity && *opacity > GetValue (MultiScaleImage::TileFadeProperty)->AsDouble()) 
+							cairo_paint_with_alpha (cr, MIN(1.0 - *opacity + GetValue(MultiScaleImage::TileFadeProperty)->AsDouble (), 1.0));
+						else
+							cairo_paint (cr);
 						    
-					cairo_restore (cr);
-
+						cairo_restore (cr);
+					}
 				}
+				layer_to_render++;
 			}
-			layer_to_render++;
+
+			if (IS_TRANSLUCENT (sub_image->GetOpacity ())) {
+				cairo_pop_group_to_source (cr);
+				cairo_paint_with_alpha (cr, sub_image->GetOpacity ());
+			}
+
+			cairo_restore (cr);
 		}
 
 #if FALSE
@@ -767,8 +793,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 
 			fadein_sb->Begin();
 
-
-
 			similar = cairo_surface_create_similar (cairo_get_target (cr),
 								has_alpha ? CAIRO_CONTENT_COLOR_ALPHA : CAIRO_CONTENT_COLOR, 
 								*p_width, *p_height);
@@ -919,6 +943,7 @@ MultiScaleImage::SetViewportWidth (double value)
 		SetValue (MultiScaleImage::ViewportWidthProperty, Value (value));
 		return;
 	}
+
 	if (!zoom_sb) {
 		zoom_sb = new Storyboard ();
 		zoom_sb->SetManualTarget (this);
