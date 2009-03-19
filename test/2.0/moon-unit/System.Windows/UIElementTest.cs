@@ -30,6 +30,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Automation.Peers;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using Mono.Moonlight.UnitTesting;
@@ -145,6 +146,63 @@ namespace MoonTest.System.Windows {
 			Assert.IsTrue ((new ConcreteUIElement ().RenderTransform as MatrixTransform).Matrix.IsIdentity, "ConcreteUIElement");
 			Assert.IsTrue ((new Canvas ().RenderTransform as MatrixTransform).Matrix.IsIdentity, "Canvas");
 			Assert.IsTrue ((new Slider ().RenderTransform as MatrixTransform).Matrix.IsIdentity, "Slider");
+		}
+
+		class ConcreteFrameworkElement : FrameworkElement { }
+		
+		[TestMethod]
+		[MoonlightBug ("SL throws an exception when setting Tag in this way.")]
+		public void TagProperty ()
+		{
+		        Assert.Throws <XamlParseException> (delegate { XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Name=""Canvas"">
+  <Canvas.Tag>
+    <Button x:Name=""Button"" />
+  </Canvas.Tag>
+</Canvas>"); });
+		}
+
+		[TestMethod]
+		public void TagPropertyNamescope2 ()
+		{
+		        Canvas c;
+			Canvas c2;
+			Button b;
+
+			c = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Name=""Canvas"" />");
+
+			b = new Button ();
+			b.Name = "Button";
+
+
+			Assert.IsNotNull (c.FindName ("Canvas"), "1");
+
+			c.Tag = b;
+
+			Assert.IsNull (c.FindName ("Button"), "2");
+			Assert.IsNull (b.FindName ("Canvas"), "2.5");
+
+			c.Children.Add (b);
+
+			Assert.IsNotNull (c.FindName ("Button"), "3");
+			Assert.IsNotNull (b.FindName ("Canvas"), "2.5");
+
+			c = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Name=""Canvas"" />");
+			c2 = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Name=""Canvas2"" />");
+
+			b = new Button ();
+			b.Name = "Button";
+
+			c.Tag = b;
+
+			c2.Children.Add (b);
+			Assert.IsNull (c.FindName ("Button"), "4");
+			Assert.IsNotNull (c2.FindName ("Button"), "5");
+			Assert.IsNull (b.FindName ("Canvas"), "5.5");
+			Assert.IsNotNull (b.FindName ("Canvas2"), "5.75");
 		}
 	}
 }
