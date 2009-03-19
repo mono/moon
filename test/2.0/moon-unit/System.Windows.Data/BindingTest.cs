@@ -158,7 +158,7 @@ namespace MoonTest.System.Windows.Data
 		
 		[TestMethod]
 		public void BindToText2 ()
-		{try {
+		{
 			PropertyUpdater data = new PropertyUpdater { Opacity = 0 };
 			Binding binding = new Binding ("Opacity");
 			
@@ -170,10 +170,6 @@ namespace MoonTest.System.Windows.Data
 			Assert.AreEqual ("0.5", box.Text, "#1");
 			data.Opacity = 0.0f;
 			Assert.AreEqual ("0", box.Text, "#2");
-			} catch (Exception ex) {
-				Console.WriteLine (ex);
-				Console.ReadLine ();
-			}
 		}
 
 		[TestMethod]
