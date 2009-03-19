@@ -35,12 +35,13 @@ using System.Windows.Media;
 using Mono.Moonlight.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows {
 
 	
 	[TestClass]
-	public class FrameworkElementTest {
+	public class FrameworkElementTest : SilverlightTest {
 
 		class ConcreteFrameworkElement : FrameworkElement {
 			public Size arrangeInput;
@@ -89,6 +90,26 @@ namespace MoonTest.System.Windows {
 			Assert.Throws<ArgumentException>(delegate {
 				f.SetValue (FrameworkElement.LanguageProperty, null);
 			}, "#2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void LayoutUpdated ()
+		{
+			bool layoutUpdated = false;
+			bool loaded = false;
+			ConcreteFrameworkElement element = new ConcreteFrameworkElement ();
+			element.LayoutUpdated += (o, e) => layoutUpdated = true;
+			element.Loaded += (o, e) => loaded = true;
+			Enqueue (() => TestPanel.Children.Add (element));
+			EnqueueConditional (() => loaded );
+			EnqueueConditional (() => layoutUpdated);
+			Enqueue (() => { layoutUpdated = false; element.InvalidateArrange (); });
+			EnqueueConditional (() => layoutUpdated);
+			Enqueue (() => { layoutUpdated = false; element.InvalidateMeasure (); });
+			EnqueueConditional (() => layoutUpdated);
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
