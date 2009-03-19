@@ -39,7 +39,8 @@ using System.IO;
 namespace Mono {
 
 	internal static class Helper {
-
+		internal static System.Globalization.CultureInfo DefaultCulture = System.Globalization.CultureInfo.GetCultureInfo ("en-US");
+		
 		public static TypeConverter GetConverterFor (Type target_type)
 		{
 			return GetConverterFor (null, target_type);
@@ -140,7 +141,7 @@ namespace Mono {
 			TypeConverter converter = GetConverterFor (pi, pi.PropertyType);
 			if (converter != null && converter.CanConvertFrom (typeof (string))) {
 				try {
-					pi.SetValue (target, converter.ConvertFrom (value), null);
+					pi.SetValue (target, converter.ConvertFrom (null, DefaultCulture, value), null);
 				} catch (Exception e) {
 					error = e.ToString ();
 				}
