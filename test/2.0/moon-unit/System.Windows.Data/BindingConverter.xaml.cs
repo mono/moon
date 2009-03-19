@@ -10,9 +10,51 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Data;
+using System.ComponentModel;
 
 namespace Mono.Moonlight
 {
+	public class DateClass
+	{
+		public static readonly DependencyProperty DateProperty = DependencyProperty.Register ("Date", typeof (DateTime?), typeof (DateClass), null);
+		
+		public DateClass ()
+		{
+		}
+		
+		DateTime? date = DateTime.Now;
+		[TypeConverter (typeof (DateTypeConverter))]
+		public DateTime? Date
+		{
+			get { return date; }
+			set { date = value; }
+		}
+	}
+
+	public class DateTypeConverter : TypeConverter
+	{
+		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
+		{
+			return true;
+		}
+		public override bool CanConvertTo (ITypeDescriptorContext context, Type destinationType)
+		{
+			return true;
+		}
+		public override object ConvertFrom (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		{
+			if (culture.Name != "en-US")
+				throw new Exception ("Culture must be en-US");
+			return DateTime.Now;
+		}
+		public override object ConvertTo (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+		{
+			if (culture.Name != "en-US")
+				throw new Exception ("Culture must be en-US");
+			return null;
+		}
+	}
+
 	public class DateConverter : IValueConverter
 	{
 		public DateTime Now
@@ -35,6 +77,9 @@ namespace Mono.Moonlight
 
 			if (((string) parameter) == "dateconverter")
 				return "converter-string";
+			
+			if (culture.Name != "en-US")
+				throw new Exception ("Default culture is en-US");
 
 			return  ((DateTime) value).ToString ((string) parameter);
 		}
