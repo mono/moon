@@ -681,6 +681,26 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
+		[MoonlightBug]
+		public void XamlDataContextWithBindingElement()
+		{
+			Canvas c = (Canvas)XamlReader.Load(@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+		x:Name=""LayoutRoot"">
+	<Canvas.Resources>
+		<SolidColorBrush x:Key=""Brush"" Color=""Blue"" />
+	</Canvas.Resources>
+
+	<Canvas.DataContext>
+		<Binding Source=""{StaticResource Brush}"" Mode=""OneTime"" />
+	</Canvas.DataContext>
+</Canvas>");
+			Assert.IsNotNull(c.DataContext, "#1");
+			Assert.IsInstanceOfType(c.DataContext, typeof(SolidColorBrush), "#2");
+		}
+
+		[TestMethod]
 		public void XamlDataContext()
 		{
 			Canvas c = (Canvas)XamlReader.Load(@"
