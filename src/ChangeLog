@@ -1,3 +1,15 @@
+2009-03-18  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (unregister_depobj_names): another side of
+	the TagProperty coin.  don't unregister names from it, since we
+	aren't registering names from it.
+	(DependencyObject::SetParent): remove the USERCONTROL extra
+	registration from here.  it's not necessary now that jackson has
+	fixed where we register the names.
+
+	* dependencyproperty.cpp (DependencyProperty::RegisterFull): only
+	freeze the default value if the property is not custom.
+
 2009-03-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes a crash in the Microsoft.SilverlightControls

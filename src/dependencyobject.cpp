@@ -1125,7 +1125,7 @@ bool
 DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (is_frozen) {
-		MoonError::FillIn (error, MoonError::UNAUTHORIZED_ACCESS, "Cannot set value on frozen DependencyObject");
+		MoonError::FillIn (error, MoonError::UNAUTHORIZED_ACCESS, g_strdup_printf ("Cannot set value for property '%s' on frozen DependencyObject '%s'", property->GetName(), GetTypeName()));
 		return false;
 	}
 	
@@ -1262,8 +1262,9 @@ unregister_depobj_names (gpointer  key,
 {
 	NameScope *from_ns = (NameScope*)user_data;
 	Value *v = (Value*)value;
+	DependencyProperty *property = (DependencyProperty*)key;
 
-	if (v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
+	if (property->GetId() != UIElement::TagProperty && v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->UnregisterAllNamesRootedAt (from_ns);
 	}
@@ -2005,12 +2006,6 @@ DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 						// namescope, we don't
 						// do anything
 					}
-				} else {
-					// A managed UserControl being added to a parent element will
-					// have a local namescope, but also needs to exist in its parent
-					// namescope so that this.FindName ("theName") works in its parent.
-					if (Is(Type::USERCONTROL) && parent_scope)
-						parent_scope->RegisterName (this->GetName (), this);
 				}
 			}
 			else {
@@ -2044,15 +2039,8 @@ DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 		// ask me, it's crazy.
 		if (this->parent) {
 			NameScope *parent_scope = this->parent->FindNameScope ();
-			if (parent_scope) {
-				// A managed UserControl being added to a parent element will
-				// have a local namescope, but also needs to exist in its parent
-				// namescope as such we need to remove the registration from the
-				// old parent_scope here since we've been reparented.
-				if (Is(Type::USERCONTROL) && parent_scope)
-					parent_scope->UnregisterName (this->GetName ());
+			if (parent_scope)
 				UnregisterAllNamesRootedAt (parent_scope);
-			}
 		}
 
 		if (!error || error->number == 0)
