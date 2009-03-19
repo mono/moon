@@ -1,3 +1,8 @@
+2009-03-19  Jb Evain  <jbevain@novell.com>
+
+	* security/ReflectionEmitTest.cs: add a test case reading
+	a internal field from a DynamicMethod with the skip visibility flag.
+
 2009-03-19  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingConverter.xaml

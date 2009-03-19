@@ -33,6 +33,7 @@ using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows;
+using Ast = System.Linq.Expressions.Expression;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -46,7 +47,7 @@ namespace MoonTest.Security {
 	[Ignore ("needs coreclr enabled")]
 	public class ReflectionEmitTest {
 
-		private DynamicMethod Create (Type type)
+		private static DynamicMethod Create (Type type)
 		{
 			ConstructorInfo ci = type.GetConstructor (Type.EmptyTypes);
 			DynamicMethod dm = new DynamicMethod ("CreateInstance", type, Type.EmptyTypes);
@@ -72,6 +73,19 @@ namespace MoonTest.Security {
 			DynamicMethod dm = Create (typeof (X509Certificate));
 			X509Certificate cert = (X509Certificate) dm.Invoke (null, new object [0]);
 			Assert.IsNotNull (cert, "Invoke");
+		}
+
+		[TestMethod]
+		public void DynamicMethod_SkipVisibilityCheck_ReadInternalField ()
+		{
+			var p = Ast.Parameter (typeof (Nullable<int>), "i");
+			var lambda = Ast.Lambda<Func<Nullable<int>, int>> (
+				Ast.Field (
+					p,
+					typeof (Nullable<int>).GetField ("value", BindingFlags.NonPublic | BindingFlags.Instance)),
+				p);
+	
+			Assert.Throws<FieldAccessException> (() => lambda.Compile ());
 		}
 
 		// TODO
