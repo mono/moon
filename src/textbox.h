@@ -64,7 +64,7 @@ enum TextBoxModelChangeType {
 
 /* @SilverlightVersion="2" */
 /* @Namespace=None */
-class TextBoxModelChangedEventArgs : public RoutedEventArgs {
+class TextBoxModelChangedEventArgs : public EventArgs {
  protected:
 	virtual ~TextBoxModelChangedEventArgs () { }
 	
