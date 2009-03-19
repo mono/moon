@@ -2293,13 +2293,10 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 Size
 TextBoxView::MeasureOverride (Size availableSize)
 {
-	Thickness padding = Thickness (0); //*GetPadding ();
-	Size constraint = availableSize.GrowBy (-padding);
-	
 	cairo_t *cr = measuring_context_create ();
-	Layout (cr, constraint);
+	Layout (cr, availableSize);
 	measuring_context_destroy (cr);
-
+	
 	Size desired = Size ();
 	layout->GetActualExtents (&desired.width, &desired.height);
 	
@@ -2309,18 +2306,13 @@ TextBoxView::MeasureOverride (Size availableSize)
 Size
 TextBoxView::ArrangeOverride (Size finalSize)
 {
-        Thickness padding = Thickness (0); //*GetPadding ();
-	Size constraint = finalSize.GrowBy (-padding);
-
 	cairo_t *cr = measuring_context_create ();
-	Layout (cr, constraint);
+	Layout (cr, finalSize);
 	measuring_context_destroy (cr);
-
+	
 	Size arranged = Size ();
 	layout->GetActualExtents (&arranged.width, &arranged.height);
 	
-	arranged = arranged.GrowBy (padding);
-
 	return arranged.Max (finalSize);
 }
 
