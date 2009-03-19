@@ -5867,8 +5867,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
 
@@ -5970,8 +5970,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.IsNull(widget.TextDecorations, "TextDecorations should have returned null");
 
@@ -6716,9 +6716,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontStretch, "GetValue(TextBlock.FontStretchProperty) is not of the correct type");
 			Assert.AreEqual("Normal", retval.ToString (), "GetValue(TextBlock.FontStretchProperty) does not match the default value");
 
-			//retval = widget.GetValue(TextBlock.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(TextBlock.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(TextBlock.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(TextBlock.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(TextBlock.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(TextBlock.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(TextBlock.TextDecorationsProperty);
 			Assert.IsNull(retval, "GetValue(TextBlock.TextDecorationsProperty) should have returned null");
@@ -6878,8 +6878,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.AreEqual(TextWrapping.NoWrap, widget.TextWrapping, "TextWrapping does not match the default value");
 
@@ -8695,9 +8695,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -8896,8 +8896,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
 			Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
@@ -9183,9 +9183,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -9367,8 +9367,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
 			Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
@@ -10086,9 +10086,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -10268,8 +10268,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
 			Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
@@ -10852,9 +10852,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -11027,8 +11027,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
 			Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
@@ -12166,9 +12166,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -12337,8 +12337,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
 			Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
@@ -12640,9 +12640,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -12823,8 +12823,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
 			Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
@@ -13142,9 +13142,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -13329,8 +13329,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
 			Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
@@ -13648,9 +13648,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -13835,8 +13835,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
 			Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
@@ -14162,9 +14162,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -14362,8 +14362,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
 			Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
@@ -14641,9 +14641,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -14818,8 +14818,8 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
 
-			//Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
-			//Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+			Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+			Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
 
 			Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
 			Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
@@ -15097,9 +15097,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -15589,9 +15589,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -16087,9 +16087,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -16596,9 +16596,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -17098,9 +17098,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -17558,9 +17558,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -18058,9 +18058,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -18913,9 +18913,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -19435,9 +19435,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -19917,9 +19917,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
@@ -20405,9 +20405,9 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsTrue(retval is FontFamily, "GetValue(Control.FontFamilyProperty) is not of the correct type");
 			Assert.AreEqual("Portable User Interface", retval.ToString (), "GetValue(Control.FontFamilyProperty) does not match the default value");
 
-			//widget.GetValue(Control.ForegroundProperty);
-			//Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
-			//Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
+			retval = widget.GetValue(Control.ForegroundProperty);
+			Assert.IsNotNull(retval, "GetValue(Control.ForegroundProperty) should not have returned null");
+			Assert.IsTrue(retval is SolidColorBrush, "GetValue(Control.ForegroundProperty) is not of the correct type");
 
 			retval = widget.GetValue(Control.FontWeightProperty);
 			Assert.IsNotNull(retval, "GetValue(Control.FontWeightProperty) should not have returned null");
