@@ -104,7 +104,7 @@ Control::ApplyTemplate ()
 	if (!GetTemplate())
 		return false;
 
-	printf ("APPLYING TEMPLATE TO %s\n", GetTypeName());
+	//printf ("APPLYING TEMPLATE TO %s\n", GetTypeName());
 
 	applied_template = GetTemplate ();
 	applied_template->ref();

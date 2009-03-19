@@ -309,7 +309,7 @@ namespace Mono {
 			unsafe {
 				// get rid of this case right away.
 				if (box_value_types && v.GetType().IsValueType) {
-					Console.WriteLine ("Boxing a value of type {0}:", v.GetType());
+					//Console.WriteLine ("Boxing a value of type {0}:", v.GetType());
 
 					GCHandle handle = GCHandle.Alloc (v);
 					value.k = Kind.MANAGED;
@@ -499,7 +499,7 @@ namespace Mono {
 					Marshal.StructureToPtr (mti, value.u.p, false);
 				}
 				else {
-					Console.WriteLine ("Do not know how to encode {0} yet, boxing it", v.GetType ());
+					//Console.WriteLine ("Do not know how to encode {0} yet, boxing it", v.GetType ());
 
 					// TODO: We probably need to marshal types that can animate as the 
 					// corresponding type (Point, Double, Color, etc).

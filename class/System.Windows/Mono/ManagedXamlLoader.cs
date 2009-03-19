@@ -400,7 +400,7 @@ namespace Mono.Xaml
 			EventInfo ie = publisher.GetType ().GetEvent (name);
 			string handler_name = Value.ToObject (null, value_ptr) as string;
 			
-			 Console.WriteLine ("TrySetEventReflection ({0}, {1}, {2}, {3}, {4}, {5}) handler_name: {6}", top_level, xmlns, publisher, type_name, name, value_ptr, handler_name);
+			//Console.WriteLine ("TrySetEventReflection ({0}, {1}, {2}, {3}, {4}, {5}) handler_name: {6}", top_level, xmlns, publisher, type_name, name, value_ptr, handler_name);
 			
 			if (ie == null) {
 				error = "Event does not exist.";
