@@ -1,3 +1,8 @@
+2009-03-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Remove MoonlightBug from
+	two tests which are now passing.
+
 2009-03-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Browser/ScriptableTest.cs: Add ctor so we can
