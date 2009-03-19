@@ -15,11 +15,6 @@ url:http://bubblemark.com/wpfe.htm
 rating:4
  *  Works!
 
-site:Channel 9
-url:http://channel9.msdn.com
-rating:4
- * works
-
 site:Chess Viewer 1.0
 url:http://www.vertigo.com/downloads/SilverlightChess/10RC/default.html
 rating:4
@@ -98,8 +93,8 @@ rating:4
 
 site:Media Preview TV
 url:http://www.mediapreview.tv/
-rating:0
- * Never finishes loading. Stays at 99% Bug 424971
+rating:4
+ * Works
 
 site:Minesweeper
 url:http://www.softencrypt.com/mines/
@@ -115,13 +110,6 @@ site:Office Ribbon
 url:http://xmldocs.net
 rating:3
  * Drop down list doesn't stay open Bug 351568
-
-site:On9Games
-url:http://www.on9games.net/GameAction.aspx
-rating:3
- * [windowless] Animated runners do not appear Bug 375225
- * [windowless] In 'Featured', the FAQ doesn't show the answers to the questions Bug 375226
- * Mouse disappears during game play
 
 site:Page Turn
 url:http://silverlight.net/samples/1.0/Page-Turn/default.html
@@ -181,11 +169,6 @@ rating:4
 
 site:Simon
 url:http://www.vertigo.com/downloads/Simon/
-rating:4
- * Works!
-
-site:Sparkleball
-url:http://www.ddjsilverlight.com/sparkleball
 rating:4
  * Works!
 
