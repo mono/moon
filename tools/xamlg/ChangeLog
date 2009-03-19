@@ -1,3 +1,7 @@
+2009-02-19  Geoff Norton  <gnorton@novell.com>
+
+	* xamlg.cs: Fix a off by 1 error if the rooted path ends in a /
+
 2009-01-13  Geoff Norton  <gnorton@novell.com>
 
 	* xamlg.cs:  Add System.Windows.Controls.Primitives namespace as well

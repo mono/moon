@@ -187,7 +187,7 @@ namespace Moonlight {
 				if (!Path.GetFullPath (xaml_file).StartsWith (root_folder))
 					throw new ApplicationException ("the -root directory is not a parent of the xaml file");
 
-				string component_path = String.Format ("/{0};component/{1}", app_name, Path.GetFullPath (xaml_file).Substring (root_folder.Length + 1));
+				string component_path = String.Format ("/{0};component/{1}", app_name, Path.GetFullPath (xaml_file).Substring (root_folder.Length + (root_folder.EndsWith ("/") ? 0 : 1)));
 				//string component_path = String.Format ("/{0};component/{1}", app_name, Path.GetFileName (xaml_file));
 
 				CodeMethodInvokeExpression load_component = new CodeMethodInvokeExpression (
