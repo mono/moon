@@ -86,7 +86,8 @@ namespace MoonTest.Security {
 		}
 
 		[TestMethod]
-		public void DynamicMethod_SkipVisibilityCheck_ReadInternalField ()
+		public void
+DynamicMethod_SkipVisibilityCheck_ReadPlatformCodeInternalField ()
 		{
 			var p = Ast.Parameter (typeof (Nullable<int>), "i");
 			var lambda = Ast.Lambda<Func<Nullable<int>, int>> (
@@ -96,6 +97,24 @@ namespace MoonTest.Security {
 				p);
 	
 			Assert.Throws<FieldAccessException> (() => lambda.Compile ());
+		}
+
+		[TestMethod]
+		public void DynamicMethod_SkipVisibilityCheck_ReadUserCodePrivateField ()
+		{
+			var parameter = Ast.Parameter (typeof (IgnoreAttribute), "attribute");
+
+			var lambda = Ast.Lambda<Func<IgnoreAttribute, string>> (
+				Ast.Field (
+					parameter,
+					typeof (IgnoreAttribute).GetField ("reason", BindingFlags.NonPublic | BindingFlags.Instance)),
+				parameter);
+
+			var reader = lambda.Compile ();
+
+			var attribute = new IgnoreAttribute ("foo");
+
+			Assert.AreEqual ("foo", reader (attribute));
 		}
 
 		// TODO

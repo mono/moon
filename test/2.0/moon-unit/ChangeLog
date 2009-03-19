@@ -1,3 +1,8 @@
+2009-03-19  Jb Evain  <jbevain@novell.com>
+
+	* security/ReflectionEmitTest.cs: add test for reading a private
+	field in user code with a DynamicMethod without visibility checks.
+
 2009-03-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/DelegateTest.cs: Fix tests (not coreclr related)
