@@ -817,6 +817,30 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 			Assert.IsNull(a.FindName("CLRObject"));
 			Assert.IsNull(a.DataContext);
 		}
+			
+		[TestMethod]
+		public void XamlStaticResource()
+		{
+			Canvas canvas = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+	<Rectangle x:Name=""Before"" Fill=""{Binding Source={StaticResource brush}}"" />
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+	<Rectangle x:Name=""After"" Fill=""{Binding Source={StaticResource brush}}"" />
+	<Rectangle x:Name=""Invalid"" Fill=""{Binding Source={StaticResource NOTHERE}}"" />
+</Canvas>
+");
+			Rectangle before = (Rectangle) canvas.FindName ("Before");
+			Rectangle after = (Rectangle) canvas.FindName ("After");
+			Rectangle invalid = (Rectangle) canvas.FindName ("Invalid");
+			Assert.IsNull (before.Fill, "#1");
+			Assert.IsNotNull (after.Fill, "#2");
+			Assert.AreEqual (after.Fill.GetValue (SolidColorBrush.ColorProperty).ToString (), Colors.Blue.ToString (), "#3");
+			Assert.IsNull (invalid.Fill, "#4");
+		}
 
 		[TestMethod]
 		public void CustomObjectTest1 ()
