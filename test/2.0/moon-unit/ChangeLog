@@ -1,5 +1,12 @@
 2009-03-19  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingConverter.xaml
+	* System.Windows.Data/BindingConverter.xaml.cs: Add tests which
+	show that en-US is the default culture. My system is en-IE and the
+	tests pass.
+
+2009-03-19  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Remove debug stuff.
 
 2009-03-19  Alan McGovern  <amcgovern@novell.com>
