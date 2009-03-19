@@ -1,4 +1,7 @@
 
+EXTRA_DIST=	\
+	moonlight.snk
+
 SUBDIRS=	\
 	Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight \
 	Microsoft.Silverlight.Testing \

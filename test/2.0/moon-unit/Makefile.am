@@ -109,6 +109,8 @@ moon-unit.sources: $(SOURCES)
 EXTRA_DIST = 			\
 	$(srcdir)/*xaml.cs	\
 	$(srcdir)/*xaml		\
+	$(srcdir)/*/*xaml	\
+	$(srcdir)/*/*/*xaml	\
 	$(srcdir)/*/*.cs
 
 test: copy-xap-to-site

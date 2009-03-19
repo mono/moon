@@ -9,6 +9,13 @@ SOURCES = \
 	$(srcdir)/Mono.Moonlight.UnitTesting/SilverlightBugAttribute.cs	\
 	$(srcdir)/Mono.Moonlight.UnitTesting/Testing.cs
 	
+EXTRA_DIST = \
+	$(SOURCES) \
+	$(srcdir)/site/MoonLogProvider.aspx \
+	$(srcdir)/site/MoonLogProvider.aspx.cs \
+	$(srcdir)/site/moon-unit-log.xsl        
+
+
 CLEANFILES = \
 	$(wildcard *.dll)	\
 	$(wildcard *.mdb)

@@ -12,10 +12,8 @@ main()
 		if (t == NULL)
 			continue;
 
-		if (!t->create_inst)
-			continue;
+		DependencyObject *obj = type_create_instance (t);
 
-		DependencyObject *obj = t->CreateInstance ();
 		if (!obj)
 			continue;
 

@@ -5,7 +5,8 @@ bin_SCRIPTS = munxap
 moon_DATA = munxap.exe
 
 EXTRA_DIST = \
-	$(munxap_exe_CS)
+	$(munxap_exe_CS) \
+	$(munxap_resources)
 
 CLEANFILES = 		\
 	munxap 		\

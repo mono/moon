@@ -195,6 +195,7 @@ $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs: $(srcdir)/UnitTestH
 
 EXTRA_DIST =			\
 	$(SOURCES)		\
+	$(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml \
 	$(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resources	\
 	$(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resx
 

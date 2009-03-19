@@ -61,6 +61,7 @@ libmoon_include_headers = 	\
 	moon-path.h		\
 	mp3.h			\
 	multiscaleimage.h	\
+	mutex.h			\
 	namescope.h		\
 	openfile.h		\
 	panel.h			\
