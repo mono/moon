@@ -197,8 +197,6 @@ namespace Mono.Xaml {
 				b.Path = new PropertyPath (str_value);
 				break;
 			case "Source":
-				if (value == null)
-					throw new Exception ("A Binding Source must be available as StaticResouce.");
 				b.Source = value;
 				break;
 			case "Converter":

@@ -1,5 +1,10 @@
 2009-03-19  Alan McGovern  <amcgovern@novell.com>
 
+	* MarkupExpressionParser.cs: We don't throw if the static resource is
+	null. i.e. if it hasn't been parsed yet.
+
+2009-03-19  Alan McGovern  <amcgovern@novell.com>
+
 	* Helper.cs: By default we use en-US, not the
 	current machine culture.
 
