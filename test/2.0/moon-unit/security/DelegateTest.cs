@@ -46,6 +46,7 @@ namespace MoonTest.Security {
 			PropertyInfo pi = typeof (Environment).GetProperty ("CurrentDirectory");
 			MethodInfo miget = pi.GetGetMethod ();
 			StringGetter dget = null;
+			Assert.IsNotNull (miget, "CurrentDirectory");
 
 			Assert.Throws<ArgumentException> (delegate {
 				// delegate could not be created
@@ -173,10 +174,10 @@ namespace MoonTest.Security {
 			}, "Delegate.CreateDelegate(Type,Type,string,bool)");
 
 			dget = (IntPtrGetter) Delegate.CreateDelegate (typeof (IntPtrGetter), cert, "get_handle", true, false);
-			Assert.IsNull (dget, "Delegate.CreateDelegate(Type,object,MethodInfo,bool,bool)");
+			Assert.IsNull (dget, "Delegate.CreateDelegate(Type,object,string,bool,bool)");
 
 			dget = (IntPtrGetter) Delegate.CreateDelegate (typeof (IntPtrGetter), typeof (X509Certificate), "get_handle", true, false);
-			Assert.IsNull (dget, "Delegate.CreateDelegate(Type,Type,MethodInfo,bool,bool)");
+			Assert.IsNull (dget, "Delegate.CreateDelegate(Type,Type,string,bool,bool)");
 		}
 
 		[TestMethod]
@@ -195,7 +196,7 @@ namespace MoonTest.Security {
 			dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), miget, false);
 			Assert.IsNull (dget, "Delegate.CreateDelegate(Type,MethodInfo,boolean)"); // not static
 
-			dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), null, miget);
+			dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), cert, miget);
 			Assert.IsNotNull (dget, "Delegate.CreateDelegate(Type,object,MethodInfo)");
 
 			dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), cert, "get_Issuer");
@@ -205,7 +206,7 @@ namespace MoonTest.Security {
 				dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), typeof (X509Certificate), "get_Issuer");
 			}, "Delegate.CreateDelegate(Type,Type,string)");
 
-			dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), null, miget, false);
+			dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), cert, miget, false);
 			Assert.IsNotNull (dget, "Delegate.CreateDelegate(Type,object,MethodInfo,bool)");
 
 			dget = (StringGetter) Delegate.CreateDelegate (typeof (StringGetter), cert, "get_issuer", true);

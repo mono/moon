@@ -1,3 +1,10 @@
+2009-03-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/DelegateTest.cs: Fix tests (not coreclr related)
+	* security/ReflectionTest.cs: Fix tests (not coreclr related)
+	* security/ReflectionEmitTest.cs: Add test case where we try to
+	create a non-accessible object type using a DynamicMethod
+
 2009-03-19  Jb Evain  <jbevain@novell.com>
 
 	* security/ReflectionEmitTest.cs: add a test case reading

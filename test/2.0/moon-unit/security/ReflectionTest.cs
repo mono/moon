@@ -104,20 +104,10 @@ namespace MoonTest.Security {
 		public void ReflectTransparentPrivateType_Outside ()
 		{
 			// find a private type inside mscorlib
-			ConstructorInfo ci = null;
-			Assembly a = typeof (int).Assembly;
-			foreach (Module m in a.GetModules ()) {
-				foreach (Type t in m.GetTypes ()) {
-					if (!t.IsNotPublic)
-						continue;
-					ci = t.GetConstructor (Type.EmptyTypes);
-					if (ci != null)
-						break;
-				}
-				if (ci != null)
-					break;
-			}
-			// we can find it...
+			Type t = Type.GetType ("System.Security.Policy.Evidence");
+			Assert.IsNotNull (t, "Type");
+			Assert.IsTrue (t.IsNotPublic, "IsNotPublic");
+			ConstructorInfo ci = ci = t.GetConstructor (Type.EmptyTypes);
 			Assert.IsNotNull (ci, "ctor");
 			// but we can't use it since it comes from another assembly (mscorlib)
 			// from a non-public type

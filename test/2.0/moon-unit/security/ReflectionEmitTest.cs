@@ -76,6 +76,16 @@ namespace MoonTest.Security {
 		}
 
 		[TestMethod]
+		public void DynamicMethod_NewObj_NonAccessible ()
+		{
+			// find a private type inside mscorlib
+			DynamicMethod dm = Create (Type.GetType ("System.Security.Policy.Evidence"));
+			Assert.Throws<TargetInvocationException, MethodAccessException> (delegate {
+				dm.Invoke (null, new object [0]);
+			}, "Invoke");
+		}
+
+		[TestMethod]
 		public void DynamicMethod_SkipVisibilityCheck_ReadInternalField ()
 		{
 			var p = Ast.Parameter (typeof (Nullable<int>), "i");
