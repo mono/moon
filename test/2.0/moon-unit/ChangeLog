@@ -1,5 +1,10 @@
 2009-03-19  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Add test for when a
+	StaticResource is databound before it has been parsed.
+
+2009-03-19  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/FrameworkElementTest.cs: Add test to ensure
 	LayoutUpdated is raised.
 
