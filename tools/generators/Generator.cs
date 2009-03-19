@@ -1403,6 +1403,7 @@ class Generator {
 		f ("System.Windows.CornerRadius", "CORNERRADIUS");
 		f ("System.Windows.PropertyPath", "PROPERTYPATH");
 		f ("System.Windows.Point", "POINT");
+		f ("System.Windows.Rect", "RECT");
 		f ("System.Windows.Size", "SIZE");
 		f ("System.Windows.FontStretch", "FONTSTRETCH");
 		f ("System.Windows.FontWeight", "FONTWEIGHT");

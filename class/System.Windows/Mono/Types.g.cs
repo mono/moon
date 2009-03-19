@@ -349,6 +349,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.PROPERTYPATH));
 				t = typeof (System.Windows.Point);
 				types.Add (t, new ManagedType (t, Kind.POINT));
+				t = typeof (System.Windows.Rect);
+				types.Add (t, new ManagedType (t, Kind.RECT));
 				t = typeof (System.Windows.Size);
 				types.Add (t, new ManagedType (t, Kind.SIZE));
 				t = typeof (System.Windows.FontStretch);
