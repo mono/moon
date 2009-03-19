@@ -38,7 +38,6 @@ namespace System.Windows.Data {
 	public abstract class BindingExpressionBase : Expression
 	{
 		static Dictionary<IntPtr, Binding> bindings = new Dictionary<IntPtr, Binding> ();
-		static System.Globalization.CultureInfo enUS = System.Globalization.CultureInfo.GetCultureInfo ("en-US");
 		
 		internal bool cached;
 		object cachedValue;
@@ -186,7 +185,7 @@ namespace System.Windows.Data {
 				value = Binding.Converter.ConvertBack (value,
 				                                       PropertyInfo.PropertyType,
 				                                       Binding.ConverterParameter,
-				                                       Binding.ConverterCulture ?? enUS);
+				                                       Binding.ConverterCulture ?? Helper.DefaultCulture);
 			
 			if (value != null && PropertyInfo.PropertyType.IsValueType && PropertyInfo.PropertyType != value.GetType ())
 				value = Convert.ChangeType (value, PropertyInfo.PropertyType, null);
@@ -220,7 +219,7 @@ namespace System.Windows.Data {
 			value = converter.Convert (value,
 			                           Property.PropertyType,
 			                           Binding.ConverterParameter,
-			                           Binding.ConverterCulture ?? enUS);
+			                           Binding.ConverterCulture ?? Helper.DefaultCulture);
 			
 			if (defined_converter && !value.GetType ().IsSubclassOf (Property.PropertyType)) {
 				converter = new MoonlightValueConverter ();
@@ -228,7 +227,7 @@ namespace System.Windows.Data {
 				value = converter.Convert (value,
 				                           Property.PropertyType,
 				                           Binding.ConverterParameter,
-				                           Binding.ConverterCulture ?? enUS);
+				                           Binding.ConverterCulture ?? Helper.DefaultCulture);
 			}
 			
 			return value;

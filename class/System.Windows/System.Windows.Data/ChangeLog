@@ -1,3 +1,8 @@
+2009-02-26  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: Use Helper.DefaultCulture
+	rather than declaring it here.
+
 * BindingExpressionBase.cs: When updating from a two-way binding,
 ensure we properly typeconvert from source type to dest type.
 
