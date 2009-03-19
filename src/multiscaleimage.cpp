@@ -656,6 +656,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 					found ++;
 				if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
 					blending = TRUE;
+
 				g_free (tile);
 			}
 		}
@@ -667,7 +668,19 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	}
 
 	//render here
-	cairo_push_group (cr);
+	//cairo_push_group (cr);
+
+
+	cairo_save (cr);
+
+	cairo_rectangle (cr, 0, 0, msi_w, msi_h);
+	cairo_clip (cr);
+	cairo_paint (cr);
+
+	cairo_scale (cr, msi_w / vp_w, msi_w / vp_w); //scale to viewport
+	cairo_translate (cr, -vp_ox, -vp_oy);
+	cairo_scale (cr, 1.0 / im_w, 1.0 / im_w);
+
 	LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 	int layer_to_render = from_layer;
 	while (from_layer >= 0 && layer_to_render <= to_layer) {
@@ -681,19 +694,23 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 					continue;
 				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
 				g_free (tile);
+
 				if (!image)
 					continue;
+
 				LOG_MSI ("rendering %d %d %d\n", layer_to_render, i, j);
 //				int *p_w = (int*)(cairo_surface_get_user_data (image, &width_key));
 //				int *p_h = (int*)(cairo_surface_get_user_data (image, &height_key));
 				cairo_save (cr);
 
-				cairo_scale (cr, msi_w / (vp_w * im_w), msi_w / (vp_w * im_w)); //scale to viewport
-				cairo_translate (cr, im_w *(-vp_ox + i * v_tile_w), im_w * (-vp_oy + j * v_tile_h));
 				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
-				cairo_rectangle (cr, 0, 0, tile_width, tile_height);
-				cairo_clip(cr);
+
+				cairo_translate (cr, i * tile_width, j * tile_height);
+				//cairo_rectangle (cr, 0, 0, tile_width, tile_height);
+
+				//cairo_clip(cr);
 				cairo_set_source_surface (cr, image, 0, 0);
+
 				double *opacity = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
 				if (opacity && *opacity > GetValue (MultiScaleImage::TileFadeProperty)->AsDouble()) {
 					cairo_paint_with_alpha (cr, MIN(1.0 - *opacity + GetValue(MultiScaleImage::TileFadeProperty)->AsDouble (), 1.0));
@@ -704,10 +721,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		}
 		layer_to_render++;
 	}
-	cairo_pop_group_to_source (cr);
-	cairo_rectangle (cr, 0, 0, msi_w, msi_h);
-	cairo_clip (cr);
-	cairo_paint (cr);
+	cairo_restore (cr);
+	//	cairo_pop_group_to_source (cr);
 
 	if (downloading)
 		return NULL;
@@ -849,8 +864,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 void
 MultiScaleImage::DownloaderComplete ()
 {
-	if (filename)
-		g_free (filename);
+	g_free (filename);
 
 	if (!(filename = g_strdup(downloader->getFileDownloader ()->GetDownloadedFile ())))
 		return;

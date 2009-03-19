@@ -1,5 +1,10 @@
 2009-03-19  Larry Ewing  <lewing@novell.com>
 
+	* multiscaleimage.cpp (RenderSingle): move the clipping to the
+	outer loop here too.
+
+2009-03-19  Larry Ewing  <lewing@novell.com>
+
 	* multiscaleimage.cpp (RenderCollection): rework the collection
 	rendering slightly by moving the subimages out of the loop.
 
