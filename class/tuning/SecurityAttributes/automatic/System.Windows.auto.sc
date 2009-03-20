@@ -79,6 +79,9 @@
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::control_apply_template(System.IntPtr)
 
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::control_focus(System.IntPtr)
+
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_marshalled_value(System.IntPtr,System.IntPtr,Mono.Value&)
 
@@ -138,9 +141,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::stroke_hit_test(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::surface_focus_element(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::surface_get_full_screen(System.IntPtr)
