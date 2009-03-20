@@ -1,3 +1,8 @@
+2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* UnitTestHarness.csproj: Update project files to build
+	  property in VS with our changes to the code base.
+
 2009-03-04  Alan McGovern  <amcgovern@novell.com>
 
 	* WorkItemTest.cs: Add the ability to append a failure message

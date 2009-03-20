@@ -1,3 +1,8 @@
+2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Mono.Moonlight.mdp: Update project files to build property
+	  in VS with our changes to the code base.
+
 2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Give MONO_PATH to smcs.

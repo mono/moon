@@ -1,3 +1,9 @@
+2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.csproj:
+	  Update project files to build property in VS with our
+	  changes to the code base.
+
 2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Sign these assemblies, this way they can be

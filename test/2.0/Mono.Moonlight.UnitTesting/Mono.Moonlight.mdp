@@ -19,8 +19,12 @@
     <File name="Mono.Moonlight.UnitTesting/MoonlightBugAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Moonlight.UnitTesting/MoonLogProvider.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono.Moonlight.UnitTesting/SilverlightBugAttribute.cs" subtype="Code" buildaction="Compile" />
-    <File name="Mono.Moonlight.UnitTesting/TestApplication.cs" subtype="Code" buildaction="Compile" />
     <File name="site" subtype="Directory" buildaction="Compile" />
+    <File name="Mono.Moonlight.UnitTesting/Testing.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Moonlight.UnitTesting/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="site/MoonLogProvider.aspx" subtype="Code" buildaction="Nothing" />
+    <File name="site/MoonLogProvider.aspx.cs" subtype="Code" buildaction="Compile" />
+    <File name="site/moon-unit-log.xsl" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

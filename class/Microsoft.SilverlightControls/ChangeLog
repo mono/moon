@@ -1,5 +1,13 @@
 2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* SDKControls/Extended/Controls.sln:
+	* SDKControls/Extended/Test/Controls.Test.csproj:
+	* SDKControls/Test/Controls.Test.Common/Controls.Test.Common.csproj:
+	  Update project files to build property in VS with our
+	  changes to the code base.
+
+2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* SDKControls/Extended/Test/Calendar/CalendarTest.cs:
 	* SDKControls/Extended/Test/TabControl/TabItemTest.cs:
 	* SDKControls/Extended/Test/TabControl/TabPanelTest.cs:

@@ -54,14 +54,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Silverlight.Testing, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b26a6e0277526b31, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Ignite\Microsoft.Silverlight.Testing.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b26a6e0277526b31, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Ignite\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
@@ -78,6 +70,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="MixControls.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\test\2.0\Microsoft.Silverlight.Testing\UnitTestHarness\UnitTestHarness.csproj">
+      <Project>{FBACE883-73A3-45C6-BDBF-72C34EF57334}</Project>
+      <Name>UnitTestHarness</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\test\2.0\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.csproj">
+      <Project>{01D5C633-B082-4D14-AE78-CFCF7CC5699B}</Project>
+      <Name>Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
