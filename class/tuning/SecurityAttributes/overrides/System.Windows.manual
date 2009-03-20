@@ -1,1 +1,8 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
+
+# this leads to the creation of a delegate (thru MonoProperty)
++SSC-M: System.Object System.Windows.Data.BindingExpressionBase::GetValue(System.Windows.DependencyProperty)
+
+# the delegate was judged "ok" at creation time, invoking it later should be ok too
++SSC-M: System.Void System.Windows.Threading.DispatcherOperation::Invoke()
+

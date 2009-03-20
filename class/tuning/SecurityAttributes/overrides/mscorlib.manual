@@ -5,3 +5,6 @@
 # but since it calls IntPtr::op_Explicit (SecurityCritical) we turn it into a SecuritySafeCritical
 +SSC-M: System.IntPtr System.Runtime.InteropServices.GCHandle::op_Explicit(System.Runtime.InteropServices.GCHandle)
 
+# use Activator.CreateInstance to create (inaccessible) GenericEqualityComparer<T>
++SSC-M: System.Void System.Collections.Generic.EqualityComparer`1::.cctor()
+

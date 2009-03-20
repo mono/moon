@@ -1,3 +1,10 @@
+2008-03-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.manual: SSC EqualityComparer<T> static ctor
+	* System.Windows.manual: SSC BindingExpressionBase.GetValue and
+	.DispatcherOperation.Invoke
+	* System.Windows.Browser.manual: SC ScriptableObjectWrapper.GetProperty
+
 2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: Turn GCHandle::op_Explicitfrom SC to SSC
