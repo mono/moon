@@ -229,6 +229,20 @@ namespace Mono.Moonlight.UnitTesting
             Assert.AreEqual("This is not a test string", box.Text, "#19");
         }
 
+        [TestMethod]
+        [MoonlightBug]
+        public void SetText ()
+        {
+            TextBox box = new TextBox ();
+            Assert.AreEqual ("", box.Text, "#1");
+            Assert.AreEqual (null, box.GetValue (TextBox.TextProperty), "#2");
+            Assert.Throws<ArgumentNullException> (delegate {
+                box.Text = null;
+            }, "#3");
+            box.SetValue (TextBox.TextProperty, null);
+            Assert.AreEqual ("", box.Text, "#4");
+            Assert.AreEqual (null, box.GetValue (TextBox.TextProperty), "#5");
+        }
         void OnSelectionChanged(object sender, RoutedEventArgs args)
         {
             selection_changed++;
