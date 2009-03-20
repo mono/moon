@@ -1,3 +1,11 @@
+2009-03-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxView::Layout): No longer takes a cairo
+	context argument since it never actually uses it anyway.
+	(TextBoxView::MeasureOverride): Don't create a temporary cairo
+	context since it never gets used.
+	(TextBoxView::ArrangeOverride): Same.
+
 2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.h:

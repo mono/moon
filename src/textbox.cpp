@@ -2270,7 +2270,7 @@ TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 	dynamic->InitializeSelectionBrushes ();
 	
 	if (dirty)
-		Layout (cr, GetRenderSize ());
+		Layout (GetRenderSize ());
 	
 	if (selection_changed) {
 		layout->Select (textbox->GetSelectionStart (), textbox->GetSelectionLength ());
@@ -2293,11 +2293,10 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 Size
 TextBoxView::MeasureOverride (Size availableSize)
 {
-	cairo_t *cr = measuring_context_create ();
-	Layout (cr, availableSize);
-	measuring_context_destroy (cr);
-	
 	Size desired = Size ();
+	
+	Layout (availableSize);
+	
 	layout->GetActualExtents (&desired.width, &desired.height);
 	
 	return desired.Min (availableSize);
@@ -2306,18 +2305,17 @@ TextBoxView::MeasureOverride (Size availableSize)
 Size
 TextBoxView::ArrangeOverride (Size finalSize)
 {
-	cairo_t *cr = measuring_context_create ();
-	Layout (cr, finalSize);
-	measuring_context_destroy (cr);
-	
 	Size arranged = Size ();
+	
+	Layout (finalSize);
+	
 	layout->GetActualExtents (&arranged.width, &arranged.height);
 	
 	return arranged.Max (finalSize);
 }
 
 void
-TextBoxView::Layout (cairo_t *cr, Size constraint)
+TextBoxView::Layout (Size constraint)
 {
 	double width = constraint.width;
 	

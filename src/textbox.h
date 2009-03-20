@@ -344,7 +344,7 @@ class TextBoxView : public FrameworkElement {
 	
 	void UpdateCursor (bool invalidate);
 	
-	void Layout (cairo_t *cr, Size constraint);
+	void Layout (Size constraint);
 	void Paint (cairo_t *cr);
 	
  protected:
