@@ -2900,6 +2900,7 @@ bool is_managed_kind (Type::Kind kind)
 	if (kind == Type::MANAGED ||
 	    kind == Type::OBJECT ||
 	    kind == Type::URI ||
+	    kind == Type::BINDING ||
 	    kind == Type::MANAGEDTYPEINFO ||
 	    kind == Type::DEPENDENCYPROPERTY)
 		return true;
@@ -4126,8 +4127,15 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 					sb->SetIsSealed (false);
 				}
 
-				if (!dep->SetValueWithError (prop, value->GetAsValue (), &err))
-					parser_error (p, item->element_name, NULL, err.code, err.message);
+				if (!is_managed_kind (value->info->GetKind ())) {
+					if (!dep->SetValueWithError (prop, value->GetAsValue (), &err))
+						parser_error (p, item->element_name, NULL, err.code, err.message);
+				} else {
+					if (!p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), prop_name [1], value->GetAsValue (), NULL)) {
+						parser_error (p, item->element_name, NULL, err.code, err.message);
+					}
+				}
+					
 					
 				// re-seal the Setter (end-HACK)
 				if (sb)
