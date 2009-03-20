@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -6,6 +6,7 @@
 using System.Windows.Controls.Primitives;
 using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
 namespace System.Windows.Controls.Test
 {
@@ -21,6 +22,7 @@ namespace System.Windows.Controls.Test
         [TestMethod]
         [Description("Validate the TabControlParent property on the TabPanel class.")]
         [Asynchronous]
+        [MoonlightBug ()]
         public void TabControlParentTest()
         {
             TabPanel tabPanel = new TabPanel();
@@ -66,6 +68,7 @@ namespace System.Windows.Controls.Test
         [TestMethod]
         [Description("Validate the GetHeadersSizeTest function.")]
         [Asynchronous]
+        [MoonlightBug ()]
         public void GetHeadersSizeTest()
         {
             TabControl tabControl = new TabControl();
@@ -110,6 +113,7 @@ namespace System.Windows.Controls.Test
         [TestMethod]
         [Description("Verify TabControl's LayoutTabHeaders function.")]
         [Asynchronous]
+        [MoonlightBug ()]
         public void LayoutTabHeadersTest()
         {
             TabControl tabControl = new TabControl();

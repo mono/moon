@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -15,6 +15,7 @@ namespace System.Windows.Controls.Extended.Test
     using System.Windows.Controls.Primitives;
     using System.Windows.Automation.Provider;
     using System.Windows.Automation.Peers;
+    using Mono.Moonlight.UnitTesting;
     
     [TestClass]
     public class GridSplitterTest : SilverlightControlTest
@@ -199,6 +200,7 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Continue a column resize operation and ensure the definitions were updated.")]
         [Asynchronous]
+        [MoonlightBug ()]
         public void MouseResizeColumns()
         {
             Grid g = CreateGrid(2, 2, 100.0, 100.0);
@@ -241,6 +243,7 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Complete a column resize operation and ensure the new column widths were committed.")]
         [Asynchronous]
+        [MoonlightBug ()]
         public void MouseCompleteResizeColumns()
         {
             Grid g = CreateGrid(2, 2, 100.0, 100.0);
@@ -336,6 +339,7 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Change the alignment in order to update the template orientation")]
         [Asynchronous]
+        [MoonlightBug ()]
         public void TemplateOrientation()
         {
             Grid g = CreateGrid(2, 2, 100.0, 100.0);
@@ -442,6 +446,7 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Use GridSplitter's AutomationPeer")]
         [Asynchronous]
+        [MoonlightBug ()]
         public void UseAutomationPeer()
         {
             Grid g = CreateGrid(2, 2, 100.0, 100.0);

@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
 namespace System.Windows.Controls.Test
 {
@@ -78,6 +79,7 @@ namespace System.Windows.Controls.Test
         /// </summary>
         [TestMethod]
         [Description("Verify TabItem's TabStripPlacement property.")]
+        [MoonlightBug ()]
         public void TabStripPlacementTest()
         {
             TabControl tabControl = new TabControl();
@@ -127,6 +129,7 @@ namespace System.Windows.Controls.Test
         [TestMethod]
         [Description("Verify TabItem's HeaderTemplate property.")]
         [Asynchronous]
+        [MoonlightBug ()]
         public void HeaderTemplateTest()
         {
             TabControl tabControl = new TabControl();

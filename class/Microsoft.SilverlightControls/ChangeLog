@@ -1,3 +1,14 @@
+2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* SDKControls/Extended/Test/Calendar/CalendarTest.cs:
+	* SDKControls/Extended/Test/TabControl/TabItemTest.cs:
+	* SDKControls/Extended/Test/TabControl/TabPanelTest.cs:
+	* SDKControls/Extended/Test/TabControl/TabControlTest.cs:
+	* SDKControls/Extended/Test/DatePicker/DatePickerTest.cs:
+	* SDKControls/Extended/Test/GridSplitter/GridSplitterTest.cs:
+	* SDKControls/Extended/Test/GridSplitter/PreviewControlTest.cs:
+	  Sprinkle [MoonlightBug].
+
 2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* SDKControls/Data/test/App.xaml.cs:

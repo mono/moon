@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -11,6 +11,7 @@ namespace System.Windows.Controls.Extended.Test
     using System.Windows.Media;
     using Microsoft.Silverlight.Testing;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Mono.Moonlight.UnitTesting;
 
     [TestClass]
     public class PreviewControlTest : SilverlightControlTest
@@ -79,6 +80,7 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Bind to a valid GridSplitter")]
         [Asynchronous]
+        [MoonlightBug ()]
         public void BindToValidGridSplitter()
         {
             Grid g = GridSplitterTest.CreateGrid(2, 2, 100, 100);

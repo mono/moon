@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -13,6 +13,7 @@ using System.Windows.Markup;
 using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Controls.Primitives;
+using Mono.Moonlight.UnitTesting;
 
 namespace System.Windows.Controls.Extended.Test
 {
@@ -1748,6 +1749,7 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Asynchronous]
         [Description("Tests the creation of an automation peer for the DayButton")]
+        [MoonlightBug ()]
         public void DayButton_AutomationPeer()
         {
             Calendar calendar = new Calendar();
@@ -1895,6 +1897,7 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Asynchronous]
         [Description("Tests the creation of an automation peer for the CalendarButton")]
+        [MoonlightBug ()]
         public void CalendarButton_AutomationPeer()
         {
             Calendar calendar = new Calendar();

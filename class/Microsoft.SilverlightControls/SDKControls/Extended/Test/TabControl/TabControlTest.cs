@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation.
+// (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
@@ -11,6 +11,7 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
 using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
 namespace System.Windows.Controls.Test
 {
@@ -75,6 +76,7 @@ namespace System.Windows.Controls.Test
         [TestMethod]
         [Description("Verify TabControl's TabItem children are updated when IsEnabled changes.")]
         [Asynchronous]
+        [MoonlightBug ()]
         public void TabItemIsEnabledPropertyUpdateTest()
         {
             TabControl tabControl = new TabControl();
