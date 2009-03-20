@@ -343,6 +343,7 @@ class TextBoxView : public FrameworkElement {
 	bool Blink ();
 	
 	void UpdateCursor (bool invalidate);
+	void UpdateText ();
 	
 	void Layout (Size constraint);
 	void Paint (cairo_t *cr);

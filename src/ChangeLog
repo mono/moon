@@ -1,5 +1,19 @@
 2009-03-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBoxView::UpdateText): Split out from
+	TextBoxView::Layout(). Sets the text on the layout engine.
+	(TextBoxView::Layout): Moved most of the logic into UpdateText()
+	and the rest into Render(). We now just set the MaxWidth and lay
+	out the text.
+	(TextBoxView::Render): If dirty, after calling Layout(), call
+	UpdateCursor(false) and clear the dirty flag.
+	(TextBoxView::OnModelChanged): If the text changes, update it
+	immediately on our layout context by calling UpdateText().
+	(TextBoxView::SetTextBox): Call UpdateText() here as well and make
+	it more robust against a NULL textbox argument.
+
+2009-03-20  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp (TextBoxView::Layout): No longer takes a cairo
 	context argument since it never actually uses it anyway.
 	(TextBoxView::MeasureOverride): Don't create a temporary cairo

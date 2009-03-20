@@ -2263,24 +2263,21 @@ TextBoxView::UpdateCursor (bool invalidate)
 }
 
 void
-TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
+TextBoxView::UpdateText ()
 {
-	TextBoxDynamicPropertyValueProvider *dynamic = (TextBoxDynamicPropertyValueProvider *) textbox->providers[PropertyPrecedence_DynamicValue];
-	
-	dynamic->InitializeSelectionBrushes ();
-	
-	if (dirty)
-		Layout (GetRenderSize ());
-	
-	if (selection_changed) {
-		layout->Select (textbox->GetSelectionStart (), textbox->GetSelectionLength ());
-		selection_changed = false;
+	if (textbox->Is (Type::PASSWORDBOX)) {
+		gunichar c = (gunichar) ((PasswordBox *) textbox)->GetPasswordChar ();
+		TextBuffer *buffer = textbox->GetBuffer ();
+		GString *passwd = g_string_new ("");
+		
+		for (int i = 0; i < buffer->len; i++)
+			g_string_append_unichar (passwd, c);
+		
+		layout->SetText (passwd->str, passwd->len);
+		g_string_free (passwd, true);
+	} else {
+		layout->SetText (textbox->GetText (), -1);
 	}
-	
-	cairo_save (cr);
-	cairo_set_matrix (cr, &absolute_xform);
-	Paint (cr);
-	cairo_restore (cr);
 }
 
 void
@@ -2324,27 +2321,7 @@ TextBoxView::Layout (Size constraint)
 	else
 		layout->SetMaxWidth (width);
 	
-	if (textbox->Is (Type::PASSWORDBOX)) {
-		gunichar c = (gunichar) ((PasswordBox *) textbox)->GetPasswordChar ();
-		TextBuffer *buffer = textbox->GetBuffer ();
-		GString *passwd = g_string_new ("");
-		
-		for (int i = 0; i < buffer->len; i++)
-			g_string_append_unichar (passwd, c);
-		
-		layout->SetText (passwd->str, passwd->len);
-		g_string_free (passwd, true);
-	} else {
-		layout->SetText (textbox->GetText (), -1);
-	}
-	
-	layout->Select (textbox->GetSelectionStart (), textbox->GetSelectionLength ());
-	selection_changed = false;
-	
 	layout->Layout ();
-	dirty = false;
-	
-	UpdateCursor (false);
 }
 
 void
@@ -2381,6 +2358,30 @@ TextBoxView::Paint (cairo_t *cr)
 }
 
 void
+TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
+{
+	TextBoxDynamicPropertyValueProvider *dynamic = (TextBoxDynamicPropertyValueProvider *) textbox->providers[PropertyPrecedence_DynamicValue];
+	
+	dynamic->InitializeSelectionBrushes ();
+	
+	if (dirty) {
+		Layout (GetRenderSize ());
+		UpdateCursor (false);
+		dirty = false;
+	}
+	
+	if (selection_changed) {
+		layout->Select (textbox->GetSelectionStart (), textbox->GetSelectionLength ());
+		selection_changed = false;
+	}
+	
+	cairo_save (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+	Paint (cr);
+	cairo_restore (cr);
+}
+
+void
 TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 {
 	switch (args->changed) {
@@ -2410,11 +2411,12 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 		// a brush has changed, no layout updates needed, we just need to re-render
 		break;
 	case TextBoxModelChangedFont:
-		// font changed, need to recalculate layout
+		// font changed, need to recalculate layout/bounds
 		dirty = true;
 		break;
 	case TextBoxModelChangedText:
-		// the text has changed, need to recalculate layout
+		// the text has changed, need to recalculate layout/bounds
+		UpdateText ();
 		dirty = true;
 		break;
 	default:
@@ -2485,6 +2487,8 @@ TextBoxView::SetTextBox (TextBox *textbox)
 		this->textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
 	}
 	
+	this->textbox = textbox;
+	
 	if (textbox) {
 		textbox->AddHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
 		
@@ -2497,9 +2501,11 @@ TextBoxView::SetTextBox (TextBox *textbox)
 		layout->SetTextWrapping (textbox->GetTextWrapping ());
 		had_selected_text = textbox->HasSelectedText ();
 		selection_changed = true;
+		UpdateText ();
+	} else {
+		layout->SetTextAttributes (NULL);
+		layout->SetText (NULL, -1);
 	}
-	
-	this->textbox = textbox;
 	
 	UpdateBounds (true);
 	Invalidate ();
