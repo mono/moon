@@ -425,15 +425,17 @@ bool
 TextLayout::SetText (const char *str, int len)
 {
 	g_free (text);
-
-	if (str)
+	
+	if (str) {
 		length = len == -1 ? strlen (str) : len;
-	else
+		text = (char *) g_malloc (length + 1);
+		memcpy (text, str, length);
+		text[length] = '\0';
+	} else {
+		text = NULL;
 		length = 0;
-
-	text = (char *) g_malloc (length + 1);
-	memcpy (text, str, length);
-	text[length] = '\0';
+	}
+	
 	last_word = NULL;
 	count = -1;
 	

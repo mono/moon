@@ -1,3 +1,8 @@
+2009-03-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::SetText): Handle text being NULL a bit
+	better.
+
 2009-03-20  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Make sure we go to managed when using property element
