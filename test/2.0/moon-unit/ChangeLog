@@ -1,3 +1,8 @@
+2009-03-20  Alan McGovern  <amcgovern@novell.com>
+
+	* test/2.0/moon-unit/System.Windows.Data/BindingTest.cs: Add
+	  two more binding tests.
+	  
 2009-03-19  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Add test for when a

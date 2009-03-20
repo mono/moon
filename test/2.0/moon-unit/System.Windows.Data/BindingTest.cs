@@ -682,6 +682,23 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 
 		[TestMethod]
 		[MoonlightBug]
+		public void XamlActualBinding ()
+		{
+			Canvas c = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+		x:Name=""LayoutRoot"">
+	<Canvas.DataContext>
+		<Binding Source=""string"" Mode=""OneTime"" />
+	</Canvas.DataContext>
+</Canvas>");
+
+			Assert.IsInstanceOfType (c.DataContext, typeof (string), "#1");
+			Assert.AreEqual ("string", c.DataContext, "#1");
+		}
+			
+		[TestMethod]
+		[MoonlightBug]
 		public void XamlDataContextWithBindingElement()
 		{
 			Canvas c = (Canvas)XamlReader.Load(@"
@@ -698,6 +715,27 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 </Canvas>");
 			Assert.IsNotNull(c.DataContext, "#1");
 			Assert.IsInstanceOfType(c.DataContext, typeof(SolidColorBrush), "#2");
+		}
+			
+		[TestMethod]
+		[MoonlightBug]
+		public void XamlDataContextWithBindingElement2 ()
+		{
+			Canvas c = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+		x:Name=""LayoutRoot"">
+	<Canvas.Resources>
+		<Rectangle x:Name=""rect"" Fill=""Red"">
+		</Rectangle>
+	</Canvas.Resources>
+
+	<Canvas.DataContext>
+		<Binding Source=""{StaticResource rect}"" Path=""Fill"" Mode=""OneTime"" />
+	</Canvas.DataContext>
+</Canvas>");
+			Assert.IsNotNull (c.DataContext, "#1");
+			Assert.IsInstanceOfType (c.DataContext, typeof (SolidColorBrush), "#2");
 		}
 
 		[TestMethod]
