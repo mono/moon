@@ -1,5 +1,9 @@
 2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* drtlist.xml: Reenable test-mms-failure.html.
+
+2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* drtlist.xml: Mark test-mms-failure as known failure.
 
 2009-03-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>

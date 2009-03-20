@@ -80,6 +80,7 @@ Media::Media (PlaylistRoot *root)
 	error_reported = false;
 	buffering_enabled = false;
 	in_open_internal = false;
+	http_retried = false;
 	download_progress = 0.0;
 	buffering_progress = 0.0;
 
@@ -615,6 +616,53 @@ Media::Initialize (IMediaDemuxer *demuxer)
 	this->demuxer->ref ();
 	
 	initialized = true;
+}
+
+
+void
+Media::RetryHttp (ErrorEventArgs *args)
+{
+	char *http_uri = NULL;
+	
+	printf ("Media::RetryHttp (), current uri: '%s'\n", uri);
+	
+	g_return_if_fail (uri != NULL);
+	g_return_if_fail (source != NULL);
+	
+	if (http_retried) {
+		ReportErrorOccurred (args);
+		return;
+	}
+	
+	// CHECK: If the current protocolo is rtsps, should we retry http or https?
+	
+	if (g_str_has_prefix (uri, "mms://")) {
+		http_uri = g_strdup_printf ("http://%s", uri + 6);
+	} else if (g_str_has_prefix (uri, "rtsp://")) {
+		http_uri = g_strdup_printf ("http://%s", uri + 7);
+	} else if (g_str_has_prefix (uri, "rtsps://")) {
+		http_uri = g_strdup_printf ("http://%s", uri + 8);
+	} else {
+		ReportErrorOccurred (args);
+		return;
+	}
+	
+	http_retried = true;
+	
+	printf ("Media::RetryHttp (), new uri: '%s'\n", http_uri);
+	
+	g_free (uri);
+	uri = NULL;
+	source->unref ();
+	source = NULL;
+	initialized = false;
+	
+	Initialize (http_uri);
+	
+	g_free (http_uri);
+	
+	if (!error_reported)
+		OpenAsync ();
 }
 
 void

@@ -1,3 +1,10 @@
+2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.h:
+	* pipeline.cpp:
+	* pipeline-asf.cpp: Re-implement fallback to http when mms
+	  fails.
+
 2009-03-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::SetText): Handle text being NULL a bit

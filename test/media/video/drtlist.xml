@@ -9,7 +9,7 @@
     <Test id="28" inputFile="test-invalid-video-codec.html" masterFile10="None" timeout="5000" categories="video,media"  />
     <Test id="29" inputFile="test-downloadprogress-on-small-files.html" masterFile10="None" timeout="5000" categories="video,media"  />
     <Test id="30" inputFile="test-download-and-buffering-progress-on-big-files.html" masterFile10="None" timeout="60000" categories="video,media,mediaserver" location="http://localhost/media/video" />
-    <Test id="31" inputFile="test-mms-failure.html" masterFile10="None" timeout="60000" categories="video,media,streaming,mediaserver" location="http://localhost/media/video" xspExecDir="../../" knownFailure="True" knownFailureReason="Unknown" />
+    <Test id="31" inputFile="test-mms-failure.html" masterFile10="None" timeout="60000" categories="video,media,streaming,mediaserver" location="http://localhost/media/video" xspExecDir="../../" />
     <Test id="32" inputFile="test-playlist-with-clientskip.html" masterFile10="None" timeout="5000" categories="media,playlist"  />
     <Test id="33" inputFile="test-misc.html" masterFile10="None" timeout="5000" categories="video,media" knownFailure="True" failureReason="Missing readonly property validation"  />
     <Test id="34" inputFile="test-http-failure.html" masterFile10="None" timeout="60000" categories="video,media,streaming,mediaserver" location="http://localhost/media/video" />

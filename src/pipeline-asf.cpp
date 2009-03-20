@@ -740,7 +740,8 @@ MemoryQueueSource::Initialize ()
 void
 MemoryQueueSource::DownloadFailedHandler (Downloader *dl, EventArgs *args)
 {
-	ReportErrorOccurred (new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR"));
+	g_return_if_fail (media != NULL);
+	media->RetryHttp (new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR"));
 }
 
 void

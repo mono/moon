@@ -517,6 +517,7 @@ private:
 	bool error_reported; // If an error has been reported.
 	bool buffering_enabled;
 	bool in_open_internal; // detect recursive calls to OpenInternal
+	bool http_retried;
 	double download_progress;
 	double buffering_progress;
 	
@@ -617,6 +618,8 @@ public:
 	
 	bool IsOpened () { return opened; }
 	bool IsOpening () { return opening; }
+	
+	void RetryHttp (ErrorEventArgs *args);
 	
 	void ReportErrorOccurred (ErrorEventArgs *args);
 	void ReportErrorOccurred (const char *message);
