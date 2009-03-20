@@ -147,13 +147,18 @@ namespace MoonlightTests {
 				// mark the current test as a failure (since it somehow crashed the viewer)
 				// and move to the next test in the queue.
 				if (agviewer_process.ExitedEvent.WaitOne ()) {
-					agviewer_process.Kill ();
 					if (run_complete)
 						break;
 					if (current_test != null) {
-						Log.WriteLine ("Start (): agviewer crashed.");
-						OnTestComplete (current_test, TestCompleteReason.Crashed);
+						if (!agviewer_process.IsRunning && agviewer_process.ExitCode == 0) {
+							Log.WriteLine ("Start (): agviewer decided to exit.");
+							OnTestComplete (current_test, TestCompleteReason.Finished);
+						} else {
+							Log.WriteLine ("Start (): agviewer crashed.");
+							OnTestComplete (current_test, TestCompleteReason.Crashed);
+						}
 					}
+					agviewer_process.Kill ();
 				}
 			 } while (!run_complete);
 		}

@@ -1,3 +1,9 @@
+2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* agviewer/agviewer.cpp:
+	* test-runner/TestRunner.cs: Have an optional way of executing
+	  only one test per agviewer process.
+
 2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* harness.mdp:
