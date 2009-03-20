@@ -150,11 +150,17 @@ namespace MoonlightTests {
 					if (run_complete)
 						break;
 					if (current_test != null) {
-						if (!agviewer_process.IsRunning && agviewer_process.ExitCode == 0) {
+						int exit_code = 256; 
+						try {
+							exit_code = agviewer_process.ExitCode;
+						} catch (Exception ex) {
+							Log.WriteLine ("Exception (ignored) while trying to get exit code: {0}", ex);
+						}
+						if (exit_code == 0) {
 							Log.WriteLine ("Start (): agviewer decided to exit.");
 							OnTestComplete (current_test, TestCompleteReason.Finished);
 						} else {
-							Log.WriteLine ("Start (): agviewer crashed.");
+							Log.WriteLine ("Start (): agviewer crashed, exit code: {0}", exit_code);
 							OnTestComplete (current_test, TestCompleteReason.Crashed);
 						}
 					}

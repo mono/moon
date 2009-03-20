@@ -1,5 +1,10 @@
 2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* test-runner/TestRunner.cs: Include more information in the
+	  output when the agviewer process exits.
+
+2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* agviewer/agviewer.cpp:
 	* test-runner/TestRunner.cs: Have an optional way of executing
 	  only one test per agviewer process.
