@@ -2,6 +2,7 @@
 
 # this leads to the creation of a delegate (thru MonoProperty)
 +SSC-M: System.Object System.Windows.Data.BindingExpressionBase::GetValue(System.Windows.DependencyProperty)
++SSC-M: System.Reflection.PropertyInfo System.Windows.Data.BindingExpressionBase::GetPropertyInfo()
 
 # the delegate was judged "ok" at creation time, invoking it later should be ok too
 +SSC-M: System.Void System.Windows.Threading.DispatcherOperation::Invoke()

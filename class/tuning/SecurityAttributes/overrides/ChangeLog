@@ -1,3 +1,8 @@
+2008-03-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: SSC BindingExpressionBase.GetPropertyInfo
+	* System.Windows.Browser.manual: Uncomment entry
+
 2008-03-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: SSC EqualityComparer<T> static ctor
