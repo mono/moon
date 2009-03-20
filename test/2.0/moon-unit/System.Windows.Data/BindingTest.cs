@@ -405,6 +405,19 @@ namespace MoonTest.System.Windows.Data
 			Assert.AreNotEqual(data.Opacity, r.Opacity, "#2");
 		}
 
+		
+		[TestMethod]
+		public void SetBinding ()
+		{
+			Binding binding = new Binding ("");
+			binding.Source = "This is a string";
+
+			TextBlock text = new TextBlock ();
+			Assert.Throws<ArgumentException> (delegate {
+				text.SetValue (TextBlock.TextProperty, binding);
+			});
+		}
+		
 		[TestMethod]
 		public void SetBindingExpression()
 		{
