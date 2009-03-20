@@ -279,6 +279,7 @@ TextLayout::TextLayout ()
 	max_width = -1.0;
 	attributes = NULL;
 	lines = g_ptr_array_new ();
+	is_wrapped = true;
 	text = NULL;
 	length = 0;
 	count = 0;
@@ -389,6 +390,12 @@ TextLayout::SetMaxWidth (double width)
 {
 	if (max_width == width)
 		return false;
+	
+	if (!is_wrapped && (width < 0.0 || width > actual_width)) {
+		// the new max_width won't change layout
+		max_width = width;
+		return false;
+	}
 	
 	max_width = width;
 	
@@ -894,6 +901,7 @@ TextLayout::LayoutWrapWithOverflow ()
 				
 				if (layout_word_overflow (&word, inptr, inend, max_width)) {
 					// force a line wrap...
+					is_wrapped = true;
 					linebreak = true;
 					break;
 				}
@@ -1570,7 +1578,11 @@ TextLayout::LayoutWrap ()
 				
 				layout_word_init (&word, line->advance, prev);
 				
-				wrapped = layout_word_wrap (&word, inptr, inend, max_width);
+				if (layout_word_wrap (&word, inptr, inend, max_width)) {
+					// force a line wrap...
+					is_wrapped = true;
+					wrapped = true;
+				}
 				
 				if (word.length > 0) {
 					// append the word to the run/line
@@ -1725,6 +1737,7 @@ TextLayout::Layout ()
 	
 	actual_height = 0.0;
 	actual_width = 0.0;
+	is_wrapped = false;
 	ClearLines ();
 	
 	if (text == NULL)

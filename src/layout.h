@@ -119,6 +119,7 @@ class TextLayout {
 	double max_height;
 	double max_width;
 	List *attributes;
+	bool is_wrapped;
 	char *text;
 	int length;
 	int count;

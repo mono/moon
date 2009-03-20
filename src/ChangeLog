@@ -1,3 +1,16 @@
+2009-03-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::SetMaxWidth): If the new MaxWidth is
+	larger than the current ActualWidth (and no wrapping has been
+	done), then no need to re-layout. This should help improve
+	performance of many cases of TextBox/Block MeasureOverride() and
+	ArrangeOverride().
+	(TextLayout::LayoutWrapWithOverflow): If we have to wrap a line,
+	set is_wrapped to true.
+	(TextLayout::LayoutWrap): Same.
+	(TextLayout::Layout): Reset is_wrapped to false before laying out
+	the text.
+
 2009-03-19  Larry Ewing  <lewing@novell.com>
 
 	* multiscaleimage.cpp (RenderSingle): move the clipping to the
