@@ -1125,9 +1125,9 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 }
 
 void
-MediaElement::SetUriSource (const char *uri)
+MediaElement::SetUriSource (Uri *uri)
 {
-	LOG_MEDIAELEMENT ("MediaElement::SetUriSource ('%s')\n", uri);
+	LOG_MEDIAELEMENT ("MediaElement::SetUriSource ('%s')\n", uri->originalString);
 	VERIFY_MAIN_THREAD;
 	
 	Reinitialize ();
@@ -1136,7 +1136,7 @@ MediaElement::SetUriSource (const char *uri)
 	g_return_if_fail (playlist == NULL);
 	
 	CreatePlaylist ();
-	playlist->GetCurrentEntry ()->InitializeWithUri (uri);
+	playlist->GetCurrentEntry ()->InitializeWithUri (uri->originalString);
 }
 
 void

@@ -403,7 +403,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::TEMPLATEBINDING] = new Type (Type::TEMPLATEBINDING, Type::EVENTOBJECT, false, "TemplateBinding", "TEMPLATEBINDING", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::TEXTBLOCK] = new Type (Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 16, NULL, (create_inst_func *) text_block_new, "Inlines");
 	types [(int) Type::TEXTBOX] = new Type (Type::TEXTBOX, Type::CONTROL, false, "TextBox", "TEXTBOX", 3, 20, TextBox_Events, (create_inst_func *) text_box_new, NULL);
-	types [(int) Type::TEXTBOXMODELCHANGEDEVENTARGS] = new Type (Type::TEXTBOXMODELCHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "TextBoxModelChangedEventArgs", "TEXTBOXMODELCHANGEDEVENTARGS", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::TEXTBOXMODELCHANGEDEVENTARGS] = new Type (Type::TEXTBOXMODELCHANGEDEVENTARGS, Type::EVENTARGS, false, "TextBoxModelChangedEventArgs", "TEXTBOXMODELCHANGEDEVENTARGS", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::TEXTBOXVIEW] = new Type (Type::TEXTBOXVIEW, Type::FRAMEWORKELEMENT, false, "TextBoxView", "TEXTBOXVIEW", 0, 16, NULL, (create_inst_func *) text_box_view_new, NULL);
 	types [(int) Type::TEXTCHANGEDEVENTARGS] = new Type (Type::TEXTCHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "TextChangedEventArgs", "TEXTCHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) text_changed_event_args_new, NULL);
 	types [(int) Type::THICKNESS] = new Type (Type::THICKNESS, Type::OBJECT, true, "Thickness", "THICKNESS", 0, 0, NULL, NULL, NULL);
@@ -429,7 +429,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::UINT32] = new Type (Type::UINT32, Type::OBJECT, true, "guint32", "UINT32", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::UINT64] = new Type (Type::UINT64, Type::OBJECT, true, "guint64", "UINT64", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::UNMANAGEDMATRIX] = new Type (Type::UNMANAGEDMATRIX, Type::MATRIX, false, "UnmanagedMatrix", "UNMANAGEDMATRIX", 0, 1, NULL, (create_inst_func *) unmanaged_matrix_new, NULL);
-	types [(int) Type::URI] = new Type (Type::URI, Type::OBJECT, false, "Uri", "URI", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::URI] = new Type (Type::URI, Type::OBJECT, true, "Uri", "URI", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::USERCONTROL] = new Type (Type::USERCONTROL, Type::CONTROL, false, "UserControl", "USERCONTROL", 0, 17, NULL, (create_inst_func *) user_control_new, "Content");
 	types [(int) Type::VIDEOBRUSH] = new Type (Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL);
 	types [(int) Type::VIDEOSTREAM] = new Type (Type::VIDEOSTREAM, Type::IMEDIASTREAM, false, "VideoStream", "VIDEOSTREAM", 0, 2, NULL, NULL, NULL);

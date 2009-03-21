@@ -1149,13 +1149,13 @@ Playlist::MergeWith (PlaylistEntry *entry)
 {
 	LOG_PLAYLIST ("Playlist::MergeWith (%p)\n", entry);
 
-	SetBase (entry->GetBase () ? entry->GetBase ()->Clone () : NULL);
+	SetBase (entry->GetBase () ? entry->GetBase () : NULL);
 	SetTitle (g_strdup (entry->GetTitle ()));
 	SetAuthor (g_strdup (entry->GetAuthor ()));
 	SetAbstract (g_strdup (entry->GetAbstract ()));
 	SetCopyright (g_strdup (entry->GetCopyright ()));
 
-	SetSourceName (entry->GetSourceName () ? entry->GetSourceName ()->Clone () : NULL);
+	SetSourceName (entry->GetSourceName () ? entry->GetSourceName () : NULL);
 	if (entry->HasDuration ()) 
 		SetDuration (entry->GetDuration ());
 	Initialize (entry->GetMedia ());

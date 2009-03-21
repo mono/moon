@@ -1,3 +1,9 @@
+2009-03-21  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightImageObject::GetProperty):
+	source->GetUriSource() returns a Uri, not a string.
+	(MoonlightImageBrushObject::GetProperty): same.
+
 2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-downloader.h:

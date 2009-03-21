@@ -14,6 +14,7 @@
 #include <config.h>
 #endif
 
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -36,19 +37,47 @@ Uri::Uri ()
 	params = NULL;
 	query = NULL;
 	fragment = NULL;
+	originalString = NULL;
+	isAbsolute = false;
+}
+
+Uri::Uri (const Uri& uri)
+{
+	protocol = NULL;
+	user = NULL;
+	auth = NULL;
+	passwd = NULL;
+	host = NULL;
+	port = 0;
+	path = NULL;
+	g_datalist_init (&params);
+	query = NULL;
+	fragment = NULL;
+	originalString = NULL;
+	isAbsolute = false;
+
+	Uri::Copy (&uri, this);
 }
 
 Uri::~Uri ()
 {
-	g_free (protocol);
-	g_free (user);
-	g_free (auth);
-	g_free (passwd);
-	g_free (host);
-	g_free (path);
+	Free ();
+}
+
+void
+Uri::Free ()
+{
+	g_free (protocol); protocol = NULL;
+	g_free (user); user = NULL;
+	g_free (auth); auth = NULL;
+	g_free (passwd); passwd = NULL;
+	g_free (host); host = NULL;
+	g_free (path); path = NULL;
 	g_datalist_clear (&params);
-	g_free (query);
-	g_free (fragment);
+	g_datalist_init (&params);
+	g_free (query); query = NULL;
+	g_free (fragment); fragment = NULL;
+	g_free (originalString); originalString = NULL;
 }
 
 static void
@@ -59,22 +88,22 @@ clone_params (GQuark quark, gpointer data, gpointer user_data)
 	g_datalist_id_set_data_full (params, quark, g_strdup (str), g_free);
 }
 
-Uri *
-Uri::Clone ()
+void
+Uri::Copy (const Uri *from, Uri *to)
 {
-	Uri *uri = new Uri ();
-	uri->protocol = g_strdup (protocol);
-	uri->user = g_strdup (user);
-	uri->auth = g_strdup (auth);
-	uri->passwd = g_strdup (passwd);
-	uri->host = g_strdup (host);
-	uri->path = g_strdup (path);
-	if (params)
-		g_datalist_foreach (&params, clone_params, &uri->params);
-	uri->query = g_strdup (query);
-	uri->fragment = g_strdup (fragment);
-	uri->port = port;
-	return uri;
+	to->protocol = g_strdup (from->protocol);
+	to->user = g_strdup (from->user);
+	to->auth = g_strdup (from->auth);
+	to->passwd = g_strdup (from->passwd);
+	to->host = g_strdup (from->host);
+	to->path = g_strdup (from->path);
+	g_datalist_init (&to->params);
+	g_datalist_foreach ((GData**)&from->params, clone_params, &to->params);
+	to->query = g_strdup (from->query);
+	to->fragment = g_strdup (from->fragment);
+	to->originalString = g_strdup (from->originalString);
+	to->port = from->port;
+	to->isAbsolute = from->isAbsolute;
 }
 
 /* canonicalise a path */
@@ -137,7 +166,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 	GData *params = NULL;
 	int port = -1;
 	size_t n;
-	
+
 	start = uri;
 	
 	inptr = start;
@@ -344,37 +373,22 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 	
 done:
 	
+	Free ();
+
 	// update the values
 	
-	g_free (this->protocol);
 	this->protocol = protocol;
-	
-	g_free (this->user);
 	this->user = user;
-	
-	g_free (this->auth);
 	this->auth = auth;
-	
-	g_free (this->passwd);
 	this->passwd = passwd;
-	
-	g_free (this->host);
 	this->host = host;
-	
 	this->port = port;
-	
-	g_free (this->path);
 	this->path = path;
-	
-	g_datalist_clear (&this->params);
 	this->params = params;
-	
-	g_free (this->query);
 	this->query = query;
-	
-	g_free (this->fragment);
 	this->fragment = fragment;
-	
+	this->originalString = g_strdup (uri);
+
 	return true;
 }
 
@@ -469,4 +483,41 @@ Uri::ToString (UriToStringFlags flags)
 	g_string_free (string, false);
 	
 	return uri;
+}
+
+bool 
+Uri::operator== (const Uri &v) const
+{
+	if (isAbsolute != v.isAbsolute)
+		return false;
+	if (port != v.port)
+		return false;
+	if (!!protocol != !!v.protocol
+	    || (protocol && strcmp (protocol, v.protocol)))
+		return false;
+	if (!!user != !!v.user
+	    || (user && strcmp (user, v.user)))
+		return false;
+	if (!!auth != !!v.auth
+	    || (auth && strcmp (auth, v.auth)))
+		return false;
+	if (!!passwd != !!v.passwd
+	    || (passwd && strcmp (passwd, v.passwd)))
+		return false;
+	if (!!host != !!v.host
+	    || (host && strcmp (host, v.host)))
+		return false;
+	if (!!path != !!v.path
+	    || (path && strcmp (path, v.path)))
+		return false;
+	if (!!query != !!v.query
+	    || (query && strcmp (query, v.query)))
+		return false;
+	if (!!fragment != !!v.fragment
+	    || (fragment && strcmp (fragment, v.fragment)))
+		return false;
+	
+	// XXX we don't compare this->data vs v.data yet.
+	
+	// we intentionally don't compare original strings
 }

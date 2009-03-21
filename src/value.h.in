@@ -32,6 +32,7 @@ struct KeyTime;
 struct Point;
 struct Rect;
 struct Size;
+struct Uri;
 struct RepeatBehavior;
 struct GridLength;
 struct Thickness;
@@ -69,6 +70,7 @@ public:
 	Value (Point pt);
 	Value (Rect rect);
 	Value (Size size);
+	Value (Uri uri);
 	Value (RepeatBehavior repeat);
 	Value (Duration duration);
 	Value (KeyTime keytime);
@@ -109,6 +111,7 @@ public:
 	gint32		AsInt32 ()	{ checked_get_exact (Type::INT32, 0, u.i32); }
 	Color*		AsColor ()	{ checked_get_exact (Type::COLOR, NULL, u.color); }
 	Point*		AsPoint ()	{ checked_get_exact (Type::POINT, NULL, u.point); }
+	Uri*		AsUri ()	{ checked_get_exact (Type::URI, NULL, u.uri); }
 	Rect*		AsRect ()	{ checked_get_exact (Type::RECT, NULL, u.rect); }
 	Size*		AsSize ()	{ checked_get_exact (Type::SIZE, NULL, u.size); }
 	FontFamily*	AsFontFamily ()	{ checked_get_exact (Type::FONTFAMILY, NULL, u.fontfamily); }
@@ -139,7 +142,6 @@ public:
   	Type::Kind GetKind ();
 	
 	void FreeValue ();
-	void Unmarshal (Type::Kind desired);
 	
   private:
 	Type::Kind k;
@@ -157,6 +159,7 @@ public:
 		Color *color;
 		DependencyProperty *dp;
 		Point *point;
+		Uri *uri;
 		Rect *rect;
 		Size *size;
 		FontFamily *fontfamily;

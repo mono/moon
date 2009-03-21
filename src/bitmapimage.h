@@ -19,8 +19,8 @@
 /* @Namespace=System.Windows.Media */
 class ImageSource : public DependencyObject {
  public:
-	virtual void        SetUriSource (const char *value) = 0;
-	virtual const char* GetUriSource () = 0;
+	virtual void SetUriSource (Uri *uri) = 0;
+	virtual Uri* GetUriSource () = 0;
 };
 
 /* @Namespace=System.Windows.Media.Imaging */
@@ -32,7 +32,7 @@ class BitmapImage : public ImageSource {
 	gpointer buffer;
 	gint32 size;
 
-	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccessors,DefaultValue=\"\" */
+	/* @PropertyType=Uri,GenerateAccessors,DefaultValue=Uri() */
 	const static int UriSourceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -43,8 +43,8 @@ class BitmapImage : public ImageSource {
 
 	void CleanUp ();
 
-	void        SetUriSource (const char *value);
-	const char* GetUriSource ();
+	void SetUriSource (Uri* value);
+	Uri* GetUriSource ();
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 };

@@ -1,3 +1,52 @@
+2009-03-21  Chris Toshok  <toshok@ximian.com>
+
+	* uri.[h,cpp]: a few changes:
+	  1. Add "bool isAbsolute" and "char* originalString" fields.
+	  2. Remove Clone and add a static Copy method which Value can use
+	     to copy all the internal fields.
+	  3. Add Free method.
+	  4. make it a struct so we'll only box when explicitly asked to in
+	     Value.cs.
+	  5. add an operator== so we can do non-reference comparisons in
+	     value.cpp
+
+	* dependencyobject.h,
+	dependencyobject.cpp (DependencyObject::SetMarshalledValueWithError):
+	remove.
+
+	* bitmapimage.[h,cpp]: UriSourceProperty is a Uri, not a string.
+
+	* glyphs.[h,cpp]: FontUriProperty is a Uri, not a string.
+	
+	* deepzoomimagetilesource.h: UriSourceProperty is a Uri, not a
+	string.
+	
+	* media.cpp: source->GetUriSource() returns a Uri*
+	
+	* mediaelement.[h,cpp]: SourceProperty is a Uri, not a string.
+
+	* multiscalesubimage.[h,cpp] (MultiScaleSubImage::MultiScaleSubImage):
+	use Uris more.
+
+	* playlist.cpp (Playlist::MergeWith): don't Clone() the uris, as
+	the Value ctor does that for us.
+
+	* xaml.cpp (value_from_str): add Type::URI case, and rework the
+	Type::BITMAPIMAGE case to use a Uri object.
+
+	* validators.[h,cpp]: rename NonNullStringValidator to
+	NonNullValidator.  All uses before didn't depend on the
+	"string"-ness of the value, and we can make use of it for the Uri
+	stuff.
+
+	* value.h.in, value.cpp: add Uri support, and remove
+	Value::Unmarshal.
+
+	* dependencyproperty.g.cpp, cbinding.cpp|.h, type-generated.cpp,
+	value.h: regen.
+
+	* textblock.h, frameworkelement.h: track name change of NonNullStringValidator
+
 2009-03-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxView::UpdateText): Split out from

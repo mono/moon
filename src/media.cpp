@@ -21,6 +21,7 @@
 #include <errno.h>
 
 #include "bitmapimage.h"
+#include "uri.h"
 #include "runtime.h"
 #include "media.h"
 #include "error.h"
@@ -1011,13 +1012,14 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				CleanupSurface ();
 
 		                if (!CreateSurface (NULL)) {
-		                        printf ("failed to create surface %s\n", source->GetUriSource ());
+		                        printf ("failed to create surface %s\n", source->GetUriSource ()->originalString);
 		                        Invalidate ();
 		                } else {
 					UpdateSize ();
 				}
 			} else {
-				MediaBase::SetSource (source->GetUriSource ());
+				Uri *uri = source->GetUriSource();
+				MediaBase::SetSource (uri ? uri->originalString : NULL);
 			}
 		}
 	}

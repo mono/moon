@@ -673,19 +673,16 @@ Glyphs::SetIndicesInternal (const char *in)
 }
 
 void
-Glyphs::DownloadFont (Surface *surface, const char *url)
+Glyphs::DownloadFont (Surface *surface, Uri *uri)
 {
-	Uri *uri = new Uri ();
-	char *str;
-	
-	if (uri->Parse (url)) {
+	if (uri) {
 		if ((downloader = surface->CreateDownloader ())) {
 			if (uri->fragment) {
 				if ((index = strtol (uri->fragment, NULL, 10)) < 0 || index == LONG_MAX)
 					index = 0;
 			}
 			
-			str = uri->ToString (UriHideFragment);
+			char *str = uri->ToString (UriHideFragment);
 			downloader->Open ("GET", str, XamlPolicy);
 			g_free (str);
 			
@@ -708,7 +705,7 @@ Glyphs::DownloadFont (Surface *surface, const char *url)
 void
 Glyphs::SetSurface (Surface *surface)
 {
-	const char *uri;
+	Uri *uri;
 	
 	if (GetSurface () == surface)
 		return;
@@ -718,7 +715,7 @@ Glyphs::SetSurface (Surface *surface)
 	if (!uri_changed || !surface)
 		return;
 	
-	if ((uri = GetFontUri ()) && *uri)
+	if ((uri = GetFontUri ()))
 		DownloadFont (surface, uri);
 	
 	uri_changed = false;
@@ -735,7 +732,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 	
 	if (args->GetId () == Glyphs::FontUriProperty) {
-		const char *str = args->new_value ? args->new_value->AsString () : NULL;
+		Uri *uri = args->new_value ? args->new_value->AsUri () : NULL;
 		Surface *surface = GetSurface ();
 		
 		if (downloader) {
@@ -746,8 +743,8 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
 		
 		if (surface) {
-			if (str && *str)
-				DownloadFont (surface, str);
+			if (uri)
+				DownloadFont (surface, uri);
 			uri_changed = false;
 		} else {
 			uri_changed = true;

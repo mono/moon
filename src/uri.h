@@ -22,8 +22,10 @@ enum UriToStringFlags {
 /* @IncludeInKinds */
 /* @SkipValue */
 /* @Namespace=System */
-class Uri {
+struct Uri {
 public:
+	bool isAbsolute;
+
 	char *protocol;
 	char *user;
 	char *auth;
@@ -34,15 +36,26 @@ public:
 	GData *params;
 	char *query;
 	char *fragment;
-	
+
+	char *originalString;
+
 	Uri ();
+	Uri (const Uri& uri);
+
 	~Uri ();
-	
+
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool Parse (const char *uri, bool allow_trailing_sep = false);
-	
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void Free ();
+
 	char *ToString (UriToStringFlags flags);
 	char *ToString () { return ToString ((UriToStringFlags) 0); }
-	Uri *Clone ();
+
+	static void Copy (const Uri *from, Uri *to);
+
+	bool operator== (const Uri &v) const;
 };
 
 #endif /* __URI_H__ */

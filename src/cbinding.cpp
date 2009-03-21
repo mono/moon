@@ -982,18 +982,6 @@ dependency_object_read_local_value_with_error (DependencyObject *instance, Depen
 }
 
 
-bool
-dependency_object_set_marshalled_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
-{
-	if (instance == NULL)
-		return false;
-	
-	if (error == NULL)
-		g_warning ("Moonlight: Called dependency_object_set_marshalled_value_with_error () with error == NULL.");
-	return instance->SetMarshalledValueWithError (property, value, error);
-}
-
-
 void
 dependency_object_set_name (DependencyObject *instance, const char *name)
 {
@@ -1013,6 +1001,18 @@ dependency_object_set_parent (DependencyObject *instance, DependencyObject *pare
 	if (error == NULL)
 		g_warning ("Moonlight: Called dependency_object_set_parent () with error == NULL.");
 	instance->SetParent (parent, error);
+}
+
+
+bool
+dependency_object_set_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (instance == NULL)
+		return false;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called dependency_object_set_value_with_error () with error == NULL.");
+	return instance->SetValueWithError (property, value, error);
 }
 
 
@@ -3934,6 +3934,29 @@ UnmanagedMatrix *
 unmanaged_matrix_new (void)
 {
 	return new UnmanagedMatrix ();
+}
+
+
+/**
+ * Uri
+ **/
+void
+uri_free (Uri *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Free ();
+}
+
+
+bool
+uri_parse (Uri *instance, const char *uri, bool allow_trailing_sep)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->Parse (uri, allow_trailing_sep);
 }
 
 

@@ -168,7 +168,7 @@ class MediaElement : public FrameworkElement {
 	const static int NaturalVideoWidthProperty;
  	/* @PropertyType=TimeSpan,AlwaysChange,GenerateAccessors */
 	const static int PositionProperty;
- 	/* @PropertyType=string,ManagedPropertyType=Uri,AlwaysChange,GenerateAccessors */
+ 	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors */
 	const static int SourceProperty;
  	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
 	const static int StretchProperty;
@@ -207,7 +207,7 @@ class MediaElement : public FrameworkElement {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	void SetSource (Downloader *downloader, const char *PartName);
-	void SetUriSource (const char *uri); // This is called from OnPropertyChanged
+	void SetUriSource (Uri *uri); // This is called from OnPropertyChanged
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetStreamSource (ManagedStreamCallbacks *stream);
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -305,8 +305,8 @@ class MediaElement : public FrameworkElement {
 	double GetDownloadProgress ();
 	void SetDownloadProgress (double progress);
 	
-	void SetSource (const char *uri);
-	const char *GetSource ();
+	void SetSource (Uri *uri);
+	Uri *GetSource ();
 	
 	void SetStretch (Stretch stretch);
 	Stretch GetStretch ();

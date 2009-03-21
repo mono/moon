@@ -51,6 +51,7 @@
 #include "trigger.h"
 #include "type.h"
 #include "uielement.h"
+#include "uri.h"
 #include "usercontrol.h"
 #include "window.h"
 #include "window-gtk.h"
@@ -432,13 +433,13 @@ Value *dependency_object_get_value_with_error (DependencyObject *instance, Type:
 Value *dependency_object_read_local_value_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
-bool dependency_object_set_marshalled_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
-
-/* @GeneratePInvoke */
 void dependency_object_set_name (DependencyObject *instance, const char *name);
 
 /* @GeneratePInvoke */
 void dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error);
+
+/* @GeneratePInvoke */
+bool dependency_object_set_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
 
 /**
  * DependencyObjectCollection
@@ -1728,6 +1729,15 @@ UIElementCollection *uielement_collection_new (void);
  **/
 /* @GeneratePInvoke */
 UnmanagedMatrix *unmanaged_matrix_new (void);
+
+/**
+ * Uri
+ **/
+/* @GeneratePInvoke */
+void uri_free (Uri *instance);
+
+/* @GeneratePInvoke */
+bool uri_parse (Uri *instance, const char *uri, bool allow_trailing_sep);
 
 /**
  * UserControl

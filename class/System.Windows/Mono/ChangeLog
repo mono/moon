@@ -1,3 +1,13 @@
+2009-03-21  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs: add first-class Uri support.
+
+	* NativeDependencyObjectHelper.cs: use
+	NativeMethods.dependency_object_set_value instead of
+	NativeMethods.dependency_object_set_marshalled_value.
+
+	* GeneratedPInvokes.cs: regen.
+
 2009-03-19  Alan McGovern  <amcgovern@novell.com>
 
 	* MarkupExpressionParser.cs: We don't throw if the static resource is

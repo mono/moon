@@ -256,7 +256,6 @@ public:
 	bool SetValue (int property, Value value);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool SetMarshalledValueWithError (DependencyProperty *property, Value *value, MoonError *error);
 	bool SetValueWithError (DependencyProperty *property, Value *value, MoonError *error);
 	bool SetValueWithError (DependencyProperty *property, Value value, MoonError *error);
 

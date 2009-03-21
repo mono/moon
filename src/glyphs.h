@@ -56,7 +56,7 @@ class Glyphs : public FrameworkElement {
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
-	void DownloadFont (Surface *surface, const char *url);
+	void DownloadFont (Surface *surface, Uri *uri);
 	
  protected:
 	virtual ~Glyphs ();
@@ -66,7 +66,7 @@ class Glyphs : public FrameworkElement {
 	const static int FillProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int FontRenderingEmSizeProperty;
- 	/* @PropertyType=string,ManagedPropertyType=Uri,DefaultValue=\"\",GenerateAccessors,Validator=NonNullStringValidator */
+ 	/* @PropertyType=Uri,GenerateAccessors,DefaultValue=Uri(),Validator=NonNullValidator */
 	const static int FontUriProperty;
  	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int IndicesProperty;
@@ -101,8 +101,8 @@ class Glyphs : public FrameworkElement {
 	void SetFontRenderingEmSize (double size);
 	double GetFontRenderingEmSize ();
 	
-	void SetFontUri (const char *uri);
-	const char *GetFontUri ();
+	void SetFontUri (Uri *uri);
+	Uri* GetFontUri ();
 	
 	void SetIndices (const char *indices);
 	const char *GetIndices ();

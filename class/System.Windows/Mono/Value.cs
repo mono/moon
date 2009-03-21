@@ -54,6 +54,21 @@ namespace Mono {
 		public double a;
 	}
 
+	internal struct UnmanagedUri {
+		public bool isAbsolute;
+		public IntPtr protocol;
+		public IntPtr user;
+		public IntPtr auth;
+		public IntPtr passwd;
+		public IntPtr host;
+		public int port;
+		public IntPtr path;
+		public IntPtr _params;
+		public IntPtr query;
+		public IntPtr fragment;
+		public IntPtr originalString;
+	}
+
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct ManagedTypeInfo {
 		public IntPtr assembly_name;
@@ -167,15 +182,16 @@ namespace Mono {
 					// marshall back to the .NET type that we simply serialised as 'string' for unmanaged usage
 					if (type == typeof (System.Windows.Markup.XmlLanguage))
 						return XmlLanguage.GetLanguage (str);
-					else if (type == typeof (System.Uri))
-						return new Uri (str, UriKind.RelativeOrAbsolute);
 					else
 						return str;
 				}
 
 				case Kind.URI: {
-					string str = Helper.PtrToStringAuto (val->u.p);
-					return new Uri (str, UriKind.RelativeOrAbsolute);
+					UnmanagedUri *uri = (UnmanagedUri*)val->u.p;
+					return uri->originalString == IntPtr.Zero
+						? new Uri("", UriKind.Relative)
+						: new Uri (Helper.PtrToStringAuto (uri->originalString),
+							   uri->isAbsolute ? UriKind.Absolute : UriKind.Relative);
 				}
 
 				case Kind.XMLLANGUAGE: {
@@ -454,10 +470,25 @@ namespace Mono {
 				}
 				else if (v is Uri) {
 					Uri uri = (Uri) v;
-					
+
 					value.k = Kind.URI;
-					
-					value.u.p = StringToIntPtr (uri.OriginalString);
+					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedUri));
+
+					UnmanagedUri *uuri = (UnmanagedUri*)value.u.p;
+					uuri->protocol = IntPtr.Zero;
+					uuri->user = IntPtr.Zero;
+					uuri->auth = IntPtr.Zero;
+					uuri->passwd = IntPtr.Zero;
+					uuri->host = IntPtr.Zero;
+					uuri->path = IntPtr.Zero;
+					uuri->_params = IntPtr.Zero;
+					uuri->query = IntPtr.Zero;
+					uuri->fragment = IntPtr.Zero;
+					uuri->originalString = IntPtr.Zero;
+
+					NativeMethods.uri_parse (value.u.p, uri.OriginalString, false);
+
+					uuri->isAbsolute = uri.IsAbsoluteUri;
 				}
 				else if (v is XmlLanguage) {
 					XmlLanguage lang = (XmlLanguage) v;

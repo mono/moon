@@ -140,7 +140,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::POPUP, "Child", Type::UIELEMENT);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Volume", new Value (0.5), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Stretch", new Value (StretchUniform), Type::INT32);
-	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Source", NULL, Type::STRING, false, false, false, true, NULL, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Source", NULL, Type::URI, false, false, false, true, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "RenderedFramesPerSecond", new Value (0.0), Type::DOUBLE, false, false, true, false, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Position", NULL, Type::TIMESPAN, false, false, false, true, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalVideoWidth", new Value (0), Type::INT32, false, false, true, false, NULL, Validators::IntGreaterThanZeroValidator, false, false);
@@ -180,7 +180,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::GLYPHS, "OriginY", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::GLYPHS, "OriginX", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::GLYPHS, "Indices", new Value (""), Type::STRING);
-	DependencyProperty::RegisterFull (this, Type::GLYPHS, "FontUri", new Value (""), Type::STRING, false, false, false, false, NULL, Validators::NonNullStringValidator, false, false);
+	DependencyProperty::RegisterFull (this, Type::GLYPHS, "FontUri", new Value (Uri()), Type::URI, false, false, false, false, NULL, Validators::NonNullValidator, false, false);
 	DependencyProperty::Register (this, Type::GLYPHS, "FontRenderingEmSize", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::GLYPHS, "Fill", Type::BRUSH);
 	DependencyProperty::Register (this, Type::CONTROL, "VerticalContentAlignment", new Value (VerticalAlignmentCenter), Type::INT32);
@@ -233,7 +233,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "MaxWidth", new Value (INFINITY), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "MaxHeight", new Value (INFINITY), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "Margin", new Value (Thickness (0)), Type::THICKNESS);
-	DependencyProperty::RegisterFull (this, Type::FRAMEWORKELEMENT, "Language", new Value ("en-US"), Type::STRING, false, false, false, false, NULL, Validators::NonNullStringValidator, false, false);
+	DependencyProperty::RegisterFull (this, Type::FRAMEWORKELEMENT, "Language", new Value ("en-US"), Type::STRING, false, false, false, false, NULL, Validators::NonNullValidator, false, false);
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "HorizontalAlignment", new Value (HorizontalAlignmentStretch), Type::INT32);
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "Height", new Value (NAN), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "DataContext", Type::OBJECT);
@@ -287,7 +287,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::KEYSPLINE, "ControlPoint1", new Value (Point (0,0)), Type::POINT);
 	DependencyProperty::RegisterFull (this, Type::INPUTMETHOD, "IsInputMethodEnabled", NULL, Type::BOOL, false, true, false, false, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::INLINE, "TextDecorations", new Value (TextDecorationsNone), Type::INT32);
-	DependencyProperty::RegisterFull (this, Type::INLINE, "Language", new Value ("en-US"), Type::STRING, false, false, false, false, NULL, Validators::NonNullStringValidator, false, false);
+	DependencyProperty::RegisterFull (this, Type::INLINE, "Language", new Value ("en-US"), Type::STRING, false, false, false, false, NULL, Validators::NonNullValidator, false, false);
 	DependencyProperty::Register (this, Type::INLINE, "Foreground", new Value (new SolidColorBrush("black")), Type::BRUSH);
 	DependencyProperty::Register (this, Type::INLINE, "FontWeight", new Value (TEXTBLOCK_FONT_WEIGHT), Type::INT32);
 	DependencyProperty::Register (this, Type::INLINE, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
@@ -377,14 +377,14 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::DOUBLEANIMATION, "From", Type::DOUBLE);
 	DependencyProperty::Register (this, Type::DOUBLEANIMATION, "By", Type::DOUBLE);
 	DependencyProperty::Register (this, Type::DEPENDENCY_OBJECT, "Name", new Value (""), Type::STRING);
-	DependencyProperty::Register (this, Type::DEEPZOOMIMAGETILESOURCE, "UriSource", Type::STRING);
+	DependencyProperty::Register (this, Type::DEEPZOOMIMAGETILESOURCE, "UriSource", Type::URI);
 	DependencyProperty::Register (this, Type::CONTROLTEMPLATE, "TargetType", Type::MANAGEDTYPEINFO);
 	DependencyProperty::Register (this, Type::COLORKEYFRAME, "Value", Type::COLOR);
 	DependencyProperty::Register (this, Type::COLORKEYFRAME, "KeyTime", Type::KEYTIME);
 	DependencyProperty::Register (this, Type::COLORANIMATION, "To", Type::COLOR);
 	DependencyProperty::Register (this, Type::COLORANIMATION, "From", Type::COLOR);
 	DependencyProperty::Register (this, Type::COLORANIMATION, "By", Type::COLOR);
-	DependencyProperty::Register (this, Type::BITMAPIMAGE, "UriSource", new Value (""), Type::STRING);
+	DependencyProperty::Register (this, Type::BITMAPIMAGE, "UriSource", new Value (Uri()), Type::URI);
 	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point3", Type::POINT);
 	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point2", Type::POINT);
 	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point1", Type::POINT);
@@ -1856,17 +1856,18 @@ MediaElement::SetStretch (Stretch value)
 	SetValue (MediaElement::StretchProperty, Value (value));
 }
 
-const char *
+Uri *
 MediaElement::GetSource ()
 {
 	Value *value = GetValue (MediaElement::SourceProperty);
-	return value ? value->AsString () : NULL;
+	return value ? value->AsUri () : NULL;
 }
 
 void
-MediaElement::SetSource (const char *value)
+MediaElement::SetSource (Uri *value)
 {
-	SetValue (MediaElement::SourceProperty, Value (value));
+	if (!value) return;
+	SetValue (MediaElement::SourceProperty, Value (*value));
 }
 
 double
@@ -2386,17 +2387,18 @@ Glyphs::SetIndices (const char *value)
 	SetValue (Glyphs::IndicesProperty, Value (value));
 }
 
-const char *
+Uri *
 Glyphs::GetFontUri ()
 {
 	Value *value = GetValue (Glyphs::FontUriProperty);
-	return value ? value->AsString () : NULL;
+	return value ? value->AsUri () : NULL;
 }
 
 void
-Glyphs::SetFontUri (const char *value)
+Glyphs::SetFontUri (Uri *value)
 {
-	SetValue (Glyphs::FontUriProperty, Value (value));
+	if (!value) return;
+	SetValue (Glyphs::FontUriProperty, Value (*value));
 }
 
 double
@@ -4785,17 +4787,18 @@ DependencyObject::SetName (const char *value)
 	SetValue (DependencyObject::NameProperty, Value (value));
 }
 
-const char *
+Uri *
 DeepZoomImageTileSource::GetUriSource ()
 {
 	Value *value = GetValue (DeepZoomImageTileSource::UriSourceProperty);
-	return value ? value->AsString () : NULL;
+	return value ? value->AsUri () : NULL;
 }
 
 void
-DeepZoomImageTileSource::SetUriSource (const char *value)
+DeepZoomImageTileSource::SetUriSource (Uri *value)
 {
-	SetValue (DeepZoomImageTileSource::UriSourceProperty, Value (value));
+	if (!value) return;
+	SetValue (DeepZoomImageTileSource::UriSourceProperty, Value (*value));
 }
 
 Color *
@@ -4908,17 +4911,18 @@ ColorAnimation::SetBy (Color *value)
 		SetValue (ColorAnimation::ByProperty, Value (*value));
 }
 
-const char *
+Uri *
 BitmapImage::GetUriSource ()
 {
 	Value *value = GetValue (BitmapImage::UriSourceProperty);
-	return value ? value->AsString () : NULL;
+	return value ? value->AsUri () : NULL;
 }
 
 void
-BitmapImage::SetUriSource (const char *value)
+BitmapImage::SetUriSource (Uri *value)
 {
-	SetValue (BitmapImage::UriSourceProperty, Value (value));
+	if (!value) return;
+	SetValue (BitmapImage::UriSourceProperty, Value (*value));
 }
 
 Point *

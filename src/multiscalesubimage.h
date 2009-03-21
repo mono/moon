@@ -46,7 +46,7 @@ class MultiScaleSubImage : public DependencyObject {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleSubImage ();
-	MultiScaleSubImage (const char* parent_uri, MultiScaleTileSource *source, int id, int n);
+	MultiScaleSubImage (Uri* parent_uri, MultiScaleTileSource *source, int id, int n);
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 

@@ -73,11 +73,11 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	//
 	// Properties
 	//
-	/* @PropertyType=string,ManagedPropertyType=Uri,GenerateAccessors */
+	/* @PropertyType=Uri,GenerateAccessors */
 	const static int UriSourceProperty;
 
-	void        SetUriSource (const char *value);
-	const char* GetUriSource ();
+	void        SetUriSource (Uri* value);
+	Uri*        GetUriSource ();
 
 	void EndElement (void *info, const char* el);
 		

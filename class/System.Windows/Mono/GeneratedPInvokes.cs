@@ -520,20 +520,6 @@ namespace Mono {
 			return result;
 		}
 
-		[DllImport ("moon", EntryPoint="dependency_object_set_marshalled_value_with_error")]
-		[return: MarshalAs (UnmanagedType.U1)]
-		// bool dependency_object_set_marshalled_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
-		private extern static bool dependency_object_set_marshalled_value_with_error_ (IntPtr instance, IntPtr property, ref Value value, out MoonError error);
-		public static bool dependency_object_set_marshalled_value (IntPtr instance, IntPtr property, ref Value value)
-		{
-			bool result;
-			MoonError error;
-			result = dependency_object_set_marshalled_value_with_error_ (instance, property, ref value, out error);
-			if (error.Number != 0)
-				throw CreateManagedException (error);
-			return result;
-		}
-
 		[DllImport ("moon")]
 		// void dependency_object_set_name (DependencyObject *instance, const char *name);
 		public extern static void dependency_object_set_name (IntPtr instance, string name);
@@ -547,6 +533,20 @@ namespace Mono {
 			dependency_object_set_parent_ (instance, parent, out error);
 			if (error.Number != 0)
 				throw CreateManagedException (error);
+		}
+
+		[DllImport ("moon", EntryPoint="dependency_object_set_value_with_error")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool dependency_object_set_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
+		private extern static bool dependency_object_set_value_with_error_ (IntPtr instance, IntPtr property, ref Value value, out MoonError error);
+		public static bool dependency_object_set_value (IntPtr instance, IntPtr property, ref Value value)
+		{
+			bool result;
+			MoonError error;
+			result = dependency_object_set_value_with_error_ (instance, property, ref value, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
 		}
 
 		[DllImport ("moon")]
@@ -1773,6 +1773,15 @@ namespace Mono {
 		[DllImport ("moon")]
 		// UnmanagedMatrix *unmanaged_matrix_new ();
 		public extern static IntPtr unmanaged_matrix_new ();
+
+		[DllImport ("moon")]
+		// void uri_free (Uri *instance);
+		public extern static void uri_free (IntPtr instance);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool uri_parse (Uri *instance, const char *uri, bool allow_trailing_sep);
+		public extern static bool uri_parse (IntPtr instance, string uri, [MarshalAs (UnmanagedType.U1)] bool allow_trailing_sep);
 
 		[DllImport ("moon")]
 		// UserControl *user_control_new ();

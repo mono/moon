@@ -3127,6 +3127,18 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		*v = new Value (rect);
 		break;
 	}
+	case Type::URI: {
+		Uri *uri = new Uri ();
+
+		if (!uri->Parse (str)) {
+			delete uri;
+			return false;
+		}
+
+		*v = new Value (*uri);
+		delete uri;
+		break;
+	}
 	case Type::DOUBLE_COLLECTION: {
 		DoubleCollection *doubles = DoubleCollection::FromStr (str);
 		if (!doubles)
@@ -3212,7 +3224,15 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 	case Type::BITMAPIMAGE: {
 		BitmapImage *bi = new BitmapImage ();
 
-		bi->SetUriSource (str);
+		Uri *uri = new Uri ();
+
+		if (!uri->Parse (str)) {
+			delete uri;
+			return false;
+		}
+
+		bi->SetUriSource (uri);
+		delete uri;
 
 		*v = new Value (bi); 
 

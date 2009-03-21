@@ -87,7 +87,7 @@ Validators::DoubleGreaterThanZeroValidator (DependencyObject* instance, Dependen
 }
 
 bool
-Validators::NonNullStringValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+Validators::NonNullValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull ()) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value cannot be null");

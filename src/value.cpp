@@ -20,6 +20,7 @@
 #include "value.h"
 #include "rect.h"
 #include "size.h"
+#include "uri.h"
 #include "color.h"
 #include "clock.h"
 #include "animation.h"
@@ -127,6 +128,10 @@ Value::Value (const Value& v)
 	case Type::SIZE:
 		u.size = g_new (Size, 1);
 		*u.size = *v.u.size;
+		break;
+	case Type::URI:
+		u.uri = g_new (Uri, 1);
+		Uri::Copy (v.u.uri, u.uri);
 		break;
 	case Type::REPEATBEHAVIOR:
 		u.repeat = g_new (RepeatBehavior, 1);
@@ -277,6 +282,15 @@ Value::Value (Point pt)
 	SetIsNull (false);
 }
 
+Value::Value (Uri uri)
+{
+	Init ();
+	k = Type::URI;
+	u.uri = g_new (Uri, 1);
+	Uri::Copy (&uri, u.uri);
+	SetIsNull (false);
+}
+
 Value::Value (Rect rect)
 {
 	Init ();
@@ -393,6 +407,10 @@ Value::FreeValue ()
 		break;
 	case Type::SIZE:
 		g_free (u.size);
+		break;
+	case Type::URI:
+		u.uri->Free();
+		g_free (u.uri);
 		break;
 	case Type::REPEATBEHAVIOR:
 		g_free (u.repeat);
@@ -525,6 +543,8 @@ Value::operator== (const Value &v) const
 		return !memcmp (u.corner, v.u.corner, sizeof (CornerRadius));
 	case Type::MANAGEDTYPEINFO:
 		return !memcmp (u.type_info, v.u.type_info, sizeof (ManagedTypeInfo));
+	case Type::URI:
+		return *u.uri == *v.u.uri;
 	case Type::MANAGED: {
 		// If we avoid the cast to 64bit uint, i don't know how to implement this sanity check.
 		//g_return_val_if_fail (a == (a & 0xFFFFFFFF) && b == (b & 0xFFFFFFFF), false);
@@ -538,23 +558,6 @@ Value::operator== (const Value &v) const
 	}
 
 	return true;
-}
-
-void
-Value::Unmarshal (Type::Kind desired)
-{
-	if (desired == k)
-		return;
-
-	if (desired == Type::STRING) {
-		switch (k) {
-		case Type::URI:
-			k = desired;
-			break;
-		default:
-			break;
-		}
-	}
 }
 
 //

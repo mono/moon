@@ -30,7 +30,7 @@ public:
 	static ValueValidator PositiveIntValidator;
 	static ValueValidator IntGreaterThanZeroValidator;
 	static ValueValidator DoubleGreaterThanZeroValidator;
-	static ValueValidator NonNullStringValidator;
+	static ValueValidator NonNullValidator;
 	static ValueValidator NotNullOrEmptyValidator;
 	static ValueValidator MediaAttributeCollectionValidator;
 	static ValueValidator StyleValidator;

@@ -15,6 +15,7 @@
 
 #include "application.h"
 #include "bitmapimage.h"
+#include "uri.h"
 
 BitmapImage::BitmapImage ()
 {
@@ -51,14 +52,14 @@ void
 BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == BitmapImage::UriSourceProperty) {
-		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
+		Uri *uri = args->new_value ? args->new_value->AsUri () : NULL;
 
 		CleanUp ();
 
 		if (uri != NULL) {
 			Application *current = Application::GetCurrent ();
 			if (current)
-				this->buffer = current->GetResource (uri, &size);
+				this->buffer = current->GetResource (uri->originalString, &size);
 		}
 	}
 	
