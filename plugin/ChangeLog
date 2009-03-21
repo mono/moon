@@ -1,3 +1,9 @@
+2009-03-21  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.[h|cpp]: Add html_object_invoke_self
+	(same as _invoke but with no name arg), that uses
+	NPN_InvokeDefault	instead.
+
 2009-03-21  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (MoonlightImageObject::GetProperty):

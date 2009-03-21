@@ -1,3 +1,10 @@
+2009-03-21  Andreia Gaita  <avidigal@novell.com>
+
+	* HtmlObject.cs, ScriptObject.cs:
+	Implement InvokeSelf using a variant of InvokeInternal with no
+	name arg, that calls html_object_invoke_self (same as _invoke but
+	with no name arg), that uses NPN_InvokeDefault instead.
+
 2009-03-12  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectWrapper.cs: Use the js binder for setting properties,

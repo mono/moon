@@ -116,7 +116,7 @@ namespace System.Windows.Browser {
 
 		public virtual object InvokeSelf (params object [] args)
 		{
-			throw new System.NotImplementedException ();
+			return HtmlObject.InvokeInternal <object> (handle, args);
 		}
 
 		protected void Initialize (IntPtr handle, IntPtr identity, bool addReference, bool releaseReferenceOnDispose)

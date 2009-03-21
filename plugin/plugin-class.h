@@ -793,6 +793,7 @@ bool html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *na
 void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result);
 void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
 void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, uint32_t arg_count, Value *result);
+void html_object_invoke_self (PluginInstance *plugin, NPObject *npobj, Value *args, uint32_t arg_count, Value *result);
 gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb, gpointer context);
 void html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener);
 void html_object_release (PluginInstance *plugin, NPObject *npobj);

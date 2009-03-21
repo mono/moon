@@ -283,6 +283,9 @@ namespace Mono {
 		public static extern void html_object_invoke (IntPtr plugin, IntPtr obj, string name, Mono.Value [] args, int arg_count, out Mono.Value result);
 
 		[DllImport ("moonplugin")]
+		public static extern void html_object_invoke_self (IntPtr plugin, IntPtr obj, Mono.Value [] args, int arg_count, out Mono.Value result);
+
+		[DllImport ("moonplugin")]
 		public static extern IntPtr html_object_attach_event (IntPtr plugin, IntPtr obj, string name, DomEventCallback cb, IntPtr context);
 
 		[DllImport ("moonplugin")]

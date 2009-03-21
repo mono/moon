@@ -4527,6 +4527,48 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 	}
 }
 
+void
+html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
+		Value *args, uint32_t arg_count, Value *result)
+{
+	NPVariant npresult;
+	NPVariant *npargs = NULL;
+	NPObject *window = NULL;
+	NPP npp = plugin->GetInstance ();
+
+	if (npobj == NULL) {
+		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+		npobj = window;
+	}
+
+	if (arg_count) {
+		npargs = new NPVariant [arg_count];
+		for (uint32_t i = 0; i < arg_count; i++)
+			value_to_variant (npobj, &args [i], &npargs [i]);
+	}
+
+	bool ret = NPN_InvokeDefault (npp, npobj, npargs, arg_count, &npresult);
+
+	if (arg_count) {
+		for (uint32_t i = 0; i < arg_count; i++)
+			NPN_ReleaseVariantValue (&npargs [i]);
+	}
+
+	if (ret)
+	{
+		Value *res = NULL;
+		if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
+			variant_to_value (&npresult, &res);
+			*result = *res;
+		    } else {
+			*result = Value (Type::INVALID);
+		}
+	} else {
+		THROW_JS_EXCEPTION2 (npobj, "");
+		*result = Value (Type::INVALID);
+	}
+}
+
 const char *
 html_get_element_text (PluginInstance *plugin, const char *element_id)
 {
