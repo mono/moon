@@ -15,6 +15,7 @@
 #include "application.h"
 #include "runtime.h"
 #include "deployment.h"
+#include "uri.h"
 
 Application::Application ()
 {
@@ -66,10 +67,10 @@ Application::ApplyStyle (FrameworkElement *fwe, Style *style)
 }
 
 gpointer
-Application::GetResource (const char *name, int *size)
+Application::GetResource (Uri *uri, int *size)
 {
 	if (get_resource_cb)
-		return get_resource_cb (name, size);
+		return get_resource_cb (uri->originalString, size);
 
 	*size = 0;
 	return NULL;

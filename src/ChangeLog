@@ -1,5 +1,13 @@
 2009-03-21  Chris Toshok  <toshok@ximian.com>
 
+	* bitmapimage.cpp (BitmapImage::OnPropertyChanged): pass the Uri
+	to Application:GetResource.
+
+	* application.[h,cpp] (Application::GetResource): this takes a Uri
+	instead of a string now.
+
+2009-03-21  Chris Toshok  <toshok@ximian.com>
+
 	* uri.[h,cpp]: a few changes:
 	  1. Add "bool isAbsolute" and "char* originalString" fields.
 	  2. Remove Clone and add a static Copy method which Value can use

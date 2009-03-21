@@ -59,7 +59,7 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		if (uri != NULL) {
 			Application *current = Application::GetCurrent ();
 			if (current)
-				this->buffer = current->GetResource (uri->originalString, &size);
+				this->buffer = current->GetResource (uri, &size);
 		}
 	}
 	
