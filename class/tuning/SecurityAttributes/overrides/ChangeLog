@@ -1,3 +1,8 @@
+2008-03-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.manual: SC SafeFileHandle since it inherits from 
+	SafeHandleZeroOrMinusOneIsInvalid, an SC type
+
 2008-03-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: SSC BindingExpressionBase.GetPropertyInfo

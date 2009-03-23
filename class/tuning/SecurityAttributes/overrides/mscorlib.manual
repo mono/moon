@@ -8,3 +8,6 @@
 # use Activator.CreateInstance to create (inaccessible) GenericEqualityComparer<T>
 +SSC-M: System.Void System.Collections.Generic.EqualityComparer`1::.cctor()
 
+# corlib now use (internal)SafeFileHandle which inherits a SC type (SafeHandleZeroOrMinusOneIsInvalid)
++SC-T: Microsoft.Win32.SafeHandles.SafeFileHandle
+
