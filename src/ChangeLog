@@ -1,3 +1,10 @@
+2009-03-23  Chris Toshok  <toshok@ximian.com>
+
+	* uri.cpp (Uri::Uri): I don't like this fix, mostly because it was
+	due to vertigo doing some weird stuff that I don't fully
+	understand :) but in the interest of not requiring every usage to
+	include a null check, init originalString to g_strdup("") here.
+
 2009-03-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: FillBuffers: fix warning. NullDecoder: Chain

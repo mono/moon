@@ -37,7 +37,7 @@ Uri::Uri ()
 	params = NULL;
 	query = NULL;
 	fragment = NULL;
-	originalString = NULL;
+	originalString = g_strdup("");
 	isAbsolute = false;
 }
 
