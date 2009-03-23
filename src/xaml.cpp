@@ -3247,7 +3247,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 			delete uri;
 			return false;
 		}
-		*v = new Value (new DeepZoomImageTileSource (str));
+		*v = new Value (new DeepZoomImageTileSource (uri));
 		delete uri;
 
 		break;

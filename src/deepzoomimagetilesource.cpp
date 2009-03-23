@@ -45,7 +45,7 @@ class SubImage
  public:
  	int id;
 	int n;
-	char *source;
+	Uri *source;
 	long width;
 	long height;
 	double vp_x;
@@ -135,11 +135,11 @@ DeepZoomImageTileSource::DeepZoomImageTileSource ()
 	Init ();
 }
 
-DeepZoomImageTileSource::DeepZoomImageTileSource (const char *uri, bool nested)
+DeepZoomImageTileSource::DeepZoomImageTileSource (Uri *uri, bool nested)
 {
 	Init ();
 	this->nested = nested;
-	SetValue (DeepZoomImageTileSource::UriSourceProperty, new Value (uri, true));
+	SetValue (DeepZoomImageTileSource::UriSourceProperty, new Value (*uri));
 }
 
 DeepZoomImageTileSource::~DeepZoomImageTileSource ()
@@ -430,9 +430,10 @@ start_element (void *data, const char *el, const char **attr)
 						info->current_subimage->n = atoi (attr[i+1]);
 					else if (!g_ascii_strcasecmp ("Id", attr[i]))
 						info->current_subimage->id = atoi (attr[i+1]);
-					else if (!g_ascii_strcasecmp ("Source", attr[i]))
-						info->current_subimage->source = g_strdup (attr[i+1]);
-					else
+					else if (!g_ascii_strcasecmp ("Source", attr[i])) {
+						info->current_subimage->source = new Uri ();
+						info->current_subimage->source->Parse (attr[i+1]);
+					} else
 						LOG_MSI ("\tunparsed arg %s: %s\n", attr[i], attr[i+1]);
 
 			} else {

@@ -58,7 +58,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	/* @GenerateCBinding,GeneratePInvoke */
 	DeepZoomImageTileSource ();
 
-	DeepZoomImageTileSource (const char *uri, bool nested = false);
+	DeepZoomImageTileSource (Uri *uri, bool nested = false);
 	void Download ();
 	gpointer GetTileLayer (int level, int x, int y);
 
