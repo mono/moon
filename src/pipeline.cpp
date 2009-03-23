@@ -2498,7 +2498,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	IMediaStream *stream;
 	MediaResult result = MEDIA_SUCCESS;
 	guint64 buffering_time = media->GetBufferingTime ();
-	guint64 buffered_size;
+	guint64 buffered_size = 0;
 	
 	LOG_BUFFERING ("IMediaDemuxer::FillBuffers (), buffering time: %llu = %llu ms\n", buffering_time, MilliSeconds_FromPts (buffering_time));
 
@@ -3475,6 +3475,8 @@ NullDecoder::Dispose ()
 {
 	g_free (logo);
 	logo = NULL;
+	
+	IMediaDecoder::Dispose ();
 }
 
 MediaResult

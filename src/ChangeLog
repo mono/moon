@@ -1,3 +1,8 @@
+2009-03-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: FillBuffers: fix warning. NullDecoder: Chain
+	  Dispose.
+
 2009-03-23  Chris Toshok  <toshok@ximian.com>
 
 	* uri.cpp (Uri::Copy): return immediately if @from == null.
