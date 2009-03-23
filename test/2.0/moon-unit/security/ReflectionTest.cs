@@ -302,5 +302,15 @@ namespace MoonTest.Security {
 			Assert.IsNotNull (Activator.CreateInstance (typeof (GCHandle)), "GCHandle-1");
 			Assert.IsNotNull (Activator.CreateInstance<GCHandle> (), "GCHandle-2");
 		}
+
+		[TestMethod]
+		public void Activator_CreateInstance_OtherAssembly ()
+		{
+			var moon_testing = typeof (Mono.Moonlight.UnitTesting.MoonLogProvider).Assembly;
+			var log_request = moon_testing.GetType (
+				"Mono.Moonlight.UnitTesting.MoonLogProvider+LogRequest");
+
+			Assert.Throws<MethodAccessException> (() => Activator.CreateInstance (log_request));
+		}
 	}
 }

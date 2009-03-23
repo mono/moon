@@ -86,8 +86,7 @@ namespace MoonTest.Security {
 		}
 
 		[TestMethod]
-		public void
-DynamicMethod_SkipVisibilityCheck_ReadPlatformCodeInternalField ()
+		public void DynamicMethod_SkipVisibilityCheck_ReadPlatformCodeInternalField ()
 		{
 			var p = Ast.Parameter (typeof (Nullable<int>), "i");
 			var lambda = Ast.Lambda<Func<Nullable<int>, int>> (
@@ -115,6 +114,22 @@ DynamicMethod_SkipVisibilityCheck_ReadPlatformCodeInternalField ()
 			var attribute = new IgnoreAttribute ("foo");
 
 			Assert.AreEqual ("foo", reader (attribute));
+		}
+
+		[TestMethod]
+		public void DynamicMethod_SkipVisibilityCheck_New_UseCodePrivateType ()
+		{
+			var moon_testing = typeof (Mono.Moonlight.UnitTesting.MoonLogProvider).Assembly;
+			var log_request = moon_testing.GetType (
+				"Mono.Moonlight.UnitTesting.MoonLogProvider+LogRequest");
+
+			var factory = Ast.Lambda<Func<object>> (
+				Ast.New (log_request)).Compile ();
+
+			var obj = factory ();
+
+			Assert.IsNotNull (obj);
+			Assert.AreEqual (log_request, obj.GetType ());
 		}
 
 		// TODO

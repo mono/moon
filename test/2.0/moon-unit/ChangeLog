@@ -1,3 +1,10 @@
+2009-03-23  Jb Evain  <jbevain@novell.com>
+
+	* security/ReflectionEmitTest.cs
+	* security/ReflectionTest.cs
+		add new tests for creating instance of private types
+		defined in other user code assemblies.
+
 * System.Windows.Data/BindingTest.cs: Add a test for when we directly
 set a Binding instead of a BindingExpression
 
