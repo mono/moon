@@ -31,12 +31,12 @@
  * 
  */
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <glib.h>
 #include <prinit.h>
 #include <gtk/gtk.h>
+#include <dlfcn.h>
 
 #ifdef DBUS_ENABLED
 #include <dbus/dbus-glib.h>
@@ -44,17 +44,16 @@
 
 #include "shutdown-manager.h"
 
-
 #define DRT_AGSERVER_SERVICE    "mono.moonlight.agserver"
 #define DRT_AGSERVER_PATH       "/mono/moonlight/agserver"
 #define DRT_AGSERVER_INTERFACE  "mono.moonlight.agserver.IAgserver"
-
 
 #define TIMEOUT_INTERVAL 10000
 
 static GMutex* shutdown_mutex = NULL;
 static GCond*  shutdown_cond = NULL;
 static gint    wait_count = 0;
+static void*   dlopened_handle = NULL;
 
 static void execute_shutdown (ShockerScriptableControlObject *shocker);
 static gboolean attempt_clean_shutdown (gpointer data);
@@ -79,29 +78,51 @@ shutdown_manager_shutdown ()
 void
 shutdown_manager_wait_increment ()
 {
+	bool open_self = false;
+	
 	g_assert (shutdown_mutex);
 	g_assert (shutdown_cond);
 
 	g_mutex_lock (shutdown_mutex);
 
-
 	wait_count++;
+	open_self = wait_count == 1;
+	
 	g_mutex_unlock (shutdown_mutex);
+	
+	if (open_self) {
+		// Prevent firefox from unloading us if we're waiting for a shutdown to happen
+		// since we're executing code on another thread (and unloading ourselves 
+		// with code executing on another thread will lead to very weird crashes).
+		dlerror (); // clear any errors
+		dlopened_handle = dlopen ("libshocker.so", RTLD_LAZY | RTLD_NOLOAD);
+		if (dlopened_handle == NULL)
+			printf ("[shocker] tried to open a handle to libshocker.so, but: '%s' (crashes may now occur).\n", dlerror ());
+	}
 }
 
 void
 shutdown_manager_wait_decrement ()
 {
+	bool close_self = false;
+	
 	g_assert (shutdown_mutex);
 	g_assert (shutdown_cond);
 
 	g_mutex_lock (shutdown_mutex);
 
 	wait_count--;
-	if (wait_count == 0)
+	if (wait_count == 0) {
+		close_self = true;
 		g_cond_signal (shutdown_cond);
+	}
 
 	g_mutex_unlock (shutdown_mutex);
+	
+	if (close_self && dlopened_handle != NULL) {
+		dlclose (dlopened_handle);
+		dlopened_handle = NULL;
+	}
 }
 
 static void
