@@ -523,4 +523,5 @@ Uri::operator== (const Uri &v) const
 	// XXX we don't compare this->data vs v.data yet.
 	
 	// we intentionally don't compare original strings
+	return true;
 }

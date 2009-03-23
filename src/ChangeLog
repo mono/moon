@@ -1,5 +1,8 @@
 2009-03-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* uri.cpp (Uri::operator==): If all the != compares pass, return
+	true. Don't let control reach the end of a non-void function!
+
 	* textbox.cpp (TextBoxView::UpdateCursor): Emit a new cursor
 	position changed event.
 
