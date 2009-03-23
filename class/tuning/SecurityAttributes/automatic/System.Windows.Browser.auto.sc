@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows.Browser, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 57 methods needs to be decorated.
+# 58 methods needs to be decorated.
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.IAsyncResult System.Windows.Browser.EventHandlerDelegate::BeginInvoke(System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
@@ -165,6 +165,9 @@
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: T System.Windows.Browser.HtmlObject::GetPropertyInternal(System.IntPtr,System.String)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: T System.Windows.Browser.HtmlObject::InvokeInternal(System.IntPtr,System.Object[])
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: T System.Windows.Browser.HtmlObject::InvokeInternal(System.IntPtr,System.String,System.Object[])

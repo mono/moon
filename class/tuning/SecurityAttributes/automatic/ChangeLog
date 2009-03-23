@@ -1,3 +1,13 @@
+2009-03-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.sc, mscorlib.auto.ssc: Update with changes to 
+	File[Stream] and SafeFileHandle
+	* System.Windows.auto.sc: Add new p/invoke methods and update the 
+	ones where signature has changed.
+	* System.Windows.Browser.auto.sc: Add new override for HtmlObject.
+	InvokeInternal
+	* System.Windows.Browser.auto.ssc: Add ScriptObject.InvokeSelf
+
 2009-03-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.s[s]c: Update

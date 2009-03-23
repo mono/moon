@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 603 methods needs to be decorated.
+# 605 methods needs to be decorated.
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::FindProxy(System.IntPtr)
@@ -417,6 +417,9 @@
 
 # using 'System.IntPtr' as return type
 +SC-M: System.IntPtr System.IO.FileStream::get_Handle()
+
+# using 'System.IntPtr' as return type
++SC-M: System.IntPtr System.IO.FileStream::get_RealHandle()
 
 # using 'System.IntPtr' as return type
 +SC-M: System.IntPtr System.IO.IntPtrStream::get_BaseAddress()
@@ -841,6 +844,9 @@
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Void Microsoft.Win32.RegistryKey::.ctor(Microsoft.Win32.RegistryHive,System.IntPtr,System.Boolean)
 
+# using 'System.IntPtr' as a parameter type
++SC-M: System.Void Microsoft.Win32.SafeHandles.SafeFileHandle::.ctor(System.IntPtr,System.Boolean)
+
 # [VISIBLE] using 'System.IntPtr' as a parameter type
 +SC-M: System.Void Microsoft.Win32.SafeHandles.SafeWaitHandle::.ctor(System.IntPtr,System.Boolean)
 
@@ -919,6 +925,9 @@
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void System.BitConverter::PutBytes(System.Byte*,System.Byte[],System.Int32,System.Int32)
 
+# using 'System.IntPtr' as a parameter type
++SC-M: System.Void System.Console/StandardConsoleStream::.ctor(System.String,System.IntPtr,System.Boolean,System.Boolean)
+
 # arglist
 +SC-M: System.Void System.Console::Write(System.String,System.Object,System.Object,System.Object,System.Object)
 
@@ -939,9 +948,6 @@
 
 # [VISIBLE] using 'System.Void*' as a parameter type
 +SC-M: System.Void System.IntPtr::.ctor(System.Void*)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.IO.FileStream::.ctor(System.IntPtr,System.IO.FileAccess,System.Boolean,System.Int32,System.Boolean,System.Boolean)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Void System.IO.MonoIO::Lock(System.IntPtr,System.Int64,System.Int64,System.IO.MonoIOError&)

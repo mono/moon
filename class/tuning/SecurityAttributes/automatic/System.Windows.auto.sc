@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 863 methods needs to be decorated.
+# 866 methods needs to be decorated.
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: Mono.INativeDependencyObjectWrapper Mono.NativeDependencyObjectHelper::FromIntPtr(System.IntPtr)
@@ -83,10 +83,10 @@
 +SC-M: System.Boolean Mono.NativeMethods::control_focus(System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_marshalled_value(System.IntPtr,System.IntPtr,Mono.Value&)
++SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_value(System.IntPtr,System.IntPtr,Mono.Value&)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_marshalled_value_with_error_(System.IntPtr,System.IntPtr,Mono.Value&,Mono.MoonError&)
++SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_value_with_error_(System.IntPtr,System.IntPtr,Mono.Value&,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::dependency_property_is_attached(System.IntPtr)
@@ -159,6 +159,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::uielement_update_layout(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::uri_parse(System.IntPtr,System.String,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::value_from_str(Mono.Kind,System.String,System.String,System.IntPtr&,System.Boolean)
@@ -1634,6 +1637,9 @@
 +SC-M: System.Void Mono.NativeMethods::html_object_invoke(System.IntPtr,System.IntPtr,System.String,Mono.Value[],System.Int32,Mono.Value&)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::html_object_invoke_self(System.IntPtr,System.IntPtr,Mono.Value[],System.Int32,Mono.Value&)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::html_object_set_property(System.IntPtr,System.IntPtr,System.String,Mono.Value&)
 
 # p/invoke declaration
@@ -1842,6 +1848,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uielement_set_subtree_object(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::uri_free(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::value_free_value(Mono.Value&)
