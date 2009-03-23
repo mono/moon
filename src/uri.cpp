@@ -91,6 +91,9 @@ clone_params (GQuark quark, gpointer data, gpointer user_data)
 void
 Uri::Copy (const Uri *from, Uri *to)
 {
+	if (!from)
+		return;
+
 	to->protocol = g_strdup (from->protocol);
 	to->user = g_strdup (from->user);
 	to->auth = g_strdup (from->auth);

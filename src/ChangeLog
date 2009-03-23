@@ -1,3 +1,7 @@
+2009-03-23  Chris Toshok  <toshok@ximian.com>
+
+	* uri.cpp (Uri::Copy): return immediately if @from == null.
+
 2009-03-21  Chris Toshok  <toshok@ximian.com>
 
 	* bitmapimage.cpp (BitmapImage::OnPropertyChanged): pass the Uri
