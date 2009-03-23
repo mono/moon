@@ -89,6 +89,7 @@ class ContentChangedEventArgs;
 class ContentControl;
 class Control;
 class ControlTemplate;
+class CursorPositionChangedEventArgs;
 class DataTemplate;
 class DeepZoomImageTileSource;
 class DependencyObject;
@@ -406,6 +407,7 @@ public:
 	ContentControl*                AsContentControl () { checked_get_subclass (Type::CONTENTCONTROL, ContentControl) }
 	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
 	ControlTemplate*               AsControlTemplate () { checked_get_subclass (Type::CONTROLTEMPLATE, ControlTemplate) }
+	CursorPositionChangedEventArgs*AsCursorPositionChangedEventArgs () { checked_get_subclass (Type::CURSORPOSITIONCHANGEDEVENTARGS, CursorPositionChangedEventArgs) }
 	DataTemplate*                  AsDataTemplate () { checked_get_subclass (Type::DATATEMPLATE, DataTemplate) }
 	DeepZoomImageTileSource*       AsDeepZoomImageTileSource () { checked_get_subclass (Type::DEEPZOOMIMAGETILESOURCE, DeepZoomImageTileSource) }
 	DependencyObject*              AsDependencyObject () { checked_get_subclass (Type::DEPENDENCY_OBJECT, DependencyObject) }

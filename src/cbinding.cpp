@@ -873,6 +873,49 @@ control_template_new (void)
 
 
 /**
+ * CursorPositionChangedEventArgs
+ **/
+CursorPositionChangedEventArgs *
+cursor_position_changed_event_args_new (void)
+{
+	return new CursorPositionChangedEventArgs ();
+}
+
+
+double
+cursor_position_changed_event_args_get_cursor_height (CursorPositionChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->GetCursorHeight ();
+}
+
+
+double
+cursor_position_changed_event_args_get_cursor_x (CursorPositionChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->GetCursorX ();
+}
+
+
+double
+cursor_position_changed_event_args_get_cursor_y (CursorPositionChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->GetCursorY ();
+}
+
+
+/**
  * DataTemplate
  **/
 DataTemplate *

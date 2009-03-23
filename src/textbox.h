@@ -51,6 +51,43 @@ class TextChangedEventArgs : public RoutedEventArgs {
 };
 
 
+/* @SilverlightVersion="2" */
+/* @Namespace=None */
+class CursorPositionChangedEventArgs : public EventArgs {
+	double height, x, y;
+	
+ protected:
+	virtual ~CursorPositionChangedEventArgs () { }
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	CursorPositionChangedEventArgs ()
+	{
+		SetObjectType (Type::CURSORPOSITIONCHANGEDEVENTARGS);
+		this->height = 0.0;
+		this->x = 0.0;
+		this->y = 0.0;
+	}
+	
+	CursorPositionChangedEventArgs (double height, double x, double y)
+	{
+		SetObjectType (Type::CURSORPOSITIONCHANGEDEVENTARGS);
+		this->height = height;
+		this->x = x;
+		this->y = y;
+	}
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	double GetCursorHeight () { return height; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	double GetCursorX () { return x; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	double GetCursorY () { return y; }
+};
+
+
 enum TextBoxModelChangeType {
 	TextBoxModelChangedNothing,
 	TextBoxModelChangedTextAlignment,
@@ -85,6 +122,7 @@ class TextBoxUndoStack;
 class TextBoxDynamicPropertyValueProvider;
 
 /* @SilverlightVersion="2" */
+/* @CallInitialize */
 /* @Namespace=System.Windows.Controls */
 class TextBox : public Control, public ITextAttributes {
 	friend class TextBoxDynamicPropertyValueProvider;
@@ -167,6 +205,7 @@ class TextBox : public Control, public ITextAttributes {
 	void Undo ();
 	void Redo ();
 	
+	void EmitCursorPositionChanged (double height, double x, double y);
 	void EmitSelectionChanged ();
 	void EmitTextChanged ();
 	
@@ -302,6 +341,7 @@ class TextBox : public Control, public ITextAttributes {
 	//
 	// Events
 	//
+	const static int CursorPositionChangedEvent;
 	const static int SelectionChangedEvent;
 	const static int TextChangedEvent;
 };

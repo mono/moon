@@ -1622,6 +1622,12 @@ TextBox::focus_in (EventObject *sender, EventArgs *args, gpointer closure)
 }
 
 void
+TextBox::EmitCursorPositionChanged (double height, double x, double y)
+{
+	Emit (TextBox::CursorPositionChangedEvent, new CursorPositionChangedEventArgs (height, x, y));
+}
+
+void
 TextBox::EmitSelectionChanged ()
 {
 	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
@@ -2256,6 +2262,8 @@ TextBoxView::UpdateCursor (bool invalidate)
 	
 	// calculate the new cursor rect
 	cursor = layout->GetCursor (Point (), cur);
+	
+	textbox->EmitCursorPositionChanged (cursor.height, cursor.x, cursor.y);
 	
 	// invalidate the new cursor rect
 	if (invalidate && cursor_visible)

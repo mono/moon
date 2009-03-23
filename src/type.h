@@ -77,6 +77,7 @@ public:
 		CONTROLTEMPLATE,// Silverlight 2.0 only
 		CORNERRADIUS,// Silverlight 2.0 only
 		CURSOR,
+		CURSORPOSITIONCHANGEDEVENTARGS,// Silverlight 2.0 only
 		DATATEMPLATE,// Silverlight 2.0 only
 		DEEPZOOMIMAGETILESOURCE,
 		DEPENDENCY_OBJECT,

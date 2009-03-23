@@ -1,3 +1,8 @@
+2009-03-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxView::UpdateCursor): Emit a new cursor
+	position changed event.
+
 2009-03-23  Chris Toshok  <toshok@ximian.com>
 
 	* uri.cpp (Uri::Uri): I don't like this fix, mostly because it was

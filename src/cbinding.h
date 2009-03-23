@@ -394,6 +394,21 @@ DependencyObject *control_get_template_child (Control *instance, const char *nam
 ControlTemplate *control_template_new (void);
 
 /**
+ * CursorPositionChangedEventArgs
+ **/
+/* @GeneratePInvoke */
+CursorPositionChangedEventArgs *cursor_position_changed_event_args_new (void);
+
+/* @GeneratePInvoke */
+double cursor_position_changed_event_args_get_cursor_height (CursorPositionChangedEventArgs *instance);
+
+/* @GeneratePInvoke */
+double cursor_position_changed_event_args_get_cursor_x (CursorPositionChangedEventArgs *instance);
+
+/* @GeneratePInvoke */
+double cursor_position_changed_event_args_get_cursor_y (CursorPositionChangedEventArgs *instance);
+
+/**
  * DataTemplate
  **/
 /* @GeneratePInvoke */
