@@ -1,3 +1,8 @@
+2009-03-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBox.cs: Connect to our CursorPositionChanged event so we can
+	update the scrollviewer offsets.
+
 2009-03-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Control.cs: Use NativeMethods.control_focus() instead of

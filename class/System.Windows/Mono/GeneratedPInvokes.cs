@@ -429,6 +429,22 @@ namespace Mono {
 		public extern static IntPtr control_template_new ();
 
 		[DllImport ("moon")]
+		// CursorPositionChangedEventArgs *cursor_position_changed_event_args_new ();
+		public extern static IntPtr cursor_position_changed_event_args_new ();
+
+		[DllImport ("moon")]
+		// double cursor_position_changed_event_args_get_cursor_height (CursorPositionChangedEventArgs *instance);
+		public extern static double cursor_position_changed_event_args_get_cursor_height (IntPtr instance);
+
+		[DllImport ("moon")]
+		// double cursor_position_changed_event_args_get_cursor_x (CursorPositionChangedEventArgs *instance);
+		public extern static double cursor_position_changed_event_args_get_cursor_x (IntPtr instance);
+
+		[DllImport ("moon")]
+		// double cursor_position_changed_event_args_get_cursor_y (CursorPositionChangedEventArgs *instance);
+		public extern static double cursor_position_changed_event_args_get_cursor_y (IntPtr instance);
+
+		[DllImport ("moon")]
 		// DataTemplate *data_template_new ();
 		public extern static IntPtr data_template_new ();
 

@@ -32,6 +32,13 @@ using System.Collections.Generic;
 
 namespace System.Windows.Controls {
 	public partial class TextBox : Control {
+		object contentElement;
+		
+		void Initialize ()
+		{
+			CursorPositionChanged += OnCursorPositionChanged;
+		}
+		
 		public FontSource FontSource {
 			// FIXME: throw new NotImplementedException ();
 			get; set;
@@ -51,17 +58,58 @@ namespace System.Windows.Controls {
 			
 			NativeMethods.text_box_select (this.native, start, length);
 		}
-
+		
 		public void SelectAll ()
 		{
 			NativeMethods.text_box_select_all (native);
 		}
 		
+		static UnmanagedEventHandler cursor_position_changed = Events.CreateSafeHandler (cursor_position_changed_cb);
 		static UnmanagedEventHandler selection_changed = Events.CreateSafeHandler (selection_changed_cb);
 		static UnmanagedEventHandler text_changed = Events.CreateSafeHandler (text_changed_cb);
 		
+		static object CursorPositionChangedEvent = new object ();
 		static object SelectionChangedEvent = new object ();
 		static object TextChangedEvent = new object ();
+		
+		void OnCursorPositionChanged (object sender, CursorPositionChangedEventArgs args)
+		{
+			if (contentElement == null)
+				contentElement = GetTemplateChild ("ContentElement");
+			
+			if (contentElement != null && contentElement is ScrollViewer) {
+				ScrollViewer scrollview = contentElement as ScrollViewer;
+				
+				Console.WriteLine ("scrolling to {0},{1}", args.CursorX, args.CursorY);
+				scrollview.ScrollToHorizontalOffset (args.CursorX);
+				scrollview.ScrollToVerticalOffset (args.CursorY);
+			}
+		}
+		
+		void InvokeCursorPositionChanged (CursorPositionChangedEventArgs args)
+		{
+			CursorPositionChangedEventHandler h = (CursorPositionChangedEventHandler) EventList [CursorPositionChangedEvent];
+			
+			if (h != null)
+				h (this, args);
+		}
+		
+		static void cursor_position_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			TextBox textbox = (TextBox) Helper.ObjectFromIntPtr (closure);
+			CursorPositionChangedEventArgs args = new CursorPositionChangedEventArgs (calldata);
+			
+			textbox.InvokeCursorPositionChanged (args);
+		}
+		
+		event CursorPositionChangedEventHandler CursorPositionChanged {
+			add {
+				RegisterEvent (CursorPositionChangedEvent, "CursorPositionChanged", cursor_position_changed, value);
+			}
+			remove {
+				UnregisterEvent (CursorPositionChangedEvent, "CursorPositionChanged", cursor_position_changed, value);           				
+			}
+		}
 		
 		void InvokeSelectionChanged (RoutedEventArgs args)
 		{
