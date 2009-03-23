@@ -157,7 +157,7 @@ DeepZoomImageTileSource::Download ()
 	if (downloaded)
 		return;
 	char *stringuri;
-	if ((stringuri = GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsString ())) {
+	if ((stringuri = GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsUri ()->ToString ())) {
 		downloaded = true;
 		download_uri (stringuri);
 	}
@@ -293,7 +293,7 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y)
 		if (!found)
 			return NULL;
 	}
-	char *sourceuri = GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsString ();
+	char *sourceuri = GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsUri ()->ToString ();
 	char buffer[strlen (sourceuri) + 32];
 	char* p = g_stpcpy (buffer, sourceuri);
 	sprintf (p-4, "_files/%d/%d_%d.%s", level, x, y, format);
