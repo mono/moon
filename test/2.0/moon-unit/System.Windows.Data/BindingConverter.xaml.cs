@@ -14,6 +14,22 @@ using System.ComponentModel;
 
 namespace Mono.Moonlight
 {
+	public class FloatConverter : IValueConverter
+	{
+		public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			Console.WriteLine ("Converting: '{0}'");
+			Console.WriteLine ("Type is: {0}", value.GetType ().Name);
+			return (float) value + 1;
+		}
+
+		public object ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			Console.WriteLine ("Converting back!?");
+			return (float) (global::System.Convert.ToDouble (value) - 1);
+		}
+	}
+	
 	public class DateClass
 	{
 		public static readonly DependencyProperty DateProperty = DependencyProperty.Register ("Date", typeof (DateTime?), typeof (DateClass), null);

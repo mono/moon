@@ -1,5 +1,12 @@
 2009-03-24  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Data/BindingConverter.xaml:
+	* System.Windows.Data/BindingConverter.xaml.cs: The NUnit
+	  tests for the binding fixes which were just committed.
+
+2009-03-24  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/StyleTest.cs: Add a test to show that strings
 	  work fine.
 

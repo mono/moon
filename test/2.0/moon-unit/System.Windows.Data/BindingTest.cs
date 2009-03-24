@@ -21,6 +21,11 @@ namespace MoonTest.System.Windows.Data
 
 	public class OpacityTest
 	{
+		public OpacityTest ()
+		{
+			Opacity = 0.5f;
+		}
+
 		public float Opacity {
 			get; set;
 		}
@@ -173,6 +178,28 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void BindToText3 ()
+		{
+			Binding binding = new Binding ("");
+			binding.Source = "string";
+			TextBox box = new TextBox ();
+			box.SetBinding (TextBox.TextProperty, binding);
+
+			Assert.AreEqual ("string", box.Text, "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("Failing due to a textbox issue - Default value for Text should be string.Empty")]
+		public void BindToText4 ()
+		{
+			Binding binding = new Binding (" ");
+			binding.Source = "string";
+			TextBox box = new TextBox { Text = "Blah" };
+			box.SetBinding (TextBox.TextProperty, binding);
+			Assert.AreEqual ("", box.GetValue (TextBox.TextProperty), "#1");
+		}
+
+		[TestMethod]
 		[Asynchronous]
 		public void BindXaml ()
 		{
@@ -250,6 +277,28 @@ namespace MoonTest.System.Windows.Data
 			// value.
 			r.DataContext = null;
 			Assert.AreEqual(null, r.Fill, "#1");
+		}
+
+		[TestMethod]
+		public void DataContext_ChangeParentOneWay ()
+		{
+			Canvas canvas = new Canvas ();
+			PropertyUpdater updater = new PropertyUpdater { Opacity = 0 };
+			Binding binding = new Binding ("Opacity");
+			Rectangle rectangle = new Rectangle { Name = "TED" };
+
+			canvas.DataContext = updater;
+			canvas.Children.Add (rectangle);
+			rectangle.SetBinding (Rectangle.OpacityProperty, binding);
+
+			Assert.AreSame (rectangle.DataContext, canvas.DataContext, "#1");
+			updater.Opacity = 0;
+			Assert.AreEqual (0, rectangle.Opacity, "#2");
+
+			canvas.DataContext = null;
+			Assert.AreEqual (1, rectangle.Opacity, "#3");
+			updater.Opacity = 0.5f;
+			Assert.AreEqual (1, rectangle.Opacity, "#4");
 		}
 
 		[TestMethod]
@@ -338,7 +387,7 @@ namespace MoonTest.System.Windows.Data
 			binding.Source = new OpacityTest { Opacity = 0.5f };
 			Rectangle r = new Rectangle ();
 			r.SetBinding (Rectangle.OpacityProperty, binding);
-			double d = r.Opacity;
+			Assert.IsBetween (0.499, 0.5001, r.Opacity, "#1");
 		}
 		
 		[TestMethod]
@@ -405,6 +454,14 @@ namespace MoonTest.System.Windows.Data
 			Assert.AreNotEqual(data.Opacity, r.Opacity, "#2");
 		}
 
+		[TestMethod]
+		public void CreateWithDP ()
+		{
+			Binding b = new Binding ();
+			Assert.Throws<ArgumentException> (() => {
+				b.Path = new PropertyPath (Rectangle.OpacityProperty);
+			});
+		}
 		
 		[TestMethod]
 		public void SetBinding ()
@@ -694,7 +751,6 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlActualBinding ()
 		{
 			Canvas c = (Canvas) XamlReader.Load (@"
@@ -711,7 +767,6 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 			
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlDataContextWithBindingElement()
 		{
 			Canvas c = (Canvas)XamlReader.Load(@"
@@ -731,7 +786,6 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 			
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlDataContextWithBindingElement2 ()
 		{
 			Canvas c = (Canvas) XamlReader.Load (@"
@@ -829,7 +883,224 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
-		public void XamlBindingPropertyPathPriority()
+		[MoonlightBug]
+		public void XamlBindPath ()
+		{
+			Assert.Throws<XamlParseException> (() => {
+				XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+		x:Name=""LayoutRoot"">
+	<Canvas.Resources>
+		<SolidColorBrush x:Name=""Brush"" Color=""Blue"" />
+	</Canvas.Resources>
+	<TextBlock Foreground=""{Binding Source={StaticResource Brush} Path={StaticResource Brush}}"" />
+</Canvas>");
+			});
+		}
+
+		[TestMethod]
+		public void XamlBindAfterResources ()
+		{
+			Assert.Throws<XamlParseException> (() => {
+				Canvas canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+
+    <TextBlock x:Name=""i"">
+        <TextBlock.Foreground>
+            <Binding Source=""{StaticResource FAKEBRUSH}"" />
+        </TextBlock.Foreground>
+    </TextBlock>
+</Canvas>
+");
+			});
+		}
+
+		[TestMethod]
+		public void XamlBindAfterResourcesb ()
+		{
+			Canvas canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+
+    <TextBlock x:Name=""i"" Foreground=""{Binding Source={StaticResource FAKEBRUSH}}"" />
+</Canvas>
+");
+			string color = ((TextBlock) canvas.FindName ("i")).Foreground.GetValue (SolidColorBrush.ColorProperty).ToString ();
+			Assert.AreEqual (Colors.Black.ToString (), color, "#1");
+		}
+
+		[TestMethod]
+		public void XamlBindAfterResources2 ()
+		{
+			Canvas canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+
+    <TextBlock x:Name=""i"">
+        <TextBlock.Foreground>
+            <Binding Source=""{StaticResource brush}"" Path=""FAKEPATH"" />
+        </TextBlock.Foreground>
+    </TextBlock>
+</Canvas>
+");
+			string color = ((TextBlock) canvas.FindName ("i")).Foreground.GetValue (SolidColorBrush.ColorProperty).ToString ();
+			Assert.AreEqual (Colors.Black.ToString (), color, "#1");
+		}
+
+		[TestMethod]
+		public void XamlBindAfterResources2b ()
+		{
+			Canvas canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+
+    <TextBlock x:Name=""i"" Foreground=""{Binding Source={StaticResource brush} Path=FAKEPATH}"" />
+</Canvas>
+");
+			string color = ((TextBlock) canvas.FindName ("i")).Foreground.GetValue (SolidColorBrush.ColorProperty).ToString ();
+			Assert.AreEqual (Colors.Black.ToString (), color, "#1");
+		}
+
+		[TestMethod]
+		public void XamlBindAfterResources3 ()
+		{
+			Assert.Throws<XamlParseException> (() => {
+				Canvas canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+
+    <TextBlock x:Name=""i"">
+        <TextBlock.Foreground>
+            <Binding Source=""{StaticResource brush}"" Path="""" Converter=""{StaticResource DONTEXIST}"" />
+        </TextBlock.Foreground>
+    </TextBlock>
+</Canvas>
+");
+			});
+		}
+
+		[TestMethod]
+		public void XamlBindAfterResources3b ()
+		{
+			Canvas canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+
+    <TextBlock x:Name=""i"" Foreground=""{Binding Source={StaticResource brush} Converter={StaticResource DONTEXIST}}"" />
+</Canvas>
+");
+			string color = ((TextBlock) canvas.FindName ("i")).Foreground.GetValue (SolidColorBrush.ColorProperty).ToString ();
+			Assert.AreEqual (Colors.Blue.ToString (), color, "#1");
+		}
+
+		[TestMethod]
+		public void XamlBindBeforeResources ()
+		{
+			Assert.Throws<XamlParseException> (() => {
+				Canvas canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <TextBlock x:Name=""i"">
+        <TextBlock.Foreground>
+            <Binding Source=""{StaticResource brush}"" />
+        </TextBlock.Foreground>
+    </TextBlock>
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+</Canvas>
+");
+			});
+		}
+
+		[TestMethod]
+		public void XamlBindBeforeResourcesb ()
+		{
+			Canvas canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <TextBlock x:Name=""i"" Foreground=""{Binding Source={StaticResource brush}}"" />
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+</Canvas>
+");
+			string color = ((TextBlock) canvas.FindName ("i")).Foreground.GetValue (SolidColorBrush.ColorProperty).ToString ();
+			Assert.AreEqual (Colors.Black.ToString (), color, "#1");
+		}
+
+		[TestMethod]
+		public void XamlBindBeforeResources2 ()
+		{
+			Assert.Throws<XamlParseException> (() => {
+				Canvas canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <TextBlock x:Name=""i"">
+        <TextBlock.Foreground>
+            <Binding Source=""{StaticResource brush}"" Path=""FAKEPATH"" />
+        </TextBlock.Foreground>
+    </TextBlock>
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+</Canvas>
+");
+			});
+		}
+
+		[TestMethod]
+		public void XamlBindBeforeResources3 ()
+		{
+			Assert.Throws<XamlParseException> (() => {
+				Canvas canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <TextBlock x:Name=""i"">
+        <TextBlock.Foreground>
+            <Binding Source=""{StaticResource brush}"" Path="""" Converter=""{StaticResource DONTEXIST}"" />
+        </TextBlock.Foreground>
+    </TextBlock>
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+</Canvas>
+");
+			});
+		}
+
+		[TestMethod]
+		public void XamlBindingPropertyPathPriority ()
 		{
 			Canvas canvas = (Canvas) XamlReader.Load(@"	
 <Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -890,7 +1161,25 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 			
 		[TestMethod]
-		public void XamlStaticResource()
+		[MoonlightBug]
+		public void XamlPropertyPathTest ()
+		{
+			Mono.Moonlight.BindingConverter c = new Mono.Moonlight.BindingConverter ();
+			TextBlock a = (TextBlock) c.FindName ("a");
+			//Assert.IsInstanceOfType (a.ReadLocalValue (TextBlock.TextProperty), typeof (BindingExpressionBase));
+			Assert.AreEqual ("0.5", a.Text, "#1");
+			Assert.AreEqual ("", ((TextBlock) c.FindName ("b")).Text, "#2");
+			Assert.AreEqual ("", ((TextBlock) c.FindName ("c")).Text, "#3");
+			Assert.AreEqual ("", ((TextBlock) c.FindName ("d")).Text, "#4");
+			Assert.AreEqual ("", ((TextBlock) c.FindName ("e")).Text, "#5");
+			Assert.AreEqual ("", ((TextBlock) c.FindName ("f")).Text, "#6");
+			Assert.AreEqual (typeof (OpacityTest).FullName, ((TextBlock) c.FindName ("g")).Text, "#7");
+			Assert.AreEqual (typeof (OpacityTest).FullName, ((TextBlock) c.FindName ("h")).Text, "#8");
+			Assert.AreEqual ("1.5", ((TextBlock) c.FindName ("i")).Text, "#9");
+		}
+
+		[TestMethod]
+		public void XamlStaticResource ()
 		{
 			Canvas canvas = (Canvas)XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
@@ -911,6 +1200,27 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 			Assert.IsNotNull (after.Fill, "#2");
 			Assert.AreEqual (after.Fill.GetValue (SolidColorBrush.ColorProperty).ToString (), Colors.Blue.ToString (), "#3");
 			Assert.IsNull (invalid.Fill, "#4");
+		}
+
+		[TestMethod]
+		public void XamlStaticResource3 ()
+		{
+			Assert.Throws<XamlParseException> (() => {
+				XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+    <TextBlock x:Name=""i"">
+        <TextBlock.Foreground>
+            <Binding Source=""{StaticResource NOTHERE}"" />
+        </TextBlock.Text>
+    </TextBlock>
+</Canvas>
+");
+			});
 		}
 
 		[TestMethod]
