@@ -321,9 +321,9 @@ namespace System.Windows.Media
 			}
 			
 			if (mediaStreamAttributes.TryGetValue (MediaSourceAttributesKeys.CanSeek, out str_can_seek)) {
-				if (str_can_seek == "0")
+				if (str_can_seek == "0" || str_can_seek == "False")
 					can_seek = false;
-				else if (str_can_seek == "1")
+				else if (str_can_seek == "1" || str_can_seek == "True")
 					can_seek = true;
 				else
 					throw new ArgumentOutOfRangeException ("mediaStreamAttributes.CanSeek");
