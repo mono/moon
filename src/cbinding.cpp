@@ -3983,6 +3983,13 @@ unmanaged_matrix_new (void)
 /**
  * Uri
  **/
+bool
+uri_equals (const Uri *left, const Uri *right)
+{
+	return Uri::Equals (left, right);
+}
+
+
 void
 uri_free (Uri *instance)
 {
