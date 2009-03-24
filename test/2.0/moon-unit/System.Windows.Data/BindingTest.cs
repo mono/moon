@@ -1206,6 +1206,25 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 
 		[TestMethod]
+		public void XamlStaticResource2 ()
+		{
+			Canvas canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+	<TextBlock x:Name=""block"">
+		{Binding Source={StaticResource brush}}
+	</TextBlock>
+</Canvas>
+");
+			TextBlock block = (TextBlock) canvas.FindName ("block");
+			Assert.AreEqual ("{Binding Source={StaticResource brush}}", block.Text, "#1");
+		}
+
+		[TestMethod]
 		public void XamlStaticResource3 ()
 		{
 			Assert.Throws<XamlParseException> (() => {
@@ -1221,6 +1240,25 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
             <Binding Source=""{StaticResource NOTHERE}"" />
         </TextBlock.Text>
     </TextBlock>
+</Canvas>
+");
+			});
+		}
+
+		[TestMethod]
+		public void XamlStaticResource4 ()
+		{
+			Assert.Throws<XamlParseException> (() => {
+				XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+        <SolidColorBrush  x:Name=""brush"" Color=""Blue"" />
+    </Canvas.Resources>
+	<TextBlock x:Name=""block"">
+		<Binding />
+	</TextBlock>
 </Canvas>
 ");
 			});
