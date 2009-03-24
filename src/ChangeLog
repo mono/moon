@@ -1,3 +1,8 @@
+2009-03-24  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Need to make this a little smarter, revert for now
+	because it breaks hardrock.
+
 2009-03-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::Layout*Wrap*): Fixed to not give 0.0
