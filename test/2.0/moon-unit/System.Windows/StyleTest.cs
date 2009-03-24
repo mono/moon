@@ -122,6 +122,17 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
+		public void ColorAsString ()
+		{
+			Style s = new Style (typeof (Rectangle));
+			s.Setters.Add (new Setter { Property = Rectangle.FillProperty, Value = "#FFEEDD55" });
+			Rectangle r = new Rectangle { Style = s };
+			Assert.IsInstanceOfType (r.Fill, typeof (SolidColorBrush), "#1");
+			Assert.AreEqual (r.Fill.GetValue (SolidColorBrush.ColorProperty).ToString(), "#FFEEDD55", "#2");
+		}
+
+		
+		[TestMethod]
 		public void SetTwiceOnElement ()
 		{
 			Style style = new Style (typeof (Rectangle));

@@ -1,3 +1,8 @@
+2009-03-24  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/StyleTest.cs: Add test for styling a color
+	  with a string value
+
 2009-03-23  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows/FrameworkElementTest.cs: add some tests to figure
