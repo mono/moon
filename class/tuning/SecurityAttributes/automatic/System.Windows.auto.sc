@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 866 methods needs to be decorated.
+# 872 methods needs to be decorated.
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: Mono.INativeDependencyObjectWrapper Mono.NativeDependencyObjectHelper::FromIntPtr(System.IntPtr)
@@ -228,6 +228,15 @@
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::column_definition_get_actual_width(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::cursor_position_changed_event_args_get_cursor_height(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::cursor_position_changed_event_args_get_cursor_x(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::cursor_position_changed_event_args_get_cursor_y(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::row_definition_get_actual_height(System.IntPtr)
@@ -594,6 +603,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::control_template_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::cursor_position_changed_event_args_new()
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.IntPtr Mono.NativeMethods::data_template_load_content(System.IntPtr)
@@ -2003,6 +2015,9 @@
 +SC-M: System.Void System.Windows.Controls.ControlTemplate::.ctor(System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
++SC-M: System.Void System.Windows.Controls.CursorPositionChangedEventArgs::.ctor(System.IntPtr)
+
+# using 'System.IntPtr' as a parameter type
 +SC-M: System.Void System.Windows.Controls.Grid::.ctor(System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
@@ -2100,6 +2115,9 @@
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Void System.Windows.Controls.TextBox::.ctor(System.IntPtr)
+
+# using 'System.IntPtr' as a parameter type
++SC-M: System.Void System.Windows.Controls.TextBox::cursor_position_changed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
 
 # using 'System.IntPtr' as a parameter type
 +SC-M: System.Void System.Windows.Controls.TextBox::selection_changed_cb(System.IntPtr,System.IntPtr,System.IntPtr)

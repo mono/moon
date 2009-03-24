@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Net to call all [SecurityCritical] methods
-# 40 methods
+# 42 methods
 
 +SSC-M: System.Void System.Net.NetworkInformation.LinuxIPInterfaceProperties::ParseResolvConf()
 +SSC-M: System.Boolean System.Net.NetworkInformation.LinuxIPv4InterfaceProperties::get_IsForwardingEnabled()
@@ -41,3 +41,5 @@
 +SSC-M: System.Void System.Net.Sockets.Socket::Dispose(System.Boolean)
 +SSC-M: System.Void System.Net.WebClient::OnOpenReadCompleted(System.Net.OpenReadCompletedEventArgs)
 +SSC-M: System.Void System.Net.WebClient::OnDownloadStringCompleted(System.Net.DownloadStringCompletedEventArgs)
++SSC-M: System.Net.WebRequest System.Net.WebRequest::CreateBrowserHttpRequest(System.Uri)
++SSC-M: System.Void System.Net.WebRequest::SetupProgressDelegate(System.Delegate)

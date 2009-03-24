@@ -1,3 +1,12 @@
+2009-03-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.sc, mscorlib.auto.ssc: SafeFileHandle patch was
+	reverted in corlib so we're moving back to old attributes
+	* System.Net.auto.ssc: Allow System.Net.WebRequest call code that 
+	reflects inside System.Windows.Browser.dll
+	* System.Windows.auto.sc, System.Windows.auto.ssc: Add cursor and
+	CursorPositionChangedEventArgs related calls.
+
 2009-03-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.sc, mscorlib.auto.ssc: Update with changes to 

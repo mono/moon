@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 387 methods
+# 392 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -69,6 +69,11 @@
 +SSC-M: System.Boolean System.Windows.Controls.Control::Focus()
 +SSC-M: System.Windows.DependencyObject System.Windows.Controls.Control::GetTemplateChild(System.String)
 +SSC-M: System.Void System.Windows.Controls.ControlTemplate::.ctor()
++SSC-M: System.Void System.Windows.Controls.CursorPositionChangedEventArgs::.ctor()
++SSC-M: System.Void System.Windows.Controls.CursorPositionChangedEventArgs::Finalize()
++SSC-M: System.Double System.Windows.Controls.CursorPositionChangedEventArgs::get_CursorHeight()
++SSC-M: System.Double System.Windows.Controls.CursorPositionChangedEventArgs::get_CursorX()
++SSC-M: System.Double System.Windows.Controls.CursorPositionChangedEventArgs::get_CursorY()
 +SSC-M: System.Void System.Windows.Controls.Grid::.ctor()
 +SSC-M: System.Void System.Windows.Controls.HitTestCollection::.ctor()
 +SSC-M: System.Void System.Windows.Controls.Image::.ctor()
