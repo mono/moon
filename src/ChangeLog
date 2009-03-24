@@ -1,3 +1,12 @@
+2009-03-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* value.cpp (Value::Value): If the input value has a NULL uri,
+	don't call Uri::Copy(), simply set the new uri to NULL too.
+
+	* uri.cpp (Uri::Copy): If the 'from' argument is NULL, nullify the
+	members in the 'to' argument. This should never happen anymore,
+	but if it does, don't allow 'to' to have invalid pointers.
+
 2009-03-24  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Need to make this a little smarter, revert for now

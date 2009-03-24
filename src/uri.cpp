@@ -91,22 +91,34 @@ clone_params (GQuark quark, gpointer data, gpointer user_data)
 void
 Uri::Copy (const Uri *from, Uri *to)
 {
-	if (!from)
-		return;
-
-	to->protocol = g_strdup (from->protocol);
-	to->user = g_strdup (from->user);
-	to->auth = g_strdup (from->auth);
-	to->passwd = g_strdup (from->passwd);
-	to->host = g_strdup (from->host);
-	to->path = g_strdup (from->path);
 	g_datalist_init (&to->params);
-	g_datalist_foreach ((GData**)&from->params, clone_params, &to->params);
-	to->query = g_strdup (from->query);
-	to->fragment = g_strdup (from->fragment);
-	to->originalString = g_strdup (from->originalString);
-	to->port = from->port;
-	to->isAbsolute = from->isAbsolute;
+	
+	if (from != NULL) {
+		to->protocol = g_strdup (from->protocol);
+		to->user = g_strdup (from->user);
+		to->auth = g_strdup (from->auth);
+		to->passwd = g_strdup (from->passwd);
+		to->host = g_strdup (from->host);
+		to->port = from->port;
+		to->path = g_strdup (from->path);
+		g_datalist_foreach ((GData**)&from->params, clone_params, &to->params);
+		to->query = g_strdup (from->query);
+		to->fragment = g_strdup (from->fragment);
+		to->originalString = g_strdup (from->originalString);
+		to->isAbsolute = from->isAbsolute;
+	} else {
+		to->protocol = NULL;
+		to->user = NULL;
+		to->auth = NULL;
+		to->passwd = NULL;
+		to->host = NULL;
+		to->port = -1;
+		to->path = NULL;
+		to->query = NULL;
+		to->fragment = NULL;
+		to->originalString = NULL;
+		to->isAbsolute = false;
+	}
 }
 
 /* canonicalise a path */
@@ -169,7 +181,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 	GData *params = NULL;
 	int port = -1;
 	size_t n;
-
+	
 	start = uri;
 	
 	inptr = start;

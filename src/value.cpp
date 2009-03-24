@@ -130,8 +130,12 @@ Value::Value (const Value& v)
 		*u.size = *v.u.size;
 		break;
 	case Type::URI:
-		u.uri = g_new (Uri, 1);
-		Uri::Copy (v.u.uri, u.uri);
+		if (v.u.uri) {
+			u.uri = g_new (Uri, 1);
+			Uri::Copy (v.u.uri, u.uri);
+		} else {
+			u.uri = NULL;
+		}
 		break;
 	case Type::REPEATBEHAVIOR:
 		u.repeat = g_new (RepeatBehavior, 1);
