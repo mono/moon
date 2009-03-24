@@ -55,6 +55,10 @@ namespace System.Windows.Data {
 			get; set;
 		}
 		
+		internal bool Updating {
+			get { return updating; }
+		}
+		
 		internal DependencyProperty Property {
 			get; set;
 		}
@@ -170,7 +174,6 @@ namespace System.Windows.Data {
 			else {
 				cachedValue = PropertyInfo.GetValue (PropertySource, null);
 			}
-			
 			cachedValue = ConvertToDestType (cachedValue);
 			
 			return cachedValue;
@@ -201,9 +204,18 @@ namespace System.Windows.Data {
 
 		void PropertyChanged (object sender, PropertyChangedEventArgs e)
 		{
-			if (PropertyInfo.Name.Equals (e.PropertyName)) {
-				object value = ConvertToDestType (PropertyInfo.GetValue (PropertySource, null));
-				Target.SetValueImpl (Property, value);
+			try {
+				updating = true;
+				if (string.IsNullOrEmpty (Binding.Path.Path)) {
+					Target.SetValueImpl (Property, ConvertToDestType (DataSource));
+				} else if (PropertyInfo == null) {
+					return;
+				} else if (PropertyInfo.Name.Equals (e.PropertyName)) {
+					object value = ConvertToDestType (PropertyInfo.GetValue (PropertySource, null));
+					Target.SetValueImpl (Property, value);
+				}
+			} finally {
+				updating = false;
 			}
 		}
 		

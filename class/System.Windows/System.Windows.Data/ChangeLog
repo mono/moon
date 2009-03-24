@@ -1,3 +1,13 @@
+2009-03-24  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: 1) When updating from an
+	  INotifyPropertyChanged, mark the binding as 'Updating' so
+	  that it doesn't get removed when calling
+	  Target.SetValueImpl.
+	2) If the target property doesn't exist (invalid binding or
+	  source hasn't been set), then ignore the property changed
+	  notification.
+
 2009-02-26  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: Use Helper.DefaultCulture
