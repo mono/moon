@@ -361,8 +361,9 @@ namespace System.Windows {
 
 					if (beb.Binding.Mode == BindingMode.TwoWay)
 						beb.SetValue (value);
-					else
+					else if (!(beb.Updating && beb.Binding.Mode == BindingMode.OneWay)) {
 						expressions.Remove (dp);
+					}
 				}
 				else {
 					expressions.Remove (dp);

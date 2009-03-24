@@ -1,3 +1,9 @@
+2009-03-24  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: If a one-way binding is setting a new
+	  value to its target FrameworkElement, ensure it is not
+	  removed from the list of expressions.
+
 2009-03-18  Chris Toshok  <toshok@ximian.com>
 
 	* FrameworkElement.cs: introduce a flag to keep us from looping
