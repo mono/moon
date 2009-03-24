@@ -1,3 +1,9 @@
+2009-03-24  Jackson Harper  <jackson@ximian.com>
+
+	* animation2.h:
+	* animation.cpp: Use an OBJECT for the Value property.
+	* dependencyproperty.g.cpp: Regen
+	
 2009-03-24  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* uri.h|uri.cpp: new Equals () methods, so we can use its generated

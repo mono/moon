@@ -23,16 +23,12 @@ class ObjectKeyFrame : public KeyFrame /* The managed class derives directly fro
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	ObjectKeyFrame ();
 	
-	/* BROKEN BROKEN BROKEN! */
-	/* @PropertyType=DependencyObject,ManagedPropertyType=object,GenerateAccessors */
+	/* @PropertyType=object,ManagedPropertyType=object */
 	const static int ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
 	const static int KeyTimeProperty;
 
-	// Property accessors
-	DependencyObject *GetValue ();
-	void    SetValue (DependencyObject *pv);
-	void    SetValue (DependencyObject v);
+	Value *GetValue ();
 
 	virtual KeyTime *GetKeyTime ();
 	virtual void SetKeyTime (KeyTime keytime);

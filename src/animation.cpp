@@ -1913,6 +1913,12 @@ ObjectKeyFrame::~ObjectKeyFrame ()
 {
 }
 
+Value *
+ObjectKeyFrame::GetValue ()
+{
+	return DependencyObject::GetValue (ValueProperty);
+}
+
 DiscreteObjectKeyFrame::DiscreteObjectKeyFrame ()
 {
 	SetObjectType (Type::DISCRETEOBJECTKEYFRAME);
@@ -1925,12 +1931,12 @@ DiscreteObjectKeyFrame::~DiscreteObjectKeyFrame ()
 Value*
 DiscreteObjectKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	DependencyObject *to = GetValue();
+	Value *to = GetValue();
 
 	if (to && keyFrameProgress == 1.0)
-		return new Value(to);
+		return to;
 	else
-		return new Value (baseValue->AsDependencyObject());
+		return baseValue;
 }
 
 ObjectAnimationUsingKeyFrames::ObjectAnimationUsingKeyFrames ()
@@ -1992,7 +1998,7 @@ ObjectAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 		key_start_time = 0;
 	} else {
 		/* start at the previous keyframe's target value */
-		baseValue = new Value(previous_keyframe->GetValue ());
+		baseValue = previous_keyframe->GetValue ();
 		deleteBaseValue = true;
 		key_start_time = previous_keyframe->resolved_keytime;
 	}

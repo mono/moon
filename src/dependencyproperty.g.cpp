@@ -360,7 +360,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::POINTANIMATION, "To", Type::POINT);
 	DependencyProperty::Register (this, Type::POINTANIMATION, "From", Type::POINT);
 	DependencyProperty::Register (this, Type::POINTANIMATION, "By", Type::POINT);
-	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "Value", Type::DEPENDENCY_OBJECT);
+	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "Value", Type::OBJECT);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "KeyTime", Type::KEYTIME);
 	DependencyProperty::Register (this, Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::OBJECTKEYFRAME_COLLECTION);
 	DependencyProperty::Register (this, Type::MATRIXTRANSFORM, "Matrix", Type::MATRIX);
@@ -4498,19 +4498,6 @@ PointAnimation::SetBy (Point *value)
 		SetValue (PointAnimation::ByProperty, NULL);
 	else
 		SetValue (PointAnimation::ByProperty, Value (*value));
-}
-
-DependencyObject *
-ObjectKeyFrame::GetValue ()
-{
-	Value *value = DependencyObject::GetValue (ObjectKeyFrame::ValueProperty);
-	return value ? value->AsDependencyObject () : NULL;
-}
-
-void
-ObjectKeyFrame::SetValue (DependencyObject *value)
-{
-	DependencyObject::SetValue (ObjectKeyFrame::ValueProperty, Value (value));
 }
 
 KeyTime *
