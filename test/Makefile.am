@@ -81,27 +81,6 @@ run-unit-tests-harness:
 	$(MAKE) -C 2.0/moon-unit
 	MOONLIGHT_UNIT_HARNESS_LOG_DIRECTORY=$(srcdir)/test-run-data DRTLIST=2.0/moon-unit/site/drtlist.xml $(MAKE) run-xephyr
 
-gtksilver.dll: ../gtk/gtksilver.dll
-	cp ../gtk/gtksilver.dll .
-
-control.exe: control.cs 
-	gmcs -debug control.cs -pkg:gtk-sharp-2.0 -pkg:silverdesktop -r:gtksilver.dll
-
-download.exe: download.cs gtksilver.dll test-custom-element.dll
-	gmcs -debug download.cs -pkg:gtk-sharp-2.0 -pkg:silverdesktop -r:gtksilver.dll
-
-demo.exe: demo.cs gtksilver.dll 
-	gmcs -debug demo.cs -pkg:gtk-sharp-2.0 -pkg:silverdesktop -r:gtksilver.dll
-
-test-custom-element.dll: test-custom-element.cs
-	gmcs -pkg:silverdesktop /target:library test-custom-element.cs
-
-run: demo.exe
-	mono --debug demo.exe
-
-test: demo.exe
-	mono --debug demo.exe xaml/*xaml
-
 dist-hook:
 	cp -a $(srcdir)/xaml $(distdir)/xaml
 	find $(distdir)/xaml -name .svn | xargs rm -rf

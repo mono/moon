@@ -116,10 +116,6 @@
 	inputFile="test-colors.xaml"
 	masterFile10="../harness/masters/test-colorsMaster.png"
    />
-   <Test id="23"
-	inputFile="test-custom-element.xaml"
-	masterFile10="../harness/masters/test-custom-elementMaster.png"
-   />
    <Test id="25"
 	inputFile="test-double-keyspline-animation.xaml"
 	masterFile10="../harness/masters/test-double-keyspline-animationMaster.tif"

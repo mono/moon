@@ -1,5 +1,17 @@
 2009-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* demo.cs:
+	* control.cs:
+	* etest.xaml:
+	* Makefile.am:
+	* download.cs:
+	* drtlist.xml:
+	* xaml/drtlist.xml:
+	* test-custom-element.cs:
+	* xaml/test-custom-element.xaml: Delete some old files.
+
+2009-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* xaml/test-shape-path-overdraw.xaml:
 	* xaml/test-shape-path-overrdraw.xaml: Fix typo
 	  (test-shape-path-overrdraw.xaml ->
