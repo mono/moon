@@ -1,1 +1,6 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
+
+# System.Net.WebRequest creates an instance of System.Windows.Browser.Net.BrowserHttpWebRequest (a non-visible type inside
+# System.Windows.Browser.dll, platform code) using reflection so it needs to be SC
++SC-M: System.Type System.Net.WebRequest::GetBrowserHttpFromMoonlight()
+
