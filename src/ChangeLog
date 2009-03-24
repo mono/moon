@@ -1,3 +1,12 @@
+2009-03-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::Layout*Wrap*): Fixed to not give 0.0
+	actual_height extents if the text is "".
+
+	* textbox.cpp (TextBoxView::UpdateText): Make sure that we never
+	set NULL text on the layout so that we won't crash inside
+	TextLayout::GetCursor() inside g_utf8_offset_to_pointer().
+
 2009-03-24  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Don't attempt to convert values if we are going to

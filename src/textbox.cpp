@@ -2284,7 +2284,9 @@ TextBoxView::UpdateText ()
 		layout->SetText (passwd->str, passwd->len);
 		g_string_free (passwd, true);
 	} else {
-		layout->SetText (textbox->GetText (), -1);
+		const char *text = textbox->GetText ();
+		
+		layout->SetText (text ? text : "", -1);
 	}
 }
 

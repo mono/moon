@@ -872,6 +872,11 @@ TextLayout::LayoutWrapWithOverflow ()
 			line->height = MAX (line->height, font->Height ());
 		}
 		
+		if (*inptr == '\0') {
+			actual_height += line->height;
+			break;
+		}
+		
 		// layout until attrs change
 		while (inptr < inend) {
 			linebreak = false;
@@ -1022,6 +1027,11 @@ TextLayout::LayoutNoWrap ()
 		if (!OverrideLineHeight ()) {
 			line->descend = MIN (line->descend, font->Descender ());
 			line->height = MAX (line->height, font->Height ());
+		}
+		
+		if (*inptr == '\0') {
+			actual_height += line->height;
+			break;
 		}
 		
 		// layout until attrs change
@@ -1550,6 +1560,11 @@ TextLayout::LayoutWrap ()
 			line->height = MAX (line->height, font->Height ());
 		}
 		
+		if (*inptr == '\0') {
+			actual_height += line->height;
+			break;
+		}
+		
 		// layout until attrs change
 		while (inptr < inend) {
 			linebreak = false;
@@ -1741,6 +1756,7 @@ TextLayout::Layout ()
 	actual_width = 0.0;
 	is_wrapped = false;
 	ClearLines ();
+	count = 0;
 	
 	if (text == NULL)
 		return;
