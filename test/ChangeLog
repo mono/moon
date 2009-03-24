@@ -1,5 +1,12 @@
 2009-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml/test-shape-path-overdraw.xaml:
+	* xaml/test-shape-path-overrdraw.xaml: Fix typo
+	  (test-shape-path-overrdraw.xaml ->
+	  test-shape-path-overdraw.xaml).
+
+2009-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* xaml/test-type-with-case-mismatch.html:
 	* xaml/test-createFromXaml-nodownload.html:
 	* xaml/test-setsource-with-downloader.html:
