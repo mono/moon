@@ -56,6 +56,8 @@ public:
 	static void Copy (const Uri *from, Uri *to);
 
 	bool operator== (const Uri &v) const;
-};
 
+	/* @GenerateCBinding */
+	static bool Equals (const Uri *left, const Uri *right);
+};
 #endif /* __URI_H__ */

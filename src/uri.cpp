@@ -525,3 +525,14 @@ Uri::operator== (const Uri &v) const
 	// we intentionally don't compare original strings
 	return true;
 }
+
+bool
+Uri::Equals (const Uri *left, const Uri *right)
+{
+	if (!left && !right)
+		return true;
+	if (!left || !right)
+		return false;
+	return left->operator==(*right);
+}
+
