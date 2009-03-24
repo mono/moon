@@ -232,6 +232,11 @@ namespace MoonTest.System.Windows
 			Assert.Throws<ArgumentException>(delegate {
 				b.Style = style;
 			});
+			
+			b = new Button ();
+			style = new Style (typeof (Button));
+			style.Setters.Add (new Setter (FrameworkElement.TagProperty, "str"));
+			b.Style = style;
 		}
 
 		[TestMethod]
