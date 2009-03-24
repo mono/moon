@@ -1,5 +1,17 @@
 2009-03-24  Alan McGovern  <amcgovern@novell.com>
 
+	* ManagedXamlLoader.cs: 1) We need to special case the
+	  scenario where we are setting a Binding object to a
+	  FrameworkElement and convert it to a
+	  FrameworkElement.SetBinding call.
+	2) If we are setting a property from a string value, we need
+	  to check if it's a {StaticResource} first.
+	3) We need to pass the PropertyInfo to ConvertType otherwise
+	  we won't get the right type converter for properties which
+	  have a [TypeConverter] attribute.
+
+2009-03-24  Alan McGovern  <amcgovern@novell.com>
+
 	* MarkupExpressionParser.cs: When parsing a markup string, we
 	  only throw exceptions for StaticResources not being found if
 	  the expression is not a {Binding} expression.

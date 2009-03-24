@@ -372,7 +372,7 @@ namespace Mono.Xaml
 				}
 			}
 
-			o_value = ConvertType (set_params [1].ParameterType, o_value);
+			o_value = ConvertType (null, set_params [1].ParameterType, o_value);
 
 			set_method.Invoke (null, new object [] {target, o_value});
 			return true;
@@ -672,6 +672,12 @@ namespace Mono.Xaml
 			error = null;
 			object obj_value = Value.ToObject (null, value_ptr);
 
+			if (obj_value is Binding && target is FrameworkElement) {
+				FrameworkElement fe = (FrameworkElement) target;
+				fe.SetBinding (DependencyProperty.Lookup (fe.GetKind (), pi.Name), (Binding) obj_value);
+				return true;
+			};
+
 			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
 				IList the_list = (IList) pi.GetValue (target, null);
 
@@ -773,6 +779,16 @@ namespace Mono.Xaml
 					pi.SetValue (target, obj_value, null);
 					return true;
 				}
+				
+				if (MarkupExpressionParser.IsStaticResource (str_value)) {
+					// FIXME: The NUnit tests show we need to use the parent of the target to resolve
+					// the StaticResource, but are there any cases where we should use the actual target?
+					MarkupExpressionParser p = new MarkupExpressionParser ((DependencyObject) NativeDependencyObjectHelper.Lookup (target_parent_ptr), "", parser, target_data);
+					obj_value = p.ParseExpression (ref str_value);
+					obj_value = ConvertType (pi, pi.PropertyType, obj_value);
+					pi.SetValue (target, obj_value, null);
+					return true;
+				}
 
 				Helper.SetPropertyFromString (target, pi, str_value, out error, out unmanaged_value);
 
@@ -784,17 +800,17 @@ namespace Mono.Xaml
 				obj_value = Value.ToObject (pi.PropertyType, value_ptr);
 			}
 
-			obj_value = ConvertType (pi.PropertyType, obj_value);
+			obj_value = ConvertType (pi, pi.PropertyType, obj_value);
 			pi.SetValue (target, obj_value, null);
 			return true;
 		}
 
-		private static object ConvertType (Type t, object value)
+		private static object ConvertType (PropertyInfo pi, Type t, object value)
 		{
 			if (value.GetType () == t)
 				return value;
 
-			TypeConverter converter = Helper.GetConverterFor (t);
+			TypeConverter converter = Helper.GetConverterFor (pi, t);
 
 			if (converter != null && converter.CanConvertFrom (value.GetType ()))
 				return converter.ConvertFrom (value);
