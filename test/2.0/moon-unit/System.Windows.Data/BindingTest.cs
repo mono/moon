@@ -751,6 +751,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void XamlActualBinding ()
 		{
 			Canvas c = (Canvas) XamlReader.Load (@"
@@ -767,6 +768,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 			
 		[TestMethod]
+		[MoonlightBug]
 		public void XamlDataContextWithBindingElement()
 		{
 			Canvas c = (Canvas)XamlReader.Load(@"
@@ -786,6 +788,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 			
 		[TestMethod]
+		[MoonlightBug]
 		public void XamlDataContextWithBindingElement2 ()
 		{
 			Canvas c = (Canvas) XamlReader.Load (@"
