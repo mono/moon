@@ -1,5 +1,11 @@
 2009-03-24  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Don't attempt to convert values if we are going to
+	managed anyways. This prevents things that can be created easily
+	from strings being created from expressions.
+
+2009-03-24  Jackson Harper  <jackson@ximian.com>
+
 	* animation2.h:
 	* animation.cpp: Use an OBJECT for the Value property.
 	* dependencyproperty.g.cpp: Regen

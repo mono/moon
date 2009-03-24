@@ -4367,7 +4367,7 @@ start_parse:
 			if (!need_setvalue)
 				continue;
 
-			if (!v)
+			if (!v && !need_managed)
 				value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2());
 
 			Type::Kind propKind = prop->GetPropertyType ();
