@@ -1,5 +1,9 @@
 2009-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Fix breakage.
+
+2009-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.h:
 	* pipeline.cpp: Add a PassThroughDecoder for when the demuxer
 	  gives ready-to-present data. Make it handle pcm, rgb, rgba

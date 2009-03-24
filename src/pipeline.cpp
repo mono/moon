@@ -2047,8 +2047,8 @@ IMediaStream::CreateCodec (int codec_id)
 			result [current++] = (char) c;
 		if (d)
 			result [current++] = (char) d;
-		*/
 		result [current] = 0;
+		*/
 		return g_strdup ("<unknown>");
 	}
 	
