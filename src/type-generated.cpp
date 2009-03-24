@@ -343,6 +343,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::PANEL] = new Type (Type::PANEL, Type::FRAMEWORKELEMENT, false, "Panel", "PANEL", 0, 16, NULL, (create_inst_func *) panel_new, "Children");
 	types [(int) Type::PARALLELTIMELINE] = new Type (Type::PARALLELTIMELINE, Type::TIMELINEGROUP, false, "ParallelTimeline", "PARALLELTIMELINE", 0, 2, NULL, (create_inst_func *) parallel_timeline_new, NULL);
 	types [(int) Type::PARSERERROREVENTARGS] = new Type (Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, false, "ParserErrorEventArgs", "PARSERERROREVENTARGS", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::PASSTHROUGHDECODER] = new Type (Type::PASSTHROUGHDECODER, Type::IMEDIADECODER, false, "PassThroughDecoder", "PASSTHROUGHDECODER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::PASSWORDBOX] = new Type (Type::PASSWORDBOX, Type::TEXTBOX, false, "PasswordBox", "PASSWORDBOX", 0, 21, NULL, (create_inst_func *) password_box_new, NULL);
 	types [(int) Type::PATH] = new Type (Type::PATH, Type::SHAPE, false, "Path", "PATH", 0, 16, NULL, (create_inst_func *) path_new, NULL);
 	types [(int) Type::PATHFIGURE] = new Type (Type::PATHFIGURE, Type::DEPENDENCY_OBJECT, false, "PathFigure", "PATHFIGURE", 0, 1, NULL, (create_inst_func *) path_figure_new, "Segments");

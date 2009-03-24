@@ -31,6 +31,7 @@
 #define CODEC_WMAV1 0x160
 #define CODEC_WMAV2 0x161
 #define CODEC_WMAV3 0x162
+#define CODEC_PCM   0x1
 
 #define MAX_VIDEO_HEIGHT	2048
 #define MAX_VIDEO_WIDTH		2048
@@ -1266,6 +1267,29 @@ public:
 	void MarkerFound (MediaFrame *frame);
 	
 	virtual void FrameEnqueued ();
+};
+
+class PassThroughDecoder : public IMediaDecoder {
+protected:
+	virtual ~PassThroughDecoder () {}
+	virtual void DecodeFrameAsyncInternal (MediaFrame *frame);
+	virtual void OpenDecoderAsyncInternal ();
+
+public:
+	PassThroughDecoder (Media *media, IMediaStream *stream);
+	virtual void Dispose ();
+	
+	virtual const char *GetName () { return "PassThroughDecoder"; }
+};
+
+class PassThroughDecoderInfo : public DecoderInfo {
+public:
+	virtual bool Supports (const char *codec);
+	virtual IMediaDecoder *Create (Media *media, IMediaStream *stream)
+	{
+		return new PassThroughDecoder (media, stream);
+	}
+	virtual const char *GetName () { return "PassThroughDecoder"; }
 };
 
 class NullDecoder : public IMediaDecoder {

@@ -1,3 +1,14 @@
+2009-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.h:
+	* pipeline.cpp: Add a PassThroughDecoder for when the demuxer
+	  gives ready-to-present data. Make it handle pcm, rgb, rgba
+	  and yv12 formats.
+
+	* type.h:
+	* value.h:
+	* type-generated.cpp: Regenerated.
+
 2009-03-23  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* deepzoomimagetilesource.h|cpp: pass a *Uri to the ctor, related

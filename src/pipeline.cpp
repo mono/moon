@@ -317,6 +317,7 @@ Media::Initialize ()
 	}
 #endif
 	
+	Media::RegisterDecoder (new PassThroughDecoderInfo ());
 	Media::RegisterDecoder (new NullDecoderInfo ());
 }
 
@@ -2020,6 +2021,7 @@ IMediaStream::CreateCodec (int codec_id)
 	case CODEC_WMAV1: return g_strdup ("wmav1");
 	case CODEC_WMAV2: return g_strdup ("wmav2");
 	case CODEC_WMAV3: return g_strdup ("wmav3");
+	case CODEC_PCM: return g_strdup ("pcm");
 	default:
 		g_warning ("IMediaStream::CreateCodec (%i): Not implemented.\n", codec_id);
 		
@@ -2035,7 +2037,7 @@ IMediaStream::CreateCodec (int codec_id)
 		
 		g_return_val_if_fail (size >= 0 && size <= 4, g_strdup (""));
 		
-		result = (char *) g_malloc (size);
+		result = (char *) g_malloc (size + 1);
 		current = 0;
 		if (a)
 			result [current++] = (char) a;
@@ -2046,7 +2048,7 @@ IMediaStream::CreateCodec (int codec_id)
 		if (d)
 			result [current++] = (char) d;
 		*/
-		
+		result [current] = 0;
 		return g_strdup ("<unknown>");
 	}
 	
@@ -3435,6 +3437,70 @@ MediaWork::~MediaWork ()
 	
 	closure->unref ();
 	closure = NULL;
+}
+
+/*
+ * PassThroughDecoderInfo
+ */
+
+bool
+PassThroughDecoderInfo::Supports (const char *codec)
+{
+	const char *video_fourccs [] = { "yv12", "rgb", "rgba", NULL };
+	const char *audio_fourccs [] = { "pcm", NULL };
+	
+	for (int i = 0; video_fourccs [i] != NULL; i++)
+		if (!strcmp (codec, video_fourccs [i]))
+			return true;
+
+	for (int i = 0; audio_fourccs [i] != NULL; i++)
+		if (!strcmp (codec, audio_fourccs [i]))
+			return true;
+
+	return false;
+}
+
+/*
+ * PassThroughDecoder
+ */
+
+PassThroughDecoder::PassThroughDecoder (Media *media, IMediaStream *stream)
+	: IMediaDecoder (Type::PASSTHROUGHDECODER, media, stream)
+{
+}
+
+void
+PassThroughDecoder::Dispose ()
+{
+	IMediaDecoder::Dispose ();
+}
+
+void
+PassThroughDecoder::OpenDecoderAsyncInternal ()
+{
+	const char *fourcc = GetStream ()->GetCodec ();
+	
+	if (!strcmp (fourcc, "yv12")) {
+		SetPixelFormat (MoonPixelFormatYUV420P);
+	} else if (!strcmp (fourcc, "rgb")) {
+		SetPixelFormat (MoonPixelFormatRGB32);
+	} else if (!strcmp (fourcc, "rgba")) {
+		ReportErrorOccurred (g_strdup_printf ("Pixel format not implemented: %s", fourcc));
+		return;
+	} else if (!strcmp (fourcc, "pcm")) {
+		// nothing to do here
+	} else {
+		ReportErrorOccurred (g_strdup_printf ("Unknown fourcc: %s", fourcc));
+		return;
+	}
+	
+	ReportOpenDecoderCompleted ();
+}
+
+void
+PassThroughDecoder::DecodeFrameAsyncInternal (MediaFrame *frame)
+{
+	ReportDecodeFrameCompleted (frame);
 }
 
 /*
