@@ -132,13 +132,14 @@ namespace MoonTest.System.Windows {
 			bool b_loaded_sync = false;
 			bool c_loaded = false;
 			bool c_loaded_sync = false;
-			b.Loaded += (o, e) => b_loaded = true;
+			bool b_loaded_first = false;
+			b.Loaded += (o, e) => { b_loaded = true; b_loaded_first = !c_loaded; };
 			c.Loaded += (o, e) => c_loaded = true;
 			Enqueue (() => { TestPanel.Children.Add (c);
 					 b_loaded_sync = b_loaded;
 					 c_loaded_sync = c_loaded;
 				} );
-			EnqueueConditional (() => b_loaded && !b_loaded_sync && c_loaded && !c_loaded_sync);
+			EnqueueConditional (() => b_loaded && !b_loaded_sync && c_loaded && !c_loaded_sync && b_loaded_first);
 			EnqueueTestComplete ();
 		}
 
