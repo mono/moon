@@ -94,6 +94,10 @@ namespace System.Windows.Data {
 				return path;
 			}
 			set {
+				if (value != null) {
+					if (value.NativeDP != IntPtr.Zero)
+						throw new ArgumentException ("PropertyPaths which are instantiated with a DependencyProperty are not supported");
+				}
 				CheckSealed ();
 				path = value;
 			}

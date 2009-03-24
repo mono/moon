@@ -1,5 +1,11 @@
 2009-03-24  Alan McGovern  <amcgovern@novell.com>
 
+	* Binding.cs: Bindings cannot use PropertyPaths which are
+	  instantiated with DependencyProperties, they must be
+	  instantiated with a string.
+
+2009-03-24  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: 1) When updating from an
 	  INotifyPropertyChanged, mark the binding as 'Updating' so
 	  that it doesn't get removed when calling
