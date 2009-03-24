@@ -94,14 +94,91 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
+		public void LoadedTest1 ()
+		{
+			bool loaded = false;
+			ConcreteFrameworkElement element = new ConcreteFrameworkElement ();
+			element.Loaded += (o, e) => loaded = true;
+			Enqueue (() => TestPanel.Children.Add (element));
+			EnqueueConditional (() => loaded );
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void LoadedTest2 ()
+		{
+			Button b = new Button ();
+			bool loaded = false;
+			bool loaded_sync = false;
+			b.Loaded += (o, e) => loaded = true;
+			Enqueue (() => { TestPanel.Children.Add (b); loaded_sync = loaded; } );
+			EnqueueConditional (() => loaded && !loaded_sync );
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void LoadedTest3 ()
+		{
+			Canvas c = new Canvas ();
+			Button b = new Button ();
+
+			c.Children.Add (b);
+
+			bool b_loaded = false;
+			bool b_loaded_sync = false;
+			bool c_loaded = false;
+			bool c_loaded_sync = false;
+			b.Loaded += (o, e) => b_loaded = true;
+			c.Loaded += (o, e) => c_loaded = true;
+			Enqueue (() => { TestPanel.Children.Add (c);
+					 b_loaded_sync = b_loaded;
+					 c_loaded_sync = c_loaded;
+				} );
+			EnqueueConditional (() => b_loaded && !b_loaded_sync && c_loaded && !c_loaded_sync);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void LoadedTest4 ()
+		{
+			Canvas c = (Canvas)XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Button Content=""hi"" />
+</Canvas>
+");
+
+			Button b = (Button)c.Children[0];
+
+			bool b_loaded = false;
+			bool b_loaded_sync = false;
+			bool c_loaded = false;
+			bool c_loaded_sync = false;
+			b.Loaded += (o, e) => b_loaded = true;
+			c.Loaded += (o, e) => c_loaded = true;
+			Enqueue (() => { TestPanel.Children.Add (c);
+					 b_loaded_sync = b_loaded;
+					 c_loaded_sync = c_loaded;
+				} );
+			EnqueueConditional (() => b_loaded && !b_loaded_sync && c_loaded && !c_loaded_sync);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		[MoonlightBug]
 		public void LayoutUpdated ()
 		{
 			bool layoutUpdated = false;
 			bool loaded = false;
 			ConcreteFrameworkElement element = new ConcreteFrameworkElement ();
-			element.LayoutUpdated += (o, e) => layoutUpdated = true;
-			element.Loaded += (o, e) => loaded = true;
+			element.LayoutUpdated += (o, e) => { layoutUpdated = true; Console.WriteLine ("layoutUpdated"); };
+			element.Loaded += (o, e) => { loaded = true; Console.WriteLine ("loaded!"); };
 			Enqueue (() => TestPanel.Children.Add (element));
 			EnqueueConditional (() => loaded );
 			EnqueueConditional (() => layoutUpdated);

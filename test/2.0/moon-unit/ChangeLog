@@ -1,3 +1,9 @@
+2009-03-23  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows/FrameworkElementTest.cs: add some tests to figure
+	out the semantics of the Loaded event ordering.  That's the target
+	for tomorrow.
+
 2009-03-23  Jb Evain  <jbevain@novell.com>
 
 	* security/ReflectionEmitTest.cs
