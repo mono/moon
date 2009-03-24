@@ -446,6 +446,12 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		OBJECT_TO_NPVARIANT (timespan, *result);
 		break;
 	}
+	case Type::URI: {
+		char *uri_string = v->AsUri() ? v->AsUri()->ToString() : NULL;
+		string_to_npvariant (uri_string ? uri_string : "", result);
+		g_free (uri_string);
+		break;
+	}
 	case Type::COLOR: {
 		Color *c = v->AsColor ();
 		gint32 color = ((((gint32)(c->a * 255.0)) << 24) | (((gint32)(c->r * 255.0)) << 16) | 

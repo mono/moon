@@ -1,3 +1,8 @@
+2009-03-23  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (value_to_variant): getting a Uri in the plugin
+	returns a string.
+
 2009-03-21  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-class.[h|cpp]: Add html_object_invoke_self
