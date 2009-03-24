@@ -13,6 +13,7 @@ namespace Mono.Xaml {
 
 	internal class MarkupExpressionParser {
 
+		private bool parsingBinding;
 		private DependencyObject target;
 		private string attribute_name;
 		private IntPtr parser;
@@ -100,6 +101,7 @@ namespace Mono.Xaml {
 		public Binding ParseBinding (ref string expression)
 		{
 			Binding binding = new Binding ();
+			parsingBinding  = true;
 			char next;
 
 			if (expression [0] == '}')
@@ -123,6 +125,7 @@ namespace Mono.Xaml {
 				HandleProperty (binding, piece, ref remaining);
 			} while (true);
 
+			parsingBinding = false;
 			return binding;
 		}
 
@@ -156,6 +159,8 @@ namespace Mono.Xaml {
 			IntPtr value_ptr = NativeMethods.xaml_lookup_named_item (parser, target_data, name);
 			object o = Value.ToObject (null, value_ptr);
 
+			if (o == null && !parsingBinding)
+				throw new System.Windows.Markup.XamlParseException (string.Format ("Resource '{0}' must be available as a static resource", name));
 			return o;
 		}
 
@@ -200,10 +205,8 @@ namespace Mono.Xaml {
 				b.Source = value;
 				break;
 			case "Converter":
-				if (value == null)
-					throw new Exception ("A Binding Converter must be available as StaticResouce.");
 				IValueConverter value_converter = value as IValueConverter;
-				if (value_converter == null)
+				if (value_converter == null && value != null)
 					throw new Exception ("A Binding Converter must be of type IValueConverter.");
 				b.Converter = value_converter;
 				break;
