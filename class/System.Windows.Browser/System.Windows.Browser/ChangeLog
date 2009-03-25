@@ -1,3 +1,8 @@
+2009-03-25  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs: validation was the wrong way around, 
+	fix and make it clear which type it is we're checking
+
 2009-03-21  Andreia Gaita  <avidigal@novell.com>
 
 	* HtmlObject.cs, ScriptObject.cs:
