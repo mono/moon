@@ -1,3 +1,7 @@
+2009-03-25  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleImage.cs: ViewportChanged is a RoutedEvent
+
 2009-03-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TextBox.cs: Connect to our CursorPositionChanged event so we can

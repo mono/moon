@@ -201,9 +201,9 @@ namespace System.Windows.Controls {
 
 		void InvokeViewportChanged ()
 		{
-			EventHandler h = (EventHandler) EventList [ViewportChangedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [ViewportChangedEvent];
 			if (h != null)
-				h (this, EventArgs.Empty);
+				h (this, null);
 		}
 	}
 }
