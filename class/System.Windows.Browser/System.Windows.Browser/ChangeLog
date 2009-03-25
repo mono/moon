@@ -1,3 +1,9 @@
+2009-03-25  Geoff Norton  <gnorton@novell.com>
+
+	* HtmlWindow.cs: Don't pass managed objects into the mozilla code,
+	and lets not open a new window for an api that requests that we 
+	stay in the same window.
+
 2009-03-25  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectWrapper.cs: validation was the wrong way around, 
