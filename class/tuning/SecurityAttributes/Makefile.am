@@ -103,7 +103,7 @@ $(MERGED_SECURITY_ATTRIBUTES_INFO): $(SECATTRS) merge.exe
 validate: find-sc.exe
 	mkdir -p moonlight
 	mono find-sc.exe $(MOONLIGHT_PLATFORM_CODE) moonlight
-	diff compatibility/*.compat.sc moonlight/*.compat.sc
+	diff -u compatibility moonlight
 
 clean-data:
 	rm -f *.secattr

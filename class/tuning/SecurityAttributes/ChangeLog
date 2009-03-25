@@ -1,36 +1,47 @@
-2008-03-12  Sebastien Pouliot  <sebastien@ximian.com> 
+2009-03-25  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* detect-sc.cs: The idea of SC API with IntPtr (to reduce the
+	number of SSC to audit) was not a good one. It reduced the ones
+	in System.Windows.dll but added quite more elsewhere. Removing
+	this saves about 100 SSC (total). Also avoid signature checks
+	on visible API so we don't add extra SC where SL don't have them.
+	* Makefile.am: Fix 'validate' target to let us compare the end
+	result of applying the security attributes with the public API
+	of Silverlight.
+
+2009-03-12  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* CecilRocks.cs: Fix logic for IsSecurity[Safe]Critical rocks
 
-2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
+2009-03-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Adjust detect target to look at a single directory
 	since all assemblies are now available from a single location.
 	Make the stored data files a dependency to re-merge the attributes
 
-2008-03-10  Sebastien Pouliot  <sebastien@ximian.com>
+2009-03-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile: Remove. Replacedby Makefile.am
 	* Makefile.am: New
 
-2008-02-26  Sebastien Pouliot  <sebastien@ximian.com>
+2009-02-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* merge.cs: Smarter merge to avoid duplicate (or unneeded) attributes
 	on methods when a type is decorated with SC or SSC.
 
-2008-02-25  Sebastien Pouliot  <sebastien@ximian.com>
+2009-02-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* merge.cs: Avoid duplicates in the merged files (e.g. an SC from
 	both compatibility and automatic).
 
-2008-02-19  Sebastien Pouliot  <sebastien@ximian.com>
+2009-02-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* detect-sc.cs, detect-ssc.cs: Accept multiple input directories
 	to find the platform assemblies (and deal with the current /mcs
 	and /moon locations).
 	* Makefile.am: Detect platform assemblies in {x}/mcs and {x}/moon
 
-2008-02-17  Sebastien Pouliot  <sebastien@ximian.com>
+2009-02-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* detect-sc.cs: Tool to detect methods that *likely* needs a
 	[SecurityCritical] attribute to execute under the CoreCLR

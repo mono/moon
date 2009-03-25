@@ -45,13 +45,6 @@ class Program {
 	{
 		string fullname = type.FullName;
 
-		// that's unlikely something usable to transparent code
-		switch (fullname) {
-		case "System.IntPtr":
-		case "System.UIntPtr":
-			return false;
-		}
-
 		// pointers can only be used by fixed/unsafe code
 		return !fullname.EndsWith ("*");
 	}
@@ -95,7 +88,8 @@ class Program {
 			sc = !String.IsNullOrEmpty (comment);
 		}
 
-		if (!sc && method.HasParameters) {
+		// skip signature check for visible API (we get them from find-sc)
+		if (!sc && method.HasParameters && !method.IsVisible ()) {
 			// compilers will add public stuff like: System.Action`1::.ctor(System.Object,System.IntPtr)
 			if (!method.IsConstructor || (method.DeclaringType as TypeDefinition).BaseType.FullName != "System.MulticastDelegate") {
 				foreach (ParameterDefinition p in method.Parameters) {
@@ -108,7 +102,8 @@ class Program {
 			}
 		}
 
-		if (!sc) {
+		// skip signature check for visible API (we get them from find-sc)
+		if (!sc && !method.IsVisible ()) {
 			TypeReference rtype = method.ReturnType.ReturnType;
 			if (!CheckType (rtype)) {
 				sc = true;
