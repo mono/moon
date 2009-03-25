@@ -413,8 +413,10 @@ Value::FreeValue ()
 		g_free (u.size);
 		break;
 	case Type::URI:
-		u.uri->Free();
-		g_free (u.uri);
+		if (u.uri) {
+			u.uri->Free ();
+			g_free (u.uri);
+		}
 		break;
 	case Type::REPEATBEHAVIOR:
 		g_free (u.repeat);
