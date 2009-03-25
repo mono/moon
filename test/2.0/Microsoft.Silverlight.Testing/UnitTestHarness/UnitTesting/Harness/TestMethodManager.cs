@@ -108,9 +108,11 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
             Enqueue(LogStartMessage);
 
             // [Bug] attributes that are not fixed modify test method logic
-            BugAttribute bug = ReflectionUtility.GetAttribute(_testMethod, typeof(BugAttribute)) as BugAttribute;
-            if (bug != null)
-            {
+            bool known_issue = false;
+            foreach (BugAttribute bug in ReflectionUtility.GetAttributes (_testMethod.Method, typeof (BugAttribute))) {
+                if (bug == null)
+                    continue;
+
                 if (!bug.Fixed)
                 {
                     if (bug.Platforms != null)
@@ -129,8 +131,10 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
                         _bugAttributePresent = true;
                     }
 
-                    if (_bugAttributePresent)
+                    if (_bugAttributePresent) {
                         Enqueue (() => LogWriter.KnownIssue (bug.Description));
+                        break;
+                    }
                 }
             }
 
