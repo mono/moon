@@ -233,7 +233,7 @@ namespace System.Windows.Data {
 			                           Binding.ConverterParameter,
 			                           Binding.ConverterCulture ?? Helper.DefaultCulture);
 			
-			if (defined_converter && !value.GetType ().IsSubclassOf (Property.PropertyType)) {
+			if (defined_converter && value != null && !value.GetType ().IsSubclassOf (Property.PropertyType)) {
 				converter = new MoonlightValueConverter ();
 				
 				value = converter.Convert (value,

@@ -1,3 +1,9 @@
+2009-03-25  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: Null check value before
+	  referencing it. Allows a datagrid test to complete
+	  successfully.
+
 2009-03-24  Alan McGovern  <amcgovern@novell.com>
 
 	* Binding.cs: Bindings cannot use PropertyPaths which are
