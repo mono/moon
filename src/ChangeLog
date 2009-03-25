@@ -1,5 +1,14 @@
 2009-03-24  Chris Toshok  <toshok@ximian.com>
 
+	* playlist.cpp (PlaylistParser::OnASXStartElement): use
+	uri->IsScheme()
+	(PlaylistParser::OnSMILStartElement): use uri->IsScheme()
+
+	* uri.h, uri.cpp (struct Uri): add "bool IsScheme(const char
+	*scheme)" so we can stop twiddling internals.
+
+2009-03-24  Chris Toshok  <toshok@ximian.com>
+
 	* downloader.cpp: s/protocol/scheme for Uris
 
 	* playlist.cpp: s/protocol/scheme for Uris

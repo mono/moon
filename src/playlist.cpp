@@ -1626,11 +1626,11 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 						failed = true;
 					} else if (uri->scheme == NULL) {
 						failed = true;
-					} else if (g_ascii_strcasecmp (uri->scheme, "http") && 
-						   g_ascii_strcasecmp (uri->scheme, "https") && 
-						   g_ascii_strcasecmp (uri->scheme, "mms") &&
-						   g_ascii_strcasecmp (uri->scheme, "rtsp") && 
-						   g_ascii_strcasecmp (uri->scheme, "rstpt")) {
+					} else if (uri->IsScheme ("http") && 
+						   uri->IsScheme ("https") && 
+						   uri->IsScheme ("mms") &&
+						   uri->IsScheme ("rtsp") && 
+						   uri->IsScheme ("rstpt")) {
 						failed = true;
 					}
 
@@ -2089,11 +2089,11 @@ PlaylistParser::OnSMILStartElement (const char *name, const char **attrs)
 						failed = true;
 					} else if (uri->scheme == NULL) {
 						failed = true;
-					} else if (g_ascii_strcasecmp (uri->scheme, "http") && 
-						   g_ascii_strcasecmp (uri->scheme, "https") && 
-						   g_ascii_strcasecmp (uri->scheme, "mms") &&
-						   g_ascii_strcasecmp (uri->scheme, "rtsp") && 
-						   g_ascii_strcasecmp (uri->scheme, "rstpt")) {
+					} else if (uri->IsScheme ("http") && 
+						   uri->IsScheme ("https") && 
+						   uri->IsScheme ("mms") &&
+						   uri->IsScheme ("rtsp") && 
+						   uri->IsScheme ("rstpt")) {
 						failed = true;
 					}
 

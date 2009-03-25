@@ -561,3 +561,14 @@ Uri::Equals (const Uri *left, const Uri *right)
 	return left->operator==(*right);
 }
 
+bool
+Uri::IsScheme (const char *scheme)
+{
+	if (!!this->scheme != !!scheme)
+		return false;
+
+	if (this->scheme)
+		return !g_ascii_strcasecmp (this->scheme, scheme);
+
+	return true;
+}
