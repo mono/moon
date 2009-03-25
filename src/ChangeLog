@@ -1,3 +1,8 @@
+2009-03-25  Andreia Gaita  <avidigal@novell.com>
+
+	* clock.cpp: Refresh the clock's duration, it might have changed
+	after it's creation
+
 2009-03-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* value.cpp (Value::Value): If the input value has a NULL uri,

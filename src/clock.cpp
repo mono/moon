@@ -1215,6 +1215,7 @@ Clock::Reset ()
 	is_paused = false;
 	has_started = false;
 	was_stopped = false;
+	GetNaturalDuration (); // ugh
 }
 
 void
