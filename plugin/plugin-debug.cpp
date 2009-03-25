@@ -72,18 +72,22 @@ timespan_to_str (TimeSpan ts)
 static void
 reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const char *type_name, Value *value)
 {
+	DependencyObject *dobj;
 	const char *str = NULL;
 	char *buf = NULL;
 	
 	if (value && value->Is (Type::DEPENDENCY_OBJECT)) {
+		dobj = value->AsDependencyObject ();
+		
 		gtk_tree_store_set (store, node,
 				    COL_NAME, name,
-				    COL_TYPE_NAME, value->AsDependencyObject()->GetTypeName(),
+				    COL_TYPE_NAME, dobj ? dobj->GetTypeName () : "null",
 				    COL_VALUE, "",
 				    COL_ELEMENT_PTR, NULL,
 				    -1);
 		
-		reflect_dependency_object_in_tree (value->AsDependencyObject(), store, node, true);
+		if (dobj)
+			reflect_dependency_object_in_tree (dobj, store, node, true);
 		return;
 	}
 	
