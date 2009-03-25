@@ -175,10 +175,6 @@ namespace Mono {
 					GCHandle handle = Helper.GCHandleFromIntPtr (managed_object);
 					return handle.Target;
 
-				case Kind.BINDING:
-					return new Binding (val->u.p);
-
-				case Kind.BINDINGEXPRESSION:
 				case Kind.STRING: {
 					string str = Helper.PtrToStringAuto (val->u.p);
 					if (type == null)

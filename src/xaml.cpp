@@ -52,7 +52,6 @@
 #include "template.h"
 #include "style.h"
 #include "application.h"
-#include "binding.h"
 #include "thickness.h"
 #include "cornerradius.h"
 #include "deployment.h"
@@ -2900,7 +2899,6 @@ bool is_managed_kind (Type::Kind kind)
 	if (kind == Type::MANAGED ||
 	    kind == Type::OBJECT ||
 	    kind == Type::URI ||
-	    kind == Type::BINDING ||
 	    kind == Type::MANAGEDTYPEINFO ||
 	    kind == Type::DEPENDENCYPROPERTY)
 		return true;
@@ -4668,108 +4666,6 @@ xaml_markup_parse_binding (const char **markup, XamlMarkupParseError *err)
 	return binding;
 }
 
-static BindingExpression *
-create_binding_expression_from_markup (XamlParserInfo *p, XamlElementInstance *item, const char *attr_name, BindingExtension *markup)
-{
-	BindingExtensionProperty *prop = markup->properties;
-	BindingExpression *expr;
-	Binding *binding;
-	Value *value;
-	bool enable;
-	int mode;
-	
-	expr = new BindingExpression ();
-	binding = new Binding ();
-	
-	// Note: the last property of the same type specified is the one that wins out.
-	
-	while (prop != NULL) {
-		switch (prop->type) {
-		case BindingExtensionPropertyConverter:
-			if (prop->markup == XamlMarkupExtensionStaticResource) {
-				if (!p->current_element || !p->LookupNamedResource (prop->value, &value)) {
-					parser_error (p, item->element_name, attr_name, 2024,
-						      "Could not locate StaticResource %s for Converter property %s.",
-						      prop->value, attr_name);
-					
-					binding->unref ();
-					expr->unref ();
-					
-					return NULL;
-				}
-			} else {
-				value = new Value (prop->value);
-			}
-			
-			expr->SetConverter (value);
-			break;
-		case BindingExtensionPropertyConverterCulture:
-			expr->SetConverterCulture (prop->value);
-			break;
-		case BindingExtensionPropertyConverterParameter:
-			if (prop->markup == XamlMarkupExtensionStaticResource) {
-				if (!p->current_element || !p->LookupNamedResource (prop->value, &value)) {
-					parser_error (p, item->element_name, attr_name, 2024,
-						      "Could not locate StaticResource %s for ConverterParameter property %s.",
-						      prop->value, attr_name);
-					
-					binding->unref ();
-					expr->unref ();
-					
-					return NULL;
-				}
-			} else {
-				value = new Value (prop->value);
-			}
-			
-			expr->SetConverterParameter (value);
-			break;
-		case BindingExtensionPropertyNotifyOnValidationError:
-			enable = !g_ascii_strcasecmp ("true", prop->value);
-			binding->SetNotifyOnValidationError (enable);
-			break;
-		case BindingExtensionPropertyValidatesOnExceptions:
-			enable = !g_ascii_strcasecmp ("true", prop->value);
-			binding->SetValidatesOnExceptions (enable);
-			break;
-		case BindingExtensionPropertySource:
-			if (prop->markup == XamlMarkupExtensionStaticResource && p->current_element) {
-				if (!p->LookupNamedResource (prop->value, &value)) {
-					parser_error (p, item->element_name, attr_name, 2024,
-						      "Could not locate StaticResource %s for Source property %s.",
-						      prop->value, attr_name);
-					
-					binding->unref ();
-					expr->unref ();
-					
-					return NULL;
-				}
-				
-				if (value->Is (Type::DEPENDENCY_OBJECT))
-					expr->SetSource (value->AsDependencyObject ());
-				
-				delete value;
-			}
-			break;
-		case BindingExtensionPropertyMode:
-			if ((mode = enums_str_to_int ("BindingMode", prop->value, true)) != -1)
-				binding->SetBindingMode ((BindingMode) mode);
-			break;
-		case BindingExtensionPropertyPath:
-			binding->SetPropertyPath (prop->value);
-			break;
-		default:
-			break;
-		}
-		
-		prop = prop->next;
-	}
-	
-	expr->SetBinding (binding);
-	
-	return expr;
-}
-
 static bool
 handle_markup_in_managed (const char* attr_value)
 {
@@ -4799,7 +4695,6 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 	FrameworkTemplate *template_parent;
 	BindingExtension *binding;
 	XamlMarkupParseError err;
-	BindingExpression *expr;
 	char *argument;
 	
 	// Find the beginning of the extension name
@@ -4847,54 +4742,6 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 			return true;
 		}
 		break;
-/*
-	case XamlMarkupExtensionTemplateBinding:
-		template_parent = p->GetTemplateParent (item);
-		
-		if (!(argument = xaml_markup_parse_argument (&inptr, &err)) || *inptr != '\0') {
-			switch (err) {
-			case XamlMarkupParseErrorEmpty:
-				parser_error (p, item->element_name, attr_name, 2024,
-					      "Empty TemplateBinding reference for property %s.",
-					      attr_name);
-				break;
-			default:
-				parser_error (p, item->element_name, attr_name, 2024,
-					      "Syntax error in TemplateBinding markup for property %s.",
-					      attr_name);
-				break;
-			}
-			
-			g_free (argument);
-			return false;
-		} else {
-			XamlTemplateBinding *b = new XamlTemplateBinding ((FrameworkElement *) item->GetManagedPointer (), attr_name, argument);
-			template_parent->AddXamlBinding (b);
-			b->unref ();
-			return false;
-		}
-		break;
-	case XamlMarkupExtensionBinding:
-		if (!(binding = xaml_markup_parse_binding (&inptr, &err)) || *inptr != '\0') {
-			parser_error (p, item->element_name, attr_name, 2024,
-				      "Error parsing Binding markup for property %s.",
-				      attr_name);
-			
-			delete binding;
-			return false;
-		}
-		
-		expr = create_binding_expression_from_markup (p, item, attr_name, binding);
-		delete binding;
-		
-		if (expr) {
-			*value = new Value (expr);
-			expr->unref ();
-			return true;
-		}
-		// if create_binding_expression_from_markup returns NULL, it's already called parser_error
-		return false;
-*/
 	default:
 		return true;
 	}

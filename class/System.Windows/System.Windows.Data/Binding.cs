@@ -39,6 +39,10 @@ namespace System.Windows.Data {
 		CultureInfo converterCulture;
 		object converterParameter;
 		PropertyPath path;
+		BindingMode mode;
+		bool notifyonerror;
+		bool validatesonex;
+		bool issealed;
 		object source;
 		
 		public IValueConverter Converter {
@@ -66,31 +70,24 @@ namespace System.Windows.Data {
 		}
 		
 		public BindingMode Mode {
-			get { return (BindingMode) NativeMethods.binding_get_binding_mode (Native); }
+			get { return mode; }
 			set {
 				CheckSealed ();
-				NativeMethods.binding_set_binding_mode (Native, (int) value);
+				mode = value;
 			}
 		}
 
-		internal IntPtr Native {
-			get; set;
-		}
-		
 		public bool NotifyOnValidationError {
-			get { return NativeMethods.binding_get_notify_on_validation_error (Native); }
+			get { return notifyonerror; }
 			set {
 				CheckSealed ();
-				NativeMethods.binding_set_notify_on_validation_error (Native, value);
+				notifyonerror = value;
 			}
 		}
 		
 		[TypeConverter (typeof (PropertyPathConverter))]
 		public PropertyPath Path {
 			get {
-				if (Sealed && path == null) {
-					path = new PropertyPath (NativeMethods.binding_get_property_path (Native));
-				}
 				return path;
 			}
 			set {
@@ -105,10 +102,10 @@ namespace System.Windows.Data {
 
 		internal bool Sealed {
 			get {
-				return NativeMethods.binding_get_is_sealed (Native);
+				return issealed;
 			}
 			private set {
-				NativeMethods.binding_set_is_sealed (Native, value);
+				issealed = value;
 			}
 		}
 		
@@ -121,10 +118,10 @@ namespace System.Windows.Data {
 		}
 		
 		public bool ValidatesOnExceptions {
-			get { return NativeMethods.binding_get_validates_on_exceptions (Native); }
+			get { return validatesonex; }
 			set {
 				CheckSealed ();
-				NativeMethods.binding_set_validates_on_exceptions (Native, value);
+				validatesonex = value;
 			}
 		}
 		
@@ -135,27 +132,12 @@ namespace System.Windows.Data {
 		}
 
 		public Binding (string path)
-			: this (NativeMethods.binding_new ())
 		{
 			if (path == null)
 				throw new ArgumentNullException ("path");
 			
 			Mode = BindingMode.OneWay;
 			Path = new PropertyPath (path);
-		}
-
-		internal Binding (IntPtr native)
-		{
-			Native = native;
-			Mono.NativeMethods.event_object_ref (native);
-		}
-
-		~Binding ()
-		{
-			if (Native != IntPtr.Zero) {
-				Mono.NativeMethods.event_object_unref (Native);
-				Native = IntPtr.Zero;
-			}
 		}
 
 		void CheckSealed ()
@@ -170,8 +152,6 @@ namespace System.Windows.Data {
 				return;
 			
 			Sealed = true;
-			if (path != null)
-				NativeMethods.binding_set_property_path (Native, path.Path);
 		}
 	}
 }

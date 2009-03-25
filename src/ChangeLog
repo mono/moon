@@ -1,3 +1,17 @@
+2009-03-25  Geoff Norton  <gnorton@novell.com>
+
+	* Makefile.am: 
+	* binding.cpp: 
+	* binding.h: 
+	* cbinding.cpp: 
+	* cbinding.h: 
+	* frameworkelement.cpp: 
+	* frameworkelement.h: 
+	* type-generated.cpp: 
+	* type.h: 
+	* value.h: 
+	* xaml.cpp:  Bindings live 100% in managed land now
+
 2009-03-25  Alan McGovern  <amcgovern@novell.com>
 
 	* animation.cpp: Revert the changes in r130133 as they

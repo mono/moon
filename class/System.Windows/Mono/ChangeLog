@@ -1,3 +1,10 @@
+2009-03-25  Geoff Norton  <gnorton@novell.com>
+
+	* GeneratedPInvokes.cs
+	* Kind.cs
+	* Types.g.cs
+	* Value.cs: Bindings live 100% in managed code now
+
 2009-03-25  Alan McGovern  <amcgovern@novell.com>
 
 	* MoonlightTypeConverter.cs: MoonlightTypeConverter should

@@ -158,11 +158,6 @@ protected:
 
 	bool default_style_applied;
 
-	// Methods for accessing a binding expression on a property
-	void SetBindingExpression (DependencyProperty *property, BindingExpressionBase *expr);
-	BindingExpressionBase *GetBindingExpression (DependencyProperty *property);
-	void ClearBindingExpression (DependencyProperty *property, BindingExpressionBase *expr);
-	
 	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 
 	virtual void ElementAdded (UIElement *item);

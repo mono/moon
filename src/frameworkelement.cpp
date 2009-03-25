@@ -21,7 +21,6 @@
 #include "trigger.h"
 #include "thickness.h"
 #include "collection.h"
-#include "binding.h"
 #include "style.h"
 #include "validators.h"
 

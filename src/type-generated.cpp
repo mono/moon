@@ -15,7 +15,6 @@
 #include "audio.h"
 #include "audio-alsa.h"
 #include "audio-pulse.h"
-#include "binding.h"
 #include "bitmapimage.h"
 #include "border.h"
 #include "brush.h"
@@ -194,9 +193,6 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::AUDIOSTREAM] = new Type (Type::AUDIOSTREAM, Type::IMEDIASTREAM, false, "AudioStream", "AUDIOSTREAM", 0, 2, NULL, NULL, NULL);
 	types [(int) Type::BEGINSTORYBOARD] = new Type (Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard");
 	types [(int) Type::BEZIERSEGMENT] = new Type (Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL);
-	types [(int) Type::BINDING] = new Type (Type::BINDING, Type::EVENTOBJECT, false, "Binding", "BINDING", 0, 1, NULL, (create_inst_func *) binding_new, NULL);
-	types [(int) Type::BINDINGEXPRESSION] = new Type (Type::BINDINGEXPRESSION, Type::BINDINGEXPRESSIONBASE, false, "BindingExpression", "BINDINGEXPRESSION", 0, 1, NULL, (create_inst_func *) binding_expression_new, NULL);
-	types [(int) Type::BINDINGEXPRESSIONBASE] = new Type (Type::BINDINGEXPRESSIONBASE, Type::EXPRESSION, false, "BindingExpressionBase", "BINDINGEXPRESSIONBASE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::BITMAPIMAGE] = new Type (Type::BITMAPIMAGE, Type::IMAGESOURCE, false, "BitmapImage", "BITMAPIMAGE", 0, 1, NULL, (create_inst_func *) bitmap_image_new, NULL);
 	types [(int) Type::BOOL] = new Type (Type::BOOL, Type::OBJECT, true, "bool", "BOOL", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::BORDER] = new Type (Type::BORDER, Type::FRAMEWORKELEMENT, false, "Border", "BORDER", 0, 16, NULL, (create_inst_func *) border_new, "Child");

@@ -66,9 +66,6 @@ class AudioSource;
 class AudioStream;
 class BeginStoryboard;
 class BezierSegment;
-class Binding;
-class BindingExpression;
-class BindingExpressionBase;
 class BitmapImage;
 class Border;
 class Brush;
@@ -385,9 +382,6 @@ public:
 	AudioStream*                   AsAudioStream () { checked_get_subclass (Type::AUDIOSTREAM, AudioStream) }
 	BeginStoryboard*               AsBeginStoryboard () { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
 	BezierSegment*                 AsBezierSegment () { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
-	Binding*                       AsBinding () { checked_get_subclass (Type::BINDING, Binding) }
-	BindingExpression*             AsBindingExpression () { checked_get_subclass (Type::BINDINGEXPRESSION, BindingExpression) }
-	BindingExpressionBase*         AsBindingExpressionBase () { checked_get_subclass (Type::BINDINGEXPRESSIONBASE, BindingExpressionBase) }
 	BitmapImage*                   AsBitmapImage () { checked_get_subclass (Type::BITMAPIMAGE, BitmapImage) }
 	Border*                        AsBorder () { checked_get_subclass (Type::BORDER, Border) }
 	Brush*                         AsBrush () { checked_get_subclass (Type::BRUSH, Brush) }

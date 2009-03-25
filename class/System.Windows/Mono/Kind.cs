@@ -26,9 +26,6 @@ namespace Mono {
 		AUDIOSTREAM,
 		BEGINSTORYBOARD,
 		BEZIERSEGMENT,
-		BINDING,// Silverlight 2.0 only
-		BINDINGEXPRESSION,// Silverlight 2.0 only
-		BINDINGEXPRESSIONBASE,// Silverlight 2.0 only
 		BITMAPIMAGE,
 		BOOL,
 		BORDER,// Silverlight 2.0 only

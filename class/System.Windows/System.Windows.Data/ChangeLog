@@ -4,6 +4,12 @@
 	  referencing it. Allows a datagrid test to complete
 	  successfully.
 
+2009-03-25  Geoff Norton  <gnorton@novell.com>
+
+	* Binding.cs: Bindings are 100% managed now, so we need some
+	local managed members here to hold some of the values that
+	used to live in native.
+
 2009-03-24  Alan McGovern  <amcgovern@novell.com>
 
 	* Binding.cs: Bindings cannot use PropertyPaths which are

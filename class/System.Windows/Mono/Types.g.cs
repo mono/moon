@@ -115,12 +115,6 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.LAYOUTINFORMATION));
 				t = typeof (System.Windows.Controls.Primitives.Popup); 
 				types.Add (t, new ManagedType (t, Kind.POPUP));
-				t = typeof (System.Windows.Data.Binding); 
-				types.Add (t, new ManagedType (t, Kind.BINDING));
-				t = typeof (System.Windows.Data.BindingExpression); 
-				types.Add (t, new ManagedType (t, Kind.BINDINGEXPRESSION));
-				t = typeof (System.Windows.Data.BindingExpressionBase); 
-				types.Add (t, new ManagedType (t, Kind.BINDINGEXPRESSIONBASE));
 				t = typeof (System.Windows.Documents.Glyphs); 
 				types.Add (t, new ManagedType (t, Kind.GLYPHS));
 				t = typeof (System.Windows.Documents.Inline); 
