@@ -55,8 +55,16 @@ namespace Mono {
 				return value.ToString (); // XXX culture
 			}
 			else {
-				if (targetType.IsEnum && value is string)
-					return Enum.Parse (targetType, (string) value);
+				string str_value = value as string;
+				if (str_value != null) {
+					IntPtr value_ptr;
+					if (NativeMethods.value_from_str (Deployment.Current.Types.TypeToKind (targetType), null, str_value, out value_ptr, true)) {
+						value = Value.ToObject (targetType, value_ptr);
+						return value;
+					}
+				}
+				if (targetType.IsEnum && str_value != null)
+					return Enum.Parse (targetType, str_value);
 				if (targetType != value.GetType() && targetType.IsValueType && value.GetType().IsValueType)
 					return System.Convert.ChangeType (value, targetType, null);
 			}
