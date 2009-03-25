@@ -1,3 +1,8 @@
+2009-03-25  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElementAutomationPeer.cs: Commit this so that the
+	  datagrid tests can start doing something useful.
+
 2009-02-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* AutomationPeer.cs: Call *Core methods instead of throw 

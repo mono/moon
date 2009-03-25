@@ -70,7 +70,9 @@ namespace System.Windows.Automation.Peers {
 		
 		public static AutomationPeer FromElement (UIElement element)
 		{
-			throw new NotImplementedException ();
+			// FIXME: It should return null if CreatePeerForElement hasn't been called
+			// or return the same peer as was originally created.
+			return CreatePeerForElement (element);
 		}
 		
 		protected override string GetAcceleratorKeyCore ()
