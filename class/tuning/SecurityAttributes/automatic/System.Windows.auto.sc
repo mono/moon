@@ -1,14 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 872 methods needs to be decorated.
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: Mono.INativeDependencyObjectWrapper Mono.NativeDependencyObjectHelper::FromIntPtr(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: Mono.INativeDependencyObjectWrapper Mono.NativeDependencyObjectHelper::Lookup(Mono.Kind,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: Mono.INativeDependencyObjectWrapper Mono.NativeDependencyObjectHelper::Lookup(System.IntPtr)
+# 452 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -21,21 +12,6 @@
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.IntPtr,Mono.Kind)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: Mono.Xaml.XamlLoader Mono.Xaml.XamlLoader::CreateManagedXamlLoader(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: Mono.Xaml.XamlLoader Mono.Xaml.XamlLoader::CreateManagedXamlLoader(System.Reflection.Assembly,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.ApplicationLauncher::InitializeDeployment(System.IntPtr,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.NativeMethods/GSourceFunc::Invoke(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::binding_get_is_sealed(System.IntPtr)
@@ -52,9 +28,6 @@
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_contains(System.IntPtr,Mono.Value&)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.NativeMethods::collection_insert(System.IntPtr,System.Int32,Mono.Value&)
-
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_insert_with_error_(System.IntPtr,System.Int32,Mono.Value&,Mono.MoonError&)
 
@@ -64,14 +37,8 @@
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_remove(System.IntPtr,Mono.Value&)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.NativeMethods::collection_remove_at(System.IntPtr,System.Int32)
-
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_remove_at_with_error_(System.IntPtr,System.Int32,Mono.MoonError&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.NativeMethods::collection_set_value_at(System.IntPtr,System.Int32,Mono.Value&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_set_value_at_with_error_(System.IntPtr,System.Int32,Mono.Value&,Mono.MoonError&)
@@ -81,9 +48,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::control_focus(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_value(System.IntPtr,System.IntPtr,Mono.Value&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_value_with_error_(System.IntPtr,System.IntPtr,Mono.Value&,Mono.MoonError&)
@@ -112,9 +76,6 @@
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::moon_window_get_transparent(System.IntPtr)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.NativeMethods::resource_dictionary_add(System.IntPtr,System.String,Mono.Value&)
-
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::resource_dictionary_add_with_error_(System.IntPtr,System.String,Mono.Value&,Mono.MoonError&)
 
@@ -132,9 +93,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::routed_event_args_get_handled(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.NativeMethods::storyboard_begin(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::storyboard_begin_with_error_(System.IntPtr,Mono.MoonError&)
@@ -169,63 +127,6 @@
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::value_from_str_with_typename(System.String,System.String,System.String,System.IntPtr&,System.Boolean)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Stream_CanRead::Invoke(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Stream_CanSeek::Invoke(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.StreamWrapper::CanRead(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.StreamWrapper::CanSeek(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.LookupObjectCallback::Invoke(System.IntPtr,System.IntPtr,System.String,System.String,System.Boolean,Mono.Value&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_lookup_object(System.IntPtr,System.IntPtr,System.String,System.String,System.Boolean,Mono.Value&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_set_property(System.IntPtr,System.IntPtr,System.String,System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::LookupComponentFromName(System.IntPtr,System.String,System.Boolean,Mono.Value&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::LookupObject(System.IntPtr,System.String,System.String,System.Boolean,Mono.Value&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::SetProperty(System.IntPtr,System.IntPtr,System.String,System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::SetPropertyFromValue(System.IntPtr,System.IntPtr,System.Object,System.IntPtr,System.IntPtr,System.Reflection.PropertyInfo,System.IntPtr,System.IntPtr,System.String&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TryGetDefaultAssemblyName(System.IntPtr,System.String&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetAttachedProperty(System.IntPtr,System.String,System.Object,System.String,System.String,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetEnumContentProperty(System.IntPtr,System.IntPtr,System.String,System.Object,System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetEventReflection(System.IntPtr,System.String,System.Object,System.String,System.String,System.IntPtr,System.String&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetExpression(System.IntPtr,System.Object,System.IntPtr,System.String,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetPropertyReflection(System.IntPtr,System.IntPtr,System.String,System.Object,System.IntPtr,System.IntPtr,System.String,System.String,System.IntPtr,System.IntPtr,System.String&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.SetPropertyCallback::Invoke(System.IntPtr,System.IntPtr,System.String,System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Boolean System.Windows.Deployment::InitializeDeployment(System.IntPtr,System.String)
-
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::column_definition_get_actual_width(System.IntPtr)
 
@@ -253,119 +154,8 @@
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::stylus_point_get_y(System.IntPtr)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.ApplyDefaultStyleCallback::BeginInvoke(System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.ApplyStyleCallback::BeginInvoke(System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.AsyncResponseAvailableHandler::BeginInvoke(System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.NativeMethods/DomEventCallback::BeginInvoke(System.IntPtr,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Int32,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.NativeMethods/DownloaderResponseAvailableDelegate::BeginInvoke(System.IntPtr,System.IntPtr,System.IntPtr,System.UInt32,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.NativeMethods/DownloaderResponseFinishedDelegate::BeginInvoke(System.IntPtr,System.IntPtr,System.Boolean,System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.NativeMethods/DownloaderResponseStartedDelegate::BeginInvoke(System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.NativeMethods/GSourceFunc::BeginInvoke(System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.NativeMethods/HeaderVisitor::BeginInvoke(System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.NativeMethods/ImageUriFunc::BeginInvoke(System.Int32,System.Int32,System.Int32,System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.NativeMethods/TickCallHandler::BeginInvoke(System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.NativeMethods/UpdateFunction::BeginInvoke(System.Int32,System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.NativePropertyChangedHandler::BeginInvoke(System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr,Mono.MoonError&,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.PlainEvent::BeginInvoke(System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.SetCustomXamlAttributeCallback::BeginInvoke(System.IntPtr,System.String,System.String,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.SetValueCallback::BeginInvoke(System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.Stream_CanRead::BeginInvoke(System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.Stream_CanSeek::BeginInvoke(System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.Stream_Length::BeginInvoke(System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.Stream_Position::BeginInvoke(System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.Stream_Read::BeginInvoke(System.IntPtr,System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.Stream_Seek::BeginInvoke(System.IntPtr,System.Int64,System.IO.SeekOrigin,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.Stream_Write::BeginInvoke(System.IntPtr,System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.ToggleRef/ToggleNotifyHandler::BeginInvoke(System.IntPtr,System.Boolean,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.UnmanagedEventHandler::BeginInvoke(System.IntPtr,System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.Xaml.GetContentPropertyNameCallback::BeginInvoke(System.IntPtr,Mono.Kind,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.Xaml.ImportXamlNamespaceCallback::BeginInvoke(System.IntPtr,System.String,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.Xaml.LookupObjectCallback::BeginInvoke(System.IntPtr,System.IntPtr,System.String,System.String,System.Boolean,Mono.Value&,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.Xaml.SetPropertyCallback::BeginInvoke(System.IntPtr,System.IntPtr,System.String,System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult Mono.XamlHookupEventCallback::BeginInvoke(System.IntPtr,System.String,System.String,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult System.Windows.Media.MediaStreamSource/CloseDemuxerDelegate::BeginInvoke(System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult System.Windows.Media.MediaStreamSource/GetDiagnosticAsyncDelegate::BeginInvoke(System.IntPtr,System.Windows.Media.MediaStreamSourceDiagnosticKind,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult System.Windows.Media.MediaStreamSource/GetFrameAsyncDelegate::BeginInvoke(System.IntPtr,System.Windows.Media.MediaStreamType,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult System.Windows.Media.MediaStreamSource/OpenDemuxerAsyncDelegate::BeginInvoke(System.IntPtr,System.IntPtr,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult System.Windows.Media.MediaStreamSource/SeekAsyncDelegate::BeginInvoke(System.IntPtr,System.Int64,System.AsyncCallback,System.Object)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IAsyncResult System.Windows.Media.MediaStreamSource/SwitchMediaStreamAsyncDelegate::BeginInvoke(System.IntPtr,System.Windows.Media.MediaStreamDescription,System.AsyncCallback,System.Object)
-
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::binding_get_binding_mode(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Int32 Mono.NativeMethods::collection_add(System.IntPtr,Mono.Value&)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::collection_add_with_error_(System.IntPtr,Mono.Value&,Mono.MoonError&)
@@ -424,59 +214,11 @@
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::time_manager_get_maximum_refresh_rate(System.IntPtr)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Int32 Mono.Stream_Read::Invoke(System.IntPtr,System.Byte[],System.Int32,System.Int32)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Int32 Mono.StreamWrapper::Read(System.IntPtr,System.Byte[],System.Int32,System.Int32)
-
 # p/invoke declaration
 +SC-M: System.Int64 Mono.NativeMethods::multi_scale_tile_source_get_image_height(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int64 Mono.NativeMethods::multi_scale_tile_source_get_image_width(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Int64 Mono.Stream_Length::Invoke(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Int64 Mono.Stream_Position::Invoke(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Int64 Mono.StreamWrapper::Length(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Int64 Mono.StreamWrapper::Position(System.IntPtr)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.CreateCustomXamlElementCallback::EndInvoke(System.IAsyncResult)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.CreateCustomXamlElementCallback::Invoke(System.String,System.String)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.GetResourceCallback::EndInvoke(System.Int32&,System.IAsyncResult)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.GetResourceCallback::Invoke(System.String,System.Int32&)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Helper::AllocHGlobal(System.Int32)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Helper::GCHandleToIntPtr(System.Runtime.InteropServices.GCHandle)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Helper::StreamToIntPtr(System.IO.Stream)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Hosting::GetNativeObject(System.Windows.DependencyObject)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.INativeDependencyObjectWrapper::get_NativeHandle()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.MoonError::get_GCHandlePtr()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::application_get_current()
@@ -559,9 +301,6 @@
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::collection_get_iterator(System.IntPtr)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IntPtr Mono.NativeMethods::collection_get_value_at(System.IntPtr,System.Int32)
-
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::collection_get_value_at_with_error_(System.IntPtr,System.Int32,Mono.MoonError&)
 
@@ -607,9 +346,6 @@
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::cursor_position_changed_event_args_new()
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IntPtr Mono.NativeMethods::data_template_load_content(System.IntPtr)
-
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::data_template_load_content_with_error_(System.IntPtr,Mono.MoonError&)
 
@@ -628,12 +364,6 @@
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_name_(System.IntPtr)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value(System.IntPtr,Mono.Kind,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value_no_default(System.IntPtr,System.IntPtr)
-
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value_no_default_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
@@ -642,9 +372,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_new()
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_object_read_local_value(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_read_local_value_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
@@ -1183,20 +910,11 @@
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_get_template_parent(System.IntPtr,System.IntPtr)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file(System.IntPtr,System.String,System.Boolean,Mono.Kind&)
-
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string(System.IntPtr,System.String,System.Boolean,Mono.Kind&)
-
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string(System.IntPtr,System.String,System.IntPtr,System.Boolean,Mono.Kind&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,System.IntPtr,System.Boolean,Mono.Kind&,Mono.MoonError&)
@@ -1210,116 +928,8 @@
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xap_unpack_(System.String)
 
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Surface::get_Native()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.ToggleRef::get_Handle()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Types::get_Native()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Value::StringToIntPtr(System.String)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Xaml.XamlLoader::CreateFromFile(System.String,System.Boolean,Mono.Kind&)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Xaml.XamlLoader::CreateFromString(System.String,System.Boolean,Mono.Kind&)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Xaml.XamlLoader::get_NativeLoader()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Xaml.XamlLoader::get_PluginHandle()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Xaml.XamlLoader::get_PluginInDomain()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Xaml.XamlLoader::get_Surface()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr Mono.Xaml.XamlLoader::get_SurfaceInDomain()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr System.Windows.Application::get_NativeHandle()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr System.Windows.Application::get_resource_cb(System.String,System.Int32&)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr System.Windows.Application::get_resource_cb_safe(System.String,System.Int32&)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr System.Windows.Application::Mono.INativeDependencyObjectWrapper.get_NativeHandle()
-
 # p/invoke declaration
 +SC-M: System.IntPtr System.Windows.Controls.OpenFileDialog::open_file_dialog_show(System.String,System.Boolean,System.String,System.Int32)
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr System.Windows.Data.Binding::get_Native()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr System.Windows.DependencyObject::get_native()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr System.Windows.DependencyObject::Mono.INativeDependencyObjectWrapper.get_NativeHandle()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr System.Windows.DependencyProperty::get_Native()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr System.Windows.Interop.PluginHost::get_Handle()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr System.Windows.Media.MediaStreamDescription::get_NativeStream()
-
-# using 'System.IntPtr' as return type
-+SC-M: System.IntPtr System.Windows.PropertyPath::get_NativeDP()
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Object Mono.Helper::ObjectFromIntPtr(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Object Mono.NativeDependencyObjectHelper::CreateObject(Mono.Kind,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Object Mono.Value::ToObject(System.Type,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Object Mono.Xaml.ManagedXamlLoader::LookupObject(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Runtime.InteropServices.GCHandle Mono.Helper::GCHandleFromIntPtr(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.String Mono.Helper::PtrToStringAuto(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.String Mono.NativeMethods/ImageUriFunc::Invoke(System.Int32,System.Int32,System.Int32,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.String Mono.NativeMethods::binding_expression_base_get_converter_culture(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.String Mono.NativeMethods::binding_get_property_path(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.String Mono.NativeMethods::dependency_object_get_name(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.String Mono.NativeMethods::dependency_property_get_name(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.String Mono.NativeMethods::downloader_response_get_response_status_text(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.String Mono.NativeMethods::event_object_get_type_name(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.String Mono.NativeMethods::plugin_instance_get_id(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.String Mono.NativeMethods::xaml_get_element_key(System.IntPtr,System.IntPtr)
@@ -1330,30 +940,6 @@
 # p/invoke declaration
 +SC-M: System.String Mono.NativeMethods::xaml_uri_for_prefix(System.IntPtr,System.String)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.String Mono.Xaml.GetContentPropertyNameCallback::Invoke(System.IntPtr,Mono.Kind)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.String Mono.Xaml.ManagedXamlLoader::cb_get_content_property_name(System.IntPtr,Mono.Kind)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.String System.Windows.Media.MultiScaleTileSource::GetImageUriSafe(System.Int32,System.Int32,System.Int32,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Type Mono.Xaml.ManagedXamlLoader::LookupType(System.IntPtr,System.String,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Type Mono.Xaml.ManagedXamlLoader::TypeFromString(System.IntPtr,System.IntPtr,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.UInt32 Mono.NativeMethods/DownloaderResponseAvailableDelegate::Invoke(System.IntPtr,System.IntPtr,System.IntPtr,System.UInt32)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.UInt32 Mono.NativeMethods/DownloaderResponseFinishedDelegate::Invoke(System.IntPtr,System.IntPtr,System.Boolean,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.UInt32 Mono.NativeMethods/DownloaderResponseStartedDelegate::Invoke(System.IntPtr,System.IntPtr)
-
 # p/invoke declaration
 +SC-M: System.UInt32 Mono.NativeMethods::time_manager_add_tick_call(System.IntPtr,Mono.NativeMethods/TickCallHandler,System.IntPtr)
 
@@ -1362,117 +948,6 @@
 
 # p/invoke declaration
 +SC-M: System.UInt32 Mono.NativeMethods::time_manager_remove_tick_call(System.IntPtr,Mono.NativeMethods/TickCallHandler)
-
-# [VISIBLE] using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Microsoft.Internal.IManagedFrameworkInternalHelper::SetContextEx(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Microsoft.Internal.TextBoxView::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.ApplicationLauncher::DestroyApplication(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.ApplyDefaultStyleCallback::Invoke(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.ApplyStyleCallback::Invoke(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.AsyncResponseAvailableHandler::Invoke(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.DispatcherTimer::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.DispatcherTimer::UnmanagedTick(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events/<CreateSafeHandler>c__AnonStorey0::<>m__1(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::binding_validation_error_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::current_state_changed_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::current_state_changing_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::got_focus_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::InitSurface(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::key_down_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::key_up_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::layout_updated_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::loaded_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::lost_focus_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::lost_mouse_capture_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::mouse_button_down_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::mouse_button_up_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::mouse_enter_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::mouse_leave_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::mouse_motion_notify_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::size_changed_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::surface_full_screen_changed_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::surface_resized_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Events::template_applied_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Helper::FreeHGlobal(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Hosting::SurfaceAttach(System.IntPtr,System.Windows.Controls.Canvas)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.INativeDependencyObjectWrapper::set_NativeHandle(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeDependencyObjectHelper::AddNativeMapping(System.IntPtr,Mono.INativeDependencyObjectWrapper)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods/DomEventCallback::Invoke(System.IntPtr,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Int32)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods/HeaderVisitor::Invoke(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods/TickCallHandler::Invoke(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods/UpdateFunction::Invoke(System.Int32,System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.ApplyDefaultStyleCallback,Mono.ApplyStyleCallback,Mono.GetResourceCallback)
@@ -1540,17 +1015,11 @@
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::deep_zoom_image_tile_source_set_downloaded_cb(System.IntPtr,Mono.NativeMethods/DownloadedHandler)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods::dependency_object_clear_value(System.IntPtr,System.IntPtr,System.Boolean)
-
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_clear_value_(System.IntPtr,System.IntPtr,System.Boolean,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_set_name(System.IntPtr,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods::dependency_object_set_parent(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_set_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)
@@ -1629,9 +1098,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::framework_element_set_default_style(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods::framework_element_set_logical_parent(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::framework_element_set_logical_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)
@@ -1726,9 +1192,6 @@
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::plugin_instance_report_exception(System.IntPtr,System.String,System.String,System.String[],System.Int32)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods::popup_set_active_surface(System.IntPtr)
-
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::popup_set_active_surface_(System.IntPtr,System.IntPtr)
 
@@ -1756,29 +1219,17 @@
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::size_changed_event_args_get_prev_size(System.IntPtr,System.Windows.Size&)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods::storyboard_pause(System.IntPtr)
-
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::storyboard_pause_with_error_(System.IntPtr,Mono.MoonError&)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods::storyboard_resume(System.IntPtr)
-
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::storyboard_resume_with_error_(System.IntPtr,Mono.MoonError&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods::storyboard_seek(System.IntPtr,System.Int64)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::storyboard_seek_with_error_(System.IntPtr,System.Int64,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::storyboard_skip_to_fill(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativeMethods::storyboard_stop(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::storyboard_stop_with_error_(System.IntPtr,Mono.MoonError&)
@@ -1885,719 +1336,8 @@
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::xaml_set_property_from_str(System.IntPtr,System.IntPtr,System.String)
 
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.NativePropertyChangedHandler::Invoke(System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr,Mono.MoonError&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.PlainEvent::Invoke(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.SetCustomXamlAttributeCallback::Invoke(System.IntPtr,System.String,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.SetValueCallback::Invoke(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Stream_Seek::Invoke(System.IntPtr,System.Int64,System.IO.SeekOrigin)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Stream_Write::Invoke(System.IntPtr,System.Byte[],System.Int32,System.Int32)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.StreamWrapper::Seek(System.IntPtr,System.Int64,System.IO.SeekOrigin)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.StreamWrapper::Write(System.IntPtr,System.Byte[],System.Int32,System.Int32)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Surface::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.ToggleRef/ToggleNotifyHandler::Invoke(System.IntPtr,System.Boolean)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.ToggleRef::RefToggled(System.IntPtr,System.Boolean)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Types::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.UnmanagedEventHandler::Invoke(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Xaml.ImportXamlNamespaceCallback::Invoke(System.IntPtr,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Xaml.ManagedXamlLoader::.ctor(System.Reflection.Assembly,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Xaml.ManagedXamlLoader::cb_import_xaml_xmlns(System.IntPtr,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Xaml.ManagedXamlLoader::Setup(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Xaml.MarkupExpressionParser::.ctor(System.Windows.DependencyObject,System.String,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Xaml.XamlLoader::.ctor(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Xaml.XamlLoader::Hydrate(System.IntPtr,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Xaml.XamlLoader::set_PluginInDomain(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Xaml.XamlLoader::set_SurfaceInDomain(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.Xaml.XamlLoader::Setup(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void Mono.XamlHookupEventCallback::Invoke(System.IntPtr,System.String,System.String)
-
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void System.IO.SimpleUnmanagedMemoryStream::.ctor(System.Byte*,System.Int64)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Application::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Application::apply_default_style_cb(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Application::apply_default_style_cb_safe(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Application::apply_style_cb(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Application::apply_style_cb_safe(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Application::Mono.INativeDependencyObjectWrapper.set_NativeHandle(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.AssemblyPart::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.AssemblyPartCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.Border::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.Canvas::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.ColumnDefinition::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.ColumnDefinitionCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.ContentControl/ContentChangedEventArgs::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.ContentControl::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.ContentControl::content_changed_callback(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.Control::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.ControlTemplate::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.CursorPositionChangedEventArgs::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.Grid::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.HitTestCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.Image::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.Image::image_failed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.InkPresenter::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.ItemCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MediaElement::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MediaElement::buffering_progress_changed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MediaElement::current_state_changed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MediaElement::download_progress_changed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MediaElement::InvokeMarkerReached(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MediaElement::marker_reached_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MediaElement::media_ended_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MediaElement::media_failed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MediaElement::media_opened_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MultiScaleImage::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MultiScaleImage::image_failed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MultiScaleImage::image_open_failed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MultiScaleImage::image_open_succeeded_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MultiScaleImage::motion_finished_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MultiScaleImage::viewport_changed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MultiScaleSubImage::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.MultiScaleSubImageCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.Panel::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.PasswordBox::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.PasswordBox::password_changed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.Primitives.Popup::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.Primitives.Popup::<Popup>m__19(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.Primitives.Popup::<Popup>m__1A(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.RowDefinition::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.RowDefinitionCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.TextBlock::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.TextBox::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.TextBox::cursor_position_changed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.TextBox::selection_changed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.TextBox::text_changed_cb(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.TextChangedEventArgs::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.UIElementCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Controls.UserControl::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.CustomDependencyProperty::.ctor(System.IntPtr,System.String,Mono.ManagedType,Mono.ManagedType,System.Windows.PropertyMetadata)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Data.Binding::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Data.Binding::set_Native(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.DataTemplate::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.DependencyObject::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.DependencyObject::Mono.INativeDependencyObjectWrapper.set_NativeHandle(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.DependencyObject::set_native(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.DependencyProperty::.ctor(System.IntPtr,System.Type,System.Type,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.DependencyProperty::CustomNativePropertyChangedCallbackSafe(System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr,Mono.MoonError&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.DependencyProperty::NativePropertyChangedCallback(System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.DependencyProperty::NativePropertyChangedCallbackSafe(System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr,Mono.MoonError&)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Deployment::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Deployment::InitializePluginHost(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Documents.Glyphs::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Documents.Inline::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Documents.InlineCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Documents.LineBreak::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Documents.Run::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.EventTrigger::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.FrameworkElement::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.FrameworkTemplate::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Ink.DrawingAttributes::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Ink.Stroke::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Ink.StrokeCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Input.InputMethod::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Input.KeyEventArgs::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Input.MouseButtonEventArgs::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Input.MouseEventArgs::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Input.StylusInfo::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Input.StylusPoint::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Input.StylusPointCollection::.ctor(System.IntPtr)
-
-# [VISIBLE] using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Interop.HostingRenderTargetBitmap::.ctor(System.Int32,System.Int32,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Interop.PluginHost::SetPluginHandle(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.BeginStoryboard::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.ColorAnimation::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.ColorAnimationUsingKeyFrames::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.ColorKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.ColorKeyFrameCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.DiscreteColorKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.DiscreteDoubleKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.DiscreteObjectKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.DiscretePointKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.DoubleAnimation::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.DoubleAnimationUsingKeyFrames::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.DoubleKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.DoubleKeyFrameCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.KeySpline::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.LinearColorKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.LinearDoubleKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.LinearPointKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.ObjectAnimationUsingKeyFrames::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.ObjectKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.ObjectKeyFrameCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.PointAnimation::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.PointAnimationUsingKeyFrames::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.PointKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.PointKeyFrameCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.SplineColorKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.SplineDoubleKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.SplinePointKeyFrame::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.Storyboard::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.Timeline::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.Timeline::UnmanagedCompleted(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Animation.TimelineCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.ArcSegment::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.BezierSegment::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Brush::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.CompositionTarget::UnmanagedRendering(System.IntPtr,System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.DeepZoomImageTileSource::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.DoubleCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.EllipseGeometry::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.GeneralTransform::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Geometry::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.GeometryCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.GeometryGroup::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.GradientBrush::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.GradientStop::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.GradientStopCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.ImageBrush::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.ImageSource::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Imaging.BitmapImage::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.LinearGradientBrush::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.LineGeometry::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.LineSegment::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Matrix::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MatrixTransform::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaAttribute::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaAttributeCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamDescription::set_NativeStream(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource/CloseDemuxerDelegate::Invoke(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource/GetDiagnosticAsyncDelegate::Invoke(System.IntPtr,System.Windows.Media.MediaStreamSourceDiagnosticKind)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource/GetFrameAsyncDelegate::Invoke(System.IntPtr,System.Windows.Media.MediaStreamType)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource/OpenDemuxerAsyncDelegate::Invoke(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource/SeekAsyncDelegate::Invoke(System.IntPtr,System.Int64)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource/SwitchMediaStreamAsyncDelegate::Invoke(System.IntPtr,System.Windows.Media.MediaStreamDescription)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource::CloseMediaInternal(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource::GetDiagnosticAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamSourceDiagnosticKind)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource::GetSampleAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamType)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource::OpenMediaAsyncInternal(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource::OpenMediaAsyncInternal(System.IntPtr,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource::SeekAsyncInternal(System.IntPtr,System.Int64)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MediaStreamSource::SwitchMediaStreamAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamDescription)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.MultiScaleTileSource::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.PathFigure::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.PathFigureCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.PathGeometry::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.PathSegment::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.PathSegmentCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.PointCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.PolyBezierSegment::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.PolyLineSegment::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.PolyQuadraticBezierSegment::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.QuadraticBezierSegment::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.RadialGradientBrush::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.RectangleGeometry::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.RotateTransform::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.ScaleTransform::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.SkewTransform::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.SolidColorBrush::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.TileBrush::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.TimelineMarker::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.TimelineMarkerCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.Transform::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.TransformCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.TransformGroup::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.TranslateTransform::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.UnmanagedMatrix::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Media.VideoBrush::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.PresentationFrameworkCollection`1/CollectionIterator::.ctor(System.Type,System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.PresentationFrameworkCollection`1::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.ResourceDictionary::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.RoutedEventArgs::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Setter::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.SetterBase::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.SetterBaseCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Shapes.Ellipse::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Shapes.Line::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Shapes.Path::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Shapes.Polygon::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Shapes.Polyline::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Shapes.Rectangle::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Shapes.Shape::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.SizeChangedEventArgs::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Style::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.Threading.Dispatcher::dispatcher_callback(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.TriggerAction::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.TriggerActionCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.TriggerBase::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.TriggerCollection::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.UIElement::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Void System.Windows.VisualStateChangedEventArgs::.ctor(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Windows.Controls.Canvas System.Windows.Controls.Canvas::FromPtr(System.IntPtr)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Windows.DependencyProperty Mono.Xaml.ManagedXamlLoader::DependencyPropertyFromString(System.IntPtr,System.IntPtr,System.Object,System.IntPtr,System.String)
-
-# using 'System.IntPtr' as a parameter type
-+SC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::Lookup(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Windows.Point Mono.NativeMethods::multi_scale_image_element_to_logical_point(System.IntPtr,System.Windows.Point)

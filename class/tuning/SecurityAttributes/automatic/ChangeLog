@@ -1,3 +1,12 @@
+2009-03-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.sc, mscorlib.auto.ssc,
+	* System.Net.auto.sc, System.Net.auto.ssc,
+	* System.Windows.auto.sc, System.Windows.auto.ssc,
+	* System.Windows.Browser.auto.sc, System.Windows.Browser.auto.ssc:
+		Regenerated with updated tool. This is equivalent to the
+		previous version but with less attributes.
+
 2009-03-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.sc, mscorlib.auto.ssc: SafeFileHandle patch was
