@@ -1424,22 +1424,13 @@ class Generator {
 		Helper.WriteAllText (Path.Combine (Path.Combine (moon_moonlight_dir, "Mono"), "Types.g.cs"), text.ToString ());
 	}
 	
-	public static void GenerateCBindings (GlobalInfo info)
+	private static void GenerateCBindings (GlobalInfo info, string dir)
 	{
-		string base_dir = Environment.CurrentDirectory;
-		string plugin_dir = Path.Combine (base_dir, "plugin");
-		string moon_dir = Path.Combine (base_dir, "src");
 		List<MethodInfo> methods;
 		StringBuilder header = new StringBuilder ();
 		StringBuilder impl = new StringBuilder ();
 		List <string> headers = new List<string> ();
 		string last_type = string.Empty;
-		
-		if (!Directory.Exists (plugin_dir))
-			throw new ArgumentException (string.Format ("cgen must be executed from the base directory of the moon module ({0} does not exist).", plugin_dir));
-		
-		if (!Directory.Exists (moon_dir))
-			throw new ArgumentException (string.Format ("methodgen must be executed from the base directory of the moon module ({0} does not exist).", moon_dir));
 		
 		methods = info.CPPMethodsToBind;
 		
@@ -1455,6 +1446,9 @@ class Generator {
 			string h;
 			if (string.IsNullOrEmpty (method.Header))
 				continue;
+			if (!method.Header.StartsWith (dir))
+				continue;
+			
 			h = Path.GetFileName (method.Header);
 			
 			if (!headers.Contains (h))
@@ -1484,6 +1478,9 @@ class Generator {
 		foreach (MemberInfo member in methods) {
 			MethodInfo method = (MethodInfo) member;			
 			
+			if (!method.Header.StartsWith (dir))
+				continue;
+			
 			if (last_type != method.Parent.Name) {
 				last_type = method.Parent.Name;
 				foreach (StringBuilder text in new StringBuilder [] {header, impl}) {
@@ -1507,8 +1504,18 @@ class Generator {
 		header.AppendLine ();
 		header.AppendLine ("#endif");
 		
-		Helper.WriteAllText (Path.Combine (moon_dir, "cbinding.h"), header.ToString ());
-		Helper.WriteAllText (Path.Combine (moon_dir, "cbinding.cpp"), impl.ToString ());
+		Helper.WriteAllText (Path.Combine (dir, "cbinding.h"), header.ToString ());
+		Helper.WriteAllText (Path.Combine (dir, "cbinding.cpp"), impl.ToString ());
+	}
+	
+	public static void GenerateCBindings (GlobalInfo info)
+	{
+		string base_dir = Environment.CurrentDirectory;
+		string plugin_dir = Path.Combine (base_dir, "plugin");
+		string moon_dir = Path.Combine (base_dir, "src");
+		
+		GenerateCBindings (info, moon_dir);
+		GenerateCBindings (info, plugin_dir);
 	}
 	
 	static void WriteHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text)	
