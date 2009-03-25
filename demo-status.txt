@@ -70,3 +70,8 @@ url:http://www.picturespice.com/ps/Polyhedra/ClientBin/TestPage.html
 rating:3
  * animation works (a bit slow)
  * hyperlink button "Make a shape for real" does not work
+
+url:http://www.shinedraw.com/browser-integration/flash-vs-silverlight-custom-loading-splash-screen/
+rating:0
+ * need to add the hooks for splashscreens
+ * need to implement the default
