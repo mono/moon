@@ -22,7 +22,7 @@ endif INCLUDE_TESTING
 TOOLS_SUBDIR = tools
 endif !PLUGIN_INSTALL
 
-SUBDIRS = $(subdirs) $(BUILD_TOOLS) src $(MONO_SUBDIRS) $(TOOLS_SUBDIR) plugin $(TEST_SUBDIR) $(PERF_SUBDIR) $(MONO_EXAMPLES)
+SUBDIRS = $(subdirs) $(BUILD_TOOLS) src plugin $(MONO_SUBDIRS) $(TOOLS_SUBDIR) $(TEST_SUBDIR) $(PERF_SUBDIR) $(MONO_EXAMPLES)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA=moon.pc
