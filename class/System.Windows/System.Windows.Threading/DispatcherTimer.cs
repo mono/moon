@@ -64,7 +64,11 @@ namespace System.Windows.Threading {
 		}
 
 		public TimeSpan Interval {
-			get { return internalTimer.Duration.TimeSpan; }
+			get {
+				if (!internalTimer.Duration.HasTimeSpan)
+					internalTimer.Duration = new Duration (TimeSpan.FromMilliseconds (0));
+				return internalTimer.Duration.TimeSpan;
+			}
 			set {  internalTimer.Duration = new Duration (value); }
 		}
 

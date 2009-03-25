@@ -1,3 +1,7 @@
+2009-03-25  Andreia Gaita  <avidigal@novell.com>
+
+	* DispatcherTimer.cs: Fix default duration
+
 2009-02-22  Geoff Norton  <gnorton@novell.com>
 
 	* Dispatcher.cs: Cache the surface when the dispatcher is created
