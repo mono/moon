@@ -26,7 +26,7 @@ struct Uri {
 public:
 	bool isAbsolute;
 
-	char *protocol;
+	char *scheme;
 	char *user;
 	char *auth;
 	char *passwd;

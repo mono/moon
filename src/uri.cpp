@@ -27,7 +27,7 @@
 
 Uri::Uri ()
 {
-	protocol = NULL;
+	scheme = NULL;
 	user = NULL;
 	auth = NULL;
 	passwd = NULL;
@@ -43,7 +43,7 @@ Uri::Uri ()
 
 Uri::Uri (const Uri& uri)
 {
-	protocol = NULL;
+	scheme = NULL;
 	user = NULL;
 	auth = NULL;
 	passwd = NULL;
@@ -67,7 +67,7 @@ Uri::~Uri ()
 void
 Uri::Free ()
 {
-	g_free (protocol); protocol = NULL;
+	g_free (scheme); scheme = NULL;
 	g_free (user); user = NULL;
 	g_free (auth); auth = NULL;
 	g_free (passwd); passwd = NULL;
@@ -95,7 +95,7 @@ Uri::Copy (const Uri *from, Uri *to)
 	g_datalist_init (&to->params);
 	
 	if (from != NULL) {
-		to->protocol = g_strdup (from->protocol);
+		to->scheme = g_strdup (from->scheme);
 		to->user = g_strdup (from->user);
 		to->auth = g_strdup (from->auth);
 		to->passwd = g_strdup (from->passwd);
@@ -108,7 +108,7 @@ Uri::Copy (const Uri *from, Uri *to)
 		to->originalString = g_strdup (from->originalString);
 		to->isAbsolute = from->isAbsolute;
 	} else {
-		to->protocol = NULL;
+		to->scheme = NULL;
 		to->user = NULL;
 		to->auth = NULL;
 		to->passwd = NULL;
@@ -176,7 +176,7 @@ url_decode (char *in, const char *url)
 bool
 Uri::Parse (const char *uri, bool allow_trailing_sep)
 {
-	char *name, *value, *protocol, *user = NULL, *auth = NULL, *passwd = NULL, *host = NULL, *path = NULL, *query = NULL, *fragment = NULL;
+	char *name, *value, *scheme, *user = NULL, *auth = NULL, *passwd = NULL, *host = NULL, *path = NULL, *query = NULL, *fragment = NULL;
 	register const char *start, *inptr;
 	bool isAbsolute;
 	bool parse_path = false;
@@ -198,7 +198,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 		inptr++;
 	
 	if (inptr > start && *inptr == ':') {
-		protocol = g_ascii_strdown (start, inptr - start);
+		scheme = g_ascii_strdown (start, inptr - start);
 		
 		inptr++;
 		if (!*inptr) {
@@ -215,7 +215,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 	} else {
 		isAbsolute = false;
 		parse_path = true;
-		protocol = NULL;
+		scheme = NULL;
 		inptr = uri;
 	}
 	
@@ -404,7 +404,7 @@ done:
 
 	// update the values
 	
-	this->protocol = protocol;
+	this->scheme = scheme;
 	this->user = user;
 	this->auth = auth;
 	this->passwd = passwd;
@@ -460,7 +460,7 @@ Uri::ToString (UriToStringFlags flags)
 	string = g_string_new ("");
 	
 	if (this->host) {
-		g_string_append (string, this->protocol);
+		g_string_append (string, this->scheme);
 		g_string_append (string, "://");
 		
 		if (this->user) {
@@ -520,8 +520,8 @@ Uri::operator== (const Uri &v) const
 		return false;
 	if (port != v.port)
 		return false;
-	if (!!protocol != !!v.protocol
-	    || (protocol && strcmp (protocol, v.protocol)))
+	if (!!scheme != !!v.scheme
+	    || (scheme && strcmp (scheme, v.scheme)))
 		return false;
 	if (!!user != !!v.user
 	    || (user && strcmp (user, v.user)))

@@ -56,7 +56,7 @@ namespace Mono {
 
 	internal struct UnmanagedUri {
 		public bool isAbsolute;
-		public IntPtr protocol;
+		public IntPtr scheme;
 		public IntPtr user;
 		public IntPtr auth;
 		public IntPtr passwd;
@@ -475,7 +475,7 @@ namespace Mono {
 					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedUri));
 
 					UnmanagedUri *uuri = (UnmanagedUri*)value.u.p;
-					uuri->protocol = IntPtr.Zero;
+					uuri->scheme = IntPtr.Zero;
 					uuri->user = IntPtr.Zero;
 					uuri->auth = IntPtr.Zero;
 					uuri->passwd = IntPtr.Zero;

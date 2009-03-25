@@ -1,5 +1,13 @@
 2009-03-24  Chris Toshok  <toshok@ximian.com>
 
+	* downloader.cpp: s/protocol/scheme for Uris
+
+	* playlist.cpp: s/protocol/scheme for Uris
+
+	* uri.h, uri.cpp: s/protocol/scheme for Uris.
+
+2009-03-24  Chris Toshok  <toshok@ximian.com>
+
 	* uri.cpp: do as much as we can to get isAbsolute set correctly.
 
 2009-03-25  Andreia Gaita  <avidigal@novell.com>

@@ -1,3 +1,7 @@
+2009-03-24  Chris Toshok  <toshok@ximian.com>
+
+	* uri-test.cpp: s/protocol/scheme for Uris.
+
 2009-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* demo.cs:

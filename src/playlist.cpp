@@ -663,7 +663,7 @@ PlaylistEntry::GetFullSourceName ()
 {
 	/*
 	 * Now here we have some interesting semantics:
-	 * - BASE has to be a complete url, with protocol and domain
+	 * - BASE has to be a complete url, with scheme and domain
 	 * - BASE only matters up to the latest / (if no /, the entire BASE is used)
 	 *
 	 * Examples (numbered according to the test-playlist-with-base test in test/media/video)
@@ -696,11 +696,11 @@ PlaylistEntry::GetFullSourceName ()
 		//printf ("PlaylistEntry::GetFullSourceName (), base: %s, current: %s\n", base ? base->ToString () : "NULL", current ? current->ToString () : "NULL");
 		
 		if (current->host != NULL) {
-			//printf (" current host (%s) is something, protocol: %s\n", current->host, current->protocol);
+			//printf (" current host (%s) is something, scheme: %s\n", current->host, current->scheme);
 			result = current;
 		} else if (base != NULL) {
 			result = new Uri ();
-			result->protocol = g_strdup (base->protocol);
+			result->scheme = g_strdup (base->scheme);
 			result->user = g_strdup (base->user);
 			result->passwd = g_strdup (base->passwd);
 			result->host = g_strdup (base->host);
@@ -1624,13 +1624,13 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 					uri = new Uri ();
 					if (!uri->Parse (attrs [i+1], true)) {
 						failed = true;
-					} else if (uri->protocol == NULL) {
+					} else if (uri->scheme == NULL) {
 						failed = true;
-					} else if (g_ascii_strcasecmp (uri->protocol, "http") && 
-						   g_ascii_strcasecmp (uri->protocol, "https") && 
-						   g_ascii_strcasecmp (uri->protocol, "mms") &&
-						   g_ascii_strcasecmp (uri->protocol, "rtsp") && 
-						   g_ascii_strcasecmp (uri->protocol, "rstpt")) {
+					} else if (g_ascii_strcasecmp (uri->scheme, "http") && 
+						   g_ascii_strcasecmp (uri->scheme, "https") && 
+						   g_ascii_strcasecmp (uri->scheme, "mms") &&
+						   g_ascii_strcasecmp (uri->scheme, "rtsp") && 
+						   g_ascii_strcasecmp (uri->scheme, "rstpt")) {
 						failed = true;
 					}
 
@@ -2087,13 +2087,13 @@ PlaylistParser::OnSMILStartElement (const char *name, const char **attrs)
 					uri = new Uri ();
 					if (!uri->Parse (attrs [i+1], true)) {
 						failed = true;
-					} else if (uri->protocol == NULL) {
+					} else if (uri->scheme == NULL) {
 						failed = true;
-					} else if (g_ascii_strcasecmp (uri->protocol, "http") && 
-						   g_ascii_strcasecmp (uri->protocol, "https") && 
-						   g_ascii_strcasecmp (uri->protocol, "mms") &&
-						   g_ascii_strcasecmp (uri->protocol, "rtsp") && 
-						   g_ascii_strcasecmp (uri->protocol, "rstpt")) {
+					} else if (g_ascii_strcasecmp (uri->scheme, "http") && 
+						   g_ascii_strcasecmp (uri->scheme, "https") && 
+						   g_ascii_strcasecmp (uri->scheme, "mms") &&
+						   g_ascii_strcasecmp (uri->scheme, "rtsp") && 
+						   g_ascii_strcasecmp (uri->scheme, "rstpt")) {
 						failed = true;
 					}
 
