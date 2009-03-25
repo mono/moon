@@ -148,7 +148,7 @@ class ResourcePacker {
 					}
 				}
 			} catch (Exception e) {
-				Console.WriteLine ("failed to decompress {0}, exception '{1}'.. skipping", e.Message);
+				Console.WriteLine ("failed to decompress {0}, exception '{1}'.. skipping", resource, e.Message);
 			}
 		}
 

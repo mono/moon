@@ -1,3 +1,7 @@
+2009-03-25  Jackson Harper  <jackson@ximian.com>
+
+	* respack.cs: Make error message not crash.
+	
 2009-01-21  Jackson Harper  <jackson@ximian.com>
 
 	* respack.cs: Create directories for resources if needed when
