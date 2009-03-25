@@ -325,7 +325,7 @@ compare_mapping (const void *m1, const void *m2)
 }
 
 static int
-map_name_to_id (NPIdentifier name, const MoonNameIdMapping mapping[], int count, bool include_silverlight2)
+map_name_to_id (NPIdentifier name, const MoonNameIdMapping mapping[], int count)
 {
 	char *strname = npidentifier_to_downstr (name);
 	if (!strname)
@@ -341,18 +341,7 @@ map_name_to_id (NPIdentifier name, const MoonNameIdMapping mapping[], int count,
 	NPN_MemFree (strname);
 	if (!result)
 		return NoMapping;
-
-	if (result->flags != 0) {
-		if (include_silverlight2) {
-			if ((result->flags & MAPPING_FLAG_SL2) == 0)
-				return NoMapping;
-		}
-		else {
-			if ((result->flags & MAPPING_FLAG_SL1) == 0)
-				return NoMapping;
-		}
-	}
-
+	
 	return result->id;
 }
 
@@ -882,7 +871,7 @@ routedeventargs_allocate (NPP instance, NPClass *klass)
 
 static const MoonNameIdMapping
 routedeventargs_mapping[] = {
-	{ "source", MoonId_Source, MAPPING_FLAG_SL2 },
+	{ "source", MoonId_Source },
 };
 
 bool
@@ -1381,7 +1370,7 @@ mouse_event_allocate (NPP instance, NPClass *klass)
 static const MoonNameIdMapping
 mouse_event_mapping[] = {
 	{ "ctrl", MoonId_Ctrl },
-	{ "handled", MoonId_Handled, MAPPING_FLAG_SL2 },
+	{ "handled", MoonId_Handled },
 	{ "getposition", MoonId_GetPosition },
 	{ "getstylusinfo", MoonId_GetStylusInfo },
 	{ "getstyluspoints", MoonId_GetStylusPoints },
@@ -1557,7 +1546,7 @@ keyboard_event_allocate (NPP instance, NPClass *klass)
 static const MoonNameIdMapping
 keyboard_event_mapping[] = {
 	{ "ctrl", MoonId_Ctrl },
-	{ "handled", MoonId_Handled, MAPPING_FLAG_SL2 },
+	{ "handled", MoonId_Handled },
 	{ "key", MoonId_Key },
 	{ "platformkeycode", MoonId_PlatformKeyCode },
 	{ "shift", MoonId_Shift },
@@ -1700,26 +1689,13 @@ MoonlightObject::HasMethod (NPIdentifier name)
 bool
 MoonlightObject::Invoke (int id, NPIdentifier name, const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
-        PluginInstance *plugin = (PluginInstance*) instance->pdata;
-
 	switch (id) {
 	case MoonId_ToString:
 		if (argCount != 0)
 			return false;
 
 		if (moonlight_type != Type::INVALID) {
-			if (plugin->IsSilverlight2 ()) {
-				string_to_npvariant (Type::Find (moonlight_type)->GetName (), result);
-			} else {
-				switch (moonlight_type) {
-					case Type::KEYEVENTARGS:
-						string_to_npvariant ("KeyboardEventArgs", result);
-						break;
-					default:
-						string_to_npvariant (Type::Find (moonlight_type)->GetName (), result);
-						break;
-				}
-			}
+			string_to_npvariant (Type::Find (moonlight_type)->GetName (), result);
 			return true;
 		} else {
 			//string_to_npvariant ("", result);
@@ -1920,12 +1896,12 @@ MoonlightObjectType::AddMapping (const MoonNameIdMapping *mapping, int count)
 }
 
 int
-MoonlightObjectType::LookupName (NPIdentifier name, bool include_silverlight2)
+MoonlightObjectType::LookupName (NPIdentifier name)
 {
 	if (last_lookup == name)
 		return last_id;
 	
-	int id = map_name_to_id (name, mapping, mapping_count, include_silverlight2);
+	int id = map_name_to_id (name, mapping, mapping_count);
 	
 	if (id) {
 		/* only cache hits */
@@ -2611,7 +2587,7 @@ _get_dependency_property (DependencyObject *obj, char *attrname)
 }
 
 static bool
-_set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop, const NPVariant *value, bool sl2)
+_set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop, const NPVariant *value)
 {
 	if (npvariant_is_moonlight_object (*value)) {
 		MoonlightObject *obj = (MoonlightObject *) NPVARIANT_TO_OBJECT (*value);
@@ -2695,7 +2671,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			return true;
 		}
 		
-		rv = xaml_set_property_from_str (dob, prop, strval, sl2);
+		rv = xaml_set_property_from_str (dob, prop, strval);
 		
 		if (strval != strbuf)
 			g_free (strval);
@@ -2730,7 +2706,6 @@ bool
 MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	// don't need to downcase here since dependency property lookup is already case insensitive
-	PluginInstance *plugin = (PluginInstance*) instance->pdata;
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
 	DependencyObject *dob = GetDependencyObject ();
 	DependencyProperty *prop;
@@ -2759,7 +2734,7 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 		} else if (prop->GetId () == MediaElement::CurrentStateProperty) {
 			// Javascript applications use strings, while managed use an enum
 			int enum_value = dob->GetValue (prop)->AsInt32 ();
-			const char *name = enums_int_to_str ("MediaElementState", enum_value, false);
+			const char *name = enums_int_to_str ("MediaElementState", enum_value);
 			string_to_npvariant (name, result);
 			return true;
 		} else {
@@ -2778,7 +2753,7 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 		}
 		
 		if (value->GetKind () == Type::INT32) {
-			const char *s = enums_int_to_str (prop->GetName(), value->AsInt32 (), plugin->IsSilverlight2());
+			const char *s = enums_int_to_str (prop->GetName(), value->AsInt32 ());
 			if (s)
 				string_to_npvariant (s, result);
 			else
@@ -2825,8 +2800,7 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 	NPN_MemFree (strname);
 	
 	if (prop) {
-		PluginInstance *plugin = (PluginInstance*) instance->pdata;
-		if (_set_dependency_property_value (dob, prop, value, plugin->IsSilverlight2())) {
+		if (_set_dependency_property_value (dob, prop, value)) {
 			return true;
 		} else {
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");

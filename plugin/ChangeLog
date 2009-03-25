@@ -1,5 +1,15 @@
 2009-03-25  Jeffrey Stedfast  <fejj@novell.com>
 
+	* plugin-class.cpp (MoonlightObjectType::LookupName): No longer
+	takes an include_sl2 argument.
+
+	* plugin.cpp (PluginInstance::StreamAsFile): We no longer have
+	IsSilverlight2() so check the filename extension (fixed to not be
+	a gross hack). Also got rid of #if PLUGIN_2_0 confusion, we are no
+	longer supporting a 1.0-only build.
+	(PluginInstance::CreateWindow): Surface.ctor() no longer takes a
+	silverlight2 argument.
+
 	* plugin-debug.cpp (reflect_value): Don't crash when the
 	DependencyObject is null.
 

@@ -32,6 +32,7 @@
 #include "window-gtk.h"
 #include "unzip.h"
 #include "deployment.h"
+#include "uri.h"
 
 #define Visual _XxVisual
 #define Region _XxRegion
@@ -361,7 +362,6 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 {
 	this->instance = instance;
 	this->mode = mode;
-	this->silverlight2 = strcmp (pluginType, MIME_SILVERLIGHT_2) == 0;
 	window = NULL;
 	
 	properties_fps_label = NULL;
@@ -784,7 +784,7 @@ PluginInstance::CreateWindow ()
 		moon_window = new MoonWindowGtk (false, window->width, window->height);
 	}
 
-	surface = new Surface (moon_window, silverlight2);
+	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
 
 	if (onError != NULL) {
@@ -1250,20 +1250,13 @@ PluginInstance::Evaluate (const char *code)
 	return (void*)res;
 }
 
-#define MOONLIGHT_1_0_LOADING_2_0_ERROR_XAML \
-"<Canvas " \
-	"xmlns=\"http://schemas.microsoft.com/client/2007\" " \
-	"xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" " \
-        "Background=\"White\" " \
-        "Width=\"400\" " \
-        "Height=\"200\" " \
-        ">" \
-                "<TextBlock Canvas.Top=\"10\" Canvas.Left=\"10\" Foreground=\"Red\">" \
-			"<Run Text=\"Moonlight was compiled with 1.0 support only.\" />" \
-			"<LineBreak />" \
-			"<Run Text=\"This page requires 2.0 support.\" />" \
-		"</TextBlock>" \
-"</Canvas>"
+static bool
+is_xap (const char *path)
+{
+	size_t n = strlen (path);
+	
+	return n > 4 && !g_ascii_strcasecmp (path + n - 4, ".xap");
+}
 
 void
 PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
@@ -1277,30 +1270,16 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		delete xaml_loader;
 		
-#if PLUGIN_SL_2_0
-		// FIXME horrible hack to test sl2 sites that use the sl1
-		// mimetype.
-		if (IsSilverlight2 ()) {
-			LoadXAP (stream->url, fname);
-		} else if (strstr (stream->url, ".xap")) {
-			g_warning ("HACK to use sl2 on uris containing .xap engaged");
-			this->silverlight2 = TRUE;
+		Uri *uri = new Uri ();
+		
+		if (uri->Parse (stream->url, false) && is_xap (uri->path)) {
 			LoadXAP (stream->url, fname);
 		} else {
-#else
-			unzFile zf = unzOpen (fname);
-			if (zf) {
-				unzClose (zf);
-				xaml_loader = PluginXamlLoader::FromStr (MOONLIGHT_1_0_LOADING_2_0_ERROR_XAML,
-									 this, surface);
-			} else
-#endif
-				xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
-			
+			xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
 			LoadXAML ();
-#if PLUGIN_SL_2_0
 		}
-#endif
+		
+		delete uri;
 	} else if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
 		Downloader *dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
 		

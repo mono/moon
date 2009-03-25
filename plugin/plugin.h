@@ -107,8 +107,6 @@ class PluginInstance
 	int32_t GetActualHeight ();
 	int32_t GetActualWidth ();
 	
-	bool IsSilverlight2 () { return silverlight2; } 
-	
 	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 	
 	static Downloader *CreateDownloader (PluginInstance *instance);
@@ -174,7 +172,6 @@ class PluginInstance
 	char *id;
 
 	bool windowless;
-	bool silverlight2;
 	int maxFrameRate;
 
 	BrowserBridge *bridge;
