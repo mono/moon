@@ -39,6 +39,8 @@ libmoonplugin_la_LIBADD = $(MAYBE_LIBMOON) $(PLUGIN_LIBS)
 INCLUDES += -I$(top_srcdir)/src/asf
 
 libmoonplugin_la_SOURCES = \
+	cbinding.h	\
+	cbinding.cpp	\
 	browser-bridge.h	\
 	moonlight.h		\
 	npstream-request.cpp	\

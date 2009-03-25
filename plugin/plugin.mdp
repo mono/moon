@@ -72,6 +72,8 @@
     <File name="windowless.cpp" subtype="Code" buildaction="Nothing" />
     <File name="windowless.h" subtype="Code" buildaction="Nothing" />
     <File name="plugin.mdp" subtype="Code" buildaction="Nothing" />
+    <File name="cbinding.h" subtype="Code" buildaction="Nothing" />
+    <File name="cbinding.cpp" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>

@@ -1,3 +1,10 @@
+2009-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.mdp:
+	* cbinding.h:
+	* Makefile.am:
+	* cbinding.cpp: Include generated files in the build.
+
 2009-03-23  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (value_to_variant): getting a Uri in the plugin
