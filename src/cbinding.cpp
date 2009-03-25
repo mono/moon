@@ -3410,6 +3410,16 @@ surface_create_downloader (Surface *instance)
 }
 
 
+Color *
+surface_get_background_color (Surface *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetBackgroundColor ();
+}
+
+
 UIElement *
 surface_get_focused_element (Surface *instance)
 {
@@ -3454,6 +3464,23 @@ bool
 surface_in_main_thread (void)
 {
 	return Surface::InMainThread ();
+}
+
+
+bool
+surface_is_loaded (Surface *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->IsLoaded ();
+}
+
+
+bool
+surface_is_version_supported (const char *version)
+{
+	return Surface::IsVersionSupported (version);
 }
 
 

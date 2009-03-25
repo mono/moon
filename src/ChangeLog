@@ -1,3 +1,12 @@
+2009-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.h:
+	* runtime.cpp: Move IsVersionSupported implementation here,
+	  add GetBackgroundColor and sprinkle generator annotations.
+
+	* cbinding.h:
+	* cbinding.cpp: <grendel> ah, but it's interesting
+
 2009-03-25  Alan McGovern  <amcgovern@novell.com>
 
 	* uri.cpp: Scheme was being used uninitialised if the if

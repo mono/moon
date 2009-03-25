@@ -42,11 +42,20 @@ namespace System.Windows.Interop {
 
 		public bool IsVersionSupported (string versionStr)
 		{
-			throw new NotImplementedException ();
+			return NativeMethods.surface_is_version_supported (versionStr);
 		}
 
 		public Color Background {
-			get { throw new NotImplementedException (); }
+			get {
+				IntPtr clr = NativeMethods.surface_get_background_color (Deployment.Current.Surface.Native);
+				
+				if (clr == IntPtr.Zero)
+					return new Color ();
+				
+				unsafe {
+					return ((UnmanagedColor *) clr)->ToColor ();
+				}
+			}
 		}
 
 		public Content Content {
@@ -54,7 +63,9 @@ namespace System.Windows.Interop {
 		}
 
 		public bool IsLoaded {
-			get { throw new NotImplementedException (); }
+			get { 
+				return NativeMethods.surface_is_loaded (Deployment.Current.Surface.Native);
+			}
 		}
 
 		public Settings Settings {

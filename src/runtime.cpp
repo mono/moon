@@ -1871,6 +1871,65 @@ Surface::SetBackgroundColor (Color *color)
 	active_window->Invalidate ();
 }
 
+Color *
+Surface::GetBackgroundColor ()
+{
+	return background_color;
+}
+
+bool
+Surface::IsVersionSupported (const char *version_list)
+{
+	/* we support all 0.*, 1.0.*, 1.1.* and 2.0.* versions. */
+	bool supported = true;
+	gchar **versions;
+	char *version = NULL;
+	gint64 numbers [4];
+
+	if (version_list == NULL)
+		return false;
+
+	versions = g_strsplit (version_list, ".", 4);
+
+	supported = versions [0] != NULL && versions [1] != NULL;
+
+	if (supported) {
+		for (int k = 0; k < 4; k++) {
+			numbers [k] = 0;
+			version = versions [k];
+			
+			if (version == NULL)
+				break;
+						
+			// Only allow ascii 0-9 characters in the numbers
+			for (int i = 0; version [i] != 0; i++) {
+				if (version [i] < '0' || version [i] > '9') {
+					supported = false;
+					break;
+				}
+			}
+			
+			numbers [k] = atoll (version);
+		}
+		
+		switch (numbers [0]) {
+		case 0: // We support all versions of the format "0.*" and "1.*"
+		case 1: 
+			break;
+		case 2:
+			supported &= numbers [1] == 0; // 2.0.*
+			break;
+		default:
+			supported = false;
+			break;
+		}
+	}
+	
+	g_strfreev (versions);
+
+	return supported;
+}
+
 void
 runtime_init_browser ()
 {

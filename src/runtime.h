@@ -165,6 +165,8 @@ public:
 	void EmitLoad ();
 	
 	void SetBackgroundColor (Color *color);
+	/* @GenerateCBinding,GeneratePInvoke */
+	Color *GetBackgroundColor ();
 
 	int GetFrameCount () { return frames; }
 	void ResetFrameCount () { frames = 0; }
@@ -180,8 +182,12 @@ public:
 
 	bool FocusElement (UIElement *element);
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool IsLoaded () { return toplevel != NULL; }
 	bool IsSilverlight2 () { return silverlight2; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	static bool IsVersionSupported (const char *version);
 
 	const static int ResizeEvent;
 	const static int FullScreenChangeEvent;

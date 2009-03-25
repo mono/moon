@@ -1567,6 +1567,10 @@ namespace Mono {
 		public extern static IntPtr surface_create_downloader (IntPtr instance);
 
 		[DllImport ("moon")]
+		// Color *surface_get_background_color (Surface *instance);
+		public extern static IntPtr surface_get_background_color (IntPtr instance);
+
+		[DllImport ("moon")]
 		// UIElement *surface_get_focused_element (Surface *instance);
 		public extern static IntPtr surface_get_focused_element (IntPtr instance);
 
@@ -1583,6 +1587,16 @@ namespace Mono {
 		[return: MarshalAs (UnmanagedType.U1)]
 		// bool surface_in_main_thread ();
 		public extern static bool surface_in_main_thread ();
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool surface_is_loaded (Surface *instance);
+		public extern static bool surface_is_loaded (IntPtr instance);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool surface_is_version_supported (const char *version);
+		public extern static bool surface_is_version_supported (string version);
 
 		[DllImport ("moon")]
 		// void surface_paint (Surface *instance, cairo_t *ctx, int x, int y, int width, int height);

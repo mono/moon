@@ -1508,6 +1508,9 @@ void surface_attach (Surface *instance, UIElement *toplevel);
 Downloader *surface_create_downloader (Surface *instance);
 
 /* @GeneratePInvoke */
+Color *surface_get_background_color (Surface *instance);
+
+/* @GeneratePInvoke */
 UIElement *surface_get_focused_element (Surface *instance);
 
 /* @GeneratePInvoke */
@@ -1520,6 +1523,12 @@ MoonWindow *surface_get_window (Surface *instance);
 
 /* @GeneratePInvoke */
 bool surface_in_main_thread (void);
+
+/* @GeneratePInvoke */
+bool surface_is_loaded (Surface *instance);
+
+/* @GeneratePInvoke */
+bool surface_is_version_supported (const char *version);
 
 /* @GeneratePInvoke */
 void surface_paint (Surface *instance, cairo_t *ctx, int x, int y, int width, int height);

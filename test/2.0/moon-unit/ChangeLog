@@ -1,5 +1,11 @@
 2009-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* System.Windows/ApplicationTest.cs:
+	* System.Windows.Interop/SilverlightHostTest.cs: Remove some
+	  [MoonlightBug] attributes.
+
+2009-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Windows/ApplicationTest.cs: Fix
 	  LoadComponent_Application for both http:// and file://.
 

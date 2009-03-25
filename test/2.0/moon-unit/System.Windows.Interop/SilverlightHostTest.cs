@@ -52,7 +52,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void New ()
 		{
 			SilverlightHost host = new SilverlightHost ();
@@ -60,7 +59,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Current ()
 		{
 			SilverlightHost host = Application.Current.Host;

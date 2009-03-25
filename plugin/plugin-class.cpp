@@ -2122,58 +2122,14 @@ MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
 	}
 
 	case MoonId_IsVersionSupported: {
-		/* we support all 0.*, 1.0.* and 1.1.* versions. */
 		if (!check_arg_list ("s", argCount, args))
 			return false;
 		
-		bool supported = true;
 		gchar *version_list = STRDUP_FROM_VARIANT (args [0]);
-		gchar **versions = g_strsplit (version_list, ".", 4);
-		char *version = NULL;
-		gint64 numbers [4];
-
-		supported = versions [0] != NULL && versions [1] != NULL;
-
-		if (supported) {
-			for (int k = 0; k < 4; k++) {
-				numbers [k] = 0;
-				version = versions [k];
-				
-				if (version == NULL)
-					break;
-							
-				// Only allow ascii 0-9 characters in the numbers
-				for (int i = 0; version [i] != 0; i++) {
-					if (version [i] < '0' || version [i] > '9') {
-						supported = false;
-						break;
-					}
-				}
-				
-				numbers [k] = atoll (version);
-			}
-			
-			switch (numbers [0]) {
-			case 0: // We support all versions of the format "0.*" and "1.*"
-			case 1: 
-				break;
-#if PLUGIN_SL_2_0
-			case 2:
-				supported &= numbers [1] == 0; // 2.0.*
-				break;
-#endif
-			default:
-				supported = false;
-				break;
-			}
-		}
-		
-		//		d(printf ("version requested = '%s' (%s)\n", version_list, supported ? "yes" : "no"));
+		bool supported = Surface::IsVersionSupported (version_list);
+		g_free (version_list);
 		
 		BOOLEAN_TO_NPVARIANT (supported, *result);
-
-		g_strfreev (versions);
-		g_free (version_list);
 
 		return true;
 	}

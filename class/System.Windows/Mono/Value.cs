@@ -52,6 +52,11 @@ namespace Mono {
 		public double g;
 		public double b;
 		public double a;
+		
+		public Color ToColor ()
+		{
+			return Color.FromArgb ((byte)(255 * a), (byte)(255 * r), (byte)(255 * g), (byte)(255 * b));
+		}
 	}
 
 	internal struct UnmanagedUri {
@@ -242,7 +247,7 @@ namespace Mono {
 					UnmanagedColor *color = (UnmanagedColor*)val->u.p;
 					if (color == null)
 						return new Color ();
-					return Color.FromArgb ((byte)(255 * color->a), (byte)(255 * color->r), (byte)(255 * color->g), (byte)(255 * color->b));
+					return color->ToColor ();
 				}
 					
 				case Kind.MATRIX:
