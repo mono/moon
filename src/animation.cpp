@@ -1934,9 +1934,9 @@ DiscreteObjectKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgr
 	Value *to = GetValue();
 
 	if (to && keyFrameProgress == 1.0)
-		return to;
+		return new Value (*to);
 	else
-		return baseValue;
+		return new Value (*baseValue);
 }
 
 ObjectAnimationUsingKeyFrames::ObjectAnimationUsingKeyFrames ()
@@ -1998,7 +1998,7 @@ ObjectAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 		key_start_time = 0;
 	} else {
 		/* start at the previous keyframe's target value */
-		baseValue = previous_keyframe->GetValue ();
+		baseValue = new Value (*previous_keyframe->GetValue ());
 		deleteBaseValue = true;
 		key_start_time = previous_keyframe->resolved_keytime;
 	}
