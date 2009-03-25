@@ -525,7 +525,7 @@ get_common_prefix_len (GtkTreeModel *model)
 	if (!uri->Parse (url)) {
 		buf = g_strdup (filename);
 	} else {
-		buf = uri->GetPath();
+		buf = (char*)uri->GetPath();
 		uri->path = NULL;
 	}
 	
@@ -543,7 +543,7 @@ get_common_prefix_len (GtkTreeModel *model)
 		if (!uri->Parse (url))
 			path = filename;
 		else
-			path = uri->GetPath();
+			path = (char*)uri->GetPath();
 		
 		for (p = buf, q = path; *p && *q; p++, q++) {
 			if (*p != *q)
@@ -584,7 +584,7 @@ save_callback (GtkWidget *widget, gpointer data)
 		
 		uri = new Uri ();
 		if (uri->Parse (url))
-			path = uri->GetPath();
+			path = (char*)uri->GetPath();
 		else
 			path = filename;
 		

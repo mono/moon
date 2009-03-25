@@ -5,6 +5,9 @@
 	* plugin-class.cpp (MoonlightImageBrushObject::GetProperty): same.
 	(MoonlightImageObject::GetProperty): same.
 
+	* plugin-debug.cpp (get_common_prefix_len): same.
+	(save_callback): same.
+
 2009-03-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (MoonlightObjectType::LookupName): No longer
