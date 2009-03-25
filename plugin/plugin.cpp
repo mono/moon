@@ -1272,7 +1272,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		
 		Uri *uri = new Uri ();
 		
-		if (uri->Parse (stream->url, false) && is_xap (uri->path)) {
+		if (uri->Parse (stream->url, false) && is_xap (uri->GetPath())) {
 			LoadXAP (stream->url, fname);
 		} else {
 			xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);

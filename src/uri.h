@@ -24,20 +24,6 @@ enum UriToStringFlags {
 /* @Namespace=System */
 struct Uri {
 public:
-	bool isAbsolute;
-
-	char *scheme;
-	char *user;
-	char *auth;
-	char *passwd;
-	char *host;
-	int port;
-	char *path;
-	GData *params;
-	char *query;
-	char *fragment;
-
-	char *originalString;
 
 	Uri ();
 	Uri (const Uri& uri);
@@ -64,5 +50,29 @@ public:
 	guint GetHashCode ();
 
 	bool IsScheme (const char *scheme);
+
+	const char *GetScheme () const { return scheme; }
+	const char *GetHost () const { return host; }
+	int GetPort () const { return port; }
+	const char *GetUser () const { return user; }
+	const char *GetPasswd () const { return passwd; }
+	const char *GetFragment () const { return fragment; }
+	const char *GetPath () const { return path; }
+	const char *GetOriginalString () const { return originalString; }
+
+	bool isAbsolute;
+
+	char *scheme;
+	char *user;
+	char *auth;
+	char *passwd;
+	char *host;
+	int port;
+	char *path;
+	GData *params;
+	char *query;
+	char *fragment;
+
+	char *originalString;
 };
 #endif /* __URI_H__ */

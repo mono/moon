@@ -1012,14 +1012,14 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				CleanupSurface ();
 
 		                if (!CreateSurface (NULL)) {
-		                        printf ("failed to create surface %s\n", source->GetUriSource ()->originalString);
+		                        printf ("failed to create surface %s\n", source->GetUriSource ()->GetOriginalString ());
 		                        Invalidate ();
 		                } else {
 					UpdateSize ();
 				}
 			} else {
 				Uri *uri = source->GetUriSource();
-				MediaBase::SetSource (uri ? uri->originalString : NULL);
+				MediaBase::SetSource (uri ? uri->GetOriginalString () : NULL);
 			}
 		}
 	}

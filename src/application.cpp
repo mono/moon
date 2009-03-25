@@ -69,8 +69,9 @@ Application::ApplyStyle (FrameworkElement *fwe, Style *style)
 gpointer
 Application::GetResource (Uri *uri, int *size)
 {
-	if (get_resource_cb)
-		return get_resource_cb (uri->originalString, size);
+	if (get_resource_cb) {
+		return get_resource_cb (uri->GetOriginalString (), size);
+	}
 
 	*size = 0;
 	return NULL;

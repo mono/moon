@@ -695,38 +695,38 @@ PlaylistEntry::GetFullSourceName ()
 		
 		//printf ("PlaylistEntry::GetFullSourceName (), base: %s, current: %s\n", base ? base->ToString () : "NULL", current ? current->ToString () : "NULL");
 		
-		if (current->host != NULL) {
-			//printf (" current host (%s) is something, scheme: %s\n", current->host, current->scheme);
+		if (current->GetHost () != NULL) {
+			//printf (" current host (%s) is something, scheme: %s\n", current->GetHost (), current->scheme);
 			result = current;
 		} else if (base != NULL) {
 			result = new Uri ();
-			result->scheme = g_strdup (base->scheme);
-			result->user = g_strdup (base->user);
-			result->passwd = g_strdup (base->passwd);
-			result->host = g_strdup (base->host);
-			result->port = base->port;
+			result->scheme = g_strdup (base->GetScheme());
+			result->user = g_strdup (base->GetUser());
+			result->passwd = g_strdup (base->GetPasswd());
+			result->host = g_strdup (base->GetHost());
+			result->port = base->GetPort();
 			// we ignore the params, query and fragment values.
-			if (current->path != NULL && current->path [0] == '/') {
+			if (current->GetPath() != NULL && current->GetPath() [0] == '/') {
 				//printf (" current path is relative to root dir on host\n");
-				result->path = g_strdup (current->path);
-			} else if (base->path == NULL) {
+				result->path = g_strdup (current->GetPath());
+			} else if (base->GetPath() == NULL) {
 				//printf (" base path is root dir on host\n");
-				result->path = g_strdup (current->path);
+				result->path = g_strdup (current->GetPath());
 			} else {
-				pathsep = strrchr (base->path, '/');
+				pathsep = strrchr (base->GetPath(), '/');
 				if (pathsep != NULL) {
-					if ((size_t) (pathsep - base->path + 1) == strlen (base->path)) {
+					if ((size_t) (pathsep - base->GetPath() + 1) == strlen (base->GetPath())) {
 						//printf (" last character of base path (%s) is /\n", base->path);
-						result->path = g_strjoin (NULL, base->path, current->path, NULL);
+						result->path = g_strjoin (NULL, base->GetPath(), current->GetPath(), NULL);
 					} else {
 						//printf (" base path (%s) does not end with /, only copy path up to the last /\n", base->path);
-						base_path = g_strndup (base->path, pathsep - base->path + 1);
-						result->path = g_strjoin (NULL, base_path, current->path, NULL);
+						base_path = g_strndup (base->GetPath(), pathsep - base->GetPath() + 1);
+						result->path = g_strjoin (NULL, base_path, current->GetPath(), NULL);
 						g_free (base_path);
 					}
 				} else {
 					//printf (" base path (%s) does not contain a /\n", base->path);
-					result->path = g_strjoin (NULL, base->path, "/", current->path, NULL);
+					result->path = g_strjoin (NULL, base->GetPath(), "/", current->GetPath(), NULL);
 				}
 			}
 		} else {
@@ -1624,7 +1624,7 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 					uri = new Uri ();
 					if (!uri->Parse (attrs [i+1], true)) {
 						failed = true;
-					} else if (uri->scheme == NULL) {
+					} else if (uri->GetScheme() == NULL) {
 						failed = true;
 					} else if (uri->IsScheme ("http") && 
 						   uri->IsScheme ("https") && 
@@ -2087,7 +2087,7 @@ PlaylistParser::OnSMILStartElement (const char *name, const char **attrs)
 					uri = new Uri ();
 					if (!uri->Parse (attrs [i+1], true)) {
 						failed = true;
-					} else if (uri->scheme == NULL) {
+					} else if (uri->GetScheme() == NULL) {
 						failed = true;
 					} else if (uri->IsScheme ("http") && 
 						   uri->IsScheme ("https") && 

@@ -191,20 +191,20 @@ Downloader::InternalOpen (const char *verb, const char *uri, bool streaming)
 static bool
 scheme_is (const Uri *uri, const char *scheme)
 {
-	return uri->scheme && !strcmp (uri->scheme, scheme);
+	return uri->GetScheme () && !strcmp (uri->GetScheme (), scheme);
 }
 
 static bool
 same_scheme (const Uri *uri1, const Uri *uri2)
 {
-	return uri1->scheme && uri2->scheme &&
-		!strcmp (uri1->scheme, uri2->scheme);
+	return uri1->GetScheme () && uri2->GetScheme () &&
+		!strcmp (uri1->GetScheme (), uri2->GetScheme ());
 }
 
 static bool
 same_domain (const Uri *uri1, const Uri *uri2)
 {
-	return (g_ascii_strcasecmp (uri1->host, uri2->host) == 0);
+	return (g_ascii_strcasecmp (uri1->GetHost (), uri2->GetHost ()) == 0);
 }
 
 static bool
@@ -250,7 +250,7 @@ validate_policy (const char *location, const char *uri, DownloaderAccessPolicy p
 	
 	Uri *source = new Uri ();
 	source->Parse (uri);
-	if (source->host == NULL) {
+	if (source->GetHost () == NULL) {
 		//relative uri, not checking policy
 		delete source;
 		return true;
@@ -980,13 +980,13 @@ downloader_deobfuscate_font (Downloader *downloader, const char *path)
 		return NULL;
 	
 	uri = new Uri ();
-	if (!uri->Parse (str) || !uri->path) {
+	if (!uri->Parse (str) || !uri->GetPath ()) {
 		delete uri;
 		return NULL;
 	}
 	
-	if (!(str = strrchr (uri->path, '/')))
-		str = uri->path;
+	if (!(str = strrchr (uri->GetPath (), '/')))
+		str = uri->GetPath ();
 	else
 		str++;
 	

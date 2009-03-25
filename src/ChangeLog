@@ -1,3 +1,13 @@
+2009-03-25  Chris Toshok  <toshok@ximian.com>
+
+	* uri.h (struct Uri): add accessor methods for all of the fields.
+	The fields are still public for now, since a few places (e.g.,
+	plugin-debug, playlist), make direct modifications.
+
+	* multiscalesubimage.cpp, playlist.cpp, downloader.cpp,
+	glyphs.cpp, mediaelement.cpp, application.cpp, media.cpp: use
+	accessors when getting values.
+	
 2009-03-25  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* uri.h, uri.cpp: GetHashCode (), so Uris can be used as keys for

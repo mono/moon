@@ -1,3 +1,7 @@
+2009-03-25  Chris Toshok  <toshok@ximian.com>
+
+	* uri-test.cpp: use accessors.
+
 2009-03-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* parsertest/parsertest.cpp (parse_value_test): Fixed

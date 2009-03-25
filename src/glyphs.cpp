@@ -677,8 +677,8 @@ Glyphs::DownloadFont (Surface *surface, Uri *uri)
 {
 	if (uri) {
 		if ((downloader = surface->CreateDownloader ())) {
-			if (uri->fragment) {
-				if ((index = strtol (uri->fragment, NULL, 10)) < 0 || index == LONG_MAX)
+			if (uri->GetFragment ()) {
+				if ((index = strtol (uri->GetFragment (), NULL, 10)) < 0 || index == LONG_MAX)
 					index = 0;
 			}
 			
