@@ -1,3 +1,29 @@
+2009-03-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mediaelement.cpp (MediaElement::GetStateName): Don't pass an sl2
+	argument to enums_int_to_str() anymore.
+
+	* trigger.cpp (EventTrigger::SetTarget): Surface::IsSilverlight2()
+	no longer exists, don't bother checking it. If the target is other
+	than the Loaded event, we need to treat the whole thing as
+	Silverlight2 anyway.
+
+	* runtime.cpp (Surface::Surface): No longer takes a silverlight2
+	argument or keeps such a flag.
+	(Surface::EmitEventOnList): Don't need to care about the
+	silverlight2 flag.
+	(Surface::HandleUIKeyPress): Same.
+	(Surface::HandleUIKeyRelease): Here too.
+
+	* enums.cpp (enums_str_to_int): No longer takes an sl2 argument.
+	(enums_int_to_str): Same.
+
+	* xaml.cpp (value_from_str_with_typename): No longer takes an sl2
+	argument.
+	(value_from_str): Same.
+	(convert_value_type): Same.
+	(xaml_set_property_from_str): Same.
+
 2009-03-25  Geoff Norton  <gnorton@novell.com>
 
 	* Makefile.am: 

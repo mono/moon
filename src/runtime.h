@@ -139,7 +139,7 @@ typedef void (* MoonlightExposeHandoffFunc) (Surface *surface, TimeSpan time, vo
 class Surface : public EventObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	Surface (MoonWindow *window, bool silverlight2);
+	Surface (MoonWindow *window);
 	virtual void Dispose ();
 	
 	/* @GenerateCBinding */
@@ -184,7 +184,6 @@ public:
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool IsLoaded () { return toplevel != NULL; }
-	bool IsSilverlight2 () { return silverlight2; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	static bool IsVersionSupported (const char *version);
@@ -272,9 +271,6 @@ protected:
 	virtual ~Surface();
 
 private:
-	// are we being run in a silverlight2 context?
-	bool silverlight2;
-
 	// are we headed for death?
 	bool zombie;
 

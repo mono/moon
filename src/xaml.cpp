@@ -2892,8 +2892,8 @@ value_is_explicit_null (const char *str)
 	return !strcmp ("{x:Null}", str);
 }
 
-static
-bool is_managed_kind (Type::Kind kind)
+static bool
+is_managed_kind (Type::Kind kind)
 {
 	
 	if (kind == Type::MANAGED ||
@@ -2914,17 +2914,17 @@ is_static_resource_element (const char *el)
 
 // NOTE: Keep definition in sync with class/System.Windows/Mono/NativeMethods.cs
 bool
-value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v, bool sl2)
+value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v)
 {
 	Type *t = Type::Find (type_name);
 	if (!t)
 		return false;
 
-	return value_from_str (t->GetKind (), prop_name, str, v, sl2);
+	return value_from_str (t->GetKind (), prop_name, str, v);
 }
 
 bool
-value_from_str (Type::Kind type, const char *prop_name, const char *str, Value** v, bool sl2)
+value_from_str (Type::Kind type, const char *prop_name, const char *str, Value **v)
 {
 	char *endptr;
 	*v = NULL;
@@ -3016,7 +3016,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 		int i;
 
 		if (g_ascii_isalpha (str[0]) && prop_name) {
-			i = enums_str_to_int (prop_name, str, sl2);
+			i = enums_str_to_int (prop_name, str);
 			if (i == -1) {
 				g_warning ("'%s' enum is not valid on '%s' property", str, prop_name);
 				return false;
@@ -3267,12 +3267,12 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value**
 }
 
 void
-convert_value_type (Type::Kind desired_kind, const char *prop_name, Value **value, bool sl2)
+convert_value_type (Type::Kind desired_kind, const char *prop_name, Value **value)
 {
 	Value *v = *value;
 
 	if (desired_kind != Type::STRING && v->GetKind () == Type::STRING) {
-		if (value_from_str (desired_kind, prop_name, v->AsString (), value, sl2)) {
+		if (value_from_str (desired_kind, prop_name, v->AsString (), value)) {
 			delete v;
 			return;
 		}
@@ -3604,7 +3604,7 @@ XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *
 	if (!dep)
 		return false;
 
-	return xaml_set_property_from_str (item, dep, value, p->loader->GetSurface()->IsSilverlight2 ());
+	return xaml_set_property_from_str (item, dep, value);
 }
 
 void
@@ -3631,7 +3631,7 @@ bool
 XamlElementInstanceValueType::CreateValueItemFromString (const char* str)
 {
 
-	bool res = value_from_str (element_info->GetType ()->GetKind (), NULL, str, &value, parser_info->loader->GetSurface()->IsSilverlight2 ());
+	bool res = value_from_str (element_info->GetType ()->GetKind (), NULL, str, &value);
 	return res;
 }
 
@@ -3649,7 +3649,7 @@ XamlElementInstanceEnum::XamlElementInstanceEnum (XamlElementInfoEnum *element_i
 bool
 XamlElementInstanceEnum::CreateEnumFromString (const char* str)
 {
-	int i = enums_str_to_int (element_name, str, true);
+	int i = enums_str_to_int (element_name, str);
 	if (i == -1)
 		return false;
 		
@@ -4181,11 +4181,11 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 }
 
 bool
-xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value, bool sl2)
+xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value)
 {
 	Value *v = NULL;
 	
-	if (!value_from_str (prop->GetPropertyType(), prop->GetName(), value, &v, sl2))
+	if (!value_from_str (prop->GetPropertyType(), prop->GetName(), value, &v))
 		return false;
 	
 	// it's possible for (a valid) value to be NULL (and we must keep the default value)
@@ -4366,7 +4366,7 @@ start_parse:
 				continue;
 
 			if (!v && !need_managed)
-				value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v, p->loader->GetSurface()->IsSilverlight2());
+				value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v);
 
 			Type::Kind propKind = prop->GetPropertyType ();
 			Type::Kind itemKind = item->info->GetKind();
@@ -4486,186 +4486,6 @@ xaml_markup_extension_type (const char *name, size_t n)
 	return XamlMarkupExtensionNone;
 }
 
-enum BindingExtensionPropertyType {
-	BindingExtensionPropertyNone = -1,
-	BindingExtensionPropertyNotifyOnValidationError,
-	BindingExtensionPropertyValidatesOnExceptions,
-	BindingExtensionPropertyConverterParameter,
-	BindingExtensionPropertyConverterCulture,
-	BindingExtensionPropertyConverter,
-	BindingExtensionPropertySource,
-	BindingExtensionPropertyMode,
-	BindingExtensionPropertyPath,
-};
-
-#define BINDING_EXTENSION(prop) { BindingExtensionProperty##prop, #prop, sizeof (#prop) - 1 }
-
-static struct {
-	BindingExtensionPropertyType type;
-	const char *name;
-	size_t n;
-} binding_extension_properties[] = {
-	BINDING_EXTENSION (NotifyOnValidationError),
-	BINDING_EXTENSION (ValidatesOnExceptions),
-	BINDING_EXTENSION (ConverterParameter),
-	BINDING_EXTENSION (ConverterCulture),
-	BINDING_EXTENSION (Converter),
-	BINDING_EXTENSION (Source),
-	BINDING_EXTENSION (Mode),
-	BINDING_EXTENSION (Path),
-};
-
-typedef struct _BindingExtensionProperty {
-	struct _BindingExtensionProperty *next;
-	BindingExtensionPropertyType type;
-	XamlMarkupExtensionType markup;
-	char *value;
-} BindingExtensionProperty;
-
-struct BindingExtension {
-	BindingExtensionProperty *properties;
-	
-	BindingExtension ()
-	{
-		properties = NULL;
-	}
-	
-	~BindingExtension ()
-	{
-		BindingExtensionProperty *next, *prop = properties;
-		
-		while (prop) {
-			next = prop->next;
-			g_free (prop->value);
-			delete prop;
-			prop = next;
-		}
-	}
-};
-
-static BindingExtensionPropertyType
-binding_extension_property_type (const char *name, size_t n)
-{
-	guint i;
-	
-	for (i = 0; i < G_N_ELEMENTS (binding_extension_properties); i++) {
-		if (binding_extension_properties[i].n == n && !strncmp (binding_extension_properties[i].name, name, n))
-			return binding_extension_properties[i].type;
-	}
-	
-	return BindingExtensionPropertyNone;
-}
-
-static BindingExtension *
-xaml_markup_parse_binding (const char **markup, XamlMarkupParseError *err)
-{
-	BindingExtensionProperty *prop, *tail;
-	BindingExtension *binding;
-	const char *inptr, *start;
-	
-	binding = new BindingExtension ();
-	tail = (BindingExtensionProperty *) &binding->properties;
-	
-	// markup starts at first char after "{Binding"
-	inptr = *markup;
-	while (*inptr && g_ascii_isspace (*inptr))
-		inptr++;
-	
-	if (*inptr == '}')
-		goto success;
-	
-	start = inptr;
-	while (*inptr && *inptr != '}' && *inptr != ',' && !g_ascii_isspace (*inptr)) {
-		if (*inptr == '=')
-			goto property;
-		
-		inptr++;
-	}
-	
-	prop = new BindingExtensionProperty ();
-	prop->value = g_strndup (start, inptr - start);
-	prop->type = BindingExtensionPropertyPath;
-	prop->next = NULL;
-	
-	tail->next = prop;
-	tail = prop;
-	
-	do {
-		while (g_ascii_isspace (*inptr))
-			inptr++;
-		
-		if (*inptr == ',')
-			inptr++;
-		
-		while (g_ascii_isspace (*inptr))
-			inptr++;
-		
-		if (*inptr == '}')
-			break;
-		
-		start = inptr;
-		while (*inptr && *inptr != '}' && !g_ascii_isspace (*inptr)) {
-			if (*inptr == '=')
-				break;
-			
-			inptr++;
-		}
-		
-	property:
-		
-		prop = new BindingExtensionProperty ();
-		prop->type = binding_extension_property_type (start, inptr - start);
-		prop->next = NULL;
-		
-		if (*inptr == '=') {
-			inptr++;
-			if (*inptr == '{') {
-				inptr++;
-				while (*inptr && g_ascii_isspace (*inptr))
-					inptr++;
-				
-				start = inptr;
-				while (*inptr && *inptr != '}' && !g_ascii_isspace (*inptr))
-					inptr++;
-				
-				prop->markup = xaml_markup_extension_type (start, inptr - start);
-				if (prop->markup != XamlMarkupExtensionStaticResource) {
-					*err = XamlMarkupParseErrorSyntax;
-					delete binding;
-					delete prop;
-					return NULL;
-				}
-				
-				if (!(prop->value = xaml_markup_parse_argument (&inptr, err))) {
-					delete binding;
-					delete prop;
-					return NULL;
-				}
-			} else {
-				prop->markup = XamlMarkupExtensionNone;
-				
-				start = inptr;
-				while (*inptr && *inptr != '}' && !g_ascii_isspace (*inptr))
-					inptr++;
-				
-				prop->value = g_strndup (start, inptr - start);
-			}
-		}
-		
-		tail->next = prop;
-		tail = prop;
-	} while (*inptr && *inptr != '}');
-	
- success:
-	
-	if (*inptr == '}')
-		inptr++;
-	
-	*markup = inptr;
-	
-	return binding;
-}
-
 static bool
 handle_markup_in_managed (const char* attr_value)
 {
@@ -4692,8 +4512,6 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 {
 	const char *inptr, *start = attr_value + 1; // skip the initial '{'
 	XamlMarkupExtensionType type = XamlMarkupExtensionNone;
-	FrameworkTemplate *template_parent;
-	BindingExtension *binding;
 	XamlMarkupParseError err;
 	char *argument;
 	
@@ -4736,7 +4554,7 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 				return false;
 			}
 
-			convert_value_type (prop->GetPropertyType (), attr_name, value, true);
+			convert_value_type (prop->GetPropertyType (), attr_name, value);
 
 			g_free (argument);
 			return true;

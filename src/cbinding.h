@@ -1443,7 +1443,7 @@ void surface_resize (Surface *instance, int width, int height);
 void surface_set_full_screen (Surface *instance, bool value);
 
 /* @GeneratePInvoke */
-Surface *surface_new (MoonWindow *window, bool silverlight2);
+Surface *surface_new (MoonWindow *window);
 
 /**
  * TextBlock

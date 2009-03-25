@@ -3221,9 +3221,9 @@ surface_set_full_screen (Surface *instance, bool value)
 
 
 Surface *
-surface_new (MoonWindow *window, bool silverlight2)
+surface_new (MoonWindow *window)
 {
-	return new Surface (window, silverlight2);
+	return new Surface (window);
 }
 
 

@@ -106,7 +106,7 @@ MediaElement::ShuttingDownHandler (Deployment *sender, EventArgs *args)
 const char *
 MediaElement::GetStateName (MediaState state)
 {
-	return enums_int_to_str ("MediaState", state, true);
+	return enums_int_to_str ("MediaState", state);
 }
 
 MediaResult

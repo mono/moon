@@ -265,16 +265,14 @@ runtime_flags_set_show_fps (gboolean flag)
 
 /* FIXME More flag setters here */
 
-Surface::Surface (MoonWindow *window, bool silverlight2)
+Surface::Surface (MoonWindow *window)
 {
 	SetObjectType (Type::SURFACE);
 
 	GetDeployment ()->SetSurface (this);
 
 	main_thread = pthread_self ();
-
-	this->silverlight2 = silverlight2;
-
+	
 	zombie = false;
 	downloader_context = NULL;
 	downloaders = NULL;
@@ -1185,7 +1183,8 @@ Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int
 			handled = false;
 			break;
 		}
-		if (silverlight2 && args_are_routed && ((RoutedEventArgs*)args)->GetHandled())
+		
+		if (args_are_routed && ((RoutedEventArgs*)args)->GetHandled())
 			break;
 	}
 	emittingMouseEvent = false;
@@ -1789,8 +1788,8 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 	bool handled;
 
 	Keyboard::OnKeyPress (key);
-
-	if (silverlight2 && focused_element) {
+	
+	if (focused_element) {
 		List *focus_to_root = ElementPathToRoot (focused_element);
 		handled = EmitEventOnList (UIElement::KeyDownEvent, focus_to_root, (GdkEvent*)event, -1);
 		delete focus_to_root;
@@ -1818,7 +1817,7 @@ Surface::HandleUIKeyRelease (GdkEventKey *event)
 	Key key = Keyboard::MapKeyValToKey (event->keyval);
 	Keyboard::OnKeyRelease (key);
 
-	if (silverlight2 && focused_element) {
+	if (focused_element) {
 		List *focus_to_root = ElementPathToRoot (focused_element);
 		handled = EmitEventOnList (UIElement::KeyUpEvent, focus_to_root, (GdkEvent*)event, -1);
 		delete focus_to_root;
