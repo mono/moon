@@ -1665,6 +1665,8 @@ bool uri_equals (const Uri *left, const Uri *right);
 /* @GeneratePInvoke */
 void uri_free (Uri *instance);
 
+guint uri_get_hash_code (Uri *instance);
+
 /* @GeneratePInvoke */
 bool uri_parse (Uri *instance, const char *uri, bool allow_trailing_sep);
 
