@@ -1,5 +1,9 @@
 2009-03-11  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* munxap.cs: open top-level .xml too
+
+2009-03-11  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* View.cs: add ViewImage support, for .png and .jpg
 
 2009-01-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>

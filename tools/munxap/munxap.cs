@@ -174,6 +174,7 @@ public class Munxap
 		
 		switch (content.Type) {
 		case ".xaml":
+		case ".xml":
 			view = new ViewXaml (content);
 			break;
 		case ".dll":
