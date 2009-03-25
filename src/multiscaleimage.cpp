@@ -903,11 +903,13 @@ void
 MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
+		Emit (MultiScaleImage::ViewportChangedEvent);
 		Invalidate ();
 	}
 
 	if (args->GetId () == MultiScaleImage::ViewportWidthProperty) {
-		LOG_MSI ("ViewportWidth set to %f\n", args->new_value->AsDouble ());
+		//LOG_MSI ("ViewportWidth set to %f\n", args->new_value->AsDouble ());
+		Emit (MultiScaleImage::ViewportChangedEvent);
 		Invalidate ();
 	}
 
