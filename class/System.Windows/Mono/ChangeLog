@@ -1,3 +1,9 @@
+2009-03-25  Alan McGovern  <amcgovern@novell.com>
+
+	* MoonlightTypeConverter.cs: MoonlightTypeConverter should
+	  parse enums from strings. Allows the datagrid tests to load
+	  up a datagrid without exploding.
+
 2009-03-25  Jackson Harper  <jackson@ximian.com>
 
 	* MoonlightValueConverter.cs: We need to convert string from xaml,

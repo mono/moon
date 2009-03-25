@@ -75,6 +75,9 @@ namespace Mono {
 				return value;
 
 			if (value is string) {
+				if (destinationType.IsEnum)
+					return Enum.Parse (destinationType, (string)value, true);
+				
 				Kind k = destinationKind;
 
 				/* ugh.  our desire to use enums in
