@@ -1,0 +1,5 @@
+<Deployment xmlns="http://schemas.microsoft.com/client/2007/deployment" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" EntryPointAssembly="PasswordBoxView" EntryPointType="PasswordBoxView.App" RuntimeVersion="2.0.31005.0">
+  <Deployment.Parts>
+    <AssemblyPart x:Name="PasswordBoxView" Source="PasswordBoxView.dll" />
+  </Deployment.Parts>
+</Deployment>

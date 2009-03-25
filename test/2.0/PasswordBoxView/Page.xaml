@@ -1,0 +1,9 @@
+<Canvas x:Class="PasswordBoxView.Page"
+       xmlns="http://schemas.microsoft.com/client/2007"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns:my="clr-namespace:PasswordBoxView;assembly=PasswordBoxView"
+       Width="800" Height="600">
+
+  <PasswordBox Canvas.Left="5" Canvas.Top="5" x:Name="txtPasswordBox" Width="400" Height="300" MaxLength="14"/>
+  <TextBlock Canvas.Left="410" Canvas.Top="5" x:Name="txtVisualTree"/>
+</Canvas>
