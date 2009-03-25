@@ -78,6 +78,7 @@ Uri::Free ()
 	g_free (query); query = NULL;
 	g_free (fragment); fragment = NULL;
 	g_free (originalString); originalString = NULL;
+	isAbsolute = false;
 }
 
 static void
@@ -177,13 +178,21 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 {
 	char *name, *value, *protocol, *user = NULL, *auth = NULL, *passwd = NULL, *host = NULL, *path = NULL, *query = NULL, *fragment = NULL;
 	register const char *start, *inptr;
+	bool isAbsolute;
 	bool parse_path = false;
 	GData *params = NULL;
 	int port = -1;
 	size_t n;
 	
 	start = uri;
-	
+
+	isAbsolute = true;
+
+	if (!*start) {
+		isAbsolute = false;
+		goto done;
+	}
+
 	inptr = start;
 	while (*inptr && *inptr != ':' && *inptr != '/' && *inptr != '?' && *inptr != '#')
 		inptr++;
@@ -192,8 +201,10 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 		protocol = g_ascii_strdown (start, inptr - start);
 		
 		inptr++;
-		if (!*inptr)
+		if (!*inptr) {
+			isAbsolute = false;
 			goto done;
+		}
 		
 		if (!strncmp (inptr, "//", 2))
 			inptr += 2;
@@ -202,6 +213,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 		while (*inptr && *inptr != ';' && *inptr != ':' && *inptr != '@' && *inptr != '/')
 			inptr++;
 	} else {
+		isAbsolute = false;
 		parse_path = true;
 		protocol = NULL;
 		inptr = uri;
@@ -403,7 +415,8 @@ done:
 	this->query = query;
 	this->fragment = fragment;
 	this->originalString = g_strdup (uri);
-
+	this->isAbsolute = isAbsolute;
+	
 	return true;
 }
 
