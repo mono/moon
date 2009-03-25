@@ -1,3 +1,8 @@
+2009-03-25  Alan McGovern  <amcgovern@novell.com>
+
+	* uri.cpp: Scheme was being used uninitialised if the if
+	  (!*start) check succeeded.
+
 2009-03-24  Chris Toshok  <toshok@ximian.com>
 
 	* playlist.cpp (PlaylistParser::OnASXStartElement): use

@@ -176,7 +176,7 @@ url_decode (char *in, const char *url)
 bool
 Uri::Parse (const char *uri, bool allow_trailing_sep)
 {
-	char *name, *value, *scheme, *user = NULL, *auth = NULL, *passwd = NULL, *host = NULL, *path = NULL, *query = NULL, *fragment = NULL;
+	char *name, *value, *scheme = NULL, *user = NULL, *auth = NULL, *passwd = NULL, *host = NULL, *path = NULL, *query = NULL, *fragment = NULL;
 	register const char *start, *inptr;
 	bool isAbsolute;
 	bool parse_path = false;
