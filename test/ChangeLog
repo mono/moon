@@ -1,3 +1,9 @@
+2009-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* xaml/test-xaml.html:
+	* xaml/test-parsererrors.html: New html files which will be
+	  used in several tests.
+
 2009-03-24  Chris Toshok  <toshok@ximian.com>
 
 	* uri-test.cpp: s/protocol/scheme for Uris.
