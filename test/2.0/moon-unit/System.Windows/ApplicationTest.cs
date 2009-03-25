@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Windows;
+using System.Windows.Browser;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Resources;
@@ -96,9 +97,13 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("This isn't actually a bug, it just occurs when you run the tests from a file instead of over http.")]
 		public void LoadComponent_Application ()
 		{
+			Uri docuri = HtmlPage.Document.DocumentUri;
+
+			if (docuri.Scheme != "http" && docuri.Scheme != "https")
+				return;
+			
 			// Note: Exception message can be misleading
 			Assert.Throws<ArgumentNullException> (() => Application.LoadComponent (Application.Current, null), "LoadComponent(app,null)");
 			Assert.Throws<ArgumentException> (() => Application.LoadComponent (Application.Current, uri), "LoadComponent(app,uri)");
