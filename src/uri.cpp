@@ -561,6 +561,15 @@ Uri::Equals (const Uri *left, const Uri *right)
 	return left->operator==(*right);
 }
 
+guint
+Uri::GetHashCode ()
+{
+	char* str = ToString();
+	guint hash = g_str_hash (str);
+	g_free (str);
+	return hash;
+}
+
 bool
 Uri::IsScheme (const char *scheme)
 {

@@ -60,6 +60,9 @@ public:
 	/* @GenerateCBinding */
 	static bool Equals (const Uri *left, const Uri *right);
 
+	/* @GenerateCBinding */
+	guint GetHashCode ();
+
 	bool IsScheme (const char *scheme);
 };
 #endif /* __URI_H__ */
