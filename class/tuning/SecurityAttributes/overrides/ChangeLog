@@ -1,3 +1,8 @@
+2008-03-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Extra SC on Mono.Xaml.ManagedXamlLoader
+	tolet the new attributes works correctly.
+
 2008-03-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.manual: Allow System.Net.WebRequest::GetBrowserHttpFromMoonlight

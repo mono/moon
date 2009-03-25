@@ -7,3 +7,6 @@
 # the delegate was judged "ok" at creation time, invoking it later should be ok too
 +SSC-M: System.Void System.Windows.Threading.DispatcherOperation::Invoke()
 
+# this type creates delegates to non-visible properties, events ...
++SC-T: Mono.Xaml.ManagedXamlLoader
+
