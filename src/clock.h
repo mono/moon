@@ -672,7 +672,6 @@ TimeSpan get_now (void);
 class DispatcherTimer : public TimelineGroup {
 	Clock *root_clock;
 	static void OnTick (EventObject *sender, EventArgs *calldata, gpointer data);
-	TimelineGroup * timelinegroup;
 	bool stopped;
 	bool started;
 

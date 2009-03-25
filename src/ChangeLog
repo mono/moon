@@ -1,5 +1,9 @@
 2009-03-25  Andreia Gaita  <avidigal@novell.com>
 
+	* clock.h: remove unused timeline field
+
+2009-03-25  Andreia Gaita  <avidigal@novell.com>
+
 	* clock.cpp: Refresh the clock's duration, it might have changed
 	after it's creation
 
