@@ -1,3 +1,8 @@
+2009-03-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mopen1.cpp (LoadXaml): Fixed call to Surface ctor (no longer
+	takes an IsSL2 arg).
+
 2008-11-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mopen1.cpp: Add support for --timeout X to ease testing (mopen 
