@@ -5,7 +5,7 @@
 	  add GetBackgroundColor and sprinkle generator annotations.
 
 	* cbinding.h:
-	* cbinding.cpp: <grendel> ah, but it's interesting
+	* cbinding.cpp: Regenerated.
 
 2009-03-25  Alan McGovern  <amcgovern@novell.com>
 
