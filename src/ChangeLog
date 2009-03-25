@@ -1,3 +1,7 @@
+2009-03-25  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: renders layer 0 too, drop some old debug code
+
 2009-03-25  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Can put this back now that bindings are convertering

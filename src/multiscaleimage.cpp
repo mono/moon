@@ -456,7 +456,9 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			from_layer --;
 		}
 	
-		if (from_layer > 0) {
+		//render here
+		LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
+		if (from_layer >= 0) {
 			cairo_save (cr);
 			cairo_rectangle (cr, 0, 0, msi_w, msi_h);
 			cairo_clip (cr);
@@ -549,22 +551,6 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			cairo_restore (cr);
 		}
-
-#if FALSE
-		LOG_MSI ("rendering from x = %f to %f\n", MAX(msivp_ox, sub_vp.x), MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width));
-		LOG_MSI ("rendering from y = %f to %f\n", MAX(msivp_oy, sub_vp.y), MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar));
-
-		cairo_save (cr);
-		cairo_set_source_rgba (cr, 1, 0, 0, .2);
-
-		cairo_rectangle (cr,
-			msi_w / msivp_w * (-msivp_ox + MAX(msivp_ox, sub_vp.x)),
-			msi_w / msivp_w * (-msivp_oy + MAX(msivp_oy, sub_vp.y)),
-			msi_w / msivp_w * (MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - MAX(msivp_ox, sub_vp.x)),
-			msi_w / msivp_w * (MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - MAX(msivp_oy, sub_vp.y)));
-		cairo_fill (cr);
-		cairo_restore (cr);
-#endif
 
 		if (downloading)
 			continue;
