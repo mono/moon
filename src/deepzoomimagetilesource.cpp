@@ -176,8 +176,8 @@ DeepZoomImageTileSource::download_uri (const char* url)
 	if (!surface)
 		return;
 	
-	if (g_str_has_prefix (url, "/"))
-		url++;
+//	if (g_str_has_prefix (url, "/"))
+//		url++;
 
 	if (!(uri->Parse (url)))
 		return;
