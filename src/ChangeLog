@@ -1,5 +1,10 @@
 2009-03-26  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp, clock.cpp: move some class-static fields around
+	so they make more sense.
+
+2009-03-26  Chris Toshok  <toshok@ximian.com>
+
 	* clock.h: move enum FillBehavior...
 
 	* enums.h: ... to here.

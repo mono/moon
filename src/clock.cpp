@@ -52,6 +52,11 @@
 #define FPS_TO_DELAY(fps) (int)(((double)1/(fps)) * 1000)
 #define DELAY_TO_FPS(delay) (1000.0 / delay)
 
+RepeatBehavior RepeatBehavior::Forever (RepeatBehavior::FOREVER);
+Duration Duration::Automatic (Duration::AUTOMATIC);
+Duration Duration::Forever (Duration::FOREVER);
+
+
 struct ClockNode {
 	ClockNode *next;
 	Clock *clock;

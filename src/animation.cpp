@@ -32,6 +32,10 @@
 // This is 2 to power of KEYSPLINE_PRECISION_LEVEL
 #define KEYSPLINE_TOTAL_COUNT 16
 
+KeyTime KeyTime::Paced (KeyTime::PACED);
+KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
+
+
 AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/ *timeline,
 				    DependencyObject *targetobj, DependencyProperty *targetprop)
 {
@@ -1887,12 +1891,6 @@ PointAnimationUsingKeyFrames::Validate ()
 {
 	return generic_keyframe_validator (GetKeyFrames ());
 }
-
-RepeatBehavior RepeatBehavior::Forever (RepeatBehavior::FOREVER);
-Duration Duration::Automatic (Duration::AUTOMATIC);
-Duration Duration::Forever (Duration::FOREVER);
-KeyTime KeyTime::Paced (KeyTime::PACED);
-KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
 
 ObjectKeyFrameCollection::ObjectKeyFrameCollection ()
 {
