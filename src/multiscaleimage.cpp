@@ -435,7 +435,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					Uri *tile = new Uri ();
 					cairo_surface_t* image = NULL;
 
-					if (!source->get_tile_func (from_layer, i, j, tile, sub_image->source) &&
+					if (source->get_tile_func (from_layer, i, j, tile, sub_image->source) &&
 					    (image = (cairo_surface_t*)g_hash_table_lookup (cache, tile)) ) {
 						found ++;
 					} else if (from_layer <= dzits->GetMaxLevel () &&
