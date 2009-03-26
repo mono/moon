@@ -9,7 +9,6 @@
 #include <stdlib.h>
 
 #include "animation.h"
-#include "animation2.h"
 #include "application.h"
 #include "asf.h"
 #include "audio.h"
@@ -59,6 +58,8 @@
 #include "textblock.h"
 #include "textbox.h"
 #include "tilesource.h"
+#include "timeline.h"
+#include "timesource.h"
 #include "transform.h"
 #include "trigger.h"
 #include "type.h"

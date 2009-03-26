@@ -8,13 +8,11 @@
 #endif
 
 #include "animation.h"
-#include "animation2.h"
 #include "application.h"
 #include "bitmapimage.h"
 #include "border.h"
 #include "brush.h"
 #include "canvas.h"
-#include "clock.h"
 #include "collection.h"
 #include "color.h"
 #include "contentcontrol.h"
@@ -41,6 +39,7 @@
 #include "template.h"
 #include "textblock.h"
 #include "textbox.h"
+#include "timeline.h"
 #include "transform.h"
 #include "trigger.h"
 #include "uielement.h"

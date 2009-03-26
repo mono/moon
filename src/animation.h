@@ -19,6 +19,7 @@
 #include "trigger.h"
 #include "collection.h"
 #include "clock.h"
+#include "timeline.h"
 #include "list.h"
 #include "point.h"
 #include "propertypath.h"
@@ -452,6 +453,18 @@ class PointKeyFrameCollection : public KeyFrameCollection {
 	virtual Type::Kind GetElementType() { return Type::POINTKEYFRAME; }
 };
 
+/* @Version=2,Namespace=System.Windows.Media.Animation */
+class ObjectKeyFrameCollection : public KeyFrameCollection {
+ protected:
+	virtual ~ObjectKeyFrameCollection ();
+
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ObjectKeyFrameCollection ();
+
+	virtual Type::Kind GetElementType() { return Type::OBJECTKEYFRAME; }
+};
+
 /* @Namespace=System.Windows.Media.Animation */
 class DoubleKeyFrame : public KeyFrame {
  protected:
@@ -498,6 +511,27 @@ class ColorKeyFrame : public KeyFrame {
 	Color *GetValue ();
 	void   SetValue (Color *pv);
 	void   SetValue (Color v);
+
+	virtual KeyTime *GetKeyTime ();
+	virtual void SetKeyTime (KeyTime keytime);
+	virtual void SetKeyTime (KeyTime *keytime);
+};
+
+/* @Version=2,Namespace=System.Windows.Media.Animation */
+class ObjectKeyFrame : public KeyFrame /* The managed class derives directly from DependencyObject */ {
+ protected:
+	virtual ~ObjectKeyFrame ();
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
+	ObjectKeyFrame ();
+	
+	/* @PropertyType=object,ManagedPropertyType=object */
+	const static int ValueProperty;
+	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
+	const static int KeyTimeProperty;
+
+	Value *GetValue ();
 
 	virtual KeyTime *GetKeyTime ();
 	virtual void SetKeyTime (KeyTime keytime);
@@ -560,6 +594,17 @@ class DiscreteColorKeyFrame : public ColorKeyFrame {
 };
 
 
+/* @Version=2,Namespace=System.Windows.Media.Animation */
+class DiscreteObjectKeyFrame : public ObjectKeyFrame {
+ protected:
+	virtual ~DiscreteObjectKeyFrame ();
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	DiscreteObjectKeyFrame ();
+	
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+};
 
 /* @Namespace=System.Windows.Media.Animation */
 class DiscretePointKeyFrame : public PointKeyFrame {
@@ -744,6 +789,38 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	//
 	ColorKeyFrameCollection *GetKeyFrames ();
 	void SetKeyFrames (ColorKeyFrameCollection* value);
+};
+
+/* @Version=2 */
+/* @Namespace=System.Windows.Media.Animation */
+/* @ContentProperty="KeyFrames" */
+class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {
+ protected:
+	virtual ~ObjectAnimationUsingKeyFrames ();
+
+ public:
+ 	/* @PropertyType=ObjectKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int KeyFramesProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	ObjectAnimationUsingKeyFrames ();
+
+	void AddKeyFrame (ObjectKeyFrame *frame);
+	void RemoveKeyFrame (ObjectKeyFrame *frame);
+
+	// Property accessors
+	ObjectKeyFrameCollection *GetKeyFrames ();
+	void SetKeyFrames (ObjectKeyFrameCollection* value);
+
+	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
+					AnimationClock* animationClock);
+
+	virtual void Resolve ();
+
+	virtual Duration GetNaturalDurationCore (Clock* clock);
+	virtual bool Validate ();
+
+	virtual Type::Kind GetValueKind () { return Type::INVALID; };
 };
 
 /* @Namespace=System.Windows.Media.Animation */

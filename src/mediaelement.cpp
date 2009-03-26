@@ -26,6 +26,7 @@
 #include "debug.h"
 #include "deployment.h"
 #include "mediaplayer.h"
+#include "timeline.h"
 
 /*
  * MarkerNode

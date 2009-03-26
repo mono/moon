@@ -15,6 +15,7 @@
 #define MOON_CLOCK_H
 
 #include "applier.h"
+#include "timesource.h"
 #include <glib.h>
 #include <stdint.h>
 #include "collection.h"
@@ -181,57 +182,6 @@ struct RepeatBehavior {
 	TimeSpan duration;
 };
 
-class TimeSource : public EventObject {
- protected:
-	virtual ~TimeSource ();
-
- public:
-	TimeSource ();
-	TimeSource (Deployment *deployment);
-
-	virtual void Start ();
-	virtual void Stop ();
-	virtual void SetTimerFrequency (int timeout);
-	
-	virtual TimeSpan GetNow ();
-
-	const static int TickEvent;
-};
-
-class SystemTimeSource : public TimeSource {
- protected:
-	virtual ~SystemTimeSource ();
-
- public:
-	SystemTimeSource ();
-	SystemTimeSource (Deployment *deployment);
-
-	virtual void Start ();
-	virtual void Stop ();
-	virtual void SetTimerFrequency (int timeout);
-	
-	virtual TimeSpan GetNow ();
-	
- private:
-	guint timeout_id;
-	int frequency;
-	static gboolean tick_timeout (gpointer data);
-};
-
-class ManualTimeSource : public TimeSource {
- protected:
-	virtual ~ManualTimeSource ();
-
- public:
-	ManualTimeSource ();
-
-	virtual TimeSpan GetNow ();
-
-	void SetCurrentTime (TimeSpan current_time);
-
- private:
-	TimeSpan current_time;
-};
 
 //
 // Clocks and timelines
@@ -288,7 +238,6 @@ class Clock : public DependencyObject {
 	void Remove ();
 	void Resume ();
 	virtual void Seek (TimeSpan timespan);
-	void SeekAlignedToLastTick ();
 	virtual void SkipToFill ();
 	virtual void Stop ();
 
@@ -505,198 +454,6 @@ void time_manager_remove_tick_call (TimeManager *manager, TickCallHandler handle
 bool find_tick_call (List::Node *node, void *data);
 guint time_manager_add_timeout (TimeManager *manager, guint32 interval, GSourceFunc handler, gpointer obj);
 void time_manager_remove_timeout (TimeManager *manager, guint32 source_id);
-
-/* @Namespace=System.Windows.Media.Animation */
-class Timeline : public DependencyObject {
-	DependencyObject *manual_target;
-	
- protected:
-	virtual ~Timeline ();
-
- public:
-	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
-	const static int AutoReverseProperty;
- 	/* @PropertyType=TimeSpan,Nullable */
-	const static int BeginTimeProperty;
- 	/* @PropertyType=Duration,DefaultValue=Duration::Automatic */
-	const static int DurationProperty;
- 	/* @PropertyType=FillBehavior,DefaultValue=FillBehaviorHoldEnd,GenerateAccessors */
-	const static int FillBehaviorProperty;
- 	/* @PropertyType=RepeatBehavior,DefaultValue=RepeatBehavior ((double) 1) */
-	const static int RepeatBehaviorProperty;
- 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
-	const static int SpeedRatioProperty;
-	
- 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	Timeline ();
-	
-	void SetAutoReverse (bool autoreverse);
-	bool GetAutoReverse ();
-	
-	TimeSpan GetBeginTime ();
-	bool HasBeginTime ();
-	
-	void SetDuration (Duration duration);
-	Duration *GetDuration ();
-	
-	FillBehavior GetFillBehavior ();
-	void SetFillBehavior (FillBehavior behavior);
-	
-	bool GetHadParent () { return this->had_parent; }
-	void SetHadParent (bool had_parent) { this->had_parent = had_parent; }
-
-	void SetRepeatBehavior (RepeatBehavior behavior);
-	RepeatBehavior *GetRepeatBehavior ();
-	
-	void SetSpeedRatio (double ratio);
-	double GetSpeedRatio ();
-	
-	Duration GetNaturalDuration (Clock *clock);
-	virtual Duration GetNaturalDurationCore (Clock *clock);
-	
-	virtual Clock *AllocateClock () { return new Clock (this); }
-	virtual bool Validate ();
-
-	enum TimelineStatus {
-		TIMELINE_STATUS_OK, 
-		TIMELINE_STATUS_DETACHED
-	};
-
-	TimelineStatus GetTimelineStatus () { return timeline_status; }
-
-	bool HasManualTarget () { return manual_target != NULL; }
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyObject* GetManualTarget () { return manual_target; }
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetManualTarget (DependencyObject *o) { manual_target = o; }
-
-	// events
-	const static int CompletedEvent;
-
-
- private:
- 	bool had_parent;
-	TimelineStatus timeline_status;
-};
-
-
-/* @Namespace=System.Windows.Media.Animation */
-class TimelineCollection : public DependencyObjectCollection {
- protected:
-	virtual ~TimelineCollection ();
-
- public:
- 	/* @GenerateCBinding,GeneratePInvoke */
-	TimelineCollection ();
-	
-	virtual bool AddedToCollection (Value *value, MoonError *error);
-	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
-};
-
-
-/* @Namespace=None,ManagedDependencyProperties=None */
-class TimelineGroup : public Timeline {
- protected:
-	virtual ~TimelineGroup ();
-	
- public:
-	/* @PropertyType=TimelineCollection,AutoCreateValue,GenerateAccessors */
-	const static int ChildrenProperty;
-	
- 	/* @GenerateCBinding,GeneratePInvoke */
-	TimelineGroup ();
-	
-	virtual Clock *AllocateClock ();
-	virtual bool Validate ();
-	
-	void AddChild (Timeline *child);
-	void RemoveChild (Timeline *child);
-	
-	//
-	// Property Accessors
-	//
-	void SetChildren (TimelineCollection *children);
-	TimelineCollection *GetChildren ();
-};
-
-
-/* @Namespace=None */
-class ParallelTimeline : public TimelineGroup {
- protected:
-	virtual ~ParallelTimeline ();
-
- public:
- 	/* @GenerateCBinding,GeneratePInvoke */
-	ParallelTimeline ();
-
-	virtual Duration GetNaturalDurationCore (Clock *clock);
-};
-
-
-/* @Namespace=System.Windows.Media */
-class TimelineMarker : public DependencyObject {
- protected:
-	virtual ~TimelineMarker ();
-
- public:
- 	/* @PropertyType=string,GenerateAccessors */
-	const static int TextProperty;
- 	/* @PropertyType=TimeSpan,GenerateAccessors */
-	const static int TimeProperty;
- 	/* @PropertyType=string,GenerateAccessors */
-	const static int TypeProperty;
-	
- 	/* @GenerateCBinding,GeneratePInvoke */
-	TimelineMarker ();
-	
-	//
-	// Property Accessors
-	//
-	void SetText (const char *text);
-	const char *GetText ();
-	
-	void SetTime (TimeSpan time);
-	TimeSpan GetTime ();
-	
-	void SetType (const char *type);
-	const char *GetType ();
-};
-
-
-/* useful for timing things */
-TimeSpan get_now (void);
-
-/* @Namespace=Mono,Version=2 */
-class DispatcherTimer : public TimelineGroup {
-	Clock *root_clock;
-	static void OnTick (EventObject *sender, EventArgs *calldata, gpointer data);
-	bool stopped;
-	bool started;
-
- protected:
-	virtual ~DispatcherTimer ();
-
- public:
-	/* @GenerateCBinding,GeneratePInvoke,MainThread,Version=2 */
-	DispatcherTimer ();
-
-	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
-	void Start ();
-
-	/* @GenerateCBinding,GeneratePInvoke,Version=2 */
-	void Stop ();
-
-	const static int TickEvent;
-
-	bool IsStopped () { return stopped; }
-	bool IsStarted () { return started; }
-	void SetStarted (bool s) { started = s; }
-	void Run ();
-
-	virtual Duration GetNaturalDurationCore (Clock *clock);
-};
 
 
 G_END_DECLS

@@ -1,3 +1,20 @@
+2009-03-26  Chris Toshok  <toshok@ximian.com>
+
+	* animation2.h: nuke, moving everything into animation.h.
+
+	* clock.h|.cpp, timesource.h|.cpp, timeline.h|.cpp: split out all
+	the timesource/timeline stuff into separate files to reduce
+	clock.cpp's size/complexity a bit.
+
+	* mediaplayer.cpp, mediaelement.cpp, media.cpp,
+	mms-downloader.cpp: track new locations of things (that were moved
+	out of clock.h|.cpp)
+	
+	* cbinding.h, cbinding.cpp, type-generate.cpp,
+	dependencyproperty.g.cpp: regen.
+	
+	* Makefile.am: add/remove files.
+	
 2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.h|.cpp: fix optimal_layer caclulation for tiles

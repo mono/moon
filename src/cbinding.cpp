@@ -3739,7 +3739,7 @@ uri_get_hash_code (Uri *instance)
 	if (instance == NULL)
 		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (guint) 0;
-
+	
 	return instance->GetHashCode ();
 }
 

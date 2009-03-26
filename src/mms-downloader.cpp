@@ -17,7 +17,7 @@
 
 #include "asf/asf.h"
 
-#include "clock.h"
+#include "timesource.h"
 #include "debug.h"
 #include "mms-downloader.h"
 

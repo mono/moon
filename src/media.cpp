@@ -27,7 +27,7 @@
 #include "error.h"
 #include "downloader.h"
 #include "geometry.h"
-#include "clock.h"
+#include "timeline.h"
 #include "debug.h"
 
 /*

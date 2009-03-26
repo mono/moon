@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <glib.h>
 
-#include "clock.h"
+#include "timesource.h"
 #include "mediaplayer.h"
 #include "pipeline.h"
 #include "runtime.h"

@@ -5,7 +5,6 @@ lib_LTLIBRARIES = libmoon.la
 INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(srcdir)/asf
 
 libmoon_include_headers = 	\
-	animation2.h		\
 	animation.h		\
 	application.h		\
 	applier.h		\
@@ -86,6 +85,8 @@ libmoon_include_headers = 	\
 	textbox.h		\
 	thickness.h		\
 	tilesource.h		\
+	timeline.h		\
+	timesource.h		\
 	transform.h		\
 	trigger.h		\
 	type.h			\
@@ -178,6 +179,8 @@ libmoon_la_SOURCES = 		\
 	textbox.cpp		\
 	thickness.cpp		\
 	tilesource.cpp		\
+	timeline.cpp		\
+	timesource.cpp		\
 	transform.cpp		\
 	trigger.cpp		\
 	type.cpp		\
