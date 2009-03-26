@@ -293,16 +293,27 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 		if (!found)
 			return false;
 	}
-
-	//FIXME !!!!
-	char *sourceuri = GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsUri ()->ToString ();
-	char buffer[strlen (sourceuri) + 32];
-	char* p = g_stpcpy (buffer, sourceuri);
-	sprintf (p-4, "_files/%d/%d_%d.%s", level, x, y, format);
-	if (g_str_has_prefix (buffer, "/"))
-		return uri->Parse (buffer +1);
-	else
-		return uri->Parse (buffer);
+	
+	const Uri *baseUri = GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsUri ();
+	const char *filename, *ext;
+	char *image;
+	
+	if (!baseUri)
+		return false;
+	
+	if (!(filename = strrchr (baseUri->path, '/')))
+		return false;
+	
+	if (!(ext = strrchr (filename, '.')))
+		return false;
+	
+	image = g_strdup_printf ("%.*s_files/%d/%d_%d.%s", ext - filename, filename, level, x, y, format);
+	
+	Uri::Copy (baseUri, uri);
+	uri->Combine (image);
+	g_free (image);
+	
+	return true;
 }
 
 void

@@ -1,5 +1,8 @@
 2009-03-26  Jeffrey Stedfast  <fejj@novell.com>
 
+	* deepzoomimagetilesource.cpp (DeepZoomImageTileSource::GetTileLayer):
+	Use the new Uri::Combine() method.
+
 	* uri.cpp (Uri::Combine): New method to combine a relative path to
 	an existing Uri.
 
