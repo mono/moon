@@ -59,11 +59,15 @@ namespace Mono {
 			//			CheckNativeAndThread (wrapper);
 
 			IntPtr val = NativeMethods.dependency_object_get_value (wrapper.NativeHandle, Deployment.Current.Types.TypeToKind (wrapper.GetType ()), dp.Native);
+			if (val == IntPtr.Zero)
+				return dp.DefaultValue;
+			
 			result = Value.ToObject (dp.PropertyType, val);
 			
-			if (result == null && dp.PropertyType.IsValueType)
-				result = dp.DefaultValue;
-
+			if (result == null) {
+				if (dp.PropertyType.IsValueType && dp.PropertyType.IsGenericType && !dp.PropertyType.GetGenericTypeDefinition ().Equals (typeof (Nullable<>)))
+					result = dp.DefaultValue;
+			}
 			return result;
 		}
 

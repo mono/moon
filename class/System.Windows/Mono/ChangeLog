@@ -1,5 +1,12 @@
 2009-03-26  Alan McGovern  <amcgovern@novell.com>
 
+	* NativeDependencyObjectHelper.cs: A null intptr means no
+	  value has been set, so we return dp.DefaultValue. A null
+	  result means we should use dp.DefaultValue if the property
+	  is a non-nullable valuetype.
+
+2009-03-26  Alan McGovern  <amcgovern@novell.com>
+
 	* NativeDependencyObjectHelper.cs: This changed caused
 	  regressions, backing it out.
 
