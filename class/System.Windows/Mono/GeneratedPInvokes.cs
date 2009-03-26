@@ -1473,8 +1473,8 @@ namespace Mono {
 		public extern static void surface_set_full_screen (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
 
 		[DllImport ("moon")]
-		// Surface *surface_new (MoonWindow *window, bool silverlight2);
-		public extern static IntPtr surface_new (IntPtr window, [MarshalAs (UnmanagedType.U1)] bool silverlight2);
+		// Surface *surface_new (MoonWindow *window);
+		public extern static IntPtr surface_new (IntPtr window);
 
 		[DllImport ("moon")]
 		// TextBlock *text_block_new ();
