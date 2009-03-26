@@ -75,5 +75,13 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			bb.OnToggle_ ();
 			Assert.IsFalse (bb.IsChecked.Value, "Unchecked");
 		}
+		
+		[TestMethod]
+		public void IsCheckedTest ()
+		{
+			ToggleButton button = new ToggleButton ();
+			button.IsChecked = null;
+			Assert.IsNull (button.IsChecked, "#1");
+		}
 	}
 }

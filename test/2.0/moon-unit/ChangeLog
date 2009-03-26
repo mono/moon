@@ -1,3 +1,8 @@
+2009-03-26  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls.Primitives/ToggleButtonTest.cs: Add
+	  test for setting ToggleButton.IsChecked to null
+
 2009-03-25  Geoff Norton  <gnorton@novell.com>
 
 	* Ssytem.Windows.Data/BindingTest.cs: With the move to 100% managed
