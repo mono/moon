@@ -64,10 +64,9 @@ namespace Mono {
 			
 			result = Value.ToObject (dp.PropertyType, val);
 			
-			if (result == null) {
-				if (dp.PropertyType.IsValueType && dp.PropertyType.IsGenericType && !dp.PropertyType.GetGenericTypeDefinition ().Equals (typeof (Nullable<>)))
-					result = dp.DefaultValue;
-			}
+			if (result == null && dp.PropertyType.IsValueType && !dp.IsNullable)
+				result = dp.DefaultValue;
+			
 			return result;
 		}
 

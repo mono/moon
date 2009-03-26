@@ -1,5 +1,12 @@
 2009-03-26  Alan McGovern  <amcgovern@novell.com>
 
+	* NativeDependencyObjectHelper.cs: We already have
+	  dp.IsNullable so use that for the nullability check. Add
+	  extra tests to ensure every combination of null/non-null is
+	  tested.
+
+2009-03-26  Alan McGovern  <amcgovern@novell.com>
+
 	* NativeDependencyObjectHelper.cs: A null intptr means no
 	  value has been set, so we return dp.DefaultValue. A null
 	  result means we should use dp.DefaultValue if the property

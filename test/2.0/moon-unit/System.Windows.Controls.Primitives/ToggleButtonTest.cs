@@ -82,6 +82,20 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			ToggleButton button = new ToggleButton ();
 			button.IsChecked = null;
 			Assert.IsNull (button.IsChecked, "#1");
+			button.SetValue (ToggleButton.IsCheckedProperty, (bool) true);
+			Assert.IsTrue (button.IsChecked.HasValue, "#2");
+			Assert.IsTrue (button.IsChecked.Value, "#3");
+			button.SetValue (ToggleButton.IsCheckedProperty, (bool?) true);
+			Assert.IsTrue (button.IsChecked.HasValue, "#4");
+			Assert.IsTrue (button.IsChecked.Value, "#5");
+			button.SetValue (ToggleButton.IsCheckedProperty, (bool) false);
+			Assert.IsTrue (button.IsChecked.HasValue, "#6");
+			Assert.IsFalse(button.IsChecked.Value, "#7");
+			button.SetValue (ToggleButton.IsCheckedProperty, (bool?) false);
+			Assert.IsTrue (button.IsChecked.HasValue, "#8");
+			Assert.IsFalse (button.IsChecked.Value, "#9");
+			button.SetValue (ToggleButton.IsCheckedProperty, (bool?) null);
+			Assert.IsFalse (button.IsChecked.HasValue, "#10");
 		}
 	}
 }
