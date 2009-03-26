@@ -424,8 +424,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			bool blending = FALSE; //means at least a tile is not yet fully blended
 
 			//in msi relative coord
-			double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) * sub_vp.width / sub_w;
-			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / sub_w;
+			double v_tile_w = tile_width * (double)(1 << (layers - from_layer)) * sub_vp.width / sub_w;
+			double v_tile_h = tile_height * (double)(1 << (layers - from_layer)) * sub_vp.width / sub_w;
 			//LOG_MSI ("virtual tile size at layer %d; %fx%f\n", from_layer, v_tile_w, v_tile_h);
 
 			int i, j;
@@ -440,8 +440,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						found ++;
 					} else if (from_layer <= dzits->GetMaxLevel () &&
 						 source->get_tile_func (from_layer,
-									morton_x (sub_image->n) * ldexp (1.0, from_layer) / tile_width,
-									morton_y (sub_image->n) * ldexp (1.0, from_layer) / tile_height,
+									morton_x (sub_image->n) * (1 << from_layer) / tile_width,
+									morton_y (sub_image->n) * (1 << from_layer) / tile_height,
 									tile,
 									source) &&
 						(image = (cairo_surface_t*)g_hash_table_lookup (cache, tile)) ) {
@@ -486,8 +486,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			int layer_to_render = from_layer;
 			while (layer_to_render <= to_layer) {
-				double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render) * sub_vp.width / sub_w;
-				double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render) * sub_vp.width / sub_w;
+				double v_tile_w = tile_width * (double)(1 << (layers - layer_to_render)) * sub_vp.width / sub_w;
+				double v_tile_h = tile_height * (double)(1 << (layers - layer_to_render)) * sub_vp.width / sub_w;
 
 				int i, j;
 				for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
@@ -502,8 +502,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 							shared_tile = true;
 
 							if (source->get_tile_func (layer_to_render,
-									morton_x(sub_image->n) * ldexp (1.0, layer_to_render) / tile_width,
-									morton_y(sub_image->n) * ldexp (1.0, layer_to_render) / tile_height,
+									morton_x(sub_image->n) * (1 << layer_to_render) / tile_width,
+									morton_y(sub_image->n) * (1 << layer_to_render) / tile_height,
 									tile,
 									source) ) {
 								image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
@@ -519,8 +519,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						cairo_save (cr);
 
 						cairo_scale (cr,
-							     ldexp (1.0, layers - layer_to_render),
-							     ldexp (1.0, layers - layer_to_render));
+							     1 << (layers - layer_to_render),
+							     1 << (layers - layer_to_render));
 
 						cairo_translate (cr,
 								 i * tile_width,
@@ -528,8 +528,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 						if (shared_tile) {
 							cairo_translate (cr,
-									 (-morton_x(sub_image->n) * (int)ldexp (1.0, layer_to_render)) % tile_width,
-									 (-morton_y(sub_image->n) * (int)ldexp (1.0, layer_to_render)) % tile_height);
+									 (-morton_x(sub_image->n) * (1 << layer_to_render)) % tile_width,
+									 (-morton_y(sub_image->n) * (1 << layer_to_render)) % tile_height);
 
 						}
 
@@ -564,8 +564,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		while (from_layer < optimal_layer) {
 			from_layer ++;
 
-			double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) * sub_vp.width / sub_w;
-			double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) * sub_vp.width / sub_w;
+			double v_tile_w = tile_width * (double)(1 << (layers - from_layer)) * sub_vp.width / sub_w;
+			double v_tile_h = tile_height * (double)(1 << (layers - from_layer)) * sub_vp.width / sub_w;
 
 			int i, j;
 			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
@@ -578,8 +578,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					bool ret = false;
 					if (from_layer <= dzits->GetMaxLevel ())
 						ret = source->get_tile_func (from_layer,
-									     morton_x(sub_image->n) * ldexp (1.0, from_layer) / tile_width,
-									     morton_y(sub_image->n) * ldexp (1.0, from_layer) / tile_height,
+									     morton_x(sub_image->n) * (1 << from_layer) / tile_width,
+									     morton_y(sub_image->n) * (1 << from_layer) / tile_height,
 									     tile,
 									     source);
 					else 
@@ -631,8 +631,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		bool blending = FALSE; //means at least a tile is not yet fully blended
 
 		//v_tile_X is the virtual tile size at this layer in relative coordinates
-		double v_tile_w = tile_width  * ldexp (1.0, layers - from_layer) / im_w;
-		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) / im_w;
+		double v_tile_w = tile_width  * (double)(1 << (layers - from_layer)) / im_w;
+		double v_tile_h = tile_height * (double)(1 << (layers - from_layer)) / im_w;
 
 		int i, j;
 		//This double loop iterate over the displayed part of the image and find all (i,j) being top-left corners of tiles
@@ -676,8 +676,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	int layer_to_render = from_layer;
 	while (from_layer >= 0 && layer_to_render <= to_layer) {
 		int i, j;
-		double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render) / im_w;
-		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render) / im_w;
+		double v_tile_w = tile_width * (double)(1 << (layers - layer_to_render)) / im_w;
+		double v_tile_h = tile_height * (double)(1 << (layers - layer_to_render)) / im_w;
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
 				Uri *tile = new Uri ();
@@ -694,7 +694,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 //				int *p_h = (int*)(cairo_surface_get_user_data (image, &height_key));
 				cairo_save (cr);
 
-				cairo_scale (cr, ldexp (1.0, layers - layer_to_render), ldexp (1.0, layers - layer_to_render)); //scale to image size
+				cairo_scale (cr, 1 << (layers - layer_to_render), 1 << (layers - layer_to_render)); //scale to image size
 
 				cairo_translate (cr, i * tile_width, j * tile_height);
 				//cairo_rectangle (cr, 0, 0, tile_width, tile_height);
@@ -723,8 +723,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	while (from_layer < optimal_layer) {
 		from_layer ++;
 
-		double v_tile_w = tile_width * ldexp (1.0, layers - from_layer) / im_w;
-		double v_tile_h = tile_height * ldexp (1.0, layers - from_layer) / im_w;
+		double v_tile_w = tile_width * (double)(1 << (layers - from_layer)) / im_w;
+		double v_tile_h = tile_height * (double)(1 << (layers - from_layer)) / im_w;
 		int i, j;
 
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
