@@ -25,28 +25,32 @@
 
 void multi_scale_image_handle_parsed (void *userdata);
 
+struct DownloaderContext;
+
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls,ManagedDependencyProperties=Manual */
 class MultiScaleImage : public MediaBase {
-	void DownloaderAbort ();
-	void DownloadUri (Uri* url);
+	void DownloadersAbort ();
+	void DownloadUri (DownloaderContext *ctx, Uri* url);
 	GHashTable *cache;
 	bool cache_contains (Uri* filename, bool check_empty_tile);
 	MultiScaleTileSource *source;
-	Uri* context;
-	char* filename;
-	bool downloading;
+//	Uri* context;
+//	char* filename;
+//	bool downloading;
 
 	cairo_user_data_key_t width_key;
 	cairo_user_data_key_t height_key;
 	cairo_user_data_key_t full_opacity_at_key;
 
-	void DownloaderComplete ();
+	void DownloaderComplete (DownloaderContext *ctx);
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
-	void DownloaderFailed ();
+	void DownloaderFailed (DownloaderContext *ctx);
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
-	Downloader *downloader;
+	GList *downloaders;
+	DownloaderContext *GetFreeDownloader ();
+	DownloaderContext *GetDownloaderContext (Downloader *downloader);
 
 	void RenderSingle (cairo_t *cr, Region *region);
 	void RenderCollection (cairo_t *cr, Region *region);

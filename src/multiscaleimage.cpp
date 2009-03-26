@@ -77,6 +77,19 @@ morton_y (int n)
 	return n >> 16;
 }
 
+enum DownloaderState {
+	DownloaderFree,	//Free to be used
+	DownloaderBusy,	//Downloading
+	DownloaderDone	//Downloaded, but we still need to process it's results before reusing it
+};
+
+struct DownloaderContext
+{
+	DownloaderState state;
+	Downloader *downloader;
+	Uri *uri;
+};
+
 MultiScaleImage::MultiScaleImage ()
 {
 //	static bool init = true;
@@ -86,11 +99,8 @@ MultiScaleImage::MultiScaleImage ()
 //	}
 	SetObjectType (Type::MULTISCALEIMAGE); 
 	source = NULL;
-	downloader = NULL;
-	filename = NULL;
+	downloaders = NULL;
 	cache = g_hash_table_new_full ((GHashFunc)uri_get_hash_code, (GCompareFunc)uri_equals, g_free, _cairo_surface_destroy);
-	downloading = false;
-	context = NULL;
 	zoom_sb = NULL;
 	pan_sb = NULL;
 	fadein_sb = NULL;
@@ -98,10 +108,13 @@ MultiScaleImage::MultiScaleImage ()
 
 MultiScaleImage::~MultiScaleImage ()
 {
-	DownloaderAbort ();
+	DownloadersAbort ();
 	if (cache)
 		g_hash_table_destroy (cache);
 	cache = NULL;
+	if (downloaders)
+		g_list_free (downloaders);
+	downloaders = NULL;
 }
 
 void
@@ -129,33 +142,36 @@ MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 }
 
 void
-MultiScaleImage::DownloadUri (Uri* url)
+MultiScaleImage::DownloadUri (DownloaderContext *ctx, Uri* url)
 {
-	Surface* surface = GetSurface ();
-	if (!surface)
-		return;
-
-	if (!downloader) {
-		downloader = surface->CreateDownloader ();
-		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-		downloader->AddHandler (downloader->DownloadFailedEvent, downloader_failed, this);
-	}
-
-	if (!downloader)
-		return;
-
+//	Surface* surface = GetSurface ();
+//	if (!surface)
+//		return;
+//
+//	if (!downloader) {
+//		downloader = surface->CreateDownloader ();
+//		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+//		downloader->AddHandler (downloader->DownloadFailedEvent, downloader_failed, this);
+//	}
+//
+//	if (!downloader)
+//		return;
+//
 	LOG_MSI ("MSI::DownloadUri %s\n", url->ToString ());
+	ctx->state = DownloaderBusy;
+	if (ctx->uri)
+		delete ctx->uri;
 
-	downloader->Open ("GET", url->ToString (), NoPolicy);
+	ctx->uri = new Uri (*url);
+	ctx->downloader->Open ("GET", url->ToString (), NoPolicy);
 
+	ctx->downloader->Send ();
 
-	downloader->Send ();
-
-	if (downloader->Started () || downloader->Completed ()) {
-		if (downloader->Completed ())
-			DownloaderComplete ();
+	if (ctx->downloader->Started () || ctx->downloader->Completed ()) {
+		if (ctx->downloader->Completed ())
+			DownloaderComplete (ctx);
 	} else
-		downloader->Send ();
+		ctx->downloader->Send ();
 }
 
 #ifdef WORDS_BIGENDIAN
@@ -538,7 +554,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			cairo_restore (cr);
 		}
 
-		if (downloading)
+		DownloaderContext *dlctx;
+		if (!(dlctx = GetFreeDownloader ()))
 			continue;
 
 		//Get the next tile...
@@ -550,27 +567,25 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			int i, j;
 			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
-				if (downloading)
+				if (!(dlctx = GetFreeDownloader ()))
 					break;
 				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
-					if (downloading)
+					if (!(dlctx = GetFreeDownloader ()))
 						break;
-					if (context)
-						delete context;
-					context = new Uri ();
+					Uri * tile = new Uri ();
 					bool ret = false;
 					if (from_layer <= dzits->GetMaxLevel ())
 						ret = source->get_tile_func (from_layer,
 									     morton_x(sub_image->n) * ldexp (1.0, from_layer) / tile_width,
 									     morton_y(sub_image->n) * ldexp (1.0, from_layer) / tile_height,
-									     context,
+									     tile,
 									     source);
 					else 
-						ret = source->get_tile_func (from_layer, i, j, context, sub_image->source);
-					if (ret && !cache_contains (context, true)) {
-						DownloadUri (context);
-						downloading = true;
+						ret = source->get_tile_func (from_layer, i, j, tile, sub_image->source);
+					if (ret && !cache_contains (tile, true)) {
+						DownloadUri (dlctx, tile);
 					}
+					delete tile;
 				}
 			}
 		}
@@ -698,7 +713,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	cairo_restore (cr);
 	//	cairo_pop_group_to_source (cr);
 
-	if (downloading)
+	DownloaderContext *dlctx;
+	if (!(dlctx = GetFreeDownloader ()))
 		return;
 
 	//Get the next tile...
@@ -710,15 +726,16 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		int i, j;
 
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
+			if (!(dlctx = GetFreeDownloader ()))
+				return;
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
-				if (context)
-					delete context;
-				context = new Uri ();
-				if (source->get_tile_func (from_layer, i, j, context, source) && !cache_contains (context, true)) {
-					DownloadUri (context);
-					downloading = true;
+				if (!(dlctx = GetFreeDownloader ()))
 					return;
+				Uri *tile = new Uri ();
+				if (source->get_tile_func (from_layer, i, j, tile, source) && !cache_contains (tile, true)) {
+					DownloadUri (dlctx, tile);
 				}
+				delete tile;
 			}
 		}
 	}
@@ -728,78 +745,85 @@ void
 MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	LOG_MSI ("MSI::Render\n");
-	//if there's a downloaded file pending, cache it
-	if (filename) {
-		guchar *data;
-		int stride;
-		GError *error = NULL;
-		cairo_surface_t *image = NULL;
-		cairo_surface_t *similar = NULL;
 
-		GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, &error);
-		g_free (filename);
-		filename = NULL;
-		if (error) {
-			printf (error->message);
-		} else {
-			int *p_width = new int (gdk_pixbuf_get_width (pixbuf));
-			int *p_height = new int (gdk_pixbuf_get_height (pixbuf));
+	//Process the downloaded files
+	GList *list;
+	DownloaderContext *dlctx;
+	for (list = g_list_first (downloaders); list && (dlctx = (DownloaderContext*)list->data); list = list->next) {
+		const char *filename;
+		if (dlctx->state != DownloaderDone)
+			continue;
+		if ((filename = dlctx->downloader->getFileDownloader ()->GetDownloadedFile ())) {
+			guchar *data;
+			int stride;
+			GError *error = NULL;
+			cairo_surface_t *image = NULL;
+			cairo_surface_t *similar = NULL;
 
-			bool has_alpha = gdk_pixbuf_get_n_channels (pixbuf) == 4;
-			if (has_alpha) {
-				unmultiply_rgba_in_place (pixbuf);
-				stride = gdk_pixbuf_get_rowstride (pixbuf);
-				data = gdk_pixbuf_get_pixels (pixbuf);
+			GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, &error);
+			if (error) {
+				printf (error->message);
 			} else {
-				data = expand_rgb_to_argb (pixbuf, &stride);
-				g_object_unref (pixbuf);
+				int *p_width = new int (gdk_pixbuf_get_width (pixbuf));
+				int *p_height = new int (gdk_pixbuf_get_height (pixbuf));
+
+				bool has_alpha = gdk_pixbuf_get_n_channels (pixbuf) == 4;
+				if (has_alpha) {
+					unmultiply_rgba_in_place (pixbuf);
+					stride = gdk_pixbuf_get_rowstride (pixbuf);
+					data = gdk_pixbuf_get_pixels (pixbuf);
+				} else {
+					data = expand_rgb_to_argb (pixbuf, &stride);
+					g_object_unref (pixbuf);
+				}
+
+				image = cairo_image_surface_create_for_data (data,
+									     has_alpha ? MOON_FORMAT_ARGB : MOON_FORMAT_RGB,
+									     *p_width,
+									     *p_height,
+									     stride);
+
+				//cairo_surface_set_user_data (image, &width_key, p_width, g_free);
+				//cairo_surface_set_user_data (image, &height_key, p_height, g_free);
+				//FIXME: set it to 1.0 if the tile doesn't intersect with viewport, and do not start the fadein animation
+				if (!fadein_sb) {
+					fadein_sb = new Storyboard ();
+					fadein_sb->SetManualTarget (this);
+					fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("(MultiScaleImage.TileFade)"));
+					fadein_animation = new DoubleAnimation ();
+					fadein_animation->SetDuration (Duration::FromSecondsFloat (0.5));
+					TimelineCollection *tlc = new TimelineCollection ();
+					tlc->Add (fadein_animation);
+					fadein_sb->SetChildren(tlc);
+				} else {
+					fadein_sb->Pause ();
+				}
+
+				//LOG_MSI ("animating Fade from %f to %f\n\n", GetValue(MultiScaleImage::TileFadeProperty)->AsDouble(), GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
+				double *to = new double (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
+				fadein_animation->SetFrom (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble());
+				fadein_animation->SetTo (*to);
+
+				fadein_sb->Begin();
+
+				similar = cairo_surface_create_similar (cairo_get_target (cr),
+									has_alpha ? CAIRO_CONTENT_COLOR_ALPHA : CAIRO_CONTENT_COLOR,
+									*p_width, *p_height);
+
+				cairo_surface_set_user_data (similar, &full_opacity_at_key, to, g_free);
+
+				cairo_t *temp_cr = cairo_create (similar);
+				cairo_set_source_surface (temp_cr, image, 0, 0);
+				cairo_pattern_set_filter (cairo_get_source (temp_cr), CAIRO_FILTER_FAST);
+				cairo_paint (temp_cr);
+				cairo_destroy (temp_cr);
+				cairo_surface_destroy (image);
+				g_free (data);
 			}
-
-			image = cairo_image_surface_create_for_data (data,
-								     has_alpha ? MOON_FORMAT_ARGB : MOON_FORMAT_RGB,
-								     *p_width,
-								     *p_height, 
-								     stride);
-
-			//cairo_surface_set_user_data (image, &width_key, p_width, g_free);
-			//cairo_surface_set_user_data (image, &height_key, p_height, g_free);
-			//FIXME: set it to 1.0 if the tile doesn't intersect with viewport, and do not start the fadein animation
-			if (!fadein_sb) {
-				fadein_sb = new Storyboard ();
-				fadein_sb->SetManualTarget (this);
-				fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("(MultiScaleImage.TileFade)"));
-				fadein_animation = new DoubleAnimation ();
-				fadein_animation->SetDuration (Duration::FromSecondsFloat (0.5));
-				TimelineCollection *tlc = new TimelineCollection ();
-				tlc->Add (fadein_animation);
-				fadein_sb->SetChildren(tlc);
-			} else {
-				fadein_sb->Pause ();
-			}
-
-			//LOG_MSI ("animating Fade from %f to %f\n\n", GetValue(MultiScaleImage::TileFadeProperty)->AsDouble(), GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
-			double *to = new double (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
-			fadein_animation->SetFrom (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble());
-			fadein_animation->SetTo (*to);
-
-			fadein_sb->Begin();
-
-			similar = cairo_surface_create_similar (cairo_get_target (cr),
-								has_alpha ? CAIRO_CONTENT_COLOR_ALPHA : CAIRO_CONTENT_COLOR, 
-								*p_width, *p_height);
-
-			cairo_surface_set_user_data (similar, &full_opacity_at_key, to, g_free);
-
-			cairo_t *temp_cr = cairo_create (similar);
-			cairo_set_source_surface (temp_cr, image, 0, 0);
-			cairo_pattern_set_filter (cairo_get_source (temp_cr), CAIRO_FILTER_FAST);
-			cairo_paint (temp_cr);
-			cairo_destroy (temp_cr);
-			cairo_surface_destroy (image);
-			g_free (data);
+			LOG_MSI ("caching %s\n", dlctx->uri->ToString());
+			g_hash_table_insert (cache, new Uri(*(dlctx->uri)), similar);
 		}
-		LOG_MSI ("caching %s\n", context->ToString());
-		g_hash_table_insert (cache, new Uri(*context), similar);
+		dlctx->state = DownloaderFree;
 	}
 
 	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
@@ -830,26 +854,74 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		RenderSingle (cr, region);
 }
 
-void
-MultiScaleImage::DownloaderComplete ()
+DownloaderContext *
+MultiScaleImage::GetFreeDownloader ()
 {
-	g_free (filename);
+	guint num_dl = 6;
+	DownloaderContext *dlctx;
+	GList *list;
+	for (list = g_list_first (downloaders); list && (dlctx = (DownloaderContext*)list->data); list = list->next) {
+		if (dlctx->state == DownloaderFree)
+			return dlctx;
+	}
 
-	if (!(filename = g_strdup(downloader->getFileDownloader ()->GetDownloadedFile ())))
-		return;
+	if (g_list_length (downloaders) < num_dl) {
+		dlctx = new DownloaderContext ();
+		dlctx->state = DownloaderFree;
+		dlctx->uri = NULL;
 
-	LOG_MSI ("dl completed %s\n", filename);
-	downloading = false;
+		Surface* surface = GetSurface ();
+		if (!surface) {
+			delete dlctx;
+			return NULL;
+		}
+
+		dlctx->downloader = surface->CreateDownloader ();
+		if (!dlctx->downloader) {
+			delete dlctx;
+			return NULL;
+		}
+		dlctx->downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+		dlctx->downloader->AddHandler (downloader->DownloadFailedEvent, downloader_failed, this);
+
+		downloaders = g_list_append (downloaders, dlctx);
+		return dlctx;
+	}
+	return NULL;
+}
+
+DownloaderContext *
+MultiScaleImage::GetDownloaderContext (Downloader *dl)
+{
+	GList *list;
+	DownloaderContext *dlctx;
+	for (list = g_list_first (downloaders); list && (dlctx = (DownloaderContext*)list->data); list = list->next) {
+		if (dlctx->downloader == dl)
+			return dlctx;
+	}
+	return NULL;
+}
+
+void
+MultiScaleImage::DownloaderComplete (DownloaderContext *ctx)
+{
+//	g_free (filename);
+//
+//	if (!(filename = g_strdup(downloader->getFileDownloader ()->GetDownloadedFile ())))
+//		return;
+//
+	LOG_MSI ("dl completed %s\n", ctx->downloader->getFileDownloader ()->GetDownloadedFile ());
+	ctx->state = DownloaderDone;
 
 	Invalidate ();
 }
 
 void
-MultiScaleImage::DownloaderFailed ()
+MultiScaleImage::DownloaderFailed (DownloaderContext *ctx)
 {
 	LOG_MSI ("dl failed, caching a NULL\n");
-	g_hash_table_insert (cache, new Uri(*context), NULL);
-	downloading = false;
+	g_hash_table_insert (cache, new Uri(*(ctx->uri)), NULL);
+	ctx->state = DownloaderFree;
 
 	Invalidate ();
 }
@@ -857,29 +929,34 @@ MultiScaleImage::DownloaderFailed ()
 void
 MultiScaleImage::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	((MultiScaleImage *) closure)->DownloaderComplete ();
+	MultiScaleImage *msi = (MultiScaleImage *) closure;
+	msi->DownloaderComplete (msi->GetDownloaderContext ((Downloader*)sender));
 }
 
 void
 MultiScaleImage::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	((MultiScaleImage *) closure)->DownloaderFailed ();
+	MultiScaleImage *msi = (MultiScaleImage *) closure;
+	msi->DownloaderFailed (msi->GetDownloaderContext ((Downloader*)sender));
 }
 
 
 void
-MultiScaleImage::DownloaderAbort ()
+MultiScaleImage::DownloadersAbort ()
 {
-	if (downloader) {
-		downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
-		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
-		downloader->SetWriteFunc (NULL, NULL, NULL);
-		downloader->Abort ();
-		downloader->unref ();
-		g_free (part_name);
-		downloader = NULL;
-		part_name = NULL;
+	GList *list;
+	DownloaderContext *dlctx;
+	for (list = g_list_first (downloaders); list && (dlctx = (DownloaderContext*)list->data); list = list->next) {
+		dlctx->downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
+		dlctx->downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
+		dlctx->downloader->SetWriteFunc (NULL, NULL, NULL);
+		dlctx->downloader->Abort ();
+		dlctx->downloader->unref ();
+		dlctx->downloader = NULL;
+		if (dlctx->uri)
+			delete dlctx->uri;
 	}
+
 }
 
 void

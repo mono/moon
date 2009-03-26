@@ -1,5 +1,11 @@
 2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h|.cpp: replace the single downloader code by
+	a list of downloader, speed up downloading a lot. (Set --arbitrary--
+	to 6 dlders for now)
+
+2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.h|.cpp: Download directly from Render*
 
 2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
