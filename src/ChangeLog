@@ -1,5 +1,10 @@
 2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h|.cpp: DownloadUri downloads a Uri (sic). Use an Uri
+	as cache key, use the new get_image_uri_func everywhere.
+
+2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* tilesource.h:
 	* deepzoomimagetilesource.h|.cpp: change the signature of
 	get_image_uri_func. It returns a bool indicating success, the Uri is

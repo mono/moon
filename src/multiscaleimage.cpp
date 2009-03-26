@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "cbinding.h"
 #include "multiscaleimage.h"
 #include "tilesource.h"
 #include "deepzoomimagetilesource.h"
@@ -87,7 +88,7 @@ MultiScaleImage::MultiScaleImage ()
 	source = NULL;
 	downloader = NULL;
 	filename = NULL;
-	cache = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, _cairo_surface_destroy);
+	cache = g_hash_table_new_full ((GHashFunc)uri_get_hash_code, (GCompareFunc)uri_equals, g_free, _cairo_surface_destroy);
 	downloading = false;
 	context = NULL;
 	zoom_sb = NULL;
@@ -128,15 +129,10 @@ MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 }
 
 void
-MultiScaleImage::DownloadUri (const char* url)
+MultiScaleImage::DownloadUri (Uri* url)
 {
-	Uri *uri = new Uri ();
-
 	Surface* surface = GetSurface ();
 	if (!surface)
-		return;
-
-	if (!(uri->Parse (url)))
 		return;
 
 	if (!downloader) {
@@ -148,9 +144,9 @@ MultiScaleImage::DownloadUri (const char* url)
 	if (!downloader)
 		return;
 
-	LOG_MSI ("MSI::DownloadUri %s\n", url);
+	LOG_MSI ("MSI::DownloadUri %s\n", url->ToString ());
 
-	downloader->Open ("GET", uri->ToString (), NoPolicy);
+	downloader->Open ("GET", url->ToString (), NoPolicy);
 
 
 	downloader->Send ();
@@ -160,7 +156,6 @@ MultiScaleImage::DownloadUri (const char* url)
 			DownloaderComplete ();
 	} else
 		downloader->Send ();
-	delete uri;
 }
 
 #ifdef WORDS_BIGENDIAN
@@ -292,14 +287,14 @@ expand_rgb_to_argb (GdkPixbuf *pixbuf, int *stride)
 //test if the cache contains a tile at the @filename key
 //if @empty_tiles is TRUE, it'll return TRUE even if the cached tile is NULL. if @empty_tiles is FALSE, a NULL tile will be treated as missing
 bool
-MultiScaleImage::cache_contains (const char* filename, bool empty_tiles)
+MultiScaleImage::cache_contains (Uri *uri, bool empty_tiles)
 {
-	if (!filename)
+	if (!uri)
 		return empty_tiles;
 	if (empty_tiles)
-		return g_hash_table_lookup_extended (cache, filename, NULL, NULL);
+		return g_hash_table_lookup_extended (cache, uri, NULL, NULL);
 	else
-		return g_hash_table_lookup (cache, filename) != NULL;
+		return g_hash_table_lookup (cache, uri) != NULL;
 }
 
 void
@@ -344,7 +339,7 @@ multi_scale_subimage_handle_parsed (void *userdata)
 	msi->Invalidate ();
 }
 
-const char*
+Uri*
 MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 {
 	LOG_MSI ("\nMSI::RenderCollection\n");
@@ -419,33 +414,26 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
 				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
 					count++;
-					char *tile = (char*)source->get_tile_func (from_layer, i, j, sub_image->source);
-					if (!tile)
-						continue;
-					cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
-					if (image)
+					Uri *tile = new Uri ();
+					cairo_surface_t* image = NULL;
+
+					if (!source->get_tile_func (from_layer, i, j, tile, sub_image->source) &&
+					    (image = (cairo_surface_t*)g_hash_table_lookup (cache, tile)) ) {
 						found ++;
+					} else if (from_layer <= dzits->GetMaxLevel () &&
+						 source->get_tile_func (from_layer,
+									morton_x (sub_image->n) * ldexp (1.0, from_layer) / tile_width,
+									morton_y (sub_image->n) * ldexp (1.0, from_layer) / tile_height,
+									tile,
+									source) &&
+						(image = (cairo_surface_t*)g_hash_table_lookup (cache, tile)) ) {
+						found ++;
+					}
+
+					delete tile;
+
 					if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
 						blending = TRUE;
-
-					else if (from_layer <= dzits->GetMaxLevel ()) { //higher levels of collections have shared thumbnails
-
-						if (tile)
-							g_free (tile);
-						tile = (char*)source->get_tile_func (from_layer,
-							morton_x(sub_image->n) * ldexp (1.0, from_layer) / tile_width,
-							morton_y(sub_image->n) * ldexp (1.0, from_layer) / tile_height,
-							source);
-						if (!tile)
-							continue;
-						image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
-						if (image)
-							found ++;
-						if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
-							blending = TRUE;
-					}
-					if (tile)
-						g_free (tile);
 				}
 			}
 			if (found > 0 && to_layer < from_layer)
@@ -478,8 +466,6 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			if (IS_TRANSLUCENT (sub_image->GetOpacity ()))
 				cairo_push_group (cr);
 
-			//render here
-			LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 			int layer_to_render = from_layer;
 			while (layer_to_render <= to_layer) {
 				double v_tile_w = tile_width * ldexp (1.0, layers - layer_to_render) * sub_vp.width / sub_w;
@@ -488,25 +474,25 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				int i, j;
 				for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
 					for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
-						char *tile = (char*)source->get_tile_func (layer_to_render, i, j, sub_image->source);
-						cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
-
-						//Check in the shared levels
+						Uri *tile = new Uri ();
+						cairo_surface_t *image = NULL;
 						bool shared_tile = false;
-						if (!image && layer_to_render <= dzits->GetMaxLevel()) {
+						if ((!source->get_tile_func (layer_to_render, i, j, tile, sub_image->source) ||
+						     !(image = (cairo_surface_t*)g_hash_table_lookup (cache, tile))		)
+						    && layer_to_render <= dzits->GetMaxLevel()) {
+							//Check in the shared levels
 							shared_tile = true;
 
-							g_free (tile);
-
-							tile = (char*)source->get_tile_func (layer_to_render,
-											     morton_x(sub_image->n) * ldexp (1.0, layer_to_render) / tile_width,
-											     morton_y(sub_image->n) * ldexp (1.0, layer_to_render) / tile_height,
-											     source);
-
-							image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
+							if (source->get_tile_func (layer_to_render,
+									morton_x(sub_image->n) * ldexp (1.0, layer_to_render) / tile_width,
+									morton_y(sub_image->n) * ldexp (1.0, layer_to_render) / tile_height,
+									tile,
+									source) ) {
+								image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
+							}
 						}
 
-						g_free (tile);
+						delete tile;
 
 						if (!image)
 							continue;
@@ -570,15 +556,18 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					if (downloading)
 						break;
 					if (context)
-						g_free (context);
+						delete context;
+					context = new Uri ();
+					bool ret = false;
 					if (from_layer <= dzits->GetMaxLevel ())
-						context = (char*)source->get_tile_func (from_layer,
-							morton_x(sub_image->n) * ldexp (1.0, from_layer) / tile_width,
-							morton_y(sub_image->n) * ldexp (1.0, from_layer) / tile_height,
-							source);
+						ret = source->get_tile_func (from_layer,
+									     morton_x(sub_image->n) * ldexp (1.0, from_layer) / tile_width,
+									     morton_y(sub_image->n) * ldexp (1.0, from_layer) / tile_height,
+									     context,
+									     source);
 					else 
-						context = (char*)source->get_tile_func (from_layer, i, j, sub_image->source);
-					if (context && !cache_contains (context, true)) {
+						ret = source->get_tile_func (from_layer, i, j, context, sub_image->source);
+					if (ret && !cache_contains (context, true)) {
 						DownloadUri (context);
 						downloading = true;
 					}
@@ -589,7 +578,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	return NULL;
 }
 
-const char*
+Uri*
 MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 {
 	double msi_w = GetActualWidth ();
@@ -634,8 +623,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
 				count++;
-				char *tile = (char*)source->get_tile_func (from_layer, i, j, source);
-				if (!tile)
+				Uri *tile = new Uri();
+				if (!source->get_tile_func (from_layer, i, j, tile, source))
 					continue;
 				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
 				if (image)
@@ -643,7 +632,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
 					blending = TRUE;
 
-				g_free (tile);
+				delete tile;
 			}
 		}
 		if (found > 0 && to_layer < from_layer)
@@ -675,11 +664,11 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		double v_tile_h = tile_height * ldexp (1.0, layers - layer_to_render) / im_w;
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
-				char* tile = (char*)source->get_tile_func (layer_to_render, i, j, source);
-				if (!tile)
+				Uri *tile = new Uri ();
+				if (!source->get_tile_func (layer_to_render, i, j, tile, source))
 					continue;
 				cairo_surface_t *image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
-				g_free (tile);
+				delete tile;
 
 				if (!image)
 					continue;
@@ -724,9 +713,9 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
 				if (context)
-					g_free (context);
-				context = (char*)source->get_tile_func (from_layer, i, j, source);
-				if (context && !cache_contains (context, true))
+					delete context;
+				context = new Uri ();
+				if (source->get_tile_func (from_layer, i, j, context, source) && !cache_contains (context, true))
 					return context;
 			}
 		}
@@ -808,8 +797,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			cairo_surface_destroy (image);
 			g_free (data);
 		}
-		LOG_MSI ("caching %s\n", context);
-		g_hash_table_insert (cache, g_strdup(context), similar);
+		LOG_MSI ("caching %s\n", context->ToString());
+		g_hash_table_insert (cache, new Uri(*context), similar);
 	}
 
 	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
@@ -834,7 +823,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		return;
 	}
 
-	const char* nexttile;
+	Uri* nexttile;
 
 	if (is_collection)
 		nexttile = RenderCollection (cr, region);
@@ -865,7 +854,7 @@ void
 MultiScaleImage::DownloaderFailed ()
 {
 	LOG_MSI ("dl failed, caching a NULL\n");
-	g_hash_table_insert (cache, g_strdup(context), NULL);
+	g_hash_table_insert (cache, new Uri(*context), NULL);
 	downloading = false;
 
 	Invalidate ();

@@ -29,11 +29,11 @@ void multi_scale_image_handle_parsed (void *userdata);
 /* @Namespace=System.Windows.Controls,ManagedDependencyProperties=Manual */
 class MultiScaleImage : public MediaBase {
 	void DownloaderAbort ();
-	void DownloadUri (const char* url);
+	void DownloadUri (Uri* url);
 	GHashTable *cache;
-	bool cache_contains (const char* filename, bool check_empty_tile);
+	bool cache_contains (Uri* filename, bool check_empty_tile);
 	MultiScaleTileSource *source;
-	char* context;
+	Uri* context;
 	char* filename;
 	bool downloading;
 
@@ -48,8 +48,8 @@ class MultiScaleImage : public MediaBase {
 
 	Downloader *downloader;
 
-	const char* RenderSingle (cairo_t *cr, Region *region);
-	const char* RenderCollection (cairo_t *cr, Region *region);
+	Uri* RenderSingle (cairo_t *cr, Region *region);
+	Uri* RenderCollection (cairo_t *cr, Region *region);
 
 	Storyboard *zoom_sb;
 	Storyboard *pan_sb;
