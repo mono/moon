@@ -1,3 +1,7 @@
+2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* NativeMethods.cs: fix the ImageUriFunc delegate.
+
 2009-03-25  Geoff Norton  <gnorton@novell.com>
 
 	* GeneratedPInvokes.cs

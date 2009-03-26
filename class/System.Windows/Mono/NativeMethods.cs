@@ -144,7 +144,7 @@ namespace Mono {
 		[DllImport ("moon")]
 		public extern static void deep_zoom_image_tile_source_set_downloaded_cb (IntPtr instance, DownloadedHandler callback);
 
-		public delegate string ImageUriFunc (int level, int posx, int posy, IntPtr ignore);
+		public delegate bool ImageUriFunc (int level, int posx, int posy, IntPtr uri, IntPtr ignore);
 		[DllImport("moon")]
 		public extern static void multi_scale_tile_source_set_image_uri_func (IntPtr instance, ImageUriFunc func);
 
