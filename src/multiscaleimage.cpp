@@ -339,7 +339,7 @@ multi_scale_subimage_handle_parsed (void *userdata)
 	msi->Invalidate ();
 }
 
-Uri*
+void
 MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 {
 	LOG_MSI ("\nMSI::RenderCollection\n");
@@ -575,10 +575,9 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			}
 		}
 	}
-	return NULL;
 }
 
-Uri*
+void
 MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 {
 	double msi_w = GetActualWidth ();
@@ -700,7 +699,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	//	cairo_pop_group_to_source (cr);
 
 	if (downloading)
-		return NULL;
+		return;
 
 	//Get the next tile...
 	while (from_layer < optimal_layer) {
@@ -715,12 +714,14 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				if (context)
 					delete context;
 				context = new Uri ();
-				if (source->get_tile_func (from_layer, i, j, context, source) && !cache_contains (context, true))
-					return context;
+				if (source->get_tile_func (from_layer, i, j, context, source) && !cache_contains (context, true)) {
+					DownloadUri (context);
+					downloading = true;
+					return;
+				}
 			}
 		}
 	}
-	return NULL;	
 }
 
 void
@@ -823,17 +824,10 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		return;
 	}
 
-	Uri* nexttile;
-
 	if (is_collection)
-		nexttile = RenderCollection (cr, region);
+		RenderCollection (cr, region);
 	else
-		nexttile = RenderSingle (cr, region);
-
-	if (nexttile) {
-		downloading = true;
-		DownloadUri (nexttile);
-	}
+		RenderSingle (cr, region);
 }
 
 void

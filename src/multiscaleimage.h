@@ -48,8 +48,8 @@ class MultiScaleImage : public MediaBase {
 
 	Downloader *downloader;
 
-	Uri* RenderSingle (cairo_t *cr, Region *region);
-	Uri* RenderCollection (cairo_t *cr, Region *region);
+	void RenderSingle (cairo_t *cr, Region *region);
+	void RenderCollection (cairo_t *cr, Region *region);
 
 	Storyboard *zoom_sb;
 	Storyboard *pan_sb;

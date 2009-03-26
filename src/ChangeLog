@@ -1,5 +1,9 @@
 2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h|.cpp: Download directly from Render*
+
+2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.h|.cpp: DownloadUri downloads a Uri (sic). Use an Uri
 	as cache key, use the new get_image_uri_func everywhere.
 
