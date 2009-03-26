@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 452 methods needs to be decorated.
+# 426 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -12,15 +12,6 @@
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.IntPtr,Mono.Kind)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::binding_get_is_sealed(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::binding_get_notify_on_validation_error(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::binding_get_validates_on_exceptions(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_clear(System.IntPtr)
@@ -107,6 +98,12 @@
 +SC-M: System.Boolean Mono.NativeMethods::surface_in_main_thread()
 
 # p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::surface_is_loaded(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::surface_is_version_supported(System.String)
+
+# p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::type_get_value_type(Mono.Kind)
 
 # p/invoke declaration
@@ -153,9 +150,6 @@
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::stylus_point_get_y(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::binding_get_binding_mode(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::collection_add_with_error_(System.IntPtr,Mono.Value&,Mono.MoonError&)
@@ -243,39 +237,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::bezier_segment_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::binding_expression_base_get_binding(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::binding_expression_base_get_converter(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::binding_expression_base_get_converter_culture_(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::binding_expression_base_get_converter_parameter(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::binding_expression_base_get_source(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::binding_expression_base_get_target(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::binding_expression_base_get_target_property(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::binding_expression_base_get_value(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::binding_expression_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::binding_get_property_path_(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::binding_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::bitmap_image_new()
@@ -809,6 +770,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::surface_create_downloader(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::surface_get_background_color(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::surface_get_focused_element(System.IntPtr)
 
 # p/invoke declaration
@@ -954,48 +918,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_set_current(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_expression_base_register_managed_overrides(System.IntPtr,Mono.GetValueCallback,Mono.SetValueCallback)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_expression_base_set_binding(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_expression_base_set_converter(System.IntPtr,Mono.Value&)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_expression_base_set_converter_culture(System.IntPtr,System.String)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_expression_base_set_converter_parameter(System.IntPtr,Mono.Value&)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_expression_base_set_source(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_expression_base_set_target(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_expression_base_set_target_property(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_expression_base_update_source(System.IntPtr,Mono.Value&)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_set_binding_mode(System.IntPtr,System.Int32)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_set_is_sealed(System.IntPtr,System.Boolean)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_set_notify_on_validation_error(System.IntPtr,System.Boolean)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_set_property_path(System.IntPtr,System.String)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::binding_set_validates_on_exceptions(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::bitmap_image_set_buffer(System.IntPtr,System.IntPtr,System.Int32)
