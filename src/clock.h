@@ -20,8 +20,6 @@
 #include <stdint.h>
 #include "collection.h"
 
-G_BEGIN_DECLS
-
 /*
  * Time units:
  *  TimeSpan: signed int64 value, 100-nanosecond units (10 000 000 ticks per second)
@@ -448,6 +446,8 @@ class TimeManager : public EventObject {
 
 	GList *registered_timeouts;
 };
+
+G_BEGIN_DECLS
 
 void time_manager_add_tick_call (TimeManager *manager, TickCallHandler handler, EventObject *obj);
 void time_manager_remove_tick_call (TimeManager *manager, TickCallHandler handler);
