@@ -807,7 +807,8 @@ namespace Mono.Xaml
 
 		private static object ConvertType (PropertyInfo pi, Type t, object value)
 		{
-			if (value.GetType () == t)
+			Type valueType = value.GetType ();
+			if (valueType == t)
 				return value;
 
 			TypeConverter converter = Helper.GetConverterFor (pi, t);
@@ -822,7 +823,8 @@ namespace Mono.Xaml
 			}
 
 			try {
-				value = Convert.ChangeType (value, t, System.Globalization.CultureInfo.CurrentCulture);
+				if (!valueType.IsSubclassOf (t))
+					value = Convert.ChangeType (value, t, System.Globalization.CultureInfo.CurrentCulture);
 			} catch {
 			}
 			
