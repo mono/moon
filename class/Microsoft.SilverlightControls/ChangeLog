@@ -1,3 +1,9 @@
+2009-03-26  Alan McGovern  <amcgovern@novell.com>
+
+	* RuntimeControls/SilverlightControls/Button.cs: Implement
+	  CreatePeerForElement and FromElement properly for the
+	  automation stuff.
+
 2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* SDKControls/Extended/Controls.sln:

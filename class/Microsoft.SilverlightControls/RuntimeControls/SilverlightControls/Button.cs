@@ -43,6 +43,11 @@ namespace System.Windows.Controls
             UpdateVisualState(false); 
         } 
 
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			return new ButtonAutomationPeer (this);
+		}
+
         /// <summary> 
         /// Change to the correct visual state for the button.
         /// </summary>

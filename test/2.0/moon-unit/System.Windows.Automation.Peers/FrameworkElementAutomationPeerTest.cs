@@ -148,5 +148,50 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsTrue (feap.IsControlElement (), "IsControlElement");
 			Assert.IsTrue (feap.IsControlElementCore_ (), "IsControlElementCore");
 		}
+		
+		[TestMethod]
+		public void CreatePeer ()
+		{
+			Button b = new Button ();
+			AutomationPeer peer1 = FrameworkElementAutomationPeer.CreatePeerForElement (b);
+			AutomationPeer peer2 = FrameworkElementAutomationPeer.CreatePeerForElement (b);
+			Assert.IsNotNull (peer1, "#1");
+			Assert.AreSame (peer1, peer2, "#2");
+		}
+
+		[TestMethod]
+		public void CreatePeer2 ()
+		{
+			Button b = new Button ();
+			FrameworkElementAutomationPeer peer1 = new FrameworkElementAutomationPeer (b);
+			AutomationPeer peer2 = FrameworkElementAutomationPeer.CreatePeerForElement (b);
+			Assert.AreNotSame (peer1, peer2, "#2");
+		}
+//		// Uncomment when we implement ButtonAutomationPeer
+//		[TestMethod]
+//		public void CreatePeer3 ()
+//		{
+//			Button b = new Button ();
+//			ButtonAutomationPeer peer1 = new ButtonAutomationPeer (b);
+//			AutomationPeer peer2 = FrameworkElementAutomationPeer.CreatePeerForElement (b);
+//			Assert.AreNotSame (peer1, peer2, "#2");
+//		}
+
+		[TestMethod]
+		public void FindPeer ()
+		{
+			Button b = new Button ();
+			AutomationPeer peer1 = FrameworkElementAutomationPeer.FromElement (b);
+			Assert.IsNull (peer1, "#1");
+
+			peer1 = FrameworkElementAutomationPeer.CreatePeerForElement (b);
+			Assert.IsNotNull (peer1, "#2");
+
+			AutomationPeer peer2 = FrameworkElementAutomationPeer.FromElement (b);
+			Assert.AreSame (peer1, peer2, "#3");
+
+			peer2 = FrameworkElementAutomationPeer.FromElement (b);
+			Assert.AreSame (peer1, peer2, "#4");
+		}
 	}
 }

@@ -99,8 +99,12 @@ namespace System.Windows {
 			return null;
 		}
 
+		internal AutomationPeer AutomationPeer {
+			get; set;
+		}
+			
 		// needed by FrameworkElementAutomationPeer
-		internal AutomationPeer GetAutomationPeer ()
+		internal AutomationPeer CreateAutomationPeer ()
 		{
 			return OnCreateAutomationPeer ();
 		}

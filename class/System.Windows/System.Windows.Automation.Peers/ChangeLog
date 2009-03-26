@@ -1,3 +1,10 @@
+2009-03-26  Alan McGovern  <amcgovern@novell.com>
+
+	* ButtonAutomationPeer.cs:
+	* FrameworkElementAutomationPeer.cs: Implement
+	  CreatePeerForElement and FromElement properly for the
+	  automation stuff.
+
 2009-03-25  Alan McGovern  <amcgovern@novell.com>
 
 	* FrameworkElementAutomationPeer.cs: Commit this so that the

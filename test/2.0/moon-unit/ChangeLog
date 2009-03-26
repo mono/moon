@@ -1,5 +1,11 @@
 2009-03-26  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	  Implement CreatePeerForElement and FromElement properly for
+	  the automation stuff.
+
+2009-03-26  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls.Primitives/ToggleButtonTest.cs: We
 	  already have dp.IsNullable so use that for the nullability
 	  check. Add extra tests to ensure every combination of

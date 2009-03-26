@@ -1,3 +1,8 @@
+2009-03-26  Alan McGovern  <amcgovern@novell.com>
+
+	* UIElement.cs: Implement CreatePeerForElement and FromElement
+	  properly for the automation stuff.
+
 2009-03-24  Alan McGovern  <amcgovern@novell.com>
 
 	* FrameworkElement.cs: If a one-way binding is setting a new
