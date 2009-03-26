@@ -29,10 +29,11 @@ EventTrigger::~EventTrigger ()
 void
 EventTrigger::SetTarget (DependencyObject *target)
 {
+	g_return_if_fail (target);
+	
+#if AT_SOME_POINT_SILVERLIGHT_GETS_ITS_HEAD_OUT_OF_ITS_
 	const char *event = GetRoutedEvent ();
 	const char *dot;
-	
-	g_return_if_fail (target);
 	
 	if (event && (dot = strchr (event, '.'))) {
 		char *type = g_strndup (event, dot-event);
@@ -54,6 +55,9 @@ EventTrigger::SetTarget (DependencyObject *target)
 	} else if (event) {
 		registered_event_id = target->GetType ()->LookupEvent (event);
 	}
+#else
+	registered_event_id = UIElement::LoadedEvent;
+#endif
 	
 	if (registered_event_id == -1)
 		g_warning ("failed to set target");

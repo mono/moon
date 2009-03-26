@@ -1,3 +1,9 @@
+2009-03-26  Chris Toshok  <toshok@ximian.com>
+
+	* trigger.cpp (EventTrigger::SetTarget): fix regression, and ifdef
+	out the code that allows other events to be used.  Maybe in SL3
+	they'll allow it.
+
 2009-03-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp: Reengineered TextBox and PasswordBox to inherit
