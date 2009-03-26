@@ -1,3 +1,9 @@
+2009-03-26  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: If the datasource in a two way
+	  binding doesn't exist, just return immediately. Fixes
+	  several datagrid issues.
+
 2009-03-25  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: Null check value before

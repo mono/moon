@@ -181,7 +181,7 @@ namespace System.Windows.Data {
 
 		internal void SetValue (object value)
 		{
-			if (updating)
+			if (updating || PropertyInfo == null)
 				return;
 
 			if (Binding.Converter != null)
