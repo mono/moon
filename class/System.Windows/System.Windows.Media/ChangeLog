@@ -1,3 +1,9 @@
+2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleTileSource.cs: drop the useless GetImageUri, fix 
+	GetImageUriSafe to parse to the unmanaged uri, and no longer return
+	a managed string to native land.
+
 2009-03-24  Atsushi Enomoto  <atsushi@ximian.com>
 
 	* MediaStreamSource.cs : add "True" and "False" for possible
