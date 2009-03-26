@@ -1,5 +1,10 @@
 2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h|.cpp: fix optimal_layer caclulation for tiles
+	with an aspect_ratio < 1.0 (portrait images).
+
+2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.h|.cpp: replace the single downloader code by
 	a list of downloader, speed up downloading a lot. (Set --arbitrary--
 	to 6 dlders for now)

@@ -381,6 +381,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 	while (iter->Next () && (val = iter->GetCurrent(&error))) {
 		MultiScaleSubImage *sub_image = val->AsMultiScaleSubImage ();
+//		if (sub_image->id != 5)
+//			continue;
 		//if the subimage is unparsed, trigger the download
 		//FIXME: THIS NOT REQUIRED FOR LAYERS << MaxTileLayer
 //		if (sub_image->source->GetImageWidth () < 0) {
@@ -410,7 +412,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			layers --;
 
 		int optimal_layer;
-		frexp (msi_w / (subvp_w * msivp_w), &optimal_layer); 
+		frexp (msi_w / (subvp_w * msivp_w * MIN (1.0, sub_ar)), &optimal_layer);
 		optimal_layer = MIN (optimal_layer, layers);
 		LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
@@ -612,7 +614,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 
 	//optimal layer for this... aka "best viewed at"
 	int optimal_layer;
-	frexp (msi_w / vp_w, &optimal_layer);
+	frexp (msi_w / (vp_w * MIN (1.0, msi_ar))  , &optimal_layer);
 	optimal_layer = MIN (optimal_layer, layers);
 	LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
