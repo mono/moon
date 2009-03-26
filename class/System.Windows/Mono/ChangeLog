@@ -1,5 +1,10 @@
 2009-03-26  Alan McGovern  <amcgovern@novell.com>
 
+	* NativeDependencyObjectHelper.cs: This changed caused
+	  regressions, backing it out.
+
+2009-03-26  Alan McGovern  <amcgovern@novell.com>
+
 	* NativeDependencyObjectHelper.cs: If the result is null, we
 	  only use the default value if it's a non-nullable struct.
 
