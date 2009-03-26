@@ -107,10 +107,10 @@ class DZParserinfo
 void start_element (void *data, const char *el, const char **attr);
 void end_element (void *data, const char *el);
 
-gpointer
-get_tile_layer (int level, int x, int y, void *userdata)
+bool
+get_tile_layer (int level, int x, int y, Uri *uri, void *userdata)
 {
-	return ((DeepZoomImageTileSource *)userdata)->GetTileLayer (level, x, y);
+	return ((DeepZoomImageTileSource *)userdata)->GetTileLayer (level, x, y, uri);
 }
 
 
@@ -265,8 +265,8 @@ LOG_MSI ("Done parsing...\n");
 		parsed_callback (cb_userdata);
 }
 
-gpointer
-DeepZoomImageTileSource::GetTileLayer (int level, int x, int y)
+bool
+DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 {
 	//check if there tile is listed in DisplayRects
 	if (display_rects) {
@@ -291,16 +291,18 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y)
 		}
 
 		if (!found)
-			return NULL;
+			return false;
 	}
+
+	//FIXME !!!!
 	char *sourceuri = GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsUri ()->ToString ();
 	char buffer[strlen (sourceuri) + 32];
 	char* p = g_stpcpy (buffer, sourceuri);
 	sprintf (p-4, "_files/%d/%d_%d.%s", level, x, y, format);
 	if (g_str_has_prefix (buffer, "/"))
-		return g_strdup(buffer +1);
+		return uri->Parse (buffer +1);
 	else
-		return g_strdup(buffer);
+		return uri->Parse (buffer);
 }
 
 void
