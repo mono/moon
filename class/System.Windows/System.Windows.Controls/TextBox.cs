@@ -56,12 +56,12 @@ namespace System.Windows.Controls {
 			// start/length values are out of range? If
 			// not, what is supposed to happen?
 			
-			NativeMethods.text_box_select (this.native, start, length);
+			NativeMethods.text_box_base_select (this.native, start, length);
 		}
 		
 		public void SelectAll ()
 		{
-			NativeMethods.text_box_select_all (native);
+			NativeMethods.text_box_base_select_all (native);
 		}
 		
 		static UnmanagedEventHandler cursor_position_changed = Events.CreateSafeHandler (cursor_position_changed_cb);
@@ -80,7 +80,7 @@ namespace System.Windows.Controls {
 			if (contentElement != null && contentElement is ScrollViewer) {
 				ScrollViewer scrollview = contentElement as ScrollViewer;
 				
-				Console.WriteLine ("scrolling to {0},{1}", args.CursorX, args.CursorY);
+				// FIXME: I'm sure this needs work...
 				scrollview.ScrollToHorizontalOffset (args.CursorX);
 				scrollview.ScrollToVerticalOffset (args.CursorY);
 			}

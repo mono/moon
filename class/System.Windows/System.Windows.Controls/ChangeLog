@@ -1,3 +1,9 @@
+2009-03-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* PasswordBox.cs: We no longer do the evil gross hackery action.
+
+	* TextBox.cs: Updated NativeMethods use for text_box_base
+
 2009-03-25  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* MultiScaleImage.cs: ViewportChanged is a RoutedEvent

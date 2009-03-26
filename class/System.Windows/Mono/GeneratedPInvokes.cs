@@ -1481,16 +1481,16 @@ namespace Mono {
 		public extern static IntPtr text_block_new ();
 
 		[DllImport ("moon")]
-		// void text_box_select (TextBox *instance, int start, int length);
-		public extern static void text_box_select (IntPtr instance, int start, int length);
-
-		[DllImport ("moon")]
-		// void text_box_select_all (TextBox *instance);
-		public extern static void text_box_select_all (IntPtr instance);
-
-		[DllImport ("moon")]
 		// TextBox *text_box_new ();
 		public extern static IntPtr text_box_new ();
+
+		[DllImport ("moon")]
+		// void text_box_base_select (TextBoxBase *instance, int start, int length);
+		public extern static void text_box_base_select (IntPtr instance, int start, int length);
+
+		[DllImport ("moon")]
+		// void text_box_base_select_all (TextBoxBase *instance);
+		public extern static void text_box_base_select_all (IntPtr instance);
 
 		[DllImport ("moon")]
 		// TextBoxView *text_box_view_new ();

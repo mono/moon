@@ -42,44 +42,6 @@ namespace System.Windows.Controls
 	[TemplateVisualStateAttribute(Name = "Unfocused", GroupName = "FocusStates")]
 	public sealed partial class PasswordBox : Control
 	{
-		public static readonly DependencyProperty SelectionBackgroundProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionBackground", typeof (Brush));
-		public static readonly DependencyProperty SelectionForegroundProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "SelectionForeground", typeof (Brush));
-		internal static readonly DependencyProperty PasswordProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "Text", typeof (string));
-		public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "MaxLength", typeof (int));
-		
-		public Brush SelectionBackground {
-			get { return (Brush) GetValue (SelectionBackgroundProperty); }
-			set { SetValue (SelectionBackgroundProperty, value); }
-		}
-		
-		public Brush SelectionForeground {
-			get { return (Brush) GetValue (SelectionForegroundProperty); }
-			set { SetValue (SelectionForegroundProperty, value); }
-		}
-		
-		public string Password {
-			get {
-				string passwd = (string) GetValue (PasswordProperty);
-				
-				if (passwd == null)
-					return String.Empty;
-				
-				return passwd;
-			}
-			
-			set {
-				if (value == null)
-					throw new ArgumentNullException ("Value cannot be null");
-				
-				SetValue (PasswordProperty, value);
-			}
-		}
-		
-		public int MaxLength {
-			get { return (int) GetValue (MaxLengthProperty); }
-			set { SetValue (MaxLengthProperty, value); }
-		}
-		
 		public FontSource FontSource {
 			get { throw new NotImplementedException (); }
 			set { throw new NotImplementedException (); }
@@ -87,7 +49,7 @@ namespace System.Windows.Controls
 		
 		public void SelectAll ()
 		{
-			NativeMethods.text_box_select_all (native);
+			NativeMethods.text_box_base_select_all (native);
 		}
 		
 		static UnmanagedEventHandler password_changed = Events.CreateSafeHandler (password_changed_cb);
@@ -111,10 +73,10 @@ namespace System.Windows.Controls
 		
 		public event RoutedEventHandler PasswordChanged {
 			add {
-				RegisterEvent (PasswordChangedEvent, "TextChanged", password_changed, value);
+				RegisterEvent (PasswordChangedEvent, "PasswordChanged", password_changed, value);
 			}
 			remove {
-				UnregisterEvent (PasswordChangedEvent, "TextChanged", password_changed, value);
+				UnregisterEvent (PasswordChangedEvent, "PasswordChanged", password_changed, value);
 			}
 		}
 	}

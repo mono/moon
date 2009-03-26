@@ -235,6 +235,7 @@ namespace Mono {
 		TEMPLATEBINDING,// Silverlight 2.0 only
 		TEXTBLOCK,
 		TEXTBOX,// Silverlight 2.0 only
+		TEXTBOXBASE,// Silverlight 2.0 only
 		TEXTBOXMODELCHANGEDEVENTARGS,// Silverlight 2.0 only
 		TEXTBOXVIEW,// Silverlight 2.0 only
 		TEXTCHANGEDEVENTARGS,// Silverlight 2.0 only
