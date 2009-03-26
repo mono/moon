@@ -47,12 +47,6 @@ typedef guint64 TimePts;
 #define MilliSeconds_ToPts(s) ((guint64) (s) * PTS_PER_MILLISECOND)
 #define MilliSeconds_FromPts(s) ((s) / PTS_PER_MILLISECOND)
 
-// misc types
-enum FillBehavior {
-	FillBehaviorHoldEnd,
-	FillBehaviorStop
-};
-
 /* @IncludeInKinds */
 /* @Namespace=System.Windows */
 struct Duration {
@@ -108,7 +102,7 @@ struct Duration {
 	static Duration FromSeconds (int seconds) { return Duration (TimeSpan_FromSeconds (seconds)); }
 	static Duration FromSecondsFloat (double seconds) { return Duration (TimeSpan_FromSecondsFloat (seconds)); }
 
- private:
+private:
 	DurationKind k;
 	gint32 padding;
 	TimeSpan timespan;
@@ -173,7 +167,7 @@ struct RepeatBehavior {
 
 	bool IsForever () { return k == FOREVER; }
 
- private:
+private:
 	RepeatKind k;
 	gint32 padding;
 	double count;
@@ -194,10 +188,7 @@ class Applier;
    classes.  as such, all clocks are controllable */
 /* @Namespace=None,ManagedDependencyProperties=None */
 class Clock : public DependencyObject {
- protected:
-	virtual ~Clock ();
-
- public:
+public:
 	Clock (Timeline *timeline);
 	
 	ClockGroup* GetParentClock ()     { return parent_clock; }
@@ -260,7 +251,9 @@ class Clock : public DependencyObject {
 	const static int CurrentGlobalSpeedInvalidatedEvent;
 	const static int CompletedEvent;
 
- protected:
+protected:
+	virtual ~Clock ();
+
 	TimeSpan ComputeNewTime ();
 	void ClampTime ();
 	void CalcProgress ();
@@ -303,8 +296,7 @@ class Clock : public DependencyObject {
 	TimeSpan repeat_time;
 	TimeSpan start_time;
 
- private:
-
+private:
 	TimeManager *time_manager;
 	ClockGroup *parent_clock;
 	
@@ -320,10 +312,7 @@ class Clock : public DependencyObject {
 
 /* @Namespace=None,ManagedDependencyProperties=None */
 class ClockGroup : public Clock {
- protected:
-	virtual ~ClockGroup ();
-
- public:
+public:
 	ClockGroup (TimelineGroup *timeline, bool never_fill = false);
 
 	void AddChild (Clock *clock);
@@ -350,11 +339,13 @@ class ClockGroup : public Clock {
 
 	virtual void Reset ();
 
- protected:
+protected:
+	virtual ~ClockGroup ();
+
 	virtual void DoRepeat (TimeSpan time);
 	virtual void Completed ();
 	
- private:
+private:
 	TimelineGroup *timeline;
 	bool emit_completed;
 	bool idle_hint;
@@ -365,7 +356,7 @@ class ClockGroup : public Clock {
 // our root level time manager (basically the object that registers
 // the gtk_timeout and drives all Clock objects
 class TimeManager : public EventObject {
- public:
+public:
 	TimeManager ();
 
 	void Start ();
@@ -401,10 +392,10 @@ class TimeManager : public EventObject {
 	void ListClocks ();
 	Applier* GetApplier () { return applier; }
 	
- protected:
+protected:
 	virtual ~TimeManager ();
 
- private:
+private:
 
 	TimelineGroup *timeline;
 	ClockGroup *root_clock;

@@ -1,5 +1,11 @@
 2009-03-26  Chris Toshok  <toshok@ximian.com>
 
+	* clock.h: move enum FillBehavior...
+
+	* enums.h: ... to here.
+
+2009-03-26  Chris Toshok  <toshok@ximian.com>
+
 	* animation2.h: nuke, moving everything into animation.h.
 
 	* clock.h|.cpp, timesource.h|.cpp, timeline.h|.cpp: split out all

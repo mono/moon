@@ -296,6 +296,11 @@ enum CrossDomainAccess {
         CrossDomainAccessScriptableOnly,
 };
 
+enum FillBehavior {
+	FillBehaviorHoldEnd,
+	FillBehaviorStop
+};
+
 G_BEGIN_DECLS
 
 int enums_str_to_int (const char *prop_name, const char *str);
