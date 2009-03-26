@@ -498,50 +498,7 @@ TextBoxUndoStack::Peek ()
 
 
 //
-// TextBlockDynamicPropertyValueProvider
-//
-
-class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
-	Value *selection_background;
-	Value *selection_foreground;
-	
- public:
-	TextBoxDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj)
-	{
-		selection_background = NULL;
-		selection_foreground = NULL;
-	}
-	
-	virtual ~TextBoxDynamicPropertyValueProvider ()
-	{
-		delete selection_background;
-		delete selection_foreground;
-	}
-	
-	virtual Value *GetPropertyValue (DependencyProperty *property)
-	{
-		if (property->GetId () == TextBox::SelectionBackgroundProperty) {
-			return selection_background;
-		} else if (property->GetId () == TextBox::SelectionForegroundProperty) {
-			return selection_foreground;
-		}
-		
-		return NULL;
-	}
-	
-	void InitializeSelectionBrushes ()
-	{
-		if (!selection_background)
-			selection_background = Value::CreateUnrefPtr (new SolidColorBrush ("#FF444444"));
-		
-		if (!selection_foreground)
-			selection_foreground = Value::CreateUnrefPtr (new SolidColorBrush ("#FFFFFFFF"));
-	}
-};
-
-
-//
-// TextBox
+// TextBoxBase
 //
 
 // emit state
@@ -549,24 +506,27 @@ class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 #define SELECTION_CHANGED       (1 << 0)
 #define TEXT_CHANGED            (1 << 1)
 
+#define CONTROL_MASK GDK_CONTROL_MASK
+#define SHIFT_MASK   GDK_SHIFT_MASK
+#define ALT_MASK     GDK_MOD1_MASK
+
+#define IsEOL(c) ((c) == '\r' || (c) == '\n')
 
 void
-TextBox::Initialize (Type::Kind type, const char *type_name)
+TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 {
 	ManagedTypeInfo *type_info = new ManagedTypeInfo ("System.Windows", type_name);
 	
 	SetObjectType (type);
 	SetDefaultStyleKey (type_info);
 	
-	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this);
-	
-	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBox::mouse_left_button_down, this);
-	AddHandler (UIElement::MouseLeftButtonUpEvent, TextBox::mouse_left_button_up, this);
-	AddHandler (UIElement::MouseMoveEvent, TextBox::mouse_move, this);
-	AddHandler (UIElement::LostFocusEvent, TextBox::focus_out, this);
-	AddHandler (UIElement::GotFocusEvent, TextBox::focus_in, this);
-	AddHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
-	AddHandler (UIElement::KeyUpEvent, TextBox::key_up, this);
+	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBoxBase::mouse_left_button_down, this);
+	AddHandler (UIElement::MouseLeftButtonUpEvent, TextBoxBase::mouse_left_button_up, this);
+	AddHandler (UIElement::MouseMoveEvent, TextBoxBase::mouse_move, this);
+	AddHandler (UIElement::LostFocusEvent, TextBoxBase::focus_out, this);
+	AddHandler (UIElement::GotFocusEvent, TextBoxBase::focus_in, this);
+	AddHandler (UIElement::KeyDownEvent, TextBoxBase::key_down, this);
+	AddHandler (UIElement::KeyUpEvent, TextBoxBase::key_up, this);
 	
 	font = new TextFontDescription ();
 	font->SetFamily (CONTROL_FONT_FAMILY);
@@ -580,12 +540,15 @@ TextBox::Initialize (Type::Kind type, const char *type_name)
 	undo = new TextBoxUndoStack (10);
 	redo = new TextBoxUndoStack (10);
 	buffer = new TextBuffer ();
+	max_length = 0;
 	
 	emit = NOTHING_CHANGED;
 	selection_anchor = 0;
 	selection_cursor = 0;
 	cursor_offset = 0.0;
 	
+	accepts_return = false;
+	is_read_only = false;
 	have_offset = false;
 	inkeypress = false;
 	selecting = false;
@@ -595,25 +558,15 @@ TextBox::Initialize (Type::Kind type, const char *type_name)
 	view = NULL;
 }
 
-TextBox::TextBox (Type::Kind type, const char *type_name)
+TextBoxBase::~TextBoxBase ()
 {
-	Initialize (type, type_name);
-}
-
-TextBox::TextBox ()
-{
-	Initialize (Type::TEXTBOX, "System.Windows.Controls.TextBox");
-}
-
-TextBox::~TextBox ()
-{
-	RemoveHandler (UIElement::MouseLeftButtonDownEvent, TextBox::mouse_left_button_down, this);
-	RemoveHandler (UIElement::MouseLeftButtonUpEvent, TextBox::mouse_left_button_up, this);
-	RemoveHandler (UIElement::MouseMoveEvent, TextBox::mouse_move, this);
-	RemoveHandler (UIElement::LostFocusEvent, TextBox::focus_out, this);
-	RemoveHandler (UIElement::GotFocusEvent, TextBox::focus_in, this);
-	RemoveHandler (UIElement::KeyDownEvent, TextBox::key_down, this);
-	RemoveHandler (UIElement::KeyUpEvent, TextBox::key_up, this);
+	RemoveHandler (UIElement::MouseLeftButtonDownEvent, TextBoxBase::mouse_left_button_down, this);
+	RemoveHandler (UIElement::MouseLeftButtonUpEvent, TextBoxBase::mouse_left_button_up, this);
+	RemoveHandler (UIElement::MouseMoveEvent, TextBoxBase::mouse_move, this);
+	RemoveHandler (UIElement::LostFocusEvent, TextBoxBase::focus_out, this);
+	RemoveHandler (UIElement::GotFocusEvent, TextBoxBase::focus_in, this);
+	RemoveHandler (UIElement::KeyDownEvent, TextBoxBase::key_down, this);
+	RemoveHandler (UIElement::KeyUpEvent, TextBoxBase::key_up, this);
 	
 	delete buffer;
 	delete undo;
@@ -621,14 +574,8 @@ TextBox::~TextBox ()
 	delete font;
 }
 
-#define CONTROL_MASK GDK_CONTROL_MASK
-#define SHIFT_MASK   GDK_SHIFT_MASK
-#define ALT_MASK     GDK_MOD1_MASK
-
-#define IsEOL(c) ((c) == '\r' || (c) == '\n')
-
 double
-TextBox::GetCursorOffset ()
+TextBoxBase::GetCursorOffset ()
 {
 	if (!have_offset && view) {
 		cursor_offset = view->GetCursor ().x;
@@ -639,7 +586,7 @@ TextBox::GetCursorOffset ()
 }
 
 int
-TextBox::CursorDown (int cursor, bool page)
+TextBoxBase::CursorDown (int cursor, bool page)
 {
 	double y = view->GetCursor ().y;
 	double x = GetCursorOffset ();
@@ -678,7 +625,7 @@ TextBox::CursorDown (int cursor, bool page)
 }
 
 int
-TextBox::CursorUp (int cursor, bool page)
+TextBoxBase::CursorUp (int cursor, bool page)
 {
 	double y = view->GetCursor ().y;
 	double x = GetCursorOffset ();
@@ -725,7 +672,7 @@ char_class (gunichar c)
 }
 
 int
-TextBox::CursorNextWord (int cursor)
+TextBoxBase::CursorNextWord (int cursor)
 {
 	int i, lf, cr;
 	CharClass cc;
@@ -760,7 +707,7 @@ TextBox::CursorNextWord (int cursor)
 }
 
 int
-TextBox::CursorPrevWord (int cursor)
+TextBoxBase::CursorPrevWord (int cursor)
 {
 	int begin, i, cr, lf;
 	CharClass cc;
@@ -800,7 +747,7 @@ TextBox::CursorPrevWord (int cursor)
 }
 
 int
-TextBox::CursorLineBegin (int cursor)
+TextBoxBase::CursorLineBegin (int cursor)
 {
 	int cur = cursor;
 	
@@ -812,7 +759,7 @@ TextBox::CursorLineBegin (int cursor)
 }
 
 int
-TextBox::CursorLineEnd (int cursor, bool include)
+TextBoxBase::CursorLineEnd (int cursor, bool include)
 {
 	int cur = cursor;
 	
@@ -831,7 +778,7 @@ TextBox::CursorLineEnd (int cursor, bool include)
 }
 
 void
-TextBox::KeyPressBackSpace (GdkModifierType modifiers)
+TextBoxBase::KeyPressBackSpace (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -882,7 +829,7 @@ TextBox::KeyPressBackSpace (GdkModifierType modifiers)
 }
 
 void
-TextBox::KeyPressDelete (GdkModifierType modifiers)
+TextBoxBase::KeyPressDelete (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -930,7 +877,7 @@ TextBox::KeyPressDelete (GdkModifierType modifiers)
 }
 
 void
-TextBox::KeyPressPageDown (GdkModifierType modifiers)
+TextBoxBase::KeyPressPageDown (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -960,7 +907,7 @@ TextBox::KeyPressPageDown (GdkModifierType modifiers)
 }
 
 void
-TextBox::KeyPressPageUp (GdkModifierType modifiers)
+TextBoxBase::KeyPressPageUp (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -990,7 +937,7 @@ TextBox::KeyPressPageUp (GdkModifierType modifiers)
 }
 
 void
-TextBox::KeyPressDown (GdkModifierType modifiers)
+TextBoxBase::KeyPressDown (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1020,7 +967,7 @@ TextBox::KeyPressDown (GdkModifierType modifiers)
 }
 
 void
-TextBox::KeyPressUp (GdkModifierType modifiers)
+TextBoxBase::KeyPressUp (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1050,7 +997,7 @@ TextBox::KeyPressUp (GdkModifierType modifiers)
 }
 
 void
-TextBox::KeyPressHome (GdkModifierType modifiers)
+TextBoxBase::KeyPressHome (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1083,7 +1030,7 @@ TextBox::KeyPressHome (GdkModifierType modifiers)
 }
 
 void
-TextBox::KeyPressEnd (GdkModifierType modifiers)
+TextBoxBase::KeyPressEnd (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1115,7 +1062,7 @@ TextBox::KeyPressEnd (GdkModifierType modifiers)
 }
 
 void
-TextBox::KeyPressRight (GdkModifierType modifiers)
+TextBoxBase::KeyPressRight (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1150,7 +1097,7 @@ TextBox::KeyPressRight (GdkModifierType modifiers)
 }
 
 void
-TextBox::KeyPressLeft (GdkModifierType modifiers)
+TextBoxBase::KeyPressLeft (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1185,16 +1132,15 @@ TextBox::KeyPressLeft (GdkModifierType modifiers)
 }
 
 void
-TextBox::KeyPressUnichar (gunichar c)
+TextBoxBase::KeyPressUnichar (gunichar c)
 {
 	int length = abs (selection_cursor - selection_anchor);
 	int start = MIN (selection_anchor, selection_cursor);
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
-	int maxlen = GetMaxLength ();
 	TextBoxUndoAction *action;
 	
-	if ((maxlen > 0 && buffer->len >= maxlen) || ((c == '\r') && !GetAcceptsReturn ()))
+	if ((max_length > 0 && buffer->len >= max_length) || ((c == '\r') && !accepts_return))
 		return;
 	
 	if (length > 0) {
@@ -1240,7 +1186,7 @@ TextBox::KeyPressUnichar (gunichar c)
 }
 
 void
-TextBox::SyncAndEmit ()
+TextBoxBase::SyncAndEmit ()
 {
 	if (emit & TEXT_CHANGED)
 		SyncText ();
@@ -1258,7 +1204,7 @@ TextBox::SyncAndEmit ()
 }
 
 static GtkClipboard *
-GetClipboard (TextBox *textbox, GdkAtom atom)
+GetClipboard (TextBoxBase *textbox, GdkAtom atom)
 {
 	GdkDisplay *display;
 	MoonWindow *window;
@@ -1281,7 +1227,7 @@ GetClipboard (TextBox *textbox, GdkAtom atom)
 }
 
 void
-TextBox::Paste (GtkClipboard *clipboard, const char *str)
+TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
 {
 	TextBoxUndoAction *action;
 	int start, length;
@@ -1321,13 +1267,13 @@ TextBox::Paste (GtkClipboard *clipboard, const char *str)
 }
 
 void
-TextBox::paste (GtkClipboard *clipboard, const char *text, gpointer closure)
+TextBoxBase::paste (GtkClipboard *clipboard, const char *text, gpointer closure)
 {
-	((TextBox *) closure)->Paste (clipboard, text);
+	((TextBoxBase *) closure)->Paste (clipboard, text);
 }
 
 void
-TextBox::OnKeyDown (KeyEventArgs *args)
+TextBoxBase::OnKeyDown (KeyEventArgs *args)
 {
 	GdkModifierType modifiers = (GdkModifierType) args->GetModifiers ();
 	guint key = args->GetKeyVal ();
@@ -1345,19 +1291,19 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 	
 	switch (key) {
 	case GDK_Return:
-		if (!GetIsReadOnly ()) {
+		if (!is_read_only) {
 			args->SetHandled (true);
 			KeyPressUnichar ('\r');
 		}
 		break;
 	case GDK_BackSpace:
-		if (!GetIsReadOnly ()) {
+		if (!is_read_only) {
 			KeyPressBackSpace (modifiers);
 			args->SetHandled (true);
 		}
 		break;
 	case GDK_Delete:
-		if (!GetIsReadOnly ()) {
+		if (!is_read_only) {
 			KeyPressDelete (modifiers);
 			args->SetHandled (true);
 		}
@@ -1418,7 +1364,7 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
 					// copy selection to the clipboard and then cut
 					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
-					if (!GetIsReadOnly ())
+					if (!is_read_only)
 						SetSelectedText ("");
 					args->SetHandled (true);
 				}
@@ -1426,16 +1372,16 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 			case GDK_V:
 			case GDK_v:
 				// Ctrl+V => Paste
-				if (!GetIsReadOnly () && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				if (!is_read_only && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
 					// paste clipboard contents to the buffer
-					gtk_clipboard_request_text (clipboard, TextBox::paste, this);
+					gtk_clipboard_request_text (clipboard, TextBoxBase::paste, this);
 					args->SetHandled (true);
 				}
 				break;
 			case GDK_Y:
 			case GDK_y:
 				// Ctrl+Y => Redo
-				if (!GetIsReadOnly ()) {
+				if (!is_read_only) {
 					args->SetHandled (true);
 					Redo ();
 				}
@@ -1443,7 +1389,7 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 			case GDK_Z:
 			case GDK_z:
 				// Ctrl+Z => Undo
-				if (!GetIsReadOnly ()) {
+				if (!is_read_only) {
 					args->SetHandled (true);
 					Undo ();
 				}
@@ -1454,7 +1400,7 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 			}
 		} else if ((modifiers & (CONTROL_MASK | ALT_MASK)) == 0) {
 			// normal character input
-			if ((c = args->GetUnicode ()) && !GetIsReadOnly ()) {
+			if ((c = args->GetUnicode ()) && !is_read_only) {
 				args->SetHandled (true);
 				KeyPressUnichar (c);
 			}
@@ -1462,32 +1408,30 @@ TextBox::OnKeyDown (KeyEventArgs *args)
 		break;
 	}
 	
-	// FIXME: some of these may also require updating scrollbars?
-	
 	inkeypress = false;
 	SyncAndEmit ();
 }
 
 void
-TextBox::key_down (EventObject *sender, EventArgs *args, void *closure)
+TextBoxBase::key_down (EventObject *sender, EventArgs *args, void *closure)
 {
-	((TextBox *) closure)->OnKeyDown ((KeyEventArgs *) args);
+	((TextBoxBase *) closure)->OnKeyDown ((KeyEventArgs *) args);
 }
 
 void
-TextBox::OnKeyUp (KeyEventArgs *args)
+TextBoxBase::OnKeyUp (KeyEventArgs *args)
 {
 	// no-op
 }
 
 void
-TextBox::key_up (EventObject *sender, EventArgs *args, void *closure)
+TextBoxBase::key_up (EventObject *sender, EventArgs *args, void *closure)
 {
-	((TextBox *) closure)->OnKeyUp ((KeyEventArgs *) args);
+	((TextBoxBase *) closure)->OnKeyUp ((KeyEventArgs *) args);
 }
 
 void
-TextBox::OnMouseLeftButtonDown (MouseEventArgs *args)
+TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 {
 	GdkEventButton *event = (GdkEventButton *) args->GetEvent ();
 	int cursor, start, end;
@@ -1541,13 +1485,13 @@ TextBox::OnMouseLeftButtonDown (MouseEventArgs *args)
 }
 
 void
-TextBox::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure)
+TextBoxBase::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBox *) closure)->OnMouseLeftButtonDown ((MouseEventArgs *) args);
+	((TextBoxBase *) closure)->OnMouseLeftButtonDown ((MouseEventArgs *) args);
 }
 
 void
-TextBox::OnMouseLeftButtonUp (MouseEventArgs *args)
+TextBoxBase::OnMouseLeftButtonUp (MouseEventArgs *args)
 {
 	if (captured)
 		ReleaseMouseCapture ();
@@ -1558,13 +1502,13 @@ TextBox::OnMouseLeftButtonUp (MouseEventArgs *args)
 }
 
 void
-TextBox::mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure)
+TextBoxBase::mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBox *) closure)->OnMouseLeftButtonUp ((MouseEventArgs *) args);
+	((TextBoxBase *) closure)->OnMouseLeftButtonUp ((MouseEventArgs *) args);
 }
 
 void
-TextBox::OnMouseMove (MouseEventArgs *args)
+TextBoxBase::OnMouseMove (MouseEventArgs *args)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1586,13 +1530,13 @@ TextBox::OnMouseMove (MouseEventArgs *args)
 }
 
 void
-TextBox::mouse_move (EventObject *sender, EventArgs *args, gpointer closure)
+TextBoxBase::mouse_move (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBox *) closure)->OnMouseMove ((MouseEventArgs *) args);
+	((TextBoxBase *) closure)->OnMouseMove ((MouseEventArgs *) args);
 }
 
 void
-TextBox::OnFocusOut (EventArgs *args)
+TextBoxBase::OnFocusOut (EventArgs *args)
 {
 	focused = false;
 	
@@ -1601,13 +1545,13 @@ TextBox::OnFocusOut (EventArgs *args)
 }
 
 void
-TextBox::focus_out (EventObject *sender, EventArgs *args, gpointer closure)
+TextBoxBase::focus_out (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBox *) closure)->OnFocusOut (args);
+	((TextBoxBase *) closure)->OnFocusOut (args);
 }
 
 void
-TextBox::OnFocusIn (EventArgs *args)
+TextBoxBase::OnFocusIn (EventArgs *args)
 {
 	focused = true;
 	
@@ -1616,15 +1560,301 @@ TextBox::OnFocusIn (EventArgs *args)
 }
 
 void
-TextBox::focus_in (EventObject *sender, EventArgs *args, gpointer closure)
+TextBoxBase::focus_in (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBox *) closure)->OnFocusIn (args);
+	((TextBoxBase *) closure)->OnFocusIn (args);
 }
 
 void
-TextBox::EmitCursorPositionChanged (double height, double x, double y)
+TextBoxBase::EmitCursorPositionChanged (double height, double x, double y)
 {
-	Emit (TextBox::CursorPositionChangedEvent, new CursorPositionChangedEventArgs (height, x, y));
+	Emit (TextBoxBase::CursorPositionChangedEvent, new CursorPositionChangedEventArgs (height, x, y));
+}
+
+void
+TextBoxBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+{
+	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
+	
+	if (args->GetId () == Control::FontFamilyProperty) {
+		FontFamily *family = args->new_value ? args->new_value->AsFontFamily () : NULL;
+		changed = TextBoxModelChangedFont;
+		font->SetFamily (family ? family->source : NULL);
+	} else if (args->GetId () == Control::FontSizeProperty) {
+		double size = args->new_value->AsDouble ();
+		changed = TextBoxModelChangedFont;
+		font->SetSize (size);
+	} else if (args->GetId () == Control::FontStretchProperty) {
+		FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
+		changed = TextBoxModelChangedFont;
+		font->SetStretch (stretch);
+	} else if (args->GetId () == Control::FontStyleProperty) {
+		FontStyles style = (FontStyles) args->new_value->AsInt32 ();
+		changed = TextBoxModelChangedFont;
+		font->SetStyle (style);
+	} else if (args->GetId () == Control::FontWeightProperty) {
+		FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
+		changed = TextBoxModelChangedFont;
+		font->SetWeight (weight);
+	}
+	
+	if (changed != TextBoxModelChangedNothing)
+		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed, args));
+	
+	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBOXBASE) {
+		Control::OnPropertyChanged (args, error);
+		return;
+	}
+	
+	NotifyListenersOfPropertyChange (args);
+}
+
+void
+TextBoxBase::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+{
+	if (prop && (prop->GetId () == Control::BackgroundProperty ||
+		     prop->GetId () == Control::ForegroundProperty)) {
+		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedBrush));
+		Invalidate ();
+	}
+	
+	if (prop->GetOwnerType () != Type::TEXTBOXBASE)
+		Control::OnSubPropertyChanged (prop, obj, subobj_args);
+}
+
+void
+TextBoxBase::OnApplyTemplate ()
+{
+	contentElement = GetTemplateChild ("ContentElement");
+	
+	if (contentElement == NULL) {
+		g_warning ("TextBoxBase::OnApplyTemplate: no ContentElement found");
+		Control::OnApplyTemplate ();
+		return;
+	}
+	
+	view = new TextBoxView ();
+	view->SetTextBox (this);
+	
+	// Insert our TextBoxView
+	if (contentElement->Is (Type::CONTENTCONTROL)) {
+		ContentControl *control = (ContentControl *) contentElement;
+		
+		control->SetValue (ContentControl::ContentProperty, Value (view));
+	} else if (contentElement->Is (Type::BORDER)) {
+		Border *border = (Border *) contentElement;
+		
+		border->SetValue (Border::ChildProperty, Value (view));
+	} else if (contentElement->Is (Type::PANEL)) {
+		DependencyObjectCollection *children = ((Panel *) contentElement)->GetChildren ();
+		
+		children->Add (view);
+	} else {
+		g_warning ("TextBoxBase::OnApplyTemplate: don't know how to handle a ContentELement of type %s",
+			   contentElement->GetType ()->GetName ());
+		view->unref ();
+	}
+	
+	Control::OnApplyTemplate ();
+}
+
+void
+TextBoxBase::ClearSelection (int start)
+{
+	SetSelectionStart (start);
+	SetSelectionLength (0);
+	
+	if (!inkeypress)
+		SyncSelectedText ();
+}
+
+void
+TextBoxBase::Select (int start, int length)
+{
+	if ((start < 0) || (length < 0))
+		return;
+	
+	if (start > buffer->len)
+		start = buffer->len;
+	
+	if (length > (buffer->len - start))
+		length = (buffer->len - start);
+	
+	SetSelectionStart (start);
+	SetSelectionLength (length);
+	
+	if (!inkeypress)
+		SyncSelectedText ();
+}
+
+void
+TextBoxBase::SelectAll ()
+{
+	Select (0, buffer->len);
+}
+
+bool
+TextBoxBase::CanUndo ()
+{
+	return !undo->IsEmpty ();
+}
+
+bool
+TextBoxBase::CanRedo ()
+{
+	return !redo->IsEmpty ();
+}
+
+void
+TextBoxBase::Undo ()
+{
+	TextBoxUndoActionReplace *replace;
+	TextBoxUndoActionInsert *insert;
+	TextBoxUndoActionDelete *dele;
+	TextBoxUndoAction *action;
+	int anchor, cursor;
+	
+	if (undo->IsEmpty ())
+		return;
+	
+	action = undo->Pop ();
+	redo->Push (action);
+	
+	switch (action->type) {
+	case TextBoxUndoActionTypeInsert:
+		insert = (TextBoxUndoActionInsert *) action;
+		
+		buffer->Cut (insert->start, insert->length);
+		anchor = action->selection_anchor;
+		cursor = action->selection_cursor;
+		break;
+	case TextBoxUndoActionTypeDelete:
+		dele = (TextBoxUndoActionDelete *) action;
+		
+		buffer->Insert (dele->start, dele->text, dele->length);
+		anchor = action->selection_anchor;
+		cursor = action->selection_cursor;
+		break;
+	case TextBoxUndoActionTypeReplace:
+		replace = (TextBoxUndoActionReplace *) action;
+		
+		buffer->Cut (replace->start, replace->inlen);
+		buffer->Insert (replace->start, replace->deleted, replace->length);
+		anchor = action->selection_anchor;
+		cursor = action->selection_cursor;
+		break;
+	}
+	
+	SetSelectionLength (abs (cursor - anchor));
+	SetSelectionStart (MIN (anchor, cursor));
+	emit = TEXT_CHANGED | SELECTION_CHANGED;
+	selection_anchor = anchor;
+	selection_cursor = cursor;
+	
+	if (!inkeypress)
+		SyncAndEmit ();
+}
+
+void
+TextBoxBase::Redo ()
+{
+	TextBoxUndoActionReplace *replace;
+	TextBoxUndoActionInsert *insert;
+	TextBoxUndoActionDelete *dele;
+	TextBoxUndoAction *action;
+	int anchor, cursor;
+	
+	if (redo->IsEmpty ())
+		return;
+	
+	action = redo->Pop ();
+	undo->Push (action);
+	
+	switch (action->type) {
+	case TextBoxUndoActionTypeInsert:
+		insert = (TextBoxUndoActionInsert *) action;
+		
+		buffer->Insert (insert->start, insert->buffer->text, insert->buffer->len);
+		anchor = cursor = insert->start + insert->buffer->len;
+		break;
+	case TextBoxUndoActionTypeDelete:
+		dele = (TextBoxUndoActionDelete *) action;
+		
+		buffer->Cut (dele->start, dele->length);
+		anchor = cursor = dele->start;
+		break;
+	case TextBoxUndoActionTypeReplace:
+		replace = (TextBoxUndoActionReplace *) action;
+		
+		buffer->Cut (replace->start, replace->length);
+		buffer->Insert (replace->start, replace->inserted, replace->inlen);
+		anchor = cursor = replace->start + replace->inlen;
+		break;
+	}
+	
+	SetSelectionLength (abs (cursor - anchor));
+	SetSelectionStart (MIN (anchor, cursor));
+	emit = TEXT_CHANGED | SELECTION_CHANGED;
+	selection_anchor = anchor;
+	selection_cursor = cursor;
+	
+	if (!inkeypress)
+		SyncAndEmit ();
+}
+
+
+//
+// TextBoxDynamicPropertyValueProvider
+//
+
+class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
+	Value *selection_background;
+	Value *selection_foreground;
+	
+ public:
+	TextBoxDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj)
+	{
+		selection_background = NULL;
+		selection_foreground = NULL;
+	}
+	
+	virtual ~TextBoxDynamicPropertyValueProvider ()
+	{
+		delete selection_background;
+		delete selection_foreground;
+	}
+	
+	virtual Value *GetPropertyValue (DependencyProperty *property)
+	{
+		if (property->GetId () == TextBox::SelectionBackgroundProperty) {
+			return selection_background;
+		} else if (property->GetId () == TextBox::SelectionForegroundProperty) {
+			return selection_foreground;
+		}
+		
+		return NULL;
+	}
+	
+	void InitializeSelectionBrushes ()
+	{
+		if (!selection_background)
+			selection_background = Value::CreateUnrefPtr (new SolidColorBrush ("#FF444444"));
+		
+		if (!selection_foreground)
+			selection_foreground = Value::CreateUnrefPtr (new SolidColorBrush ("#FFFFFFFF"));
+	}
+};
+
+
+//
+// TextBox
+//
+
+TextBox::TextBox ()
+{
+	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this);
+	
+	Initialize (Type::TEXTBOX, "System.Windows.Controls.TextBox");
 }
 
 void
@@ -1636,7 +1866,7 @@ TextBox::EmitSelectionChanged ()
 void
 TextBox::EmitTextChanged ()
 {
-	Emit (TextChangedEvent, new TextChangedEventArgs ());
+	Emit (TextBox::TextChangedEvent, new TextChangedEventArgs ());
 }
 
 void
@@ -1674,35 +1904,17 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
 	DependencyProperty *prop;
-	bool invalidate = false;
 	int start, length;
 	
-	if (args->GetId () == Control::FontFamilyProperty) {
-		FontFamily *family = args->new_value ? args->new_value->AsFontFamily () : NULL;
-		changed = TextBoxModelChangedFont;
-		font->SetFamily (family ? family->source : NULL);
-	} else if (args->GetId () == Control::FontSizeProperty) {
-		double size = args->new_value->AsDouble ();
-		changed = TextBoxModelChangedFont;
-		font->SetSize (size);
-	} else if (args->GetId () == Control::FontStretchProperty) {
-		FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
-		changed = TextBoxModelChangedFont;
-		font->SetStretch (stretch);
-	} else if (args->GetId () == Control::FontStyleProperty) {
-		FontStyles style = (FontStyles) args->new_value->AsInt32 ();
-		changed = TextBoxModelChangedFont;
-		font->SetStyle (style);
-	} else if (args->GetId () == Control::FontWeightProperty) {
-		FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
-		changed = TextBoxModelChangedFont;
-		font->SetWeight (weight);
-	} else if (args->GetId () == TextBox::AcceptsReturnProperty) {
-		// no state changes needed
+	if (args->GetId () == TextBox::AcceptsReturnProperty) {
+		// update accepts_return state
+		accepts_return = args->new_value->AsBool ();
 	} else if (args->GetId () == TextBox::IsReadOnlyProperty) {
-		// no state changes needed
+		// update is_read_only state
+		is_read_only = args->new_value->AsBool ();
 	} else if (args->GetId () == TextBox::MaxLengthProperty) {
-		// no state changes needed
+		// update max_length state
+		max_length = args->new_value->AsInt32 ();
 	} else if (args->GetId () == TextBox::SelectedTextProperty) {
 		if (setvalue) {
 			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString () : "";
@@ -1814,31 +2026,28 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == TextBox::TextWrappingProperty) {
 		changed = TextBoxModelChangedTextWrapping;
 	} else if (args->GetId () == TextBox::HorizontalScrollBarVisibilityProperty) {
-		invalidate = true;
-		
 		// XXX more crap because these aren't templatebound.
 		if (contentElement) {
 			if ((prop = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility")))
 				contentElement->SetValue (prop, GetValue (TextBox::VerticalScrollBarVisibilityProperty));
 		}
-	} else if (args->GetId () == TextBox::VerticalScrollBarVisibilityProperty) {
-		invalidate = true;
 		
+		Invalidate ();
+	} else if (args->GetId () == TextBox::VerticalScrollBarVisibilityProperty) {
 		// XXX more crap because these aren't templatebound.
 		if (contentElement) {
 			if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility")))
 				contentElement->SetValue (prop, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
 		}
-	}
-	
-	if (invalidate)
+		
 		Invalidate ();
+	}
 	
 	if (changed != TextBoxModelChangedNothing)
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed, args));
 	
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBOX) {
-		Control::OnPropertyChanged (args, error);
+		TextBoxBase::OnPropertyChanged (args, error);
 		return;
 	}
 	
@@ -1849,15 +2058,13 @@ void
 TextBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (prop && (prop->GetId () == TextBox::SelectionBackgroundProperty ||
-	    prop->GetId () == TextBox::SelectionForegroundProperty ||
-	    prop->GetId () == Control::BackgroundProperty ||
-	    prop->GetId () == Control::ForegroundProperty)) {
+		     prop->GetId () == TextBox::SelectionForegroundProperty)) {
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedBrush));
 		Invalidate ();
 	}
 	
 	if (prop->GetOwnerType () != Type::TEXTBOX)
-		Control::OnSubPropertyChanged (prop, obj, subobj_args);
+		TextBoxBase::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 void
@@ -1865,35 +2072,10 @@ TextBox::OnApplyTemplate ()
 {
 	DependencyProperty *prop;
 	
-	contentElement = GetTemplateChild ("ContentElement");
+	TextBoxBase::OnApplyTemplate ();
 	
-	if (contentElement == NULL) {
-		g_warning ("TextBox::OnApplyTemplate: no ContentElement found");
-		Control::OnApplyTemplate ();
+	if (!contentElement)
 		return;
-	}
-	
-	view = new TextBoxView ();
-	view->SetTextBox (this);
-	
-	// Insert our TextBoxView
-	if (contentElement->Is (Type::CONTENTCONTROL)) {
-		ContentControl *control = (ContentControl *) contentElement;
-		
-		control->SetValue (ContentControl::ContentProperty, Value (view));
-	} else if (contentElement->Is (Type::BORDER)) {
-		Border *border = (Border *) contentElement;
-		
-		border->SetValue (Border::ChildProperty, Value (view));
-	} else if (contentElement->Is (Type::PANEL)) {
-		DependencyObjectCollection *children = ((Panel *) contentElement)->GetChildren ();
-		
-		children->Add (view);
-	} else {
-		g_warning ("TextBox::OnApplyTemplate: don't know how to handle a ContentELement of type %s",
-			   contentElement->GetType ()->GetName ());
-		view->unref ();
-	}
 	
 	// XXX LAME these should be template bindings in the textbox template.
 	if ((prop = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility")))
@@ -1901,152 +2083,280 @@ TextBox::OnApplyTemplate ()
 	
 	if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility")))
 		contentElement->SetValue (prop, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
-	
-	Control::OnApplyTemplate ();
 }
 
-void
-TextBox::ClearSelection (int start)
-{
-	SetSelectionStart (start);
-	SetSelectionLength (0);
-	
-	if (!inkeypress)
-		SyncSelectedText ();
-}
 
-void
-TextBox::Select (int start, int length)
-{
-	if ((start < 0) || (length < 0))
-		return;
-	
-	if (start > buffer->len)
-		start = buffer->len;
-	
-	if (length > (buffer->len - start))
-		length = (buffer->len - start);
-	
-	SetSelectionStart (start);
-	SetSelectionLength (length);
-	
-	if (!inkeypress)
-		SyncSelectedText ();
-}
+//
+// PasswordBox
+//
 
-void
-TextBox::SelectAll ()
-{
-	Select (0, buffer->len);
-}
+//
+// PasswordBoxDynamicPropertyValueProvider
+//
 
-bool
-TextBox::CanUndo ()
-{
-	return !undo->IsEmpty ();
-}
-
-bool
-TextBox::CanRedo ()
-{
-	return !redo->IsEmpty ();
-}
-
-void
-TextBox::Undo ()
-{
-	TextBoxUndoActionReplace *replace;
-	TextBoxUndoActionInsert *insert;
-	TextBoxUndoActionDelete *dele;
-	TextBoxUndoAction *action;
-	int anchor, cursor;
+class PasswordBoxDynamicPropertyValueProvider : public PropertyValueProvider {
+	Value *selection_background;
+	Value *selection_foreground;
 	
-	if (undo->IsEmpty ())
-		return;
-	
-	action = undo->Pop ();
-	redo->Push (action);
-	
-	switch (action->type) {
-	case TextBoxUndoActionTypeInsert:
-		insert = (TextBoxUndoActionInsert *) action;
-		
-		buffer->Cut (insert->start, insert->length);
-		anchor = action->selection_anchor;
-		cursor = action->selection_cursor;
-		break;
-	case TextBoxUndoActionTypeDelete:
-		dele = (TextBoxUndoActionDelete *) action;
-		
-		buffer->Insert (dele->start, dele->text, dele->length);
-		anchor = action->selection_anchor;
-		cursor = action->selection_cursor;
-		break;
-	case TextBoxUndoActionTypeReplace:
-		replace = (TextBoxUndoActionReplace *) action;
-		
-		buffer->Cut (replace->start, replace->inlen);
-		buffer->Insert (replace->start, replace->deleted, replace->length);
-		anchor = action->selection_anchor;
-		cursor = action->selection_cursor;
-		break;
+ public:
+	PasswordBoxDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj)
+	{
+		selection_background = NULL;
+		selection_foreground = NULL;
 	}
 	
-	SetSelectionLength (abs (cursor - anchor));
-	SetSelectionStart (MIN (anchor, cursor));
-	emit = TEXT_CHANGED | SELECTION_CHANGED;
-	selection_anchor = anchor;
-	selection_cursor = cursor;
+	virtual ~PasswordBoxDynamicPropertyValueProvider ()
+	{
+		delete selection_background;
+		delete selection_foreground;
+	}
 	
-	if (!inkeypress)
-		SyncAndEmit ();
+	virtual Value *GetPropertyValue (DependencyProperty *property)
+	{
+		if (property->GetId () == PasswordBox::SelectionBackgroundProperty) {
+			return selection_background;
+		} else if (property->GetId () == PasswordBox::SelectionForegroundProperty) {
+			return selection_foreground;
+		}
+		
+		return NULL;
+	}
+	
+	void InitializeSelectionBrushes ()
+	{
+		if (!selection_background)
+			selection_background = Value::CreateUnrefPtr (new SolidColorBrush ("#FF444444"));
+		
+		if (!selection_foreground)
+			selection_foreground = Value::CreateUnrefPtr (new SolidColorBrush ("#FFFFFFFF"));
+	}
+};
+
+
+//
+// PasswordBox
+//
+
+PasswordBox::PasswordBox ()
+{
+	providers[PropertyPrecedence_DynamicValue] = new PasswordBoxDynamicPropertyValueProvider (this);
+	
+	Initialize (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox");
+}
+
+int
+PasswordBox::CursorDown (int cursor, bool page)
+{
+	return GetBuffer ()->len;
+}
+
+int
+PasswordBox::CursorUp (int cursor, bool page)
+{
+	return 0;
+}
+
+int
+PasswordBox::CursorLineBegin (int cursor)
+{
+	return 0;
+}
+
+int
+PasswordBox::CursorLineEnd (int cursor, bool include)
+{
+	return GetBuffer ()->len;
+}
+
+int
+PasswordBox::CursorNextWord (int cursor)
+{
+	return GetBuffer ()->len;
+}
+
+int
+PasswordBox::CursorPrevWord (int cursor)
+{
+	return 0;
 }
 
 void
-TextBox::Redo ()
+PasswordBox::EmitTextChanged ()
 {
-	TextBoxUndoActionReplace *replace;
-	TextBoxUndoActionInsert *insert;
-	TextBoxUndoActionDelete *dele;
-	TextBoxUndoAction *action;
-	int anchor, cursor;
-	
-	if (redo->IsEmpty ())
-		return;
-	
-	action = redo->Pop ();
-	undo->Push (action);
-	
-	switch (action->type) {
-	case TextBoxUndoActionTypeInsert:
-		insert = (TextBoxUndoActionInsert *) action;
+	Emit (PasswordBox::PasswordChangedEvent, new RoutedEventArgs ());
+}
+
+void
+PasswordBox::SyncSelectedText ()
+{
+	if (selection_cursor != selection_anchor) {
+		int length = abs (selection_cursor - selection_anchor);
+		int start = MIN (selection_anchor, selection_cursor);
+		char *text;
 		
-		buffer->Insert (insert->start, insert->buffer->text, insert->buffer->len);
-		anchor = cursor = insert->start + insert->buffer->len;
-		break;
-	case TextBoxUndoActionTypeDelete:
-		dele = (TextBoxUndoActionDelete *) action;
+		text = g_ucs4_to_utf8 (buffer->text + start, length, NULL, NULL, NULL);
 		
-		buffer->Cut (dele->start, dele->length);
-		anchor = cursor = dele->start;
-		break;
-	case TextBoxUndoActionTypeReplace:
-		replace = (TextBoxUndoActionReplace *) action;
+		setvalue = false;
+		SetValue (PasswordBox::SelectedTextProperty, Value (text, true));
+		setvalue = true;
+	} else {
+		setvalue = false;
+		SetValue (PasswordBox::SelectedTextProperty, Value (""));
+		setvalue = true;
+	}
+}
+
+void
+PasswordBox::SyncText ()
+{
+	char *text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
+	
+	setvalue = false;
+	SetValue (PasswordBox::PasswordProperty, Value (text, true));
+	setvalue = true;
+}
+
+void
+PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+{
+	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
+	int length, start;
+	
+	if (args->GetId () == PasswordBox::MaxLengthProperty) {
+		// update max_length state
+		max_length = args->new_value->AsInt32 ();
+	} else if (args->GetId () == PasswordBox::PasswordCharProperty) {
+		changed = TextBoxModelChangedText;
+	} else if (args->GetId () == PasswordBox::PasswordProperty) {
+		if (setvalue) {
+			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString () : "";
+			TextBoxUndoAction *action;
+			gunichar *text;
+			glong textlen;
+			
+			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
+				if (buffer->len > 0) {
+					// replace the current text
+					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, 0, buffer->len, text, textlen);
+					
+					buffer->Replace (0, buffer->len, text, textlen);
+				} else {
+					// insert the text
+					action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, 0, text, textlen);
+					
+					buffer->Insert (0, text, textlen);
+				}
+				
+				undo->Push (action);
+				redo->Clear ();
+				
+				emit |= TEXT_CHANGED;
+				
+				ClearSelection (0);
+			} else {
+				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
+			}
+		}
 		
-		buffer->Cut (replace->start, replace->length);
-		buffer->Insert (replace->start, replace->inserted, replace->inlen);
-		anchor = cursor = replace->start + replace->inlen;
-		break;
+		changed = TextBoxModelChangedText;
+	} else if (args->GetId () == PasswordBox::SelectedTextProperty) {
+		if (setvalue) {
+			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString () : "";
+			TextBoxUndoAction *action;
+			gunichar *text;
+			glong textlen;
+			
+			length = abs (selection_cursor - selection_anchor);
+			start = MIN (selection_anchor, selection_cursor);
+			
+			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
+				if (length > 0) {
+					// replace the currently selected text
+					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, textlen);
+					
+					buffer->Replace (start, length, text, textlen);
+				} else {
+					// insert the text at the cursor
+					action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, textlen);
+					
+					buffer->Insert (start, text, textlen);
+				}
+				
+				undo->Push (action);
+				redo->Clear ();
+				
+				emit |= TEXT_CHANGED;
+				
+				ClearSelection (start + textlen);
+				
+				if (!inkeypress)
+					SyncText ();
+			} else {
+				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
+			}
+		}
+	} else if (args->GetId () == PasswordBox::SelectionStartProperty) {
+		length = abs (selection_cursor - selection_anchor);
+		start = args->new_value->AsInt32 ();
+		
+		// When set programatically, anchor is always the
+		// start and cursor is always the end
+		selection_cursor = start + length;
+		selection_anchor = start;
+		
+		changed = TextBoxModelChangedSelection;
+		emit |= SELECTION_CHANGED;
+		have_offset = false;
+		
+		if (!inkeypress) {
+			// update SelectedText
+			SyncSelectedText ();
+		}
+	} else if (args->GetId () == PasswordBox::SelectionLengthProperty) {
+		start = MIN (selection_anchor, selection_cursor);
+		length = args->new_value->AsInt32 ();
+		
+		// When set programatically, anchor is always the
+		// start and cursor is always the end
+		selection_cursor = start + length;
+		selection_anchor = start;
+		
+		changed = TextBoxModelChangedSelection;
+		emit |= SELECTION_CHANGED;
+		have_offset = false;
+		
+		if (!inkeypress) {
+			// update SelectedText
+			SyncSelectedText ();
+		}
+	} else if (args->GetId () == PasswordBox::SelectionBackgroundProperty) {
+		changed = TextBoxModelChangedBrush;
+	} else if (args->GetId () == PasswordBox::SelectionForegroundProperty) {
+		changed = TextBoxModelChangedBrush;
 	}
 	
-	SetSelectionLength (abs (cursor - anchor));
-	SetSelectionStart (MIN (anchor, cursor));
-	emit = TEXT_CHANGED | SELECTION_CHANGED;
-	selection_anchor = anchor;
-	selection_cursor = cursor;
+	if (changed != TextBoxModelChangedNothing)
+		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed, args));
 	
-	if (!inkeypress)
-		SyncAndEmit ();
+	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBOX) {
+		TextBoxBase::OnPropertyChanged (args, error);
+		return;
+	}
+	
+	NotifyListenersOfPropertyChange (args);
+}
+
+void
+PasswordBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+{
+	if (prop && (prop->GetId () == PasswordBox::SelectionBackgroundProperty ||
+		     prop->GetId () == PasswordBox::SelectionForegroundProperty)) {
+		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedBrush));
+		Invalidate ();
+	}
+	
+	if (prop->GetOwnerType () != Type::TEXTBOX)
+		TextBoxBase::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 
@@ -2485,7 +2795,7 @@ TextBoxView::mouse_left_button_up (EventObject *sender, EventArgs *args, gpointe
 }
 
 void
-TextBoxView::SetTextBox (TextBox *textbox)
+TextBoxView::SetTextBox (TextBoxBase *textbox)
 {
 	TextLayoutAttributes *attrs;
 	
@@ -2494,13 +2804,13 @@ TextBoxView::SetTextBox (TextBox *textbox)
 	
 	if (this->textbox) {
 		// remove the event handlers from the old textbox
-		this->textbox->RemoveHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
+		this->textbox->RemoveHandler (TextBoxBase::ModelChangedEvent, TextBoxView::model_changed, this);
 	}
 	
 	this->textbox = textbox;
 	
 	if (textbox) {
-		textbox->AddHandler (TextBox::ModelChangedEvent, TextBoxView::model_changed, this);
+		textbox->AddHandler (TextBoxBase::ModelChangedEvent, TextBoxView::model_changed, this);
 		
 		// sync our state with the textbox
 		layout->SetTextAttributes (new List ());
@@ -2520,64 +2830,4 @@ TextBoxView::SetTextBox (TextBox *textbox)
 	UpdateBounds (true);
 	Invalidate ();
 	dirty = true;
-}
-
-
-//
-// PasswordBox
-//
-
-PasswordBox::PasswordBox () : TextBox (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox")
-{
-	
-}
-
-int
-PasswordBox::CursorDown (int cursor, bool page)
-{
-	return GetBuffer ()->len;
-}
-
-int
-PasswordBox::CursorUp (int cursor, bool page)
-{
-	return 0;
-}
-
-int
-PasswordBox::CursorLineBegin (int cursor)
-{
-	return 0;
-}
-
-int
-PasswordBox::CursorLineEnd (int cursor, bool include)
-{
-	return GetBuffer ()->len;
-}
-
-int
-PasswordBox::CursorNextWord (int cursor)
-{
-	return GetBuffer ()->len;
-}
-
-int
-PasswordBox::CursorPrevWord (int cursor)
-{
-	return 0;
-}
-
-void
-PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
-{
-	if (args->GetProperty ()->GetOwnerType () != Type::PASSWORDBOX) {
-		TextBox::OnPropertyChanged (args, error);
-		return;
-	}
-	
-	if (args->GetId () == PasswordBox::PasswordCharProperty)
-		Invalidate ();
-	
-	NotifyListenersOfPropertyChange (args);
 }

@@ -3240,8 +3240,18 @@ text_block_new (void)
 /**
  * TextBox
  **/
+TextBox *
+text_box_new (void)
+{
+	return new TextBox ();
+}
+
+
+/**
+ * TextBoxBase
+ **/
 void
-text_box_select (TextBox *instance, int start, int length)
+text_box_base_select (TextBoxBase *instance, int start, int length)
 {
 	if (instance == NULL)
 		return;
@@ -3251,19 +3261,12 @@ text_box_select (TextBox *instance, int start, int length)
 
 
 void
-text_box_select_all (TextBox *instance)
+text_box_base_select_all (TextBoxBase *instance)
 {
 	if (instance == NULL)
 		return;
 	
 	instance->SelectAll ();
-}
-
-
-TextBox *
-text_box_new (void)
-{
-	return new TextBox ();
 }
 
 

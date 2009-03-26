@@ -119,13 +119,11 @@ class TextBoxModelChangedEventArgs : public EventArgs {
 
 class TextBuffer;
 class TextBoxUndoStack;
-class TextBoxDynamicPropertyValueProvider;
 
 /* @SilverlightVersion="2" */
-/* @CallInitialize */
-/* @Namespace=System.Windows.Controls */
-class TextBox : public Control, public ITextAttributes {
-	friend class TextBoxDynamicPropertyValueProvider;
+/* @Namespace=None */
+class TextBoxBase : public Control, public ITextAttributes {
+ protected:
 	friend class TextBoxView;
 	
 	DependencyObject *contentElement;
@@ -138,7 +136,10 @@ class TextBox : public Control, public ITextAttributes {
 	double cursor_offset;
 	TextBuffer *buffer;
 	TextBoxView *view;
+	int max_length;
 	
+	int accepts_return:1;
+	int is_read_only:1;
 	int have_offset:1;
 	int inkeypress:1;
 	int selecting:1;
@@ -146,8 +147,6 @@ class TextBox : public Control, public ITextAttributes {
 	int captured:1;
 	int focused:1;
 	int emit:2;
-	
-	void Initialize (Type::Kind type, const char *type_name);
 	
 	// focus in/out events
 	static void focus_out (EventObject *sender, EventArgs *args, gpointer closure);
@@ -172,7 +171,10 @@ class TextBox : public Control, public ITextAttributes {
 	static void paste (GtkClipboard *clipboard, const char *text, gpointer closure);
 	void Paste (GtkClipboard *clipboard, const char *text);
 	
- protected:
+	//
+	// Cursor Navigation
+	//
+	double GetCursorOffset ();
 	virtual int CursorDown (int cursor, bool page);
 	virtual int CursorUp (int cursor, bool page);
 	virtual int CursorLineBegin (int cursor);
@@ -180,6 +182,9 @@ class TextBox : public Control, public ITextAttributes {
 	virtual int CursorNextWord (int cursor);
 	virtual int CursorPrevWord (int cursor);
 	
+	//
+	// Keyboard Input
+	//
 	void KeyPressUnichar (gunichar c);
 	
 	void KeyPressBackSpace (GdkModifierType modifiers);
@@ -193,21 +198,12 @@ class TextBox : public Control, public ITextAttributes {
 	void KeyPressDown (GdkModifierType modifiers);
 	void KeyPressUp (GdkModifierType modifiers);
 	
-	double GetCursorOffset ();
-	
-	void SyncSelectedText ();
-	void SyncText ();
-	
-	void ClearSelection (int start);
-	
-	bool CanUndo ();
-	bool CanRedo ();
-	void Undo ();
-	void Redo ();
-	
 	void EmitCursorPositionChanged (double height, double x, double y);
-	void EmitSelectionChanged ();
-	void EmitTextChanged ();
+	virtual void EmitSelectionChanged () { }
+	virtual void EmitTextChanged () = 0;
+	
+	virtual void SyncSelectedText () = 0;
+	virtual void SyncText () = 0;
 	
 	void SyncAndEmit ();
 	
@@ -219,16 +215,111 @@ class TextBox : public Control, public ITextAttributes {
 	int GetCursor () { return selection_cursor; }
 	bool IsFocused () { return focused; }
 	
-	void SetSelectionStart (int start);
-	void SetSelectionLength (int length);
+	virtual void SetSelectedText (const char *text) = 0;
+	virtual const char *GetSelectedText () = 0;
+	
+	virtual void SetSelectionStart (int start) = 0;
+	virtual int GetSelectionStart () = 0;
+	
+	virtual void SetSelectionLength (int length) = 0;
+	virtual int GetSelectionLength () = 0;
+	
+	void ClearSelection (int start);
 	
 	//
 	// Protected Events
 	//
 	const static int ModelChangedEvent;
 	
-	TextBox (Type::Kind type, const char *type_name);
-	virtual ~TextBox ();
+	//
+	// Initialization/Destruction
+	//
+	void Initialize (Type::Kind type, const char *type_name);
+	virtual ~TextBoxBase ();
+	
+ public:
+	TextBoxBase () { }
+	
+	//
+	// Overrides
+	//
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	virtual void OnApplyTemplate ();
+	
+	//
+	// ITextAttributes Interface Methods
+	//
+	virtual TextDecorations Decorations () { return TextDecorationsNone; }
+	virtual TextFontDescription *FontDescription () { return font; }
+	
+	virtual Brush *Background (bool selected)
+	{
+		if (selected)
+			return GetSelectionBackground ();
+		else
+			return NULL;
+	}
+	
+	virtual Brush *Foreground (bool selected)
+	{
+		if (selected)
+			return GetSelectionForeground ();
+		else
+			return GetForeground ();
+	}
+	
+	//
+	// Undo/Redo Operations
+	//
+	bool CanUndo ();
+	bool CanRedo ();
+	void Undo ();
+	void Redo ();
+	
+	//
+	// Selection Operations
+	//
+	/* @GenerateCBinding,GeneratePInvoke */
+	void Select (int start, int length);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SelectAll ();
+	
+	virtual Brush *GetSelectionBackground () = 0;
+	virtual Brush *GetSelectionForeground () = 0;
+	
+	// FIXME: these are gross, find a better way
+	virtual TextAlignment GetTextAlignment () = 0;
+	virtual TextWrapping GetTextWrapping () = 0;
+	virtual const char *GetText () = 0;
+	
+	//
+	// Events
+	//
+	const static int CursorPositionChangedEvent;
+};
+
+
+class TextBoxDynamicPropertyValueProvider;
+
+/* @SilverlightVersion="2" */
+/* @CallInitialize */
+/* @Namespace=System.Windows.Controls */
+class TextBox : public TextBoxBase {
+	friend class TextBoxDynamicPropertyValueProvider;
+	
+ protected:
+	virtual void EmitSelectionChanged ();
+	virtual void EmitTextChanged ();
+	
+	virtual void SyncSelectedText ();
+	virtual void SyncText ();
+	
+	virtual void SetSelectionStart (int start);
+	virtual void SetSelectionLength (int length);
+	
+	virtual ~TextBox () { }
 	
  public:
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
@@ -269,37 +360,6 @@ class TextBox : public Control, public ITextAttributes {
 	virtual void OnApplyTemplate ();
 	
 	//
-	// Methods
-	//
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	void Select (int start, int length);
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SelectAll ();
-	
-	//
-	// ITextAttributes Interface Methods
-	//
-	virtual TextDecorations Decorations () { return TextDecorationsNone; }
-	virtual TextFontDescription *FontDescription () { return font; }
-	
-	virtual Brush *Background (bool selected)
-	{
-		if (selected)
-			return GetSelectionBackground ();
-		else
-			return NULL;
-	}
-	
-	virtual Brush *Foreground (bool selected)
-	{
-		if (selected)
-			return GetSelectionForeground ();
-		else
-			return GetForeground ();
-	}
-	
-	//
 	// Property Accessors
 	//
 	void SetAcceptsReturn (bool accept);
@@ -315,25 +375,25 @@ class TextBox : public Control, public ITextAttributes {
 	int GetMaxLength ();
 	
 	void SetSelectionBackground (Brush *background);
-	Brush *GetSelectionBackground ();
+	virtual Brush *GetSelectionBackground ();
 	
 	void SetSelectionForeground (Brush *foreground);
-	Brush *GetSelectionForeground ();
+	virtual Brush *GetSelectionForeground ();
 	
-	void SetSelectedText (const char *text);
-	const char *GetSelectedText ();
+	virtual void SetSelectedText (const char *text);
+	virtual const char *GetSelectedText ();
 	
-	int GetSelectionStart ();
-	int GetSelectionLength ();
+	virtual int GetSelectionStart ();
+	virtual int GetSelectionLength ();
 	
 	void SetText (const char *text);
-	const char *GetText ();
+	virtual const char *GetText ();
 	
 	void SetTextAlignment (TextAlignment alignment);
-	TextAlignment GetTextAlignment ();
+	virtual TextAlignment GetTextAlignment ();
 	
 	void SetTextWrapping (TextWrapping wrapping);
-	TextWrapping GetTextWrapping ();
+	virtual TextWrapping GetTextWrapping ();
 	
 	void SetVerticalScrollBarVisibility (ScrollBarVisibility visibility);
 	ScrollBarVisibility GetVerticalScrollBarVisibility ();
@@ -341,7 +401,6 @@ class TextBox : public Control, public ITextAttributes {
 	//
 	// Events
 	//
-	const static int CursorPositionChangedEvent;
 	const static int SelectionChangedEvent;
 	const static int TextChangedEvent;
 };
@@ -350,9 +409,9 @@ class TextBox : public Control, public ITextAttributes {
 /* @SilverlightVersion="2" */
 /* @Namespace=Microsoft.Internal */
 class TextBoxView : public FrameworkElement {
+	TextBoxBase *textbox;
 	glong blink_timeout;
 	TextLayout *layout;
-	TextBox *textbox;
 	Rect cursor;
 	
 	int selection_changed:1;
@@ -419,14 +478,18 @@ class TextBoxView : public FrameworkElement {
 	//
 	// Property Accessors
 	//
-	TextBox *GetTextBox () { return textbox; }
-	void SetTextBox (TextBox *textbox);
+	TextBoxBase *GetTextBox () { return textbox; }
+	void SetTextBox (TextBoxBase *textbox);
 };
 
 
+class PasswordBoxDynamicPropertyValueProvider;
+
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
-class PasswordBox : public TextBox {
+class PasswordBox : public TextBoxBase {
+	friend class PasswordBoxDynamicPropertyValueProvider;
+	
  protected:
 	virtual int CursorDown (int cursor, bool page);
 	virtual int CursorUp (int cursor, bool page);
@@ -435,20 +498,78 @@ class PasswordBox : public TextBox {
 	virtual int CursorNextWord (int cursor);
 	virtual int CursorPrevWord (int cursor);
 	
+	virtual void EmitTextChanged ();
+	
+	virtual void SyncSelectedText ();
+	virtual void SyncText ();
+	
+	//
+	// Protected Property Accessors
+	//
+	virtual void SetSelectedText (const char *text);
+	virtual const char *GetSelectedText ();
+	
+	virtual void SetSelectionStart (int start);
+	virtual int GetSelectionStart ();
+	
+	virtual void SetSelectionLength (int length);
+	virtual int GetSelectionLength ();
+	
+	virtual ~PasswordBox () { }
+	
  public:
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
+	const static int MaxLengthProperty;
 	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
 	const static int PasswordCharProperty;
+	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,GenerateAccessors */
+	const static int PasswordProperty;
+	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	const static int SelectedTextProperty;
+	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	const static int SelectionBackgroundProperty;
+	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	const static int SelectionForegroundProperty;
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	const static int SelectionLengthProperty;
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	const static int SelectionStartProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	PasswordBox ();
 	
+	//
+	// Overrides
+	//
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	
+	virtual TextAlignment GetTextAlignment () { return TextAlignmentLeft; }
+	virtual TextWrapping GetTextWrapping () { return TextWrappingNoWrap; }
+	virtual const char *GetText () { return GetPassword (); }
 	
 	//
 	// Property Accesors
 	//
+	void SetMaxLength (int length);
+	int GetMaxLength ();
+	
+	void SetPassword (const char *password);
+	const char *GetPassword ();
+	
 	void SetPasswordChar (int c);
 	int GetPasswordChar ();
+	
+	void SetSelectionBackground (Brush *background);
+	virtual Brush *GetSelectionBackground ();
+	
+	void SetSelectionForeground (Brush *foreground);
+	virtual Brush *GetSelectionForeground ();
+	
+	//
+	// Events
+	//
+	const static int PasswordChangedEvent;
 };
 
 #endif /* __TEXTBOX_H__ */

@@ -249,6 +249,7 @@ class SystemTimeSource;
 class TemplateBinding;
 class TextBlock;
 class TextBox;
+class TextBoxBase;
 class TextBoxModelChangedEventArgs;
 class TextBoxView;
 class TextChangedEventArgs;
@@ -565,6 +566,7 @@ public:
 	TemplateBinding*               AsTemplateBinding () { checked_get_subclass (Type::TEMPLATEBINDING, TemplateBinding) }
 	TextBlock*                     AsTextBlock () { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }
 	TextBox*                       AsTextBox () { checked_get_subclass (Type::TEXTBOX, TextBox) }
+	TextBoxBase*                   AsTextBoxBase () { checked_get_subclass (Type::TEXTBOXBASE, TextBoxBase) }
 	TextBoxModelChangedEventArgs*  AsTextBoxModelChangedEventArgs () { checked_get_subclass (Type::TEXTBOXMODELCHANGEDEVENTARGS, TextBoxModelChangedEventArgs) }
 	TextBoxView*                   AsTextBoxView () { checked_get_subclass (Type::TEXTBOXVIEW, TextBoxView) }
 	TextChangedEventArgs*          AsTextChangedEventArgs () { checked_get_subclass (Type::TEXTCHANGEDEVENTARGS, TextChangedEventArgs) }

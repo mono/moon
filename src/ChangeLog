@@ -1,6 +1,18 @@
+2009-03-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp: Reengineered TextBox and PasswordBox to inherit
+	from a new TextBoxBase class which handles almost all of the logic
+	for us.
+
 2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: replace the ldexp (1.0, n) by 1 << n
+
+2009-03-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp: Reengineered TextBox and PasswordBox to inherit
+	from a new TextBoxBase class which handles almost all of the logic
+	for us.
 
 2009-03-26  Jeffrey Stedfast  <fejj@novell.com>
 

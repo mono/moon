@@ -1455,13 +1455,16 @@ TextBlock *text_block_new (void);
  * TextBox
  **/
 /* @GeneratePInvoke */
-void text_box_select (TextBox *instance, int start, int length);
-
-/* @GeneratePInvoke */
-void text_box_select_all (TextBox *instance);
-
-/* @GeneratePInvoke */
 TextBox *text_box_new (void);
+
+/**
+ * TextBoxBase
+ **/
+/* @GeneratePInvoke */
+void text_box_base_select (TextBoxBase *instance, int start, int length);
+
+/* @GeneratePInvoke */
+void text_box_base_select_all (TextBoxBase *instance);
 
 /**
  * TextBoxView
