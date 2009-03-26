@@ -1,5 +1,10 @@
 2009-03-26  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: If we can't convert the value to
+	  the correct type, bail out without throwing an exception.
+
+2009-03-26  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: If the datasource in a two way
 	  binding doesn't exist, just return immediately. Fixes
 	  several datagrid issues.

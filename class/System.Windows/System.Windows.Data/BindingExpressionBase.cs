@@ -189,9 +189,15 @@ namespace System.Windows.Data {
 				                                       PropertyInfo.PropertyType,
 				                                       Binding.ConverterParameter,
 				                                       Binding.ConverterCulture ?? Helper.DefaultCulture);
-			
-			if (value != null && PropertyInfo.PropertyType.IsValueType && PropertyInfo.PropertyType != value.GetType ())
-				value = Convert.ChangeType (value, PropertyInfo.PropertyType, null);
+
+			if (value != null && PropertyInfo.PropertyType.IsValueType && PropertyInfo.PropertyType != value.GetType ()) {
+				try {
+					value = Convert.ChangeType (value, PropertyInfo.PropertyType, null);
+				} catch {
+					Console.WriteLine ("Failed to convert '{0}' to '{1}", value.GetType (), PropertyInfo.PropertyType);
+					return;
+				}
+			}
 
 			try {
 				updating = true;
