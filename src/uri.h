@@ -24,7 +24,6 @@ enum UriToStringFlags {
 /* @Namespace=System */
 struct Uri {
 public:
-
 	Uri ();
 	Uri (const Uri& uri);
 
@@ -32,7 +31,8 @@ public:
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool Parse (const char *uri, bool allow_trailing_sep = false);
-
+	void Combine (const char *relative_path);
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Free ();
 
@@ -55,6 +55,7 @@ public:
 	const char *GetHost () const { return host; }
 	int GetPort () const { return port; }
 	const char *GetUser () const { return user; }
+	const char *GetAuth () const { return auth; }
 	const char *GetPasswd () const { return passwd; }
 	const char *GetFragment () const { return fragment; }
 	const char *GetPath () const { return path; }
@@ -75,4 +76,5 @@ public:
 
 	char *originalString;
 };
+
 #endif /* __URI_H__ */

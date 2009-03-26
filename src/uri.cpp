@@ -420,6 +420,30 @@ done:
 	return true;
 }
 
+void
+Uri::Combine (const char *relative_path)
+{
+	const char *filename;
+	char *new_path;
+	
+	if (path && relative_path[0] != '/') {
+		if (!(filename = strrchr (path, '/')))
+			filename = path;
+		
+		new_path = g_strdup_printf ("%.*s/%s", filename - path, path, relative_path);
+		g_free (path);
+		
+		path = new_path;
+	} else {
+		g_free (path);
+		
+		if (relative_path[0] != '/')
+			path = g_strdup_printf ("/%s", relative_path);
+		else
+			path = g_strdup (relative_path);
+	}
+}
+
 static void
 append_url_encoded (GString *string, const char *in, const char *extra)
 {
