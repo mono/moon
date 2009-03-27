@@ -58,14 +58,15 @@ struct Size {
 
 	Size GrowBy (const double w, const double h) const
 	{
-		return Size (w + width, h + height);
+		const double hh = isinf (height) ? height : height + h;
+		const double ww = isinf (width) ? width : width + w;
+		
+		return Size (ww > 0 ? ww : 0, hh > 0 ? hh : 0);
 	}
 
 	Size GrowBy (const Thickness &t) 
 	{
-		const double w = width + t.left + t.right;
-		const double h = height + t.top + t.bottom;
-		return Size (w > 0 ? w : 0, h > 0 ? h : 0); 
+		return GrowBy (t.left + t.right, t.top + t.bottom);
 	}
 
 	bool operator == (const Size &size)

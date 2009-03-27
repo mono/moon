@@ -1,3 +1,13 @@
+2009-03-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* size.h (Size::GrowBy): If the width or height are infinite going
+	in, then leave them infinite going out.
+
+	* textblock.cpp (TextBlock::GetSize): New method to get the
+	TextBlock's size.
+	(TextBlock::Render): Use GetSize() instead of GetRenderSize().
+	(class TextBlockDynamicPropertyValueProvider): Same.
+
 2009-03-27  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.h (class UIElement): add LostMouseCaptureEvent.

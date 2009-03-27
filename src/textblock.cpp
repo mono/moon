@@ -167,7 +167,7 @@ class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
 		if (tb->dirty) {
 			Size constraint;
 			
-			constraint = tb->GetRenderSize ().GrowBy (-padding);
+			constraint = tb->GetSize ().GrowBy (-padding);
 			
 			delete actual_height_value;
 			actual_height_value = NULL;
@@ -264,18 +264,32 @@ TextBlock::SetFontSource (Downloader *downloader)
 	}
 }
 
+Size
+TextBlock::GetSize ()
+{
+	Size size = Size (GetWidth (), GetHeight ());
+	
+	if (size.height == 0)
+		size.height = INFINITY;
+	
+	if (size.width == 0)
+		size.width = INFINITY;
+	
+	return size;
+}
+
 void
 TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	Thickness padding = *GetPadding ();
-	Size renderSize = GetRenderSize ().GrowBy (-padding);
+	Size size = GetSize ().GrowBy (-padding);
 	
 	if (dirty)
-		Layout (renderSize);
+		Layout (size);
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
-	layout->SetAvailableWidth (renderSize.width);
+	layout->SetAvailableWidth (size.width);
 	Paint (cr);
 	cairo_restore (cr);
 }

@@ -169,6 +169,8 @@ class TextBlock : public FrameworkElement {
 	bool setvalue;
 	bool dirty;
 	
+	Size GetSize ();
+	
 	void Layout (Size constraint);
 	void Paint (cairo_t *cr);
 	
