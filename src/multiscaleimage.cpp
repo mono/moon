@@ -141,6 +141,16 @@ void
 MultiScaleImage::DownloadUri (DownloaderContext *ctx, Uri* url)
 {
 	LOG_MSI ("MSI::DownloadUri %s\n", url->ToString ());
+
+	GList *list;
+	DownloaderContext *dlctx;
+	for (list = g_list_first (downloaders); list && (dlctx = (DownloaderContext*)list->data); list = list->next) {
+		if (dlctx->state == DownloaderBusy && dlctx->uri->operator== (*url)) {
+			LOG_MSI ("this tile is already being downloaded\n");
+			return;
+		}
+	}
+
 	ctx->state = DownloaderBusy;
 	if (ctx->uri)
 		delete ctx->uri;
