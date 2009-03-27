@@ -12,10 +12,6 @@
 
 //TODO
 //
-//- blend new layers
-//- animation for VP changes
-//- if opacity is not 1.0, stack the layers internally, then paint at once (use cairo_group for this)
-//- fix the leaks
 //- only invalidate regions
 //- only render changed regions
 
@@ -144,19 +140,6 @@ MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 void
 MultiScaleImage::DownloadUri (DownloaderContext *ctx, Uri* url)
 {
-//	Surface* surface = GetSurface ();
-//	if (!surface)
-//		return;
-//
-//	if (!downloader) {
-//		downloader = surface->CreateDownloader ();
-//		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-//		downloader->AddHandler (downloader->DownloadFailedEvent, downloader_failed, this);
-//	}
-//
-//	if (!downloader)
-//		return;
-//
 	LOG_MSI ("MSI::DownloadUri %s\n", url->ToString ());
 	ctx->state = DownloaderBusy;
 	if (ctx->uri)
@@ -381,8 +364,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 	while (iter->Next () && (val = iter->GetCurrent(&error))) {
 		MultiScaleSubImage *sub_image = val->AsMultiScaleSubImage ();
-//		if (sub_image->id != 5)
-//			continue;
+
 		//if the subimage is unparsed, trigger the download
 		//FIXME: THIS NOT REQUIRED FOR LAYERS << MaxTileLayer
 //		if (sub_image->source->GetImageWidth () < 0) {
@@ -690,16 +672,12 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 					continue;
 
 				LOG_MSI ("rendering %d %d %d\n", layer_to_render, i, j);
-//				int *p_w = (int*)(cairo_surface_get_user_data (image, &width_key));
-//				int *p_h = (int*)(cairo_surface_get_user_data (image, &height_key));
 				cairo_save (cr);
 
 				cairo_scale (cr, 1 << (layers - layer_to_render), 1 << (layers - layer_to_render)); //scale to image size
 
 				cairo_translate (cr, i * tile_width, j * tile_height);
-				//cairo_rectangle (cr, 0, 0, tile_width, tile_height);
 
-				//cairo_clip(cr);
 				cairo_set_source_surface (cr, image, 0, 0);
 
 				double *opacity = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
@@ -907,11 +885,6 @@ MultiScaleImage::GetDownloaderContext (Downloader *dl)
 void
 MultiScaleImage::DownloaderComplete (DownloaderContext *ctx)
 {
-//	g_free (filename);
-//
-//	if (!(filename = g_strdup(downloader->getFileDownloader ()->GetDownloadedFile ())))
-//		return;
-//
 	LOG_MSI ("dl completed %s\n", ctx->downloader->getFileDownloader ()->GetDownloadedFile ());
 	ctx->state = DownloaderDone;
 
