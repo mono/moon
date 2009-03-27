@@ -194,9 +194,9 @@ namespace System.Windows.Controls {
 
 		void InvokeMotionFinished ()
 		{
-			EventHandler h = (EventHandler) EventList [MotionFinishedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [MotionFinishedEvent];
 			if (h != null)
-				h (this, EventArgs.Empty);
+				h (this, null);
 		}
 
 		void InvokeViewportChanged ()
