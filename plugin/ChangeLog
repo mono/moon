@@ -1,3 +1,8 @@
+2009-03-27  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin.cpp: Don't release return from Eval if they're npobj,
+	client code might reference it later
+
 2009-03-25  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::StreamAsFile): use uri accessors.

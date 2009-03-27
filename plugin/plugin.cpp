@@ -1240,13 +1240,18 @@ PluginInstance::Evaluate (const char *code)
 	bool ret = NPN_Evaluate (instance, object, &string, &npresult);
 	
 	Value *res = NULL;
+	bool keep_ref = false;
 	if (ret) {
-		if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult))
+		if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
 			variant_to_value (&npresult, &res);
+			if (npresult.type == NPVariantType_Object)
+				keep_ref = true;
+		}
 	}
 
-	NPN_ReleaseVariantValue (&npresult);
-	
+	if (!keep_ref)
+		NPN_ReleaseVariantValue (&npresult);
+
 	return (void*)res;
 }
 
