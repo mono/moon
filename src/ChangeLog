@@ -1,5 +1,10 @@
 2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscalesubimage.h|.cpp: fix the mess I was doing on uris in
+	the overloaded ctor now that we have a proper Uri struct
+
+2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* uri.h, uri.cpp: add Combine (const Uri*).
 
 2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
