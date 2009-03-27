@@ -301,9 +301,10 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 	if (!baseUri)
 		return false;
 	
-	if (!(filename = strrchr (baseUri->path, '/')))
-		return false;
-	filename ++;
+	if ((filename = strrchr (baseUri->path, '/')))
+		filename ++;
+	else
+		filename = baseUri->path;
 	
 	if (!(ext = strrchr (filename, '.')))
 		return false;
