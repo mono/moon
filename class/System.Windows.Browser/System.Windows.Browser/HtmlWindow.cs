@@ -112,7 +112,18 @@ namespace System.Windows.Browser
 
 		public ScriptObject CreateInstance (string typeName, params object [] args)
 		{
-			throw new NotImplementedException ();
+			string str = "new function () {{ this.ci = function ({1}) {{ return new {0} ({1}); }}; }}";
+
+			string parms = "";
+			for (int i = 0; i < args.Length; i++) {
+				if (i == 0)
+					parms += "arg";
+				else
+					parms += ",args";
+				parms += i;
+			}
+			ScriptObject func = (ScriptObject) this.Eval (String.Format (str, typeName, parms));
+			return (ScriptObject) func.Invoke ("ci", args);
 		} 
 	}
 }
