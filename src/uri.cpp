@@ -444,6 +444,14 @@ Uri::Combine (const char *relative_path)
 	}
 }
 
+void
+Uri::Combine (const Uri *relative_uri)
+{
+	if (relative_uri->isAbsolute)
+		g_warning ("Uri::Combine (): Nor a relative Uri");
+	Combine (relative_uri->path);
+}
+
 static void
 append_url_encoded (GString *string, const char *in, const char *extra)
 {

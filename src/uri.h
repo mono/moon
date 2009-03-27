@@ -32,6 +32,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool Parse (const char *uri, bool allow_trailing_sep = false);
 	void Combine (const char *relative_path);
+	void Combine (const Uri *relative_uri);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Free ();

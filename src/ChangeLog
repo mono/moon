@@ -1,5 +1,9 @@
 2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* uri.h, uri.cpp: add Combine (const Uri*).
+
+2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.h|.cpp: Emit MotionFinishedEvent
 
 2009-03-26  Chris Toshok  <toshok@ximian.com>
