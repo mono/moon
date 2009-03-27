@@ -102,7 +102,7 @@
 		</Border>
 	</StackPanel>
 
-	<TextBox Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" x:Name="log" Width="400" Height="200" />
+	<TextBox Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" x:Name="log" Width="400" Height="200" AcceptsReturn="true" />
 
     </Grid>
 </UserControl>
