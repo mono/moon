@@ -162,21 +162,28 @@ class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
 			return NULL;
 		
 		TextBlock *tb = (TextBlock *) obj;
+		Thickness padding = *tb->GetPadding ();
+		
 		if (tb->dirty) {
+			Size constraint;
+			
+			constraint = tb->GetRenderSize ().GrowBy (-padding);
+			
 			delete actual_height_value;
 			actual_height_value = NULL;
 			delete actual_width_value;
 			actual_width_value = NULL;
-			tb->CalcActualWidthHeight (NULL);
+			
+			tb->Layout (constraint);
 		}
 		
 		if (property->GetId () == FrameworkElement::ActualHeightProperty) {
 			if (!actual_height_value)
-				actual_height_value = new Value (tb->actual_height);
+				actual_height_value = new Value (tb->actual_height + padding.top + padding.bottom);
 			return actual_height_value;
 		} else {
 			if (!actual_width_value)
-				actual_width_value = new Value (tb->actual_width);
+				actual_width_value = new Value (tb->actual_width + padding.left + padding.right);
 			return actual_width_value;
 		}
 	}
@@ -197,7 +204,6 @@ TextBlock::TextBlock ()
 	
 	layout = new TextLayout ();
 	
-	constraint = Size (INFINITY, INFINITY);
 	actual_height = 0.0;
 	actual_width = 0.0;
 	setvalue = true;
@@ -260,37 +266,17 @@ TextBlock::SetFontSource (Downloader *downloader)
 void
 TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 {
+	Thickness padding = *GetPadding ();
+	Size renderSize = GetRenderSize ().GrowBy (-padding);
+	
 	if (dirty)
-		Layout (cr);
+		Layout (renderSize);
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
+	layout->SetAvailableWidth (renderSize.width);
 	Paint (cr);
 	cairo_restore (cr);
-}
-
-void
-TextBlock::CalcActualWidthHeight (cairo_t *cr)
-{
-	bool destroy = false;
-	
-	if (cr == NULL) {
-		cr = measuring_context_create ();
-		destroy = true;
-	} else {
-		cairo_save (cr);
-	}
-	
-	cairo_identity_matrix (cr);
-	
-	Layout (cr);
-	
-	if (destroy) {
-		measuring_context_destroy (cr);
-	} else {
-		cairo_new_path (cr);
-		cairo_restore (cr);
-	}
 }
 
 #define USE_FE 0
@@ -335,91 +321,45 @@ Size
 TextBlock::MeasureOverride (Size availableSize)
 {
 	Thickness padding = *GetPadding ();
-	dirty = true;
+	Size constraint;
+	Size desired;
 	
 	constraint = availableSize.GrowBy (-padding);
-
-	if (constraint.width == 0 && constraint.height == 0)
-		constraint = Size (INFINITY, INFINITY);
-
-	CalcActualWidthHeight (NULL);
+	Layout (constraint);
 	
-	//printf ("measure actual = %g, %g\n", actual_width, actual_height);
-	Size desired = Size (actual_width, actual_height).GrowBy (padding);
+	desired = Size (actual_width, actual_height).GrowBy (padding);
 	
-	return availableSize.Min (desired);
+	return desired.Min (availableSize);
 }
 
 Size
 TextBlock::ArrangeOverride (Size finalSize)
 {
 	Thickness padding = *GetPadding ();
-	dirty = true;
+	Size constraint;
+	Size arranged;
 	
 	constraint = finalSize.GrowBy (-padding);
+	Layout (constraint);
 	
-	// Hack around the funky canvas logic in layout //
-	if (constraint.width <= 0 || constraint.height <= 0)
-		constraint = Size (INFINITY, INFINITY);
-
-	CalcActualWidthHeight (NULL);
+	arranged = Size (actual_width, actual_height).GrowBy (padding);
 	
-	//printf ("arrange actual = %g, %g\n", actual_width, actual_height);
-
-	return Size (actual_width, actual_height).GrowBy (padding);
+	return arranged.Max (finalSize);
 }
 
 void
-TextBlock::Layout (cairo_t *cr)
+TextBlock::UpdateLayoutAttributes ()
 {
 	InlineCollection *inlines = GetInlines ();
-	double width = constraint.width;
+	TextLayoutAttributes *attrs;
 	const char *text;
 	int length = 0;
+	Inline *item;
 	List *runs;
-	
-	/* 
-	 *  in the layout case this should already be handled
-	 *  but we do it anyway to help
-	 */
-	if (!isnan (width))
-		width = GetWidth ();
-	
-	if (width == 0)
-		width = INFINITY;
-	
-	if (!(text = GetText ())) {
-		// If the TextBlock's Text property is not set,
-		// then don't modify ActualHeight.
-		// Fixes bug #435798
-		// actual_height = 0.0;
-		actual_width = 0.0;
-		goto done;
-	}
 	
 	runs = new List ();
 	
-	if (!isinf (width)) {
-		Thickness *padding = GetPadding ();
-		double pad = padding->left + padding->right;
-		
-		if (pad >= width) {
-			layout->SetTextAttributes (runs);
-			layout->SetText ("", 0);
-			actual_height = 0.0;
-			actual_width = 0.0;
-			goto done;
-		}
-		
-		layout->SetMaxWidth (width);
-	} else {
-		layout->SetMaxWidth (-1.0);
-	}
-	
 	if (inlines != NULL) {
-		TextLayoutAttributes *attrs;
-		Inline *item;
-		
 		for (int i = 0; i < inlines->GetCount (); i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
 			item->UpdateFontDescription ();
@@ -450,13 +390,21 @@ TextBlock::Layout (cairo_t *cr)
 	
 	layout->SetText (GetText (), length);
 	layout->SetTextAttributes (runs);
+}
+
+void
+TextBlock::Layout (Size constraint)
+{
+	InlineCollection *inlines = GetInlines ();
 	
-	layout->Layout ();
-	
-	layout->GetActualExtents (&actual_width, &actual_height);
-	//layout->GetLayoutExtents (&bbox_width, &bbox_height);
-	
-	if (runs->IsEmpty ()) {
+	if (!GetText ()) {
+		// If the TextBlock's Text property is not set,
+		// then don't modify ActualHeight.
+		// Fixes bug #435798
+		// actual_height = 0.0;
+		actual_width = 0.0;
+		goto done;
+	} else if (inlines->GetCount () == 0) {
 		// If the Text property had been set once upon a time,
 		// but is currently empty, Silverlight seems to set
 		// the ActualHeight property to the font height. See
@@ -464,7 +412,13 @@ TextBlock::Layout (cairo_t *cr)
 		TextFont *font = this->font->GetFont ();
 		actual_height = font->Height ();
 		font->unref ();
+		goto done;
 	}
+	
+	layout->SetMaxWidth (constraint.width);
+	layout->Layout ();
+	
+	layout->GetActualExtents (&actual_width, &actual_height);
 	
  done:
 	
@@ -606,8 +560,10 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args, error);
 		if (args->GetId () == FrameworkElement::WidthProperty) {
-			if (layout->GetTextWrapping () != TextWrappingNoWrap)
+			if (layout->SetMaxWidth (args->new_value->AsDouble ()))
 				dirty = true;
+			
+			layout->SetAvailableWidth (args->new_value->AsDouble ());
 			
 			UpdateBounds (true);
 		}
@@ -644,10 +600,12 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				// no change so nothing to invalidate
 				invalidate = false;
 			} else {
+				UpdateLayoutAttributes ();
 				dirty = true;
 			}
 		} else {
 			// result of a change to the TextBlock.Inlines property
+			UpdateLayoutAttributes ();
 			invalidate = false;
 		}
 	} else if (args->GetId () == TextBlock::TextDecorationsProperty) {
@@ -660,8 +618,10 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			InlineCollection *inlines = args->new_value ? args->new_value->AsInlineCollection () : NULL;
 			
 			setvalue = false;
+			// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
 			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 			setvalue = true;
+			
 			dirty = true;
 		} else {
 			// result of a change to the TextBlock.Text property
@@ -730,6 +690,7 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 	
 	if (update_text) {
 		setvalue = false;
+		// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
 		SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 		setvalue = true;
 	}
@@ -754,6 +715,7 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 		if (args->GetId () == Run::TextProperty) {
 			// update our TextProperty
 			setvalue = false;
+			// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
 			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 			setvalue = true;
 		}

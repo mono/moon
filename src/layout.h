@@ -115,6 +115,7 @@ class TextLayout {
 	const char *last_word;
 	int selection_length;
 	int selection_start;
+	double avail_width;
 	double line_height;
 	double max_height;
 	double max_width;
@@ -169,6 +170,9 @@ class TextLayout {
 	
 	double GetMaxHeight () { return max_height; }
 	bool SetMaxHeight (double height);
+	
+	double GetAvailableWidth () { return avail_width; }
+	bool SetAvailableWidth (double width) { avail_width = width; return false; }
 	
 	double GetMaxWidth () { return max_width; }
 	bool SetMaxWidth (double width);

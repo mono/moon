@@ -1,5 +1,35 @@
 2009-03-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textblock.cpp (TextBlock::UpdateLayoutAttributes): New method to
+	update the TextLayout's text and attributes.
+	(TextBlock::OnPropertyChanged): If the Text or Inlines properties
+	change, immediately call UpdateLayoutAttributes().
+	(TextBlock::Layout): No longer sets up the TextLayout's attributes
+	as this is already done. Also no longer takes a cairo_t argument
+	since it's never used, instead it now takes a Size constraint
+	argument.
+	(TextBlock::CalcActualWidthHeight): Removed, no longer needed.
+	(TextBlock::MeasureOverride): Rewritten / simplified.
+	(TextBlock::ArrangeOverride): Same.
+	(class TextBlockDynamicPropertyValueProvider): Updated.
+
+	* textbox.cpp (TextBoxView::Render): Set the layout's
+	AvailableWidth to the render size width.
+	(TextBoxView::Layout): Don't worry about constraint.width being
+	INFINITY anymore, TextLayout() now handles INFINITY.
+
+	* layout.cpp: Instead of using -1.0 to mean 'unset' for extents
+	and max width/height constraints, use NAN and
+	INFINITY (respectively). This will prevent TextBox/Block from
+	having to use hacks if their width/height constraints are
+	INFINITY.
+	(TextLayout::HorizontalAlignment): Since MaxWidth might be
+	INFINITY, we need to base this on a new property called
+	AvailableWidth, which is the width available for rendering (where
+	MaxWidth is only used for wrapping).
+
+2009-03-27  Jeffrey Stedfast  <fejj@novell.com>
+
 	* deepzoomimagetilesource.cpp (DeepZoomImageTileSource::GetTileLayer):
 	After finding the baseUri's filename, advance beyond the / before
 	passing it to uri->Combine().

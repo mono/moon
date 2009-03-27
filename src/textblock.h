@@ -164,18 +164,18 @@ class TextBlock : public FrameworkElement {
 	Downloader *downloader;
 	TextLayout *layout;
 	
-	Size constraint;
 	double actual_height;
 	double actual_width;
 	bool setvalue;
 	bool dirty;
 	
-	void CalcActualWidthHeight (cairo_t *cr);
-	void Layout (cairo_t *cr);
+	void Layout (Size constraint);
 	void Paint (cairo_t *cr);
 	
 	char *GetTextInternal (InlineCollection *inlines);
 	bool SetTextInternal (const char *text);
+	
+	void UpdateLayoutAttributes ();
 	
 	void DownloaderComplete ();
 	

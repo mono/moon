@@ -2650,12 +2650,7 @@ TextBoxView::ArrangeOverride (Size finalSize)
 void
 TextBoxView::Layout (Size constraint)
 {
-	double width = constraint.width;
-	
-	if (isinf (width))
-		layout->SetMaxWidth (-1.0);
-	else
-		layout->SetMaxWidth (width);
+	layout->SetMaxWidth (constraint.width);
 	
 	layout->Layout ();
 }
@@ -2697,11 +2692,12 @@ void
 TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	TextBoxDynamicPropertyValueProvider *dynamic = (TextBoxDynamicPropertyValueProvider *) textbox->providers[PropertyPrecedence_DynamicValue];
+	Size renderSize = GetRenderSize ();
 	
 	dynamic->InitializeSelectionBrushes ();
 	
 	if (dirty) {
-		Layout (GetRenderSize ());
+		Layout (renderSize);
 		UpdateCursor (false);
 		dirty = false;
 	}
@@ -2713,6 +2709,7 @@ TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
+	layout->SetAvailableWidth (renderSize.width);
 	Paint (cr);
 	cairo_restore (cr);
 }

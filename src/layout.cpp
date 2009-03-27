@@ -272,11 +272,12 @@ TextLayout::TextLayout ()
 	selection_length = 0;
 	selection_start = 0;
 	last_word = NULL;
-	actual_height = -1.0;
-	actual_width = -1.0;
+	avail_width = INFINITY;
+	max_height = INFINITY;
+	max_width = INFINITY;
+	actual_height = NAN;
+	actual_width = NAN;
 	line_height = NAN;
-	max_height = -1.0;
-	max_width = -1.0;
 	attributes = NULL;
 	lines = g_ptr_array_new ();
 	is_wrapped = true;
@@ -315,8 +316,8 @@ TextLayout::SetLineStackingStrategy (LineStackingStrategy mode)
 	
 	strategy = mode;
 	
-	actual_height = -1.0;
-	actual_width = -1.0;
+	actual_height = NAN;
+	actual_width = NAN;
 	
 	return true;
 }
@@ -351,8 +352,8 @@ TextLayout::SetTextWrapping (TextWrapping mode)
 	
 	wrapping = mode;
 	
-	actual_height = -1.0;
-	actual_width = -1.0;
+	actual_height = NAN;
+	actual_width = NAN;
 	
 	return true;
 }
@@ -365,8 +366,8 @@ TextLayout::SetLineHeight (double height)
 	
 	line_height = height;
 	
-	actual_height = -1.0;
-	actual_width = -1.0;
+	actual_height = NAN;
+	actual_width = NAN;
 	
 	return true;
 }
@@ -379,8 +380,8 @@ TextLayout::SetMaxHeight (double height)
 	
 	max_height = height;
 	
-	actual_height = -1.0;
-	actual_width = -1.0;
+	actual_height = NAN;
+	actual_width = NAN;
 	
 	return true;
 }
@@ -391,7 +392,7 @@ TextLayout::SetMaxWidth (double width)
 	if (max_width == width)
 		return false;
 	
-	if (!is_wrapped && (width < 0.0 || width > actual_width)) {
+	if (!is_wrapped && (isinf (width) || width > actual_width)) {
 		// the new max_width won't change layout
 		max_width = width;
 		return false;
@@ -399,8 +400,8 @@ TextLayout::SetMaxWidth (double width)
 	
 	max_width = width;
 	
-	actual_height = -1.0;
-	actual_width = -1.0;
+	actual_height = NAN;
+	actual_width = NAN;
 	
 	return true;
 }
@@ -415,8 +416,8 @@ TextLayout::SetTextAttributes (List *attrs)
 	
 	attributes = attrs;
 	
-	actual_height = -1.0;
-	actual_width = -1.0;
+	actual_height = NAN;
+	actual_width = NAN;
 	
 	return true;
 }
@@ -439,8 +440,8 @@ TextLayout::SetText (const char *str, int len)
 	last_word = NULL;
 	count = -1;
 	
-	actual_height = -1.0;
-	actual_width = -1.0;
+	actual_height = NAN;
+	actual_width = NAN;
 	
 	return true;
 }
@@ -819,7 +820,7 @@ layout_word_overflow (LayoutWord *word, const char *in, const char *inend, doubl
 		// If this word starts the line, then we must allow it to
 		// overflow. Otherwise, return %true to our caller so it
 		// can create a new line to layout this word into.
-		if (!line_start && max_width > 0.0 && (word->line_advance + advance) >= max_width) {
+		if (!line_start && !isinf (max_width) && (word->line_advance + advance) >= max_width) {
 			word->advance = 0.0;
 			word->length = 0;
 			return true;
@@ -1263,7 +1264,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		
 		g_array_append_val (word->break_ops, op);
 		
-		if (max_width > 0.0 && word->line_advance >= max_width) {
+		if (!isinf (max_width) && word->line_advance >= max_width) {
 			d(printf ("\tjust exceeded max width: %s\n", debug->str));
 			
 			if (inptr <= word->last_word) {
@@ -1749,7 +1750,7 @@ print_lines (GPtrArray *lines)
 void
 TextLayout::Layout ()
 {
-	if (actual_width != -1.0)
+	if (!isnan (actual_width))
 		return;
 	
 	actual_height = 0.0;
@@ -1765,7 +1766,7 @@ TextLayout::Layout ()
 	case TextWrappingWrapWithOverflow:
 #if DEBUG
 		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
-			if (max_width > 0.0)
+			if (!isinf (max_width))
 				printf ("TextLayout::LayoutWrapWithOverflow(%f)\n", max_width);
 			else
 				printf ("TextLayout::LayoutWrapWithOverflow()\n");
@@ -1776,7 +1777,7 @@ TextLayout::Layout ()
 	case TextWrappingNoWrap:
 #if DEBUG
 		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
-			if (max_width > 0.0)
+			if (!isinf (max_width))
 				printf ("TextLayout::LayoutWrapNoWrap(%f)\n", max_width);
 			else
 				printf ("TextLayout::LayoutNoWrap()\n");
@@ -1789,7 +1790,7 @@ TextLayout::Layout ()
 	default:
 #if DEBUG
 		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
-			if (max_width > 0.0)
+			if (!isinf (max_width))
 				printf ("TextLayout::LayoutWrap(%f)\n", max_width);
 			else
 				printf ("TextLayout::LayoutWrap()\n");
@@ -2025,21 +2026,38 @@ TextLayoutLine::Render (cairo_t *cr, const Point &origin, double left, double to
 	}
 }
 
+static double
+GetWidthConstraint (double avail_width, double max_width, double actual_width)
+{
+	if (isinf (avail_width)) {
+		// find an upper width constraint
+		if (isinf (max_width))
+			return actual_width;
+		else
+			return max_width;
+	}
+	
+	return avail_width;
+}
+
 double
 TextLayout::HorizontalAlignment (double line_width)
 {
 	double deltax;
+	double width;
 	
 	switch (alignment) {
 	case TextAlignmentCenter:
-		if (line_width < max_width)
-			deltax = (max_width - line_width) / 2.0;
+		width = GetWidthConstraint (avail_width, max_width, actual_width);
+		if (line_width < width)
+			deltax = (width - line_width) / 2.0;
 		else
 			deltax = 0.0;
 		break;
 	case TextAlignmentRight:
-		if (line_width < max_width)
-			deltax = max_width - line_width;
+		width = GetWidthConstraint (avail_width, max_width, actual_width);
+		if (line_width < width)
+			deltax = width - line_width;
 		else
 			deltax = 0.0;
 		break;
