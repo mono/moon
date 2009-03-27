@@ -861,8 +861,8 @@ MultiScaleImage::GetFreeDownloader ()
 			delete dlctx;
 			return NULL;
 		}
-		dlctx->downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-		dlctx->downloader->AddHandler (downloader->DownloadFailedEvent, downloader_failed, this);
+		dlctx->downloader->AddHandler (dlctx->downloader->CompletedEvent, downloader_complete, this);
+		dlctx->downloader->AddHandler (dlctx->downloader->DownloadFailedEvent, downloader_failed, this);
 
 		downloaders = g_list_append (downloaders, dlctx);
 		return dlctx;
