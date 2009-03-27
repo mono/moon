@@ -280,18 +280,20 @@ namespace Mono.Xaml
 			if (binding == null)
 				return false;
 
+			Kind kind;
 			DependencyProperty prop;
 			Type type = string.IsNullOrEmpty (type_name) ? null : TypeFromString (parser, top_level, type_name);
-			Kind kind = type == null ? dob.GetKind () : Deployment.Current.Types.TypeToNativeKind (type);
-			
-			if (kind == Kind.INVALID) {
-				FieldInfo field = type.GetField (name + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-				if (field == null)
-					return false;
-				prop = (DependencyProperty) field.GetValue (null);
+			if (type != null) {
+				EnsureRegistered (type);
+				kind = Deployment.Current.Types.TypeToNativeKind (type);
 			} else {
-				prop = DependencyProperty.Lookup (kind, name);
+				kind = dob.GetKind ();
 			}
+
+			if (kind == Kind.INVALID)
+				return false;
+			
+			prop = DependencyProperty.Lookup (kind, name);
 			if (prop == null)
 				return false;
 
@@ -657,20 +659,24 @@ namespace Mono.Xaml
 
 				target_type = TypeFromString (parser, top_level, type_name);
 			}
-
-			//
-			// Yup, we have to call Initialize to make sure that the DPs get registered
-			//
-			Type walk = target_type;
-			while (walk != typeof (object)) {
-				System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor (walk.TypeHandle);
-				walk = walk.BaseType;
-			}
+			
+			EnsureRegistered (target_type);
 
 			ManagedType mt = Deployment.Current.Types.Find (target_type);
 			DependencyProperty dp = DependencyProperty.Lookup ((Kind) mt.native_handle, str_value);
 
 			return dp;
+		}
+		
+		void EnsureRegistered (Type type)
+		{
+			//
+			// Yup, we have to call Initialize to make sure that the DPs get registered
+			//
+			while (type != typeof (object)) {
+				System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor (type.TypeHandle);
+				type = type.BaseType;
+			}	
 		}
 		
 		private bool SetPropertyFromValue (IntPtr parser, IntPtr top_level, object target, IntPtr target_data, IntPtr target_parent_ptr, PropertyInfo pi, IntPtr value_ptr, IntPtr value_data, out string error)

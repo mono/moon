@@ -1,3 +1,9 @@
+2009-03-27  Alan McGovern  <amcgovern@novell.com>
+
+	* ManagedXamlLoader.cs: Instead of manually searching for the
+	  DP, ensure that DPs in the type have been registered, then
+	  look it up normally. Thanks jackson.
+
 2009-03-27  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: We need to parse out StaticResouces when
