@@ -1,5 +1,14 @@
 2009-03-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* deepzoomimagetilesource.cpp (DeepZoomImageTileSource::GetTileLayer):
+	After finding the baseUri's filename, advance beyond the / before
+	passing it to uri->Combine().
+
+	* uri.cpp (Uri::Combine): If the uri has no path and the
+	relative_path does not begin with a /, don't prepend one.
+
+2009-03-27  Jeffrey Stedfast  <fejj@novell.com>
+
 	General cleanup of the TextBoxBase abstraction.
 
 	* textbox.cpp (TextBoxView::UpdateText): Get rid of special-casing

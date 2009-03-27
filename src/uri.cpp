@@ -437,10 +437,7 @@ Uri::Combine (const char *relative_path)
 	} else {
 		g_free (path);
 		
-		if (relative_path[0] != '/')
-			path = g_strdup_printf ("/%s", relative_path);
-		else
-			path = g_strdup (relative_path);
+		path = g_strdup (relative_path);
 	}
 }
 
