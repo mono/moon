@@ -18,7 +18,7 @@
 #include "collection.h"
 #include "downloader.h"
 
-#include <mono/metadata/appdomain.h>
+typedef struct _MonoDomain MonoDomain;
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */

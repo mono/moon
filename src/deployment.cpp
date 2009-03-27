@@ -31,6 +31,8 @@ G_END_DECLS
 #include <mono/metadata/threads.h>
 #include <mono/metadata/profiler.h>
 
+#include <mono/metadata/appdomain.h>
+
 /*
  * Deployment
  */

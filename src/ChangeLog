@@ -1,5 +1,12 @@
 2009-03-26  Chris Toshok  <toshok@ximian.com>
 
+	* deployment.h|.cpp: be a little more fragile (and a lot less
+	evil) about the way we're exposing Mono types in our headers.
+	just put a typedef for MonoDomain in deployment.h instead of
+	including appdomain.h.  Include appdomain.h from deployment.cpp.
+
+2009-03-26  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.h|.cpp (class UIElement): add the ability to do
 	instant and delayed emission of Loaded events.
 	(UIElement::PostSubtreeLoad): perhaps poorly named, but the
