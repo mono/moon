@@ -1,3 +1,20 @@
+2009-03-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	General cleanup of the TextBoxBase abstraction.
+
+	* textbox.cpp (TextBoxView::UpdateText): Get rid of special-casing
+	of PasswordBox.
+	(PasswordBox::SyncDisplayText): Generate a masked password string
+	using the specified PasswordChar.
+	(PasswordBox::SyncText): Call SyncDisplayText ().
+	(PasswordBox::OnPropertyChanged): When the PasswordProperty
+	changes, call SyncDisplayText().
+	(PasswordBox::GetDisplayText): Override TextBoxBase's to return
+	our masked password string.
+	(PasswordBox::ctor): Initialize display text
+	(PasswordBox::dtor): Delete display text.
+	(TextBox::GetDisplayText): Simply return GetText ()
+
 2009-03-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* playlist.cpp: MergeWith: need to clone uris, otherwise it'll

@@ -2142,6 +2142,13 @@ PasswordBox::PasswordBox ()
 	providers[PropertyPrecedence_DynamicValue] = new PasswordBoxDynamicPropertyValueProvider (this);
 	
 	Initialize (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox");
+	
+	display = g_string_new ("");
+}
+
+PasswordBox::~PasswordBox ()
+{
+	g_string_free (display, true);
 }
 
 int
@@ -2207,6 +2214,17 @@ PasswordBox::SyncSelectedText ()
 }
 
 void
+PasswordBox::SyncDisplayText ()
+{
+	gunichar c = GetPasswordChar ();
+	
+	g_string_truncate (display, 0);
+	
+	for (int i = 0; i < buffer->len; i++)
+		g_string_append_unichar (display, c);
+}
+
+void
 PasswordBox::SyncText ()
 {
 	char *text = g_ucs4_to_utf8 (buffer->text, buffer->len, NULL, NULL, NULL);
@@ -2214,6 +2232,14 @@ PasswordBox::SyncText ()
 	setvalue = false;
 	SetValue (PasswordBox::PasswordProperty, Value (text, true));
 	setvalue = true;
+	
+	SyncDisplayText ();
+}
+
+const char *
+PasswordBox::GetDisplayText ()
+{
+	return display->str;
 }
 
 void
@@ -2246,6 +2272,8 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 					
 					buffer->Insert (0, text, textlen);
 				}
+				
+				SyncDisplayText ();
 				
 				undo->Push (action);
 				redo->Clear ();
@@ -2583,21 +2611,9 @@ TextBoxView::UpdateCursor (bool invalidate)
 void
 TextBoxView::UpdateText ()
 {
-	if (textbox->Is (Type::PASSWORDBOX)) {
-		gunichar c = (gunichar) ((PasswordBox *) textbox)->GetPasswordChar ();
-		TextBuffer *buffer = textbox->GetBuffer ();
-		GString *passwd = g_string_new ("");
-		
-		for (int i = 0; i < buffer->len; i++)
-			g_string_append_unichar (passwd, c);
-		
-		layout->SetText (passwd->str, passwd->len);
-		g_string_free (passwd, true);
-	} else {
-		const char *text = textbox->GetText ();
-		
-		layout->SetText (text ? text : "", -1);
-	}
+	const char *text = textbox->GetDisplayText ();
+	
+	layout->SetText (text ? text : "", -1);
 }
 
 void

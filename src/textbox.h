@@ -289,10 +289,10 @@ class TextBoxBase : public Control, public ITextAttributes {
 	virtual Brush *GetSelectionBackground () = 0;
 	virtual Brush *GetSelectionForeground () = 0;
 	
-	// FIXME: these are gross, find a better way
-	virtual TextAlignment GetTextAlignment () = 0;
-	virtual TextWrapping GetTextWrapping () = 0;
-	virtual const char *GetText () = 0;
+	virtual TextAlignment GetTextAlignment () { return TextAlignmentLeft; }
+	virtual TextWrapping GetTextWrapping () { return TextWrappingNoWrap; }
+	
+	virtual const char *GetDisplayText () = 0;
 	
 	//
 	// Events
@@ -359,6 +359,8 @@ class TextBox : public TextBoxBase {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnApplyTemplate ();
 	
+	virtual const char *GetDisplayText () { return GetText (); }
+	
 	//
 	// Property Accessors
 	//
@@ -387,7 +389,7 @@ class TextBox : public TextBoxBase {
 	virtual int GetSelectionLength ();
 	
 	void SetText (const char *text);
-	virtual const char *GetText ();
+	const char *GetText ();
 	
 	void SetTextAlignment (TextAlignment alignment);
 	virtual TextAlignment GetTextAlignment ();
@@ -403,6 +405,97 @@ class TextBox : public TextBoxBase {
 	//
 	const static int SelectionChangedEvent;
 	const static int TextChangedEvent;
+};
+
+
+class PasswordBoxDynamicPropertyValueProvider;
+
+/* @SilverlightVersion="2" */
+/* @Namespace=System.Windows.Controls */
+class PasswordBox : public TextBoxBase {
+	friend class PasswordBoxDynamicPropertyValueProvider;
+	
+	GString *display;
+	
+ protected:
+	virtual int CursorDown (int cursor, bool page);
+	virtual int CursorUp (int cursor, bool page);
+	virtual int CursorLineBegin (int cursor);
+	virtual int CursorLineEnd (int cursor, bool include = false);
+	virtual int CursorNextWord (int cursor);
+	virtual int CursorPrevWord (int cursor);
+	
+	virtual void EmitTextChanged ();
+	
+	virtual void SyncSelectedText ();
+	virtual void SyncText ();
+	void SyncDisplayText ();
+	
+	//
+	// Protected Property Accessors
+	//
+	virtual void SetSelectedText (const char *text);
+	virtual const char *GetSelectedText ();
+	
+	virtual void SetSelectionStart (int start);
+	virtual int GetSelectionStart ();
+	
+	virtual void SetSelectionLength (int length);
+	virtual int GetSelectionLength ();
+	
+	virtual ~PasswordBox ();
+	
+ public:
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
+	const static int MaxLengthProperty;
+	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
+	const static int PasswordCharProperty;
+	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,GenerateAccessors */
+	const static int PasswordProperty;
+	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	const static int SelectedTextProperty;
+	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	const static int SelectionBackgroundProperty;
+	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
+	const static int SelectionForegroundProperty;
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	const static int SelectionLengthProperty;
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	const static int SelectionStartProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	PasswordBox ();
+	
+	//
+	// Overrides
+	//
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	
+	virtual const char *GetDisplayText ();
+	
+	//
+	// Property Accesors
+	//
+	void SetMaxLength (int length);
+	int GetMaxLength ();
+	
+	void SetPassword (const char *password);
+	const char *GetPassword ();
+	
+	void SetPasswordChar (int c);
+	int GetPasswordChar ();
+	
+	void SetSelectionBackground (Brush *background);
+	virtual Brush *GetSelectionBackground ();
+	
+	void SetSelectionForeground (Brush *foreground);
+	virtual Brush *GetSelectionForeground ();
+	
+	//
+	// Events
+	//
+	const static int PasswordChangedEvent;
 };
 
 
@@ -480,96 +573,6 @@ class TextBoxView : public FrameworkElement {
 	//
 	TextBoxBase *GetTextBox () { return textbox; }
 	void SetTextBox (TextBoxBase *textbox);
-};
-
-
-class PasswordBoxDynamicPropertyValueProvider;
-
-/* @SilverlightVersion="2" */
-/* @Namespace=System.Windows.Controls */
-class PasswordBox : public TextBoxBase {
-	friend class PasswordBoxDynamicPropertyValueProvider;
-	
- protected:
-	virtual int CursorDown (int cursor, bool page);
-	virtual int CursorUp (int cursor, bool page);
-	virtual int CursorLineBegin (int cursor);
-	virtual int CursorLineEnd (int cursor, bool include = false);
-	virtual int CursorNextWord (int cursor);
-	virtual int CursorPrevWord (int cursor);
-	
-	virtual void EmitTextChanged ();
-	
-	virtual void SyncSelectedText ();
-	virtual void SyncText ();
-	
-	//
-	// Protected Property Accessors
-	//
-	virtual void SetSelectedText (const char *text);
-	virtual const char *GetSelectedText ();
-	
-	virtual void SetSelectionStart (int start);
-	virtual int GetSelectionStart ();
-	
-	virtual void SetSelectionLength (int length);
-	virtual int GetSelectionLength ();
-	
-	virtual ~PasswordBox () { }
-	
- public:
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
-	const static int MaxLengthProperty;
-	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
-	const static int PasswordCharProperty;
-	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,GenerateAccessors */
-	const static int PasswordProperty;
-	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
-	const static int SelectedTextProperty;
-	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
-	const static int SelectionBackgroundProperty;
-	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
-	const static int SelectionForegroundProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
-	const static int SelectionLengthProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
-	const static int SelectionStartProperty;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	PasswordBox ();
-	
-	//
-	// Overrides
-	//
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
-	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-	
-	virtual TextAlignment GetTextAlignment () { return TextAlignmentLeft; }
-	virtual TextWrapping GetTextWrapping () { return TextWrappingNoWrap; }
-	virtual const char *GetText () { return GetPassword (); }
-	
-	//
-	// Property Accesors
-	//
-	void SetMaxLength (int length);
-	int GetMaxLength ();
-	
-	void SetPassword (const char *password);
-	const char *GetPassword ();
-	
-	void SetPasswordChar (int c);
-	int GetPasswordChar ();
-	
-	void SetSelectionBackground (Brush *background);
-	virtual Brush *GetSelectionBackground ();
-	
-	void SetSelectionForeground (Brush *foreground);
-	virtual Brush *GetSelectionForeground ();
-	
-	//
-	// Events
-	//
-	const static int PasswordChangedEvent;
 };
 
 #endif /* __TEXTBOX_H__ */
