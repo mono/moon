@@ -1,3 +1,8 @@
+2008-03-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Browser.manual: Change ScriptableObjectWrapper.GetProperty
+	to SSC otherwise we would not respect the method override rule
+
 2008-03-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: Extra SC on Mono.Xaml.ManagedXamlLoader
