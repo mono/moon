@@ -35,9 +35,7 @@ class MultiScaleImage : public MediaBase {
 	GHashTable *cache;
 	bool cache_contains (Uri* filename, bool check_empty_tile);
 	MultiScaleTileSource *source;
-//	Uri* context;
-//	char* filename;
-//	bool downloading;
+	bool subimages_sorted;
 
 	cairo_user_data_key_t width_key;
 	cairo_user_data_key_t height_key;
@@ -93,6 +91,8 @@ class MultiScaleImage : public MediaBase {
 	//
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 
 	//
 	// Methods

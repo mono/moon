@@ -100,6 +100,7 @@ MultiScaleImage::MultiScaleImage ()
 	zoom_sb = NULL;
 	pan_sb = NULL;
 	fadein_sb = NULL;
+	subimages_sorted = false;
 }
 
 MultiScaleImage::~MultiScaleImage ()
@@ -366,13 +367,13 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 	Rect viewport = Rect (msivp_ox, msivp_oy, msivp_w, msivp_w/msi_ar);
 
-	//FIXME: sort the subimages by ZIndex first
-	CollectionIterator *iter = GetSubImages ()->GetIterator();
-	Value *val;
-	int error;
-
-	while (iter->Next () && (val = iter->GetCurrent(&error))) {
-		MultiScaleSubImage *sub_image = val->AsMultiScaleSubImage ();
+	if (!subimages_sorted) {
+		GetSubImages ()->ResortByZIndex ();
+		subimages_sorted = true;
+	}
+	int i;
+	for (i = 0; i < GetSubImages ()->GetCount (); i++) {
+		MultiScaleSubImage *sub_image = (MultiScaleSubImage*)g_ptr_array_index (GetSubImages ()->z_sorted, i);
 
 		//if the subimage is unparsed, trigger the download
 		//FIXME: THIS NOT REQUIRED FOR LAYERS << MaxTileLayer
@@ -980,6 +981,23 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	}
 	
 	NotifyListenersOfPropertyChange (args);
+}
+
+void
+MultiScaleImage::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
+{
+	subimages_sorted = false;
+}
+
+void
+MultiScaleImage::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	if (args->GetId () == MultiScaleSubImage::ViewportWidthProperty)
+		Invalidate ();
+	if (args->GetId () == MultiScaleSubImage::ViewportOriginProperty)
+		Invalidate ();
+	if (args->GetId () == MultiScaleSubImage::ZIndexProperty)
+		subimages_sorted = false;
 }
 
 void
