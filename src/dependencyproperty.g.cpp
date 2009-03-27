@@ -256,7 +256,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::PATHFIGURE, "IsFilled", new Value (true), Type::BOOL);
 	DependencyProperty::Register (this, Type::PATHFIGURE, "IsClosed", new Value (false), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::NAMESCOPE, "NameScope", NULL, Type::NAMESCOPE, false, true, false, false, NULL, NULL, false, false);
-	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "ZIndex", Type::INT32);
+	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "ZIndex", new Value (0), Type::INT32);
 	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "ViewportWidth", new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "ViewportOrigin", new Value (Point(0,0)), Type::POINT);
 	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "Opacity", new Value (1.0), Type::DOUBLE);
