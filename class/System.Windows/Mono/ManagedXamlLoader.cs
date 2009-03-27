@@ -299,7 +299,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool TrySetAttachedProperty (IntPtr top_level, string xmlns, object target, string type_name, string name, IntPtr value_ptr)
+		private bool TrySetAttachedProperty (IntPtr parser, IntPtr top_level, string xmlns, object target, IntPtr target_data, string type_name, string name, IntPtr value_ptr)
 		{
 			if (type_name == null)
 				return false;
@@ -340,11 +340,7 @@ namespace Mono.Xaml
 			}
 
 			string error = null;
-			IntPtr unmanaged_value = IntPtr.Zero;
-
-			object o_value = Value.ToObject (null, value_ptr);
-			if (error == null && unmanaged_value != IntPtr.Zero)
-				o_value = Value.ToObject (null, unmanaged_value);
+			object o_value = GetObjectValue (target, target_data, name, parser, value_ptr, out error);
 
 			//
 			// The Setter might actually want a collection, in this case we grab the old collection with the getter
@@ -384,7 +380,6 @@ namespace Mono.Xaml
 			}
 
 			o_value = ConvertType (null, set_params [1].ParameterType, o_value);
-
 			set_method.Invoke (null, new object [] {target, o_value});
 			return true;
 		}
@@ -569,7 +564,7 @@ namespace Mono.Xaml
 			if (TrySetEventReflection (top_level, xmlns, target, type_name, name, value_ptr, out error))
 				return true;
 
-			if (TrySetAttachedProperty (top_level, xmlns, target, type_name, name, value_ptr))
+			if (TrySetAttachedProperty (parser, top_level, xmlns, target, target_data, type_name, name, value_ptr))
 				return true;
 
 			return false;
@@ -869,6 +864,24 @@ namespace Mono.Xaml
 			if (end == -1)
 				end = xmlns.Length;
 			return xmlns.Substring (start, end - start);
+		}
+
+		private static object GetObjectValue (object target, IntPtr target_data, string prop_name, IntPtr parser, IntPtr value_ptr, out string error)
+		{
+			error = null;
+
+			IntPtr unmanaged_value = IntPtr.Zero;
+			object o_value = Value.ToObject (null, value_ptr);
+			if (error == null && unmanaged_value != IntPtr.Zero)
+				o_value = Value.ToObject (null, unmanaged_value);
+
+			if (o_value is String && MarkupExpressionParser.IsStaticResource ((string) o_value)) {
+				MarkupExpressionParser mp = new MarkupExpressionParser ((DependencyObject) target, prop_name, parser, target_data);
+				string str_value = o_value as String;
+				o_value = mp.ParseExpression (ref str_value);
+			}
+
+			return o_value;
 		}
 
 		///
