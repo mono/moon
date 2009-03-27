@@ -1,3 +1,10 @@
+2009-03-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* detect-sc.cs: Handle interfaces and method overrides since the
+	rules for [SecurityCritical] makes it impossible to have them 
+	differs. This is not a problem for [SecuritySafeCritical] since 
+	the override rules are more lax.
+
 2009-03-25  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* detect-sc.cs: The idea of SC API with IntPtr (to reduce the

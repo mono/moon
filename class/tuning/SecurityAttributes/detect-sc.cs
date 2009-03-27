@@ -73,6 +73,23 @@ class Program {
 		return String.Empty;
 	}
 
+	static bool Compare (MethodDefinition m1, MethodDefinition m2)
+	{
+		if (m1.Name != m2.Name)
+			return false;
+		if (m1.HasParameters && m2.HasParameters) {
+			if (m1.Parameters.Count != m2.Parameters.Count)
+				return false;
+			for (int i = 0; i < m1.Parameters.Count; i++) {
+				ParameterDefinition p1 = m1.Parameters [i];
+				ParameterDefinition p2 = m2.Parameters [i];
+				if (p1.ParameterType.FullName != p2.ParameterType.FullName)
+					return false;
+			}
+		}
+		return (m1.ReturnType.ReturnType.FullName == m2.ReturnType.ReturnType.FullName);
+	}
+
 	static void ProcessMethod (MethodDefinition method)
 	{
 		string comment = null;
@@ -111,6 +128,55 @@ class Program {
 			}
 		}
 
+		// check if this method implements an interface where the corresponding member
+		// is [SecurityCritical]
+		TypeDefinition type = method.DeclaringType;
+		if (!sc && type.HasInterfaces) {
+			foreach (TypeReference intf in type.Interfaces) {
+				TypeDefinition td = intf.Resolve ();
+				if (td == null || !td.HasMethods)
+					continue;
+				foreach (MethodDefinition im in td.Methods) {
+					if (im.IsSecurityCritical ()) {
+						if (Compare (method, im)) {
+							sc = true;
+							comment = String.Format ("implements '{0}'.", im);
+						}
+					}
+				}
+			}
+		}
+
+		// if we're overriding a [SecurityCritical] method then we must be one too! or
+		// if we are [SecurityCritical] then the base method needs to be too!
+		if (method.IsVirtual && !method.IsAbstract) {
+			TypeReference tr = method.DeclaringType.BaseType;
+			if (tr != null) {
+				TypeDefinition td = tr.Resolve ();
+				if (td != null) {
+					foreach (MethodDefinition bm in td.Methods) {
+						if (Compare (method, bm)) {
+							if (!sc) {
+								if (bm.IsSecurityCritical ()) {
+									sc = true;
+									comment = String.Format ("overrides '{0}'.", bm);
+								}
+							} else {
+								if (!bm.IsSecurityCritical ()) {
+									string bms = bm.ToString ();
+									if (!methods.ContainsKey (bms)) {
+										comment = String.Format ("Promoting {0}base method to [SecurityCritical] because of '{1}'.", 
+											bm.IsVisible () ? "[VISIBLE] " : String.Empty, method);
+										methods.Add (bms, comment);
+									}
+								}
+							}							
+						}
+					}
+				}
+			}
+		}
+
 		if (sc) {
 			// note: add a warning on visible API since adding [SecurityCritical]
 			// on "new" visible API would introduce incompatibility (so this needs
@@ -118,6 +184,32 @@ class Program {
 			if (method.IsVisible ())
 				comment = "[VISIBLE] " + comment;
 			methods.Add (method.ToString (), comment);
+		}
+
+		// if this method is [SecurityCritical] (already or because we determined it should be)
+		// and implements an interface then some interface members may needs to be [SecurityCritical] 
+		// too or a TypeLoadException will be thrown 
+		// e.g. AppDomain.add_AssemblyResolve versus _AppDomain
+		if (sc || method.IsSecurityCritical ()) {
+			if (type.HasInterfaces) {
+				foreach (TypeReference intf in type.Interfaces) {
+					TypeDefinition td = intf.Resolve ();
+					if (td == null || !td.HasMethods)
+						continue;
+					foreach (MethodDefinition im in td.Methods) {
+						// note: in this case we don't care if the method is indirectly critical (e.g.via its type)
+						if (Compare (method, im) && !type.IsSecurityCritical ()) {
+							string ims = im.ToString ();
+							// only add this if it's not something we already found before
+							if (!methods.ContainsKey (ims)) {
+								comment = String.Format ("Promoting {0}interface member to [SecurityCritical] because of '{1}'.", 
+									im.IsVisible () ? "[VISIBLE] " : String.Empty, method);
+								methods.Add (ims, comment);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
