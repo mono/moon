@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 227 methods
+# 226 methods
 
 +SSC-M: System.Void Microsoft.Win32.KeyHandler::.ctor(Microsoft.Win32.RegistryKey,System.String)
 +SSC-M: System.Void Microsoft.Win32.KeyHandler::Load()
@@ -143,7 +143,6 @@
 +SSC-M: System.Int32 System.IO.UnmanagedMemoryStream::ReadByte()
 +SSC-M: System.Void System.IO.UnmanagedMemoryStream::Write(System.Byte[],System.Int32,System.Int32)
 +SSC-M: System.Void System.IO.UnmanagedMemoryStream::WriteByte(System.Byte)
-+SSC-M: System.IO.FileStream[] System.Reflection.Assembly::GetFiles()
 +SSC-M: System.IO.Stream System.Reflection.Assembly::GetManifestResourceStream(System.String)
 +SSC-M: System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(System.Globalization.CultureInfo,System.Version)
 +SSC-M: System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssemblyNoThrow(System.Globalization.CultureInfo,System.Version)

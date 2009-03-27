@@ -779,7 +779,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::surface_get_time_manager(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::surface_new(System.IntPtr,System.Boolean)
++SC-M: System.IntPtr Mono.NativeMethods::surface_new(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::text_block_new()
@@ -1187,10 +1187,10 @@
 +SC-M: System.Void Mono.NativeMethods::surface_set_full_screen(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::text_box_select(System.IntPtr,System.Int32,System.Int32)
++SC-M: System.Void Mono.NativeMethods::text_box_base_select(System.IntPtr,System.Int32,System.Int32)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::text_box_select_all(System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::text_box_base_select_all(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::time_manager_remove_timeout(System.IntPtr,System.UInt32)

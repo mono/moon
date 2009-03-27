@@ -1,3 +1,11 @@
+2009-03-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.sc: Add overrides/interfaces entries
+	* mscorlib.auto.ssc: Remove System.Reflection.Assembly::GetFiles. 
+	It's now SC
+	* System.Windows.auto.sc: Adjust p/invoke declarations
+	* System.Windows.auto.ssc: Add Application::set_RootVisual(
+
 2009-03-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* automatic/System.Windows.auto.sc, automatic/System.Windows.auto.ssc:
