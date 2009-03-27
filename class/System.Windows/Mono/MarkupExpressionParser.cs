@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Windows.Markup;
 
 
 namespace Mono.Xaml {
@@ -160,7 +161,7 @@ namespace Mono.Xaml {
 			object o = Value.ToObject (null, value_ptr);
 
 			if (o == null && !parsingBinding)
-				throw new System.Windows.Markup.XamlParseException (string.Format ("Resource '{0}' must be available as a static resource", name));
+				throw new XamlParseException (String.Format ("Resource '{0}' must be available as a static resource", name));
 			return o;
 		}
 
@@ -189,6 +190,9 @@ namespace Mono.Xaml {
 
 				if (remaining.Length > 0 && remaining[0] == ',')
 					remaining = remaining.Substring (1);
+
+				if (value is string)
+					str_value = (string) value;
 			}
 			else {
 				str_value = GetNextPiece (ref remaining, out next);
@@ -196,9 +200,13 @@ namespace Mono.Xaml {
 
 			switch (prop) {
 			case "Mode":
+				if (str_value == null)
+					throw new XamlParseException (String.Format ("Invalid type '{0}' for Mode.", value == null ? "null" : value.GetType ().ToString ()));
 				b.Mode = (BindingMode) Enum.Parse (typeof (BindingMode), str_value);
 				break;
 			case "Path":
+				if (str_value == null)
+					throw new XamlParseException (String.Format ("Invalid type '{0}' for Path.", value == null ? "null" : value.GetType ().ToString ()));
 				b.Path = new PropertyPath (str_value);
 				break;
 			case "Source":

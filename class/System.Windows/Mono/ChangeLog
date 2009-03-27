@@ -1,3 +1,10 @@
+2009-03-27  Jackson Harper  <jackson@ximian.com>
+
+	* MarkupExpressionParser.cs: Don't allow setting path or mode with
+	non strings (TODO: Maybe Mode can be an enum resource).
+	- If we happen to parse a string out of a sub exrpression use it
+	as the string value.
+
 2009-03-26  Alan McGovern  <amcgovern@novell.com>
 
 	* ManagedXamlLoader.cs: Only try and change the type if we're
