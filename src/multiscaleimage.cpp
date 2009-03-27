@@ -974,6 +974,20 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 }
 
 void
+MultiScaleImage::EmitMotionFinished ()
+{
+	printf ("Emitting MotionFinished\n");
+	Emit (MultiScaleImage::MotionFinishedEvent);
+}
+
+void
+motion_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	MultiScaleImage *msi = (MultiScaleImage *) closure;
+	msi->EmitMotionFinished ();
+}
+
+void
 MultiScaleImage::SetViewportWidth (double value)
 {
 	if (!GetUseSprings ()) {
@@ -985,6 +999,7 @@ MultiScaleImage::SetViewportWidth (double value)
 		zoom_sb = new Storyboard ();
 		zoom_sb->SetManualTarget (this);
 		zoom_sb->SetTargetProperty (zoom_sb, new PropertyPath ("(MultiScaleImage.ViewportWidth)"));
+		zoom_sb->AddHandler (zoom_sb->CompletedEvent, motion_finished, this);
 		zoom_animation = new DoubleAnimation ();
 		zoom_animation->SetDuration (Duration::FromSecondsFloat (.4));
 		TimelineCollection *tlc = new TimelineCollection ();
@@ -1013,6 +1028,7 @@ MultiScaleImage::SetViewportOrigin (Point value)
 		pan_sb = new Storyboard ();
 		pan_sb->SetManualTarget (this);
 		pan_sb->SetTargetProperty (pan_sb, new PropertyPath ("(MultiScaleImage.ViewportOrigin)"));
+		pan_sb->AddHandler (pan_sb->CompletedEvent, motion_finished, this);
 		pan_animation = new PointAnimation ();
 		pan_animation->SetDuration (Duration::FromSecondsFloat (.4));
 		TimelineCollection *tlc = new TimelineCollection ();

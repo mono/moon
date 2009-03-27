@@ -66,6 +66,7 @@ class MultiScaleImage : public MediaBase {
 	virtual ~MultiScaleImage ();
 
  public:
+	void EmitMotionFinished ();
 	static void EmitImageOpenSucceeded (EventObject *user_data);
 
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
