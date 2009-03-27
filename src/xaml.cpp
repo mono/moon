@@ -213,7 +213,6 @@ class XamlContextInternal {
 		bool exists = false;
 		GSList *walk = resources;
 		while (walk) {
-			bool exists;
 			*v = lookup_resource_dictionary ((ResourceDictionary *) walk->data, name, &exists);
 
 			if (exists)
@@ -935,7 +934,6 @@ class XNamespace : public XamlNamespace {
 		}
 
 		if (!strcmp ("Key", attr)) {
-			
 			if (item->GetKey () && IsParentResourceDictionary (p->current_element) && !Type::IsSubclassOf (item->info->GetKind (), Type::STORYBOARD)) {
 				// XXX don't know the proper values here...
 				parser_error (p, item->element_name, NULL, 2007,
@@ -1596,11 +1594,19 @@ create_resource_list (XamlParserInfo *p)
 
 	while (walk) {
 		if (walk->element_type == XamlElementInstance::ELEMENT && Type::Find (walk->info->GetKind ())->IsSubclassOf (Type::FRAMEWORKELEMENT)) {
-			list = g_slist_append (list, walk->GetAsDependencyObject ()->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ());
+			ResourceDictionary *rd = (ResourceDictionary *) walk->GetAsDependencyObject ()->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
+			if (g_slist_index (list, rd) == -1)
+				list = g_slist_prepend (list, rd);
+		}
+		if (walk->element_type == XamlElementInstance::ELEMENT && Type::Find (walk->info->GetKind ())->IsSubclassOf (Type::RESOURCE_DICTIONARY)) {
+			ResourceDictionary *rd = (ResourceDictionary *) walk->GetAsDependencyObject ();
+			if (g_slist_index (list, rd) == -1)
+				list = g_slist_prepend (list, walk->GetAsDependencyObject ());
 		}
 		walk = walk->parent;
 	}
 
+	list = g_slist_reverse (list);
 	return list;
 }
 

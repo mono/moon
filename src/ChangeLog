@@ -1,3 +1,12 @@
+2009-03-27  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Fix typo in LookupNamedItem so exists returns the
+	correct value.
+	- When we are populating the context resource dictionaries we need
+	to include elements that are resource dictionaries not just
+	elements have have dictionaries.  This fixes elements looking up
+	items in their top level RD (like in generic xaml).
+
 2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* xaml.cpp: Source attribute of MultiScaleImage, even while starting with a
