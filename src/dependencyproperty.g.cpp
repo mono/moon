@@ -363,7 +363,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "SelectionForeground", Type::BRUSH);
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "SelectionBackground", Type::BRUSH);
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "SelectedText", new Value (""), Type::STRING);
-	DependencyProperty::Register (this, Type::PASSWORDBOX, "Password", new Value (""), Type::STRING);
+	DependencyProperty::RegisterFull (this, Type::PASSWORDBOX, "Password", new Value (""), Type::STRING, false, false, false, false, NULL, Validators::NonNullValidator, false, false);
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "PasswordChar", new Value (9679), Type::CHAR);
 	DependencyProperty::RegisterFull (this, Type::PASSWORDBOX, "MaxLength", new Value (0), Type::INT32, false, false, false, false, NULL, Validators::PositiveIntValidator, false, false);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "Value", Type::OBJECT);
