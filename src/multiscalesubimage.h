@@ -40,7 +40,7 @@ class MultiScaleSubImage : public DependencyObject {
 	const static int ViewportOriginProperty;
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
 	const static int ViewportWidthProperty;
-	/* @PropertyType=gint32,Version=2.0,GenerateAccessors */
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors */
 	const static int ZIndexProperty;
 
 	
