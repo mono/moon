@@ -1,3 +1,14 @@
+2009-03-27  Chris Toshok  <toshok@ximian.com>
+
+	* ItemsControl.cs: only install our default ItemsPresenter if
+	there isn't a template that's going to be applied to this element.
+	In the case of a template either 1 of 2 things will happen.
+	Either there's an ItemsPresenter someplace in the template, and
+	ItemsPresenter.InvokeLoaded grovels up the tree until it finds
+	this ItemsControl, calling SetItemsPresenter on it, or the control
+	deals with all the Items changes manually (as in TabControl) and
+	we never have an ItemsPresenter.
+
 2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* MultiScaleImage.cs: MotionFinished is a RoutedEvent

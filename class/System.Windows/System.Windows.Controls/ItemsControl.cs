@@ -60,8 +60,12 @@ namespace System.Windows.Controls {
 		{
 			base.InvokeLoaded ();
 
-			// XXX
-			SetItemsPresenter (new ItemsPresenter ());
+			// effectively apply our default template
+			// (which is nothing but an ItemsPresenter)
+			// here.  but only do it if we don't have a
+			// template in our style.
+			if (Template == null)
+				SetItemsPresenter (new ItemsPresenter ());
 		}
 		
 		internal void SetItemsPresenter (ItemsPresenter presenter)
@@ -185,8 +189,6 @@ namespace System.Windows.Controls {
 			for (int i = 0; i < newItems.Count; i ++) {
 				object item = newItems[i];
 				object element;
-
-				Console.WriteLine ("adding item of type {0}", item.GetType());
 
 				if (IsItemItsOwnContainerOverride (item)) {
 					Console.WriteLine("item is its own container");
