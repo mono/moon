@@ -428,9 +428,9 @@ Uri::Combine (const char *relative_path)
 	
 	if (path && relative_path[0] != '/') {
 		if (!(filename = strrchr (path, '/')))
-			filename = path;
-		
-		new_path = g_strdup_printf ("%.*s/%s", filename - path, path, relative_path);
+			new_path = g_strdup (relative_path);
+		else	
+			new_path = g_strdup_printf ("%.*s/%s", filename - path, path, relative_path);
 		g_free (path);
 		
 		path = new_path;
