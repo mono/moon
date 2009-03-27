@@ -1,3 +1,12 @@
+2009-03-26  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs: remove the surface_attach call from here.  It's
+	not done in Application.set_RootVisual where it belongs.
+
+	* Application.cs: attach the root visual to the native surface
+	here so we set RootVisual sometime after Startup has been
+	emitted (vertigo does this with ncaa).
+
 2009-03-26  Alan McGovern  <amcgovern@novell.com>
 
 	* UIElement.cs: Implement CreatePeerForElement and FromElement

@@ -1,5 +1,43 @@
 2009-03-26  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.h|.cpp (class UIElement): add the ability to do
+	instant and delayed emission of Loaded events.
+	(UIElement::PostSubtreeLoad): perhaps poorly named, but the
+	@load_list is a list of UIElement which will be walked in order in
+	a tick call, emitting OnLoaded on all of them.
+	(UIElement::EmitSyncLoaded): walk the same list as would be passed
+	to PostSubtreeLoad, emitting it now.
+	(UIElement::WalkTreeForLoaded): this does a post-order tree walk
+	building up the list which is passed to PostSubtreeLoad or
+	EmitSubtreeLoad.  The out bool parameter tells us whether we
+	should delay the emission or not. Currently the only thing that
+	delays emission is a control with a style applied (even a default
+	style.)  We also set a PENDING_LOADED flag on all elements during
+	the walk.
+	(UIElement::OnLoaded): no longer walk the tree here.  only emit
+	Loaded on this one element.  Clear the PENDING_LOADED flag while
+	we're at it.
+	(UIElement::ElementAdded): complicate matters slightly here so
+	that it follows the following two rules:
+
+	1) if @this is loaded, walk the tree and either emit or post the
+	load based on what the out param tells us to do.
+
+	2) if @this is pending_loaded, walk the tree and always post.
+	
+	* frameworkelement.h (class FrameworkElement): unfortunately we
+	need access to "default_style_applied" from UIElement.
+
+	* control.h|.cpp: remove OnLoaded implementation from here.
+
+	* runtime.cpp (Surface::Attach): move the Loaded handling *after*
+	the zombie check.  not sure why we were ever doing it before.  but
+	most importantly, this always Posts the loaded state, it doesn't
+	emit it synchronously.  This allows us to do the changes in
+	Application.cs/Deployment.cs that are needed to get ncaa working.
+
+2009-03-26  Chris Toshok  <toshok@ximian.com>
+
 	* trigger.cpp (EventTrigger::SetTarget): fix regression, and ifdef
 	out the code that allows other events to be used.  Maybe in SL3
 	they'll allow it.

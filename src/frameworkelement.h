@@ -152,11 +152,11 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetDefaultStyle (Style *value);
 
+	bool default_style_applied;
+
 protected:
 	Rect bounds_with_children;
 	GHashTable *styles;
-
-	bool default_style_applied;
 
 	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 

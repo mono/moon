@@ -47,8 +47,6 @@ public:
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);
 	
-	virtual void OnLoaded ();
-
 	virtual void OnApplyTemplate ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */

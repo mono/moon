@@ -69,7 +69,12 @@ public:
 		SHAPE_NORMAL     = 0x40,	// normal drawing
 		SHAPE_DEGENERATE = 0x80,	// degenerate drawing, use the Stroke brush for filling
 		SHAPE_RADII      = 0x100,
-		SHAPE_MASK       = (SHAPE_EMPTY | SHAPE_NORMAL | SHAPE_DEGENERATE | SHAPE_RADII)
+		SHAPE_MASK       = (SHAPE_EMPTY | SHAPE_NORMAL | SHAPE_DEGENERATE | SHAPE_RADII),
+
+		// this means the element will be emitting OnLoaded
+		// shortly, and any child added to the element while
+		// it is in this state should post Loaded as well.
+		PENDING_LOADED   = 0x200
 	};
 	
 	virtual TimeManager *GetTimeManager ();
@@ -338,6 +343,12 @@ public:
 	//
 	/* @GenerateCBinding,GeneratePInvoke */
 	void ReleaseMouseCapture ();
+
+	List* WalkTreeForLoaded (bool *delay);
+
+	void PostSubtreeLoad (List *load_list);
+	static void EmitSubtreeLoad (List *load_list);
+	static void emit_delayed_loaded (EventObject *data);
 
 	virtual void OnLoaded ();
 	

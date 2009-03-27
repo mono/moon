@@ -479,10 +479,12 @@ Surface::Attach (UIElement *element)
 	if (first)
 		active_window->EnableEvents (first);
 
-	canvas->OnLoaded ();
-	
 	if (zombie)
 		return;
+
+	List *list = canvas->WalkTreeForLoaded (NULL);
+	canvas->PostSubtreeLoad (list);
+	// PostSubtreeLoad will take care of deleting the list for us.
 
 	Emit (Surface::LoadEvent);
 	

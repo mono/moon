@@ -63,28 +63,6 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	NotifyListenersOfPropertyChange (args);
 }
 
-void
-Control::OnLoaded ()
-{
-	// according to
-	// http://blogs.msdn.com/devdave/archive/2008/10/11/control-lifecycle.aspx
-	// when controls are created programmatically, their builtin
-	// style is applied when they're added to the tree (I hope
-	// this means "Loaded"...)
-
-	if (!GetStyle() && !default_style_applied) {
-		ManagedTypeInfo *key = GetDefaultStyleKey ();
-		if (key) {
-			if (Application::GetCurrent () == NULL)
-				g_warning ("attempting to use a null application.");
-			else
-				Application::GetCurrent()->ApplyDefaultStyle (this, key);
-		}
-	}
-
-	FrameworkElement::OnLoaded ();
-}
-
 bool
 Control::ApplyTemplate ()
 {

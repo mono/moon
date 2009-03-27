@@ -94,7 +94,7 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		public void LoadedTest1 ()
+		public void Loaded_nonStyled ()
 		{
 			bool loaded = false;
 			ConcreteFrameworkElement element = new ConcreteFrameworkElement ();
@@ -106,8 +106,7 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
-		public void LoadedTest2 ()
+		public void Loaded_styled ()
 		{
 			Button b = new Button ();
 			bool loaded = false;
@@ -120,8 +119,7 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
-		public void LoadedTest3 ()
+		public void Loaded_styledChildOfNonStyledParent ()
 		{
 			Canvas c = new Canvas ();
 			Button b = new Button ();
@@ -145,8 +143,7 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
-		public void LoadedTest4 ()
+		public void Loaded_styledChildOfNonStyledParent_parsed ()
 		{
 			Canvas c = (Canvas)XamlReader.Load (@"
 <Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
@@ -167,6 +164,139 @@ namespace MoonTest.System.Windows {
 					 c_loaded_sync = c_loaded;
 				} );
 			EnqueueConditional (() => b_loaded && !b_loaded_sync && c_loaded && !c_loaded_sync);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Loaded_styledChildOfNonStyledParent_nonStyledSiblingAfter ()
+		{
+			Canvas c = new Canvas ();
+			Button b = new Button ();
+			ConcreteFrameworkElement cfe = new ConcreteFrameworkElement ();
+
+			c.Children.Add (b);
+			c.Children.Add (cfe);
+
+			bool b_loaded = false;
+			bool b_loaded_sync = false;
+			bool c_loaded = false;
+			bool c_loaded_sync = false;
+			bool b_loaded_before_sibling = false;
+			bool cfe_loaded = false;
+			bool cfe_loaded_sync = false;
+
+			cfe.Loaded += (o, e) => cfe_loaded = true;
+			b.Loaded += (o, e) => { b_loaded = true; b_loaded_before_sibling = !cfe_loaded; };
+			c.Loaded += (o, e) => c_loaded = true;
+			Enqueue (() => { TestPanel.Children.Add (c);
+					 b_loaded_sync = b_loaded;
+					 c_loaded_sync = c_loaded;
+					 cfe_loaded_sync = cfe_loaded;
+				} );
+
+			EnqueueConditional (() => b_loaded && !b_loaded_sync, "1");
+			EnqueueConditional (() => cfe_loaded && !cfe_loaded_sync, "2");
+			EnqueueConditional (() => c_loaded && !c_loaded_sync, "3");
+			EnqueueConditional (() => b_loaded_before_sibling, "4");
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Loaded_styledChildOfNonStyledParent_nonStyledSiblingBefore ()
+		{
+			Canvas c = new Canvas ();
+			Button b = new Button ();
+			ConcreteFrameworkElement cfe = new ConcreteFrameworkElement ();
+
+			c.Children.Add (cfe);
+			c.Children.Add (b);
+
+			bool b_loaded = false;
+			bool b_loaded_sync = false;
+			bool c_loaded = false;
+			bool c_loaded_sync = false;
+			bool b_loaded_before_sibling = false;
+			bool cfe_loaded = false;
+			bool cfe_loaded_sync = false;
+
+			cfe.Loaded += (o, e) => cfe_loaded = true;
+			b.Loaded += (o, e) => { b_loaded = true; b_loaded_before_sibling = !cfe_loaded; };
+			c.Loaded += (o, e) => c_loaded = true;
+			Enqueue (() => { TestPanel.Children.Add (c);
+					 b_loaded_sync = b_loaded;
+					 c_loaded_sync = c_loaded;
+					 cfe_loaded_sync = cfe_loaded;
+				} );
+			EnqueueConditional (() => b_loaded && !b_loaded_sync, "1");
+			EnqueueConditional (() => cfe_loaded && !cfe_loaded_sync, "2");
+			EnqueueConditional (() => c_loaded && !c_loaded_sync, "3");
+			EnqueueConditional (() => !b_loaded_before_sibling, "4");
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Loaded_styledChildOfNonStyledParent_styledSiblingInsertedBefore ()
+		{
+			Canvas c = new Canvas ();
+			Button b1 = new Button ();
+			Button b2 = new Button ();
+
+			c.Children.Add (b1);
+
+			bool b1_loaded = false;
+			bool b1_loaded_sync = false;
+			bool b2_loaded = false;
+			bool b2_loaded_sync = false;
+			bool c_loaded = false;
+			bool c_loaded_sync = false;
+			bool b1_loaded_before_sibling = false;
+			bool b2_loaded_before_c = false;
+
+			b1.Loaded += (o, e) => { b1_loaded = true; b1_loaded_before_sibling = !b2_loaded; };
+			b2.Loaded += (o, e) => { b2_loaded = true; b2_loaded_before_c = !c_loaded; };
+			c.Loaded += (o, e) => c_loaded = true;
+			Enqueue (() => { TestPanel.Children.Add (c);
+					 b1_loaded_sync = b1_loaded;
+					 c_loaded_sync = c_loaded;
+					 c.Children.Insert (0, b2);
+					 b2_loaded_sync = b2_loaded;
+				} );
+
+			EnqueueConditional (() => b1_loaded && !b1_loaded_sync, "1");
+			EnqueueConditional (() => b2_loaded && !b2_loaded_sync, "2");
+			EnqueueConditional (() => c_loaded && !c_loaded_sync, "3");
+			EnqueueConditional (() => b1_loaded_before_sibling, "4");
+			EnqueueConditional (() => !b2_loaded_before_c, "5");
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Loaded_styledChildOfNonStyledParent_childRemoved ()
+		{
+			Canvas c = new Canvas ();
+			Button b1 = new Button ();
+
+			c.Children.Add (b1);
+
+			bool b1_loaded = false;
+			bool c_loaded = false;
+
+			b1.Loaded += (o, e) => b1_loaded = true;
+			c.Loaded += (o, e) => c_loaded = true;
+			Enqueue (() => { TestPanel.Children.Add (c);
+					 c.Children.RemoveAt (0);
+				} );
+
+			EnqueueConditional (() => b1_loaded, "1");
+			EnqueueConditional (() => c_loaded, "3");
+
 			EnqueueTestComplete ();
 		}
 

@@ -479,8 +479,28 @@ UIElement::ElementAdded (UIElement *item)
 	//item->UpdateBounds (true);
 	item->Invalidate ();
 	
-	if (IsLoaded ())
-		item->OnLoaded ();
+	if (0 != (flags & (UIElement::IS_LOADED | UIElement::PENDING_LOADED))) {
+		bool delay = false;
+		List *load_list = item->WalkTreeForLoaded (&delay);
+
+		// if we're loaded, key the delay state off of the
+		// WalkTreeForLoaded call.
+		//
+		// if we're actually pending loaded, forcibly delay
+		// the new element's Loaded firing as well.
+		//
+		if (0 != (flags & UIElement::PENDING_LOADED))
+			delay = true;
+
+		if (delay) {
+			PostSubtreeLoad (load_list);
+			// PostSubtreeLoad will take care of deleting the list for us.
+		}
+		else {
+			EmitSubtreeLoad (load_list);
+			delete load_list;
+		}
+	}
 
 	UpdateBounds (true);
 	InvalidateMeasure ();
@@ -569,6 +589,98 @@ UIElement::InsideObject (cairo_t *cr, double x, double y)
 	return InsideClip (cr, x, y);
 }
 
+class LoadedState : public EventObject {
+public:
+	LoadedState (List *list) { this->list = list; }
+	~LoadedState () { delete list; }
+  
+	List* GetUIElementList () { return list; }
+
+private:
+	List* list;
+};
+
+void
+UIElement::emit_delayed_loaded (EventObject *data)
+{
+	LoadedState *state = (LoadedState *)data;
+
+	EmitSubtreeLoad (state->GetUIElementList ());
+}
+
+void
+UIElement::EmitSubtreeLoad (List *l)
+{
+	while (UIElementNode* node = (UIElementNode*)l->First()) {
+		l->Unlink (node);
+
+		node->uielement->OnLoaded ();
+
+		delete node;
+	}
+}
+
+void
+UIElement::PostSubtreeLoad (List *load_list)
+{
+	if (emitting_loaded)
+		return;
+
+	LoadedState *state = new LoadedState (load_list);
+
+	GetDeployment()->GetSurface()->GetTimeManager()->AddTickCall (emit_delayed_loaded, state);
+
+	state->unref ();
+}
+
+List*
+UIElement::WalkTreeForLoaded (bool *delay)
+{
+	List *walk_list = new List();
+	List *load_list = new List();
+
+	if (delay)
+		*delay = false;
+
+	walk_list->Append (new UIElementNode (this));
+
+	while (UIElementNode *next = (UIElementNode*)walk_list->First ()) {
+		// remove it from the walk list
+		walk_list->Unlink (next);
+
+		if (next->uielement->Is(Type::CONTROL)) {
+			Control *control = (Control*)next->uielement;
+			if (!control->GetStyle() && !control->default_style_applied) {
+				ManagedTypeInfo *key = control->GetDefaultStyleKey ();
+				if (key) {
+					if (Application::GetCurrent () == NULL)
+						g_warning ("attempting to use a null application.");
+					else
+						Application::GetCurrent()->ApplyDefaultStyle (control, key);
+				}
+			}
+
+			if (control->GetStyle() || control->default_style_applied)
+				if (delay)
+					*delay = true;
+			  
+		}
+
+		// add it to the front of the load list, and mark it as PENDING_LOADED
+		next->uielement->flags |= UIElement::PENDING_LOADED;
+		load_list->Prepend (next);
+
+		// and add its children to the front of the walk list
+		VisualTreeWalker walker (next->uielement);
+		while (UIElement *child = walker.Step ())
+			walk_list->Prepend (new UIElementNode (child));
+	}
+
+	delete walk_list;
+
+	return load_list;
+}
+
 void
 UIElement::OnLoaded ()
 {
@@ -576,17 +688,14 @@ UIElement::OnLoaded ()
 		return;
 
 	emitting_loaded = true;
-
-	VisualTreeWalker walker (this);
-	while (UIElement *child = walker.Step ())
-		child->OnLoaded ();
 		   
 	flags |= UIElement::IS_LOADED;
+
+	flags &= ~UIElement::PENDING_LOADED;
 
 	Emit (LoadedEvent, NULL, true);
 
  	emitting_loaded = false;
-
 }
 
 void

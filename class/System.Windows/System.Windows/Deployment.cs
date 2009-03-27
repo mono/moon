@@ -247,10 +247,6 @@ namespace System.Windows {
 			}
 
 			instance.OnStartup ();
-			
-			if (instance.RootVisual != null) {
-				NativeMethods.surface_attach (Surface.Native, instance.RootVisual.native);
-			}
 
 			Events.InitSurface (Surface.Native);
 			SetCurrentApplication (instance);

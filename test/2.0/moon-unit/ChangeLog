@@ -1,3 +1,9 @@
+2009-03-26  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows/FrameworkElementTest.cs: add all sorts of fun
+	with Loaded event order, and rename the tests to be a little more
+	clear.
+
 2009-03-26  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:

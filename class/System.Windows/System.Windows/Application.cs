@@ -410,6 +410,8 @@ namespace System.Windows {
 					return;
 				
 				root_visual = value;
+
+				NativeMethods.surface_attach (Deployment.Current.Surface.Native, root_visual.native);
 			}
 		}
 
