@@ -1,5 +1,10 @@
 2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* xaml.cpp: Source attribute of MultiScaleImage, even while starting with a
+	'/', are relative uris.
+
+2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: if a tile is already being downloaded, don't
 	start a 2nd downloader for the same uri.
 
