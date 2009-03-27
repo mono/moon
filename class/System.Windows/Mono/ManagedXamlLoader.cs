@@ -257,7 +257,7 @@ namespace Mono.Xaml
 			return name.IndexOf ('.') > 0;
 		}
 
-		private bool TrySetExpression (IntPtr parser, object target, IntPtr target_data, string name, IntPtr value_ptr)
+		private bool TrySetExpression (IntPtr top_level, IntPtr parser, object target, IntPtr target_data, string type_name, string name, IntPtr value_ptr)
 		{
 			FrameworkElement dob = target as FrameworkElement;
 			object obj_value = Value.ToObject (null, value_ptr);
@@ -280,7 +280,18 @@ namespace Mono.Xaml
 			if (binding == null)
 				return false;
 
-			DependencyProperty prop = DependencyProperty.Lookup (dob.GetKind (), name);
+			DependencyProperty prop;
+			Type type = string.IsNullOrEmpty (type_name) ? null : TypeFromString (parser, top_level, type_name);
+			Kind kind = type == null ? dob.GetKind () : Deployment.Current.Types.TypeToNativeKind (type);
+			
+			if (kind == Kind.INVALID) {
+				FieldInfo field = type.GetField (name + "Property", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+				if (field == null)
+					return false;
+				prop = (DependencyProperty) field.GetValue (null);
+			} else {
+				prop = DependencyProperty.Lookup (kind, name);
+			}
 			if (prop == null)
 				return false;
 
@@ -549,7 +560,7 @@ namespace Mono.Xaml
 				name = name.Substring (++dot, name.Length - dot);
 			}
 
-			if (TrySetExpression (parser, target, target_data, name, value_ptr))
+			if (TrySetExpression (top_level, parser, target, target_data, type_name, name, value_ptr))
 				return true;
 
 			if (TrySetPropertyReflection (parser, top_level, xmlns, target, target_data, target_parent_ptr, type_name, name, value_ptr, value_data, out error))
