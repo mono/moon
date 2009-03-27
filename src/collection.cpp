@@ -628,12 +628,11 @@ MultiScaleSubImageCollection::~MultiScaleSubImageCollection ()
 static int
 MultiScaleSubImageZIndexComparer (gconstpointer msisi1, gconstpointer msisi2)
 {
-	int z1 = multi_scale_sub_image_get_zindex ((MultiScaleSubImage*)msisi1);
-	int z2 = multi_scale_sub_image_get_zindex ((MultiScaleSubImage*)msisi2);
+	int z1 = (*((MultiScaleSubImage**)msisi1))->GetZIndex ();
+	int z2 = (*((MultiScaleSubImage**)msisi2))->GetZIndex ();
 	
 	return z1 - z2;
 }
-
 
 void
 MultiScaleSubImageCollection::ResortByZIndex ()
@@ -656,7 +655,6 @@ MultiScaleSubImageCollection::Clear ()
 	g_ptr_array_set_size (z_sorted, 0);
 	return DependencyObjectCollection::Clear ();
 }
-
 
 //
 // CollectionIterator

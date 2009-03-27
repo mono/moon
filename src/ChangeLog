@@ -1,5 +1,10 @@
 2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* collection.cpp: do not use generated cbinding in
+	MultiScaleSubImageZIndexComparer.
+
+2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscalesubimage.h: set a default ZIndex value
 
 2009-03-27  Jeffrey Stedfast  <fejj@novell.com>
