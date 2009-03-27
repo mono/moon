@@ -921,7 +921,6 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlBindPath ()
 		{
 			Assert.Throws<XamlParseException> (() => {
