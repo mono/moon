@@ -26,7 +26,6 @@ class MultiScaleSubImage : public DependencyObject {
 	int id, n;
 
 	double GetViewportHeight ();
-	MultiScaleImage *parent;
 
  protected:
 	virtual ~MultiScaleSubImage () {}
@@ -47,8 +46,6 @@ class MultiScaleSubImage : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleSubImage ();
 	MultiScaleSubImage (const Uri* parent_uri, MultiScaleTileSource *source, int id, int n);
-
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	double GetAspectRatio ();
 	void SetAspectRatio (double ratio);

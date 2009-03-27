@@ -1,5 +1,11 @@
 2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscalesubimage.h|.cpp:
+	* multiscaleimage.cpp: remove the link to msi parents and don't try to
+	Invalidate from subimage.
+
+2009-03-27  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* collection.cpp: do not use generated cbinding in
 	MultiScaleSubImageZIndexComparer.
 

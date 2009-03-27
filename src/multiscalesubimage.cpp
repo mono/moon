@@ -26,7 +26,6 @@ MultiScaleSubImage::MultiScaleSubImage ()
 {
 	SetObjectType (Type::MULTISCALESUBIMAGE);
 	source = NULL;	
-	parent = NULL;
 }
 
 MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSource *tsource, int _id, int _n)
@@ -34,7 +33,6 @@ MultiScaleSubImage::MultiScaleSubImage (const Uri *parent_uri, MultiScaleTileSou
 	LOG_MSI ("new MultiScaleSubImage ()\n");
 	SetObjectType (Type::MULTISCALESUBIMAGE);
 	source = tsource;
-	parent = NULL;
 	id = _id;
 	n = _n;
 
@@ -56,26 +54,4 @@ double
 MultiScaleSubImage::GetViewportHeight ()
 {
 	return GetAspectRatio () * GetViewportWidth ();
-}
-
-void
-MultiScaleSubImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
-{
-	if (args->GetId () == MultiScaleSubImage::ViewportOriginProperty) {
-		Point *p = args->new_value->AsPoint();
-		if (parent)
-			parent->Invalidate ();
-	}
-
-	if (args->GetId () == MultiScaleSubImage::ViewportWidthProperty) {
-		if (parent)
-			parent->Invalidate ();
-	}
-
-	if (args->GetProperty ()->GetOwnerType () != Type::MULTISCALESUBIMAGE) {
-		DependencyObject::OnPropertyChanged (args, error);
-		return;
-	}
-	
-	NotifyListenersOfPropertyChange (args);
 }
