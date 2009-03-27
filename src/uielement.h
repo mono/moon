@@ -477,6 +477,7 @@ public:
 	const static int InvalidatedEvent;
 	const static int GotFocusEvent;
 	const static int LostFocusEvent;
+	const static int LostMouseCaptureEvent;
 
 protected:
 	virtual ~UIElement ();
