@@ -1,3 +1,9 @@
+2009-03-27  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Add test to ensure
+	  conversions between type/string and string/type are working.
+	  Add test for an invalid property path in a two way binding.
+
 2009-03-26  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows/FrameworkElementTest.cs: add all sorts of fun

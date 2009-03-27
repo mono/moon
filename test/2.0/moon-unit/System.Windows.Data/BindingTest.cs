@@ -539,6 +539,44 @@ namespace MoonTest.System.Windows.Data
 		}
 		
 		[TestMethod]
+		public void TestTwoWayBinding3 ()
+		{
+			PropertyUpdater data = new PropertyUpdater { Opacity = 0.5f };
+			Rectangle r = new Rectangle { Opacity = 0 };
+			r.SetBinding (Rectangle.OpacityProperty, new Binding {
+				Path = new PropertyPath ("OpacityASDF"),
+				Source = data,
+				Mode = BindingMode.TwoWay
+			});
+			Assert.AreEqual (1, r.Opacity, "#1");
+			Assert.AreEqual (0.5, data.Opacity, "#2");
+			data.Opacity = 0;
+			Assert.AreEqual (1, r.Opacity, "#3");
+			r.Opacity = 0.5f;
+			Assert.AreEqual (0, data.Opacity);
+		}
+		
+				
+		[TestMethod]
+		public void TestTwoWayBinding4 ()
+		{
+			PropertyUpdater data = new PropertyUpdater { Opacity = 0.5f };
+			TextBlock block = new TextBlock { Text = "Ted" };
+			block.SetBinding (TextBlock.TextProperty, new Binding {
+				Path = new PropertyPath ("Opacity"),
+				Source = data,
+				Mode = BindingMode.TwoWay
+			});
+			Assert.AreEqual ("0.5", block.Text, "#1");
+			block.Text = "1";
+			Assert.AreEqual (1, data.Opacity, "#2");
+			block.Text = "100";
+			Assert.AreEqual (100, data.Opacity, "#3");
+			block.Text = "";
+			Assert.AreEqual (100, data.Opacity, "#4");
+		}
+
+		[TestMethod]
 		public void TestOnceOffBinding ()
 		{
 			Data data = new Data ();
