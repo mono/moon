@@ -176,6 +176,7 @@ class TextBlock : public FrameworkElement {
 	bool SetTextInternal (const char *text);
 	
 	void UpdateLayoutAttributes ();
+	void UpdateFontDescriptions ();
 	
 	void DownloaderComplete ();
 	

@@ -255,6 +255,7 @@ TextBlock::SetFontSource (Downloader *downloader)
 	} else {
 		ClearValue (TextBlock::FontFilenameProperty);
 		font->SetFilename (NULL);
+		UpdateFontDescriptions ();
 		
 		dirty = true;
 		
@@ -326,6 +327,7 @@ TextBlock::MeasureOverride (Size availableSize)
 	
 	constraint = availableSize.GrowBy (-padding);
 	Layout (constraint);
+	dirty = true;
 	
 	desired = Size (actual_width, actual_height).GrowBy (padding);
 	
@@ -341,6 +343,7 @@ TextBlock::ArrangeOverride (Size finalSize)
 	
 	constraint = finalSize.GrowBy (-padding);
 	Layout (constraint);
+	dirty = true;
 	
 	arranged = Size (actual_width, actual_height).GrowBy (padding);
 	
@@ -390,6 +393,20 @@ TextBlock::UpdateLayoutAttributes ()
 	
 	layout->SetText (GetText (), length);
 	layout->SetTextAttributes (runs);
+}
+
+void
+TextBlock::UpdateFontDescriptions ()
+{
+	InlineCollection *inlines = GetInlines ();
+	Inline *item;
+	
+	if (inlines != NULL) {
+		for (int i = 0; i < inlines->GetCount (); i++) {
+			item = inlines->GetValueAt (i)->AsInline ();
+			item->UpdateFontDescription ();
+		}
+	}
 }
 
 void
@@ -563,8 +580,6 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			if (layout->SetMaxWidth (args->new_value->AsDouble ()))
 				dirty = true;
 			
-			layout->SetAvailableWidth (args->new_value->AsDouble ());
-			
 			UpdateBounds (true);
 		}
 		
@@ -574,22 +589,27 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetId () == TextBlock::FontFamilyProperty) {
 		FontFamily *family = args->new_value ? args->new_value->AsFontFamily () : NULL;
 		font->SetFamily (family ? family->source : NULL);
+		UpdateFontDescriptions ();
 		dirty = true;
 	} else if (args->GetId () == TextBlock::FontSizeProperty) {
 		double size = args->new_value->AsDouble ();
 		font->SetSize (size);
+		UpdateFontDescriptions ();
 		dirty = true;
 	} else if (args->GetId () == TextBlock::FontStretchProperty) {
 		FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
 		font->SetStretch (stretch);
+		UpdateFontDescriptions ();
 		dirty = true;
 	} else if (args->GetId () == TextBlock::FontStyleProperty) {
 		FontStyles style = (FontStyles) args->new_value->AsInt32 ();
 		font->SetStyle (style);
+		UpdateFontDescriptions ();
 		dirty = true;
 	} else if (args->GetId () == TextBlock::FontWeightProperty) {
 		FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
 		font->SetWeight (weight);
+		UpdateFontDescriptions ();
 		dirty = true;
 	} else if (args->GetId () == TextBlock::TextProperty) {
 		if (setvalue) {
@@ -718,6 +738,9 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 			// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
 			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 			setvalue = true;
+		} else {
+			// likely a font property change...
+			((Inline *) obj)->UpdateFontDescription ();
 		}
 		
 		// All non-Foreground property changes require
@@ -761,6 +784,7 @@ TextBlock::DownloaderComplete ()
 	
 	font->SetFilename (path);
 	SetValue (TextBlock::FontFilenameProperty, path);
+	UpdateFontDescriptions ();
 	dirty = true;
 	
 	UpdateBounds (true);

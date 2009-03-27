@@ -38,6 +38,14 @@
 	(TextBlock::MeasureOverride): Rewritten / simplified.
 	(TextBlock::ArrangeOverride): Same.
 	(class TextBlockDynamicPropertyValueProvider): Updated.
+	(TextBlock::OnCollectionItemChanged): Call UpdateFontDescription
+	on the Inline that changed.
+	(TextBlock::UpdateFontDescriptions): New method to update the font
+	descriptions on all inlines.
+	(TextBlock::OnPropertyChanged): Update the font descriptions on
+	all inlines whenever a font property changes.
+	(TextBlock::SetFontSource): Call UpdateFontDescriptions().
+	(TextBlock::DownloaderComplete): Same.
 
 	* textbox.cpp (TextBoxView::Render): Set the layout's
 	AvailableWidth to the render size width.
