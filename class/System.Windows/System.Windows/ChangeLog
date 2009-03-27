@@ -1,5 +1,12 @@
 2009-03-26  Chris Toshok  <toshok@ximian.com>
 
+	* DependencyProperty.cs (DependencyProperty.RegisterAny): don't
+	register a NativePropertyChangeHandler if the user is only
+	registering a default value (i.e. if
+	metadata.property_changed_callback is null).
+
+2009-03-26  Chris Toshok  <toshok@ximian.com>
+
 	* Deployment.cs: remove the surface_attach call from here.  It's
 	not done in Application.set_RootVisual where it belongs.
 

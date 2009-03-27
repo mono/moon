@@ -114,7 +114,8 @@ namespace System.Windows {
 			owner_type = Deployment.Current.Types.Find (ownerType);
 
 			if (metadata != null) {
-				handler = NativePropertyChangedCallbackSafe;
+				if (metadata.property_changed_callback != null)
+					handler = NativePropertyChangedCallbackSafe;
 				defaultVal = metadata.default_value;
 			}
 
