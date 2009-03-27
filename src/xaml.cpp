@@ -1029,6 +1029,9 @@ class PrimitiveNamespace : public XamlNamespace {
 		} else if (!strcmp ("Double", el)) {
 			Type* t = Type::Find (Type::DOUBLE);
 			return new XamlElementInfoNative (t);
+		} else if (!strcmp ("Boolean", el)) {
+			Type* t = Type::Find (Type::BOOL);
+			return new XamlElementInfoNative (t);
 		}
 
 		return NULL;

@@ -1,5 +1,11 @@
 2009-03-27  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Despite the docs saying differently
+	(http://msdn.microsoft.com/en-us/library/cc917841(VS.95).aspx)
+	sys:Boolean is also legal. (I wonder what else is).
+
+2009-03-27  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Fix typo in LookupNamedItem so exists returns the
 	correct value.
 	- When we are populating the context resource dictionaries we need
