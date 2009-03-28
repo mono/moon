@@ -641,19 +641,29 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 
 typedef BrowserBridge* (*create_bridge_func)();
 
+const char*
+get_plugin_dir (void)
+{
+	static char *plugin_dir = NULL;
+
+	if (!plugin_dir) {
+		Dl_info dlinfo;
+		if (dladdr((void *) &plugin_show_menu, &dlinfo) == 0) {
+			fprintf (stderr, "Unable to find the location of libmoonplugin.so: %s\n", dlerror ());
+			return NULL;
+		}
+		plugin_dir = g_path_get_dirname (dlinfo.dli_fname);
+	}
+	return plugin_dir;
+}
+
 void
 PluginInstance::TryLoadBridge (const char *prefix)
 {
-	Dl_info dlinfo;
-	if (dladdr((void *) &plugin_show_menu, &dlinfo) == 0) {
-		fprintf (stderr, "Unable to find the location of libmoonplugin.so: %s\n", dlerror ());
-		return;
-	}
-
 	char *bridge_name = g_strdup_printf ("libmoonplugin-%sbridge.so", prefix);
 	char *bridge_path;
 
-	bridge_path = g_build_filename (g_path_get_dirname(dlinfo.dli_fname), bridge_name, NULL);
+	bridge_path = g_build_filename (get_plugin_dir (), bridge_name, NULL);
 
 	void* bridge_handle = dlopen (bridge_path, RTLD_LAZY);
 

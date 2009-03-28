@@ -225,7 +225,7 @@ NPP_Initialize (void)
 
 	if (!runtime_initialized) {
 		runtime_initialized = true;
-		runtime_init_browser ();
+		runtime_init_browser (get_plugin_dir ());
 	}
 
 	plugin_init_classes ();

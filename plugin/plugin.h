@@ -310,6 +310,8 @@ class PluginXamlLoader : public XamlLoader
 
 G_BEGIN_DECLS
 
+const char *get_plugin_dir (void);
+
 int32_t plugin_instance_get_actual_width  (PluginInstance *instance);
 int32_t plugin_instance_get_actual_height (PluginInstance *instance);
 

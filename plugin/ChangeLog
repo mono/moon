@@ -1,3 +1,9 @@
+2009-03-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp|h: Export a new function (get_plugin_dir) that returns
+	the location of the plugin.
+	* plugin-glue.cpp: Initialize the runtime using the plugin location.
+
 2009-03-27  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin.cpp: Don't release return from Eval if they're npobj,
