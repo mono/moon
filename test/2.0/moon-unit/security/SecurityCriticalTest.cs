@@ -53,7 +53,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.Security {
 
 	[TestClass]
-	[Ignore ("needs coreclr enabled")]
+//	[Ignore ("needs coreclr enabled")]
 	public class SecurityCriticalTest {
 
 		// mscorlib.dll

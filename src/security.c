@@ -72,8 +72,7 @@ determine_platform_image (const char *image_name)
 void
 security_enable_coreclr (const char *platform_dir)
 {
-	// XXX condition to be reversed before preview XXX
-	if (g_getenv ("MOON_SECURITY") == NULL) {
+	if (g_getenv ("MOON_SECURITY") != NULL) {
 		g_warning ("CORECLR was DISABLED using MOON_SECURITY override");
 		return;
 	}
