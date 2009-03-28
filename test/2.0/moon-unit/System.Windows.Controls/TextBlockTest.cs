@@ -246,7 +246,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Initial ActualHeight is being set to the line height when it should be 0")]
+		[MoonlightBug ("Second test's ActualWidth extents slightly off, likely due to font metrics")]
 		public void ComputeActualWidth ()
 		{
 			var tb = new TextBlock ();
