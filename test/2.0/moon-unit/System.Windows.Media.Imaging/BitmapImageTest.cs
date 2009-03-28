@@ -85,7 +85,5 @@ namespace MoonTest.System.Windows.Media.Imaging {
 			BitmapImage bitmap = new BitmapImage ();
 			bitmap.SetValue (BitmapImage.UriSourceProperty, corruptImage);
 		}
-		
-		
 	}
 }

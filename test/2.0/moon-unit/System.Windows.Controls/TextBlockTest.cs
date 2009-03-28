@@ -46,7 +46,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("Extents are slightly off (27,17) instead of (28,16), likely due to font metrics")]
 		public void MeasureTest ()
 		{
 			Border b = new Border ();
@@ -61,7 +61,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("Extents are slightly off (104,34) instead of (107,32), likely due to font metrics")]
 		public void MeasureNewlineTest ()
 		{
 			Border b = new Border ();
@@ -76,7 +76,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("Extents are slightly off (44,17) instead of (44,16), likely due to font metrics")]
 		public void MeasureTooLongLineTest ()
 		{
 			Border b = new Border ();
@@ -92,7 +92,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("Extents are slightly off (32,118) instead of (32,112), likely due to font metrics")]
 		public void MeasureTooLongLineWrapTest ()
 		{
 			Border b = new Border ();
@@ -109,7 +109,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("Pre-Measure()'d Extents are slightly off likely due to font metrics, Post-Measure() extents off definitely due to font metrics")]
 		public void ArrangeTooLongLineTest ()
 		{
 			Border b = new Border ();
@@ -119,27 +119,27 @@ namespace MoonTest.System.Windows.Controls {
 			b.Child = tb;
 			b.Width = 44;
 
-			Assert.IsTrue (tb.ActualWidth < 202.4 && tb.ActualWidth > 202.3, "tb.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (16, tb.ActualHeight, "tb.ActualHeight");
+			//Assert.IsTrue (tb.ActualWidth < 202.4 && tb.ActualWidth > 202.3, "1. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			//Assert.AreEqual (16, tb.ActualHeight, "1. tb.ActualHeight");
 
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			
-			Assert.AreEqual (new Size (44,16), tb.DesiredSize, "tb.DesiredSize 0");
-			Assert.AreEqual (new Size (44,16), b.DesiredSize, "1b.DesiredSize 0");
-			Assert.IsTrue (tb.ActualWidth < 202.4 && tb.ActualWidth > 202.3, "tb.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (16, tb.ActualHeight, "tb.ActualHeight");
+			Assert.AreEqual (new Size (44,16), tb.DesiredSize, "2. tb.DesiredSize");
+			Assert.AreEqual (new Size (44,16), b.DesiredSize, "2. b.DesiredSize");
+			Assert.IsTrue (tb.ActualWidth < 202.4 && tb.ActualWidth > 202.3, "2. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (16, tb.ActualHeight, "2. tb.ActualHeight");
 
 			b.Arrange (new Rect (0,0, b.DesiredSize.Width, b.DesiredSize.Height));
 
-			Assert.AreEqual (new Size (44,16), tb.DesiredSize, "tb.DesiredSize 1");
-			Assert.AreEqual (new Size (44,16), b.DesiredSize, "b.DesiredSize 1");
-			Assert.IsTrue (tb.ActualWidth > 202.3 && tb.ActualWidth < 202.4,"tb.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (16, tb.ActualHeight, "tb.ActualHeight");
-			Assert.AreEqual (new Size (44,16), new Size (b.ActualWidth, b.ActualHeight), "b.Actual*");
+			Assert.AreEqual (new Size (44,16), tb.DesiredSize, "3. tb.DesiredSize");
+			Assert.AreEqual (new Size (44,16), b.DesiredSize, "3. b.DesiredSize");
+			Assert.IsTrue (tb.ActualWidth > 202.3 && tb.ActualWidth < 202.4,"3. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (16, tb.ActualHeight, "3. tb.ActualHeight");
+			Assert.AreEqual (new Size (44,16), new Size (b.ActualWidth, b.ActualHeight), "3. b.Actual*");
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("TextBlock is wrapping text pre-Measure() when it shouldn't be")]
 		public void ArrangeTooLongLineWrapMeasureTest ()
 		{
 			Border b = new Border ();
@@ -151,17 +151,17 @@ namespace MoonTest.System.Windows.Controls {
 			// notice this is on the border not the textblock
 			b.Width = 44;
 
-			Assert.IsTrue (tb.ActualWidth < 202.4 && tb.ActualWidth > 202.3, "tb.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (16, tb.ActualHeight, "tb.ActualHeight");
+			Assert.IsTrue (tb.ActualWidth < 202.4 && tb.ActualWidth > 202.3, "1. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (16, tb.ActualHeight, "1. tb.ActualHeight");
 
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 
-			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth1 is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (560, tb.ActualHeight, "tb.ActualHeight1");
+			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "2. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (560, tb.ActualHeight, "2. tb.ActualHeight");
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("Pre-Measure()'d ActualWidth is 0!?!?")]
 		public void ArrangeTooLongLocal_LineWrapMeasureTest ()
 		{
 			Border b = new Border ();
@@ -173,17 +173,17 @@ namespace MoonTest.System.Windows.Controls {
 			// notice this is on the textblock not the border
 			tb.Width = 44;
 
-			Assert.IsTrue (tb.ActualWidth < 34 && tb.ActualWidth > 33, "tb.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (112, tb.ActualHeight, "tb.ActualHeight");
+			Assert.IsTrue (tb.ActualWidth < 34 && tb.ActualWidth > 33, "1. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (112, tb.ActualHeight, "1. tb.ActualHeight");
 
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 
-			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth1 is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (560, tb.ActualHeight, "tb.ActualHeight1");
+			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "2. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (560, tb.ActualHeight, "2. tb.ActualHeight");
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("TextBlock is wrapping text pre-Measure() when it shouldn't be")]
 		public void ArrangeTooLongLineWrapMeasureReverseTest ()
 		{
 			Border b = new Border ();
@@ -204,7 +204,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("Pre-Measure()'d ActualWidth is 0!?!?")]
 		public void ArrangeTooLongLocal_LineWrapMeasureReverseTest ()
 		{
 			Border b = new Border ();
@@ -216,63 +216,63 @@ namespace MoonTest.System.Windows.Controls {
 			tb.Text = "Hello and don't you forget Who I am";
 
 			Assert.AreEqual (11, tb.FontSize);
-			Assert.IsTrue (tb.ActualWidth < 34 && tb.ActualWidth > 33, "tb.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (112, tb.ActualHeight, "tb.ActualHeight");
+			Assert.IsTrue (tb.ActualWidth < 34 && tb.ActualWidth > 33, "1. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (112, tb.ActualHeight, "1. tb.ActualHeight");
 
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 
 			Assert.AreEqual (11, tb.FontSize);
-			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth1 is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (560, tb.ActualHeight, "tb.ActualHeight1");
+			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "2. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (560, tb.ActualHeight, "2. tb.ActualHeight");
 
 			tb.Text = "Hello and don't you forget Who I am.";
 
-			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth2 is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (576, tb.ActualHeight, "tb.ActualHeight2");
+			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "3. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (576, tb.ActualHeight, "3. tb.ActualHeight");
 
 			tb.Width = 70;
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 
-			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth3 is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (576, tb.ActualHeight, "tb.ActualHeight3");
+			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "4. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (576, tb.ActualHeight, "4. tb.ActualHeight");
 
 			b.InvalidateMeasure ();
 			tb.InvalidateMeasure ();
 
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			
-			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "tb.ActualWidth4 is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (576, tb.ActualHeight, "tb.ActualHeight4");
+			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "5. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (576, tb.ActualHeight, "5. tb.ActualHeight");
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("Initial ActualHeight is being set to the line height when it should be 0")]
 		public void ComputeActualWidth ()
 		{
-			var c = new TextBlock ();
+			var tb = new TextBlock ();
 			
-			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c.DesiredSize 0");
-			Assert.AreEqual (new Size (0,0), new Size (c.ActualWidth,c.ActualHeight), "c.Actual 0");
+			Assert.AreEqual (new Size (0,0), tb.DesiredSize, "1. tb.DesiredSize");
+			Assert.AreEqual (new Size (0,0), new Size (tb.ActualWidth, tb.ActualHeight), "1. tb.Actual");
 			
-			c.Text = "Hello";
+			tb.Text = "Hello";
 
-			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
-			Assert.IsTrue (c.ActualWidth < 27.6 && c.ActualWidth > 27.5, "c.ActualWidth is " + c.ActualWidth.ToString ());
-			Assert.AreEqual (16, c.ActualHeight, "c.ActualHeight");
+			Assert.AreEqual (new Size (0,0), tb.DesiredSize, "2. tb.DesiredSize");
+			Assert.IsTrue (tb.ActualWidth < 27.6 && tb.ActualWidth > 27.5, "2. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (16, tb.ActualHeight, "2. tb.ActualHeight");
 
-			c.MaxWidth = 25;
-			c.Width = 50;
-			c.MinHeight = 33;
+			tb.MaxWidth = 25;
+			tb.Width = 50;
+			tb.MinHeight = 33;
 
-			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired1");
-			Assert.IsTrue (c.ActualWidth < 27.6 && c.ActualWidth > 27.5, "c.ActualWidth1 is " + c.ActualWidth.ToString ());
-			Assert.AreEqual (16, c.ActualHeight, "c.ActualHeight1");
+			Assert.AreEqual (new Size (0,0), tb.DesiredSize, "3. tb.DesiredSize");
+			Assert.IsTrue (tb.ActualWidth < 27.6 && tb.ActualWidth > 27.5, "3. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (16, tb.ActualHeight, "3. tb.ActualHeight");
 
-			c.Measure (new Size (100, 100));
+			tb.Measure (new Size (100, 100));
 
-			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired2");
-			Assert.IsTrue (c.ActualWidth < 27.6 && c.ActualWidth > 27.5, "c.ActualWidth2 is " + c.ActualWidth.ToString ());
-			Assert.AreEqual (16, c.ActualHeight, "c.ActualHeight2");
+			Assert.AreEqual (new Size (0,0), tb.DesiredSize, "4. tb.DesiredSize");
+			Assert.IsTrue (tb.ActualWidth < 27.6 && tb.ActualWidth > 27.5, "4. tb.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (16, tb.ActualHeight, "4. tb.ActualHeight");
 		}
 	}
 }
