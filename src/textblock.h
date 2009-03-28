@@ -166,8 +166,10 @@ class TextBlock : public FrameworkElement {
 	
 	double actual_height;
 	double actual_width;
-	bool setvalue;
-	bool dirty;
+	
+	int setvalue:1;
+	int was_set:1;
+	int dirty:1;
 	
 	Size GetSize ();
 	

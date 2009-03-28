@@ -1,5 +1,14 @@
 2009-03-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textblock.cpp (Layout): Fixed the special-case logic. If no text
+	has ever been set, then the extents should be 0,0. However, if
+	they have ever been set but the text is currently empty, then use
+	the font height as the ActualHeight value. Use a state variable to
+	check if the text has ever been set rather than trying to check
+	other things which are not reliable.
+
+2009-03-27  Jeffrey Stedfast  <fejj@novell.com>
+
 	* size.h (Size::GrowBy): If the width or height are infinite going
 	in, then leave them infinite going out.
 

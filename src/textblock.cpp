@@ -207,6 +207,7 @@ TextBlock::TextBlock ()
 	actual_height = 0.0;
 	actual_width = 0.0;
 	setvalue = true;
+	was_set = false;
 	dirty = true;
 	
 	font = new TextFontDescription ();
@@ -403,6 +404,9 @@ TextBlock::UpdateLayoutAttributes ()
 				break;
 			}
 		}
+		
+		if (inlines->GetCount () > 0)
+			was_set = true;
 	}
 	
 	layout->SetText (GetText (), length);
@@ -426,34 +430,36 @@ TextBlock::UpdateFontDescriptions ()
 void
 TextBlock::Layout (Size constraint)
 {
-	InlineCollection *inlines = GetInlines ();
-	
-	if (!GetText ()) {
-		// If the TextBlock's Text property is not set,
-		// then don't modify ActualHeight.
-		// Fixes bug #435798
-		// actual_height = 0.0;
-		actual_width = 0.0;
-		goto done;
-	} else if (inlines->GetCount () == 0) {
+	if (was_set && !GetValueNoDefault (TextBlock::TextProperty)) {
+		// FIXME: Does this only apply if the Text is set to
+		// String.Empty?  If so, then TextLayout::Layout()
+		// will handle this for us...
+		
 		// If the Text property had been set once upon a time,
 		// but is currently empty, Silverlight seems to set
 		// the ActualHeight property to the font height. See
 		// bug #405514 for details.
 		TextFont *font = this->font->GetFont ();
 		actual_height = font->Height ();
+		actual_width = 0.0;
 		font->unref ();
-		goto done;
+		dirty = false;
+		return;
+	} else if (!was_set) {
+		// If the Text property has never been set, then its
+		// extents should both be 0.0. See bug #435798 for
+		// details.
+		actual_height = 0.0;
+		actual_width = 0.0;
+		dirty = false;
+		return;
 	}
 	
 	layout->SetMaxWidth (constraint.width);
 	layout->Layout ();
+	dirty = false;
 	
 	layout->GetActualExtents (&actual_width, &actual_height);
-	
- done:
-	
-	dirty = false;
 }
 
 void
