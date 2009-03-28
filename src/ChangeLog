@@ -1,7 +1,3 @@
-2009-03-28  Sebastien Pouliot  <sebastien@ximian.com> 
-
-	* security.c: Enable CoreCLR by default (test run on bots)
-
 2009-03-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* deployment.cpp|h (Initialize): If a platform directory is

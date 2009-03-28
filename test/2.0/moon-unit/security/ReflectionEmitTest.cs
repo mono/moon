@@ -44,7 +44,7 @@ namespace MoonTest.Security {
 	//	http://msdn.microsoft.com/en-us/library/9syytdak(VS.95).aspx
 
 	[TestClass]
-//	[Ignore ("needs coreclr enabled")]
+	[Ignore ("needs coreclr enabled")]
 	public class ReflectionEmitTest {
 
 		private static DynamicMethod Create (Type type)
