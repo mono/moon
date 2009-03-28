@@ -1,3 +1,12 @@
+2009-03-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (GetSize): Check isnan() rather than 0.
+	(Render): The dirty flag should never be set at this point, so
+	don't bother with it. Set TextLayout's AvailableWidth to our
+	ActualWidth value.
+	(ArrangeOverride): Don't set dirty back to true after we've
+	arranged, this is why dirty was true in ::Render()
+
 2009-03-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.cpp (Layout): Fixed the special-case logic. If no text

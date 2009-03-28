@@ -270,10 +270,10 @@ TextBlock::GetSize ()
 {
 	Size size = Size (GetWidth (), GetHeight ());
 	
-	if (size.height == 0)
+	if (isnan (size.height))
 		size.height = INFINITY;
 	
-	if (size.width == 0)
+	if (isnan (size.width))
 		size.width = INFINITY;
 	
 	return size;
@@ -282,55 +282,37 @@ TextBlock::GetSize ()
 void
 TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 {
-	Thickness padding = *GetPadding ();
-	Size size = GetSize ().GrowBy (-padding);
-	
-	if (dirty)
-		Layout (size);
+	layout->SetAvailableWidth (GetActualWidth ());
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
-	layout->SetAvailableWidth (size.width);
 	Paint (cr);
 	cairo_restore (cr);
 }
 
-#define USE_FE 0
 void
 TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-#if USE_FE
-	FrameworkElement::GetSizeForBrush (cr, width, height);
-#else
 	*width = actual_width;
 	*height = actual_height;
-#endif	
 }
 
 void
 TextBlock::ComputeBounds ()
 {
-#if USE_FE
-	FrameworkElement::ComputeBounds ();
-#else
 	Size total = Size (actual_width, actual_height);
 	total.GrowBy (*GetPadding ());
 	extents = Rect (0,0,total.width, total.height);
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	bounds_with_children = bounds;
-#endif
 }
 
 Point
 TextBlock::GetTransformOrigin ()
 {
-#if USE_FE
-	return FrameworkElement::GetTransformOrigin ();
-#else
 	Point *user_xform_origin = GetRenderTransformOrigin ();
 	return Point (actual_width * user_xform_origin->x, 
 		      actual_height * user_xform_origin->y);
-#endif
 }
 
 Size
@@ -358,7 +340,6 @@ TextBlock::ArrangeOverride (Size finalSize)
 	
 	constraint = finalSize.GrowBy (-padding);
 	Layout (constraint);
-	dirty = true;
 	
 	arranged = Size (actual_width, actual_height).GrowBy (padding);
 	
