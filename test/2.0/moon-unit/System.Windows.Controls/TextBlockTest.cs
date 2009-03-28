@@ -57,7 +57,7 @@ namespace MoonTest.System.Windows.Controls {
 			
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			
-			Assert.AreEqual (new Size (28,16), tb.DesiredSize, "tb.DesiredSize 0");
+			Assert.AreEqual (new Size (28,16), tb.DesiredSize, "tb.DesiredSize");
 		}
 
 		[TestMethod]
@@ -72,7 +72,7 @@ namespace MoonTest.System.Windows.Controls {
 			
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			
-			Assert.AreEqual (new Size (107,32), tb.DesiredSize, "tb.DesiredSize 0");
+			Assert.AreEqual (new Size (107,32), tb.DesiredSize, "tb.DesiredSize");
 		}
 
 		[TestMethod]
