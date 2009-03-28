@@ -116,8 +116,8 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		FullInvalidate (p->x != 0.0 || p->y != 0.0);
 
 		if (IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ())) {
-			SetActualWidth (0);
-			SetActualHeight (0);
+			ClearValue (FrameworkElement::ActualHeightProperty);
+			ClearValue (FrameworkElement::ActualWidthProperty);
 		} else {
 			Size actual (GetMinWidth (), GetMinHeight ());
 			actual = actual.Max (GetWidth (), GetHeight ());

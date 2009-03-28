@@ -1,5 +1,9 @@
 2009-03-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	* frameworkelement.cpp (OnPropertyChanged): Instead of setting
+	ActualWidth/Height to 0 in the non-LayoutContainer case, use
+	ClearValue() those properties instead. Fixes some TextBlock cases.
+
 	* textblock.cpp (GetSize): Check isnan() rather than 0.
 	(Render): The dirty flag should never be set at this point, so
 	don't bother with it. Set TextLayout's AvailableWidth to our
