@@ -294,7 +294,7 @@ main (int argc, char **argv)
 	}
 
 	gtk_init (&argc, &argv);
-	runtime_init_browser();
+	runtime_init_browser(NULL);
 
 	window = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
 
