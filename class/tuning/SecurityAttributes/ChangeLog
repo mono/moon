@@ -1,3 +1,8 @@
+2009-03-27  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Makefile.am: Use the plugin directory as the assembly source
+	to analyze.
+
 2009-03-27  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* detect-sc.cs: Handle interfaces and method overrides since the

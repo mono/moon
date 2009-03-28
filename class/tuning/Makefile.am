@@ -1,7 +1,7 @@
 SUBDIRS=SecurityAttributes
 
 LINKER = ../lib/tuner/monolinker.exe
-GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib /package 2.1
+#GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib /package 2.1
 
 TUNER_DESCS =	\
 	Descriptors/mscorlib.xml	\
@@ -91,19 +91,17 @@ $(TUNER_INSTALL_DIR):
 end-install:	\
 	inst-mscorlib.dll	\
 	inst-smcs.exe	\
-	gac-System	\
-	gac-System.Net	\
-	gac-System.Xml	\
-	gac-System.Xml.Linq	\
-	gac-System.Core	\
-	gac-System.Runtime.Serialization	\
-	gac-System.ServiceModel	\
-	gac-System.ServiceModel.Web	\
-	gac-Mono.CompilerServices.SymbolWriter
+	inst-System.dll	\
+	inst-System.Net.dll	\
+	inst-System.Xml.dll	\
+	inst-System.Xml.Linq.dll	\
+	inst-System.Core.dll	\
+	inst-System.Runtime.Serialization.dll	\
+	inst-System.ServiceModel.dll	\
+	inst-System.ServiceModel.Web.dll	\
+	inst-Mono.CompilerServices.SymbolWriter.dll
 
 inst-%: $(OUTPUT_DIR)/%
-	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(TUNER_INSTALL_DIR)/$*
-	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(TUNER_INSTALL_DIR)/$*.mdb
+	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(prefix)/lib/moon/plugin/$*
+	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(prefix)/lib/moon/plugin/$*.mdb
 
-gac-%: $(OUTPUT_DIR)/%.dll
-	$(GACUTIL) /f /i $(OUTPUT_DIR)/$*.dll
