@@ -92,7 +92,7 @@ class Deployment : public DependencyObject {
 	static void SetCurrent (Deployment* value);
 	static void SetCurrent (Deployment* value, bool domain);
 
-	static bool Initialize ();
+	static bool Initialize (const char *platform_dir);
 	static void RegisterThread (Deployment *deployment);
 
 	void UnrefDelayed (EventObject *obj);

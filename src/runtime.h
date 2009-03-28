@@ -406,10 +406,10 @@ private:
 
 G_BEGIN_DECLS
 
-void     runtime_init (guint64 flags);
+void     runtime_init (const char *plugin_dir, guint64 flags);
 
-void     runtime_init_browser ();
-void     runtime_init_desktop ();
+void     runtime_init_browser (const char *plugin_dir);
+void     runtime_init_desktop (void);
 
 GList   *runtime_get_surface_list (void);
 

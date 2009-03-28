@@ -1,3 +1,13 @@
+2009-03-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* deployment.cpp|h (Initialize): If a platform directory is
+	specified then we initialize the CoreCLR security model.
+	* runtime.cpp|h: Initialize the runtime using the plugin
+	directory (when applicable, i.e. browser mode).
+	* security.c|h: New. Handle the CoreCLR security model 
+	initialization and platform code detection.
+	* Makefile.am: Add security.[c|h] to the build
+
 2009-03-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* frameworkelement.cpp (OnPropertyChanged): Instead of setting

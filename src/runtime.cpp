@@ -1932,15 +1932,15 @@ Surface::IsVersionSupported (const char *version_list)
 }
 
 void
-runtime_init_browser ()
+runtime_init_browser (const char *plugin_dir)
 {
-	runtime_init (RUNTIME_INIT_BROWSER);
+	runtime_init (plugin_dir, RUNTIME_INIT_BROWSER);
 }
 
 void
 runtime_init_desktop ()
 {
-	runtime_init (RUNTIME_INIT_DESKTOP);
+	runtime_init (NULL, RUNTIME_INIT_DESKTOP);
 }
 
 static gint64
@@ -1996,7 +1996,7 @@ get_flags (gint64 def, const char *envname, struct env_options options[])
 }
 
 void
-runtime_init (guint64 flags)
+runtime_init (const char *plugin_dir, guint64 flags)
 {
 
 	if (inited)
@@ -2029,7 +2029,7 @@ runtime_init (guint64 flags)
 	
 	moonlight_flags = flags;
 	
-	Deployment::Initialize ();
+	Deployment::Initialize (plugin_dir);
 	xaml_init ();
 	font_init ();
 	downloader_init ();

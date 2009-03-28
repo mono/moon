@@ -76,6 +76,7 @@ libmoon_include_headers = 	\
 	region.h		\
 	resources.h		\
 	runtime.h		\
+	security.h		\
 	shape.h			\
 	size.h			\
 	style.h			\
@@ -170,6 +171,7 @@ libmoon_la_SOURCES = 		\
 	region.cpp		\
 	resources.cpp		\
 	runtime.cpp		\
+	security.c		\
 	shape.cpp		\
 	size.cpp		\
 	style.cpp		\

@@ -16,6 +16,7 @@
 #include "deployment.h"
 #include "debug.h"
 #include "utils.h"
+#include "security.h"
 
 #include <stdlib.h>
 #include <mono/jit/jit.h>
@@ -50,7 +51,7 @@ public:
 };
  
 bool
-Deployment::Initialize()
+Deployment::Initialize (const char *platform_dir)
 {
 	const gchar *trace_options;
 	const gchar *moon_path;
@@ -74,8 +75,20 @@ Deployment::Initialize()
 
 	mono_config_parse (NULL);
 
-	if (g_getenv ("MOON_SECURITY") != NULL)
-		mono_security_enable_core_clr ();
+	/* if a platform directory is provided then we're running inside the browser and CoreCLR should be enabled */
+	if (platform_dir) {
+		security_enable_coreclr (platform_dir);
+
+		/* XXX confine mono itself to the platform directory XXX incomplete */
+		g_setenv ("MONO_PATH", platform_dir, true);
+		g_unsetenv ("MONO_GAC_PREFIX");
+	} else {
+		moon_path = g_getenv ("MOON_PATH");
+		if (moon_path != NULL && moon_path [0] != 0) {
+			printf ("Setting moonlight root directory to: %s\n", moon_path);
+			mono_assembly_setrootdir (moon_path);
+		}
+	}
 
 	trace_options = g_getenv ("MOON_TRACE");
 	if (trace_options != NULL){
@@ -83,12 +96,6 @@ Deployment::Initialize()
 		mono_jit_set_trace_options (trace_options);
 	}
 	
-	moon_path = g_getenv ("MOON_PATH");
-	if (moon_path != NULL && moon_path [0] != 0) {
-		printf ("Setting moonlight root directory to: %s\n", moon_path);
-		mono_assembly_setrootdir (moon_path);
-	}
-
 	profiler = g_getenv ("MOON_PROFILER");
 	if (profiler != NULL) {
 		printf ("Setting profiler to: %s\n", profiler);
