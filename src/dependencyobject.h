@@ -214,18 +214,20 @@ private:
 
 
 struct PropertyChangedEventArgs {
-private:
-	DependencyProperty *obj;
-	int id;
-	
 public:
 	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv) : obj (p), id (pid), old_value(ov), new_value (nv) { }
 
-	Value *old_value;
-	Value *new_value;
-	
 	DependencyProperty *GetProperty () { return obj; }
 	int GetId () { return id; }
+	Value* GetOldValue () { return old_value; }
+	Value* GetNewValue () { return new_value; }
+
+private:
+	DependencyProperty *obj;
+	int id;
+
+	Value *old_value;
+	Value *new_value;
 };
 
 typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer closure);

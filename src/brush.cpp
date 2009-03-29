@@ -618,10 +618,10 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if (args->GetId () == ImageBrush::DownloadProgressProperty) {
-		image->SetValue (Image::DownloadProgressProperty, args->new_value);
+		image->SetValue (Image::DownloadProgressProperty, args->GetNewValue());
 	}
 	else if (args->GetId () == ImageBrush::ImageSourceProperty) {
-		image->SetValue (Image::SourceProperty, args->new_value);
+		image->SetValue (Image::SourceProperty, args->GetNewValue());
 	}
 
 	NotifyListenersOfPropertyChange (args);
@@ -938,7 +938,7 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if (args->GetId () == VideoBrush::SourceNameProperty) {
-		char *name = args->new_value ? args->new_value->AsString () : NULL;
+		char *name = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
 		DependencyObject *obj;
 		
 		if (media != NULL) {
@@ -1083,7 +1083,7 @@ VisualBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 
 	if (args->GetId () == VisualBrush::VisualProperty) {
 		// XXX we really need a way to disconnect from the preview visual
-		UIElement *v = args->new_value->AsUIElement();
+		UIElement *v = args->GetNewValue()->AsUIElement();
 		v->AddHandler (((UIElement*)v)->InvalidatedEvent, update_brush, this);
 	}
 

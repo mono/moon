@@ -193,19 +193,19 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetId () == Panel::ChildrenProperty) {
 		Collection *collection;
 		
-		if (args->old_value) {
-			collection = args->old_value->AsCollection ();
+		if (args->GetOldValue()) {
+			collection = args->GetOldValue()->AsCollection ();
 			for (int i = 0; i < collection->GetCount (); i++)
 				ElementRemoved (collection->GetValueAt (i)->AsUIElement());
 		}
 		
-		if (args->new_value) {
-			collection = args->new_value->AsCollection ();
+		if (args->GetNewValue()) {
+			collection = args->GetNewValue()->AsCollection ();
 			for (int i = 0; i < collection->GetCount (); i++)
 				ElementAdded (collection->GetValueAt (i)->AsUIElement ());
 		}
 
-		SetSubtreeObject (args->new_value ? args->new_value->AsCollection() : NULL);
+		SetSubtreeObject (args->GetNewValue() ? args->GetNewValue()->AsCollection() : NULL);
 
 		UpdateBounds();
 	}
@@ -229,21 +229,21 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 	if (col == GetChildren ()) {
 		MoonError error;
 
-		switch (args->action) {
+		switch (args->GetChangedAction()) {
 		case CollectionChangedActionReplace:
-			if (args->old_value->Is(Type::FRAMEWORKELEMENT))
-				args->old_value->AsFrameworkElement()->SetLogicalParent (NULL, &error /* XXX unused */);
-			ElementRemoved (args->old_value->AsUIElement ());
+			if (args->GetOldItem()->Is(Type::FRAMEWORKELEMENT))
+				args->GetOldItem()->AsFrameworkElement()->SetLogicalParent (NULL, &error /* XXX unused */);
+			ElementRemoved (args->GetOldItem()->AsUIElement ());
 			// now fall thru to Add
 		case CollectionChangedActionAdd:
-			ElementAdded (args->new_value->AsUIElement ());
-			if (args->new_value->Is(Type::FRAMEWORKELEMENT))
-				args->new_value->AsFrameworkElement()->SetLogicalParent (this, &error /* XXX unused */);
+			ElementAdded (args->GetNewItem()->AsUIElement ());
+			if (args->GetNewItem()->Is(Type::FRAMEWORKELEMENT))
+				args->GetNewItem()->AsFrameworkElement()->SetLogicalParent (this, &error /* XXX unused */);
 			break;
 		case CollectionChangedActionRemove:
-			if (args->old_value->Is(Type::FRAMEWORKELEMENT))
-				args->old_value->AsFrameworkElement()->SetLogicalParent (NULL, &error /* XXX unused */);
-			ElementRemoved (args->old_value->AsUIElement ());
+			if (args->GetOldItem()->Is(Type::FRAMEWORKELEMENT))
+				args->GetOldItem()->AsFrameworkElement()->SetLogicalParent (NULL, &error /* XXX unused */);
+			ElementRemoved (args->GetOldItem()->AsUIElement ());
 			break;
 		case CollectionChangedActionClearing:
 			for (int i = 0; i < col->GetCount (); i++) {

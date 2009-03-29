@@ -52,7 +52,7 @@ void
 BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == BitmapImage::UriSourceProperty) {
-		Uri *uri = args->new_value ? args->new_value->AsUri () : NULL;
+		Uri *uri = args->GetNewValue() ? args->GetNewValue()->AsUri () : NULL;
 
 		CleanUp ();
 

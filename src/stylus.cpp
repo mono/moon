@@ -602,18 +602,18 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 	
 	old_bounds = bounds;
 	
-	switch (args->action) {
+	switch (args->GetChangedAction ()) {
 	case CollectionChangedActionAdd:
 		// add previous point to dirty
-		if (args->index > 0)
-			dirty = AddStylusPointToBounds (col->GetValueAt (args->index - 1)->AsStylusPoint (), dirty);
+		if (args->GetIndex() > 0)
+			dirty = AddStylusPointToBounds (col->GetValueAt (args->GetIndex() - 1)->AsStylusPoint (), dirty);
 		
 		// add new point to dirty
-		dirty = AddStylusPointToBounds (args->new_value->AsStylusPoint (), dirty);
+		dirty = AddStylusPointToBounds (args->GetNewItem()->AsStylusPoint (), dirty);
 		
 		// add next point to dirty
-		if (args->index + 1 < col->GetCount ())
-			dirty = AddStylusPointToBounds (col->GetValueAt (args->index + 1)->AsStylusPoint (), dirty);
+		if (args->GetIndex() + 1 < col->GetCount ())
+			dirty = AddStylusPointToBounds (col->GetValueAt (args->GetIndex() + 1)->AsStylusPoint (), dirty);
 		
 		// update official bounds
 		bounds = bounds.Union (dirty);
@@ -871,15 +871,15 @@ InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		// be smart about invalidating only the union of the
 		// old stroke bounds and the new stroke bounds
 
-		if (args->old_value) {
-			StrokeCollection *strokes = args->old_value->AsStrokeCollection();
+		if (args->GetOldValue()) {
+			StrokeCollection *strokes = args->GetOldValue()->AsStrokeCollection();
 			if (strokes)
 				Invalidate (strokes->GetBounds().Transform (&absolute_xform));
 			//XXX else ?
 		}
 
-		if (args->new_value) {
-			StrokeCollection *strokes = args->new_value->AsStrokeCollection();
+		if (args->GetNewValue()) {
+			StrokeCollection *strokes = args->GetNewValue()->AsStrokeCollection();
 			if (strokes)
 				Invalidate (strokes->GetBounds().Transform (&absolute_xform));
 			//XXX else ?
@@ -901,22 +901,22 @@ InkPresenter::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *
 		return;
 	}
 	
-	switch (args->action) {
+	switch (args->GetChangedAction()) {
 	case CollectionChangedActionAdd:
-		stroke = args->new_value->AsStroke ();
+		stroke = args->GetNewItem()->AsStroke ();
 		Invalidate (stroke->GetBounds().Transform (&absolute_xform));
 		UpdateBounds ();
 		break;
 	case CollectionChangedActionRemove:
-		stroke = args->old_value->AsStroke ();
+		stroke = args->GetOldItem()->AsStroke ();
 		Invalidate (stroke->GetOldBounds ().Transform (&absolute_xform));
 		Invalidate (stroke->GetBounds ().Transform (&absolute_xform));
 		UpdateBounds ();
 		break;
 	case CollectionChangedActionReplace:
-		stroke = args->old_value->AsStroke ();
+		stroke = args->GetOldItem()->AsStroke ();
 		Invalidate (stroke->GetOldBounds ().Transform (&absolute_xform));
-		stroke = args->new_value->AsStroke ();
+		stroke = args->GetNewItem()->AsStroke ();
 		Invalidate (stroke->GetBounds().Transform (&absolute_xform));
 		UpdateBounds ();
 		break;

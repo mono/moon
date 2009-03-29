@@ -34,17 +34,17 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 	}
 	
 	if (args->GetId () == ContentControl::ContentProperty) {
-		if (args->old_value && args->old_value->Is(Type::FRAMEWORKELEMENT)) {
-			args->old_value->AsFrameworkElement()->SetLogicalParent (NULL, error);
+		if (args->GetOldValue() && args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
+			args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
 			if (error->number)
 				return;
 		}
-		if (args->new_value && args->new_value->Is(Type::FRAMEWORKELEMENT)) {
-			args->new_value->AsFrameworkElement()->SetLogicalParent (this, error);
+		if (args->GetNewValue() && args->GetNewValue()->Is(Type::FRAMEWORKELEMENT)) {
+			args->GetNewValue()->AsFrameworkElement()->SetLogicalParent (this, error);
 			if (error->number)
 				return;
 		}
-		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->old_value, args->new_value));
+		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->GetOldValue(), args->GetNewValue()));
 	}
 	
 	NotifyListenersOfPropertyChange (args);

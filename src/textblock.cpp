@@ -578,7 +578,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args, error);
 		if (args->GetId () == FrameworkElement::WidthProperty) {
-			if (layout->SetMaxWidth (args->new_value->AsDouble ()))
+			if (layout->SetMaxWidth (args->GetNewValue()->AsDouble ()))
 				dirty = true;
 			
 			UpdateBounds (true);
@@ -588,34 +588,34 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 	
 	if (args->GetId () == TextBlock::FontFamilyProperty) {
-		FontFamily *family = args->new_value ? args->new_value->AsFontFamily () : NULL;
+		FontFamily *family = args->GetNewValue() ? args->GetNewValue()->AsFontFamily () : NULL;
 		font->SetFamily (family ? family->source : NULL);
 		UpdateFontDescriptions ();
 		dirty = true;
 	} else if (args->GetId () == TextBlock::FontSizeProperty) {
-		double size = args->new_value->AsDouble ();
+		double size = args->GetNewValue()->AsDouble ();
 		font->SetSize (size);
 		UpdateFontDescriptions ();
 		dirty = true;
 	} else if (args->GetId () == TextBlock::FontStretchProperty) {
-		FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
+		FontStretches stretch = (FontStretches) args->GetNewValue()->AsInt32 ();
 		font->SetStretch (stretch);
 		UpdateFontDescriptions ();
 		dirty = true;
 	} else if (args->GetId () == TextBlock::FontStyleProperty) {
-		FontStyles style = (FontStyles) args->new_value->AsInt32 ();
+		FontStyles style = (FontStyles) args->GetNewValue()->AsInt32 ();
 		font->SetStyle (style);
 		UpdateFontDescriptions ();
 		dirty = true;
 	} else if (args->GetId () == TextBlock::FontWeightProperty) {
-		FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
+		FontWeights weight = (FontWeights) args->GetNewValue()->AsInt32 ();
 		font->SetWeight (weight);
 		UpdateFontDescriptions ();
 		dirty = true;
 	} else if (args->GetId () == TextBlock::TextProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Text property
-			const char *text = args->new_value ? args->new_value->AsString () : NULL;
+			const char *text = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
 			
 			if (!SetTextInternal (text)) {
 				// no change so nothing to invalidate
@@ -632,11 +632,11 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == TextBlock::TextDecorationsProperty) {
 		dirty = true;
 	} else if (args->GetId () == TextBlock::TextWrappingProperty) {
-		dirty = layout->SetTextWrapping ((TextWrapping) args->new_value->AsInt32 ());
+		dirty = layout->SetTextWrapping ((TextWrapping) args->GetNewValue()->AsInt32 ());
 	} else if (args->GetId () == TextBlock::InlinesProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Inlines property
-			InlineCollection *inlines = args->new_value ? args->new_value->AsInlineCollection () : NULL;
+			InlineCollection *inlines = args->GetNewValue() ? args->GetNewValue()->AsInlineCollection () : NULL;
 			
 			setvalue = false;
 			// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
@@ -649,11 +649,11 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			invalidate = false;
 		}
 	} else if (args->GetId () == TextBlock::LineStackingStrategyProperty) {
-		dirty = layout->SetLineStackingStrategy ((LineStackingStrategy) args->new_value->AsInt32 ());
+		dirty = layout->SetLineStackingStrategy ((LineStackingStrategy) args->GetNewValue()->AsInt32 ());
 	} else if (args->GetId () == TextBlock::LineHeightProperty) {
-		dirty = layout->SetLineHeight (args->new_value->AsDouble ());
+		dirty = layout->SetLineHeight (args->GetNewValue()->AsDouble ());
 	} else if (args->GetId () == TextBlock::TextAlignmentProperty) {
-		dirty = layout->SetTextAlignment ((TextAlignment) args->new_value->AsInt32 ());
+		dirty = layout->SetTextAlignment ((TextAlignment) args->GetNewValue()->AsInt32 ());
 	} else if (args->GetId () == TextBlock::PaddingProperty) {
 		dirty = true;
 	}
@@ -690,7 +690,7 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 		return;
 	}
 	
-	switch (args->action) {
+	switch (args->GetChangedAction()) {
 	case CollectionChangedActionAdd:
 	case CollectionChangedActionRemove:
 	case CollectionChangedActionReplace:

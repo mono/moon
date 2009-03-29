@@ -732,7 +732,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 	
 	if (args->GetId () == Glyphs::FontUriProperty) {
-		Uri *uri = args->new_value ? args->new_value->AsUri () : NULL;
+		Uri *uri = args->GetNewValue() ? args->GetNewValue()->AsUri () : NULL;
 		Surface *surface = GetSurface ();
 		
 		if (downloader) {
@@ -752,9 +752,9 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		
 		invalidate = false;
 	} else if (args->GetId () == Glyphs::FillProperty) {
-		fill = args->new_value ? args->new_value->AsBrush() : NULL;
+		fill = args->GetNewValue() ? args->GetNewValue()->AsBrush() : NULL;
 	} else if (args->GetId () == Glyphs::UnicodeStringProperty) {
-		const char *str = args->new_value ? args->new_value->AsString () : NULL;
+		const char *str = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
 		g_free (text);
 		
 		if (str != NULL)
@@ -764,24 +764,24 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		
 		dirty = true;
 	} else if (args->GetId () == Glyphs::IndicesProperty) {
-		const char *str = args->new_value ? args->new_value->AsString () : NULL;
+		const char *str = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
 		SetIndicesInternal (str);
 		dirty = true;
 	} else if (args->GetId () == Glyphs::FontRenderingEmSizeProperty) {
-		double size = args->new_value->AsDouble();
+		double size = args->GetNewValue()->AsDouble();
 		desc->SetSize (size);
 		dirty = true;
 	} else if (args->GetId () == Glyphs::OriginXProperty) {
-		origin_x = args->new_value->AsDouble ();
+		origin_x = args->GetNewValue()->AsDouble ();
 		dirty = true;
 	} else if (args->GetId () == Glyphs::OriginYProperty) {
-		origin_y = args->new_value->AsDouble ();
+		origin_y = args->GetNewValue()->AsDouble ();
 		origin_y_specified = true;
 		dirty = true;
 	} else if (args->GetId () == Glyphs::StyleSimulationsProperty) {
 		// Silverlight 1.0 does not implement this property but, if present, 
 		// requires it to be 0 (or else nothing is displayed)
-		bool none = (args->new_value->AsInt32 () == StyleSimulationsNone);
+		bool none = (args->GetNewValue()->AsInt32 () == StyleSimulationsNone);
 		dirty = (none != simulation_none);
 		simulation_none = none;
 	}

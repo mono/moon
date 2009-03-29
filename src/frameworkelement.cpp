@@ -129,8 +129,8 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		InvalidateMeasure ();
 	}
 	else if (args->GetId () == FrameworkElement::StyleProperty) {
-		if (args->new_value) {
-			Style *s = args->new_value->AsStyle ();
+		if (args->GetNewValue()) {
+			Style *s = args->GetNewValue()->AsStyle ();
 			if (s) {
 				// this has a side effect of calling
 				// ProviderValueChanged on all values

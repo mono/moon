@@ -1366,12 +1366,12 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		SetUriSource (GetSource ());		
 	} else if (args->GetId () == MediaElement::AudioStreamIndexProperty) {
 		if (mplayer)
-			mplayer->SetAudioStreamIndex (args->new_value->AsInt32 ());
+			mplayer->SetAudioStreamIndex (args->GetNewValue()->AsInt32 ());
 	} else if (args->GetId () == MediaElement::AutoPlayProperty) {
 		// no state to change
 	} else if (args->GetId () == MediaElement::BalanceProperty) {
 		if (mplayer)
-			mplayer->SetBalance (args->new_value->AsDouble ());
+			mplayer->SetBalance (args->GetNewValue()->AsDouble ());
 	} else if (args->GetId () == MediaElement::BufferingProgressProperty) {
 		// read-only property
 	} else if (args->GetId () == MediaElement::BufferingTimeProperty) {
@@ -1390,7 +1390,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		// This should really not happen, we use a property provider for this property.
 	} else if (args->GetId () == MediaElement::IsMutedProperty) {
 		if (mplayer)
-			mplayer->SetMuted (args->new_value->AsBool ());
+			mplayer->SetMuted (args->GetNewValue()->AsBool ());
 	} else if (args->GetId () == MediaElement::MarkersProperty) {
 		// 
 	} else if (args->GetId () == MediaElement::NaturalVideoHeightProperty) {
@@ -1400,21 +1400,21 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		// read-only property
 		flags |= RecalculateMatrix;
 	} else if (args->GetId () == MediaElement::PositionProperty) {
-		Seek (args->new_value->AsTimeSpan ());
+		Seek (args->GetNewValue()->AsTimeSpan ());
 		ClearValue (MediaElement::PositionProperty, false); // We need this, otherwise our property system will return the seeked-to position forever (MediaElementPropertyValueProvider isn't called).
 	} else if (args->GetId () == MediaElement::VolumeProperty) {
 		if (mplayer)
-			mplayer->SetVolume (args->new_value->AsDouble ());
+			mplayer->SetVolume (args->GetNewValue()->AsDouble ());
 	} else if (args->GetId () == FrameworkElement::HeightProperty) {
 		if (!(flags & UpdatingSizeFromMedia)) {
-			if (args->new_value == NULL)
+			if (args->GetNewValue() == NULL)
 				flags |= UseMediaHeight;
 			else
 				flags &= ~UseMediaHeight;
 		}
 	} else if (args->GetId () == FrameworkElement::WidthProperty) {
 		if (!(flags & UpdatingSizeFromMedia)) {
-			if (args->new_value == NULL)
+			if (args->GetNewValue() == NULL)
 				flags |= UseMediaWidth;
 			else
 				flags &= ~UseMediaWidth;

@@ -40,21 +40,21 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	}
 	
 	if (args->GetId () == UserControl::ContentProperty){
-		if (args->old_value) {
-			if (args->old_value->Is(Type::FRAMEWORKELEMENT)) {
-				args->old_value->AsFrameworkElement()->SetLogicalParent (NULL, error);
+		if (args->GetOldValue()) {
+			if (args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
+				args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
 				if (error->number)
 					return;
 			}
-			ElementRemoved (args->old_value->AsUIElement ());
+			ElementRemoved (args->GetOldValue()->AsUIElement ());
 		}
-		if (args->new_value) {
-			if (args->new_value->Is(Type::FRAMEWORKELEMENT)) {
-				args->new_value->AsFrameworkElement()->SetLogicalParent (this, error);
+		if (args->GetNewValue()) {
+			if (args->GetNewValue()->Is(Type::FRAMEWORKELEMENT)) {
+				args->GetNewValue()->AsFrameworkElement()->SetLogicalParent (this, error);
 				if (error->number)
 					return;
 			}
-			ElementAdded (args->new_value->AsUIElement ());
+			ElementAdded (args->GetNewValue()->AsUIElement ());
 		}
 
 		UpdateBounds ();

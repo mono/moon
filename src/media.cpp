@@ -208,7 +208,7 @@ void
 MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == MediaBase::SourceProperty) {
-		const char *uri = args->new_value ? args->new_value->AsString () : NULL;
+		const char *uri = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
 		Surface *surface = GetSurface ();
 					
 		if (surface && AllowDownloads ()) {
@@ -997,12 +997,12 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == FrameworkElement::HeightProperty) {
 		if (!updating_size_from_media)
-			use_media_height = args->new_value == NULL;
+			use_media_height = args->GetNewValue() == NULL;
 	} else if (args->GetId () == FrameworkElement::WidthProperty) {
 		if (!updating_size_from_media)
-			use_media_width = args->new_value == NULL;
+			use_media_width = args->GetNewValue() == NULL;
 	} else if (args->GetId () == Image::SourceProperty) {
-		BitmapImage *source = args->new_value ? args->new_value->AsBitmapImage () : NULL;
+		BitmapImage *source = args->GetNewValue() ? args->GetNewValue()->AsBitmapImage () : NULL;
 
 		if (source == NULL) {
 			MediaBase::SetSource (NULL);

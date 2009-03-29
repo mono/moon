@@ -953,7 +953,7 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	}
 
 	if (args->GetId () == MultiScaleImage::ViewportWidthProperty) {
-		//LOG_MSI ("ViewportWidth set to %f\n", args->new_value->AsDouble ());
+		//LOG_MSI ("ViewportWidth set to %f\n", args->GetNewValue()->AsDouble ());
 		Emit (MultiScaleImage::ViewportChangedEvent);
 		Invalidate ();
 	}
@@ -963,12 +963,12 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 		// - loop all the tiles, update their opacity, and only invalidate a subregion
 		// - Invalidate all, and compute the new opacity on the tiles that needs to be rendered.
 		//Both options are unfortunately quite expensive :(
-		//LOG_MSI ("TileFade changed to %f\n", args->new_value->AsDouble ());
+		//LOG_MSI ("TileFade changed to %f\n", args->GetNewValue()->AsDouble ());
 		Invalidate ();
 	}
 
 	if (args->GetId () == MultiScaleImage::SourceProperty) {
-		DeepZoomImageTileSource *source = args->new_value ? args->new_value->AsDeepZoomImageTileSource () : NULL;
+		DeepZoomImageTileSource *source = args->GetNewValue() ? args->GetNewValue()->AsDeepZoomImageTileSource () : NULL;
 		if (source) {
 			source->set_parsed_cb (multi_scale_image_handle_parsed, this);
 			source->Download ();

@@ -30,11 +30,11 @@ class UIElement;
 
 /* @Namespace=None */
 class EventArgs : public DependencyObject {
- protected:
-	virtual ~EventArgs ();
-	
- public:
+public:
 	EventArgs ();
+
+protected:
+	virtual ~EventArgs ();
 };
 
 enum CollectionChangedAction {
@@ -47,15 +47,7 @@ enum CollectionChangedAction {
 
 /* @Namespace=None */
 class CollectionChangedEventArgs : public EventArgs {
-protected:
-	virtual ~CollectionChangedEventArgs ();
-
 public:
-	CollectionChangedAction action;
-	Value *old_value;
-	Value *new_value;
-	int index;
-
 	/* @GenerateCBinding,GeneratePInvoke */
 	CollectionChangedEventArgs ();
 
@@ -84,6 +76,16 @@ public:
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetIndex ();
+
+protected:
+	virtual ~CollectionChangedEventArgs ();
+
+
+private:
+	CollectionChangedAction action;
+	Value *old_item;
+	Value *new_item;
+	int index;
 };
 
 /* @Namespace=None */
@@ -100,6 +102,12 @@ public:
 		this->newValue = newValue;
 	}
 
+	DependencyObject*   GetCollectionItem() { return collectionItem; }
+	DependencyProperty* GetProperty()       { return property; }
+	Value*              GetOldValue ()      { return oldValue; }
+	Value*              GetNewValue ()      { return newValue; }
+
+private:
 	DependencyObject *collectionItem;
 	DependencyProperty *property;
 	Value *oldValue;
@@ -108,13 +116,7 @@ public:
 
 /* @Namespace=None */
 class RoutedEventArgs : public EventArgs {
-	DependencyObject *source;
-	bool handled;
-	
- protected:
-	virtual ~RoutedEventArgs ();
-	
- public:
+public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	RoutedEventArgs ();
 	
@@ -131,16 +133,18 @@ class RoutedEventArgs : public EventArgs {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetHandled ();
+
+protected:
+	virtual ~RoutedEventArgs ();
+	
+private:
+	DependencyObject *source;
+	bool handled;
 };
 
 /* @Namespace=None */
 class KeyEventArgs : public RoutedEventArgs {
-	GdkEventKey *event;
-	
- protected:
-	virtual ~KeyEventArgs ();
-	
- public:
+public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	KeyEventArgs ();
 	KeyEventArgs (GdkEventKey *event);
@@ -156,16 +160,17 @@ class KeyEventArgs : public RoutedEventArgs {
 	gunichar GetUnicode ();
 	guint GetKeyVal ();
 	bool IsModifier ();
+
+protected:
+	virtual ~KeyEventArgs ();
+	
+private:
+	GdkEventKey *event;
 };
 
 /* @Namespace=None */
 class MouseEventArgs : public RoutedEventArgs {
-	GdkEvent *event;
-	
- protected:
-	virtual ~MouseEventArgs ();
-	
- public:
+public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	MouseEventArgs ();
 	MouseEventArgs (GdkEvent *event);
@@ -182,6 +187,13 @@ class MouseEventArgs : public RoutedEventArgs {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPointCollection *GetStylusPoints (UIElement *ink_presenter);
+
+protected:
+	virtual ~MouseEventArgs ();
+	
+
+private:
+	GdkEvent *event;
 };
 
 #endif /* __EVENTARGS_H__ */

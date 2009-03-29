@@ -381,7 +381,7 @@ DependencyObjectCollection::SetSurface (Surface *surface)
 void
 DependencyObjectCollection::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	EmitItemChanged (obj, subobj_args->GetProperty(), subobj_args->new_value, subobj_args->old_value);
+	EmitItemChanged (obj, subobj_args->GetProperty(), subobj_args->GetNewValue(), subobj_args->GetOldValue());
 }
 
 void

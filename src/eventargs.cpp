@@ -35,18 +35,18 @@ CollectionChangedEventArgs::CollectionChangedEventArgs ()
 	SetObjectType (Type::COLLECTIONCHANGEDEVENTARGS);
 
 	action = CollectionChangedActionAdd;
-	old_value = NULL;
-	new_value = NULL;
+	old_item = NULL;
+	new_item = NULL;
 	index = -1;
 }
 
-CollectionChangedEventArgs::CollectionChangedEventArgs (CollectionChangedAction action, Value *new_value, Value *old_value, int index)
+CollectionChangedEventArgs::CollectionChangedEventArgs (CollectionChangedAction action, Value *new_item, Value *old_item, int index)
 {
 	SetObjectType (Type::COLLECTIONCHANGEDEVENTARGS);
 
 	this->action = action;
-	this->new_value = new_value;
-	this->old_value = old_value;
+	this->new_item = new_item;
+	this->old_item = old_item;
 	this->index = index;
 }
 
@@ -69,25 +69,25 @@ CollectionChangedEventArgs::GetChangedAction ()
 void
 CollectionChangedEventArgs::SetNewItem (Value *item)
 {
-	new_value = item;
+	new_item = item;
 }
 	
 Value *
 CollectionChangedEventArgs::GetNewItem ()
 {
-	return new_value;
+	return new_item;
 }
 	
 void
 CollectionChangedEventArgs::SetOldItem (Value *item)
 {
-	old_value = item;
+	old_item = item;
 }
 	
 Value *
 CollectionChangedEventArgs::GetOldItem ()
 {
-	return old_value;
+	return old_item;
 }
 	
 void

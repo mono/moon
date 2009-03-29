@@ -219,17 +219,17 @@ Matrix::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 	
 	if (args->GetId () == Matrix::M11Property)
-		matrix.xx = args->new_value->AsDouble ();
+		matrix.xx = args->GetNewValue()->AsDouble ();
 	else if (args->GetId () == Matrix::M12Property)
-		matrix.yx = args->new_value->AsDouble ();
+		matrix.yx = args->GetNewValue()->AsDouble ();
 	else if (args->GetId () == Matrix::M21Property)
-		matrix.xy = args->new_value->AsDouble ();
+		matrix.xy = args->GetNewValue()->AsDouble ();
 	else if (args->GetId () == Matrix::M22Property)
-		matrix.yy = args->new_value->AsDouble ();
+		matrix.yy = args->GetNewValue()->AsDouble ();
 	else if (args->GetId () == Matrix::OffsetXProperty)
-		matrix.x0 = args->new_value->AsDouble ();
+		matrix.x0 = args->GetNewValue()->AsDouble ();
 	else if (args->GetId () == Matrix::OffsetYProperty)
-		matrix.y0 = args->new_value->AsDouble ();
+		matrix.y0 = args->GetNewValue()->AsDouble ();
 
 	NotifyListenersOfPropertyChange (args);
 }

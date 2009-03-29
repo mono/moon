@@ -1642,13 +1642,13 @@ DependencyObject::collection_item_changed (EventObject *sender, EventArgs *args,
 	DependencyObject *obj = (DependencyObject*)closure;
 	CollectionItemChangedEventArgs* itemArgs = (CollectionItemChangedEventArgs*)args;
 
-	PropertyChangedEventArgs propChangedArgs (itemArgs->property,
-						  itemArgs->property->GetId (),
-						  itemArgs->oldValue,
-						  itemArgs->newValue);
+	PropertyChangedEventArgs propChangedArgs (itemArgs->GetProperty(),
+						  itemArgs->GetProperty()->GetId (),
+						  itemArgs->GetOldValue(),
+						  itemArgs->GetNewValue());
 
 	obj->OnCollectionItemChanged ((Collection*)sender,
-				      itemArgs->collectionItem,
+				      itemArgs->GetCollectionItem(),
 				      &propChangedArgs);
 }
 
@@ -2069,8 +2069,8 @@ DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 {
 	if (DependencyObject::NameProperty == args->GetId ()) {
 		NameScope *scope = FindNameScope ();
-		if (scope && args->new_value)
-			scope->RegisterName (args->new_value->AsString (), this);
+		if (scope && args->GetNewValue())
+			scope->RegisterName (args->GetNewValue()->AsString (), this);
 	}
 
 	NotifyListenersOfPropertyChange (args);

@@ -700,12 +700,12 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			InvalidatePathCache ();
 
 		if (args->GetId () == UIElement::OpacityProperty) {
-			double value = args->new_value->AsDouble ();
+			double value = args->GetNewValue()->AsDouble ();
 			if (IS_INVISIBLE (value))
 				InvalidateSurfaceCache ();
 		} else {
 			if (args->GetId () == UIElement::VisibilityProperty) {
-				int value = args->new_value->AsInt32 ();
+				int value = args->GetNewValue()->AsInt32 ();
 				if (value != VisibilityVisible)
 					InvalidateSurfaceCache ();
 			}
@@ -720,7 +720,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		UpdateBounds (true);
 	}
 	else if (args->GetId () == Shape::StrokeProperty) {
-		Brush *new_stroke = args->new_value ? args->new_value->AsBrush () : NULL;
+		Brush *new_stroke = args->GetNewValue() ? args->GetNewValue()->AsBrush () : NULL;
 
 		if (!stroke || !new_stroke) {
 			// If the stroke changes from null to
@@ -736,7 +736,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 
 		stroke = new_stroke;
 	} else if (args->GetId () == Shape::FillProperty) {
-		Brush *new_fill = args->new_value ? args->new_value->AsBrush () : NULL;
+		Brush *new_fill = args->GetNewValue() ? args->GetNewValue()->AsBrush () : NULL;
 
 		if (!fill || !new_fill) {
 			InvalidatePathCache ();
@@ -744,7 +744,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		} else
 			InvalidateSurfaceCache ();
 			
-		fill = args->new_value ? args->new_value->AsBrush() : NULL;
+		fill = args->GetNewValue() ? args->GetNewValue()->AsBrush() : NULL;
 	} else if (args->GetId () == Shape::StrokeThicknessProperty) {
 		InvalidatePathCache ();
 		UpdateBounds ();

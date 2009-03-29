@@ -1577,23 +1577,23 @@ TextBoxBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
 	
 	if (args->GetId () == Control::FontFamilyProperty) {
-		FontFamily *family = args->new_value ? args->new_value->AsFontFamily () : NULL;
+		FontFamily *family = args->GetNewValue() ? args->GetNewValue()->AsFontFamily () : NULL;
 		changed = TextBoxModelChangedFont;
 		font->SetFamily (family ? family->source : NULL);
 	} else if (args->GetId () == Control::FontSizeProperty) {
-		double size = args->new_value->AsDouble ();
+		double size = args->GetNewValue()->AsDouble ();
 		changed = TextBoxModelChangedFont;
 		font->SetSize (size);
 	} else if (args->GetId () == Control::FontStretchProperty) {
-		FontStretches stretch = (FontStretches) args->new_value->AsInt32 ();
+		FontStretches stretch = (FontStretches) args->GetNewValue()->AsInt32 ();
 		changed = TextBoxModelChangedFont;
 		font->SetStretch (stretch);
 	} else if (args->GetId () == Control::FontStyleProperty) {
-		FontStyles style = (FontStyles) args->new_value->AsInt32 ();
+		FontStyles style = (FontStyles) args->GetNewValue()->AsInt32 ();
 		changed = TextBoxModelChangedFont;
 		font->SetStyle (style);
 	} else if (args->GetId () == Control::FontWeightProperty) {
-		FontWeights weight = (FontWeights) args->new_value->AsInt32 ();
+		FontWeights weight = (FontWeights) args->GetNewValue()->AsInt32 ();
 		changed = TextBoxModelChangedFont;
 		font->SetWeight (weight);
 	}
@@ -1908,16 +1908,16 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	
 	if (args->GetId () == TextBox::AcceptsReturnProperty) {
 		// update accepts_return state
-		accepts_return = args->new_value->AsBool ();
+		accepts_return = args->GetNewValue()->AsBool ();
 	} else if (args->GetId () == TextBox::IsReadOnlyProperty) {
 		// update is_read_only state
-		is_read_only = args->new_value->AsBool ();
+		is_read_only = args->GetNewValue()->AsBool ();
 	} else if (args->GetId () == TextBox::MaxLengthProperty) {
 		// update max_length state
-		max_length = args->new_value->AsInt32 ();
+		max_length = args->GetNewValue()->AsInt32 ();
 	} else if (args->GetId () == TextBox::SelectedTextProperty) {
 		if (setvalue) {
-			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString () : "";
+			const char *str = args->GetNewValue() && args->GetNewValue()->AsString () ? args->GetNewValue()->AsString () : "";
 			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
@@ -1953,7 +1953,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
 	} else if (args->GetId () == TextBox::SelectionStartProperty) {
 		length = abs (selection_cursor - selection_anchor);
-		start = args->new_value->AsInt32 ();
+		start = args->GetNewValue()->AsInt32 ();
 		
 		// When set programatically, anchor is always the
 		// start and cursor is always the end
@@ -1970,7 +1970,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
 	} else if (args->GetId () == TextBox::SelectionLengthProperty) {
 		start = MIN (selection_anchor, selection_cursor);
-		length = args->new_value->AsInt32 ();
+		length = args->GetNewValue()->AsInt32 ();
 		
 		// When set programatically, anchor is always the
 		// start and cursor is always the end
@@ -1991,7 +1991,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		changed = TextBoxModelChangedBrush;
 	} else if (args->GetId () == TextBox::TextProperty) {
 		if (setvalue) {
-			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString () : "";
+			const char *str = args->GetNewValue() && args->GetNewValue()->AsString () ? args->GetNewValue()->AsString () : "";
 			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
@@ -2250,12 +2250,12 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	
 	if (args->GetId () == PasswordBox::MaxLengthProperty) {
 		// update max_length state
-		max_length = args->new_value->AsInt32 ();
+		max_length = args->GetNewValue()->AsInt32 ();
 	} else if (args->GetId () == PasswordBox::PasswordCharProperty) {
 		changed = TextBoxModelChangedText;
 	} else if (args->GetId () == PasswordBox::PasswordProperty) {
 		if (setvalue) {
-			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString () : "";
+			const char *str = args->GetNewValue() && args->GetNewValue()->AsString () ? args->GetNewValue()->AsString () : "";
 			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
@@ -2289,7 +2289,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		changed = TextBoxModelChangedText;
 	} else if (args->GetId () == PasswordBox::SelectedTextProperty) {
 		if (setvalue) {
-			const char *str = args->new_value && args->new_value->AsString () ? args->new_value->AsString () : "";
+			const char *str = args->GetNewValue() && args->GetNewValue()->AsString () ? args->GetNewValue()->AsString () : "";
 			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
@@ -2325,7 +2325,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		}
 	} else if (args->GetId () == PasswordBox::SelectionStartProperty) {
 		length = abs (selection_cursor - selection_anchor);
-		start = args->new_value->AsInt32 ();
+		start = args->GetNewValue()->AsInt32 ();
 		
 		// When set programatically, anchor is always the
 		// start and cursor is always the end
@@ -2342,7 +2342,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		}
 	} else if (args->GetId () == PasswordBox::SelectionLengthProperty) {
 		start = MIN (selection_anchor, selection_cursor);
-		length = args->new_value->AsInt32 ();
+		length = args->GetNewValue()->AsInt32 ();
 		
 		// When set programatically, anchor is always the
 		// start and cursor is always the end
@@ -2720,12 +2720,12 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 	switch (args->changed) {
 	case TextBoxModelChangedTextAlignment:
 		// text alignment changed, update our layout
-		if (layout->SetTextAlignment ((TextAlignment) args->property->new_value->AsInt32 ()))
+		if (layout->SetTextAlignment ((TextAlignment) args->property->GetNewValue()->AsInt32 ()))
 			dirty = true;
 		break;
 	case TextBoxModelChangedTextWrapping:
 		// text wrapping changed, update our layout
-		if (layout->SetTextWrapping ((TextWrapping) args->property->new_value->AsInt32 ()))
+		if (layout->SetTextWrapping ((TextWrapping) args->property->GetNewValue()->AsInt32 ()))
 			dirty = true;
 		break;
 	case TextBoxModelChangedSelection:

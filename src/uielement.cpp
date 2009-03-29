@@ -155,7 +155,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		// note: invalid enum values are only validated in 1.1 (managed code),
 		// the default value for VisibilityProperty is VisibilityCollapsed
 		// (see bug #340799 for more details)
-		if (args->new_value->AsInt32() == VisibilityVisible)
+		if (args->GetNewValue()->AsInt32() == VisibilityVisible)
 			flags |= UIElement::RENDER_VISIBLE;
 		else
 			flags &= ~UIElement::RENDER_VISIBLE;
@@ -163,7 +163,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		UpdateTotalRenderVisibility();
 		Invalidate (GetSubtreeBounds ());
 	} else if (args->GetId () == UIElement::IsHitTestVisibleProperty) {
-		if (args->new_value->AsBool())
+		if (args->GetNewValue()->AsBool())
 			flags |= UIElement::HIT_TEST_VISIBLE;
 		else
 			flags &= ~UIElement::HIT_TEST_VISIBLE;
@@ -174,22 +174,22 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		// changes (since the clip can be concave)
 		UpdateBounds (true);
 	} else if (args->GetId () == UIElement::OpacityMaskProperty) {
-		opacityMask = args->new_value ? args->new_value->AsBrush() : NULL;
+		opacityMask = args->GetNewValue() ? args->GetNewValue()->AsBrush() : NULL;
 		Invalidate (GetSubtreeBounds ());
 	} else if (args->GetId () == UIElement::RenderTransformProperty || args->GetId () == UIElement::RenderTransformOriginProperty) {
 		UpdateTransform ();
 	}
 	else if (args->GetId () == UIElement::TriggersProperty) {
-		if (args->old_value) {
+		if (args->GetOldValue()) {
 			// remove the old trigger targets
-			TriggerCollection *triggers = args->old_value->AsTriggerCollection();
+			TriggerCollection *triggers = args->GetOldValue()->AsTriggerCollection();
 			for (int i = 0; i < triggers->GetCount (); i++)
 				triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
 		}
 
-		if (args->new_value) {
+		if (args->GetNewValue()) {
 			// set the new ones
-			TriggerCollection *triggers = args->new_value->AsTriggerCollection();
+			TriggerCollection *triggers = args->GetNewValue()->AsTriggerCollection();
 			for (int i = 0; i < triggers->GetCount (); i++)
 				triggers->GetValueAt (i)->AsEventTrigger ()->SetTarget (this);
 		}
@@ -202,15 +202,15 @@ void
 UIElement::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	if (col == GetTriggers ()) {
-		switch (args->action) {
+		switch (args->GetChangedAction()) {
 		case CollectionChangedActionReplace:
-			args->old_value->AsEventTrigger ()->RemoveTarget (this);
+			args->GetOldItem()->AsEventTrigger ()->RemoveTarget (this);
 			// fall thru to Add
 		case CollectionChangedActionAdd:
-			args->new_value->AsEventTrigger ()->SetTarget (this);
+			args->GetNewItem()->AsEventTrigger ()->SetTarget (this);
 			break;
 		case CollectionChangedActionRemove:
-			args->old_value->AsEventTrigger ()->RemoveTarget (this);
+			args->GetOldItem()->AsEventTrigger ()->RemoveTarget (this);
 			break;
 		case CollectionChangedActionClearing:
 			for (int i = 0; i < col->GetCount (); i++)

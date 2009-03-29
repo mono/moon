@@ -1,5 +1,16 @@
 2009-03-29  Chris Toshok  <toshok@ximian.com>
 
+	* eventargs.h: consistenfy everything, and make
+	CollectionChangedEventArgs fields private, not public.  add
+	accessors.
+
+	* dependencyobject.h (PropertyChangedEventArgs): make
+	old_value/new_value private and add accessors.
+
+	* *.cpp|.h: track the above changes.
+	
+2009-03-29  Chris Toshok  <toshok@ximian.com>
+
 	* dependencyproperty.h|.cpp: rename AutoCreate to IsAutoCreated.
 
 	* dependencyobject.cpp:, provider.cpp: track above change.

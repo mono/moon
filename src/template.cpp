@@ -225,7 +225,7 @@ TemplateBinding::~TemplateBinding ()
 void
 TemplateBinding::OnSourcePropertyChanged (DependencyObject *sender, PropertyChangedEventArgs *args)
 {
-	target->SetValue (targetProperty, args->new_value);
+	target->SetValue (targetProperty, args->GetNewValue());
 }
 
 void
