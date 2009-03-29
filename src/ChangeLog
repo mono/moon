@@ -1,5 +1,27 @@
 2009-03-29  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyproperty.h|.cpp: rework the autocreate functionality.
+	instead of a boolean flag, we pass a function pointer.  We keep
+	IsAutoCreated() around (just func != NULL) and add
+	GetAutoCreator() so the AutoCreateProvider can call the method
+	when it needs a value.
+
+	Also, remove the empty ctor since it doesn't initialize any
+	fields (and it also isn't called.)
+
+	* provider.h (class AutoCreators): new class, containing the
+	default autocreator which just calls type->CreateInstance().
+
+	* provider.cpp (AutoCreatePropertyValueProvider::GetPropertyValue):
+	call the property's AutoCreator function if there is one.
+	(AutoCreators::default_autocreator): new function for the default
+	case.  basically some code that was ripped out of
+	::GetPropertyValue
+
+	* dependencyproperty.g.cpp: regen.
+
+2009-03-29  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.cpp (UIElement::OnLoaded): now that we don't walk the
 	tree in OnLoaded, don't do anything at all if we're already
 	Loaded.

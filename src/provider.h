@@ -95,6 +95,13 @@ public:
 	virtual Value *GetPropertyValue (DependencyProperty *property);
 };
 
+typedef Value* AutoCreator  (DependencyProperty *property);
+
+class AutoCreators {
+public:
+	static AutoCreator default_autocreator;
+};
+
 class AutoCreatePropertyValueProvider : public PropertyValueProvider {
  public:
 	GHashTable *auto_values;

@@ -28,10 +28,17 @@ class FieldInfo : MemberInfo {
 		}
 	}
 	
-	public bool IsDPAutoCreateValue {
-		get { return Annotations.ContainsKey ("AutoCreateValue"); }
+	public string DPAutoCreator {
+		get {
+			if (Annotations.ContainsKey ("AutoCreator"))
+				return Annotations.GetValue ("AutoCreator");
+			else if (Annotations.ContainsKey ("AutoCreateValue"))
+				return "AutoCreators::default_autocreator";
+			else
+				return null;
+		}
 	}
-	
+
 	public bool IsDPReadOnly {
 		get { return Annotations.ContainsKey ("ReadOnly"); }
 	}

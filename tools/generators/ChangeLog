@@ -1,3 +1,13 @@
+2009-03-29  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs: use the new AutoCreator functionality to generate
+	the proper DP::RegisterFull call.  If there's a '::' in the
+	autocreator name we just emit it.  If there isn't a '::', we
+	prepend "AutoCreators::" onto the method name.
+
+	* FieldInfo.cs: IsDPAutoCreateValue -> DPAutoCreator, and it now
+	returns a string method name instead of a bool.
+	
 2009-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: Implement/fix cbinding generation for plugin.

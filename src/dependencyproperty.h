@@ -22,7 +22,7 @@ class MoonError;
 
 typedef	void NativePropertyChangedHandler (DependencyProperty *dependency_property, DependencyObject *dependency_object, Value *old_value, Value *new_value, MoonError *error);
 typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
-
+typedef Value* AutoCreator  (DependencyProperty *property);
 //
 // DependencyProperty
 //
@@ -30,9 +30,9 @@ typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *pro
 /* @SkipValue */
 class DependencyProperty {
  public:
-	DependencyProperty () {};
+	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, AutoCreator *autocreator, bool is_custom);
+
 	~DependencyProperty ();
-	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool autocreate, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom);
 
 	int GetId () { return id; }
 	void SetId (int value) { id = value; }
@@ -52,7 +52,8 @@ class DependencyProperty {
 	bool IsReadOnly () { return is_readonly; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool IsAttached () { return is_attached; }
-	bool IsAutoCreated () { return is_autocreated; }
+	bool IsAutoCreated () { return autocreator != NULL; }
+	AutoCreator* GetAutoCreator () { return autocreator; }
 	bool AlwaysChange () { return always_change; }
 	bool IsCustom () { return is_custom; }
 	NativePropertyChangedHandler *GetChangedCallback () { return changed_callback; }
@@ -72,7 +73,7 @@ class DependencyProperty {
 	static int Register (Types *types, Type::Kind type, const char *name, Value *default_value);
 	static int Register (Types *types, Type::Kind type, const char *name, Type::Kind vtype);
 	static int Register (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
-	static int RegisterFull (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype,  bool is_autocreated, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom, bool is_nullable);
+	static int RegisterFull (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator,  AutoCreator* autocreator, bool is_custom, bool is_nullable);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	static DependencyProperty *RegisterManagedProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback);
@@ -89,7 +90,7 @@ private:
 	GHashTable *storage_hash; // keys: objects, values: animation storage's
 	int id;
 	
-	bool is_autocreated; // autocreate in AutoCreatePropertyValueProvider
+	AutoCreator* autocreator; // invoked by AutoCreatePropertyValueProvider to create values
 	bool is_readonly;
 	bool is_nullable;
 	bool is_attached;

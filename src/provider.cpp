@@ -342,7 +342,6 @@ Value *
 AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
 	Value *value;
-	Type *type;
 	
 	if (!property->IsAutoCreated ())
 		return NULL;
@@ -351,11 +350,8 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	if ((value = (Value *) g_hash_table_lookup (auto_values, property)))
 		return value;
 	
-	if (!(type = Type::Find (property->GetPropertyType ())))
-		return NULL;
-	
-	// autocreate a new auto value
-	value = Value::CreateUnrefPtr (type->CreateInstance ());
+	value = (property->GetAutoCreator()) (property);
+
 	g_hash_table_insert (auto_values, property, value);
 	
 	obj->ProviderValueChanged (PropertyPrecedence_AutoCreate, property, NULL, value, true, NULL);
@@ -373,4 +369,14 @@ void
 AutoCreatePropertyValueProvider::ClearValue (DependencyProperty *property)
 {
 	g_hash_table_remove (auto_values, property);
+}
+
+Value* 
+AutoCreators::default_autocreator (DependencyProperty *property)
+{
+	Type *type = Type::Find (property->GetPropertyType ());
+	if (!type)
+		return NULL;
+
+	return Value::CreateUnrefPtr (type->CreateInstance ());
 }
