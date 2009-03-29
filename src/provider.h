@@ -95,7 +95,7 @@ public:
 	virtual Value *GetPropertyValue (DependencyProperty *property);
 };
 
-typedef Value* AutoCreator  (DependencyProperty *property);
+typedef Value* AutoCreator  (DependencyObject *instance, DependencyProperty *property);
 
 class AutoCreators {
 public:

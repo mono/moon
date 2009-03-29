@@ -1,5 +1,11 @@
 2009-03-29  Chris Toshok  <toshok@ximian.com>
 
+	* provider.h, provider.cpp, dependencyproperty.h: change
+	AutoCreator signature to take the DependencyObject as the first
+	parameter.
+
+2009-03-29  Chris Toshok  <toshok@ximian.com>
+
 	* dependencyproperty.h|.cpp: rework the autocreate functionality.
 	instead of a boolean flag, we pass a function pointer.  We keep
 	IsAutoCreated() around (just func != NULL) and add

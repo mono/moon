@@ -350,7 +350,7 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	if ((value = (Value *) g_hash_table_lookup (auto_values, property)))
 		return value;
 	
-	value = (property->GetAutoCreator()) (property);
+	value = (property->GetAutoCreator()) (obj, property);
 
 	g_hash_table_insert (auto_values, property, value);
 	
@@ -372,7 +372,7 @@ AutoCreatePropertyValueProvider::ClearValue (DependencyProperty *property)
 }
 
 Value* 
-AutoCreators::default_autocreator (DependencyProperty *property)
+AutoCreators::default_autocreator (DependencyObject *instance, DependencyProperty *property)
 {
 	Type *type = Type::Find (property->GetPropertyType ());
 	if (!type)
