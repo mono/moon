@@ -1,5 +1,11 @@
 2009-03-29  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (UIElement::OnLoaded): now that we don't walk the
+	tree in OnLoaded, don't do anything at all if we're already
+	Loaded.
+
+2009-03-29  Chris Toshok  <toshok@ximian.com>
+
 	* eventargs.h: consistenfy everything, and make
 	CollectionChangedEventArgs fields private, not public.  add
 	accessors.

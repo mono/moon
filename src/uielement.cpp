@@ -684,7 +684,7 @@ UIElement::WalkTreeForLoaded (bool *delay)
 void
 UIElement::OnLoaded ()
 {
-	if (emitting_loaded)
+	if (emitting_loaded || IsLoaded())
 		return;
 
 	emitting_loaded = true;
