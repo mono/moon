@@ -344,7 +344,7 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	Value *value;
 	Type *type;
 	
-	if (!property->AutoCreate ())
+	if (!property->IsAutoCreated ())
 		return NULL;
 	
 	// return previously set auto value next

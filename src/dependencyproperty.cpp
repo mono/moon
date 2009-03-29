@@ -22,14 +22,14 @@
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool autocreate, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom)
+DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool is_autocreated, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, bool is_custom)
 {
 	this->owner_type = owner_type;
 	this->hash_key = NULL;
 	this->name = g_strdup (name);
 	this->default_value = default_value;
 	this->property_type = property_type;
-	this->autocreate = autocreate;
+	this->is_autocreated = is_autocreated;
 	this->is_nullable = false;
 	this->is_attached = attached;
 	this->is_readonly = readonly;

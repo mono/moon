@@ -1,3 +1,9 @@
+2009-03-29  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyproperty.h|.cpp: rename AutoCreate to IsAutoCreated.
+
+	* dependencyobject.cpp:, provider.cpp: track above change.
+
 2009-03-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* deployment.cpp|h (Initialize): If a platform directory is

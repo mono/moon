@@ -1134,7 +1134,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	bool equal = false;
 	
 	if (!(current_value = ReadLocalValue (property)))
-		if (property->AutoCreate ())
+		if (property->IsAutoCreated ())
 			current_value = autocreate->ReadLocalValue (property);
 	
 	if (current_value != NULL && value != NULL) {
@@ -1149,10 +1149,10 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		// remove the old value
 		g_hash_table_remove (local_values, property);
 		
-		if (property->AutoCreate ())
+		if (property->IsAutoCreated ())
 			autocreate->ClearValue (property);
 		
-		if (value && (!property->AutoCreate () || !value->Is (Type::DEPENDENCY_OBJECT) || value->AsDependencyObject () != NULL))
+		if (value && (!property->IsAutoCreated () || !value->Is (Type::DEPENDENCY_OBJECT) || value->AsDependencyObject () != NULL))
 			new_value = new Value (*value);
 		else
 			new_value = NULL;
@@ -1552,7 +1552,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	Value *old_local_value;
 	
 	if (!(old_local_value = ReadLocalValue (property)))
-		if (property->AutoCreate ())
+		if (property->IsAutoCreated ())
 			old_local_value = autocreate->ReadLocalValue (property);
 	
 	if (old_local_value == NULL) {
@@ -1580,7 +1580,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	
 	g_hash_table_remove (local_values, property);
 	
-	if (property->AutoCreate ())
+	if (property->IsAutoCreated ())
 		autocreate->ClearValue (property);
 	
 	// this is... yeah, it's disgusting
