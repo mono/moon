@@ -1,3 +1,8 @@
+2009-03-30  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* deepzoomimagetilesource.cpp: revert latest change, don't advance
+	twice. Fixes collections.
+
 2009-03-29  Chris Toshok  <toshok@ximian.com>
 
 	* provider.cpp (AutoCreatePropertyValueProvider::GetPropertyValue):
