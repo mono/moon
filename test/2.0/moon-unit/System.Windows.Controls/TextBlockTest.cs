@@ -280,14 +280,14 @@ namespace MoonTest.System.Windows.Controls {
 			tb.Text = "Hello and don't you forget Who I am.";
 
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "3. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (35, GetLineCount (tb.ActualHeight), "3. line count based on textblock.ActualHeight");
+			Assert.AreEqual (36, GetLineCount (tb.ActualHeight), "3. line count based on textblock.ActualHeight");
 			//Assert.AreEqual (576, tb.ActualHeight, "3. tb.ActualHeight");
 
 			tb.Width = 70;
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "4. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (35, GetLineCount (tb.ActualHeight), "4. line count based on textblock.ActualHeight");
+			Assert.AreEqual (36, GetLineCount (tb.ActualHeight), "4. line count based on textblock.ActualHeight");
 			//Assert.AreEqual (576, tb.ActualHeight, "4. tb.ActualHeight");
 
 			b.InvalidateMeasure ();
@@ -296,7 +296,7 @@ namespace MoonTest.System.Windows.Controls {
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "5. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
-			Assert.AreEqual (35, GetLineCount (tb.ActualHeight), "5. line count based on textblock.ActualHeight");
+			Assert.AreEqual (36, GetLineCount (tb.ActualHeight), "5. line count based on textblock.ActualHeight");
 			//Assert.AreEqual (576, tb.ActualHeight, "5. tb.ActualHeight");
 		}
 
