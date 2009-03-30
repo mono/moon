@@ -71,18 +71,18 @@ determine_platform_image (const char *image_name)
 
 void
 security_enable_coreclr (const char *platform_dir)
-{
+{	
+	// XXX condition to be reversed before preview XXX
+	if (g_getenv ("MOON_SECURITY") == NULL) {
+		g_warning ("CORECLR was DISABLED using MOON_SECURITY override");
+		return;
+	}
+	
 	memset (&platform_stat, 0, sizeof (platform_stat));
 	if (g_path_is_absolute (platform_dir)) {
 		if (stat (platform_dir, &platform_stat) == 0) {
 			mono_assembly_setrootdir (platform_dir);
 		}
-	}
-
-	// XXX condition to be reversed before preview XXX
-	if (g_getenv ("MOON_SECURITY") == NULL) {
-		g_warning ("CORECLR was DISABLED using MOON_SECURITY override");
-		return;
 	}
 	
 	mono_security_enable_core_clr ();
