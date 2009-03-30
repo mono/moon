@@ -419,8 +419,8 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_fill (cr);
 
 	cairo_restore (cr);
+	cairo_pattern_destroy (pattern);
 
-cleanup:
 	source->Unlock ();
 }
 

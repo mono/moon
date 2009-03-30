@@ -10,6 +10,10 @@
 	  mono/mcs and moonlight are installed into different
 	  prefixes.
 
+2009-03-30  Geoff Norton  <gnorton@novell.com>
+
+	* media.cpp: Stop leaking a cairo pattern in Image::Render
+
 2009-03-30  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* deepzoomimagetilesource.cpp: revert latest change, don't advance
