@@ -1,3 +1,12 @@
+2009-03-29  Chris Toshok  <toshok@ximian.com>
+
+	* provider.cpp (AutoCreatePropertyValueProvider::GetPropertyValue):
+	add a sanity check here to make sure the autocreated value is of a
+	compatible type.
+
+	* animation.h|.cpp: remove the /*Timeline*/ comments from
+	everywhere -- stop pretending the type names are the same as WPF.
+
 2009-03-29  Geoff Norton  <gnorton@novell.com>
 
 	* media.cpp: Ensure that the ImageSource we get is a BitmapImage

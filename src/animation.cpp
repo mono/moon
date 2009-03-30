@@ -36,7 +36,7 @@ KeyTime KeyTime::Paced (KeyTime::PACED);
 KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
 
 
-AnimationStorage::AnimationStorage (AnimationClock *clock, Animation/*Timeline*/ *timeline,
+AnimationStorage::AnimationStorage (AnimationClock *clock, Animation *timeline,
 				    DependencyObject *targetobj, DependencyProperty *targetprop)
 {
 	this->nonResetableFlag = false;
@@ -253,7 +253,7 @@ AnimationClock::OnSurfaceReAttach ()
 		storage->ReAttachUpdateHandler ();
 }
 
-AnimationClock::AnimationClock (Animation/*Timeline*/ *timeline)
+AnimationClock::AnimationClock (Animation *timeline)
   : Clock (timeline)
 {
 	SetObjectType (Type::ANIMATIONCLOCK);
@@ -345,7 +345,7 @@ AnimationClock::~AnimationClock ()
 }
 
 Clock*
-Animation/*Timeline*/::AllocateClock()
+Animation::AllocateClock()
 {
 	Clock *clock = new AnimationClock (this);
 	char *name = g_strdup_printf ("AnimationClock for %s, targetobj = %p/%s, targetprop = %s", GetTypeName(),
@@ -358,13 +358,13 @@ Animation/*Timeline*/::AllocateClock()
 }
 
 Value*
-Animation/*Timeline*/::GetTargetValue (Value* defaultOriginValue)
+Animation::GetTargetValue (Value* defaultOriginValue)
 {
 	return NULL;
 }
 
 Value*
-Animation/*Timeline*/::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestinationValue,
+Animation::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestinationValue,
 					AnimationClock* animationClock)
 {
 	return NULL;
@@ -372,7 +372,7 @@ Animation/*Timeline*/::GetCurrentValue (Value* defaultOriginValue, Value* defaul
 
 
 Duration
-Animation/*Timeline*/::GetNaturalDurationCore (Clock* clock)
+Animation::GetNaturalDurationCore (Clock* clock)
 {
 	return Duration::FromSeconds (1);
 }
@@ -1439,7 +1439,7 @@ SplinePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
    http://msdn2.microsoft.com/en-us/library/ms742524.aspx
 */
 static void
-KeyFrameAnimation_ResolveKeyFrames (Animation/*Timeline*/ *animation, KeyFrameCollection *col)
+KeyFrameAnimation_ResolveKeyFrames (Animation *animation, KeyFrameCollection *col)
 {
 	if (col->resolved)
 		return;

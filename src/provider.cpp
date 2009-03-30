@@ -352,6 +352,14 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	
 	value = (property->GetAutoCreator()) (obj, property);
 
+#if SANITY
+	if (!value->Is(property->GetPropertyType()))
+		g_warning ("autocreated value for property '%s' (type=%s) is of incompatible type %s\n",
+			   property->GetName(),
+			   Type::Find (property->GetPropertyType ())->GetName(),
+			   Type::Find (value->GetKind())->GetName());
+#endif
+
 	g_hash_table_insert (auto_values, property, value);
 	
 	obj->ProviderValueChanged (PropertyPrecedence_AutoCreate, property, NULL, value, true, NULL);

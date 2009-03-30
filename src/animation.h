@@ -135,7 +135,7 @@ class AnimationStorage;
 // internal WPF class gleaned from stack traces
 class AnimationStorage {
  public:
-	AnimationStorage (AnimationClock *clock, Animation/*Timeline*/ *timeline,
+	AnimationStorage (AnimationClock *clock, Animation *timeline,
 			  DependencyObject *targetobj, DependencyProperty *targetprop);
 	~AnimationStorage ();
 	
@@ -161,7 +161,7 @@ class AnimationStorage {
 	static void update_property_value (EventObject *sender, EventArgs *calldata, gpointer data);
 
 	AnimationClock *clock;
-	Animation/*Timeline*/* timeline;
+	Animation* timeline;
 	DependencyObject *targetobj;
 	DependencyProperty *targetprop;
 	Value *baseValue;
@@ -172,7 +172,7 @@ class AnimationStorage {
 };
 
 
-class Animation/*Timeline*/;
+class Animation;
 
 /* @Namespace=None,ManagedDependencyProperties=None */
 class AnimationClock : public Clock {
@@ -180,7 +180,7 @@ class AnimationClock : public Clock {
 	virtual ~AnimationClock ();
 
  public:
-	AnimationClock (Animation/*Timeline*/ *timeline);
+	AnimationClock (Animation *timeline);
 	virtual void ExtraRepeatAction ();
 	virtual void OnSurfaceDetach ();
 	virtual void OnSurfaceReAttach ();
@@ -193,7 +193,7 @@ class AnimationClock : public Clock {
 	virtual void Begin ();
 
  private:
-	Animation/*Timeline*/ *timeline;
+	Animation *timeline;
 	AnimationStorage *storage;
 };
 
@@ -201,15 +201,14 @@ class AnimationClock : public Clock {
 
 
 
-/* this is called AnimationTimeline in wpf */
 /* @Namespace=None */
-class Animation/*Timeline*/ : public Timeline {
+class Animation : public Timeline {
  protected:
 	virtual ~Animation () {}
 
  public:
 
-	Animation/*Timeline*/ () { };
+	Animation () { };
 	
 	virtual Clock *AllocateClock ();
 
@@ -227,7 +226,7 @@ class Animation/*Timeline*/ : public Timeline {
 };
 
 /* @Namespace=System.Windows.Media.Animation */
-class DoubleAnimation : public Animation/*Timeline*/ {
+class DoubleAnimation : public Animation {
  protected:
 	virtual ~DoubleAnimation () {}
 
@@ -276,7 +275,7 @@ class DoubleAnimation : public Animation/*Timeline*/ {
 
 
 /* @Namespace=System.Windows.Media.Animation */
-class ColorAnimation : public Animation/*Timeline*/ {
+class ColorAnimation : public Animation {
  protected:
 	virtual ~ColorAnimation () {}
 
@@ -325,7 +324,7 @@ class ColorAnimation : public Animation/*Timeline*/ {
 
 
 /* @Namespace=System.Windows.Media.Animation */
-class PointAnimation : public Animation/*Timeline*/ {
+class PointAnimation : public Animation {
  protected:
 	virtual ~PointAnimation ();
 
