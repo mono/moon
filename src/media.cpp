@@ -555,7 +555,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 		}
-		if (old && source->Is(Type::BITMAPIMAGE)) {
+		if (source && source->Is(Type::BITMAPIMAGE)) {
 			((BitmapImage *)source)->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 			((BitmapImage *)source)->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			((BitmapImage *)source)->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);

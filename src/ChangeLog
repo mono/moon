@@ -1,3 +1,10 @@
+2009-03-30  Larry Ewing  <lewing@novell.com>
+
+	* brush.cpp (OnPropertyChanged): check for the right property and
+	fixup a harmless typo.
+	
+	* media.cpp (OnPropertyChanged): fixup a (harmless) logic typo
+
 2009-03-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (FontFace::GetExtents): Instead of calculating our

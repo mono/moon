@@ -583,7 +583,7 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetProperty ()->GetOwnerType() != Type::IMAGEBRUSH) {
 		TileBrush::OnPropertyChanged (args, error);
 		return;
-	} else if (args->GetId () == Image::SourceProperty) {
+	} else if (args->GetId () == ImageSourceProperty) {
 		ImageSource *source = args->GetNewValue () ? args->GetNewValue ()->AsImageSource () : NULL;
 		ImageSource *old = args->GetOldValue () ? args->GetOldValue ()->AsImageSource () : NULL;
 
@@ -592,7 +592,7 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
                 }
-		if (old && source->Is(Type::BITMAPIMAGE)) {
+		if (source && source->Is(Type::BITMAPIMAGE)) {
 			((BitmapImage *)source)->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 			((BitmapImage *)source)->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			((BitmapImage *)source)->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
