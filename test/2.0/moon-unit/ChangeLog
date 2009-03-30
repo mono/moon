@@ -1,3 +1,9 @@
+2009-03-30  Alan McGovern  <amcgovern@novell.com>
+
+	* BasicCanvas.xaml:
+	* System.Windows.Controls.Primitives/PopupTest.cs: Make the
+	  popup tests less sucky
+
 2009-03-27  Jackson Harper  <jackson@ximian.com>
 
 	* System.Windows.Data/BindingTest.cs: Fixed invalid binding test.
