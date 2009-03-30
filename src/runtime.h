@@ -79,6 +79,7 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_ENABLE_MS_CODECS      = 1 << 22,
 	RUNTIME_INIT_DISABLE_FFMPEG_CODECS = 1 << 23,
 	RUNTIME_INIT_ALL_IMAGE_FORMATS     = 1 << 24,
+	RUNTIME_INIT_CREATE_ROOT_DOMAIN    = 1 << 25,
 };
 
 extern guint64 moonlight_flags;
@@ -406,7 +407,7 @@ private:
 
 G_BEGIN_DECLS
 
-void     runtime_init (const char *plugin_dir, guint64 flags);
+void     runtime_init (const char *platform_dir, guint64 flags);
 
 void     runtime_init_browser (const char *plugin_dir);
 void     runtime_init_desktop (void);

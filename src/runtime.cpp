@@ -125,7 +125,7 @@ static struct env_options overrides[] = {
 };
 
 #define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ALL_IMAGE_FORMATS)
-#define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ENABLE_MS_CODECS)
+#define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN)
 
 #if DEBUG
 static struct env_options debugs[] = {
@@ -1996,7 +1996,7 @@ get_flags (gint64 def, const char *envname, struct env_options options[])
 }
 
 void
-runtime_init (const char *plugin_dir, guint64 flags)
+runtime_init (const char *platform_dir, guint64 flags)
 {
 
 	if (inited)
@@ -2028,8 +2028,9 @@ runtime_init (const char *plugin_dir, guint64 flags)
 	}
 	
 	moonlight_flags = flags;
-	
-	Deployment::Initialize (plugin_dir);
+
+	Deployment::Initialize (platform_dir, (flags & RUNTIME_INIT_CREATE_ROOT_DOMAIN) != 0);
+
 	xaml_init ();
 	font_init ();
 	downloader_init ();

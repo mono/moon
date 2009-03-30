@@ -43,78 +43,91 @@ pthread_key_t Deployment::tls_key = 0;
 pthread_mutex_t Deployment::hash_mutex;
 GHashTable* Deployment::current_hash = NULL;
 MonoDomain* Deployment::root_domain = NULL;
+Deployment *Deployment::desktop_deployment = NULL;
 
 class IDownloaderNode : public List::Node {
 public:
 	IDownloader *dl;
 	IDownloaderNode (IDownloader *dl) { this->dl = dl; }
 };
- 
-bool
-Deployment::Initialize (const char *platform_dir)
-{
-	const gchar *trace_options;
-	const gchar *moon_path;
-	const gchar *profiler;
 
+bool
+Deployment::Initialize (const char *platform_dir, bool create_root_domain)
+{
 	if (initialized)
 		return true;
-		
-#if DEBUG && SANITY
-	// Install signal handlers for crash reporting
-	// Note that this only works if mono hasn't been 
-	// initialized yet (i.e. this must not be done
-	// for mopen, etc).
-	moonlight_install_signal_handlers ();
-#endif
-
-#if DEBUG
-	printf ("Moonlight: Enabling MONO_DEBUG=keep-delegates.\n");
-	g_setenv ("MONO_DEBUG", "keep-delegates", false);
-#endif
-
-	mono_config_parse (NULL);
-
-	/* if a platform directory is provided then we're running inside the browser and CoreCLR should be enabled */
-	if (platform_dir) {
-		security_enable_coreclr (platform_dir);
-
-		/* XXX confine mono itself to the platform directory XXX incomplete */
-		g_setenv ("MONO_PATH", platform_dir, true);
-		g_unsetenv ("MONO_GAC_PREFIX");
-	} else {
-		moon_path = g_getenv ("MOON_PATH");
-		if (moon_path != NULL && moon_path [0] != 0) {
-			printf ("Setting moonlight root directory to: %s\n", moon_path);
-			mono_assembly_setrootdir (moon_path);
-		}
-	}
-
-	trace_options = g_getenv ("MOON_TRACE");
-	if (trace_options != NULL){
-		printf ("Setting trace options to: %s\n", trace_options);
-		mono_jit_set_trace_options (trace_options);
-	}
-	
-	profiler = g_getenv ("MOON_PROFILER");
-	if (profiler != NULL) {
-		printf ("Setting profiler to: %s\n", profiler);
-		mono_profiler_load (profiler);
-	}
-
-	mono_set_signal_chaining (true);
-	mono_debug_init (MONO_DEBUG_FORMAT_MONO);
-	root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");
 
 	initialized = true;
+
 	current_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
 	pthread_key_create (&tls_key, NULL);
 	pthread_mutex_init (&hash_mutex, NULL);
-
-	enable_vm_stack_trace ();
-
-	LOG_DEPLOYMENT ("Deployment::Initialize (): Created root domain: %p\n", root_domain);
 	
+	enable_vm_stack_trace ();
+	
+	if (create_root_domain) {
+		const gchar *trace_options;
+		const gchar *moon_path;
+		const gchar *profiler;
+
+#if DEBUG && SANITY
+		// Install signal handlers for crash reporting
+		// Note that this only works if mono hasn't been 
+		// initialized yet (i.e. this must not be done
+		// for mopen, etc).
+		moonlight_install_signal_handlers ();
+#endif
+
+#if DEBUG
+		printf ("Moonlight: Enabling MONO_DEBUG=keep-delegates.\n");
+		g_setenv ("MONO_DEBUG", "keep-delegates", false);
+#endif
+
+		mono_config_parse (NULL);
+		
+		/* if a platform directory is provided then we're running inside the browser and CoreCLR should be enabled */
+		if (platform_dir) {
+			security_enable_coreclr (platform_dir);
+
+			/* XXX confine mono itself to the platform directory XXX incomplete */
+			g_setenv ("MONO_PATH", platform_dir, true);
+			g_unsetenv ("MONO_GAC_PREFIX");
+		} else {
+			moon_path = g_getenv ("MOON_PATH");
+			if (moon_path != NULL && moon_path [0] != 0) {
+				printf ("Setting moonlight root directory to: %s\n", moon_path);
+				mono_assembly_setrootdir (moon_path);
+			}
+		}
+
+		trace_options = g_getenv ("MOON_TRACE");
+		if (trace_options != NULL){
+			printf ("Setting trace options to: %s\n", trace_options);
+			mono_jit_set_trace_options (trace_options);
+		}
+	
+		profiler = g_getenv ("MOON_PROFILER");
+		if (profiler != NULL) {
+			printf ("Setting profiler to: %s\n", profiler);
+			mono_profiler_load (profiler);
+		}
+
+		mono_set_signal_chaining (true);
+		mono_debug_init (MONO_DEBUG_FORMAT_MONO);
+	
+		root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");
+	}
+	else {
+		root_domain = mono_domain_get ();
+
+		Deployment::desktop_deployment = new Deployment (root_domain);
+		Deployment::SetCurrent (Deployment::desktop_deployment);
+
+		Application *desktop_app = new Application ();
+		desktop_deployment->SetCurrentApplication (desktop_app);
+		desktop_app->unref ();
+	}
+
 	return true;
 }
 
@@ -137,9 +150,7 @@ Deployment::GetCurrent()
 	 * the current appdomain
 	 */ 
 	if (deployment == NULL && current_domain != NULL) {
-		if (current_domain == root_domain) {
-			LOG_DEPLOYMENT ("Deployment::GetCurrent (): Couldn't find deployment in our tls, and the current domain is the root domain.\n");
-		} else if (current_domain != NULL) {
+		if (current_domain != NULL) {
 			pthread_mutex_lock (&hash_mutex);
 			deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
 			pthread_mutex_unlock (&hash_mutex);
@@ -195,14 +206,37 @@ Deployment::SetCurrent (Deployment* deployment, bool domain)
 	pthread_setspecific (tls_key, deployment);
 }
 
+Deployment::Deployment (MonoDomain *domain)
+	: DependencyObject (this, Type::DEPLOYMENT)
+{
+	this->domain = domain;
+	current_app = NULL;
+	pending_unrefs = NULL;
+	objects_created = 0;
+	objects_destroyed = 0;
+	
+#if OBJECT_TRACKING
+	objects_alive = NULL;
+	pthread_mutex_init (&objects_alive_mutex, NULL);
+#endif
+	
+	pthread_setspecific (tls_key, this);
+	
+	pthread_mutex_lock (&hash_mutex);
+	g_hash_table_insert (current_hash, domain, this);
+	pthread_mutex_unlock (&hash_mutex);
+
+	types = new Types ();
+	types->Initialize ();
+	downloaders = new List ();
+}
+
 Deployment::Deployment()
 	: DependencyObject (this, Type::DEPLOYMENT)
 {
 	char *domain_name = g_strdup_printf ("moonlight-%p", this);
 
 	current_app = NULL;
-	types = NULL;
-	downloaders = NULL;
 	pending_unrefs = NULL;
 	objects_created = 0;
 	objects_destroyed = 0;
@@ -266,8 +300,10 @@ Deployment::~Deployment()
 	pthread_mutex_unlock (&hash_mutex);
 
 	mono_domain_set (root_domain, FALSE);
-	mono_domain_unload (domain);
-
+	
+	if (domain != root_domain)
+		mono_domain_unload (domain);
+	
 	LOG_DEPLOYMENT ("Deployment::~Deployment (): %p\n", this);
 
 #if SANITY

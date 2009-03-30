@@ -1,3 +1,15 @@
+2009-03-30  Chris Toshok  <toshok@ximian.com>
+
+	* deployment.h|.cpp: combing the desktop and browser cases (the
+	desktop case coming from jeff's patch) into one method, where the
+	different root_domain behavior is determined by the boolean
+	argument.
+
+	* runtime.cpp (runtime_init): pass an initial boolean to
+	Deployment::Initialize to tell whether or not we should create the
+	root domain (i.e. whether or not we should initialize mono.)
+	(RUNTIME_INIT_BROWSER): add RUNTIME_INIT_CREATE_ROOT_DOMAIN.
+
 2009-03-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* security.c: Revert latest fix, the buildbots aren't ready

@@ -23,38 +23,35 @@ typedef struct _MonoDomain MonoDomain;
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 class AssemblyPart : public DependencyObject {
- protected:
-	virtual ~AssemblyPart ();
-	
- public:
+public:
  	/* @PropertyType=string,DefaultValue=\"\" */
 	const static int SourceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	AssemblyPart ();
+
+protected:
+	virtual ~AssemblyPart ();
 };
 
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 class AssemblyPartCollection : public DependencyObjectCollection {
- protected:
-	virtual ~AssemblyPartCollection ();
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	AssemblyPartCollection ();
 
 	virtual Type::Kind GetElementType () { return Type::ASSEMBLYPART; }
+
+protected:
+	virtual ~AssemblyPartCollection ();
 };
 
 /* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 class Deployment : public DependencyObject {
- protected:
-	virtual ~Deployment ();
-
- public:
+public:
  	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal */
 	const static int ExternalCallersFromCrossDomainProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
@@ -92,7 +89,8 @@ class Deployment : public DependencyObject {
 	static void SetCurrent (Deployment* value);
 	static void SetCurrent (Deployment* value, bool domain);
 
-	static bool Initialize (const char *platform_dir);
+	static bool Initialize (const char *platform_dir, bool create_root_domain);
+
 	static void RegisterThread (Deployment *deployment);
 
 	void UnrefDelayed (EventObject *obj);
@@ -102,7 +100,12 @@ class Deployment : public DependencyObject {
 
 	const static int ShuttingDownEvent;
 
-private:	
+protected:
+	virtual ~Deployment ();
+
+private:
+	Deployment (MonoDomain *domain);
+	
 	void AbortAllDownloaders ();
 	void DrainUnrefs ();
 	static gboolean DrainUnrefs (gpointer ptr);
@@ -126,7 +129,8 @@ private:
 	pthread_mutex_t objects_alive_mutex;
 	void ReportLeaks ();
 #endif
-
+	
+	static Deployment *desktop_deployment;
 	static GHashTable *current_hash;
 	static gboolean initialized;
 	static pthread_key_t tls_key;
