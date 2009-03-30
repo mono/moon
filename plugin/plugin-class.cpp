@@ -3484,7 +3484,7 @@ MoonlightImageObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 
 	switch (id) {
 	case MoonId_Source: {
-		ImageSource *source = img->GetSource ();
+		BitmapImage *source = (BitmapImage *) img->GetSource ();
 		if (source) {
 			char *uri = g_strdup (source->GetUriSource() ? source->GetUriSource()->GetOriginalString() : "");
 			STRINGN_TO_NPVARIANT (uri, strlen (uri), *result);
@@ -3560,7 +3560,7 @@ MoonlightImageBrushObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 
 	switch (id) {
 	case MoonId_Source: {
-		ImageSource *source = brush->GetImageSource ();
+		BitmapImage *source = (BitmapImage *) brush->GetImageSource ();
 		if (source) {
 			char *uri = g_strdup (source->GetUriSource() ? source->GetUriSource()->GetOriginalString() : "");
 			STRINGN_TO_NPVARIANT (uri, strlen (uri), *result);

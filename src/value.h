@@ -67,6 +67,7 @@ class AudioStream;
 class BeginStoryboard;
 class BezierSegment;
 class BitmapImage;
+class BitmapSource;
 class Border;
 class Brush;
 class Canvas;
@@ -103,6 +104,7 @@ class DoubleAnimationUsingKeyFrames;
 class DoubleKeyFrame;
 class DoubleKeyFrameCollection;
 class Downloader;
+class DownloadProgressEventArgs;
 class DrawingAttributes;
 class Ellipse;
 class EllipseGeometry;
@@ -111,6 +113,7 @@ class EventArgs;
 class EventListenerProxy;
 class EventObject;
 class EventTrigger;
+class ExceptionRoutedEventArgs;
 class Expression;
 class ExternalDemuxer;
 class FfmpegDecoder;
@@ -276,6 +279,7 @@ class UserControl;
 class VideoBrush;
 class VideoStream;
 class VisualBrush;
+class WriteableBitmap;
 class XamlTemplateBinding;
 class YUVConverter;
 
@@ -384,6 +388,7 @@ public:
 	BeginStoryboard*               AsBeginStoryboard () { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
 	BezierSegment*                 AsBezierSegment () { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
 	BitmapImage*                   AsBitmapImage () { checked_get_subclass (Type::BITMAPIMAGE, BitmapImage) }
+	BitmapSource*                  AsBitmapSource () { checked_get_subclass (Type::BITMAPSOURCE, BitmapSource) }
 	Border*                        AsBorder () { checked_get_subclass (Type::BORDER, Border) }
 	Brush*                         AsBrush () { checked_get_subclass (Type::BRUSH, Brush) }
 	Canvas*                        AsCanvas () { checked_get_subclass (Type::CANVAS, Canvas) }
@@ -420,6 +425,7 @@ public:
 	DoubleKeyFrame*                AsDoubleKeyFrame () { checked_get_subclass (Type::DOUBLEKEYFRAME, DoubleKeyFrame) }
 	DoubleKeyFrameCollection*      AsDoubleKeyFrameCollection () { checked_get_subclass (Type::DOUBLEKEYFRAME_COLLECTION, DoubleKeyFrameCollection) }
 	Downloader*                    AsDownloader () { checked_get_subclass (Type::DOWNLOADER, Downloader) }
+	DownloadProgressEventArgs*     AsDownloadProgressEventArgs () { checked_get_subclass (Type::DOWNLOADPROGRESSEVENTARGS, DownloadProgressEventArgs) }
 	DrawingAttributes*             AsDrawingAttributes () { checked_get_subclass (Type::DRAWINGATTRIBUTES, DrawingAttributes) }
 	Ellipse*                       AsEllipse () { checked_get_subclass (Type::ELLIPSE, Ellipse) }
 	EllipseGeometry*               AsEllipseGeometry () { checked_get_subclass (Type::ELLIPSEGEOMETRY, EllipseGeometry) }
@@ -428,6 +434,7 @@ public:
 	EventListenerProxy*            AsEventListenerProxy () { checked_get_subclass (Type::EVENTLISTENERPROXY, EventListenerProxy) }
 	EventObject*                   AsEventObject () { checked_get_subclass (Type::EVENTOBJECT, EventObject) }
 	EventTrigger*                  AsEventTrigger () { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
+	ExceptionRoutedEventArgs*      AsExceptionRoutedEventArgs () { checked_get_subclass (Type::EXCEPTIONROUTEDEVENTARGS, ExceptionRoutedEventArgs) }
 	Expression*                    AsExpression () { checked_get_subclass (Type::EXPRESSION, Expression) }
 	ExternalDemuxer*               AsExternalDemuxer () { checked_get_subclass (Type::EXTERNALDEMUXER, ExternalDemuxer) }
 	FfmpegDecoder*                 AsFfmpegDecoder () { checked_get_subclass (Type::FFMPEGDECODER, FfmpegDecoder) }
@@ -593,6 +600,7 @@ public:
 	VideoBrush*                    AsVideoBrush () { checked_get_subclass (Type::VIDEOBRUSH, VideoBrush) }
 	VideoStream*                   AsVideoStream () { checked_get_subclass (Type::VIDEOSTREAM, VideoStream) }
 	VisualBrush*                   AsVisualBrush () { checked_get_subclass (Type::VISUALBRUSH, VisualBrush) }
+	WriteableBitmap*               AsWriteableBitmap () { checked_get_subclass (Type::WRITEABLEBITMAP, WriteableBitmap) }
 	XamlTemplateBinding*           AsXamlTemplateBinding () { checked_get_subclass (Type::XAMLTEMPLATEBINDING, XamlTemplateBinding) }
 	YUVConverter*                  AsYUVConverter () { checked_get_subclass (Type::YUVCONVERTER, YUVConverter) }
 

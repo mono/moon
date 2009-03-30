@@ -218,6 +218,7 @@ namespace Mono {
 			case Kind.BEZIERSEGMENT: return new BezierSegment (raw);
 				//			case Kind.BINDINGEXPRESSION: return new BindingExpression (raw);
 			case Kind.BITMAPIMAGE: return new BitmapImage (raw);
+			case Kind.BITMAPSOURCE: return new BitmapSource (raw);
 			case Kind.BORDER: return new Border (raw);
 			case Kind.CANVAS: return new Canvas (raw);
 			case Kind.COLORANIMATION: return new ColorAnimation (raw);
@@ -319,6 +320,7 @@ namespace Mono {
 			case Kind.UIELEMENT_COLLECTION: return new UIElementCollection (raw);
 			case Kind.USERCONTROL: return new UserControl (raw);
 			case Kind.VIDEOBRUSH: return new VideoBrush (raw);
+			case Kind.WRITEABLEBITMAP: return new WriteableBitmap (raw);
 				
 			case Kind.CLOCKGROUP:
 			case Kind.ANIMATIONCLOCK:

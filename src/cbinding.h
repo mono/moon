@@ -10,6 +10,7 @@
 #include "animation.h"
 #include "application.h"
 #include "bitmapimage.h"
+#include "bitmapsource.h"
 #include "border.h"
 #include "brush.h"
 #include "canvas.h"
@@ -27,6 +28,7 @@
 #include "geometry.h"
 #include "glyphs.h"
 #include "grid.h"
+#include "imagesource.h"
 #include "keyboard.h"
 #include "media.h"
 #include "mediaelement.h"
@@ -54,6 +56,7 @@
 #include "usercontrol.h"
 #include "window.h"
 #include "window-gtk.h"
+#include "writeablebitmap.h"
 #include "xaml.h"
 #include "xap.h"
 
@@ -117,7 +120,22 @@ BezierSegment *bezier_segment_new (void);
 BitmapImage *bitmap_image_new (void);
 
 /* @GeneratePInvoke */
-void bitmap_image_set_buffer (BitmapImage *instance, gpointer buffer, int size);
+void bitmap_image_pixbuf_write (BitmapImage *instance, gpointer buffer, gint32 offset, gint32 n);
+
+/* @GeneratePInvoke */
+void bitmap_image_pixmap_complete (BitmapImage *instance);
+
+/**
+ * BitmapSource
+ **/
+/* @GeneratePInvoke */
+BitmapSource *bitmap_source_new (void);
+
+/* @GeneratePInvoke */
+void bitmap_source_invalidate (BitmapSource *instance);
+
+/* @GeneratePInvoke */
+void bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data);
 
 /**
  * Border
@@ -515,6 +533,12 @@ int downloader_response_get_response_status (DownloaderResponse *instance);
 const char *downloader_response_get_response_status_text (DownloaderResponse *instance);
 
 /**
+ * DownloadProgressEventArgs
+ **/
+/* @GeneratePInvoke */
+double download_progress_event_args_get_progress (DownloadProgressEventArgs *instance);
+
+/**
  * DrawingAttributes
  **/
 /* @GeneratePInvoke */
@@ -688,13 +712,19 @@ HitTestCollection *hit_test_collection_new (void);
 Image *image_new (void);
 
 /* @GeneratePInvoke */
-void image_set_source (Image *instance, BitmapImage *source);
+void image_set_source (Image *instance, ImageSource *source);
 
 /**
  * ImageBrush
  **/
 /* @GeneratePInvoke */
 ImageBrush *image_brush_new (void);
+
+/**
+ * ImageSource
+ **/
+/* @GeneratePInvoke */
+ImageSource *image_source_new (void);
 
 /**
  * IMediaDemuxer
@@ -1699,6 +1729,18 @@ VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint3
  **/
 /* @GeneratePInvoke */
 VisualBrush *visual_brush_new (void);
+
+/**
+ * WriteableBitmap
+ **/
+/* @GeneratePInvoke */
+void writeable_bitmap_lock (WriteableBitmap *instance);
+
+/* @GeneratePInvoke */
+void writeable_bitmap_unlock (WriteableBitmap *instance);
+
+/* @GeneratePInvoke */
+WriteableBitmap *writeable_bitmap_new (void);
 
 /**
  * XamlLoader

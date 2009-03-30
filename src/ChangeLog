@@ -1,3 +1,20 @@
+2009-03-29  Geoff Norton  <gnorton@novell.com>
+
+	* Makefile.am, bitmapimage.cpp|h, bitmapsource.cpp|h,
+	  writeablebitmap.cpp|h, brush.cpp, enums.h, eventargs.cpp|h,
+	  imagesource.cpp|h, media.cpp|h, mediaplayer.h, pipeline.cpp:
+	Update the image based source to have a properly implemented
+	BitmapImage.  I've also moved all this code to the SL3 API which
+	injects a BitmapSource in between ImageSource and BitmapImage,
+	and adds support for WriteableBitmap.
+
+	Basically now all the cairo logic lives in ImageSource and 
+	BitmapSource.  All the pixbuf loader logics and downloader logic
+	is isolated in BitmapImage.
+
+	* cbinding.cpp|h, dependencyproperty.g.cpp, type-generated.cpp,
+	  type.h, value.h: Regenerate  
+
 2009-03-29  Chris Toshok  <toshok@ximian.com>
 
 	* provider.h, provider.cpp, dependencyproperty.h: change

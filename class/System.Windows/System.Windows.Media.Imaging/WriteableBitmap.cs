@@ -1,8 +1,5 @@
 //
-// ExceptionRoutedEventArgs.cs
-//
-// Contact:
-//   Moonlight List (moonlight-list@lists.ximian.com)
+// BitmapImage.cs
 //
 // Copyright 2008 Novell, Inc.
 //
@@ -26,20 +23,52 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Resources;
+using System.IO;
+using System.Threading;
+using System.Net;
+using System.Runtime.InteropServices;
+using Mono;
 
-namespace System.Windows
+namespace System.Windows.Media.Imaging
 {
-	public sealed class ExceptionRoutedEventArgs : RoutedEventArgs
+	public partial class WriteableBitmap : BitmapSource
 	{
-		private Exception error_exception;
-		
-		internal ExceptionRoutedEventArgs (IntPtr raw) : base (raw)
+		IntPtr buffer;
+
+		public WriteableBitmap (int width, int height, PixelFormat format) : base (NativeMethods.writeable_bitmap_new ())
 		{
+			PixelWidth = width;
+			PixelHeight = height;
+			PixelFormat = format;
+
+			buffer = Marshal.AllocHGlobal (width * height * 4);
+			NativeMethods.bitmap_source_set_bitmap_data (native, buffer);
 		}
 
-		public Exception ErrorException {
-			get { return error_exception; }				
+		public int this[int index] {
+			get {
+				return Marshal.ReadInt32 (buffer, index*4);
+			}
+			set {
+				Marshal.WriteInt32 (buffer, index*4, value);
+			}
+		}
+		
+		public void Invalidate () {
+			NativeMethods.bitmap_source_invalidate (native);
+		}
+
+		public void Lock () {
+			NativeMethods.writeable_bitmap_lock (native);
+		}
+
+		public void Unlock () {
+			NativeMethods.writeable_bitmap_unlock (native);
 		}
 	}
+
 }

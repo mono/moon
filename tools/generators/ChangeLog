@@ -1,3 +1,8 @@
+2009-03-29  Geoff Norton  <gnorton@novell.com>
+
+	* FieldInfo.cs: PixelFormat is another enum as a structure as a class
+	field like FontWeight.  Support the necessary mapping here
+
 2009-03-29  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs: use the new AutoCreator functionality to generate

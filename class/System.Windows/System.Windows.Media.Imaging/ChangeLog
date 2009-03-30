@@ -1,3 +1,8 @@
+2009-03-29  Geoff Norton  <gnorton@novell.com>
+
+	* BitmapImage.cs: Move to the new SL3 api and hook up all the events
+	* BitmapSource.cs, WriteableBitmap.cs: New SL3 api
+
 2009-01-21  Geoff Norton  <gnorton@novell.com>
 
 	* BitmapImage.cs: Clean up and handle all this in native now.

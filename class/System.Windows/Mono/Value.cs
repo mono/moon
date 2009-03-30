@@ -511,7 +511,7 @@ namespace Mono {
 					value.u.p = Helper.AllocHGlobal (sizeof (GridLength));
 					Marshal.StructureToPtr (gl, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
-				else if ((v is FontStretch) || (v is FontStyle) || (v is FontWeight)) {
+				else if ((v is FontStretch) || (v is FontStyle) || (v is FontWeight) || (v is PixelFormat)) {
 					value.k = Kind.INT32;
 					value.u.i32 = v.GetHashCode (); // unit tested as such
 				}

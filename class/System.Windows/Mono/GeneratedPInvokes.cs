@@ -59,8 +59,24 @@ namespace Mono {
 		public extern static IntPtr bitmap_image_new ();
 
 		[DllImport ("moon")]
-		// void bitmap_image_set_buffer (BitmapImage *instance, gpointer buffer, int size);
-		public extern static void bitmap_image_set_buffer (IntPtr instance, IntPtr buffer, int size);
+		// void bitmap_image_pixbuf_write (BitmapImage *instance, gpointer buffer, gint32 offset, gint32 n);
+		public extern static void bitmap_image_pixbuf_write (IntPtr instance, IntPtr buffer, int offset, int n);
+
+		[DllImport ("moon")]
+		// void bitmap_image_pixmap_complete (BitmapImage *instance);
+		public extern static void bitmap_image_pixmap_complete (IntPtr instance);
+
+		[DllImport ("moon")]
+		// BitmapSource *bitmap_source_new ();
+		public extern static IntPtr bitmap_source_new ();
+
+		[DllImport ("moon")]
+		// void bitmap_source_invalidate (BitmapSource *instance);
+		public extern static void bitmap_source_invalidate (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data);
+		public extern static void bitmap_source_set_bitmap_data (IntPtr instance, IntPtr data);
 
 		[DllImport ("moon")]
 		// Border *border_new ();
@@ -589,6 +605,10 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
+		// double download_progress_event_args_get_progress (DownloadProgressEventArgs *instance);
+		public extern static double download_progress_event_args_get_progress (IntPtr instance);
+
+		[DllImport ("moon")]
 		// DrawingAttributes *drawing_attributes_new ();
 		public extern static IntPtr drawing_attributes_new ();
 
@@ -757,12 +777,16 @@ namespace Mono {
 		public extern static IntPtr image_new ();
 
 		[DllImport ("moon")]
-		// void image_set_source (Image *instance, BitmapImage *source);
+		// void image_set_source (Image *instance, ImageSource *source);
 		public extern static void image_set_source (IntPtr instance, IntPtr source);
 
 		[DllImport ("moon")]
 		// ImageBrush *image_brush_new ();
 		public extern static IntPtr image_brush_new ();
+
+		[DllImport ("moon")]
+		// ImageSource *image_source_new ();
+		public extern static IntPtr image_source_new ();
 
 		// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in TypeReference.cs and add the missing case) and try again.
 		// [DllImport ("moon")]
@@ -1694,6 +1718,18 @@ namespace Mono {
 		[DllImport ("moon")]
 		// VisualBrush *visual_brush_new ();
 		public extern static IntPtr visual_brush_new ();
+
+		[DllImport ("moon")]
+		// void writeable_bitmap_lock (WriteableBitmap *instance);
+		public extern static void writeable_bitmap_lock (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void writeable_bitmap_unlock (WriteableBitmap *instance);
+		public extern static void writeable_bitmap_unlock (IntPtr instance);
+
+		[DllImport ("moon")]
+		// WriteableBitmap *writeable_bitmap_new ();
+		public extern static IntPtr writeable_bitmap_new ();
 
 		[DllImport ("moon", EntryPoint="xaml_loader_create_from_file_with_error")]
 		// DependencyObject *xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);

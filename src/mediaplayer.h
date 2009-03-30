@@ -48,7 +48,7 @@ class MediaPlayer : public EventObject {
 		AudioEnded			= (1 << 13),
 		VideoEnded			= (1 << 14),
 		BufferUnderflow     = (1 << 15),
-		IsLive              = (1 << 16),
+		IsLive	      = (1 << 16),
 	};
 	
  private:

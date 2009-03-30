@@ -23,16 +23,31 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
+
 namespace System.Windows.Media.Imaging {
 
 	public class DownloadProgressEventArgs : EventArgs {
+		internal IntPtr native;
 
-		internal DownloadProgressEventArgs ()
+		internal DownloadProgressEventArgs (IntPtr raw)
 		{
+			native = raw;
+			NativeMethods.event_object_ref (native);
+		}
+
+		~DownloadProgressEventArgs ()
+		{
+			if (native != IntPtr.Zero) {
+				NativeMethods.event_object_unref (native);
+				native = IntPtr.Zero;
+			}
 		}
 
 		public int Progress {
-			get { throw new NotImplementedException (); }
+			get {
+				return (int) NativeMethods.download_progress_event_args_get_progress (native) * 100;
+			}
 		}
 	}
 

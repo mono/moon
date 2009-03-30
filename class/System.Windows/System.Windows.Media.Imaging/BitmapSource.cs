@@ -1,8 +1,5 @@
 //
-// ExceptionRoutedEventArgs.cs
-//
-// Contact:
-//   Moonlight List (moonlight-list@lists.ximian.com)
+// BitmapImage.cs
 //
 // Copyright 2008 Novell, Inc.
 //
@@ -26,20 +23,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Resources;
+using System.IO;
+using System.Threading;
+using System.Net;
+using Mono;
 
-namespace System.Windows
+namespace System.Windows.Media.Imaging
 {
-	public sealed class ExceptionRoutedEventArgs : RoutedEventArgs
+	public partial class BitmapSource : ImageSource
 	{
-		private Exception error_exception;
-		
-		internal ExceptionRoutedEventArgs (IntPtr raw) : base (raw)
-		{
-		}
-
-		public Exception ErrorException {
-			get { return error_exception; }				
-		}
 	}
+
 }

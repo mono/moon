@@ -299,6 +299,10 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.TIMELINE_COLLECTION));
 				t = typeof (System.Windows.Media.Imaging.BitmapImage); 
 				types.Add (t, new ManagedType (t, Kind.BITMAPIMAGE));
+				t = typeof (System.Windows.Media.Imaging.BitmapSource); 
+				types.Add (t, new ManagedType (t, Kind.BITMAPSOURCE));
+				t = typeof (System.Windows.Media.Imaging.WriteableBitmap); 
+				types.Add (t, new ManagedType (t, Kind.WRITEABLEBITMAP));
 				t = typeof (System.Windows.Shapes.Ellipse); 
 				types.Add (t, new ManagedType (t, Kind.ELLIPSE));
 				t = typeof (System.Windows.Shapes.Line); 

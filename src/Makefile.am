@@ -15,6 +15,7 @@ libmoon_include_headers = 	\
 	asf/asf-structures.h	\
 	audio.h			\
 	bitmapimage.h		\
+	bitmapsource.h		\
 	border.h		\
 	brush.h			\
 	canvas.h		\
@@ -45,6 +46,7 @@ libmoon_include_headers = 	\
 	glyphs.h		\
 	grid.h			\
 	http-streaming.h	\
+	imagesource.h		\
 	internal-downloader.h	\
 	keyboard.h		\
 	layout.h		\
@@ -99,6 +101,7 @@ libmoon_include_headers = 	\
 	value.h			\
 	window-gtk.h		\
 	window.h		\
+	writeablebitmap.h	\
 	xaml.h			\
 	xap.h			\
 	yuv-converter.h
@@ -114,6 +117,7 @@ libmoon_la_SOURCES = 		\
 	asf/asf-structures.cpp	\
 	audio.cpp		\
 	bitmapimage.cpp		\
+	bitmapsource.cpp	\
 	border.cpp		\
 	brush.cpp		\
 	canvas.cpp		\
@@ -144,6 +148,7 @@ libmoon_la_SOURCES = 		\
 	glyphs.cpp		\
 	grid.cpp		\
 	http-streaming.cpp	\
+	imagesource.cpp		\
 	keyboard.cpp		\
 	layout.cpp		\
 	list.cpp		\
@@ -194,6 +199,7 @@ libmoon_la_SOURCES = 		\
 	validators.cpp		\
 	value.cpp		\
 	window-gtk.cpp		\
+	writeablebitmap.cpp	\
 	xaml.cpp		\
 	xap.cpp			\
 	yuv-converter.cpp	\

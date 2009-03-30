@@ -33,7 +33,7 @@ using Mono;
 
 namespace System.Windows.Media.Imaging
 {
-	public sealed partial class BitmapImage : ImageSource
+	public sealed partial class BitmapImage : BitmapSource
 	{
 		public BitmapImage (Uri uriSource) : base (NativeMethods.bitmap_image_new ())
 		{
@@ -43,12 +43,80 @@ namespace System.Windows.Media.Imaging
 		public void SetSource (Stream streamSource)
 		{
 			if (streamSource == null)
-				NativeMethods.bitmap_image_set_buffer (native, IntPtr.Zero, 0);
-			else
-				NativeMethods.bitmap_image_set_buffer (native, Helper.StreamToIntPtr (streamSource), (int) streamSource.Length);
+				NativeMethods.bitmap_source_set_bitmap_data (native, IntPtr.Zero);
+			else {
+				NativeMethods.bitmap_image_pixbuf_write (native, Helper.StreamToIntPtr (streamSource), 0, (int) streamSource.Length);
+				NativeMethods.bitmap_image_pixmap_complete (native);
+			}
+		}
+                
+		static object DownloadProgressEvent = new object ();
+                static object ImageFailedEvent = new object ();
+                static object ImageOpenedEvent = new object ();
+
+		public event EventHandler<DownloadProgressEventArgs> DownloadProgress {
+			add {
+                                RegisterEvent (DownloadProgressEvent, "DownloadProgress", image_failed, value);
+			}
+			remove {
+                                UnregisterEvent (DownloadProgressEvent, "DownloadProgress", image_failed, value);
+			}
+		}
+			
+		public event EventHandler<DownloadProgressEventArgs> ImageFailed {
+			add {
+                                RegisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
+			}
+			remove {
+                                UnregisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
+			}
 		}
 
-		public event EventHandler<DownloadProgressEventArgs> DownloadProgress;
+		public event EventHandler<DownloadProgressEventArgs> ImageOpened {
+			add {
+                                RegisterEvent (ImageOpenedEvent, "ImageOpened", image_failed, value);
+			}
+			remove {
+                                UnregisterEvent (ImageOpenedEvent, "ImageOpened", image_failed, value);
+			}
+		}
+
+                static UnmanagedEventHandler download_progress = Events.CreateSafeHandler (download_progress_cb);
+                static UnmanagedEventHandler image_failed = Events.CreateSafeHandler (image_failed_cb);
+                static UnmanagedEventHandler image_opened = Events.CreateSafeHandler (image_opened_cb);
+
+                private static void download_progress_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
+			BitmapImage b = (BitmapImage) Helper.ObjectFromIntPtr (closure);
+                        b.RaiseDownloadProgress (new DownloadProgressEventArgs (calldata));
+                }
+                
+		private static void image_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
+			BitmapImage b = (BitmapImage) Helper.ObjectFromIntPtr (closure);
+                        b.RaiseImageFailed (new ExceptionRoutedEventArgs (calldata));
+                }
+		
+		private static void image_opened_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
+			BitmapImage b = (BitmapImage) Helper.ObjectFromIntPtr (closure);
+                        b.RaiseImageOpened (new RoutedEventArgs (calldata));
+                }
+
+		private void RaiseDownloadProgress (DownloadProgressEventArgs args) {
+                        EventHandler<DownloadProgressEventArgs> h = (EventHandler<DownloadProgressEventArgs>) EventList [DownloadProgressEvent];
+			if (h != null)
+				h (this, args);
+		}
+		
+		private void RaiseImageFailed (ExceptionRoutedEventArgs args) {
+                        EventHandler<ExceptionRoutedEventArgs> h = (EventHandler<ExceptionRoutedEventArgs>) EventList [ImageFailedEvent];
+			if (h != null)
+				h (this, args);
+		}
+		
+		private void RaiseImageOpened (RoutedEventArgs args) {
+                        EventHandler<RoutedEventArgs> h = (EventHandler<RoutedEventArgs>) EventList [ImageOpenedEvent];
+			if (h != null)
+				h (this, args);
+		}
 	}
 
 }

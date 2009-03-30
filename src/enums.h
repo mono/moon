@@ -74,6 +74,11 @@ enum MediaState {
 	MediaStateError
 };
 
+enum PixelFormats {
+	PixelFormatBgr32 = 1,
+	PixelFormatPbgra32 = 2
+};
+
 enum StyleSimulations {
 	StyleSimulationsNone
 };

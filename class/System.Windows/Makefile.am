@@ -359,6 +359,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/PathSegmentCollection.cs			\
 	$(srcdir)/System.Windows.Media/PenLineCap.cs				\
 	$(srcdir)/System.Windows.Media/PenLineJoin.cs				\
+	$(srcdir)/System.Windows.Media/PixelFormat.cs				\
+	$(srcdir)/System.Windows.Media/PixelFormats.cs				\
+	$(srcdir)/System.Windows.Media/PixelFormatKind.cs			\
 	$(srcdir)/System.Windows.Media/PointCollection.cs			\
 	$(srcdir)/System.Windows.Media/PolyBezierSegment.cs			\
 	$(srcdir)/System.Windows.Media/PolyLineSegment.cs			\
@@ -398,7 +401,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/Storyboard.cs			\
 	$(srcdir)/System.Windows.Media.Animation/Timeline.cs			\
 	$(srcdir)/System.Windows.Media.Imaging/BitmapImage.cs			\
+	$(srcdir)/System.Windows.Media.Imaging/BitmapSource.cs			\
 	$(srcdir)/System.Windows.Media.Imaging/DownloadProgressEventArgs.cs	\
+	$(srcdir)/System.Windows.Media.Imaging/WriteableBitmap.cs		\
 	$(srcdir)/System.Windows.Resources/StreamResourceInfo.cs		\
 	$(srcdir)/System.Windows.Shapes/Ellipse.cs				\
 	$(srcdir)/System.Windows.Shapes/Line.cs					\

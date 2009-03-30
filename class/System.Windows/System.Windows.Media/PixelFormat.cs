@@ -1,5 +1,5 @@
 //
-// ExceptionRoutedEventArgs.cs
+// PixelFormat.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -27,19 +27,49 @@
 //
 
 using System;
+using System.Runtime.InteropServices;
 
-namespace System.Windows
+namespace System.Windows.Media
 {
-	public sealed class ExceptionRoutedEventArgs : RoutedEventArgs
+	[StructLayout(LayoutKind.Sequential)]
+	public struct PixelFormat
 	{
-		private Exception error_exception;
+		private PixelFormatKind kind;
 		
-		internal ExceptionRoutedEventArgs (IntPtr raw) : base (raw)
+		internal PixelFormat (PixelFormatKind kind)
 		{
+			this.kind = kind;
 		}
-
-		public Exception ErrorException {
-			get { return error_exception; }				
+		
+		public static bool operator == (PixelFormat left, PixelFormat right)
+		{
+			return left.kind == right.kind;
+		}
+		
+		public static bool operator != (PixelFormat left, PixelFormat right)
+		{
+			return left.kind != right.kind;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			if (obj == null)
+				return false;
+			
+			if (!(obj is PixelFormat))
+				return false;
+			
+			return this == (PixelFormat) obj;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return (int) kind;
+		}
+		
+		public override string ToString()
+		{
+			return kind.ToString ();
 		}
 	}
 }

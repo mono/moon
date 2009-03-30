@@ -198,7 +198,6 @@
     <File name="style.cpp" subtype="Code" buildaction="Compile" />
     <File name="template.h" subtype="Code" buildaction="Nothing" />
     <File name="template.cpp" subtype="Code" buildaction="Compile" />
-    <File name="animation2.h" subtype="Code" buildaction="Nothing" />
     <File name="tilesource.h" subtype="Code" buildaction="Nothing" />
     <File name="applier.cpp" subtype="Code" buildaction="Compile" />
     <File name="applier.h" subtype="Code" buildaction="Nothing" />
@@ -227,8 +226,6 @@
     <File name="pipeline-asf.h" subtype="Code" buildaction="Nothing" />
     <File name="mediaelement.cpp" subtype="Code" buildaction="Compile" />
     <File name="mediaelement.h" subtype="Code" buildaction="Nothing" />
-    <File name="binding.cpp" subtype="Code" buildaction="Compile" />
-    <File name="binding.h" subtype="Code" buildaction="Nothing" />
     <File name="expression.h" subtype="Code" buildaction="Nothing" />
     <File name="validators.cpp" subtype="Code" buildaction="Compile" />
     <File name="provider.cpp" subtype="Code" buildaction="Compile" />
@@ -250,6 +247,12 @@
     <File name="mkcolor.cs" subtype="Code" buildaction="Nothing" />
     <File name="propertypath.h" subtype="Code" buildaction="Nothing" />
     <File name="multiscalesubimage.cpp" subtype="Code" buildaction="Compile" />
+    <File name="bitmapsource.cpp" subtype="Code" buildaction="Compile" />
+    <File name="bitmapsource.h" subtype="Code" buildaction="Nothing" />
+    <File name="imagesource.cpp" subtype="Code" buildaction="Compile" />
+    <File name="imagesource.h" subtype="Code" buildaction="Nothing" />
+    <File name="writeablebitmap.cpp" subtype="Code" buildaction="Compile" />
+    <File name="writeablebitmap.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

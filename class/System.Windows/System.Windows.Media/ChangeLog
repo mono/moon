@@ -1,3 +1,8 @@
+2009-03-29  Geoff Norton  <gnorton@novell.com>
+
+	* PixelFormat.cs, PixelFormats.cs, PixelFormatKind.cs: New SL3 API
+	required for WriteableBitmap.
+
 2009-03-26  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* MultiScaleTileSource.cs: drop the useless GetImageUri, fix 

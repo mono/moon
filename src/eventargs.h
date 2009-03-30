@@ -115,6 +115,24 @@ private:
 };
 
 /* @Namespace=None */
+class DownloadProgressEventArgs : public EventArgs {
+ private:
+	double progress;
+
+ protected:
+	virtual ~DownloadProgressEventArgs ();
+ 
+ public:
+	DownloadProgressEventArgs ();
+	DownloadProgressEventArgs (double progress);
+	
+	void SetProgress (double progress);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	double GetProgress ();
+};
+
+/* @Namespace=None */
 class RoutedEventArgs : public EventArgs {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
@@ -141,6 +159,16 @@ private:
 	DependencyObject *source;
 	bool handled;
 };
+
+/* @Namespace=None */
+class ExceptionRoutedEventArgs : public RoutedEventArgs {
+ protected:
+	virtual ~ExceptionRoutedEventArgs ();
+	
+ public:
+	ExceptionRoutedEventArgs ();
+};
+
 
 /* @Namespace=None */
 class KeyEventArgs : public RoutedEventArgs {

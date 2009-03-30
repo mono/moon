@@ -1,10 +1,7 @@
-//
-// ExceptionRoutedEventArgs.cs
-//
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2007 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,20 +23,16 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
+namespace System.Windows.Media {
 
-namespace System.Windows
-{
-	public sealed class ExceptionRoutedEventArgs : RoutedEventArgs
+	public static class PixelFormats
 	{
-		private Exception error_exception;
-		
-		internal ExceptionRoutedEventArgs (IntPtr raw) : base (raw)
-		{
+		public static PixelFormat Bgr32 {
+			get { return new PixelFormat (PixelFormatKind.Bgr32); }
 		}
-
-		public Exception ErrorException {
-			get { return error_exception; }				
+		
+		public static PixelFormat Pbgra32 {
+			get { return new PixelFormat (PixelFormatKind.Pbgra32); }
 		}
 	}
 }

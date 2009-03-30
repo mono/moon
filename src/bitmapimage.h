@@ -14,39 +14,61 @@
 #ifndef __BITMAPIMAGE_H__
 #define __BITMAPIMAGE_H__
 
-#include "dependencyobject.h"
+#include <gdk/gdkpixbuf.h>
 
-/* @Namespace=System.Windows.Media */
-class ImageSource : public DependencyObject {
- public:
-	virtual void SetUriSource (Uri *uri) = 0;
-	virtual Uri* GetUriSource () = 0;
-};
+#include "dependencyobject.h"
+#include "downloader.h"
+#include "bitmapsource.h"
 
 /* @Namespace=System.Windows.Media.Imaging */
-class BitmapImage : public ImageSource {
+class BitmapImage : public BitmapSource {
+ private:
+	Downloader *downloader;
+	GdkPixbufLoader *loader;
+	GError *error;
+	char *part_name;
+
  protected:
 	virtual ~BitmapImage ();
 
  public:
-	gpointer buffer;
-	gint32 size;
-
-	/* @PropertyType=Uri,GenerateAccessors,DefaultValue=Uri() */
-	const static int UriSourceProperty;
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	BitmapImage ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetBuffer (gpointer buffer, int size);
-
-	void CleanUp ();
+	/* @PropertyType=Uri,GenerateAccessors,DefaultValue=Uri() */
+	const static int UriSourceProperty;
+	/* @PropertyType=double,GenerateAccessors */
+	const static int ProgressProperty;
 
 	void SetUriSource (Uri* value);
 	Uri* GetUriSource ();
 	
+	void SetProgress (double progress);
+	double GetProgress ();
+	
+	void CleanupLoader ();
+	void CreateLoader (unsigned char *buffer);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void PixbufWrite (gpointer buffer, gint32 offset, gint32 n);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void PixmapComplete ();
+
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+
+	const static int DownloadProgressEvent;
+	const static int ImageFailedEvent;
+	const static int ImageOpenedEvent;
+
+	void SetDownloader (Downloader *downloader, Uri *uri, char *part_name);
+	void CleanupDownloader ();
+	void DownloaderProgressChanged ();
+	void DownloaderComplete ();
+	void DownloaderFailed ();
+
+	static void downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void pixbuf_write (void *buffer, gint32 offset, gint32 n, gpointer data);
 };
 
 #endif /* __BITMAPIMAGE_H__ */

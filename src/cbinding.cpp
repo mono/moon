@@ -116,12 +116,52 @@ bitmap_image_new (void)
 
 
 void
-bitmap_image_set_buffer (BitmapImage *instance, gpointer buffer, int size)
+bitmap_image_pixbuf_write (BitmapImage *instance, gpointer buffer, gint32 offset, gint32 n)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SetBuffer (buffer, size);
+	instance->PixbufWrite (buffer, offset, n);
+}
+
+
+void
+bitmap_image_pixmap_complete (BitmapImage *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->PixmapComplete ();
+}
+
+
+/**
+ * BitmapSource
+ **/
+BitmapSource *
+bitmap_source_new (void)
+{
+	return new BitmapSource ();
+}
+
+
+void
+bitmap_source_invalidate (BitmapSource *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Invalidate ();
+}
+
+
+void
+bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetBitmapData (data);
 }
 
 
@@ -1115,6 +1155,20 @@ downloader_response_get_response_status_text (DownloaderResponse *instance)
 
 
 /**
+ * DownloadProgressEventArgs
+ **/
+double
+download_progress_event_args_get_progress (DownloadProgressEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->GetProgress ();
+}
+
+
+/**
  * DrawingAttributes
  **/
 DrawingAttributes *
@@ -1519,7 +1573,7 @@ image_new (void)
 
 
 void
-image_set_source (Image *instance, BitmapImage *source)
+image_set_source (Image *instance, ImageSource *source)
 {
 	if (instance == NULL)
 		return;
@@ -1535,6 +1589,16 @@ ImageBrush *
 image_brush_new (void)
 {
 	return new ImageBrush ();
+}
+
+
+/**
+ * ImageSource
+ **/
+ImageSource *
+image_source_new (void)
+{
+	return new ImageSource ();
 }
 
 
@@ -3804,6 +3868,36 @@ VisualBrush *
 visual_brush_new (void)
 {
 	return new VisualBrush ();
+}
+
+
+/**
+ * WriteableBitmap
+ **/
+void
+writeable_bitmap_lock (WriteableBitmap *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Lock ();
+}
+
+
+void
+writeable_bitmap_unlock (WriteableBitmap *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Unlock ();
+}
+
+
+WriteableBitmap *
+writeable_bitmap_new (void)
+{
+	return new WriteableBitmap ();
 }
 
 

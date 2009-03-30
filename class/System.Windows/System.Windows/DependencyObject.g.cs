@@ -415,6 +415,7 @@ namespace System.Windows.Media {
 	}
 
 	partial class ImageSource {
+		public ImageSource () : base (NativeMethods.image_source_new ()) {}
 		internal ImageSource (IntPtr raw) : base (raw) {}
 	}
 
@@ -750,6 +751,16 @@ namespace System.Windows.Media.Imaging {
 	partial class BitmapImage {
 		public BitmapImage () : base (NativeMethods.bitmap_image_new ()) {}
 		internal BitmapImage (IntPtr raw) : base (raw) {}
+	}
+
+	partial class BitmapSource {
+		public BitmapSource () : base (NativeMethods.bitmap_source_new ()) {}
+		internal BitmapSource (IntPtr raw) : base (raw) {}
+	}
+
+	partial class WriteableBitmap {
+		public WriteableBitmap () : base (NativeMethods.writeable_bitmap_new ()) {}
+		internal WriteableBitmap (IntPtr raw) : base (raw) {}
 	}
 }
 

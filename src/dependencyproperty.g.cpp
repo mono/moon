@@ -10,6 +10,7 @@
 #include "animation.h"
 #include "application.h"
 #include "bitmapimage.h"
+#include "bitmapsource.h"
 #include "border.h"
 #include "brush.h"
 #include "canvas.h"
@@ -91,7 +92,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::MULTISCALEIMAGE, "SubImages", NULL, Type::MULTISCALESUBIMAGE_COLLECTION, false, true, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "Source", Type::MULTISCALETILESOURCE);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "AspectRatio", new Value (1.0), Type::DOUBLE);
-	DependencyProperty::RegisterFull (this, Type::IMAGE, "Source", NULL, Type::BITMAPIMAGE, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::RegisterFull (this, Type::IMAGE, "Source", NULL, Type::IMAGESOURCE, false, false, false, NULL, NULL, Image::CreateDefaultImageSource, false, false);
 	DependencyProperty::Register (this, Type::USERCONTROL, "Content", Type::UIELEMENT);
 	DependencyProperty::Register (this, Type::CONTENTCONTROL, "ContentTemplate", Type::DATATEMPLATE);
 	DependencyProperty::RegisterFull (this, Type::CONTENTCONTROL, "Content", NULL, Type::OBJECT, false, false, false, NULL, Validators::ContentControlContentValidator, NULL, false, false);
@@ -319,6 +320,8 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::APPLICATION, "Resources", NULL, Type::RESOURCE_DICTIONARY, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::RegisterFull (this, Type::SPLINECOLORKEYFRAME, "KeySpline", NULL, Type::KEYSPLINE, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::RegisterFull (this, Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", NULL, Type::COLORKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::BITMAPIMAGE, "UriSource", new Value (Uri()), Type::URI);
+	DependencyProperty::Register (this, Type::BITMAPIMAGE, "Progress", Type::DOUBLE);
 	DependencyProperty::Register (this, Type::TRANSLATETRANSFORM, "Y", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::TRANSLATETRANSFORM, "X", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::TRANSFORMGROUP, "Children", NULL, Type::TRANSFORM_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
@@ -391,7 +394,9 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::COLORANIMATION, "To", Type::COLOR);
 	DependencyProperty::Register (this, Type::COLORANIMATION, "From", Type::COLOR);
 	DependencyProperty::Register (this, Type::COLORANIMATION, "By", Type::COLOR);
-	DependencyProperty::Register (this, Type::BITMAPIMAGE, "UriSource", new Value (Uri()), Type::URI);
+	DependencyProperty::RegisterFull (this, Type::BITMAPSOURCE, "PixelWidth", new Value (0), Type::INT32, false, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::BITMAPSOURCE, "PixelHeight", new Value (0), Type::INT32, false, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false, false);
+	DependencyProperty::Register (this, Type::BITMAPSOURCE, "PixelFormat", new Value (PixelFormatPbgra32), Type::INT32);
 	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point3", Type::POINT);
 	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point2", Type::POINT);
 	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point1", Type::POINT);
@@ -672,88 +677,92 @@ const int AssemblyPart::SourceProperty = 265;
 const int Application::ResourcesProperty = 266;
 const int SplineColorKeyFrame::KeySplineProperty = 267;
 const int ColorAnimationUsingKeyFrames::KeyFramesProperty = 268;
-const int TranslateTransform::YProperty = 269;
-const int TranslateTransform::XProperty = 270;
-const int TransformGroup::ChildrenProperty = 271;
-const int TextBox::VerticalScrollBarVisibilityProperty = 272;
-const int TextBox::TextWrappingProperty = 273;
-const int TextBox::TextProperty = 274;
-const int TextBox::TextAlignmentProperty = 275;
-const int TextBox::SelectionStartProperty = 276;
-const int TextBox::SelectionLengthProperty = 277;
-const int TextBox::SelectionForegroundProperty = 278;
-const int TextBox::SelectionBackgroundProperty = 279;
-const int TextBox::SelectedTextProperty = 280;
-const int TextBox::MaxLengthProperty = 281;
-const int TextBox::IsReadOnlyProperty = 282;
-const int TextBox::HorizontalScrollBarVisibilityProperty = 283;
-const int TextBox::AcceptsReturnProperty = 284;
-const int Storyboard::TargetPropertyProperty = 285;
-const int Storyboard::TargetNameProperty = 286;
-const int SkewTransform::CenterYProperty = 287;
-const int SkewTransform::CenterXProperty = 288;
-const int SkewTransform::AngleYProperty = 289;
-const int SkewTransform::AngleXProperty = 290;
-const int SetterBaseCollection::IsSealedProperty = 291;
-const int ScaleTransform::ScaleYProperty = 292;
-const int ScaleTransform::ScaleXProperty = 293;
-const int ScaleTransform::CenterYProperty = 294;
-const int ScaleTransform::CenterXProperty = 295;
-const int RotateTransform::CenterYProperty = 296;
-const int RotateTransform::CenterXProperty = 297;
-const int RotateTransform::AngleProperty = 298;
-const int QuadraticBezierSegment::Point2Property = 299;
-const int QuadraticBezierSegment::Point1Property = 300;
-const int PolyQuadraticBezierSegment::PointsProperty = 301;
-const int PolyLineSegment::PointsProperty = 302;
-const int PolyBezierSegment::PointsProperty = 303;
-const int PointKeyFrame::ValueProperty = 304;
-const int PointKeyFrame::KeyTimeProperty = 305;
-const int PointAnimation::ToProperty = 306;
-const int PointAnimation::FromProperty = 307;
-const int PointAnimation::ByProperty = 308;
-const int PasswordBox::SelectionStartProperty = 309;
-const int PasswordBox::SelectionLengthProperty = 310;
-const int PasswordBox::SelectionForegroundProperty = 311;
-const int PasswordBox::SelectionBackgroundProperty = 312;
-const int PasswordBox::SelectedTextProperty = 313;
-const int PasswordBox::PasswordProperty = 314;
-const int PasswordBox::PasswordCharProperty = 315;
-const int PasswordBox::MaxLengthProperty = 316;
-const int ObjectKeyFrame::ValueProperty = 317;
-const int ObjectKeyFrame::KeyTimeProperty = 318;
-const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 319;
-const int MatrixTransform::MatrixProperty = 320;
-const int LineSegment::PointProperty = 321;
-const int LayoutInformation::LayoutSlotProperty = 322;
-const int LayoutInformation::LayoutClipProperty = 323;
-const int LayoutInformation::LastMeasureProperty = 324;
-const int LayoutInformation::LastArrangeProperty = 325;
-const int EventTrigger::RoutedEventProperty = 326;
-const int EventTrigger::ActionsProperty = 327;
-const int DoubleKeyFrame::ValueProperty = 328;
-const int DoubleKeyFrame::KeyTimeProperty = 329;
-const int DoubleAnimation::ToProperty = 330;
-const int DoubleAnimation::FromProperty = 331;
-const int DoubleAnimation::ByProperty = 332;
-const int DependencyObject::NameProperty = 333;
-const int DeepZoomImageTileSource::UriSourceProperty = 334;
-const int ControlTemplate::TargetTypeProperty = 335;
-const int ColorKeyFrame::ValueProperty = 336;
-const int ColorKeyFrame::KeyTimeProperty = 337;
-const int ColorAnimation::ToProperty = 338;
-const int ColorAnimation::FromProperty = 339;
-const int ColorAnimation::ByProperty = 340;
-const int BitmapImage::UriSourceProperty = 341;
-const int BezierSegment::Point3Property = 342;
-const int BezierSegment::Point2Property = 343;
-const int BezierSegment::Point1Property = 344;
-const int BeginStoryboard::StoryboardProperty = 345;
-const int ArcSegment::SweepDirectionProperty = 346;
-const int ArcSegment::SizeProperty = 347;
-const int ArcSegment::RotationAngleProperty = 348;
-const int ArcSegment::PointProperty = 349;
-const int ArcSegment::IsLargeArcProperty = 350;
+const int BitmapImage::UriSourceProperty = 269;
+const int BitmapImage::ProgressProperty = 270;
+const int TranslateTransform::YProperty = 271;
+const int TranslateTransform::XProperty = 272;
+const int TransformGroup::ChildrenProperty = 273;
+const int TextBox::VerticalScrollBarVisibilityProperty = 274;
+const int TextBox::TextWrappingProperty = 275;
+const int TextBox::TextProperty = 276;
+const int TextBox::TextAlignmentProperty = 277;
+const int TextBox::SelectionStartProperty = 278;
+const int TextBox::SelectionLengthProperty = 279;
+const int TextBox::SelectionForegroundProperty = 280;
+const int TextBox::SelectionBackgroundProperty = 281;
+const int TextBox::SelectedTextProperty = 282;
+const int TextBox::MaxLengthProperty = 283;
+const int TextBox::IsReadOnlyProperty = 284;
+const int TextBox::HorizontalScrollBarVisibilityProperty = 285;
+const int TextBox::AcceptsReturnProperty = 286;
+const int Storyboard::TargetPropertyProperty = 287;
+const int Storyboard::TargetNameProperty = 288;
+const int SkewTransform::CenterYProperty = 289;
+const int SkewTransform::CenterXProperty = 290;
+const int SkewTransform::AngleYProperty = 291;
+const int SkewTransform::AngleXProperty = 292;
+const int SetterBaseCollection::IsSealedProperty = 293;
+const int ScaleTransform::ScaleYProperty = 294;
+const int ScaleTransform::ScaleXProperty = 295;
+const int ScaleTransform::CenterYProperty = 296;
+const int ScaleTransform::CenterXProperty = 297;
+const int RotateTransform::CenterYProperty = 298;
+const int RotateTransform::CenterXProperty = 299;
+const int RotateTransform::AngleProperty = 300;
+const int QuadraticBezierSegment::Point2Property = 301;
+const int QuadraticBezierSegment::Point1Property = 302;
+const int PolyQuadraticBezierSegment::PointsProperty = 303;
+const int PolyLineSegment::PointsProperty = 304;
+const int PolyBezierSegment::PointsProperty = 305;
+const int PointKeyFrame::ValueProperty = 306;
+const int PointKeyFrame::KeyTimeProperty = 307;
+const int PointAnimation::ToProperty = 308;
+const int PointAnimation::FromProperty = 309;
+const int PointAnimation::ByProperty = 310;
+const int PasswordBox::SelectionStartProperty = 311;
+const int PasswordBox::SelectionLengthProperty = 312;
+const int PasswordBox::SelectionForegroundProperty = 313;
+const int PasswordBox::SelectionBackgroundProperty = 314;
+const int PasswordBox::SelectedTextProperty = 315;
+const int PasswordBox::PasswordProperty = 316;
+const int PasswordBox::PasswordCharProperty = 317;
+const int PasswordBox::MaxLengthProperty = 318;
+const int ObjectKeyFrame::ValueProperty = 319;
+const int ObjectKeyFrame::KeyTimeProperty = 320;
+const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 321;
+const int MatrixTransform::MatrixProperty = 322;
+const int LineSegment::PointProperty = 323;
+const int LayoutInformation::LayoutSlotProperty = 324;
+const int LayoutInformation::LayoutClipProperty = 325;
+const int LayoutInformation::LastMeasureProperty = 326;
+const int LayoutInformation::LastArrangeProperty = 327;
+const int EventTrigger::RoutedEventProperty = 328;
+const int EventTrigger::ActionsProperty = 329;
+const int DoubleKeyFrame::ValueProperty = 330;
+const int DoubleKeyFrame::KeyTimeProperty = 331;
+const int DoubleAnimation::ToProperty = 332;
+const int DoubleAnimation::FromProperty = 333;
+const int DoubleAnimation::ByProperty = 334;
+const int DependencyObject::NameProperty = 335;
+const int DeepZoomImageTileSource::UriSourceProperty = 336;
+const int ControlTemplate::TargetTypeProperty = 337;
+const int ColorKeyFrame::ValueProperty = 338;
+const int ColorKeyFrame::KeyTimeProperty = 339;
+const int ColorAnimation::ToProperty = 340;
+const int ColorAnimation::FromProperty = 341;
+const int ColorAnimation::ByProperty = 342;
+const int BitmapSource::PixelWidthProperty = 343;
+const int BitmapSource::PixelHeightProperty = 344;
+const int BitmapSource::PixelFormatProperty = 345;
+const int BezierSegment::Point3Property = 346;
+const int BezierSegment::Point2Property = 347;
+const int BezierSegment::Point1Property = 348;
+const int BeginStoryboard::StoryboardProperty = 349;
+const int ArcSegment::SweepDirectionProperty = 350;
+const int ArcSegment::SizeProperty = 351;
+const int ArcSegment::RotationAngleProperty = 352;
+const int ArcSegment::PointProperty = 353;
+const int ArcSegment::IsLargeArcProperty = 354;
 
 UIElement *
 VisualBrush::GetVisual ()
@@ -1243,15 +1252,15 @@ MultiScaleImage::GetAspectRatio ()
 	return value->AsDouble ();
 }
 
-BitmapImage *
+ImageSource *
 Image::GetSource ()
 {
 	Value *value = GetValue (Image::SourceProperty);
-	return value ? value->AsBitmapImage () : NULL;
+	return value ? value->AsImageSource () : NULL;
 }
 
 void
-Image::SetSource (BitmapImage *value)
+Image::SetSource (ImageSource *value)
 {
 	SetValue (Image::SourceProperty, Value (value));
 }
@@ -3929,6 +3938,33 @@ ColorAnimationUsingKeyFrames::SetKeyFrames (ColorKeyFrameCollection *value)
 	SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
 }
 
+Uri *
+BitmapImage::GetUriSource ()
+{
+	Value *value = GetValue (BitmapImage::UriSourceProperty);
+	return value ? value->AsUri () : NULL;
+}
+
+void
+BitmapImage::SetUriSource (Uri *value)
+{
+	if (!value) return;
+	SetValue (BitmapImage::UriSourceProperty, Value (*value));
+}
+
+double
+BitmapImage::GetProgress ()
+{
+	Value *value = GetValue (BitmapImage::ProgressProperty);
+	return value->AsDouble ();
+}
+
+void
+BitmapImage::SetProgress (double value)
+{
+	SetValue (BitmapImage::ProgressProperty, Value (value));
+}
+
 double
 TranslateTransform::GetY ()
 {
@@ -5003,18 +5039,43 @@ ColorAnimation::SetBy (Color *value)
 		SetValue (ColorAnimation::ByProperty, Value (*value));
 }
 
-Uri *
-BitmapImage::GetUriSource ()
+gint32
+BitmapSource::GetPixelWidth ()
 {
-	Value *value = GetValue (BitmapImage::UriSourceProperty);
-	return value ? value->AsUri () : NULL;
+	Value *value = GetValue (BitmapSource::PixelWidthProperty);
+	return value->AsInt32 ();
 }
 
 void
-BitmapImage::SetUriSource (Uri *value)
+BitmapSource::SetPixelWidth (gint32 value)
 {
-	if (!value) return;
-	SetValue (BitmapImage::UriSourceProperty, Value (*value));
+	SetValue (BitmapSource::PixelWidthProperty, Value (value));
+}
+
+gint32
+BitmapSource::GetPixelHeight ()
+{
+	Value *value = GetValue (BitmapSource::PixelHeightProperty);
+	return value->AsInt32 ();
+}
+
+void
+BitmapSource::SetPixelHeight (gint32 value)
+{
+	SetValue (BitmapSource::PixelHeightProperty, Value (value));
+}
+
+PixelFormats
+BitmapSource::GetPixelFormat ()
+{
+	Value *value = GetValue (BitmapSource::PixelFormatProperty);
+	return (PixelFormats) value->AsInt32 ();
+}
+
+void
+BitmapSource::SetPixelFormat (PixelFormats value)
+{
+	SetValue (BitmapSource::PixelFormatProperty, Value (value));
 }
 
 Point *

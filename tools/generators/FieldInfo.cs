@@ -63,6 +63,8 @@ class FieldInfo : MemberInfo {
 				switch (result) {
 				case "string":
 					return "char*";
+				case "PixelFormat":	
+					return "PixelFormats";
 				case "FontStretch":	
 					return "FontStretches";
 				case "FontWeight":

@@ -1,4 +1,8 @@
-2009-03-28  Sebastien Pouliot  <sebastien@ximian.com>
+2009-03-29  Geoff Norton  <gnorton@novell.com>
+
+	* plugin-class.cpp: Image.Source is always a BitmapImage
+
+ 2009-03-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin.cpp|h: Export a new function (get_plugin_dir) that returns
 	the location of the plugin.

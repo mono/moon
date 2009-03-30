@@ -1954,11 +1954,38 @@ namespace System.Windows.Media.Animation {
 
 namespace System.Windows.Media.Imaging {
 	partial class BitmapImage {
+		public static readonly DependencyProperty ProgressProperty = DependencyProperty.Lookup (Kind.BITMAPIMAGE, "Progress", typeof (double));
 		public static readonly DependencyProperty UriSourceProperty = DependencyProperty.Lookup (Kind.BITMAPIMAGE, "UriSource", typeof (Uri));
+
+		public double Progress {
+			get { return (double) GetValue (ProgressProperty); }
+			set { SetValue (ProgressProperty, value); }
+		}
 
 		public Uri UriSource {
 			get { return (Uri) GetValue (UriSourceProperty); }
 			set { SetValue (UriSourceProperty, value); }
+		}
+	}
+
+	partial class BitmapSource {
+		internal static readonly DependencyProperty PixelFormatProperty = DependencyProperty.Lookup (Kind.BITMAPSOURCE, "PixelFormat", typeof (PixelFormat));
+		public static readonly DependencyProperty PixelHeightProperty = DependencyProperty.Lookup (Kind.BITMAPSOURCE, "PixelHeight", typeof (int));
+		public static readonly DependencyProperty PixelWidthProperty = DependencyProperty.Lookup (Kind.BITMAPSOURCE, "PixelWidth", typeof (int));
+
+		internal PixelFormat PixelFormat {
+			get { return (PixelFormat) GetValue (PixelFormatProperty); }
+			set { SetValue (PixelFormatProperty, value); }
+		}
+
+		public int PixelHeight {
+			get { return (int) GetValue (PixelHeightProperty); }
+			internal set { SetValue (PixelHeightProperty, value); }
+		}
+
+		public int PixelWidth {
+			get { return (int) GetValue (PixelWidthProperty); }
+			internal set { SetValue (PixelWidthProperty, value); }
 		}
 	}
 }

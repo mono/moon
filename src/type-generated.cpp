@@ -15,6 +15,7 @@
 #include "audio-alsa.h"
 #include "audio-pulse.h"
 #include "bitmapimage.h"
+#include "bitmapsource.h"
 #include "border.h"
 #include "brush.h"
 #include "canvas.h"
@@ -34,6 +35,7 @@
 #include "geometry.h"
 #include "glyphs.h"
 #include "grid.h"
+#include "imagesource.h"
 #include "media.h"
 #include "mediaelement.h"
 #include "mediaplayer.h"
@@ -65,8 +67,12 @@
 #include "type.h"
 #include "uielement.h"
 #include "usercontrol.h"
+#include "writeablebitmap.h"
 #include "yuv-converter.h"
 
+const int BitmapImage::DownloadProgressEvent = 1;
+const int BitmapImage::ImageFailedEvent = 2;
+const int BitmapImage::ImageOpenedEvent = 3;
 const int Clock::CompletedEvent = 1;
 const int Clock::CurrentGlobalSpeedInvalidatedEvent = 2;
 const int Clock::CurrentStateInvalidatedEvent = 3;
@@ -150,6 +156,7 @@ const int UIElement::MouseLeftButtonUpEvent = 11;
 const int UIElement::MouseMoveEvent = 12;
 const int UIElement::UnloadedEvent = 13;
 
+const char *BitmapImage_Events [] = { "DownloadProgress", "ImageFailed", "ImageOpened", NULL };
 const char *Clock_Events [] = { "Completed", "CurrentGlobalSpeedInvalidated", "CurrentStateInvalidated", "CurrentTimeInvalidated", NULL };
 const char *Collection_Events [] = { "Changed", "ItemChanged", NULL };
 const char *ContentControl_Events [] = { "ContentChanged", NULL };
@@ -198,7 +205,8 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::AUDIOSTREAM] = new Type (Type::AUDIOSTREAM, Type::IMEDIASTREAM, false, "AudioStream", "AUDIOSTREAM", 0, 2, NULL, NULL, NULL);
 	types [(int) Type::BEGINSTORYBOARD] = new Type (Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard");
 	types [(int) Type::BEZIERSEGMENT] = new Type (Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL);
-	types [(int) Type::BITMAPIMAGE] = new Type (Type::BITMAPIMAGE, Type::IMAGESOURCE, false, "BitmapImage", "BITMAPIMAGE", 0, 1, NULL, (create_inst_func *) bitmap_image_new, NULL);
+	types [(int) Type::BITMAPIMAGE] = new Type (Type::BITMAPIMAGE, Type::BITMAPSOURCE, false, "BitmapImage", "BITMAPIMAGE", 3, 4, BitmapImage_Events, (create_inst_func *) bitmap_image_new, NULL);
+	types [(int) Type::BITMAPSOURCE] = new Type (Type::BITMAPSOURCE, Type::IMAGESOURCE, false, "BitmapSource", "BITMAPSOURCE", 0, 1, NULL, (create_inst_func *) bitmap_source_new, NULL);
 	types [(int) Type::BOOL] = new Type (Type::BOOL, Type::OBJECT, true, "bool", "BOOL", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::BORDER] = new Type (Type::BORDER, Type::FRAMEWORKELEMENT, false, "Border", "BORDER", 0, 17, NULL, (create_inst_func *) border_new, "Child");
 	types [(int) Type::BRUSH] = new Type (Type::BRUSH, Type::DEPENDENCY_OBJECT, false, "Brush", "BRUSH", 0, 1, NULL, (create_inst_func *) brush_new, NULL);
@@ -242,6 +250,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::DOUBLEKEYFRAME] = new Type (Type::DOUBLEKEYFRAME, Type::KEYFRAME, false, "DoubleKeyFrame", "DOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) double_key_frame_new, NULL);
 	types [(int) Type::DOUBLEKEYFRAME_COLLECTION] = new Type (Type::DOUBLEKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, "DoubleKeyFrameCollection", "DOUBLEKEYFRAME_COLLECTION", 0, 3, NULL, (create_inst_func *) double_key_frame_collection_new, NULL);
 	types [(int) Type::DOWNLOADER] = new Type (Type::DOWNLOADER, Type::DEPENDENCY_OBJECT, false, "Downloader", "DOWNLOADER", 3, 4, Downloader_Events, (create_inst_func *) downloader_new, NULL);
+	types [(int) Type::DOWNLOADPROGRESSEVENTARGS] = new Type (Type::DOWNLOADPROGRESSEVENTARGS, Type::EVENTARGS, false, "DownloadProgressEventArgs", "DOWNLOADPROGRESSEVENTARGS", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::DRAWINGATTRIBUTES] = new Type (Type::DRAWINGATTRIBUTES, Type::DEPENDENCY_OBJECT, false, "DrawingAttributes", "DRAWINGATTRIBUTES", 0, 1, NULL, (create_inst_func *) drawing_attributes_new, NULL);
 	types [(int) Type::DURATION] = new Type (Type::DURATION, Type::OBJECT, true, "Duration", "DURATION", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::ELLIPSE] = new Type (Type::ELLIPSE, Type::SHAPE, false, "Ellipse", "ELLIPSE", 0, 17, NULL, (create_inst_func *) ellipse_new, NULL);
@@ -251,6 +260,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::EVENTLISTENERPROXY] = new Type (Type::EVENTLISTENERPROXY, Type::EVENTOBJECT, false, "EventListenerProxy", "EVENTLISTENERPROXY", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::EVENTOBJECT] = new Type (Type::EVENTOBJECT, Type::OBJECT, false, "EventObject", "EVENTOBJECT", 1, 1, EventObject_Events, NULL, NULL);
 	types [(int) Type::EVENTTRIGGER] = new Type (Type::EVENTTRIGGER, Type::TRIGGERBASE, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions");
+	types [(int) Type::EXCEPTIONROUTEDEVENTARGS] = new Type (Type::EXCEPTIONROUTEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "ExceptionRoutedEventArgs", "EXCEPTIONROUTEDEVENTARGS", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::EXPRESSION] = new Type (Type::EXPRESSION, Type::EVENTOBJECT, false, "Expression", "EXPRESSION", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::EXTERNALDEMUXER] = new Type (Type::EXTERNALDEMUXER, Type::IMEDIADEMUXER, false, "ExternalDemuxer", "EXTERNALDEMUXER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::FFMPEGDECODER] = new Type (Type::FFMPEGDECODER, Type::IMEDIADECODER, false, "FfmpegDecoder", "FFMPEGDECODER", 0, 1, NULL, NULL, NULL);
@@ -277,7 +287,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::IMAGE] = new Type (Type::IMAGE, Type::MEDIABASE, false, "Image", "IMAGE", 1, 19, Image_Events, (create_inst_func *) image_new, NULL);
 	types [(int) Type::IMAGEBRUSH] = new Type (Type::IMAGEBRUSH, Type::TILEBRUSH, false, "ImageBrush", "IMAGEBRUSH", 2, 3, ImageBrush_Events, (create_inst_func *) image_brush_new, NULL);
 	types [(int) Type::IMAGEERROREVENTARGS] = new Type (Type::IMAGEERROREVENTARGS, Type::ERROREVENTARGS, false, "ImageErrorEventArgs", "IMAGEERROREVENTARGS", 0, 1, NULL, NULL, NULL);
-	types [(int) Type::IMAGESOURCE] = new Type (Type::IMAGESOURCE, Type::DEPENDENCY_OBJECT, false, "ImageSource", "IMAGESOURCE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::IMAGESOURCE] = new Type (Type::IMAGESOURCE, Type::DEPENDENCY_OBJECT, false, "ImageSource", "IMAGESOURCE", 0, 1, NULL, (create_inst_func *) image_source_new, NULL);
 	types [(int) Type::IMEDIADECODER] = new Type (Type::IMEDIADECODER, Type::IMEDIAOBJECT, false, "IMediaDecoder", "IMEDIADECODER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::IMEDIADEMUXER] = new Type (Type::IMEDIADEMUXER, Type::IMEDIAOBJECT, false, "IMediaDemuxer", "IMEDIADEMUXER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::IMEDIAOBJECT] = new Type (Type::IMEDIAOBJECT, Type::EVENTOBJECT, false, "IMediaObject", "IMEDIAOBJECT", 0, 1, NULL, NULL, NULL);
@@ -439,6 +449,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::VIDEOBRUSH] = new Type (Type::VIDEOBRUSH, Type::TILEBRUSH, false, "VideoBrush", "VIDEOBRUSH", 0, 1, NULL, (create_inst_func *) video_brush_new, NULL);
 	types [(int) Type::VIDEOSTREAM] = new Type (Type::VIDEOSTREAM, Type::IMEDIASTREAM, false, "VideoStream", "VIDEOSTREAM", 0, 2, NULL, NULL, NULL);
 	types [(int) Type::VISUALBRUSH] = new Type (Type::VISUALBRUSH, Type::TILEBRUSH, false, "VisualBrush", "VISUALBRUSH", 0, 1, NULL, (create_inst_func *) visual_brush_new, NULL);
+	types [(int) Type::WRITEABLEBITMAP] = new Type (Type::WRITEABLEBITMAP, Type::BITMAPSOURCE, false, "WriteableBitmap", "WRITEABLEBITMAP", 0, 1, NULL, (create_inst_func *) writeable_bitmap_new, NULL);
 	types [(int) Type::XAMLTEMPLATEBINDING] = new Type (Type::XAMLTEMPLATEBINDING, Type::EVENTOBJECT, false, "XamlTemplateBinding", "XAMLTEMPLATEBINDING", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::XMLLANGUAGE] = new Type (Type::XMLLANGUAGE, Type::OBJECT, false, "System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::YUVCONVERTER] = new Type (Type::YUVCONVERTER, Type::IIMAGECONVERTER, false, "YUVConverter", "YUVCONVERTER", 0, 1, NULL, NULL, NULL);

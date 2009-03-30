@@ -1,3 +1,9 @@
+2009-03-29  Geoff Norton  <gnorton@novell.com>
+
+	* ExceptionRoutedEventArgs.cs: We need to be able to hook this
+	up from a native ptr
+	* DependencyObject.g.cs, DependencyProperty.g.cs: Regen
+
 2009-03-26  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyProperty.cs (DependencyProperty.RegisterAny): don't

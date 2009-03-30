@@ -753,32 +753,48 @@ is_stretch_valid (Stretch stretch)
 void
 ImageBrush::SetupBrush (cairo_t *cr, const Rect &area)
 {
-	cairo_surface_t *surface = image->GetCairoSurface ();
-
-	Stretch stretch = GetStretch ();
-
-	if (!surface || !is_stretch_valid (stretch)) {
-		// not yet available, draw nothing (!surface) or a bad enum value for stretch
-		// XXX Removing this _source_set at all?
-		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
-		return;
-	}
-	
-	AlignmentX ax = GetAlignmentX ();
-	AlignmentY ay = GetAlignmentY ();
-	
-	Transform *transform = GetTransform ();
-	Transform *relative_transform = GetRelativeTransform ();
+	ImageSource *source = image->GetSource ();
+	cairo_surface_t *surface;
+	cairo_pattern_t *pattern;
 	cairo_matrix_t matrix;
+	Transform *transform;
+	Transform *relative_transform;
+	AlignmentX ax;
+	AlignmentY ay;
+	Stretch stretch;
 
-	cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
+	if (!source) goto failed;
+
+	source->Lock ();
+
+	surface = source->GetSurface (cr);
+
+	stretch = GetStretch ();
+
+	if (!surface || !is_stretch_valid (stretch)) goto failed;
+
+	ax = GetAlignmentX ();
+	ay = GetAlignmentY ();
+	
+	transform = GetTransform ();
+	relative_transform = GetRelativeTransform ();
+
+	pattern = cairo_pattern_create_for_surface (surface);
 
 	image_brush_compute_pattern_matrix (&matrix, area.width, area.height, image->GetImageWidth (), image->GetImageHeight (), stretch, ax, ay, transform, relative_transform);
 	cairo_matrix_translate (&matrix, -area.x, -area.y);
 	cairo_pattern_set_matrix (pattern, &matrix);
-	
+
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
+
+	source->Unlock ();
+
+	return;
+
+failed:
+	cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+	return;
 }
 
 //

@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "writeablebitmap.h"
 #include "bitmapimage.h"
 #include "uri.h"
 #include "runtime.h"
@@ -240,210 +241,92 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 //
 // Image
 //
-GHashTable *Image::surface_cache = NULL;
-
 Image::Image ()
 {
 	SetObjectType (Type::IMAGE);
 
-	create_xlib_surface = true;
-	
-	pattern = NULL;
 	brush = NULL;
-	surface = NULL;
-	loader = NULL;
-	loader_err = NULL;
 }
 
 Image::~Image ()
 {
-	if (loader != NULL) {
-		gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), NULL);
-		g_object_unref (loader);
-		loader = NULL;
-	}
-	CleanupSurface ();
 }
 
 void
-Image::CleanupPattern ()
+Image::download_progress (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	if (pattern) {
-		cairo_pattern_destroy (pattern);
-		pattern = NULL;
-	}
+	Image *media = (Image *) closure;
+
+	media->DownloadProgress ();
 }
 
 void
-Image::CleanupSurface ()
+Image::image_opened (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	CleanupPattern ();
+	Image *media = (Image *) closure;
 
-	if (surface) {
-		surface->ref_count--;
-		if (surface->ref_count == 0) {
-			if (surface->filename != NULL) {
-				LOG_MEDIA ("removing %s\n", surface->filename);
-				g_hash_table_remove (surface_cache, surface->filename);
-				g_free (surface->filename);
-			}
-			cairo_surface_destroy (surface->cairo);
-			if (surface->backing_pixbuf)
-				g_object_unref (surface->backing_pixbuf);
-			if (surface->backing_data)
-				g_free (surface->backing_data);
-			g_free (surface);
-		}
-		
-		surface = NULL;
-	}
+	media->ImageOpened ();
 }
 
 void
-Image::UpdateProgress ()
+Image::image_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	if (downloader == NULL)
-		return;
+	Image *media = (Image *) closure;
 
-	double progress = downloader->GetDownloadProgress ();
-	double current = GetDownloadProgress ();
-	
-	SetDownloadProgress (progress);
-	
-	/* only emit an event if the delta is >= 0.05% */
-	if (progress == 1.0 || (progress - current) > 0.05)
-		Emit (DownloadProgressChangedEvent);
+	media->ImageFailed ();
 }
 
-
-bool 
-Image::IsSurfaceCached ()
+void
+Image::DownloadProgress ()
 {
-	const char *uri;
-	bool found;
+	BitmapImage *source = (BitmapImage *) GetSource ();
 
-	if (!downloader)
-		return false;
+	SetDownloadProgress (source->GetProgress ());
+	Emit (DownloadProgressChangedEvent);
+}
 
-	if (strcmp (part_name, "") == 0)
-		uri = downloader->GetUri ();
-	else
-		uri = downloader->GetDownloadedFilename (part_name);
+void
+Image::ImageOpened ()
+{
+	BitmapImage *source = (BitmapImage *) GetSource ();
 
-	found = uri && surface_cache && g_hash_table_lookup (surface_cache, uri);
+	source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 
-	LOG_MEDIA ("%s cache for (%s)\n", found ? "found" : "no", uri);
+	UpdateSize ();
+}
 
-	return found;
+void
+Image::ImageFailed ()
+{
+	BitmapImage *source = (BitmapImage *) GetSource ();
+
+	source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (NULL));
 }
 
 void
 Image::SetSourceInternal (Downloader *downloader, char *PartName)
 {
-	// We need to actually download something
+	BitmapImage *source = (BitmapImage *) GetSource ();
+
 	MediaBase::SetSourceInternal (downloader, PartName);
-	
-	// If the uri the we are requesting is already cached 
-	// short circuit the request and use the cached image
-	if (IsSurfaceCached ()) {
-		DownloaderComplete ();
-		SetDownloadProgress (1.0);
-		
-		Emit (DownloadProgressChangedEvent);
-		
-		MediaBase::SetSourceInternal (NULL, PartName);
-		downloader->Abort ();
-		downloader->unref ();
-		InvalidateMeasure ();
-		return;
-	} else if (!downloader) {
-		CleanupSurface ();
-		Invalidate ();
-		return;
-	}
-	
-	downloader->AddHandler (Downloader::CompletedEvent, downloader_complete, this);
-	downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
-	
-	if (downloader->Started () || downloader->Completed ()) {
-		if (downloader->Completed ())
-			DownloaderComplete ();
-		
-		UpdateProgress ();
-	} else {
-		downloader->SetWriteFunc (pixbuf_write, size_notify, this);
-		
-		// Image::SetSource() is already async, so we don't need another
-		// layer of asyncronicity... it is safe to call SendNow() here.
-		downloader->SendNow ();
-	}
+
+	source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+	source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+	source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+
+	source->SetDownloader (downloader, NULL, PartName);
 }
 
 void
 Image::SetSource (Downloader *downloader, const char *PartName)
 {
-	loader = NULL;
 	MediaBase::SetSource (downloader, PartName);
-}
-
-void
-Image::PixbufWrite (unsigned char *buf, gint32 offset, gint32 n)
-{
-	UpdateProgress ();
-	if (loader == NULL && offset == 0) {
-		if (!(moonlight_flags & RUNTIME_INIT_ALL_IMAGE_FORMATS)) {
-			if (n == 0)
-				return;
-			// 89 50 4E 47 == png magic
-			if (buf[0] == 0x89)
-				loader = gdk_pixbuf_loader_new_with_type ("png", NULL);
-			// ff d8 ff e0 == jfif magic
-			if (buf[0] == 0xff)
-				loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
-
-			if (loader == NULL)
-				return;
-		} else {
-			loader = gdk_pixbuf_loader_new ();
-		}
-	}
-
-	if (loader != NULL && loader_err == NULL) {
-		gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), (const guchar *)buf, n, &loader_err);
-
-		if (loader_err != NULL) {
-			gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), NULL);
-		}
-	}
-}
-
-void
-Image::DownloaderComplete ()
-{
-	char *uri;
-
-	downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
-	downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
-
-	if (strcmp (part_name, "") == 0)
-		uri = g_strdup (downloader->GetUri ());
-	else
-		uri = g_strdup (downloader->GetDownloadedFilename (part_name));
-
-	if (surface == NULL || (surface->filename == NULL || strcmp (uri, surface->filename))) {
-		CleanupSurface ();
-
-		if (!CreateSurface (uri)) {
-			printf ("failed to create surface %s\n", uri);
-			g_free (uri);
-			Invalidate ();
-			return;
-		}
-	}
-
-	g_free (uri);
-
-	UpdateSize ();
 }
 
 void
@@ -457,18 +340,18 @@ Image::UpdateSize ()
 			Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
 			
 			if (!use_media_height)
-				SetWidth ((double) surface->width * height->AsDouble () / (double) surface->height);
+				SetWidth ((double) GetSource ()->GetPixelWidth () * height->AsDouble () / (double) GetSource ()->GetPixelHeight ());
 			else
-				SetWidth ((double) surface->width);
+				SetWidth ((double) GetSource ()->GetPixelWidth ());
 		}
 		
 		if (use_media_height) {
 			Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
 			
 			if (!use_media_width)
-				SetHeight ((double) surface->height * width->AsDouble () / (double) surface->width);
+				SetHeight ((double) GetSource ()->GetPixelHeight () * width->AsDouble () / (double) GetSource ()->GetPixelWidth ());
 			else
-				SetHeight ((double) surface->height);
+				SetHeight ((double) GetSource ()->GetPixelHeight ());
 		}
 		
 		updating_size_from_media = false;
@@ -490,358 +373,33 @@ Image::UpdateSize ()
 }
 
 void
-Image::DownloaderFailed (EventArgs *args)
-{
-	ErrorEventArgs *err = NULL;
-	
-	if (args && args->GetObjectType () == Type::ERROREVENTARGS)
-		err = (ErrorEventArgs *) args;
-	
-	Emit (ImageFailedEvent, new ImageErrorEventArgs (err ? err->error_message : NULL));
-	
-	Invalidate ();
-}
-
-
-#ifdef WORDS_BIGENDIAN
-#define set_pixel_bgra(pixel,index,b,g,r,a) \
-	G_STMT_START { \
-		((unsigned char *)(pixel))[index]   = a; \
-		((unsigned char *)(pixel))[index+1] = r; \
-		((unsigned char *)(pixel))[index+2] = g; \
-		((unsigned char *)(pixel))[index+3] = b; \
-	} G_STMT_END
-#define get_pixel_bgr_p(p,b,g,r) \
-	G_STMT_START { \
-		r = *(p);   \
-		g = *(p+1); \
-		b = *(p+2); \
-	} G_STMT_END
-#else
-#define set_pixel_bgra(pixel,index,b,g,r,a) \
-	G_STMT_START { \
-		((unsigned char *)(pixel))[index]   = b; \
-		((unsigned char *)(pixel))[index+1] = g; \
-		((unsigned char *)(pixel))[index+2] = r; \
-		((unsigned char *)(pixel))[index+3] = a; \
-	} G_STMT_END
-#define get_pixel_bgr_p(p,b,g,r) \
-	G_STMT_START { \
-		b = *(p);   \
-		g = *(p+1); \
-		r = *(p+2); \
-	} G_STMT_END
-#endif
-#define get_pixel_bgra(color, b, g, r, a) \
-	G_STMT_START { \
-		a = ((color & 0xff000000) >> 24); \
-		r = ((color & 0x00ff0000) >> 16); \
-		g = ((color & 0x0000ff00) >> 8); \
-		b = (color & 0x000000ff); \
-	} G_STMT_END
-#define get_pixel_bgr(color, b, g, r) \
-	G_STMT_START { \
-		r = ((color & 0x00ff0000) >> 16); \
-		g = ((color & 0x0000ff00) >> 8); \
-		b = (color & 0x000000ff); \
-	} G_STMT_END
-#include "alpha-premul-table.inc"
-
-//
-// Expands RGB to ARGB allocating new buffer for it.
-//
-static guchar*
-expand_rgb_to_argb (GdkPixbuf *pixbuf, int *stride)
-{
-	guchar *pb_pixels = gdk_pixbuf_get_pixels (pixbuf);
-	guchar *p;
-	int w = gdk_pixbuf_get_width (pixbuf);
-	int h = gdk_pixbuf_get_height (pixbuf);
-	*stride = w * 4;
-	guchar *data = (guchar *) g_malloc (*stride * h);
-	guchar *out;
-
-	for (int y = 0; y < h; y ++) {
-		p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
-		out = data + y * (*stride);
-		if (false && gdk_pixbuf_get_rowstride (pixbuf) % 4 == 0) {
-			for (int x = 0; x < w; x ++) {
-				guint32 color = *(guint32*)p;
-				guchar r, g, b;
-
-				get_pixel_bgr (color, b, g, r);
-				set_pixel_bgra (out, 0, r, g, b, 255);
-
-				p += 3;
-				out += 4;
-			}
-		}
-		else {
-			for (int x = 0; x < w; x ++) {
-				guchar r, g, b;
-
-				get_pixel_bgr_p (p, b, g, r);
-				set_pixel_bgra (out, 0, r, g, b, 255);
-
-				p += 3;
-				out += 4;
-			}
-		}
-	}
-
-	return data;
-}
-
-//
-// Converts RGBA unmultiplied alpha to ARGB pre-multiplied alpha.
-//
-static void
-unmultiply_rgba_in_place (GdkPixbuf *pixbuf)
-{
-	guchar *pb_pixels = gdk_pixbuf_get_pixels (pixbuf);
-	guchar *p;
-	int w = gdk_pixbuf_get_width (pixbuf);
-	int h = gdk_pixbuf_get_height (pixbuf);
-
-	for (int y = 0; y < h; y ++) {
-		p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
-		for (int x = 0; x < w; x ++) {
-			guint32 color = *(guint32*)p;
-			guchar r, g, b, a;
-
-			get_pixel_bgra (color, b, g, r, a);
-
-			/* pre-multipled alpha */
-			if (a == 0) {
-				r = g = b = 0;
-			}
-			else if (a < 255) {
-				r = pre_multiplied_table [r][a];
-				g = pre_multiplied_table [g][a];
-				b = pre_multiplied_table [b][a];
-			}
-
-			/* store it back, swapping red and blue */
-			set_pixel_bgra (p, 0, r, g, b, a);
-
-			p += 4;
-		}
-	}
-}
-
-bool
-Image::CreateSurface (const char *uri)
-{
-	if (surface) {
-		// image surface already created
-		return true;
-	}
-	char *msg;
-
-	CleanupPattern ();
-
-	if (!surface_cache)
-		surface_cache = g_hash_table_new (g_str_hash, g_str_equal);
-	
-	if (uri == NULL || !(surface = (CachedSurface *) g_hash_table_lookup (surface_cache, uri))) {
-		GdkPixbuf *pixbuf = NULL;
-		
-		if (loader == NULL) {
-			guchar buf[4096];
-			ssize_t n;
-			char *filename;
-			int fd;
-                
-			filename = downloader->GetDownloadedFilename (part_name);
-			if (filename == NULL) {
-				guchar *dlbuf = (guchar *)downloader->GetBuffer ();
-				if (dlbuf == NULL)
-					goto failed;
-
-				if (!(moonlight_flags & RUNTIME_INIT_ALL_IMAGE_FORMATS)) {
-					// 89 50 4E 47 == png magic
-					if (dlbuf[0] == 0x89 && dlbuf[1] == 0x50 && dlbuf[2] == 0x4e && dlbuf[3] == 0x47)
-						loader = gdk_pixbuf_loader_new_with_type ("png", NULL);
-					// ff d8 ff e0 == jfif magic
-					if (dlbuf[0] == 0xff && dlbuf[1] == 0xd8 && dlbuf[2] == 0xff && dlbuf[3] == 0xe0)
-						loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
-				} else {
-					loader = gdk_pixbuf_loader_new ();
-				}
-
-				if (loader)
-					gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), dlbuf, downloader->GetSize (), &loader_err);
-			} else {
-				if ((fd = open (filename, O_RDONLY)) == -1)
-					goto failed;
-
-				if (!(moonlight_flags & RUNTIME_INIT_ALL_IMAGE_FORMATS)) {
-					n = read (fd, buf, 4);
-					if (n < 4)
-						goto failed;
-	
-					// 89 50 4E 47 == png magic
-					if (buf[0] == 0x89 && buf[1] == 0x50 && buf[2] == 0x4e && buf[3] == 0x47)
-						loader = gdk_pixbuf_loader_new_with_type ("png", NULL);
-					// ff d8 ff e0 == jfif magic
-					if (buf[0] == 0xff && buf[1] == 0xd8 && buf[2] == 0xff && buf[3] == 0xe0)
-						loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
-	
-					if (loader)
-						gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buf, n, &loader_err);
-				} else {
-					loader = gdk_pixbuf_loader_new ();
-				}
-	
-				if (loader == NULL || loader_err != NULL)
-					goto failed;
-	
-				do {
-					do {
-						n = read (fd, buf, sizeof (buf));
-					} while (n == -1 && errno == EINTR);
-	
-					if (n == -1)
-						break;
-	
-					gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), buf, n, &loader_err);
-				} while (n > 0 && !loader_err);
-
-				close (fd);
-			}
-		}
-
-		gdk_pixbuf_loader_close (GDK_PIXBUF_LOADER (loader), loader_err ? NULL : &loader_err);
-		
-		if (!(pixbuf = gdk_pixbuf_loader_get_pixbuf (GDK_PIXBUF_LOADER (loader)))) {
-			g_object_unref (loader);
-			loader = NULL;
-			if (loader_err && loader_err->message)
-				msg = g_strdup_printf ("Failed to load image %s: %s", uri, loader_err->message);
-			else
-				msg = g_strdup_printf ("Failed to load image %s", uri);
-			
-			Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
-			
-			if (loader_err) {
-				g_error_free (loader_err);
-				loader_err = NULL;
-			}
-
-			return false;
-		} else if (loader_err) {
-			g_error_free (loader_err);
-			loader_err = NULL;
-		}
-		g_object_ref (pixbuf);
-		g_object_unref (loader);
-		loader = NULL;
-		
-		surface = g_new0 (CachedSurface, 1);
-		
-		surface->ref_count = 1;
-		surface->filename = g_strdup (uri);
-		surface->height = gdk_pixbuf_get_height (pixbuf);
-		surface->width = gdk_pixbuf_get_width (pixbuf);
-		
-		bool has_alpha = gdk_pixbuf_get_n_channels (pixbuf) == 4;
-		guchar *data;
-		int stride;
-		
-		if (has_alpha) {
-			surface->backing_pixbuf = pixbuf;
-			surface->backing_data = NULL;
-			unmultiply_rgba_in_place (pixbuf);
-			stride = gdk_pixbuf_get_rowstride (pixbuf);
-			data = gdk_pixbuf_get_pixels (pixbuf);
-		} else {
-			surface->backing_pixbuf = NULL;
-			surface->backing_data = expand_rgb_to_argb (pixbuf, &stride);
-			data = surface->backing_data;
-			g_object_unref (pixbuf);
-		}
-
-		surface->cairo = cairo_image_surface_create_for_data (data,
-								      has_alpha ? MOON_FORMAT_ARGB : MOON_FORMAT_RGB,
-								      surface->width,
-								      surface->height,
-								      stride);
-
-		surface->has_alpha = has_alpha;
-
-		if (surface->filename != NULL)
-			g_hash_table_insert (surface_cache, surface->filename, surface);
-	} else {
-		surface->ref_count++;
-	}
-
-	return true;
-
-failed:
-	msg = g_strdup_printf ("Failed to load image %s", part_name);
-	Emit (ImageFailedEvent, new ImageErrorEventArgs (msg));
-	return false;
-}
-
-void
-Image::size_notify (gint64 size, gpointer data)
-{
-	// Do something with it?
-	// if size == -1, we do not know the size of the file, can happen
-	// if the server does not return a Content-Length header
-	//printf ("The image size is %lld\n", size);
-}
-
-void
-Image::pixbuf_write (void *buf, gint32 offset, gint32 n, gpointer data)
-{
-	((Image *) data)->PixbufWrite ((unsigned char *)buf, offset, n);
-}
-
-void
 Image::Render (cairo_t *cr, Region *region, bool path_only)
 {
-	if (!surface)
+	ImageSource *source = GetSource ();
+	cairo_surface_t *cairo_surface;
+	cairo_pattern_t *pattern;
+	cairo_matrix_t matrix;
+	Rect image;
+	Rect paint;
+	Geometry *clip;
+
+	if (!source)
 		return;
-	
-	if (create_xlib_surface && !surface->xlib_surface_created) {
-		surface->xlib_surface_created = true;
-		
-		cairo_surface_t *xlib_surface = image_brush_create_similar (cr, surface->width, surface->height);
-		cairo_t *cr = cairo_create (xlib_surface);
 
-		cairo_set_source_surface (cr, surface->cairo, 0, 0);
+	source->Lock ();
 
-		//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
+	cairo_surface = source->GetSurface (cr);
 
-		cairo_paint (cr);
-		cairo_destroy (cr);
-
-		cairo_surface_destroy (surface->cairo);
-
-		if (surface->backing_pixbuf) {
-			g_object_unref (surface->backing_pixbuf);
-			surface->backing_pixbuf = NULL;
-		}
-
-		if (surface->backing_data) {
-			g_free (surface->backing_data);
-			surface->backing_data =NULL;
-		}
-
-		surface->cairo = xlib_surface;
-	}
+	if (GetActualWidth () == 0.0 && GetActualHeight () == 0.0)
+		return;
+	if (source->GetPixelWidth () == 0.0 && source->GetPixelWidth () == 0.0)
+		return;
 
 	cairo_save (cr);
 
-	Rect image = Rect (0, 0, surface->width, surface->height);
-	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
-
-	if (!pattern)
-		pattern = cairo_pattern_create_for_surface (surface->cairo);
-	
-	cairo_matrix_t matrix;
+	image = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
+	paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	pattern = cairo_pattern_create_for_surface (cairo_surface);
 	
 	image_brush_compute_pattern_matrix (&matrix, paint.width, paint.height, image.width, image.height, GetStretch (), 
 					    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
@@ -851,7 +409,7 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	Geometry *clip = LayoutInformation::GetLayoutClip (this);
+	clip = LayoutInformation::GetLayoutClip (this);
 	if (clip) {
 		clip->Draw (cr);
 		cairo_clip (cr);
@@ -861,6 +419,9 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_fill (cr);
 
 	cairo_restore (cr);
+
+cleanup:
+	source->Unlock ();
 }
 
 Size
@@ -868,11 +429,12 @@ Image::MeasureOverride (Size availableSize)
 {
 	Size desired = availableSize;
 	Rect shape_bounds = Rect ();
+	ImageSource *source = GetSource ();
 	double sx = 0.0;
 	double sy = 0.0;
 
-	if (surface)
-		shape_bounds = Rect (0,0,surface->width,surface->height);
+	if (source)
+		shape_bounds = Rect (0,0,source->GetPixelWidth (),source->GetPixelHeight ());
 
 	if (GetStretch () == StretchNone)
 		return desired.Min (shape_bounds.width, shape_bounds.height);
@@ -910,15 +472,16 @@ Image::ArrangeOverride (Size finalSize)
 {
 	Size arranged = finalSize;
 	Rect shape_bounds = Rect ();
+	ImageSource *source = GetSource ();
 	double sx = 1.0;
 	double sy = 1.0;
 
 
-	if (surface)
-		shape_bounds = Rect (0, 0, surface->width, surface->height);
+	if (source)
+		shape_bounds = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
 
 	if (GetStretch () == StretchNone) {
-	        arranged = Size (shape_bounds.x + shape_bounds.width,
+		arranged = Size (shape_bounds.x + shape_bounds.width,
 				 shape_bounds.y + shape_bounds.height);
 
 		if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
@@ -961,15 +524,16 @@ Rect
 Image::GetCoverageBounds ()
 {
 	Stretch stretch = GetStretch ();
+	ImageSource *source = GetSource ();
 
-	if (!surface || surface->has_alpha)
+	if (!source || source->GetPixelFormat () == PixelFormatPbgra32)
 		return Rect ();
 
-        if (stretch == StretchFill || stretch == StretchUniformToFill)
+	if (stretch == StretchFill || stretch == StretchUniformToFill)
 		return bounds;
 
 	cairo_matrix_t matrix;
-	Rect image = Rect (0, 0, surface->width, surface->height);
+	Rect image = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
 	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 
 	image_brush_compute_pattern_matrix (&matrix, 
@@ -986,12 +550,6 @@ Image::GetCoverageBounds ()
 	return image;
 }
 
-cairo_surface_t *
-Image::GetCairoSurface ()
-{
-	return surface ? surface->cairo : NULL;
-}
-
 void
 Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
@@ -1002,25 +560,18 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (!updating_size_from_media)
 			use_media_width = args->GetNewValue() == NULL;
 	} else if (args->GetId () == Image::SourceProperty) {
-		BitmapImage *source = args->GetNewValue() ? args->GetNewValue()->AsBitmapImage () : NULL;
+		BitmapImage *source = args->GetNewValue () ? args->GetNewValue ()->AsBitmapImage () : NULL; 
+		BitmapImage *old = args->GetOldValue () ? args->GetOldValue ()->AsBitmapImage () : NULL;
 
-		if (source == NULL) {
-			MediaBase::SetSource (NULL);
-		} else {
-			if (source->buffer) {
-				PixbufWrite ((unsigned char *)source->buffer, 0, source->size);
-				CleanupSurface ();
-
-		                if (!CreateSurface (NULL)) {
-		                        printf ("failed to create surface %s\n", source->GetUriSource ()->GetOriginalString ());
-		                        Invalidate ();
-		                } else {
-					UpdateSize ();
-				}
-			} else {
-				Uri *uri = source->GetUriSource();
-				MediaBase::SetSource (uri ? uri->GetOriginalString () : NULL);
-			}
+		if (old) {
+			old->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+			old->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+			old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+		}
+		if (source) {
+			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 		}
 	}
 
@@ -1036,12 +587,17 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 bool
 Image::InsideObject (cairo_t *cr, double x, double y)
 {
-	if (!surface)
+	if (!GetSource ())
 		return false;
 
 	return FrameworkElement::InsideObject (cr, x, y);
 }
 
+Value *
+Image::CreateDefaultImageSource (DependencyObject *instance, DependencyProperty *property)
+{
+	return Value::CreateUnrefPtr (new BitmapImage ());
+}
 
 //
 // MediaAttributeCollection

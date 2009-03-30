@@ -102,7 +102,44 @@ CollectionChangedEventArgs::GetIndex ()
 	return index;
 }
 
+DownloadProgressEventArgs::DownloadProgressEventArgs (double progress)
+{
+	SetObjectType (Type::DOWNLOADPROGRESSEVENTARGS);
 
+	this->progress = progress;
+}
+
+DownloadProgressEventArgs::DownloadProgressEventArgs ()
+{
+	SetObjectType (Type::DOWNLOADPROGRESSEVENTARGS);
+
+	progress = 0.0;
+}
+
+DownloadProgressEventArgs::~DownloadProgressEventArgs ()
+{
+}
+
+void
+DownloadProgressEventArgs::SetProgress (double progress)
+{
+	this->progress = progress;
+}
+	
+double
+DownloadProgressEventArgs::GetProgress ()
+{
+	return progress;
+}
+
+ExceptionRoutedEventArgs::ExceptionRoutedEventArgs ()
+{
+	SetObjectType (Type::EXCEPTIONROUTEDEVENTARGS);
+}
+
+ExceptionRoutedEventArgs::~ExceptionRoutedEventArgs ()
+{
+}
 
 RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
 {

@@ -1102,7 +1102,7 @@ Media::WorkerLoop ()
 	while (queued_requests != NULL && !stopping) {
 		MediaWork *node = NULL;
 		
-		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): entering mutex.\n");
+		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (%p): entering mutex.\n", this);
 		
 		// Wait until we have something in the queue
 		pthread_mutex_lock (&queue_mutex);
@@ -1119,19 +1119,19 @@ Media::WorkerLoop ()
 		pthread_mutex_unlock (&queue_mutex);
 		
 		if (queued_requests == NULL || stopping) {
-			LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): exiting.\n");
+			LOG_FRAMEREADERLOOP ("Media::WorkerLoop (%p): exiting.\n", this);
 			break;
 		}
 								
 		if (node == NULL)
 			continue; // Found nothing, continue waiting.
 
-		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): got a node, there are %d nodes left.\n", queued_requests->Length ());
-		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): processing node %p.\n", node);
+		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (%p): got a node, there are %d nodes left.\n", this, queued_requests->Length ());
+		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (%p): processing node %p.\n", this, node);
 		
 		node->closure->Call ();
 		
-		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (): processed node %p, result: %i.\n", node, result);
+		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (%p): processed node %p, result: %i.\n", this, node, result);
 		
 		delete node;
 	}

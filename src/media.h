@@ -22,6 +22,7 @@
 #include "error.h"
 #include "downloader.h"
 #include "pipeline.h"
+#include "bitmapsource.h"
 
 
 /* NOTE: both of these formats are 32bits wide per pixel */
@@ -181,58 +182,16 @@ class MediaBase : public FrameworkElement {
 
 /* @Namespace=System.Windows.Controls */
 class Image : public MediaBase {
-	int create_xlib_surface:1;
-
-	bool CreateSurface (const char *filename);
-	bool IsSurfaceCached ();
-	void CleanupSurface ();
-	void CleanupPattern ();
-
-	// downloader callbacks
-	void PixbufWrite (unsigned char *buf, gint32 offset, gint32 n);
-	virtual void DownloaderFailed (EventArgs *args);
-	virtual void DownloaderComplete ();
-	void UpdateProgress ();
-	void UpdateSize ();
-	
-	static void pixbuf_write (void *buf, gint32 offset, gint32 n, gpointer data);
-	static void size_notify (gint64 size, gpointer data);
-	
-	// pattern caching
-	cairo_pattern_t *pattern;
-
-	// pixbuf loading
-	GdkPixbufLoader *loader;
-	GError *loader_err;
-
  protected:
 	virtual ~Image ();
 	
-	virtual void OnEmptySource () { CleanupSurface (); }
-	
+	void UpdateSize ();
  public:
- 	/* @PropertyType=BitmapImage,ManagedPropertyType=ImageSource,AutoCreateValue,GenerateAccessors */
+ 	/* @PropertyType=ImageSource,AutoCreator=Image::CreateDefaultImageSource,GenerateAccessors */
 	const static int SourceProperty;
 
-	static GHashTable *surface_cache;
-	
 	const static int ImageFailedEvent;
 	
-	struct CachedSurface {
-		int xlib_surface_created:1;
-		int ref_count:30;
-		int has_alpha:1;
-		
-		GdkPixbuf *backing_pixbuf;
-		cairo_surface_t *cairo;
-		guchar *backing_data;
-		char *filename;
-		
-		int height;
-		int width;
-	};
-	
-	CachedSurface *surface;
 	ImageBrush *brush;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
@@ -240,15 +199,13 @@ class Image : public MediaBase {
 	
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	
-	cairo_surface_t *GetCairoSurface ();
-	
 	virtual void SetSourceInternal (Downloader *downloader, char *PartName);
 	virtual void SetSource (Downloader *downloader, const char *PartName);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
-	int GetImageHeight () { return surface ? surface->height : 0; };
-	int GetImageWidth  () { return surface ? surface->width : 0; };
+	int GetImageHeight () { return GetSource () ? GetSource ()->GetPixelHeight () : 0; };
+	int GetImageWidth  () { return GetSource () ? GetSource ()->GetPixelWidth () : 0; };
 	
 	virtual Rect GetCoverageBounds ();
 	
@@ -258,8 +215,18 @@ class Image : public MediaBase {
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetSource (BitmapImage *source);
-	BitmapImage *GetSource ();
+	void SetSource (ImageSource *source);
+	ImageSource *GetSource ();
+	
+	void DownloadProgress ();
+	void ImageOpened ();
+	void ImageFailed ();
+
+	static void download_progress (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void image_opened (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+
+	static Value *CreateDefaultImageSource (DependencyObject *instance, DependencyProperty *property);
 };
 
 #endif /* __MEDIA_H__ */
