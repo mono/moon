@@ -23,7 +23,7 @@ rating:0
 site:Calculator
 url:http://silver.calcsharp.net/
 rating:0
- * not working
+ * "Could not parse element Setter, attribute Value"
 
 site:Zoom Mosaic
 url:http://xaml.me/zoommosaic/
@@ -47,8 +47,9 @@ rating:0
 
 site:Dr. Popper
 url:http://www.bluerosegames.com/brg/free-web-games/bubble-breaker.aspx
-rating:2
- * works, but crashes when game is over
+rating:1
+ * not longer playable :(
+ * page loads but cannot start a game
 
 site:3D Image Rotation
 url:http://www.shinedraw.com/3d-illusion/flash-and-silverlight-3d-image-rotation/
@@ -57,6 +58,13 @@ rating:4
 
 site:Grid Transition Rotator
 url:http://www.shinedraw.com/image-manipulation/flash-vs-silverlight-grid-transition-rotator/
+rating:1
+ * first image appears. 
+ * Does not transition to second image
+ * "Could not parse element Button, attribute Style"
+
+site:Python WebIDE
+url:http://www.voidspace.org.uk/ironpython/webide/webide.html
 rating:0
  * not loading, error while launching app from xap
 
@@ -71,6 +79,7 @@ rating:3
  * animation works (a bit slow)
  * hyperlink button "Make a shape for real" does not work
 
+site:Custon Splash screen
 url:http://www.shinedraw.com/browser-integration/flash-vs-silverlight-custom-loading-splash-screen/
 rating:0
  * need to add the hooks for splashscreens
