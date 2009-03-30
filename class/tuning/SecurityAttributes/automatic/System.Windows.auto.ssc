@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 410 methods
+# 422 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -275,9 +275,21 @@
 +SSC-M: System.Void System.Windows.Media.GradientStop::.ctor()
 +SSC-M: System.Void System.Windows.Media.GradientStopCollection::.ctor()
 +SSC-M: System.Void System.Windows.Media.ImageBrush::.ctor()
++SSC-M: System.Void System.Windows.Media.ImageSource::.ctor()
 +SSC-M: System.Void System.Windows.Media.Imaging.BitmapImage::.ctor()
 +SSC-M: System.Void System.Windows.Media.Imaging.BitmapImage::.ctor(System.Uri)
 +SSC-M: System.Void System.Windows.Media.Imaging.BitmapImage::SetSource(System.IO.Stream)
++SSC-M: System.Void System.Windows.Media.Imaging.BitmapSource::.ctor()
++SSC-M: System.Void System.Windows.Media.Imaging.DownloadProgressEventArgs::.ctor(System.IntPtr)
++SSC-M: System.Void System.Windows.Media.Imaging.DownloadProgressEventArgs::Finalize()
++SSC-M: System.Int32 System.Windows.Media.Imaging.DownloadProgressEventArgs::get_Progress()
++SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor()
++SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Int32,System.Int32,System.Windows.Media.PixelFormat)
++SSC-M: System.Int32 System.Windows.Media.Imaging.WriteableBitmap::get_Item(System.Int32)
++SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::set_Item(System.Int32,System.Int32)
++SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Invalidate()
++SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Lock()
++SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Unlock()
 +SSC-M: System.Void System.Windows.Media.LinearGradientBrush::.ctor()
 +SSC-M: System.Void System.Windows.Media.LineGeometry::.ctor()
 +SSC-M: System.Void System.Windows.Media.LineSegment::.ctor()

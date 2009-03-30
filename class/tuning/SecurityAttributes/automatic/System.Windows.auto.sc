@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 426 methods needs to be decorated.
+# 435 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -137,6 +137,9 @@
 +SC-M: System.Double Mono.NativeMethods::cursor_position_changed_event_args_get_cursor_y(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::download_progress_event_args_get_progress(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::row_definition_get_actual_height(System.IntPtr)
 
 # p/invoke declaration
@@ -240,6 +243,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::bitmap_image_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::bitmap_source_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::border_new()
@@ -471,6 +477,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::image_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::image_source_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::imedia_object_get_media_reffed(System.IntPtr)
@@ -872,6 +881,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::visual_brush_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::writeable_bitmap_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_get_template_parent(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
@@ -920,7 +932,16 @@
 +SC-M: System.Void Mono.NativeMethods::application_set_current(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::bitmap_image_set_buffer(System.IntPtr,System.IntPtr,System.Int32)
++SC-M: System.Void Mono.NativeMethods::bitmap_image_pixbuf_write(System.IntPtr,System.IntPtr,System.Int32,System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::bitmap_image_pixmap_complete(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::bitmap_source_invalidate(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::bitmap_source_set_bitmap_data(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::collection_changed_event_args_set_index(System.IntPtr,System.Int32)
@@ -1245,6 +1266,12 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::video_brush_set_source(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::writeable_bitmap_lock(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::writeable_bitmap_unlock(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::xaml_loader_add_missing(System.IntPtr,System.String)
