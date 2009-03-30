@@ -182,8 +182,9 @@ FF2BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 			NPN_GetValue (npp, NPNVDOMWindow, NS_STATIC_CAST (nsISupports **, getter_AddRefs (item)));
 		} else {
 			NPVariant docresult;
-			NPN_GetProperty (npp, window, document_identifier, &docresult);
 			NPIdentifier document_identifier = NPN_GetStringIdentifier ("document");
+
+			NPN_GetProperty (npp, window, document_identifier, &docresult);
 
 			if (npobj == NPVARIANT_TO_OBJECT (docresult)) {
 				item = ff2_get_dom_document (npp);
