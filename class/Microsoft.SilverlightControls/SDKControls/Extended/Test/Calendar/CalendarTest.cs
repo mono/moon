@@ -1749,7 +1749,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Asynchronous]
         [Description("Tests the creation of an automation peer for the DayButton")]
-        [MoonlightBug ()]
         public void DayButton_AutomationPeer()
         {
             Calendar calendar = new Calendar();
@@ -1897,7 +1896,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Asynchronous]
         [Description("Tests the creation of an automation peer for the CalendarButton")]
-        [MoonlightBug ()]
         public void CalendarButton_AutomationPeer()
         {
             Calendar calendar = new Calendar();

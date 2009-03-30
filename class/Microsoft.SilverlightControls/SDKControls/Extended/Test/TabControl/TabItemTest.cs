@@ -129,7 +129,6 @@ namespace System.Windows.Controls.Test
         [TestMethod]
         [Description("Verify TabItem's HeaderTemplate property.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void HeaderTemplateTest()
         {
             TabControl tabControl = new TabControl();

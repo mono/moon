@@ -1,3 +1,12 @@
+2009-03-30  Alan McGovern  <amcgovern@novell.com>
+
+	* SDKControls/Extended/Test/Calendar/CalendarTest.cs:
+	* SDKControls/Extended/Test/TabControl/TabItemTest.cs:
+	* SDKControls/Extended/Test/TabControl/TabPanelTest.cs:
+	* SDKControls/Extended/Test/DatePicker/DatePickerTest.cs:
+	  Remove [MoonlightBug] from a bunch of tests which are
+	  unexpectedly passing now.
+
 2009-03-26  Alan McGovern  <amcgovern@novell.com>
 
 	* RuntimeControls/SilverlightControls/Button.cs: Implement

@@ -559,7 +559,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Ensure DropDown is opening/closing properly.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void IsDropDownOpen()
         {
             _elementToCleanUp = new DatePicker();
@@ -589,7 +588,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Verify IsTodayHighlighted propery.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void IsTodayHighlighted()
         {
             _elementToCleanUp = new DatePicker();
@@ -689,7 +687,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Ensure SelectedDateFormat can be changed.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void DPSelectedDateFormat()
         {
             _elementToCleanUp = new DatePicker();
@@ -721,9 +718,7 @@ namespace System.Windows.Controls.Extended.Test
         /// </summary>
         [TestMethod]
         [Description("Ensure Text property reflects the changes in the TextBox part of the DatePicker.")]
-        [Asynchronous]
-        [MoonlightBug ()]
-        public void DPText()
+        [Asynchronous]        public void DPText()
         {
             _elementToCleanUp = new DatePicker();
             TestPanel.Children.Add(_elementToCleanUp);
@@ -755,7 +750,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Ensure TextBox text property reflects the changes in the Text property of the DatePicker.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void DPTextBeforeLoad()
         {
             _elementToCleanUp = new DatePicker();
@@ -775,7 +769,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Ensure TextBox text property reflects the changes in the Text property of the DatePicker.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void DPValidTextBeforeLoad()
         {
             _elementToCleanUp = new DatePicker();
@@ -796,7 +789,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Ensure Text property reflects the changes in the TextBox part of the DatePicker.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void DPTextNull()
         {
             _elementToCleanUp = new DatePicker();
@@ -839,7 +831,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Ensure the popup does not close when navigating through the CalendarModes.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void DPNavigation()
         {
             _elementToCleanUp = new DatePicker();

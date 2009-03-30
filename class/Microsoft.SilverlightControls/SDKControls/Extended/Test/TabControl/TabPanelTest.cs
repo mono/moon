@@ -22,7 +22,6 @@ namespace System.Windows.Controls.Test
         [TestMethod]
         [Description("Validate the TabControlParent property on the TabPanel class.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void TabControlParentTest()
         {
             TabPanel tabPanel = new TabPanel();
@@ -68,7 +67,6 @@ namespace System.Windows.Controls.Test
         [TestMethod]
         [Description("Validate the GetHeadersSizeTest function.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void GetHeadersSizeTest()
         {
             TabControl tabControl = new TabControl();
