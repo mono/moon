@@ -1,3 +1,9 @@
+2009-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: We need to load the plugin from where the rest
+	  of the assemblies are (in the prefix), otherwise moonlight
+	  won't find the assemblies.
+
 2009-03-25  Chris Toshok  <toshok@ximian.com>
 
 	* uri-test.cpp: use accessors.

@@ -5,16 +5,12 @@ if INCLUDE_BROWSER_MANAGED_CODE
 SUBDIRS += 2.0
 endif
 
-MOZ_PATH = `pwd`/$(top_builddir)/test/harness/shocker/.libs:`pwd`/$(top_builddir)/plugin/.libs
+MOZ_PATH = `pwd`/$(top_builddir)/test/harness/shocker/.libs:$(prefix)/lib/moon/plugin
 if HAVE_GECKO_1_9 
-LD_PATH = $(top_builddir)/plugin/.libs:$(top_builddir)/src/.libs:`pkg-config --variable=sdkdir mozilla-gtkmozembed`/lib
+LD_PATH = $(prefix)/lib/moon/plugin:`pkg-config --variable=sdkdir mozilla-gtkmozembed`/lib
 else
-LD_PATH = $(top_builddir)/plugin/.libs:$(top_builddir)/src/.libs:`pkg-config --variable=libdir xulrunner-gtkmozembed`
+LD_PATH = $(prefix)/lib/moon/plugin:`pkg-config --variable=libdir xulrunner-gtkmozembed`
 endif
-
-MOON_PLUGIN_DIR = `pwd`/$(top_builddir)/plugin/.libs
-
-BUILDDIR_MONO_PATH = `pwd`/$(top_builddir)/class/lib/2.1
 
 if INCLUDE_TESTING
 TESTING = true
@@ -54,7 +50,7 @@ run-xephyr:
 	kill $$xephyr_pid)
 
 run-drtlist: all check-testing
-	(GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono --debug harness/test-runner/test-runner.exe -drtlist $(DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -v -html-report -run-known-failures $(HARNESS_FLAGS))
+	(GNOME_DISABLE_CRASH_DIALOG=1 MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) mono --debug harness/test-runner/test-runner.exe -drtlist $(DRTLIST) -agviewer $(top_srcdir)/test/harness/agviewer/agviewer -v -v -v -html-report -run-known-failures $(HARNESS_FLAGS))
 
 run-tests:
 	DRTLIST=$(top_builddir)/test/xaml/drtlist.xml $(MAKE) run-drtlist
@@ -66,7 +62,7 @@ run-test:
 	$(MAKE) run-test-impl
 
 run-test-impl:
-	GNOME_DISABLE_CRASH_DIALOG=1 MOON_PLUGIN_DIR=$(MOON_PLUGIN_DIR) MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) $(TEST_COMMAND) $(top_srcdir)/test/harness/agviewer/agviewer $(DRTTEST) 
+	GNOME_DISABLE_CRASH_DIALOG=1 MOZ_PLUGIN_PATH=$(MOZ_PATH) LD_LIBRARY_PATH=$(LD_PATH):$(LD_LIBRARY_PATH) $(TEST_COMMAND) $(top_srcdir)/test/harness/agviewer/agviewer $(DRTTEST) 
 
 run-test-gdb:
 	TEST_COMMAND="gdb --eval-command=run --args" $(MAKE) run-test-impl
