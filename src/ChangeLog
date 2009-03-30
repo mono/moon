@@ -1,3 +1,11 @@
+2009-03-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (FontFace::GetExtents): Instead of calculating our
+	ascent/descent and height values from 2 different ways, calculate
+	ascent/descent the same way we calculated height. This seems to
+	give slightly more accurate results (previous logic rounded up to
+	the nearest whole pixel for ascent/descent).
+
 2009-03-30  Geoff Norton  <gnorton@novell.com>
 
 	* media.h: Hide some API that never should have been public.

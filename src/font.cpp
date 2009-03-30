@@ -49,7 +49,7 @@ static const FT_Matrix invert_y = {
         0, -65535,
 };
 
-#define LOAD_FLAGS (FT_LOAD_NO_BITMAP | FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_TARGET_NORMAL)
+#define LOAD_FLAGS (FT_LOAD_NO_BITMAP | /*FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT |*/ FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_TARGET_NORMAL)
 
 
 struct GlyphBitmap {
@@ -1323,8 +1323,8 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 	if (extents->underline_thickness < 1.0)
 		extents->underline_thickness = 1.0;
 	
-	extents->descent = face->size->metrics.descender * scale;
-	extents->ascent = face->size->metrics.ascender * scale;
+	extents->descent = FT_MulFix (face->descender, face->size->metrics.y_scale) * scale;
+	extents->ascent = FT_MulFix (face->ascender, face->size->metrics.y_scale) * scale;
 	extents->height = FT_MulFix (face->height, face->size->metrics.y_scale) * scale;
 }
 
