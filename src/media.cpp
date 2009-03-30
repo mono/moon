@@ -560,18 +560,18 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (!updating_size_from_media)
 			use_media_width = args->GetNewValue() == NULL;
 	} else if (args->GetId () == Image::SourceProperty) {
-		BitmapImage *source = args->GetNewValue () ? args->GetNewValue ()->AsBitmapImage () : NULL; 
-		BitmapImage *old = args->GetOldValue () ? args->GetOldValue ()->AsBitmapImage () : NULL;
+		ImageSource *source = args->GetNewValue () ? args->GetNewValue ()->AsImageSource () : NULL; 
+		ImageSource *old = args->GetOldValue () ? args->GetOldValue ()->AsImageSource () : NULL;
 
-		if (old) {
-			old->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-			old->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-			old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+		if (old && old->Is(Type::BITMAPIMAGE)) {
+			((BitmapImage *)old)->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 		}
-		if (source) {
-			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+		if (old && source->Is(Type::BITMAPIMAGE)) {
+			((BitmapImage *)source)->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+			((BitmapImage *)source)->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+			((BitmapImage *)source)->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 		}
 	}
 

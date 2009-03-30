@@ -1,5 +1,10 @@
 2009-03-29  Geoff Norton  <gnorton@novell.com>
 
+	* media.cpp: Ensure that the ImageSource we get is a BitmapImage
+	before treating it as such.
+
+2009-03-29  Geoff Norton  <gnorton@novell.com>
+
 	* Makefile.am, bitmapimage.cpp|h, bitmapsource.cpp|h,
 	  writeablebitmap.cpp|h, brush.cpp, enums.h, eventargs.cpp|h,
 	  imagesource.cpp|h, media.cpp|h, mediaplayer.h, pipeline.cpp:
