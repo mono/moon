@@ -1,5 +1,10 @@
 2009-03-29  Geoff Norton  <gnorton@novell.com>
 
+	* plugin-class.cpp: Ensure that the ImageSource we get is a BitmapImage
+	before treating it as such.
+
+2009-03-29  Geoff Norton  <gnorton@novell.com>
+
 	* plugin-class.cpp: Image.Source is always a BitmapImage
 
  2009-03-28  Sebastien Pouliot  <sebastien@ximian.com>
