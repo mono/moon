@@ -1,3 +1,8 @@
+2009-03-30  Geoff Norton  <gnorton@novell.com>
+
+	* bitmapimage.cpp: Ensure we fall back to downloading if we 
+	cannot find the image as a resource.
+
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
 	* deployment.h|.cpp: combing the desktop and browser cases (the

@@ -179,19 +179,21 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			if (size > 0) {
 				PixbufWrite (buffer, 0, size);
 				PixmapComplete ();
-			}
-		} else {
-			if (surface == NULL) {
-				SetBitmapData (NULL);
+
 				return;
 			}
-
-			if (!(downloader = surface->CreateDownloader ()))
-				return;
-
-			SetDownloader (downloader, uri, NULL);
-			downloader->unref ();
 		}
+
+		if (surface == NULL) {
+			SetBitmapData (NULL);
+			return;
+		}
+
+		if (!(downloader = surface->CreateDownloader ()))
+			return;
+
+		SetDownloader (downloader, uri, NULL);
+		downloader->unref ();
 	} else if (args->GetId () == BitmapImage::ProgressProperty) {
 		Emit (DownloadProgressEvent, new DownloadProgressEventArgs (GetProgress ()));
 	}
