@@ -175,14 +175,14 @@ FF3BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 		item = element;
 	} else {
 		NPObject *window = NULL;
-		NPIdentifier document_identifier = NPN_GetStringIdentifier ("document");
-
 		NPN_GetValue (npp, NPNVWindowNPObject, &window);
 
-		if (npobj == window) {
+		if (window && npobj->_class == window->_class) {
 			NPN_GetValue (npp, NPNVDOMWindow, static_cast<nsISupports **>(getter_AddRefs (item)));
 		} else {
 			NPVariant docresult;
+			NPIdentifier document_identifier = NPN_GetStringIdentifier ("document");
+
 			NPN_GetProperty (npp, window, document_identifier, &docresult);
 
 			if (npobj == NPVARIANT_TO_OBJECT (docresult)) {

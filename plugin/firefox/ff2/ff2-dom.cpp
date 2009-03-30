@@ -176,15 +176,14 @@ FF2BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 		item = element;
 	} else {
 		NPObject *window = NULL;
-		NPIdentifier document_identifier = NPN_GetStringIdentifier ("document");
-
 		NPN_GetValue (npp, NPNVWindowNPObject, &window);
 
-		if (npobj == window) {
+		if (window && npobj->_class == window->_class) {
 			NPN_GetValue (npp, NPNVDOMWindow, NS_STATIC_CAST (nsISupports **, getter_AddRefs (item)));
 		} else {
 			NPVariant docresult;
 			NPN_GetProperty (npp, window, document_identifier, &docresult);
+			NPIdentifier document_identifier = NPN_GetStringIdentifier ("document");
 
 			if (npobj == NPVARIANT_TO_OBJECT (docresult)) {
 				item = ff2_get_dom_document (npp);
