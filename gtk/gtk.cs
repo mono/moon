@@ -53,10 +53,13 @@ public class GtkSilver : EventBox {
 	// The downloader callbacks
 	//
 	internal delegate IntPtr downloader_create_state_func  (IntPtr native);
-	internal delegate void   downloader_destroy_state_func (IntPtr state);
-	internal delegate void   downloader_open_func  (string verb, string uri, bool streaming, IntPtr state);
-	internal delegate void   downloader_send_func  (IntPtr state);
-	internal delegate void   downloader_abort_func (IntPtr state);
+	internal delegate void downloader_destroy_state_func (IntPtr state);
+	internal delegate void downloader_open_func  (string verb, string uri, bool streaming, IntPtr state);
+	internal delegate void downloader_send_func  (IntPtr state);
+	internal delegate void downloader_abort_func (IntPtr state);
+	internal delegate void downloader_header_func (IntPtr state, string header, string value);
+	internal delegate void downloader_body_func (IntPtr state, IntPtr body, int length);
+	internal delegate IntPtr downloader_create_webrequest_func (IntPtr state);
 	
 	[DllImport ("moon")]
 	internal extern static void downloader_set_functions (
@@ -64,7 +67,11 @@ public class GtkSilver : EventBox {
 		downloader_destroy_state_func destroy_state,
 		downloader_open_func open,
 		downloader_send_func send,
-		downloader_abort_func abort);
+		downloader_abort_func abort,
+		downloader_header_func header,
+		downloader_body_func body,
+		downloader_create_webrequest_func request
+	);
 	
 	static GtkSilver ()
 	{
@@ -74,7 +81,10 @@ public class GtkSilver : EventBox {
 			ManagedDownloader.DestroyDownloader,
 			ManagedDownloader.Open,
 			ManagedDownloader.Send,
-			ManagedDownloader.Abort);
+			ManagedDownloader.Abort,
+			ManagedDownloader.Header,
+			ManagedDownloader.Body,
+			ManagedDownloader.CreateWebrequest);
 		
 		DependencyObject.Initialize ();
 	}

@@ -1,3 +1,9 @@
+2009-03-30  Geoff Norton  <gnorton@novell.com>
+
+	* gtk.cs: Update to the new downloader pinvoke structure
+	* ManagedDownloader.cs: Stop getting a null filename from downloader
+	just to pass it back.
+
 2009-02-09  Jonathan Pryor  <jpryor@novell.com>
 
 	* gtksilver.source: Add a /monodoc/node element so that

@@ -48,9 +48,6 @@ namespace Gtk.Moonlight {
 		[DllImport ("moon")]
 		internal extern static void downloader_notify_finished (IntPtr downloader, string filename);
 		
-		[DllImport ("moon")]
-		internal extern static string downloader_get_downloaded_file (IntPtr downloader);
-		
 		public delegate void TickCall (IntPtr data);
 
 		[DllImport ("moon")]
@@ -169,8 +166,7 @@ namespace Gtk.Moonlight {
 						if (!downloading)
 							return;
 						tick_call = null;
-						path = downloader_get_downloaded_file (downloader);
-						downloader_notify_finished (downloader, path);
+						downloader_notify_finished (downloader, null);
 					}, IntPtr.Zero);
 				}
 			} catch (Exception e){
@@ -273,6 +269,34 @@ namespace Gtk.Moonlight {
 				return;
 
 		        m.downloading = false;
+		}
+		
+		public static void Header (IntPtr state, string header, string value)
+		{
+			ManagedDownloader m = (ManagedDownloader) downloaders [state];
+			if (m == null)
+				return;
+			
+			m.request.Headers [header] = value;
+		}
+		
+		public static void Body (IntPtr state, IntPtr body, int length)
+		{
+			ManagedDownloader m = (ManagedDownloader) downloaders [state];
+			if (m == null)
+				return;
+
+			Stream stream = m.request.GetRequestStream ();
+			
+			byte[] buffer = new byte[length];
+
+			Marshal.Copy (body, buffer, 0, length);
+			stream.Write (buffer, 0, length);
+		}
+		
+		public static IntPtr CreateWebrequest (IntPtr state)
+		{
+			throw new NotImplementedException ();
 		}
 
 		public static string GetResponseText (string part, IntPtr state)
