@@ -5,7 +5,7 @@
 int
 main()
 {
-	runtime_init (0, NULL);
+	runtime_init (NULL, 0);
 
 	for (int i = 0; i < Type::LASTTYPE; i ++) {
 		Type *t = Type::Find((Type::Kind)i);
