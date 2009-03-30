@@ -1,3 +1,10 @@
+2009-03-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* security.c: Always call mono_assembly_setrootdir, even if
+	  CoreCLR is disabled. This should fix buildbots where
+	  mono/mcs and moonlight are installed into different
+	  prefixes.
+
 2009-03-30  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* deepzoomimagetilesource.cpp: revert latest change, don't advance
