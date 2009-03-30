@@ -182,6 +182,15 @@ class MediaBase : public FrameworkElement {
 
 /* @Namespace=System.Windows.Controls */
 class Image : public MediaBase {
+ private:
+	void DownloadProgress ();
+	void ImageOpened ();
+	void ImageFailed ();
+
+	static void download_progress (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void image_opened (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+
  protected:
 	virtual ~Image ();
 	
@@ -191,8 +200,6 @@ class Image : public MediaBase {
 	const static int SourceProperty;
 
 	const static int ImageFailedEvent;
-	
-	ImageBrush *brush;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
@@ -217,14 +224,6 @@ class Image : public MediaBase {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetSource (ImageSource *source);
 	ImageSource *GetSource ();
-	
-	void DownloadProgress ();
-	void ImageOpened ();
-	void ImageFailed ();
-
-	static void download_progress (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void image_opened (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
 	static Value *CreateDefaultImageSource (DependencyObject *instance, DependencyProperty *property);
 };

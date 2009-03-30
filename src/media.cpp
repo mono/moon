@@ -244,8 +244,6 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 Image::Image ()
 {
 	SetObjectType (Type::IMAGE);
-
-	brush = NULL;
 }
 
 Image::~Image ()
@@ -358,18 +356,7 @@ Image::UpdateSize ()
 	}
 	
 	InvalidateMeasure ();
-	
-	if (brush) {
-		// FIXME: this is wrong, we probably need to set the
-		// property, or use some other mechanism, but this is
-		// gross.
-		PropertyChangedEventArgs args (GetDeployment ()->GetTypes ()->GetProperty (ImageBrush::DownloadProgressProperty), ImageBrush::DownloadProgressProperty, NULL, 
-					       brush->GetValue (ImageBrush::DownloadProgressProperty));
-		MoonError error;
-
-		brush->OnPropertyChanged (&args, &error /* XXX ignored */);
-	} else
-		Invalidate ();
+	Invalidate ();
 }
 
 void

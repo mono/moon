@@ -18,6 +18,7 @@
 
 #include "enums.h"
 #include "collection.h"
+#include "bitmapimage.h"
 
 class MediaElement;
 
@@ -304,24 +305,22 @@ class TileBrush : public Brush {
 
 /* @Namespace=System.Windows.Media */
 class ImageBrush : public TileBrush {
-	static void image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
+private:
+	void DownloadProgress ();
+	void ImageOpened ();
+	void ImageFailed ();
+
+	static void download_progress (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void image_opened (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void target_unloaded (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void target_loaded (EventObject *sender, EventArgs *calldata, gpointer closure);
-	
-	void TargetUnloaded ();
-	void TargetLoaded ();
-	
-	int loaded_count;
-	Image *image;
-	
+
  protected:
 	virtual ~ImageBrush ();
 	
  public:
 	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Private,GenerateAccessors */
 	const static int DownloadProgressProperty;
- 	/* @PropertyType=BitmapImage,ManagedPropertyType=ImageSource,GenerateAccessors */
+ 	/* @PropertyType=ImageSource,AutoCreator=Image::CreateDefaultImageSource,GenerateAccessors */
 	const static int ImageSourceProperty;
 	
 	const static int DownloadProgressChangedEvent;
@@ -333,9 +332,6 @@ class ImageBrush : public TileBrush {
 	void SetSource (Downloader *downloader, const char *PartName);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
-	virtual void RemoveTarget (DependencyObject *obj);
-	virtual void AddTarget (DependencyObject *obj);
-	virtual void SetSurface (Surface *surface);
 	
 	virtual bool IsOpaque ();
 	
@@ -345,8 +341,8 @@ class ImageBrush : public TileBrush {
 	void SetDownloadProgress (double progress);
 	double GetDownloadProgress ();
 	
-	void SetImageSource (BitmapImage *source);
-	BitmapImage *GetImageSource ();
+	void SetImageSource (ImageSource *source);
+	ImageSource *GetImageSource ();
 };
 
 cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int height);

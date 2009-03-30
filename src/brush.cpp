@@ -501,112 +501,80 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 // ImageBrush
 //
 
-void
-ImageBrush::image_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
+ImageBrush::ImageBrush ()
 {
-	ImageBrush *brush = (ImageBrush*)closure;
-	double progress = brush->image->GetDownloadProgress ();
-	
-	brush->SetDownloadProgress (progress);
-	
-	brush->Emit (ImageBrush::DownloadProgressChangedEvent);
+	SetObjectType (Type::IMAGEBRUSH);
+}
+
+ImageBrush::~ImageBrush ()
+{
+}
+
+void
+ImageBrush::download_progress (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	ImageBrush *media = (ImageBrush *) closure;
+
+	media->DownloadProgress ();
+}
+
+void
+ImageBrush::image_opened (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	ImageBrush *media = (ImageBrush *) closure;
+
+	media->ImageOpened ();
 }
 
 void
 ImageBrush::image_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	if (calldata)
-		calldata->ref ();
-	((ImageBrush*)closure)->Emit (ImageBrush::ImageFailedEvent, calldata);
+	ImageBrush *media = (ImageBrush *) closure;
+
+	media->ImageFailed ();
 }
 
-ImageBrush::ImageBrush ()
+void
+ImageBrush::DownloadProgress ()
 {
-	SetObjectType (Type::IMAGEBRUSH);
+	BitmapImage *source = (BitmapImage *) GetImageSource ();
 
-	image = new Image ();
-
-	image->AddHandler (MediaBase::DownloadProgressChangedEvent, image_progress_changed, this);
-	image->AddHandler (Image::ImageFailedEvent, image_failed, this);
-
-	image->brush = this;
-	
-	loaded_count = 0;
+	SetDownloadProgress (source->GetProgress ());
+	Emit (DownloadProgressChangedEvent);
 }
 
-ImageBrush::~ImageBrush ()
+void
+ImageBrush::ImageOpened ()
 {
-	image->brush = NULL;
-	image->unref ();
+	BitmapImage *source = (BitmapImage *) GetImageSource ();
+
+	source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+}
+
+void
+ImageBrush::ImageFailed ()
+{
+	BitmapImage *source = (BitmapImage *) GetImageSource ();
+
+	source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (NULL));
 }
 
 void
 ImageBrush::SetSource (Downloader *downloader, const char *PartName)
 {
-	image->SetSource (downloader, PartName);
-}
+	BitmapImage *source = (BitmapImage *) GetImageSource ();
 
-void
-ImageBrush::SetSurface (Surface *surface)
-{
-	if (GetSurface() == surface)
-		return;
-	
-	image->SetSurface (surface);
-	
-	DependencyObject::SetSurface (surface);
-}
+	source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+	source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+	source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 
-void
-ImageBrush::TargetLoaded ()
-{
-	if (++loaded_count == 1)
-		image->SetAllowDownloads (true);
-}
-
-void
-ImageBrush::target_loaded (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	((ImageBrush *) closure)->TargetLoaded ();
-}
-
-void
-ImageBrush::TargetUnloaded ()
-{
-	if (--loaded_count == 0)
-		image->SetAllowDownloads (false);
-}
-
-void
-ImageBrush::target_unloaded (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	((ImageBrush *) closure)->TargetUnloaded ();
-}
-
-void
-ImageBrush::AddTarget (DependencyObject *obj)
-{
-	if (!obj->Is (Type::UIELEMENT))
-		return;
-	
-	if (((UIElement *) obj)->IsLoaded ())
-		TargetLoaded ();
-	
-	obj->AddHandler (UIElement::UnloadedEvent, target_unloaded, this);
-	obj->AddHandler (UIElement::LoadedEvent, target_loaded, this);
-}
-
-void
-ImageBrush::RemoveTarget (DependencyObject *obj)
-{
-	if (!obj->Is (Type::UIELEMENT))
-		return;
-	
-	if (((UIElement *) obj)->IsLoaded ())
-		TargetUnloaded ();
-	
-	obj->RemoveHandler (UIElement::UnloadedEvent, target_unloaded, this);
-	obj->RemoveHandler (UIElement::LoadedEvent, target_loaded, this);
+	source->SetDownloader (downloader, NULL, PartName);
 }
 
 void
@@ -615,14 +583,21 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetProperty ()->GetOwnerType() != Type::IMAGEBRUSH) {
 		TileBrush::OnPropertyChanged (args, error);
 		return;
-	}
+	} else if (args->GetId () == Image::SourceProperty) {
+		ImageSource *source = args->GetNewValue () ? args->GetNewValue ()->AsImageSource () : NULL;
+		ImageSource *old = args->GetOldValue () ? args->GetOldValue ()->AsImageSource () : NULL;
 
-	if (args->GetId () == ImageBrush::DownloadProgressProperty) {
-		image->SetValue (Image::DownloadProgressProperty, args->GetNewValue());
-	}
-	else if (args->GetId () == ImageBrush::ImageSourceProperty) {
-		image->SetValue (Image::SourceProperty, args->GetNewValue());
-	}
+		if (old && old->Is(Type::BITMAPIMAGE)) {
+			((BitmapImage *)old)->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+                }
+		if (old && source->Is(Type::BITMAPIMAGE)) {
+			((BitmapImage *)source)->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+			((BitmapImage *)source)->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+			((BitmapImage *)source)->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+		}
+        }
 
 	NotifyListenersOfPropertyChange (args);
 }
@@ -753,7 +728,7 @@ is_stretch_valid (Stretch stretch)
 void
 ImageBrush::SetupBrush (cairo_t *cr, const Rect &area)
 {
-	ImageSource *source = image->GetSource ();
+	ImageSource *source = GetImageSource ();
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
 	cairo_matrix_t matrix;
@@ -781,7 +756,7 @@ ImageBrush::SetupBrush (cairo_t *cr, const Rect &area)
 
 	pattern = cairo_pattern_create_for_surface (surface);
 
-	image_brush_compute_pattern_matrix (&matrix, area.width, area.height, image->GetImageWidth (), image->GetImageHeight (), stretch, ax, ay, transform, relative_transform);
+	image_brush_compute_pattern_matrix (&matrix, area.width, area.height, source->GetPixelWidth (), source->GetPixelHeight (), stretch, ax, ay, transform, relative_transform);
 	cairo_matrix_translate (&matrix, -area.x, -area.y);
 	cairo_pattern_set_matrix (pattern, &matrix);
 

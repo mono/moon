@@ -1,5 +1,14 @@
 2009-03-30  Geoff Norton  <gnorton@novell.com>
 
+	* media.h: Hide some API that never should have been public.
+	* media.cpp: ImageBrush no longer uses a image internally.
+	* bitmapimage.cpp|h: Part name is a const char * since we dup
+	it here.
+	* brush.cpp|h: Migrate away from using a Image internally
+	and consume the new BitmapImage API.
+
+2009-03-30  Geoff Norton  <gnorton@novell.com>
+
 	* bitmapimage.cpp: Ensure we fall back to downloading if we 
 	cannot find the image as a resource.
 

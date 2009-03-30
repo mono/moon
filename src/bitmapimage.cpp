@@ -202,7 +202,7 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 }
 
 void
-BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, char *part_name)
+BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_name)
 {
 	this->downloader = downloader;
 	this->part_name = g_strdup (part_name);

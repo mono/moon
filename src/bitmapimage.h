@@ -59,7 +59,7 @@ class BitmapImage : public BitmapSource {
 	const static int ImageFailedEvent;
 	const static int ImageOpenedEvent;
 
-	void SetDownloader (Downloader *downloader, Uri *uri, char *part_name);
+	void SetDownloader (Downloader *downloader, Uri *uri, const char *part_name);
 	void CleanupDownloader ();
 	void DownloaderProgressChanged ();
 	void DownloaderComplete ();
