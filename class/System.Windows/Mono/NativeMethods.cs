@@ -272,7 +272,9 @@ namespace Mono {
 			[MarshalAs (UnmanagedType.Bool)] bool alt_key,	// glib gboolean is a gint (i.e. 4 bytes just like the FX bool)
 			[MarshalAs (UnmanagedType.Bool)] bool ctrl_key,
 			[MarshalAs (UnmanagedType.Bool)] bool shift_key, 
-			int /* System.Windows.Browser.MouseButtons */ mouse_button);
+			int /* System.Windows.Browser.MouseButtons */ mouse_button,
+			int key_code,
+			int char_code);
 
 		[DllImport ("moonplugin")]
 		public static extern bool html_object_has_property (IntPtr plugin, IntPtr obj, string name);

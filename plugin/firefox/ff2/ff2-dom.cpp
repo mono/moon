@@ -21,6 +21,8 @@
 #include <nsIDOMEventTarget.h>
 #include <nsIDOMEventListener.h>
 
+#include <dom/nsIDOMKeyEvent.h>
+
 #ifdef DEBUG
 #define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s)\n" G_STRLOC, x)
 #define d(x) x
@@ -56,7 +58,7 @@ NS_IMPL_ISUPPORTS1(FF2DomEventWrapper, nsIDOMEventListener)
 NS_IMETHODIMP
 FF2DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 {
-	int client_x, client_y, offset_x, offset_y, mouse_button;
+	int client_x, client_y, offset_x, offset_y, mouse_button, key_code, char_code;
 	gboolean alt_key, ctrl_key, shift_key;
 	nsString str_event;
 
@@ -90,8 +92,26 @@ FF2DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 		mouse_button = umouse_button;
 	}
 
+	nsCOMPtr<nsIDOMKeyEvent> key_event = do_QueryInterface (aDOMEvent);
+	if (key_event != nsnull) {
+		PRUint32 ukey_code, uchar_code;
+
+		key_event->GetKeyCode (&ukey_code);
+		key_event->GetCharCode (&uchar_code);
+
+		key_code = ukey_code;
+		char_code = uchar_code;
+
+		if (char_code == 0 && key_code != 0)
+			char_code = key_code;
+
+		key_event->GetAltKey (&alt_key);
+		key_event->GetCtrlKey (&ctrl_key);
+		key_event->GetShiftKey (&shift_key);
+	}
+
 	callback (context, strdup (NS_ConvertUTF16toUTF8 (str_event).get ()), client_x, client_y, offset_x, offset_y,
-			alt_key, ctrl_key, shift_key, mouse_button);
+			alt_key, ctrl_key, shift_key, mouse_button, key_code, char_code);
 
 	return NS_OK;
 }

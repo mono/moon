@@ -1,3 +1,8 @@
+2009-03-31  Jb Evain  <jbevain@novell.com>
+
+	* HtmlObject.cs: adjust to the change in DomEventCallback where
+	keyCode and charCode have been added.
+
 2009-03-27  Andreia Gaita  <avidigal@novell.com>
 
 	* HtmlWindow.cs: Implement CreateInstance

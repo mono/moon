@@ -1,3 +1,7 @@
+2009-03-31  Jb Evain  <jbevain@novell.com>
+
+	* NativeMethods.cs: add keyCode and charCode to DomEventCallback.
+
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
 	* Events.cs: rename mouse_button_up/doown to

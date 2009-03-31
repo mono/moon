@@ -1,3 +1,7 @@
+2009-03-31  Jb Evain  <jbevain@novell.com>
+
+	* ff3-dom.cpp (HandleEvent): handle key events.
+
 2009-03-30  Andreia Gaita <avidigal@novell.com>
 
 	* ff3-dom.cpp: Fix event registration on window object (the

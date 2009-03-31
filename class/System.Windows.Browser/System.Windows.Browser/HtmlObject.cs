@@ -43,7 +43,7 @@ namespace System.Windows.Browser {
 			public string event_name;
 			public static NativeMethods.DomEventCallback callback = new NativeMethods.DomEventCallback (DomEventHandler);
 
-			static void DomEventHandler (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, bool alt_key, bool ctrl_key, bool shift_key, int mouse_button)
+			static void DomEventHandler (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, bool alt_key, bool ctrl_key, bool shift_key, int mouse_button, int key_code, int char_code)
 			{
 				try {
 					GCHandle handle = Helper.GCHandleFromIntPtr (context);
@@ -52,7 +52,7 @@ namespace System.Windows.Browser {
 					if (info.handler != null) {
 						info.handler (info.obj, EventArgs.Empty);
 					} else if (info.handler_args != null) {
-						info.handler_args (info.obj, new HtmlEventArgs (info.obj, client_x, client_y, offset_x, offset_y, alt_key, ctrl_key, shift_key, (MouseButtons) mouse_button, 0, 0, name));
+						info.handler_args (info.obj, new HtmlEventArgs (info.obj, client_x, client_y, offset_x, offset_y, alt_key, ctrl_key, shift_key, (MouseButtons) mouse_button, key_code, char_code, name));
 					}
 				} catch (Exception ex) {
 					Console.WriteLine ("Unhandled exception un HtmlObject.EventInfo.DomEventHandler callback: {0}", ex.Message);
