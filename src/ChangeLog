@@ -1,3 +1,9 @@
+2009-03-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security.c: Ensure mono_assembly_setrootdir is always called
+	while enabled coreclr is dependent on the MOON_DISABLE_SECURITY
+	variable and the availability of a platform directory.
+
 2009-03-30  Geoff Norton  <gnorton@novell.com>
 
 	* brush.h: Brush.ImageSource is stupid, and of course not consistent
