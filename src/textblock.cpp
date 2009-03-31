@@ -326,7 +326,9 @@ TextBlock::MeasureOverride (Size availableSize)
 	
 	constraint = availableSize.GrowBy (-padding);
 	Layout (constraint);
-	dirty = true;
+	
+	SetActualHeight (actual_height);
+	SetActualWidth (actual_width);
 	
 	desired = Size (actual_width, actual_height).GrowBy (padding);
 	
@@ -339,6 +341,8 @@ TextBlock::ArrangeOverride (Size finalSize)
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size arranged;
+	
+	//printf ("TextBlock::ArrangeOverride(finalSize = { %f, %f })\n", finalSize.width, finalSize.height);
 	
 	constraint = finalSize.GrowBy (-padding);
 	Layout (constraint);
@@ -441,8 +445,6 @@ TextBlock::Layout (Size constraint)
 	
 	//printf ("TextBlock::Layout(constraint = { %f, %f }) => %f, %f\n", constraint.width, constraint.height, actual_width, actual_height);
 	
-	SetActualHeight (actual_height);
-	SetActualWidth (actual_width);
 	dirty = false;
 }
 

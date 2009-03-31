@@ -1,9 +1,16 @@
 2009-03-31  Jeffrey Stedfast  <fejj@novell.com>
 
-	* textblock.cpp (TextBlock::Layout): Set the ActualWidth/Height DP
-	values here, this seems to be what Silverlight does (can't be set
-	in FWE::Measure() because it doesn't have the actual extents, it
-	just has the desiredSize).
+	* enums.h: Well what do ya know... TextWrapping enum wasn't the
+	same as the TextWrapping.cs enum, this is likely the case of some
+	text layout wonkyness.
+
+	* textblock.cpp (TextBlock::MeasureOverride): Set the
+	ActualWidth/Height DP values here after calling Layout(), this
+	seems to be what Silverlight does (can't be set in FWE::Measure()
+	because it doesn't have the actual extents, it just has the
+	desiredSize). Also don't reset dirty back to true after laying out
+	the text.
+	(TextBlock::Layout): Restructured slightly.
 
 2009-03-31  Stephane Delcroix  <sdelcroix@novell.com>
 
