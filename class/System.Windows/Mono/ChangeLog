@@ -1,5 +1,11 @@
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
+	* Events.cs: rename mouse_button_up/doown to
+	mouse_left_button_up/down, and add (NET_3_0-only)
+	mouse_right_button_up/down and mouse_wheel support.
+
+2009-03-30  Chris Toshok  <toshok@ximian.com>
+
 	* NativeMethods.cs: add all the downloader delegates, and move
 	TickCall out of the NativeMethods class.
 

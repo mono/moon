@@ -66,8 +66,13 @@ namespace Mono {
 		internal static UnmanagedEventHandler current_state_changing = CreateSafeHandler (current_state_changing_callback);
 		internal static UnmanagedEventHandler current_state_changed = CreateSafeHandler (current_state_changed_callback);
 		internal static UnmanagedEventHandler mouse_motion = CreateSafeHandler (mouse_motion_notify_callback);
-		internal static UnmanagedEventHandler mouse_button_down = CreateSafeHandler (mouse_button_down_callback);
-		internal static UnmanagedEventHandler mouse_button_up = CreateSafeHandler (mouse_button_up_callback);
+		internal static UnmanagedEventHandler mouse_left_button_down = CreateSafeHandler (mouse_left_button_down_callback);
+		internal static UnmanagedEventHandler mouse_left_button_up = CreateSafeHandler (mouse_left_button_up_callback);
+#if NET_3_0
+		internal static UnmanagedEventHandler mouse_right_button_down = CreateSafeHandler (mouse_right_button_down_callback);
+		internal static UnmanagedEventHandler mouse_right_button_up = CreateSafeHandler (mouse_right_button_up_callback);
+		internal static UnmanagedEventHandler mouse_wheel = CreateSafeHandler (mouse_wheel_callback);
+#endif
 		internal static UnmanagedEventHandler mouse_enter = CreateSafeHandler (mouse_enter_callback);
 		internal static UnmanagedEventHandler key_down = CreateSafeHandler (key_down_callback);
 		internal static UnmanagedEventHandler key_up = CreateSafeHandler (key_up_callback);
@@ -163,17 +168,37 @@ namespace Mono {
 			e.InvokeMouseMove (new MouseEventArgs (calldata));
 		}
 		
-		static void mouse_button_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
+		static void mouse_left_button_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
-			e.InvokeMouseButtonDown (new MouseButtonEventArgs (calldata));
+			e.InvokeMouseLeftButtonDown (new MouseButtonEventArgs (calldata));
 		}
 		
-		static void mouse_button_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
+		static void mouse_left_button_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
-			e.InvokeMouseButtonUp (new MouseButtonEventArgs (calldata));
+			e.InvokeMouseLeftButtonUp (new MouseButtonEventArgs (calldata));
 		}
+
+#if NET_3_0
+		static void mouse_right_button_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			e.InvokeMouseRightButtonDown (new MouseButtonEventArgs (calldata));
+		}
+		
+		static void mouse_right_button_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			e.InvokeMouseRightButtonUp (new MouseButtonEventArgs (calldata));
+		}
+
+		static void mouse_wheel_callback (IntPtr target, IntPtr calldata, IntPtr closure)
+		{
+			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			e.InvokeMouseWheel (new MouseWheelEventArgs (calldata));
+		}
+#endif
 		
 		static void mouse_enter_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{

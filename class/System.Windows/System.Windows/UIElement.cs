@@ -131,6 +131,11 @@ namespace System.Windows {
 		static object MouseLeftButtonDownEvent = new object ();
 		static object MouseLeftButtonUpEvent = new object ();
 		static object MouseMoveEvent = new object ();
+#if NET_3_0
+		static object MouseRightButtonDownEvent = new object ();
+		static object MouseRightButtonUpEvent = new object ();
+		static object MouseWheelEvent = new object ();
+#endif
 		
 		public event RoutedEventHandler GotFocus {
 			add {
@@ -197,21 +202,51 @@ namespace System.Windows {
 
 		public event MouseButtonEventHandler MouseLeftButtonDown {
 			add {
-				RegisterEvent (MouseLeftButtonDownEvent, "MouseLeftButtonDown", Events.mouse_button_down, value);
+				RegisterEvent (MouseLeftButtonDownEvent, "MouseLeftButtonDown", Events.mouse_left_button_down, value);
 			}
 			remove {
-				UnregisterEvent (MouseLeftButtonDownEvent, "MouseLeftButtonDown", Events.mouse_button_down, value);
+				UnregisterEvent (MouseLeftButtonDownEvent, "MouseLeftButtonDown", Events.mouse_left_button_down, value);
 			}
 		}
 
 		public event MouseButtonEventHandler MouseLeftButtonUp {
 			add {
-				RegisterEvent (MouseLeftButtonUpEvent, "MouseLeftButtonUp", Events.mouse_button_up, value);
+				RegisterEvent (MouseLeftButtonUpEvent, "MouseLeftButtonUp", Events.mouse_left_button_up, value);
 			}
 			remove {
-				UnregisterEvent (MouseLeftButtonUpEvent, "MouseLeftButtonUp", Events.mouse_button_up, value);
+				UnregisterEvent (MouseLeftButtonUpEvent, "MouseLeftButtonUp", Events.mouse_left_button_up, value);
 			}
 		}
+
+#if NET_3_0
+		public event MouseButtonEventHandler MouseRightButtonDown {
+			add {
+				RegisterEvent (MouseRightButtonDownEvent, "MouseRightButtonDown", Events.mouse_right_button_down, value);
+			}
+			remove {
+				UnregisterEvent (MouseRightButtonDownEvent, "MouseRightButtonDown", Events.mouse_right_button_down, value);
+			}
+		}
+
+		public event MouseButtonEventHandler MouseRightButtonUp {
+			add {
+				RegisterEvent (MouseRightButtonUpEvent, "MouseRightButtonUp", Events.mouse_right_button_up, value);
+			}
+			remove {
+				UnregisterEvent (MouseRightButtonUpEvent, "MouseRightButtonUp", Events.mouse_right_button_up, value);
+			}
+		}
+
+		public event MouseWheelEventHandler MouseWheel {
+			add {
+				RegisterEvent (MouseWheelEvent, "MouseWheel", Events.mouse_wheel, value);
+			}
+			remove {
+				UnregisterEvent (MouseWheelEvent, "MouseWheel", Events.mouse_wheel, value);
+			}
+		}
+#endif
+
 
 		public event MouseEventHandler MouseMove {
 			add {
@@ -251,20 +286,42 @@ namespace System.Windows {
 				h (this, m);
 		}
 
-		internal virtual void InvokeMouseButtonDown (MouseButtonEventArgs e)
+		internal virtual void InvokeMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
 			MouseButtonEventHandler h = (MouseButtonEventHandler) EventList [MouseLeftButtonDownEvent];
 			if (h != null)
 				h (this, e);
 		}
 
-		internal virtual void InvokeMouseButtonUp (MouseButtonEventArgs e)
+		internal virtual void InvokeMouseLeftButtonUp (MouseButtonEventArgs e)
 		{
 			MouseButtonEventHandler h = (MouseButtonEventHandler) EventList [MouseLeftButtonUpEvent];
 			if (h != null)
 				h (this, e);
 		}
 
+#if NET_3_0
+		internal virtual void InvokeMouseRightButtonDown (MouseButtonEventArgs e)
+		{
+			MouseButtonEventHandler h = (MouseButtonEventHandler) EventList [MouseRightButtonDownEvent];
+			if (h != null)
+				h (this, e);
+		}
+
+		internal virtual void InvokeMouseRightButtonUp (MouseButtonEventArgs e)
+		{
+			MouseButtonEventHandler h = (MouseButtonEventHandler) EventList [MouseRightButtonUpEvent];
+			if (h != null)
+				h (this, e);
+		}
+
+		internal virtual void InvokeMouseWheel (MouseWheelEventArgs e)
+		{
+			MouseWheelEventHandler h = (MouseWheelEventHandler) EventList [MouseWheelEvent];
+			if (h != null)
+				h (this, e);
+		}
+#endif
 		internal virtual void InvokeKeyDown (KeyEventArgs k)
 		{
 			KeyEventHandler h = (KeyEventHandler) EventList [KeyDownEvent];

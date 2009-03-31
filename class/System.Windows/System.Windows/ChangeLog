@@ -1,3 +1,8 @@
+2009-03-30  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs: track change of MouseButton -> MouseLeftButton,
+	and add MouseRightButtonUp/Down and MouseWheel.
+
 2009-03-29  Geoff Norton  <gnorton@novell.com>
 
 	* ExceptionRoutedEventArgs.cs: We need to be able to hook this

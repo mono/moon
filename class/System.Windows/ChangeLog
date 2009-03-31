@@ -1,5 +1,10 @@
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
+	* Makefile.am (system_windows_sources): add
+	MouseWheelEvent{Args,Handler}.cs
+
+2009-03-30  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am: add the resources to the desktop assembly too.
 
 2009-03-27  Sebastien Pouliot  <sebastien@ximian.com>

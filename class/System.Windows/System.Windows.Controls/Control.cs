@@ -201,11 +201,11 @@ namespace System.Windows.Controls {
 				throw new ArgumentNullException ("e");
 		}
 
-		internal override void InvokeMouseButtonDown (MouseButtonEventArgs e)
+		internal override void InvokeMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
 			OnMouseLeftButtonDown (e);
 			if (!e.Handled)
-				base.InvokeMouseButtonDown (e);
+				base.InvokeMouseLeftButtonDown (e);
 		}
 
 		// called before the event
@@ -215,11 +215,11 @@ namespace System.Windows.Controls {
 				throw new ArgumentNullException ("e");
 		}
 
-		internal override void InvokeMouseButtonUp (MouseButtonEventArgs e)
+		internal override void InvokeMouseLeftButtonUp (MouseButtonEventArgs e)
 		{
 			OnMouseLeftButtonUp (e);
 			if (!e.Handled)
-				base.InvokeMouseButtonUp (e);
+				base.InvokeMouseLeftButtonUp (e);
 		}
 
 		// called before the event
@@ -228,6 +228,50 @@ namespace System.Windows.Controls {
 			if (e == null)
 				throw new ArgumentNullException ("e");
 		}
+
+#if NET_3_0
+		internal override void InvokeMouseRightButtonDown (MouseButtonEventArgs e)
+		{
+			OnMouseRightButtonDown (e);
+			if (!e.Handled)
+				base.InvokeMouseRightButtonDown (e);
+		}
+
+		// called before the event
+		protected virtual void OnMouseRightButtonDown (MouseButtonEventArgs e)
+		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
+		}
+
+		internal override void InvokeMouseRightButtonUp (MouseButtonEventArgs e)
+		{
+			OnMouseRightButtonUp (e);
+			if (!e.Handled)
+				base.InvokeMouseRightButtonUp (e);
+		}
+
+		// called before the event
+		protected virtual void OnMouseRightButtonUp (MouseButtonEventArgs e)
+		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
+		}
+
+		internal override void InvokeMouseWheel (MouseWheelEventArgs e)
+		{
+			OnMouseWheel (e);
+			if (!e.Handled)
+				base.InvokeMouseWheel (e);
+		}
+
+		// called before the event
+		protected virtual void OnMouseWheel (MouseWheelEventArgs e)
+		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
+		}
+#endif
 
 		internal override void InvokeMouseMove (MouseEventArgs e)
 		{

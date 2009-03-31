@@ -1,3 +1,8 @@
+2009-03-30  Chris Toshok  <toshok@ximian.com>
+
+	* MouseWheelEventArgs.cs, MouseWheelEventHandler.cs: add NET_3_0
+	implementations of these for desktop usage.
+
 2009-02-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* InputMethod.cs: Implemented.
