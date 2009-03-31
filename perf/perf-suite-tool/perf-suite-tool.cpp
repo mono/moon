@@ -30,6 +30,7 @@
 #include <config.h>
 #include <runtime.h>
 #include <clock.h>
+#include <timemanager.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
