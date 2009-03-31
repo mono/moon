@@ -54,6 +54,8 @@ namespace System.Windows.Media.Imaging
 				return Marshal.ReadInt32 (buffer, index*4);
 			}
 			set {
+				if (index > width*height || index < 0)
+					throw new ArgumentOutOfRangeException ("index must lie withing the boundaries of the bitmap");
 				Marshal.WriteInt32 (buffer, index*4, value);
 			}
 		}
