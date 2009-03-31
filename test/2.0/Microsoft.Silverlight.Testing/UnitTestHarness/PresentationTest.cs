@@ -32,7 +32,10 @@ namespace Microsoft.Silverlight.Testing
         {
             get { return TestPanelManager.Instance.TestPanel; }
         }
-
+		public TestPage TestPage
+		{
+			get { return TestPanelManager.Instance.TestPage; }
+		}
         protected void CreateAsyncTest(FrameworkElement element, params Action[] actions)
         {
             Assert.IsNotNull(element);

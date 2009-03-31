@@ -87,12 +87,12 @@ namespace MoonTest.System.Windows {
 			group.States.Add (vstate);
 
 			Enqueue (() => TestPanel.Children.Add (r));
-			Enqueue (() => VisualStateManager.GetVisualStateGroups (TestPanel).Add (group));
+			Enqueue (() => VisualStateManager.GetVisualStateGroups ((FrameworkElement)TestPanel.Parent).Add (group));
 			Enqueue (() => Assert.AreEqual(0, r.Width, "#1"));
-			Enqueue (() => Assert.IsTrue (VisualStateManager.GoToState ((Control) TestPanel.Parent, "state", false), "#2"));
+			Enqueue (() => Assert.IsTrue (VisualStateManager.GoToState (TestPage, "state", false), "#2"));
 			Enqueue (() => Assert.IsGreater (99, r.Width, "#3"));
 			Enqueue (() => TestPanel.Children.Clear ());
-			Enqueue (() => VisualStateManager.GetVisualStateGroups (TestPanel).Clear ());
+			Enqueue (() => VisualStateManager.GetVisualStateGroups (TestPage).Clear ());
 			EnqueueTestComplete();
 		}
 	}

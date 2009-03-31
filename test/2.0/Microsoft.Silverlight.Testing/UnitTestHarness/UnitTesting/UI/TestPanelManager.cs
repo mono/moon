@@ -57,7 +57,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.UI
         internal TestPage TestPage
         {
             get { return _testPage; }
-            set { _testPage = value; }
+            set { _testPage = value; ClearChildren (); }
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.UI
             get
             {
                 _dirty = true;
-                return _testPage.TestPanel;
+                return (Panel)_testPage.TestPanel.Children[0];
             }
         }
 
@@ -93,8 +93,8 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.UI
         {
             if (_testPage != null && _testPage.TestPanel != null)
             {
-				_testPage.TestPanel.Resources.Clear ();
-                _testPage.TestPanel.Children.Clear();
+                _testPage.TestPanel.Children.Clear ();
+                _testPage.TestPanel.Children.Add (new Grid ());
             }
 
             _dirty = false;
