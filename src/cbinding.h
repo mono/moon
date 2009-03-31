@@ -571,6 +571,7 @@ int event_object_add_xaml_handler (EventObject *instance, const char *event_name
 /* @GeneratePInvoke */
 Type::Kind event_object_get_object_type (EventObject *instance);
 
+/* @GeneratePInvoke */
 Surface *event_object_get_surface (EventObject *instance);
 
 /* @GeneratePInvoke */
@@ -1553,6 +1554,8 @@ TimelineMarkerCollection *timeline_marker_collection_new (void);
 /**
  * TimeManager
  **/
+void time_manager_add_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
+
 /* @GeneratePInvoke */
 int time_manager_get_maximum_refresh_rate (TimeManager *instance);
 

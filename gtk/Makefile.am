@@ -32,7 +32,7 @@ monodoc_DATA = gtksilver.zip gtksilver.tree gtksilver.source
 
 gtksilver.xml: gtksilver.dll
 gtksilver.dll: $(gtksilver_dll_CS) $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/System.Windows.Browser.dll
-	gmcs -debug -doc:gtksilver.xml -out:gtksilver.dll -target:library $(gtksilver_dll_CS) -keyfile:$(gtksilver_SNK) -pkg:gtk-sharp-2.0 -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.Browser.dll
+	gmcs -debug -doc:gtksilver.xml -out:gtksilver.dll -unsafe -target:library $(gtksilver_dll_CS) -keyfile:$(gtksilver_SNK) -pkg:gtk-sharp-2.0 -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.Browser.dll
 
 MONODOCER = MONO_PATH="../class/lib/3.0:$$MONO_PATH" monodocer
 gtksilver.tree: gtksilver.zip

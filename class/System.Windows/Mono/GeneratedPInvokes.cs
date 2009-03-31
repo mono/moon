@@ -636,6 +636,10 @@ namespace Mono {
 		// Type::Kind event_object_get_object_type (EventObject *instance);
 		public extern static Kind event_object_get_object_type (IntPtr instance);
 
+		[DllImport ("moon")]
+		// Surface *event_object_get_surface (EventObject *instance);
+		public extern static IntPtr event_object_get_surface (IntPtr instance);
+
 		[DllImport ("moon", EntryPoint="event_object_get_type_name")]
 		// const char *event_object_get_type_name (EventObject *instance);
 		private extern static IntPtr event_object_get_type_name_ (IntPtr instance);
@@ -1783,6 +1787,26 @@ namespace Mono {
 			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
 			return s;
 		}
+
+		[DllImport ("moon")]
+		// void downloader_write (Downloader *dl, void *buf, gint32 offset, gint32 n);
+		public extern static void downloader_write (IntPtr dl, IntPtr buf, int offset, int n);
+
+		[DllImport ("moon")]
+		// void downloader_notify_size (Downloader *dl, gint64 size);
+		public extern static void downloader_notify_size (IntPtr dl, long size);
+
+		[DllImport ("moon")]
+		// void downloader_notify_finished (Downloader *dl, const char *filename);
+		public extern static void downloader_notify_finished (IntPtr dl, string filename);
+
+		[DllImport ("moon")]
+		// void downloader_notify_error (Downloader *dl, const char *msg);
+		public extern static void downloader_notify_error (IntPtr dl, string msg);
+
+		[DllImport ("moon")]
+		// void downloader_set_functions (downloader_create_state_func create_state, downloader_destroy_state_func destroy_state, downloader_open_func open, downloader_send_func send, downloader_abort_func abort, downloader_header_func header, downloader_body_func body, downloader_create_webrequest_func request);
+		public extern static void downloader_set_functions (Mono.DownloaderCreateStateFunc create_state, Mono.DownloaderDestroyStateFunc destroy_state, Mono.DownloaderOpenFunc open, Mono.DownloaderSendFunc send, Mono.DownloaderAbortFunc abort, Mono.DownloaderHeaderFunc header, Mono.DownloaderBodyFunc body, Mono.DownloaderCreateWebRequestFunc request);
 
 	}
 }

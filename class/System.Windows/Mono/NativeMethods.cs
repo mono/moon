@@ -35,6 +35,15 @@ using System.Windows.Markup;
 
 namespace Mono {
 
+	internal delegate IntPtr DownloaderCreateStateFunc (IntPtr dl);
+	internal delegate void   DownloaderDestroyStateFunc (IntPtr state);
+	internal delegate void   DownloaderOpenFunc (string verb, string uri, bool streaming, IntPtr state);
+	internal delegate void   DownloaderSendFunc (IntPtr state);
+	internal delegate void   DownloaderAbortFunc (IntPtr state);
+	internal delegate void   DownloaderHeaderFunc (IntPtr state, string header, string value);
+	internal delegate void   DownloaderBodyFunc (IntPtr state, IntPtr body, int length);
+	internal delegate IntPtr DownloaderCreateWebRequestFunc (string method, string uri, IntPtr context);
+
 	internal delegate Size MeasureOverrideCallback (Size availableSize);
 	internal delegate Size ArrangeOverrideCallback (Size finalSize);
 
@@ -56,6 +65,9 @@ namespace Mono {
 	internal delegate void HttpHeaderHandler (string name, string value);
 	internal delegate void AsyncResponseAvailableHandler (IntPtr response, IntPtr context);
 	internal delegate void NativePropertyChangedHandler (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value, ref MoonError error);
+
+	internal delegate void TickCallHandler (IntPtr handle);
+
 
 	internal static partial class NativeMethods {
 
@@ -200,8 +212,6 @@ namespace Mono {
 		public extern static uint time_manager_add_timeout (IntPtr manager, int interval, GSourceFunc callback, IntPtr data);
 		[DllImport("moon")]
 		public extern static void time_manager_remove_timeout (IntPtr manager, uint source_id);
-
-		public delegate void TickCallHandler (IntPtr handle);
 
 		[DllImport("moon")]
 		public extern static uint time_manager_add_tick_call (IntPtr manager, TickCallHandler callback, IntPtr data);

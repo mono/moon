@@ -1,3 +1,16 @@
+2009-03-30  Chris Toshok  <toshok@ximian.com>
+
+	* downloader.h: add pinvokes for a few of the downloader_* C
+	functions.
+
+	* clock.h|.cpp (class TimeManager): add a CBinding/PInvoke for
+	AddTickCall, and remove the manual implementation.
+
+	* dependencyobject.h (class EventObject): add a PInvoke for
+	event_object_get_surface.
+
+	* cbinding.h, cbinding.cpp: regen
+
 2009-03-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security.c: Ensure mono_assembly_setrootdir is always called

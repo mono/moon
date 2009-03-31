@@ -1,3 +1,8 @@
+2009-03-30  Chris Toshok  <toshok@ximian.com>
+
+	* Dispatcher.cs: track move of TickCallHandler from
+	Mono.NativeMethods to Mono.
+
 2009-03-25  Andreia Gaita  <avidigal@novell.com>
 
 	* DispatcherTimer.cs: Fix default duration

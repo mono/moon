@@ -133,7 +133,7 @@ public:
 	void RemoveAllHandlers (gpointer data);
 	void RemoveMatchingHandlers (int event_id, EventHandlerPredicate predicate, gpointer closure);
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	Surface *GetSurface ();
 	virtual void SetSurface (Surface *surface);
 	// SetSurfaceLock/Unlock

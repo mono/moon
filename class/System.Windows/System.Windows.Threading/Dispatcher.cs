@@ -33,7 +33,7 @@ namespace System.Windows.Threading {
 
 	[CLSCompliant (false)]
 	public class Dispatcher {
-		NativeMethods.TickCallHandler callback;
+		TickCallHandler callback;
 		Queue<DispatcherOperation> queuedOperations;
 		Surface surface;
 		uint source;
@@ -93,7 +93,7 @@ namespace System.Windows.Threading {
 				queuedOperations.Enqueue (op);
 				if (source == 0) {
 					if (callback == null)
-						callback = new NativeMethods.TickCallHandler (dispatcher_callback);
+						callback = new TickCallHandler (dispatcher_callback);
 					source = NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (surface.Native), callback, IntPtr.Zero);
 				}
 			}

@@ -935,12 +935,6 @@ time_manager_remove_timeout (TimeManager *manager, guint timeout_id)
 }
 
 void
-time_manager_add_tick_call (TimeManager *manager, TickCallHandler func, EventObject *tick_data)
-{
-	manager->AddTickCall (func, tick_data);
-}
-
-void
 time_manager_remove_tick_call (TimeManager *manager, TickCallHandler func)
 {
 	manager->RemoveTickCall (func);

@@ -3437,6 +3437,16 @@ timeline_marker_collection_new (void)
 /**
  * TimeManager
  **/
+void
+time_manager_add_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->AddTickCall (handler, tick_data);
+}
+
+
 int
 time_manager_get_maximum_refresh_rate (TimeManager *instance)
 {

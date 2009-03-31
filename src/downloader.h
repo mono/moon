@@ -280,14 +280,20 @@ void  downloader_send		(Downloader *dl);
 //
 // Used to push data to the consumer
 //
+
+/* @GeneratePInvoke */
 void downloader_write		(Downloader *dl, void *buf, gint32 offset, gint32 n);
 void downloader_completed       (Downloader *dl, const char *filename);
 
+/* @GeneratePInvoke */
 void downloader_notify_size     (Downloader *dl, gint64 size);
+/* @GeneratePInvoke */
 void downloader_notify_finished (Downloader *dl, const char *filename);
+/* @GeneratePInvoke */
 void downloader_notify_error    (Downloader *dl, const char *msg);
 
 
+/* @GeneratePInvoke */
 void downloader_set_functions (downloader_create_state_func create_state,
 			       downloader_destroy_state_func destroy_state,
 			       downloader_open_func open,

@@ -1,5 +1,12 @@
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
+	* NativeMethods.cs: add all the downloader delegates, and move
+	TickCall out of the NativeMethods class.
+
+	* GeneratedPInvokes.cs: regen.
+
+2009-03-30  Chris Toshok  <toshok@ximian.com>
+
 	* NativeMethods.cs: go ahead and remove runtime_init and
 	runtime_init_browser here, since the only one of use is
 	runtime_init_desktop (and even that is 3.0-only).

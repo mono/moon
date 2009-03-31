@@ -32,33 +32,11 @@ using System.IO;
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Net;
+using Mono;
 
 namespace Gtk.Moonlight {
 
 	internal class ManagedDownloader {
-		[DllImport ("moon")]
-		internal extern static void downloader_write (IntPtr downloader, byte []buf, int offset, int n);
-
-		[DllImport ("moon")]
-		internal extern static void downloader_notify_size (IntPtr downloader, long l);
-
-		[DllImport ("moon")]
-		internal extern static void downloader_notify_error (IntPtr downloader, string msg);
-		
-		[DllImport ("moon")]
-		internal extern static void downloader_notify_finished (IntPtr downloader, string filename);
-		
-		public delegate void TickCall (IntPtr data);
-
-		[DllImport ("moon")]
-		internal extern static void time_manager_add_tick_call (IntPtr time_manager, TickCall func, IntPtr data);
-
-		[DllImport ("moon")]
-		internal extern static IntPtr surface_get_time_manager (IntPtr surface);
-
-		[DllImport ("moon")]
-		internal extern static IntPtr event_object_get_surface (IntPtr eventobject);
-		
 		static int keyid;
 		static Hashtable downloaders = new Hashtable ();
 
@@ -84,7 +62,7 @@ namespace Gtk.Moonlight {
 		WebRequest request = null;
 		string fname;
 		
-		TickCall tick_call;
+		Mono.TickCallHandler tick_call;
 
 		ManagedDownloader (IntPtr native)
 		{
@@ -97,24 +75,24 @@ namespace Gtk.Moonlight {
 			if (!downloading)
 				return;
 
-			IntPtr time_manager = surface_get_time_manager (event_object_get_surface (downloader));
+			IntPtr time_manager = NativeMethods.surface_get_time_manager (NativeMethods.event_object_get_surface (downloader));
 			// Special case: local file, just notify that we are done
 			
 			if (fname != null) {
 				if (File.Exists (fname)) {
-					time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
+					NativeMethods.time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
 						if (!downloading)
 							return;
 						tick_call = null;
-						downloader_notify_finished (downloader, fname);
+						NativeMethods.downloader_notify_finished (downloader, fname);
 					}, IntPtr.Zero);
 				}
 				else {
-					time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
+					NativeMethods.time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
 						if (!downloading)
 							return;
 						tick_call = null;
-						downloader_notify_error (downloader, String.Format ("File `{0}' not found", fname));
+						NativeMethods.downloader_notify_error (downloader, String.Format ("File `{0}' not found", fname));
 					}, IntPtr.Zero);
 				}
 				return;
@@ -129,10 +107,10 @@ namespace Gtk.Moonlight {
 			
 			try {
 				using (WebResponse r = request.GetResponse ()){
-					time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
+					NativeMethods.time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
 						if (!downloading)
 							return;
-						downloader_notify_size (downloader, r.ContentLength);
+						NativeMethods.downloader_notify_size (downloader, r.ContentLength);
 						tick_call = null;
 						auto_reset.Set ();
 					}, IntPtr.Zero);
@@ -150,11 +128,15 @@ namespace Gtk.Moonlight {
 								break;
 							}
 
-							time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
+							NativeMethods.time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
 								if (!downloading)
 									return;
 								tick_call = null;
-								downloader_write (downloader, buffer, offset, count);
+								unsafe {
+									fixed (byte *buf = &buffer[0]) {
+										NativeMethods.downloader_write (downloader, (IntPtr)buf, offset, count);
+									}
+								}
 								auto_reset.Set ();
 							}, IntPtr.Zero);
 							auto_reset.WaitOne ();
@@ -162,16 +144,16 @@ namespace Gtk.Moonlight {
 						}
 					}
 					// We are done
-					time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
+					NativeMethods.time_manager_add_tick_call (time_manager, tick_call = delegate (IntPtr data) {
 						if (!downloading)
 							return;
 						tick_call = null;
-						downloader_notify_finished (downloader, null);
+						NativeMethods.downloader_notify_finished (downloader, null);
 					}, IntPtr.Zero);
 				}
 			} catch (Exception e){
 				Console.Error.WriteLine ("There was an error {0}", e);
-				downloader_notify_error (downloader, e.Message);
+				NativeMethods.downloader_notify_error (downloader, e.Message);
 			}
 		}
 
@@ -294,7 +276,7 @@ namespace Gtk.Moonlight {
 			stream.Write (buffer, 0, length);
 		}
 		
-		public static IntPtr CreateWebrequest (IntPtr state)
+		public static IntPtr CreateWebRequest (string method, string uri, IntPtr context)
 		{
 			throw new NotImplementedException ();
 		}
