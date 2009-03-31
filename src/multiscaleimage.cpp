@@ -995,6 +995,7 @@ void
 MultiScaleImage::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	subimages_sorted = false;
+	Invalidate ();
 }
 
 void
@@ -1004,8 +1005,10 @@ MultiScaleImage::OnCollectionItemChanged (Collection *col, DependencyObject *obj
 		Invalidate ();
 	if (args->GetId () == MultiScaleSubImage::ViewportOriginProperty)
 		Invalidate ();
-	if (args->GetId () == MultiScaleSubImage::ZIndexProperty)
+	if (args->GetId () == MultiScaleSubImage::ZIndexProperty) {
 		subimages_sorted = false;
+		Invalidate ();
+	}
 }
 
 void

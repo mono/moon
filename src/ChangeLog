@@ -1,5 +1,10 @@
 2009-03-31  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp: Invalidate on ZIndex change, or on subimages 
+	added/removed
+
+2009-03-31  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.h|.cpp: remove the AddTickCall workaround for 
 	the race while emitting ImageOpenSucceded. Test if the source is
 	a deepzoom before casting (avoid g_warnings on the console). Change a 
