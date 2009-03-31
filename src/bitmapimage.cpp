@@ -369,7 +369,6 @@ BitmapImage::DownloaderFailed ()
 	downloader->unref ();
 	downloader = NULL;
 
-	print_stack_trace ();
 	Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
 }
 

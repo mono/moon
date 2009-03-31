@@ -53,7 +53,7 @@ Types::RegisterNativeProperties ()
 {
 	DependencyProperty::Register (this, Type::VISUALBRUSH, "Visual", Type::UIELEMENT);
 	DependencyProperty::Register (this, Type::VIDEOBRUSH, "SourceName", new Value (""), Type::STRING);
-	DependencyProperty::RegisterFull (this, Type::IMAGEBRUSH, "ImageSource", NULL, Type::IMAGESOURCE, false, false, false, NULL, NULL, Image::CreateDefaultImageSource, false, false);
+	DependencyProperty::Register (this, Type::IMAGEBRUSH, "ImageSource", Type::IMAGESOURCE);
 	DependencyProperty::Register (this, Type::IMAGEBRUSH, "DownloadProgress", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::RADIALGRADIENTBRUSH, "RadiusY", new Value (0.5), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::RADIALGRADIENTBRUSH, "RadiusX", new Value (0.5), Type::DOUBLE);

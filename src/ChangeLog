@@ -1,3 +1,10 @@
+2009-03-30  Geoff Norton  <gnorton@novell.com>
+
+	* brush.h: Brush.ImageSource is stupid, and of course not consistent
+	with Image.Source
+	* bitmapimage.cpp: Nuke some debug spew.
+	* dependencyproperty.g.cpp: Funky cold medina.
+
 2009-03-30  Larry Ewing  <lewing@novell.com>
 
 	* brush.cpp (OnPropertyChanged): check for the right property and

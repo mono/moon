@@ -320,7 +320,7 @@ private:
  public:
 	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Private,GenerateAccessors */
 	const static int DownloadProgressProperty;
- 	/* @PropertyType=ImageSource,AutoCreator=Image::CreateDefaultImageSource,GenerateAccessors */
+ 	/* @PropertyType=ImageSource,GenerateAccessors */
 	const static int ImageSourceProperty;
 	
 	const static int DownloadProgressChangedEvent;
