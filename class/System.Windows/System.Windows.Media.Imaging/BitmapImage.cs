@@ -56,14 +56,14 @@ namespace System.Windows.Media.Imaging
 
 		public event EventHandler<DownloadProgressEventArgs> DownloadProgress {
 			add {
-                                RegisterEvent (DownloadProgressEvent, "DownloadProgress", image_failed, value);
+                                RegisterEvent (DownloadProgressEvent, "DownloadProgress", download_progress, value);
 			}
 			remove {
-                                UnregisterEvent (DownloadProgressEvent, "DownloadProgress", image_failed, value);
+                                UnregisterEvent (DownloadProgressEvent, "DownloadProgress", download_progress, value);
 			}
 		}
 			
-		public event EventHandler<DownloadProgressEventArgs> ImageFailed {
+		public event EventHandler<ExceptionRoutedEventArgs> ImageFailed {
 			add {
                                 RegisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
 			}
@@ -72,12 +72,12 @@ namespace System.Windows.Media.Imaging
 			}
 		}
 
-		public event EventHandler<DownloadProgressEventArgs> ImageOpened {
+		public event EventHandler<RoutedEventArgs> ImageOpened {
 			add {
-                                RegisterEvent (ImageOpenedEvent, "ImageOpened", image_failed, value);
+                                RegisterEvent (ImageOpenedEvent, "ImageOpened", image_opened, value);
 			}
 			remove {
-                                UnregisterEvent (ImageOpenedEvent, "ImageOpened", image_failed, value);
+                                UnregisterEvent (ImageOpenedEvent, "ImageOpened", image_opened, value);
 			}
 		}
 

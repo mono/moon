@@ -1,3 +1,7 @@
+2009-03-30  Geoff Norton  <gnorton@novell.com>
+
+	* BitmapImage.cs: Fix event registration to have the proper types.
+
 2009-03-29  Geoff Norton  <gnorton@novell.com>
 
 	* BitmapImage.cs: Move to the new SL3 api and hook up all the events
