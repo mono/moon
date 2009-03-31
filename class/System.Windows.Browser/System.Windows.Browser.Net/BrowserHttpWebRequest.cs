@@ -130,7 +130,7 @@ namespace System.Windows.Browser.Net
 			if (NativeMethods.surface_in_main_thread ()) {
 				InitializeNativeRequest (IntPtr.Zero);
 			} else {
-				NativeMethods.TickCallHandler tch = new NativeMethods.TickCallHandler (InitializeNativeRequestSafe);
+				TickCallHandler tch = new TickCallHandler (InitializeNativeRequestSafe);
 
 				NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (NativeMethods.plugin_instance_get_surface (PluginHost.Handle)), tch, IntPtr.Zero);
 
