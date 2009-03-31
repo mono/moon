@@ -1,3 +1,8 @@
+2009-03-31  Jb Evain  <jbevain@novell.com>
+
+	* plugin-class.h: add key_code and char_code parameters
+	to callback_dom_event.
+
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp: #include timemanager.h
