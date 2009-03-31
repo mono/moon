@@ -1,5 +1,10 @@
 2009-03-31  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls.Primitives/PopupTest.cs: Add another
+	  rendering test.
+
+2009-03-31  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls.Primitives/PopupTest.cs: Add tests
 	  to ensure that render transforms applied on the Popup and on
 	  the popups parent are taken into account. These require

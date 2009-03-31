@@ -125,7 +125,6 @@ namespace MoonTest.System.Windows.Controls.Primitives
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		[Asynchronous]
 		public void Rendering ()
 		{
@@ -137,7 +136,6 @@ namespace MoonTest.System.Windows.Controls.Primitives
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		[Asynchronous]
 		public void Rendering2 ()
 		{
@@ -150,6 +148,20 @@ namespace MoonTest.System.Windows.Controls.Primitives
 			EnqueueTestComplete ();
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void Rendering3 ()
+		{
+			Rectangle r = new Rectangle { Fill = new SolidColorBrush (Colors.Blue), Width = 100, Height = 50 };
+			r.RenderTransform = new TranslateTransform { X = 200, Y = 400 };
+			Popup p = new Popup { Child = r };
+			TestPanel.Children.Add (p);
+			TestPanel.RenderTransform = new ScaleTransform { ScaleX = 0.2, ScaleY = 0.2 };
+			p.IsOpen = true;
+			Enqueue (() => p.IsOpen = false);
+			EnqueueTestComplete ();
+		}
+		
 		[TestMethod]
 		public void VisualChildren ()
 		{
