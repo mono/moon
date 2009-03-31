@@ -1,0 +1,2 @@
+#!/bin/sh
+MONO_PATH=@prefix@/lib/moon/plugin exec @prefix@/bin/mono $MONO_OPTIONS --security=temporary-smcs-hack @prefix@/lib/mono/2.1/smcs.exe "$@"
