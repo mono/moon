@@ -47,6 +47,14 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug]
+		public void NaNValuesTest ()
+		{
+			Size nan = new Size (Double.NaN, Double.NaN);
+			Assert.AreEqual (nan, new Size (Double.NaN, Double.NaN));
+		}
+
+		[TestMethod]
 		public void ToStringTest ()
 		{
 			Assert.AreEqual (Concat (5, 5), new Size (5, 5).ToString ());

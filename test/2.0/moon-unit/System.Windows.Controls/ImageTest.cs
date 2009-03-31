@@ -79,14 +79,22 @@ namespace MoonTest.System.Windows.Controls
 			image.Loaded += (sender, args) => { loaded = true; };
 			image.ImageFailed += (sender, args) => { failed = true; };
 
-			Enqueue (() => TestPanel.Children.Add (image));
-			EnqueueConditional (() => loaded);
+			var border = new Border { Child = image, Width = 128, Height = 300 };
+
+			Enqueue (() => TestPanel.Children.Add (border));
+			EnqueueConditional (() => (loaded && progress >= 100) || failed );
 			Enqueue (() => {
 				Assert.IsFalse (failed, "failed");
 				Assert.AreEqual (100, progress, "progress");
-				//Assert.AreEqual (new Size (64, 96), new Size (image.ActualWidth, image.ActualHeight), "actual");
-				Assert.AreEqual (new Size (399, 598), image.DesiredSize, "desired");
-				Assert.AreEqual (new Size (Double.NaN, Double.NaN), new Size (image.Width, image.Height), "specified");
+				
+				Assert.AreEqual (DependencyProperty.UnsetValue, image.ReadLocalValue (FrameworkElement.ActualWidthProperty), "local actual.width");
+				Assert.AreEqual (DependencyProperty.UnsetValue, image.ReadLocalValue (FrameworkElement.ActualHeightProperty), "local actual.height");
+
+				Assert.AreEqual (new Size (128, 192), new Size (image.ActualWidth, image.ActualHeight), "actual");
+				Assert.AreEqual (new Size (128, 192), image.DesiredSize, "desired");
+				Assert.AreEqual (true, Double.IsNaN (image.Width), "specified.width");
+				Assert.AreEqual (true, Double.IsNaN (image.Height), "specified.height");
+				//Assert.AreEqual (new Size (Double.NaN, Double.NaN), new Size (image.Width, image.Height), "specified");
 			});
 			
 			Enqueue (() => TestPanel.Children.Clear ());
@@ -114,13 +122,20 @@ namespace MoonTest.System.Windows.Controls
 			c.Children.Add (image);
 			
 			Enqueue (() => TestPanel.Children.Add (c));
-			EnqueueConditional (() => loaded);
+			EnqueueConditional (() => (loaded && progress >= 100) || failed );
 			Enqueue (() => {
 				Assert.IsFalse (failed, "failed");
 				Assert.AreEqual (100, progress, "progress");
+
+				Assert.AreEqual (DependencyProperty.UnsetValue, image.ReadLocalValue (FrameworkElement.ActualWidthProperty), "local actual.width");
+				Assert.AreEqual (DependencyProperty.UnsetValue, image.ReadLocalValue (FrameworkElement.ActualHeightProperty), "local actual.height");
+
 				Assert.AreEqual (new Size (64, 96), new Size (image.ActualWidth, image.ActualHeight), "actual");
+
 				Assert.AreEqual (new Size (0, 0), image.DesiredSize, "desired");
-				Assert.AreEqual (new Size (Double.NaN, Double.NaN), new Size (image.Width, image.Height), "specified");
+				Assert.AreEqual (true, Double.IsNaN (image.Width), "specified.width");
+				Assert.AreEqual (true, Double.IsNaN (image.Height), "specified.height");
+				//Assert.AreEqual (new Size (Double.NaN, Double.NaN), new Size (image.Width, image.Height), "specified");
 				
 				image.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 				
