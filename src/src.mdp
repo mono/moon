@@ -247,6 +247,12 @@
     <File name="mkcolor.cs" subtype="Code" buildaction="Nothing" />
     <File name="propertypath.h" subtype="Code" buildaction="Nothing" />
     <File name="multiscalesubimage.cpp" subtype="Code" buildaction="Compile" />
+    <File name="security.c" subtype="Code" buildaction="Compile" />
+    <File name="security.h" subtype="Code" buildaction="Nothing" />
+    <File name="timeline.cpp" subtype="Code" buildaction="Compile" />
+    <File name="timeline.h" subtype="Code" buildaction="Nothing" />
+    <File name="timesource.cpp" subtype="Code" buildaction="Compile" />
+    <File name="timesource.h" subtype="Code" buildaction="Nothing" />
     <File name="bitmapsource.cpp" subtype="Code" buildaction="Compile" />
     <File name="bitmapsource.h" subtype="Code" buildaction="Nothing" />
     <File name="imagesource.cpp" subtype="Code" buildaction="Compile" />

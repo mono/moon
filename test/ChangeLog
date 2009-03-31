@@ -1,5 +1,9 @@
 2009-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* test.mdp: Updated some project files.
+
+2009-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am: We need to load the plugin from where the rest
 	  of the assemblies are (in the prefix), otherwise moonlight
 	  won't find the assemblies.

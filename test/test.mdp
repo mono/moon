@@ -14,7 +14,6 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="drtlist.xml" subtype="Code" buildaction="Nothing" />
     <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
     <File name="make-xephyr" subtype="Code" buildaction="Nothing" />
     <File name="xaml/README" subtype="Code" buildaction="Nothing" />
@@ -75,5 +74,34 @@
     <File name="media/video/test-playlist-autoplayed-stop.html" subtype="Code" buildaction="Nothing" />
     <File name="media/video/test-playlist-autoplayed-stop.asx" subtype="Code" buildaction="Nothing" />
     <File name="2.0" subtype="Directory" buildaction="Compile" />
+    <File name="media/audio/drtlist.xml" subtype="Code" buildaction="Nothing" />
+    <File name="media/audio/Silverlight.js" subtype="Code" buildaction="Nothing" />
+    <File name="media/audio/test-http-mp3.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/audio/test-media-ended.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/audio/test-mms-mp3.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/audio/test-mp3-media-properties.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/audio/test-mp3-progressive-download.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/audio/test-pause.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/audio/test-seek-mp3.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/audio/test-seek-wma.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-asf-demuxer-big-markers.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-asf-demuxer-shuffled-payloads.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-audiostreamindex.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-dns-failure.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-double-stop.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-double-stop.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-inexistent-medias.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-markers-after-seek.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-mms-with-markers.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-nested-playlist.A.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-nested-playlist.B.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-nested-playlist.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-pause-and-play.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-progressive-mms-seek.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-seek-race.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-states.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-stopped-media.asx" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-stopped-media.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-video-only-seek.html" subtype="Code" buildaction="Nothing" />
   </Contents>
 </Project>
