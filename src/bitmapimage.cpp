@@ -218,7 +218,7 @@ BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_n
 	} else {
 		if (!downloader->Started ()) {
 			if (uri)
-				downloader->Open ("GET", uri->GetOriginalString (), MediaPolicy);
+				downloader->Open ("GET", uri->ToString (), MediaPolicy);
 			downloader->SetWriteFunc (pixbuf_write, NULL, this);
 			downloader->Send ();
 		}

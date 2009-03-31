@@ -1,5 +1,10 @@
 2009-03-31  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* bitmapimage.cpp: use Uri::ToString () instead of OriginalString, as
+	originalstrings aren't updated on Uri::Combine ().
+
+2009-03-31  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* bitmapimage.h: Set a DefaultValue for ProgressProperty
 
 2009-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
