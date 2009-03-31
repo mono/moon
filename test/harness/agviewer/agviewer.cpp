@@ -317,7 +317,7 @@ mark_test_as_complete_and_start_next_test (gboolean successful)
 	char *single_test = getenv ("MOONLIGHT_AGVIEWER_SINGLE_TEST");
 	if (single_test != NULL && single_test [0] != 0) {
 		printf ("[agviewer] Exiting, only doing one test per process.\n");
-		exit (0);
+		exit (successful ? 0 : 1);
 	}
 
 	error = NULL;

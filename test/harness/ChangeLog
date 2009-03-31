@@ -1,5 +1,10 @@
 2009-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* agviewer/agviewer.cpp: If the test failed, return 1 instead
+	  of 0.
+
+2009-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* test-runner/TestRunner.cs: Don't overwrite the result of a
 	  test which already timed out.
 
