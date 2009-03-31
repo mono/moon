@@ -13,6 +13,7 @@ using System.Windows.Controls.Primitives;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace MoonTest.System.Windows.Controls.Primitives
 {
@@ -27,6 +28,41 @@ namespace MoonTest.System.Windows.Controls.Primitives
 			Assert.AreEqual (p.HorizontalAlignment, HorizontalAlignment.Stretch, "#2");
 			Assert.IsFalse (p.IsOpen, "#3");
 			Assert.AreEqual (p.VerticalAlignment, VerticalAlignment.Stretch, "#4");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[Ignore ("To make this work we need to be able to fake mouse clicks")]
+		public void EventTest ()
+		{
+			TestPage.Width = 1000;
+			TestPanel.Height = 1000;
+			TestPanel.Background = new SolidColorBrush (Colors.Green);
+			List<string> list = new List<string> ();
+			Canvas c = new Canvas ();
+			Rectangle r = new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush (Colors.Blue) };
+			c.Children.Add (r);
+			Popup p = new Popup { Child = c };
+
+			TestPage.MouseLeftButtonDown += delegate { list.Add ("PageDown"); };
+			TestPage.MouseLeftButtonUp += delegate { list.Add ("PageUp"); };
+
+			TestPanel.MouseLeftButtonDown += delegate { list.Add ("PanelDown"); };
+			TestPanel.MouseLeftButtonUp += delegate { list.Add ("PanelUp"); };
+
+			p.MouseLeftButtonDown += delegate { list.Add ("PopupDown"); };
+			p.MouseLeftButtonUp += delegate { list.Add ("PopupUp"); };
+
+			c.MouseLeftButtonDown += delegate { list.Add ("CanvasDown"); };
+			c.MouseLeftButtonUp += delegate { list.Add ("CanvasUp"); };
+
+			r.MouseLeftButtonDown += delegate { list.Add ("RectDown"); };
+			r.MouseLeftButtonUp += delegate { list.Add ("RectUp"); };
+
+			p.IsOpen = true;
+			Enqueue (() => {
+				// Fake a click - Only the canvas and rectangle see it
+			});
 		}
 
 		[TestMethod]
@@ -171,16 +207,19 @@ namespace MoonTest.System.Windows.Controls.Primitives
 			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (r), "#1");
 			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (p), "#2");
 			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (TestPanel), "#3");
+			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (TestPage), "#4");
 
 			TestPanel.Children.Add (p);
 			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (r), "#4");
 			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (p), "#5");
 			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (TestPanel), "#6");
+			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (TestPage), "#4");
 
 			p.IsOpen = true;
 			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (r), "#7");
 			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (p), "#8");
 			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (TestPanel), "#9");
+			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (TestPage), "#4");
 
 			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (TestPanel.Parent), "#10");
 		}
