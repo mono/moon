@@ -1,3 +1,10 @@
+2009-03-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/DelegateTest.cs: Enable
+	* security/ReflectionEmitTest.cs: Enable
+	* security/ReflectionTest.cs: Enable
+	* security/SecurityCriticalTest.cs: Enable
+
 2009-03-31  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls.Primitives/PopupTest.cs: Add another

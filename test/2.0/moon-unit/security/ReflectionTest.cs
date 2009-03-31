@@ -72,7 +72,6 @@ namespace MoonTest.Security {
 	}
 
 	[TestClass]
-	[Ignore ("needs coreclr enabled")]
 	public class ReflectionTest {
 
 		[TestMethod]
