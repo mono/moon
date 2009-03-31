@@ -1,3 +1,7 @@
+2009-03-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* System.Windows.Controls/TextBlockTest.cs: Fixed to pass on Windows.
+
 2009-03-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/DelegateTest.cs: Enable

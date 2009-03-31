@@ -114,7 +114,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		//[MoonlightBug ("TextBlock.ActualHeight suggests unwrapped content, but the DesiredSize.Height is correct")]
+		[MoonlightBug ("TextBlock.ActualHeight suggests Silverlight wraps on a per-char basis rather than wrapping to 44px")]
 		public void MeasureTooLongLineWrapTest ()
 		{
 			Border b = new Border ();
@@ -127,7 +127,10 @@ namespace MoonTest.System.Windows.Controls {
 			
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			
-			Assert.AreEqual (7, GetLineCount (tb.ActualHeight), "line count based on tb.ActualHeight");
+			Assert.IsTrue (tb.ActualWidth > 10.8 && tb.ActualWidth < 10.9, "textblock.ActualWidth is " + tb.ActualWidth.ToString ());
+			Assert.AreEqual (35, GetLineCount (tb.ActualHeight), "line count based on tb.ActualHeight");
+			
+			Assert.IsTrue (tb.DesiredSize.Width > 32 && tb.DesiredSize.Width < 33, "textblock.DesiredSize.Width is " + tb.DesiredSize.Width.ToString ());
 			Assert.AreEqual (7, GetLineCount (tb.DesiredSize.Height), "line count based on tb.DesiredSize");
 			//Assert.AreEqual (new Size (33,112), tb.DesiredSize, "tb.DesiredSize");
 		}
