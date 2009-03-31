@@ -90,7 +90,7 @@ $(TUNER_INSTALL_DIR):
 
 end-install:	\
 	inst-mscorlib.dll	\
-	inst-smcs.exe	\
+	inst-mono-smcs.exe	\
 	inst-System.dll	\
 	inst-System.Net.dll	\
 	inst-System.Xml.dll	\
@@ -100,6 +100,10 @@ end-install:	\
 	inst-System.ServiceModel.dll	\
 	inst-System.ServiceModel.Web.dll	\
 	inst-Mono.CompilerServices.SymbolWriter.dll
+
+inst-mono-%: $(OUTPUT_DIR)/%
+	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(prefix)/lib/mono/2.1/$*
+	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(prefix)/lib/mono/2.1/$*.mdb
 
 inst-%: $(OUTPUT_DIR)/%
 	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(prefix)/lib/moon/plugin/$*
