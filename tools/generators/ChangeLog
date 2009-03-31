@@ -1,3 +1,12 @@
+2009-03-30  Chris Toshok  <toshok@ximian.com>
+
+	* TypeReference.cs (GetManagedType): add all the downloader
+	delegate types here.
+
+	* MethodInfo.cs (CMethod): skip the this parameter if there's no
+	Parent.Name (i.e. we're decorating a C function instead of a C++
+	method)
+
 2009-03-29  Geoff Norton  <gnorton@novell.com>
 
 	* FieldInfo.cs: PixelFormat is another enum as a structure as a class

@@ -59,7 +59,7 @@ class MethodInfo : MemberInfo {
 				c_method.ReturnType = ReturnType == null ? new TypeReference ("void") : ReturnType;
 				c_method.Parent = Parent;
 								
-				if (!IsStatic && !IsConstructor) {
+				if (!string.IsNullOrEmpty (Parent.Name) && !IsStatic && !IsConstructor) {
 					ParameterInfo parameter = new ParameterInfo ();
 					parameter.Name = "instance";
 					parameter.ParameterType = new TypeReference (Parent.Name + "*");

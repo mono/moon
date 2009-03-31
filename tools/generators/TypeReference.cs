@@ -228,6 +228,31 @@ class TypeReference {
 			case "ToggleNotifyHandler":
 				managed_type = "Mono.ToggleRef.ToggleNotifyHandler";
 				break;
+
+			case "downloader_create_state_func":
+				managed_type = "Mono.DownloaderCreateStateFunc";
+				break;
+			case "downloader_destroy_state_func":
+				managed_type = "Mono.DownloaderDestroyStateFunc";
+				break;
+			case "downloader_open_func":
+				managed_type = "Mono.DownloaderOpenFunc";
+				break;
+			case "downloader_send_func":
+				managed_type = "Mono.DownloaderSendFunc";
+				break;
+			case "downloader_abort_func":
+				managed_type = "Mono.DownloaderAbortFunc";
+				break;
+			case "downloader_header_func":
+				managed_type = "Mono.DownloaderHeaderFunc";
+				break;
+			case "downloader_body_func":
+				managed_type = "Mono.DownloaderBodyFunc";
+				break;
+			case "downloader_create_webrequest_func":
+				managed_type = "Mono.DownloaderCreateWebRequestFunc";
+				break;
 			default:
 				if (Value.Contains ("*"))
 					managed_type = "IntPtr";
