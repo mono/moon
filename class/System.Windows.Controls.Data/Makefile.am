@@ -123,6 +123,8 @@ clean-local:
 
 if INCLUDE_BROWSER_MANAGED_CODE
 install-sl:
+	$(INSTALL) -c -m 755  $(assemblysl) $(prefix)/lib/moon/plugin/$(assembly).dll
+	test ! -f $(assemblysl).mdb || $(INSTALL) -c -m 755 $(assemblysl).mdb $(prefix)/lib/moon/plugin/$(assembly).dll.mdb
 else
 install-sl:
 endif

@@ -1,8 +1,3 @@
-2009-03-31  Sebastien Pouliot  <sebastien@ximian.com>
-
-	* Makefile.am: Do not install (at all) for 2.1 since it should 
-	not be installed with the plugin
-
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: add the resources to the desktop assembly too.
