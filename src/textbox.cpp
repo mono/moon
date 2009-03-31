@@ -29,7 +29,7 @@
 #include "textbox.h"
 #include "border.h"
 #include "panel.h"
-#include "clock.h"
+#include "timemanager.h"
 #include "utils.h"
 
 

@@ -1,3 +1,15 @@
+2009-03-30  Chris Toshok  <toshok@ximian.com>
+
+	* timemanager.cpp|.h: split this out from clock.cpp|.h
+
+	* animation.cpp, clock.cpp, clock.h, dependencyobject.cpp,
+	libmoon.h, mediaplayer.cpp, runtime.cpp, textbox.cpp,
+	timeline.cpp, uielement.cpp: track the above change.
+
+	* Makefile.am: add timemanager.cpp|.h
+
+	* cbinding.h, type-generated.cpp: regen
+
 2009-03-30  Geoff Norton  <gnorton@novell.com>
 
 	* bitmapsource.cpp: When caching a native surface ensure we dont

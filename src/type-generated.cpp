@@ -61,6 +61,7 @@
 #include "textbox.h"
 #include "tilesource.h"
 #include "timeline.h"
+#include "timemanager.h"
 #include "timesource.h"
 #include "transform.h"
 #include "trigger.h"

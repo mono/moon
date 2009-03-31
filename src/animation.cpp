@@ -19,6 +19,7 @@
 #include <math.h>
 
 #include "application.h"
+#include "timemanager.h"
 #include "animation.h"
 
 #include "color.h"

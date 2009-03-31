@@ -48,6 +48,7 @@
 #include "fullscreen.h"
 #include "utils.h"
 #include "window-gtk.h"
+#include "timemanager.h"
 
 #include "contentcontrol.h"
 #include "usercontrol.h"

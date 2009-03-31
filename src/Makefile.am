@@ -89,6 +89,7 @@ libmoon_include_headers = 	\
 	thickness.h		\
 	tilesource.h		\
 	timeline.h		\
+	timemanager.h		\
 	timesource.h		\
 	transform.h		\
 	trigger.h		\
@@ -187,6 +188,7 @@ libmoon_la_SOURCES = 		\
 	thickness.cpp		\
 	tilesource.cpp		\
 	timeline.cpp		\
+	timemanager.cpp		\
 	timesource.cpp		\
 	transform.cpp		\
 	trigger.cpp		\

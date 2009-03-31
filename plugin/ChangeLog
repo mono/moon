@@ -1,3 +1,7 @@
+2009-03-30  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp: #include timemanager.h
+
 2009-03-29  Geoff Norton  <gnorton@novell.com>
 
 	* plugin-class.cpp: Ensure that the ImageSource we get is a BitmapImage

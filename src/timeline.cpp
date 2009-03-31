@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "timeline.h"
+#include "timemanager.h"
 
 #include "uielement.h"
 #include "runtime.h"

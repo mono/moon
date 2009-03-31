@@ -22,7 +22,7 @@
 #include "shape.h"
 #include "dirty.h"
 #include "eventargs.h"
-#include "clock.h"
+#include "timemanager.h"
 #include "media.h"
 #include "resources.h"
 

@@ -18,6 +18,7 @@
 #include <glib.h>
 
 #include "timesource.h"
+#include "timemanager.h"
 #include "mediaplayer.h"
 #include "pipeline.h"
 #include "runtime.h"

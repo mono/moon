@@ -20,7 +20,7 @@
 #include "collection.h"
 #include "dependencyobject.h"
 #include "textblock.h"
-#include "clock.h"
+#include "timemanager.h"
 #include "runtime.h"
 #include "uielement.h"
 #include "animation.h"

@@ -33,6 +33,7 @@
 #include "unzip.h"
 #include "deployment.h"
 #include "uri.h"
+#include "timemanager.h"
 
 #define Visual _XxVisual
 #define Region _XxRegion
