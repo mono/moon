@@ -20,7 +20,6 @@ typedef void (*ApplyDefaultStyleCallback)(FrameworkElement *fwe, ManagedTypeInfo
 typedef void (*ApplyStyleCallback)(FrameworkElement *fwe, Style *style);
 typedef void *(*GetResourceCallback)(const char *name, int *size);
 
-/* @SilverlightVersion="2" */
 /* @ManagedDependencyProperties=Manual */
 /* @Namespace=None */
 class Application : public DependencyObject {

@@ -18,7 +18,6 @@
 //
 // UserControl
 //
-/* @SilverlightVersion="2" */
 /* @ContentProperty="Content" */
 /* @Namespace=System.Windows.Controls */
 class UserControl : public Control {

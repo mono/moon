@@ -1,5 +1,14 @@
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
+	* application.h, border.h, contentcontrol.h, control.h,
+	cornerradius.h, deployment.h, expression.h, frameworkelement.h,
+	grid.h, multiscaleimage.h, size.h, style.h, template.h, textbox.h,
+	transform.h, type.h, usercontrol.h: remove @SilverlightVersion
+	metadata attributes.
+
+
+2009-03-30  Chris Toshok  <toshok@ximian.com>
+
 	* downloader.h: add pinvokes for a few of the downloader_* C
 	functions.
 

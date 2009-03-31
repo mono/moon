@@ -39,7 +39,6 @@ class InputMethod : public DependencyObject {
 	InputMethod () { SetObjectType (Type::INPUTMETHOD); }
 };
 
-/* @SilverlightVersion="2" */
 /* @Namespace=None */
 class TextChangedEventArgs : public RoutedEventArgs {
  protected:
@@ -51,7 +50,6 @@ class TextChangedEventArgs : public RoutedEventArgs {
 };
 
 
-/* @SilverlightVersion="2" */
 /* @Namespace=None */
 class CursorPositionChangedEventArgs : public EventArgs {
 	double height, x, y;
@@ -99,7 +97,6 @@ enum TextBoxModelChangeType {
 };
 
 
-/* @SilverlightVersion="2" */
 /* @Namespace=None */
 class TextBoxModelChangedEventArgs : public EventArgs {
  protected:
@@ -120,7 +117,6 @@ class TextBoxModelChangedEventArgs : public EventArgs {
 class TextBuffer;
 class TextBoxUndoStack;
 
-/* @SilverlightVersion="2" */
 /* @Namespace=None */
 class TextBoxBase : public Control, public ITextAttributes {
  protected:
@@ -303,7 +299,6 @@ class TextBoxBase : public Control, public ITextAttributes {
 
 class TextBoxDynamicPropertyValueProvider;
 
-/* @SilverlightVersion="2" */
 /* @CallInitialize */
 /* @Namespace=System.Windows.Controls */
 class TextBox : public TextBoxBase {
@@ -410,7 +405,6 @@ class TextBox : public TextBoxBase {
 
 class PasswordBoxDynamicPropertyValueProvider;
 
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class PasswordBox : public TextBoxBase {
 	friend class PasswordBoxDynamicPropertyValueProvider;
@@ -499,7 +493,6 @@ class PasswordBox : public TextBoxBase {
 };
 
 
-/* @SilverlightVersion="2" */
 /* @Namespace=Microsoft.Internal */
 class TextBoxView : public FrameworkElement {
 	TextBoxBase *textbox;

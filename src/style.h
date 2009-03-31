@@ -19,7 +19,6 @@
 //
 // Style
 //
-/* @SilverlightVersion="2" */
 /* @ContentProperty="Setters" */
 /* @Namespace=System.Windows */
 class Style : public DependencyObject {
@@ -53,7 +52,6 @@ protected:
 //
 // SetterBaseCollection
 //
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 class SetterBaseCollection : public DependencyObjectCollection {
 public:
@@ -86,7 +84,6 @@ private:
 //
 // SetterBase
 //
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 class SetterBase : public DependencyObject {
  protected:
@@ -117,7 +114,6 @@ class SetterBase : public DependencyObject {
 //
 // Setter
 //
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 /* @ManagedDependencyProperties=Manual */
 class Setter : public SetterBase {

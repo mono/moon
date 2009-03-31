@@ -106,11 +106,8 @@ public:
 
 	virtual bool UpdateLayout ();
 	
-	/* @SilverlightVersion="2" */
 	const static int BindingValidationErrorEvent;
-	/* @SilverlightVersion="2" */
 	const static int LayoutUpdatedEvent;
-	/* @SilverlightVersion="2" */
 	const static int SizeChangedEvent;
 	// XXX 2.0 also has the Loaded event moved here from
 	// UIElement.

@@ -24,7 +24,6 @@ class XamlContext;
 //
 // FrameworkTemplate
 //
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 class FrameworkTemplate : public DependencyObject {
 public:
@@ -53,7 +52,6 @@ protected:
 //
 // ControlTemplate
 //
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class ControlTemplate : public FrameworkTemplate {
 public:
@@ -78,7 +76,6 @@ protected:
 //
 // DataTemplate
 //
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 class DataTemplate : public FrameworkTemplate {
 public:
@@ -92,7 +89,6 @@ protected:
 	virtual ~DataTemplate () {}
 };
 
-/* @SilverlightVersion="2" */
 class XamlTemplateBinding : public EventObject {
 public:
 	XamlTemplateBinding (DependencyObject *target,
@@ -112,7 +108,6 @@ private:
 	char *sourcePropertyName;
 };
 
-/* @SilverlightVersion="2" */
 class TemplateBinding : public EventObject {
 public:
 	TemplateBinding (DependencyObject *source,

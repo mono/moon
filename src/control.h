@@ -30,7 +30,6 @@
 //
 // Control Class
 //
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 /* @CallInitialize */
 class Control : public FrameworkElement {
@@ -58,7 +57,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetTemplateChild (const char *name);
 	
-	/* @SilverlightVersion="2" */
 	const static int TemplateAppliedEvent;
 
 	//

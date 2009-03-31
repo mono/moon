@@ -13,7 +13,6 @@
 
 #include <math.h>
 
-/* @SilverlightVersion="2" */
 /* @IncludeInKinds */
 struct CornerRadius {
 	double topLeft;

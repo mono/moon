@@ -20,7 +20,6 @@
 
 typedef struct _MonoDomain MonoDomain;
 
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 class AssemblyPart : public DependencyObject {
 public:
@@ -35,7 +34,6 @@ protected:
 };
 
 
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 class AssemblyPartCollection : public DependencyObjectCollection {
 public:
@@ -48,7 +46,6 @@ protected:
 	virtual ~AssemblyPartCollection ();
 };
 
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 class Deployment : public DependencyObject {
 public:

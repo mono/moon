@@ -19,7 +19,6 @@
 //
 // Border
 //
-/* @SilverlightVersion="2" */
 /* @ContentProperty="Child" */
 /* @Namespace=System.Windows.Controls */
 class Border : public FrameworkElement {

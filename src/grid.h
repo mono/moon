@@ -15,7 +15,6 @@
 #include "panel.h"
 
 /* @IncludeInKinds */
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows */
 struct GridLength {
  public:
@@ -34,7 +33,6 @@ struct GridLength {
 	}
 };
 
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class ColumnDefinition : public DependencyObject {
 	// Actual width computed
@@ -69,7 +67,6 @@ class ColumnDefinition : public DependencyObject {
 	void SetWidth (GridLength *value);
 };
 
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class RowDefinition : public DependencyObject {
 	// Actual height computed
@@ -104,7 +101,6 @@ class RowDefinition : public DependencyObject {
 	void SetHeight (GridLength *value);
 };
 
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class ColumnDefinitionCollection : public DependencyObjectCollection {
  protected:
@@ -118,7 +114,6 @@ class ColumnDefinitionCollection : public DependencyObjectCollection {
 };
 
 
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class RowDefinitionCollection : public DependencyObjectCollection {
  protected:
@@ -132,7 +127,6 @@ class RowDefinitionCollection : public DependencyObjectCollection {
 };
 
 
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls */
 class Grid : public Panel {
 	Size magic;

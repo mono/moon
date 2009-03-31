@@ -239,7 +239,6 @@ class Matrix : public DependencyObject {
 	double GetOffsetY ();
 };
 
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Media */
 // this type does not really exists - its purpose is to let the unmanaged (1.x) matrix be a dependency object
 // and the later (2.x) managed code use a struct (non-DO) for the matrix

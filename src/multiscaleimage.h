@@ -27,7 +27,6 @@ void multi_scale_image_handle_parsed (void *userdata);
 
 struct DownloaderContext;
 
-/* @SilverlightVersion="2" */
 /* @Namespace=System.Windows.Controls,ManagedDependencyProperties=Manual */
 class MultiScaleImage : public MediaBase {
 	void DownloadersAbort ();

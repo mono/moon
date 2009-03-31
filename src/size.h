@@ -16,7 +16,6 @@
 #include "eventargs.h"
 #include "thickness.h"
 
-/* @SilverlightVersion="2" */
 /* @IncludeInKinds */
 struct Size {
 	double width, height;
@@ -87,7 +86,6 @@ struct Size {
 	static bool FromStr (const char *s, Size *size);
 };
 
-/* @SilverlightVersion="2" */
 /* @Namespace=None */
 class SizeChangedEventArgs : public RoutedEventArgs {
 	Size prev_size;
