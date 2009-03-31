@@ -1,3 +1,7 @@
+2009-03-31  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* bitmapimage.h: Set a DefaultValue for ProgressProperty
+
 2009-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* src.mdp: Updated some project files.
