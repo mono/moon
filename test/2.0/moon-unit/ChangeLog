@@ -1,3 +1,8 @@
+2009-03-31  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls.Primitives/PopupTest.cs: Add a bunch
+	  of extra tests for Popup, currently they're all disabled.
+
 2009-03-30  Alan McGovern  <amcgovern@novell.com>
 
 	* BasicCanvas.xaml:
