@@ -1,3 +1,8 @@
+2009-03-31  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls.Primitives/PopupTest.cs: Add tests
+	  for clearing the child while the popup is visible.
+
 2009-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* moon-unit.mdp: Updated some project files.

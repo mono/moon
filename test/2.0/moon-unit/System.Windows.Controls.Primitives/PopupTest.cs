@@ -203,5 +203,27 @@ namespace MoonTest.System.Windows.Controls.Primitives
 			Popup p1 = new Popup { Child = r };
 			Assert.Throws<InvalidOperationException> (() => new Popup { Child = r }); 
 		}
+
+		[TestMethod]
+		public void VisualTree5 ()
+		{
+			Rectangle r = new Rectangle ();
+			Popup p = new Popup { Child = r };
+			p.IsOpen = true;
+			p.Child = null;
+			Assert.IsNull (p.Child, "#1");
+			Assert.IsNull (r.Parent, "#2");
+		}
+
+		[TestMethod]
+		[Ignore ("Setting the child to null while the popup is open causes SL2 to nuke firefox if the child is in the visual tree already")]
+		public void VisualTree6 ()
+		{
+			Rectangle r = new Rectangle ();
+			Popup p = new Popup { Child = r };
+			TestPanel.Children.Add (r);
+			p.IsOpen = true;
+			p.Child = null;
+		}
 	}
 }
