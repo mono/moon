@@ -1,5 +1,10 @@
 2009-03-31  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls.Primitives/PopupTest.cs: Add another
+	  test for when we set a name.
+
+2009-03-31  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls.Primitives/PopupTest.cs: Add tests
 	  for clearing the child while the popup is visible.
 

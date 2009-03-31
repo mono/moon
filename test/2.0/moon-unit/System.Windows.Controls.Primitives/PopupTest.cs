@@ -225,5 +225,19 @@ namespace MoonTest.System.Windows.Controls.Primitives
 			p.IsOpen = true;
 			p.Child = null;
 		}
+		
+		[TestMethod]
+		[MoonlightBug]
+		public void VisualTree7 ()
+		{
+			Rectangle r = new Rectangle { Name = "Ted" };
+			Popup p = new Popup { Child = r };
+			Assert.AreEqual (p, r.Parent, "#1");
+			TestPanel.Children.Add (r);
+			Assert.AreEqual (p, r.Parent, "#2");
+			p.Child = null;
+			Assert.AreEqual (TestPanel, r.Parent, "#3");
+			Assert.Throws<ArgumentException> (() => p.Child = r, "#4");
+		}
 	}
 }
