@@ -321,7 +321,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::SPLINECOLORKEYFRAME, "KeySpline", NULL, Type::KEYSPLINE, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::RegisterFull (this, Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", NULL, Type::COLORKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::Register (this, Type::BITMAPIMAGE, "UriSource", new Value (Uri()), Type::URI);
-	DependencyProperty::Register (this, Type::BITMAPIMAGE, "Progress", Type::DOUBLE);
+	DependencyProperty::Register (this, Type::BITMAPIMAGE, "Progress", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::TRANSLATETRANSFORM, "Y", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::TRANSLATETRANSFORM, "X", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::TRANSFORMGROUP, "Children", NULL, Type::TRANSFORM_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
