@@ -1,3 +1,7 @@
+2009-03-31  Jb Evain  <jbevain@novell.com>
+
+	* configure.ac: take care of the new scripts folder.
+
 2009-03-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* moon.mds: Updated.

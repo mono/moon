@@ -677,6 +677,8 @@ class/System.Windows/Makefile
 class/System.Windows.Browser/Makefile
 class/System.Windows.Controls/Makefile
 class/System.Windows.Controls.Data/Makefile
+scripts/Makefile
+scripts/smcs
 gtk/Makefile
 man/Makefile
 gtk/gtksilver.pc
