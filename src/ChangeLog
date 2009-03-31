@@ -1,3 +1,10 @@
+2009-03-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (TextBlock::Layout): Set the ActualWidth/Height DP
+	values here, this seems to be what Silverlight does (can't be set
+	in FWE::Measure() because it doesn't have the actual extents, it
+	just has the desiredSize).
+
 2009-03-31  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* bitmapimage.cpp: use Uri::ToString () instead of OriginalString, as

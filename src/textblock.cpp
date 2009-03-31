@@ -322,6 +322,8 @@ TextBlock::MeasureOverride (Size availableSize)
 	Size constraint;
 	Size desired;
 	
+	//printf ("TextBlock::MeasureOverride(availableSize = { %f, %f })\n", availableSize.width, availableSize.height);
+	
 	constraint = availableSize.GrowBy (-padding);
 	Layout (constraint);
 	dirty = true;
@@ -424,23 +426,24 @@ TextBlock::Layout (Size constraint)
 		actual_height = font->Height ();
 		actual_width = 0.0;
 		font->unref ();
-		dirty = false;
-		return;
 	} else if (!was_set) {
 		// If the Text property has never been set, then its
 		// extents should both be 0.0. See bug #435798 for
 		// details.
 		actual_height = 0.0;
 		actual_width = 0.0;
-		dirty = false;
-		return;
+	} else {
+		layout->SetMaxWidth (constraint.width);
+		layout->Layout ();
+		
+		layout->GetActualExtents (&actual_width, &actual_height);
 	}
 	
-	layout->SetMaxWidth (constraint.width);
-	layout->Layout ();
-	dirty = false;
+	//printf ("TextBlock::Layout(constraint = { %f, %f }) => %f, %f\n", constraint.width, constraint.height, actual_width, actual_height);
 	
-	layout->GetActualExtents (&actual_width, &actual_height);
+	SetActualHeight (actual_height);
+	SetActualWidth (actual_width);
+	dirty = false;
 }
 
 void
