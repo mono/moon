@@ -51,7 +51,7 @@ namespace MoonTest.System.Windows.Controls {
 		
 		int GetLineCount (double height)
 		{
-			return (int) (height / line_height);
+			return (int) Math.Round (height / line_height);
 		}
 		
 		[TestMethod]
@@ -114,7 +114,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Extents are slightly off (32,118) instead of (32,112), likely due to font metrics")]
+		//[MoonlightBug ("TextBlock.ActualHeight suggests unwrapped content, but the DesiredSize.Height is correct")]
 		public void MeasureTooLongLineWrapTest ()
 		{
 			Border b = new Border ();
@@ -174,7 +174,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Post-Measure()'d TextBlock extents/wrapping are wrong")]
+		[MoonlightBug ("Post-Border.Measure()'d TextBlock extents/wrapping are wrong")]
 		public void ArrangeTooLongLineWrapMeasureTest ()
 		{
 			Border b = new Border ();
@@ -186,13 +186,23 @@ namespace MoonTest.System.Windows.Controls {
 			// notice this is on the border not the textblock
 			b.Width = 44;
 			
+			Assert.IsTrue (tb.ActualWidth > 192.8 && tb.ActualWidth < 202.4, "1. tb.ActualWidth is " + tb.ActualWidth.ToString ());
 			Assert.AreEqual (1, GetLineCount (tb.ActualHeight), "1. line count based on textblock.ActualHeight");
 			//Assert.IsTrue (tb.ActualWidth < 202.4 && tb.ActualWidth > 202.3, "1. tb.ActualWidth is " + tb.ActualWidth.ToString ());
 			//Assert.AreEqual (16, tb.ActualHeight, "1. tb.ActualHeight");
-
+			
+			//Console.WriteLine ("=========== Calling Border.Measure() ============");
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			//Console.WriteLine ("========= Done calling Border.Measure() =========");
 			
 			// FIXME: wrong after this point
+			//
+			// Debug output:
+			//
+			// =========== Calling Border.Measure() ============
+			// TextBlock::MeasureOverride(availableSize = { 44.000000, inf })
+			// TextBlock::Layout(constraint = { 44.000000, inf }) => 32.403809, 118.317073
+			// ========= Done calling Border.Measure() =========
 			
 			// note: need to fix ActualWidth values to be within moonlight's tolerance
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "2. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
@@ -201,7 +211,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Post-Measure()'d TextBlock extents/wrapping are wrong")]
+		[MoonlightBug ("Post-Border.Measure()'d TextBlock extents/wrapping are wrong")]
 		public void ArrangeTooLongLocal_LineWrapMeasureTest ()
 		{
 			Border b = new Border ();
@@ -216,10 +226,19 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsTrue (tb.ActualWidth >= 32 && tb.ActualWidth < 34, "1. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
 			Assert.AreEqual (7, GetLineCount (tb.ActualHeight), "1. line count based on textblock.ActualHeight");
 			//Assert.AreEqual (112, tb.ActualHeight, "1. tb.ActualHeight");
-
+			
+			//Console.WriteLine ("=========== Calling Border.Measure() ============");
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			//Console.WriteLine ("========= Done calling Border.Measure() =========");
 			
 			// FIXME: wrong after this point
+			//
+			// Debug output:
+			//
+			// =========== Calling Border.Measure() ============
+			// TextBlock::MeasureOverride(availableSize = { 44.000000, inf })
+			// TextBlock::Layout(constraint = { 44.000000, inf }) => 32.403809, 118.317073
+			// ========= Done calling Border.Measure() =========
 			
 			// note: need to fix ActualWidth values to be within moonlight's tolerance
 			Assert.IsTrue (tb.ActualWidth < 10.9 && tb.ActualWidth > 10.8, "2. textblock.ActualWidth is " + tb.ActualWidth.ToString ());
