@@ -1,3 +1,9 @@
+2009-03-30  Geoff Norton  <gnorton@novell.com>
+
+	* bitmapsource.cpp: When caching a native surface ensure we dont
+	destroy it on every GetSurface pass, but we do clean it up in
+	Invalidate.
+
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
 	* application.h, border.h, contentcontrol.h, control.h,

@@ -56,6 +56,10 @@ BitmapSource::Invalidate ()
 	if (GetPixelWidth () == 0 || GetPixelHeight () == 0)
 		return;
 
+	if (native_surface) {
+		cairo_surface_destroy (native_surface);
+		native_surface = NULL;
+	}
 	if (image_surface)
 		cairo_surface_destroy (image_surface);
 
@@ -68,9 +72,8 @@ BitmapSource::GetSurface (cairo_t *cr)
 	if (image_surface == NULL)
 		return NULL;
 
-	if (native_surface) {
-		cairo_surface_destroy (native_surface);
-	}
+	if (native_surface)
+		return native_surface;
 
 	native_surface = cairo_surface_create_similar (cairo_get_target (cr), CAIRO_CONTENT_COLOR_ALPHA, GetPixelWidth (), GetPixelHeight ());
 	cairo_t *context = cairo_create (native_surface);
