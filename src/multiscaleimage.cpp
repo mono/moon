@@ -317,8 +317,9 @@ multi_scale_image_handle_parsed (void *userdata)
 	if (source->GetImageWidth () >= 0 && source->GetImageHeight () >= 0)
 		msi->SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)source->GetImageWidth () / (double)source->GetImageHeight ()));
 
-	DeepZoomImageTileSource *dsource = (DeepZoomImageTileSource *)source;
-	if (dsource) {
+	DeepZoomImageTileSource *dsource;
+	if (source->Is (Type::DEEPZOOMIMAGETILESOURCE) &&
+	    (dsource = (DeepZoomImageTileSource *)source)) {
 		int i;
 		MultiScaleSubImage *si;
 		for (i = 0; (si = (MultiScaleSubImage*)g_list_nth_data (dsource->subimages, i)); i++) {
@@ -329,16 +330,9 @@ multi_scale_image_handle_parsed (void *userdata)
 		}
 	}
 	msi->Invalidate ();
-	LOG_MSI ("\nMSI::Emitting open suceeded\n");
-	msi->AddTickCall (MultiScaleImage::EmitImageOpenSucceeded);
-}
 
-void
-MultiScaleImage::EmitImageOpenSucceeded (EventObject *user_data)
-{
-	MultiScaleImage *msi = (MultiScaleImage *) user_data;
-	
-	msi->Emit (MultiScaleImage::ImageOpenSucceededEvent);
+	//FIXME: we're only emitting this in deepzoom case
+	msi->EmitImageOpenSucceeded ();
 }
 
 void
@@ -363,7 +357,11 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	int tile_width = source->GetTileWidth ();
 	int tile_height = source->GetTileHeight ();
 
-	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*)source;
+	if (!source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+		g_warning ("RenderCollection called for a non deepzoom tile source. this should not happen");
+		return;
+	}
+	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *)source;
 
 	Rect viewport = Rect (msivp_ox, msivp_oy, msivp_w, msivp_w/msi_ar);
 
@@ -816,9 +814,11 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		dlctx->state = DownloaderFree;
 	}
 
-	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource*) source;
-	bool is_collection = dzits && dzits->IsCollection () && GetSubImages ();
-	
+	bool is_collection = source &&
+			     source->Is (Type::DEEPZOOMIMAGETILESOURCE) &&
+			     ((DeepZoomImageTileSource *)source)->IsCollection () &&
+			     GetSubImages ();
+
 	if (!(source = GetSource ())) {
 		LOG_MSI ("no sources set, nothing to render\n");
 		return;
@@ -826,9 +826,10 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 
 	if (source->GetImageWidth () < 0 && !is_collection) {
 		LOG_MSI ("nothing to render so far...\n");
-		//FIXME: check for null cast
-		((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
-		((DeepZoomImageTileSource*)source)->Download ();
+		if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+			((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
+			((DeepZoomImageTileSource*)source)->Download ();
+		}
 		return;
 	}
 
@@ -968,11 +969,18 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	}
 
 	if (args->GetId () == MultiScaleImage::SourceProperty) {
-		DeepZoomImageTileSource *source = args->GetNewValue() ? args->GetNewValue()->AsDeepZoomImageTileSource () : NULL;
-		if (source) {
+		DeepZoomImageTileSource *source;
+		if (args->GetNewValue() &&
+		    args->GetNewValue ()->Is (Type::DEEPZOOMIMAGETILESOURCE) && 
+		    (source = args->GetNewValue()->AsDeepZoomImageTileSource ())) {
 			source->set_parsed_cb (multi_scale_image_handle_parsed, this);
 			source->Download ();
 		}
+
+		//FIXME: On source change
+		// - abort all downloaders
+		// - invalidate the cache
+		// - invalidate the control
 	}
 
 	if (args->GetProperty ()->GetOwnerType () != Type::MULTISCALEIMAGE) {
@@ -1001,9 +1009,16 @@ MultiScaleImage::OnCollectionItemChanged (Collection *col, DependencyObject *obj
 }
 
 void
+MultiScaleImage::EmitImageOpenSucceeded ()
+{
+	LOG_MSI ("\nMSI::Emitting open suceeded\n");
+	Emit (MultiScaleImage::ImageOpenSucceededEvent);
+}
+
+void
 MultiScaleImage::EmitMotionFinished ()
 {
-	printf ("Emitting MotionFinished\n");
+	LOG_MSI ("Emitting MotionFinished\n");
 	Emit (MultiScaleImage::MotionFinishedEvent);
 }
 
