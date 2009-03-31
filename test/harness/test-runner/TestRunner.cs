@@ -184,7 +184,8 @@ namespace MoonlightTests {
 
 		private void OnTestComplete (Test test, TestCompleteReason reason)
 		{
-			test.CompleteReason = reason;
+			if (test.CompleteReason != TestCompleteReason.Timedout)
+				test.CompleteReason = reason;
 			if (TestCompleteEvent != null)
 				TestCompleteEvent (test, reason);
 		}
