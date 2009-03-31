@@ -123,6 +123,32 @@ namespace MoonTest.System.Windows.Controls.Primitives
 			pop.Child = r;
 			Assert.AreEqual (pop, r.Parent);
 		}
+		
+		[TestMethod]
+		[MoonlightBug]
+		[Asynchronous]
+		public void Rendering ()
+		{
+			Rectangle r = new Rectangle { Fill = new SolidColorBrush (Colors.Blue), Width = 100, Height = 50 };
+			Popup p = new Popup { Child = r, RenderTransform = new TranslateTransform { X=300, Y = 300 } };
+			p.IsOpen = true;
+			Enqueue (() => p.IsOpen = false);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		[Asynchronous]
+		public void Rendering2 ()
+		{
+			Rectangle r = new Rectangle { Fill = new SolidColorBrush (Colors.Blue), Width = 100, Height = 50 };
+			Popup p = new Popup { Child = r };
+			TestPanel.Children.Add (p);
+			TestPanel.RenderTransform = new ScaleTransform { ScaleX = 0.2, ScaleY = 0.2 };
+			p.IsOpen = true;
+			Enqueue (() => p.IsOpen = false);
+			EnqueueTestComplete ();
+		}
 
 		[TestMethod]
 		public void VisualChildren ()
