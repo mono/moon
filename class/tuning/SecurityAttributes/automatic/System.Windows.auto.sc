@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 435 methods needs to be decorated.
+# 439 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -417,6 +417,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::ellipse_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::event_object_get_surface(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::event_object_get_type_name_(System.IntPtr)
@@ -917,13 +920,13 @@
 +SC-M: System.String Mono.NativeMethods::xaml_uri_for_prefix(System.IntPtr,System.String)
 
 # p/invoke declaration
-+SC-M: System.UInt32 Mono.NativeMethods::time_manager_add_tick_call(System.IntPtr,Mono.NativeMethods/TickCallHandler,System.IntPtr)
++SC-M: System.UInt32 Mono.NativeMethods::time_manager_add_tick_call(System.IntPtr,Mono.TickCallHandler,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.UInt32 Mono.NativeMethods::time_manager_add_timeout(System.IntPtr,System.Int32,Mono.NativeMethods/GSourceFunc,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.UInt32 Mono.NativeMethods::time_manager_remove_tick_call(System.IntPtr,Mono.NativeMethods/TickCallHandler)
++SC-M: System.UInt32 Mono.NativeMethods::time_manager_remove_tick_call(System.IntPtr,Mono.TickCallHandler)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.ApplyDefaultStyleCallback,Mono.ApplyStyleCallback,Mono.GetResourceCallback)
@@ -989,6 +992,15 @@
 +SC-M: System.Void Mono.NativeMethods::downloader_abort(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::downloader_notify_error(System.IntPtr,System.String)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::downloader_notify_finished(System.IntPtr,System.String)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::downloader_notify_size(System.IntPtr,System.Int64)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::downloader_request_abort(System.IntPtr)
 
 # p/invoke declaration
@@ -1013,7 +1025,13 @@
 +SC-M: System.Void Mono.NativeMethods::downloader_send(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::downloader_set_functions(Mono.DownloaderCreateStateFunc,Mono.DownloaderDestroyStateFunc,Mono.DownloaderOpenFunc,Mono.DownloaderSendFunc,Mono.DownloaderAbortFunc,Mono.DownloaderHeaderFunc,Mono.DownloaderBodyFunc,Mono.DownloaderCreateWebRequestFunc)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::downloader_want_events(System.IntPtr,Mono.NativeMethods/UpdateFunction,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::downloader_write(System.IntPtr,System.IntPtr,System.Int32,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_add_toggle_ref_notifier(System.IntPtr,Mono.ToggleRef/ToggleNotifyHandler)
@@ -1143,12 +1161,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::routed_event_args_set_source(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::runtime_init(System.Int32)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::runtime_init_browser()
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::runtime_init_desktop()

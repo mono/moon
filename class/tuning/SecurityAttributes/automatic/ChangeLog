@@ -1,3 +1,9 @@
+2009-03-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.sc: Remove some runtime_init* p/invokes,
+	adjust the downloader and time_manager p/invokes, add new
+	event_object_get_surface
+
 2009-03-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: Add new p/invokes for bitmap_source,
