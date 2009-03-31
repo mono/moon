@@ -1,3 +1,8 @@
+2009-03-31  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Browser.auto.ssc: Adjust signature for
+	System.Windows.Browser.HtmlObject/EventInfo::DomEventHandler
+
 2009-03-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: Remove some runtime_init* p/invokes,
