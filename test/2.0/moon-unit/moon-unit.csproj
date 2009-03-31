@@ -394,10 +394,6 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="BasicCanvas.xaml">
-      <SubType>Page</SubType>
-      <Generator>MSBuild:MarkupCompilePass1</Generator>
-    </Page>
     <Resource Include="misc\Events\Event_ExactCaseMismatch.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
