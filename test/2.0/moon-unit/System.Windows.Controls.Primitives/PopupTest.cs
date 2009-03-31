@@ -16,8 +16,8 @@ using System.Threading;
 
 namespace MoonTest.System.Windows.Controls.Primitives
 {
-    [TestClass]
-	public class ___PopupTest : Microsoft.Silverlight.Testing.SilverlightTest
+//    [TestClass]
+	public class PopupTest : Microsoft.Silverlight.Testing.SilverlightTest
     {
         [TestMethod]
         public void Defaults()
