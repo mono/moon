@@ -1,3 +1,8 @@
+2009-04-01  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* plugin-class.cpp: use Uri::ToString instead of originalstring.
+	BitmapImage::GetUriSource never returns a NULL
+
 2009-04-01  Andreia Gaita  <avidigal@novell.com>
 
         * plugin-class.[cpp|h]: move some declarations to the header
