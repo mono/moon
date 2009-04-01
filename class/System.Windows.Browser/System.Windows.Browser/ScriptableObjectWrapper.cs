@@ -112,6 +112,11 @@ namespace System.Windows.Browser
 			ScriptableNativeMethods.register (WebApplication.Current.PluginHandle, scriptKey, moon_handle);
 		}
 
+		public static IntPtr MoonToNPObj (IntPtr ptr)
+		{
+			return ScriptableNativeMethods.moonlight_object_to_npobject (ptr);
+		}
+
 		public void AddProperty (PropertyInfo pi)
 		{
 			TypeCode tc = Type.GetTypeCode (pi.PropertyType);
@@ -439,8 +444,12 @@ namespace System.Windows.Browser
 
 		public override void SetProperty (string name, object value)
 		{
-			PropertyInfo pi = properties[name];
-			pi.SetValue (this.ManagedObject, value, BindingFlags.SetProperty, new JSFriendlyMethodBinder (), null, CultureInfo.InvariantCulture);
+			if (ManagedObject != null) {
+				PropertyInfo pi = properties[name];
+				pi.SetValue (ManagedObject, value, BindingFlags.SetProperty, new JSFriendlyMethodBinder (), null, CultureInfo.InvariantCulture);
+			} else {
+				base.SetProperty (name, value);
+			}
 		}
 
 		static void SetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, ref Value value)
@@ -464,8 +473,12 @@ namespace System.Windows.Browser
 
 		public override object GetProperty (string name)
 		{
-			PropertyInfo pi = properties[name];
-			return pi.GetValue (this.ManagedObject, null);
+			if (ManagedObject != null) {
+				PropertyInfo pi = properties[name];
+				return pi.GetValue (ManagedObject, null);
+			} else {
+				return base.GetProperty (name);
+			}
 		}
 
 		static void GetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, ref Value value)

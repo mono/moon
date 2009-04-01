@@ -5,7 +5,6 @@
 #include "plugin.h"
 
 #include "ff3-bridge.h"
-#include "plugin-class.h"
 
 #include <nsCOMPtr.h>
 #include <nsIDOMElement.h>
@@ -31,6 +30,9 @@
 #define d(x)
 #endif
 
+// debug scriptable object
+#define ds(x)
+
 #define STR_FROM_VARIANT(v) ((char *) NPVARIANT_TO_STRING (v).utf8characters)
 
 class FF3DomEventWrapper : public nsIDOMEventListener {
@@ -49,6 +51,17 @@ class FF3DomEventWrapper : public nsIDOMEventListener {
 	callback_dom_event *callback;
 	nsCOMPtr<nsIDOMEventTarget> target;
 	gpointer context;
+	NPP npp;
+};
+
+struct FF3DomEvent : MoonlightObject {
+	FF3DomEvent (NPP instance) : MoonlightObject (instance) { }
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+
+	nsIDOMEvent * event;
 };
 
 NS_IMPL_ISUPPORTS1(FF3DomEventWrapper, nsIDOMEventListener)
@@ -67,6 +80,12 @@ FF3DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 
 	client_x = client_y = offset_x = offset_y = mouse_button = 0;
 	alt_key = ctrl_key = shift_key = FALSE;
+
+	FF3DomEvent *obj = (FF3DomEvent *)
+		NPN_CreateObject (npp,
+				  FF3DomEventClass);
+
+	obj->event = aDOMEvent;
 
 	nsCOMPtr<nsIDOMMouseEvent> mouse_event = do_QueryInterface (aDOMEvent);
 	if (mouse_event != nsnull) {
@@ -109,7 +128,7 @@ FF3DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 	}
 
 	callback (context, strdup (NS_ConvertUTF16toUTF8 (str_event).get ()), client_x, client_y, offset_x, offset_y,
-			alt_key, ctrl_key, shift_key, mouse_button, key_code, char_code);
+			alt_key, ctrl_key, shift_key, mouse_button, key_code, char_code, obj);
 
 	return NS_OK;
 }
@@ -132,6 +151,11 @@ ff3_get_dom_document (NPP npp)
 	}
 
 	return dom_document;
+}
+
+FF3BrowserBridge::FF3BrowserBridge ()
+{
+	FF3DomEventClass = new FF3DomEventType ();
 }
 
 const char*
@@ -238,6 +262,7 @@ FF3BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 	wrapper->callback = cb;
 	wrapper->target = target;
 	wrapper->context = context;
+	wrapper->npp = npp;
 
 	rv = target->AddEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
 
@@ -252,4 +277,73 @@ FF3BrowserBridge::HtmlObjectDetachEvent (NPP instance, const char *name, gpointe
 	wrapper->target->RemoveEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
 	wrapper->callback = NULL;
 	delete wrapper;
+}
+
+static NPObject *
+dom_event_allocate (NPP instance, NPClass *klass)
+{
+	return new FF3DomEvent (instance);
+}
+
+
+FF3DomEventType::FF3DomEventType ()
+{
+	allocate = dom_event_allocate;
+	AddMapping (dom_event_mapping, G_N_ELEMENTS (dom_event_mapping));
+}
+
+FF3DomEventType *FF3DomEventClass;
+
+
+bool
+FF3DomEvent::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	NULL_TO_NPVARIANT (*result);
+
+#if ds(!)0
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	printf ("getting event property %s\n", strname);
+	NPN_MemFree (strname);
+#endif
+
+	switch (id) {
+		case MoonId_Detail: {
+			nsCOMPtr<nsIDOMUIEvent> uievent = do_QueryInterface (event);
+			if (uievent) {
+				int detail;
+				uievent->GetDetail (&detail);
+				INT32_TO_NPVARIANT (detail, *result);
+			}
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool
+FF3DomEvent::Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result)
+{
+	NULL_TO_NPVARIANT (*result);
+	ds(printf("FF3DomEvent::Invoke\n"));
+	switch (id) {
+		case MoonId_StopPropagation: {
+			if (event) {
+				ds(printf("FF3DomEvent::StopPropagation\n"));
+				event->StopPropagation ();
+			}
+			return true;
+		}
+		case MoonId_PreventDefault: {
+			if (event) {
+				ds(printf("FF3DomEvent::PreventDefault\n"));
+				event->PreventDefault ();
+			}
+			return true;
+		}
+		default: {
+			return MoonlightObject::Invoke (id, name, args, argCount, result);
+		}
+	}
 }

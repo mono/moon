@@ -1,3 +1,9 @@
+2009-04-01  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser.manual: 
+	Add EventInfo type and HtmlEventArgs.cctor to the list to fix the
+	DomEvent callback works
+
 2008-03-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.ServiceModel.manual: Add entries to allow reflection usage in

@@ -43,19 +43,24 @@ namespace System.Windows.Browser {
 			public string event_name;
 			public static NativeMethods.DomEventCallback callback = new NativeMethods.DomEventCallback (DomEventHandler);
 
-			static void DomEventHandler (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, bool alt_key, bool ctrl_key, bool shift_key, int mouse_button, int key_code, int char_code)
+			static void DomEventHandler (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, 
+				                             bool alt_key, bool ctrl_key, bool shift_key, int mouse_button, 
+				                             int key_code, int char_code,
+				                             IntPtr domEvent)
 			{
 				try {
 					GCHandle handle = Helper.GCHandleFromIntPtr (context);
 					EventInfo info = (EventInfo) handle.Target;
-					
 					if (info.handler != null) {
 						info.handler (info.obj, EventArgs.Empty);
 					} else if (info.handler_args != null) {
-						info.handler_args (info.obj, new HtmlEventArgs (info.obj, client_x, client_y, offset_x, offset_y, alt_key, ctrl_key, shift_key, (MouseButtons) mouse_button, key_code, char_code, name));
+						info.handler_args (info.obj, new HtmlEventArgs (info.obj, client_x, client_y, offset_x, offset_y, 
+						                                                alt_key, ctrl_key, shift_key, (MouseButtons) mouse_button, 
+						                                                key_code, char_code, name, domEvent));
 					}
 				} catch (Exception ex) {
-					Console.WriteLine ("Unhandled exception un HtmlObject.EventInfo.DomEventHandler callback: {0}", ex.Message);
+					Console.WriteLine ("Unhandled exception in HtmlObject.EventInfo.DomEventHandler callback: {0}", ex.Message);
+					//Console.WriteLine (ex);
 				}
 			}
 
@@ -86,7 +91,9 @@ namespace System.Windows.Browser {
 				info.obj = obj;
 				info.handle = GCHandle.Alloc (info);
 				info.event_name = eventName;
-				info.wrapper = NativeMethods.html_object_attach_event (WebApplication.Current.PluginHandle, obj.Handle, info.EventNameMozilla, callback, Helper.GCHandleToIntPtr (info.handle));
+				info.wrapper = NativeMethods.html_object_attach_event (WebApplication.Current.PluginHandle, 
+				                                                       obj.Handle, info.EventNameMozilla, 
+				                                                       callback, Helper.GCHandleToIntPtr (info.handle));
 
 				if (info.wrapper == IntPtr.Zero) {
 					info.handle.Free ();

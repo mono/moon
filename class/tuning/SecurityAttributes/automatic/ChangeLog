@@ -1,3 +1,7 @@
+2009-04-01  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser.auto.ssc: regen
+
 2009-03-31  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Browser.auto.ssc: Adjust signature for

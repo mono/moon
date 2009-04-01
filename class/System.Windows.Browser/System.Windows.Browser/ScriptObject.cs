@@ -124,18 +124,6 @@ namespace System.Windows.Browser {
 			throw new System.NotImplementedException ();
 		}
 
-		internal void InvokeMethod (string name, params object [] args)
-		{
-			throw new System.NotImplementedException ();
-			//WebApplication.InvokeMethod (handle, name, args);
-		}
-
-		internal T InvokeMethod<T> (string name, params object [] args)
-		{
-			throw new System.NotImplementedException ();
-			//return WebApplication.InvokeMethod<T> (handle, name, args);
-		}
-
 		[EditorBrowsable (EditorBrowsableState.Never)]
 		public bool CheckAccess ()
 		{

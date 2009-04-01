@@ -1,3 +1,9 @@
+2009-04-01  Andreia Gaita  <avidigal@novell.com>
+
+	* ff3-bridge.h, ff3-dom.cpp: Wrap nsIDOM events as npobj and
+	include them in the callback so that they can be referenced later
+	from managed
+
 2009-03-31  Jb Evain  <jbevain@novell.com>
 
 	* ff3-dom.cpp (HandleEvent): handle key events.

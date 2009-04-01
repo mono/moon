@@ -1,3 +1,12 @@
+2009-04-01  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs, HtmlObject.cs, HtmlEventArgs.cs: 
+	Include the native DOM object (wrapped as a npobj) in the DomEvent 
+	callback handler and store it so it can called later by user code.
+	Implement StopPropagation, PreventDefault and EventObject.
+
+        * ScriptObject.cs: Remove unused code      
+
 2009-03-31  Jb Evain  <jbevain@novell.com>
 
 	* HtmlObject.cs: adjust to the change in DomEventCallback where

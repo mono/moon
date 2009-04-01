@@ -274,7 +274,8 @@ namespace Mono {
 			[MarshalAs (UnmanagedType.Bool)] bool shift_key, 
 			int /* System.Windows.Browser.MouseButtons */ mouse_button,
 			int key_code,
-			int char_code);
+			int char_code,
+			IntPtr domEvent);
 
 		[DllImport ("moonplugin")]
 		public static extern bool html_object_has_property (IntPtr plugin, IntPtr obj, string name);

@@ -10,3 +10,7 @@
 # this will indirectly create delegates that are not accessible from a transparent caller
 +SSC-M: System.Object System.Windows.Browser.ScriptableObjectWrapper::GetProperty(System.String)
 
++SSC-T: System.Windows.Browser.HtmlObject/EventInfo
+
++SSC-M: System.Void System.Windows.Browser.HtmlEventArgs::.cctor()
+

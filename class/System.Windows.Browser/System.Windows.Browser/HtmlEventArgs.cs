@@ -37,13 +37,14 @@ namespace System.Windows.Browser
 		MouseButtons mouse_button;
 		int key_code, char_code;
 		string event_type;
+		ScriptObject dom_event;
 
 		internal HtmlEventArgs (HtmlObject source,
 				      int clientX, int clientY,
 				      int offsetX, int offsetY,
 				      bool altKey, bool ctrlKey, bool shiftKey,
 				      MouseButtons mouseButton, int keyCode, int charCode,
-				      string eventType)
+				      string eventType, IntPtr domEvent)
 		{
 			source_element = source;
 			client_x = clientX;
@@ -61,16 +62,18 @@ namespace System.Windows.Browser
 			char_code = charCode;
 
 			event_type = eventType;
+			IntPtr handle = ScriptableObjectWrapper.MoonToNPObj (domEvent);
+			dom_event = new ScriptObject (handle);
 		}
 
 		public void PreventDefault ()
 		{
-			throw new NotImplementedException ();
+			dom_event.Invoke ("preventDefault");
 		}
 		
 		public void StopPropagation ()
 		{
-			throw new NotImplementedException ();
+			dom_event.Invoke ("stopPropagation");
 		}
 		
 		public HtmlObject Source {
@@ -90,11 +93,11 @@ namespace System.Windows.Browser
 		}
 
 		public int ScreenX {
-			get { throw new NotImplementedException (); }
+			get { return 0; }
 		}
 
 		public int ScreenY {
-			get { throw new NotImplementedException (); }
+			get { return 0; }
 		}
 		
 		public int OffsetX {
@@ -130,7 +133,7 @@ namespace System.Windows.Browser
 		}
 		
 		public ScriptObject EventObject {
-			get { throw new NotImplementedException (); }
+			get { return dom_event; }
 		}
 	}
 }
