@@ -168,7 +168,7 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 		Application *current = Application::GetCurrent ();
 
-		if (uri == NULL) {
+		if (uri == NULL || uri->operator== (* (Deployment::GetCurrent ()->GetTypes ()->GetProperty (BitmapImage::UriSourceProperty)->GetDefaultValue ()->AsUri ()))) {
 			SetBitmapData (NULL);
 			return;
 		}
