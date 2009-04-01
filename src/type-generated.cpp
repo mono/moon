@@ -30,7 +30,6 @@
 #include "downloader.h"
 #include "error.h"
 #include "eventargs.h"
-#include "expression.h"
 #include "frameworkelement.h"
 #include "geometry.h"
 #include "glyphs.h"
@@ -265,7 +264,6 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::EVENTOBJECT] = new Type (Type::EVENTOBJECT, Type::OBJECT, false, "EventObject", "EVENTOBJECT", 1, 1, EventObject_Events, NULL, NULL);
 	types [(int) Type::EVENTTRIGGER] = new Type (Type::EVENTTRIGGER, Type::TRIGGERBASE, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions");
 	types [(int) Type::EXCEPTIONROUTEDEVENTARGS] = new Type (Type::EXCEPTIONROUTEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "ExceptionRoutedEventArgs", "EXCEPTIONROUTEDEVENTARGS", 0, 1, NULL, NULL, NULL);
-	types [(int) Type::EXPRESSION] = new Type (Type::EXPRESSION, Type::EVENTOBJECT, false, "Expression", "EXPRESSION", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::EXTERNALDEMUXER] = new Type (Type::EXTERNALDEMUXER, Type::IMEDIADEMUXER, false, "ExternalDemuxer", "EXTERNALDEMUXER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::FFMPEGDECODER] = new Type (Type::FFMPEGDECODER, Type::IMEDIADECODER, false, "FfmpegDecoder", "FFMPEGDECODER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::FFMPEGDEMUXER] = new Type (Type::FFMPEGDEMUXER, Type::IMEDIADEMUXER, false, "FfmpegDemuxer", "FFMPEGDEMUXER", 0, 1, NULL, NULL, NULL);

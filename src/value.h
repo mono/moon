@@ -114,7 +114,6 @@ class EventListenerProxy;
 class EventObject;
 class EventTrigger;
 class ExceptionRoutedEventArgs;
-class Expression;
 class ExternalDemuxer;
 class FfmpegDecoder;
 class FfmpegDemuxer;
@@ -436,7 +435,6 @@ public:
 	EventObject*                   AsEventObject () { checked_get_subclass (Type::EVENTOBJECT, EventObject) }
 	EventTrigger*                  AsEventTrigger () { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
 	ExceptionRoutedEventArgs*      AsExceptionRoutedEventArgs () { checked_get_subclass (Type::EXCEPTIONROUTEDEVENTARGS, ExceptionRoutedEventArgs) }
-	Expression*                    AsExpression () { checked_get_subclass (Type::EXPRESSION, Expression) }
 	ExternalDemuxer*               AsExternalDemuxer () { checked_get_subclass (Type::EXTERNALDEMUXER, ExternalDemuxer) }
 	FfmpegDecoder*                 AsFfmpegDecoder () { checked_get_subclass (Type::FFMPEGDECODER, FfmpegDecoder) }
 	FfmpegDemuxer*                 AsFfmpegDemuxer () { checked_get_subclass (Type::FFMPEGDEMUXER, FfmpegDemuxer) }

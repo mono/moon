@@ -36,7 +36,6 @@ libmoon_include_headers = 	\
 	enums.h			\
 	error.h			\
 	eventargs.h		\
-	expression.h		\
 	file-downloader.h	\
 	font.h			\
 	fontfamily.h		\
@@ -141,7 +140,6 @@ libmoon_la_SOURCES = 		\
 	enums.cpp		\
 	error.cpp		\
 	eventargs.cpp		\
-	expression.cpp		\
 	file-downloader.cpp	\
 	font.cpp		\
 	frameworkelement.cpp	\
