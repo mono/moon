@@ -570,6 +570,11 @@ ImageBrush::SetSource (Downloader *downloader, const char *PartName)
 {
 	BitmapImage *source = (BitmapImage *) GetImageSource ();
 
+	if (source == NULL) {
+		source = new BitmapImage ();
+		SetImageSource (source);
+	}
+
 	source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 	source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 	source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
