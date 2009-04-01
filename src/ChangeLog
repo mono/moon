@@ -1,3 +1,10 @@
+2009-04-01  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* mediaelement.cpp:
+	* bitmapimage.cpp:
+	* deepzoomimagetilesource.cpp: g_free the memory allocated by
+	uri->ToString()
+
 2009-04-01  Chris Toshok  <toshok@ximian.com>
 
 	* window-gtk.cpp (MoonWindowGtk::button_press): reinstate
