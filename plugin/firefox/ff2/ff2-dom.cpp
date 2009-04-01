@@ -111,7 +111,7 @@ FF2DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 	}
 
 	callback (context, strdup (NS_ConvertUTF16toUTF8 (str_event).get ()), client_x, client_y, offset_x, offset_y,
-			alt_key, ctrl_key, shift_key, mouse_button, key_code, char_code);
+			alt_key, ctrl_key, shift_key, mouse_button, key_code, char_code, NULL);
 
 	return NS_OK;
 }
