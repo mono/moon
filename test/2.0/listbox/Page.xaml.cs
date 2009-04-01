@@ -33,11 +33,11 @@ namespace listbox
 #if DESKTOP
 			MouseWheel += delegate (object sender, MouseWheelEventArgs args) {
 
-				if (args.Delta < 0) {
+				if (args.Delta > 0) {
 					scale.ScaleX /= 1.1;
 					scale.ScaleY /= 1.1;
 				}
-				else if (args.Delta > 0) {
+				else if (args.Delta < 0) {
 					scale.ScaleX *= 1.1;
 					scale.ScaleY *= 1.1;
 				}
