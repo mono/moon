@@ -1,3 +1,9 @@
+2009-04-01  Chris Toshok  <toshok@ximian.com>
+
+	* eventargs.cpp (MouseWheelEventArgs::GetWheelDelta): flip the
+	sign here so we have the same behavior that lutz's demo expects
+	from windows.
+
 2009-04-01  Geoff Norton  <gnorton@novell.com>
 
 	* uri.cpp|h: Add IsNullOrEmpty

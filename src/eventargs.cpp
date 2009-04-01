@@ -333,9 +333,9 @@ MouseWheelEventArgs::GetWheelDelta ()
 	/* we only handle UP/DOWN scroll events for the time being */
 	switch (((GdkEventScroll*)event)->direction) {
 	case GDK_SCROLL_UP:
-		return -MOON_SCROLL_WHEEL_DELTA;
-	case GDK_SCROLL_DOWN:
 		return MOON_SCROLL_WHEEL_DELTA;
+	case GDK_SCROLL_DOWN:
+		return -MOON_SCROLL_WHEEL_DELTA;
 
 	default:
 	case GDK_SCROLL_LEFT:
