@@ -1,3 +1,7 @@
+2009-04-01  Geoff Norton  <gnorton@novell.com>
+
+	* mopen.cs: Support mopen directly from a uri.
+
 2009-03-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mopen1.cpp (LoadXaml): Fixed call to Surface ctor (no longer

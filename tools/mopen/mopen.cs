@@ -55,6 +55,7 @@ using System.Collections;
 using Mono;
 using System.Reflection;
 using System.Xml;
+using System.Net;
 using Application = Gtk.Application;
 using NDesk.Options;
 
@@ -453,6 +454,26 @@ class MonoOpen {
 
 			if (File.Exists (combine))
 				return DoLoad (combine, cmdargs);
+		}
+		
+		Uri uri = new Uri (file, UriKind.RelativeOrAbsolute);
+
+		if (uri.IsAbsoluteUri) {
+			WebClient client = new WebClient ();
+			string extension = file.Substring (file.LastIndexOf ("."));
+			string tmpfile = System.IO.Path.Combine (System.IO.Path.GetTempPath (), string.Format ("{0}{1}", Guid.NewGuid ().ToString (), extension));
+			int ret = 0;
+
+			try {
+				client.DownloadFile (uri, tmpfile);
+				ret = DoLoad (tmpfile, cmdargs);
+			} catch {
+				ret = 1;
+			} finally {
+				File.Delete (tmpfile);
+			}
+
+			return ret;
 		}
 		
 		Console.Error.WriteLine ("mopen: Nothing to do");
