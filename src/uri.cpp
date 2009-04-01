@@ -590,6 +590,18 @@ Uri::Equals (const Uri *left, const Uri *right)
 	return left->operator==(*right);
 }
 
+bool
+Uri::IsNullOrEmpty (const Uri *uri)
+{
+	if (!uri || (uri->scheme == NULL && uri->user == NULL && uri->auth == NULL &&
+	    uri->passwd == NULL && uri->host == NULL && uri->port == 0 && uri->path == NULL
+	    && uri->params == NULL && uri->query == NULL && uri->fragment == NULL && 
+	    strcmp (uri->originalString, "") == 0 && !uri->isAbsolute))
+		return true;
+
+	return false;
+}
+
 guint
 Uri::GetHashCode ()
 {

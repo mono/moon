@@ -175,7 +175,7 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			downloader = NULL;
 		}
 
-		if (uri == NULL || uri->operator== (* (Deployment::GetCurrent ()->GetTypes ()->GetProperty (BitmapImage::UriSourceProperty)->GetDefaultValue ()->AsUri ()))) {
+		if (Uri::IsNullOrEmpty (uri)) {
 			SetBitmapData (NULL);
 			return;
 		}

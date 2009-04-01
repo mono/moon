@@ -46,6 +46,7 @@ public:
 
 	/* @GenerateCBinding */
 	static bool Equals (const Uri *left, const Uri *right);
+	static bool IsNullOrEmpty (const Uri *uri);
 
 	/* @GenerateCBinding */
 	guint GetHashCode ();

@@ -1,5 +1,10 @@
 2009-04-01  Geoff Norton  <gnorton@novell.com>
 
+	* uri.cpp|h: Add IsNullOrEmpty
+	* bitmapimage.cpp: Clean up this call to use Uri::IsNullOrEmpty
+
+2009-04-01  Geoff Norton  <gnorton@novell.com>
+
 	* bitmapimage.cpp: Ensure we deregister the events too.
 
 2009-04-01  Geoff Norton  <gnorton@novell.com>
