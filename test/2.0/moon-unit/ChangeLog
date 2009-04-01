@@ -1,3 +1,10 @@
+2009-03-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Include System.Windows.Controls.dll (which is not 
+	part of the base SL2, but the SDK) into the XAP file. This makes
+	the XAP file usable by SL2 (and future ML2) because the SWC.dll
+	can not be loaded otherwise (out of XAP or SL2 supplied assemblies)
+
 2009-03-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	* System.Windows.Controls/TextBlockTest.cs: Fixed to pass on Windows.

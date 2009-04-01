@@ -74,13 +74,16 @@ SOURCES= \
 	$(wildcard $(srcdir)/*/*/*.cs) 
 
 REFERENCES = \
-	-r:System.Windows.Controls \
+	-r:$(builddir)/System.Windows.Controls.dll \
 	-r:$(builddir)/Microsoft.Silverlight.Testing.dll \
 	-r:$(builddir)/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
 	-r:$(builddir)/Mono.Moonlight.UnitTesting.dll
 
-moon-unit.xap: $(builddir)/moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll Mono.Moonlight.UnitTesting.dll
+moon-unit.xap: $(builddir)/moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll Mono.Moonlight.UnitTesting.dll System.Windows.Controls.dll
 	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --generate-html- --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(builddir)/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) $(REFERENCES)  $(srcdir)/ $(XAML_RESOURCES)
+
+System.Windows.Controls.dll : ../Microsoft.SilverlightControls/System.Windows.Controls.dll
+	cp ../Microsoft.SilverlightControls/System.Windows.Controls.dll* .
 
 Microsoft.Silverlight.Testing.dll: ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll
 	cp ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll* .
