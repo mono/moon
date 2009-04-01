@@ -36,20 +36,18 @@ namespace MoonTest.System.Windows.Browser {
 	[TestClass]	
 	public class ScriptObjectTest {
 
-		public class Foo {
-			public string Name { get; set; }
-		}
-
 		[TestMethod]
-		[Ignore]
-		public void SetPropertyManagedObject ()
+		[MoonlightBug]
+		public void SetInnerHTML ()
 		{
 			var element = HtmlPage.Document.CreateElement ("div");
-			var foo = new Foo { Name = "bar" };
 
-			element.SetProperty ("foo", foo);
+			element.SetProperty ("innerHTML", typeof (object));
 
-			Assert.AreEqual (foo, element.GetProperty ("foo"));
+			var result = element.GetProperty ("innerHTML");
+			Assert.IsNotNull (result);
+			Assert.IsInstanceOfType (result, typeof (string));
+			Assert.AreEqual ("System.Object", result);
 		}
 	}
 }
