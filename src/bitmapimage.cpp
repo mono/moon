@@ -169,6 +169,7 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		Application *current = Application::GetCurrent ();
 
 		if (downloader) {
+			CleanupDownloader ();
 			downloader->Abort ();
 			downloader->unref ();
 			downloader = NULL;
