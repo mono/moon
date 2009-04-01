@@ -38,9 +38,12 @@ namespace System.Windows.Input {
 		}
 
 		public int Delta {
-			get { 
-				throw new NotImplementedException ();
-			}
+			get { return NativeMethods.mouse_wheel_event_args_get_wheel_delta (native); }
+		}
+
+		public bool Handled {
+			get { return NativeMethods.routed_event_args_get_handled (native); }
+			set { NativeMethods.routed_event_args_set_handled (native, value); }
 		}
 	}
 }

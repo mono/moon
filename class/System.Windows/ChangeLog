@@ -1,3 +1,7 @@
+2009-04-01  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (GMCS): add -d:NET_3_0 for desktop code.
+
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (system_windows_sources): add

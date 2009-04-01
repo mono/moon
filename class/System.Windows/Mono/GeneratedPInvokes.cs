@@ -995,6 +995,14 @@ namespace Mono {
 		public extern static IntPtr mouse_event_args_new ();
 
 		[DllImport ("moon")]
+		// int mouse_wheel_event_args_get_wheel_delta (MouseWheelEventArgs *instance);
+		public extern static int mouse_wheel_event_args_get_wheel_delta (IntPtr instance);
+
+		[DllImport ("moon")]
+		// MouseWheelEventArgs *mouse_wheel_event_args_new ();
+		public extern static IntPtr mouse_wheel_event_args_new ();
+
+		[DllImport ("moon")]
 		// Point multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point elementPoint);
 		public extern static Point multi_scale_image_element_to_logical_point (IntPtr instance, Point elementPoint);
 

@@ -1,3 +1,8 @@
+2009-04-01  Chris Toshok  <toshok@ximian.com>
+
+	* MouseWheelEventArgs.cs: implement Delta property, and add a
+	Handled property.
+
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
 	* MouseWheelEventArgs.cs, MouseWheelEventHandler.cs: add NET_3_0
