@@ -33,8 +33,6 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.DURATION));
 				t = typeof (System.Windows.EventTrigger); 
 				types.Add (t, new ManagedType (t, Kind.EVENTTRIGGER));
-				t = typeof (System.Windows.Expression); 
-				types.Add (t, new ManagedType (t, Kind.EXPRESSION));
 				t = typeof (System.Windows.FrameworkElement); 
 				types.Add (t, new ManagedType (t, Kind.FRAMEWORKELEMENT));
 				t = typeof (System.Windows.FrameworkTemplate); 
