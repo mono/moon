@@ -1,3 +1,8 @@
+2009-04-01  Geoff Norton  <gnorton@novell.com>
+
+	* brush.cpp: ImageSource is a nullable property so we need to new
+	one up here if we dont have one already.
+
 2009-04-01  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.h|.cpp: reuse BitmapImage for tile downloading
