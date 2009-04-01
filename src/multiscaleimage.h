@@ -24,13 +24,10 @@
 #include "animation.h"
 
 void multi_scale_image_handle_parsed (void *userdata);
-
-struct DownloaderContext;
+struct BitmapImageContext;
 
 /* @Namespace=System.Windows.Controls,ManagedDependencyProperties=Manual */
 class MultiScaleImage : public MediaBase {
-	void DownloadersAbort ();
-	void DownloadUri (DownloaderContext *ctx, Uri* url);
 	GHashTable *cache;
 	bool cache_contains (Uri* filename, bool check_empty_tile);
 	MultiScaleTileSource *source;
@@ -40,14 +37,13 @@ class MultiScaleImage : public MediaBase {
 	cairo_user_data_key_t height_key;
 	cairo_user_data_key_t full_opacity_at_key;
 
-	void DownloaderComplete (DownloaderContext *ctx);
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
-	void DownloaderFailed (DownloaderContext *ctx);
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
-	GList *downloaders;
-	DownloaderContext *GetFreeDownloader ();
-	DownloaderContext *GetDownloaderContext (Downloader *downloader);
+	GList *bitmapimages;
+	BitmapImageContext *GetFreeBitmapImageContext ();
+	void DownloadTile (BitmapImageContext *ctx, Uri *tile);
+	BitmapImageContext *GetBitmapImageContext (BitmapImage *bitmapimage);
 
 	void RenderSingle (cairo_t *cr, Region *region);
 	void RenderCollection (cairo_t *cr, Region *region);
@@ -65,6 +61,8 @@ class MultiScaleImage : public MediaBase {
  public:
 	void EmitImageOpenSucceeded ();
 	void EmitMotionFinished ();
+	void TileOpened (BitmapImage *bitmapImage);
+	void TileFailed (BitmapImage *bitmapImage);
 
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
 	const static int AspectRatioProperty;
