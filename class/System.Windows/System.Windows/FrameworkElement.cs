@@ -190,11 +190,7 @@ namespace System.Windows {
 			if (binding == null)
 				throw new ArgumentNullException ("binding");
 
-			BindingExpression e = new BindingExpression {
-				Binding = binding,
-				Target = this,
-				Property = dp
-			};
+			BindingExpression e = new BindingExpression (binding, this, dp);
 			binding.Seal ();
 			SetValue (dp, e);
 			return e;
@@ -335,13 +331,23 @@ namespace System.Windows {
 
 		internal override void ClearValueImpl (DependencyProperty dp)
 		{
-			if (expressions.ContainsKey (dp)) {
-				expressions.Remove (dp);
-				// XXX detach template bindings here
-			}
+			RemoveExpression (dp);
 			base.ClearValueImpl (dp);
 		}
 
+		void RemoveExpression (DependencyProperty dp)
+		{
+			Expression e;
+			if (expressions.TryGetValue (dp, out e)) {
+				expressions.Remove (dp);
+				
+				BindingExpressionBase be = e as BindingExpressionBase;
+				if (be != null)
+					be.Dispose ();
+				// XXX detach template bindings here
+			}
+		}
+		
 		internal override void SetValueImpl (DependencyProperty dp, object value)
 		{
 			Expression existing;
@@ -351,7 +357,7 @@ namespace System.Windows {
 			
 			if (expression != null) {
 				if (existing != null)
-					expressions.Remove (dp);
+					RemoveExpression (dp);
 				expressions.Add (dp, expression);
 
 				value = expression.GetValue (dp);
@@ -362,13 +368,11 @@ namespace System.Windows {
 					if (beb.Binding.Mode == BindingMode.TwoWay)
 						beb.SetValue (value);
 					else if (!(beb.Updating && beb.Binding.Mode == BindingMode.OneWay)) {
-						expressions.Remove (dp);
+						RemoveExpression (dp);
 					}
 				}
 				else {
-					expressions.Remove (dp);
-
-					// XXX detach template binding here
+					RemoveExpression (dp);
 				}
 			}
 

@@ -1,3 +1,11 @@
+2009-04-01  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: TextBox only updates a two way binding
+	  when it loses focus, so we need to hook into the LostFocus
+	  event. Add an internal BindingExpressionBase.Dispose method
+	  so that we can ensure we detach from this event when the
+	  binding is removed.
+
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
 	* UIElement.cs: track change of MouseButton -> MouseLeftButton,

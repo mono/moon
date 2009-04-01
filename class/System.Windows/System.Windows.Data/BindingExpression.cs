@@ -36,7 +36,8 @@ namespace System.Windows.Data
 //		GetValueCallback gv_callback;
 //		SetValueCallback sv_callback;
 		
-		public BindingExpression()
+		public BindingExpression(Binding binding, FrameworkElement target, DependencyProperty property)
+			: base (binding, target, property)
 //			: this (NativeMethods.binding_expression_new ())
 		{
 //			gv_callback = new GetValueCallback (GetValueOverride);

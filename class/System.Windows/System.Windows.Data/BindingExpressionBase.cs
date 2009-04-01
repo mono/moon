@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using System.Collections.Generic;
+using System.Windows.Controls;
 
 using Mono;
 
@@ -48,11 +49,15 @@ namespace System.Windows.Data {
 		bool updating;
 		
 		internal Binding Binding {
+			get; private set;
+		}
+		
+		UnmanagedEventHandler LostFocusHandler {
 			get; set;
 		}
 
 		internal FrameworkElement Target {
-			get; set;
+			get; private set;
 		}
 		
 		internal bool Updating {
@@ -60,7 +65,7 @@ namespace System.Windows.Data {
 		}
 		
 		internal DependencyProperty Property {
-			get; set;
+			get; private set;
 		}
 
 		// This is the object we're databound to
@@ -102,11 +107,26 @@ namespace System.Windows.Data {
 		}
 
 		
-		internal BindingExpressionBase ()
+		internal BindingExpressionBase (Binding binding, FrameworkElement target, DependencyProperty property)
 		{
-			
+			Binding = binding;
+			Target = target;
+			Property = property;
+
+			if (target is TextBox && Property == TextBox.TextProperty && binding.Mode == BindingMode.TwoWay) {
+				LostFocusHandler = TextBoxLostFocus;
+				Events.AddHandler (target, "LostFocus", LostFocusHandler);
+			}
 		}
 
+		internal void Dispose ()
+		{
+			if (LostFocusHandler != null) {
+				Events.RemoveHandler (Target, "LostFocus", LostFocusHandler);
+				LostFocusHandler = null;
+			}
+		}
+		
 		PropertyInfo GetPropertyInfo ()
 		{
 			object source = DataSource;
@@ -259,6 +279,12 @@ namespace System.Windows.Data {
 			}
 			
 			return value;
+		}
+
+		void TextBoxLostFocus (IntPtr sender, IntPtr calldata, IntPtr closure)
+		{
+			string text = ((TextBox)Target).Text;
+			SetValue (text);
 		}
 	}
 }
