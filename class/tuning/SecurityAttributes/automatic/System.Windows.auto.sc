@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 439 methods needs to be decorated.
+# 441 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -189,6 +189,9 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::keyboard_get_modifiers()
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::mouse_wheel_event_args_get_wheel_delta(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::multi_scale_tile_source_get_tile_height(System.IntPtr)
@@ -579,6 +582,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::mouse_event_args_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::mouse_wheel_event_args_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::multi_scale_image_new()
