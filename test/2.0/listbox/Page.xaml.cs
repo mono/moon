@@ -29,6 +29,20 @@ namespace listbox
 			stringCollection.Add ("string 0");
 
 			databoundItemsControl.ItemsSource = stringCollection;
+
+#if DESKTOP
+			MouseWheel += delegate (object sender, MouseWheelEventArgs args) {
+
+				if (args.Delta < 0) {
+					scale.ScaleX /= 1.1;
+					scale.ScaleY /= 1.1;
+				}
+				else if (args.Delta > 0) {
+					scale.ScaleX *= 1.1;
+					scale.ScaleY *= 1.1;
+				}
+			};
+#endif
 		}
 
 		public void button_Click (object sender, RoutedEventArgs e)
