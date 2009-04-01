@@ -15,6 +15,8 @@ CLEANFILES=	$(xapname).xap 		\
 		Microsoft.Silverlight.Testing.dll.mdb \
 		Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll \
 		Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll.mdb \
+		System.Windows.Controls.dll	\
+		System.Windows.Controls.dll.mdb	\
 		System.Xml.Linq.dll	\
 		System.Xml.Linq.dll.mdb	\
 		Mono.Moonlight.UnitTesting.dll	\
