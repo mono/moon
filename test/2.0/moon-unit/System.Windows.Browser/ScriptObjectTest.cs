@@ -41,7 +41,7 @@ namespace MoonTest.System.Windows.Browser {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[Ignore]
 		public void SetPropertyManagedObject ()
 		{
 			var element = HtmlPage.Document.CreateElement ("div");
