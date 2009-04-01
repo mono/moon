@@ -1588,9 +1588,12 @@ Surface::HandleUIFocusOut (GdkEventFocus *event)
 gboolean
 Surface::HandleUIButtonRelease (GdkEventButton *event)
 {
-	if (event->button != 1)
+	if (event->button != 1
+	    && ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0
+		|| event->button != 3)) {
 		return false;
-	
+	}
+
 	SetCanFullScreen (true);
 	
 	if (mouse_event)
@@ -1598,7 +1601,8 @@ Surface::HandleUIButtonRelease (GdkEventButton *event)
 	
 	mouse_event = gdk_event_copy ((GdkEvent *) event);
 
-	HandleMouseEvent (UIElement::MouseLeftButtonUpEvent, true, true, true, mouse_event);
+	HandleMouseEvent (event->button == 1 ? UIElement::MouseLeftButtonUpEvent : UIElement::MouseRightButtonUpEvent,
+			  true, true, true, mouse_event);
 
 	UpdateCursorFromInputList ();
 	SetCanFullScreen (false);
@@ -1615,8 +1619,11 @@ Surface::HandleUIButtonPress (GdkEventButton *event)
 {
 	active_window->GrabFocus ();
 	
-	if (event->button != 1)
+	if (event->button != 1
+	    && ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0
+		|| event->button != 3)) {
 		return false;
+	}
 
 	SetCanFullScreen (true);
 
@@ -1625,7 +1632,8 @@ Surface::HandleUIButtonPress (GdkEventButton *event)
 	
 	mouse_event = gdk_event_copy ((GdkEvent *) event);
 
-	bool handled = HandleMouseEvent (UIElement::MouseLeftButtonDownEvent, true, true, true, mouse_event);
+	bool handled = HandleMouseEvent (event->button == 1 ? UIElement::MouseLeftButtonDownEvent : UIElement::MouseRightButtonDownEvent,
+					 true, true, true, mouse_event);
 
 	UpdateCursorFromInputList ();
 	SetCanFullScreen (false);

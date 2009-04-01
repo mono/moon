@@ -1,5 +1,14 @@
 2009-04-01  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (Surface::HandleUIButtonRelease): if desktop
+	extensions are turned on, allow button 3 (right mouse).
+	(Surface::HandleUIButtonPress): same.
+
+	* window-gtk.cpp (MoonWindowGtk::button_release): don't suppress
+	non-button 1 presses here.
+
+2009-04-01  Chris Toshok  <toshok@ximian.com>
+
 	* eventargs.cpp (MouseWheelEventArgs::GetWheelDelta): flip the
 	sign here so we have the same behavior that lutz's demo expects
 	from windows.
