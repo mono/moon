@@ -4233,7 +4233,13 @@ xaml_is_valid_event_name (const char *name)
 		!strcmp (name, "MouseLeave") ||
 		!strcmp (name, "MouseLeftButtonDown") ||
 		!strcmp (name, "MouseLeftButtonUp") ||
-		!strcmp (name, "MouseMove"));
+		!strcmp (name, "MouseMove") ||
+
+		(((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) != 0)
+		 && (!strcmp (name, "MouseRightButtonDown") ||
+		     !strcmp (name, "MouseRightButtonUp") ||
+		     !strcmp (name, "MouseWheel")))
+		);
 }
 
 static void

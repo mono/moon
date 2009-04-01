@@ -182,6 +182,7 @@ class MemoryNestedSource;
 class MemoryQueueSource;
 class MemorySource;
 class MouseEventArgs;
+class MouseWheelEventArgs;
 class Mp3Demuxer;
 class MultiScaleImage;
 class MultiScaleSubImage;
@@ -503,6 +504,7 @@ public:
 	MemoryQueueSource*             AsMemoryQueueSource () { checked_get_subclass (Type::MEMORYQUEUESOURCE, MemoryQueueSource) }
 	MemorySource*                  AsMemorySource () { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
 	MouseEventArgs*                AsMouseEventArgs () { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
+	MouseWheelEventArgs*           AsMouseWheelEventArgs () { checked_get_subclass (Type::MOUSEWHEELEVENTARGS, MouseWheelEventArgs) }
 	Mp3Demuxer*                    AsMp3Demuxer () { checked_get_subclass (Type::MP3DEMUXER, Mp3Demuxer) }
 	MultiScaleImage*               AsMultiScaleImage () { checked_get_subclass (Type::MULTISCALEIMAGE, MultiScaleImage) }
 	MultiScaleSubImage*            AsMultiScaleSubImage () { checked_get_subclass (Type::MULTISCALESUBIMAGE, MultiScaleSubImage) }

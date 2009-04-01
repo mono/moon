@@ -965,6 +965,15 @@ StylusPointCollection *mouse_event_args_get_stylus_points (MouseEventArgs *insta
 MouseEventArgs *mouse_event_args_new (void);
 
 /**
+ * MouseWheelEventArgs
+ **/
+/* @GeneratePInvoke */
+int mouse_wheel_event_args_get_wheel_delta (MouseWheelEventArgs *instance);
+
+/* @GeneratePInvoke */
+MouseWheelEventArgs *mouse_wheel_event_args_new (void);
+
+/**
  * MultiScaleImage
  **/
 /* @GeneratePInvoke */

@@ -60,6 +60,7 @@ private:
 	static gboolean key_release (GtkWidget *widget, GdkEventKey *event, gpointer user_data);
 	static gboolean button_release (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 	static gboolean button_press (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
+	static gboolean scroll (GtkWidget *widget, GdkEventScroll *event, gpointer user_data);
 	static gboolean focus_in (GtkWidget *widget, GdkEventFocus *event, gpointer user_data);
 	static gboolean focus_out (GtkWidget *widget, GdkEventFocus *event, gpointer user_data);
 	static gboolean realized (GtkWidget *widget, gpointer user_data);

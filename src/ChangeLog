@@ -1,3 +1,26 @@
+2009-04-01  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h (class UIElement): add
+	MouseRightButton{Down,Up}Event and MouseWheelEvent.
+
+	* runtime.cpp|.h (RUNTIME_INIT_DESKTOP): enable desktop
+	extensions.
+	(Surface::HandleUIScroll): new method, emit a MouseWheelEvent.
+
+	* eventargs.cpp|.h (class MouseWheelEventArgs): new class.
+
+	* window-gtk.cpp|.h (MoonWindowGtk::scroll): new method for mouse
+	wheel action.
+	(MoonWindowGtk::EnableEvents): connect the scroll-event.
+	(MoonWindowGtk::InitializeCommon): if desktop extensions are
+	enabled, add GDK_SCROLL_MASK.
+
+	* xaml.cpp (xaml_is_valid_event_name): if we're running with
+	desktop extensions, expose the right button events and mouse
+	wheel.
+
+	* value.h, cbinding.h, cbinding.cpp, type-generated.cpp: regen.
+
 2009-03-31  Jeffrey Stedfast  <fejj@novell.com>
 
 	* enums.h: Well what do ya know... TextWrapping enum wasn't the

@@ -224,4 +224,23 @@ private:
 	GdkEvent *event;
 };
 
+/* @Namespace=None */
+class MouseWheelEventArgs : public RoutedEventArgs {
+public:
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	MouseWheelEventArgs ();
+	MouseWheelEventArgs (GdkEvent *event);
+	
+	GdkEvent *GetEvent () { return event; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetWheelDelta ();
+	
+protected:
+	virtual ~MouseWheelEventArgs ();
+	
+private:
+	GdkEvent *event;
+};
+
 #endif /* __EVENTARGS_H__ */

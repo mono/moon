@@ -479,6 +479,10 @@ public:
 	const static int LostFocusEvent;
 	const static int LostMouseCaptureEvent;
 
+	const static int MouseRightButtonDownEvent;
+	const static int MouseRightButtonUpEvent;
+	const static int MouseWheelEvent;
+
 protected:
 	virtual ~UIElement ();
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);

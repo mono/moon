@@ -307,6 +307,43 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 	return points;
 }
 
+MouseWheelEventArgs::MouseWheelEventArgs (GdkEvent *event)
+{
+	SetObjectType (Type::MOUSEWHEELEVENTARGS);
+	this->event = gdk_event_copy (event);
+}
+
+MouseWheelEventArgs::MouseWheelEventArgs ()
+{
+	SetObjectType (Type::MOUSEWHEELEVENTARGS);
+	event = gdk_event_new (GDK_SCROLL);
+}
+
+
+MouseWheelEventArgs::~MouseWheelEventArgs ()
+{
+	gdk_event_free (event);
+}
+
+#define MOON_SCROLL_WHEEL_DELTA 10
+
+int
+MouseWheelEventArgs::GetWheelDelta ()
+{
+	/* we only handle UP/DOWN scroll events for the time being */
+	switch (((GdkEventScroll*)event)->direction) {
+	case GDK_SCROLL_UP:
+		return -MOON_SCROLL_WHEEL_DELTA;
+	case GDK_SCROLL_DOWN:
+		return MOON_SCROLL_WHEEL_DELTA;
+
+	default:
+	case GDK_SCROLL_LEFT:
+	case GDK_SCROLL_RIGHT:
+		return 0;
+	}
+}
+
 KeyEventArgs::KeyEventArgs (GdkEventKey *event)
 {
 	SetObjectType (Type::KEYEVENTARGS);

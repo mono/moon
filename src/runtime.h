@@ -80,6 +80,7 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_DISABLE_FFMPEG_CODECS = 1 << 23,
 	RUNTIME_INIT_ALL_IMAGE_FORMATS     = 1 << 24,
 	RUNTIME_INIT_CREATE_ROOT_DOMAIN    = 1 << 25,
+	RUNTIME_INIT_DESKTOP_EXTENSIONS    = 1 << 26,
 };
 
 extern guint64 moonlight_flags;
@@ -246,6 +247,7 @@ public:
 	gboolean HandleUIKeyRelease (GdkEventKey *event);
 	gboolean HandleUIButtonRelease (GdkEventButton *event);
 	gboolean HandleUIButtonPress (GdkEventButton *event);
+	gboolean HandleUIScroll (GdkEventScroll *event);
 	gboolean HandleUIFocusIn (GdkEventFocus *event);
 	gboolean HandleUIFocusOut (GdkEventFocus *event);
 	void HandleUIWindowAllocation (bool emit_resize);

@@ -2114,6 +2114,27 @@ mouse_event_args_new (void)
 
 
 /**
+ * MouseWheelEventArgs
+ **/
+int
+mouse_wheel_event_args_get_wheel_delta (MouseWheelEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetWheelDelta ();
+}
+
+
+MouseWheelEventArgs *
+mouse_wheel_event_args_new (void)
+{
+	return new MouseWheelEventArgs ();
+}
+
+
+/**
  * MultiScaleImage
  **/
 Point

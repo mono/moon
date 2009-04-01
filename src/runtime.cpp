@@ -125,7 +125,7 @@ static struct env_options overrides[] = {
 	{ "allimages=yes",     RUNTIME_INIT_ALL_IMAGE_FORMATS,     true  },
 };
 
-#define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ALL_IMAGE_FORMATS)
+#define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_DESKTOP_EXTENSIONS)
 #define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN)
 
 #if DEBUG
@@ -1143,8 +1143,12 @@ Surface::CreateArgsForEvent (int event_id, GdkEvent *event)
 		 || event_id ==UIElement::MouseMoveEvent
 		 || event_id ==UIElement::MouseLeftButtonDownEvent
 		 || event_id ==UIElement::MouseLeftButtonUpEvent
+		 || event_id ==UIElement::MouseRightButtonDownEvent
+		 || event_id ==UIElement::MouseRightButtonUpEvent
 		 || event_id ==UIElement::MouseEnterEvent)
 		return new MouseEventArgs(event);
+	else if (event_id == UIElement::MouseWheelEvent)
+		return new MouseWheelEventArgs(event);
 	else if (event_id == UIElement::KeyDownEvent
 		 || event_id == UIElement::KeyUpEvent)
 		return new KeyEventArgs((GdkEventKey*)event);
@@ -1625,6 +1629,23 @@ Surface::HandleUIButtonPress (GdkEventButton *event)
 
 	UpdateCursorFromInputList ();
 	SetCanFullScreen (false);
+
+	return handled;
+}
+
+gboolean
+Surface::HandleUIScroll (GdkEventScroll *event)
+{
+	if (mouse_event)
+		gdk_event_free (mouse_event);
+	
+	mouse_event = gdk_event_copy ((GdkEvent *) event);
+
+	bool handled = false;
+
+	handled = HandleMouseEvent (UIElement::MouseWheelEvent, true, true, true, mouse_event);
+
+	UpdateCursorFromInputList ();
 
 	return handled;
 }

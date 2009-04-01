@@ -102,6 +102,7 @@ MoonWindowGtk::InitializeCommon ()
 			       GDK_KEY_RELEASE_MASK |
 			       GDK_BUTTON_PRESS_MASK |
 			       GDK_BUTTON_RELEASE_MASK |
+			       ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) != 0 ? GDK_SCROLL_MASK : 0) |
 			       GDK_FOCUS_CHANGE_MASK);
 	
 	GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
@@ -341,6 +342,7 @@ MoonWindowGtk::EnableEvents (bool first)
 	g_signal_connect (widget, "key-release-event", G_CALLBACK (key_release), this);
 	g_signal_connect (widget, "button-press-event", G_CALLBACK (button_press), this);
 	g_signal_connect (widget, "button-release-event", G_CALLBACK (button_release), this);
+	g_signal_connect (widget, "scroll-event", G_CALLBACK (scroll), this);
 	g_signal_connect (widget, "focus-in-event", G_CALLBACK (focus_in), this);
 	g_signal_connect (widget, "focus-out-event", G_CALLBACK (focus_out), this);
 
@@ -437,6 +439,20 @@ MoonWindowGtk::button_release (GtkWidget *widget, GdkEventButton *event, gpointe
 	if (window->surface)
 		window->surface->HandleUIButtonRelease (event);
 	// ignore HandleUIButtonRelease's return value, and always
+	// return true here, or it gets bubbled up to firefox.
+	return true;
+}
+
+gboolean
+MoonWindowGtk::scroll (GtkWidget *widget, GdkEventScroll *event, gpointer data)
+{
+	MoonWindowGtk *window = (MoonWindowGtk*)data;
+
+	Deployment::SetCurrent (window->GetDeployment ());
+
+	if (window->surface)
+		window->surface->HandleUIScroll (event);
+	// ignore HandleUIScroll's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
 }
