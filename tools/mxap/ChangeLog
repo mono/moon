@@ -1,3 +1,8 @@
+2009-04-01  Chris Toshok  <toshok@ximian.com>
+
+	* mxap.cs (CreateApplicationAssembly): add -d:DESKTOP to the gmcs
+	flags if we're --desktop.
+
 2009-03-02  Chris Toshok  <toshok@ximian.com>
 
 	* mxap.cs: if we're running a 2.1 tool from the builddir (if

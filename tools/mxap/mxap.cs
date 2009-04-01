@@ -254,6 +254,9 @@ namespace Moonlight {
 
 			StringBuilder compiler_args = new StringBuilder ();
 
+			if (desktop)
+				compiler_args.Append (" -d:DESKTOP ");
+
 			compiler_args.AppendFormat (" -debug+ -target:library -out:{0}.dll ", ApplicationName);
 
 			foreach (string asm in ReferenceAssemblies) {
