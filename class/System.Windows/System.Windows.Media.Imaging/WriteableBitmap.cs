@@ -45,8 +45,10 @@ namespace System.Windows.Media.Imaging
 			PixelHeight = height;
 			PixelFormat = format;
 
-			buffer = Marshal.AllocHGlobal (width * height * 4);
-			NativeMethods.bitmap_source_set_bitmap_data (native, buffer);
+			checked {
+				buffer = Marshal.AllocHGlobal (width * height * 4);
+				NativeMethods.bitmap_source_set_bitmap_data (native, buffer);
+			}
 		}
 
 		public int this[int index] {
@@ -56,7 +58,9 @@ namespace System.Windows.Media.Imaging
 			set {
 				if (index > PixelWidth*PixelHeight || index < 0)
 					throw new ArgumentOutOfRangeException ("index must lie withing the boundaries of the bitmap");
-				Marshal.WriteInt32 (buffer, index*4, value);
+				checked {
+					Marshal.WriteInt32 (buffer, index*4, value);
+				}
 			}
 		}
 		

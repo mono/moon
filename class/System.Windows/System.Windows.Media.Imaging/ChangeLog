@@ -1,3 +1,8 @@
+2009-04-02  Geoff Norton  <gnorton@novell.com>
+
+	* WriteableBitmap.cs: Avoid a integer overflow that could have us
+	allocating some bogus amount of memory, or writing into random memory.
+
 2009-03-31  Geoff Norton  <gnorton@novell.com>
 
 	* WriteableBitmap.cs: Ensure that we cannot let user code write out to 
