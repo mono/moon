@@ -613,6 +613,35 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public void TestTwoWayBinding6 ()
+		{
+			TextBlock block = new TextBlock { Text = "Ted" };
+			Rectangle data = new Rectangle { Opacity = 0.5f };
+			block.SetBinding (TextBlock.TextProperty, new Binding {
+				Path = new PropertyPath ("Opacity"),
+				Source = data,
+				Mode = BindingMode.TwoWay
+			});
+
+			Storyboard sb = new Storyboard ();
+			DoubleAnimation anim = new DoubleAnimation { From = 1, To = 0, Duration = TimeSpan.FromMilliseconds (1) };
+			Storyboard.SetTarget (anim, data);
+			Storyboard.SetTargetProperty (anim, new PropertyPath ("Opacity"));
+			sb.Children.Add (anim);
+
+			bool complete = false;
+			sb.Completed += delegate { complete = true; };
+			sb.Begin ();
+			EnqueueConditional (() => complete, "#1");
+			Enqueue (() => {
+				Assert.AreEqual (0, data.Opacity, "#2");
+				Assert.AreEqual ("0.5", block.Text, "#3");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
 		public void TestOnceOffBinding ()
 		{
 			Data data = new Data ();
