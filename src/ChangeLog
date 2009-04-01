@@ -1,3 +1,10 @@
+2009-04-01  Chris Toshok  <toshok@ximian.com>
+
+	* window-gtk.cpp (MoonWindowGtk::button_press): reinstate
+	the (desktop extension -ized) button check here.  this wouldn't be
+	necessary if the plugin could insert its signal handler before the
+	window's, but alas, gtk...
+
 2009-04-01  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* application.cpp (GetResource): use the uri path, not

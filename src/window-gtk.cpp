@@ -419,6 +419,12 @@ MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer 
 
 	Deployment::SetCurrent (window->GetDeployment ());
 
+	if (event->button != 1
+	    && ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0
+		|| event->button != 3)) {
+		return false;
+	}
+
 	if (window->surface)
 		window->surface->HandleUIButtonPress (event);
 	// ignore HandleUIButtonPress's return value, and always
