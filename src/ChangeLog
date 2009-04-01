@@ -1,3 +1,8 @@
+2009-04-01  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp (ZoomAboutLogicalPoint): zoom around the point,
+	not to the center of the control
+
 2009-04-01  Andreia Gaita  <avidigal@novell.com>
     
         * window-gtk.cpp: Only connect the scroll-event signal if we're

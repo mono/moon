@@ -121,12 +121,14 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 		zoom_sb->Pause ();
 	if (pan_sb)
 		pan_sb->Pause ();
-	
+
+
 	double width = GetViewportWidth () / zoomIncrementFactor;
-	double height = GetViewportWidth () / (GetAspectRatio () * zoomIncrementFactor);
 	SetViewportWidth (width);
-	if (!isnan(zoomCenterLogicalX) && !isnan(zoomCenterLogicalY))
-		SetViewportOrigin (Point (zoomCenterLogicalX - width/2.0, zoomCenterLogicalY - height/2.0));
+	if (!isnan(zoomCenterLogicalX) && !isnan(zoomCenterLogicalY)) {
+		SetViewportOrigin (Point (zoomCenterLogicalX - (zoomCenterLogicalX - GetViewportOrigin()->x) / zoomIncrementFactor,
+					  zoomCenterLogicalY - (zoomCenterLogicalY - GetViewportOrigin()->y) / zoomIncrementFactor));
+	}
 }
 
 Point
