@@ -61,7 +61,6 @@ public:
 	const char *GetPasswd () const { return passwd; }
 	const char *GetFragment () const { return fragment; }
 	const char *GetPath () const { return path; }
-	const char *GetOriginalString () const { return originalString; }
 
 	bool isAbsolute;
 

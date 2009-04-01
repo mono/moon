@@ -1,5 +1,10 @@
 2009-04-01  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* uri.h: no longer expose GetOriginalString(), it leads to buggy
+	code.
+
+2009-04-01  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* mediaelement.cpp:
 	* bitmapimage.cpp:
 	* deepzoomimagetilesource.cpp: g_free the memory allocated by
