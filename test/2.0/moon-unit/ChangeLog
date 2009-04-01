@@ -1,3 +1,9 @@
+2009-04-01  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: If we're updating a two
+	  way binding, don't invoke the setter if the old value is the
+	  same as the new value.
+
 2009-03-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Include System.Windows.Controls.dll (which is not 

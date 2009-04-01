@@ -95,14 +95,23 @@ namespace MoonTest.System.Windows.Data
 			public event PropertyChangedEventHandler PropertyChanged;
 
 			private float opacity;
-			
+			public bool Get;
+			public bool Set;
+
+			public void Reset ()
+			{
+				Get = false;
+				Set = false;
+			}
+
 			public float Opacity
 			{
-				get { return opacity; }
+				get { Get = true; return opacity; }
 				set {
+					Set = true;
 					opacity = value;
 					if (PropertyChanged != null)
-						PropertyChanged(this, new PropertyChangedEventArgs("Opacity"));
+						PropertyChanged (this, new PropertyChangedEventArgs ("Opacity"));
 				}
 			}
 
@@ -574,6 +583,33 @@ namespace MoonTest.System.Windows.Data
 			Assert.AreEqual (100, data.Opacity, "#3");
 			block.Text = "";
 			Assert.AreEqual (100, data.Opacity, "#4");
+		}
+					
+		[TestMethod]
+		public void TestTwoWayBinding5 ()
+		{
+			PropertyUpdater data = new PropertyUpdater { Opacity = 0.5f };
+			data.Reset ();
+			TextBlock block = new TextBlock { Text = "Ted" };
+			block.SetBinding (TextBlock.TextProperty, new Binding {
+				Path = new PropertyPath ("Opacity"),
+				Source = data,
+				Mode = BindingMode.TwoWay
+			});
+			Assert.AreEqual ("0.5", block.Text, "#1");
+			Assert.IsTrue (data.Get, "#a");
+			Assert.IsFalse (data.Set, "#b");
+			data.Reset ();
+
+			block.Text = "1";
+			Assert.AreEqual (1, data.Opacity, "#2");
+			Assert.IsTrue (data.Get, "#c");
+			Assert.IsTrue (data.Set, "#d");
+			data.Reset ();
+
+			block.Text = "1";
+			Assert.IsFalse (data.Get, "#e");
+			Assert.IsFalse (data.Set, "#f");
 		}
 
 		[TestMethod]

@@ -198,10 +198,20 @@ namespace System.Windows.Data {
 					return;
 				}
 			}
+			
+			if (cachedValue == null) {
+				if (value == null)
+					return;
+			}
+			else if (cachedValue.Equals (value)) {
+				return;
+			}
+
 
 			try {
 				updating = true;
 				PropertyInfo.SetValue (PropertySource, value, null);
+				cachedValue = value;
 			}
 			finally {
 				updating = false;
