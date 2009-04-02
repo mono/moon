@@ -1,3 +1,7 @@
+2009-04-02  Jb Evain  <jbevain@novell.com>
+
+	* Makefile.am: add scripts to SUBDIRS.
+
 2009-03-31  Jb Evain  <jbevain@novell.com>
 
 	* configure.ac: take care of the new scripts folder.
