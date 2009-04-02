@@ -1,3 +1,7 @@
+2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Use the correct keyfile to sign.
+
 2009-04-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Do not install (at all) for 2.1 since it should 

@@ -81,7 +81,7 @@ $(assembly).g.resources: $(MSSDKCONTROLS)/App.xaml $(MSSDKCONTROLS)/themes/gener
 	mono $(top_builddir)/tools/respack/respack.exe $@ $(XAML_RESOURCES)
 
 $(assemblysl): $(system_windows_controls_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll $(assembly).g.resources $(assembly).Resource.resources
-	$(SMCS) -target:library -out:$@ $(system_windows_controls_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../silverlight.pub -delaysign+ -res:$(assembly).g.resources -res:$(assembly).Resource.resources
+	$(SMCS) -target:library -out:$@ $(system_windows_controls_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../winfx3.pub -delaysign+ -res:$(assembly).g.resources -res:$(assembly).Resource.resources
 	sn -q -R $@ $(srcdir)/../mono.snk 
 
 $(assemblydesktop): $(system_windows_controls_sources) Makefile $(top_builddir)/class/lib/3.0/System.Windows.dll $(assembly).g.resources $(assembly).Resource.resources

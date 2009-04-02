@@ -110,7 +110,7 @@ RESOURCES = 	\
 	-res:System.Windows.Controls.Resource.resources
 
 $(assemblysl): $(system_windows_controls_data_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll $(assembly).g.resources System.Windows.Controls.Resource.resources
-	$(SMCS) -target:library -out:$@ $(system_windows_controls_data_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../silverlight.pub -delaysign+ $(RESOURCES)
+	$(SMCS) -target:library -out:$@ $(system_windows_controls_data_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../winfx3.pub -delaysign+ $(RESOURCES)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_controls_data_sources) Makefile $(top_builddir)/class/lib/3.0/System.Windows.dll

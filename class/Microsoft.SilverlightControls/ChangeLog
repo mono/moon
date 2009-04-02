@@ -1,3 +1,9 @@
+2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* SDKControls/Data/src/Properties/AssemblyInfo.cs:
+	* SDKControls/Extended/Src/Properties/AssemblyInfo.cs: Set the
+	  correct assembly version.
+
 2009-03-30  Alan McGovern  <amcgovern@novell.com>
 
 	* SDKControls/Extended/Test/Calendar/CalendarTest.cs:
