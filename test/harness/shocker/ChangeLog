@@ -1,5 +1,11 @@
 2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* image-capture.cpp: For multiple image capture don't assume
+	  the requested file name doesn't have a tif extension, and
+	  put the tif in MOONLIGHT_HARNESS_OUTPUT_DIR if set.
+
+2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* netscape.h: Add license.
 
 2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>

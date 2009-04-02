@@ -127,14 +127,14 @@ capture_multiple_images (void* data)
 	gchar **image_paths = (gchar **) g_malloc0 (sizeof (gchar *) * (cmid->count + 1));
 	gchar **image_files = (gchar **) g_malloc0 (sizeof (gchar *) * (cmid->count + 1));
 	
+	// printf ("Moonlight harness: Capture %i screenshots, initial delay: %i ms, interval: %i ms, width: %i, height: %i\n", cmid->count, cmid->initial_delay, cmid->interval, cmid->width, cmid->height);
+	
 	usleep (cmid->initial_delay * 1000);
 
 	g_mkdir_with_parents (image_dir, 0700);
 
 	ScreenCaptureData sc (cmid->x, cmid->y, cmid->width, cmid->height);
 	
-	// printf ("Moonlight harness: Capture %i screenshots, initial delay: %i ms, interval: %i ms\n", cmid->count, cmid->initial_delay, cmid->interval);
-
 	start = get_now () / ticks_in_ms;
 	for (int i = 0; i < cmid->count; i++) {
 		image_files [i] = g_strdup_printf ("multilayered-image-%03i.png", i);
@@ -182,19 +182,33 @@ capture_multiple_images (void* data)
 	capture_multiple_images_data_free (cmid);
 	shutdown_manager_wait_decrement ();
 
+	// printf ("capture_multiple_images [Done]\n");
+
 	return NULL;
 }
 
 
 void
-ImageCaptureProvider::CaptureMultipleImages (const char* test_path, int x, int y, int width, int height, int count, int interval, int initial_delay)
+ImageCaptureProvider::CaptureMultipleImages (const char* file_name, int x, int y, int width, int height, int count, int interval, int initial_delay)
 {
 #ifdef SHOCKER_DEBUG
-	printf ("CaptureMultipleImages (%s, %d, %d, %d, %d, %d, %d, %d)\n", test_path, x, y, width, height, count, interval, initial_delay);
+	printf ("CaptureMultipleImages (%s, %d, %d, %d, %d, %d, %d, %d)\n", file_name, x, y, width, height, count, interval, initial_delay);
 #endif
 	capture_multiple_images_data_t* cmid = new capture_multiple_images_data ();
 
-	cmid->image_path = g_strdup_printf ("%s.tif", test_path);
+	// get the directory where to put the images.
+	if (moonlight_harness_output_dir == NULL) {
+		moonlight_harness_output_dir = getenv ("MOONLIGHT_HARNESS_OUTPUT_DIR");
+		if (moonlight_harness_output_dir == NULL || moonlight_harness_output_dir [0] == 0)
+			moonlight_harness_output_dir = g_get_current_dir ();
+	}
+
+	cmid->image_path = g_build_filename (moonlight_harness_output_dir, file_name, NULL);
+	if (!g_str_has_suffix (cmid->image_path, ".tif")) {
+		char *tmp = cmid->image_path;
+		cmid->image_path = g_strdup_printf ("%s.tif", cmid->image_path);
+		g_free (tmp);
+	}
 	cmid->x = MAX (0, x);
 	cmid->y = MAX (0, y);
 	cmid->width = width;
