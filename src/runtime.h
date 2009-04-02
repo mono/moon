@@ -286,7 +286,6 @@ private:
 	void ProcessUpDirtyElements ();
 
 	void Paint (UIElement *toplevel, cairo_t *ctx, Region * region);
-	void UpdateLayout (UIElement *toplevel);
 	DirtyLists *down_dirty;
 	DirtyLists *up_dirty;
 	

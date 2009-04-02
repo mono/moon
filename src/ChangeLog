@@ -1,3 +1,10 @@
+2009-04-02  Larry Ewing  <lewing@novell.com>
+
+	* dirty.cpp:
+	* runtime.h:
+	* runtime.cpp: Treat full_screen_message as another layer.  Make
+	sure that we mark layers as loaded.  Popups should render now.
+
 2009-04-02  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.cpp: the real toplevel element must always be at

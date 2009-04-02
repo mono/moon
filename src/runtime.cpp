@@ -355,8 +355,7 @@ Surface::~Surface ()
 	}
 #endif
 	
-	if (full_screen_message)
-		HideFullScreenMessage ();
+	HideFullScreenMessage ();
 	
 	delete input_list;
 	
@@ -530,6 +529,9 @@ Surface::AttachLayer (UIElement *layer)
 		layers->Add (Value (layer));
 	layer->SetSurface (this);
 	layer->FullInvalidate (true);
+
+	List *list = layer->WalkTreeForLoaded (NULL);
+	layer->PostSubtreeLoad (list);
 }
 
 void
@@ -588,9 +590,6 @@ Surface::Paint (UIElement *toplevel, cairo_t *ctx, Region *region)
 	Region *copy = new Region (region);
 
 	if (moonlight_flags & RUNTIME_INIT_RENDER_FRONT_TO_BACK) {
-		if (full_screen_message)
-			full_screen_message->FrontToBack (copy, render_list);
-
 		toplevel->FrontToBack (copy, render_list);
 
 		if (!render_list->IsEmpty ()) {
@@ -612,10 +611,6 @@ Surface::Paint (UIElement *toplevel, cairo_t *ctx, Region *region)
 
 	if (!did_front_to_back) {
 		toplevel->DoRender (ctx, region);
-
-		if (full_screen_message) {
-			full_screen_message->DoRender (ctx, region);
-		}
 	}
 
 #if FRONT_TO_BACK_STATS
@@ -718,7 +713,7 @@ Surface::ShowFullScreenMessage ()
 	}
 	
 	full_screen_message = (Canvas*) message;
-	full_screen_message->SetSurface (this);
+	AttachLayer (full_screen_message);
 	
 	DependencyObject* message_object = full_screen_message->FindName ("message");
 	DependencyObject* url_object = full_screen_message->FindName ("url");
@@ -775,11 +770,6 @@ Surface::ShowFullScreenMessage ()
 	// Put the box in the middle of the screen
 	transform->SetValue (TranslateTransform::XProperty, Value ((active_window->GetWidth() - box_width) / 2));
 	transform->SetValue (TranslateTransform::YProperty, Value ((active_window->GetHeight() - box_height) / 2));
-	
-	full_screen_message->UpdateTotalRenderVisibility ();
-	full_screen_message->UpdateTotalHitTestVisibility ();
-	full_screen_message->FullInvalidate (true);
-	full_screen_message->OnLoaded ();
 }
 
 const char* 
@@ -799,6 +789,7 @@ void
 Surface::HideFullScreenMessage ()
 {
 	if (full_screen_message) {
+	        DetachLayer (full_screen_message);
 		full_screen_message->unref ();
 		full_screen_message = NULL;
 	}
