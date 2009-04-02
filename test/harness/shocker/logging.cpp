@@ -70,14 +70,14 @@ LogProvider::LogProvider (const char* test_name) : log_file (NULL)
 	error = NULL;
 	connection = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
 	if (!connection) {
-		g_warning ("Failed to open connection to bus: %s\n", error->message);
+		printf ("[shocker] Failed to open connection to bus: %s\n", error->message);
 		g_error_free (error);
+	} else {
+		dbus_proxy = dbus_g_proxy_new_for_name (connection,
+				SHOCKER_LOGGER_SERVICE,
+				SHOCKER_LOGGER_PATH,
+				SHOCKER_LOGGER_INTERFACE);
 	}
-
-	dbus_proxy = dbus_g_proxy_new_for_name (connection,
-			SHOCKER_LOGGER_SERVICE,
-			SHOCKER_LOGGER_PATH,
-			SHOCKER_LOGGER_INTERFACE);
 #endif
 
 }
@@ -142,9 +142,9 @@ LogProvider::LogResult (TestResult result)
 	}
 	
 #ifdef DBUS_ENABLED
-	g_return_if_fail (dbus_proxy);
-
-	dbus_g_proxy_call_no_reply (dbus_proxy, "LogResult", G_TYPE_STRING, test_name, G_TYPE_INT, TestResultToInt (result), G_TYPE_INVALID);
+	if (dbus_proxy != NULL) {
+		dbus_g_proxy_call_no_reply (dbus_proxy, "LogResult", G_TYPE_STRING, test_name, G_TYPE_INT, TestResultToInt (result), G_TYPE_INVALID);
+	}
 #else
 	g_warning ("DBUS NOT ENABLED, result will not be logged: %d\n", TestResultToInt (result));
 #endif
@@ -164,6 +164,15 @@ LogProvider::Log (const char* level, const char* msg)
 	fprintf (log_file, "%s:%s:%s:%s\n", level, timestr, test_name, msg);
 	fflush (log_file);
 
+
+#ifdef DBUS_ENABLED
+	if (dbus_proxy != NULL) {
+		dbus_g_proxy_call_no_reply (dbus_proxy, "Log", G_TYPE_STRING, test_name, G_TYPE_STRING, level, G_TYPE_STRING, msg, G_TYPE_INVALID);
+	} else {
+		use_printf = 1;
+	}
+#endif
+
 	if (use_printf == 0) {
 		char *env = getenv ("MOON_SHOCKER_LOG_TO_STDOUT");
 		if (env != NULL && env [0] != 0)
@@ -180,16 +189,8 @@ LogProvider::Log (const char* level, const char* msg)
 		} else {
 			forecolor = "34";
 		} 
-		printf ("\033[%s;49m%s: %s: %s\033[39;49m\n", forecolor, test_name, level, msg);
-		
+		printf ("\033[%s;49m%s: %s: %s\033[39;49m\n", forecolor, test_name, level, msg);	
 	}
-
-#ifdef DBUS_ENABLED
-	g_return_if_fail (dbus_proxy);
-	
-	dbus_g_proxy_call_no_reply (dbus_proxy, "Log", G_TYPE_STRING, test_name, G_TYPE_STRING, level, G_TYPE_STRING, msg, G_TYPE_INVALID);
-#endif
-
 }
 
 
