@@ -45,6 +45,7 @@
 
 	function Cheese ()
 	{
+		TestHost.TranslateCoordinates = true;
 		TestHost.CaptureSingleImage ("", "test-yuv-converter.html.png", 0, 0, 200, 150);
 		TestHost.SignalShutdown (document.name);
 	}

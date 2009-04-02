@@ -42,6 +42,7 @@
 
 		done = true;
 		TestLogger.LogDebug ("logResult: taking snapshot.");
+		TestHost.TranslateCoordinates = true;
 		TakeSingleSnapshotAndShutdown (TestHost, "test-video-seek-7.html.png", 300, 300);
 		TestLogger.LogDebug ("logResult: ending test.");
 	}

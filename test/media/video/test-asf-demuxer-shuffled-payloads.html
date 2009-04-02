@@ -25,6 +25,7 @@
 	function Cheese ()
 	{
 		TestLogger.LogDebug ("Taking screenshot");
+		TestHost.TranslateCoordinates = true;
 		TestHost.CaptureSingleImage ("", "test-asf-demuxer-shuffled-payloads.html.png", 0, 0, 350, 250);
 		SignalShutdown ();
 	}
