@@ -1,4 +1,5 @@
 var TestLogger = null;
+var _TestPlugin = null; // not to be used outside this script
 var TestHost = null;
 var TestPluginReady = false;
 var pendingTypes = new Array ();
@@ -57,12 +58,12 @@ function createTestPlugin ()
 	
 	if ((navigator.appVersion.indexOf ('MSIE') != -1)) {
 	pluginHtml = 
-		'<object id="_TestPlugin" width="0" height="0" ' +
+		'<object id="_TestPlugin" style="position:absolute;top:1000px;left:1000px;height:1px;width:1px;" ' +
 		'classid = "CLSID:596F7B43-899C-42F4-BF3C-B62BA99E73FF">' +
 		'<\/object>';
 	} else {
 	pluginHtml = 
-		'<embed id="_TestPlugin" width="0" height="0" ' +
+		'<embed id="_TestPlugin" style="position:absolute;top:1000px;left:1000px;height:1px;width:1px;" ' +
 		'type="application\/x-jolttest">' +
 		'<\/embed>';
 	}
@@ -98,29 +99,88 @@ function loadTestPlugin ()
 	if (TestHost)
 		return;
 	
-	TestHost = document.getElementById ("_TestPlugin");
-	if (!TestHost) {
+	_TestPlugin = document.getElementById ("_TestPlugin");
+	
+	if (!_TestPlugin) {
 		window.setTimeout ("loadTestPlugin ();", 10);
-	} else {
-		TestHost.Connect ();
-		TestLogger = TestHost;
-		TestPluginReady = true;
-		try {
-			TestLogger.LogDebug ("Test plugin initialized");
+		return;
+	}
+	
+	_TestPlugin.Connect ();
 
-			for (var i = 0; i < pendingTypes.length; i++) {
-				switch (pendingTypes [i]) {
-				case "Debug": TestLogger.LogDebug ("<delayed>: " + pendingMessages [i]); break;
-				case "Error": TestLogger.LogError ("<delayed>: " + pendingMessages [i]); break;
-				case "Warning": TestLogger.LogWarning ("<delayed>: " + pendingMessages [i]); break;
-				case "Result": TestLogger.LogResult (pendingMessages [i]); break;
-				case "TryResult": TestLogger.TryLogResult (pendingMessages [i]); break;
-				case "Message": TestLogger.LogMessage ("<delayed>: " + pendingMessages [i]); break;
-				}
+	TestHost = 
+	{
+		TranslateCoordinates : false,
+		Connect : function () {},
+		LogDebug : function (msg) { _TestPlugin.LogDebug (msg); }, 
+		LogError : function (msg) { _TestPlugin.LogError (msg); }, 
+		LogWarning : function (msg) { _TestPlugin.LogWarning (msg); },
+		LogResult : function (result) { _TestPlugin.LogResult (result); },
+		TryLogResult : function (result) { _TestPlugin.TryLogResult (result); },
+		LogMessage : function (msg) { _TestPlugin.LogMessage (msg); },
+		SignalShutdown : function  ()
+		{
+			_TestPlugin.SignalShutdown (document.name);
+			setTimeout (function () { window.location = "about:blank"; }, 100);
+		},
+		CaptureSingleImage : function (a, b, x, y, w, h)
+		{
+			if (this.TranslateCoordinates) {
+				x += this.GetX ();
+				y += this.GetY ();
 			}
-			OnTestPluginReady ();
-		} catch (ex) {
+			_TestPlugin.CaptureSingleImage (a, b, x, y, w, h); 
+		},
+		CaptureMultipleImages : function (a, b, x, y, w, h, g, i, j)
+		{
+			if (this.TranslateCoordinates) {
+				x += this.GetX ();
+				y += this.GetY ();
+			}
+			_TestPlugin.CaptureMultipleImages (a, b, x, y, w, h, g, i, j);
+		},
+		moveMouse : function (x, y)
+		{
+			if (this.TranslateCoordinates) {
+				x += this.GetX ();
+				y += this.GetY ();
+			}
+			_TestPlugin.moveMouse (x, y);
+		},
+		moveMouseLogarithmic : function (x, y)
+		{
+			if (this.TranslateCoordinates) {
+				x += this.GetX ();
+				y += this.GetY ();
+			}
+			_TestPlugin.moveMouseLogarithmic (x, y);
+		},
+		mouseLeftButtonDown : function () { _TestPlugin.mouseLeftButtonDown (); },
+		mouseLeftButtonUp : function () { _TestPlugin.mouseLeftButtonUp (); },
+		mouseLeftClick : function () { _TestPlugin.mouseLeftClick (); },
+		mouseRightClick : function () { _TestPlugin.mouseRightClick (); },
+		sendKeyInput : function (a, b, c, d) { _TestPlugin.sendKeyInput (a, b, c, d); },
+		GetX : function () { return _TestPlugin.X; },
+		GetY : function () { return _TestPlugin.Y; }
+	};
+
+	TestLogger = TestHost;
+	TestPluginReady = true;
+	try {
+		TestLogger.LogDebug ("Test plugin initialized");
+
+		for (var i = 0; i < pendingTypes.length; i++) {
+			switch (pendingTypes [i]) {
+			case "Debug": TestLogger.LogDebug ("<delayed>: " + pendingMessages [i]); break;
+			case "Error": TestLogger.LogError ("<delayed>: " + pendingMessages [i]); break;
+			case "Warning": TestLogger.LogWarning ("<delayed>: " + pendingMessages [i]); break;
+			case "Result": TestLogger.LogResult (pendingMessages [i]); break;
+			case "TryResult": TestLogger.TryLogResult (pendingMessages [i]); break;
+			case "Message": TestLogger.LogMessage ("<delayed>: " + pendingMessages [i]); break;
+			}
 		}
+		OnTestPluginReady ();
+	} catch (ex) {
 	}
 }
 

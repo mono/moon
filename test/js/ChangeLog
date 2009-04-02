@@ -1,3 +1,12 @@
+2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* js/testplugin.js: Make the plugin have non-empty size, so
+	  that it appears on the page and can calculate the x,y
+	  coordinates of the html page for us. Implement optional
+	  translation of coordinates (earlier we assumed that the
+	  top-left corner of the html page was at 0,0, this isn't
+	  necessarily true).
+
 2008-06-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* js/testplugin.js: Added a GetNonCachableUrl method which appends ? to
