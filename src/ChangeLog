@@ -2,6 +2,13 @@
 
 	* popup.h:
 	* popup.cpp:
+	* dependencyproperty.g.cpp: The Child property has similar
+	  validation to a ContentControl. Fixes three tests.
+
+2009-04-02  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.h:
+	* popup.cpp:
 	* dirty.cpp:
 	* runtime.h:
 	* cbinding.h:

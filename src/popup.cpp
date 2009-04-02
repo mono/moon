@@ -20,14 +20,33 @@ Popup::Popup ()
 void
 Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
+	if (args->GetProperty ()->GetOwnerType() != Type::POPUP) {
+		FrameworkElement::OnPropertyChanged (args, error);
+		return;
+	}
+	
 	if (args->GetId () == Popup::IsOpenProperty) {
 		Emit (Popup::IsOpenChangedEvent);
 		if (args->GetNewValue () && args->GetNewValue ()->AsBool ())
 			Show ();
 		else
 			Hide ();
+	} else if (args->GetId () == Popup::ChildProperty) {
+		if (args->GetOldValue () && !args->GetOldValue ()->GetIsNull ()) {
+			FrameworkElement *el = args->GetOldValue ()->AsFrameworkElement ();
+			if (el->GetLogicalParent () == this)
+				el->SetLogicalParent (NULL, error);
+			if (error->number)
+				return;
+		}
+		if (args->GetNewValue () && !args->GetNewValue ()->GetIsNull ()) {
+			FrameworkElement *el = args->GetNewValue ()->AsFrameworkElement ();
+			args->GetNewValue ()->AsFrameworkElement ()->SetLogicalParent (this, error);
+			if (error->number)
+				return;
+		}	
 	}
-	DependencyObject::OnPropertyChanged (args, error);
+	NotifyListenersOfPropertyChange (args);
 }
 
 void

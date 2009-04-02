@@ -13,12 +13,12 @@
 
 #include <glib.h>
 
-#include "frameworkelement.h"
+#include "panel.h"
 
 /*@Namespace=System.Windows.Controls.Primitives*/
 class Popup : public FrameworkElement {
  public:
-	/* @PropertyType=UIElement,GenerateAccessors */
+	/* @PropertyType=UIElement,GenerateAccessors,Validator=ContentControlContentValidator */
 	const static int ChildProperty;
 	/* @PropertyType=double,GenerateAccessors,DefaultValue=0.0 */
 	const static int HorizontalOffsetProperty;

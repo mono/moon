@@ -151,7 +151,6 @@ namespace MoonTest.System.Windows.Controls.Primitives
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void PopupParent ()
 		{
 			Rectangle r = new Rectangle { Fill = new SolidColorBrush (Colors.Blue) };
@@ -241,7 +240,6 @@ namespace MoonTest.System.Windows.Controls.Primitives
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void VisualTree ()
 		{
 			Rectangle r = new Rectangle { Fill = new SolidColorBrush (Colors.Blue) };
@@ -272,7 +270,6 @@ namespace MoonTest.System.Windows.Controls.Primitives
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void VisualTree4 ()
 		{
 			Rectangle r = new Rectangle ();
@@ -300,20 +297,6 @@ namespace MoonTest.System.Windows.Controls.Primitives
 			TestPanel.Children.Add (r);
 			p.IsOpen = true;
 			p.Child = null;
-		}
-		
-		[TestMethod]
-		[MoonlightBug]
-		public void VisualTree7 ()
-		{
-			Rectangle r = new Rectangle { Name = "Ted" };
-			Popup p = new Popup { Child = r };
-			Assert.AreEqual (p, r.Parent, "#1");
-			TestPanel.Children.Add (r);
-			Assert.AreEqual (p, r.Parent, "#2");
-			p.Child = null;
-			Assert.AreEqual (TestPanel, r.Parent, "#3");
-			Assert.Throws<ArgumentException> (() => p.Child = r, "#4");
 		}
 	}
 }

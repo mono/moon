@@ -124,7 +124,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::POPUP, "VerticalOffset", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::POPUP, "IsOpen", Type::BOOL);
 	DependencyProperty::Register (this, Type::POPUP, "HorizontalOffset", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::POPUP, "Child", Type::UIELEMENT);
+	DependencyProperty::RegisterFull (this, Type::POPUP, "Child", NULL, Type::UIELEMENT, false, false, false, NULL, Validators::ContentControlContentValidator, NULL, false, false);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Volume", new Value (0.5), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Stretch", new Value (StretchUniform), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Source", NULL, Type::URI, false, false, true, NULL, NULL, NULL, false, false);
