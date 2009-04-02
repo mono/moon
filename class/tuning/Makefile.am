@@ -77,7 +77,8 @@ TUNER_STEPS = \
 	Mono.Tuner.InjectSecurityAttributes,Mono.Tuner:OutputStep	\
 	Mono.Tuner.AdjustVisibility,Mono.Tuner:OutputStep	\
 	Mono.Tuner.PrintStatus,Mono.Tuner:OutputStep	\
-	Mono.Tuner.RemoveSerialization,Mono.Tuner:OutputStep
+	Mono.Tuner.RemoveSerialization,Mono.Tuner:OutputStep	\
+	Mono.Tuner.CheckVisibility,Mono.Tuner
 
 $(OUTPUT_FILES): $(WORKING_FILES) $(SECURITY_ATTRIBUTES_INFO)
 	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)

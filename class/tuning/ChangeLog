@@ -1,3 +1,7 @@
+2009-04-02  Jb Evain  <jbevain@novell.com>
+
+	* Makefile.am: re-enable the visibility checks.
+
 2009-03-31  Jb Evain  <jbevain@novell.com>
 
 	* Makefile.am: install smcs.exe in $(prefix)/mono/lib/2.1.
