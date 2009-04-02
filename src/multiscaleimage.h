@@ -51,8 +51,8 @@ class MultiScaleImage : public MediaBase {
 	Storyboard *zoom_sb;
 	Storyboard *pan_sb;
 	Storyboard *fadein_sb;
-	DoubleAnimation *zoom_animation;
-	PointAnimation *pan_animation;
+	DoubleAnimationUsingKeyFrames *zoom_animation;
+	PointAnimationUsingKeyFrames *pan_animation;
 	DoubleAnimation *fadein_animation;
 
  protected:

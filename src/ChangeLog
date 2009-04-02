@@ -1,3 +1,9 @@
+2009-04-02  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h|cpp: use *AnimationUsingKeyFrames instead of
+	linear animation, animate for 4 secs instead of .4, use steep spline
+	to start fast finish smoothly. For botn panning and zooming.
+
 2009-04-02  Alan McGovern  <amcgovern@novell.com>
 
 	* popup.h:

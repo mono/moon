@@ -822,8 +822,14 @@ MultiScaleImage::SetViewportWidth (double value)
 		zoom_sb->SetManualTarget (this);
 		zoom_sb->SetTargetProperty (zoom_sb, new PropertyPath ("(MultiScaleImage.ViewportWidth)"));
 		zoom_sb->AddHandler (zoom_sb->CompletedEvent, motion_finished, this);
-		zoom_animation = new DoubleAnimation ();
-		zoom_animation->SetDuration (Duration::FromSecondsFloat (.4));
+		zoom_animation = new DoubleAnimationUsingKeyFrames ();
+		zoom_animation->SetDuration (Duration::FromSeconds (4));
+		zoom_animation->SetKeyFrames (new DoubleKeyFrameCollection ());
+		SplineDoubleKeyFrame *keyframe = new SplineDoubleKeyFrame ();
+		keyframe->SetKeySpline (new KeySpline (0, 1.0, 0, 1.0));
+		keyframe->SetKeyTime (KeyTime::FromPercent (1.0));
+		zoom_animation->GetKeyFrames ()->Add (keyframe);
+
 		TimelineCollection *tlc = new TimelineCollection ();
 		tlc->Add (zoom_animation);
 		zoom_sb->SetChildren(tlc);
@@ -832,9 +838,8 @@ MultiScaleImage::SetViewportWidth (double value)
 	}
 
 	LOG_MSI ("animating zoom from %f to %f\n\n", GetViewportWidth(), value)	
-	zoom_animation->SetFrom (GetViewportWidth ());
-	zoom_animation->SetTo (value);
 
+	zoom_animation->GetKeyFrames ()->GetValueAt (0)->AsSplineDoubleKeyFrame ()->SetValue (value);
 	zoom_sb->Begin();
 }
 
@@ -851,17 +856,21 @@ MultiScaleImage::SetViewportOrigin (Point value)
 		pan_sb->SetManualTarget (this);
 		pan_sb->SetTargetProperty (pan_sb, new PropertyPath ("(MultiScaleImage.ViewportOrigin)"));
 		pan_sb->AddHandler (pan_sb->CompletedEvent, motion_finished, this);
-		pan_animation = new PointAnimation ();
-		pan_animation->SetDuration (Duration::FromSecondsFloat (.4));
+		pan_animation = new PointAnimationUsingKeyFrames ();
+		pan_animation->SetDuration (Duration::FromSeconds (4));
+		pan_animation->SetKeyFrames (new PointKeyFrameCollection ());
+		SplinePointKeyFrame *keyframe = new SplinePointKeyFrame ();
+		keyframe->SetKeySpline (new KeySpline (0, 1.0, 0, 1.0));
+		keyframe->SetKeyTime (KeyTime::FromPercent (1.0));
+		pan_animation->GetKeyFrames ()->Add (keyframe);
+
 		TimelineCollection *tlc = new TimelineCollection ();
 		tlc->Add (pan_animation);
 		pan_sb->SetChildren(tlc);
 	} else
 		pan_sb->Pause ();
 
-	pan_animation->SetFrom (GetViewportOrigin());
-	pan_animation->SetTo (value);
-
+	pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->SetValue (value);
 	pan_sb->Begin ();
 }
 
