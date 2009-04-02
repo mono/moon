@@ -1,3 +1,14 @@
+2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* xaml/input-test.html:
+	* xaml/test-bubbling.html:
+	* xaml/test-event-argcount.html:
+	* xaml/test-empty-element-source.html:
+	* xaml/assorted/test-collections.html:
+	* xaml/assorted/test-stroke-collection.html: Include our
+	  testplugin.js to report test results and handle
+	  mouse/screenshot coordinates correctly.
+
 2009-03-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* test.mdp: Updated some project files.

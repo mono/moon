@@ -2,6 +2,8 @@
 <head>
 <title>StrokeCollections test</title>
 <meta></meta>
+		<script type="text/javascript" src="../../js/js/utils.js"></script>
+		<script type="text/javascript" src="../../js/js/testplugin.js"></script>
 </head>
 <body>
 
@@ -22,6 +24,8 @@ function Log (content, textblock, message)
 	textblock.inlines.add (run);
 	run = content.createFromXaml ("<LineBreak/>");
 	textblock.inlines.add (run);
+
+	TestLogger.LogDebug (message);
 }
 
 function OnLoaded (sender, eventArgs)
@@ -33,19 +37,22 @@ function OnLoaded (sender, eventArgs)
 	var ink1 = content.findName ("ink1");
 	var ink2 = content.findName ("ink2");
 	var log = content.findName ("log");
-	
+	var failed = false;
+
 	// add the stroke to ink1
 	try {
 		index = ink1.strokes.add (stroke);
 		Log (content, log, "ink1.strokes.add (stroke) => PASS");
 	} catch (err) {
 		Log (content, log, "ink1.strokes.add (stroke) => FAIL");
+		failed = true;
 	}
 	
 	// try adding it to ink1 again (should fail)
 	try {
 		index = ink1.strokes.add (stroke);
 		Log (content, log, "ink1.strokes.add (stroke) => FAIL");
+		failed = true;
 	} catch (err) {
 		Log (content, log, "ink1.strokes.add (stroke) => PASS");
 	}
@@ -56,7 +63,11 @@ function OnLoaded (sender, eventArgs)
 		Log (content, log, "ink2.strokes.add (stroke) => PASS");
 	} catch (err) {
 		Log (content, log, "ink2.strokes.add (stroke) => FAIL");
+		failed = true;
 	}
+
+	TestLogger.LogResult (failed ? -1 : 1);
+	SignalShutdown ();
 }
 </script>
 

@@ -2,6 +2,8 @@
 <head>
 <title>Collections test</title>
 <meta></meta>
+		<script type="text/javascript" src="../../js/js/utils.js"></script>
+		<script type="text/javascript" src="../../js/js/testplugin.js"></script>
 </head>
 <body>
 
@@ -19,6 +21,7 @@ textblock.printf (message);
 	textblock.inlines.add (run);
 	run = content.createFromXaml ("<LineBreak/>");
 	textblock.inlines.add (run);
+	TestLogger.LogDebug (message);
 }
 
 function OnLoaded (sender, eventArgs)
@@ -30,7 +33,8 @@ function OnLoaded (sender, eventArgs)
 	var canvas2 = content.findName ("canvas2");
 	var log = content.findName ("log");
 	var index, count;
-	
+	var failed = false;
+
 	var xaml = "<Image Source='moonlight_logo.png'/>";
 	var image = content.createFromXaml (xaml);
 	
@@ -40,12 +44,14 @@ function OnLoaded (sender, eventArgs)
 		Log (content, log, "canvas1.children.add (image) => PASS");
 	} catch (err) {
 		Log (content, log, "canvas1.children.add (image) => FAIL");
+		failed = true;
 	}
 	
 	// try adding it to canvas1 again (should fail)
 	try {
 		index = canvas1.children.add (image);
 		Log (content, log, "canvas1.children.add (image) => FAIL");
+		failed = true;
 	} catch (err) {
 		Log (content, log, "canvas1.children.add (image) => PASS");
 	}
@@ -54,6 +60,7 @@ function OnLoaded (sender, eventArgs)
 	try {
 		index = canvas1.children.insert (0, image);
 		Log (content, log, "canvas1.children.insert (0, image) => FAIL");
+		failed = true;
 	} catch (err) {
 		Log (content, log, "canvas1.children.insert (0, image) => PASS");
 	}
@@ -62,9 +69,13 @@ function OnLoaded (sender, eventArgs)
 	try {
 		index = canvas2.children.add (image);
 		Log (content, log, "canvas2.children.add (image) => FAIL");
+		failed = true;
 	} catch (err) {
 		Log (content, log, "canvas2.children.add (image) => PASS");
 	}
+
+	TestLogger.LogResult (failed ? -1 : 1);
+	SignalShutdown ();
 }
 </script>
 

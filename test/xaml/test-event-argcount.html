@@ -874,6 +874,7 @@
 
 		document.getElementById ("div1").innerHTML = embeds [0];
 		document.getElementById ("div2").innerHTML = embeds [1];
+		window.resizeTo (screen.width - 20, screen.height - 20);
 	
 		end_test ();
 		TestLogger.LogDebug ("TestPlugin [Started]");
@@ -971,6 +972,9 @@
 		}
 		if (started)
 			return;
+		window.moveTo (0, 0);
+		window.resizeTo (screen.width, screen.height);
+		TestHost.TranslateCoordinates = true;
 		started = true;
 		StartTests ();
 	}

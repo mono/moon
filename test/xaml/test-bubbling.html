@@ -2,7 +2,8 @@
 <head>
   <title>event bubbling tests</title>
   
-  <script src="Silverlight.js"></script>
+	<script src="../js/js/utils.js"></script>
+	<script src="../js/js/testplugin.js"></script>
 
   <script type="text/xaml" id="TestXaml">
     <Canvas xmlns="http://schemas.microsoft.com/client/2007"
@@ -22,6 +23,7 @@
     var mouseDownCount;
 
     var token_to_remove;
+	var root;
 
     function mouseLeftButtonDownCount (sender, args)
     {
@@ -383,13 +385,15 @@
 
     function DoClicks ()
     {
+			TestHost.TranslateCoordinates = true;
+
             // click in the green rectangle
-            test_plugin.moveMouseLogarithmic (75, 75);
-            test_plugin.mouseLeftClick ();
+            TestHost.moveMouseLogarithmic (75, 75);
+            TestHost.mouseLeftClick ();
 
             // click in the red rectangle
-            test_plugin.moveMouseLogarithmic (205, 15);
-            test_plugin.mouseLeftClick ();
+            TestHost.moveMouseLogarithmic (205, 15);
+            TestHost.mouseLeftClick ();
     }
 		      
 
@@ -426,10 +430,6 @@
            id="_MoonlightControl" Source="#TestXaml"
            style="position:absolute; left:0px; top:0px" >
     </embed>
-  </div>
-
-  <div>
-    <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest"></embed>
   </div>
 
 </body>
