@@ -16,10 +16,12 @@
 
 		function timeOut ()
 		{
-			TestLogger.LogError ("Nothing happened, didn't get neither MediaOpened nor MediaFailed events.");
-			TestLogger.LogResult (-1);
-			SignalShutdown ();
-			timedout = true;
+			if (!ShutdownSignalled) {
+				TestLogger.LogError ("Nothing happened, didn't get neither MediaOpened nor MediaFailed events.");
+				TestLogger.LogResult (-1);
+				SignalShutdown ();
+				timedout = true;
+			}
 		}
 
 		function OnMediaOpened (sender, args)
