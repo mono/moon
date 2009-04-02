@@ -72,6 +72,7 @@ LogProvider::LogProvider (const char* test_name) : log_file (NULL)
 	if (!connection) {
 		printf ("[shocker] Failed to open connection to bus: %s\n", error->message);
 		g_error_free (error);
+		dbus_proxy = NULL;
 	} else {
 		dbus_proxy = dbus_g_proxy_new_for_name (connection,
 				SHOCKER_LOGGER_SERVICE,
