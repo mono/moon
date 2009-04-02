@@ -475,8 +475,8 @@ Surface::Attach (UIElement *element)
 		NameScope::SetNameScope (canvas, new NameScope());
 	}
 
-	AttachLayer (canvas);
 	toplevel = canvas;
+	AttachLayer (canvas);
 
 	// First time we connect the surface, start responding to events
 	if (first)
@@ -524,7 +524,10 @@ Surface::Attach (UIElement *element)
 void
 Surface::AttachLayer (UIElement *layer)
 {
-	layers->Add (Value (layer));
+	if (layer == toplevel)
+		layers->Insert (0, Value(layer));
+	else
+		layers->Add (Value (layer));
 	layer->SetSurface (this);
 	layer->FullInvalidate (true);
 }

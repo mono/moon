@@ -1,3 +1,9 @@
+2009-04-02  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: the real toplevel element must always be at
+	  position 0 in the layers list. Fixes the situation where we
+	  open a popup before setting attaching the surface.
+
 2009-04-02  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.h|cpp: use *AnimationUsingKeyFrames instead of
