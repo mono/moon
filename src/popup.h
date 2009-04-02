@@ -20,11 +20,11 @@ class Popup : public FrameworkElement {
  public:
 	/* @PropertyType=UIElement,GenerateAccessors */
 	const static int ChildProperty;
-	/* @PropertyType=double,GenerateAccessors */
+	/* @PropertyType=double,GenerateAccessors,DefaultValue=0.0 */
 	const static int HorizontalOffsetProperty;
 	/* @PropertyType=bool,GenerateAccessors */
 	const static int IsOpenProperty;
-	/* @PropertyType=double,GenerateAccessors */
+	/* @PropertyType=double,GenerateAccessors,DefaultValue=0.0 */
 	const static int VerticalOffsetProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -45,14 +45,13 @@ class Popup : public FrameworkElement {
 	void SetVerticalOffset (double offset);
 	double GetVerticalOffset ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetActiveSurface (Surface *surface);
-
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	const static int IsOpenChangedEvent;
  private:
-	Surface *surface;
+ 	void Hide ();
+ 	void Show ();
+	bool visible;
 };
 
 

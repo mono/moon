@@ -292,6 +292,7 @@ Surface::Surface (MoonWindow *window)
 		g_warning ("Surfaces cannot be initialized with fullscreen windows.");
 	window->SetSurface (this);
 	
+	layers = new HitTestCollection ();
 	toplevel = NULL;
 	input_list = new List ();
 	captured = false;
@@ -375,6 +376,7 @@ Surface::~Surface ()
 	delete down_dirty;
 	
 	delete downloaders;
+	delete layers;
 	
 	surface_list = g_list_remove (surface_list, this);
 }
@@ -433,7 +435,7 @@ Surface::Attach (UIElement *element)
 
 				
 	if (toplevel) {
-		toplevel->SetSurface (NULL);
+		DetachLayer (toplevel);
 		time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
 		time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		time_manager->Stop ();
@@ -473,7 +475,7 @@ Surface::Attach (UIElement *element)
 		NameScope::SetNameScope (canvas, new NameScope());
 	}
 
-	canvas->SetSurface (this);
+	AttachLayer (canvas);
 	toplevel = canvas;
 
 	// First time we connect the surface, start responding to events
@@ -519,6 +521,21 @@ Surface::Attach (UIElement *element)
 	toplevel->InvalidateMeasure ();
 }
 
+void
+Surface::AttachLayer (UIElement *layer)
+{
+	layers->Add (Value (layer));
+	layer->SetSurface (this);
+	layer->FullInvalidate (true);
+}
+
+void
+Surface::DetachLayer (UIElement *layer)
+{
+	layers->Remove (Value (layer));
+	layer->SetSurface (NULL);
+	Invalidate (layer->GetBounds ());
+}
 
 void
 Surface::Invalidate (Rect r)
@@ -545,7 +562,15 @@ Surface::Paint (cairo_t *ctx, Region *region)
 {
 	if (!toplevel)
 		return;
+	for (int i = 0; i < layers->GetCount (); i++) {
+		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
+		Paint (layer, ctx, region);
+	}
+}
 
+void
+Surface::Paint (UIElement *toplevel, cairo_t *ctx, Region *region)
+{
 #if FRONT_TO_BACK_STATS
 	uielements_rendered_front_to_back = 0;
 	uielements_rendered_back_to_front = 0;
@@ -659,8 +684,12 @@ Surface::IsTopLevel (UIElement* top)
 {
 	if (top == NULL)
 		return false;
-		
-	return top == toplevel || top == full_screen_message;
+
+	bool ret = top == full_screen_message;
+	for (int i = 0; i < layers->GetCount () && !ret; i++)
+		ret = layers->GetValueAt (i)->AsUIElement () == top;
+
+	return ret;
 }
 
 void
@@ -1312,8 +1341,9 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		Point p (x,y);
 
 		cairo_t *ctx = measuring_context_create ();
-		toplevel->HitTest (ctx, p, new_input_list);
-		
+		for (int i = layers->GetCount () - 1; i >= 0 && new_input_list->IsEmpty (); i--)
+			layers->GetValueAt (i)->AsUIElement ()->HitTest (ctx, p, new_input_list);
+
 		// for 2 lists:
 		//   l1:  [a1, a2, a3, a4, ... ]
 		//   l2:  [b1, b2, b3, b4, ... ]

@@ -14,7 +14,7 @@
 Popup::Popup ()
 {
 	SetObjectType (Type::POPUP);
-	surface = NULL;
+	visible = false;
 }
 
 void
@@ -22,32 +22,36 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == Popup::IsOpenProperty) {
 		Emit (Popup::IsOpenChangedEvent);
+		if (args->GetNewValue () && args->GetNewValue ()->AsBool ())
+			Show ();
+		else
+			Hide ();
 	}
 	DependencyObject::OnPropertyChanged (args, error);
 }
 
 void
-Popup::SetActiveSurface (Surface *surface)
+Popup::Hide ()
 {
-	if (this->surface == surface)
+	if (!visible)
 		return;
 
+	visible = false;
 	UIElement *child = GetChild ();
-	if (this->surface && child) {
-		printf ("\nClearing child");
-		UIElement *topLevel = surface->GetToplevel ();
-		topLevel->ElementRemoved (child);
+	if (child) {
+		Deployment::GetCurrent ()->GetSurface ()->DetachLayer (child);
 	}
-	
-	this->surface = surface;
-	
-	if (this->surface && child) {
-		printf ("\nAdding child to surface");
-		UIElement *topLevel = surface->GetToplevel ();
-		if (topLevel)
-			printf ("\nToplevel is a: %s", topLevel->GetType ()->GetName ());	
+}
 
-		topLevel->ElementAdded (child);
+void
+Popup::Show ()
+{
+	if (visible)
+		return;
+		
+	visible = true;
+	UIElement *child = GetChild ();
+	if (child) {
+		Deployment::GetCurrent ()->GetSurface ()->AttachLayer (child);
 	}
-	SetSurface (surface);
 }

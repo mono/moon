@@ -156,6 +156,10 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Attach (UIElement *toplevel);
 
+	void AttachLayer (UIElement *layer);
+
+	void DetachLayer (UIElement *layer);
+	
 	void SetCursor (MouseCursor cursor);
 
 	bool SetMouseCapture (UIElement *capture);
@@ -280,7 +284,9 @@ private:
 	// bad, but these two live in dirty.cpp, not runtime.cpp
 	void ProcessDownDirtyElements ();
 	void ProcessUpDirtyElements ();
-	
+
+	void Paint (UIElement *toplevel, cairo_t *ctx, Region * region);
+	void UpdateLayout (UIElement *toplevel);
 	DirtyLists *down_dirty;
 	DirtyLists *up_dirty;
 	
@@ -295,6 +301,9 @@ private:
 	
 	// We set active_window to this whenever we are in fullscreen mode.
 	MoonWindow *fullscreen_window;
+	
+	// We can have multiple top level elements, these are stored as layers
+	HitTestCollection *layers;
 	
 	// This currently can only be a canvas.
 	UIElement *toplevel;

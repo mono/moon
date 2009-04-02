@@ -436,6 +436,13 @@ Surface::ProcessUpDirtyElements ()
 void
 Surface::UpdateLayout ()
 {
+	for (int i = 0; i < layers->GetCount (); i++)
+		UpdateLayout (layers->GetValueAt (i)->AsUIElement ());
+}
+
+void
+Surface::UpdateLayout (UIElement *toplevel)
+{
 	if (toplevel) {
 		Size available = Size (active_window->GetWidth (),
 				       active_window->GetHeight ());

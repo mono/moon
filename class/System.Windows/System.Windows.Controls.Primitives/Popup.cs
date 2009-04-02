@@ -33,7 +33,6 @@ using System.Windows.Markup;
 
 namespace System.Windows.Controls.Primitives {
 
-	[MonoTODO("likely need an unmanaged peer for this?")]
 	[ContentPropertyAttribute("Child", true)]
 	public sealed partial class Popup : FrameworkElement
 	{
@@ -79,7 +78,6 @@ namespace System.Windows.Controls.Primitives {
 			EventHandler h = IsOpen ? opened_event : closed_event;
 			if (h != null)
 				h (this, EventArgs.Empty);
-			Mono.NativeMethods.popup_set_active_surface (native);
 		}
 	}
 }

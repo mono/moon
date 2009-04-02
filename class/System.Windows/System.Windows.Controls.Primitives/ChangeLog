@@ -1,3 +1,11 @@
+2009-04-02  Alan McGovern  <amcgovern@novell.com>
+
+	* Popup.cs: Popups are treated as top level elements which are
+	  rendered on top of all other elements. To handle this a list
+	  of all toplevel elements (layers) is kept in the surface.
+	  Mouse events are captured within a toplevel element and not
+	  visible to other toplevel elements.
+
 2009-03-06  Andreia Gaita  <avidigal@novell.com>
 
 	* Popup.cs: Switch to using ObjectFromIntPtr to lookup objects.

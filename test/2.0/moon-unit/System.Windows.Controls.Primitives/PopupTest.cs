@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 namespace MoonTest.System.Windows.Controls.Primitives
 {
-//	[TestClass]
+	[TestClass]
 	public class PopupTest : Microsoft.Silverlight.Testing.SilverlightTest
 	{
 		[TestMethod]
@@ -225,7 +225,6 @@ namespace MoonTest.System.Windows.Controls.Primitives
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void VisualParent ()
 		{
 			Rectangle r = new Rectangle ();
