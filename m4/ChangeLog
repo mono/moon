@@ -1,3 +1,8 @@
+2009-04-03  Chris Toshok  <toshok@ximian.com>
+
+	* build-configuration.m4: remove the COMPATABILITY_BUGS stuff,
+	since that's for compatability with 1.0, which we no longer are.
+
 2009-04-02  Aaron Bockover  <abockover@novell.com>
 
 	* ffmpeg.m4:

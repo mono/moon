@@ -435,11 +435,7 @@ Clock::Begin ()
 		}
 	}
 	else if (repeat->HasDuration ()) {
-#ifndef COMPATIBILITY_BUGS
 		repeat_count = -1;
-#else
-		repeat_count = 1;
-#endif
 		repeat_time = (repeat->GetDuration() * timeline->GetSpeedRatio ());
 	}
 	else {

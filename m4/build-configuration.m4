@@ -56,18 +56,5 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 	if test x$with_logging = xyes; then
 		AC_DEFINE([LOGGING], [1], [Include support for logging with MOONLIGHT_DEBUG])
 	fi
-
-	dnl
-	dnl compatibility checks
-	dnl
-	AC_ARG_WITH(compatibility-bugs, AC_HELP_STRING([--with-compatibility-bugs=yes|no],
-		[If you want to build including Silverlight 1.0-compatible bugs (default=yes)]),
-		[], [with_compatibility_bugs=yes])
-
-	if test x$with_compatibility_bugs = xyes; then
-		CFLAGS="$CXXFLAGS -DCOMPATIBILITY_BUGS=1"
-		CXXFLAGS="$CXXFLAGS -DCOMPATIBILITY_BUGS=1"
-		AC_DEFINE([COMPATIBILITY_BUGS],[1],[Include compatibility bugs support])
-	fi
 ])
 
