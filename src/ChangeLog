@@ -1,3 +1,7 @@
+2009-04-03  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.cpp (Surface::IsAnythingDirty): correct sense of bool test.
+
 2009-04-03  Alan McGovern  <amcgovern@novell.com>
 
 	* textbox.h: TextBox does validation in both the getter and

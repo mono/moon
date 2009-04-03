@@ -156,7 +156,7 @@ bool
 Surface::IsAnythingDirty ()
 {
 	//return !down_dirty->IsEmpty() || !up_dirty->IsEmpty() || toplevel->dirty_flags & (DirtyMeasure | DirtyArrange);
-	return !measure_dirty->IsEmpty () || arrange_dirty->IsEmpty () || !down_dirty->IsEmpty() || !up_dirty->IsEmpty();
+	return !measure_dirty->IsEmpty () || !arrange_dirty->IsEmpty () || !down_dirty->IsEmpty() || !up_dirty->IsEmpty();
 }
 
 void
