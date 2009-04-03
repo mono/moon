@@ -54,7 +54,6 @@ namespace MoonTest.System.Windows.Interop {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void New ()
 		{
 			Settings settings = new Settings ();
@@ -62,7 +61,6 @@ namespace MoonTest.System.Windows.Interop {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Current ()
 		{
 			Settings settings = Application.Current.Host.Settings;
