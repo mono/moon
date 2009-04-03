@@ -338,10 +338,7 @@ FrameworkElement::Measure (Size availableSize)
 		size.height = round (size.height);
 	}
 
- 	if (size != GetDesiredSize ()) {
-		InvalidateArrange ();
-		SetDesiredSize (size);
-	}
+	SetDesiredSize (size);
 }
 
 Size
@@ -487,11 +484,13 @@ FrameworkElement::Arrange (Rect finalRect)
 	LayoutInformation::SetLayoutClip (this, rectangle);
 	rectangle->unref ();
 
+	/*
 	if (old != response) {
 		SizeChangedEventArgs *args = new SizeChangedEventArgs (old, response);
 
 		Emit(SizeChangedEvent, args);
 	}
+	*/
 	// XXX what do we do with finalRect.x and y?
 	//printf ("\u231a");
 }

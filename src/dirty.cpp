@@ -18,6 +18,7 @@
 
 #include "canvas.h"
 #include "uielement.h"
+#include "frameworkelement.h"
 #include "panel.h"
 #include "control.h"
 #include "runtime.h"
@@ -458,22 +459,41 @@ void
 Surface::UpdateLayout ()
 {
 	int i = 0;
+	List *size_dirty = new List ();
+
+	if (toplevel) {
+		Size available = Size (active_window->GetWidth (),
+				       active_window->GetHeight ());
+		Size *last = LayoutInformation::GetLastMeasure (toplevel);
+		if (!last || *last != available) {
+			LayoutInformation::SetLastMeasure (toplevel, &available);
+			toplevel->InvalidateMeasure ();
+			toplevel->InvalidateArrange ();
+		}
+	}
+
 	for (int i = 0; i < 250; i++) {
 		while (!measure_dirty->IsEmpty ()) {
-			DirtyNode *node = (DirtyNode *) list->First ();
+			DirtyNode *node = (DirtyNode *) measure_dirty->First ();
 			UIElement *element = node->element;
-			element->UpdateMeasure ();
+			element->DoMeasure ();
 
-			if (node != element->arrange_dirty_node)
+			if (node != element->measure_dirty_node)
 				g_warning ("Dirty node mismatch while measuring");
 
 			measure_dirty->Remove (element->measure_dirty_node);
 			element->measure_dirty_node = NULL;
 		}
-
+		
 		while (!arrange_dirty->IsEmpty () && measure_dirty->IsEmpty ()) {
-			DirtyNode *node = (DirtyNode *) list->First ();
-			UIElement *element->UpdateArrange ();
+			DirtyNode *node = (DirtyNode *) arrange_dirty->First ();
+			UIElement *element = node->element;
+			Size *prev = LayoutInformation::GetLastRenderSize (element);
+
+			element->DoArrange ();
+
+			if (!prev && LayoutInformation::GetLastRenderSize (element))
+				size_dirty->Append (new DirtyNode (element));
 
 			if (node != element->arrange_dirty_node)
 				g_warning ("Dirty node mismatch while arranging");
@@ -486,33 +506,18 @@ Surface::UpdateLayout ()
 			continue;
 
 		while (!size_dirty->IsEmpty () && measure_dirty->IsEmpty () && arrange_dirty->IsEmpty ()) {
-			DirtyNode *node = (DirtyNode *) list->First ();
+			DirtyNode *node = (DirtyNode *) size_dirty->First ();
 			UIElement *element = node->element;
 
-			Size old = *LayoutInformation::GetLastRenderSize (element);
-			SizeChangedEventArgs *args = new SizeChangedEventArgs (old, element->GetRenderSize ());
+			element->UpdateSize ();
 			
-			Emit (SizeChangedEventArgs, args);
-
-			uielement->ClearValue (LayoutInformation::LastRenderSizeProperty, false);
+			size_dirty->Remove (node);
 		}
-	}
-	
-	for (int i = 0; i < layers->GetCount (); i++) {
-		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
 
-		Size available = Size (active_window->GetWidth (),
-				       active_window->GetHeight ());
-		
-		layer->Measure (available);
-		Size desired = layer->GetDesiredSize ();
-		
-		if (layer->IsLayoutContainer ())
-			desired = desired.Max (available);
-		
-		layer->Arrange (Rect (Canvas::GetLeft (layer),
-				      Canvas::GetTop (layer), 
-				      desired.width, desired.height));
+		if (measure_dirty->IsEmpty () && size_dirty->IsEmpty () && arrange_dirty->IsEmpty ()) {
+			g_warning ("Got out early %d", i);
+			break;
+		}
 	}
 }
 

@@ -527,6 +527,8 @@ UIElement::InvalidateArrange ()
 
 	//if (GetVisualParent ())
 	//	GetVisualParent ()->InvalidateArrange ();
+
+	this->dirty_flags |= DirtyArrange;
 }
 
 void
@@ -541,7 +543,8 @@ UIElement::DoMeasure ()
 		    return;
 	}
 
-	UIElement *parent = GetParent ();
+	InvalidateArrange ();
+	UIElement *parent = GetVisualParent ();
 	if (parent && parent->IsLayoutContainer ())
 		parent->InvalidateMeasure ();
 }
@@ -550,16 +553,50 @@ void
 UIElement::DoArrange ()
 {
 	Rect *last = LayoutInformation::GetLayoutSlot (this);
+	Size previous_render = Size ();
+	UIElement *parent = GetVisualParent ();
+	Rect viewport;
+
+	if (!parent && !last) {
+		Size desired = GetDesiredSize ();
+
+		if (IsLayoutContainer ())
+			desired = desired.Max (*LayoutInformation::GetLastMeasure (this));
+
+		viewport = Rect (Canvas::GetLeft (this),
+				 Canvas::GetTop (this), 
+				 desired.width, desired.height);
+		last = &viewport;
+	}
+
 	if (last) {
-		Size previous_render = GetRenderSize ();
+		previous_render = GetRenderSize ();
 		Arrange (*last);
+
 		if (previous_render == GetRenderSize ())
 			return;
 	}
 
-	UIElement *parent = GetParent ();
 	if (parent && parent->IsLayoutContainer ())
 		parent->InvalidateArrange ();
+
+	LayoutInformation::SetLastRenderSize (this, &previous_render);
+}
+
+void
+UIElement::UpdateSize ()
+{
+	Size *old = LayoutInformation::GetLastRenderSize (this);
+	
+	if (old) {
+		SizeChangedEventArgs *args = new SizeChangedEventArgs (*old, GetRenderSize ());
+		
+		Emit (FrameworkElement::SizeChangedEvent, args);
+		
+		ClearValue (LayoutInformation::LastRenderSizeProperty, false);
+	} else {
+		g_warning ("changed for %p", this);
+	}
 }
 
 bool
