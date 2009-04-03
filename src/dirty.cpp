@@ -221,9 +221,15 @@ Surface::RemoveDirtyElement (UIElement *element)
 		up_dirty->RemoveDirtyNode (element->GetVisualLevel(), element->up_dirty_node);
 	if (element->down_dirty_node)
 		down_dirty->RemoveDirtyNode (element->GetVisualLevel(), element->down_dirty_node);
+	if (element->measure_dirty_node)
+		measure_dirty->Remove (element->measure_dirty_node);
+	if (element->arrange_dirty_node)
+		arrange_dirty->Remove (element->arrange_dirty_node);
 
 	element->down_dirty_node = NULL;
 	element->up_dirty_node = NULL;
+	element->measure_dirty_node = NULL;
+	element->arrange_dirty_node = NULL;
 }
 
 
@@ -515,7 +521,8 @@ Surface::UpdateLayout ()
 		}
 
 		if (measure_dirty->IsEmpty () && size_dirty->IsEmpty () && arrange_dirty->IsEmpty ()) {
-			g_warning ("Got out early %d", i);
+			if (i > 0)
+				g_warning ("Got out early %d", i);
 			break;
 		}
 	}
