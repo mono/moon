@@ -3,7 +3,7 @@ securitymodel_sources = CecilRocks.cs PlatformCode.cs
 CECIL=-r:$(MCS_PATH)/class/lib/net_1_1/Mono.Cecil.dll
 LIBS=$(CECIL) -r:Moonlight.SecurityModel.dll
 MONO_PLATFORM_CODE=$(MCS_PATH)/class/lib/net_2_1/
-MOONLIGHT_PLATFORM_CODE=$(pkglibdir)
+MOONLIGHT_PLATFORM_CODE=$(pkglibdir)/plugin
 SILVERLIGHT_PLATFORM_CODE="/cygdrive/c/Program\ Files/Microsoft\ Silverlight/2.0.31005.0/"
 
 SECURITY_ATTRIBUTES_AUTOMATIC_INFO= \

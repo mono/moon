@@ -5,11 +5,11 @@ if INCLUDE_BROWSER_MANAGED_CODE
 SUBDIRS += 2.0
 endif
 
-MOZ_PATH = `pwd`/$(top_builddir)/test/harness/shocker/.libs:$(pkglibdir)
+MOZ_PATH = `pwd`/$(top_builddir)/test/harness/shocker/.libs:$(pkglibdir)/plugin
 if HAVE_GECKO_1_9 
-LD_PATH = $(pkglibdir):`pkg-config --variable=sdkdir mozilla-gtkmozembed`/lib
+LD_PATH = $(pkglibdir)/plugin:`pkg-config --variable=sdkdir mozilla-gtkmozembed`/lib
 else
-LD_PATH = $(pkglibdir):`pkg-config --variable=libdir xulrunner-gtkmozembed`
+LD_PATH = $(pkglibdir)/plugin:`pkg-config --variable=libdir xulrunner-gtkmozembed`
 endif
 
 if INCLUDE_TESTING

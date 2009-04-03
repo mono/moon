@@ -109,6 +109,6 @@ inst-mono-%: $(OUTPUT_DIR)/%
 
 inst-%: $(OUTPUT_DIR)/%
 	-mkdir -p $(pkglibdir)
-	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(pkglibdir)/$*
-	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(pkglibdir)/$*.mdb
+	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(pkglibdir)/plugin/$*
+	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(pkglibdir)/plugin/$*.mdb
 
