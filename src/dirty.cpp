@@ -463,11 +463,23 @@ Surface::UpdateLayout ()
 			DirtyNode *node = (DirtyNode *) list->First ();
 			UIElement *element = node->element;
 			element->UpdateMeasure ();
+
+			if (node != element->arrange_dirty_node)
+				g_warning ("Dirty node mismatch while measuring");
+
+			measure_dirty->Remove (element->measure_dirty_node);
+			element->measure_dirty_node = NULL;
 		}
 
 		while (!arrange_dirty->IsEmpty () && measure_dirty->IsEmpty ()) {
 			DirtyNode *node = (DirtyNode *) list->First ();
 			UIElement *element->UpdateArrange ();
+
+			if (node != element->arrange_dirty_node)
+				g_warning ("Dirty node mismatch while arranging");
+
+			arrange_dirty->Remove (element->arrange_dirty_node);
+			element->arrange_dirty_node = NULL;
 		}
 		
 		if (!measure_dirty->IsEmpty ())

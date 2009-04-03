@@ -513,10 +513,10 @@ UIElement::InvalidateMeasure ()
 	if (GetSurface ())
 		GetSurface()->AddDirtyElement (this, DirtyMeasure);
 
-	if (GetVisualParent ())
-		GetVisualParent ()->InvalidateMeasure ();
+	//if (GetVisualParent ())
+	//	GetVisualParent ()->InvalidateMeasure ();
 
-	//this->dirty_flags |= DirtyMeasure;
+	this->dirty_flags |= DirtyMeasure;
 }
 
 void
@@ -525,20 +525,41 @@ UIElement::InvalidateArrange ()
 	if (GetSurface ())
 		GetSurface()->AddDirtyElement (this, DirtyArrange);
 
-	if (GetVisualParent ())
-		GetVisualParent ()->InvalidateArrange ();
+	//if (GetVisualParent ())
+	//	GetVisualParent ()->InvalidateArrange ();
 }
 
 void
 UIElement::DoMeasure ()
 {
-	// Measuring implies Arranging
-	InvalidateArrange();
+	Size *last = LayoutInformation::GetLastMeasure (this);
+	if (last) {
+		Size previous_desired = GetDesiredSize ();
+		Measure (*last);
+		
+		if (previous_desired == GetDesiredSize ())
+		    return;
+	}
+
+	UIElement *parent = GetParent ();
+	if (parent && parent->IsLayoutContainer ())
+		parent->InvalidateMeasure ();
 }
 
 void
 UIElement::DoArrange ()
 {
+	Rect *last = LayoutInformation::GetLayoutSlot (this);
+	if (last) {
+		Size previous_render = GetRenderSize ();
+		Arrange (*last);
+		if (previous_render == GetRenderSize ())
+			return;
+	}
+
+	UIElement *parent = GetParent ();
+	if (parent && parent->IsLayoutContainer ())
+		parent->InvalidateArrange ();
 }
 
 bool
