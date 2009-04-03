@@ -4,7 +4,7 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 	dnl debug checks
 	dnl
 	
-	AC_ARG_WITH(debug, AC_HELP_STRING([--with-debug=yes,no],
+	AC_ARG_WITH(debug, AC_HELP_STRING([--with-debug=yes|no],
 		[If you want to enable debug support (default=yes)]),
 		[], [with_debug=yes])
 
@@ -26,7 +26,7 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 	dnl sanity checks
 	dnl
 
-	AC_ARG_WITH(sanity-checks, AC_HELP_STRING([--with-sanity-checks=yes,no],
+	AC_ARG_WITH(sanity-checks, AC_HELP_STRING([--with-sanity-checks=yes|no],
 		[If you want to enable sanity checks (default=no)]),
 		[], [with_sanity_checks=no])
 	if test x$with_sanity_checks = xyes; then
@@ -37,7 +37,7 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 	dnl object tracking
 	dnl
 
-	AC_ARG_WITH(object-tracking, AC_HELP_STRING([--with-object-tracking=yes,no],
+	AC_ARG_WITH(object-tracking, AC_HELP_STRING([--with-object-tracking=yes|no],
 		[If you want to enable object tracking (default=no)]),
 		[], [with_object_tracking=no])
 
@@ -49,7 +49,7 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 	dnl logging
 	dnl
 
-	AC_ARG_WITH(logging, AC_HELP_STRING([--with-logging=yes,no],
+	AC_ARG_WITH(logging, AC_HELP_STRING([--with-logging=yes|no],
 		[If you want to enable support for logging with MOONLIGHT_DEBUG (default=yes)]),
 		[], [with_logging=yes])
 
@@ -60,7 +60,7 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 	dnl
 	dnl compatibility checks
 	dnl
-	AC_ARG_WITH(compatibility-bugs, AC_HELP_STRING([--with-compatibility-bugs=yes,no],
+	AC_ARG_WITH(compatibility-bugs, AC_HELP_STRING([--with-compatibility-bugs=yes|no],
 		[If you want to build including Silverlight 1.0-compatible bugs (default=yes)]),
 		[], [with_compatibility_bugs=yes])
 

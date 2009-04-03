@@ -4,7 +4,7 @@ AC_DEFUN([MOONLIGHT_CHECK_SOUND],
 	dnl ALSA
 	dnl
 
-	AC_ARG_WITH(alsa, AC_HELP_STRING([--with-alsa=yes,no], 
+	AC_ARG_WITH(alsa, AC_HELP_STRING([--with-alsa=yes|no], 
 		[If you want to enable alsa sound support]),
 		[], [with_alsa=yes])
 
@@ -26,7 +26,7 @@ AC_DEFUN([MOONLIGHT_CHECK_SOUND],
 	dnl PulseAudio
 	dnl
 
-	AC_ARG_WITH(pulseaudio, AC_HELP_STRING([--with-pulseaudio=yes,no], 
+	AC_ARG_WITH(pulseaudio, AC_HELP_STRING([--with-pulseaudio=yes|no], 
 		[If you want to enable pulseaudio sound support]),
 		[], [with_pulseaudio=yes])
 

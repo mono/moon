@@ -1,6 +1,6 @@
 AC_DEFUN([MOONLIGHT_CHECK_FFMPEG],
 [
-	AC_ARG_WITH(ffmpeg, AC_HELP_STRING([--with-ffmpeg=yes,no],
+	AC_ARG_WITH(ffmpeg, AC_HELP_STRING([--with-ffmpeg=yes|no],
 		[If you want to enable support for ffmpeg]),
 		[], [with_ffmpeg=yes])
 

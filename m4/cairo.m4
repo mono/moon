@@ -1,6 +1,6 @@
 AC_DEFUN([MOONLIGHT_CHECK_CAIRO],
 [
-	AC_ARG_WITH(cairo, AC_HELP_STRING([--with-cairo=embedded,system],
+	AC_ARG_WITH(cairo, AC_HELP_STRING([--with-cairo=embedded|system],
 		[Enable linking against system cairo]),
 		[], [with_cairo=embedded])
 

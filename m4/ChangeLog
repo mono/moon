@@ -1,0 +1,9 @@
+2009-04-02  Aaron Bockover  <abockover@novell.com>
+
+	* ffmpeg.m4:
+	* build-configuration.m4:
+	* mozilla.m4:
+	* sound.m4:
+	* cairo.m4: Change the , to a | in AC_HELP_STRING because aclocal in
+	openSUSE 11.0 is old and sucks and thinks it's an argument separator
+

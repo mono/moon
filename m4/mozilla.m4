@@ -8,7 +8,7 @@ AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 	dnl Firefox 3
 	dnl
 
-	AC_ARG_WITH(ff3, AC_HELP_STRING([--with-ff3=no,yes], 
+	AC_ARG_WITH(ff3, AC_HELP_STRING([--with-ff3=no|yes], 
 		[If you want to enable the xulrunner 1.9 (Firefox 3) bridge]),
 		[], [with_ff3=yes])
 
@@ -33,7 +33,7 @@ AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 	dnl Firefox 2
 	dnl
 
-	AC_ARG_WITH(ff2, AC_HELP_STRING([--with-ff2=no,yes],
+	AC_ARG_WITH(ff2, AC_HELP_STRING([--with-ff2=no|yes],
 		[If you want to enable the xulrunner 1.8.1 (Firefox 2)]),
 		[], [with_ff2=yes])
 
