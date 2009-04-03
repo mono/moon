@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008, 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,6 +28,7 @@
 
 using System;
 using Mono;
+using Mono.Xaml;
 
 namespace System.Windows.Interop {
 	public sealed class Settings
@@ -36,19 +37,19 @@ namespace System.Windows.Interop {
 		{
 		}
 
-		//FIXME: this should enable the fps counter in the browser status bar
-		public bool EnableFrameRateCounter
-		{
+		[MonoTODO ("this should enable the fps counter in the browser status bar")]
+		public bool EnableFrameRateCounter {
 			get { return false; }
 			set {}
 		}
 
-		//FIXME
 		public bool EnableHTMLAccess {
-			get { return false ;}
+			get {
+				return NativeMethods.plugin_instance_get_enable_html_access (XamlLoader.PluginInDomain);
+			}
 		}
 
-		//FIXME
+		[MonoTODO]
 		public bool EnableRedrawRegions {
 			get { return false; }
 			set {}
@@ -63,9 +64,10 @@ namespace System.Windows.Interop {
 			}
 		}
 
-		//FIXME
 		public bool Windowless {
-			get { return false; }
+			get {
+				return NativeMethods.plugin_instance_get_windowless (XamlLoader.PluginInDomain);
+			}
 		}
 	}
 }

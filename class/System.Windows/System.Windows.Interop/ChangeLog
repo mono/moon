@@ -1,3 +1,8 @@
+2009-04-03  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Settings.cs: Implement EnableHTMLAccess and Windowless properties
+	and add MonoTODO on the other, non-implemented, properties.
+
 2009-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* SilverlightHost.cs: Implement IsLoaded, Background and
