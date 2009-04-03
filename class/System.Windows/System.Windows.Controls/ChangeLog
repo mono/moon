@@ -1,3 +1,7 @@
+2009-04-02  Aaron Bockover  <abockover@novell.com>
+
+	* ContentPresenter.cs: Nuke a BOM on which gmcs 2.0.1 explodes
+
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
 	* Control.cs: track change of MouseButton -> MouseLeftButton, and

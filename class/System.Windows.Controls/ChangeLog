@@ -1,3 +1,8 @@
+2009-04-02  Aaron Bockover  <abockover@novell.com>
+
+	* Makefile.am: Add System.Windows.Controls.Resource.resources and
+	System.Windows.Controls.g.resources to DISTCLEANFILES so distcheck passes
+
 2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Use the correct keyfile to sign.

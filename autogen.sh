@@ -22,6 +22,8 @@ if [ -n "$MONO_PATH" ]; then
 	export PATH
 fi
 
+ACLOCAL_FLAGS="-I m4 $ACLOCAL_FLAGS"
+
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
   echo
   echo "**Error**: You must have \`autoconf' installed to compile Mono."

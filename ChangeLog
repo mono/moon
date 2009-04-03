@@ -1,3 +1,26 @@
+2009-04-02  Aaron Bockover  <abockover@novell.com>
+
+	* configure.ac: Lots of clean up, easier to read, call the new macros;
+	changed the tarball name from moon to moonlight, version from 1.9 to 1.9.0
+	to make packaging more consistent for distributions; make sure -I m4
+	gets passed to aclocal when running 'make' and configure has changed
+
+	* m4/: Factored out all the major checks in configure.ac into easier to
+	read and maintain m4 macros; most of the logic is identical - major changes
+	documented below
+
+	* m4/mono.m4: Completely rewrote the Mono checks; nuked --with-managed;
+	managed code now implied/required; added --disable-browser-support and
+	--disable-desktop-support options; if browser support is disabled, allow
+	building with a Mono as old as 2.0; define MONO_ENABLE_APP_DOMAIN_CONTROL
+	and MONO_ENABLE_CORECLR_SECURITY if Mono 2.5 or better is available, which
+	is required for the browser plugin
+
+	* autogen.sh: Updated to pass -I m4 to aclocal
+
+	* Makefile.am: Fix up SUBDIRS; don't enter the plugins directory if
+	we're not going to build the plugin
+
 2009-04-02  Jb Evain  <jbevain@novell.com>
 
 	* Makefile.am: add scripts to SUBDIRS.

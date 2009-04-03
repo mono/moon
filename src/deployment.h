@@ -102,7 +102,8 @@ protected:
 
 private:
 	Deployment (MonoDomain *domain);
-	
+	void InnerConstructor ();
+
 	void AbortAllDownloaders ();
 	void DrainUnrefs ();
 	static gboolean DrainUnrefs (gpointer ptr);

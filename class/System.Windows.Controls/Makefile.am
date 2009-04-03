@@ -91,6 +91,10 @@ clean-local:
 	-rm -rf $(assemblies) 
 	-rm -rf *.dll *.mdb
 
+DISTCLEANFILES = \
+	System.Windows.Controls.Resource.resources \
+	System.Windows.Controls.g.resources
+
 if INCLUDE_BROWSER_MANAGED_CODE
 install-sl:
 else

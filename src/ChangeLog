@@ -1,3 +1,18 @@
+2009-04-02  Aaron Bockover  <abockover@novell.com>
+
+	Do not build code that requires Mono 2.5 or better in the case where
+	we want Moonlight to run only in an embedded desktop app scenario; in
+	this case, CoreCLR security and non-default app domains are not needed
+
+	* security.c (security_enable_coreclr): If MONO_ENABLE_CORECLR_SECURITY
+	is not defined, this function is now a noop
+
+	* deployment.cpp: If MONO_ENABLE_APP_DOMAIN_CONTROL is not defined, do
+	not implement app domain loading/unloading; factor out all common init
+	code that was duplicated in both ctors into InnerConstructor
+	
+	* deployment.h: Define InnerConstructor
+
 2009-04-02  Larry Ewing  <lewing@novell.com>
 
 	* uielement.h:

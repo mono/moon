@@ -1,5 +1,6 @@
 MONO_SUBDIRS=
 PERF_SUBDIR=
+PLUGIN_SUBDIR=
 
 if INCLUDE_MANAGED_CODE
 BUILD_TOOLS = tools/respack
@@ -22,7 +23,21 @@ endif INCLUDE_TESTING
 TOOLS_SUBDIR = tools
 endif !PLUGIN_INSTALL
 
-SUBDIRS = $(subdirs) $(BUILD_TOOLS) src plugin $(MONO_SUBDIRS) $(TOOLS_SUBDIR) $(TEST_SUBDIR) $(PERF_SUBDIR) $(MONO_EXAMPLES) scripts
+if HAVE_MOZILLA
+PLUGIN_SUBDIR += plugin
+endif
+
+SUBDIRS = $(subdirs) \
+	m4 \
+	$(BUILD_TOOLS) \
+	src \
+	$(PLUGIN_SUBDIR) \
+	$(MONO_SUBDIRS) \
+	$(TOOLS_SUBDIR) \
+	$(TEST_SUBDIR) \
+	$(PERF_SUBDIR) \
+	$(MONO_EXAMPLES) \
+	scripts
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA=moon.pc

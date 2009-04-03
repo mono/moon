@@ -64,7 +64,8 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 	pthread_mutex_init (&hash_mutex, NULL);
 	
 	enable_vm_stack_trace ();
-	
+
+#if MONO_ENABLE_APP_DOMAIN_CONTROL
 	if (create_root_domain) {
 		const gchar *trace_options;
 		const gchar *moon_path;
@@ -118,6 +119,7 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");
 	}
 	else {
+#endif
 		root_domain = mono_domain_get ();
 
 		Deployment::desktop_deployment = new Deployment (root_domain);
@@ -126,7 +128,9 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		Application *desktop_app = new Application ();
 		desktop_deployment->SetCurrentApplication (desktop_app);
 		desktop_app->unref ();
+#if MONO_ENABLE_APP_DOMAIN_CONTROL
 	}
+#endif
 
 	return true;
 }
@@ -210,32 +214,31 @@ Deployment::Deployment (MonoDomain *domain)
 	: DependencyObject (this, Type::DEPLOYMENT)
 {
 	this->domain = domain;
-	current_app = NULL;
-	pending_unrefs = NULL;
-	objects_created = 0;
-	objects_destroyed = 0;
-	
-#if OBJECT_TRACKING
-	objects_alive = NULL;
-	pthread_mutex_init (&objects_alive_mutex, NULL);
-#endif
-	
-	pthread_setspecific (tls_key, this);
-	
-	pthread_mutex_lock (&hash_mutex);
-	g_hash_table_insert (current_hash, domain, this);
-	pthread_mutex_unlock (&hash_mutex);
-
-	types = new Types ();
-	types->Initialize ();
-	downloaders = new List ();
+	InnerConstructor ();
 }
 
 Deployment::Deployment()
 	: DependencyObject (this, Type::DEPLOYMENT)
 {
+#if MONO_ENABLE_APP_DOMAIN_CONTROL
 	char *domain_name = g_strdup_printf ("moonlight-%p", this);
+	mono_domain_set (root_domain, FALSE);
+	domain = mono_domain_create_appdomain (domain_name, NULL);
+	g_free (domain_name);
 
+	LOG_DEPLOYMENT ("Deployment::Deployment (): Created domain %p for deployment %p\n", domain, this);
+
+	mono_domain_set (domain, FALSE);
+#else
+	domain = NULL;
+#endif
+
+	InnerConstructor ();
+}
+
+void
+Deployment::InnerConstructor ()
+{
 	current_app = NULL;
 	pending_unrefs = NULL;
 	objects_created = 0;
@@ -245,16 +248,8 @@ Deployment::Deployment()
 	objects_alive = NULL;
 	pthread_mutex_init (&objects_alive_mutex, NULL);
 #endif
-	
-	mono_domain_set (root_domain, FALSE);
-	domain = mono_domain_create_appdomain (domain_name, NULL);
-	g_free (domain_name);
 
 	pthread_setspecific (tls_key, this);
-
-	LOG_DEPLOYMENT ("Deployment::Deployment (): Created domain %p for deployment %p\n", domain, this);
-
-	mono_domain_set (domain, FALSE);
 
 	pthread_mutex_lock (&hash_mutex);
 	g_hash_table_insert (current_hash, domain, this);
@@ -300,10 +295,12 @@ Deployment::~Deployment()
 	pthread_mutex_unlock (&hash_mutex);
 
 	mono_domain_set (root_domain, FALSE);
-	
+
+#if MONO_ENABLE_APP_DOMAIN_CONTROL
 	if (domain != root_domain)
 		mono_domain_unload (domain);
-	
+#endif
+
 	LOG_DEPLOYMENT ("Deployment::~Deployment (): %p\n", this);
 
 #if SANITY
@@ -370,7 +367,10 @@ Deployment::Dispose ()
 	AbortAllDownloaders ();
 	
 	mono_gc_collect (mono_gc_max_generation ());
+
+#if MONO_ENABLE_APP_DOMAIN_CONTROL
 	mono_gc_invoke_finalizers ();
+#endif
 
 	if (current_app != NULL)
 		current_app->Dispose ();

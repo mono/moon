@@ -135,6 +135,7 @@ namespace System.Windows.Browser {
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Advanced)]
+		[CLSCompliant (false)]
 		public Dispatcher Dispatcher {
 			get { return Dispatcher.Main; }
 		}

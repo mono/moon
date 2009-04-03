@@ -1,3 +1,8 @@
+2009-04-02  Aaron Bockover  <abockover@novell.com>
+
+	* ScriptObject.cs: Add [CLSCompliant (false)] attr to Dispatched to avoid
+	gmcs 2.0.1 throwing an error when it should throw a warning
+
 2009-04-01  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectWrapper.cs, HtmlObject.cs, HtmlEventArgs.cs: 
