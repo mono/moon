@@ -386,6 +386,9 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mo
 	id = NULL;
 
 	windowless = false;
+	// XXX default is true for same-domain applications, false for cross-domain applications XXX
+	enable_html_access = true;
+	allow_html_popup_window = false;
 	xembed_supported = FALSE;
 
 	bridge = NULL;
@@ -553,6 +556,12 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "id")) {
 			id = g_strdup (argv [i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "enablehtmlaccess")) {
+			enable_html_access = !g_ascii_strcasecmp (argv [i], "true");
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "allowhtmlpopupwindow")) {
+			allow_html_popup_window = !g_ascii_strcasecmp (argv [i], "true");
 		}
 		else {
 		  //fprintf (stderr, "unhandled attribute %s='%s' in PluginInstance::Initialize\n", argn[i], argv[i]);
@@ -1534,7 +1543,13 @@ PluginInstance::SetEnableRedrawRegions (bool value)
 bool
 PluginInstance::GetEnableHtmlAccess ()
 {
-	return true;
+	return enable_html_access;
+}
+
+bool
+PluginInstance::GetAllowHtmlPopupWindow ()
+{
+	return allow_html_popup_window;
 }
 
 bool
@@ -1689,6 +1704,24 @@ void *
 plugin_instance_evaluate (PluginInstance *instance, const char *code)
 {
 	return instance->Evaluate (code);
+}
+
+gboolean
+plugin_instance_get_enable_html_access (PluginInstance *instance)
+{
+	return instance->GetEnableHtmlAccess ();
+}
+
+gboolean
+plugin_instance_get_allow_html_popup_window (PluginInstance *instance)
+{
+	return instance->GetAllowHtmlPopupWindow ();
+}
+
+gboolean
+plugin_instance_get_windowless (PluginInstance *instance)
+{
+	return instance->GetWindowless ();
 }
 
 /*

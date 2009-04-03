@@ -1,3 +1,8 @@
+2009-04-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp|h: Parse enablehtmlaccess and allowhtmlpopupwindow
+	from the plugin properties. Add missing properties and C bindings.
+
 2009-04-01  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* plugin-class.cpp: use Uri::ToString instead of originalstring.

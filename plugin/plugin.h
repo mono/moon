@@ -92,6 +92,7 @@ class PluginInstance
 	bool GetEnableRedrawRegions ();
 	void SetEnableRedrawRegions (bool value);
 	bool GetEnableHtmlAccess ();
+	bool GetAllowHtmlPopupWindow ();
 	bool GetWindowless ();
 	void SetMaxFrameRate (int value);
 	int  GetMaxFrameRate ();
@@ -172,6 +173,8 @@ class PluginInstance
 	char *id;
 
 	bool windowless;
+	bool enable_html_access;
+	bool allow_html_popup_window;
 	int maxFrameRate;
 
 	BrowserBridge *bridge;
@@ -330,6 +333,10 @@ void plugin_instance_report_exception (PluginInstance *instance, char *msg, char
 void *plugin_instance_load_url (PluginInstance *instance, char *url, int32_t *length);
 
 void *plugin_instance_evaluate (PluginInstance *instance, const char *code);
+
+gboolean plugin_instance_get_enable_html_access (PluginInstance *instance);
+gboolean plugin_instance_get_allow_html_popup_window (PluginInstance *instance);
+gboolean plugin_instance_get_windowless (PluginInstance *instance);
 
 PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *surface);
 
