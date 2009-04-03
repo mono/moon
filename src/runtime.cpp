@@ -557,82 +557,34 @@ Surface::ProcessUpdates ()
 void
 Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
 {
-	Rect r = Rect (x, y, width, height);
-	Region region = Region (r);
-	Paint (ctx, &region);
+       Rect r = Rect (x, y, width, height);
+       Region region = Region (r);
+       Paint (ctx, &region);
 }
 
 void
 Surface::Paint (cairo_t *ctx, Region *region)
 {
-	if (!toplevel)
-		return;
 	for (int i = 0; i < layers->GetCount (); i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
-		Paint (layer, ctx, region);
+		layer->Paint (ctx, region, NULL);
 	}
-}
-
-void
-Surface::Paint (UIElement *toplevel, cairo_t *ctx, Region *region)
-{
-#if FRONT_TO_BACK_STATS
-	uielements_rendered_front_to_back = 0;
-	uielements_rendered_back_to_front = 0;
-#endif
-
-	if (IsAnythingDirty())
-		ProcessDirtyElements ();
-
-	bool did_front_to_back = false;
-
-	List *render_list = new List ();
-	Region *copy = new Region (region);
-
-	if (moonlight_flags & RUNTIME_INIT_RENDER_FRONT_TO_BACK) {
-		toplevel->FrontToBack (copy, render_list);
-
-		if (!render_list->IsEmpty ()) {
-			while (RenderNode *node = (RenderNode*)render_list->First()) {
-#if FRONT_TO_BACK_STATS
-				uielements_rendered_front_to_back ++;
-#endif
-				node->Render (ctx);
-
-				render_list->Remove (node);
-			}
-
-			did_front_to_back = true;
-		}
-
-		delete render_list;
-		delete copy;
-	}
-
-	if (!did_front_to_back) {
-		toplevel->DoRender (ctx, region);
-	}
-
-#if FRONT_TO_BACK_STATS
-	printf ("UIElements rendered front-to-back: %d\n", uielements_rendered_front_to_back);
-	printf ("UIElements rendered back-to-front: %d\n", uielements_rendered_back_to_front);
-#endif
 
 #ifdef DEBUG
-		if (debug_selected_element) {
-			Rect bounds = debug_selected_element->GetSubtreeBounds();
+	if (debug_selected_element) {
+		Rect bounds = debug_selected_element->GetSubtreeBounds();
 // 			printf ("debug_selected_element is %s\n", debug_selected_element->GetName());
 // 			printf ("bounds is %g %g %g %g\n", bounds.x, bounds.y, bounds.w, bounds.h);
-			cairo_save (ctx);
-			//RenderClipPath (ctx);
-			cairo_new_path (ctx);
-			cairo_identity_matrix (ctx);
-			cairo_set_source_rgba (ctx, 1.0, 0.5, 0.2, 1.0);
-			cairo_set_line_width (ctx, 1);
-			cairo_rectangle (ctx, bounds.x, bounds.y, bounds.width, bounds.height);
-			cairo_stroke (ctx);
-			cairo_restore (ctx);
-		}
+		cairo_save (ctx);
+		//RenderClipPath (ctx);
+		cairo_new_path (ctx);
+		cairo_identity_matrix (ctx);
+		cairo_set_source_rgba (ctx, 1.0, 0.5, 0.2, 1.0);
+		cairo_set_line_width (ctx, 1);
+		cairo_rectangle (ctx, bounds.x, bounds.y, bounds.width, bounds.height);
+		cairo_stroke (ctx);
+		cairo_restore (ctx);
+	}
 #endif
 }
 

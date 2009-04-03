@@ -1,5 +1,19 @@
 2009-04-02  Larry Ewing  <lewing@novell.com>
 
+	* uielement.h:
+	* uielement.cpp: move the bulk of the paint ftb logic from surface
+	to here since we will be using this in more places.  Make some of
+	the ftb logic protected now.
+
+	* bitmapsource.h:
+	* writeablebitmap.h:
+	* writeablebitmap.cpp: Land Geoff's initial Render implementation
+	with a few changes.
+
+	Regenerate.
+	
+2009-04-02  Larry Ewing  <lewing@novell.com>
+	
 	* dirty.cpp:
 	* runtime.h:
 	* runtime.cpp: Treat full_screen_message as another layer.  Make

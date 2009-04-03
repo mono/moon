@@ -228,6 +228,8 @@ class InkPresenter : public Canvas {
  protected:
 	virtual ~InkPresenter () {}
 
+	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
+
  public:
 	/* @PropertyType=StrokeCollection,AutoCreateValue,GenerateAccessors */
 	const static int StrokesProperty;
@@ -235,7 +237,6 @@ class InkPresenter : public Canvas {
 	/* @GenerateCBinding,GeneratePInvoke */
 	InkPresenter ();
 	
-	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);

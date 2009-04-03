@@ -154,18 +154,19 @@ public:
 	//   exposed is delimited by x, y, width, height
 	//
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
-	
+
+	//
+	// Paint:
+	//   Do an optimized render pass on the this element and it's
+	//   subtree.
+	//
+	void Paint (cairo_t *cr, Region *region, cairo_matrix_t *matrix);
+
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
 	void DoRender (cairo_t *cr, Region *region);
 	
 	bool UseBackToFront ();
-	void FrontToBack (Region *surface_region, List *render_list);
-	virtual void PreRender (cairo_t *cr, Region *region, bool front_to_back);
-	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
-
-	static void CallPreRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back);
-	static void CallPostRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back);
 
 	//
 	// GetSizeForBrush:
@@ -500,7 +501,14 @@ protected:
 	// Absolute affine transform, precomputed with all of its data
 	cairo_matrix_t absolute_xform;
 	cairo_matrix_t layout_xform;
-	
+
+	void FrontToBack (Region *surface_region, List *render_list);
+	virtual void PreRender (cairo_t *cr, Region *region, bool front_to_back);
+	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
+
+	static void CallPreRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back);
+	static void CallPostRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back);
+
 private:
 	int visual_level;
 	UIElement *visual_parent;

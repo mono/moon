@@ -38,12 +38,21 @@ namespace System.Windows.Media.Imaging
 	public partial class WriteableBitmap : BitmapSource
 	{
 		IntPtr buffer;
+		bool rendered;
+
+		public WriteableBitmap (BitmapSource source) : base (NativeMethods.writeable_bitmap_new ())
+		{
+			rendered = true;
+			if (source != null)
+				NativeMethods.writeable_bitmap_initialize_from_bitmap_source (native, source.native);
+		}
 
 		public WriteableBitmap (int width, int height, PixelFormat format) : base (NativeMethods.writeable_bitmap_new ())
 		{
 			PixelWidth = width;
 			PixelHeight = height;
 			PixelFormat = format;
+			rendered = false;
 
 			checked {
 				buffer = Marshal.AllocHGlobal (width * height * 4);
@@ -53,6 +62,9 @@ namespace System.Windows.Media.Imaging
 
 		public int this[int index] {
 			get {
+				if (rendered)
+					throw new NullReferenceException ();
+
 				return Marshal.ReadInt32 (buffer, index*4);
 			}
 			set {
@@ -64,6 +76,20 @@ namespace System.Windows.Media.Imaging
 			}
 		}
 		
+		public void Render (UIElement element, Transform transform) {
+			Lock ();
+
+			if (element == null)
+				throw new NullReferenceException ("element cannot be null");
+			if (transform == null)
+				throw new NullReferenceException ("transform cannot be null");
+
+			rendered = true;
+			NativeMethods.writeable_bitmap_render (native, element.native, transform.native);
+
+			Unlock ();
+		}
+
 		public void Invalidate () {
 			NativeMethods.bitmap_source_invalidate (native);
 		}

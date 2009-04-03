@@ -149,10 +149,10 @@ public:
 	
 	// allows you to redirect painting of the surface to an
 	// arbitrary cairo context.
+	void Paint (cairo_t *ctx, Region *region);
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Paint (cairo_t *ctx, int x, int y, int width, int height);
-	void Paint (cairo_t *ctx, Region *);
-	
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Attach (UIElement *toplevel);
 
@@ -285,7 +285,6 @@ private:
 	void ProcessDownDirtyElements ();
 	void ProcessUpDirtyElements ();
 
-	void Paint (UIElement *toplevel, cairo_t *ctx, Region * region);
 	DirtyLists *down_dirty;
 	DirtyLists *up_dirty;
 	

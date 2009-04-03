@@ -1743,7 +1743,13 @@ VisualBrush *visual_brush_new (void);
  * WriteableBitmap
  **/
 /* @GeneratePInvoke */
+gpointer writeable_bitmap_initialize_from_bitmap_source (WriteableBitmap *instance, BitmapSource *source);
+
+/* @GeneratePInvoke */
 void writeable_bitmap_lock (WriteableBitmap *instance);
+
+/* @GeneratePInvoke */
+void writeable_bitmap_render (WriteableBitmap *instance, UIElement *element, Transform *transform);
 
 /* @GeneratePInvoke */
 void writeable_bitmap_unlock (WriteableBitmap *instance);

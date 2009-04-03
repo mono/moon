@@ -1102,6 +1102,52 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 }
 
 void
+UIElement::Paint (cairo_t *ctx,  Region *region, cairo_matrix_t *xform)
+{
+	// FIXME xform is ignored for now
+	if (xform)
+		g_warning ("passing a transform to UIElement::Paint is not yet supported");
+
+#if FRONT_TO_BACK_STATS
+	uielements_rendered_front_to_back = 0;
+	uielements_rendered_back_to_front = 0;
+#endif
+
+	bool did_front_to_back = false;
+	List *render_list = new List ();
+	Region *copy = new Region (region);
+
+	if (moonlight_flags & RUNTIME_INIT_RENDER_FRONT_TO_BACK) {
+		FrontToBack (copy, render_list);
+		
+		if (!render_list->IsEmpty ()) {
+			while (RenderNode *node = (RenderNode*)render_list->First()) {
+#if FRONT_TO_BACK_STATS
+				uielements_rendered_front_to_back ++;
+#endif
+				node->Render (ctx);
+
+				render_list->Remove (node);
+			}
+
+			did_front_to_back = true;
+		}
+
+		delete render_list;
+		delete copy;
+	}
+
+	if (!did_front_to_back) {
+		DoRender (ctx, region);
+	}
+
+#if FRONT_TO_BACK_STATS
+	printf ("UIElements rendered front-to-back for: %s(%p)\n", uielements_rendered_front_to_back, GetName (), this);
+	printf ("UIElements rendered back-to-front for: %s(%p)\n", uielements_rendered_back_to_front, GetName (), this);
+#endif
+}
+
+void
 UIElement::CallPreRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back)
 {
 	element->PreRender (cr, region, front_to_back);

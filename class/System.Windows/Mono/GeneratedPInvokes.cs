@@ -1724,8 +1724,16 @@ namespace Mono {
 		public extern static IntPtr visual_brush_new ();
 
 		[DllImport ("moon")]
+		// gpointer writeable_bitmap_initialize_from_bitmap_source (WriteableBitmap *instance, BitmapSource *source);
+		public extern static IntPtr writeable_bitmap_initialize_from_bitmap_source (IntPtr instance, IntPtr source);
+
+		[DllImport ("moon")]
 		// void writeable_bitmap_lock (WriteableBitmap *instance);
 		public extern static void writeable_bitmap_lock (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void writeable_bitmap_render (WriteableBitmap *instance, UIElement *element, Transform *transform);
+		public extern static void writeable_bitmap_render (IntPtr instance, IntPtr element, IntPtr transform);
 
 		[DllImport ("moon")]
 		// void writeable_bitmap_unlock (WriteableBitmap *instance);

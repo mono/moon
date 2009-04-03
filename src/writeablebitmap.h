@@ -29,7 +29,11 @@ class WriteableBitmap : public BitmapSource {
 	/* @GenerateCBinding,GeneratePInvoke */
 	WriteableBitmap ();
 
-	
+	/* @GenerateCBinding,GeneratePInvoke */
+	gpointer InitializeFromBitmapSource (BitmapSource *source);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual void Render (UIElement *element, Transform *transform);
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void Lock ();
 	/* @GenerateCBinding,GeneratePInvoke */

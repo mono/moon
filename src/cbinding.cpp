@@ -3895,6 +3895,17 @@ visual_brush_new (void)
 /**
  * WriteableBitmap
  **/
+gpointer
+writeable_bitmap_initialize_from_bitmap_source (WriteableBitmap *instance, BitmapSource *source)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (gpointer) 0;
+	
+	return instance->InitializeFromBitmapSource (source);
+}
+
+
 void
 writeable_bitmap_lock (WriteableBitmap *instance)
 {
@@ -3902,6 +3913,16 @@ writeable_bitmap_lock (WriteableBitmap *instance)
 		return;
 	
 	instance->Lock ();
+}
+
+
+void
+writeable_bitmap_render (WriteableBitmap *instance, UIElement *element, Transform *transform)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Render (element, transform);
 }
 
 

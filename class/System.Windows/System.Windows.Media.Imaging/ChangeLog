@@ -1,3 +1,7 @@
+2009-04-02  Larry Ewing  <lewing@novell.com>
+
+	* WriteableBitmap.cs: Land Geoffs Render changes.
+
 2009-04-02  Geoff Norton  <gnorton@novell.com>
 
 	* WriteableBitmap.cs: Avoid a integer overflow that could have us
