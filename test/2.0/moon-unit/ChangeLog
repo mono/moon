@@ -1,3 +1,8 @@
+2009-04-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/TextBoxTest.cs: This test is passing
+	  now.
+
 2009-04-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Controls/PanelTest.cs:
