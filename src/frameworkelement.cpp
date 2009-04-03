@@ -338,7 +338,10 @@ FrameworkElement::Measure (Size availableSize)
 		size.height = round (size.height);
 	}
 
-	SetDesiredSize (size);
+ 	if (size != GetDesiredSize ()) {
+		InvalidateArrange ();
+		SetDesiredSize (size);
+	}
 }
 
 Size

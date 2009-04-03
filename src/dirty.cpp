@@ -457,12 +457,35 @@ Surface::ProcessUpDirtyElements ()
 void
 Surface::UpdateLayout ()
 {
-	while (!measure_dirty->IsEmpty () || !arrange_dirty->IsEmpty ()) {
-		if (!measure_dirty->IsEmpty ()) {
-			DirtyNode node = (DirtyNode *) list->First ();
+	int i = 0;
+	for (int i = 0; i < 250; i++) {
+		while (!measure_dirty->IsEmpty ()) {
+			DirtyNode *node = (DirtyNode *) list->First ();
+			UIElement *element = node->element;
+			element->UpdateMeasure ();
+		}
+
+		while (!arrange_dirty->IsEmpty () && measure_dirty->IsEmpty ()) {
+			DirtyNode *node = (DirtyNode *) list->First ();
+			UIElement *element->UpdateArrange ();
+		}
+		
+		if (!measure_dirty->IsEmpty ())
+			continue;
+
+		while (!size_dirty->IsEmpty () && measure_dirty->IsEmpty () && arrange_dirty->IsEmpty ()) {
+			DirtyNode *node = (DirtyNode *) list->First ();
+			UIElement *element = node->element;
+
+			Size old = *LayoutInformation::GetLastRenderSize (element);
+			SizeChangedEventArgs *args = new SizeChangedEventArgs (old, element->GetRenderSize ());
+			
+			Emit (SizeChangedEventArgs, args);
+
+			uielement->ClearValue (LayoutInformation::LastRenderSizeProperty, false);
 		}
 	}
-
+	
 	for (int i = 0; i < layers->GetCount (); i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
 
