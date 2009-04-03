@@ -30,7 +30,6 @@
  * 
  */
 
-
 #include <glib.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,11 +42,6 @@
 #include "logging.h"
 #include "input.h"
 #include "shutdown-manager.h"
-
-
-
-
-
 
 #define MOONLIGHT_PLUGIN_ID	"joltControl"
 
@@ -242,6 +236,8 @@ CaptureSingleImage (ShockerScriptableControlObject* obj, char* name, const NPVar
 bool
 CaptureMultipleImages (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
 {
+	const char *path;
+	
 	g_assert (arg_count == 9);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
 	g_assert (NPVARIANT_IS_STRING (args [1]));
@@ -253,7 +249,11 @@ CaptureMultipleImages (ShockerScriptableControlObject* obj, char* name, const NP
 	g_assert (NPVARIANT_IS_NUMBER (args [7]));
 	g_assert (NPVARIANT_IS_NUMBER (args [8]));
 
-	obj->GetImageCaptureProvider ()->CaptureMultipleImages (obj->GetTestPath (), NUMBER_TO_INT32 (args [2]), NUMBER_TO_INT32 (args [3]),
+	path = STR_FROM_VARIANT (args [1]);
+	if (path == NULL || path [0] == 0)
+		path = obj->GetTestPath ();
+
+	obj->GetImageCaptureProvider ()->CaptureMultipleImages (path, NUMBER_TO_INT32 (args [2]), NUMBER_TO_INT32 (args [3]),
 			NUMBER_TO_INT32 (args [4]), NUMBER_TO_INT32 (args [5]),NUMBER_TO_INT32 (args [6]), NUMBER_TO_INT32 (args [7]),
 			NUMBER_TO_INT32 (args [8]));
 
@@ -493,7 +493,7 @@ ShockerScriptableControlObject::SignalShutdown ()
 	delete input_provider; input_provider = NULL;
 	delete log_provider; log_provider = NULL;
 
-	shutdown_manager_queue_shutdown (this);
+	shutdown_manager_queue_shutdown ();
 }
 
 char *

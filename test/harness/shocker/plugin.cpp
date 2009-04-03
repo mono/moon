@@ -30,19 +30,16 @@
  */
 
 #include <strings.h>
-#define Visual _XVisual
-#include <X11/X.h>
-#undef Visual
 #include "browser.h"
 #include "plugin.h"
 #include "logging.h"
-
 
 #define MIME_TYPES_HANDLED  	"application/x-jolttest"
 #define PLUGIN_NAME         	"The Shocker"
 #define MIME_TYPES_DESCRIPTION  MIME_TYPES_HANDLED":jolttest:"PLUGIN_NAME
 #define PLUGIN_DESCRIPTION  	PLUGIN_NAME ":  Test Harness Plugin for testing Moonlight files."
 
+Window PluginObject::browser_app_context = 0;
 
 char*
 Plugin_GetMIMEDescription (void)
@@ -197,6 +194,8 @@ Plugin_New (NPMIMEType type, NPP instance, uint16 mode, int16 argc, char* argn[]
 		return NPERR_OUT_OF_MEMORY_ERROR;
 
 	instance->pdata = (void *) plugin;
+
+	NPError result = Browser::Instance ()->GetValue (instance, NPNVnetscapeWindow, (void *) &PluginObject::browser_app_context);
 
 #ifdef SHOCKER_DEBUG
 	printf ("Plugin_New created:   %p\n", plugin);

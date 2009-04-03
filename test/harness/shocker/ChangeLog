@@ -1,3 +1,18 @@
+2009-04-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* netscape.cpp: Prevent firefox from unloading us in all
+	  cases.
+
+	* plugin.h:
+	* plugin.cpp: Fetch the browser's toplevel window.
+
+	* shocker.cpp: CaptureMultipleImages: only use the test path
+	  as the destination filename if a path wasn't provided.
+
+	* shutdown-manager.h:
+	* shutdown-manager.cpp: Be nice to the browser and shut it
+	  down in a clean way.
+
 2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* image-capture.cpp: For multiple image capture don't assume

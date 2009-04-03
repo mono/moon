@@ -19,8 +19,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  *
- * Author:
+ * Authors:
  *   Jackson Harper (jackson@ximian.com)
+ *   Rolf Bjarne Kvinge (RKvinge@novell.com)
  *
  * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
  *
@@ -31,102 +32,41 @@
  * 
  */
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <glib.h>
-#include <prinit.h>
-#include <gtk/gtk.h>
-#include <dlfcn.h>
-
-#ifdef DBUS_ENABLED
-#include <dbus/dbus-glib.h>
-#endif
 
 #include "shutdown-manager.h"
+#include "input.h"
+#include "plugin.h"
 
-#define DRT_AGSERVER_SERVICE    "mono.moonlight.agserver"
-#define DRT_AGSERVER_PATH       "/mono/moonlight/agserver"
-#define DRT_AGSERVER_INTERFACE  "mono.moonlight.agserver.IAgserver"
+static gint wait_count = 0;
 
-#define TIMEOUT_INTERVAL 10000
-
-static GMutex* shutdown_mutex = NULL;
-static GCond*  shutdown_cond = NULL;
-static gint    wait_count = 0;
-static void*   dlopened_handle = NULL;
-
-static void execute_shutdown (ShockerScriptableControlObject *shocker);
+static void execute_shutdown ();
 static gboolean attempt_clean_shutdown (gpointer data);
-
-void
-shutdown_manager_init ()
-{
-	wait_count = 0;
-	shutdown_mutex = g_mutex_new ();
-	shutdown_cond = g_cond_new ();
-}
-
-void
-shutdown_manager_shutdown ()
-{
-	wait_count = 0;
-
-	g_mutex_free (shutdown_mutex);
-	g_cond_free (shutdown_cond);
-}
 
 void
 shutdown_manager_wait_increment ()
 {
-	bool open_self = false;
-	
-	g_assert (shutdown_mutex);
-	g_assert (shutdown_cond);
-
-	g_mutex_lock (shutdown_mutex);
-
-	wait_count++;
-	open_self = wait_count == 1;
-	
-	g_mutex_unlock (shutdown_mutex);
-	
-	if (open_self) {
-		// Prevent firefox from unloading us if we're waiting for a shutdown to happen
-		// since we're executing code on another thread (and unloading ourselves 
-		// with code executing on another thread will lead to very weird crashes).
-		dlerror (); // clear any errors
-		dlopened_handle = dlopen ("libshocker.so", RTLD_LAZY | RTLD_NOLOAD);
-		if (dlopened_handle == NULL)
-			printf ("[shocker] tried to open a handle to libshocker.so, but: '%s' (crashes may now occur).\n", dlerror ());
-	}
+	g_atomic_int_inc (&wait_count);
 }
 
 void
 shutdown_manager_wait_decrement ()
 {
-	bool close_self = false;
+	g_atomic_int_dec_and_test (&wait_count);
+}
+
+static gboolean
+force_shutdown (gpointer data)
+{
+	printf ("[shocker] Could not shutdown nicely, exiting the process.\n");
+	exit (0);
 	
-	g_assert (shutdown_mutex);
-	g_assert (shutdown_cond);
-
-	g_mutex_lock (shutdown_mutex);
-
-	wait_count--;
-	if (wait_count == 0) {
-		close_self = true;
-		g_cond_signal (shutdown_cond);
-	}
-
-	g_mutex_unlock (shutdown_mutex);
-	
-	if (close_self && dlopened_handle != NULL) {
-		dlclose (dlopened_handle);
-		dlopened_handle = NULL;
-	}
+	return false;
 }
 
 static void
-execute_shutdown (ShockerScriptableControlObject *shocker)
+execute_shutdown ()
 {
 	char *dont_die = getenv ("MOONLIGHT_SHOCKER_DONT_DIE");
 	if (dont_die != NULL && dont_die [0] != 0)
@@ -134,59 +74,48 @@ execute_shutdown (ShockerScriptableControlObject *shocker)
 
 	g_type_init ();
 
-	DBusGConnection* connection;
-	GError* error = NULL;  
+	if (PluginObject::browser_app_context != 0) {
+		printf ("[shocker] shutting down firefox...\n");
 
-	error = NULL;
-	connection = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
-	if (!connection) {
-		g_warning ("Failed to open connection to bus: %s\n", error->message);
-		g_error_free (error);
-	}
-
-	DBusGProxy* dbus_proxy = dbus_g_proxy_new_for_name (connection,
-			DRT_AGSERVER_SERVICE,
-			DRT_AGSERVER_PATH,
-			DRT_AGSERVER_INTERFACE);
-	
-
-	dbus_g_proxy_call_no_reply (dbus_proxy, "SignalShutdown", G_TYPE_INVALID, G_TYPE_INVALID);
-
-//	if (!dbus_g_proxy_call (dbus_proxy, "SignalShutdown", &error, G_TYPE_INVALID, G_TYPE_INVALID)) {
-//		g_warning ("unable to make signal shutdown call:  %s\n", error->message);
-//	}
-
-
-
-	if (gtk_main_level ()) {
-		// We are running inside the embedded agviewer, so we can use gtk to signal shutdown
-//		gtk_main_quit ();
+		Display *display = XOpenDisplay (NULL);
+		Atom WM_PROTOCOLS = XInternAtom (display, "WM_PROTOCOLS", False);
+		Atom WM_DELETE_WINDOW = XInternAtom (display, "WM_DELETE_WINDOW", False);
+		XClientMessageEvent ev;
+		
+		ev.type = ClientMessage;
+		ev.window = PluginObject::browser_app_context;
+		ev.message_type = WM_PROTOCOLS;
+		ev.format = 32;
+		ev.data.l [0] = WM_DELETE_WINDOW;
+		ev.data.l [1] = 0;
+		
+		XSendEvent (display, ev.window, False, 0, (XEvent*) &ev);
+		XCloseDisplay (display);
+		
+		PluginObject::browser_app_context = 0;
 	} else {
-		// This block never actually gets called, since firefox is also using gtk_main.
-		PR_ProcessExit (0);
+		printf ("[shocker] sending Ctrl-Q to firefox...\n");
+		InputProvider input;
+		// send ctrl-q
+		input.SendKeyInput (VK_CONTROL, true);
+		input.SendKeyInput (VK_Q, true);
+		input.SendKeyInput (VK_Q, false);
+		input.SendKeyInput (VK_CONTROL, false);
 	}
+	
+	// Have a backup in case the above fails.
+	g_timeout_add (2500, force_shutdown, NULL);
 }
 
 static gboolean
 attempt_clean_shutdown (gpointer data)
 {
-	ShockerScriptableControlObject *shocker = (ShockerScriptableControlObject *) data;
-	char *dont_die = getenv ("MOONLIGHT_SHOCKER_DONT_DIE");
-	if (dont_die != NULL && dont_die [0] != 0)
-		return FALSE;
-
-	g_assert (shutdown_mutex);
-	g_assert (shutdown_cond);
-
 	bool ready_for_shutdown = false;
 
-	g_mutex_lock (shutdown_mutex);
-	if (wait_count <= 0)
-		ready_for_shutdown = true;
-	g_mutex_unlock (shutdown_mutex);
+	ready_for_shutdown = g_atomic_int_get (&wait_count) <= 0;
 
 	if (ready_for_shutdown) {
-		execute_shutdown (shocker);
+		execute_shutdown ();
 		return FALSE;
 	}
 
@@ -194,19 +123,16 @@ attempt_clean_shutdown (gpointer data)
 }
 
 void
-shutdown_manager_queue_shutdown (ShockerScriptableControlObject* shocker)
+shutdown_manager_queue_shutdown ()
 {
-	g_assert (shutdown_mutex);
-	g_assert (shutdown_cond);
+	if (g_atomic_int_get (&wait_count) == 0)
+		return execute_shutdown ();
 
-	if (!wait_count)
-		return execute_shutdown (shocker);
-
-	printf ("Unable to execute shutdown immediately, attempting a clean shutdown.\n");
+	printf ("[shocker] Unable to execute shutdown immediately (pending screenshots), attempting a clean shutdown.\n");
 	
-	if (!g_timeout_add (TIMEOUT_INTERVAL, attempt_clean_shutdown, shocker)) {
-		g_error ("Unable to create timeout for queued shutdown, executing immediate shutdown.");
-		execute_shutdown (shocker);
+	if (!g_timeout_add (100, attempt_clean_shutdown, NULL)) {
+		printf ("[shocker] Unable to create timeout for queued shutdown, executing immediate shutdown.\n");
+		execute_shutdown ();
 	}
 }
 

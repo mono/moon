@@ -4,6 +4,11 @@
 #ifndef __PLUGIN_H__
 #define __PLUGIN_H__
 
+#define Visual _XVisual
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#undef Visual
+
 class PluginObject;
 
 #include "netscape.h"
@@ -27,6 +32,7 @@ public:
 	int GetX () { return x; }
 	int GetY () { return y; }
 	
+	static Window browser_app_context;
 private:	  
 	NPP instance;
 	AutoCapture* auto_capture;

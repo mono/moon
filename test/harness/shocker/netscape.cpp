@@ -28,6 +28,8 @@
  * netscape.cpp: Mozilla plugin entry point functions
  *
  */
+ 
+#include <dlfcn.h>
 
 #include "netscape.h"
 #include "shocker.h"
@@ -47,8 +49,16 @@ NP_Initialize (NPNetscapeFuncs* mozilla_funcs, NPPluginFuncs* plugin_funcs)
 	printf ("NP_Initialize\n");
 #endif
 
-	shutdown_manager_init ();
-
+	Dl_info dl_info;
+	// Prevent firefox from unloading us
+	if (dladdr ((void *) &NP_Initialize, &dl_info) != 0) {
+		void *handle = dlopen (dl_info.dli_fname, RTLD_LAZY | RTLD_NOLOAD);
+		if (handle == NULL)
+			printf ("[shocker] tried to open a handle to libshocker.so, but: '%s' (rare crashes might occur).\n", dlerror ());
+	} else {
+		printf ("[shocker] could not get path of libshocker.so: '%s' (rare crashes might occur).\n", dlerror ());
+	}
+	
 	Browser_Initialize (mozilla_funcs);
 	Plugin_Initialize (plugin_funcs);
 	Shocker_Initialize ();
@@ -62,8 +72,6 @@ NP_Shutdown (void)
 #ifdef SHOCKER_DEBUG
     printf ("NP_Shutdown\n");
 #endif
-
-    shutdown_manager_shutdown ();
 
     Shocker_Shutdown ();
     
