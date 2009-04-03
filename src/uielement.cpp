@@ -45,7 +45,7 @@ UIElement::UIElement ()
 
 	emitting_loaded = false;
 	dirty_flags = DirtyMeasure;
-	up_dirty_node = down_dirty_node = NULL;
+	up_dirty_node = down_dirty_node = measure_dirty_node = arrange_dirty_node = NULL;
 	force_invalidate_of_new_bounds = false;
 	dirty_region = new Region ();
 
@@ -510,19 +510,23 @@ UIElement::ElementAdded (UIElement *item)
 void
 UIElement::InvalidateMeasure ()
 {
+	if (GetSurface ())
+		GetSurface()->AddDirtyElement (this, DirtyMeasure);
+
 	if (GetVisualParent ())
 		GetVisualParent ()->InvalidateMeasure ();
 
-	this->dirty_flags |= DirtyMeasure;
+	//this->dirty_flags |= DirtyMeasure;
 }
 
 void
 UIElement::InvalidateArrange ()
 {
+	if (GetSurface ())
+		GetSurface()->AddDirtyElement (this, DirtyArrange);
+
 	if (GetVisualParent ())
 		GetVisualParent ()->InvalidateArrange ();
-
-	this->dirty_flags |= DirtyArrange;
 }
 
 void

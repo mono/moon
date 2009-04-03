@@ -155,7 +155,7 @@ bool
 Surface::IsAnythingDirty ()
 {
 	//return !down_dirty->IsEmpty() || !up_dirty->IsEmpty() || toplevel->dirty_flags & (DirtyMeasure | DirtyArrange);
-	return !down_dirty->IsEmpty() || !up_dirty->IsEmpty();
+	return !measure_dirty->IsEmpty () || arrange_dirty->IsEmpty () || !down_dirty->IsEmpty() || !up_dirty->IsEmpty();
 }
 
 void
@@ -171,13 +171,33 @@ Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 // 	if (element->dirty_flags & dirt)
 // 		return;
 
-	element->dirty_flags |= dirt;
 
 	//printf ("adding element %p (%s) to the dirty list\n", element, element->GetTypeName());
+
+	if (dirt & DirtyMeasure) {
+		if (element->measure_dirty_node)
+			return;
+
+		element->measure_dirty_node = new DirtyNode (element);
+		
+		measure_dirty->Append (element->measure_dirty_node);
+	}
+
+	if (dirt & DirtyArrange) {
+		if (element->arrange_dirty_node)
+			return;
+
+		element->arrange_dirty_node = new DirtyNode (element);
+		
+		arrange_dirty->Append (element->arrange_dirty_node);
+	}
+
+	element->dirty_flags |= dirt;
 
 	if (dirt & DownDirtyState) {
 		if (element->down_dirty_node)
 			return;
+
 		element->down_dirty_node = new DirtyNode (element);
 
 		down_dirty->AddDirtyNode (element->GetVisualLevel (), element->down_dirty_node);
@@ -186,6 +206,7 @@ Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 	if (dirt & UpDirtyState) {
 		if (element->up_dirty_node)
 			return;
+
 		element->up_dirty_node = new DirtyNode (element);
 
 		up_dirty->AddDirtyNode (element->GetVisualLevel (), element->up_dirty_node);
@@ -436,8 +457,15 @@ Surface::ProcessUpDirtyElements ()
 void
 Surface::UpdateLayout ()
 {
+	while (!measure_dirty->IsEmpty () || !arrange_dirty->IsEmpty ()) {
+		if (!measure_dirty->IsEmpty ()) {
+			DirtyNode node = (DirtyNode *) list->First ();
+		}
+	}
+
 	for (int i = 0; i < layers->GetCount (); i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
+
 		Size available = Size (active_window->GetWidth (),
 				       active_window->GetHeight ());
 		

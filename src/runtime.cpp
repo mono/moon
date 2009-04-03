@@ -335,6 +335,9 @@ Surface::Surface (MoonWindow *window)
 	up_dirty = new DirtyLists (true);
 	down_dirty = new DirtyLists (false);
 	
+	measure_dirty = new List ();
+	arrange_dirty = new List ();
+
 	surface_list = g_list_append (surface_list, this);
 }
 
