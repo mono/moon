@@ -172,6 +172,7 @@ Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 // 	if (element->dirty_flags & dirt)
 // 		return;
 
+	element->dirty_flags |= dirt;
 
 	//printf ("adding element %p (%s) to the dirty list\n", element, element->GetTypeName());
 
@@ -467,14 +468,18 @@ Surface::UpdateLayout ()
 	int i = 0;
 	List *size_dirty = new List ();
 
-	if (toplevel) {
-		Size available = Size (active_window->GetWidth (),
-				       active_window->GetHeight ());
-		Size *last = LayoutInformation::GetLastMeasure (toplevel);
+	Size available = Size (active_window->GetWidth (),
+			       active_window->GetHeight ());
+
+	for (int i = 0; i < layers->GetCount (); i++) {
+		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
+
+		Size *last = LayoutInformation::GetLastMeasure (layer);
+
 		if (!last || *last != available) {
-			LayoutInformation::SetLastMeasure (toplevel, &available);
-			toplevel->InvalidateMeasure ();
-			toplevel->InvalidateArrange ();
+			LayoutInformation::SetLastMeasure (layer, &available);
+			layer->InvalidateMeasure ();
+			layer->InvalidateArrange ();
 		}
 	}
 
