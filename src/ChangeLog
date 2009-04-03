@@ -1,3 +1,12 @@
+2009-04-03  Larry Ewing  <lewing@novell.com>
+
+	* popup.h:
+	* popup.cpp: Make sure that we hide any active layers when Child
+	changes and that we show any new ones.  Fixes part of
+	PopupExample2.  Give IsOpen a default value.
+
+	Regenerate.
+
 2009-04-03  Chris Toshok  <toshok@ximian.com>
 
 	* animation.h: remove a couple of ancient (and unused) method and

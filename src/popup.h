@@ -22,7 +22,7 @@ class Popup : public FrameworkElement {
 	const static int ChildProperty;
 	/* @PropertyType=double,GenerateAccessors,DefaultValue=0.0 */
 	const static int HorizontalOffsetProperty;
-	/* @PropertyType=bool,GenerateAccessors */
+	/* @PropertyType=bool,GenerateAccessors,DefaultValue=false */
 	const static int IsOpenProperty;
 	/* @PropertyType=double,GenerateAccessors,DefaultValue=0.0 */
 	const static int VerticalOffsetProperty;
@@ -49,8 +49,8 @@ class Popup : public FrameworkElement {
 
 	const static int IsOpenChangedEvent;
  private:
- 	void Hide ();
- 	void Show ();
+ 	void Hide (UIElement *child);
+ 	void Show (UIElement *child);
 	bool visible;
 };
 

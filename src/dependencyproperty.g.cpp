@@ -122,7 +122,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontFilename", Type::STRING);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);
 	DependencyProperty::Register (this, Type::POPUP, "VerticalOffset", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::POPUP, "IsOpen", Type::BOOL);
+	DependencyProperty::Register (this, Type::POPUP, "IsOpen", new Value (false), Type::BOOL);
 	DependencyProperty::Register (this, Type::POPUP, "HorizontalOffset", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::POPUP, "Child", NULL, Type::UIELEMENT, false, false, false, NULL, Validators::ContentControlContentValidator, NULL, false, false);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Volume", new Value (0.5), Type::DOUBLE);

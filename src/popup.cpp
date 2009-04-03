@@ -28,49 +28,52 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetId () == Popup::IsOpenProperty) {
 		Emit (Popup::IsOpenChangedEvent);
 		if (args->GetNewValue () && args->GetNewValue ()->AsBool ())
-			Show ();
+			Show (GetChild ());
 		else
-			Hide ();
+			Hide (GetChild ());
 	} else if (args->GetId () == Popup::ChildProperty) {
 		if (args->GetOldValue () && !args->GetOldValue ()->GetIsNull ()) {
 			FrameworkElement *el = args->GetOldValue ()->AsFrameworkElement ();
-			if (el->GetLogicalParent () == this)
+			if (el->GetLogicalParent () == this) {
+				Hide (el);
 				el->SetLogicalParent (NULL, error);
+			}
 			if (error->number)
 				return;
 		}
 		if (args->GetNewValue () && !args->GetNewValue ()->GetIsNull ()) {
 			FrameworkElement *el = args->GetNewValue ()->AsFrameworkElement ();
 			args->GetNewValue ()->AsFrameworkElement ()->SetLogicalParent (this, error);
-			if (error->number)
+			if (error->number) 
 				return;
+			
+			if (GetIsOpen ())
+				Show (el);
 		}	
 	}
 	NotifyListenersOfPropertyChange (args);
 }
 
 void
-Popup::Hide ()
+Popup::Hide (UIElement *child)
 {
 	if (!visible)
 		return;
 
 	visible = false;
-	UIElement *child = GetChild ();
-	if (child) {
+
+	if (child)
 		Deployment::GetCurrent ()->GetSurface ()->DetachLayer (child);
-	}
 }
 
 void
-Popup::Show ()
+Popup::Show (UIElement *child)
 {
 	if (visible)
 		return;
 		
 	visible = true;
-	UIElement *child = GetChild ();
-	if (child) {
+
+	if (child)
 		Deployment::GetCurrent ()->GetSurface ()->AttachLayer (child);
-	}
 }
