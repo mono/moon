@@ -18,7 +18,7 @@ namespace PopupExample2
 {
 	public partial class Page : UserControl
 	{
-		Rectangle expected = new Rectangle { Opacity = 0.4, Width = 100, Height = 100, Fill = new SolidColorBrush (Colors.Black) };
+		Rectangle expected = new Rectangle { Opacity = .5, Width = 100, Height = 100, Fill = new SolidColorBrush (Colors.Black) };
 		Popup p;
 		Action Delay (Action action)
 		{
@@ -30,7 +30,9 @@ namespace PopupExample2
 		public Page ()
 		{
 			InitializeComponent ();
-			LayoutRoot.Children.Add (expected);
+			Canvas c = new Canvas ();
+			c.Children.Add (expected);
+			LayoutRoot.Children.Add (c);
 			LayoutRoot.Width = 500;
 			LayoutRoot.Height = 500;
 			Queue<Action> test = new Queue<Action> (new List<Action> {
@@ -134,7 +136,7 @@ namespace PopupExample2
 
 		public void Test9 ()
 		{
-			Rectangle r = new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush (Colors.Brown) };
+			Rectangle r = new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush (Colors.Orange) };
 			p = new Popup { Child = r };
 			p.HorizontalOffset = 100;
 			p.VerticalOffset = 100;
