@@ -108,7 +108,7 @@ inst-mono-%: $(OUTPUT_DIR)/%
 	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(prefix)/lib/mono/2.1/$*.mdb
 
 inst-%: $(OUTPUT_DIR)/%
-	-mkdir -p $(prefix)/lib/moon/plugin
-	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(prefix)/lib/moon/plugin/$*
-	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(prefix)/lib/moon/plugin/$*.mdb
+	-mkdir -p $(pkglibdir)
+	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(pkglibdir)/$*
+	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(pkglibdir)/$*.mdb
 
