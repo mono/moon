@@ -32,8 +32,8 @@ namespace PopupExample
 			var p2 = new Popup { Child = child2 };
 			Canvas.SetTop (b2, 50);
 			Canvas.SetTop (p2, 100);
-
-
+			p2.RenderTransform = new RotateTransform { Angle = -15, CenterX = 50 };
+			
 			b.Click += (sender, args) => { p.IsOpen = ! p.IsOpen; };
 			child.Click += (sender, args) => { p.IsOpen = ! p.IsOpen; };
 
