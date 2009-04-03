@@ -388,6 +388,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void MeasureTest ()
 		{
 			Border b = new Border ();

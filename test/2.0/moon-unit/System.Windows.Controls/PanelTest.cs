@@ -467,6 +467,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void InvalidateMeasureTest ()
 		{
 			Border b = new Border ();
@@ -522,6 +523,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void InvalidateMeasureTest3 ()
 		{
 			Border b = new Border ();
@@ -557,6 +559,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void InvalidateMeasureTest4 ()
 		{
 			Border b = new Border ();
