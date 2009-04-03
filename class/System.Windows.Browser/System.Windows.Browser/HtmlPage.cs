@@ -48,6 +48,8 @@ namespace System.Windows.Browser{
 
 		public static BrowserInformation BrowserInformation {
 			get {
+				CheckHtmlAccess();
+
 				if (browser_info == null)
 					browser_info = new BrowserInformation (Window);
 
@@ -55,15 +57,18 @@ namespace System.Windows.Browser{
 			}
 		}
 		
-		[MonoTODO ("This method should return false when we're not running in a browser.")]
+		[MonoTODO ("This property should return false when we're not running in a browser")]
 		public static bool IsEnabled {		
 			get {
-				return true;
+				// FIXME: add condition for out-of-browser
+				return Application.Current.Host.Settings.EnableHTMLAccess;
 			}
 		}
 		
 		public static HtmlDocument Document {
 			get {
+				CheckHtmlAccess();
+
 				if (document == null)
 					document = HtmlObject.GetPropertyInternal<HtmlDocument> (IntPtr.Zero, "document");
 
@@ -88,6 +93,8 @@ namespace System.Windows.Browser{
 
 		public static HtmlWindow Window {
 			get {
+				CheckHtmlAccess();
+
 				if (window == null)
 					window = HtmlObject.GetPropertyInternal<HtmlWindow> (IntPtr.Zero, "window");
 
@@ -97,6 +104,8 @@ namespace System.Windows.Browser{
 
 		public static HtmlElement Plugin {
 			get {
+				CheckHtmlAccess();
+
 				if (plugin == null)
 					plugin = new HtmlElement (NativeMethods.plugin_instance_get_host (Mono.Xaml.XamlLoader.PluginInDomain));
 
@@ -104,13 +113,27 @@ namespace System.Windows.Browser{
 			}
 		}
 
+		[MonoTODO ("This property should return the value of the plugin's AllowHtmlPopupWindow property (and other stuff)")]
 		public static bool IsPopupWindowAllowed {
-			get { throw new System.NotImplementedException (); }
+			// TODO: the action must be coming the the user (e.g. click) and only once (per click)
+			get {
+				return NativeMethods.plugin_instance_get_allow_html_popup_window (Mono.Xaml.XamlLoader.PluginInDomain);
+			}
 		}
 
 		public static HtmlWindow PopupWindow (Uri navigateToUri, string target, HtmlPopupWindowOptions options)
 		{
+			// TODO: documentation says this method turns off (temporarily) the browser popup blocker
+			// http://msdn.microsoft.com/en-us/library/system.windows.browser.htmlpage.popupwindow(VS.95).aspx
 			throw new System.NotImplementedException ();
+		}
+
+		// The HTML bridge can be disable by the plugin 'enableHTMLAccess' parameter (defaults to true)
+		// or can be unavailable if the plugin is hosted outside a browser (e.g. inside an IDE)
+		static void CheckHtmlAccess ()
+		{
+			if (!IsEnabled)
+				throw new InvalidOperationException ("HTML Bridge is not enabled or available.");
 		}
 	}
 }
