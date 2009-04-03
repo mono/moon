@@ -97,6 +97,8 @@ The following annotations are understood by the generator:
 	  *Getter*/*Setter* defaults to *Accessor* value, *Accessor*/*Field* 
 	  values defaults to the ManagedAccess value, which defaults to the
 	  Access value, which defaults to Public.
+	* GenerateManagedAccessors: Disables the generation of managed getters/setters
+	  Valid Values: 'true' or 'false'. Defaults to 'true'.
 
 src/type.h
 ==========

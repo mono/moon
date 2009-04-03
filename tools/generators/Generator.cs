@@ -289,7 +289,7 @@ class Generator {
 			foreach (FieldInfo field in fields) {
 				bool conv_int_to_double = field.GetDPManagedPropertyType (all) == "int" && field.GetDPPropertyType (all).Name == "double";
 				
-				if (field.IsDPAttached)
+				if (field.IsDPAttached || !field.GenerateManagedAccessors)
 					continue;
 				
 				text.AppendLine ();

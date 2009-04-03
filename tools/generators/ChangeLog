@@ -1,3 +1,11 @@
+2009-04-03  Alan McGovern  <amcgovern@novell.com>
+
+	* README:
+	* FieldInfo.cs:
+	* Generator.cs:
+	* GlobalInfo.cs: Add the ability to skip generation of managed
+	  accessors for a specific DP.
+
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
 	* TypeReference.cs (GetManagedType): add all the downloader

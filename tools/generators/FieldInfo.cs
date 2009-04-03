@@ -86,6 +86,18 @@ class FieldInfo : MemberInfo {
 		get { return Annotations.GetValue ("Validator"); }
 	}
 	
+	public bool GenerateManagedAccessors {
+		get {
+			string val = Annotations.GetValue ("GenerateManagedAccessors");
+			if (val == null || val == "true")
+				return true;
+			if (val == "false")
+				return false;
+
+			throw new Exception ("Invalid value for 'GenerateManagedAccessors'. Must be 'true' or 'false'");
+		}
+	}
+	
 	public TypeInfo GetDPPropertyType (GlobalInfo all)
 	{
 		string property_type = DPPropertyType;
