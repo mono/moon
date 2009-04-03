@@ -210,12 +210,20 @@ namespace System.Windows.Data {
 				                                       Binding.ConverterParameter,
 				                                       Binding.ConverterCulture ?? Helper.DefaultCulture);
 
-			if (value != null && PropertyInfo.PropertyType.IsValueType && PropertyInfo.PropertyType != value.GetType ()) {
-				try {
-					value = Convert.ChangeType (value, PropertyInfo.PropertyType, null);
-				} catch {
-					Console.WriteLine ("Failed to convert '{0}' to '{1}", value.GetType (), PropertyInfo.PropertyType);
-					return;
+			if (value != null) {
+				Type destType = PropertyInfo.PropertyType;
+				if (PropertyInfo.PropertyType.IsValueType && PropertyInfo.PropertyType != value.GetType ()) {
+					try {
+						if (destType.IsGenericType && destType.GetGenericTypeDefinition () == typeof (Nullable<>))
+							destType = destType.GetGenericArguments () [0];
+						if (destType.IsEnum)
+							value = Enum.Parse (destType, value.ToString (), true);
+						else
+							value = Convert.ChangeType (value, destType, null);
+					} catch {
+						Console.WriteLine ("Failed to convert '{0}' to '{1}", value.GetType (), PropertyInfo.PropertyType);
+						return;
+					}
 				}
 			}
 			

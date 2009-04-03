@@ -1,3 +1,9 @@
+2009-04-03  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: Fix a few type converting issues
+	  with two way bindings which are now revealed by the datagrid
+	  tests.
+
 2009-04-01  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpression.cs:
