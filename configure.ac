@@ -6,8 +6,6 @@ AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE([1.9 dist-bzip2 tar-ustar])
 AM_MAINTAINER_MODE
 
-AC_SUBST([DISTCHECK_CONFIGURE_FLAGS], ["--disable-browser-support"])
-
 AC_SUBST([ACLOCAL_AMFLAGS], ["-I m4 \${ACLOCAL_FLAGS}"])
 
 AC_PROG_CXX

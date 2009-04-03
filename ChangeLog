@@ -1,3 +1,8 @@
+2009-04-03  Aaron Bockover  <abockover@novell.com>
+
+	* configure.ac: Remove DISTCHECK_CONFIGURE_FLAGS - was only there for
+	testing the new build stuff
+
 2009-04-02  Aaron Bockover  <abockover@novell.com>
 
 	* configure.ac: Lots of clean up, easier to read, call the new macros;
