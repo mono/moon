@@ -1,3 +1,10 @@
+2009-04-03  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Page.xaml.cs: Add a few more test cases (for Settings) that
+	behave like documentation (i.e. they don't care about 
+	EnabledHtmlAccess)
+	* README: Add instructions for "same-domain" test
+
 2009-04-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	*: Test case for the plugin's EnableHtmlAccess property

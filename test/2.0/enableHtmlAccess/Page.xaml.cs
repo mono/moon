@@ -7,6 +7,7 @@ using System.Windows.Browser;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Animation;
@@ -126,11 +127,16 @@ namespace enableHtmlAccess
 			IsFalse (HtmlPage.IsPopupWindowAllowed, "HtmlPage.IsPopupWindowAllowed");
 			IsNotNull (HtmlPage.Plugin, "HtmlPage.Plugin");
 			IsNotNull (HtmlPage.Window, "HtmlPage.Window");
+
+			CheckSettingsAccess ();
 		}
 
 		public void EnableHTMLAccess_False ()
 		{
 			Info ("EnableHTMLAccess == false");
+
+			// according to "Security Settings in HTML Bridge" only four properties are affected
+			// http://msdn.microsoft.com/en-us/library/cc645023(VS.95).aspx
 			Throws<InvalidOperationException> (delegate {
 				Console.WriteLine (HtmlPage.BrowserInformation);
 			}, "HtmlPage.BrowserInformation");
@@ -145,6 +151,26 @@ namespace enableHtmlAccess
 			Throws<InvalidOperationException> (delegate {
 				Console.WriteLine (HtmlPage.Window);
 			}, "HtmlPage.Window");
+
+			// Settings are not affected by EnableHTMLAccess
+			CheckSettingsAccess ();
+		}
+
+		public void CheckSettingsAccess ()
+		{
+			Settings s = Application.Current.Host.Settings;
+			IsFalse (s.EnableFrameRateCounter, "Settings.EnableFrameRateCounter");
+			s.EnableFrameRateCounter = true;
+// not yet implemented in Moonlight
+//			IsTrue (s.EnableFrameRateCounter, "Settings.EnableFrameRateCounter/Set");
+			IsFalse (s.EnableRedrawRegions, "Settings.EnableRedrawRegions");
+			s.EnableRedrawRegions = true;
+// not yet implemented in Moonlight
+//			IsTrue (s.EnableRedrawRegions, "Settings.EnableRedrawRegions/Set");
+			IsFalse (s.MaxFrameRate <= 0, "Settings.MaxFrameRate");
+			s.MaxFrameRate = 1;
+			IsTrue (s.MaxFrameRate == 1, "Settings.MaxFrameRate/Set");
+			IsFalse (s.Windowless, "Settings.Windowless");
 		}
 	}
 }
