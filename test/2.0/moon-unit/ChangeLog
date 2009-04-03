@@ -1,5 +1,10 @@
 2009-04-03  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/TextBoxTest.cs: Add test for the
+	  strange behaviour of TextBox.TextProperty.
+
+2009-04-03  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/TextBoxTest.cs: This test is passing
 	  now.
 
