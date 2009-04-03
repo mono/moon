@@ -1,5 +1,10 @@
 2009-04-03  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Commit additional tests
+	  to ensure that TextBox.Text is handled properly.
+
+2009-04-03  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/TextBoxTest.cs: Add test for the
 	  strange behaviour of TextBox.TextProperty.
 

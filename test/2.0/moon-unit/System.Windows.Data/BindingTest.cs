@@ -19,6 +19,16 @@ using Microsoft.Silverlight.Testing;
 namespace MoonTest.System.Windows.Data
 {
 
+	public class TextProp : FrameworkElement
+	{
+		public static readonly DependencyProperty MyTextProperty = DependencyProperty.Register ("MyText", typeof (string), typeof (TextProp), null);
+		public string MyText
+		{
+			get { return (string)GetValue (MyTextProperty); }
+			set { SetValue (MyTextProperty, value); }
+		}
+	}
+	
 	public class OpacityTest
 	{
 		public OpacityTest ()
@@ -198,7 +208,7 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Failing due to a textbox issue - Default value for Text should be string.Empty")]
+		[MoonlightBug]
 		public void BindToText4 ()
 		{
 			Binding binding = new Binding (" ");
@@ -206,6 +216,52 @@ namespace MoonTest.System.Windows.Data
 			TextBox box = new TextBox { Text = "Blah" };
 			box.SetBinding (TextBox.TextProperty, binding);
 			Assert.AreEqual ("", box.GetValue (TextBox.TextProperty), "#1");
+		}
+
+		public void BindToText4b ()
+		{
+			Binding binding = new Binding (" ");
+			binding.Source = "string";
+			TextBox box = new TextBox { };
+			Assert.AreEqual (null, box.GetValue (TextBox.TextProperty), "#2");
+			box.SetBinding (TextBox.TextProperty, binding);
+			Assert.AreEqual (null, box.GetValue (TextBox.TextProperty), "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void BindToText4c ()
+		{
+			Binding binding = new Binding (" ");
+			binding.Source = "string";
+			TextBox box = new TextBox { Text = "Blah" };
+			Assert.AreEqual ("Blah", box.GetValue (TextBox.TextProperty), "#2");
+			box.SetValue (TextBox.TextProperty, null);
+			Assert.AreEqual ("", box.GetValue (TextBox.TextProperty), "#1");
+			box.ClearValue (TextBox.TextProperty);
+			Assert.AreEqual (null, box.GetValue (TextBox.TextProperty), "#3");
+		}
+
+		[TestMethod]
+		public void BindToText5 ()
+		{
+			Binding binding = new Binding (" ");
+			binding.Source = "string";
+			TextProp prop = new TextProp ();
+			prop.SetBinding (TextProp.MyTextProperty, binding);
+
+			Assert.AreEqual (null, prop.MyText, "#1");
+		}
+
+		[TestMethod]
+		public void BindToText5b ()
+		{
+			Binding binding = new Binding (" ");
+			binding.Source = "string";
+			TextProp prop = new TextProp { MyText = "test" };
+			prop.SetBinding (TextProp.MyTextProperty, binding);
+
+			Assert.AreEqual (null, prop.MyText, "#1");
 		}
 
 		[TestMethod]
