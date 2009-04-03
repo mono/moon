@@ -1,3 +1,8 @@
+2009-04-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* security.c: Include "config.h" to get
+	  MONO_ENABLE_CORECLR_SECURITY.
+
 2009-04-02  Aaron Bockover  <abockover@novell.com>
 
 	Do not build code that requires Mono 2.5 or better in the case where

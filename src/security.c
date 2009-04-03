@@ -10,6 +10,7 @@
  * See the LICENSE file included with the distribution for details.
  */
 
+#include "config.h"
 #include "security.h"
 
 static struct stat platform_stat;
