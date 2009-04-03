@@ -268,6 +268,18 @@ namespace Mono {
 		[DllImport("moonplugin")]
 		public extern static IntPtr plugin_instance_evaluate  (IntPtr plugin_handle, string code);
 
+		[DllImport("moonplugin")]
+		[return: MarshalAs (UnmanagedType.Bool)] // glib gboolean
+		public extern static bool plugin_instance_get_enable_html_access (IntPtr plugin_handle);
+
+		[DllImport("moonplugin")]
+		[return: MarshalAs (UnmanagedType.Bool)] // glib gboolean
+		public extern static bool plugin_instance_get_allow_html_popup_window (IntPtr plugin_handle);
+
+		[DllImport("moonplugin")]
+		[return: MarshalAs (UnmanagedType.Bool)] // glib gboolean
+		public extern static bool plugin_instance_get_windowless (IntPtr plugin_handle);
+
 		public delegate void DomEventCallback (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, 
 			[MarshalAs (UnmanagedType.Bool)] bool alt_key,	// glib gboolean is a gint (i.e. 4 bytes just like the FX bool)
 			[MarshalAs (UnmanagedType.Bool)] bool ctrl_key,
