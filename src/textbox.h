@@ -335,7 +335,7 @@ class TextBox : public TextBoxBase {
 	const static int SelectionLengthProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int SelectionStartProperty;
-	/* @PropertyType=string,Version=2.0,GenerateAccessors */
+	/* @PropertyType=string,Version=2.0,GenerateAccessors,GenerateManagedAccessors=false */
 	const static int TextProperty;
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0,GenerateAccessors */
 	const static int TextAlignmentProperty;

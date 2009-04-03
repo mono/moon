@@ -921,11 +921,6 @@ namespace System.Windows.Controls {
 			set { SetValue (TextAlignmentProperty, value); }
 		}
 
-		public string Text {
-			get { return (string) GetValue (TextProperty); }
-			set { SetValue (TextProperty, value); }
-		}
-
 		public TextWrapping TextWrapping {
 			get { return (TextWrapping) GetValue (TextWrappingProperty); }
 			set { SetValue (TextWrappingProperty, value); }

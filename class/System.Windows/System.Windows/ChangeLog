@@ -1,3 +1,9 @@
+2009-04-03  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.g.cs: TextBox does validation in both the
+	  getter and setter of its TextProperty, so we have to
+	  manually implement it.
+
 2009-04-01  Alan McGovern  <amcgovern@novell.com>
 
 	* FrameworkElement.cs: TextBox only updates a two way binding

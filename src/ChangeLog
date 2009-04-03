@@ -1,3 +1,9 @@
+2009-04-03  Alan McGovern  <amcgovern@novell.com>
+
+	* textbox.h: TextBox does validation in both the getter and
+	  setter of its TextProperty, so we have to manually implement
+	  it.
+
 2009-04-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* security.c: Include "config.h" to get

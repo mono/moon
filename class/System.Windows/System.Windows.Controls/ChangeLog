@@ -1,3 +1,9 @@
+2009-04-03  Alan McGovern  <amcgovern@novell.com>
+
+	* TextBox.cs: TextBox does validation in both the getter and
+	  setter of its TextProperty, so we have to manually implement
+	  it.
+
 2009-04-02  Aaron Bockover  <abockover@novell.com>
 
 	* ContentPresenter.cs: Nuke a BOM on which gmcs 2.0.1 explodes

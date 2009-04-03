@@ -44,6 +44,16 @@ namespace System.Windows.Controls {
 			get; set;
 		}
 		
+		public string Text {
+			get {
+				return (string)GetValue (TextProperty) ?? "";
+			}
+			set {
+				if (value == null)
+					throw new ArgumentNullException ("Text cannot be null");
+				SetValue (TextProperty, value);
+			}
+		}
 		public void Select (int start, int length)
 		{
 			if (start < 0)
