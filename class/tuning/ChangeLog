@@ -1,3 +1,7 @@
+2009-04-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Unbreak the build on OS11.0.
+
 2009-04-02  Jb Evain  <jbevain@novell.com>
 
 	* Makefile.am: re-enable the visibility checks.

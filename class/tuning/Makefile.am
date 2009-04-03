@@ -103,10 +103,12 @@ end-install:	\
 	inst-Mono.CompilerServices.SymbolWriter.dll
 
 inst-mono-%: $(OUTPUT_DIR)/%
+	-mkdir -p $(prefix)/lib/mono/2.1
 	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(prefix)/lib/mono/2.1/$*
 	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(prefix)/lib/mono/2.1/$*.mdb
 
 inst-%: $(OUTPUT_DIR)/%
+	-mkdir -p $(prefix)/lib/moon/plugin
 	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(prefix)/lib/moon/plugin/$*
 	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(prefix)/lib/moon/plugin/$*.mdb
 
