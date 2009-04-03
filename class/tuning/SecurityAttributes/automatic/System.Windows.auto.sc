@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 440 methods needs to be decorated.
+# 445 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -66,6 +66,15 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::moon_window_get_transparent(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_allow_html_popup_window(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_enable_html_access(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_windowless(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::resource_dictionary_add_with_error_(System.IntPtr,System.String,Mono.Value&,Mono.MoonError&)
@@ -890,6 +899,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::visual_brush_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::writeable_bitmap_initialize_from_bitmap_source(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::writeable_bitmap_new()
 
 # p/invoke declaration
@@ -1284,6 +1296,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::writeable_bitmap_lock(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::writeable_bitmap_render(System.IntPtr,System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::writeable_bitmap_unlock(System.IntPtr)
