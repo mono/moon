@@ -1,0 +1,3 @@
+2009-04-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	*: Test case for the plugin's EnableHtmlAccess property

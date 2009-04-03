@@ -1,0 +1,5 @@
+Test cases for EnableHTMLAccess
+
+The unit tests (i.e. moon-unit) requires EnableHTMLAccess to be true
+(i.e. well to have access to the HTML DOM) in order to work. So we're
+testing the non-availability (versus the ability) here.
