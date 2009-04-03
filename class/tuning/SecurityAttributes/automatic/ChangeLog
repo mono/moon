@@ -1,3 +1,9 @@
+2009-04-03  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Browser.auto.ssc: Add HtmlPage.Plugin property
+	* System.Windows.auto.ssc: Add Settings.EnableHTMLAccess and 
+	Windowless properties.
+
 2009-04-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: Add new pinvoke for plugin properties 

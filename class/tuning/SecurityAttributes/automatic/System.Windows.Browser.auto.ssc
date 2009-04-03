@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows.Browser to call all [SecurityCritical] methods
-# 39 methods
+# 40 methods
 
 +SSC-M: T System.Windows.Browser.HtmlObject::GetPropertyInternal(System.IntPtr,System.String)
 +SSC-M: System.Void System.Windows.Browser.HtmlObject::SetPropertyInternal(System.IntPtr,System.String,System.Object)
@@ -9,6 +9,7 @@
 +SSC-M: System.Void System.Windows.Browser.HtmlObject/EventInfo::DetachEvent()
 +SSC-M: System.Windows.Browser.HtmlObject/EventInfo System.Windows.Browser.HtmlObject/EventInfo::AttachEvent(System.String,System.EventHandler,System.EventHandler`1<System.Windows.Browser.HtmlEventArgs>,System.Windows.Browser.HtmlObject)
 +SSC-M: System.Windows.Browser.HtmlElement System.Windows.Browser.HtmlPage::get_Plugin()
++SSC-M: System.Boolean System.Windows.Browser.HtmlPage::get_IsPopupWindowAllowed()
 +SSC-M: System.Object System.Windows.Browser.HtmlWindow::Eval(System.String)
 +SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebRequest::.ctor(System.Uri)
 +SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebRequest::Finalize()
