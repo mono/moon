@@ -45,9 +45,7 @@ public:
 	int dirty_flags;
 	List::Node *up_dirty_node;
 	List::Node *down_dirty_node;
-	List::Node *measure_dirty_node;
-	List::Node *arrange_dirty_node;
-	
+
 	bool force_invalidate_of_new_bounds;
 	bool emitting_loaded;
 
@@ -375,7 +373,6 @@ public:
 
 	void DoMeasure ();
 	void DoArrange ();
-	void UpdateSize ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void Measure (Size availableSize) = 0;
@@ -536,8 +533,6 @@ public:
 	const static int LastMeasureProperty;
 	/* @PropertyType=Size,Attached,GenerateAccessors */
 	const static int LastArrangeProperty;
-	/* @PropertyType=Size,Attached,GenerateAccessors */
-	const static int LastRenderSizeProperty;
 
 	static void SetLayoutClip (DependencyObject *item, Geometry *clip);
 	static Geometry* GetLayoutClip (DependencyObject *item);
@@ -550,8 +545,5 @@ public:
 
 	static void SetLastArrange (DependencyObject *item, Size *size);
 	static Size *GetLastArrange (DependencyObject *item);
-
-	static void SetLastRenderSize (DependencyObject *item, Size *size);
-	static Size *GetLastRenderSize (DependencyObject *item);
 };
 #endif /* __MOON_UIELEMENT_H__ */

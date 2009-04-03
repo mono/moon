@@ -18,7 +18,6 @@
 
 #include "canvas.h"
 #include "uielement.h"
-#include "frameworkelement.h"
 #include "panel.h"
 #include "control.h"
 #include "runtime.h"
@@ -156,7 +155,7 @@ bool
 Surface::IsAnythingDirty ()
 {
 	//return !down_dirty->IsEmpty() || !up_dirty->IsEmpty() || toplevel->dirty_flags & (DirtyMeasure | DirtyArrange);
-	return !measure_dirty->IsEmpty () || !arrange_dirty->IsEmpty () || !down_dirty->IsEmpty() || !up_dirty->IsEmpty();
+	return !down_dirty->IsEmpty() || !up_dirty->IsEmpty();
 }
 
 void
@@ -176,30 +175,9 @@ Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 
 	//printf ("adding element %p (%s) to the dirty list\n", element, element->GetTypeName());
 
-	if (dirt & DirtyMeasure) {
-		if (element->measure_dirty_node)
-			return;
-
-		element->measure_dirty_node = new DirtyNode (element);
-		
-		measure_dirty->Append (element->measure_dirty_node);
-	}
-
-	if (dirt & DirtyArrange) {
-		if (element->arrange_dirty_node)
-			return;
-
-		element->arrange_dirty_node = new DirtyNode (element);
-		
-		arrange_dirty->Append (element->arrange_dirty_node);
-	}
-
-	element->dirty_flags |= dirt;
-
 	if (dirt & DownDirtyState) {
 		if (element->down_dirty_node)
 			return;
-
 		element->down_dirty_node = new DirtyNode (element);
 
 		down_dirty->AddDirtyNode (element->GetVisualLevel (), element->down_dirty_node);
@@ -208,7 +186,6 @@ Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 	if (dirt & UpDirtyState) {
 		if (element->up_dirty_node)
 			return;
-
 		element->up_dirty_node = new DirtyNode (element);
 
 		up_dirty->AddDirtyNode (element->GetVisualLevel (), element->up_dirty_node);
@@ -222,15 +199,9 @@ Surface::RemoveDirtyElement (UIElement *element)
 		up_dirty->RemoveDirtyNode (element->GetVisualLevel(), element->up_dirty_node);
 	if (element->down_dirty_node)
 		down_dirty->RemoveDirtyNode (element->GetVisualLevel(), element->down_dirty_node);
-	if (element->measure_dirty_node)
-		measure_dirty->Remove (element->measure_dirty_node);
-	if (element->arrange_dirty_node)
-		arrange_dirty->Remove (element->arrange_dirty_node);
 
 	element->down_dirty_node = NULL;
 	element->up_dirty_node = NULL;
-	element->measure_dirty_node = NULL;
-	element->arrange_dirty_node = NULL;
 }
 
 
@@ -465,71 +436,20 @@ Surface::ProcessUpDirtyElements ()
 void
 Surface::UpdateLayout ()
 {
-	int i = 0;
-	List *size_dirty = new List ();
-
-	Size available = Size (active_window->GetWidth (),
-			       active_window->GetHeight ());
-
 	for (int i = 0; i < layers->GetCount (); i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
-
-		Size *last = LayoutInformation::GetLastMeasure (layer);
-
-		if (!last || *last != available) {
-			LayoutInformation::SetLastMeasure (layer, &available);
-			layer->InvalidateMeasure ();
-			layer->InvalidateArrange ();
-		}
-	}
-
-	for (int i = 0; i < 250; i++) {
-		while (!measure_dirty->IsEmpty ()) {
-			DirtyNode *node = (DirtyNode *) measure_dirty->First ();
-			UIElement *element = node->element;
-			element->DoMeasure ();
-
-			if (node != element->measure_dirty_node)
-				g_warning ("Dirty node mismatch while measuring");
-
-			measure_dirty->Remove (element->measure_dirty_node);
-			element->measure_dirty_node = NULL;
-		}
+		Size available = Size (active_window->GetWidth (),
+				       active_window->GetHeight ());
 		
-		while (!arrange_dirty->IsEmpty () && measure_dirty->IsEmpty ()) {
-			DirtyNode *node = (DirtyNode *) arrange_dirty->First ();
-			UIElement *element = node->element;
-			Size *prev = LayoutInformation::GetLastRenderSize (element);
-
-			element->DoArrange ();
-
-			if (!prev && LayoutInformation::GetLastRenderSize (element))
-				size_dirty->Append (new DirtyNode (element));
-
-			if (node != element->arrange_dirty_node)
-				g_warning ("Dirty node mismatch while arranging");
-
-			arrange_dirty->Remove (element->arrange_dirty_node);
-			element->arrange_dirty_node = NULL;
-		}
+		layer->Measure (available);
+		Size desired = layer->GetDesiredSize ();
 		
-		if (!measure_dirty->IsEmpty ())
-			continue;
-
-		while (!size_dirty->IsEmpty () && measure_dirty->IsEmpty () && arrange_dirty->IsEmpty ()) {
-			DirtyNode *node = (DirtyNode *) size_dirty->First ();
-			UIElement *element = node->element;
-
-			element->UpdateSize ();
-			
-			size_dirty->Remove (node);
-		}
-
-		if (measure_dirty->IsEmpty () && size_dirty->IsEmpty () && arrange_dirty->IsEmpty ()) {
-			if (i > 0)
-				g_warning ("Got out early %d", i);
-			break;
-		}
+		if (layer->IsLayoutContainer ())
+			desired = desired.Max (available);
+		
+		layer->Arrange (Rect (Canvas::GetLeft (layer),
+				      Canvas::GetTop (layer), 
+				      desired.width, desired.height));
 	}
 }
 

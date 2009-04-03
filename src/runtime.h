@@ -288,9 +288,6 @@ private:
 	DirtyLists *down_dirty;
 	DirtyLists *up_dirty;
 	
-	List *measure_dirty;
-	List *arrange_dirty;
-
 	gpointer downloader_context;
 	List *downloaders;
 	static void OnDownloaderDestroyed (EventObject *sender, EventArgs *args, gpointer closure);

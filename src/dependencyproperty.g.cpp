@@ -377,7 +377,6 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::LINESEGMENT, "Point", Type::POINT);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LayoutSlot", NULL, Type::RECT, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LayoutClip", NULL, Type::GEOMETRY, true, false, false, NULL, NULL, NULL, false, false);
-	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LastRenderSize", NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LastMeasure", NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LastArrange", NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::EVENTTRIGGER, "RoutedEvent", Type::STRING);
@@ -735,36 +734,35 @@ const int MatrixTransform::MatrixProperty = 322;
 const int LineSegment::PointProperty = 323;
 const int LayoutInformation::LayoutSlotProperty = 324;
 const int LayoutInformation::LayoutClipProperty = 325;
-const int LayoutInformation::LastRenderSizeProperty = 326;
-const int LayoutInformation::LastMeasureProperty = 327;
-const int LayoutInformation::LastArrangeProperty = 328;
-const int EventTrigger::RoutedEventProperty = 329;
-const int EventTrigger::ActionsProperty = 330;
-const int DoubleKeyFrame::ValueProperty = 331;
-const int DoubleKeyFrame::KeyTimeProperty = 332;
-const int DoubleAnimation::ToProperty = 333;
-const int DoubleAnimation::FromProperty = 334;
-const int DoubleAnimation::ByProperty = 335;
-const int DependencyObject::NameProperty = 336;
-const int DeepZoomImageTileSource::UriSourceProperty = 337;
-const int ControlTemplate::TargetTypeProperty = 338;
-const int ColorKeyFrame::ValueProperty = 339;
-const int ColorKeyFrame::KeyTimeProperty = 340;
-const int ColorAnimation::ToProperty = 341;
-const int ColorAnimation::FromProperty = 342;
-const int ColorAnimation::ByProperty = 343;
-const int BitmapSource::PixelWidthProperty = 344;
-const int BitmapSource::PixelHeightProperty = 345;
-const int BitmapSource::PixelFormatProperty = 346;
-const int BezierSegment::Point3Property = 347;
-const int BezierSegment::Point2Property = 348;
-const int BezierSegment::Point1Property = 349;
-const int BeginStoryboard::StoryboardProperty = 350;
-const int ArcSegment::SweepDirectionProperty = 351;
-const int ArcSegment::SizeProperty = 352;
-const int ArcSegment::RotationAngleProperty = 353;
-const int ArcSegment::PointProperty = 354;
-const int ArcSegment::IsLargeArcProperty = 355;
+const int LayoutInformation::LastMeasureProperty = 326;
+const int LayoutInformation::LastArrangeProperty = 327;
+const int EventTrigger::RoutedEventProperty = 328;
+const int EventTrigger::ActionsProperty = 329;
+const int DoubleKeyFrame::ValueProperty = 330;
+const int DoubleKeyFrame::KeyTimeProperty = 331;
+const int DoubleAnimation::ToProperty = 332;
+const int DoubleAnimation::FromProperty = 333;
+const int DoubleAnimation::ByProperty = 334;
+const int DependencyObject::NameProperty = 335;
+const int DeepZoomImageTileSource::UriSourceProperty = 336;
+const int ControlTemplate::TargetTypeProperty = 337;
+const int ColorKeyFrame::ValueProperty = 338;
+const int ColorKeyFrame::KeyTimeProperty = 339;
+const int ColorAnimation::ToProperty = 340;
+const int ColorAnimation::FromProperty = 341;
+const int ColorAnimation::ByProperty = 342;
+const int BitmapSource::PixelWidthProperty = 343;
+const int BitmapSource::PixelHeightProperty = 344;
+const int BitmapSource::PixelFormatProperty = 345;
+const int BezierSegment::Point3Property = 346;
+const int BezierSegment::Point2Property = 347;
+const int BezierSegment::Point1Property = 348;
+const int BeginStoryboard::StoryboardProperty = 349;
+const int ArcSegment::SweepDirectionProperty = 350;
+const int ArcSegment::SizeProperty = 351;
+const int ArcSegment::RotationAngleProperty = 352;
+const int ArcSegment::PointProperty = 353;
+const int ArcSegment::IsLargeArcProperty = 354;
 
 UIElement *
 VisualBrush::GetVisual ()
@@ -4734,22 +4732,6 @@ LayoutInformation::SetLayoutClip (DependencyObject *obj, Geometry *value)
 {
 	if (!obj) return;
 	obj->SetValue (LayoutInformation::LayoutClipProperty, Value (value));
-}
-
-Size *
-LayoutInformation::GetLastRenderSize (DependencyObject *obj)
-{
-	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LastRenderSizeProperty);
-	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::LastRenderSizeProperty)->GetDefaultValue();
-	return value ? value->AsSize () : NULL;
-}
-
-void
-LayoutInformation::SetLastRenderSize (DependencyObject *obj, Size *value)
-{
-	if (!obj) return;
-	if (!value) return;
-	obj->SetValue (LayoutInformation::LastRenderSizeProperty, Value (*value));
 }
 
 Size *
