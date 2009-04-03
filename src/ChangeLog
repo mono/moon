@@ -1,5 +1,12 @@
 2009-04-03  Chris Toshok  <toshok@ximian.com>
 
+	* animation.h: remove a couple of ancient (and unused) method and
+	function declarations, and re-order
+	public/private/protected (seriously, this makes my eyes bleed.)
+	Also move the "internal classes" to the end.
+
+2009-04-03  Chris Toshok  <toshok@ximian.com>
+
 	* clock.cpp (Clock::Begin): remove the COMPATABILITY_BUGS stuff,
 	since that's for compatability with 1.0, which we no longer are.
 	

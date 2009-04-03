@@ -29,12 +29,7 @@
 // misc types
 /* @Namespace=System.Windows.Media.Animation */
 class KeySpline : public DependencyObject {
-	moon_quadratic *quadraticsArray;
-	
- protected:
-	virtual ~KeySpline ();
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	KeySpline ();
 	
@@ -56,12 +51,18 @@ class KeySpline : public DependencyObject {
 
 	Point *GetControlPoint2 ();
 	void SetControlPoint2 (Point *controlPoint2);
+	
+protected:
+	virtual ~KeySpline ();
+
+
+private:
+	moon_quadratic *quadraticsArray;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @IncludeInKinds */
 struct KeyTime {
- public:
 	enum KeyTimeType {
 		UNIFORM,
 		PERCENT,
@@ -117,7 +118,7 @@ struct KeyTime {
 	bool HasTimeSpan () { return k == TIMESPAN; }
 	TimeSpan GetTimeSpan () { return timespan; }
 
- private:
+private:
 	KeyTimeType k;
 	gint32 padding;
 	double percent;
@@ -128,85 +129,12 @@ struct KeyTime {
 //
 // Animations (more specialized clocks and timelines) and their subclasses
 //
-class Animation;
 class AnimationClock;
-class AnimationStorage;
-
-// internal WPF class gleaned from stack traces
-class AnimationStorage {
- public:
-	AnimationStorage (AnimationClock *clock, Animation *timeline,
-			  DependencyObject *targetobj, DependencyProperty *targetprop);
-	~AnimationStorage ();
-	
-	void ResetPropertyValue ();
-	void DetachUpdateHandler ();
-	void ReAttachUpdateHandler ();
-	void DetachTarget ();
-	void FlagAsNonResetable ();
-	void Float ();
-	bool IsFloating () { return floating; };
-	bool IsLonely () { return (targetobj == NULL); };
-	bool IsCurrentStorage ();
-	Value* GetResetValue ();
-	void UpdatePropertyValueWith (Value *v);
-	Value* GetStopValue (void);
-	void DetachFromPrevStorage (void);
-
- private:
-	void TargetObjectDestroyed ();
-	static void target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer data);
-
-	void UpdatePropertyValue ();
-	static void update_property_value (EventObject *sender, EventArgs *calldata, gpointer data);
-
-	AnimationClock *clock;
-	Animation* timeline;
-	DependencyObject *targetobj;
-	DependencyProperty *targetprop;
-	Value *baseValue;
-	Value *stopValue;
-	bool nonResetableFlag;
-	bool floating;
-	bool wasAttached;
-};
-
-
-class Animation;
-
-/* @Namespace=None,ManagedDependencyProperties=None */
-class AnimationClock : public Clock {
- protected:
-	virtual ~AnimationClock ();
-
- public:
-	AnimationClock (Animation *timeline);
-	virtual void ExtraRepeatAction ();
-	virtual void OnSurfaceDetach ();
-	virtual void OnSurfaceReAttach ();
-
-	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
-
-	bool HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
-
-	virtual void Stop ();
-	virtual void Begin ();
-
- private:
-	Animation *timeline;
-	AnimationStorage *storage;
-};
-
-
-
 
 
 /* @Namespace=None */
 class Animation : public Timeline {
- protected:
-	virtual ~Animation () {}
-
- public:
+public:
 
 	Animation () { };
 	
@@ -223,22 +151,14 @@ class Animation : public Timeline {
 
 	/* The kind of values this animation generates */
 	virtual Type::Kind GetValueKind () { return Type::INVALID; };
+
+protected:
+	virtual ~Animation () {}
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 class DoubleAnimation : public Animation {
- protected:
-	virtual ~DoubleAnimation () {}
-
- private:
-	double *doubleToCached;
-	double *doubleFromCached;
-	double *doubleByCached;
-	bool hasCached;
-
-	void EnsureCache (void);
-
- public:
+public:
  	/* @PropertyType=double,Nullable,GenerateAccessors */
 	const static int ByProperty;
 	/* @PropertyType=double,Nullable,GenerateAccessors */
@@ -271,22 +191,23 @@ class DoubleAnimation : public Animation {
 	double *GetTo ();
 	void    SetTo (double *pv);
 	void    SetTo (double v);
+
+protected:
+	virtual ~DoubleAnimation () {}
+
+private:
+	double *doubleToCached;
+	double *doubleFromCached;
+	double *doubleByCached;
+	bool hasCached;
+
+	void EnsureCache (void);
+
 };
 
 
 /* @Namespace=System.Windows.Media.Animation */
 class ColorAnimation : public Animation {
- protected:
-	virtual ~ColorAnimation () {}
-
- private:
-	Color *colorToCached;
-	Color *colorFromCached;
-	Color *colorByCached;
-	bool hasCached;
-
-	void EnsureCache (void);
-
  public:
  	/* @PropertyType=Color,Nullable,GenerateAccessors */
 	const static int ByProperty;
@@ -320,23 +241,23 @@ class ColorAnimation : public Animation {
 	Color *GetTo ();
 	void   SetTo (Color *pv);
 	void   SetTo (Color v);
+
+protected:
+	virtual ~ColorAnimation () {}
+
+private:
+	Color *colorToCached;
+	Color *colorFromCached;
+	Color *colorByCached;
+	bool hasCached;
+
+	void EnsureCache (void);
 };
 
 
 /* @Namespace=System.Windows.Media.Animation */
 class PointAnimation : public Animation {
- protected:
-	virtual ~PointAnimation ();
-
- private:
-	Point *pointToCached;
-	Point *pointFromCached;
-	Point *pointByCached;
-	bool hasCached;
-
-	void EnsureCache (void);
-
- public:
+public:
  	/* @PropertyType=Point,Nullable,GenerateAccessors */
 	const static int ByProperty;
  	/* @PropertyType=Point,Nullable,GenerateAccessors */
@@ -369,16 +290,24 @@ class PointAnimation : public Animation {
 	Point *GetTo ();
 	void   SetTo (Point *pv);
 	void   SetTo (Point v);
+
+protected:
+	virtual ~PointAnimation ();
+
+private:
+	Point *pointToCached;
+	Point *pointFromCached;
+	Point *pointByCached;
+	bool hasCached;
+
+	void EnsureCache (void);
+
 };
 
 
 /* @Namespace=None,ManagedDependencyProperties=None */
 class KeyFrame : public DependencyObject {
- protected:
-	virtual ~KeyFrame ();
-	KeyFrame ();
-
- public:
+public:
 	TimeSpan resolved_keytime;
 	bool resolved;
 	
@@ -390,17 +319,15 @@ class KeyFrame : public DependencyObject {
 	virtual KeyTime *GetKeyTime () = 0;
 	virtual void SetKeyTime (KeyTime keytime) = 0;
 	virtual void SetKeyTime (KeyTime *keytime) = 0;
+
+protected:
+	virtual ~KeyFrame ();
+	KeyFrame ();
 };
 
 /* @Namespace=None */
 class KeyFrameCollection : public DependencyObjectCollection {
- protected:
-	virtual bool AddedToCollection (Value *value, MoonError *error);
-	virtual void RemovedFromCollection (Value *value);
-	
-	virtual ~KeyFrameCollection ();
-
- public:
+public:
 	GPtrArray *sorted_list;
 	bool resolved;
 	
@@ -414,62 +341,65 @@ class KeyFrameCollection : public DependencyObjectCollection {
 	KeyFrame *GetKeyFrameForTime (TimeSpan t, KeyFrame **previous_frame);
 
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+
+protected:
+	virtual bool AddedToCollection (Value *value, MoonError *error);
+	virtual void RemovedFromCollection (Value *value);
+	
+	virtual ~KeyFrameCollection ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 class ColorKeyFrameCollection : public KeyFrameCollection {
- protected:
-	virtual ~ColorKeyFrameCollection ();
-
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	ColorKeyFrameCollection ();
 	
 	virtual Type::Kind GetElementType() { return Type::COLORKEYFRAME; }
+
+protected:
+	virtual ~ColorKeyFrameCollection ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 class DoubleKeyFrameCollection : public KeyFrameCollection {
- protected:
-	virtual ~DoubleKeyFrameCollection ();
-
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DoubleKeyFrameCollection ();
 	
 	virtual Type::Kind GetElementType() { return Type::DOUBLEKEYFRAME; }
+
+protected:
+	virtual ~DoubleKeyFrameCollection ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 class PointKeyFrameCollection : public KeyFrameCollection {
- protected:
-	virtual ~PointKeyFrameCollection ();
-
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	PointKeyFrameCollection ();
 	
 	virtual Type::Kind GetElementType() { return Type::POINTKEYFRAME; }
+
+protected:
+	virtual ~PointKeyFrameCollection ();
 };
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
 class ObjectKeyFrameCollection : public KeyFrameCollection {
- protected:
-	virtual ~ObjectKeyFrameCollection ();
-
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	ObjectKeyFrameCollection ();
 
 	virtual Type::Kind GetElementType() { return Type::OBJECTKEYFRAME; }
+
+protected:
+	virtual ~ObjectKeyFrameCollection ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 class DoubleKeyFrame : public KeyFrame {
- protected:
-	virtual ~DoubleKeyFrame ();
-
- public:
+public:
  	/* @PropertyType=double,Nullable,ManagedPropertyType=double,GenerateAccessors */
 	const static int ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
@@ -488,14 +418,14 @@ class DoubleKeyFrame : public KeyFrame {
 	virtual KeyTime *GetKeyTime ();
 	virtual void SetKeyTime (KeyTime keytime);
 	virtual void SetKeyTime (KeyTime *keytime);
+
+protected:
+	virtual ~DoubleKeyFrame ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 class ColorKeyFrame : public KeyFrame {
- protected:
-	virtual ~ColorKeyFrame ();
-
- public:
+public:
  	/* @PropertyType=Color,Nullable,ManagedPropertyType=Color,GenerateAccessors */
 	const static int ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
@@ -514,14 +444,14 @@ class ColorKeyFrame : public KeyFrame {
 	virtual KeyTime *GetKeyTime ();
 	virtual void SetKeyTime (KeyTime keytime);
 	virtual void SetKeyTime (KeyTime *keytime);
+
+protected:
+	virtual ~ColorKeyFrame ();
 };
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
 class ObjectKeyFrame : public KeyFrame /* The managed class derives directly from DependencyObject */ {
- protected:
-	virtual ~ObjectKeyFrame ();
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	ObjectKeyFrame ();
 	
@@ -535,14 +465,14 @@ class ObjectKeyFrame : public KeyFrame /* The managed class derives directly fro
 	virtual KeyTime *GetKeyTime ();
 	virtual void SetKeyTime (KeyTime keytime);
 	virtual void SetKeyTime (KeyTime *keytime);
+
+protected:
+	virtual ~ObjectKeyFrame ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 class PointKeyFrame : public KeyFrame {
- protected:
-	virtual ~PointKeyFrame ();
-	
- public:
+public:
  	/* @PropertyType=Point,Nullable,ManagedPropertyType=Point,GenerateAccessors */
 	const static int ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
@@ -561,20 +491,23 @@ class PointKeyFrame : public KeyFrame {
 	virtual KeyTime *GetKeyTime ();
 	virtual void SetKeyTime (KeyTime keytime);
 	virtual void SetKeyTime (KeyTime *keytime);
+
+protected:
+	virtual ~PointKeyFrame ();
 };
 
 
 
 /* @Namespace=System.Windows.Media.Animation */
 class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
- protected:
-	virtual ~DiscreteDoubleKeyFrame ();
-
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DiscreteDoubleKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+
+protected:
+	virtual ~DiscreteDoubleKeyFrame ();
 };
 
 
@@ -582,90 +515,87 @@ class DiscreteDoubleKeyFrame : public DoubleKeyFrame {
 
 /* @Namespace=System.Windows.Media.Animation */
 class DiscreteColorKeyFrame : public ColorKeyFrame {
- protected:
-	virtual ~DiscreteColorKeyFrame ();
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DiscreteColorKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+
+protected:
+	virtual ~DiscreteColorKeyFrame ();
 };
 
 
 /* @Version=2,Namespace=System.Windows.Media.Animation */
 class DiscreteObjectKeyFrame : public ObjectKeyFrame {
- protected:
-	virtual ~DiscreteObjectKeyFrame ();
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DiscreteObjectKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+
+protected:
+	virtual ~DiscreteObjectKeyFrame ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 class DiscretePointKeyFrame : public PointKeyFrame {
- protected:
-	virtual ~DiscretePointKeyFrame ();
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DiscretePointKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+
+protected:
+	virtual ~DiscretePointKeyFrame ();
 };
 
 
 /* @Namespace=System.Windows.Media.Animation */
 class LinearDoubleKeyFrame : public DoubleKeyFrame {
- protected:
-	virtual ~LinearDoubleKeyFrame ();
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	LinearDoubleKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+
+protected:
+	virtual ~LinearDoubleKeyFrame ();
 };
 
 
 
 /* @Namespace=System.Windows.Media.Animation */
 class LinearColorKeyFrame : public ColorKeyFrame {
- protected:
-	virtual ~LinearColorKeyFrame ();
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	LinearColorKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+
+protected:
+	virtual ~LinearColorKeyFrame ();
 };
 
 
 
 /* @Namespace=System.Windows.Media.Animation */
 class LinearPointKeyFrame : public PointKeyFrame {
- protected:
-	virtual ~LinearPointKeyFrame ();
-	
- public:
+public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	LinearPointKeyFrame ();
 	
 	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+
+protected:
+	virtual ~LinearPointKeyFrame ();
 };
 
 
 
 /* @Namespace=System.Windows.Media.Animation */
 class SplineDoubleKeyFrame : public DoubleKeyFrame {
- protected:
-	virtual ~SplineDoubleKeyFrame ();
-	
- public:
+public:
  	/* @PropertyType=KeySpline,AutoCreateValue,GenerateAccessors */
 	const static int KeySplineProperty;
 	
@@ -679,16 +609,16 @@ class SplineDoubleKeyFrame : public DoubleKeyFrame {
 	//
 	KeySpline *GetKeySpline ();
 	void SetKeySpline (KeySpline* value);
+
+protected:
+	virtual ~SplineDoubleKeyFrame ();
 };
 
 
 
 /* @Namespace=System.Windows.Media.Animation */
 class SplineColorKeyFrame : public ColorKeyFrame {
- protected:
-	virtual ~SplineColorKeyFrame ();
-
- public:
+public:
  	/* @PropertyType=KeySpline,AutoCreateValue,GenerateAccessors */
 	const static int KeySplineProperty;
 	
@@ -702,16 +632,16 @@ class SplineColorKeyFrame : public ColorKeyFrame {
 	//
 	KeySpline *GetKeySpline ();
 	void SetKeySpline (KeySpline* value);
+
+protected:
+	virtual ~SplineColorKeyFrame ();
 };
 
 
 
 /* @Namespace=System.Windows.Media.Animation */
 class SplinePointKeyFrame : public PointKeyFrame {
- protected:
-	virtual ~SplinePointKeyFrame ();
-	
- public:
+public:
  	/* @PropertyType=KeySpline,AutoCreateValue,GenerateAccessors */
 	const static int KeySplineProperty;
 	
@@ -725,16 +655,16 @@ class SplinePointKeyFrame : public PointKeyFrame {
 	//
 	KeySpline *GetKeySpline ();
 	void SetKeySpline (KeySpline* value);
+
+protected:
+	virtual ~SplinePointKeyFrame ();
 };
 
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
 class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
- protected:
-	virtual ~DoubleAnimationUsingKeyFrames ();
-
- public:
+public:
  	/* @PropertyType=DoubleKeyFrameCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int KeyFramesProperty;
 	
@@ -757,15 +687,15 @@ class DoubleAnimationUsingKeyFrames : public DoubleAnimation {
 	//
 	DoubleKeyFrameCollection *GetKeyFrames ();
 	void SetKeyFrames (DoubleKeyFrameCollection* value);
+
+protected:
+	virtual ~DoubleAnimationUsingKeyFrames ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
 class ColorAnimationUsingKeyFrames : public ColorAnimation {
- protected:
-	virtual ~ColorAnimationUsingKeyFrames ();
-
- public:
+public:
  	/* @PropertyType=ColorKeyFrameCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int KeyFramesProperty;
 	
@@ -788,16 +718,16 @@ class ColorAnimationUsingKeyFrames : public ColorAnimation {
 	//
 	ColorKeyFrameCollection *GetKeyFrames ();
 	void SetKeyFrames (ColorKeyFrameCollection* value);
+
+protected:
+	virtual ~ColorAnimationUsingKeyFrames ();
 };
 
 /* @Version=2 */
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
 class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {
- protected:
-	virtual ~ObjectAnimationUsingKeyFrames ();
-
- public:
+public:
  	/* @PropertyType=ObjectKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int KeyFramesProperty;
 	
@@ -820,15 +750,15 @@ class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {
 	virtual bool Validate ();
 
 	virtual Type::Kind GetValueKind () { return Type::INVALID; };
+
+protected:
+	virtual ~ObjectAnimationUsingKeyFrames ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */
 class PointAnimationUsingKeyFrames : public PointAnimation {
- protected:
-	virtual ~PointAnimationUsingKeyFrames ();
-
- public:
+public:
  	/* @PropertyType=PointKeyFrameCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int KeyFramesProperty;
 	
@@ -851,24 +781,15 @@ class PointAnimationUsingKeyFrames : public PointAnimation {
 	//
 	PointKeyFrameCollection *GetKeyFrames ();
 	void SetKeyFrames (PointKeyFrameCollection* value);
+
+protected:
+	virtual ~PointAnimationUsingKeyFrames ();
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="Children" */
 class Storyboard : public ParallelTimeline {
-	static void storyboard_completed (EventObject *sender, EventArgs *calldata, gpointer data);
-	static gboolean storyboard_tick (gpointer data);
-	
-	bool HookupAnimationsRecurse (Clock *clock, MoonError *error);
-	void TeardownClockGroup ();
-	gboolean Tick ();
-	Clock *clock;
-	Clock *root_clock;
-	
- protected:
-	virtual ~Storyboard ();
-
- public:
+public:
  	/* @PropertyType=string,Attached,GenerateAccessors,Validator=IsTimelineValidator */
 	const static int TargetNameProperty;
  	/* @PropertyType=PropertyPath,Attached,GenerateAccessors,Validator=IsTimelineValidator */
@@ -917,15 +838,23 @@ class Storyboard : public ParallelTimeline {
 	static const char *GetTargetName (DependencyObject *o);
 	static void SetTargetProperty (DependencyObject *o, PropertyPath *targetProperty);
 	static PropertyPath *GetTargetProperty (DependencyObject *o);
+
+protected:
+	virtual ~Storyboard ();
+
+private:
+	static void storyboard_completed (EventObject *sender, EventArgs *calldata, gpointer data);
+	
+	bool HookupAnimationsRecurse (Clock *clock, MoonError *error);
+	void TeardownClockGroup ();
+	Clock *clock;
+	Clock *root_clock;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="Storyboard" */
 class BeginStoryboard : public TriggerAction {
- protected:
-	virtual ~BeginStoryboard ();
-
- public:
+public:
  	/* @PropertyType=Storyboard,GenerateAccessors */
 	const static int StoryboardProperty;
 	
@@ -939,16 +868,71 @@ class BeginStoryboard : public TriggerAction {
 	//
 	void SetStoryboard (Storyboard *sb);
 	Storyboard *GetStoryboard ();
+
+protected:
+	virtual ~BeginStoryboard ();
 };
 
-G_BEGIN_DECLS
+// internal WPF class gleaned from stack traces
+class AnimationStorage {
+public:
+	AnimationStorage (AnimationClock *clock, Animation *timeline,
+			  DependencyObject *targetobj, DependencyProperty *targetprop);
+	~AnimationStorage ();
+	
+	void ResetPropertyValue ();
+	void DetachUpdateHandler ();
+	void ReAttachUpdateHandler ();
+	void DetachTarget ();
+	void FlagAsNonResetable ();
+	void Float ();
+	bool IsFloating () { return floating; };
+	bool IsLonely () { return (targetobj == NULL); };
+	bool IsCurrentStorage ();
+	Value* GetResetValue ();
+	void UpdatePropertyValueWith (Value *v);
+	Value* GetStopValue (void);
+	void DetachFromPrevStorage (void);
 
-void key_spline_get_control_point_1 (KeySpline *ks, double *x, double *y);
-void key_spline_set_control_point_1 (KeySpline *ks, double x, double y);
+private:
+	void TargetObjectDestroyed ();
+	static void target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer data);
 
-void key_spline_get_control_point_2 (KeySpline *ks, double *x, double *y);
-void key_spline_set_control_point_2 (KeySpline *ks, double x, double y);
+	void UpdatePropertyValue ();
+	static void update_property_value (EventObject *sender, EventArgs *calldata, gpointer data);
 
-G_END_DECLS
+	AnimationClock *clock;
+	Animation* timeline;
+	DependencyObject *targetobj;
+	DependencyProperty *targetprop;
+	Value *baseValue;
+	Value *stopValue;
+	bool nonResetableFlag;
+	bool floating;
+	bool wasAttached;
+};
+
+/* @Namespace=None,ManagedDependencyProperties=None */
+class AnimationClock : public Clock {
+public:
+	AnimationClock (Animation *timeline);
+	virtual void ExtraRepeatAction ();
+	virtual void OnSurfaceDetach ();
+	virtual void OnSurfaceReAttach ();
+
+	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
+
+	bool HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
+
+	virtual void Stop ();
+	virtual void Begin ();
+
+protected:
+	virtual ~AnimationClock ();
+
+private:
+	Animation *timeline;
+	AnimationStorage *storage;
+};
 
 #endif /* MOON_ANIMATION_H */
