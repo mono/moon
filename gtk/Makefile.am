@@ -29,6 +29,9 @@ CLEANFILES = \
 	moonlight-gtk.xml \
 	moonlight-gtk.tree
 
+clean-local:
+	-rm -rf $(builddir)/docs
+
 moonlight_gtk_SNK = $(srcdir)/moonlight-gtk.snk
 
 Moonlight.Gtk.dll: $(moonlight_gtk_dll_CS) $(top_builddir)/class/lib/3.0/System.Windows.dll

@@ -1,5 +1,9 @@
 2009-04-03  Aaron Bockover  <abockover@novell.com>
 
+	* Makefile.am: clean-local target to nuke the docs folder
+
+2009-04-03  Aaron Bockover  <abockover@novell.com>
+
 	* Moonlight.Gtk/XamlHost.cs: New Moonlight Gtk# widget for hosting XAML
 	content; used to be GtkSilver; the API has been vastly improved and
 	simplified, and the implementation updated to be cleaner, taking
