@@ -210,7 +210,7 @@ EOF
 cat <<EOF
 
   Silverlight Support:
-	Silverlight 1.0: yes (bug compatibility: $with_compatibility_bugs)
+	Silverlight 1.0: yes
 	Silverlight 2.0: yes
 EOF
 
