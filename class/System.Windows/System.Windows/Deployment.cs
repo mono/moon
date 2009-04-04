@@ -147,7 +147,8 @@ namespace System.Windows {
 		}
 
 		internal bool InitializeDeployment () {
-			EntryPointType = typeof (Application).Name;
+			EntryPointType = "System.Windows.Application";
+			EntryPointAssembly = typeof (Application).Assembly.GetName ().Name;
 			EntryAssembly = typeof (Application).Assembly;
 			return LoadAssemblies ();
 		}
@@ -221,7 +222,7 @@ namespace System.Windows {
 				return false;
 			}
 
-			if (!entry_type.IsSubclassOf (typeof (Application))){
+			if (!entry_type.IsSubclassOf (typeof (Application)) && entry_type != typeof (Application)){
 				Report.Error ("Startup type does not derive from System.Windows.Application");
 #if SANITY
 				Type t = entry_type;

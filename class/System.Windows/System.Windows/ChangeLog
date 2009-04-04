@@ -1,3 +1,8 @@
+2009-04-03  Geoff Norton  <gnorton@novell.com>
+
+	* Deployment.cs: Fixup XAPless initialiation so that we actually
+	construct and Application and connect it to the native instance.
+
 2009-04-03  Aaron Bockover  <abockover@novell.com>
 
 	* Deployment.cs: Added a new InitializeDeployment method that does not
