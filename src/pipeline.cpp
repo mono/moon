@@ -1015,7 +1015,7 @@ Media::SelectDecodersAsync ()
 		if (stream->GetType () != MediaTypeVideo)
 			continue; // Only video streams need converters
 			
-		if (decoder->GetPixelFormat () == MoonPixelFormatRGB32)
+		if (decoder->GetPixelFormat () == MoonPixelFormatRGB32 || decoder->GetPixelFormat () == MoonPixelFormatRGBA32)
 			continue; // We need RGB32, so any stream already producing RGB32 doesn't need a converter.
 			
 		// Select converter for this stream
@@ -2021,6 +2021,7 @@ IMediaStream::CreateCodec (int codec_id)
 	case CODEC_WMAV1: return g_strdup ("wmav1");
 	case CODEC_WMAV2: return g_strdup ("wmav2");
 	case CODEC_WMAV3: return g_strdup ("wmav3");
+	case CODEC_RGBA: return g_strdup ("rgba");
 	case CODEC_PCM: return g_strdup ("pcm");
 	default:
 		g_warning ("IMediaStream::CreateCodec (%i): Not implemented.\n", codec_id);
@@ -3446,7 +3447,7 @@ MediaWork::~MediaWork ()
 bool
 PassThroughDecoderInfo::Supports (const char *codec)
 {
-	const char *video_fourccs [] = { "yv12", "rgb", "rgba", NULL };
+	const char *video_fourccs [] = { "yv12", "rgba", NULL };
 	const char *audio_fourccs [] = { "pcm", NULL };
 	
 	for (int i = 0; video_fourccs [i] != NULL; i++)
@@ -3482,11 +3483,8 @@ PassThroughDecoder::OpenDecoderAsyncInternal ()
 	
 	if (!strcmp (fourcc, "yv12")) {
 		SetPixelFormat (MoonPixelFormatYUV420P);
-	} else if (!strcmp (fourcc, "rgb")) {
-		SetPixelFormat (MoonPixelFormatRGB32);
 	} else if (!strcmp (fourcc, "rgba")) {
-		ReportErrorOccurred (g_strdup_printf ("Pixel format not implemented: %s", fourcc));
-		return;
+		SetPixelFormat (MoonPixelFormatRGBA32);
 	} else if (!strcmp (fourcc, "pcm")) {
 		// nothing to do here
 	} else {
@@ -3500,6 +3498,7 @@ PassThroughDecoder::OpenDecoderAsyncInternal ()
 void
 PassThroughDecoder::DecodeFrameAsyncInternal (MediaFrame *frame)
 {
+	frame->AddState (FRAME_DECODED);
 	ReportDecodeFrameCompleted (frame);
 }
 

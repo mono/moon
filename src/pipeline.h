@@ -27,6 +27,7 @@
 #define CODEC_WMV3	MAKE_CODEC_ID ('W', 'M', 'V', '3')
 #define CODEC_WMVA	MAKE_CODEC_ID ('W', 'M', 'V', 'A')
 #define CODEC_WVC1	MAKE_CODEC_ID ('W', 'V', 'C', '1')
+#define CODEC_RGBA	MAKE_CODEC_ID ('R', 'G', 'B', 'A')
 #define CODEC_MP3	0x55
 #define CODEC_WMAV1 0x160
 #define CODEC_WMAV2 0x161
@@ -171,6 +172,7 @@ enum MediaStreamSourceDiagnosticKind {
 enum MoonPixelFormat {
 	MoonPixelFormatNone = 0,
 	MoonPixelFormatRGB32,
+	MoonPixelFormatRGBA32,
 	MoonPixelFormatYUV420P
 };
 

@@ -1,3 +1,14 @@
+2009-04-04  Geoff Norton  <gnorton@novell.com>
+
+	* media.h: Removed unused define
+	* mediaplayer.cpp|h: We need to support RGBA video formats now, so 
+	lets track what the decoder is giving us (pass-thru is the only decoder
+	which will provide RGBA from MSS, we still pass around yuv and rgb
+	internally).  If the format is RGBA we have to incur a one-frame penalty
+	to recreate our cairo surfaces.
+	* pipeline.cpp|h: Support RGBA pixel formats.  Don't support RGB from 
+	MediaStreamSource.  Mark the pass-thru frames as decoded.
+
 2009-04-04  Chris Toshok  <toshok@ximian.com>
 
 	* animation.h|.cpp: add Easing{Color,Double,Point}KeyFrame types.

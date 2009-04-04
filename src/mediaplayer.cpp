@@ -48,6 +48,7 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 	rgb_buffer = NULL;
 	buffer_width = 0;
 	buffer_height = 0;
+	format = MoonPixelFormatRGB32;
 	advance_frame_timeout_id = 0;
 
 	media = NULL;
@@ -375,7 +376,8 @@ MediaPlayer::SetVideoBufferSize (gint32 width, gint32 height)
 		surface = NULL;
 	}
 		
-	stride = cairo_format_stride_for_width (MOON_FORMAT_RGB, MAX (width, buffer_width));
+	/* NOTE: We only accept RGB32 or RGBA32 data here */
+	stride = cairo_format_stride_for_width (format == MoonPixelFormatRGB32 ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, MAX (width, buffer_width));
 	
 	if (stride % 64) {
 		int remain = stride % 64;
@@ -399,7 +401,8 @@ MediaPlayer::SetVideoBufferSize (gint32 width, gint32 height)
 		
 	// rendering surface
 	LOG_MEDIAPLAYER ("MediaPlayer::SetVideoBufferSize (): creating new surface, width: %i, height: %i, stride: %i\n", width, height, stride);
-	surface = cairo_image_surface_create_for_data (rgb_buffer, MOON_FORMAT_RGB, width, height, stride);
+	/* NOTE: We only accept RGB32 or RGBA32 data here */
+	surface = cairo_image_surface_create_for_data (rgb_buffer, format == MoonPixelFormatRGB32 ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, width, height, stride);
 }
 
 void 
@@ -493,7 +496,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 		return;
 	}
 	
-	if ((frame->width > 0 && frame->width != width) || (frame->height > 0 && frame->height != height)) {
+	if ((frame->width > 0 && frame->width != width) || (frame->height > 0 && frame->height != height) || (format != stream->GetDecoder ()->GetPixelFormat ())) {
 		LOG_MEDIAPLAYER ("MediaPlayer::RenderFrame () frame width: %i, frame height: %i, stream width: %i, stream height: %i, previous frame width: %i, previous frame height: %i\n",
 			frame->width, frame->height, video_stream->width, video_stream->height, width, height);
 
@@ -501,6 +504,9 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 			width = frame->width;
 		if (frame->height > 0)
 			height = frame->height;
+
+		format = stream->GetDecoder ()->GetPixelFormat ();
+
 		SetVideoBufferSize (width, height);
 	}
 	

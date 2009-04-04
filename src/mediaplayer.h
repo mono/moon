@@ -69,6 +69,7 @@ class MediaPlayer : public EventObject {
 	PlayerState state;
 	gint32 height;
 	gint32 width;
+	MoonPixelFormat format;
 	int audio_stream_count;
 	int advance_frame_timeout_id;
 	
