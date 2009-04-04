@@ -30,6 +30,8 @@ using System;
 using System.Windows;
 using Gtk;
 
+using Application = Gtk.Application;
+
 namespace Moonlight.Gtk {
 
 	/// <summary>
