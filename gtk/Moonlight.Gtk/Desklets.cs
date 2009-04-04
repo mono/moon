@@ -30,7 +30,7 @@ using System;
 using System.Windows;
 using Gtk;
 
-namespace Gtk.Moonlight {
+namespace Moonlight.Gtk {
 
 	/// <summary>
 	///   Provides utility functions for Desklet developers

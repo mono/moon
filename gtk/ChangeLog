@@ -1,5 +1,11 @@
 2009-04-03  Aaron Bockover  <abockover@novell.com>
 
+	* Moonlight.Gtk/Desklets.cs: Fix namespace
+
+	* Moonlight.Gtk/XamlHost.cs: Fix documentation
+
+2009-04-03  Aaron Bockover  <abockover@novell.com>
+
 	* Makefile.am: clean-local target to nuke the docs folder
 
 2009-04-03  Aaron Bockover  <abockover@novell.com>

@@ -51,18 +51,18 @@ namespace Moonlight.Gtk
         /// <summary>
         ///    Public constructor
         /// </summary>
-        /// <param name="width">The initial width for the widget</param>
-        /// <param name="height">The initial height for the widget</param>
         /// <remarks>
         ///    <para>The size of the internal root canvas is determined by 
         //     the size of the Surface widget, which can later be changed
         ///    by using the standard Gtk# APIs (SizeAllocate).</para>
         ///
-        ///    <para>The widget is initially empty, you must call the
-        ///    <see cref="Attach"/> method with a
+        ///    <para>The widget is initially empty, you must set the
+        ///    <see cref="Content"/> method with a
         ///    System.Windows.FrameworkElement instance (you can
-        ///    create those programatically, using XAML, or using the
-        ///    <see cref="LoadFile(System.String)"/> method).</para>
+        ///    create those programatically, or use 
+        ///    <see cref="LoadXaml(System.String)"/>,
+        ///    <see cref="LoadXamlFromFile(System.String)"/>, or
+        ///    <see cref="LoadXap(System.String)"/>).</para>
         /// </remarks>
         public XamlHost ()
         {
