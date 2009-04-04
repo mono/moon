@@ -2017,11 +2017,12 @@ IMediaStream::CreateCodec (int codec_id)
 	case CODEC_WMV3: return g_strdup ("wmv3");
 	case CODEC_WMVA: return g_strdup ("wmva");
 	case CODEC_WVC1: return g_strdup ("vc1");
+	case CODEC_RGBA: return g_strdup ("rgba");
+	case CODEC_YV12: return g_strdup ("yv12");
 	case CODEC_MP3: return g_strdup ("mp3");
 	case CODEC_WMAV1: return g_strdup ("wmav1");
 	case CODEC_WMAV2: return g_strdup ("wmav2");
 	case CODEC_WMAV3: return g_strdup ("wmav3");
-	case CODEC_RGBA: return g_strdup ("rgba");
 	case CODEC_PCM: return g_strdup ("pcm");
 	default:
 		g_warning ("IMediaStream::CreateCodec (%i): Not implemented.\n", codec_id);
@@ -3499,6 +3500,22 @@ void
 PassThroughDecoder::DecodeFrameAsyncInternal (MediaFrame *frame)
 {
 	frame->AddState (FRAME_DECODED);
+	if (GetPixelFormat () == MoonPixelFormatYUV420P) {
+		VideoStream *vs = (VideoStream *) GetStream ();
+
+		frame->width = vs->width;
+		frame->height = vs->height;
+
+		frame->data_stride[0] = frame->buffer;
+		frame->data_stride[1] = frame->buffer + (frame->width*frame->height);
+		frame->data_stride[2] = frame->buffer + (frame->width*frame->height)+(frame->width/2*frame->height/2);
+		frame->buffer = NULL;
+		frame->srcStride[0] = frame->width;
+		frame->srcSlideY = frame->width;
+		frame->srcSlideH = frame->height;
+
+		frame->AddState (FRAME_PLANAR);
+	}
 	ReportDecodeFrameCompleted (frame);
 }
 

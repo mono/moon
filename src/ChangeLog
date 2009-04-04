@@ -1,5 +1,9 @@
 2009-04-04  Geoff Norton  <gnorton@novell.com>
 
+	* pipeline.cpp|h: Support YV12 from MediaStreamSource as well
+
+2009-04-04  Geoff Norton  <gnorton@novell.com>
+
 	* media.h: Removed unused define
 	* mediaplayer.cpp|h: We need to support RGBA video formats now, so 
 	lets track what the decoder is giving us (pass-thru is the only decoder
