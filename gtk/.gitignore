@@ -3,8 +3,9 @@
 /*.dll
 /*.mdb
 /*.pc
-/gtksilver.xml
-/gtksilver.tree
-/gtksilver.zip
+/moonlight-gtk.xml
+/moonlight-gtk.tree
+/moonlight-gtk.zip
 /mopen.exe
 /mopen
+/docs
