@@ -516,6 +516,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 		for (int i = 0; i < height; i++)
 			memcpy (rgb_buffer + stride * i, frame->buffer + i * width * 4, width * 4);
 		SetBit (RenderedFrame);
+		element->Invalidate ();
 		return;
 	}
 	

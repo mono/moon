@@ -1,5 +1,9 @@
 2009-04-04  Geoff Norton  <gnorton@novell.com>
 
+	* mediaplayer.cpp: Ensure that we invalidate for planar data as well.
+
+2009-04-04  Geoff Norton  <gnorton@novell.com>
+
 	* pipeline.cpp|h: Support YV12 from MediaStreamSource as well
 
 2009-04-04  Geoff Norton  <gnorton@novell.com>
