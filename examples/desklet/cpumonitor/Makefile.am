@@ -1,7 +1,7 @@
 desklet=cpumonitor
 entrypoint=Desklets.CpuMonitorPanel.App
 
-DESKTOP_ASSEMBLIES=-r:$(top_builddir)/gtk/gtksilver.dll \
+DESKTOP_ASSEMBLIES=-r:$(top_builddir)/gtk/Moonlight.Gtk.dll \
 		   -r:$(top_builddir)/class/lib/3.0/System.Windows.dll \
 		   -r:$(top_builddir)/class/lib/3.0/System.Windows.Browser.dll
 

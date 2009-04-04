@@ -108,7 +108,7 @@ namespace Desklets.Ruler
 
 		public void PageLoaded (object o, EventArgs e)
 		{
-			Gtk.Moonlight.Desklet.SetupToolbox(this);
+			Moonlight.Gtk.Desklet.SetupToolbox(this);
 			
 			storyboard = FindName ("storyboard") as Storyboard;
 			

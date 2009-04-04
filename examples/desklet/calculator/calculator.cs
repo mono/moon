@@ -7,7 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-using Gtk.Moonlight;
+using Moonlight.Gtk;
 
 namespace Desklet.Calculator
 {
@@ -26,7 +26,7 @@ namespace Desklet.Calculator
 		{
 			InitializeComponent ();
 
-			Gtk.Moonlight.Desklet.SetupToolbox (this);
+			Moonlight.Gtk.Desklet.SetupToolbox (this);
 			
 			desklet_close.MouseEnter += delegate {
 				HighlightButton (desklet_close);

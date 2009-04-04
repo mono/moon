@@ -79,7 +79,7 @@ namespace Desklets.GlassySlides
 		
 		public void PageLoaded (object o, EventArgs e)
 		{
-			Gtk.Moonlight.Desklet.SetupToolbox (this);
+			Moonlight.Gtk.Desklet.SetupToolbox (this);
 			
 			change  = FindName ("change")  as Storyboard;
 			fadein  = FindName ("fadein")  as Storyboard;

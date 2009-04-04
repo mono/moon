@@ -125,7 +125,7 @@ namespace Desklets
 				Console.WriteLine ("content: "+entry.Content.Src.Content);
 			}
 			
-			Gtk.Moonlight.Desklet.Invoke(delegate { DownloadImage (0); });
+			Moonlight.Gtk.Desklet.Invoke(delegate { DownloadImage (0); });
 		}
 	}
 }

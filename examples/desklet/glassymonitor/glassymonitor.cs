@@ -96,7 +96,7 @@ public Monitor() { InitializeComponent();}
 		
 		public void PageLoaded (object o, EventArgs e)
 		{
-			Gtk.Moonlight.Desklet.SetupToolbox (this);
+			Moonlight.Gtk.Desklet.SetupToolbox (this);
 
 			closeButton = FindName ("desklet-close") as Polygon;			
 

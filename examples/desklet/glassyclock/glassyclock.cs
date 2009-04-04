@@ -47,7 +47,7 @@ namespace Desklets.Clock
 		
 		public void PageLoaded (object o, EventArgs e)
 		{
-			Gtk.Moonlight.Desklet.SetupToolbox (this);
+			Moonlight.Gtk.Desklet.SetupToolbox (this);
 			
 			secondsHand = FindName ("secondsHand") as RotateTransform;
 			minuteHand  = FindName ("minuteHand")  as RotateTransform;
