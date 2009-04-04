@@ -25,8 +25,11 @@ namespace EasingFunctions
 			InitializeComponent();
 
 			Loaded += delegate {
-
 				Polyline polyline = new Polyline ();
+				Canvas canvas = new Canvas ();
+				canvas.Children.Add (polyline);
+				canvas.Margin = rect.Margin;
+
 
 				for (int px = 0; px < rect.ActualWidth; px++) {
 					double x = (double) px / rect.ActualWidth;
@@ -38,9 +41,7 @@ namespace EasingFunctions
 				polyline.Stroke = new SolidColorBrush (Colors.Blue);
 				polyline.Fill = null;
 
-				polyline.Margin = new Thickness(5);
-
-				LayoutRoot.Children.Add (polyline);
+				LayoutRoot.Children.Add (canvas);
 			};
 		}
 
