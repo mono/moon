@@ -678,9 +678,24 @@ namespace System.Windows.Media.Animation {
 		internal DoubleKeyFrameCollection (IntPtr raw) : base (raw) {}
 	}
 
+	partial class EasingColorKeyFrame {
+		public EasingColorKeyFrame () : base (NativeMethods.easing_color_key_frame_new ()) {}
+		internal EasingColorKeyFrame (IntPtr raw) : base (raw) {}
+	}
+
+	partial class EasingDoubleKeyFrame {
+		public EasingDoubleKeyFrame () : base (NativeMethods.easing_double_key_frame_new ()) {}
+		internal EasingDoubleKeyFrame (IntPtr raw) : base (raw) {}
+	}
+
 	partial class EasingFunctionBase {
 		public EasingFunctionBase () : base (NativeMethods.easing_function_base_new ()) {}
 		internal EasingFunctionBase (IntPtr raw) : base (raw) {}
+	}
+
+	partial class EasingPointKeyFrame {
+		public EasingPointKeyFrame () : base (NativeMethods.easing_point_key_frame_new ()) {}
+		internal EasingPointKeyFrame (IntPtr raw) : base (raw) {}
 	}
 
 	partial class ElasticEase {

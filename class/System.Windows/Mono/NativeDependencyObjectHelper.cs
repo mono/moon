@@ -243,6 +243,9 @@ namespace Mono {
 			case Kind.DOUBLEKEYFRAME_COLLECTION: return new DoubleKeyFrameCollection (raw);
 			case Kind.DOUBLE_COLLECTION: return new DoubleCollection (raw);
 			case Kind.DRAWINGATTRIBUTES: return new DrawingAttributes (raw);
+			case Kind.EASINGCOLORKEYFRAME: return new EasingColorKeyFrame (raw);
+			case Kind.EASINGDOUBLEKEYFRAME: return new EasingDoubleKeyFrame (raw);
+			case Kind.EASINGPOINTKEYFRAME: return new EasingPointKeyFrame (raw);
 			case Kind.ELASTICEASE: return new ElasticEase (raw);
 			case Kind.ELLIPSEGEOMETRY: return new EllipseGeometry (raw);
 			case Kind.ELLIPSE: return new Ellipse (raw);

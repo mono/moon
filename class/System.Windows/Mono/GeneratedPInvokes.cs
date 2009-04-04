@@ -645,8 +645,20 @@ namespace Mono {
 		public extern static IntPtr drawing_attributes_new ();
 
 		[DllImport ("moon")]
+		// EasingColorKeyFrame *easing_color_key_frame_new ();
+		public extern static IntPtr easing_color_key_frame_new ();
+
+		[DllImport ("moon")]
+		// EasingDoubleKeyFrame *easing_double_key_frame_new ();
+		public extern static IntPtr easing_double_key_frame_new ();
+
+		[DllImport ("moon")]
 		// EasingFunctionBase *easing_function_base_new ();
 		public extern static IntPtr easing_function_base_new ();
+
+		[DllImport ("moon")]
+		// EasingPointKeyFrame *easing_point_key_frame_new ();
+		public extern static IntPtr easing_point_key_frame_new ();
 
 		[DllImport ("moon")]
 		// double elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime);

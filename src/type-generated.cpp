@@ -261,7 +261,10 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::DOWNLOADPROGRESSEVENTARGS] = new Type (Type::DOWNLOADPROGRESSEVENTARGS, Type::EVENTARGS, false, "DownloadProgressEventArgs", "DOWNLOADPROGRESSEVENTARGS", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::DRAWINGATTRIBUTES] = new Type (Type::DRAWINGATTRIBUTES, Type::DEPENDENCY_OBJECT, false, "DrawingAttributes", "DRAWINGATTRIBUTES", 0, 1, NULL, (create_inst_func *) drawing_attributes_new, NULL);
 	types [(int) Type::DURATION] = new Type (Type::DURATION, Type::OBJECT, true, "Duration", "DURATION", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::EASINGCOLORKEYFRAME] = new Type (Type::EASINGCOLORKEYFRAME, Type::COLORKEYFRAME, false, "EasingColorKeyFrame", "EASINGCOLORKEYFRAME", 0, 1, NULL, (create_inst_func *) easing_color_key_frame_new, NULL);
+	types [(int) Type::EASINGDOUBLEKEYFRAME] = new Type (Type::EASINGDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, "EasingDoubleKeyFrame", "EASINGDOUBLEKEYFRAME", 0, 1, NULL, (create_inst_func *) easing_double_key_frame_new, NULL);
 	types [(int) Type::EASINGFUNCTIONBASE] = new Type (Type::EASINGFUNCTIONBASE, Type::DEPENDENCY_OBJECT, false, "EasingFunctionBase", "EASINGFUNCTIONBASE", 0, 1, NULL, (create_inst_func *) easing_function_base_new, NULL);
+	types [(int) Type::EASINGPOINTKEYFRAME] = new Type (Type::EASINGPOINTKEYFRAME, Type::POINTKEYFRAME, false, "EasingPointKeyFrame", "EASINGPOINTKEYFRAME", 0, 1, NULL, (create_inst_func *) easing_point_key_frame_new, NULL);
 	types [(int) Type::ELASTICEASE] = new Type (Type::ELASTICEASE, Type::EASINGFUNCTIONBASE, false, "ElasticEase", "ELASTICEASE", 0, 1, NULL, (create_inst_func *) elastic_ease_new, NULL);
 	types [(int) Type::ELLIPSE] = new Type (Type::ELLIPSE, Type::SHAPE, false, "Ellipse", "ELLIPSE", 0, 20, NULL, (create_inst_func *) ellipse_new, NULL);
 	types [(int) Type::ELLIPSEGEOMETRY] = new Type (Type::ELLIPSEGEOMETRY, Type::GEOMETRY, false, "EllipseGeometry", "ELLIPSEGEOMETRY", 0, 1, NULL, (create_inst_func *) ellipse_geometry_new, NULL);

@@ -265,8 +265,14 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.DOUBLEKEYFRAME));
 				t = typeof (System.Windows.Media.Animation.DoubleKeyFrameCollection); 
 				types.Add (t, new ManagedType (t, Kind.DOUBLEKEYFRAME_COLLECTION));
+				t = typeof (System.Windows.Media.Animation.EasingColorKeyFrame); 
+				types.Add (t, new ManagedType (t, Kind.EASINGCOLORKEYFRAME));
+				t = typeof (System.Windows.Media.Animation.EasingDoubleKeyFrame); 
+				types.Add (t, new ManagedType (t, Kind.EASINGDOUBLEKEYFRAME));
 				t = typeof (System.Windows.Media.Animation.EasingFunctionBase); 
 				types.Add (t, new ManagedType (t, Kind.EASINGFUNCTIONBASE));
+				t = typeof (System.Windows.Media.Animation.EasingPointKeyFrame); 
+				types.Add (t, new ManagedType (t, Kind.EASINGPOINTKEYFRAME));
 				t = typeof (System.Windows.Media.Animation.ElasticEase); 
 				types.Add (t, new ManagedType (t, Kind.ELASTICEASE));
 				t = typeof (System.Windows.Media.Animation.ExponentialEase); 

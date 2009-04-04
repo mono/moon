@@ -582,10 +582,28 @@ double download_progress_event_args_get_progress (DownloadProgressEventArgs *ins
 DrawingAttributes *drawing_attributes_new (void);
 
 /**
+ * EasingColorKeyFrame
+ **/
+/* @GeneratePInvoke */
+EasingColorKeyFrame *easing_color_key_frame_new (void);
+
+/**
+ * EasingDoubleKeyFrame
+ **/
+/* @GeneratePInvoke */
+EasingDoubleKeyFrame *easing_double_key_frame_new (void);
+
+/**
  * EasingFunctionBase
  **/
 /* @GeneratePInvoke */
 EasingFunctionBase *easing_function_base_new (void);
+
+/**
+ * EasingPointKeyFrame
+ **/
+/* @GeneratePInvoke */
+EasingPointKeyFrame *easing_point_key_frame_new (void);
 
 /**
  * ElasticEase

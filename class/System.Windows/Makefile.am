@@ -207,8 +207,11 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/DiscretePointKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/DoubleKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/DoubleKeyFrameCollection.cs	\
+	$(srcdir)/System.Windows.Media.Animation/EasingColorKeyFrame.cs		\
+	$(srcdir)/System.Windows.Media.Animation/EasingDoubleKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/EasingFunctionBase.cs		\
 	$(srcdir)/System.Windows.Media.Animation/EasingMode.cs			\
+	$(srcdir)/System.Windows.Media.Animation/EasingPointKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/ElasticEase.cs			\
 	$(srcdir)/System.Windows.Media.Animation/ExponentialEase.cs		\
 	$(srcdir)/System.Windows.Media.Animation/IEasingFunction.cs		\

@@ -1445,6 +1445,97 @@ SplinePointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	return new Value (LERP (start, end, splineProgress));
 }
 
+EasingColorKeyFrame::EasingColorKeyFrame ()
+{
+	SetObjectType (Type::EASINGCOLORKEYFRAME);
+}
+
+EasingColorKeyFrame::~EasingColorKeyFrame ()
+{
+}
+
+Value *
+EasingColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	Color *to = GetValue();
+
+	if (!to)
+		return new Value (*baseValue->AsColor());
+	else if (keyFrameProgress >= 1.0)
+		return new Value (*to);
+
+	Color start, end;
+
+	start = *baseValue->AsColor();
+	end = *to;
+
+	if (GetEasingFunction ())
+		GetEasingFunction ()->Ease (keyFrameProgress);
+
+	return new Value (LERP (start, end, keyFrameProgress));
+}
+
+EasingDoubleKeyFrame::EasingDoubleKeyFrame ()
+{
+	SetObjectType (Type::EASINGDOUBLEKEYFRAME);
+}
+
+EasingDoubleKeyFrame::~EasingDoubleKeyFrame ()
+{
+}
+
+Value *
+EasingDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	double *to = GetValue();
+
+	if (!to)
+		return new Value (baseValue->AsDouble());
+	else if (keyFrameProgress >= 1.0)
+		return new Value (*to);
+
+	double start, end;
+
+	start = baseValue->AsDouble();
+	end = *to;
+
+	if (GetEasingFunction ())
+		GetEasingFunction ()->Ease (keyFrameProgress);
+
+	return new Value (LERP (start, end, keyFrameProgress));
+}
+
+
+EasingPointKeyFrame::EasingPointKeyFrame ()
+{
+	SetObjectType (Type::EASINGPOINTKEYFRAME);
+}
+
+EasingPointKeyFrame::~EasingPointKeyFrame ()
+{
+}
+
+Value *
+EasingPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
+{
+	Point *to = GetValue();
+
+	if (!to)
+		return new Value (*baseValue->AsPoint());
+	else if (keyFrameProgress >= 1.0)
+		return new Value (*to);
+
+	Point start, end;
+
+	start = *baseValue->AsPoint();
+	end = *to;
+
+	if (GetEasingFunction ())
+		GetEasingFunction ()->Ease (keyFrameProgress);
+
+	return new Value (LERP (start, end, keyFrameProgress));
+}
+
 /* implements the algorithm specified at the bottom of this page:
    http://msdn2.microsoft.com/en-us/library/ms742524.aspx
 */

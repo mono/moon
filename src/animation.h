@@ -676,6 +676,68 @@ protected:
 	virtual ~SplinePointKeyFrame ();
 };
 
+/* @Namespace=System.Windows.Media.Animation */
+class EasingColorKeyFrame : public ColorKeyFrame {
+public:
+ 	/* @PropertyType=EasingFunctionBase,ManagedPropertyType=IEasingFunction,GenerateAccessors */
+	const static int EasingFunctionProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	EasingColorKeyFrame ();
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+	
+	//
+	// Property Accessors
+	//
+	EasingFunctionBase *GetEasingFunction ();
+	void SetEasingFunction (EasingFunctionBase* value);
+
+protected:
+	virtual ~EasingColorKeyFrame ();
+};
+
+/* @Namespace=System.Windows.Media.Animation */
+class EasingDoubleKeyFrame : public DoubleKeyFrame {
+public:
+ 	/* @PropertyType=EasingFunctionBase,ManagedPropertyType=IEasingFunction,GenerateAccessors */
+	const static int EasingFunctionProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	EasingDoubleKeyFrame ();
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+	
+	//
+	// Property Accessors
+	//
+	EasingFunctionBase *GetEasingFunction ();
+	void SetEasingFunction (EasingFunctionBase* value);
+
+protected:
+	virtual ~EasingDoubleKeyFrame ();
+};
+
+/* @Namespace=System.Windows.Media.Animation */
+class EasingPointKeyFrame : public PointKeyFrame {
+public:
+ 	/* @PropertyType=EasingFunctionBase,ManagedPropertyType=IEasingFunction,GenerateAccessors */
+	const static int EasingFunctionProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	EasingPointKeyFrame ();
+
+	virtual Value *InterpolateValue (Value *baseValue, double keyFrameProgress);
+	
+	//
+	// Property Accessors
+	//
+	EasingFunctionBase *GetEasingFunction ();
+	void SetEasingFunction (EasingFunctionBase* value);
+
+protected:
+	virtual ~EasingPointKeyFrame ();
+};
 
 /* @Namespace=System.Windows.Media.Animation */
 /* @ContentProperty="KeyFrames" */

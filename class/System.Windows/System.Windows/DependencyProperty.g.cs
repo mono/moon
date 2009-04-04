@@ -1827,12 +1827,39 @@ namespace System.Windows.Media.Animation {
 		}
 	}
 
+	partial class EasingColorKeyFrame {
+		public static readonly DependencyProperty EasingFunctionProperty = DependencyProperty.Lookup (Kind.EASINGCOLORKEYFRAME, "EasingFunction", typeof (IEasingFunction));
+
+		public IEasingFunction EasingFunction {
+			get { return (IEasingFunction) GetValue (EasingFunctionProperty); }
+			set { SetValue (EasingFunctionProperty, value); }
+		}
+	}
+
+	partial class EasingDoubleKeyFrame {
+		public static readonly DependencyProperty EasingFunctionProperty = DependencyProperty.Lookup (Kind.EASINGDOUBLEKEYFRAME, "EasingFunction", typeof (IEasingFunction));
+
+		public IEasingFunction EasingFunction {
+			get { return (IEasingFunction) GetValue (EasingFunctionProperty); }
+			set { SetValue (EasingFunctionProperty, value); }
+		}
+	}
+
 	partial class EasingFunctionBase {
 		public static readonly DependencyProperty EasingModeProperty = DependencyProperty.Lookup (Kind.EASINGFUNCTIONBASE, "EasingMode", typeof (EasingMode));
 
 		public EasingMode EasingMode {
 			get { return (EasingMode) GetValue (EasingModeProperty); }
 			set { SetValue (EasingModeProperty, value); }
+		}
+	}
+
+	partial class EasingPointKeyFrame {
+		public static readonly DependencyProperty EasingFunctionProperty = DependencyProperty.Lookup (Kind.EASINGPOINTKEYFRAME, "EasingFunction", typeof (IEasingFunction));
+
+		public IEasingFunction EasingFunction {
+			get { return (IEasingFunction) GetValue (EasingFunctionProperty); }
+			set { SetValue (EasingFunctionProperty, value); }
 		}
 	}
 

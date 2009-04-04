@@ -1263,12 +1263,42 @@ drawing_attributes_new (void)
 
 
 /**
+ * EasingColorKeyFrame
+ **/
+EasingColorKeyFrame *
+easing_color_key_frame_new (void)
+{
+	return new EasingColorKeyFrame ();
+}
+
+
+/**
+ * EasingDoubleKeyFrame
+ **/
+EasingDoubleKeyFrame *
+easing_double_key_frame_new (void)
+{
+	return new EasingDoubleKeyFrame ();
+}
+
+
+/**
  * EasingFunctionBase
  **/
 EasingFunctionBase *
 easing_function_base_new (void)
 {
 	return new EasingFunctionBase ();
+}
+
+
+/**
+ * EasingPointKeyFrame
+ **/
+EasingPointKeyFrame *
+easing_point_key_frame_new (void)
+{
+	return new EasingPointKeyFrame ();
 }
 
 

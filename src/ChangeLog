@@ -1,3 +1,10 @@
+2009-04-04  Chris Toshok  <toshok@ximian.com>
+
+	* animation.h|.cpp: add Easing{Color,Double,Point}KeyFrame types.
+
+	* type.h, type-generated.cpp, dependencyproperty.g.cpp, value.h,
+	cbinding.h|.cpp: regen.
+	
 2009-04-03  Chris Toshok  <toshok@ximian.com>
 
 	* animation.h: add EasingFunctionProperty to

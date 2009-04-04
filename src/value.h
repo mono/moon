@@ -110,7 +110,10 @@ class DoubleKeyFrameCollection;
 class Downloader;
 class DownloadProgressEventArgs;
 class DrawingAttributes;
+class EasingColorKeyFrame;
+class EasingDoubleKeyFrame;
 class EasingFunctionBase;
+class EasingPointKeyFrame;
 class ElasticEase;
 class Ellipse;
 class EllipseGeometry;
@@ -443,7 +446,10 @@ public:
 	Downloader*                    AsDownloader () { checked_get_subclass (Type::DOWNLOADER, Downloader) }
 	DownloadProgressEventArgs*     AsDownloadProgressEventArgs () { checked_get_subclass (Type::DOWNLOADPROGRESSEVENTARGS, DownloadProgressEventArgs) }
 	DrawingAttributes*             AsDrawingAttributes () { checked_get_subclass (Type::DRAWINGATTRIBUTES, DrawingAttributes) }
+	EasingColorKeyFrame*           AsEasingColorKeyFrame () { checked_get_subclass (Type::EASINGCOLORKEYFRAME, EasingColorKeyFrame) }
+	EasingDoubleKeyFrame*          AsEasingDoubleKeyFrame () { checked_get_subclass (Type::EASINGDOUBLEKEYFRAME, EasingDoubleKeyFrame) }
 	EasingFunctionBase*            AsEasingFunctionBase () { checked_get_subclass (Type::EASINGFUNCTIONBASE, EasingFunctionBase) }
+	EasingPointKeyFrame*           AsEasingPointKeyFrame () { checked_get_subclass (Type::EASINGPOINTKEYFRAME, EasingPointKeyFrame) }
 	ElasticEase*                   AsElasticEase () { checked_get_subclass (Type::ELASTICEASE, ElasticEase) }
 	Ellipse*                       AsEllipse () { checked_get_subclass (Type::ELLIPSE, Ellipse) }
 	EllipseGeometry*               AsEllipseGeometry () { checked_get_subclass (Type::ELLIPSEGEOMETRY, EllipseGeometry) }

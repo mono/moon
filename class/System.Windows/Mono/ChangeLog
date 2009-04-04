@@ -1,3 +1,10 @@
+2009-04-04  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs (CreateObject): add the easing
+	keyframe types.
+
+	* GeneratedPInvokes.cs, Kind.cs, Types.g.cs: regen
+
 2009-04-03  Chris Toshok  <toshok@ximian.com>
 
 	* NativeDependencyObjectHelper.cs (CreateObject): add all the
