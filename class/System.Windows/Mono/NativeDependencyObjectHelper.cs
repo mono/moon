@@ -214,13 +214,16 @@ namespace Mono {
 			case Kind.APPLICATION: return new Application (raw);
 			case Kind.ASSEMBLYPART: return new AssemblyPart (raw);
 			case Kind.ASSEMBLYPART_COLLECTION: return new AssemblyPartCollection (raw);
+			case Kind.BACKEASE: return new BackEase (raw);
 			case Kind.BEGINSTORYBOARD: return new BeginStoryboard (raw);
 			case Kind.BEZIERSEGMENT: return new BezierSegment (raw);
 				//			case Kind.BINDINGEXPRESSION: return new BindingExpression (raw);
 			case Kind.BITMAPIMAGE: return new BitmapImage (raw);
 			case Kind.BITMAPSOURCE: return new BitmapSource (raw);
+			case Kind.BOUNCEEASE: return new BounceEase (raw);
 			case Kind.BORDER: return new Border (raw);
 			case Kind.CANVAS: return new Canvas (raw);
+			case Kind.CIRCLEEASE: return new CircleEase (raw);
 			case Kind.COLORANIMATION: return new ColorAnimation (raw);
 			case Kind.COLORANIMATIONUSINGKEYFRAMES: return new ColorAnimationUsingKeyFrames (raw);
 			case Kind.COLORKEYFRAME_COLLECTION: return new ColorKeyFrameCollection (raw);
@@ -228,6 +231,7 @@ namespace Mono {
 			case Kind.COLUMNDEFINITION_COLLECTION: return new ColumnDefinitionCollection (raw);
 			case Kind.CONTENTCONTROL: return new ContentControl (raw);
 			case Kind.CONTROLTEMPLATE: return new ControlTemplate (raw);
+			case Kind.CUBICEASE: return new CubicEase (raw);
 			case Kind.DATATEMPLATE: return new DataTemplate (raw);
 			case Kind.DEPLOYMENT: return new Deployment (raw);
 			case Kind.DISCRETECOLORKEYFRAME: return new DiscreteColorKeyFrame (raw);
@@ -239,9 +243,11 @@ namespace Mono {
 			case Kind.DOUBLEKEYFRAME_COLLECTION: return new DoubleKeyFrameCollection (raw);
 			case Kind.DOUBLE_COLLECTION: return new DoubleCollection (raw);
 			case Kind.DRAWINGATTRIBUTES: return new DrawingAttributes (raw);
+			case Kind.ELASTICEASE: return new ElasticEase (raw);
 			case Kind.ELLIPSEGEOMETRY: return new EllipseGeometry (raw);
 			case Kind.ELLIPSE: return new Ellipse (raw);
 			case Kind.EVENTTRIGGER: return new EventTrigger (raw);
+			case Kind.EXPONENTIALEASE: return new ExponentialEase (raw);
 			case Kind.GEOMETRY_COLLECTION: return new GeometryCollection (raw);
 			case Kind.GEOMETRYGROUP: return new GeometryGroup (raw);
 			case Kind.GLYPHS: return new Glyphs (raw);
@@ -285,7 +291,11 @@ namespace Mono {
 			case Kind.POLYLINESEGMENT: return new PolyLineSegment (raw);
 			case Kind.POLYQUADRATICBEZIERSEGMENT: return new PolyQuadraticBezierSegment (raw);
 			case Kind.POPUP: return new Popup (raw);
+			case Kind.POWEREASE: return new PowerEase (raw);
 			case Kind.QUADRATICBEZIERSEGMENT: return new QuadraticBezierSegment (raw);
+			case Kind.QUADRATICEASE: return new QuadraticEase (raw);
+			case Kind.QUARTICEASE: return new QuarticEase (raw);
+			case Kind.QUINTICEASE: return new QuinticEase (raw);
 			case Kind.RADIALGRADIENTBRUSH: return new RadialGradientBrush (raw);
 			case Kind.RECTANGLEGEOMETRY: return new RectangleGeometry (raw);
 			case Kind.RECTANGLE: return new Rectangle (raw);
@@ -297,6 +307,7 @@ namespace Mono {
 			case Kind.SETTERBASE_COLLECTION: return new SetterBaseCollection (raw);
 			case Kind.SETTER: return new Setter (raw);
 			case Kind.SCALETRANSFORM: return new ScaleTransform (raw);
+			case Kind.SINEEASE: return new SineEase (raw);
 			case Kind.SOLIDCOLORBRUSH: return new SolidColorBrush (raw);
 			case Kind.SPLINECOLORKEYFRAME: return new SplineColorKeyFrame (raw);
 			case Kind.SPLINEDOUBLEKEYFRAME: return new SplineDoubleKeyFrame (raw);
@@ -343,6 +354,7 @@ namespace Mono {
 			case Kind.GEOMETRY:
 			case Kind.SETTERBASE:
 			case Kind.FRAMEWORKTEMPLATE:
+			case Kind.EASINGFUNCTIONBASE:
 				throw new Exception (
 					String.Format ("Should never get an abstract class from unmanaged code {0}", k));
 

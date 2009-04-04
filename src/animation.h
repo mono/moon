@@ -24,6 +24,7 @@
 #include "point.h"
 #include "propertypath.h"
 #include "moon-curves.h"
+#include "easing.h"
 #include "applier.h"
 
 // misc types
@@ -165,7 +166,9 @@ public:
 	const static int FromProperty;
 	/* @PropertyType=double,Nullable,GenerateAccessors */
 	const static int ToProperty;
-	
+	/* @PropertyType=EasingFunctionBase,ManagedPropertyType=IEasingFunction,GenerateAccessors */
+	const static int EasingFunctionProperty;
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	DoubleAnimation ();
 	
@@ -192,6 +195,9 @@ public:
 	void    SetTo (double *pv);
 	void    SetTo (double v);
 
+	EasingFunctionBase* GetEasingFunction ();
+	void SetEasingFunction (EasingFunctionBase* value);
+
 protected:
 	virtual ~DoubleAnimation () {}
 
@@ -215,6 +221,8 @@ class ColorAnimation : public Animation {
 	const static int FromProperty;
  	/* @PropertyType=Color,Nullable,GenerateAccessors */
 	const static int ToProperty;
+	/* @PropertyType=EasingFunctionBase,ManagedPropertyType=IEasingFunction,GenerateAccessors */
+	const static int EasingFunctionProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ColorAnimation ();
@@ -242,6 +250,9 @@ class ColorAnimation : public Animation {
 	void   SetTo (Color *pv);
 	void   SetTo (Color v);
 
+	EasingFunctionBase* GetEasingFunction ();
+	void SetEasingFunction (EasingFunctionBase* value);
+
 protected:
 	virtual ~ColorAnimation () {}
 
@@ -264,6 +275,8 @@ public:
 	const static int FromProperty;
  	/* @PropertyType=Point,Nullable,GenerateAccessors */
 	const static int ToProperty;
+	/* @PropertyType=EasingFunctionBase,ManagedPropertyType=IEasingFunction,GenerateAccessors */
+	const static int EasingFunctionProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
  	PointAnimation ();
@@ -290,6 +303,9 @@ public:
 	Point *GetTo ();
 	void   SetTo (Point *pv);
 	void   SetTo (Point v);
+
+	EasingFunctionBase* GetEasingFunction ();
+	void SetEasingFunction (EasingFunctionBase* value);
 
 protected:
 	virtual ~PointAnimation ();

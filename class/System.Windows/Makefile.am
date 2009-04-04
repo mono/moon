@@ -193,16 +193,25 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Interop/PluginHost.cs				\
 	$(srcdir)/System.Windows.Interop/Settings.cs				\
 	$(srcdir)/System.Windows.Interop/SilverlightHost.cs			\
+	$(srcdir)/System.Windows.Media.Animation/BackEase.cs			\
+	$(srcdir)/System.Windows.Media.Animation/BounceEase.cs			\
+	$(srcdir)/System.Windows.Media.Animation/CircleEase.cs			\
 	$(srcdir)/System.Windows.Media.Animation/ClockState.cs			\
 	$(srcdir)/System.Windows.Media.Animation/ColorAnimationUsingKeyFrames.cs\
 	$(srcdir)/System.Windows.Media.Animation/ColorKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/ColorKeyFrameCollection.cs	\
+	$(srcdir)/System.Windows.Media.Animation/CubicEase.cs			\
 	$(srcdir)/System.Windows.Media.Animation/DiscreteColorKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/DiscreteDoubleKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/DiscreteObjectKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/DiscretePointKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/DoubleKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/DoubleKeyFrameCollection.cs	\
+	$(srcdir)/System.Windows.Media.Animation/EasingFunctionBase.cs		\
+	$(srcdir)/System.Windows.Media.Animation/EasingMode.cs			\
+	$(srcdir)/System.Windows.Media.Animation/ElasticEase.cs			\
+	$(srcdir)/System.Windows.Media.Animation/ExponentialEase.cs		\
+	$(srcdir)/System.Windows.Media.Animation/IEasingFunction.cs		\
 	$(srcdir)/System.Windows.Media.Animation/KeyTime.cs			\
 	$(srcdir)/System.Windows.Media.Animation/KeyTimeType.cs			\
 	$(srcdir)/System.Windows.Media.Animation/LinearColorKeyFrame.cs		\
@@ -214,6 +223,11 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/PointAnimationUsingKeyFrames.cs\
 	$(srcdir)/System.Windows.Media.Animation/PointKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/PointKeyFrameCollection.cs	\
+	$(srcdir)/System.Windows.Media.Animation/PowerEase.cs			\
+	$(srcdir)/System.Windows.Media.Animation/QuadraticEase.cs		\
+	$(srcdir)/System.Windows.Media.Animation/QuarticEase.cs			\
+	$(srcdir)/System.Windows.Media.Animation/QuinticEase.cs			\
+	$(srcdir)/System.Windows.Media.Animation/SineEase.cs			\
 	$(srcdir)/System.Windows.Media.Animation/SplineColorKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/SplinePointKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/TimelineCollection.cs		\

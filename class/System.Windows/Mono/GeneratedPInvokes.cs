@@ -47,6 +47,14 @@ namespace Mono {
 		public extern static IntPtr audio_stream_new (IntPtr media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, IntPtr extra_data, uint extra_data_size);
 
 		[DllImport ("moon")]
+		// BackEase *back_ease_new ();
+		public extern static IntPtr back_ease_new ();
+
+		[DllImport ("moon")]
+		// double back_ease_ease_in_core (BackEase *instance, double normalizedTime);
+		public extern static double back_ease_ease_in_core (IntPtr instance, double normalizedTime);
+
+		[DllImport ("moon")]
 		// BeginStoryboard *begin_storyboard_new ();
 		public extern static IntPtr begin_storyboard_new ();
 
@@ -83,12 +91,28 @@ namespace Mono {
 		public extern static IntPtr border_new ();
 
 		[DllImport ("moon")]
+		// BounceEase *bounce_ease_new ();
+		public extern static IntPtr bounce_ease_new ();
+
+		[DllImport ("moon")]
+		// double bounce_ease_ease_in_core (BounceEase *instance, double normalizedTime);
+		public extern static double bounce_ease_ease_in_core (IntPtr instance, double normalizedTime);
+
+		[DllImport ("moon")]
 		// Brush *brush_new ();
 		public extern static IntPtr brush_new ();
 
 		[DllImport ("moon")]
 		// Canvas *canvas_new ();
 		public extern static IntPtr canvas_new ();
+
+		[DllImport ("moon")]
+		// CircleEase *circle_ease_new ();
+		public extern static IntPtr circle_ease_new ();
+
+		[DllImport ("moon")]
+		// double circle_ease_ease_in_core (CircleEase *instance, double normalizedTime);
+		public extern static double circle_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon", EntryPoint="collection_add_with_error")]
 		// int collection_add_with_error (Collection *instance, Value *value, MoonError *error);
@@ -305,6 +329,14 @@ namespace Mono {
 		[DllImport ("moon")]
 		// ControlTemplate *control_template_new ();
 		public extern static IntPtr control_template_new ();
+
+		[DllImport ("moon")]
+		// CubicEase *cubic_ease_new ();
+		public extern static IntPtr cubic_ease_new ();
+
+		[DllImport ("moon")]
+		// double cubic_ease_ease_in_core (CubicEase *instance, double normalizedTime);
+		public extern static double cubic_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon")]
 		// CursorPositionChangedEventArgs *cursor_position_changed_event_args_new ();
@@ -613,6 +645,18 @@ namespace Mono {
 		public extern static IntPtr drawing_attributes_new ();
 
 		[DllImport ("moon")]
+		// EasingFunctionBase *easing_function_base_new ();
+		public extern static IntPtr easing_function_base_new ();
+
+		[DllImport ("moon")]
+		// double elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime);
+		public extern static double elastic_ease_ease_in_core (IntPtr instance, double normalizedTime);
+
+		[DllImport ("moon")]
+		// ElasticEase *elastic_ease_new ();
+		public extern static IntPtr elastic_ease_new ();
+
+		[DllImport ("moon")]
 		// Ellipse *ellipse_new ();
 		public extern static IntPtr ellipse_new ();
 
@@ -676,6 +720,14 @@ namespace Mono {
 		[DllImport ("moon")]
 		// EventTrigger *event_trigger_new ();
 		public extern static IntPtr event_trigger_new ();
+
+		[DllImport ("moon")]
+		// double exponential_ease_ease_in_core (ExponentialEase *instance, double normalizedTime);
+		public extern static double exponential_ease_ease_in_core (IntPtr instance, double normalizedTime);
+
+		[DllImport ("moon")]
+		// ExponentialEase *exponential_ease_new ();
+		public extern static IntPtr exponential_ease_new ();
 
 		[DllImport ("moon")]
 		// gint32 external_demuxer_add_stream (ExternalDemuxer *instance, IMediaStream *stream);
@@ -1167,8 +1219,40 @@ namespace Mono {
 		public extern static IntPtr popup_new ();
 
 		[DllImport ("moon")]
+		// double power_ease_ease_in_core (PowerEase *instance, double normalizedTime);
+		public extern static double power_ease_ease_in_core (IntPtr instance, double normalizedTime);
+
+		[DllImport ("moon")]
+		// PowerEase *power_ease_new ();
+		public extern static IntPtr power_ease_new ();
+
+		[DllImport ("moon")]
 		// QuadraticBezierSegment *quadratic_bezier_segment_new ();
 		public extern static IntPtr quadratic_bezier_segment_new ();
+
+		[DllImport ("moon")]
+		// double quadratic_ease_ease_in_core (QuadraticEase *instance, double normalizedTime);
+		public extern static double quadratic_ease_ease_in_core (IntPtr instance, double normalizedTime);
+
+		[DllImport ("moon")]
+		// QuadraticEase *quadratic_ease_new ();
+		public extern static IntPtr quadratic_ease_new ();
+
+		[DllImport ("moon")]
+		// double quartic_ease_ease_in_core (QuarticEase *instance, double normalizedTime);
+		public extern static double quartic_ease_ease_in_core (IntPtr instance, double normalizedTime);
+
+		[DllImport ("moon")]
+		// QuarticEase *quartic_ease_new ();
+		public extern static IntPtr quartic_ease_new ();
+
+		[DllImport ("moon")]
+		// double quintic_ease_ease_in_core (QuinticEase *instance, double normalizedTime);
+		public extern static double quintic_ease_ease_in_core (IntPtr instance, double normalizedTime);
+
+		[DllImport ("moon")]
+		// QuinticEase *quintic_ease_new ();
+		public extern static IntPtr quintic_ease_new ();
 
 		[DllImport ("moon")]
 		// RadialGradientBrush *radial_gradient_brush_new ();
@@ -1284,6 +1368,14 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Shape *shape_new ();
 		public extern static IntPtr shape_new ();
+
+		[DllImport ("moon")]
+		// double sine_ease_ease_in_core (SineEase *instance, double normalizedTime);
+		public extern static double sine_ease_ease_in_core (IntPtr instance, double normalizedTime);
+
+		[DllImport ("moon")]
+		// SineEase *sine_ease_new ();
+		public extern static IntPtr sine_ease_new ();
 
 		[DllImport ("moon")]
 		// SizeChangedEventArgs *size_changed_event_args_new ();
@@ -1801,6 +1893,10 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
+		// void downloader_write (Downloader *dl, void *buf, gint32 offset, gint32 n);
+		public extern static void downloader_write (IntPtr dl, IntPtr buf, int offset, int n);
+
+		[DllImport ("moon")]
 		// void downloader_notify_size (Downloader *dl, gint64 size);
 		public extern static void downloader_notify_size (IntPtr dl, long size);
 
@@ -1809,16 +1905,12 @@ namespace Mono {
 		public extern static void downloader_notify_finished (IntPtr dl, string filename);
 
 		[DllImport ("moon")]
-		// void downloader_set_functions (downloader_create_state_func create_state, downloader_destroy_state_func destroy_state, downloader_open_func open, downloader_send_func send, downloader_abort_func abort, downloader_header_func header, downloader_body_func body, downloader_create_webrequest_func request);
-		public extern static void downloader_set_functions (Mono.DownloaderCreateStateFunc create_state, Mono.DownloaderDestroyStateFunc destroy_state, Mono.DownloaderOpenFunc open, Mono.DownloaderSendFunc send, Mono.DownloaderAbortFunc abort, Mono.DownloaderHeaderFunc header, Mono.DownloaderBodyFunc body, Mono.DownloaderCreateWebRequestFunc request);
-
-		[DllImport ("moon")]
 		// void downloader_notify_error (Downloader *dl, const char *msg);
 		public extern static void downloader_notify_error (IntPtr dl, string msg);
 
 		[DllImport ("moon")]
-		// void downloader_write (Downloader *dl, void *buf, gint32 offset, gint32 n);
-		public extern static void downloader_write (IntPtr dl, IntPtr buf, int offset, int n);
+		// void downloader_set_functions (downloader_create_state_func create_state, downloader_destroy_state_func destroy_state, downloader_open_func open, downloader_send_func send, downloader_abort_func abort, downloader_header_func header, downloader_body_func body, downloader_create_webrequest_func request);
+		public extern static void downloader_set_functions (Mono.DownloaderCreateStateFunc create_state, Mono.DownloaderDestroyStateFunc destroy_state, Mono.DownloaderOpenFunc open, Mono.DownloaderSendFunc send, Mono.DownloaderAbortFunc abort, Mono.DownloaderHeaderFunc header, Mono.DownloaderBodyFunc body, Mono.DownloaderCreateWebRequestFunc request);
 
 	}
 }

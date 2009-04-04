@@ -1,3 +1,11 @@
+2009-04-03  Chris Toshok  <toshok@ximian.com>
+
+	* BackEase.cs, BounceEase.cs, CircleEase.cs, CubicEase.cs,
+	EasingFunctionBase.cs, EasingMode.cs, ElasticEase.cs,
+	ExponentialEase.cs, IEasingFunction.cs, PowerEase.cs,
+	QuadraticEase.cs, QuarticEase.cs, QuinticEase.cs, SineEase.cs: add
+	the easing types.
+
 2009-03-12  Geoff Norton  <gnorton@novell.com>
 
 	* Storyboard.cs: Implement SkipToFill

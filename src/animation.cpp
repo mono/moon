@@ -758,6 +758,9 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 
 	double progress = animationClock->GetCurrentProgress ();
 
+	if (GetEasingFunction ())
+		progress = GetEasingFunction()->Ease (progress);
+
 	return new Value (LERP (start, end, progress));
 }
 
@@ -833,6 +836,9 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	}
 
 	double progress = animationClock->GetCurrentProgress ();
+
+	if (GetEasingFunction ())
+		progress = GetEasingFunction()->Ease (progress);
 
 	return new Value (LERP (start, end, progress));
 }
@@ -913,6 +919,9 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	}
 
 	double progress = animationClock->GetCurrentProgress ();
+
+	if (GetEasingFunction ())
+		progress = GetEasingFunction()->Ease (progress);
 
 	return new Value (LERP (start, end, progress));
 }

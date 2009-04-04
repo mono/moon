@@ -285,6 +285,13 @@ static enum_map_t cross_domain_access_map [] = {
 	END_MAPPING 
 };
 
+static enum_map_t easing_mode_map [] = {
+	MAP_ENUM_FULL ("EaseIn", EasingModeIn), 
+	MAP_ENUM_FULL ("EaseOut", EasingModeOut),
+	MAP_ENUM_FULL ("EaseInOut", EasingModeInOut),
+	END_MAPPING 
+};
+
 static void
 initialize_enums (void)
 {
@@ -331,6 +338,8 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "TabNavigation", keyboard_navigation_mode_map);
 
 	g_hash_table_insert (enum_map, (char *) "MediaElementState", media_element_state_map);
+
+	g_hash_table_insert (enum_map, (char *) "EasingMode", easing_mode_map);
 }
 
 static int

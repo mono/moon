@@ -22,6 +22,7 @@
 #include "dependencyproperty.h"
 #include "deployment.h"
 #include "downloader.h"
+#include "easing.h"
 #include "eventargs.h"
 #include "frameworkelement.h"
 #include "geometry.h"
@@ -102,6 +103,15 @@ AssemblyPartCollection *assembly_part_collection_new (void);
 AudioStream *audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, gpointer extra_data, guint32 extra_data_size);
 
 /**
+ * BackEase
+ **/
+/* @GeneratePInvoke */
+BackEase *back_ease_new (void);
+
+/* @GeneratePInvoke */
+double back_ease_ease_in_core (BackEase *instance, double normalizedTime);
+
+/**
  * BeginStoryboard
  **/
 /* @GeneratePInvoke */
@@ -144,6 +154,15 @@ void bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data);
 Border *border_new (void);
 
 /**
+ * BounceEase
+ **/
+/* @GeneratePInvoke */
+BounceEase *bounce_ease_new (void);
+
+/* @GeneratePInvoke */
+double bounce_ease_ease_in_core (BounceEase *instance, double normalizedTime);
+
+/**
  * Brush
  **/
 /* @GeneratePInvoke */
@@ -154,6 +173,15 @@ Brush *brush_new (void);
  **/
 /* @GeneratePInvoke */
 Canvas *canvas_new (void);
+
+/**
+ * CircleEase
+ **/
+/* @GeneratePInvoke */
+CircleEase *circle_ease_new (void);
+
+/* @GeneratePInvoke */
+double circle_ease_ease_in_core (CircleEase *instance, double normalizedTime);
 
 /**
  * Collection
@@ -313,6 +341,15 @@ DependencyObject *control_get_template_child (Control *instance, const char *nam
  **/
 /* @GeneratePInvoke */
 ControlTemplate *control_template_new (void);
+
+/**
+ * CubicEase
+ **/
+/* @GeneratePInvoke */
+CubicEase *cubic_ease_new (void);
+
+/* @GeneratePInvoke */
+double cubic_ease_ease_in_core (CubicEase *instance, double normalizedTime);
 
 /**
  * CursorPositionChangedEventArgs
@@ -545,6 +582,21 @@ double download_progress_event_args_get_progress (DownloadProgressEventArgs *ins
 DrawingAttributes *drawing_attributes_new (void);
 
 /**
+ * EasingFunctionBase
+ **/
+/* @GeneratePInvoke */
+EasingFunctionBase *easing_function_base_new (void);
+
+/**
+ * ElasticEase
+ **/
+/* @GeneratePInvoke */
+double elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime);
+
+/* @GeneratePInvoke */
+ElasticEase *elastic_ease_new (void);
+
+/**
  * Ellipse
  **/
 /* @GeneratePInvoke */
@@ -597,6 +649,15 @@ void event_object_unref (EventObject *instance);
  **/
 /* @GeneratePInvoke */
 EventTrigger *event_trigger_new (void);
+
+/**
+ * ExponentialEase
+ **/
+/* @GeneratePInvoke */
+double exponential_ease_ease_in_core (ExponentialEase *instance, double normalizedTime);
+
+/* @GeneratePInvoke */
+ExponentialEase *exponential_ease_new (void);
 
 /**
  * ExternalDemuxer
@@ -1184,10 +1245,46 @@ PolyQuadraticBezierSegment *poly_quadratic_bezier_segment_new (void);
 Popup *popup_new (void);
 
 /**
+ * PowerEase
+ **/
+/* @GeneratePInvoke */
+double power_ease_ease_in_core (PowerEase *instance, double normalizedTime);
+
+/* @GeneratePInvoke */
+PowerEase *power_ease_new (void);
+
+/**
  * QuadraticBezierSegment
  **/
 /* @GeneratePInvoke */
 QuadraticBezierSegment *quadratic_bezier_segment_new (void);
+
+/**
+ * QuadraticEase
+ **/
+/* @GeneratePInvoke */
+double quadratic_ease_ease_in_core (QuadraticEase *instance, double normalizedTime);
+
+/* @GeneratePInvoke */
+QuadraticEase *quadratic_ease_new (void);
+
+/**
+ * QuarticEase
+ **/
+/* @GeneratePInvoke */
+double quartic_ease_ease_in_core (QuarticEase *instance, double normalizedTime);
+
+/* @GeneratePInvoke */
+QuarticEase *quartic_ease_new (void);
+
+/**
+ * QuinticEase
+ **/
+/* @GeneratePInvoke */
+double quintic_ease_ease_in_core (QuinticEase *instance, double normalizedTime);
+
+/* @GeneratePInvoke */
+QuinticEase *quintic_ease_new (void);
 
 /**
  * RadialGradientBrush
@@ -1305,6 +1402,15 @@ SetterBaseCollection *setter_base_collection_new (void);
  **/
 /* @GeneratePInvoke */
 Shape *shape_new (void);
+
+/**
+ * SineEase
+ **/
+/* @GeneratePInvoke */
+double sine_ease_ease_in_core (SineEase *instance, double normalizedTime);
+
+/* @GeneratePInvoke */
+SineEase *sine_ease_new (void);
 
 /**
  * SizeChangedEventArgs

@@ -86,6 +86,27 @@ audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_ali
 
 
 /**
+ * BackEase
+ **/
+BackEase *
+back_ease_new (void)
+{
+	return new BackEase ();
+}
+
+
+double
+back_ease_ease_in_core (BackEase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
+}
+
+
+/**
  * BeginStoryboard
  **/
 BeginStoryboard *
@@ -176,6 +197,27 @@ border_new (void)
 
 
 /**
+ * BounceEase
+ **/
+BounceEase *
+bounce_ease_new (void)
+{
+	return new BounceEase ();
+}
+
+
+double
+bounce_ease_ease_in_core (BounceEase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
+}
+
+
+/**
  * Brush
  **/
 Brush *
@@ -192,6 +234,27 @@ Canvas *
 canvas_new (void)
 {
 	return new Canvas ();
+}
+
+
+/**
+ * CircleEase
+ **/
+CircleEase *
+circle_ease_new (void)
+{
+	return new CircleEase ();
+}
+
+
+double
+circle_ease_ease_in_core (CircleEase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
 }
 
 
@@ -615,6 +678,27 @@ ControlTemplate *
 control_template_new (void)
 {
 	return new ControlTemplate ();
+}
+
+
+/**
+ * CubicEase
+ **/
+CubicEase *
+cubic_ease_new (void)
+{
+	return new CubicEase ();
+}
+
+
+double
+cubic_ease_ease_in_core (CubicEase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
 }
 
 
@@ -1179,6 +1263,37 @@ drawing_attributes_new (void)
 
 
 /**
+ * EasingFunctionBase
+ **/
+EasingFunctionBase *
+easing_function_base_new (void)
+{
+	return new EasingFunctionBase ();
+}
+
+
+/**
+ * ElasticEase
+ **/
+double
+elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
+}
+
+
+ElasticEase *
+elastic_ease_new (void)
+{
+	return new ElasticEase ();
+}
+
+
+/**
  * Ellipse
  **/
 Ellipse *
@@ -1320,6 +1435,27 @@ EventTrigger *
 event_trigger_new (void)
 {
 	return new EventTrigger ();
+}
+
+
+/**
+ * ExponentialEase
+ **/
+double
+exponential_ease_ease_in_core (ExponentialEase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
+}
+
+
+ExponentialEase *
+exponential_ease_new (void)
+{
+	return new ExponentialEase ();
 }
 
 
@@ -2581,12 +2717,96 @@ popup_new (void)
 
 
 /**
+ * PowerEase
+ **/
+double
+power_ease_ease_in_core (PowerEase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
+}
+
+
+PowerEase *
+power_ease_new (void)
+{
+	return new PowerEase ();
+}
+
+
+/**
  * QuadraticBezierSegment
  **/
 QuadraticBezierSegment *
 quadratic_bezier_segment_new (void)
 {
 	return new QuadraticBezierSegment ();
+}
+
+
+/**
+ * QuadraticEase
+ **/
+double
+quadratic_ease_ease_in_core (QuadraticEase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
+}
+
+
+QuadraticEase *
+quadratic_ease_new (void)
+{
+	return new QuadraticEase ();
+}
+
+
+/**
+ * QuarticEase
+ **/
+double
+quartic_ease_ease_in_core (QuarticEase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
+}
+
+
+QuarticEase *
+quartic_ease_new (void)
+{
+	return new QuarticEase ();
+}
+
+
+/**
+ * QuinticEase
+ **/
+double
+quintic_ease_ease_in_core (QuinticEase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
+}
+
+
+QuinticEase *
+quintic_ease_new (void)
+{
+	return new QuinticEase ();
 }
 
 
@@ -2840,6 +3060,27 @@ Shape *
 shape_new (void)
 {
 	return new Shape ();
+}
+
+
+/**
+ * SineEase
+ **/
+double
+sine_ease_ease_in_core (SineEase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
+}
+
+
+SineEase *
+sine_ease_new (void)
+{
+	return new SineEase ();
 }
 
 

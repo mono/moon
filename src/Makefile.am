@@ -33,6 +33,7 @@ libmoon_include_headers = 	\
 	deployment.h		\
 	dirty.h			\
 	downloader.h		\
+	easing.h		\
 	enums.h			\
 	error.h			\
 	eventargs.h		\
@@ -137,6 +138,7 @@ libmoon_la_SOURCES = 		\
 	dirty.cpp		\
 	dirty.h			\
 	downloader.cpp		\
+	easing.cpp		\
 	enums.cpp		\
 	error.cpp		\
 	eventargs.cpp		\

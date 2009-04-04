@@ -64,13 +64,16 @@ class AssemblyPartCollection;
 class ASXDemuxer;
 class AudioSource;
 class AudioStream;
+class BackEase;
 class BeginStoryboard;
 class BezierSegment;
 class BitmapImage;
 class BitmapSource;
 class Border;
+class BounceEase;
 class Brush;
 class Canvas;
+class CircleEase;
 class Clock;
 class ClockGroup;
 class CodecDownloader;
@@ -87,6 +90,7 @@ class ContentChangedEventArgs;
 class ContentControl;
 class Control;
 class ControlTemplate;
+class CubicEase;
 class CursorPositionChangedEventArgs;
 class DataTemplate;
 class DeepZoomImageTileSource;
@@ -106,6 +110,8 @@ class DoubleKeyFrameCollection;
 class Downloader;
 class DownloadProgressEventArgs;
 class DrawingAttributes;
+class EasingFunctionBase;
+class ElasticEase;
 class Ellipse;
 class EllipseGeometry;
 class ErrorEventArgs;
@@ -114,6 +120,7 @@ class EventListenerProxy;
 class EventObject;
 class EventTrigger;
 class ExceptionRoutedEventArgs;
+class ExponentialEase;
 class ExternalDemuxer;
 class FfmpegDecoder;
 class FfmpegDemuxer;
@@ -217,9 +224,13 @@ class Polyline;
 class PolyLineSegment;
 class PolyQuadraticBezierSegment;
 class Popup;
+class PowerEase;
 class ProgressiveSource;
 class PulseSource;
 class QuadraticBezierSegment;
+class QuadraticEase;
+class QuarticEase;
+class QuinticEase;
 class RadialGradientBrush;
 class Rectangle;
 class RectangleGeometry;
@@ -234,6 +245,7 @@ class Setter;
 class SetterBase;
 class SetterBaseCollection;
 class Shape;
+class SineEase;
 class SizeChangedEventArgs;
 class SkewTransform;
 class SolidColorBrush;
@@ -385,13 +397,16 @@ public:
 	ASXDemuxer*                    AsASXDemuxer () { checked_get_subclass (Type::ASXDEMUXER, ASXDemuxer) }
 	AudioSource*                   AsAudioSource () { checked_get_subclass (Type::AUDIOSOURCE, AudioSource) }
 	AudioStream*                   AsAudioStream () { checked_get_subclass (Type::AUDIOSTREAM, AudioStream) }
+	BackEase*                      AsBackEase () { checked_get_subclass (Type::BACKEASE, BackEase) }
 	BeginStoryboard*               AsBeginStoryboard () { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
 	BezierSegment*                 AsBezierSegment () { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
 	BitmapImage*                   AsBitmapImage () { checked_get_subclass (Type::BITMAPIMAGE, BitmapImage) }
 	BitmapSource*                  AsBitmapSource () { checked_get_subclass (Type::BITMAPSOURCE, BitmapSource) }
 	Border*                        AsBorder () { checked_get_subclass (Type::BORDER, Border) }
+	BounceEase*                    AsBounceEase () { checked_get_subclass (Type::BOUNCEEASE, BounceEase) }
 	Brush*                         AsBrush () { checked_get_subclass (Type::BRUSH, Brush) }
 	Canvas*                        AsCanvas () { checked_get_subclass (Type::CANVAS, Canvas) }
+	CircleEase*                    AsCircleEase () { checked_get_subclass (Type::CIRCLEEASE, CircleEase) }
 	Clock*                         AsClock () { checked_get_subclass (Type::CLOCK, Clock) }
 	ClockGroup*                    AsClockGroup () { checked_get_subclass (Type::CLOCKGROUP, ClockGroup) }
 	CodecDownloader*               AsCodecDownloader () { checked_get_subclass (Type::CODECDOWNLOADER, CodecDownloader) }
@@ -408,6 +423,7 @@ public:
 	ContentControl*                AsContentControl () { checked_get_subclass (Type::CONTENTCONTROL, ContentControl) }
 	Control*                       AsControl () { checked_get_subclass (Type::CONTROL, Control) }
 	ControlTemplate*               AsControlTemplate () { checked_get_subclass (Type::CONTROLTEMPLATE, ControlTemplate) }
+	CubicEase*                     AsCubicEase () { checked_get_subclass (Type::CUBICEASE, CubicEase) }
 	CursorPositionChangedEventArgs*AsCursorPositionChangedEventArgs () { checked_get_subclass (Type::CURSORPOSITIONCHANGEDEVENTARGS, CursorPositionChangedEventArgs) }
 	DataTemplate*                  AsDataTemplate () { checked_get_subclass (Type::DATATEMPLATE, DataTemplate) }
 	DeepZoomImageTileSource*       AsDeepZoomImageTileSource () { checked_get_subclass (Type::DEEPZOOMIMAGETILESOURCE, DeepZoomImageTileSource) }
@@ -427,6 +443,8 @@ public:
 	Downloader*                    AsDownloader () { checked_get_subclass (Type::DOWNLOADER, Downloader) }
 	DownloadProgressEventArgs*     AsDownloadProgressEventArgs () { checked_get_subclass (Type::DOWNLOADPROGRESSEVENTARGS, DownloadProgressEventArgs) }
 	DrawingAttributes*             AsDrawingAttributes () { checked_get_subclass (Type::DRAWINGATTRIBUTES, DrawingAttributes) }
+	EasingFunctionBase*            AsEasingFunctionBase () { checked_get_subclass (Type::EASINGFUNCTIONBASE, EasingFunctionBase) }
+	ElasticEase*                   AsElasticEase () { checked_get_subclass (Type::ELASTICEASE, ElasticEase) }
 	Ellipse*                       AsEllipse () { checked_get_subclass (Type::ELLIPSE, Ellipse) }
 	EllipseGeometry*               AsEllipseGeometry () { checked_get_subclass (Type::ELLIPSEGEOMETRY, EllipseGeometry) }
 	ErrorEventArgs*                AsErrorEventArgs () { checked_get_subclass (Type::ERROREVENTARGS, ErrorEventArgs) }
@@ -435,6 +453,7 @@ public:
 	EventObject*                   AsEventObject () { checked_get_subclass (Type::EVENTOBJECT, EventObject) }
 	EventTrigger*                  AsEventTrigger () { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
 	ExceptionRoutedEventArgs*      AsExceptionRoutedEventArgs () { checked_get_subclass (Type::EXCEPTIONROUTEDEVENTARGS, ExceptionRoutedEventArgs) }
+	ExponentialEase*               AsExponentialEase () { checked_get_subclass (Type::EXPONENTIALEASE, ExponentialEase) }
 	ExternalDemuxer*               AsExternalDemuxer () { checked_get_subclass (Type::EXTERNALDEMUXER, ExternalDemuxer) }
 	FfmpegDecoder*                 AsFfmpegDecoder () { checked_get_subclass (Type::FFMPEGDECODER, FfmpegDecoder) }
 	FfmpegDemuxer*                 AsFfmpegDemuxer () { checked_get_subclass (Type::FFMPEGDEMUXER, FfmpegDemuxer) }
@@ -538,9 +557,13 @@ public:
 	PolyLineSegment*               AsPolyLineSegment () { checked_get_subclass (Type::POLYLINESEGMENT, PolyLineSegment) }
 	PolyQuadraticBezierSegment*    AsPolyQuadraticBezierSegment () { checked_get_subclass (Type::POLYQUADRATICBEZIERSEGMENT, PolyQuadraticBezierSegment) }
 	Popup*                         AsPopup () { checked_get_subclass (Type::POPUP, Popup) }
+	PowerEase*                     AsPowerEase () { checked_get_subclass (Type::POWEREASE, PowerEase) }
 	ProgressiveSource*             AsProgressiveSource () { checked_get_subclass (Type::PROGRESSIVESOURCE, ProgressiveSource) }
 	PulseSource*                   AsPulseSource () { checked_get_subclass (Type::PULSESOURCE, PulseSource) }
 	QuadraticBezierSegment*        AsQuadraticBezierSegment () { checked_get_subclass (Type::QUADRATICBEZIERSEGMENT, QuadraticBezierSegment) }
+	QuadraticEase*                 AsQuadraticEase () { checked_get_subclass (Type::QUADRATICEASE, QuadraticEase) }
+	QuarticEase*                   AsQuarticEase () { checked_get_subclass (Type::QUARTICEASE, QuarticEase) }
+	QuinticEase*                   AsQuinticEase () { checked_get_subclass (Type::QUINTICEASE, QuinticEase) }
 	RadialGradientBrush*           AsRadialGradientBrush () { checked_get_subclass (Type::RADIALGRADIENTBRUSH, RadialGradientBrush) }
 	Rectangle*                     AsRectangle () { checked_get_subclass (Type::RECTANGLE, Rectangle) }
 	RectangleGeometry*             AsRectangleGeometry () { checked_get_subclass (Type::RECTANGLEGEOMETRY, RectangleGeometry) }
@@ -555,6 +578,7 @@ public:
 	SetterBase*                    AsSetterBase () { checked_get_subclass (Type::SETTERBASE, SetterBase) }
 	SetterBaseCollection*          AsSetterBaseCollection () { checked_get_subclass (Type::SETTERBASE_COLLECTION, SetterBaseCollection) }
 	Shape*                         AsShape () { checked_get_subclass (Type::SHAPE, Shape) }
+	SineEase*                      AsSineEase () { checked_get_subclass (Type::SINEEASE, SineEase) }
 	SizeChangedEventArgs*          AsSizeChangedEventArgs () { checked_get_subclass (Type::SIZECHANGEDEVENTARGS, SizeChangedEventArgs) }
 	SkewTransform*                 AsSkewTransform () { checked_get_subclass (Type::SKEWTRANSFORM, SkewTransform) }
 	SolidColorBrush*               AsSolidColorBrush () { checked_get_subclass (Type::SOLIDCOLORBRUSH, SolidColorBrush) }

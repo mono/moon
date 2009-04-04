@@ -1692,6 +1692,15 @@ namespace System.Windows.Media {
 }
 
 namespace System.Windows.Media.Animation {
+	partial class BackEase {
+		public static readonly DependencyProperty AmplitudeProperty = DependencyProperty.Lookup (Kind.BACKEASE, "Amplitude", typeof (double));
+
+		public double Amplitude {
+			get { return (double) GetValue (AmplitudeProperty); }
+			set { SetValue (AmplitudeProperty, value); }
+		}
+	}
+
 	partial class BeginStoryboard {
 		public static readonly DependencyProperty StoryboardProperty = DependencyProperty.Lookup (Kind.BEGINSTORYBOARD, "Storyboard", typeof (Storyboard));
 
@@ -1701,14 +1710,35 @@ namespace System.Windows.Media.Animation {
 		}
 	}
 
+	partial class BounceEase {
+		public static readonly DependencyProperty BouncesProperty = DependencyProperty.Lookup (Kind.BOUNCEEASE, "Bounces", typeof (int));
+		public static readonly DependencyProperty BouncinessProperty = DependencyProperty.Lookup (Kind.BOUNCEEASE, "Bounciness", typeof (double));
+
+		public int Bounces {
+			get { return (int) GetValue (BouncesProperty); }
+			set { SetValue (BouncesProperty, value); }
+		}
+
+		public double Bounciness {
+			get { return (double) GetValue (BouncinessProperty); }
+			set { SetValue (BouncinessProperty, value); }
+		}
+	}
+
 	partial class ColorAnimation {
 		public static readonly DependencyProperty ByProperty = DependencyProperty.Lookup (Kind.COLORANIMATION, "By", typeof (Nullable<Color>));
+		public static readonly DependencyProperty EasingFunctionProperty = DependencyProperty.Lookup (Kind.COLORANIMATION, "EasingFunction", typeof (IEasingFunction));
 		public static readonly DependencyProperty FromProperty = DependencyProperty.Lookup (Kind.COLORANIMATION, "From", typeof (Nullable<Color>));
 		public static readonly DependencyProperty ToProperty = DependencyProperty.Lookup (Kind.COLORANIMATION, "To", typeof (Nullable<Color>));
 
 		public Nullable<Color> By {
 			get { return (Nullable<Color>) GetValue (ByProperty); }
 			set { SetValue (ByProperty, value); }
+		}
+
+		public IEasingFunction EasingFunction {
+			get { return (IEasingFunction) GetValue (EasingFunctionProperty); }
+			set { SetValue (EasingFunctionProperty, value); }
 		}
 
 		public Nullable<Color> From {
@@ -1748,12 +1778,18 @@ namespace System.Windows.Media.Animation {
 
 	partial class DoubleAnimation {
 		public static readonly DependencyProperty ByProperty = DependencyProperty.Lookup (Kind.DOUBLEANIMATION, "By", typeof (Nullable<double>));
+		public static readonly DependencyProperty EasingFunctionProperty = DependencyProperty.Lookup (Kind.DOUBLEANIMATION, "EasingFunction", typeof (IEasingFunction));
 		public static readonly DependencyProperty FromProperty = DependencyProperty.Lookup (Kind.DOUBLEANIMATION, "From", typeof (Nullable<double>));
 		public static readonly DependencyProperty ToProperty = DependencyProperty.Lookup (Kind.DOUBLEANIMATION, "To", typeof (Nullable<double>));
 
 		public Nullable<double> By {
 			get { return (Nullable<double>) GetValue (ByProperty); }
 			set { SetValue (ByProperty, value); }
+		}
+
+		public IEasingFunction EasingFunction {
+			get { return (IEasingFunction) GetValue (EasingFunctionProperty); }
+			set { SetValue (EasingFunctionProperty, value); }
 		}
 
 		public Nullable<double> From {
@@ -1788,6 +1824,39 @@ namespace System.Windows.Media.Animation {
 		public double Value {
 			get { return (double) GetValue (ValueProperty); }
 			set { SetValue (ValueProperty, value); }
+		}
+	}
+
+	partial class EasingFunctionBase {
+		public static readonly DependencyProperty EasingModeProperty = DependencyProperty.Lookup (Kind.EASINGFUNCTIONBASE, "EasingMode", typeof (EasingMode));
+
+		public EasingMode EasingMode {
+			get { return (EasingMode) GetValue (EasingModeProperty); }
+			set { SetValue (EasingModeProperty, value); }
+		}
+	}
+
+	partial class ElasticEase {
+		public static readonly DependencyProperty OscillationsProperty = DependencyProperty.Lookup (Kind.ELASTICEASE, "Oscillations", typeof (int));
+		public static readonly DependencyProperty SpringinessProperty = DependencyProperty.Lookup (Kind.ELASTICEASE, "Springiness", typeof (double));
+
+		public int Oscillations {
+			get { return (int) GetValue (OscillationsProperty); }
+			set { SetValue (OscillationsProperty, value); }
+		}
+
+		public double Springiness {
+			get { return (double) GetValue (SpringinessProperty); }
+			set { SetValue (SpringinessProperty, value); }
+		}
+	}
+
+	partial class ExponentialEase {
+		public static readonly DependencyProperty ExponentProperty = DependencyProperty.Lookup (Kind.EXPONENTIALEASE, "Exponent", typeof (double));
+
+		public double Exponent {
+			get { return (double) GetValue (ExponentProperty); }
+			set { SetValue (ExponentProperty, value); }
 		}
 	}
 
@@ -1832,12 +1901,18 @@ namespace System.Windows.Media.Animation {
 
 	partial class PointAnimation {
 		public static readonly DependencyProperty ByProperty = DependencyProperty.Lookup (Kind.POINTANIMATION, "By", typeof (Nullable<Point>));
+		public static readonly DependencyProperty EasingFunctionProperty = DependencyProperty.Lookup (Kind.POINTANIMATION, "EasingFunction", typeof (IEasingFunction));
 		public static readonly DependencyProperty FromProperty = DependencyProperty.Lookup (Kind.POINTANIMATION, "From", typeof (Nullable<Point>));
 		public static readonly DependencyProperty ToProperty = DependencyProperty.Lookup (Kind.POINTANIMATION, "To", typeof (Nullable<Point>));
 
 		public Nullable<Point> By {
 			get { return (Nullable<Point>) GetValue (ByProperty); }
 			set { SetValue (ByProperty, value); }
+		}
+
+		public IEasingFunction EasingFunction {
+			get { return (IEasingFunction) GetValue (EasingFunctionProperty); }
+			set { SetValue (EasingFunctionProperty, value); }
 		}
 
 		public Nullable<Point> From {
@@ -1872,6 +1947,15 @@ namespace System.Windows.Media.Animation {
 		public Point Value {
 			get { return (Point) GetValue (ValueProperty); }
 			set { SetValue (ValueProperty, value); }
+		}
+	}
+
+	partial class PowerEase {
+		public static readonly DependencyProperty PowerProperty = DependencyProperty.Lookup (Kind.POWEREASE, "Power", typeof (double));
+
+		public double Power {
+			get { return (double) GetValue (PowerProperty); }
+			set { SetValue (PowerProperty, value); }
 		}
 	}
 

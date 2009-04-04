@@ -28,6 +28,7 @@
 #include "dependencyobject.h"
 #include "deployment.h"
 #include "downloader.h"
+#include "easing.h"
 #include "error.h"
 #include "eventargs.h"
 #include "frameworkelement.h"
@@ -206,15 +207,18 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::ASXDEMUXER] = new Type (Type::ASXDEMUXER, Type::IMEDIADEMUXER, false, "ASXDemuxer", "ASXDEMUXER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::AUDIOSOURCE] = new Type (Type::AUDIOSOURCE, Type::EVENTOBJECT, false, "AudioSource", "AUDIOSOURCE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::AUDIOSTREAM] = new Type (Type::AUDIOSTREAM, Type::IMEDIASTREAM, false, "AudioStream", "AUDIOSTREAM", 0, 2, NULL, NULL, NULL);
+	types [(int) Type::BACKEASE] = new Type (Type::BACKEASE, Type::EASINGFUNCTIONBASE, false, "BackEase", "BACKEASE", 0, 1, NULL, (create_inst_func *) back_ease_new, NULL);
 	types [(int) Type::BEGINSTORYBOARD] = new Type (Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, "BeginStoryboard", "BEGINSTORYBOARD", 0, 1, NULL, (create_inst_func *) begin_storyboard_new, "Storyboard");
 	types [(int) Type::BEZIERSEGMENT] = new Type (Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, "BezierSegment", "BEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) bezier_segment_new, NULL);
 	types [(int) Type::BITMAPIMAGE] = new Type (Type::BITMAPIMAGE, Type::BITMAPSOURCE, false, "BitmapImage", "BITMAPIMAGE", 3, 4, BitmapImage_Events, (create_inst_func *) bitmap_image_new, NULL);
 	types [(int) Type::BITMAPSOURCE] = new Type (Type::BITMAPSOURCE, Type::IMAGESOURCE, false, "BitmapSource", "BITMAPSOURCE", 0, 1, NULL, (create_inst_func *) bitmap_source_new, NULL);
 	types [(int) Type::BOOL] = new Type (Type::BOOL, Type::OBJECT, true, "bool", "BOOL", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::BORDER] = new Type (Type::BORDER, Type::FRAMEWORKELEMENT, false, "Border", "BORDER", 0, 20, NULL, (create_inst_func *) border_new, "Child");
+	types [(int) Type::BOUNCEEASE] = new Type (Type::BOUNCEEASE, Type::EASINGFUNCTIONBASE, false, "BounceEase", "BOUNCEEASE", 0, 1, NULL, (create_inst_func *) bounce_ease_new, NULL);
 	types [(int) Type::BRUSH] = new Type (Type::BRUSH, Type::DEPENDENCY_OBJECT, false, "Brush", "BRUSH", 0, 1, NULL, (create_inst_func *) brush_new, NULL);
 	types [(int) Type::CANVAS] = new Type (Type::CANVAS, Type::PANEL, false, "Canvas", "CANVAS", 0, 20, NULL, (create_inst_func *) canvas_new, NULL);
 	types [(int) Type::CHAR] = new Type (Type::CHAR, Type::OBJECT, true, "char", "CHAR", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::CIRCLEEASE] = new Type (Type::CIRCLEEASE, Type::EASINGFUNCTIONBASE, false, "CircleEase", "CIRCLEEASE", 0, 1, NULL, (create_inst_func *) circle_ease_new, NULL);
 	types [(int) Type::CLOCK] = new Type (Type::CLOCK, Type::DEPENDENCY_OBJECT, false, "Clock", "CLOCK", 4, 5, Clock_Events, NULL, NULL);
 	types [(int) Type::CLOCKGROUP] = new Type (Type::CLOCKGROUP, Type::CLOCK, false, "ClockGroup", "CLOCKGROUP", 0, 5, NULL, NULL, NULL);
 	types [(int) Type::CODECDOWNLOADER] = new Type (Type::CODECDOWNLOADER, Type::EVENTOBJECT, false, "CodecDownloader", "CODECDOWNLOADER", 0, 1, NULL, NULL, NULL);
@@ -233,6 +237,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::CONTROL] = new Type (Type::CONTROL, Type::FRAMEWORKELEMENT, false, "Control", "CONTROL", 1, 21, Control_Events, (create_inst_func *) control_new, NULL);
 	types [(int) Type::CONTROLTEMPLATE] = new Type (Type::CONTROLTEMPLATE, Type::FRAMEWORKTEMPLATE, false, "ControlTemplate", "CONTROLTEMPLATE", 0, 1, NULL, (create_inst_func *) control_template_new, NULL);
 	types [(int) Type::CORNERRADIUS] = new Type (Type::CORNERRADIUS, Type::OBJECT, true, "CornerRadius", "CORNERRADIUS", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::CUBICEASE] = new Type (Type::CUBICEASE, Type::EASINGFUNCTIONBASE, false, "CubicEase", "CUBICEASE", 0, 1, NULL, (create_inst_func *) cubic_ease_new, NULL);
 	types [(int) Type::CURSOR] = new Type (Type::CURSOR, Type::OBJECT, false, "System.Windows.Input.Cursor", "CURSOR", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::CURSORPOSITIONCHANGEDEVENTARGS] = new Type (Type::CURSORPOSITIONCHANGEDEVENTARGS, Type::EVENTARGS, false, "CursorPositionChangedEventArgs", "CURSORPOSITIONCHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) cursor_position_changed_event_args_new, NULL);
 	types [(int) Type::DATATEMPLATE] = new Type (Type::DATATEMPLATE, Type::FRAMEWORKTEMPLATE, false, "DataTemplate", "DATATEMPLATE", 0, 1, NULL, (create_inst_func *) data_template_new, NULL);
@@ -256,6 +261,8 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::DOWNLOADPROGRESSEVENTARGS] = new Type (Type::DOWNLOADPROGRESSEVENTARGS, Type::EVENTARGS, false, "DownloadProgressEventArgs", "DOWNLOADPROGRESSEVENTARGS", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::DRAWINGATTRIBUTES] = new Type (Type::DRAWINGATTRIBUTES, Type::DEPENDENCY_OBJECT, false, "DrawingAttributes", "DRAWINGATTRIBUTES", 0, 1, NULL, (create_inst_func *) drawing_attributes_new, NULL);
 	types [(int) Type::DURATION] = new Type (Type::DURATION, Type::OBJECT, true, "Duration", "DURATION", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::EASINGFUNCTIONBASE] = new Type (Type::EASINGFUNCTIONBASE, Type::DEPENDENCY_OBJECT, false, "EasingFunctionBase", "EASINGFUNCTIONBASE", 0, 1, NULL, (create_inst_func *) easing_function_base_new, NULL);
+	types [(int) Type::ELASTICEASE] = new Type (Type::ELASTICEASE, Type::EASINGFUNCTIONBASE, false, "ElasticEase", "ELASTICEASE", 0, 1, NULL, (create_inst_func *) elastic_ease_new, NULL);
 	types [(int) Type::ELLIPSE] = new Type (Type::ELLIPSE, Type::SHAPE, false, "Ellipse", "ELLIPSE", 0, 20, NULL, (create_inst_func *) ellipse_new, NULL);
 	types [(int) Type::ELLIPSEGEOMETRY] = new Type (Type::ELLIPSEGEOMETRY, Type::GEOMETRY, false, "EllipseGeometry", "ELLIPSEGEOMETRY", 0, 1, NULL, (create_inst_func *) ellipse_geometry_new, NULL);
 	types [(int) Type::ERROREVENTARGS] = new Type (Type::ERROREVENTARGS, Type::EVENTARGS, false, "ErrorEventArgs", "ERROREVENTARGS", 0, 1, NULL, NULL, NULL);
@@ -264,6 +271,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::EVENTOBJECT] = new Type (Type::EVENTOBJECT, Type::OBJECT, false, "EventObject", "EVENTOBJECT", 1, 1, EventObject_Events, NULL, NULL);
 	types [(int) Type::EVENTTRIGGER] = new Type (Type::EVENTTRIGGER, Type::TRIGGERBASE, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions");
 	types [(int) Type::EXCEPTIONROUTEDEVENTARGS] = new Type (Type::EXCEPTIONROUTEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "ExceptionRoutedEventArgs", "EXCEPTIONROUTEDEVENTARGS", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::EXPONENTIALEASE] = new Type (Type::EXPONENTIALEASE, Type::EASINGFUNCTIONBASE, false, "ExponentialEase", "EXPONENTIALEASE", 0, 1, NULL, (create_inst_func *) exponential_ease_new, NULL);
 	types [(int) Type::EXTERNALDEMUXER] = new Type (Type::EXTERNALDEMUXER, Type::IMEDIADEMUXER, false, "ExternalDemuxer", "EXTERNALDEMUXER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::FFMPEGDECODER] = new Type (Type::FFMPEGDECODER, Type::IMEDIADECODER, false, "FfmpegDecoder", "FFMPEGDECODER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::FFMPEGDEMUXER] = new Type (Type::FFMPEGDEMUXER, Type::IMEDIADEMUXER, false, "FfmpegDemuxer", "FFMPEGDEMUXER", 0, 1, NULL, NULL, NULL);
@@ -380,10 +388,14 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::POLYLINESEGMENT] = new Type (Type::POLYLINESEGMENT, Type::PATHSEGMENT, false, "PolyLineSegment", "POLYLINESEGMENT", 0, 1, NULL, (create_inst_func *) poly_line_segment_new, NULL);
 	types [(int) Type::POLYQUADRATICBEZIERSEGMENT] = new Type (Type::POLYQUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyQuadraticBezierSegment", "POLYQUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_quadratic_bezier_segment_new, NULL);
 	types [(int) Type::POPUP] = new Type (Type::POPUP, Type::FRAMEWORKELEMENT, false, "Popup", "POPUP", 1, 21, Popup_Events, (create_inst_func *) popup_new, NULL);
+	types [(int) Type::POWEREASE] = new Type (Type::POWEREASE, Type::EASINGFUNCTIONBASE, false, "PowerEase", "POWEREASE", 0, 1, NULL, (create_inst_func *) power_ease_new, NULL);
 	types [(int) Type::PROGRESSIVESOURCE] = new Type (Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, "ProgressiveSource", "PROGRESSIVESOURCE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::PROPERTYPATH] = new Type (Type::PROPERTYPATH, Type::OBJECT, true, "PropertyPath", "PROPERTYPATH", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::PULSESOURCE] = new Type (Type::PULSESOURCE, Type::AUDIOSOURCE, false, "PulseSource", "PULSESOURCE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::QUADRATICBEZIERSEGMENT] = new Type (Type::QUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "QuadraticBezierSegment", "QUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) quadratic_bezier_segment_new, NULL);
+	types [(int) Type::QUADRATICEASE] = new Type (Type::QUADRATICEASE, Type::EASINGFUNCTIONBASE, false, "QuadraticEase", "QUADRATICEASE", 0, 1, NULL, (create_inst_func *) quadratic_ease_new, NULL);
+	types [(int) Type::QUARTICEASE] = new Type (Type::QUARTICEASE, Type::EASINGFUNCTIONBASE, false, "QuarticEase", "QUARTICEASE", 0, 1, NULL, (create_inst_func *) quartic_ease_new, NULL);
+	types [(int) Type::QUINTICEASE] = new Type (Type::QUINTICEASE, Type::EASINGFUNCTIONBASE, false, "QuinticEase", "QUINTICEASE", 0, 1, NULL, (create_inst_func *) quintic_ease_new, NULL);
 	types [(int) Type::RADIALGRADIENTBRUSH] = new Type (Type::RADIALGRADIENTBRUSH, Type::GRADIENTBRUSH, false, "RadialGradientBrush", "RADIALGRADIENTBRUSH", 0, 1, NULL, (create_inst_func *) radial_gradient_brush_new, NULL);
 	types [(int) Type::RECT] = new Type (Type::RECT, Type::OBJECT, true, "Rect", "RECT", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::RECTANGLE] = new Type (Type::RECTANGLE, Type::SHAPE, false, "Rectangle", "RECTANGLE", 0, 20, NULL, (create_inst_func *) rectangle_new, NULL);
@@ -400,6 +412,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::SETTERBASE] = new Type (Type::SETTERBASE, Type::DEPENDENCY_OBJECT, false, "SetterBase", "SETTERBASE", 0, 1, NULL, (create_inst_func *) setter_base_new, NULL);
 	types [(int) Type::SETTERBASE_COLLECTION] = new Type (Type::SETTERBASE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "SetterBaseCollection", "SETTERBASE_COLLECTION", 0, 3, NULL, (create_inst_func *) setter_base_collection_new, NULL);
 	types [(int) Type::SHAPE] = new Type (Type::SHAPE, Type::FRAMEWORKELEMENT, false, "Shape", "SHAPE", 0, 20, NULL, (create_inst_func *) shape_new, NULL);
+	types [(int) Type::SINEEASE] = new Type (Type::SINEEASE, Type::EASINGFUNCTIONBASE, false, "SineEase", "SINEEASE", 0, 1, NULL, (create_inst_func *) sine_ease_new, NULL);
 	types [(int) Type::SIZE] = new Type (Type::SIZE, Type::OBJECT, true, "Size", "SIZE", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::SIZECHANGEDEVENTARGS] = new Type (Type::SIZECHANGEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "SizeChangedEventArgs", "SIZECHANGEDEVENTARGS", 0, 1, NULL, (create_inst_func *) size_changed_event_args_new, NULL);
 	types [(int) Type::SKEWTRANSFORM] = new Type (Type::SKEWTRANSFORM, Type::TRANSFORM, false, "SkewTransform", "SKEWTRANSFORM", 0, 1, NULL, (create_inst_func *) skew_transform_new, NULL);

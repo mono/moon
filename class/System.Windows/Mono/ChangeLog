@@ -1,3 +1,8 @@
+2009-04-03  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs (CreateObject): add all the
+	easing types.
+
 2009-04-03  Aaron Bockover  <abockover@novell.com>
 
 	* GeneratedPInvokes.cs: Updated, provides surface_get_toplevel

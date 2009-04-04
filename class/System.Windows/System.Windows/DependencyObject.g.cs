@@ -590,10 +590,25 @@ namespace System.Windows.Media {
 }
 
 namespace System.Windows.Media.Animation {
+	partial class BackEase {
+		public BackEase () : base (NativeMethods.back_ease_new ()) {}
+		internal BackEase (IntPtr raw) : base (raw) {}
+	}
+
 	[ContentProperty ("Storyboard")]
 	partial class BeginStoryboard {
 		public BeginStoryboard () : base (NativeMethods.begin_storyboard_new ()) {}
 		internal BeginStoryboard (IntPtr raw) : base (raw) {}
+	}
+
+	partial class BounceEase {
+		public BounceEase () : base (NativeMethods.bounce_ease_new ()) {}
+		internal BounceEase (IntPtr raw) : base (raw) {}
+	}
+
+	partial class CircleEase {
+		public CircleEase () : base (NativeMethods.circle_ease_new ()) {}
+		internal CircleEase (IntPtr raw) : base (raw) {}
 	}
 
 	partial class ColorAnimation {
@@ -615,6 +630,11 @@ namespace System.Windows.Media.Animation {
 	partial class ColorKeyFrameCollection {
 		public ColorKeyFrameCollection () : base (NativeMethods.color_key_frame_collection_new ()) {}
 		internal ColorKeyFrameCollection (IntPtr raw) : base (raw) {}
+	}
+
+	partial class CubicEase {
+		public CubicEase () : base (NativeMethods.cubic_ease_new ()) {}
+		internal CubicEase (IntPtr raw) : base (raw) {}
 	}
 
 	partial class DiscreteColorKeyFrame {
@@ -656,6 +676,21 @@ namespace System.Windows.Media.Animation {
 	partial class DoubleKeyFrameCollection {
 		public DoubleKeyFrameCollection () : base (NativeMethods.double_key_frame_collection_new ()) {}
 		internal DoubleKeyFrameCollection (IntPtr raw) : base (raw) {}
+	}
+
+	partial class EasingFunctionBase {
+		public EasingFunctionBase () : base (NativeMethods.easing_function_base_new ()) {}
+		internal EasingFunctionBase (IntPtr raw) : base (raw) {}
+	}
+
+	partial class ElasticEase {
+		public ElasticEase () : base (NativeMethods.elastic_ease_new ()) {}
+		internal ElasticEase (IntPtr raw) : base (raw) {}
+	}
+
+	partial class ExponentialEase {
+		public ExponentialEase () : base (NativeMethods.exponential_ease_new ()) {}
+		internal ExponentialEase (IntPtr raw) : base (raw) {}
 	}
 
 	partial class KeySpline {
@@ -713,6 +748,31 @@ namespace System.Windows.Media.Animation {
 	partial class PointKeyFrameCollection {
 		public PointKeyFrameCollection () : base (NativeMethods.point_key_frame_collection_new ()) {}
 		internal PointKeyFrameCollection (IntPtr raw) : base (raw) {}
+	}
+
+	partial class PowerEase {
+		public PowerEase () : base (NativeMethods.power_ease_new ()) {}
+		internal PowerEase (IntPtr raw) : base (raw) {}
+	}
+
+	partial class QuadraticEase {
+		public QuadraticEase () : base (NativeMethods.quadratic_ease_new ()) {}
+		internal QuadraticEase (IntPtr raw) : base (raw) {}
+	}
+
+	partial class QuarticEase {
+		public QuarticEase () : base (NativeMethods.quartic_ease_new ()) {}
+		internal QuarticEase (IntPtr raw) : base (raw) {}
+	}
+
+	partial class QuinticEase {
+		public QuinticEase () : base (NativeMethods.quintic_ease_new ()) {}
+		internal QuinticEase (IntPtr raw) : base (raw) {}
+	}
+
+	partial class SineEase {
+		public SineEase () : base (NativeMethods.sine_ease_new ()) {}
+		internal SineEase (IntPtr raw) : base (raw) {}
 	}
 
 	partial class SplineColorKeyFrame {
