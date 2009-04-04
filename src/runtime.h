@@ -180,6 +180,7 @@ public:
 	virtual void Invalidate (Rect r);
 	virtual void ProcessUpdates ();
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	UIElement *GetToplevel() { return toplevel; }
 	bool IsTopLevel (UIElement *top);
 

@@ -3231,6 +3231,16 @@ surface_get_time_manager (Surface *instance)
 }
 
 
+UIElement *
+surface_get_toplevel (Surface *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetToplevel ();
+}
+
+
 MoonWindow *
 surface_get_window (Surface *instance)
 {

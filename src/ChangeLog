@@ -1,3 +1,11 @@
+2009-04-03  Aaron Bockover  <abockover@novell.com>
+
+	* cbinding.h:
+	* runtime.h:
+	* dependencyproperty.g.cpp:
+	* cbinding.cpp: Add generated binding for Surface::GetToplevel, needed
+	by Moonlight.Gtk.XamlHost
+
 2009-04-03  Larry Ewing  <lewing@novell.com>
 
 	* popup.h:

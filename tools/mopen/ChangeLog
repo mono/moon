@@ -1,3 +1,9 @@
+2009-04-03  Aaron Bockover  <abockover@novell.com>
+
+	* mopen.cs: Updated to use the new Moonlight.Gtk APIs
+
+	* Makefile.am: gtksilver -> Moonlight.Gtk
+
 2009-04-01  Geoff Norton  <gnorton@novell.com>
 
 	* mopen.cs: Support mopen directly from a uri.

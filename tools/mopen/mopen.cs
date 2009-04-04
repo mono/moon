@@ -44,7 +44,7 @@ using System.Collections.Generic;
 using GLib;
 using Gtk;
 using Cairo;
-using Gtk.Moonlight;
+using Moonlight.Gtk;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -134,8 +134,9 @@ class MonoOpen {
 			test [0] = "--sync";
 
 		Application.Init ("mopen", ref test);
-		GtkSilver.Init ();
+		XamlRuntime.Init ();
 		window = new Window (file);
+		window.SetDefaultSize (400, 400);
 
 		if (transparent) {
 			CompositeHelper.SetRgbaColormap (window);
@@ -151,13 +152,16 @@ class MonoOpen {
 			Application.Quit ();
 		};
 
-		GtkSilver silver = new GtkSilver (400, 400);
-		FrameworkElement top;
-		
-		if (!silver.LoadFile (file, out top)) {
-			Console.Error.WriteLine ("mopen: Could not load xaml");
+		XamlHost xaml_host = new XamlHost ();
+
+		try {
+			xaml_host.LoadXamlFromFile (file);
+		} catch (Exception e) {
+			Console.Error.WriteLine ("mopen: Could not load xaml: {0}", e.Message);
 			return 1;
 		}
+
+		FrameworkElement top = xaml_host.Content;
 
 		if (parse_only)
 			return 0;
@@ -168,13 +172,13 @@ class MonoOpen {
 			height = (int) top.Height;
 
 		if (width > 0 && height > 0) {
-			silver.Resize (width, height);
+			xaml_host.SetSizeRequest (width, height);
 			window.Resize (width, height);
 		} 
 
 		if (transparent){
-			silver.AppPaintable = true;
-			silver.Transparent = true;
+			xaml_host.AppPaintable = true;
+			xaml_host.Transparent = true;
 		}
 
 		if (desklet) {
@@ -183,7 +187,7 @@ class MonoOpen {
 			top.MouseMove += new MouseEventHandler (HandleMouseMove);
 		}
 
-		window.Add (silver);
+		window.Add (xaml_host);
 
 		window.ShowAll ();
 
@@ -231,8 +235,9 @@ class MonoOpen {
 			test [0] = "--sync";
 
 		Application.Init ("mopen", ref test);
-		GtkSilver.Init ();
+		XamlRuntime.Init ();
 		window = new Window (file);
+		window.SetDefaultSize (400, 400);
 
 		if (transparent) {
 			CompositeHelper.SetRgbaColormap (window);
@@ -248,14 +253,16 @@ class MonoOpen {
 			Application.Quit ();
 		};
 
-		GtkSilver silver = new GtkSilver (400, 400);
-		System.Windows.Application app;
-		
-		if (!silver.LoadXap (file, out app)) {
-			Console.Error.WriteLine ("mopen: Could not load xaml");
+		XamlHost xaml_host = new XamlHost ();
+
+		try {
+			xaml_host.LoadXap (file);
+		} catch (Exception e) {
+			Console.Error.WriteLine ("mopen: Could not load xaml: {0}", e.Message);
 			return 1;
 		}
 
+		System.Windows.Application app = xaml_host.Application;
 		FrameworkElement top = (FrameworkElement)app.RootVisual;
 
 		if (parse_only)
@@ -267,13 +274,13 @@ class MonoOpen {
 			height = (int) top.Height;
 
 		if (width > 0 && height > 0) {
-			silver.Resize (width, height);
+			xaml_host.SetSizeRequest (width, height);
 			window.Resize (width, height);
 		} 
 
 		if (transparent){
-			silver.AppPaintable = true;
-			silver.Transparent = true;
+			xaml_host.AppPaintable = true;
+			xaml_host.Transparent = true;
 		}
 
 		if (desklet) {
@@ -282,7 +289,7 @@ class MonoOpen {
 			top.MouseMove += new MouseEventHandler (HandleMouseMove);
 		}
 
-		window.Add (silver);
+		window.Add (xaml_host);
 
 		window.ShowAll ();
 

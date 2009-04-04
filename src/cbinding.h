@@ -1459,6 +1459,9 @@ bool surface_get_full_screen (Surface *instance);
 /* @GeneratePInvoke */
 TimeManager *surface_get_time_manager (Surface *instance);
 
+/* @GeneratePInvoke */
+UIElement *surface_get_toplevel (Surface *instance);
+
 MoonWindow *surface_get_window (Surface *instance);
 
 /* @GeneratePInvoke */

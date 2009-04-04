@@ -1,3 +1,8 @@
+2009-04-03  Aaron Bockover  <abockover@novell.com>
+
+	* Deployment.cs: Added a new InitializeDeployment method that does not
+	require loading a XAP
+
 2009-04-03  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyProperty.g.cs: TextBox does validation in both the

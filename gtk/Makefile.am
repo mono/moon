@@ -1,53 +1,57 @@
-gtksilverdir = $(prefix)/lib/mono/moon
-pkgconfigdir = $(prefix)/lib/pkgconfig
-monodocdir   = $(prefix)/lib/monodoc/sources
+moonlight_gtkdir = $(prefix)/lib/mono/moon
+pkgconfigdir     = $(prefix)/lib/pkgconfig
+monodocdir       = $(prefix)/lib/monodoc/sources
 
-gtksilver_DATA = gtksilver.dll 
-pkgconfig_DATA = gtksilver.pc 
+moonlight_gtk_DATA = Moonlight.Gtk.dll 
+pkgconfig_DATA = moonlight-gtk.pc 
+monodoc_DATA = \
+	moonlight-gtk.zip \
+	moonlight-gtk.tree \
+	moonlight-gtk.source
 
-EXTRA_DIST= $(gtksilver_dll_CS) gtksilver.snk gtksilver.source 
+moonlight_gtk_dll_CS = \
+	Moonlight.Gtk/XamlRuntime.cs \
+	Moonlight.Gtk/XamlHost.cs \
+	Moonlight.Gtk/Desklets.cs \
+    Moonlight.Gtk/ManagedDownloader.cs \
+	Moonlight.Gtk/AssemblyInfo.cs
 
-CLEANFILES =				\
-	gtksilver.dll 			\
-	gtksilver.dll.mdb 		\
-	gtksilver.tree 			\
-	gtksilver.zip 			\
-	gtksilver.xml			\
-	docs/Gtk.Moonlight/Desklet.xml	\
-	docs/Gtk.Moonlight/GtkSilver.xml\
-	docs/Gtk.Moonlight.xml		\
-	docs/ns-Gtk.Moonlight.xml	\
-	docs/index.xml
+EXTRA_DIST = \
+	$(moonlight_gtk_dll_CS) \
+	moonlight-gtk.pc.in \
+	moonlight-gtk.snk \
+	moonlight-gtk.source
 
-DISTCLEANFILES=$(CLEANFILES)
+CLEANFILES = \
+	Moonlight.Gtk.dll \
+	Moonlight.Gtk.dll.mdb \
+	moonlight-gtk.zip \
+	moonlight-gtk.xml \
+	moonlight-gtk.tree
 
-gtksilver_dll_CS = $(srcdir)/gtk.cs \
-		   $(srcdir)/desklets.cs \
-                   $(srcdir)/ManagedDownloader.cs \
-                   $(srcdir)/Assembly.cs
+moonlight_gtk_SNK = $(srcdir)/moonlight-gtk.snk
 
-gtksilver_SNK = $(srcdir)/gtksilver.snk
-
-monodoc_DATA = gtksilver.zip gtksilver.tree gtksilver.source
-
-gtksilver.xml: gtksilver.dll
-gtksilver.dll: $(gtksilver_dll_CS) $(top_builddir)/class/lib/3.0/System.Windows.dll $(top_builddir)/class/lib/3.0/System.Windows.Browser.dll
-	gmcs -debug -doc:gtksilver.xml -out:gtksilver.dll -unsafe -target:library $(gtksilver_dll_CS) -keyfile:$(gtksilver_SNK) -pkg:gtk-sharp-2.0 -r:$(top_builddir)/class/lib/3.0/System.Windows.dll -r:$(top_builddir)/class/lib/3.0/System.Windows.Browser.dll
+Moonlight.Gtk.dll: $(moonlight_gtk_dll_CS) $(top_builddir)/class/lib/3.0/System.Windows.dll
+	gmcs -debug -out:$@ -target:library -unsafe -doc:moonlight-gtk.xml \
+		-keyfile:$(moonlight_gtk_SNK) -pkg:gtk-sharp-2.0 \
+		-r:$(top_builddir)/class/lib/3.0/System.Windows.dll \
+		$(moonlight_gtk_dll_CS)
 
 MONODOCER = MONO_PATH="../class/lib/3.0:$$MONO_PATH" monodocer
-gtksilver.tree: gtksilver.zip
-gtksilver.zip: gtksilver.dll
-	rm -f $(top_builddir)/gtk/docs/ns-Gtk.Moonlight.xml
-	$(MONODOCER) -importslashdoc:gtksilver.xml -path:$(top_builddir)/gtk/docs -assembly:gtksilver.dll
-	mdassembler --ecma $(top_builddir)/gtk/docs/ --out gtksilver
+moonlight-gtk.xml: Moonlight.Gtk.dll
+moonlight-gtk.tree: moonlight-gtk.zip
+moonlight-gtk.zip: Moonlight.Gtk.dll
+	rm -f $(top_builddir)/gtk/docs/ns-Moonlight.Gtk.xml
+	$(MONODOCER) -importslashdoc:moonlight-gtk.xml -path:$(top_builddir)/gtk/docs -assembly:Moonlight.Gtk.dll
+	mdassembler --ecma $(top_builddir)/gtk/docs/ --out moonlight-gtk
 
 install-data-local:
-	gacutil -gacdir $(DESTDIR)$(prefix) -i gtksilver.dll
+	gacutil -gacdir $(DESTDIR)$(prefix) -i Moonlight.Gtk.dll
 
 uninstall-local:
-	gacutil -gacdir $(DESTDIR)$(prefix) -u gtksilver
+	gacutil -gacdir $(DESTDIR)$(prefix) -u Moonlight.Gtk
 
-#NAMESPACES=Gtk.Moonlight
+#NAMESPACES=Moonlight.Gtk
 #dist-hook:
 #	mkdir -p $(distdir)/docs
 #	cp -f $(srcdir)/docs/*.xml $(distdir)/docs/.
@@ -58,4 +62,4 @@ uninstall-local:
 
  
 push:
-	scp -v gtksilver.tree gtksilver.zip gtksilver.source root@www.go-mono.com:/usr/lib/monodoc/sources/
+	scp -v moonlight-gtk.tree moonlight-gtk.zip moonlight-gtk.source root@www.go-mono.com:/usr/lib/monodoc/sources/

@@ -51,51 +51,32 @@
 void
 Types::RegisterNativeProperties ()
 {
-	DependencyProperty::Register (this, Type::VISUALBRUSH, "Visual", Type::UIELEMENT);
-	DependencyProperty::Register (this, Type::VIDEOBRUSH, "SourceName", new Value (""), Type::STRING);
-	DependencyProperty::Register (this, Type::IMAGEBRUSH, "ImageSource", Type::IMAGESOURCE);
-	DependencyProperty::Register (this, Type::IMAGEBRUSH, "DownloadProgress", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::RADIALGRADIENTBRUSH, "RadiusY", new Value (0.5), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::RADIALGRADIENTBRUSH, "RadiusX", new Value (0.5), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::RADIALGRADIENTBRUSH, "GradientOrigin", new Value (Point (0.5, 0.5)), Type::POINT);
 	DependencyProperty::Register (this, Type::RADIALGRADIENTBRUSH, "Center", new Value (Point (0.5, 0.5)), Type::POINT);
 	DependencyProperty::Register (this, Type::LINEARGRADIENTBRUSH, "StartPoint", Type::POINT);
 	DependencyProperty::Register (this, Type::LINEARGRADIENTBRUSH, "EndPoint", new Value (Point(1,1)), Type::POINT);
+	DependencyProperty::Register (this, Type::VIDEOBRUSH, "SourceName", new Value (""), Type::STRING);
+	DependencyProperty::Register (this, Type::VISUALBRUSH, "Visual", Type::UIELEMENT);
+	DependencyProperty::Register (this, Type::IMAGEBRUSH, "ImageSource", Type::IMAGESOURCE);
+	DependencyProperty::Register (this, Type::IMAGEBRUSH, "DownloadProgress", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::SOLIDCOLORBRUSH, "Color", new Value (Color (0x00000000)), Type::COLOR);
-	DependencyProperty::Register (this, Type::TILEBRUSH, "Stretch", new Value (StretchFill), Type::INT32);
-	DependencyProperty::Register (this, Type::TILEBRUSH, "AlignmentY", new Value (AlignmentYCenter), Type::INT32);
-	DependencyProperty::Register (this, Type::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter), Type::INT32);
 	DependencyProperty::Register (this, Type::GRADIENTBRUSH, "SpreadMethod", new Value (GradientSpreadMethodPad), Type::INT32);
 	DependencyProperty::Register (this, Type::GRADIENTBRUSH, "MappingMode", new Value (BrushMappingModeRelativeToBoundingBox), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::GRADIENTBRUSH, "GradientStops", NULL, Type::GRADIENTSTOP_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::Register (this, Type::GRADIENTBRUSH, "ColorInterpolationMode", new Value (ColorInterpolationModeSRgbLinearInterpolation), Type::INT32);
+	DependencyProperty::Register (this, Type::TILEBRUSH, "Stretch", new Value (StretchFill), Type::INT32);
+	DependencyProperty::Register (this, Type::TILEBRUSH, "AlignmentY", new Value (AlignmentYCenter), Type::INT32);
+	DependencyProperty::Register (this, Type::TILEBRUSH, "AlignmentX", new Value (AlignmentXCenter), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::INKPRESENTER, "Strokes", NULL, Type::STROKE_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::Register (this, Type::BRUSH, "Transform", new Value (new MatrixTransform ()), Type::TRANSFORM);
 	DependencyProperty::Register (this, Type::BRUSH, "RelativeTransform", new Value (new MatrixTransform ()), Type::TRANSFORM);
 	DependencyProperty::Register (this, Type::BRUSH, "Opacity", new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::BRUSH, "Changed", Type::BOOL);
-	DependencyProperty::Register (this, Type::RECTANGLE, "RadiusY", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::RECTANGLE, "RadiusX", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::RegisterFull (this, Type::POLYLINE, "Points", NULL, Type::POINT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::Register (this, Type::POLYLINE, "FillRule", new Value (FillRuleEvenOdd), Type::INT32);
-	DependencyProperty::RegisterFull (this, Type::POLYGON, "Points", NULL, Type::POINT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::Register (this, Type::POLYGON, "FillRule", new Value (FillRuleEvenOdd), Type::INT32);
-	DependencyProperty::Register (this, Type::PATH, "Data", Type::GEOMETRY);
-	DependencyProperty::Register (this, Type::LINE, "Y2", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::LINE, "Y1", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::LINE, "X2", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::LINE, "X1", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "ViewportWidth", new Value (1.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "ViewportOrigin", new Value (Point(0,0)), Type::POINT);
-	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "UseSprings", new Value (true), Type::BOOL);
-	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "TileFade", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::RegisterFull (this, Type::MULTISCALEIMAGE, "SubImages", NULL, Type::MULTISCALESUBIMAGE_COLLECTION, false, true, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "Source", Type::MULTISCALETILESOURCE);
-	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "AspectRatio", new Value (1.0), Type::DOUBLE);
-	DependencyProperty::RegisterFull (this, Type::IMAGE, "Source", NULL, Type::IMAGESOURCE, false, false, false, NULL, NULL, Image::CreateDefaultImageSource, false, false);
-	DependencyProperty::Register (this, Type::USERCONTROL, "Content", Type::UIELEMENT);
-	DependencyProperty::Register (this, Type::CONTENTCONTROL, "ContentTemplate", Type::DATATEMPLATE);
-	DependencyProperty::RegisterFull (this, Type::CONTENTCONTROL, "Content", NULL, Type::OBJECT, false, false, false, NULL, Validators::ContentControlContentValidator, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::CANVAS, "ZIndex", new Value (0), Type::INT32, true, false, false, NULL, NULL, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::CANVAS, "Top", new Value (0.0), Type::DOUBLE, true, false, false, NULL, NULL, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::CANVAS, "Left", new Value (0.0), Type::DOUBLE, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::GRID, "ShowGridLines", new Value (true), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::GRID, "RowSpan", new Value (1), Type::INT32, true, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::GRID, "Row", new Value (0), Type::INT32, true, false, false, NULL, Validators::PositiveIntValidator, NULL, false, false);
@@ -103,9 +84,28 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::GRID, "ColumnSpan", new Value (1), Type::INT32, true, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::GRID, "Column", new Value (0), Type::INT32, true, false, false, NULL, Validators::PositiveIntValidator, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::GRID, "ColumnDefinitions", NULL, Type::COLUMNDEFINITION_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::RegisterFull (this, Type::CANVAS, "ZIndex", new Value (0), Type::INT32, true, false, false, NULL, NULL, NULL, false, false);
-	DependencyProperty::RegisterFull (this, Type::CANVAS, "Top", new Value (0.0), Type::DOUBLE, true, false, false, NULL, NULL, NULL, false, false);
-	DependencyProperty::RegisterFull (this, Type::CANVAS, "Left", new Value (0.0), Type::DOUBLE, true, false, false, NULL, NULL, NULL, false, false);
+	DependencyProperty::Register (this, Type::USERCONTROL, "Content", Type::UIELEMENT);
+	DependencyProperty::Register (this, Type::CONTENTCONTROL, "ContentTemplate", Type::DATATEMPLATE);
+	DependencyProperty::RegisterFull (this, Type::CONTENTCONTROL, "Content", NULL, Type::OBJECT, false, false, false, NULL, Validators::ContentControlContentValidator, NULL, false, false);
+	DependencyProperty::Register (this, Type::LINE, "Y2", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::LINE, "Y1", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::LINE, "X2", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::LINE, "X1", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::PATH, "Data", Type::GEOMETRY);
+	DependencyProperty::RegisterFull (this, Type::POLYGON, "Points", NULL, Type::POINT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::POLYGON, "FillRule", new Value (FillRuleEvenOdd), Type::INT32);
+	DependencyProperty::Register (this, Type::RECTANGLE, "RadiusY", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::RECTANGLE, "RadiusX", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::POLYLINE, "Points", NULL, Type::POINT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::POLYLINE, "FillRule", new Value (FillRuleEvenOdd), Type::INT32);
+	DependencyProperty::RegisterFull (this, Type::IMAGE, "Source", NULL, Type::IMAGESOURCE, false, false, false, NULL, NULL, Image::CreateDefaultImageSource, false, false);
+	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "ViewportWidth", new Value (1.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "ViewportOrigin", new Value (Point(0,0)), Type::POINT);
+	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "UseSprings", new Value (true), Type::BOOL);
+	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "TileFade", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::MULTISCALEIMAGE, "SubImages", NULL, Type::MULTISCALESUBIMAGE_COLLECTION, false, true, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "Source", Type::MULTISCALETILESOURCE);
+	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "AspectRatio", new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "TextWrapping", new Value (TextWrappingNoWrap), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "Text", new Value (""), Type::STRING);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "TextDecorations", new Value (TextDecorationsNone), Type::INT32);
@@ -121,10 +121,20 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontSize", new Value (TEXTBLOCK_FONT_SIZE), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontFilename", Type::STRING);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);
+	DependencyProperty::Register (this, Type::GLYPHS, "UnicodeString", new Value (""), Type::STRING);
+	DependencyProperty::Register (this, Type::GLYPHS, "StyleSimulations", new Value (StyleSimulationsNone), Type::INT32);
+	DependencyProperty::Register (this, Type::GLYPHS, "OriginY", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::GLYPHS, "OriginX", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::GLYPHS, "Indices", new Value (""), Type::STRING);
+	DependencyProperty::RegisterFull (this, Type::GLYPHS, "FontUri", new Value (Uri()), Type::URI, false, false, false, NULL, Validators::NonNullValidator, NULL, false, false);
+	DependencyProperty::Register (this, Type::GLYPHS, "FontRenderingEmSize", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::GLYPHS, "Fill", Type::BRUSH);
 	DependencyProperty::Register (this, Type::POPUP, "VerticalOffset", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::POPUP, "IsOpen", new Value (false), Type::BOOL);
 	DependencyProperty::Register (this, Type::POPUP, "HorizontalOffset", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::POPUP, "Child", NULL, Type::UIELEMENT, false, false, false, NULL, Validators::ContentControlContentValidator, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::PANEL, "Children", NULL, Type::UIELEMENT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::PANEL, "Background", Type::BRUSH);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Volume", new Value (0.5), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Stretch", new Value (StretchUniform), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Source", NULL, Type::URI, false, false, true, NULL, NULL, NULL, false, false);
@@ -148,28 +158,12 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "AudioStreamIndex", NULL, Type::INT32, false, false, false, NULL, Validators::AudioStreamIndexValidator, NULL, false, true);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "AudioStreamCount", new Value (0), Type::INT32, false, true, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Attributes", NULL, Type::MEDIAATTRIBUTE_COLLECTION, false, false, false, NULL, Validators::MediaAttributeCollectionValidator, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::Register (this, Type::SHAPE, "StrokeThickness", new Value (1.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SHAPE, "StrokeStartLineCap", new Value (PenLineCapFlat), Type::INT32);
-	DependencyProperty::Register (this, Type::SHAPE, "Stroke", Type::BRUSH);
-	DependencyProperty::Register (this, Type::SHAPE, "StrokeMiterLimit", new Value (10.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SHAPE, "StrokeLineJoin", new Value (PenLineJoinMiter), Type::INT32);
-	DependencyProperty::Register (this, Type::SHAPE, "StrokeEndLineCap", new Value (PenLineCapFlat), Type::INT32);
-	DependencyProperty::Register (this, Type::SHAPE, "StrokeDashOffset", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SHAPE, "StrokeDashCap", new Value (PenLineCapFlat), Type::INT32);
-	DependencyProperty::Register (this, Type::SHAPE, "StrokeDashArray", Type::DOUBLE_COLLECTION);
-	DependencyProperty::Register (this, Type::SHAPE, "Stretch", new Value (StretchNone), Type::INT32);
-	DependencyProperty::Register (this, Type::SHAPE, "Fill", Type::BRUSH);
-	DependencyProperty::Register (this, Type::MEDIABASE, "Stretch", new Value (StretchUniform), Type::INT32);
-	DependencyProperty::RegisterFull (this, Type::MEDIABASE, "Source", NULL, Type::STRING, false, false, true, NULL, NULL, NULL, false, false);
-	DependencyProperty::Register (this, Type::MEDIABASE, "DownloadProgress", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::GLYPHS, "UnicodeString", new Value (""), Type::STRING);
-	DependencyProperty::Register (this, Type::GLYPHS, "StyleSimulations", new Value (StyleSimulationsNone), Type::INT32);
-	DependencyProperty::Register (this, Type::GLYPHS, "OriginY", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::GLYPHS, "OriginX", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::GLYPHS, "Indices", new Value (""), Type::STRING);
-	DependencyProperty::RegisterFull (this, Type::GLYPHS, "FontUri", new Value (Uri()), Type::URI, false, false, false, NULL, Validators::NonNullValidator, NULL, false, false);
-	DependencyProperty::Register (this, Type::GLYPHS, "FontRenderingEmSize", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::GLYPHS, "Fill", Type::BRUSH);
+	DependencyProperty::RegisterFull (this, Type::BORDER, "Padding", new Value (Thickness(0)), Type::THICKNESS, false, false, false, NULL, Validators::BorderThicknessValidator, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::BORDER, "CornerRadius", NULL, Type::CORNERRADIUS, false, false, false, NULL, Validators::CornerRadiusValidator, NULL, false, false);
+	DependencyProperty::Register (this, Type::BORDER, "Child", Type::UIELEMENT);
+	DependencyProperty::RegisterFull (this, Type::BORDER, "BorderThickness", new Value (Thickness(0)), Type::THICKNESS, false, false, false, NULL, Validators::BorderThicknessValidator, NULL, false, false);
+	DependencyProperty::Register (this, Type::BORDER, "BorderBrush", Type::BRUSH);
+	DependencyProperty::Register (this, Type::BORDER, "Background", Type::BRUSH);
 	DependencyProperty::Register (this, Type::CONTROL, "VerticalContentAlignment", new Value (VerticalAlignmentCenter), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::CONTROL, "Template", NULL, Type::CONTROLTEMPLATE, false, false, false, NULL, Validators::TemplateValidator, NULL, false, false);
 	DependencyProperty::Register (this, Type::CONTROL, "TabNavigation", new Value (KeyboardNavigationModeLocal), Type::INT32);
@@ -187,31 +181,37 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::CONTROL, "BorderThickness", new Value (Thickness(0.0)), Type::THICKNESS);
 	DependencyProperty::Register (this, Type::CONTROL, "BorderBrush", Type::BRUSH);
 	DependencyProperty::Register (this, Type::CONTROL, "Background", Type::BRUSH);
-	DependencyProperty::RegisterFull (this, Type::PANEL, "Children", NULL, Type::UIELEMENT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::Register (this, Type::PANEL, "Background", Type::BRUSH);
-	DependencyProperty::RegisterFull (this, Type::BORDER, "Padding", new Value (Thickness(0)), Type::THICKNESS, false, false, false, NULL, Validators::BorderThicknessValidator, NULL, false, false);
-	DependencyProperty::RegisterFull (this, Type::BORDER, "CornerRadius", NULL, Type::CORNERRADIUS, false, false, false, NULL, Validators::CornerRadiusValidator, NULL, false, false);
-	DependencyProperty::Register (this, Type::BORDER, "Child", Type::UIELEMENT);
-	DependencyProperty::RegisterFull (this, Type::BORDER, "BorderThickness", new Value (Thickness(0)), Type::THICKNESS, false, false, false, NULL, Validators::BorderThicknessValidator, NULL, false, false);
-	DependencyProperty::Register (this, Type::BORDER, "BorderBrush", Type::BRUSH);
-	DependencyProperty::Register (this, Type::BORDER, "Background", Type::BRUSH);
+	DependencyProperty::Register (this, Type::SHAPE, "StrokeThickness", new Value (1.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SHAPE, "StrokeStartLineCap", new Value (PenLineCapFlat), Type::INT32);
+	DependencyProperty::Register (this, Type::SHAPE, "Stroke", Type::BRUSH);
+	DependencyProperty::Register (this, Type::SHAPE, "StrokeMiterLimit", new Value (10.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SHAPE, "StrokeLineJoin", new Value (PenLineJoinMiter), Type::INT32);
+	DependencyProperty::Register (this, Type::SHAPE, "StrokeEndLineCap", new Value (PenLineCapFlat), Type::INT32);
+	DependencyProperty::Register (this, Type::SHAPE, "StrokeDashOffset", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SHAPE, "StrokeDashCap", new Value (PenLineCapFlat), Type::INT32);
+	DependencyProperty::Register (this, Type::SHAPE, "StrokeDashArray", Type::DOUBLE_COLLECTION);
+	DependencyProperty::Register (this, Type::SHAPE, "Stretch", new Value (StretchNone), Type::INT32);
+	DependencyProperty::Register (this, Type::SHAPE, "Fill", Type::BRUSH);
+	DependencyProperty::Register (this, Type::MEDIABASE, "Stretch", new Value (StretchUniform), Type::INT32);
+	DependencyProperty::RegisterFull (this, Type::MEDIABASE, "Source", NULL, Type::STRING, false, false, true, NULL, NULL, NULL, false, false);
+	DependencyProperty::Register (this, Type::MEDIABASE, "DownloadProgress", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::TIMELINEGROUP, "Children", NULL, Type::TIMELINE_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::RegisterFull (this, Type::SETTER, "Value", NULL, Type::OBJECT, false, false, false, NULL, Validators::IsSetterSealedValidator, NULL, false, false);
-	DependencyProperty::RegisterFull (this, Type::SETTER, "Property", NULL, Type::DEPENDENCYPROPERTY, false, false, false, NULL, Validators::IsSetterSealedValidator, NULL, false, false);
-	DependencyProperty::Register (this, Type::SETTER, "ConvertedValue", Type::OBJECT);
 	DependencyProperty::Register (this, Type::RUN, "Text", Type::STRING);
-	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "Rect", Type::RECT);
-	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "RadiusY", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "RadiusX", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::PATHGEOMETRY, "FillRule", new Value (FillRuleEvenOdd), Type::INT32);
-	DependencyProperty::Register (this, Type::PATHGEOMETRY, "Figures", Type::PATHFIGURE_COLLECTION);
-	DependencyProperty::Register (this, Type::LINEGEOMETRY, "StartPoint", Type::POINT);
-	DependencyProperty::Register (this, Type::LINEGEOMETRY, "EndPoint", Type::POINT);
 	DependencyProperty::Register (this, Type::GEOMETRYGROUP, "FillRule", new Value (FillRuleEvenOdd), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::GEOMETRYGROUP, "Children", NULL, Type::GEOMETRY_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::PATHGEOMETRY, "FillRule", new Value (FillRuleEvenOdd), Type::INT32);
+	DependencyProperty::Register (this, Type::PATHGEOMETRY, "Figures", Type::PATHFIGURE_COLLECTION);
 	DependencyProperty::Register (this, Type::ELLIPSEGEOMETRY, "RadiusY", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::ELLIPSEGEOMETRY, "RadiusX", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::ELLIPSEGEOMETRY, "Center", Type::POINT);
+	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "Rect", Type::RECT);
+	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "RadiusY", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "RadiusX", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::LINEGEOMETRY, "StartPoint", Type::POINT);
+	DependencyProperty::Register (this, Type::LINEGEOMETRY, "EndPoint", Type::POINT);
+	DependencyProperty::RegisterFull (this, Type::SETTER, "Value", NULL, Type::OBJECT, false, false, false, NULL, Validators::IsSetterSealedValidator, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::SETTER, "Property", NULL, Type::DEPENDENCYPROPERTY, false, false, false, NULL, Validators::IsSetterSealedValidator, NULL, false, false);
+	DependencyProperty::Register (this, Type::SETTER, "ConvertedValue", Type::OBJECT);
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "Width", new Value (NAN), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "VerticalAlignment", new Value (VerticalAlignmentStretch), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::FRAMEWORKELEMENT, "Style", NULL, Type::STYLE, false, false, false, NULL, Validators::StyleValidator, NULL, false, false);
@@ -226,30 +226,49 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "DataContext", Type::OBJECT);
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "ActualWidth", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "ActualHeight", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::RegisterFull (this, Type::SPLINEPOINTKEYFRAME, "KeySpline", NULL, Type::KEYSPLINE, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::RegisterFull (this, Type::POINTANIMATIONUSINGKEYFRAMES, "KeyFrames", NULL, Type::POINTKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::RegisterFull (this, Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", NULL, Type::COLORKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::BITMAPIMAGE, "UriSource", new Value (Uri()), Type::URI);
+	DependencyProperty::Register (this, Type::BITMAPIMAGE, "Progress", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::SPLINEDOUBLEKEYFRAME, "KeySpline", NULL, Type::KEYSPLINE, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::RegisterFull (this, Type::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", NULL, Type::DOUBLEKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::Register (this, Type::TIMELINEMARKER, "Type", Type::STRING);
-	DependencyProperty::Register (this, Type::TIMELINEMARKER, "Time", Type::TIMESPAN);
-	DependencyProperty::Register (this, Type::TIMELINEMARKER, "Text", Type::STRING);
+	DependencyProperty::RegisterFull (this, Type::SPLINEPOINTKEYFRAME, "KeySpline", NULL, Type::KEYSPLINE, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::RegisterFull (this, Type::SPLINECOLORKEYFRAME, "KeySpline", NULL, Type::KEYSPLINE, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::ASSEMBLYPART, "Source", new Value (""), Type::STRING);
+	DependencyProperty::Register (this, Type::STYLUSINFO, "IsInverted", new Value (false), Type::BOOL);
+	DependencyProperty::Register (this, Type::STYLUSINFO, "DeviceType", new Value (TabletDeviceTypeMouse), Type::INT32);
+	DependencyProperty::Register (this, Type::DOWNLOADER, "Uri", Type::STRING);
+	DependencyProperty::Register (this, Type::DOWNLOADER, "StatusText", new Value (""), Type::STRING);
+	DependencyProperty::Register (this, Type::DOWNLOADER, "Status", new Value (0), Type::INT32);
+	DependencyProperty::Register (this, Type::DOWNLOADER, "ResponseText", Type::STRING);
+	DependencyProperty::Register (this, Type::DOWNLOADER, "DownloadProgress", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::NAMESCOPE, "NameScope", NULL, Type::NAMESCOPE, true, false, false, NULL, NULL, NULL, false, false);
+	DependencyProperty::Register (this, Type::GRADIENTSTOP, "Offset", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::GRADIENTSTOP, "Color", new Value (Color (0x00000000)), Type::COLOR);
 	DependencyProperty::Register (this, Type::TIMELINE, "SpeedRatio", new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double) 1)), Type::REPEATBEHAVIOR);
 	DependencyProperty::Register (this, Type::TIMELINE, "FillBehavior", new Value (FillBehaviorHoldEnd), Type::INT32);
 	DependencyProperty::Register (this, Type::TIMELINE, "Duration", new Value (Duration::Automatic), Type::DURATION);
 	DependencyProperty::Register (this, Type::TIMELINE, "BeginTime", Type::TIMESPAN);
 	DependencyProperty::Register (this, Type::TIMELINE, "AutoReverse", new Value (false), Type::BOOL);
-	DependencyProperty::Register (this, Type::STYLUSPOINT, "Y", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::STYLUSPOINT, "X", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::STYLUSPOINT, "PressureFactor", new Value (0.5), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::STYLUSINFO, "IsInverted", new Value (false), Type::BOOL);
-	DependencyProperty::Register (this, Type::STYLUSINFO, "DeviceType", new Value (TabletDeviceTypeMouse), Type::INT32);
+	DependencyProperty::Register (this, Type::KEYSPLINE, "ControlPoint2", new Value (Point (1.0, 1.0)), Type::POINT);
+	DependencyProperty::Register (this, Type::KEYSPLINE, "ControlPoint1", new Value (Point (0,0)), Type::POINT);
 	DependencyProperty::Register (this, Type::STYLE, "TargetType", Type::MANAGEDTYPEINFO);
 	DependencyProperty::RegisterFull (this, Type::STYLE, "Setters", NULL, Type::SETTERBASE_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::Register (this, Type::STYLE, "IsSealed", new Value (false), Type::BOOL);
+	DependencyProperty::Register (this, Type::MATRIX, "OffsetY", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::MATRIX, "OffsetX", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::MATRIX, "M22", new Value (1.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::MATRIX, "M21", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::MATRIX, "M12", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::MATRIX, "M11", new Value (1.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::STROKE, "StylusPoints", NULL, Type::STYLUSPOINT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::RegisterFull (this, Type::STROKE, "DrawingAttributes", NULL, Type::DRAWINGATTRIBUTES, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::Register (this, Type::SETTERBASE, "IsSealed", new Value (false), Type::BOOL);
+	DependencyProperty::Register (this, Type::COLLECTION, "Count", new Value (0), Type::INT32);
+	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "ZIndex", new Value (0), Type::INT32);
+	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "ViewportWidth", new Value (1.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "ViewportOrigin", new Value (Point(0,0)), Type::POINT);
+	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "Opacity", new Value (1.0), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::MULTISCALESUBIMAGE, "AspectRatio", new Value (1.0), Type::DOUBLE, false, true, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::ROWDEFINITION, "MinHeight", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::ROWDEFINITION, "MaxHeight", new Value (INFINITY), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::ROWDEFINITION, "Height", new Value (GridLength (1.0, GridUnitTypeStar)), Type::GRIDLENGTH);
@@ -257,21 +276,9 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::PATHFIGURE, "Segments", NULL, Type::PATHSEGMENT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::Register (this, Type::PATHFIGURE, "IsFilled", new Value (true), Type::BOOL);
 	DependencyProperty::Register (this, Type::PATHFIGURE, "IsClosed", new Value (false), Type::BOOL);
-	DependencyProperty::RegisterFull (this, Type::NAMESCOPE, "NameScope", NULL, Type::NAMESCOPE, true, false, false, NULL, NULL, NULL, false, false);
-	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "ZIndex", new Value (0), Type::INT32);
-	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "ViewportWidth", new Value (1.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "ViewportOrigin", new Value (Point(0,0)), Type::POINT);
-	DependencyProperty::Register (this, Type::MULTISCALESUBIMAGE, "Opacity", new Value (1.0), Type::DOUBLE);
-	DependencyProperty::RegisterFull (this, Type::MULTISCALESUBIMAGE, "AspectRatio", new Value (1.0), Type::DOUBLE, false, true, false, NULL, NULL, NULL, false, false);
-	DependencyProperty::Register (this, Type::MEDIAATTRIBUTE, "Value", Type::STRING);
-	DependencyProperty::Register (this, Type::MATRIX, "OffsetY", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::MATRIX, "OffsetX", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::MATRIX, "M22", new Value (1.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::MATRIX, "M21", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::MATRIX, "M12", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::MATRIX, "M11", new Value (1.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::KEYSPLINE, "ControlPoint2", new Value (Point (1.0, 1.0)), Type::POINT);
-	DependencyProperty::Register (this, Type::KEYSPLINE, "ControlPoint1", new Value (Point (0,0)), Type::POINT);
+	DependencyProperty::Register (this, Type::STYLUSPOINT, "Y", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::STYLUSPOINT, "X", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::STYLUSPOINT, "PressureFactor", new Value (0.5), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::INPUTMETHOD, "IsInputMethodEnabled", NULL, Type::BOOL, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::INLINE, "TextDecorations", new Value (TextDecorationsNone), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::INLINE, "Language", new Value ("en-US"), Type::STRING, false, false, false, NULL, Validators::NonNullValidator, NULL, false, false);
@@ -282,28 +289,26 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::INLINE, "FontSize", new Value (TEXTBLOCK_FONT_SIZE), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::INLINE, "FontFilename", Type::STRING);
 	DependencyProperty::Register (this, Type::INLINE, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);
-	DependencyProperty::Register (this, Type::GRADIENTSTOP, "Offset", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::GRADIENTSTOP, "Color", new Value (Color (0x00000000)), Type::COLOR);
-	DependencyProperty::Register (this, Type::GEOMETRY, "Transform", Type::TRANSFORM);
-	DependencyProperty::Register (this, Type::DRAWINGATTRIBUTES, "Width", new Value (3.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::DRAWINGATTRIBUTES, "OutlineColor", new Value (Color (0x00000000)), Type::COLOR);
-	DependencyProperty::Register (this, Type::DRAWINGATTRIBUTES, "Height", new Value (3.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::DRAWINGATTRIBUTES, "Color", new Value (Color (0xFF000000)), Type::COLOR);
-	DependencyProperty::Register (this, Type::DOWNLOADER, "Uri", Type::STRING);
-	DependencyProperty::Register (this, Type::DOWNLOADER, "StatusText", new Value (""), Type::STRING);
-	DependencyProperty::Register (this, Type::DOWNLOADER, "Status", new Value (0), Type::INT32);
-	DependencyProperty::Register (this, Type::DOWNLOADER, "ResponseText", Type::STRING);
-	DependencyProperty::Register (this, Type::DOWNLOADER, "DownloadProgress", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::COLUMNDEFINITION, "Width", new Value (GridLength (1.0, GridUnitTypeStar)), Type::GRIDLENGTH);
+	DependencyProperty::Register (this, Type::COLUMNDEFINITION, "MinWidth", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::COLUMNDEFINITION, "MaxWidth", new Value (INFINITY), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::DEPLOYMENT, "Surface", Type::SURFACE);
 	DependencyProperty::Register (this, Type::DEPLOYMENT, "RuntimeVersion", Type::STRING);
 	DependencyProperty::Register (this, Type::DEPLOYMENT, "Parts", Type::ASSEMBLYPART_COLLECTION);
 	DependencyProperty::Register (this, Type::DEPLOYMENT, "ExternalCallersFromCrossDomain", new Value (CrossDomainAccessNoAccess), Type::INT32);
 	DependencyProperty::Register (this, Type::DEPLOYMENT, "EntryPointType", Type::STRING);
 	DependencyProperty::Register (this, Type::DEPLOYMENT, "EntryPointAssembly", Type::STRING);
-	DependencyProperty::Register (this, Type::COLUMNDEFINITION, "Width", new Value (GridLength (1.0, GridUnitTypeStar)), Type::GRIDLENGTH);
-	DependencyProperty::Register (this, Type::COLUMNDEFINITION, "MinWidth", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::COLUMNDEFINITION, "MaxWidth", new Value (INFINITY), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::COLLECTION, "Count", new Value (0), Type::INT32);
+	DependencyProperty::Register (this, Type::MEDIAATTRIBUTE, "Value", Type::STRING);
+	DependencyProperty::Register (this, Type::GEOMETRY, "Transform", Type::TRANSFORM);
+	DependencyProperty::RegisterFull (this, Type::APPLICATION, "Resources", NULL, Type::RESOURCE_DICTIONARY, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::TIMELINEMARKER, "Type", Type::STRING);
+	DependencyProperty::Register (this, Type::TIMELINEMARKER, "Time", Type::TIMESPAN);
+	DependencyProperty::Register (this, Type::TIMELINEMARKER, "Text", Type::STRING);
+	DependencyProperty::Register (this, Type::DRAWINGATTRIBUTES, "Width", new Value (3.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::DRAWINGATTRIBUTES, "OutlineColor", new Value (Color (0x00000000)), Type::COLOR);
+	DependencyProperty::Register (this, Type::DRAWINGATTRIBUTES, "Height", new Value (3.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::DRAWINGATTRIBUTES, "Color", new Value (Color (0xFF000000)), Type::COLOR);
+	DependencyProperty::Register (this, Type::SETTERBASE, "IsSealed", new Value (false), Type::BOOL);
 	DependencyProperty::Register (this, Type::UIELEMENT, "Visibility", new Value (VisibilityVisible), Type::INT32);
 	DependencyProperty::Register (this, Type::UIELEMENT, "UseLayoutRounding", new Value (true), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::UIELEMENT, "Triggers", NULL, Type::TRIGGER_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
@@ -316,15 +321,13 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::UIELEMENT, "IsHitTestVisible", new Value (true), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::UIELEMENT, "Cursor", new Value (MouseCursorDefault), Type::INT32, false, false, false, NULL, Validators::CursorValidator, NULL, false, false);
 	DependencyProperty::Register (this, Type::UIELEMENT, "Clip", Type::GEOMETRY);
-	DependencyProperty::Register (this, Type::ASSEMBLYPART, "Source", new Value (""), Type::STRING);
-	DependencyProperty::RegisterFull (this, Type::APPLICATION, "Resources", NULL, Type::RESOURCE_DICTIONARY, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::RegisterFull (this, Type::SPLINECOLORKEYFRAME, "KeySpline", NULL, Type::KEYSPLINE, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::RegisterFull (this, Type::COLORANIMATIONUSINGKEYFRAMES, "KeyFrames", NULL, Type::COLORKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::Register (this, Type::BITMAPIMAGE, "UriSource", new Value (Uri()), Type::URI);
-	DependencyProperty::Register (this, Type::BITMAPIMAGE, "Progress", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::TRANSLATETRANSFORM, "Y", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::TRANSLATETRANSFORM, "X", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::RegisterFull (this, Type::TRANSFORMGROUP, "Children", NULL, Type::TRANSFORM_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::RegisterFull (this, Type::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", NULL, Type::DOUBLEKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::DEEPZOOMIMAGETILESOURCE, "UriSource", Type::URI);
+	DependencyProperty::Register (this, Type::POINTANIMATION, "To", Type::POINT);
+	DependencyProperty::Register (this, Type::POINTANIMATION, "From", Type::POINT);
+	DependencyProperty::Register (this, Type::POINTANIMATION, "By", Type::POINT);
+	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "Value", Type::OBJECT);
+	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "KeyTime", Type::KEYTIME);
 	DependencyProperty::Register (this, Type::TEXTBOX, "VerticalScrollBarVisibility", new Value (ScrollBarVisibilityHidden), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBOX, "TextWrapping", new Value (TextWrappingNoWrap), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBOX, "Text", Type::STRING);
@@ -340,28 +343,35 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBOX, "AcceptsReturn", new Value (false), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::STORYBOARD, "TargetProperty", NULL, Type::PROPERTYPATH, true, false, false, NULL, Validators::IsTimelineValidator, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::STORYBOARD, "TargetName", NULL, Type::STRING, true, false, false, NULL, Validators::IsTimelineValidator, NULL, false, false);
-	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "CenterY", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "CenterX", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "AngleY", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "AngleX", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SETTERBASE_COLLECTION, "IsSealed", new Value (false), Type::BOOL);
-	DependencyProperty::Register (this, Type::SCALETRANSFORM, "ScaleY", new Value (1.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SCALETRANSFORM, "ScaleX", new Value (1.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SCALETRANSFORM, "CenterY", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SCALETRANSFORM, "CenterX", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::ARCSEGMENT, "SweepDirection", new Value (SweepDirectionCounterclockwise), Type::INT32);
+	DependencyProperty::Register (this, Type::ARCSEGMENT, "Size", Type::SIZE);
+	DependencyProperty::Register (this, Type::ARCSEGMENT, "RotationAngle", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::ARCSEGMENT, "Point", Type::POINT);
+	DependencyProperty::Register (this, Type::ARCSEGMENT, "IsLargeArc", new Value (false), Type::BOOL);
+	DependencyProperty::RegisterFull (this, Type::POLYLINESEGMENT, "Points", NULL, Type::POINT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::Register (this, Type::ROTATETRANSFORM, "CenterY", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::ROTATETRANSFORM, "CenterX", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::ROTATETRANSFORM, "Angle", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::QUADRATICBEZIERSEGMENT, "Point2", Type::POINT);
-	DependencyProperty::Register (this, Type::QUADRATICBEZIERSEGMENT, "Point1", Type::POINT);
+	DependencyProperty::Register (this, Type::COLORANIMATION, "To", Type::COLOR);
+	DependencyProperty::Register (this, Type::COLORANIMATION, "From", Type::COLOR);
+	DependencyProperty::Register (this, Type::COLORANIMATION, "By", Type::COLOR);
+	DependencyProperty::Register (this, Type::TRANSLATETRANSFORM, "Y", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::TRANSLATETRANSFORM, "X", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::BITMAPSOURCE, "PixelWidth", new Value (0), Type::INT32, false, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::BITMAPSOURCE, "PixelHeight", new Value (0), Type::INT32, false, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false, false);
+	DependencyProperty::Register (this, Type::BITMAPSOURCE, "PixelFormat", new Value (PixelFormatPbgra32), Type::INT32);
+	DependencyProperty::Register (this, Type::DOUBLEKEYFRAME, "Value", Type::DOUBLE);
+	DependencyProperty::Register (this, Type::DOUBLEKEYFRAME, "KeyTime", Type::KEYTIME);
 	DependencyProperty::RegisterFull (this, Type::POLYQUADRATICBEZIERSEGMENT, "Points", NULL, Type::POINT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::RegisterFull (this, Type::POLYLINESEGMENT, "Points", NULL, Type::POINT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::RegisterFull (this, Type::POLYBEZIERSEGMENT, "Points", NULL, Type::POINT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::OBJECTKEYFRAME_COLLECTION);
 	DependencyProperty::Register (this, Type::POINTKEYFRAME, "Value", Type::POINT);
 	DependencyProperty::Register (this, Type::POINTKEYFRAME, "KeyTime", Type::KEYTIME);
-	DependencyProperty::Register (this, Type::POINTANIMATION, "To", Type::POINT);
-	DependencyProperty::Register (this, Type::POINTANIMATION, "From", Type::POINT);
-	DependencyProperty::Register (this, Type::POINTANIMATION, "By", Type::POINT);
+	DependencyProperty::Register (this, Type::LINESEGMENT, "Point", Type::POINT);
+	DependencyProperty::Register (this, Type::BEGINSTORYBOARD, "Storyboard", Type::STORYBOARD);
+	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point3", Type::POINT);
+	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point2", Type::POINT);
+	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point1", Type::POINT);
+	DependencyProperty::Register (this, Type::SETTERBASE_COLLECTION, "IsSealed", new Value (false), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::PASSWORDBOX, "SelectionStart", new Value (0), Type::INT32, false, false, false, NULL, Validators::PositiveIntValidator, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::PASSWORDBOX, "SelectionLength", new Value (0), Type::INT32, false, false, false, NULL, Validators::PositiveIntValidator, NULL, false, false);
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "SelectionForeground", Type::BRUSH);
@@ -370,99 +380,89 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::PASSWORDBOX, "Password", new Value (""), Type::STRING, false, false, false, NULL, Validators::NonNullValidator, NULL, false, false);
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "PasswordChar", new Value (9679), Type::CHAR);
 	DependencyProperty::RegisterFull (this, Type::PASSWORDBOX, "MaxLength", new Value (0), Type::INT32, false, false, false, NULL, Validators::PositiveIntValidator, NULL, false, false);
-	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "Value", Type::OBJECT);
-	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "KeyTime", Type::KEYTIME);
-	DependencyProperty::Register (this, Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::OBJECTKEYFRAME_COLLECTION);
-	DependencyProperty::Register (this, Type::MATRIXTRANSFORM, "Matrix", Type::MATRIX);
-	DependencyProperty::Register (this, Type::LINESEGMENT, "Point", Type::POINT);
+	DependencyProperty::Register (this, Type::SCALETRANSFORM, "ScaleY", new Value (1.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SCALETRANSFORM, "ScaleX", new Value (1.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SCALETRANSFORM, "CenterY", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SCALETRANSFORM, "CenterX", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::TRANSFORMGROUP, "Children", NULL, Type::TRANSFORM_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::COLORKEYFRAME, "Value", Type::COLOR);
+	DependencyProperty::Register (this, Type::COLORKEYFRAME, "KeyTime", Type::KEYTIME);
+	DependencyProperty::Register (this, Type::QUADRATICBEZIERSEGMENT, "Point2", Type::POINT);
+	DependencyProperty::Register (this, Type::QUADRATICBEZIERSEGMENT, "Point1", Type::POINT);
+	DependencyProperty::RegisterFull (this, Type::POLYBEZIERSEGMENT, "Points", NULL, Type::POINT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::EVENTTRIGGER, "RoutedEvent", Type::STRING);
+	DependencyProperty::RegisterFull (this, Type::EVENTTRIGGER, "Actions", NULL, Type::TRIGGERACTION_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::CONTROLTEMPLATE, "TargetType", Type::MANAGEDTYPEINFO);
+	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "CenterY", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "CenterX", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "AngleY", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "AngleX", new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::DEPENDENCY_OBJECT, "Name", new Value (""), Type::STRING);
+	DependencyProperty::Register (this, Type::DOUBLEANIMATION, "To", Type::DOUBLE);
+	DependencyProperty::Register (this, Type::DOUBLEANIMATION, "From", Type::DOUBLE);
+	DependencyProperty::Register (this, Type::DOUBLEANIMATION, "By", Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LayoutSlot", NULL, Type::RECT, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LayoutClip", NULL, Type::GEOMETRY, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LastMeasure", NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LastArrange", NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false, false);
-	DependencyProperty::Register (this, Type::EVENTTRIGGER, "RoutedEvent", Type::STRING);
-	DependencyProperty::RegisterFull (this, Type::EVENTTRIGGER, "Actions", NULL, Type::TRIGGERACTION_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::Register (this, Type::DOUBLEKEYFRAME, "Value", Type::DOUBLE);
-	DependencyProperty::Register (this, Type::DOUBLEKEYFRAME, "KeyTime", Type::KEYTIME);
-	DependencyProperty::Register (this, Type::DOUBLEANIMATION, "To", Type::DOUBLE);
-	DependencyProperty::Register (this, Type::DOUBLEANIMATION, "From", Type::DOUBLE);
-	DependencyProperty::Register (this, Type::DOUBLEANIMATION, "By", Type::DOUBLE);
-	DependencyProperty::Register (this, Type::DEPENDENCY_OBJECT, "Name", new Value (""), Type::STRING);
-	DependencyProperty::Register (this, Type::DEEPZOOMIMAGETILESOURCE, "UriSource", Type::URI);
-	DependencyProperty::Register (this, Type::CONTROLTEMPLATE, "TargetType", Type::MANAGEDTYPEINFO);
-	DependencyProperty::Register (this, Type::COLORKEYFRAME, "Value", Type::COLOR);
-	DependencyProperty::Register (this, Type::COLORKEYFRAME, "KeyTime", Type::KEYTIME);
-	DependencyProperty::Register (this, Type::COLORANIMATION, "To", Type::COLOR);
-	DependencyProperty::Register (this, Type::COLORANIMATION, "From", Type::COLOR);
-	DependencyProperty::Register (this, Type::COLORANIMATION, "By", Type::COLOR);
-	DependencyProperty::RegisterFull (this, Type::BITMAPSOURCE, "PixelWidth", new Value (0), Type::INT32, false, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false, false);
-	DependencyProperty::RegisterFull (this, Type::BITMAPSOURCE, "PixelHeight", new Value (0), Type::INT32, false, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false, false);
-	DependencyProperty::Register (this, Type::BITMAPSOURCE, "PixelFormat", new Value (PixelFormatPbgra32), Type::INT32);
-	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point3", Type::POINT);
-	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point2", Type::POINT);
-	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point1", Type::POINT);
-	DependencyProperty::Register (this, Type::BEGINSTORYBOARD, "Storyboard", Type::STORYBOARD);
-	DependencyProperty::Register (this, Type::ARCSEGMENT, "SweepDirection", new Value (SweepDirectionCounterclockwise), Type::INT32);
-	DependencyProperty::Register (this, Type::ARCSEGMENT, "Size", Type::SIZE);
-	DependencyProperty::Register (this, Type::ARCSEGMENT, "RotationAngle", new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::ARCSEGMENT, "Point", Type::POINT);
-	DependencyProperty::Register (this, Type::ARCSEGMENT, "IsLargeArc", new Value (false), Type::BOOL);
+	DependencyProperty::Register (this, Type::MATRIXTRANSFORM, "Matrix", Type::MATRIX);
 }
 
-const int VisualBrush::VisualProperty = 0;
-const int VideoBrush::SourceNameProperty = 1;
-const int ImageBrush::ImageSourceProperty = 2;
-const int ImageBrush::DownloadProgressProperty = 3;
-const int RadialGradientBrush::RadiusYProperty = 4;
-const int RadialGradientBrush::RadiusXProperty = 5;
-const int RadialGradientBrush::GradientOriginProperty = 6;
-const int RadialGradientBrush::CenterProperty = 7;
-const int LinearGradientBrush::StartPointProperty = 8;
-const int LinearGradientBrush::EndPointProperty = 9;
+const int RadialGradientBrush::RadiusYProperty = 0;
+const int RadialGradientBrush::RadiusXProperty = 1;
+const int RadialGradientBrush::GradientOriginProperty = 2;
+const int RadialGradientBrush::CenterProperty = 3;
+const int LinearGradientBrush::StartPointProperty = 4;
+const int LinearGradientBrush::EndPointProperty = 5;
+const int VideoBrush::SourceNameProperty = 6;
+const int VisualBrush::VisualProperty = 7;
+const int ImageBrush::ImageSourceProperty = 8;
+const int ImageBrush::DownloadProgressProperty = 9;
 const int SolidColorBrush::ColorProperty = 10;
-const int TileBrush::StretchProperty = 11;
-const int TileBrush::AlignmentYProperty = 12;
-const int TileBrush::AlignmentXProperty = 13;
-const int GradientBrush::SpreadMethodProperty = 14;
-const int GradientBrush::MappingModeProperty = 15;
-const int GradientBrush::GradientStopsProperty = 16;
-const int GradientBrush::ColorInterpolationModeProperty = 17;
+const int GradientBrush::SpreadMethodProperty = 11;
+const int GradientBrush::MappingModeProperty = 12;
+const int GradientBrush::GradientStopsProperty = 13;
+const int GradientBrush::ColorInterpolationModeProperty = 14;
+const int TileBrush::StretchProperty = 15;
+const int TileBrush::AlignmentYProperty = 16;
+const int TileBrush::AlignmentXProperty = 17;
 const int InkPresenter::StrokesProperty = 18;
 const int Brush::TransformProperty = 19;
 const int Brush::RelativeTransformProperty = 20;
 const int Brush::OpacityProperty = 21;
 const int Brush::ChangedProperty = 22;
-const int Rectangle::RadiusYProperty = 23;
-const int Rectangle::RadiusXProperty = 24;
-const int Polyline::PointsProperty = 25;
-const int Polyline::FillRuleProperty = 26;
-const int Polygon::PointsProperty = 27;
-const int Polygon::FillRuleProperty = 28;
-const int Path::DataProperty = 29;
-const int Line::Y2Property = 30;
-const int Line::Y1Property = 31;
-const int Line::X2Property = 32;
-const int Line::X1Property = 33;
-const int MultiScaleImage::ViewportWidthProperty = 34;
-const int MultiScaleImage::ViewportOriginProperty = 35;
-const int MultiScaleImage::UseSpringsProperty = 36;
-const int MultiScaleImage::TileFadeProperty = 37;
-const int MultiScaleImage::SubImagesProperty = 38;
-const int MultiScaleImage::SourceProperty = 39;
-const int MultiScaleImage::AspectRatioProperty = 40;
-const int Image::SourceProperty = 41;
-const int UserControl::ContentProperty = 42;
-const int ContentControl::ContentTemplateProperty = 43;
-const int ContentControl::ContentProperty = 44;
-const int Grid::ShowGridLinesProperty = 45;
-const int Grid::RowSpanProperty = 46;
-const int Grid::RowProperty = 47;
-const int Grid::RowDefinitionsProperty = 48;
-const int Grid::ColumnSpanProperty = 49;
-const int Grid::ColumnProperty = 50;
-const int Grid::ColumnDefinitionsProperty = 51;
-const int Canvas::ZIndexProperty = 52;
-const int Canvas::TopProperty = 53;
-const int Canvas::LeftProperty = 54;
+const int Canvas::ZIndexProperty = 23;
+const int Canvas::TopProperty = 24;
+const int Canvas::LeftProperty = 25;
+const int Grid::ShowGridLinesProperty = 26;
+const int Grid::RowSpanProperty = 27;
+const int Grid::RowProperty = 28;
+const int Grid::RowDefinitionsProperty = 29;
+const int Grid::ColumnSpanProperty = 30;
+const int Grid::ColumnProperty = 31;
+const int Grid::ColumnDefinitionsProperty = 32;
+const int UserControl::ContentProperty = 33;
+const int ContentControl::ContentTemplateProperty = 34;
+const int ContentControl::ContentProperty = 35;
+const int Line::Y2Property = 36;
+const int Line::Y1Property = 37;
+const int Line::X2Property = 38;
+const int Line::X1Property = 39;
+const int Path::DataProperty = 40;
+const int Polygon::PointsProperty = 41;
+const int Polygon::FillRuleProperty = 42;
+const int Rectangle::RadiusYProperty = 43;
+const int Rectangle::RadiusXProperty = 44;
+const int Polyline::PointsProperty = 45;
+const int Polyline::FillRuleProperty = 46;
+const int Image::SourceProperty = 47;
+const int MultiScaleImage::ViewportWidthProperty = 48;
+const int MultiScaleImage::ViewportOriginProperty = 49;
+const int MultiScaleImage::UseSpringsProperty = 50;
+const int MultiScaleImage::TileFadeProperty = 51;
+const int MultiScaleImage::SubImagesProperty = 52;
+const int MultiScaleImage::SourceProperty = 53;
+const int MultiScaleImage::AspectRatioProperty = 54;
 const int TextBlock::TextWrappingProperty = 55;
 const int TextBlock::TextProperty = 56;
 const int TextBlock::TextDecorationsProperty = 57;
@@ -478,97 +478,97 @@ const int TextBlock::FontStretchProperty = 66;
 const int TextBlock::FontSizeProperty = 67;
 const int TextBlock::FontFilenameProperty = 68;
 const int TextBlock::FontFamilyProperty = 69;
-const int Popup::VerticalOffsetProperty = 70;
-const int Popup::IsOpenProperty = 71;
-const int Popup::HorizontalOffsetProperty = 72;
-const int Popup::ChildProperty = 73;
-const int MediaElement::VolumeProperty = 74;
-const int MediaElement::StretchProperty = 75;
-const int MediaElement::SourceProperty = 76;
-const int MediaElement::RenderedFramesPerSecondProperty = 77;
-const int MediaElement::PositionProperty = 78;
-const int MediaElement::NaturalVideoWidthProperty = 79;
-const int MediaElement::NaturalVideoHeightProperty = 80;
-const int MediaElement::NaturalDurationProperty = 81;
-const int MediaElement::MarkersProperty = 82;
-const int MediaElement::IsMutedProperty = 83;
-const int MediaElement::DroppedFramesPerSecondProperty = 84;
-const int MediaElement::DownloadProgressProperty = 85;
-const int MediaElement::DownloadProgressOffsetProperty = 86;
-const int MediaElement::CurrentStateProperty = 87;
-const int MediaElement::CanSeekProperty = 88;
-const int MediaElement::CanPauseProperty = 89;
-const int MediaElement::BufferingTimeProperty = 90;
-const int MediaElement::BufferingProgressProperty = 91;
-const int MediaElement::BalanceProperty = 92;
-const int MediaElement::AutoPlayProperty = 93;
-const int MediaElement::AudioStreamIndexProperty = 94;
-const int MediaElement::AudioStreamCountProperty = 95;
-const int MediaElement::AttributesProperty = 96;
-const int Shape::StrokeThicknessProperty = 97;
-const int Shape::StrokeStartLineCapProperty = 98;
-const int Shape::StrokeProperty = 99;
-const int Shape::StrokeMiterLimitProperty = 100;
-const int Shape::StrokeLineJoinProperty = 101;
-const int Shape::StrokeEndLineCapProperty = 102;
-const int Shape::StrokeDashOffsetProperty = 103;
-const int Shape::StrokeDashCapProperty = 104;
-const int Shape::StrokeDashArrayProperty = 105;
-const int Shape::StretchProperty = 106;
-const int Shape::FillProperty = 107;
-const int MediaBase::StretchProperty = 108;
-const int MediaBase::SourceProperty = 109;
-const int MediaBase::DownloadProgressProperty = 110;
-const int Glyphs::UnicodeStringProperty = 111;
-const int Glyphs::StyleSimulationsProperty = 112;
-const int Glyphs::OriginYProperty = 113;
-const int Glyphs::OriginXProperty = 114;
-const int Glyphs::IndicesProperty = 115;
-const int Glyphs::FontUriProperty = 116;
-const int Glyphs::FontRenderingEmSizeProperty = 117;
-const int Glyphs::FillProperty = 118;
-const int Control::VerticalContentAlignmentProperty = 119;
-const int Control::TemplateProperty = 120;
-const int Control::TabNavigationProperty = 121;
-const int Control::TabIndexProperty = 122;
-const int Control::PaddingProperty = 123;
-const int Control::IsTabStopProperty = 124;
-const int Control::HorizontalContentAlignmentProperty = 125;
-const int Control::ForegroundProperty = 126;
-const int Control::FontWeightProperty = 127;
-const int Control::FontStyleProperty = 128;
-const int Control::FontStretchProperty = 129;
-const int Control::FontSizeProperty = 130;
-const int Control::FontFamilyProperty = 131;
-const int Control::DefaultStyleKeyProperty = 132;
-const int Control::BorderThicknessProperty = 133;
-const int Control::BorderBrushProperty = 134;
-const int Control::BackgroundProperty = 135;
-const int Panel::ChildrenProperty = 136;
-const int Panel::BackgroundProperty = 137;
-const int Border::PaddingProperty = 138;
-const int Border::CornerRadiusProperty = 139;
-const int Border::ChildProperty = 140;
-const int Border::BorderThicknessProperty = 141;
-const int Border::BorderBrushProperty = 142;
-const int Border::BackgroundProperty = 143;
+const int Glyphs::UnicodeStringProperty = 70;
+const int Glyphs::StyleSimulationsProperty = 71;
+const int Glyphs::OriginYProperty = 72;
+const int Glyphs::OriginXProperty = 73;
+const int Glyphs::IndicesProperty = 74;
+const int Glyphs::FontUriProperty = 75;
+const int Glyphs::FontRenderingEmSizeProperty = 76;
+const int Glyphs::FillProperty = 77;
+const int Popup::VerticalOffsetProperty = 78;
+const int Popup::IsOpenProperty = 79;
+const int Popup::HorizontalOffsetProperty = 80;
+const int Popup::ChildProperty = 81;
+const int Panel::ChildrenProperty = 82;
+const int Panel::BackgroundProperty = 83;
+const int MediaElement::VolumeProperty = 84;
+const int MediaElement::StretchProperty = 85;
+const int MediaElement::SourceProperty = 86;
+const int MediaElement::RenderedFramesPerSecondProperty = 87;
+const int MediaElement::PositionProperty = 88;
+const int MediaElement::NaturalVideoWidthProperty = 89;
+const int MediaElement::NaturalVideoHeightProperty = 90;
+const int MediaElement::NaturalDurationProperty = 91;
+const int MediaElement::MarkersProperty = 92;
+const int MediaElement::IsMutedProperty = 93;
+const int MediaElement::DroppedFramesPerSecondProperty = 94;
+const int MediaElement::DownloadProgressProperty = 95;
+const int MediaElement::DownloadProgressOffsetProperty = 96;
+const int MediaElement::CurrentStateProperty = 97;
+const int MediaElement::CanSeekProperty = 98;
+const int MediaElement::CanPauseProperty = 99;
+const int MediaElement::BufferingTimeProperty = 100;
+const int MediaElement::BufferingProgressProperty = 101;
+const int MediaElement::BalanceProperty = 102;
+const int MediaElement::AutoPlayProperty = 103;
+const int MediaElement::AudioStreamIndexProperty = 104;
+const int MediaElement::AudioStreamCountProperty = 105;
+const int MediaElement::AttributesProperty = 106;
+const int Border::PaddingProperty = 107;
+const int Border::CornerRadiusProperty = 108;
+const int Border::ChildProperty = 109;
+const int Border::BorderThicknessProperty = 110;
+const int Border::BorderBrushProperty = 111;
+const int Border::BackgroundProperty = 112;
+const int Control::VerticalContentAlignmentProperty = 113;
+const int Control::TemplateProperty = 114;
+const int Control::TabNavigationProperty = 115;
+const int Control::TabIndexProperty = 116;
+const int Control::PaddingProperty = 117;
+const int Control::IsTabStopProperty = 118;
+const int Control::HorizontalContentAlignmentProperty = 119;
+const int Control::ForegroundProperty = 120;
+const int Control::FontWeightProperty = 121;
+const int Control::FontStyleProperty = 122;
+const int Control::FontStretchProperty = 123;
+const int Control::FontSizeProperty = 124;
+const int Control::FontFamilyProperty = 125;
+const int Control::DefaultStyleKeyProperty = 126;
+const int Control::BorderThicknessProperty = 127;
+const int Control::BorderBrushProperty = 128;
+const int Control::BackgroundProperty = 129;
+const int Shape::StrokeThicknessProperty = 130;
+const int Shape::StrokeStartLineCapProperty = 131;
+const int Shape::StrokeProperty = 132;
+const int Shape::StrokeMiterLimitProperty = 133;
+const int Shape::StrokeLineJoinProperty = 134;
+const int Shape::StrokeEndLineCapProperty = 135;
+const int Shape::StrokeDashOffsetProperty = 136;
+const int Shape::StrokeDashCapProperty = 137;
+const int Shape::StrokeDashArrayProperty = 138;
+const int Shape::StretchProperty = 139;
+const int Shape::FillProperty = 140;
+const int MediaBase::StretchProperty = 141;
+const int MediaBase::SourceProperty = 142;
+const int MediaBase::DownloadProgressProperty = 143;
 const int TimelineGroup::ChildrenProperty = 144;
-const int Setter::ValueProperty = 145;
-const int Setter::PropertyProperty = 146;
-const int Setter::ConvertedValueProperty = 147;
-const int Run::TextProperty = 148;
-const int RectangleGeometry::RectProperty = 149;
-const int RectangleGeometry::RadiusYProperty = 150;
-const int RectangleGeometry::RadiusXProperty = 151;
-const int PathGeometry::FillRuleProperty = 152;
-const int PathGeometry::FiguresProperty = 153;
-const int LineGeometry::StartPointProperty = 154;
-const int LineGeometry::EndPointProperty = 155;
-const int GeometryGroup::FillRuleProperty = 156;
-const int GeometryGroup::ChildrenProperty = 157;
-const int EllipseGeometry::RadiusYProperty = 158;
-const int EllipseGeometry::RadiusXProperty = 159;
-const int EllipseGeometry::CenterProperty = 160;
+const int Run::TextProperty = 145;
+const int GeometryGroup::FillRuleProperty = 146;
+const int GeometryGroup::ChildrenProperty = 147;
+const int PathGeometry::FillRuleProperty = 148;
+const int PathGeometry::FiguresProperty = 149;
+const int EllipseGeometry::RadiusYProperty = 150;
+const int EllipseGeometry::RadiusXProperty = 151;
+const int EllipseGeometry::CenterProperty = 152;
+const int RectangleGeometry::RectProperty = 153;
+const int RectangleGeometry::RadiusYProperty = 154;
+const int RectangleGeometry::RadiusXProperty = 155;
+const int LineGeometry::StartPointProperty = 156;
+const int LineGeometry::EndPointProperty = 157;
+const int Setter::ValueProperty = 158;
+const int Setter::PropertyProperty = 159;
+const int Setter::ConvertedValueProperty = 160;
 const int FrameworkElement::WidthProperty = 161;
 const int FrameworkElement::VerticalAlignmentProperty = 162;
 const int FrameworkElement::StyleProperty = 163;
@@ -583,238 +583,186 @@ const int FrameworkElement::HeightProperty = 171;
 const int FrameworkElement::DataContextProperty = 172;
 const int FrameworkElement::ActualWidthProperty = 173;
 const int FrameworkElement::ActualHeightProperty = 174;
-const int SplinePointKeyFrame::KeySplineProperty = 175;
-const int PointAnimationUsingKeyFrames::KeyFramesProperty = 176;
-const int SplineDoubleKeyFrame::KeySplineProperty = 177;
-const int DoubleAnimationUsingKeyFrames::KeyFramesProperty = 178;
-const int TimelineMarker::TypeProperty = 179;
-const int TimelineMarker::TimeProperty = 180;
-const int TimelineMarker::TextProperty = 181;
-const int Timeline::SpeedRatioProperty = 182;
-const int Timeline::RepeatBehaviorProperty = 183;
-const int Timeline::FillBehaviorProperty = 184;
-const int Timeline::DurationProperty = 185;
-const int Timeline::BeginTimeProperty = 186;
-const int Timeline::AutoReverseProperty = 187;
-const int StylusPoint::YProperty = 188;
-const int StylusPoint::XProperty = 189;
-const int StylusPoint::PressureFactorProperty = 190;
-const int StylusInfo::IsInvertedProperty = 191;
-const int StylusInfo::DeviceTypeProperty = 192;
-const int Style::TargetTypeProperty = 193;
-const int Style::SettersProperty = 194;
-const int Style::IsSealedProperty = 195;
-const int Stroke::StylusPointsProperty = 196;
-const int Stroke::DrawingAttributesProperty = 197;
-const int SetterBase::IsSealedProperty = 198;
-const int RowDefinition::MinHeightProperty = 199;
-const int RowDefinition::MaxHeightProperty = 200;
-const int RowDefinition::HeightProperty = 201;
-const int PathFigure::StartPointProperty = 202;
-const int PathFigure::SegmentsProperty = 203;
-const int PathFigure::IsFilledProperty = 204;
-const int PathFigure::IsClosedProperty = 205;
-const int NameScope::NameScopeProperty = 206;
-const int MultiScaleSubImage::ZIndexProperty = 207;
-const int MultiScaleSubImage::ViewportWidthProperty = 208;
-const int MultiScaleSubImage::ViewportOriginProperty = 209;
-const int MultiScaleSubImage::OpacityProperty = 210;
-const int MultiScaleSubImage::AspectRatioProperty = 211;
-const int MediaAttribute::ValueProperty = 212;
-const int Matrix::OffsetYProperty = 213;
-const int Matrix::OffsetXProperty = 214;
-const int Matrix::M22Property = 215;
-const int Matrix::M21Property = 216;
-const int Matrix::M12Property = 217;
-const int Matrix::M11Property = 218;
-const int KeySpline::ControlPoint2Property = 219;
-const int KeySpline::ControlPoint1Property = 220;
-const int InputMethod::IsInputMethodEnabledProperty = 221;
-const int Inline::TextDecorationsProperty = 222;
-const int Inline::LanguageProperty = 223;
-const int Inline::ForegroundProperty = 224;
-const int Inline::FontWeightProperty = 225;
-const int Inline::FontStyleProperty = 226;
-const int Inline::FontStretchProperty = 227;
-const int Inline::FontSizeProperty = 228;
-const int Inline::FontFilenameProperty = 229;
-const int Inline::FontFamilyProperty = 230;
-const int GradientStop::OffsetProperty = 231;
-const int GradientStop::ColorProperty = 232;
-const int Geometry::TransformProperty = 233;
-const int DrawingAttributes::WidthProperty = 234;
-const int DrawingAttributes::OutlineColorProperty = 235;
-const int DrawingAttributes::HeightProperty = 236;
-const int DrawingAttributes::ColorProperty = 237;
-const int Downloader::UriProperty = 238;
-const int Downloader::StatusTextProperty = 239;
-const int Downloader::StatusProperty = 240;
-const int Downloader::ResponseTextProperty = 241;
-const int Downloader::DownloadProgressProperty = 242;
-const int Deployment::SurfaceProperty = 243;
-const int Deployment::RuntimeVersionProperty = 244;
-const int Deployment::PartsProperty = 245;
-const int Deployment::ExternalCallersFromCrossDomainProperty = 246;
-const int Deployment::EntryPointTypeProperty = 247;
-const int Deployment::EntryPointAssemblyProperty = 248;
-const int ColumnDefinition::WidthProperty = 249;
-const int ColumnDefinition::MinWidthProperty = 250;
-const int ColumnDefinition::MaxWidthProperty = 251;
-const int Collection::CountProperty = 252;
-const int UIElement::VisibilityProperty = 253;
-const int UIElement::UseLayoutRoundingProperty = 254;
-const int UIElement::TriggersProperty = 255;
-const int UIElement::TagProperty = 256;
-const int UIElement::ResourcesProperty = 257;
-const int UIElement::RenderTransformProperty = 258;
-const int UIElement::RenderTransformOriginProperty = 259;
-const int UIElement::OpacityProperty = 260;
-const int UIElement::OpacityMaskProperty = 261;
-const int UIElement::IsHitTestVisibleProperty = 262;
-const int UIElement::CursorProperty = 263;
-const int UIElement::ClipProperty = 264;
-const int AssemblyPart::SourceProperty = 265;
-const int Application::ResourcesProperty = 266;
-const int SplineColorKeyFrame::KeySplineProperty = 267;
-const int ColorAnimationUsingKeyFrames::KeyFramesProperty = 268;
-const int BitmapImage::UriSourceProperty = 269;
-const int BitmapImage::ProgressProperty = 270;
-const int TranslateTransform::YProperty = 271;
-const int TranslateTransform::XProperty = 272;
-const int TransformGroup::ChildrenProperty = 273;
-const int TextBox::VerticalScrollBarVisibilityProperty = 274;
-const int TextBox::TextWrappingProperty = 275;
-const int TextBox::TextProperty = 276;
-const int TextBox::TextAlignmentProperty = 277;
-const int TextBox::SelectionStartProperty = 278;
-const int TextBox::SelectionLengthProperty = 279;
-const int TextBox::SelectionForegroundProperty = 280;
-const int TextBox::SelectionBackgroundProperty = 281;
-const int TextBox::SelectedTextProperty = 282;
-const int TextBox::MaxLengthProperty = 283;
-const int TextBox::IsReadOnlyProperty = 284;
-const int TextBox::HorizontalScrollBarVisibilityProperty = 285;
-const int TextBox::AcceptsReturnProperty = 286;
-const int Storyboard::TargetPropertyProperty = 287;
-const int Storyboard::TargetNameProperty = 288;
-const int SkewTransform::CenterYProperty = 289;
-const int SkewTransform::CenterXProperty = 290;
-const int SkewTransform::AngleYProperty = 291;
-const int SkewTransform::AngleXProperty = 292;
-const int SetterBaseCollection::IsSealedProperty = 293;
-const int ScaleTransform::ScaleYProperty = 294;
-const int ScaleTransform::ScaleXProperty = 295;
-const int ScaleTransform::CenterYProperty = 296;
-const int ScaleTransform::CenterXProperty = 297;
+const int PointAnimationUsingKeyFrames::KeyFramesProperty = 175;
+const int ColorAnimationUsingKeyFrames::KeyFramesProperty = 176;
+const int BitmapImage::UriSourceProperty = 177;
+const int BitmapImage::ProgressProperty = 178;
+const int SplineDoubleKeyFrame::KeySplineProperty = 179;
+const int SplinePointKeyFrame::KeySplineProperty = 180;
+const int SplineColorKeyFrame::KeySplineProperty = 181;
+const int AssemblyPart::SourceProperty = 182;
+const int StylusInfo::IsInvertedProperty = 183;
+const int StylusInfo::DeviceTypeProperty = 184;
+const int Downloader::UriProperty = 185;
+const int Downloader::StatusTextProperty = 186;
+const int Downloader::StatusProperty = 187;
+const int Downloader::ResponseTextProperty = 188;
+const int Downloader::DownloadProgressProperty = 189;
+const int NameScope::NameScopeProperty = 190;
+const int GradientStop::OffsetProperty = 191;
+const int GradientStop::ColorProperty = 192;
+const int Timeline::SpeedRatioProperty = 193;
+const int Timeline::RepeatBehaviorProperty = 194;
+const int Timeline::FillBehaviorProperty = 195;
+const int Timeline::DurationProperty = 196;
+const int Timeline::BeginTimeProperty = 197;
+const int Timeline::AutoReverseProperty = 198;
+const int KeySpline::ControlPoint2Property = 199;
+const int KeySpline::ControlPoint1Property = 200;
+const int Style::TargetTypeProperty = 201;
+const int Style::SettersProperty = 202;
+const int Style::IsSealedProperty = 203;
+const int Matrix::OffsetYProperty = 204;
+const int Matrix::OffsetXProperty = 205;
+const int Matrix::M22Property = 206;
+const int Matrix::M21Property = 207;
+const int Matrix::M12Property = 208;
+const int Matrix::M11Property = 209;
+const int Stroke::StylusPointsProperty = 210;
+const int Stroke::DrawingAttributesProperty = 211;
+const int Collection::CountProperty = 212;
+const int MultiScaleSubImage::ZIndexProperty = 213;
+const int MultiScaleSubImage::ViewportWidthProperty = 214;
+const int MultiScaleSubImage::ViewportOriginProperty = 215;
+const int MultiScaleSubImage::OpacityProperty = 216;
+const int MultiScaleSubImage::AspectRatioProperty = 217;
+const int RowDefinition::MinHeightProperty = 218;
+const int RowDefinition::MaxHeightProperty = 219;
+const int RowDefinition::HeightProperty = 220;
+const int PathFigure::StartPointProperty = 221;
+const int PathFigure::SegmentsProperty = 222;
+const int PathFigure::IsFilledProperty = 223;
+const int PathFigure::IsClosedProperty = 224;
+const int StylusPoint::YProperty = 225;
+const int StylusPoint::XProperty = 226;
+const int StylusPoint::PressureFactorProperty = 227;
+const int InputMethod::IsInputMethodEnabledProperty = 228;
+const int Inline::TextDecorationsProperty = 229;
+const int Inline::LanguageProperty = 230;
+const int Inline::ForegroundProperty = 231;
+const int Inline::FontWeightProperty = 232;
+const int Inline::FontStyleProperty = 233;
+const int Inline::FontStretchProperty = 234;
+const int Inline::FontSizeProperty = 235;
+const int Inline::FontFilenameProperty = 236;
+const int Inline::FontFamilyProperty = 237;
+const int ColumnDefinition::WidthProperty = 238;
+const int ColumnDefinition::MinWidthProperty = 239;
+const int ColumnDefinition::MaxWidthProperty = 240;
+const int Deployment::SurfaceProperty = 241;
+const int Deployment::RuntimeVersionProperty = 242;
+const int Deployment::PartsProperty = 243;
+const int Deployment::ExternalCallersFromCrossDomainProperty = 244;
+const int Deployment::EntryPointTypeProperty = 245;
+const int Deployment::EntryPointAssemblyProperty = 246;
+const int MediaAttribute::ValueProperty = 247;
+const int Geometry::TransformProperty = 248;
+const int Application::ResourcesProperty = 249;
+const int TimelineMarker::TypeProperty = 250;
+const int TimelineMarker::TimeProperty = 251;
+const int TimelineMarker::TextProperty = 252;
+const int DrawingAttributes::WidthProperty = 253;
+const int DrawingAttributes::OutlineColorProperty = 254;
+const int DrawingAttributes::HeightProperty = 255;
+const int DrawingAttributes::ColorProperty = 256;
+const int SetterBase::IsSealedProperty = 257;
+const int UIElement::VisibilityProperty = 258;
+const int UIElement::UseLayoutRoundingProperty = 259;
+const int UIElement::TriggersProperty = 260;
+const int UIElement::TagProperty = 261;
+const int UIElement::ResourcesProperty = 262;
+const int UIElement::RenderTransformProperty = 263;
+const int UIElement::RenderTransformOriginProperty = 264;
+const int UIElement::OpacityProperty = 265;
+const int UIElement::OpacityMaskProperty = 266;
+const int UIElement::IsHitTestVisibleProperty = 267;
+const int UIElement::CursorProperty = 268;
+const int UIElement::ClipProperty = 269;
+const int DoubleAnimationUsingKeyFrames::KeyFramesProperty = 270;
+const int DeepZoomImageTileSource::UriSourceProperty = 271;
+const int PointAnimation::ToProperty = 272;
+const int PointAnimation::FromProperty = 273;
+const int PointAnimation::ByProperty = 274;
+const int ObjectKeyFrame::ValueProperty = 275;
+const int ObjectKeyFrame::KeyTimeProperty = 276;
+const int TextBox::VerticalScrollBarVisibilityProperty = 277;
+const int TextBox::TextWrappingProperty = 278;
+const int TextBox::TextProperty = 279;
+const int TextBox::TextAlignmentProperty = 280;
+const int TextBox::SelectionStartProperty = 281;
+const int TextBox::SelectionLengthProperty = 282;
+const int TextBox::SelectionForegroundProperty = 283;
+const int TextBox::SelectionBackgroundProperty = 284;
+const int TextBox::SelectedTextProperty = 285;
+const int TextBox::MaxLengthProperty = 286;
+const int TextBox::IsReadOnlyProperty = 287;
+const int TextBox::HorizontalScrollBarVisibilityProperty = 288;
+const int TextBox::AcceptsReturnProperty = 289;
+const int Storyboard::TargetPropertyProperty = 290;
+const int Storyboard::TargetNameProperty = 291;
+const int ArcSegment::SweepDirectionProperty = 292;
+const int ArcSegment::SizeProperty = 293;
+const int ArcSegment::RotationAngleProperty = 294;
+const int ArcSegment::PointProperty = 295;
+const int ArcSegment::IsLargeArcProperty = 296;
+const int PolyLineSegment::PointsProperty = 297;
 const int RotateTransform::CenterYProperty = 298;
 const int RotateTransform::CenterXProperty = 299;
 const int RotateTransform::AngleProperty = 300;
-const int QuadraticBezierSegment::Point2Property = 301;
-const int QuadraticBezierSegment::Point1Property = 302;
-const int PolyQuadraticBezierSegment::PointsProperty = 303;
-const int PolyLineSegment::PointsProperty = 304;
-const int PolyBezierSegment::PointsProperty = 305;
-const int PointKeyFrame::ValueProperty = 306;
-const int PointKeyFrame::KeyTimeProperty = 307;
-const int PointAnimation::ToProperty = 308;
-const int PointAnimation::FromProperty = 309;
-const int PointAnimation::ByProperty = 310;
-const int PasswordBox::SelectionStartProperty = 311;
-const int PasswordBox::SelectionLengthProperty = 312;
-const int PasswordBox::SelectionForegroundProperty = 313;
-const int PasswordBox::SelectionBackgroundProperty = 314;
-const int PasswordBox::SelectedTextProperty = 315;
-const int PasswordBox::PasswordProperty = 316;
-const int PasswordBox::PasswordCharProperty = 317;
-const int PasswordBox::MaxLengthProperty = 318;
-const int ObjectKeyFrame::ValueProperty = 319;
-const int ObjectKeyFrame::KeyTimeProperty = 320;
-const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 321;
-const int MatrixTransform::MatrixProperty = 322;
-const int LineSegment::PointProperty = 323;
-const int LayoutInformation::LayoutSlotProperty = 324;
-const int LayoutInformation::LayoutClipProperty = 325;
-const int LayoutInformation::LastMeasureProperty = 326;
-const int LayoutInformation::LastArrangeProperty = 327;
-const int EventTrigger::RoutedEventProperty = 328;
-const int EventTrigger::ActionsProperty = 329;
-const int DoubleKeyFrame::ValueProperty = 330;
-const int DoubleKeyFrame::KeyTimeProperty = 331;
-const int DoubleAnimation::ToProperty = 332;
-const int DoubleAnimation::FromProperty = 333;
-const int DoubleAnimation::ByProperty = 334;
-const int DependencyObject::NameProperty = 335;
-const int DeepZoomImageTileSource::UriSourceProperty = 336;
-const int ControlTemplate::TargetTypeProperty = 337;
-const int ColorKeyFrame::ValueProperty = 338;
-const int ColorKeyFrame::KeyTimeProperty = 339;
-const int ColorAnimation::ToProperty = 340;
-const int ColorAnimation::FromProperty = 341;
-const int ColorAnimation::ByProperty = 342;
-const int BitmapSource::PixelWidthProperty = 343;
-const int BitmapSource::PixelHeightProperty = 344;
-const int BitmapSource::PixelFormatProperty = 345;
-const int BezierSegment::Point3Property = 346;
-const int BezierSegment::Point2Property = 347;
-const int BezierSegment::Point1Property = 348;
-const int BeginStoryboard::StoryboardProperty = 349;
-const int ArcSegment::SweepDirectionProperty = 350;
-const int ArcSegment::SizeProperty = 351;
-const int ArcSegment::RotationAngleProperty = 352;
-const int ArcSegment::PointProperty = 353;
-const int ArcSegment::IsLargeArcProperty = 354;
-
-UIElement *
-VisualBrush::GetVisual ()
-{
-	Value *value = GetValue (VisualBrush::VisualProperty);
-	return value ? value->AsUIElement () : NULL;
-}
-
-void
-VisualBrush::SetVisual (UIElement *value)
-{
-	SetValue (VisualBrush::VisualProperty, Value (value));
-}
-
-const char *
-VideoBrush::GetSourceName ()
-{
-	Value *value = GetValue (VideoBrush::SourceNameProperty);
-	return value ? value->AsString () : NULL;
-}
-
-void
-VideoBrush::SetSourceName (const char *value)
-{
-	SetValue (VideoBrush::SourceNameProperty, Value (value));
-}
-
-ImageSource *
-ImageBrush::GetImageSource ()
-{
-	Value *value = GetValue (ImageBrush::ImageSourceProperty);
-	return value ? value->AsImageSource () : NULL;
-}
-
-void
-ImageBrush::SetImageSource (ImageSource *value)
-{
-	SetValue (ImageBrush::ImageSourceProperty, Value (value));
-}
-
-double
-ImageBrush::GetDownloadProgress ()
-{
-	Value *value = GetValue (ImageBrush::DownloadProgressProperty);
-	return value->AsDouble ();
-}
-
-void
-ImageBrush::SetDownloadProgress (double value)
-{
-	SetValue (ImageBrush::DownloadProgressProperty, Value (value));
-}
+const int ColorAnimation::ToProperty = 301;
+const int ColorAnimation::FromProperty = 302;
+const int ColorAnimation::ByProperty = 303;
+const int TranslateTransform::YProperty = 304;
+const int TranslateTransform::XProperty = 305;
+const int BitmapSource::PixelWidthProperty = 306;
+const int BitmapSource::PixelHeightProperty = 307;
+const int BitmapSource::PixelFormatProperty = 308;
+const int DoubleKeyFrame::ValueProperty = 309;
+const int DoubleKeyFrame::KeyTimeProperty = 310;
+const int PolyQuadraticBezierSegment::PointsProperty = 311;
+const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 312;
+const int PointKeyFrame::ValueProperty = 313;
+const int PointKeyFrame::KeyTimeProperty = 314;
+const int LineSegment::PointProperty = 315;
+const int BeginStoryboard::StoryboardProperty = 316;
+const int BezierSegment::Point3Property = 317;
+const int BezierSegment::Point2Property = 318;
+const int BezierSegment::Point1Property = 319;
+const int SetterBaseCollection::IsSealedProperty = 320;
+const int PasswordBox::SelectionStartProperty = 321;
+const int PasswordBox::SelectionLengthProperty = 322;
+const int PasswordBox::SelectionForegroundProperty = 323;
+const int PasswordBox::SelectionBackgroundProperty = 324;
+const int PasswordBox::SelectedTextProperty = 325;
+const int PasswordBox::PasswordProperty = 326;
+const int PasswordBox::PasswordCharProperty = 327;
+const int PasswordBox::MaxLengthProperty = 328;
+const int ScaleTransform::ScaleYProperty = 329;
+const int ScaleTransform::ScaleXProperty = 330;
+const int ScaleTransform::CenterYProperty = 331;
+const int ScaleTransform::CenterXProperty = 332;
+const int TransformGroup::ChildrenProperty = 333;
+const int ColorKeyFrame::ValueProperty = 334;
+const int ColorKeyFrame::KeyTimeProperty = 335;
+const int QuadraticBezierSegment::Point2Property = 336;
+const int QuadraticBezierSegment::Point1Property = 337;
+const int PolyBezierSegment::PointsProperty = 338;
+const int EventTrigger::RoutedEventProperty = 339;
+const int EventTrigger::ActionsProperty = 340;
+const int ControlTemplate::TargetTypeProperty = 341;
+const int SkewTransform::CenterYProperty = 342;
+const int SkewTransform::CenterXProperty = 343;
+const int SkewTransform::AngleYProperty = 344;
+const int SkewTransform::AngleXProperty = 345;
+const int DependencyObject::NameProperty = 346;
+const int DoubleAnimation::ToProperty = 347;
+const int DoubleAnimation::FromProperty = 348;
+const int DoubleAnimation::ByProperty = 349;
+const int LayoutInformation::LayoutSlotProperty = 350;
+const int LayoutInformation::LayoutClipProperty = 351;
+const int LayoutInformation::LastMeasureProperty = 352;
+const int LayoutInformation::LastArrangeProperty = 353;
+const int MatrixTransform::MatrixProperty = 354;
 
 double
 RadialGradientBrush::GetRadiusY ()
@@ -898,6 +846,58 @@ LinearGradientBrush::SetEndPoint (Point *value)
 	SetValue (LinearGradientBrush::EndPointProperty, Value (*value));
 }
 
+const char *
+VideoBrush::GetSourceName ()
+{
+	Value *value = GetValue (VideoBrush::SourceNameProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+VideoBrush::SetSourceName (const char *value)
+{
+	SetValue (VideoBrush::SourceNameProperty, Value (value));
+}
+
+UIElement *
+VisualBrush::GetVisual ()
+{
+	Value *value = GetValue (VisualBrush::VisualProperty);
+	return value ? value->AsUIElement () : NULL;
+}
+
+void
+VisualBrush::SetVisual (UIElement *value)
+{
+	SetValue (VisualBrush::VisualProperty, Value (value));
+}
+
+ImageSource *
+ImageBrush::GetImageSource ()
+{
+	Value *value = GetValue (ImageBrush::ImageSourceProperty);
+	return value ? value->AsImageSource () : NULL;
+}
+
+void
+ImageBrush::SetImageSource (ImageSource *value)
+{
+	SetValue (ImageBrush::ImageSourceProperty, Value (value));
+}
+
+double
+ImageBrush::GetDownloadProgress ()
+{
+	Value *value = GetValue (ImageBrush::DownloadProgressProperty);
+	return value->AsDouble ();
+}
+
+void
+ImageBrush::SetDownloadProgress (double value)
+{
+	SetValue (ImageBrush::DownloadProgressProperty, Value (value));
+}
+
 Color *
 SolidColorBrush::GetColor ()
 {
@@ -910,45 +910,6 @@ SolidColorBrush::SetColor (Color *value)
 {
 	if (!value) return;
 	SetValue (SolidColorBrush::ColorProperty, Value (*value));
-}
-
-Stretch
-TileBrush::GetStretch ()
-{
-	Value *value = GetValue (TileBrush::StretchProperty);
-	return (Stretch) value->AsInt32 ();
-}
-
-void
-TileBrush::SetStretch (Stretch value)
-{
-	SetValue (TileBrush::StretchProperty, Value (value));
-}
-
-AlignmentY
-TileBrush::GetAlignmentY ()
-{
-	Value *value = GetValue (TileBrush::AlignmentYProperty);
-	return (AlignmentY) value->AsInt32 ();
-}
-
-void
-TileBrush::SetAlignmentY (AlignmentY value)
-{
-	SetValue (TileBrush::AlignmentYProperty, Value (value));
-}
-
-AlignmentX
-TileBrush::GetAlignmentX ()
-{
-	Value *value = GetValue (TileBrush::AlignmentXProperty);
-	return (AlignmentX) value->AsInt32 ();
-}
-
-void
-TileBrush::SetAlignmentX (AlignmentX value)
-{
-	SetValue (TileBrush::AlignmentXProperty, Value (value));
 }
 
 GradientSpreadMethod
@@ -1003,6 +964,45 @@ GradientBrush::SetColorInterpolationMode (ColorInterpolationMode value)
 	SetValue (GradientBrush::ColorInterpolationModeProperty, Value (value));
 }
 
+Stretch
+TileBrush::GetStretch ()
+{
+	Value *value = GetValue (TileBrush::StretchProperty);
+	return (Stretch) value->AsInt32 ();
+}
+
+void
+TileBrush::SetStretch (Stretch value)
+{
+	SetValue (TileBrush::StretchProperty, Value (value));
+}
+
+AlignmentY
+TileBrush::GetAlignmentY ()
+{
+	Value *value = GetValue (TileBrush::AlignmentYProperty);
+	return (AlignmentY) value->AsInt32 ();
+}
+
+void
+TileBrush::SetAlignmentY (AlignmentY value)
+{
+	SetValue (TileBrush::AlignmentYProperty, Value (value));
+}
+
+AlignmentX
+TileBrush::GetAlignmentX ()
+{
+	Value *value = GetValue (TileBrush::AlignmentXProperty);
+	return (AlignmentX) value->AsInt32 ();
+}
+
+void
+TileBrush::SetAlignmentX (AlignmentX value)
+{
+	SetValue (TileBrush::AlignmentXProperty, Value (value));
+}
+
 StrokeCollection *
 InkPresenter::GetStrokes ()
 {
@@ -1055,227 +1055,49 @@ Brush::SetOpacity (double value)
 	SetValue (Brush::OpacityProperty, Value (value));
 }
 
-double
-Rectangle::GetRadiusY ()
+gint32
+Canvas::GetZIndex (DependencyObject *obj)
 {
-	Value *value = GetValue (Rectangle::RadiusYProperty);
+	Value *value = (!obj) ? NULL : obj->GetValue (Canvas::ZIndexProperty);
+	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (Canvas::ZIndexProperty)->GetDefaultValue();
+	return value->AsInt32 ();
+}
+
+void
+Canvas::SetZIndex (DependencyObject *obj, gint32 value)
+{
+	if (!obj) return;
+	obj->SetValue (Canvas::ZIndexProperty, Value (value));
+}
+
+double
+Canvas::GetTop (DependencyObject *obj)
+{
+	Value *value = (!obj) ? NULL : obj->GetValue (Canvas::TopProperty);
+	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (Canvas::TopProperty)->GetDefaultValue();
 	return value->AsDouble ();
 }
 
 void
-Rectangle::SetRadiusY (double value)
+Canvas::SetTop (DependencyObject *obj, double value)
 {
-	SetValue (Rectangle::RadiusYProperty, Value (value));
+	if (!obj) return;
+	obj->SetValue (Canvas::TopProperty, Value (value));
 }
 
 double
-Rectangle::GetRadiusX ()
+Canvas::GetLeft (DependencyObject *obj)
 {
-	Value *value = GetValue (Rectangle::RadiusXProperty);
+	Value *value = (!obj) ? NULL : obj->GetValue (Canvas::LeftProperty);
+	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (Canvas::LeftProperty)->GetDefaultValue();
 	return value->AsDouble ();
 }
 
 void
-Rectangle::SetRadiusX (double value)
+Canvas::SetLeft (DependencyObject *obj, double value)
 {
-	SetValue (Rectangle::RadiusXProperty, Value (value));
-}
-
-PointCollection *
-Polyline::GetPoints ()
-{
-	Value *value = GetValue (Polyline::PointsProperty);
-	return value ? value->AsPointCollection () : NULL;
-}
-
-void
-Polyline::SetPoints (PointCollection *value)
-{
-	SetValue (Polyline::PointsProperty, Value (value));
-}
-
-FillRule
-Polyline::GetFillRule ()
-{
-	Value *value = GetValue (Polyline::FillRuleProperty);
-	return (FillRule) value->AsInt32 ();
-}
-
-void
-Polyline::SetFillRule (FillRule value)
-{
-	SetValue (Polyline::FillRuleProperty, Value (value));
-}
-
-PointCollection *
-Polygon::GetPoints ()
-{
-	Value *value = GetValue (Polygon::PointsProperty);
-	return value ? value->AsPointCollection () : NULL;
-}
-
-void
-Polygon::SetPoints (PointCollection *value)
-{
-	SetValue (Polygon::PointsProperty, Value (value));
-}
-
-FillRule
-Polygon::GetFillRule ()
-{
-	Value *value = GetValue (Polygon::FillRuleProperty);
-	return (FillRule) value->AsInt32 ();
-}
-
-void
-Polygon::SetFillRule (FillRule value)
-{
-	SetValue (Polygon::FillRuleProperty, Value (value));
-}
-
-Geometry *
-Path::GetData ()
-{
-	Value *value = GetValue (Path::DataProperty);
-	return value ? value->AsGeometry () : NULL;
-}
-
-void
-Path::SetData (Geometry *value)
-{
-	SetValue (Path::DataProperty, Value (value));
-}
-
-double
-Line::GetY2 ()
-{
-	Value *value = GetValue (Line::Y2Property);
-	return value->AsDouble ();
-}
-
-void
-Line::SetY2 (double value)
-{
-	SetValue (Line::Y2Property, Value (value));
-}
-
-double
-Line::GetY1 ()
-{
-	Value *value = GetValue (Line::Y1Property);
-	return value->AsDouble ();
-}
-
-void
-Line::SetY1 (double value)
-{
-	SetValue (Line::Y1Property, Value (value));
-}
-
-double
-Line::GetX2 ()
-{
-	Value *value = GetValue (Line::X2Property);
-	return value->AsDouble ();
-}
-
-void
-Line::SetX2 (double value)
-{
-	SetValue (Line::X2Property, Value (value));
-}
-
-double
-Line::GetX1 ()
-{
-	Value *value = GetValue (Line::X1Property);
-	return value->AsDouble ();
-}
-
-void
-Line::SetX1 (double value)
-{
-	SetValue (Line::X1Property, Value (value));
-}
-
-double
-MultiScaleImage::GetViewportWidth ()
-{
-	Value *value = GetValue (MultiScaleImage::ViewportWidthProperty);
-	return value->AsDouble ();
-}
-
-Point *
-MultiScaleImage::GetViewportOrigin ()
-{
-	Value *value = GetValue (MultiScaleImage::ViewportOriginProperty);
-	return value ? value->AsPoint () : NULL;
-}
-
-bool
-MultiScaleImage::GetUseSprings ()
-{
-	Value *value = GetValue (MultiScaleImage::UseSpringsProperty);
-	return value->AsBool ();
-}
-
-void
-MultiScaleImage::SetUseSprings (bool value)
-{
-	SetValue (MultiScaleImage::UseSpringsProperty, Value (value));
-}
-
-MultiScaleSubImageCollection *
-MultiScaleImage::GetSubImages ()
-{
-	Value *value = GetValue (MultiScaleImage::SubImagesProperty);
-	return value ? value->AsMultiScaleSubImageCollection () : NULL;
-}
-
-MultiScaleTileSource *
-MultiScaleImage::GetSource ()
-{
-	Value *value = GetValue (MultiScaleImage::SourceProperty);
-	return value ? value->AsMultiScaleTileSource () : NULL;
-}
-
-void
-MultiScaleImage::SetSource (MultiScaleTileSource *value)
-{
-	SetValue (MultiScaleImage::SourceProperty, Value (value));
-}
-
-double
-MultiScaleImage::GetAspectRatio ()
-{
-	Value *value = GetValue (MultiScaleImage::AspectRatioProperty);
-	return value->AsDouble ();
-}
-
-ImageSource *
-Image::GetSource ()
-{
-	Value *value = GetValue (Image::SourceProperty);
-	return value ? value->AsImageSource () : NULL;
-}
-
-void
-Image::SetSource (ImageSource *value)
-{
-	SetValue (Image::SourceProperty, Value (value));
-}
-
-DataTemplate *
-ContentControl::GetContentTemplate ()
-{
-	Value *value = GetValue (ContentControl::ContentTemplateProperty);
-	return value ? value->AsDataTemplate () : NULL;
-}
-
-void
-ContentControl::SetContentTemplate (DataTemplate *value)
-{
-	SetValue (ContentControl::ContentTemplateProperty, Value (value));
+	if (!obj) return;
+	obj->SetValue (Canvas::LeftProperty, Value (value));
 }
 
 bool
@@ -1377,49 +1199,227 @@ Grid::SetColumnDefinitions (ColumnDefinitionCollection *value)
 	SetValue (Grid::ColumnDefinitionsProperty, Value (value));
 }
 
-gint32
-Canvas::GetZIndex (DependencyObject *obj)
+DataTemplate *
+ContentControl::GetContentTemplate ()
 {
-	Value *value = (!obj) ? NULL : obj->GetValue (Canvas::ZIndexProperty);
-	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (Canvas::ZIndexProperty)->GetDefaultValue();
-	return value->AsInt32 ();
+	Value *value = GetValue (ContentControl::ContentTemplateProperty);
+	return value ? value->AsDataTemplate () : NULL;
 }
 
 void
-Canvas::SetZIndex (DependencyObject *obj, gint32 value)
+ContentControl::SetContentTemplate (DataTemplate *value)
 {
-	if (!obj) return;
-	obj->SetValue (Canvas::ZIndexProperty, Value (value));
+	SetValue (ContentControl::ContentTemplateProperty, Value (value));
 }
 
 double
-Canvas::GetTop (DependencyObject *obj)
+Line::GetY2 ()
 {
-	Value *value = (!obj) ? NULL : obj->GetValue (Canvas::TopProperty);
-	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (Canvas::TopProperty)->GetDefaultValue();
+	Value *value = GetValue (Line::Y2Property);
 	return value->AsDouble ();
 }
 
 void
-Canvas::SetTop (DependencyObject *obj, double value)
+Line::SetY2 (double value)
 {
-	if (!obj) return;
-	obj->SetValue (Canvas::TopProperty, Value (value));
+	SetValue (Line::Y2Property, Value (value));
 }
 
 double
-Canvas::GetLeft (DependencyObject *obj)
+Line::GetY1 ()
 {
-	Value *value = (!obj) ? NULL : obj->GetValue (Canvas::LeftProperty);
-	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (Canvas::LeftProperty)->GetDefaultValue();
+	Value *value = GetValue (Line::Y1Property);
 	return value->AsDouble ();
 }
 
 void
-Canvas::SetLeft (DependencyObject *obj, double value)
+Line::SetY1 (double value)
 {
-	if (!obj) return;
-	obj->SetValue (Canvas::LeftProperty, Value (value));
+	SetValue (Line::Y1Property, Value (value));
+}
+
+double
+Line::GetX2 ()
+{
+	Value *value = GetValue (Line::X2Property);
+	return value->AsDouble ();
+}
+
+void
+Line::SetX2 (double value)
+{
+	SetValue (Line::X2Property, Value (value));
+}
+
+double
+Line::GetX1 ()
+{
+	Value *value = GetValue (Line::X1Property);
+	return value->AsDouble ();
+}
+
+void
+Line::SetX1 (double value)
+{
+	SetValue (Line::X1Property, Value (value));
+}
+
+Geometry *
+Path::GetData ()
+{
+	Value *value = GetValue (Path::DataProperty);
+	return value ? value->AsGeometry () : NULL;
+}
+
+void
+Path::SetData (Geometry *value)
+{
+	SetValue (Path::DataProperty, Value (value));
+}
+
+PointCollection *
+Polygon::GetPoints ()
+{
+	Value *value = GetValue (Polygon::PointsProperty);
+	return value ? value->AsPointCollection () : NULL;
+}
+
+void
+Polygon::SetPoints (PointCollection *value)
+{
+	SetValue (Polygon::PointsProperty, Value (value));
+}
+
+FillRule
+Polygon::GetFillRule ()
+{
+	Value *value = GetValue (Polygon::FillRuleProperty);
+	return (FillRule) value->AsInt32 ();
+}
+
+void
+Polygon::SetFillRule (FillRule value)
+{
+	SetValue (Polygon::FillRuleProperty, Value (value));
+}
+
+double
+Rectangle::GetRadiusY ()
+{
+	Value *value = GetValue (Rectangle::RadiusYProperty);
+	return value->AsDouble ();
+}
+
+void
+Rectangle::SetRadiusY (double value)
+{
+	SetValue (Rectangle::RadiusYProperty, Value (value));
+}
+
+double
+Rectangle::GetRadiusX ()
+{
+	Value *value = GetValue (Rectangle::RadiusXProperty);
+	return value->AsDouble ();
+}
+
+void
+Rectangle::SetRadiusX (double value)
+{
+	SetValue (Rectangle::RadiusXProperty, Value (value));
+}
+
+PointCollection *
+Polyline::GetPoints ()
+{
+	Value *value = GetValue (Polyline::PointsProperty);
+	return value ? value->AsPointCollection () : NULL;
+}
+
+void
+Polyline::SetPoints (PointCollection *value)
+{
+	SetValue (Polyline::PointsProperty, Value (value));
+}
+
+FillRule
+Polyline::GetFillRule ()
+{
+	Value *value = GetValue (Polyline::FillRuleProperty);
+	return (FillRule) value->AsInt32 ();
+}
+
+void
+Polyline::SetFillRule (FillRule value)
+{
+	SetValue (Polyline::FillRuleProperty, Value (value));
+}
+
+ImageSource *
+Image::GetSource ()
+{
+	Value *value = GetValue (Image::SourceProperty);
+	return value ? value->AsImageSource () : NULL;
+}
+
+void
+Image::SetSource (ImageSource *value)
+{
+	SetValue (Image::SourceProperty, Value (value));
+}
+
+double
+MultiScaleImage::GetViewportWidth ()
+{
+	Value *value = GetValue (MultiScaleImage::ViewportWidthProperty);
+	return value->AsDouble ();
+}
+
+Point *
+MultiScaleImage::GetViewportOrigin ()
+{
+	Value *value = GetValue (MultiScaleImage::ViewportOriginProperty);
+	return value ? value->AsPoint () : NULL;
+}
+
+bool
+MultiScaleImage::GetUseSprings ()
+{
+	Value *value = GetValue (MultiScaleImage::UseSpringsProperty);
+	return value->AsBool ();
+}
+
+void
+MultiScaleImage::SetUseSprings (bool value)
+{
+	SetValue (MultiScaleImage::UseSpringsProperty, Value (value));
+}
+
+MultiScaleSubImageCollection *
+MultiScaleImage::GetSubImages ()
+{
+	Value *value = GetValue (MultiScaleImage::SubImagesProperty);
+	return value ? value->AsMultiScaleSubImageCollection () : NULL;
+}
+
+MultiScaleTileSource *
+MultiScaleImage::GetSource ()
+{
+	Value *value = GetValue (MultiScaleImage::SourceProperty);
+	return value ? value->AsMultiScaleTileSource () : NULL;
+}
+
+void
+MultiScaleImage::SetSource (MultiScaleTileSource *value)
+{
+	SetValue (MultiScaleImage::SourceProperty, Value (value));
+}
+
+double
+MultiScaleImage::GetAspectRatio ()
+{
+	Value *value = GetValue (MultiScaleImage::AspectRatioProperty);
+	return value->AsDouble ();
 }
 
 TextWrapping
@@ -1619,6 +1619,111 @@ TextBlock::SetFontFamily (FontFamily *value)
 	SetValue (TextBlock::FontFamilyProperty, Value (*value));
 }
 
+const char *
+Glyphs::GetUnicodeString ()
+{
+	Value *value = GetValue (Glyphs::UnicodeStringProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+Glyphs::SetUnicodeString (const char *value)
+{
+	SetValue (Glyphs::UnicodeStringProperty, Value (value));
+}
+
+StyleSimulations
+Glyphs::GetStyleSimulations ()
+{
+	Value *value = GetValue (Glyphs::StyleSimulationsProperty);
+	return (StyleSimulations) value->AsInt32 ();
+}
+
+void
+Glyphs::SetStyleSimulations (StyleSimulations value)
+{
+	SetValue (Glyphs::StyleSimulationsProperty, Value (value));
+}
+
+double
+Glyphs::GetOriginY ()
+{
+	Value *value = GetValue (Glyphs::OriginYProperty);
+	return value->AsDouble ();
+}
+
+void
+Glyphs::SetOriginY (double value)
+{
+	SetValue (Glyphs::OriginYProperty, Value (value));
+}
+
+double
+Glyphs::GetOriginX ()
+{
+	Value *value = GetValue (Glyphs::OriginXProperty);
+	return value->AsDouble ();
+}
+
+void
+Glyphs::SetOriginX (double value)
+{
+	SetValue (Glyphs::OriginXProperty, Value (value));
+}
+
+const char *
+Glyphs::GetIndices ()
+{
+	Value *value = GetValue (Glyphs::IndicesProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+Glyphs::SetIndices (const char *value)
+{
+	SetValue (Glyphs::IndicesProperty, Value (value));
+}
+
+Uri *
+Glyphs::GetFontUri ()
+{
+	Value *value = GetValue (Glyphs::FontUriProperty);
+	return value ? value->AsUri () : NULL;
+}
+
+void
+Glyphs::SetFontUri (Uri *value)
+{
+	if (!value) return;
+	SetValue (Glyphs::FontUriProperty, Value (*value));
+}
+
+double
+Glyphs::GetFontRenderingEmSize ()
+{
+	Value *value = GetValue (Glyphs::FontRenderingEmSizeProperty);
+	return value->AsDouble ();
+}
+
+void
+Glyphs::SetFontRenderingEmSize (double value)
+{
+	SetValue (Glyphs::FontRenderingEmSizeProperty, Value (value));
+}
+
+Brush *
+Glyphs::GetFill ()
+{
+	Value *value = GetValue (Glyphs::FillProperty);
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+Glyphs::SetFill (Brush *value)
+{
+	SetValue (Glyphs::FillProperty, Value (value));
+}
+
 double
 Popup::GetVerticalOffset ()
 {
@@ -1669,6 +1774,32 @@ void
 Popup::SetChild (UIElement *value)
 {
 	SetValue (Popup::ChildProperty, Value (value));
+}
+
+UIElementCollection *
+Panel::GetChildren ()
+{
+	Value *value = GetValue (Panel::ChildrenProperty);
+	return value ? value->AsUIElementCollection () : NULL;
+}
+
+void
+Panel::SetChildren (UIElementCollection *value)
+{
+	SetValue (Panel::ChildrenProperty, Value (value));
+}
+
+Brush *
+Panel::GetBackground ()
+{
+	Value *value = GetValue (Panel::BackgroundProperty);
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+Panel::SetBackground (Brush *value)
+{
+	SetValue (Panel::BackgroundProperty, Value (value));
 }
 
 double
@@ -1981,291 +2112,85 @@ MediaElement::SetAttributes (MediaAttributeCollection *value)
 	SetValue (MediaElement::AttributesProperty, Value (value));
 }
 
-double
-Shape::GetStrokeThickness ()
+Thickness *
+Border::GetPadding ()
 {
-	Value *value = GetValue (Shape::StrokeThicknessProperty);
-	return value->AsDouble ();
+	Value *value = GetValue (Border::PaddingProperty);
+	return value ? value->AsThickness () : NULL;
 }
 
 void
-Shape::SetStrokeThickness (double value)
-{
-	SetValue (Shape::StrokeThicknessProperty, Value (value));
-}
-
-PenLineCap
-Shape::GetStrokeStartLineCap ()
-{
-	Value *value = GetValue (Shape::StrokeStartLineCapProperty);
-	return (PenLineCap) value->AsInt32 ();
-}
-
-void
-Shape::SetStrokeStartLineCap (PenLineCap value)
-{
-	SetValue (Shape::StrokeStartLineCapProperty, Value (value));
-}
-
-Brush *
-Shape::GetStroke ()
-{
-	Value *value = GetValue (Shape::StrokeProperty);
-	return value ? value->AsBrush () : NULL;
-}
-
-void
-Shape::SetStroke (Brush *value)
-{
-	SetValue (Shape::StrokeProperty, Value (value));
-}
-
-double
-Shape::GetStrokeMiterLimit ()
-{
-	Value *value = GetValue (Shape::StrokeMiterLimitProperty);
-	return value->AsDouble ();
-}
-
-void
-Shape::SetStrokeMiterLimit (double value)
-{
-	SetValue (Shape::StrokeMiterLimitProperty, Value (value));
-}
-
-PenLineJoin
-Shape::GetStrokeLineJoin ()
-{
-	Value *value = GetValue (Shape::StrokeLineJoinProperty);
-	return (PenLineJoin) value->AsInt32 ();
-}
-
-void
-Shape::SetStrokeLineJoin (PenLineJoin value)
-{
-	SetValue (Shape::StrokeLineJoinProperty, Value (value));
-}
-
-PenLineCap
-Shape::GetStrokeEndLineCap ()
-{
-	Value *value = GetValue (Shape::StrokeEndLineCapProperty);
-	return (PenLineCap) value->AsInt32 ();
-}
-
-void
-Shape::SetStrokeEndLineCap (PenLineCap value)
-{
-	SetValue (Shape::StrokeEndLineCapProperty, Value (value));
-}
-
-double
-Shape::GetStrokeDashOffset ()
-{
-	Value *value = GetValue (Shape::StrokeDashOffsetProperty);
-	return value->AsDouble ();
-}
-
-void
-Shape::SetStrokeDashOffset (double value)
-{
-	SetValue (Shape::StrokeDashOffsetProperty, Value (value));
-}
-
-PenLineCap
-Shape::GetStrokeDashCap ()
-{
-	Value *value = GetValue (Shape::StrokeDashCapProperty);
-	return (PenLineCap) value->AsInt32 ();
-}
-
-void
-Shape::SetStrokeDashCap (PenLineCap value)
-{
-	SetValue (Shape::StrokeDashCapProperty, Value (value));
-}
-
-DoubleCollection *
-Shape::GetStrokeDashArray ()
-{
-	Value *value = GetValue (Shape::StrokeDashArrayProperty);
-	return value ? value->AsDoubleCollection () : NULL;
-}
-
-void
-Shape::SetStrokeDashArray (DoubleCollection *value)
-{
-	SetValue (Shape::StrokeDashArrayProperty, Value (value));
-}
-
-Stretch
-Shape::GetStretch ()
-{
-	Value *value = GetValue (Shape::StretchProperty);
-	return (Stretch) value->AsInt32 ();
-}
-
-void
-Shape::SetStretch (Stretch value)
-{
-	SetValue (Shape::StretchProperty, Value (value));
-}
-
-Brush *
-Shape::GetFill ()
-{
-	Value *value = GetValue (Shape::FillProperty);
-	return value ? value->AsBrush () : NULL;
-}
-
-void
-Shape::SetFill (Brush *value)
-{
-	SetValue (Shape::FillProperty, Value (value));
-}
-
-Stretch
-MediaBase::GetStretch ()
-{
-	Value *value = GetValue (MediaBase::StretchProperty);
-	return (Stretch) value->AsInt32 ();
-}
-
-void
-MediaBase::SetStretch (Stretch value)
-{
-	SetValue (MediaBase::StretchProperty, Value (value));
-}
-
-const char *
-MediaBase::GetSource ()
-{
-	Value *value = GetValue (MediaBase::SourceProperty);
-	return value ? value->AsString () : NULL;
-}
-
-void
-MediaBase::SetSource (const char *value)
-{
-	SetValue (MediaBase::SourceProperty, Value (value));
-}
-
-double
-MediaBase::GetDownloadProgress ()
-{
-	Value *value = GetValue (MediaBase::DownloadProgressProperty);
-	return value->AsDouble ();
-}
-
-void
-MediaBase::SetDownloadProgress (double value)
-{
-	SetValue (MediaBase::DownloadProgressProperty, Value (value));
-}
-
-const char *
-Glyphs::GetUnicodeString ()
-{
-	Value *value = GetValue (Glyphs::UnicodeStringProperty);
-	return value ? value->AsString () : NULL;
-}
-
-void
-Glyphs::SetUnicodeString (const char *value)
-{
-	SetValue (Glyphs::UnicodeStringProperty, Value (value));
-}
-
-StyleSimulations
-Glyphs::GetStyleSimulations ()
-{
-	Value *value = GetValue (Glyphs::StyleSimulationsProperty);
-	return (StyleSimulations) value->AsInt32 ();
-}
-
-void
-Glyphs::SetStyleSimulations (StyleSimulations value)
-{
-	SetValue (Glyphs::StyleSimulationsProperty, Value (value));
-}
-
-double
-Glyphs::GetOriginY ()
-{
-	Value *value = GetValue (Glyphs::OriginYProperty);
-	return value->AsDouble ();
-}
-
-void
-Glyphs::SetOriginY (double value)
-{
-	SetValue (Glyphs::OriginYProperty, Value (value));
-}
-
-double
-Glyphs::GetOriginX ()
-{
-	Value *value = GetValue (Glyphs::OriginXProperty);
-	return value->AsDouble ();
-}
-
-void
-Glyphs::SetOriginX (double value)
-{
-	SetValue (Glyphs::OriginXProperty, Value (value));
-}
-
-const char *
-Glyphs::GetIndices ()
-{
-	Value *value = GetValue (Glyphs::IndicesProperty);
-	return value ? value->AsString () : NULL;
-}
-
-void
-Glyphs::SetIndices (const char *value)
-{
-	SetValue (Glyphs::IndicesProperty, Value (value));
-}
-
-Uri *
-Glyphs::GetFontUri ()
-{
-	Value *value = GetValue (Glyphs::FontUriProperty);
-	return value ? value->AsUri () : NULL;
-}
-
-void
-Glyphs::SetFontUri (Uri *value)
+Border::SetPadding (Thickness *value)
 {
 	if (!value) return;
-	SetValue (Glyphs::FontUriProperty, Value (*value));
+	SetValue (Border::PaddingProperty, Value (*value));
 }
 
-double
-Glyphs::GetFontRenderingEmSize ()
+CornerRadius *
+Border::GetCornerRadius ()
 {
-	Value *value = GetValue (Glyphs::FontRenderingEmSizeProperty);
-	return value->AsDouble ();
+	Value *value = GetValue (Border::CornerRadiusProperty);
+	return value ? value->AsCornerRadius () : NULL;
 }
 
 void
-Glyphs::SetFontRenderingEmSize (double value)
+Border::SetCornerRadius (CornerRadius *value)
 {
-	SetValue (Glyphs::FontRenderingEmSizeProperty, Value (value));
+	if (!value) return;
+	SetValue (Border::CornerRadiusProperty, Value (*value));
+}
+
+UIElement *
+Border::GetChild ()
+{
+	Value *value = GetValue (Border::ChildProperty);
+	return value ? value->AsUIElement () : NULL;
+}
+
+void
+Border::SetChild (UIElement *value)
+{
+	SetValue (Border::ChildProperty, Value (value));
+}
+
+Thickness *
+Border::GetBorderThickness ()
+{
+	Value *value = GetValue (Border::BorderThicknessProperty);
+	return value ? value->AsThickness () : NULL;
+}
+
+void
+Border::SetBorderThickness (Thickness *value)
+{
+	if (!value) return;
+	SetValue (Border::BorderThicknessProperty, Value (*value));
 }
 
 Brush *
-Glyphs::GetFill ()
+Border::GetBorderBrush ()
 {
-	Value *value = GetValue (Glyphs::FillProperty);
+	Value *value = GetValue (Border::BorderBrushProperty);
 	return value ? value->AsBrush () : NULL;
 }
 
 void
-Glyphs::SetFill (Brush *value)
+Border::SetBorderBrush (Brush *value)
 {
-	SetValue (Glyphs::FillProperty, Value (value));
+	SetValue (Border::BorderBrushProperty, Value (value));
+}
+
+Brush *
+Border::GetBackground ()
+{
+	Value *value = GetValue (Border::BackgroundProperty);
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+Border::SetBackground (Brush *value)
+{
+	SetValue (Border::BackgroundProperty, Value (value));
 }
 
 VerticalAlignment
@@ -2493,111 +2418,186 @@ Control::SetBackground (Brush *value)
 	SetValue (Control::BackgroundProperty, Value (value));
 }
 
-UIElementCollection *
-Panel::GetChildren ()
+double
+Shape::GetStrokeThickness ()
 {
-	Value *value = GetValue (Panel::ChildrenProperty);
-	return value ? value->AsUIElementCollection () : NULL;
+	Value *value = GetValue (Shape::StrokeThicknessProperty);
+	return value->AsDouble ();
 }
 
 void
-Panel::SetChildren (UIElementCollection *value)
+Shape::SetStrokeThickness (double value)
 {
-	SetValue (Panel::ChildrenProperty, Value (value));
+	SetValue (Shape::StrokeThicknessProperty, Value (value));
+}
+
+PenLineCap
+Shape::GetStrokeStartLineCap ()
+{
+	Value *value = GetValue (Shape::StrokeStartLineCapProperty);
+	return (PenLineCap) value->AsInt32 ();
+}
+
+void
+Shape::SetStrokeStartLineCap (PenLineCap value)
+{
+	SetValue (Shape::StrokeStartLineCapProperty, Value (value));
 }
 
 Brush *
-Panel::GetBackground ()
+Shape::GetStroke ()
 {
-	Value *value = GetValue (Panel::BackgroundProperty);
+	Value *value = GetValue (Shape::StrokeProperty);
 	return value ? value->AsBrush () : NULL;
 }
 
 void
-Panel::SetBackground (Brush *value)
+Shape::SetStroke (Brush *value)
 {
-	SetValue (Panel::BackgroundProperty, Value (value));
+	SetValue (Shape::StrokeProperty, Value (value));
 }
 
-Thickness *
-Border::GetPadding ()
+double
+Shape::GetStrokeMiterLimit ()
 {
-	Value *value = GetValue (Border::PaddingProperty);
-	return value ? value->AsThickness () : NULL;
-}
-
-void
-Border::SetPadding (Thickness *value)
-{
-	if (!value) return;
-	SetValue (Border::PaddingProperty, Value (*value));
-}
-
-CornerRadius *
-Border::GetCornerRadius ()
-{
-	Value *value = GetValue (Border::CornerRadiusProperty);
-	return value ? value->AsCornerRadius () : NULL;
+	Value *value = GetValue (Shape::StrokeMiterLimitProperty);
+	return value->AsDouble ();
 }
 
 void
-Border::SetCornerRadius (CornerRadius *value)
+Shape::SetStrokeMiterLimit (double value)
 {
-	if (!value) return;
-	SetValue (Border::CornerRadiusProperty, Value (*value));
+	SetValue (Shape::StrokeMiterLimitProperty, Value (value));
 }
 
-UIElement *
-Border::GetChild ()
+PenLineJoin
+Shape::GetStrokeLineJoin ()
 {
-	Value *value = GetValue (Border::ChildProperty);
-	return value ? value->AsUIElement () : NULL;
-}
-
-void
-Border::SetChild (UIElement *value)
-{
-	SetValue (Border::ChildProperty, Value (value));
-}
-
-Thickness *
-Border::GetBorderThickness ()
-{
-	Value *value = GetValue (Border::BorderThicknessProperty);
-	return value ? value->AsThickness () : NULL;
+	Value *value = GetValue (Shape::StrokeLineJoinProperty);
+	return (PenLineJoin) value->AsInt32 ();
 }
 
 void
-Border::SetBorderThickness (Thickness *value)
+Shape::SetStrokeLineJoin (PenLineJoin value)
 {
-	if (!value) return;
-	SetValue (Border::BorderThicknessProperty, Value (*value));
+	SetValue (Shape::StrokeLineJoinProperty, Value (value));
+}
+
+PenLineCap
+Shape::GetStrokeEndLineCap ()
+{
+	Value *value = GetValue (Shape::StrokeEndLineCapProperty);
+	return (PenLineCap) value->AsInt32 ();
+}
+
+void
+Shape::SetStrokeEndLineCap (PenLineCap value)
+{
+	SetValue (Shape::StrokeEndLineCapProperty, Value (value));
+}
+
+double
+Shape::GetStrokeDashOffset ()
+{
+	Value *value = GetValue (Shape::StrokeDashOffsetProperty);
+	return value->AsDouble ();
+}
+
+void
+Shape::SetStrokeDashOffset (double value)
+{
+	SetValue (Shape::StrokeDashOffsetProperty, Value (value));
+}
+
+PenLineCap
+Shape::GetStrokeDashCap ()
+{
+	Value *value = GetValue (Shape::StrokeDashCapProperty);
+	return (PenLineCap) value->AsInt32 ();
+}
+
+void
+Shape::SetStrokeDashCap (PenLineCap value)
+{
+	SetValue (Shape::StrokeDashCapProperty, Value (value));
+}
+
+DoubleCollection *
+Shape::GetStrokeDashArray ()
+{
+	Value *value = GetValue (Shape::StrokeDashArrayProperty);
+	return value ? value->AsDoubleCollection () : NULL;
+}
+
+void
+Shape::SetStrokeDashArray (DoubleCollection *value)
+{
+	SetValue (Shape::StrokeDashArrayProperty, Value (value));
+}
+
+Stretch
+Shape::GetStretch ()
+{
+	Value *value = GetValue (Shape::StretchProperty);
+	return (Stretch) value->AsInt32 ();
+}
+
+void
+Shape::SetStretch (Stretch value)
+{
+	SetValue (Shape::StretchProperty, Value (value));
 }
 
 Brush *
-Border::GetBorderBrush ()
+Shape::GetFill ()
 {
-	Value *value = GetValue (Border::BorderBrushProperty);
+	Value *value = GetValue (Shape::FillProperty);
 	return value ? value->AsBrush () : NULL;
 }
 
 void
-Border::SetBorderBrush (Brush *value)
+Shape::SetFill (Brush *value)
 {
-	SetValue (Border::BorderBrushProperty, Value (value));
+	SetValue (Shape::FillProperty, Value (value));
 }
 
-Brush *
-Border::GetBackground ()
+Stretch
+MediaBase::GetStretch ()
 {
-	Value *value = GetValue (Border::BackgroundProperty);
-	return value ? value->AsBrush () : NULL;
+	Value *value = GetValue (MediaBase::StretchProperty);
+	return (Stretch) value->AsInt32 ();
 }
 
 void
-Border::SetBackground (Brush *value)
+MediaBase::SetStretch (Stretch value)
 {
-	SetValue (Border::BackgroundProperty, Value (value));
+	SetValue (MediaBase::StretchProperty, Value (value));
+}
+
+const char *
+MediaBase::GetSource ()
+{
+	Value *value = GetValue (MediaBase::SourceProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+MediaBase::SetSource (const char *value)
+{
+	SetValue (MediaBase::SourceProperty, Value (value));
+}
+
+double
+MediaBase::GetDownloadProgress ()
+{
+	Value *value = GetValue (MediaBase::DownloadProgressProperty);
+	return value->AsDouble ();
+}
+
+void
+MediaBase::SetDownloadProgress (double value)
+{
+	SetValue (MediaBase::DownloadProgressProperty, Value (value));
 }
 
 TimelineCollection *
@@ -2624,6 +2624,98 @@ void
 Run::SetText (const char *value)
 {
 	SetValue (Run::TextProperty, Value (value));
+}
+
+FillRule
+GeometryGroup::GetFillRule ()
+{
+	Value *value = GetValue (GeometryGroup::FillRuleProperty);
+	return (FillRule) value->AsInt32 ();
+}
+
+void
+GeometryGroup::SetFillRule (FillRule value)
+{
+	SetValue (GeometryGroup::FillRuleProperty, Value (value));
+}
+
+GeometryCollection *
+GeometryGroup::GetChildren ()
+{
+	Value *value = GetValue (GeometryGroup::ChildrenProperty);
+	return value ? value->AsGeometryCollection () : NULL;
+}
+
+void
+GeometryGroup::SetChildren (GeometryCollection *value)
+{
+	SetValue (GeometryGroup::ChildrenProperty, Value (value));
+}
+
+FillRule
+PathGeometry::GetFillRule ()
+{
+	Value *value = GetValue (PathGeometry::FillRuleProperty);
+	return (FillRule) value->AsInt32 ();
+}
+
+void
+PathGeometry::SetFillRule (FillRule value)
+{
+	SetValue (PathGeometry::FillRuleProperty, Value (value));
+}
+
+PathFigureCollection *
+PathGeometry::GetFigures ()
+{
+	Value *value = GetValue (PathGeometry::FiguresProperty);
+	return value ? value->AsPathFigureCollection () : NULL;
+}
+
+void
+PathGeometry::SetFigures (PathFigureCollection *value)
+{
+	SetValue (PathGeometry::FiguresProperty, Value (value));
+}
+
+double
+EllipseGeometry::GetRadiusY ()
+{
+	Value *value = GetValue (EllipseGeometry::RadiusYProperty);
+	return value->AsDouble ();
+}
+
+void
+EllipseGeometry::SetRadiusY (double value)
+{
+	SetValue (EllipseGeometry::RadiusYProperty, Value (value));
+}
+
+double
+EllipseGeometry::GetRadiusX ()
+{
+	Value *value = GetValue (EllipseGeometry::RadiusXProperty);
+	return value->AsDouble ();
+}
+
+void
+EllipseGeometry::SetRadiusX (double value)
+{
+	SetValue (EllipseGeometry::RadiusXProperty, Value (value));
+}
+
+Point *
+EllipseGeometry::GetCenter ()
+{
+	Value *value = GetValue (EllipseGeometry::CenterProperty);
+	return value ? value->AsPoint () : NULL;
+}
+
+void
+EllipseGeometry::SetCenter (Point *value)
+{
+	if (!value) return;
+	SetValue (EllipseGeometry::CenterProperty, Value (*value));
 }
 
 Rect *
@@ -2666,32 +2758,6 @@ RectangleGeometry::SetRadiusX (double value)
 	SetValue (RectangleGeometry::RadiusXProperty, Value (value));
 }
 
-FillRule
-PathGeometry::GetFillRule ()
-{
-	Value *value = GetValue (PathGeometry::FillRuleProperty);
-	return (FillRule) value->AsInt32 ();
-}
-
-void
-PathGeometry::SetFillRule (FillRule value)
-{
-	SetValue (PathGeometry::FillRuleProperty, Value (value));
-}
-
-PathFigureCollection *
-PathGeometry::GetFigures ()
-{
-	Value *value = GetValue (PathGeometry::FiguresProperty);
-	return value ? value->AsPathFigureCollection () : NULL;
-}
-
-void
-PathGeometry::SetFigures (PathFigureCollection *value)
-{
-	SetValue (PathGeometry::FiguresProperty, Value (value));
-}
-
 Point *
 LineGeometry::GetStartPoint ()
 {
@@ -2718,72 +2784,6 @@ LineGeometry::SetEndPoint (Point *value)
 {
 	if (!value) return;
 	SetValue (LineGeometry::EndPointProperty, Value (*value));
-}
-
-FillRule
-GeometryGroup::GetFillRule ()
-{
-	Value *value = GetValue (GeometryGroup::FillRuleProperty);
-	return (FillRule) value->AsInt32 ();
-}
-
-void
-GeometryGroup::SetFillRule (FillRule value)
-{
-	SetValue (GeometryGroup::FillRuleProperty, Value (value));
-}
-
-GeometryCollection *
-GeometryGroup::GetChildren ()
-{
-	Value *value = GetValue (GeometryGroup::ChildrenProperty);
-	return value ? value->AsGeometryCollection () : NULL;
-}
-
-void
-GeometryGroup::SetChildren (GeometryCollection *value)
-{
-	SetValue (GeometryGroup::ChildrenProperty, Value (value));
-}
-
-double
-EllipseGeometry::GetRadiusY ()
-{
-	Value *value = GetValue (EllipseGeometry::RadiusYProperty);
-	return value->AsDouble ();
-}
-
-void
-EllipseGeometry::SetRadiusY (double value)
-{
-	SetValue (EllipseGeometry::RadiusYProperty, Value (value));
-}
-
-double
-EllipseGeometry::GetRadiusX ()
-{
-	Value *value = GetValue (EllipseGeometry::RadiusXProperty);
-	return value->AsDouble ();
-}
-
-void
-EllipseGeometry::SetRadiusX (double value)
-{
-	SetValue (EllipseGeometry::RadiusXProperty, Value (value));
-}
-
-Point *
-EllipseGeometry::GetCenter ()
-{
-	Value *value = GetValue (EllipseGeometry::CenterProperty);
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-EllipseGeometry::SetCenter (Point *value)
-{
-	if (!value) return;
-	SetValue (EllipseGeometry::CenterProperty, Value (*value));
 }
 
 double
@@ -2943,19 +2943,6 @@ FrameworkElement::SetActualHeight (double value)
 	SetValue (FrameworkElement::ActualHeightProperty, Value (value));
 }
 
-KeySpline *
-SplinePointKeyFrame::GetKeySpline ()
-{
-	Value *value = DependencyObject::GetValue (SplinePointKeyFrame::KeySplineProperty);
-	return value ? value->AsKeySpline () : NULL;
-}
-
-void
-SplinePointKeyFrame::SetKeySpline (KeySpline *value)
-{
-	DependencyObject::SetValue (SplinePointKeyFrame::KeySplineProperty, Value (value));
-}
-
 PointKeyFrameCollection *
 PointAnimationUsingKeyFrames::GetKeyFrames ()
 {
@@ -2967,6 +2954,46 @@ void
 PointAnimationUsingKeyFrames::SetKeyFrames (PointKeyFrameCollection *value)
 {
 	SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
+}
+
+ColorKeyFrameCollection *
+ColorAnimationUsingKeyFrames::GetKeyFrames ()
+{
+	Value *value = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty);
+	return value ? value->AsColorKeyFrameCollection () : NULL;
+}
+
+void
+ColorAnimationUsingKeyFrames::SetKeyFrames (ColorKeyFrameCollection *value)
+{
+	SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
+}
+
+Uri *
+BitmapImage::GetUriSource ()
+{
+	Value *value = GetValue (BitmapImage::UriSourceProperty);
+	return value ? value->AsUri () : NULL;
+}
+
+void
+BitmapImage::SetUriSource (Uri *value)
+{
+	if (!value) return;
+	SetValue (BitmapImage::UriSourceProperty, Value (*value));
+}
+
+double
+BitmapImage::GetProgress ()
+{
+	Value *value = GetValue (BitmapImage::ProgressProperty);
+	return value->AsDouble ();
+}
+
+void
+BitmapImage::SetProgress (double value)
+{
+	SetValue (BitmapImage::ProgressProperty, Value (value));
 }
 
 KeySpline *
@@ -2982,56 +3009,98 @@ SplineDoubleKeyFrame::SetKeySpline (KeySpline *value)
 	DependencyObject::SetValue (SplineDoubleKeyFrame::KeySplineProperty, Value (value));
 }
 
-DoubleKeyFrameCollection *
-DoubleAnimationUsingKeyFrames::GetKeyFrames ()
+KeySpline *
+SplinePointKeyFrame::GetKeySpline ()
 {
-	Value *value = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty);
-	return value ? value->AsDoubleKeyFrameCollection () : NULL;
+	Value *value = DependencyObject::GetValue (SplinePointKeyFrame::KeySplineProperty);
+	return value ? value->AsKeySpline () : NULL;
 }
 
 void
-DoubleAnimationUsingKeyFrames::SetKeyFrames (DoubleKeyFrameCollection *value)
+SplinePointKeyFrame::SetKeySpline (KeySpline *value)
 {
-	SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
+	DependencyObject::SetValue (SplinePointKeyFrame::KeySplineProperty, Value (value));
 }
 
-const char *
-TimelineMarker::GetType ()
+KeySpline *
+SplineColorKeyFrame::GetKeySpline ()
 {
-	Value *value = GetValue (TimelineMarker::TypeProperty);
-	return value ? value->AsString () : NULL;
-}
-
-void
-TimelineMarker::SetType (const char *value)
-{
-	SetValue (TimelineMarker::TypeProperty, Value (value));
-}
-
-TimeSpan
-TimelineMarker::GetTime ()
-{
-	Value *value = GetValue (TimelineMarker::TimeProperty);
-	return value->AsTimeSpan ();
+	Value *value = DependencyObject::GetValue (SplineColorKeyFrame::KeySplineProperty);
+	return value ? value->AsKeySpline () : NULL;
 }
 
 void
-TimelineMarker::SetTime (TimeSpan value)
+SplineColorKeyFrame::SetKeySpline (KeySpline *value)
 {
-	SetValue (TimelineMarker::TimeProperty, Value (value, Type::TIMESPAN));
+	DependencyObject::SetValue (SplineColorKeyFrame::KeySplineProperty, Value (value));
 }
 
-const char *
-TimelineMarker::GetText ()
+bool
+StylusInfo::GetIsInverted ()
 {
-	Value *value = GetValue (TimelineMarker::TextProperty);
-	return value ? value->AsString () : NULL;
+	Value *value = GetValue (StylusInfo::IsInvertedProperty);
+	return value->AsBool ();
 }
 
 void
-TimelineMarker::SetText (const char *value)
+StylusInfo::SetIsInverted (bool value)
 {
-	SetValue (TimelineMarker::TextProperty, Value (value));
+	SetValue (StylusInfo::IsInvertedProperty, Value (value));
+}
+
+TabletDeviceType
+StylusInfo::GetDeviceType ()
+{
+	Value *value = GetValue (StylusInfo::DeviceTypeProperty);
+	return (TabletDeviceType) value->AsInt32 ();
+}
+
+void
+StylusInfo::SetDeviceType (TabletDeviceType value)
+{
+	SetValue (StylusInfo::DeviceTypeProperty, Value (value));
+}
+
+NameScope *
+NameScope::GetNameScope (DependencyObject *obj)
+{
+	Value *value = (!obj) ? NULL : obj->GetValue (NameScope::NameScopeProperty);
+	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (NameScope::NameScopeProperty)->GetDefaultValue();
+	return value ? value->AsNameScope () : NULL;
+}
+
+void
+NameScope::SetNameScope (DependencyObject *obj, NameScope *value)
+{
+	if (!obj) return;
+	obj->SetValue (NameScope::NameScopeProperty, Value (value));
+}
+
+double
+GradientStop::GetOffset ()
+{
+	Value *value = GetValue (GradientStop::OffsetProperty);
+	return value->AsDouble ();
+}
+
+void
+GradientStop::SetOffset (double value)
+{
+	SetValue (GradientStop::OffsetProperty, Value (value));
+}
+
+Color *
+GradientStop::GetColor ()
+{
+	Value *value = GetValue (GradientStop::ColorProperty);
+	return value ? value->AsColor () : NULL;
+}
+
+void
+GradientStop::SetColor (Color *value)
+{
+	if (!value) return;
+	SetValue (GradientStop::ColorProperty, Value (*value));
 }
 
 double
@@ -3073,69 +3142,32 @@ Timeline::SetAutoReverse (bool value)
 	SetValue (Timeline::AutoReverseProperty, Value (value));
 }
 
-double
-StylusPoint::GetY ()
+Point *
+KeySpline::GetControlPoint2 ()
 {
-	Value *value = GetValue (StylusPoint::YProperty);
-	return value->AsDouble ();
+	Value *value = GetValue (KeySpline::ControlPoint2Property);
+	return value ? value->AsPoint () : NULL;
 }
 
 void
-StylusPoint::SetY (double value)
+KeySpline::SetControlPoint2 (Point *value)
 {
-	SetValue (StylusPoint::YProperty, Value (value));
+	if (!value) return;
+	SetValue (KeySpline::ControlPoint2Property, Value (*value));
 }
 
-double
-StylusPoint::GetX ()
+Point *
+KeySpline::GetControlPoint1 ()
 {
-	Value *value = GetValue (StylusPoint::XProperty);
-	return value->AsDouble ();
-}
-
-void
-StylusPoint::SetX (double value)
-{
-	SetValue (StylusPoint::XProperty, Value (value));
-}
-
-double
-StylusPoint::GetPressureFactor ()
-{
-	Value *value = GetValue (StylusPoint::PressureFactorProperty);
-	return value->AsDouble ();
+	Value *value = GetValue (KeySpline::ControlPoint1Property);
+	return value ? value->AsPoint () : NULL;
 }
 
 void
-StylusPoint::SetPressureFactor (double value)
+KeySpline::SetControlPoint1 (Point *value)
 {
-	SetValue (StylusPoint::PressureFactorProperty, Value (value));
-}
-
-bool
-StylusInfo::GetIsInverted ()
-{
-	Value *value = GetValue (StylusInfo::IsInvertedProperty);
-	return value->AsBool ();
-}
-
-void
-StylusInfo::SetIsInverted (bool value)
-{
-	SetValue (StylusInfo::IsInvertedProperty, Value (value));
-}
-
-TabletDeviceType
-StylusInfo::GetDeviceType ()
-{
-	Value *value = GetValue (StylusInfo::DeviceTypeProperty);
-	return (TabletDeviceType) value->AsInt32 ();
-}
-
-void
-StylusInfo::SetDeviceType (TabletDeviceType value)
-{
-	SetValue (StylusInfo::DeviceTypeProperty, Value (value));
+	if (!value) return;
+	SetValue (KeySpline::ControlPoint1Property, Value (*value));
 }
 
 SetterBaseCollection *
@@ -3164,6 +3196,84 @@ Style::SetIsSealed (bool value)
 	SetValue (Style::IsSealedProperty, Value (value));
 }
 
+double
+Matrix::GetOffsetY ()
+{
+	Value *value = GetValue (Matrix::OffsetYProperty);
+	return value->AsDouble ();
+}
+
+void
+Matrix::SetOffsetY (double value)
+{
+	SetValue (Matrix::OffsetYProperty, Value (value));
+}
+
+double
+Matrix::GetOffsetX ()
+{
+	Value *value = GetValue (Matrix::OffsetXProperty);
+	return value->AsDouble ();
+}
+
+void
+Matrix::SetOffsetX (double value)
+{
+	SetValue (Matrix::OffsetXProperty, Value (value));
+}
+
+double
+Matrix::GetM22 ()
+{
+	Value *value = GetValue (Matrix::M22Property);
+	return value->AsDouble ();
+}
+
+void
+Matrix::SetM22 (double value)
+{
+	SetValue (Matrix::M22Property, Value (value));
+}
+
+double
+Matrix::GetM21 ()
+{
+	Value *value = GetValue (Matrix::M21Property);
+	return value->AsDouble ();
+}
+
+void
+Matrix::SetM21 (double value)
+{
+	SetValue (Matrix::M21Property, Value (value));
+}
+
+double
+Matrix::GetM12 ()
+{
+	Value *value = GetValue (Matrix::M12Property);
+	return value->AsDouble ();
+}
+
+void
+Matrix::SetM12 (double value)
+{
+	SetValue (Matrix::M12Property, Value (value));
+}
+
+double
+Matrix::GetM11 ()
+{
+	Value *value = GetValue (Matrix::M11Property);
+	return value->AsDouble ();
+}
+
+void
+Matrix::SetM11 (double value)
+{
+	SetValue (Matrix::M11Property, Value (value));
+}
+
 StylusPointCollection *
 Stroke::GetStylusPoints ()
 {
@@ -3190,17 +3300,77 @@ Stroke::SetDrawingAttributes (DrawingAttributes *value)
 	SetValue (Stroke::DrawingAttributesProperty, Value (value));
 }
 
-bool
-SetterBase::GetIsSealed ()
+gint32
+Collection::GetCount ()
 {
-	Value *value = GetValue (SetterBase::IsSealedProperty);
-	return value->AsBool ();
+	Value *value = GetValue (Collection::CountProperty);
+	return value->AsInt32 ();
 }
 
 void
-SetterBase::SetIsSealed (bool value)
+Collection::SetCount (gint32 value)
 {
-	SetValue (SetterBase::IsSealedProperty, Value (value));
+	SetValue (Collection::CountProperty, Value (value));
+}
+
+gint32
+MultiScaleSubImage::GetZIndex ()
+{
+	Value *value = GetValue (MultiScaleSubImage::ZIndexProperty);
+	return value->AsInt32 ();
+}
+
+void
+MultiScaleSubImage::SetZIndex (gint32 value)
+{
+	SetValue (MultiScaleSubImage::ZIndexProperty, Value (value));
+}
+
+double
+MultiScaleSubImage::GetViewportWidth ()
+{
+	Value *value = GetValue (MultiScaleSubImage::ViewportWidthProperty);
+	return value->AsDouble ();
+}
+
+void
+MultiScaleSubImage::SetViewportWidth (double value)
+{
+	SetValue (MultiScaleSubImage::ViewportWidthProperty, Value (value));
+}
+
+Point *
+MultiScaleSubImage::GetViewportOrigin ()
+{
+	Value *value = GetValue (MultiScaleSubImage::ViewportOriginProperty);
+	return value ? value->AsPoint () : NULL;
+}
+
+void
+MultiScaleSubImage::SetViewportOrigin (Point *value)
+{
+	if (!value) return;
+	SetValue (MultiScaleSubImage::ViewportOriginProperty, Value (*value));
+}
+
+double
+MultiScaleSubImage::GetOpacity ()
+{
+	Value *value = GetValue (MultiScaleSubImage::OpacityProperty);
+	return value->AsDouble ();
+}
+
+void
+MultiScaleSubImage::SetOpacity (double value)
+{
+	SetValue (MultiScaleSubImage::OpacityProperty, Value (value));
+}
+
+double
+MultiScaleSubImage::GetAspectRatio ()
+{
+	Value *value = GetValue (MultiScaleSubImage::AspectRatioProperty);
+	return value->AsDouble ();
 }
 
 double
@@ -3296,198 +3466,43 @@ PathFigure::SetIsClosed (bool value)
 	SetValue (PathFigure::IsClosedProperty, Value (value));
 }
 
-NameScope *
-NameScope::GetNameScope (DependencyObject *obj)
-{
-	Value *value = (!obj) ? NULL : obj->GetValue (NameScope::NameScopeProperty);
-	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (NameScope::NameScopeProperty)->GetDefaultValue();
-	return value ? value->AsNameScope () : NULL;
-}
-
-void
-NameScope::SetNameScope (DependencyObject *obj, NameScope *value)
-{
-	if (!obj) return;
-	obj->SetValue (NameScope::NameScopeProperty, Value (value));
-}
-
-gint32
-MultiScaleSubImage::GetZIndex ()
-{
-	Value *value = GetValue (MultiScaleSubImage::ZIndexProperty);
-	return value->AsInt32 ();
-}
-
-void
-MultiScaleSubImage::SetZIndex (gint32 value)
-{
-	SetValue (MultiScaleSubImage::ZIndexProperty, Value (value));
-}
-
 double
-MultiScaleSubImage::GetViewportWidth ()
+StylusPoint::GetY ()
 {
-	Value *value = GetValue (MultiScaleSubImage::ViewportWidthProperty);
+	Value *value = GetValue (StylusPoint::YProperty);
 	return value->AsDouble ();
 }
 
 void
-MultiScaleSubImage::SetViewportWidth (double value)
+StylusPoint::SetY (double value)
 {
-	SetValue (MultiScaleSubImage::ViewportWidthProperty, Value (value));
-}
-
-Point *
-MultiScaleSubImage::GetViewportOrigin ()
-{
-	Value *value = GetValue (MultiScaleSubImage::ViewportOriginProperty);
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-MultiScaleSubImage::SetViewportOrigin (Point *value)
-{
-	if (!value) return;
-	SetValue (MultiScaleSubImage::ViewportOriginProperty, Value (*value));
+	SetValue (StylusPoint::YProperty, Value (value));
 }
 
 double
-MultiScaleSubImage::GetOpacity ()
+StylusPoint::GetX ()
 {
-	Value *value = GetValue (MultiScaleSubImage::OpacityProperty);
+	Value *value = GetValue (StylusPoint::XProperty);
 	return value->AsDouble ();
 }
 
 void
-MultiScaleSubImage::SetOpacity (double value)
+StylusPoint::SetX (double value)
 {
-	SetValue (MultiScaleSubImage::OpacityProperty, Value (value));
+	SetValue (StylusPoint::XProperty, Value (value));
 }
 
 double
-MultiScaleSubImage::GetAspectRatio ()
+StylusPoint::GetPressureFactor ()
 {
-	Value *value = GetValue (MultiScaleSubImage::AspectRatioProperty);
-	return value->AsDouble ();
-}
-
-const char *
-MediaAttribute::GetValue ()
-{
-	Value *value = DependencyObject::GetValue (MediaAttribute::ValueProperty);
-	return value ? value->AsString () : NULL;
-}
-
-void
-MediaAttribute::SetValue (const char *value)
-{
-	DependencyObject::SetValue (MediaAttribute::ValueProperty, Value (value));
-}
-
-double
-Matrix::GetOffsetY ()
-{
-	Value *value = GetValue (Matrix::OffsetYProperty);
+	Value *value = GetValue (StylusPoint::PressureFactorProperty);
 	return value->AsDouble ();
 }
 
 void
-Matrix::SetOffsetY (double value)
+StylusPoint::SetPressureFactor (double value)
 {
-	SetValue (Matrix::OffsetYProperty, Value (value));
-}
-
-double
-Matrix::GetOffsetX ()
-{
-	Value *value = GetValue (Matrix::OffsetXProperty);
-	return value->AsDouble ();
-}
-
-void
-Matrix::SetOffsetX (double value)
-{
-	SetValue (Matrix::OffsetXProperty, Value (value));
-}
-
-double
-Matrix::GetM22 ()
-{
-	Value *value = GetValue (Matrix::M22Property);
-	return value->AsDouble ();
-}
-
-void
-Matrix::SetM22 (double value)
-{
-	SetValue (Matrix::M22Property, Value (value));
-}
-
-double
-Matrix::GetM21 ()
-{
-	Value *value = GetValue (Matrix::M21Property);
-	return value->AsDouble ();
-}
-
-void
-Matrix::SetM21 (double value)
-{
-	SetValue (Matrix::M21Property, Value (value));
-}
-
-double
-Matrix::GetM12 ()
-{
-	Value *value = GetValue (Matrix::M12Property);
-	return value->AsDouble ();
-}
-
-void
-Matrix::SetM12 (double value)
-{
-	SetValue (Matrix::M12Property, Value (value));
-}
-
-double
-Matrix::GetM11 ()
-{
-	Value *value = GetValue (Matrix::M11Property);
-	return value->AsDouble ();
-}
-
-void
-Matrix::SetM11 (double value)
-{
-	SetValue (Matrix::M11Property, Value (value));
-}
-
-Point *
-KeySpline::GetControlPoint2 ()
-{
-	Value *value = GetValue (KeySpline::ControlPoint2Property);
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-KeySpline::SetControlPoint2 (Point *value)
-{
-	if (!value) return;
-	SetValue (KeySpline::ControlPoint2Property, Value (*value));
-}
-
-Point *
-KeySpline::GetControlPoint1 ()
-{
-	Value *value = GetValue (KeySpline::ControlPoint1Property);
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-KeySpline::SetControlPoint1 (Point *value)
-{
-	if (!value) return;
-	SetValue (KeySpline::ControlPoint1Property, Value (*value));
+	SetValue (StylusPoint::PressureFactorProperty, Value (value));
 }
 
 TextDecorations
@@ -3595,31 +3610,70 @@ Inline::SetFontFamily (FontFamily *value)
 	SetValue (Inline::FontFamilyProperty, Value (*value));
 }
 
-double
-GradientStop::GetOffset ()
+GridLength *
+ColumnDefinition::GetWidth ()
 {
-	Value *value = GetValue (GradientStop::OffsetProperty);
+	Value *value = GetValue (ColumnDefinition::WidthProperty);
+	return value ? value->AsGridLength () : NULL;
+}
+
+void
+ColumnDefinition::SetWidth (GridLength *value)
+{
+	if (!value) return;
+	SetValue (ColumnDefinition::WidthProperty, Value (*value));
+}
+
+double
+ColumnDefinition::GetMinWidth ()
+{
+	Value *value = GetValue (ColumnDefinition::MinWidthProperty);
 	return value->AsDouble ();
 }
 
 void
-GradientStop::SetOffset (double value)
+ColumnDefinition::SetMinWidth (double value)
 {
-	SetValue (GradientStop::OffsetProperty, Value (value));
+	SetValue (ColumnDefinition::MinWidthProperty, Value (value));
 }
 
-Color *
-GradientStop::GetColor ()
+double
+ColumnDefinition::GetMaxWidth ()
 {
-	Value *value = GetValue (GradientStop::ColorProperty);
-	return value ? value->AsColor () : NULL;
+	Value *value = GetValue (ColumnDefinition::MaxWidthProperty);
+	return value->AsDouble ();
 }
 
 void
-GradientStop::SetColor (Color *value)
+ColumnDefinition::SetMaxWidth (double value)
 {
-	if (!value) return;
-	SetValue (GradientStop::ColorProperty, Value (*value));
+	SetValue (ColumnDefinition::MaxWidthProperty, Value (value));
+}
+
+Surface *
+Deployment::GetSurface ()
+{
+	Value *value = GetValue (Deployment::SurfaceProperty);
+	return value ? value->AsSurface () : NULL;
+}
+
+void
+Deployment::SetSurface (Surface *value)
+{
+	SetValue (Deployment::SurfaceProperty, Value (value));
+}
+
+const char *
+MediaAttribute::GetValue ()
+{
+	Value *value = DependencyObject::GetValue (MediaAttribute::ValueProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+MediaAttribute::SetValue (const char *value)
+{
+	DependencyObject::SetValue (MediaAttribute::ValueProperty, Value (value));
 }
 
 Transform *
@@ -3633,6 +3687,58 @@ void
 Geometry::SetTransform (Transform *value)
 {
 	SetValue (Geometry::TransformProperty, Value (value));
+}
+
+ResourceDictionary *
+Application::GetResources ()
+{
+	Value *value = GetValue (Application::ResourcesProperty);
+	return value ? value->AsResourceDictionary () : NULL;
+}
+
+void
+Application::SetResources (ResourceDictionary *value)
+{
+	SetValue (Application::ResourcesProperty, Value (value));
+}
+
+const char *
+TimelineMarker::GetType ()
+{
+	Value *value = GetValue (TimelineMarker::TypeProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+TimelineMarker::SetType (const char *value)
+{
+	SetValue (TimelineMarker::TypeProperty, Value (value));
+}
+
+TimeSpan
+TimelineMarker::GetTime ()
+{
+	Value *value = GetValue (TimelineMarker::TimeProperty);
+	return value->AsTimeSpan ();
+}
+
+void
+TimelineMarker::SetTime (TimeSpan value)
+{
+	SetValue (TimelineMarker::TimeProperty, Value (value, Type::TIMESPAN));
+}
+
+const char *
+TimelineMarker::GetText ()
+{
+	Value *value = GetValue (TimelineMarker::TextProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+TimelineMarker::SetText (const char *value)
+{
+	SetValue (TimelineMarker::TextProperty, Value (value));
 }
 
 double
@@ -3689,70 +3795,17 @@ DrawingAttributes::SetColor (Color *value)
 	SetValue (DrawingAttributes::ColorProperty, Value (*value));
 }
 
-Surface *
-Deployment::GetSurface ()
+bool
+SetterBase::GetIsSealed ()
 {
-	Value *value = GetValue (Deployment::SurfaceProperty);
-	return value ? value->AsSurface () : NULL;
+	Value *value = GetValue (SetterBase::IsSealedProperty);
+	return value->AsBool ();
 }
 
 void
-Deployment::SetSurface (Surface *value)
+SetterBase::SetIsSealed (bool value)
 {
-	SetValue (Deployment::SurfaceProperty, Value (value));
-}
-
-GridLength *
-ColumnDefinition::GetWidth ()
-{
-	Value *value = GetValue (ColumnDefinition::WidthProperty);
-	return value ? value->AsGridLength () : NULL;
-}
-
-void
-ColumnDefinition::SetWidth (GridLength *value)
-{
-	if (!value) return;
-	SetValue (ColumnDefinition::WidthProperty, Value (*value));
-}
-
-double
-ColumnDefinition::GetMinWidth ()
-{
-	Value *value = GetValue (ColumnDefinition::MinWidthProperty);
-	return value->AsDouble ();
-}
-
-void
-ColumnDefinition::SetMinWidth (double value)
-{
-	SetValue (ColumnDefinition::MinWidthProperty, Value (value));
-}
-
-double
-ColumnDefinition::GetMaxWidth ()
-{
-	Value *value = GetValue (ColumnDefinition::MaxWidthProperty);
-	return value->AsDouble ();
-}
-
-void
-ColumnDefinition::SetMaxWidth (double value)
-{
-	SetValue (ColumnDefinition::MaxWidthProperty, Value (value));
-}
-
-gint32
-Collection::GetCount ()
-{
-	Value *value = GetValue (Collection::CountProperty);
-	return value->AsInt32 ();
-}
-
-void
-Collection::SetCount (gint32 value)
-{
-	SetValue (Collection::CountProperty, Value (value));
+	SetValue (SetterBase::IsSealedProperty, Value (value));
 }
 
 Visibility
@@ -3899,109 +3952,119 @@ UIElement::SetClip (Geometry *value)
 	SetValue (UIElement::ClipProperty, Value (value));
 }
 
-ResourceDictionary *
-Application::GetResources ()
+DoubleKeyFrameCollection *
+DoubleAnimationUsingKeyFrames::GetKeyFrames ()
 {
-	Value *value = GetValue (Application::ResourcesProperty);
-	return value ? value->AsResourceDictionary () : NULL;
+	Value *value = GetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty);
+	return value ? value->AsDoubleKeyFrameCollection () : NULL;
 }
 
 void
-Application::SetResources (ResourceDictionary *value)
+DoubleAnimationUsingKeyFrames::SetKeyFrames (DoubleKeyFrameCollection *value)
 {
-	SetValue (Application::ResourcesProperty, Value (value));
-}
-
-KeySpline *
-SplineColorKeyFrame::GetKeySpline ()
-{
-	Value *value = DependencyObject::GetValue (SplineColorKeyFrame::KeySplineProperty);
-	return value ? value->AsKeySpline () : NULL;
-}
-
-void
-SplineColorKeyFrame::SetKeySpline (KeySpline *value)
-{
-	DependencyObject::SetValue (SplineColorKeyFrame::KeySplineProperty, Value (value));
-}
-
-ColorKeyFrameCollection *
-ColorAnimationUsingKeyFrames::GetKeyFrames ()
-{
-	Value *value = GetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty);
-	return value ? value->AsColorKeyFrameCollection () : NULL;
-}
-
-void
-ColorAnimationUsingKeyFrames::SetKeyFrames (ColorKeyFrameCollection *value)
-{
-	SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
+	SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
 }
 
 Uri *
-BitmapImage::GetUriSource ()
+DeepZoomImageTileSource::GetUriSource ()
 {
-	Value *value = GetValue (BitmapImage::UriSourceProperty);
+	Value *value = GetValue (DeepZoomImageTileSource::UriSourceProperty);
 	return value ? value->AsUri () : NULL;
 }
 
 void
-BitmapImage::SetUriSource (Uri *value)
+DeepZoomImageTileSource::SetUriSource (Uri *value)
 {
 	if (!value) return;
-	SetValue (BitmapImage::UriSourceProperty, Value (*value));
+	SetValue (DeepZoomImageTileSource::UriSourceProperty, Value (*value));
 }
 
-double
-BitmapImage::GetProgress ()
+Point *
+PointAnimation::GetTo ()
 {
-	Value *value = GetValue (BitmapImage::ProgressProperty);
-	return value->AsDouble ();
-}
-
-void
-BitmapImage::SetProgress (double value)
-{
-	SetValue (BitmapImage::ProgressProperty, Value (value));
-}
-
-double
-TranslateTransform::GetY ()
-{
-	Value *value = GetValue (TranslateTransform::YProperty);
-	return value->AsDouble ();
+	Value *value = GetValue (PointAnimation::ToProperty);
+	return value ? value->AsPoint () : NULL;
 }
 
 void
-TranslateTransform::SetY (double value)
+PointAnimation::SetTo (Point value)
 {
-	SetValue (TranslateTransform::YProperty, Value (value));
-}
-
-double
-TranslateTransform::GetX ()
-{
-	Value *value = GetValue (TranslateTransform::XProperty);
-	return value->AsDouble ();
+	SetValue (PointAnimation::ToProperty, Value (value));
 }
 
 void
-TranslateTransform::SetX (double value)
+PointAnimation::SetTo (Point *value)
 {
-	SetValue (TranslateTransform::XProperty, Value (value));
+	if (!value)
+		SetValue (PointAnimation::ToProperty, NULL);
+	else
+		SetValue (PointAnimation::ToProperty, Value (*value));
 }
 
-TransformCollection *
-TransformGroup::GetChildren ()
+Point *
+PointAnimation::GetFrom ()
 {
-	Value *value = GetValue (TransformGroup::ChildrenProperty);
-	return value ? value->AsTransformCollection () : NULL;
+	Value *value = GetValue (PointAnimation::FromProperty);
+	return value ? value->AsPoint () : NULL;
 }
 
 void
-TransformGroup::SetChildren (TransformCollection *value)
+PointAnimation::SetFrom (Point value)
 {
-	SetValue (TransformGroup::ChildrenProperty, Value (value));
+	SetValue (PointAnimation::FromProperty, Value (value));
+}
+
+void
+PointAnimation::SetFrom (Point *value)
+{
+	if (!value)
+		SetValue (PointAnimation::FromProperty, NULL);
+	else
+		SetValue (PointAnimation::FromProperty, Value (*value));
+}
+
+Point *
+PointAnimation::GetBy ()
+{
+	Value *value = GetValue (PointAnimation::ByProperty);
+	return value ? value->AsPoint () : NULL;
+}
+
+void
+PointAnimation::SetBy (Point value)
+{
+	SetValue (PointAnimation::ByProperty, Value (value));
+}
+
+void
+PointAnimation::SetBy (Point *value)
+{
+	if (!value)
+		SetValue (PointAnimation::ByProperty, NULL);
+	else
+		SetValue (PointAnimation::ByProperty, Value (*value));
+}
+
+KeyTime *
+ObjectKeyFrame::GetKeyTime ()
+{
+	Value *value = DependencyObject::GetValue (ObjectKeyFrame::KeyTimeProperty);
+	return value ? value->AsKeyTime () : NULL;
+}
+
+void
+ObjectKeyFrame::SetKeyTime (KeyTime value)
+{
+	DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, Value (value));
+}
+
+void
+ObjectKeyFrame::SetKeyTime (KeyTime *value)
+{
+	if (!value)
+		DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, NULL);
+	else
+		DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, Value (*value));
 }
 
 ScrollBarVisibility
@@ -4204,121 +4267,84 @@ Storyboard::SetTargetName (DependencyObject *obj, const char *value)
 	obj->SetValue (Storyboard::TargetNameProperty, Value (value));
 }
 
-double
-SkewTransform::GetCenterY ()
+SweepDirection
+ArcSegment::GetSweepDirection ()
 {
-	Value *value = GetValue (SkewTransform::CenterYProperty);
+	Value *value = GetValue (ArcSegment::SweepDirectionProperty);
+	return (SweepDirection) value->AsInt32 ();
+}
+
+void
+ArcSegment::SetSweepDirection (SweepDirection value)
+{
+	SetValue (ArcSegment::SweepDirectionProperty, Value (value));
+}
+
+Size *
+ArcSegment::GetSize ()
+{
+	Value *value = GetValue (ArcSegment::SizeProperty);
+	return value ? value->AsSize () : NULL;
+}
+
+void
+ArcSegment::SetSize (Size *value)
+{
+	if (!value) return;
+	SetValue (ArcSegment::SizeProperty, Value (*value));
+}
+
+double
+ArcSegment::GetRotationAngle ()
+{
+	Value *value = GetValue (ArcSegment::RotationAngleProperty);
 	return value->AsDouble ();
 }
 
 void
-SkewTransform::SetCenterY (double value)
+ArcSegment::SetRotationAngle (double value)
 {
-	SetValue (SkewTransform::CenterYProperty, Value (value));
+	SetValue (ArcSegment::RotationAngleProperty, Value (value));
 }
 
-double
-SkewTransform::GetCenterX ()
+Point *
+ArcSegment::GetPoint ()
 {
-	Value *value = GetValue (SkewTransform::CenterXProperty);
-	return value->AsDouble ();
-}
-
-void
-SkewTransform::SetCenterX (double value)
-{
-	SetValue (SkewTransform::CenterXProperty, Value (value));
-}
-
-double
-SkewTransform::GetAngleY ()
-{
-	Value *value = GetValue (SkewTransform::AngleYProperty);
-	return value->AsDouble ();
+	Value *value = GetValue (ArcSegment::PointProperty);
+	return value ? value->AsPoint () : NULL;
 }
 
 void
-SkewTransform::SetAngleY (double value)
+ArcSegment::SetPoint (Point *value)
 {
-	SetValue (SkewTransform::AngleYProperty, Value (value));
-}
-
-double
-SkewTransform::GetAngleX ()
-{
-	Value *value = GetValue (SkewTransform::AngleXProperty);
-	return value->AsDouble ();
-}
-
-void
-SkewTransform::SetAngleX (double value)
-{
-	SetValue (SkewTransform::AngleXProperty, Value (value));
+	if (!value) return;
+	SetValue (ArcSegment::PointProperty, Value (*value));
 }
 
 bool
-SetterBaseCollection::GetIsSealed ()
+ArcSegment::GetIsLargeArc ()
 {
-	Value *value = GetValue (SetterBaseCollection::IsSealedProperty);
+	Value *value = GetValue (ArcSegment::IsLargeArcProperty);
 	return value->AsBool ();
 }
 
 void
-SetterBaseCollection::SetIsSealed (bool value)
+ArcSegment::SetIsLargeArc (bool value)
 {
-	SetValue (SetterBaseCollection::IsSealedProperty, Value (value));
+	SetValue (ArcSegment::IsLargeArcProperty, Value (value));
 }
 
-double
-ScaleTransform::GetScaleY ()
+PointCollection *
+PolyLineSegment::GetPoints ()
 {
-	Value *value = GetValue (ScaleTransform::ScaleYProperty);
-	return value->AsDouble ();
-}
-
-void
-ScaleTransform::SetScaleY (double value)
-{
-	SetValue (ScaleTransform::ScaleYProperty, Value (value));
-}
-
-double
-ScaleTransform::GetScaleX ()
-{
-	Value *value = GetValue (ScaleTransform::ScaleXProperty);
-	return value->AsDouble ();
+	Value *value = GetValue (PolyLineSegment::PointsProperty);
+	return value ? value->AsPointCollection () : NULL;
 }
 
 void
-ScaleTransform::SetScaleX (double value)
+PolyLineSegment::SetPoints (PointCollection *value)
 {
-	SetValue (ScaleTransform::ScaleXProperty, Value (value));
-}
-
-double
-ScaleTransform::GetCenterY ()
-{
-	Value *value = GetValue (ScaleTransform::CenterYProperty);
-	return value->AsDouble ();
-}
-
-void
-ScaleTransform::SetCenterY (double value)
-{
-	SetValue (ScaleTransform::CenterYProperty, Value (value));
-}
-
-double
-ScaleTransform::GetCenterX ()
-{
-	Value *value = GetValue (ScaleTransform::CenterXProperty);
-	return value->AsDouble ();
-}
-
-void
-ScaleTransform::SetCenterX (double value)
-{
-	SetValue (ScaleTransform::CenterXProperty, Value (value));
+	SetValue (PolyLineSegment::PointsProperty, Value (value));
 }
 
 double
@@ -4360,32 +4386,179 @@ RotateTransform::SetAngle (double value)
 	SetValue (RotateTransform::AngleProperty, Value (value));
 }
 
-Point *
-QuadraticBezierSegment::GetPoint2 ()
+Color *
+ColorAnimation::GetTo ()
 {
-	Value *value = GetValue (QuadraticBezierSegment::Point2Property);
-	return value ? value->AsPoint () : NULL;
+	Value *value = GetValue (ColorAnimation::ToProperty);
+	return value ? value->AsColor () : NULL;
 }
 
 void
-QuadraticBezierSegment::SetPoint2 (Point *value)
+ColorAnimation::SetTo (Color value)
 {
-	if (!value) return;
-	SetValue (QuadraticBezierSegment::Point2Property, Value (*value));
-}
-
-Point *
-QuadraticBezierSegment::GetPoint1 ()
-{
-	Value *value = GetValue (QuadraticBezierSegment::Point1Property);
-	return value ? value->AsPoint () : NULL;
+	SetValue (ColorAnimation::ToProperty, Value (value));
 }
 
 void
-QuadraticBezierSegment::SetPoint1 (Point *value)
+ColorAnimation::SetTo (Color *value)
 {
-	if (!value) return;
-	SetValue (QuadraticBezierSegment::Point1Property, Value (*value));
+	if (!value)
+		SetValue (ColorAnimation::ToProperty, NULL);
+	else
+		SetValue (ColorAnimation::ToProperty, Value (*value));
+}
+
+Color *
+ColorAnimation::GetFrom ()
+{
+	Value *value = GetValue (ColorAnimation::FromProperty);
+	return value ? value->AsColor () : NULL;
+}
+
+void
+ColorAnimation::SetFrom (Color value)
+{
+	SetValue (ColorAnimation::FromProperty, Value (value));
+}
+
+void
+ColorAnimation::SetFrom (Color *value)
+{
+	if (!value)
+		SetValue (ColorAnimation::FromProperty, NULL);
+	else
+		SetValue (ColorAnimation::FromProperty, Value (*value));
+}
+
+Color *
+ColorAnimation::GetBy ()
+{
+	Value *value = GetValue (ColorAnimation::ByProperty);
+	return value ? value->AsColor () : NULL;
+}
+
+void
+ColorAnimation::SetBy (Color value)
+{
+	SetValue (ColorAnimation::ByProperty, Value (value));
+}
+
+void
+ColorAnimation::SetBy (Color *value)
+{
+	if (!value)
+		SetValue (ColorAnimation::ByProperty, NULL);
+	else
+		SetValue (ColorAnimation::ByProperty, Value (*value));
+}
+
+double
+TranslateTransform::GetY ()
+{
+	Value *value = GetValue (TranslateTransform::YProperty);
+	return value->AsDouble ();
+}
+
+void
+TranslateTransform::SetY (double value)
+{
+	SetValue (TranslateTransform::YProperty, Value (value));
+}
+
+double
+TranslateTransform::GetX ()
+{
+	Value *value = GetValue (TranslateTransform::XProperty);
+	return value->AsDouble ();
+}
+
+void
+TranslateTransform::SetX (double value)
+{
+	SetValue (TranslateTransform::XProperty, Value (value));
+}
+
+gint32
+BitmapSource::GetPixelWidth ()
+{
+	Value *value = GetValue (BitmapSource::PixelWidthProperty);
+	return value->AsInt32 ();
+}
+
+void
+BitmapSource::SetPixelWidth (gint32 value)
+{
+	SetValue (BitmapSource::PixelWidthProperty, Value (value));
+}
+
+gint32
+BitmapSource::GetPixelHeight ()
+{
+	Value *value = GetValue (BitmapSource::PixelHeightProperty);
+	return value->AsInt32 ();
+}
+
+void
+BitmapSource::SetPixelHeight (gint32 value)
+{
+	SetValue (BitmapSource::PixelHeightProperty, Value (value));
+}
+
+PixelFormats
+BitmapSource::GetPixelFormat ()
+{
+	Value *value = GetValue (BitmapSource::PixelFormatProperty);
+	return (PixelFormats) value->AsInt32 ();
+}
+
+void
+BitmapSource::SetPixelFormat (PixelFormats value)
+{
+	SetValue (BitmapSource::PixelFormatProperty, Value (value));
+}
+
+double *
+DoubleKeyFrame::GetValue ()
+{
+	Value *value = DependencyObject::GetValue (DoubleKeyFrame::ValueProperty);
+	return value ? value->AsNullableDouble () : NULL;
+}
+
+void
+DoubleKeyFrame::SetValue (double value)
+{
+	DependencyObject::SetValue (DoubleKeyFrame::ValueProperty, Value (value));
+}
+
+void
+DoubleKeyFrame::SetValue (double * value)
+{
+	if (!value)
+		DependencyObject::SetValue (DoubleKeyFrame::ValueProperty, NULL);
+	else
+		DependencyObject::SetValue (DoubleKeyFrame::ValueProperty, Value (*value));
+}
+
+KeyTime *
+DoubleKeyFrame::GetKeyTime ()
+{
+	Value *value = DependencyObject::GetValue (DoubleKeyFrame::KeyTimeProperty);
+	return value ? value->AsKeyTime () : NULL;
+}
+
+void
+DoubleKeyFrame::SetKeyTime (KeyTime value)
+{
+	DependencyObject::SetValue (DoubleKeyFrame::KeyTimeProperty, Value (value));
+}
+
+void
+DoubleKeyFrame::SetKeyTime (KeyTime *value)
+{
+	if (!value)
+		DependencyObject::SetValue (DoubleKeyFrame::KeyTimeProperty, NULL);
+	else
+		DependencyObject::SetValue (DoubleKeyFrame::KeyTimeProperty, Value (*value));
 }
 
 PointCollection *
@@ -4401,30 +4574,17 @@ PolyQuadraticBezierSegment::SetPoints (PointCollection *value)
 	SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (value));
 }
 
-PointCollection *
-PolyLineSegment::GetPoints ()
+ObjectKeyFrameCollection *
+ObjectAnimationUsingKeyFrames::GetKeyFrames ()
 {
-	Value *value = GetValue (PolyLineSegment::PointsProperty);
-	return value ? value->AsPointCollection () : NULL;
+	Value *value = GetValue (ObjectAnimationUsingKeyFrames::KeyFramesProperty);
+	return value ? value->AsObjectKeyFrameCollection () : NULL;
 }
 
 void
-PolyLineSegment::SetPoints (PointCollection *value)
+ObjectAnimationUsingKeyFrames::SetKeyFrames (ObjectKeyFrameCollection *value)
 {
-	SetValue (PolyLineSegment::PointsProperty, Value (value));
-}
-
-PointCollection *
-PolyBezierSegment::GetPoints ()
-{
-	Value *value = GetValue (PolyBezierSegment::PointsProperty);
-	return value ? value->AsPointCollection () : NULL;
-}
-
-void
-PolyBezierSegment::SetPoints (PointCollection *value)
-{
-	SetValue (PolyBezierSegment::PointsProperty, Value (value));
+	SetValue (ObjectAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
 }
 
 Point *
@@ -4472,69 +4632,85 @@ PointKeyFrame::SetKeyTime (KeyTime *value)
 }
 
 Point *
-PointAnimation::GetTo ()
+LineSegment::GetPoint ()
 {
-	Value *value = GetValue (PointAnimation::ToProperty);
+	Value *value = GetValue (LineSegment::PointProperty);
 	return value ? value->AsPoint () : NULL;
 }
 
 void
-PointAnimation::SetTo (Point value)
+LineSegment::SetPoint (Point *value)
 {
-	SetValue (PointAnimation::ToProperty, Value (value));
+	if (!value) return;
+	SetValue (LineSegment::PointProperty, Value (*value));
+}
+
+Storyboard *
+BeginStoryboard::GetStoryboard ()
+{
+	Value *value = GetValue (BeginStoryboard::StoryboardProperty);
+	return value ? value->AsStoryboard () : NULL;
 }
 
 void
-PointAnimation::SetTo (Point *value)
+BeginStoryboard::SetStoryboard (Storyboard *value)
 {
-	if (!value)
-		SetValue (PointAnimation::ToProperty, NULL);
-	else
-		SetValue (PointAnimation::ToProperty, Value (*value));
+	SetValue (BeginStoryboard::StoryboardProperty, Value (value));
 }
 
 Point *
-PointAnimation::GetFrom ()
+BezierSegment::GetPoint3 ()
 {
-	Value *value = GetValue (PointAnimation::FromProperty);
+	Value *value = GetValue (BezierSegment::Point3Property);
 	return value ? value->AsPoint () : NULL;
 }
 
 void
-PointAnimation::SetFrom (Point value)
+BezierSegment::SetPoint3 (Point *value)
 {
-	SetValue (PointAnimation::FromProperty, Value (value));
-}
-
-void
-PointAnimation::SetFrom (Point *value)
-{
-	if (!value)
-		SetValue (PointAnimation::FromProperty, NULL);
-	else
-		SetValue (PointAnimation::FromProperty, Value (*value));
+	if (!value) return;
+	SetValue (BezierSegment::Point3Property, Value (*value));
 }
 
 Point *
-PointAnimation::GetBy ()
+BezierSegment::GetPoint2 ()
 {
-	Value *value = GetValue (PointAnimation::ByProperty);
+	Value *value = GetValue (BezierSegment::Point2Property);
 	return value ? value->AsPoint () : NULL;
 }
 
 void
-PointAnimation::SetBy (Point value)
+BezierSegment::SetPoint2 (Point *value)
 {
-	SetValue (PointAnimation::ByProperty, Value (value));
+	if (!value) return;
+	SetValue (BezierSegment::Point2Property, Value (*value));
+}
+
+Point *
+BezierSegment::GetPoint1 ()
+{
+	Value *value = GetValue (BezierSegment::Point1Property);
+	return value ? value->AsPoint () : NULL;
 }
 
 void
-PointAnimation::SetBy (Point *value)
+BezierSegment::SetPoint1 (Point *value)
 {
-	if (!value)
-		SetValue (PointAnimation::ByProperty, NULL);
-	else
-		SetValue (PointAnimation::ByProperty, Value (*value));
+	if (!value) return;
+	SetValue (BezierSegment::Point1Property, Value (*value));
+}
+
+bool
+SetterBaseCollection::GetIsSealed ()
+{
+	Value *value = GetValue (SetterBaseCollection::IsSealedProperty);
+	return value->AsBool ();
+}
+
+void
+SetterBaseCollection::SetIsSealed (bool value)
+{
+	SetValue (SetterBaseCollection::IsSealedProperty, Value (value));
 }
 
 gint32
@@ -4641,129 +4817,154 @@ PasswordBox::SetMaxLength (gint32 value)
 	SetValue (PasswordBox::MaxLengthProperty, Value (value));
 }
 
-KeyTime *
-ObjectKeyFrame::GetKeyTime ()
+double
+ScaleTransform::GetScaleY ()
 {
-	Value *value = DependencyObject::GetValue (ObjectKeyFrame::KeyTimeProperty);
+	Value *value = GetValue (ScaleTransform::ScaleYProperty);
+	return value->AsDouble ();
+}
+
+void
+ScaleTransform::SetScaleY (double value)
+{
+	SetValue (ScaleTransform::ScaleYProperty, Value (value));
+}
+
+double
+ScaleTransform::GetScaleX ()
+{
+	Value *value = GetValue (ScaleTransform::ScaleXProperty);
+	return value->AsDouble ();
+}
+
+void
+ScaleTransform::SetScaleX (double value)
+{
+	SetValue (ScaleTransform::ScaleXProperty, Value (value));
+}
+
+double
+ScaleTransform::GetCenterY ()
+{
+	Value *value = GetValue (ScaleTransform::CenterYProperty);
+	return value->AsDouble ();
+}
+
+void
+ScaleTransform::SetCenterY (double value)
+{
+	SetValue (ScaleTransform::CenterYProperty, Value (value));
+}
+
+double
+ScaleTransform::GetCenterX ()
+{
+	Value *value = GetValue (ScaleTransform::CenterXProperty);
+	return value->AsDouble ();
+}
+
+void
+ScaleTransform::SetCenterX (double value)
+{
+	SetValue (ScaleTransform::CenterXProperty, Value (value));
+}
+
+TransformCollection *
+TransformGroup::GetChildren ()
+{
+	Value *value = GetValue (TransformGroup::ChildrenProperty);
+	return value ? value->AsTransformCollection () : NULL;
+}
+
+void
+TransformGroup::SetChildren (TransformCollection *value)
+{
+	SetValue (TransformGroup::ChildrenProperty, Value (value));
+}
+
+Color *
+ColorKeyFrame::GetValue ()
+{
+	Value *value = DependencyObject::GetValue (ColorKeyFrame::ValueProperty);
+	return value ? value->AsColor () : NULL;
+}
+
+void
+ColorKeyFrame::SetValue (Color value)
+{
+	DependencyObject::SetValue (ColorKeyFrame::ValueProperty, Value (value));
+}
+
+void
+ColorKeyFrame::SetValue (Color *value)
+{
+	if (!value)
+		DependencyObject::SetValue (ColorKeyFrame::ValueProperty, NULL);
+	else
+		DependencyObject::SetValue (ColorKeyFrame::ValueProperty, Value (*value));
+}
+
+KeyTime *
+ColorKeyFrame::GetKeyTime ()
+{
+	Value *value = DependencyObject::GetValue (ColorKeyFrame::KeyTimeProperty);
 	return value ? value->AsKeyTime () : NULL;
 }
 
 void
-ObjectKeyFrame::SetKeyTime (KeyTime value)
+ColorKeyFrame::SetKeyTime (KeyTime value)
 {
-	DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, Value (value));
+	DependencyObject::SetValue (ColorKeyFrame::KeyTimeProperty, Value (value));
 }
 
 void
-ObjectKeyFrame::SetKeyTime (KeyTime *value)
+ColorKeyFrame::SetKeyTime (KeyTime *value)
 {
 	if (!value)
-		DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, NULL);
+		DependencyObject::SetValue (ColorKeyFrame::KeyTimeProperty, NULL);
 	else
-		DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, Value (*value));
-}
-
-ObjectKeyFrameCollection *
-ObjectAnimationUsingKeyFrames::GetKeyFrames ()
-{
-	Value *value = GetValue (ObjectAnimationUsingKeyFrames::KeyFramesProperty);
-	return value ? value->AsObjectKeyFrameCollection () : NULL;
-}
-
-void
-ObjectAnimationUsingKeyFrames::SetKeyFrames (ObjectKeyFrameCollection *value)
-{
-	SetValue (ObjectAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
-}
-
-Matrix *
-MatrixTransform::GetMatrix ()
-{
-	Value *value = GetValue (MatrixTransform::MatrixProperty);
-	return value ? value->AsMatrix () : NULL;
-}
-
-void
-MatrixTransform::SetMatrix (Matrix *value)
-{
-	SetValue (MatrixTransform::MatrixProperty, Value (value));
+		DependencyObject::SetValue (ColorKeyFrame::KeyTimeProperty, Value (*value));
 }
 
 Point *
-LineSegment::GetPoint ()
+QuadraticBezierSegment::GetPoint2 ()
 {
-	Value *value = GetValue (LineSegment::PointProperty);
+	Value *value = GetValue (QuadraticBezierSegment::Point2Property);
 	return value ? value->AsPoint () : NULL;
 }
 
 void
-LineSegment::SetPoint (Point *value)
+QuadraticBezierSegment::SetPoint2 (Point *value)
 {
 	if (!value) return;
-	SetValue (LineSegment::PointProperty, Value (*value));
+	SetValue (QuadraticBezierSegment::Point2Property, Value (*value));
 }
 
-Rect *
-LayoutInformation::GetLayoutSlot (DependencyObject *obj)
+Point *
+QuadraticBezierSegment::GetPoint1 ()
 {
-	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LayoutSlotProperty);
-	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::LayoutSlotProperty)->GetDefaultValue();
-	return value ? value->AsRect () : NULL;
+	Value *value = GetValue (QuadraticBezierSegment::Point1Property);
+	return value ? value->AsPoint () : NULL;
 }
 
 void
-LayoutInformation::SetLayoutSlot (DependencyObject *obj, Rect *value)
+QuadraticBezierSegment::SetPoint1 (Point *value)
 {
-	if (!obj) return;
 	if (!value) return;
-	obj->SetValue (LayoutInformation::LayoutSlotProperty, Value (*value));
+	SetValue (QuadraticBezierSegment::Point1Property, Value (*value));
 }
 
-Geometry *
-LayoutInformation::GetLayoutClip (DependencyObject *obj)
+PointCollection *
+PolyBezierSegment::GetPoints ()
 {
-	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LayoutClipProperty);
-	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::LayoutClipProperty)->GetDefaultValue();
-	return value ? value->AsGeometry () : NULL;
+	Value *value = GetValue (PolyBezierSegment::PointsProperty);
+	return value ? value->AsPointCollection () : NULL;
 }
 
 void
-LayoutInformation::SetLayoutClip (DependencyObject *obj, Geometry *value)
+PolyBezierSegment::SetPoints (PointCollection *value)
 {
-	if (!obj) return;
-	obj->SetValue (LayoutInformation::LayoutClipProperty, Value (value));
-}
-
-Size *
-LayoutInformation::GetLastMeasure (DependencyObject *obj)
-{
-	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LastMeasureProperty);
-	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::LastMeasureProperty)->GetDefaultValue();
-	return value ? value->AsSize () : NULL;
-}
-
-void
-LayoutInformation::SetLastMeasure (DependencyObject *obj, Size *value)
-{
-	if (!obj) return;
-	if (!value) return;
-	obj->SetValue (LayoutInformation::LastMeasureProperty, Value (*value));
-}
-
-Size *
-LayoutInformation::GetLastArrange (DependencyObject *obj)
-{
-	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LastArrangeProperty);
-	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::LastArrangeProperty)->GetDefaultValue();
-	return value ? value->AsSize () : NULL;
-}
-
-void
-LayoutInformation::SetLastArrange (DependencyObject *obj, Size *value)
-{
-	if (!obj) return;
-	if (!value) return;
-	obj->SetValue (LayoutInformation::LastArrangeProperty, Value (*value));
+	SetValue (PolyBezierSegment::PointsProperty, Value (value));
 }
 
 const char *
@@ -4792,48 +4993,69 @@ EventTrigger::SetActions (TriggerActionCollection *value)
 	SetValue (EventTrigger::ActionsProperty, Value (value));
 }
 
-double *
-DoubleKeyFrame::GetValue ()
+double
+SkewTransform::GetCenterY ()
 {
-	Value *value = DependencyObject::GetValue (DoubleKeyFrame::ValueProperty);
-	return value ? value->AsNullableDouble () : NULL;
+	Value *value = GetValue (SkewTransform::CenterYProperty);
+	return value->AsDouble ();
 }
 
 void
-DoubleKeyFrame::SetValue (double value)
+SkewTransform::SetCenterY (double value)
 {
-	DependencyObject::SetValue (DoubleKeyFrame::ValueProperty, Value (value));
+	SetValue (SkewTransform::CenterYProperty, Value (value));
+}
+
+double
+SkewTransform::GetCenterX ()
+{
+	Value *value = GetValue (SkewTransform::CenterXProperty);
+	return value->AsDouble ();
 }
 
 void
-DoubleKeyFrame::SetValue (double * value)
+SkewTransform::SetCenterX (double value)
 {
-	if (!value)
-		DependencyObject::SetValue (DoubleKeyFrame::ValueProperty, NULL);
-	else
-		DependencyObject::SetValue (DoubleKeyFrame::ValueProperty, Value (*value));
+	SetValue (SkewTransform::CenterXProperty, Value (value));
 }
 
-KeyTime *
-DoubleKeyFrame::GetKeyTime ()
+double
+SkewTransform::GetAngleY ()
 {
-	Value *value = DependencyObject::GetValue (DoubleKeyFrame::KeyTimeProperty);
-	return value ? value->AsKeyTime () : NULL;
+	Value *value = GetValue (SkewTransform::AngleYProperty);
+	return value->AsDouble ();
 }
 
 void
-DoubleKeyFrame::SetKeyTime (KeyTime value)
+SkewTransform::SetAngleY (double value)
 {
-	DependencyObject::SetValue (DoubleKeyFrame::KeyTimeProperty, Value (value));
+	SetValue (SkewTransform::AngleYProperty, Value (value));
+}
+
+double
+SkewTransform::GetAngleX ()
+{
+	Value *value = GetValue (SkewTransform::AngleXProperty);
+	return value->AsDouble ();
 }
 
 void
-DoubleKeyFrame::SetKeyTime (KeyTime *value)
+SkewTransform::SetAngleX (double value)
 {
-	if (!value)
-		DependencyObject::SetValue (DoubleKeyFrame::KeyTimeProperty, NULL);
-	else
-		DependencyObject::SetValue (DoubleKeyFrame::KeyTimeProperty, Value (*value));
+	SetValue (SkewTransform::AngleXProperty, Value (value));
+}
+
+const char *
+DependencyObject::GetName ()
+{
+	Value *value = GetValue (DependencyObject::NameProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+DependencyObject::SetName (const char *value)
+{
+	SetValue (DependencyObject::NameProperty, Value (value));
 }
 
 double *
@@ -4902,301 +5124,79 @@ DoubleAnimation::SetBy (double * value)
 		SetValue (DoubleAnimation::ByProperty, Value (*value));
 }
 
-const char *
-DependencyObject::GetName ()
+Rect *
+LayoutInformation::GetLayoutSlot (DependencyObject *obj)
 {
-	Value *value = GetValue (DependencyObject::NameProperty);
-	return value ? value->AsString () : NULL;
+	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LayoutSlotProperty);
+	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::LayoutSlotProperty)->GetDefaultValue();
+	return value ? value->AsRect () : NULL;
 }
 
 void
-DependencyObject::SetName (const char *value)
+LayoutInformation::SetLayoutSlot (DependencyObject *obj, Rect *value)
 {
-	SetValue (DependencyObject::NameProperty, Value (value));
-}
-
-Uri *
-DeepZoomImageTileSource::GetUriSource ()
-{
-	Value *value = GetValue (DeepZoomImageTileSource::UriSourceProperty);
-	return value ? value->AsUri () : NULL;
-}
-
-void
-DeepZoomImageTileSource::SetUriSource (Uri *value)
-{
+	if (!obj) return;
 	if (!value) return;
-	SetValue (DeepZoomImageTileSource::UriSourceProperty, Value (*value));
+	obj->SetValue (LayoutInformation::LayoutSlotProperty, Value (*value));
 }
 
-Color *
-ColorKeyFrame::GetValue ()
+Geometry *
+LayoutInformation::GetLayoutClip (DependencyObject *obj)
 {
-	Value *value = DependencyObject::GetValue (ColorKeyFrame::ValueProperty);
-	return value ? value->AsColor () : NULL;
-}
-
-void
-ColorKeyFrame::SetValue (Color value)
-{
-	DependencyObject::SetValue (ColorKeyFrame::ValueProperty, Value (value));
+	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LayoutClipProperty);
+	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::LayoutClipProperty)->GetDefaultValue();
+	return value ? value->AsGeometry () : NULL;
 }
 
 void
-ColorKeyFrame::SetValue (Color *value)
+LayoutInformation::SetLayoutClip (DependencyObject *obj, Geometry *value)
 {
-	if (!value)
-		DependencyObject::SetValue (ColorKeyFrame::ValueProperty, NULL);
-	else
-		DependencyObject::SetValue (ColorKeyFrame::ValueProperty, Value (*value));
-}
-
-KeyTime *
-ColorKeyFrame::GetKeyTime ()
-{
-	Value *value = DependencyObject::GetValue (ColorKeyFrame::KeyTimeProperty);
-	return value ? value->AsKeyTime () : NULL;
-}
-
-void
-ColorKeyFrame::SetKeyTime (KeyTime value)
-{
-	DependencyObject::SetValue (ColorKeyFrame::KeyTimeProperty, Value (value));
-}
-
-void
-ColorKeyFrame::SetKeyTime (KeyTime *value)
-{
-	if (!value)
-		DependencyObject::SetValue (ColorKeyFrame::KeyTimeProperty, NULL);
-	else
-		DependencyObject::SetValue (ColorKeyFrame::KeyTimeProperty, Value (*value));
-}
-
-Color *
-ColorAnimation::GetTo ()
-{
-	Value *value = GetValue (ColorAnimation::ToProperty);
-	return value ? value->AsColor () : NULL;
-}
-
-void
-ColorAnimation::SetTo (Color value)
-{
-	SetValue (ColorAnimation::ToProperty, Value (value));
-}
-
-void
-ColorAnimation::SetTo (Color *value)
-{
-	if (!value)
-		SetValue (ColorAnimation::ToProperty, NULL);
-	else
-		SetValue (ColorAnimation::ToProperty, Value (*value));
-}
-
-Color *
-ColorAnimation::GetFrom ()
-{
-	Value *value = GetValue (ColorAnimation::FromProperty);
-	return value ? value->AsColor () : NULL;
-}
-
-void
-ColorAnimation::SetFrom (Color value)
-{
-	SetValue (ColorAnimation::FromProperty, Value (value));
-}
-
-void
-ColorAnimation::SetFrom (Color *value)
-{
-	if (!value)
-		SetValue (ColorAnimation::FromProperty, NULL);
-	else
-		SetValue (ColorAnimation::FromProperty, Value (*value));
-}
-
-Color *
-ColorAnimation::GetBy ()
-{
-	Value *value = GetValue (ColorAnimation::ByProperty);
-	return value ? value->AsColor () : NULL;
-}
-
-void
-ColorAnimation::SetBy (Color value)
-{
-	SetValue (ColorAnimation::ByProperty, Value (value));
-}
-
-void
-ColorAnimation::SetBy (Color *value)
-{
-	if (!value)
-		SetValue (ColorAnimation::ByProperty, NULL);
-	else
-		SetValue (ColorAnimation::ByProperty, Value (*value));
-}
-
-gint32
-BitmapSource::GetPixelWidth ()
-{
-	Value *value = GetValue (BitmapSource::PixelWidthProperty);
-	return value->AsInt32 ();
-}
-
-void
-BitmapSource::SetPixelWidth (gint32 value)
-{
-	SetValue (BitmapSource::PixelWidthProperty, Value (value));
-}
-
-gint32
-BitmapSource::GetPixelHeight ()
-{
-	Value *value = GetValue (BitmapSource::PixelHeightProperty);
-	return value->AsInt32 ();
-}
-
-void
-BitmapSource::SetPixelHeight (gint32 value)
-{
-	SetValue (BitmapSource::PixelHeightProperty, Value (value));
-}
-
-PixelFormats
-BitmapSource::GetPixelFormat ()
-{
-	Value *value = GetValue (BitmapSource::PixelFormatProperty);
-	return (PixelFormats) value->AsInt32 ();
-}
-
-void
-BitmapSource::SetPixelFormat (PixelFormats value)
-{
-	SetValue (BitmapSource::PixelFormatProperty, Value (value));
-}
-
-Point *
-BezierSegment::GetPoint3 ()
-{
-	Value *value = GetValue (BezierSegment::Point3Property);
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-BezierSegment::SetPoint3 (Point *value)
-{
-	if (!value) return;
-	SetValue (BezierSegment::Point3Property, Value (*value));
-}
-
-Point *
-BezierSegment::GetPoint2 ()
-{
-	Value *value = GetValue (BezierSegment::Point2Property);
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-BezierSegment::SetPoint2 (Point *value)
-{
-	if (!value) return;
-	SetValue (BezierSegment::Point2Property, Value (*value));
-}
-
-Point *
-BezierSegment::GetPoint1 ()
-{
-	Value *value = GetValue (BezierSegment::Point1Property);
-	return value ? value->AsPoint () : NULL;
-}
-
-void
-BezierSegment::SetPoint1 (Point *value)
-{
-	if (!value) return;
-	SetValue (BezierSegment::Point1Property, Value (*value));
-}
-
-Storyboard *
-BeginStoryboard::GetStoryboard ()
-{
-	Value *value = GetValue (BeginStoryboard::StoryboardProperty);
-	return value ? value->AsStoryboard () : NULL;
-}
-
-void
-BeginStoryboard::SetStoryboard (Storyboard *value)
-{
-	SetValue (BeginStoryboard::StoryboardProperty, Value (value));
-}
-
-SweepDirection
-ArcSegment::GetSweepDirection ()
-{
-	Value *value = GetValue (ArcSegment::SweepDirectionProperty);
-	return (SweepDirection) value->AsInt32 ();
-}
-
-void
-ArcSegment::SetSweepDirection (SweepDirection value)
-{
-	SetValue (ArcSegment::SweepDirectionProperty, Value (value));
+	if (!obj) return;
+	obj->SetValue (LayoutInformation::LayoutClipProperty, Value (value));
 }
 
 Size *
-ArcSegment::GetSize ()
+LayoutInformation::GetLastMeasure (DependencyObject *obj)
 {
-	Value *value = GetValue (ArcSegment::SizeProperty);
+	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LastMeasureProperty);
+	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::LastMeasureProperty)->GetDefaultValue();
 	return value ? value->AsSize () : NULL;
 }
 
 void
-ArcSegment::SetSize (Size *value)
+LayoutInformation::SetLastMeasure (DependencyObject *obj, Size *value)
 {
+	if (!obj) return;
 	if (!value) return;
-	SetValue (ArcSegment::SizeProperty, Value (*value));
+	obj->SetValue (LayoutInformation::LastMeasureProperty, Value (*value));
 }
 
-double
-ArcSegment::GetRotationAngle ()
+Size *
+LayoutInformation::GetLastArrange (DependencyObject *obj)
 {
-	Value *value = GetValue (ArcSegment::RotationAngleProperty);
-	return value->AsDouble ();
-}
-
-void
-ArcSegment::SetRotationAngle (double value)
-{
-	SetValue (ArcSegment::RotationAngleProperty, Value (value));
-}
-
-Point *
-ArcSegment::GetPoint ()
-{
-	Value *value = GetValue (ArcSegment::PointProperty);
-	return value ? value->AsPoint () : NULL;
+	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LastArrangeProperty);
+	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::LastArrangeProperty)->GetDefaultValue();
+	return value ? value->AsSize () : NULL;
 }
 
 void
-ArcSegment::SetPoint (Point *value)
+LayoutInformation::SetLastArrange (DependencyObject *obj, Size *value)
 {
+	if (!obj) return;
 	if (!value) return;
-	SetValue (ArcSegment::PointProperty, Value (*value));
+	obj->SetValue (LayoutInformation::LastArrangeProperty, Value (*value));
 }
 
-bool
-ArcSegment::GetIsLargeArc ()
+Matrix *
+MatrixTransform::GetMatrix ()
 {
-	Value *value = GetValue (ArcSegment::IsLargeArcProperty);
-	return value->AsBool ();
+	Value *value = GetValue (MatrixTransform::MatrixProperty);
+	return value ? value->AsMatrix () : NULL;
 }
 
 void
-ArcSegment::SetIsLargeArc (bool value)
+MatrixTransform::SetMatrix (Matrix *value)
 {
-	SetValue (ArcSegment::IsLargeArcProperty, Value (value));
+	SetValue (MatrixTransform::MatrixProperty, Value (value));
 }
 

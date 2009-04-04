@@ -1,3 +1,7 @@
+2009-04-03  Aaron Bockover  <abockover@novell.com>
+
+	* AssemblyInfo.cs: gtksilver -> Moonlight.Gtk
+
 2008-12-17  Chris Toshok  <toshok@ximian.com>
 
 	* AssemblyInfo.cs: internals are always visible to

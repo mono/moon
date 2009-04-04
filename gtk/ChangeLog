@@ -1,3 +1,20 @@
+2009-04-03  Aaron Bockover  <abockover@novell.com>
+
+	* Moonlight.Gtk/XamlHost.cs: New Moonlight Gtk# widget for hosting XAML
+	content; used to be GtkSilver; the API has been vastly improved and
+	simplified, and the implementation updated to be cleaner, taking
+	advantage of new Moonlight 2.0 runtime APIs
+
+	* Moonlight.Gtk/XamlRuntime.cs: Moved GtkSilver.Init into its own class
+	that makes more sense; use XamlRuntime.Init
+
+	* ManagedDownloader.cs: Updated namespace to Moonlight.Gtk
+
+	* Makefile.am:
+	* moonlight-gtk.pc.in:
+	* moonlight-gtk.snk:
+	* moonlight-gtk.source: gtksilver -> { moonlight-gtk | Moonlight.Gtk }
+
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
 	* ManagedDownloader.cs: remove all the local DllImports and use

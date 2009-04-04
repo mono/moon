@@ -1474,6 +1474,10 @@ namespace Mono {
 		public extern static IntPtr surface_get_time_manager (IntPtr instance);
 
 		[DllImport ("moon")]
+		// UIElement *surface_get_toplevel (Surface *instance);
+		public extern static IntPtr surface_get_toplevel (IntPtr instance);
+
+		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
 		// bool surface_in_main_thread ();
 		public extern static bool surface_in_main_thread ();
@@ -1797,10 +1801,6 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
-		// void downloader_write (Downloader *dl, void *buf, gint32 offset, gint32 n);
-		public extern static void downloader_write (IntPtr dl, IntPtr buf, int offset, int n);
-
-		[DllImport ("moon")]
 		// void downloader_notify_size (Downloader *dl, gint64 size);
 		public extern static void downloader_notify_size (IntPtr dl, long size);
 
@@ -1809,12 +1809,16 @@ namespace Mono {
 		public extern static void downloader_notify_finished (IntPtr dl, string filename);
 
 		[DllImport ("moon")]
+		// void downloader_set_functions (downloader_create_state_func create_state, downloader_destroy_state_func destroy_state, downloader_open_func open, downloader_send_func send, downloader_abort_func abort, downloader_header_func header, downloader_body_func body, downloader_create_webrequest_func request);
+		public extern static void downloader_set_functions (Mono.DownloaderCreateStateFunc create_state, Mono.DownloaderDestroyStateFunc destroy_state, Mono.DownloaderOpenFunc open, Mono.DownloaderSendFunc send, Mono.DownloaderAbortFunc abort, Mono.DownloaderHeaderFunc header, Mono.DownloaderBodyFunc body, Mono.DownloaderCreateWebRequestFunc request);
+
+		[DllImport ("moon")]
 		// void downloader_notify_error (Downloader *dl, const char *msg);
 		public extern static void downloader_notify_error (IntPtr dl, string msg);
 
 		[DllImport ("moon")]
-		// void downloader_set_functions (downloader_create_state_func create_state, downloader_destroy_state_func destroy_state, downloader_open_func open, downloader_send_func send, downloader_abort_func abort, downloader_header_func header, downloader_body_func body, downloader_create_webrequest_func request);
-		public extern static void downloader_set_functions (Mono.DownloaderCreateStateFunc create_state, Mono.DownloaderDestroyStateFunc destroy_state, Mono.DownloaderOpenFunc open, Mono.DownloaderSendFunc send, Mono.DownloaderAbortFunc abort, Mono.DownloaderHeaderFunc header, Mono.DownloaderBodyFunc body, Mono.DownloaderCreateWebRequestFunc request);
+		// void downloader_write (Downloader *dl, void *buf, gint32 offset, gint32 n);
+		public extern static void downloader_write (IntPtr dl, IntPtr buf, int offset, int n);
 
 	}
 }

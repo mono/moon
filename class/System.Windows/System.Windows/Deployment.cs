@@ -145,6 +145,12 @@ namespace System.Windows {
 			}
 			return true;
 		}
+
+		internal bool InitializeDeployment () {
+			EntryPointType = typeof (Application).Name;
+			EntryAssembly = typeof (Application).Assembly;
+			return LoadAssemblies ();
+		}
 			
 		internal bool InitializeDeployment (IntPtr plugin, string xapPath) {
 			InitializePluginHost (plugin);
@@ -162,7 +168,7 @@ namespace System.Windows {
 			
 			bool delay_load = false;
 
-			for (int i = 0; i < Parts.Count; i++) {
+			for (int i = 0; Parts != null && i < Parts.Count; i++) {
 				var part = Parts [i];
 
 				if (part.Source[0] == '/') {

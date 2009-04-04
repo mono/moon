@@ -1,3 +1,7 @@
+2009-04-03  Aaron Bockover  <abockover@novell.com>
+
+	* GeneratedPInvokes.cs: Updated, provides surface_get_toplevel
+
 2009-04-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* NativeMethods.cs: Add new bindings to the plugin for 

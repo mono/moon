@@ -128,7 +128,7 @@ scripts/Makefile
 scripts/smcs
 gtk/Makefile
 man/Makefile
-gtk/gtksilver.pc
+gtk/moonlight-gtk.pc
 data/Makefile
 test/Makefile
 test/2.0/Makefile

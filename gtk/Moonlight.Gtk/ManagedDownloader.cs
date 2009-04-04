@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 using System.Net;
 using Mono;
 
-namespace Gtk.Moonlight {
+namespace Moonlight.Gtk {
 
 	internal class ManagedDownloader {
 		static int keyid;
