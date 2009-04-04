@@ -1,3 +1,8 @@
+2009-04-03  Geoff Norton  <gnorton@novell.com>
+
+	* multiscaleimage.cpp: Guard against 0x0 MSI's to prevent a cairo bug
+	which renders garbage on the screen on amd64.
+
 2009-04-03  Aaron Bockover  <abockover@novell.com>
 
 	* cbinding.h:

@@ -459,6 +459,10 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	double vp_w = GetViewportWidth ();
 
 	int layers;
+
+	if (msi_w <= 0.0 && msi_h <= 0.0)
+		return;
+
 	if (frexp (MAX (im_w, im_h), &layers) == 0.5)
 		layers --;
 
