@@ -1,3 +1,10 @@
+2009-04-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.sc: Add surface_get_toplevel and ease*
+	p/invokes
+	* System.Windows.auto.ssc: Add Deployment.InitializeDeployment
+	and the new Ease methods.
+
 2009-04-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Browser.auto.ssc: Add HtmlPage.Plugin property

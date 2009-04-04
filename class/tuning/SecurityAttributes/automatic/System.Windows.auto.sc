@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 445 methods needs to be decorated.
+# 469 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -134,7 +134,19 @@
 +SC-M: System.Boolean Mono.NativeMethods::value_from_str_with_typename(System.String,System.String,System.String,System.IntPtr&,System.Boolean)
 
 # p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::back_ease_ease_in_core(System.IntPtr,System.Double)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::bounce_ease_ease_in_core(System.IntPtr,System.Double)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::circle_ease_ease_in_core(System.IntPtr,System.Double)
+
+# p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::column_definition_get_actual_width(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::cubic_ease_ease_in_core(System.IntPtr,System.Double)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::cursor_position_changed_event_args_get_cursor_height(System.IntPtr)
@@ -149,7 +161,28 @@
 +SC-M: System.Double Mono.NativeMethods::download_progress_event_args_get_progress(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::elastic_ease_ease_in_core(System.IntPtr,System.Double)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::exponential_ease_ease_in_core(System.IntPtr,System.Double)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::power_ease_ease_in_core(System.IntPtr,System.Double)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::quadratic_ease_ease_in_core(System.IntPtr,System.Double)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::quartic_ease_ease_in_core(System.IntPtr,System.Double)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::quintic_ease_ease_in_core(System.IntPtr,System.Double)
+
+# p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::row_definition_get_actual_height(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::sine_ease_ease_in_core(System.IntPtr,System.Double)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::stylus_point_collection_add_stylus_points(System.IntPtr,System.IntPtr)
@@ -248,6 +281,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::audio_stream_new(System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.IntPtr,System.UInt32)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::back_ease_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::begin_storyboard_new()
 
 # p/invoke declaration
@@ -263,10 +299,16 @@
 +SC-M: System.IntPtr Mono.NativeMethods::border_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::bounce_ease_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::brush_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::canvas_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::circle_ease_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::collection_changed_event_args_get_new_item(System.IntPtr)
@@ -321,6 +363,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::control_template_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::cubic_ease_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::cursor_position_changed_event_args_new()
@@ -425,6 +470,12 @@
 +SC-M: System.IntPtr Mono.NativeMethods::drawing_attributes_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::easing_function_base_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::elastic_ease_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::ellipse_geometry_new()
 
 # p/invoke declaration
@@ -438,6 +489,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::event_trigger_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::exponential_ease_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::framework_element_get_logical_parent(System.IntPtr)
@@ -698,7 +752,19 @@
 +SC-M: System.IntPtr Mono.NativeMethods::popup_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::power_ease_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::quadratic_bezier_segment_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::quadratic_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::quartic_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::quintic_ease_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::radial_gradient_brush_new()
@@ -747,6 +813,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::shape_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::sine_ease_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::size_changed_event_args_new()
@@ -804,6 +873,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::surface_get_time_manager(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::surface_get_toplevel(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::surface_new(System.IntPtr)
