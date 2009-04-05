@@ -1,3 +1,8 @@
+2009-04-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.sc: Add new easing_*_framenew p/invokes
+	* System.Windows.auto.ssc: Add new Easing*Frame constructors
+
 2009-04-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: Add surface_get_toplevel and ease*

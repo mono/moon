@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 469 methods needs to be decorated.
+# 472 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -470,7 +470,16 @@
 +SC-M: System.IntPtr Mono.NativeMethods::drawing_attributes_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::easing_color_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::easing_double_key_frame_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::easing_function_base_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::easing_point_key_frame_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::elastic_ease_new()
