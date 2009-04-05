@@ -3,9 +3,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <Grid x:Name="LayoutRoot" Width="200" Height="80">
-
-	<Rectangle Margin="5" x:Name="rect" Fill="#ebebee" Stroke="#7a7a7a" />
-
+    <Grid>
+      <Canvas x:Name="LayoutRoot" Margin="5" Width="200" Height="80">
+	<Rectangle Canvas.Left="5" Canvas.Top="5" Width="190" Height="70" x:Name="rect" Fill="#ebebee" Stroke="#7a7a7a" />
+      </Canvas>
     </Grid>
 </UserControl>

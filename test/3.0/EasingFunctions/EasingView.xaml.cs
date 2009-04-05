@@ -26,22 +26,22 @@ namespace EasingFunctions
 
 			Loaded += delegate {
 				Polyline polyline = new Polyline ();
-				Canvas canvas = new Canvas ();
-				canvas.Children.Add (polyline);
-				canvas.Margin = rect.Margin;
 
+				for (int px = 0; px <= rect.Width; px++) {
+					double x = (double) px / rect.Width;
 
-				for (int px = 0; px < rect.ActualWidth; px++) {
-					double x = (double) px / rect.ActualWidth;
 					double y = EasingFunction.Ease (x);
 
-					polyline.Points.Add (new Point (px,rect.ActualHeight - y * rect.ActualHeight));
+					polyline.Points.Add (new Point (px,rect.Height - y * rect.Height));
 				}
 
 				polyline.Stroke = new SolidColorBrush (Colors.Blue);
 				polyline.Fill = null;
 
-				LayoutRoot.Children.Add (canvas);
+				Canvas.SetTop (polyline, 5);
+				Canvas.SetLeft (polyline, 5);
+
+				LayoutRoot.Children.Add (polyline);
 			};
 		}
 
