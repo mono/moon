@@ -16,25 +16,11 @@ using System.Windows.Shapes;
 
 namespace EasingFunctions
 {
-	public partial class Page : UserControl
+	public class CustomEase : IEasingFunction
 	{
-		public Page()
+		public double Ease (double normalizedTime)
 		{
-			InitializeComponent();
-		}
-
-		public void StartAnimation (object sender, EventArgs args)
-		{
-			Storyboard sb = Resources["animation"] as Storyboard;
-
-			sb.Stop ();
-
-			EasingView view = sender as EasingView;
-			DoubleAnimation anim = (DoubleAnimation)sb.Children[0];
-			Storyboard.SetTarget (anim, rect);
-			anim.EasingFunction = view.EasingFunction;
-
-			sb.Begin ();
+			return normalizedTime < 0.5 ? 0 : 1;
 		}
 	}
 }

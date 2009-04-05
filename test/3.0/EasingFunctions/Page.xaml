@@ -40,11 +40,17 @@
 	<QuinticEase x:Key="quinticEaseInOut" EasingMode="EaseInOut"/>
 	<SineEase x:Key="sineEaseInOut" EasingMode="EaseInOut"/>
 
+	<ease:CustomEase x:Key="customEase" />
+
 	<Style x:Key="headingText" TargetType="TextBlock">
 	       <Setter Property="FontWeight" Value="Bold" />
 	       <Setter Property="FontSize" Value="11" />
 	       <Setter Property="TextAlignment" Value="Center" />
 	</Style>
+
+	<Storyboard x:Key="animation">
+		<DoubleAnimation Storyboard.TargetProperty="(Canvas.Top)" By="500" Duration="00:00:02" />
+	</Storyboard>
     </UserControl.Resources>
 
   <ScrollViewer>
@@ -58,6 +64,7 @@
 		<ColumnDefinition Width="*" />
 		<ColumnDefinition Width="*" />
 		<ColumnDefinition Width="*" />
+		<ColumnDefinition Width="150" />
 	</Grid.ColumnDefinitions>
 
 	<Grid.RowDefinitions>
@@ -123,41 +130,50 @@
 		<TextBlock Style="{StaticResource headingText}" Text="Sine" />
 	</Border>
 
-	<ease:EasingView Grid.Column="1" Grid.Row="1" EasingFunction="{StaticResource backEaseIn}" />
-	<ease:EasingView Grid.Column="1" Grid.Row="2" EasingFunction="{StaticResource bounceEaseIn}" />
-	<ease:EasingView Grid.Column="1" Grid.Row="3" EasingFunction="{StaticResource circleEaseIn}" />
-	<ease:EasingView Grid.Column="1" Grid.Row="4" EasingFunction="{StaticResource cubicEaseIn}" />
-	<ease:EasingView Grid.Column="1" Grid.Row="5" EasingFunction="{StaticResource elasticEaseIn}" />
-	<ease:EasingView Grid.Column="1" Grid.Row="6" EasingFunction="{StaticResource exponentialEaseIn}" />
-	<ease:EasingView Grid.Column="1" Grid.Row="7" EasingFunction="{StaticResource powerEaseIn}" />
-	<ease:EasingView Grid.Column="1" Grid.Row="8" EasingFunction="{StaticResource quadraticEaseIn}" />
-	<ease:EasingView Grid.Column="1" Grid.Row="9" EasingFunction="{StaticResource quarticEaseIn}" />
-	<ease:EasingView Grid.Column="1" Grid.Row="10" EasingFunction="{StaticResource quinticEaseIn}" />
-	<ease:EasingView Grid.Column="1" Grid.Row="11" EasingFunction="{StaticResource sineEaseIn}" />
+<!--	<ease:EasingView Grid.Column="1" Grid.Row="1" EasingFunction="{StaticResource customEase}" />-->
 
-	<ease:EasingView Grid.Column="2" Grid.Row="1" EasingFunction="{StaticResource backEaseOut}" />
-	<ease:EasingView Grid.Column="2" Grid.Row="2" EasingFunction="{StaticResource bounceEaseOut}" />
-	<ease:EasingView Grid.Column="2" Grid.Row="3" EasingFunction="{StaticResource circleEaseOut}" />
-	<ease:EasingView Grid.Column="2" Grid.Row="4" EasingFunction="{StaticResource cubicEaseOut}" />
-	<ease:EasingView Grid.Column="2" Grid.Row="5" EasingFunction="{StaticResource elasticEaseOut}" />
-	<ease:EasingView Grid.Column="2" Grid.Row="6" EasingFunction="{StaticResource exponentialEaseOut}" />
-	<ease:EasingView Grid.Column="2" Grid.Row="7" EasingFunction="{StaticResource powerEaseOut}" />
-	<ease:EasingView Grid.Column="2" Grid.Row="8" EasingFunction="{StaticResource quadraticEaseOut}" />
-	<ease:EasingView Grid.Column="2" Grid.Row="9" EasingFunction="{StaticResource quarticEaseOut}" />
-	<ease:EasingView Grid.Column="2" Grid.Row="10" EasingFunction="{StaticResource quinticEaseOut}" />
-	<ease:EasingView Grid.Column="2" Grid.Row="11" EasingFunction="{StaticResource sineEaseOut}" />
+	<ease:EasingView Grid.Column="1" Grid.Row="1" EasingFunction="{StaticResource backEaseIn}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="1" Grid.Row="2" EasingFunction="{StaticResource bounceEaseIn}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="1" Grid.Row="3" EasingFunction="{StaticResource circleEaseIn}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="1" Grid.Row="4" EasingFunction="{StaticResource cubicEaseIn}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="1" Grid.Row="5" EasingFunction="{StaticResource elasticEaseIn}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="1" Grid.Row="6" EasingFunction="{StaticResource exponentialEaseIn}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="1" Grid.Row="7" EasingFunction="{StaticResource powerEaseIn}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="1" Grid.Row="8" EasingFunction="{StaticResource quadraticEaseIn}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="1" Grid.Row="9" EasingFunction="{StaticResource quarticEaseIn}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="1" Grid.Row="10" EasingFunction="{StaticResource quinticEaseIn}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="1" Grid.Row="11" EasingFunction="{StaticResource sineEaseIn}" MouseLeftButtonDown="StartAnimation" />
 
-	<ease:EasingView Grid.Column="3" Grid.Row="1" EasingFunction="{StaticResource backEaseInOut}" />
-	<ease:EasingView Grid.Column="3" Grid.Row="2" EasingFunction="{StaticResource bounceEaseInOut}" />
-	<ease:EasingView Grid.Column="3" Grid.Row="3" EasingFunction="{StaticResource circleEaseInOut}" />
-	<ease:EasingView Grid.Column="3" Grid.Row="4" EasingFunction="{StaticResource cubicEaseInOut}" />
-	<ease:EasingView Grid.Column="3" Grid.Row="5" EasingFunction="{StaticResource elasticEaseInOut}" />
-	<ease:EasingView Grid.Column="3" Grid.Row="6" EasingFunction="{StaticResource exponentialEaseInOut}" />
-	<ease:EasingView Grid.Column="3" Grid.Row="7" EasingFunction="{StaticResource powerEaseInOut}" />
-	<ease:EasingView Grid.Column="3" Grid.Row="8" EasingFunction="{StaticResource quadraticEaseInOut}" />
-	<ease:EasingView Grid.Column="3" Grid.Row="9" EasingFunction="{StaticResource quarticEaseInOut}" />
-	<ease:EasingView Grid.Column="3" Grid.Row="10" EasingFunction="{StaticResource quinticEaseInOut}" />
-	<ease:EasingView Grid.Column="3" Grid.Row="11" EasingFunction="{StaticResource sineEaseInOut}" />
+	<ease:EasingView Grid.Column="2" Grid.Row="1" EasingFunction="{StaticResource backEaseOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="2" Grid.Row="2" EasingFunction="{StaticResource bounceEaseOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="2" Grid.Row="3" EasingFunction="{StaticResource circleEaseOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="2" Grid.Row="4" EasingFunction="{StaticResource cubicEaseOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="2" Grid.Row="5" EasingFunction="{StaticResource elasticEaseOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="2" Grid.Row="6" EasingFunction="{StaticResource exponentialEaseOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="2" Grid.Row="7" EasingFunction="{StaticResource powerEaseOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="2" Grid.Row="8" EasingFunction="{StaticResource quadraticEaseOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="2" Grid.Row="9" EasingFunction="{StaticResource quarticEaseOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="2" Grid.Row="10" EasingFunction="{StaticResource quinticEaseOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="2" Grid.Row="11" EasingFunction="{StaticResource sineEaseOut}" MouseLeftButtonDown="StartAnimation" />
+
+	<ease:EasingView Grid.Column="3" Grid.Row="1" EasingFunction="{StaticResource backEaseInOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="3" Grid.Row="2" EasingFunction="{StaticResource bounceEaseInOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="3" Grid.Row="3" EasingFunction="{StaticResource circleEaseInOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="3" Grid.Row="4" EasingFunction="{StaticResource cubicEaseInOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="3" Grid.Row="5" EasingFunction="{StaticResource elasticEaseInOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="3" Grid.Row="6" EasingFunction="{StaticResource exponentialEaseInOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="3" Grid.Row="7" EasingFunction="{StaticResource powerEaseInOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="3" Grid.Row="8" EasingFunction="{StaticResource quadraticEaseInOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="3" Grid.Row="9" EasingFunction="{StaticResource quarticEaseInOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="3" Grid.Row="10" EasingFunction="{StaticResource quinticEaseInOut}" MouseLeftButtonDown="StartAnimation" />
+	<ease:EasingView Grid.Column="3" Grid.Row="11" EasingFunction="{StaticResource sineEaseInOut}" MouseLeftButtonDown="StartAnimation" />
+
+
+	<Canvas Grid.Column="4" Grid.Row="0" Grid.RowSpan="11">
+		<Rectangle x:Name="measure1" Canvas.Left="7" Canvas.Top="7" Height="600" Width="3" Fill="Black" />
+		<Rectangle x:Name="measure2" Canvas.Left="110" Canvas.Top="7" Height="600" Width="3" Fill="Black" />
+		<Rectangle x:Name="rect" Canvas.Left="10" Canvas.Top="7" Width="100" Height="100" Fill="Red" />
+	</Canvas>
 
     </Grid>
   </ScrollViewer>
