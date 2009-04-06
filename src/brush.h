@@ -18,7 +18,7 @@
 
 #include "enums.h"
 #include "collection.h"
-#include "bitmapimage.h"
+#include "imagesource.h"
 
 class MediaElement;
 

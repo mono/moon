@@ -1,3 +1,9 @@
+2009-04-06  Chris Toshok  <toshok@ximian.com>
+
+	* brush.h: include imagesource.h, not bitmapimage.h
+
+	* brush.cpp: include bitmapimage.h here.
+
 2009-04-06  Geoff Norton  <gnorton@novell.com>
 
 	* application.cpp: We want ToString here, not just the path of the

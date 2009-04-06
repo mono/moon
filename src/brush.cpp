@@ -20,6 +20,7 @@
 #include "color.h"
 #include "transform.h"
 #include "mediaplayer.h"
+#include "bitmapimage.h"
 
 //
 // SL-Cairo convertion and helper routines
