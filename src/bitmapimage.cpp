@@ -180,6 +180,7 @@ BitmapImage::UriSourceChanged ()
 			PixbufWrite (buffer, 0, size);
 			PixmapComplete ();
 
+			g_free (buffer);
 			return;
 		}
 	}
