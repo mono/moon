@@ -296,8 +296,13 @@ namespace System.Windows {
 			} else {
 				assembly = Deployment.Current.EntryAssembly;
 				assembly_name = Deployment.Current.EntryPointAssembly;
-				resource = loc [0] == '/' ? loc.Substring (1) : loc;	
+				resource = loc;
 			}
+
+			resource = resource [0] == '/' ? resource : string.Format ("/{0}", resource);
+			resource = Path.GetFullPath (resource);
+			resource = resource [0] == '/' ? resource.Substring (1) : resource;
+
 
 			try {
 				var manager = new ResourceManager (assembly_name + ".g", assembly) { IgnoreCase = true };
