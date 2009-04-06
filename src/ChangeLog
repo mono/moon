@@ -1,3 +1,7 @@
+2009-04-06  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h: ad the 3.0 DPs and property accessors
+
 2009-04-05  Chris Toshok  <toshok@ximian.com>
 
 	* easing.cpp|.h: add EasingFunctionBase::SetEasingFunction so that

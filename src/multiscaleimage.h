@@ -64,8 +64,16 @@ class MultiScaleImage : public MediaBase {
 	void TileOpened (BitmapImage *bitmapImage);
 	void TileFailed (BitmapImage *bitmapImage);
 
+	/* @PropertyType=bool,DefaultValue=true,Version=3.0,GenerateAccessors */
+	const static int AllowDownloadingProperty;
 	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
 	const static int AspectRatioProperty;
+	/* @PropertyType=double,DefaultValue=1.0,Version=3.0,GenerateAccessors */
+	const static int BlurFactorProperty;
+	/* @PropertyType=bool,DefaultValue=false,Version=3.0,GenerateGetter */
+	const static int IsDownloadingProperty;
+	/* @PropertyType=bool,DefaultValue=true,Version=3.0,GenerateGetter */
+	const static int IsIdleProperty;
 	/* @PropertyType=MultiScaleTileSource,Version=2.0,GenerateAccessors */
 	const static int SourceProperty;
 	/* @PropertyType=MultiScaleSubImageCollection,AutoCreateValue,ReadOnly,Version=2.0,GenerateGetter */
@@ -103,6 +111,16 @@ class MultiScaleImage : public MediaBase {
 	// Property Accessors
 	//
 	double GetAspectRatio ();
+
+	bool GetAllowDownloading ();
+	void SetAllowDownloading (bool value);
+
+	double GetBlurFactor ();
+	void SetBlurFactor (double value);
+
+	bool GetIsIdle ();
+
+	bool GetIsDownloading ();
 
 	MultiScaleTileSource* GetSource ();
 	void SetSource (MultiScaleTileSource* source);
