@@ -228,6 +228,19 @@ namespace Mono {
 			return Marshal.AllocHGlobal (cb);
 		}
 
+		static MethodInfo inDomain;
+
+		public static bool GCHandleInDomain (IntPtr ptr)
+		{
+			if (inDomain == null) {
+				inDomain = typeof(GCHandle).GetMethod ("CheckCurrentDomain", BindingFlags.Static | BindingFlags.NonPublic);
+				if (inDomain == null)
+					throw new Exception ("argh");
+			}
+
+			return (bool)inDomain.Invoke (null, new object[1] { (int)ptr });
+		}
+
 		public static GCHandle GCHandleFromIntPtr (IntPtr ptr)
 		{
 			return GCHandle.FromIntPtr (ptr);

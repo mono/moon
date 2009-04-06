@@ -242,11 +242,11 @@ namespace Mono.Xaml
 			if (target_ptr == IntPtr.Zero)
 				return  null;
 
-			try {
+			if (Helper.GCHandleInDomain (target_ptr)) {
 				GCHandle handle = Helper.GCHandleFromIntPtr (target_ptr);
 				return handle.Target;
 			}
-			catch {
+			else {
 				Kind k = NativeMethods.event_object_get_object_type (target_ptr); 
 				return NativeDependencyObjectHelper.Lookup (k, target_ptr) as INativeDependencyObjectWrapper;
 			}
