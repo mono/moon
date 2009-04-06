@@ -597,11 +597,15 @@ namespace Mono.Xaml
 						break;
 					}
 					res = assembly.GetType (full_name);
+					if (res != null && !res.IsPublic)
+						res = null;
 				}
 
 				if (res == null && !explicit_assembly) {
 					assembly = typeof (DependencyObject).Assembly;
 					res = assembly.GetType (full_name);
+					if (res != null && !res.IsPublic)
+						res = null;
 				}
 			} while (false);
 
