@@ -134,6 +134,9 @@ class TypeReference {
 			case "NativePropertyChangedHandler*":
 				managed_type = "Mono.NativePropertyChangedHandler";
 				break;
+			case "EasingFunction":
+				managed_type = "Mono.EasingFunctionCallback";
+				break;
 			case "MeasureOverrideCallback":
 				managed_type = "Mono.MeasureOverrideCallback";
 				break;
