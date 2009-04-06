@@ -1,9 +1,10 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 452 methods
+# 454 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
++SSC-M: System.Void Mono.EasingFunctionWrapper::ReportException(System.Exception)
 +SSC-M: System.Void Mono.Events::InitSurface(System.IntPtr)
 +SSC-M: System.Void Mono.Events::AddHandler(System.Windows.DependencyObject,System.String,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void Mono.Events::RemoveHandler(System.Windows.DependencyObject,System.String,Mono.UnmanagedEventHandler)
@@ -166,7 +167,7 @@
 +SSC-M: System.Boolean System.Windows.Deployment::InitializeDeployment()
 +SSC-M: System.Boolean System.Windows.Deployment::LoadAssemblies()
 +SSC-M: System.Boolean System.Windows.Deployment::CreateApplication()
-+SSC-M: System.Void System.Windows.Deployment::<LoadAssemblies>m__1C(System.Object,System.Net.OpenReadCompletedEventArgs)
++SSC-M: System.Void System.Windows.Deployment::<LoadAssemblies>m__1D(System.Object,System.Net.OpenReadCompletedEventArgs)
 +SSC-M: System.Void System.Windows.Documents.Glyphs::.ctor()
 +SSC-M: System.Void System.Windows.Documents.Inline::.ctor()
 +SSC-M: System.Void System.Windows.Documents.InlineCollection::.ctor()
@@ -249,6 +250,7 @@
 +SSC-M: System.Void System.Windows.Media.Animation.EasingColorKeyFrame::.ctor()
 +SSC-M: System.Void System.Windows.Media.Animation.EasingDoubleKeyFrame::.ctor()
 +SSC-M: System.Void System.Windows.Media.Animation.EasingFunctionBase::.ctor()
++SSC-M: System.Void System.Windows.Media.Animation.EasingFunctionBase::Initialize()
 +SSC-M: System.Void System.Windows.Media.Animation.EasingPointKeyFrame::.ctor()
 +SSC-M: System.Void System.Windows.Media.Animation.ElasticEase::.ctor()
 +SSC-M: System.Double System.Windows.Media.Animation.ElasticEase::EaseInCore(System.Double)

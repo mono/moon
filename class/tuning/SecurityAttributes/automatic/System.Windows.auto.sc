@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 472 methods needs to be decorated.
+# 473 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1131,6 +1131,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::downloader_write(System.IntPtr,System.IntPtr,System.Int32,System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::easing_function_base_set_easing_function(System.IntPtr,Mono.EasingFunctionCallback)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_add_toggle_ref_notifier(System.IntPtr,Mono.ToggleRef/ToggleNotifyHandler)

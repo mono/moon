@@ -1,3 +1,11 @@
+2009-04-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.sc: Add easing_function_base_set_easing_function
+	p/invoke.
+	* System.Windows.auto.ssc: Add EasingFunctionWrapper.ReportException,
+	and EasingFunctionBase.Initialize. Rename Deployment.LoadAssemblies
+	anon method.
+
 2009-04-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: Add new easing_*_framenew p/invokes
