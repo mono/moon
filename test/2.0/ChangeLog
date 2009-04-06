@@ -1,3 +1,10 @@
+2009-04-06  Alan McGovern  <amcgovern@novell.com>
+
+	* PopupExample2/Page.xaml:
+	* PopupExample2/Page.xaml.cs: The test wasn't working because
+	  the layout root wasn't a canvas. I must've only fixed it in
+	  my VM as I know I noticed this and fixed it.
+
 2009-03-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Include Microsoft.SilverlightControls in the
