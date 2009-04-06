@@ -1,5 +1,10 @@
 2009-04-06  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (value_from_str): quiet spew (which in this case
+	indicates an error when there isn't one.)
+
+2009-04-06  Chris Toshok  <toshok@ximian.com>
+
 	* brush.h: include imagesource.h, not bitmapimage.h
 
 	* brush.cpp: include bitmapimage.h here.
