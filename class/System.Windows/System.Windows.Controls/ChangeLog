@@ -1,3 +1,7 @@
+2009-04-06  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleImage.cs: lookup the new DPs and new properties
+
 2009-04-03  Alan McGovern  <amcgovern@novell.com>
 
 	* TextBox.cs: TextBox does validation in both the getter and

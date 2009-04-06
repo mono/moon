@@ -31,7 +31,11 @@ using System.Windows.Media;
 namespace System.Windows.Controls {
 
 	public partial class MultiScaleImage : FrameworkElement {
+		public static readonly DependencyProperty AllowDownloadingProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "AllowDownloading", typeof (bool));
 		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "AspectRatio", typeof (double));
+		public static readonly DependencyProperty BlurFactorProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "BlurFactor", typeof (double));
+		public static readonly DependencyProperty IsDownloadingProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "IsDownloading", typeof (bool));
+		public static readonly DependencyProperty IsIdleProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "IsIdle", typeof (bool));
 		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "Source", typeof (MultiScaleTileSource));
 		public static readonly DependencyProperty SubImagesProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "SubImages", typeof (MultiScaleSubImageCollection));
 		public static readonly DependencyProperty UseSpringsProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "UseSprings", typeof (bool));
@@ -40,9 +44,27 @@ namespace System.Windows.Controls {
 		
 		ReadOnlyCollection<MultiScaleSubImage> subimages;
 		
+		public bool AllowDownloading {
+			get { return (bool) GetValue (AllowDownloadingProperty); }
+			set { SetValue (AllowDownloadingProperty, value); }
+		}
+
 		public double AspectRatio {
 			get { return (double) GetValue (AspectRatioProperty); }
 			set { SetValue (AspectRatioProperty, value); }
+		}
+		
+		public double BlurFactorRatio {
+			get { return (double) GetValue (BlurFactorProperty); }
+			set { SetValue (BlurFactorProperty, value); }
+		}
+
+		public bool IsDownloading {
+			get { return (bool) GetValue (IsDownloadingProperty); }
+		}
+		
+		public bool IsIdle {
+			get { return (bool) GetValue (IsIdleProperty); }
 		}
 		
 		public MultiScaleTileSource Source {
