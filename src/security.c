@@ -27,6 +27,9 @@ const static char* platform_code_assemblies [] = {
 	"System.Windows.Browser.dll",
 	"System.Xml.dll",
 	"Microsoft.VisualBasic.dll",
+#if DEBUG
+	"jtr.dll",
+#endif
 };
 
 static gboolean
