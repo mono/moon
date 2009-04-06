@@ -1,39 +1,10 @@
-// define this here so that protypes.h isn't included (and doesn't
-// muck with our npapi.h)
-#define NO_NSPR_10_SUPPORT
-
+#include "../ff-common.h"
 #include "plugin.h"
 
 #include "ff2-bridge.h"
-#include "plugin-class.h"
 
-#include <nsCOMPtr.h>
-#include <nsIDOMElement.h>
-#include <nsIDOMRange.h>
-#include <nsIDOMDocumentRange.h>
-#include <nsIDOMDocument.h>
-#include <nsIDOMWindow.h>
-#include <nsStringAPI.h>
-
-// Events
-#include <nsIDOMEvent.h>
-#include <nsIDOMMouseEvent.h>
-#include <nsIDOMEventTarget.h>
-#include <nsIDOMEventListener.h>
-
+// this is the only one that differs better ff2 and ff3
 #include <dom/nsIDOMKeyEvent.h>
-
-#ifdef DEBUG
-#define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s)\n" G_STRLOC, x)
-#define d(x) x
-#else
-#define DEBUG_WARN_NOTIMPLEMENTED(x)
-#define d(x)
-#endif
-
-#define STR_FROM_VARIANT(v) ((char *) NPVARIANT_TO_STRING (v).utf8characters)
-
-// HtmlObject support
 
 class FF2DomEventWrapper : public nsIDOMEventListener {
 
@@ -51,6 +22,7 @@ class FF2DomEventWrapper : public nsIDOMEventListener {
 	callback_dom_event *callback;
 	nsCOMPtr<nsIDOMEventTarget> target;
 	gpointer context;
+	NPP npp;
 };
 
 NS_IMPL_ISUPPORTS1(FF2DomEventWrapper, nsIDOMEventListener)
@@ -69,6 +41,9 @@ FF2DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 
 	client_x = client_y = offset_x = offset_y = mouse_button = 0;
 	alt_key = ctrl_key = shift_key = FALSE;
+
+	FFDomEvent *obj = (FFDomEvent *) NPN_CreateObject (npp, FFDomEventClass);
+	obj->event = aDOMEvent;
 
 	nsCOMPtr<nsIDOMMouseEvent> mouse_event = do_QueryInterface (aDOMEvent);
 	if (mouse_event != nsnull) {
@@ -111,7 +86,7 @@ FF2DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 	}
 
 	callback (context, strdup (NS_ConvertUTF16toUTF8 (str_event).get ()), client_x, client_y, offset_x, offset_y,
-			alt_key, ctrl_key, shift_key, mouse_button, key_code, char_code, NULL);
+			alt_key, ctrl_key, shift_key, mouse_button, key_code, char_code, obj);
 
 	return NS_OK;
 }
@@ -134,6 +109,11 @@ ff2_get_dom_document (NPP npp)
 	}
 
 	return dom_document;
+}
+
+FF2BrowserBridge::FF2BrowserBridge ()
+{
+	FFDomEventClass = new FFDomEventType ();
 }
 
 const char*
@@ -240,6 +220,7 @@ FF2BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 	wrapper->callback = cb;
 	wrapper->target = target;
 	wrapper->context = context;
+	wrapper->npp = npp;
 
 	rv = target->AddEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
 
@@ -256,4 +237,70 @@ FF2BrowserBridge::HtmlObjectDetachEvent (NPP npp, const char *name, gpointer lis
 	delete wrapper;
 }
 
+static NPObject *
+dom_event_allocate (NPP instance, NPClass *klass)
+{
+	return new FFDomEvent (instance);
+}
 
+FFDomEventType::FFDomEventType ()
+{
+	allocate = dom_event_allocate;
+	AddMapping (dom_event_mapping, G_N_ELEMENTS (dom_event_mapping));
+}
+
+FFDomEventType *FFDomEventClass;
+
+
+bool
+FFDomEvent::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	NULL_TO_NPVARIANT (*result);
+
+#if ds(!)0
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	printf ("getting event property %s\n", strname);
+	NPN_MemFree (strname);
+#endif
+
+	switch (id) {
+		case MoonId_Detail: {
+			nsCOMPtr<nsIDOMUIEvent> uievent = do_QueryInterface (event);
+			if (uievent) {
+				int detail;
+				uievent->GetDetail (&detail);
+				INT32_TO_NPVARIANT (detail, *result);
+			}
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool
+FFDomEvent::Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, uint32_t argCount, NPVariant *result)
+{
+	NULL_TO_NPVARIANT (*result);
+	ds(printf("FFDomEvent::Invoke\n"));
+	switch (id) {
+		case MoonId_StopPropagation: {
+			if (event) {
+				ds(printf("FFDomEvent::StopPropagation\n"));
+				event->StopPropagation ();
+			}
+			return true;
+		}
+		case MoonId_PreventDefault: {
+			if (event) {
+				ds(printf("FFDomEvent::PreventDefault\n"));
+				event->PreventDefault ();
+			}
+			return true;
+		}
+		default: {
+			return MoonlightObject::Invoke (id, name, args, argCount, result);
+		}
+	}
+}

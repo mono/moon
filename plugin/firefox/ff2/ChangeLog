@@ -1,6 +1,14 @@
+2009-04-06  Andreia Gaita  <avidigal@novell.com>
+
+	* ff2-bridge.h, ff2-dom.cpp: Wrap nsIDOM events as npobj and
+	include them in the callback so that they can be referenced later
+	from managed. Move some of the common ff2/3 code to ff-common.h
+
+	* Makefile.am: add ff-common.h
+
 2009-03-31  Jb Evain  <jbevain@novell.com>
 
-	* ff3-dom.cpp (HandleEvent): handle key events.
+	* ff2-dom.cpp (HandleEvent): handle key events.
 
 2009-03-30  Andreia Gaita <avidigal@novell.com>
 

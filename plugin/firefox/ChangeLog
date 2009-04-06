@@ -1,3 +1,8 @@
+2009-04-06  Andreia Gaita  <avidigal@novell.com>
+
+	* ff-common.h: add new header for common structs and dom includes
+	for ff2/3-dom and bridge
+
 2009-03-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* browser-http.inc: FF2/3DownloaderResponse: propagate the

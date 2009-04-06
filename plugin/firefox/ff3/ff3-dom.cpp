@@ -1,39 +1,10 @@
-// define this here so that protypes.h isn't included (and doesn't
-// muck with our npapi.h)
-#define NO_NSPR_10_SUPPORT
-
+#include "../ff-common.h"
 #include "plugin.h"
 
 #include "ff3-bridge.h"
 
-#include <nsCOMPtr.h>
-#include <nsIDOMElement.h>
-#include <nsIDOMRange.h>
-#include <nsIDOMDocumentRange.h>
-#include <nsIDOMDocument.h>
-#include <nsIDOMWindow.h>
-#include <nsStringAPI.h>
-
-// Events
-#include <nsIDOMEvent.h>
-#include <nsIDOMMouseEvent.h>
+// this is the only one that differs better ff2 and ff3
 #include <nsIDOMKeyEvent.h>
-#include <nsIDOMEventTarget.h>
-#include <nsIDOMEventListener.h>
-
-
-#ifdef DEBUG
-#define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s)\n" G_STRLOC, x)
-#define d(x) x
-#else
-#define DEBUG_WARN_NOTIMPLEMENTED(x)
-#define d(x)
-#endif
-
-// debug scriptable object
-#define ds(x)
-
-#define STR_FROM_VARIANT(v) ((char *) NPVARIANT_TO_STRING (v).utf8characters)
 
 class FF3DomEventWrapper : public nsIDOMEventListener {
 
@@ -54,16 +25,6 @@ class FF3DomEventWrapper : public nsIDOMEventListener {
 	NPP npp;
 };
 
-struct FF3DomEvent : MoonlightObject {
-	FF3DomEvent (NPP instance) : MoonlightObject (instance) { }
-
-	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
-	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
-
-	nsIDOMEvent * event;
-};
-
 NS_IMPL_ISUPPORTS1(FF3DomEventWrapper, nsIDOMEventListener)
 
 NS_IMETHODIMP
@@ -81,10 +42,7 @@ FF3DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 	client_x = client_y = offset_x = offset_y = mouse_button = 0;
 	alt_key = ctrl_key = shift_key = FALSE;
 
-	FF3DomEvent *obj = (FF3DomEvent *)
-		NPN_CreateObject (npp,
-				  FF3DomEventClass);
-
+	FFDomEvent *obj = (FFDomEvent *) NPN_CreateObject (npp, FFDomEventClass);
 	obj->event = aDOMEvent;
 
 	nsCOMPtr<nsIDOMMouseEvent> mouse_event = do_QueryInterface (aDOMEvent);
@@ -155,7 +113,7 @@ ff3_get_dom_document (NPP npp)
 
 FF3BrowserBridge::FF3BrowserBridge ()
 {
-	FF3DomEventClass = new FF3DomEventType ();
+	FFDomEventClass = new FFDomEventType ();
 }
 
 const char*
@@ -282,21 +240,20 @@ FF3BrowserBridge::HtmlObjectDetachEvent (NPP instance, const char *name, gpointe
 static NPObject *
 dom_event_allocate (NPP instance, NPClass *klass)
 {
-	return new FF3DomEvent (instance);
+	return new FFDomEvent (instance);
 }
 
-
-FF3DomEventType::FF3DomEventType ()
+FFDomEventType::FFDomEventType ()
 {
 	allocate = dom_event_allocate;
 	AddMapping (dom_event_mapping, G_N_ELEMENTS (dom_event_mapping));
 }
 
-FF3DomEventType *FF3DomEventClass;
+FFDomEventType *FFDomEventClass;
 
 
 bool
-FF3DomEvent::GetProperty (int id, NPIdentifier name, NPVariant *result)
+FFDomEvent::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	NULL_TO_NPVARIANT (*result);
 
@@ -322,22 +279,22 @@ FF3DomEvent::GetProperty (int id, NPIdentifier name, NPVariant *result)
 }
 
 bool
-FF3DomEvent::Invoke (int id, NPIdentifier name,
+FFDomEvent::Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, uint32_t argCount, NPVariant *result)
 {
 	NULL_TO_NPVARIANT (*result);
-	ds(printf("FF3DomEvent::Invoke\n"));
+	ds(printf("FFDomEvent::Invoke\n"));
 	switch (id) {
 		case MoonId_StopPropagation: {
 			if (event) {
-				ds(printf("FF3DomEvent::StopPropagation\n"));
+				ds(printf("FFDomEvent::StopPropagation\n"));
 				event->StopPropagation ();
 			}
 			return true;
 		}
 		case MoonId_PreventDefault: {
 			if (event) {
-				ds(printf("FF3DomEvent::PreventDefault\n"));
+				ds(printf("FFDomEvent::PreventDefault\n"));
 				event->PreventDefault ();
 			}
 			return true;
