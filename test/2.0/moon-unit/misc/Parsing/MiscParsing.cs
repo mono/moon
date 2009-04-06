@@ -56,6 +56,11 @@ namespace MoonTest.Misc.Parsing
 			Assert.IsNotNull (canvas.FindName ("some_name"), "5");
 			Assert.IsNull (canvas.FindName ("the_block"), "6");
 			Assert.IsNull (page.FindName ("some_name"), "7");
+
+			//
+			// The managed element should be able to find itself
+			//
+			Assert.IsNotNull (canvas.FindName ("the_canvas"), "8");
 		}
 	}
 }
