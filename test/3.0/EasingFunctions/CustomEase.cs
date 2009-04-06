@@ -16,11 +16,30 @@ using System.Windows.Shapes;
 
 namespace EasingFunctions
 {
-	public class CustomEase : IEasingFunction
+	public class CustomEaseIn : IEasingFunction
 	{
 		public double Ease (double normalizedTime)
 		{
 			return normalizedTime < 0.5 ? 0 : 1;
+		}
+	}
+
+	public class CustomEaseOut : IEasingFunction
+	{
+		public double Ease (double normalizedTime)
+		{
+			return normalizedTime < 0.5 ? 1 : 0;
+		}
+	}
+
+	public class CustomEaseInOut : IEasingFunction
+	{
+		public double Ease (double normalizedTime)
+		{
+			return normalizedTime < 0.25 ? 1
+					 : normalizedTime < 0.5 ? 0
+						: normalizedTime < 0.75 ? 1
+							: 0;
 		}
 	}
 }
