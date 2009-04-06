@@ -1,3 +1,10 @@
+2009-04-06  Jackson Harper  <jackson@ximian.com>
+
+	* Makefile.am:
+	* misc/Parsing/MiscParsing*: New test for namescopes (doesn't
+	really have anything to do with namescopes but originally we
+	thought the problems were in the parser).
+
 2009-04-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Interop/SettingsTest.cs: Remove [MoonlightBug]
