@@ -40,6 +40,7 @@ system_windows_sources =							\
 	$(srcdir)/System.IO/SimpleUnmanagedMemoryStream.cs			\
 	$(srcdir)/Mono/ApplicationLauncher.cs					\
 	$(srcdir)/Mono/DispatcherTimer.cs					\
+	$(srcdir)/Mono/EasingFunctionWrapper.cs					\
 	$(srcdir)/Mono/EventHandlerList.cs					\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/GeneratedPInvokes.cs					\

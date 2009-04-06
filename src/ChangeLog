@@ -1,3 +1,10 @@
+2009-04-05  Chris Toshok  <toshok@ximian.com>
+
+	* easing.cpp|.h: add EasingFunctionBase::SetEasingFunction so that
+	managed subclasses can register a delegate.
+
+	* cbinding.cpp|.h: regen.
+
 2009-04-04  Geoff Norton  <gnorton@novell.com>
 
 	* mediaplayer.cpp: Ensure that we invalidate for planar data as well.

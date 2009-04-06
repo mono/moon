@@ -1292,6 +1292,16 @@ easing_function_base_new (void)
 }
 
 
+void
+easing_function_base_set_easing_function (EasingFunctionBase *instance, EasingFunction value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetEasingFunction (value);
+}
+
+
 /**
  * EasingPointKeyFrame
  **/

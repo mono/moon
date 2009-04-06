@@ -657,6 +657,10 @@ namespace Mono {
 		public extern static IntPtr easing_function_base_new ();
 
 		[DllImport ("moon")]
+		// void easing_function_base_set_easing_function (EasingFunctionBase *instance, EasingFunction value);
+		public extern static void easing_function_base_set_easing_function (IntPtr instance, Mono.EasingFunctionCallback value);
+
+		[DllImport ("moon")]
 		// EasingPointKeyFrame *easing_point_key_frame_new ();
 		public extern static IntPtr easing_point_key_frame_new ();
 

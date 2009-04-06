@@ -334,6 +334,9 @@ namespace Mono {
 					return value;
 				}
 
+				if (v is IEasingFunction && !(v is EasingFunctionBase))
+					v = new EasingFunctionWrapper (v as IEasingFunction);
+
 				if (v is DependencyObject) {
 					DependencyObject dov = (DependencyObject) v;
 

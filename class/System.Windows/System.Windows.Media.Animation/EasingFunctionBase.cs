@@ -24,10 +24,19 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
+
 namespace System.Windows.Media.Animation 
 {
 	public abstract partial class EasingFunctionBase : DependencyObject, IEasingFunction
 	{
+		void Initialize ()
+		{
+			callback = EasingFunctionWrapper.CreateSafeEasingFunction (new EasingFunctionCallback (Ease));
+
+			NativeMethods.easing_function_base_set_easing_function (native, callback);
+		}
+
 		public double Ease (double normalizedTime)
 		{
 			switch (EasingMode) {
@@ -48,5 +57,7 @@ namespace System.Windows.Media.Animation
 		}
 
 		public abstract double EaseInCore (double normalizedTime);
+
+		EasingFunctionCallback callback;
 	}
 }

@@ -689,8 +689,14 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class EasingFunctionBase {
-		public EasingFunctionBase () : base (NativeMethods.easing_function_base_new ()) {}
-		internal EasingFunctionBase (IntPtr raw) : base (raw) {}
+		public EasingFunctionBase () : base (NativeMethods.easing_function_base_new ())
+		{
+			Initialize ();
+		}
+		internal EasingFunctionBase (IntPtr raw) : base (raw)
+		{
+			Initialize ();
+		}
 	}
 
 	partial class EasingPointKeyFrame {

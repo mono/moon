@@ -1,3 +1,15 @@
+2009-04-05  Chris Toshok  <toshok@ximian.com>
+
+	* GeneratedPInvokes.cs: regen.
+
+	* EasingFunctionWrapper.cs: wrapper class, a DO subclass (by way
+	of EasingFunctionBase) so we can store it easily and ref it.  Its
+	EaseInCore method just calls the IEasingFunction's Ease method.
+
+	* Value.cs (Value.FromObject): if we're dealing with an
+	IEasingFunction implementation that is *not* an EasingFunctionBase
+	subclass, we need to wrap it.
+
 2009-04-04  Chris Toshok  <toshok@ximian.com>
 
 	* NativeDependencyObjectHelper.cs (CreateObject): add the easing

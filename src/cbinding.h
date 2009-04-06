@@ -599,6 +599,9 @@ EasingDoubleKeyFrame *easing_double_key_frame_new (void);
 /* @GeneratePInvoke */
 EasingFunctionBase *easing_function_base_new (void);
 
+/* @GeneratePInvoke */
+void easing_function_base_set_easing_function (EasingFunctionBase *instance, EasingFunction value);
+
 /**
  * EasingPointKeyFrame
  **/

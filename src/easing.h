@@ -15,7 +15,10 @@
 #include "dependencyobject.h"
 #include "enums.h"
 
+typedef double (*EasingFunction) (double normalizedTime);
+
 /* @Namespace=System.Windows.Media.Animation */
+/* @CallInitialize */
 class EasingFunctionBase : public DependencyObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -30,8 +33,14 @@ public:
 	EasingMode GetEasingMode ();
 	void SetEasingMode (EasingMode easingMode);
 
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetEasingFunction (EasingFunction value);
+
 protected:
 	virtual ~EasingFunctionBase ();
+
+private:
+	EasingFunction easing_function_callback;
 };
 
 /* @Namespace=System.Windows.Media.Animation */

@@ -15,6 +15,10 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdio.h>
+#include <runtime.h>
+#include <timemanager.h>
+#include <timesource.h>
 
 #include "easing.h"
 
@@ -23,6 +27,7 @@
 EasingFunctionBase::EasingFunctionBase ()
 {
 	SetObjectType (Type::EASINGFUNCTIONBASE);
+	easing_function_callback = NULL;
 }
 
 EasingFunctionBase::~EasingFunctionBase ()
@@ -33,6 +38,9 @@ EasingFunctionBase::~EasingFunctionBase ()
 double
 EasingFunctionBase::Ease (double normalizedTime)
 {
+	if (easing_function_callback)
+		return easing_function_callback (normalizedTime);
+
 	switch (GetEasingMode()) {
 	case EasingModeIn:
 		return EaseInCore (normalizedTime);
@@ -46,6 +54,12 @@ EasingFunctionBase::Ease (double normalizedTime)
 		// XXX
 		return 0.0;
 	}
+}
+
+void
+EasingFunctionBase::SetEasingFunction (EasingFunction easing_function)
+{
+	easing_function_callback = easing_function;
 }
 
 // Back

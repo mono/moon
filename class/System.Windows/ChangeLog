@@ -1,3 +1,8 @@
+2009-04-05  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (system_windows_sources): add
+	Mono/EasingFunctionWrapper.cs
+
 2009-04-04  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (system_windows_sources): add the easing keyframe
