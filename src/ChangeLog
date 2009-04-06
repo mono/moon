@@ -1,3 +1,10 @@
+2009-04-06  Geoff Norton  <gnorton@novell.com>
+
+	* application.cpp: We want ToString here, not just the path of the
+	uri.
+	* bitmapimage.cpp|h: We need to do this async, since the events
+	might be registered in managed code before a yield.
+
 2009-04-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* security.c: Add jtr.dll to the list of platform assemblies,

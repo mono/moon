@@ -161,12 +161,47 @@ BitmapImage::~BitmapImage ()
 }
 
 void
+BitmapImage::uri_source_changed_callback (EventObject *user_data)
+{
+	BitmapImage *image = (BitmapImage *) user_data;
+	image->UriSourceChanged ();
+}
+
+void
+BitmapImage::UriSourceChanged ()
+{
+	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+	Application *current = Application::GetCurrent ();
+
+	if (current) {
+		int size = 0;
+		unsigned char *buffer = (unsigned char *)current->GetResource (GetUriSource (), &size);
+		if (size > 0) {
+			PixbufWrite (buffer, 0, size);
+			PixmapComplete ();
+
+			return;
+		}
+	}
+
+	if (surface == NULL) {
+		SetBitmapData (NULL);
+		return;
+	}
+
+	if (!(downloader = surface->CreateDownloader ()))
+		return;
+
+	SetDownloader (downloader, GetUriSource (), NULL);
+	downloader->unref ();
+}
+
+
+void
 BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == BitmapImage::UriSourceProperty) {
 		Uri *uri = args->GetNewValue () ? args->GetNewValue ()->AsUri () : NULL;
-		Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-		Application *current = Application::GetCurrent ();
 
 		if (downloader) {
 			CleanupDownloader ();
@@ -177,30 +212,9 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 
 		if (Uri::IsNullOrEmpty (uri)) {
 			SetBitmapData (NULL);
-			return;
+		} else {
+			AddTickCall (uri_source_changed_callback);
 		}
-
-		if (current) {
-			int size = 0;
-			unsigned char *buffer = (unsigned char *)current->GetResource (uri, &size);
-			if (size > 0) {
-				PixbufWrite (buffer, 0, size);
-				PixmapComplete ();
-
-				return;
-			}
-		}
-
-		if (surface == NULL) {
-			SetBitmapData (NULL);
-			return;
-		}
-
-		if (!(downloader = surface->CreateDownloader ()))
-			return;
-
-		SetDownloader (downloader, uri, NULL);
-		downloader->unref ();
 	} else if (args->GetId () == BitmapImage::ProgressProperty) {
 		Emit (DownloadProgressEvent, new DownloadProgressEventArgs (GetProgress ()));
 	}
@@ -335,6 +349,8 @@ failed:
 void
 BitmapImage::PixmapComplete ()
 {
+	SetProgress (1.0);
+
 	gdk_pixbuf_loader_close (loader, error == NULL ? &error : NULL);
 
 	if (error) goto failed;

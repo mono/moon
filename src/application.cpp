@@ -70,7 +70,7 @@ gpointer
 Application::GetResource (Uri *uri, int *size)
 {
 	if (get_resource_cb) {
-		return get_resource_cb (uri->GetPath (), size);
+		return get_resource_cb (uri->ToString (), size);
 	}
 
 	*size = 0;
