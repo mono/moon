@@ -959,7 +959,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::uielement_get_subtree_object(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::uielement_get_transform_to_uielement(System.IntPtr,System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::uielement_get_transform_to_uielement_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::uielement_get_visual_parent(System.IntPtr)

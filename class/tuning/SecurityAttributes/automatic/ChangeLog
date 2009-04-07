@@ -1,3 +1,10 @@
+2009-04-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.sc: Rename uielement_get_transform_to_uielement
+	to uielement_get_transform_to_uielement_with_error_
+	* System.Windows.auto.ssc: Add uielement_get_transform_to_uielement
+	which removes the need for UIElement.TransformToVisual
+
 2009-04-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: Add easing_function_base_set_easing_function
