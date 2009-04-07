@@ -117,22 +117,33 @@ namespace MoonTest.System.Windows {
 
 			bool loaded_reached = false;
 
-			ui.Loaded += delegate {
-				Assert.IsNotNull (ui.TransformToVisual (c), "1");
-				Assert.IsNotNull (ui.TransformToVisual (null), "2");
+			Exception loaded_exception = null;
 
+			ui.Loaded += delegate {
 				loaded_reached = true;
+
+				try {
+					Assert.IsNotNull (ui.TransformToVisual (c), "1");
+					Assert.IsNotNull (ui.TransformToVisual (null), "2");
+				}
+				catch (Exception e) {
+					loaded_exception = e;
+				}
 			};
 
 			TestPanel.Children.Add (c);
 
 			EnqueueConditional ( () => loaded_reached );
+
+			if (loaded_exception != null)
+				throw loaded_exception;
+
 			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
+		[MoonlightBug ("the Canvas top/left coordinates are not reflected in the absolute transform")]
 		public void TransformToVisual_InVisualTree2 ()
 		{
 			ConcreteUIElement ui = new ConcreteUIElement ();
@@ -145,18 +156,28 @@ namespace MoonTest.System.Windows {
 
 			bool loaded_reached = false;
 
+			Exception loaded_exception = null;
+
 			ui.Loaded += delegate {
-				MatrixTransform mt = (MatrixTransform)ui.TransformToVisual (null);
-
-				Assert.AreEqual (10, mt.Matrix.OffsetX, "3");
-				Assert.AreEqual (15, mt.Matrix.OffsetY, "4");
-
 				loaded_reached = true;
+				try {
+					MatrixTransform mt = (MatrixTransform)ui.TransformToVisual (null);
+
+					Assert.AreEqual (10, mt.Matrix.OffsetX, "3");
+					Assert.AreEqual (15, mt.Matrix.OffsetY, "4");
+				}
+				catch (Exception e) {
+					loaded_exception = e;
+				}
 			};
 
 			TestPanel.Children.Add (c);
 
 			EnqueueConditional ( () => loaded_reached );
+
+			if (loaded_exception != null)
+				throw loaded_exception;
+
 			EnqueueTestComplete ();
 		}
 

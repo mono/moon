@@ -1,5 +1,12 @@
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
+	* System.Windows/UIElementTest.cs: catch the exceptions in the
+	Loaded handlers and rethrow them from outside so the tests will
+	fail correctly and not add unhandled exception spew in the browser
+	window.
+
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
 	* System.Windows.Controls/UserControlTest.cs (DefaultStyleKeyTest_NotWorking):
 	these are working now, roll them into DefaultStyleKeyTest_Working,
 	and rename it DefaultStyleKeyTest.
