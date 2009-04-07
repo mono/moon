@@ -1,3 +1,8 @@
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
+	* HtmlWindow.cs: use string.IsNullOrEmpty instead of just checking
+	null then assuming string[0] is valid.
+
 2009-04-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* HtmlPage.cs: Do not let the "major" properties be usable if 

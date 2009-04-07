@@ -99,7 +99,7 @@ namespace System.Windows.Browser
 				IntPtr loc = GetPropertyInternal<IntPtr> (HtmlPage.Document.Handle, "location");
 				string hash = GetPropertyInternal<string> (loc, "hash");
 
-				if (hash == null || hash [0] != '#')
+				if (string.IsNullOrEmpty (hash) || hash [0] != '#')
 					return null;
 				return hash.Substring (1, hash.Length - 1);
 			}
