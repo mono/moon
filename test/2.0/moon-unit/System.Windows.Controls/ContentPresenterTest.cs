@@ -32,10 +32,32 @@ using System.Windows.Controls;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows.Shapes;
+using System.Windows.Media;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class ContentPresenterTest {
+	public class ContentPresenterTest : SilverlightTest {
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void Test ()
+		{
+			bool loaded =false;
+			Rectangle r = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush (Colors.Black) };
+			ContentPresenter p = new ContentPresenter ();
+			p.Content = r;
+			p.Loaded += delegate { loaded = true; };
+
+			TestPanel.Children.Add (p);
+			EnqueueConditional (() => loaded);
+			Enqueue (() => {
+				Assert.IsNull (r.Parent, "#1");
+			});
+			EnqueueTestComplete ();
+		}
 	}
 }

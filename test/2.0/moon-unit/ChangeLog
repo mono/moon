@@ -1,5 +1,10 @@
 2009-04-07  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentPresenterTest.cs:
+	  ContentPresenter is reparenting stuff it shouldn't be.
+
+2009-04-07  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/FrameworkElementTest.cs: If we call
 	  InvalidateArrange/InvalidateMeasure we fail to actually call
 	  MeasureOverride/ArrangeOverride. This breaks datagrid (and
