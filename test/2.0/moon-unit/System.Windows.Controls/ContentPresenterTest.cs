@@ -56,6 +56,13 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueConditional (() => loaded);
 			Enqueue (() => {
 				Assert.IsNull (r.Parent, "#1");
+				Assert.AreEqual (1, TestPanel.Children.Count, "#1");
+				Assert.AreEqual (p, TestPanel.Children [0], "#2");
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (TestPanel), "#3");
+				Assert.AreEqual (p, VisualTreeHelper.GetChild (TestPanel, 0), "#4");
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (p), "#5");
+				Assert.AreEqual (r, VisualTreeHelper.GetChild (p, 0), "#6");
+				
 			});
 			EnqueueTestComplete ();
 		}
