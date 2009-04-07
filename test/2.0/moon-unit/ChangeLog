@@ -1,3 +1,10 @@
+2009-04-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: If we call
+	  InvalidateArrange/InvalidateMeasure we fail to actually call
+	  MeasureOverride/ArrangeOverride. This breaks datagrid (and
+	  other managed controls)
+
 2009-04-06  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows/UIElementTest.cs: add some more TransformToVisual

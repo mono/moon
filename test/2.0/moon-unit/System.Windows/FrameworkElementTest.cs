@@ -44,7 +44,27 @@ namespace MoonTest.System.Windows {
 	public class FrameworkElementTest : SilverlightTest {
 
 		class ConcreteFrameworkElement : FrameworkElement {
+
+			public bool Templated, Arranged, Measured;
 			public Size arrangeInput;
+
+			public override void OnApplyTemplate ()
+			{
+				Templated = true;
+				base.OnApplyTemplate ();
+			}
+
+			protected override Size ArrangeOverride (Size finalSize)
+			{
+				Arranged = true;
+				return base.ArrangeOverride (finalSize);
+			}
+
+			protected override Size MeasureOverride (Size availableSize)
+			{
+				Measured = true;
+				return base.MeasureOverride (availableSize);
+			}
 
 			public Size ArrangeOverride_ (Size finalSize)
 			{
@@ -80,6 +100,44 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (null, c.Cursor, "#4");
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void InvalidateArrange ()
+		{
+			bool loaded = false;
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			c.Loaded += delegate { loaded = true; };
+			TestPanel.Children.Add (c);
+			EnqueueConditional (() => loaded, "#1");
+			EnqueueConditional (() => c.Measured, "#2");
+			EnqueueConditional (() => c.Arranged, "#3");
+			Enqueue (() => loaded = c.Arranged = c.Measured = c.Templated = false);
+			Enqueue (() => c.InvalidateArrange ());
+			EnqueueConditional (() => c.Arranged, "#4");
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void InvalidateMeasure ()
+		{
+			bool loaded = false;
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			c.Loaded += delegate { loaded = true; };
+			TestPanel.Children.Add (c);
+			EnqueueConditional (() => loaded, "#1");
+			EnqueueConditional (() => c.Measured, "#2");
+			EnqueueConditional (() => c.Arranged, "#3");
+			Enqueue (() => loaded = c.Arranged = c.Measured = c.Templated = false);
+			Enqueue (() => c.InvalidateMeasure ());
+			EnqueueConditional (() => c.Measured, "#4");
+			EnqueueConditional (() => c.Arranged, "#5");
+			EnqueueTestComplete ();
+		}
+		
 		[TestMethod]
 		public void InvalidValues()
 		{
