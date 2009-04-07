@@ -73,6 +73,7 @@ namespace DefaultValues {
 					GenerateReadLocalValueTest (widget, type);
 					GenerateGetValueTest (widget, type);
 					GeneratePropertyGetterTest (widget, type);
+					GenerateSetStringValueTest (widget, type);
 					//GenerateSetValueTest (widget, type);
 				}
 			} catch {
@@ -376,6 +377,174 @@ namespace DefaultValues {
 				
 				ctype = ctype.BaseType;
 			} while (ctype.IsSubclassOf (typeof (DependencyObject)));
+			
+			if (testing) {
+				sb.AppendLine ("        }");
+				sb.AppendLine ();
+			}
+		}
+		
+		DependencyProperty GetDependencyPropertyByName (DependencyObject widget, Type type, string name)
+		{
+			FieldInfo[] fields = type.GetFields ();
+			DependencyProperty prop;
+			FieldInfo field = null;
+			
+			for (int i = 0; i < fields.Length; i++) {
+				if (fields[i].Name == name) {
+					field = fields[i];
+					break;
+				}
+			}
+			
+			if (field == null || !field.IsPublic || !field.IsStatic || field.FieldType != typeof (DependencyProperty))
+				return null;
+			
+			try {
+				prop = field.GetValue (null) as DependencyProperty;
+			} catch {
+				prop = null;
+			}
+			
+			return prop;
+		}
+		
+		void GenerateSetStringValueTest (DependencyObject widget, Type type)
+		{
+			DependencyProperty property;
+			PropertyInfo[] properties;
+			bool testing = false;
+			Type ctype = type;
+			string prop_name;
+			string actual;
+			string method;
+			object retval;
+			
+			while (ctype.IsSubclassOf (typeof (DependencyObject)) && !ctype.IsGenericType) {
+				properties = ctype.GetProperties ();
+				
+				// Note: we iterate over the getter/setter properties because the DependencyProperties do not have type information
+				for (int i = 0; i < properties.Length; i++) {
+					if (properties[i].PropertyType != typeof (string))
+						continue;
+					
+					prop_name = properties[i].Name + "Property";
+					property = GetDependencyPropertyByName (widget, ctype, prop_name);
+					if (property == null)
+						continue;
+					
+					if (!testing) {
+						EmitTestMethod (type, "SetStringValue", true);
+						testing = true;
+					} else {
+						sb.AppendLine ();
+					}
+					
+					// First thing we try is setting the string to something
+					method = "SetValue(" + ctype.Name + "." + prop_name + ", \"some text\")";
+					
+					try {
+						widget.SetValue (property, "some text");
+						
+						sb.AppendLine ("            widget." + method + ";");
+					} catch (Exception ex) {
+						sb.AppendLine ("            Assert.Throws<" + ex.GetType ().Name + ">(delegate {");
+						sb.AppendLine ("                widget." + method + ";");
+						sb.AppendLine ("            }, \"" + method + " should thow an exception\");");
+					}
+					
+					// Then we check that the value is what we we just set
+					method = "GetValue(" + ctype.Name + "." + prop_name + ")";
+					
+					try {
+						retval = widget.GetValue (property);
+						actual = retval as string;
+						
+						sb.AppendLine ("            retval = widget." + method + ";");
+						
+						if (actual == "some text") {
+							sb.AppendLine ("            Assert.AreEqual(\"some text\", retval, \"" + method + " should have returned 'some text'\");");
+						} else if (actual != null) {
+							sb.AppendLine ("            Assert.AreEqual(\"" + actual + "\", retval, \"" + method + " should have returned '" + actual + "'\");");
+						} else {
+							sb.AppendLine ("            Assert.IsNull(retval, \"" + method + " should have returned null\");");
+						}
+					} catch (Exception ex) {
+						sb.AppendLine ("            Assert.Throws<" + ex.GetType ().Name + ">(delegate {");
+						sb.AppendLine ("                retval = widget." + method + ";");
+						sb.AppendLine ("            }, \"" + method + " should thow an exception\");");
+					}
+					
+					// Next we try setting the string to null to see if it will let us
+					method = "SetValue(" + ctype.Name + "." + prop_name + ", null)";
+					
+					try {
+						widget.SetValue (property, null);
+						
+						sb.AppendLine ("            widget." + method + ";");
+					} catch (Exception ex) {
+						sb.AppendLine ("            Assert.Throws<" + ex.GetType ().Name + ">(delegate {");
+						sb.AppendLine ("                widget." + method + ";");
+						sb.AppendLine ("            }, \"" + method + " should thow an exception\");");
+					}
+					
+					// Then we check that the value was actually set to null as opposed to String.Empty
+					method = "GetValue(" + ctype.Name + "." + prop_name + ")";
+					
+					try {
+						retval = widget.GetValue (property);
+						actual = retval as string;
+						
+						sb.AppendLine ("            retval = widget." + method + ";");
+						
+						if (actual == String.Empty) {
+							sb.AppendLine ("            Assert.AreEqual(String.Empty, retval, \"" + method + " should have returned String.Empty\");");
+						} else if (actual != null) {
+							sb.AppendLine ("            Assert.AreEqual(\"" + actual + "\", retval, \"" + method + " should have returned '" + actual + "'\");");
+						} else {
+							sb.AppendLine ("            Assert.IsNull(retval, \"" + method + " should have returned null\");");
+						}
+					} catch (Exception ex) {
+						sb.AppendLine ("            Assert.Throws<" + ex.GetType ().Name + ">(delegate {");
+						sb.AppendLine ("                retval = widget." + method + ";");
+						sb.AppendLine ("            }, \"" + method + " should thow an exception\");");
+						retval = actual = null;
+					}
+					
+					// If the GetValue returned String.Empty, then we need to check ReadLocalValue to see wtf is going on
+					if (actual == String.Empty) {
+						method = "ReadLocalValue(" + ctype.Name + "." + prop_name + ")";
+						
+						try {
+							retval = widget.ReadLocalValue (property);
+							
+							sb.AppendLine ("            retval = widget." + method + ";");
+							
+							if (retval != DependencyProperty.UnsetValue) {
+								actual = retval as string;
+								
+								if (actual == String.Empty) {
+									sb.AppendLine ("            Assert.AreEqual(String.Empty, retval, \"" + method + " should have returned String.Empty\");");
+								} else if (actual != null) {
+									sb.AppendLine ("            Assert.AreEqual(\"" + actual + "\", retval, \"" + method + " should have returned '" + actual + "'\");");
+								} else {
+									sb.AppendLine ("            Assert.IsNull(retval, \"" + method + " should have returned null\");");
+								}
+							} else {
+								sb.AppendLine ("            Assert.AreEqual(DependencyProperty.UnsetValue, retval, \"" + method + 
+									       " should not have a value by default\");");
+							}
+						} catch (Exception ex) {
+							sb.AppendLine ("            // [MoonlightBug] - Moonlight needs to be fixed to throw on some ReadLocalValue invocations");
+							sb.AppendLine ("            //Assert.Throws<" + ex.GetType ().Name + ">(delegate {");
+							sb.AppendLine ("            //    retval = widget." + method + ";");
+							sb.AppendLine ("            //}, \"" + method + " should thow an exception\");");
+						}
+					}
+				}
+				
+				ctype = ctype.BaseType;
+			}
 			
 			if (testing) {
 				sb.AppendLine ("        }");
