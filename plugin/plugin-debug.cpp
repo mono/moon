@@ -161,7 +161,7 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 			break;
 		case Type::GRIDLENGTH: {
 			GridLength *length = value->AsGridLength ();
-			str = buf = g_strdup_printf ("<b>%g (%s)", length->val, length->type == GridUnitTypeAuto ?
+			str = buf = g_strdup_printf ("<b>%g (%s)</b>", length->val, length->type == GridUnitTypeAuto ?
 						     "Auto" : length->type == GridUnitTypeStar ? "*" : "Pixel");
 			break;
 		}
