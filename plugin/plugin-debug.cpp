@@ -360,6 +360,8 @@ plugin_debug (PluginInstance *plugin)
 	gtk_window_set_title (GTK_WINDOW (tree_win), "Xaml contents");
 	gtk_window_set_default_size (GTK_WINDOW (tree_win), 300, 400);
 	
+	Deployment::SetCurrent (plugin->GetDeployment ());
+
 	surface->AddHandler (EventObject::DestroyedEvent, surface_destroyed, tree_win);
 	g_object_weak_ref (G_OBJECT (tree_win), (GWeakNotify) remove_destroyed_handler, surface);
 	
@@ -430,6 +432,8 @@ plugin_debug (PluginInstance *plugin)
 	gtk_container_add (GTK_CONTAINER (tree_win), scrolled);
 
 	gtk_widget_show_all (tree_win);
+
+	Deployment::SetCurrent (NULL);
 }
 
 static void

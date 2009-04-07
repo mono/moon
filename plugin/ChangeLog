@@ -1,3 +1,7 @@
+2009-04-06  Geoff Norton  <gnorton@novell.com>
+
+	* plugin-debug.cpp: Ensure we set our deployment before poking in the surface
+
 2009-04-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin.cpp|h: Parse enablehtmlaccess and allowhtmlpopupwindow
