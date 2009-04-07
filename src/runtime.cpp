@@ -376,7 +376,7 @@ Surface::~Surface ()
 	delete down_dirty;
 	
 	delete downloaders;
-	delete layers;
+	layers->unref ();
 	
 	surface_list = g_list_remove (surface_list, this);
 }

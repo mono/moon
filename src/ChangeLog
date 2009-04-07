@@ -1,5 +1,13 @@
 2009-04-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.cpp: layers is an EventObject, unref instead of
+	  delete.
+
+	* collection.h: Have a protected dtor so that nobody can
+	  delete this class directly ever again.
+
+2009-04-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp: Add a few null checks.
 
 2009-04-07  Stephane Delcroix  <sdelcroix@novell.com>
