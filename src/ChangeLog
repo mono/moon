@@ -1,5 +1,11 @@
 2009-04-06  Chris Toshok  <toshok@ximian.com>
 
+	* dependencyobject.cpp (DependencyObject::ProviderValueChanged):
+	in case we didn't notify listeners, output the moon error if there
+	was one.
+
+2009-04-06  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp (value_from_str): quiet spew (which in this case
 	indicates an error when there isn't one.)
 

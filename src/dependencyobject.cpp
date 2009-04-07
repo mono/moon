@@ -1519,9 +1519,12 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 			OnPropertyChanged (&args, error);
 
-			if (!listeners_notified)
-				g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified\n",
+			if (!listeners_notified) {
+				g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified",
 					   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
+				if (error->number)
+					g_warning ("the error was: %s", error->message);
+			}
 		}
 
 		if (property && property->GetChangedCallback () != NULL) {
