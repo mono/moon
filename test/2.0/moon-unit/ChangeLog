@@ -1,5 +1,10 @@
 2009-04-07  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentPresenterTest.cs: Add some
+	  more tests for ContentPresenter
+
+2009-04-07  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentPresenterTest.cs:
 	  ContentPresenter is reparenting stuff it shouldn't be.
 

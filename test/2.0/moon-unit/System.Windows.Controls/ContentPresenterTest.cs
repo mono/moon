@@ -59,5 +59,42 @@ namespace MoonTest.System.Windows.Controls {
 			});
 			EnqueueTestComplete ();
 		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AlreadyInTree ()
+		{
+			Rectangle r = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush (Colors.Black) };
+			TestPanel.Children.Add (r);
+			Assert.Throws<ArgumentException>(() => new ContentPresenter ().Content = r);
+		}
+
+		[TestMethod]
+		public void AlreadyInPresenter ()
+		{
+			Rectangle r = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush (Colors.Black) };
+			ContentPresenter c = new ContentPresenter { Content = r };
+			TestPanel.Children.Add (r);
+		}
+
+		[TestMethod]
+		[Ignore("This test passes, but leads to infinite recursion in .NET when the presenter is rendered/arranged")]
+		public void AlreadyInPresenter2 ()
+		{
+			Rectangle r = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush (Colors.Black) };
+			ContentPresenter c = new ContentPresenter { Content = r };
+			TestPanel.Children.Add (r);
+			TestPanel.Children.Add (c);
+		}
+
+		[TestMethod]
+		public void AlreadyInPresenter3 ()
+		{
+			Rectangle r = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush (Colors.Black) };
+			ContentPresenter c = new ContentPresenter { Content = r };
+			TestPanel.Children.Add (r);
+			TestPanel.Children.Add (c);
+			TestPanel.Children.Remove (r);
+		}
 	}
 }
