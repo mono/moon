@@ -1,3 +1,9 @@
+2009-04-07  Alan McGovern  <amcgovern@novell.com>
+
+	* SDKControls/Data/test/TestCases/DataGridTests_Unrestricted.cs:
+	  The test should be using Double.IsNaN (double) to check
+	  default values - nothing else is guaranteed to work.
+
 2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* SDKControls/Data/src/Properties/AssemblyInfo.cs:

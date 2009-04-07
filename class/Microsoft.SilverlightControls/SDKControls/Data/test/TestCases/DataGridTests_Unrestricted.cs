@@ -47,9 +47,9 @@ namespace System.Windows.Controls.Data.Test
                 Assert.AreEqual(true, dataGrid.CanUserResizeColumns, "CanUserResizeColumns wrong default");
                 Assert.AreEqual(false, dataGrid.IsReadOnly, "IsReadOnly wrong default");
                 Assert.AreEqual(DataGridLength.Auto, dataGrid.ColumnWidth, "ColumnWidth wrong default");
-                Assert.AreEqual(double.NaN, dataGrid.RowHeight, "RowHeight wrong default");
-                Assert.AreEqual(double.NaN, dataGrid.ColumnHeaderHeight, "ColumnHeaderHeight wrong default");
-                Assert.AreEqual(double.NaN, dataGrid.RowHeaderWidth, "RowHeaderWidth wrong default");
+                Assert.IsTrue(double.IsNaN (dataGrid.RowHeight), "RowHeight wrong default");
+                Assert.IsTrue(double.IsNaN (dataGrid.ColumnHeaderHeight), "ColumnHeaderHeight wrong default");
+                Assert.IsTrue(double.IsNaN (dataGrid.RowHeaderWidth), "RowHeaderWidth wrong default");
                 Assert.AreEqual(null, dataGrid.SelectedItem, "SelectedItem wrong default");
                 Assert.AreEqual(((IList<TDataClass>)(new List<TDataClass>())).Count, dataGrid.SelectedItems.Count, "SelectedItems wrong default");
                 Assert.AreEqual(DataGridSelectionMode.Extended, dataGrid.SelectionMode, "SelectionMode wrong default");
