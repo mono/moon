@@ -392,7 +392,7 @@ public:
 	Size GetRenderSize () { return render_size; }
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	GeneralTransform *GetTransformToUIElement (UIElement *to_element);
+	GeneralTransform *GetTransformToUIElementWithError (UIElement *to_element, MoonError *error);
 
 	//
 	// TransformPoint:

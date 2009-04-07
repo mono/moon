@@ -1189,12 +1189,54 @@ UIElement::GetTimeManager ()
 }
 
 GeneralTransform *
-UIElement::GetTransformToUIElement (UIElement *to_element)
+UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *error)
 {
+	/* walk from this up to the root.  if we hit null before we hit the toplevel, it's an error */
+	UIElement *visual = GetVisualParent();
+	bool ok = false;
+
+	if (visual && GetSurface()) {
+		while (visual) {
+			if (GetSurface()->IsTopLevel (visual))
+				ok = true;
+				visual = visual->GetVisualParent ();
+		}
+	}
+
+	if (!ok) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
+				   "visual");
+		return NULL;
+	}
+
+	if (to_element) {
+		/* if @to_element is specified we also need to make sure there's a path to the root from it */
+		ok = false;
+		visual = to_element->GetVisualParent ();
+		if (visual && to_element->GetSurface()) {
+			while (visual) {
+				if (to_element->GetSurface()->IsTopLevel (visual))
+					ok = true;
+				visual = visual->GetVisualParent ();
+			}
+		}
+
+		if (!ok) {
+			MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
+					   "visual");
+			return NULL;
+		}
+	}
+
 	cairo_matrix_t result;
-	cairo_matrix_t inverse = absolute_xform;
-	cairo_matrix_invert (&inverse);
-	cairo_matrix_multiply (&result, &inverse, &to_element->absolute_xform);
+	if (to_element) {
+		cairo_matrix_t inverse = absolute_xform;
+		cairo_matrix_invert (&inverse);
+		cairo_matrix_multiply (&result, &inverse, &to_element->absolute_xform);
+	}
+	else {
+		result = absolute_xform;
+	}
 
 	Matrix *matrix  = new Matrix (&result);
 

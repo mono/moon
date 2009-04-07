@@ -83,10 +83,7 @@ namespace System.Windows {
 
 		public GeneralTransform TransformToVisual (UIElement visual)
 		{
-			if (visual == null)
-				throw new ArgumentException ("visual");
-
-			IntPtr t = NativeMethods.uielement_get_transform_to_uielement (native, visual.native);
+			IntPtr t = NativeMethods.uielement_get_transform_to_uielement (native, visual == null ? IntPtr.Zero : visual.native);
 
 			return (MatrixTransform) NativeDependencyObjectHelper.Lookup (Kind.MATRIXTRANSFORM, t);
 		}

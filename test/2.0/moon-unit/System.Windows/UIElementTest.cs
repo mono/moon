@@ -35,13 +35,16 @@ using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing.UnitTesting.UI;
+using Microsoft.Silverlight.Testing.UnitTesting.Metadata.VisualStudio;
+using Microsoft.Silverlight.Testing;
 
 using MoonTest.System.Windows.Media;
 
 namespace MoonTest.System.Windows {
 
 	[TestClass]
-	public class UIElementTest {
+	public class UIElementTest : Microsoft.Silverlight.Testing.SilverlightTest {
 
 		// we can't directly inherit from UIElement (no ctor)
 		class ConcreteUIElement : FrameworkElement {
@@ -89,7 +92,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("no exception is thrown")]
 		public void TransformToVisual ()
 		{
 			ConcreteUIElement ui = new ConcreteUIElement ();
@@ -99,7 +101,63 @@ namespace MoonTest.System.Windows {
 			Assert.Throws<ArgumentException> (delegate {
 				ui.TransformToVisual (new ConcreteUIElement ());
 			}, "TransformToVisual(new)");
-			// an UIElement is probably not complete enough to complete the call
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TransformToVisual_InVisualTree ()
+		{
+			ConcreteUIElement ui = new ConcreteUIElement ();
+			Canvas c = new Canvas ();
+
+			c.Children.Add (ui);
+			Assert.Throws<ArgumentException> (delegate { 
+					ui.TransformToVisual (c);
+			}, "TransformToVisual (parent)");
+
+			bool loaded_reached = false;
+
+			ui.Loaded += delegate {
+				Assert.IsNotNull (ui.TransformToVisual (c), "1");
+				Assert.IsNotNull (ui.TransformToVisual (null), "2");
+
+				loaded_reached = true;
+			};
+
+			TestPanel.Children.Add (c);
+
+			EnqueueConditional ( () => loaded_reached );
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void TransformToVisual_InVisualTree2 ()
+		{
+			ConcreteUIElement ui = new ConcreteUIElement ();
+			Canvas c = new Canvas ();
+
+			Canvas.SetLeft (ui, 10);
+			Canvas.SetTop (ui, 15);
+
+			c.Children.Add (ui);
+
+			bool loaded_reached = false;
+
+			ui.Loaded += delegate {
+				MatrixTransform mt = (MatrixTransform)ui.TransformToVisual (null);
+
+				Assert.AreEqual (10, mt.Matrix.OffsetX, "3");
+				Assert.AreEqual (15, mt.Matrix.OffsetY, "4");
+
+				loaded_reached = true;
+			};
+
+			TestPanel.Children.Add (c);
+
+			EnqueueConditional ( () => loaded_reached );
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]

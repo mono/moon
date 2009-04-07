@@ -3993,12 +3993,14 @@ uielement_get_subtree_object (UIElement *instance)
 
 
 GeneralTransform *
-uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element)
+uielement_get_transform_to_uielement_with_error (UIElement *instance, UIElement *to_element, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
-	return instance->GetTransformToUIElement (to_element);
+	if (error == NULL)
+		g_warning ("Moonlight: Called uielement_get_transform_to_uielement_with_error () with error == NULL.");
+	return instance->GetTransformToUIElementWithError (to_element, error);
 }
 
 

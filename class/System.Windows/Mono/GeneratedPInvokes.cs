@@ -1765,9 +1765,18 @@ namespace Mono {
 		// DependencyObject *uielement_get_subtree_object (UIElement *instance);
 		public extern static IntPtr uielement_get_subtree_object (IntPtr instance);
 
-		[DllImport ("moon")]
-		// GeneralTransform *uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element);
-		public extern static IntPtr uielement_get_transform_to_uielement (IntPtr instance, IntPtr to_element);
+		[DllImport ("moon", EntryPoint="uielement_get_transform_to_uielement_with_error")]
+		// GeneralTransform *uielement_get_transform_to_uielement_with_error (UIElement *instance, UIElement *to_element, MoonError *error);
+		private extern static IntPtr uielement_get_transform_to_uielement_with_error_ (IntPtr instance, IntPtr to_element, out MoonError error);
+		public static IntPtr uielement_get_transform_to_uielement (IntPtr instance, IntPtr to_element)
+		{
+			IntPtr result;
+			MoonError error;
+			result = uielement_get_transform_to_uielement_with_error_ (instance, to_element, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
 
 		[DllImport ("moon")]
 		// UIElement *uielement_get_visual_parent (UIElement *instance);

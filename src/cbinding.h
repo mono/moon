@@ -1794,7 +1794,7 @@ Size uielement_get_render_size (UIElement *instance);
 DependencyObject *uielement_get_subtree_object (UIElement *instance);
 
 /* @GeneratePInvoke */
-GeneralTransform *uielement_get_transform_to_uielement (UIElement *instance, UIElement *to_element);
+GeneralTransform *uielement_get_transform_to_uielement_with_error (UIElement *instance, UIElement *to_element, MoonError *error);
 
 /* @GeneratePInvoke */
 UIElement *uielement_get_visual_parent (UIElement *instance);

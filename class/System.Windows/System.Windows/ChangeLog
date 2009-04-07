@@ -1,3 +1,9 @@
+2009-04-06  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs (TransformToVisual): remove the ArgumentException
+	from here.  it's not a simple null check, and it's handled in
+	unmanaged code now.
+
 2009-04-06  Geoff Norton  <gnorton@novell.com>
 
 	* Application.cs: Fix up the path canonicalization issues in

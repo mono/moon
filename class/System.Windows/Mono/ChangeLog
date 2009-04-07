@@ -1,5 +1,9 @@
 2009-04-06  Chris Toshok  <toshok@ximian.com>
 
+	* GeneratedPInvokes.cs: regen.
+
+2009-04-06  Chris Toshok  <toshok@ximian.com>
+
 	* Helper.cs (GCHandleInDomain): new method, use reflection to
 	twiddle GCHandle.CheckCurrentDomain so we can check if an intptr
 	is a valid GCHandle without throwing and catching exceptions.
