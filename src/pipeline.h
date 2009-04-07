@@ -219,6 +219,23 @@ public:
 	EventObject *GetContext () { return context; }
 };
 
+/*
+ * MediaReportSeekCompletedClosure
+ */
+class MediaReportSeekCompletedClosure : public MediaClosure {
+private:
+	guint64 pts;
+
+protected:
+	virtual ~MediaReportSeekCompletedClosure ();
+		
+public:
+	MediaReportSeekCompletedClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, guint64 pts);
+	virtual void Dispose ();
+	
+	guint64 GetPts () { return pts; }
+	IMediaDemuxer *GetDemuxer () { return (IMediaDemuxer *) GetContext (); }
+};
 
 /*
  * MediaGetFrameClosure
@@ -741,6 +758,7 @@ private:
 	bool opened;
 	bool opening;
 	
+	static MediaResult ReportSeekCompletedCallback (MediaClosure *closure);
 	static MediaResult GetFrameCallback (MediaClosure *closure);
 	static MediaResult FillBuffersCallback (MediaClosure *closure);
 	static MediaResult OpenCallback (MediaClosure *closure);
@@ -767,6 +785,7 @@ protected:
 	virtual void SwitchMediaStreamAsyncInternal (IMediaStream *stream) = 0;
 	
 	void EnqueueOpen ();
+	void EnqueueReportSeekCompleted (guint64 pts);
 	void EnqueueGetFrame (IMediaStream *stream);
 	void EnqueueSeek (guint64 pts);
 	

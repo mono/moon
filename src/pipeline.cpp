@@ -1929,6 +1929,28 @@ MediaDecodeFrameClosure::Dispose ()
 }
 
 /*
+ * MediaReportSeekCompletedClosure
+ */
+
+MediaReportSeekCompletedClosure::MediaReportSeekCompletedClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, guint64 pts)
+	: MediaClosure (media, callback, context)
+{
+	g_return_if_fail (context != NULL);
+	
+	this->pts = pts;
+}
+
+MediaReportSeekCompletedClosure::~MediaReportSeekCompletedClosure ()
+{
+}
+
+void
+MediaReportSeekCompletedClosure::Dispose ()
+{
+	MediaClosure::Dispose ();
+}
+
+/*
  * MediaGetFrameClosure
  */
 
@@ -2375,13 +2397,39 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 	}
 }
 
+MediaResult
+IMediaDemuxer::ReportSeekCompletedCallback (MediaClosure *c)
+{
+	MediaReportSeekCompletedClosure *closure = (MediaReportSeekCompletedClosure *) c;
+	IMediaDemuxer *demuxer;
+	
+	g_return_val_if_fail (closure != NULL, MEDIA_FAIL);
+	g_return_val_if_fail (closure->GetContext () != NULL, MEDIA_FAIL);
+	
+	demuxer = (IMediaDemuxer *) closure->GetContext ();
+	demuxer->ReportSeekCompleted (closure->GetPts ());
+	
+	return MEDIA_SUCCESS;
+}
+
+void 
+IMediaDemuxer::EnqueueReportSeekCompleted (guint64 pts)
+{
+	MediaClosure *closure = new MediaReportSeekCompletedClosure (media, ReportSeekCompletedCallback, this, pts);
+	media->EnqueueWork (closure);
+	closure->unref ();
+}
+
 void
 IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 {
 	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%llu)\n", pts);
 	
 	g_return_if_fail (media != NULL);
-	g_return_if_fail (media->InMediaThread ());
+	if (!media->InMediaThread ()) {
+		EnqueueReportSeekCompleted (pts);
+		return;
+	}
 	
 	for (int i = 0; i < GetStreamCount (); i++) {
 		IMediaStream *stream = GetStream (i);

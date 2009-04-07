@@ -1,5 +1,10 @@
 2009-04-07  Geoff Norton  <gnorton@novell.com>
 
+	* pipeline.cpp|h: Ensure that we can post ReportSeekCompleted back to the
+	media thread from any thread.  Fixes seeking on SmoothHD sites.
+
+2009-04-07  Geoff Norton  <gnorton@novell.com>
+
 	* bitmapimage.cpp|h: Ensure we stop getting events from any 
 	active downloaders once we're disposed.
 	* brush.cpp|h: Ensure we stop getting events from any 
