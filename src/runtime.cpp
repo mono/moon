@@ -508,13 +508,13 @@ Surface::ToplevelLoaded (UIElement *element)
 
 		Emit (Surface::LoadEvent);
 	
-		if (active_window->HasFocus())
+		if (active_window && active_window->HasFocus())
 			element->EmitGotFocus ();
 	
 		//
 		// If the did not get a size specified
 		//
-		if (normal_window->GetWidth() == 0 && normal_window->GetHeight() == 0 && toplevel) {
+		if (normal_window && normal_window->GetWidth() == 0 && normal_window->GetHeight() == 0 && toplevel) {
 			/*
 			 * this should only be hit in the nonplugin case ans is
 			 * simply here to give a reasonable default size
