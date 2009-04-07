@@ -6,3 +6,5 @@
 # this type creates delegates to non-visible properties, events ...
 +SC-T: Mono.Xaml.ManagedXamlLoader
 
+# this method reflects into GCHandle to avoid creating an exception every time we try a invalid handle
++SC-M: System.Boolean Mono.Helper::GCHandleInDomain(System.IntPtr)

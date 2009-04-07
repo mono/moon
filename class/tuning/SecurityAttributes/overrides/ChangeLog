@@ -1,3 +1,8 @@
+2009-04-06  Geoff Norton  <gnorton@novell.com>
+
+	* System.Windows.manual: Add a SC override for a method that needs
+	to use reflection to get at a icall in GCHandle.cs
+
 2008-04-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual, System.Windows.Browser.manual: Remove 
