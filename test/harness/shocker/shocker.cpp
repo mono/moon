@@ -298,7 +298,7 @@ GetTestDefinition (ShockerScriptableControlObject* obj, char* name, const NPVari
 	
 	printf ("[shocker] GetTestDefinition ()\n");
 	//printf (test_definition);
-	p//rintf ("\n");
+	//printf ("\n");
 	
 	retval = NPN_strdup (test_definition == NULL ? "" : test_definition);
 	
