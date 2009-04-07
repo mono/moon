@@ -58,14 +58,19 @@ namespace System.Windows.Controls {
 		}
 
 		private static Type ControlType = typeof (Control);
+		private static Type UserControlType = typeof (UserControl);
 		
 		protected object DefaultStyleKey {
 			get { return (object) GetValue (DefaultStyleKeyProperty); }
 			set {
 				Type t = value as Type;
 				// feels weird but that's unit tested as such
-				if (t == null || (t == ControlType) || !t.IsSubclassOf (ControlType))
+				if (t == null || (t == ControlType)  || !t.IsSubclassOf (ControlType)
+				    || (t == UserControlType) || (t.IsSubclassOf (UserControlType)))
 					throw new ArgumentException ("DefaultStyleKey");
+
+				if (this.GetType() == UserControlType || this.GetType().IsSubclassOf (UserControlType))
+					throw new InvalidOperationException ("UserControls do not participate in templating, so setting the DefaultStyleKey is not allowed");
 
 				SetValue (DefaultStyleKeyProperty, value);
 			}

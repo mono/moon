@@ -1,3 +1,9 @@
+2009-04-06  Chris Toshok  <toshok@ximian.com>
+
+	* Control.cs (set_DefaultStyleKey): add a few more error
+	conditions (surrounding UserControlType) to get 2.0 ms test
+	fixture 552 closer to working.
+
 2009-04-06  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* MultiScaleImage.cs: lookup the new DPs and new properties
