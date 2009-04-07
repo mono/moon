@@ -1,6 +1,12 @@
 2009-04-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* logging.h:
+	* logging.cpp:
+	* shocker.cpp: Add new logging and plugin methods.
+
+2009-04-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* logging.h:
 	* logging.cpp: Remove file and dbus logging, and always log to
 	  stdout.
 

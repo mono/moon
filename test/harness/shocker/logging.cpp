@@ -112,3 +112,38 @@ LogProvider::Log (const char* level, const char* msg)
 	printf ("\033[%s;49m%s: %s: %s\033[39;49m\n", forecolor, test_name, level, msg);
 }
 
+
+
+void 
+LogDebug (const char *message)
+{
+	printf ("[shocker] LogDebug: Not implemented\n");
+}
+
+void LogMessage (const char *message)
+{
+	printf ("[shocker] LogDebug: Not implemented\n");
+}
+
+void LogResult (gint32 result)
+{
+	printf ("[shocker] LogResult: Not implemented\n");
+}
+
+void LogError (const char *message)
+{
+	printf ("[shocker] LogError: Not implemented\n");
+}
+
+void LogWarning (const char *message)
+{
+	printf ("[shocker] LogWarning: Not implemented\n");
+}
+
+void GetTestDefinition (char **result)
+{
+	printf ("[shocker] GetTestDefinition: Not implemented\n");
+}
+
+
+

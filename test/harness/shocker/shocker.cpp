@@ -64,144 +64,163 @@ Shocker_Shutdown (void)
 		delete ShockerScriptableControlClass;
 }
 
+char *
+NPN_strdup (const char *tocopy)
+{
+	int len = strlen(tocopy);
+	char *ptr = (char *)NPN_MemAlloc (len+1);
+	if (ptr != NULL) {
+		strcpy (ptr, tocopy);
+		// WebKit should calloc so we dont have to do this
+		ptr[len] = 0;
+	}
 
-static bool
-Connect (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+	return ptr;
+}
+
+static void print_stack_trace ()
+{
+	// int provoke_stacktrace = * (int *) NULL;
+	// printf ("%i", provoke_stacktrace); // silence warnings
+}
+
+static void
+Connect (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	obj->Connect ();
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-static bool
-SignalShutdown (ShockerScriptableControlObject *obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+SignalShutdown (ShockerScriptableControlObject *obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	obj->SignalShutdown ();
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-LogMessage (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+LogMessage (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	g_assert (arg_count == 1);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
 
 	obj->GetLogProvider ()->LogMessage (STR_FROM_VARIANT (args [0]));
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-LogWarning (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+LogWarning (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	g_assert (arg_count == 1);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
 
 	obj->GetLogProvider ()->LogWarning (STR_FROM_VARIANT (args [0]));
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-LogHelp (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+LogHelp (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	g_assert (arg_count == 1);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
 
 	obj->GetLogProvider ()->LogHelp (STR_FROM_VARIANT (args [0]));
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-LogError (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+LogError (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	g_assert (arg_count == 1);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
 
 	obj->GetLogProvider ()->LogError (STR_FROM_VARIANT (args [0]));
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 
-bool
-LogDebug (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+LogDebug (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	g_assert (arg_count == 1);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
 
 	obj->GetLogProvider ()->LogDebug (STR_FROM_VARIANT (args [0]));
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-LogResult (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+LogResult (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	g_assert (arg_count == 1);
 	g_assert (NPVARIANT_IS_NUMBER (args [0]));
 
 	obj->GetLogProvider ()->LogResult (LogProvider::IntToResult (NUMBER_TO_INT32 (args [0])));
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-MoveMouseLogarithmic (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+MoveMouseLogarithmic (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	g_assert (arg_count == 2);
 	g_assert (NPVARIANT_IS_NUMBER (args [0]));
 	g_assert (NPVARIANT_IS_NUMBER (args [1]));
 
 	obj->GetInputProvider ()->MoveMouseLogarithmic (NUMBER_TO_INT32 (args [0]), NUMBER_TO_INT32 (args [1]));
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-MoveMouse (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+MoveMouse (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	g_assert (arg_count == 2);
 	g_assert (NPVARIANT_IS_NUMBER (args [0]));
 	g_assert (NPVARIANT_IS_NUMBER (args [1]));
 
 	obj->GetInputProvider ()->MoveMouse (NUMBER_TO_INT32 (args [0]), NUMBER_TO_INT32 (args [1]));
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-MouseIsAtPosition (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+MouseIsAtPosition (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	g_assert (arg_count == 2);
 	g_assert (NPVARIANT_IS_NUMBER (args [0]));
 	g_assert (NPVARIANT_IS_NUMBER (args [1]));
 
-	return obj->GetInputProvider ()->MouseIsAtPosition (NUMBER_TO_INT32 (args [0]), NUMBER_TO_INT32 (args [1]));
+	BOOLEAN_TO_NPVARIANT (obj->GetInputProvider ()->MouseIsAtPosition (NUMBER_TO_INT32 (args [0]), NUMBER_TO_INT32 (args [1])), *result);
 }
 
-bool
-MouseLeftClick (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+MouseLeftClick (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	obj->GetInputProvider ()->MouseLeftClick ();
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-MouseRightClick (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+MouseRightClick (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	obj->GetInputProvider ()->MouseRightClick ();
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-MouseLeftButtonDown (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+MouseLeftButtonDown (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	obj->GetInputProvider ()->MouseLeftButtonDown ();
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-MouseLeftButtonUp (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+MouseLeftButtonUp (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	obj->GetInputProvider ()->MouseLeftButtonUp ();
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-SendKeyInput (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+SendKeyInput (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	//
 	// There are two optional args here that I am just going to ignore for now
@@ -213,11 +232,109 @@ SendKeyInput (ShockerScriptableControlObject* obj, char* name, const NPVariant* 
 
 	obj->GetInputProvider ()->SendKeyInput (NUMBER_TO_INT32 (args [0]), NPVARIANT_TO_BOOLEAN (args [1]));
 
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-CaptureSingleImage (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+SetKeyboardInputSpeed (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	printf ("[shocker] SetKeyboardInputSpeed: Not implemented\n");
+	print_stack_trace ();
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+CompareImages (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	printf ("[shocker] CompareImages: Not implemented\n");
+	print_stack_trace ();
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+GetActiveInputLocaleId (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	printf ("[shocker] GetActiveInputLocaleId: Not implemented\n");
+	print_stack_trace ();
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+ActivateKeyboardLayout (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	printf ("[shocker] ActivateKeyboardLayout: Not implemented\n");
+	print_stack_trace ();
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+IsInputLocaleInstalled (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	printf ("[shocker] IsInputLocaleInstalled: Not implemented\n");
+	print_stack_trace ();
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+GetTestDirectory (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	printf ("[shocker] GetTestDirectory: Not implemented\n");
+	print_stack_trace ();
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+GetTestDefinition (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	char *test_definition;
+	char *retval;
+	
+	g_assert (arg_count == 0);
+	
+	test_definition = getenv ("MOONLIGHT_HARNESS_TESTDEFINITION");
+	
+	if (test_definition == NULL || test_definition [0] == 0)
+		printf ("[shocker] GetTestDefinition (): MOONLIGHT_HARNESS_TESTDEFINITION isn't set, this will probably cause the test to fail.\n");
+	
+	printf ("[shocker] GetTestDefinition ()\n");
+	//printf (test_definition);
+	p//rintf ("\n");
+	
+	retval = NPN_strdup (test_definition == NULL ? "" : test_definition);
+	
+	STRINGZ_TO_NPVARIANT (retval, *result);
+}
+
+static void
+GetRuntimePropertyValue (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	printf ("[shocker] GetRuntimePropertyValue: Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void 
+SetRuntimePropertyValue (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	printf ("[shocker] SetRuntimePropertyValue: Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+CleanDRM (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	printf ("[shocker] CleanDRM: Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
+SwitchToHighContrastScheme (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	printf ("[shocker] SwitchToHighContrastScheme: Not implemented\n");
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+    
+static void
+CaptureSingleImage (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	g_assert (arg_count == 6);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
@@ -230,11 +347,11 @@ CaptureSingleImage (ShockerScriptableControlObject* obj, char* name, const NPVar
 	obj->GetImageCaptureProvider ()->CaptureSingleImage (STR_FROM_VARIANT (args [0]), STR_FROM_VARIANT (args [1]),
 			NUMBER_TO_INT32 (args [2]), NUMBER_TO_INT32 (args [3]), NUMBER_TO_INT32 (args [4]), NUMBER_TO_INT32 (args [5]));
 
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-bool
-CaptureMultipleImages (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count)
+static void
+CaptureMultipleImages (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	const char *path;
 	
@@ -257,7 +374,7 @@ CaptureMultipleImages (ShockerScriptableControlObject* obj, char* name, const NP
 			NUMBER_TO_INT32 (args [4]), NUMBER_TO_INT32 (args [5]),NUMBER_TO_INT32 (args [6]), NUMBER_TO_INT32 (args [7]),
 			NUMBER_TO_INT32 (args [8]));
 
-	return true;
+	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
 static void
@@ -286,7 +403,7 @@ shocker_scriptable_control_invalidate (NPObject *npobj)
 typedef struct 
 {
     const char* name;
-    bool (* Invoke) (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count);
+    void (* Invoke) (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result);
 } ScriptableMethod;
 
 
@@ -316,6 +433,18 @@ static ScriptableMethod scriptable_methods [] = {
 	{ "CaptureSingleImage", &CaptureSingleImage },
 	{ "CaptureMultipleImages", &CaptureMultipleImages },
 
+	// New test plugin methods in 2.0
+    { "setKeyboardInputSpeed", &SetKeyboardInputSpeed },
+    { "CompareImages", &CompareImages },
+    { "GetActiveInputLocaleId", &GetActiveInputLocaleId },
+    { "ActivateKeyboardLayout", &ActivateKeyboardLayout },
+    { "IsInputLocaleInstalled", &IsInputLocaleInstalled },
+    { "GetTestDirectory", &GetTestDirectory },
+    { "GetTestDefinition", &GetTestDefinition },
+    { "GetRuntimePropertyValue", &GetRuntimePropertyValue },
+    { "SetRuntimePropertyValue", &SetRuntimePropertyValue },
+    { "CleanDRM", &CleanDRM },
+    { "SwitchToHighContrastScheme", &SwitchToHighContrastScheme },
 	{ NULL, NULL }
 };
 
@@ -404,7 +533,7 @@ shocker_scriptable_control_invoke (NPObject *npobj, NPIdentifier id, const NPVar
 
 	while (walk->name) {
 		if (!strcmp (name, walk->name)) {
-			BOOLEAN_TO_NPVARIANT (walk->Invoke ((ShockerScriptableControlObject *) npobj, name, args, arg_count), *result);
+			walk->Invoke ((ShockerScriptableControlObject *) npobj, name, args, arg_count, result);
 			res = true;
 			break;
 		}

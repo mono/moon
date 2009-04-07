@@ -61,5 +61,16 @@ private:
 	char *test_name;
 };
 
+G_BEGIN_DECLS
+
+void LogDebug (const char *message);
+void LogMessage (const char *message);
+void LogResult (gint32 result);
+void LogError (const char *message);
+void LogWarning (const char *message);
+void GetTestDefinition (char **result);
+
+G_END_DECLS
+
 #endif
 
