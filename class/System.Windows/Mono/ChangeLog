@@ -1,3 +1,9 @@
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs (SetValue): we need specify type
+	checking in the case of a genericly typed DP.
+	Type.IsAssignableFrom is not enough.
+
 2009-04-06  Chris Toshok  <toshok@ximian.com>
 
 	* GeneratedPInvokes.cs: regen.

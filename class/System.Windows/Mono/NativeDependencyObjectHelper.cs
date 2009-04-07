@@ -101,10 +101,31 @@ namespace Mono {
 			// settable properties, so we're safe for now.
 			if (wrapper is DependencyObject)
 				dp.Validate ((DependencyObject)wrapper, dp, value);
-			
+
 			object_type = value.GetType ();
-			if (!dp.PropertyType.IsAssignableFrom (object_type))
-				throw new ArgumentException (string.Format ("The DependencyProperty '{2}', whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName, dp.Name));
+
+			bool type_valid = false;
+			if (dp.PropertyType.IsGenericTypeDefinition) {
+				Type t = object_type;
+				while (t != null) {
+					if (dp.PropertyType.IsAssignableFrom (t)) {
+						type_valid = true;
+						break;
+					}
+
+					if (t.IsGenericType && !t.IsGenericTypeDefinition)
+						t = t.GetGenericTypeDefinition ();
+					else
+						t = t.BaseType;
+				}
+			}
+			else {
+				type_valid = dp.PropertyType.IsAssignableFrom (object_type);
+			}
+
+			if (!type_valid) {
+				throw new ArgumentException (string.Format ("The DependencyProperty '{3}.{2}', whose property type is {0} can't be set to value whose type is {1}", dp.PropertyType.FullName, object_type.FullName, dp.Name, dp.DeclaringType.FullName));
+			}
 				                     
 			v = Value.FromObject (value, dp.PropertyType == typeof(object) && dp.BoxValueTypes);
 			try {
