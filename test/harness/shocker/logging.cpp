@@ -29,66 +29,21 @@
  *
  */
 
-
-
 #include <glib.h>
 #include <string.h>
-#include <time.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "logging.h"
 
-#define SHOCKER_LOGGER_SERVICE    "mono.moonlight.tests"
-#define SHOCKER_LOGGER_PATH       "/mono/moonlight/tests/logger"
-#define SHOCKER_LOGGER_INTERFACE  "mono.moonlight.tests.logger.ITestLogger"
-
-#define SHOCKER_LOG_FILE 	"shocker-log.txt"
-
-#define PASS_MESSAGE		"PASS"
-#define FAIL_MESSAGE		"FAIL"
-
-#define LOG_TIME_FORMAT		"%Y-%m-%d %H:%M:%S"
-
-static int use_printf = 0;
-
-LogProvider::LogProvider (const char* test_name) : log_file (NULL)
+LogProvider::LogProvider (const char* test_name)
 {
-	g_assert (test_name);
-
 	this->test_name = strdup (test_name);
-
-	log_file = fopen (SHOCKER_LOG_FILE, "a+");
-	if (!log_file) {
-		g_warning ("Unable to open log file, logging disabled.\n");
-		log_file = NULL;
-	}
-
-#ifdef DBUS_ENABLED
-	g_type_init ();
-
-	DBusGConnection* connection;
-	GError* error = NULL;  
-
-	error = NULL;
-	connection = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
-	if (!connection) {
-		printf ("[shocker] Failed to open connection to bus: %s\n", error->message);
-		g_error_free (error);
-		dbus_proxy = NULL;
-	} else {
-		dbus_proxy = dbus_g_proxy_new_for_name (connection,
-				SHOCKER_LOGGER_SERVICE,
-				SHOCKER_LOGGER_PATH,
-				SHOCKER_LOGGER_INTERFACE);
-	}
-#endif
-
 }
 
 LogProvider::~LogProvider ()
 {
 	free (test_name);
-
-	if (log_file)
-		fclose (log_file);
 }
 
 void
@@ -141,60 +96,19 @@ LogProvider::LogResult (TestResult result)
 			fclose (result_fd);
 		}
 	}
-	
-#ifdef DBUS_ENABLED
-	if (dbus_proxy != NULL) {
-		dbus_g_proxy_call_no_reply (dbus_proxy, "LogResult", G_TYPE_STRING, test_name, G_TYPE_INT, TestResultToInt (result), G_TYPE_INVALID);
-	}
-#else
-	g_warning ("DBUS NOT ENABLED, result will not be logged: %d\n", TestResultToInt (result));
-#endif
 }
 
 void
 LogProvider::Log (const char* level, const char* msg)
 {
-	g_return_if_fail (log_file);
-
-	char timestr [64];
-	time_t timet = time (NULL);
-	struct tm* timeinfo = localtime (&timet);
-
-	strftime (timestr, 64, LOG_TIME_FORMAT, timeinfo);
-
-	fprintf (log_file, "%s:%s:%s:%s\n", level, timestr, test_name, msg);
-	fflush (log_file);
-
-
-#ifdef DBUS_ENABLED
-	if (dbus_proxy != NULL) {
-		dbus_g_proxy_call_no_reply (dbus_proxy, "Log", G_TYPE_STRING, test_name, G_TYPE_STRING, level, G_TYPE_STRING, msg, G_TYPE_INVALID);
+	const char *forecolor = "39";
+	if (strcmp (level, "Warning") == 0) {
+		forecolor = "37";
+	} else if (strcmp (level, "Error") == 0) {
+		forecolor = "31";
 	} else {
-		use_printf = 1;
-	}
-#endif
-
-	if (use_printf == 0) {
-		char *env = getenv ("MOON_SHOCKER_LOG_TO_STDOUT");
-		if (env != NULL && env [0] != 0)
-			use_printf = 1;
-		else
-			use_printf = 2;
-	}
-	if (use_printf == 1) {
-		const char *forecolor = "39";
-		if (strcmp (level, "Warning") == 0) {
-			forecolor = "37";
-		} else if (strcmp (level, "Error") == 0) {
-			forecolor = "31";
-		} else {
-			forecolor = "34";
-		} 
-		printf ("\033[%s;49m%s: %s: %s\033[39;49m\n", forecolor, test_name, level, msg);	
-	}
+		forecolor = "34";
+	} 
+	printf ("\033[%s;49m%s: %s: %s\033[39;49m\n", forecolor, test_name, level, msg);
 }
-
-
-
-
 
