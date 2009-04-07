@@ -34,6 +34,7 @@ class BitmapImage : public BitmapSource {
  public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	BitmapImage ();
+	virtual void Dispose ();
 
 	/* @PropertyType=Uri,GenerateAccessors,DefaultValue=Uri() */
 	const static int UriSourceProperty;

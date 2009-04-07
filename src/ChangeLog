@@ -1,3 +1,10 @@
+2009-04-07  Geoff Norton  <gnorton@novell.com>
+
+	* bitmapimage.cpp|h: Ensure we stop getting events from any 
+	active downloaders once we're disposed.
+	* brush.cpp|h: Ensure we stop getting events from any 
+	active BitmapImages once we're disposed.
+
 2009-04-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* glyphs.cpp (CleanupDownloader): New helper method.

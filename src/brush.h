@@ -328,6 +328,7 @@ private:
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ImageBrush ();
+	virtual void Dispose ();
 	
 	void SetSource (Downloader *downloader, const char *PartName);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);

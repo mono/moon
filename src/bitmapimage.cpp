@@ -161,6 +161,16 @@ BitmapImage::~BitmapImage ()
 }
 
 void
+BitmapImage::Dispose ()
+{
+	if (downloader) {
+		CleanupDownloader ();
+		downloader->Abort ();
+	}
+	EventObject::Dispose ();
+}
+
+void
 BitmapImage::uri_source_changed_callback (EventObject *user_data)
 {
 	BitmapImage *image = (BitmapImage *) user_data;
@@ -250,7 +260,8 @@ BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_n
 	}
 }
 
-void BitmapImage::CleanupDownloader ()
+void
+BitmapImage::CleanupDownloader ()
 {
 	downloader->RemoveHandler (Downloader::DownloadProgressChangedEvent, downloader_progress_changed, this);
 	downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);

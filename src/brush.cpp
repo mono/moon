@@ -512,6 +512,20 @@ ImageBrush::~ImageBrush ()
 }
 
 void
+ImageBrush::Dispose ()
+{
+	BitmapImage *source = (BitmapImage *) GetImageSource ();
+
+	if (source) {
+		source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+		source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+		source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+	}
+
+	EventObject::Dispose ();
+}
+
+void
 ImageBrush::download_progress (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	ImageBrush *media = (ImageBrush *) closure;
