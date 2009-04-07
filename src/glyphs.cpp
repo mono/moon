@@ -99,10 +99,7 @@ Glyphs::Glyphs ()
 
 Glyphs::~Glyphs ()
 {
-	if (downloader) {
-		downloader_abort (downloader);
-		downloader->unref ();
-	}
+	CleanupDownloader ();
 	
 	if (path)
 		moon_path_destroy (path);
@@ -113,6 +110,16 @@ Glyphs::~Glyphs ()
 	g_free (text);
 	
 	delete desc;
+}
+
+void
+Glyphs::CleanupDownloader ()
+{
+	if (downloader) {
+		downloader->Abort ();
+		downloader->unref ();
+		downloader = NULL;
+	}
 }
 
 void
@@ -698,8 +705,6 @@ Glyphs::DownloadFont (Surface *surface, Uri *uri)
 			// we're shutting down
 		}
 	}
-	
-	delete uri;
 }
 
 void
@@ -735,15 +740,11 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		Uri *uri = args->GetNewValue() ? args->GetNewValue()->AsUri () : NULL;
 		Surface *surface = GetSurface ();
 		
-		if (downloader) {
-			downloader->Abort ();
-			downloader->unref ();
-			downloader = NULL;
-			index = 0;
-		}
+		CleanupDownloader ();
+		index = 0;
 		
 		if (surface) {
-			if (uri)
+			if (!Uri::IsNullOrEmpty (uri))
 				DownloadFont (surface, uri);
 			uri_changed = false;
 		} else {

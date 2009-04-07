@@ -52,6 +52,7 @@ class Glyphs : public FrameworkElement {
 	void Layout ();
 	void SetIndicesInternal (const char *in);
 	
+	void CleanupDownloader ();
 	void DownloaderComplete ();
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);

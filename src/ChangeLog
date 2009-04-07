@@ -1,3 +1,10 @@
+2009-04-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* glyphs.cpp (CleanupDownloader): New helper method.
+	(DownloadFont): Don't delete the uri after we're done, we do not
+	own this object!
+	(OnPropertyChanged): Use Uri::IsNullOrEmpty().
+
 2009-04-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp: layers is an EventObject, unref instead of
