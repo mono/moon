@@ -1,3 +1,7 @@
+2009-04-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* input.h: Add license.
+
 2009-04-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* netscape.cpp: Prevent firefox from unloading us in all
