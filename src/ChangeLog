@@ -1,5 +1,14 @@
 2009-04-06  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp|.h (Surface::Attach): split this method effectively
+	in half: stuff we do before the loaded events are fired, and stuff
+	we do after.  The second half is in Surface::ToplevelLoaded.  This
+	fixes playboy.covertocover.com coming up, as the alert that
+	vertigo pops up via Surface::LoadEvent was causing a sub-mainloop
+	to screw with our async events.
+
+2009-04-06  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.cpp|.h (UIElement::GetTransformToUIElementWithError):
 	flesh this method out some.  I don't like the walks we have to do
 	here.  Also, rename this to *WithError so we can report the error

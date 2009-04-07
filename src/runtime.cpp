@@ -54,6 +54,7 @@
 #include "usercontrol.h"
 #include "deployment.h"
 #include "grid.h"
+#include "cbinding.h"
 
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1
@@ -434,6 +435,7 @@ Surface::Attach (UIElement *element)
 
 				
 	if (toplevel) {
+		toplevel->RemoveHandler (UIElement::LoadedEvent, toplevel_loaded, this);
 		DetachLayer (toplevel);
 		time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
 		time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
@@ -488,36 +490,53 @@ Surface::Attach (UIElement *element)
 	canvas->PostSubtreeLoad (list);
 	// PostSubtreeLoad will take care of deleting the list for us.
 
-	Emit (Surface::LoadEvent);
+	this->ref ();
+	canvas->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify)event_object_unref);
+}
+
+void
+Surface::toplevel_loaded (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((Surface*)closure)->ToplevelLoaded ((UIElement*)sender);
+}
+
+void
+Surface::ToplevelLoaded (UIElement *element)
+{
+	if (element == toplevel) {
+		toplevel->RemoveHandler (UIElement::LoadedEvent, toplevel_loaded, this);
+
+		Emit (Surface::LoadEvent);
 	
-	if (active_window->HasFocus())
-		canvas->EmitGotFocus ();
+		if (active_window->HasFocus())
+			element->EmitGotFocus ();
 	
-	//
-	// If the did not get a size specified
-	//
-	if (normal_window->GetWidth() == 0 && normal_window->GetHeight() == 0 && toplevel) {
-		/*
-		 * this should only be hit in the nonplugin case ans is
-		 * simply here to give a reasonable default size
-		 */
-		Value *vh, *vw;
-		vw = toplevel->GetValue (FrameworkElement::WidthProperty);
-		vh = toplevel->GetValue (FrameworkElement::HeightProperty);
-		if (vh || vw)
-			normal_window->Resize (MAX (vw ? (int)vw->AsDouble () : 0, 0),
-					       MAX (vh ? (int)vh->AsDouble () : 0, 0));
+		//
+		// If the did not get a size specified
+		//
+		if (normal_window->GetWidth() == 0 && normal_window->GetHeight() == 0 && toplevel) {
+			/*
+			 * this should only be hit in the nonplugin case ans is
+			 * simply here to give a reasonable default size
+			 */
+			Value *vh, *vw;
+			vw = toplevel->GetValue (FrameworkElement::WidthProperty);
+			vh = toplevel->GetValue (FrameworkElement::HeightProperty);
+			if (vh || vw)
+				normal_window->Resize (MAX (vw ? (int)vw->AsDouble () : 0, 0),
+						       MAX (vh ? (int)vh->AsDouble () : 0, 0));
+		}
+
+		Emit (ResizeEvent);
+
+		toplevel->UpdateTotalRenderVisibility ();
+		toplevel->UpdateTotalHitTestVisibility ();
+		toplevel->FullInvalidate (true);
+
+		// we call this two here so that the layout pass proceeds when
+		// we next process the dirty list.
+		toplevel->InvalidateMeasure ();
 	}
-
-	Emit (ResizeEvent);
-
-	toplevel->UpdateTotalRenderVisibility ();
-	toplevel->UpdateTotalHitTestVisibility ();
-	toplevel->FullInvalidate (true);
-
-	// we call this two here so that the layout pass proceeds when
-	// we next process the dirty list.
-	toplevel->InvalidateMeasure ();
 }
 
 void

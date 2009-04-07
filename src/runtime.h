@@ -384,6 +384,9 @@ private:
 	bool HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event);
 	void PerformCapture (UIElement *capture);
 	void PerformReleaseCapture ();
+
+	static void toplevel_loaded (EventObject *sender, EventArgs *args, gpointer closure);
+	void ToplevelLoaded (UIElement *element);
 };
 
 /* for hit testing */
