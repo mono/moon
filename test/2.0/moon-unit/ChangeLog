@@ -1,3 +1,9 @@
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Controls/UserControlTest.cs (DefaultStyleKeyTest_NotWorking):
+	these are working now, roll them into DefaultStyleKeyTest_Working,
+	and rename it DefaultStyleKeyTest.
+
 2009-04-07  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ContentPresenterTest.cs: Add yet
