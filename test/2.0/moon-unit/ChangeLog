@@ -1,5 +1,11 @@
 2009-04-07  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentPresenterTest.cs: Add yet
+	  more tests to see exactly how the content is handled in
+	  different scenarios.
+
+2009-04-07  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentPresenterTest.cs: Beef up the
 	  initial test to get a more accurate understanding of where
 	  things exist. Looks like ContentPresenter.Content only goes

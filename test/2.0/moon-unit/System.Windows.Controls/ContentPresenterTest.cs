@@ -103,5 +103,82 @@ namespace MoonTest.System.Windows.Controls {
 			TestPanel.Children.Add (c);
 			TestPanel.Children.Remove (r);
 		}
+		
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void NullContent ()
+		{
+			bool loaded = false;
+			ContentPresenter p = new ContentPresenter ();
+			p.Loaded += delegate { loaded = true; };
+
+			TestPanel.Children.Add (p);
+			EnqueueConditional (() => loaded);
+			Enqueue (() => {
+				Assert.AreEqual (1, TestPanel.Children.Count, "#1");
+				Assert.AreEqual (p, TestPanel.Children [0], "#2");
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (TestPanel), "#3");
+				Assert.AreEqual (p, VisualTreeHelper.GetChild (TestPanel, 0), "#4");
+				Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (p), "#5");
+
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ObjectContent ()
+		{
+			bool loaded = false;
+			ContentPresenter p = new ContentPresenter ();
+			p.Content = new object ();
+			p.Loaded += delegate { loaded = true; };
+
+			TestPanel.Children.Add (p);
+			EnqueueConditional (() => loaded);
+			Enqueue (() => {
+				Assert.AreEqual (1, TestPanel.Children.Count, "#1");
+				Assert.AreEqual (p, TestPanel.Children [0], "#2");
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (TestPanel), "#3");
+				Assert.AreEqual (p, VisualTreeHelper.GetChild (TestPanel, 0), "#4");
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (p), "#5");
+				Grid g = VisualTreeHelper.GetChild (p, 0) as Grid;
+				Assert.IsNotNull (g, "#6");
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (g), "#7");
+				TextBlock block = VisualTreeHelper.GetChild (g, 0) as TextBlock;
+				Assert.IsNotNull (block, "#8");
+				Assert.AreEqual ("System.Object", block.Text, "#9");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void StringContent ()
+		{
+			bool loaded = false;
+			ContentPresenter p = new ContentPresenter ();
+			p.Content = "text";
+			p.Loaded += delegate { loaded = true; };
+
+			TestPanel.Children.Add (p);
+			EnqueueConditional (() => loaded);
+			Enqueue (() => {
+				Assert.AreEqual (1, TestPanel.Children.Count, "#1");
+				Assert.AreEqual (p, TestPanel.Children [0], "#2");
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (TestPanel), "#3");
+				Assert.AreEqual (p, VisualTreeHelper.GetChild (TestPanel, 0), "#4");
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (p), "#5");
+				Grid g = VisualTreeHelper.GetChild (p, 0) as Grid;
+				Assert.IsNotNull (g, "#6");
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (g), "#7");
+				TextBlock block = VisualTreeHelper.GetChild (g, 0) as TextBlock;
+				Assert.IsNotNull (block, "#8");
+				Assert.AreEqual ("text", block.Text, "#9");
+			});
+			EnqueueTestComplete ();
+		}
 	}
 }
