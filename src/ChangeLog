@@ -1,3 +1,8 @@
+2009-04-07  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* application.cpp: uri->ToString() allocates memory, free it after
+	use.
+
 2009-04-06  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp|.h (Surface::Attach): split this method effectively
