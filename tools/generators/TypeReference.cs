@@ -232,28 +232,28 @@ class TypeReference {
 				managed_type = "Mono.ToggleRef.ToggleNotifyHandler";
 				break;
 
-			case "downloader_create_state_func":
+			case "DownloaderCreateStateFunc":
 				managed_type = "Mono.DownloaderCreateStateFunc";
 				break;
-			case "downloader_destroy_state_func":
+			case "DownloaderDestroyStateFunc":
 				managed_type = "Mono.DownloaderDestroyStateFunc";
 				break;
-			case "downloader_open_func":
+			case "DownloaderOpenFunc":
 				managed_type = "Mono.DownloaderOpenFunc";
 				break;
-			case "downloader_send_func":
+			case "DownloaderSendFunc":
 				managed_type = "Mono.DownloaderSendFunc";
 				break;
-			case "downloader_abort_func":
+			case "DownloaderAbortFunc":
 				managed_type = "Mono.DownloaderAbortFunc";
 				break;
-			case "downloader_header_func":
+			case "DownloaderHeaderFunc":
 				managed_type = "Mono.DownloaderHeaderFunc";
 				break;
-			case "downloader_body_func":
+			case "DownloaderBodyFunc":
 				managed_type = "Mono.DownloaderBodyFunc";
 				break;
-			case "downloader_create_webrequest_func":
+			case "DownloaderCreateWebRequestFunc":
 				managed_type = "Mono.DownloaderCreateWebRequestFunc";
 				break;
 			default:
