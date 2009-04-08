@@ -36,7 +36,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Media {
 
 	[TestClass]
-	public class RectangleGeometryTest {
+	public partial class RectangleGeometryTest {
 
 		[TestMethod]
 		public void Defaults ()

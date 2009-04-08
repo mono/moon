@@ -111,7 +111,7 @@ namespace MoonTest.System.Windows.Controls {
 	}
 
 	[TestClass]
-	public class ComboBoxTest {
+	public partial class ComboBoxTest {
 
 		[TestMethod]
 		public void DefaultValues ()

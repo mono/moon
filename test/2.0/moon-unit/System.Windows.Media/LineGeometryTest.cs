@@ -30,7 +30,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Media
 {
 	[TestClass]
-	public class LineGeometryTest
+	public partial class LineGeometryTest
 	{
 		[TestMethod]
 		public void Defaults ()

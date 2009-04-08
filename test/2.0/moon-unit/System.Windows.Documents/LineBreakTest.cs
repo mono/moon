@@ -37,7 +37,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Documents {
 
 	[TestClass]
-	public class LineBreakTest {
+	public partial class LineBreakTest {
 
 		[TestMethod]
 		public void NullifyFontFamily ()

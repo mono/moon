@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows
 {
 	[TestClass]
-	public class VisualStateTest
+	public partial class VisualStateTest
 	{
 		[TestMethod]
 		public void TestParse ()

@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Shapes
 {
 	[TestClass]
-	public class PathTest
+	public partial class PathTest
 	{
 		[TestMethod]
 		public void MeasureRectangleTest1 ()

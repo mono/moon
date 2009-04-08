@@ -40,7 +40,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls.Primitives {
 
 	[TestClass]
-	public class ThumbTest {
+	public partial class ThumbTest {
 
 		[TestMethod]
 		public void ReadOnlyProperties ()

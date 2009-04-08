@@ -36,7 +36,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Media {
 
 	[TestClass]
-	public class RadialGradientBrushTest {
+	public partial class RadialGradientBrushTest {
 
 		[TestMethod]
 		public void DefaultCtor ()

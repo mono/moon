@@ -49,7 +49,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 	}
 	
 	[TestClass]
-	public class StoryboardTest : SilverlightTest {
+	public partial class StoryboardTest : SilverlightTest {
 		
 		[TestMethod]
 		public void InvalidValues_NonTimeline ()

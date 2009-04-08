@@ -37,7 +37,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows {
 
 	[TestClass]
-	public class AssemblyPartTest {
+	public partial class AssemblyPartTest {
 
 		[TestMethod]
 		public void LoadNewAssemblyPartFromMemoryStream ()

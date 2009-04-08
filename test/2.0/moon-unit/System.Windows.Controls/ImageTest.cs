@@ -17,7 +17,7 @@ using Microsoft.Silverlight.Testing;
 namespace MoonTest.System.Windows.Controls
 {
 	[TestClass]
-	public class ImageTest : Microsoft.Silverlight.Testing.SilverlightTest
+	public partial class ImageTest : Microsoft.Silverlight.Testing.SilverlightTest
 	{
 		[TestMethod]
 		public void MeasureTest_Empty ()

@@ -38,7 +38,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class UserControlTest {
+	public partial class UserControlTest {
 
 		class DefaultStyleKey_TypeClass : UserControl {
 			public DefaultStyleKey_TypeClass ()

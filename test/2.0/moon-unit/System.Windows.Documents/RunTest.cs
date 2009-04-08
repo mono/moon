@@ -38,7 +38,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Documents {
 
 	[TestClass]
-	public class RunTest {
+	public partial class RunTest {
 
 		[TestMethod]
 		public void TextBlockInherited ()

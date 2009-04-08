@@ -17,7 +17,7 @@ using Microsoft.Silverlight.Testing;
 namespace MoonTest.System.Windows {
 
 	[TestClass]
-	public class VisualStateManagerTest : SilverlightTest {
+	public partial class VisualStateManagerTest : SilverlightTest {
 
 		[TestMethod]
 		public void SetCustomVSMNullDO ()

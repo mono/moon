@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls
 {
 	[TestClass]
-	public class InkPresenterTest
+	public partial class InkPresenterTest
 	{
 		[TestMethod]
 		public void ClearValueTest()

@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls
 {
 	[TestClass]
-	public class CanvasTest
+	public partial class CanvasTest
 	{
 		[TestMethod]
 		public void ChildlessMeasureTest ()

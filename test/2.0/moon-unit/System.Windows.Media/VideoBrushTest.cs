@@ -37,7 +37,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Media {
 
 	[TestClass]
-	public class VideoBrushTest {
+	public partial class VideoBrushTest {
 
 		[TestMethod]
 		public void DefaultCtor ()

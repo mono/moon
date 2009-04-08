@@ -37,6 +37,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Shapes {
 
 	[TestClass]
-	public class EllipseTest {
+	public partial class EllipseTest {
 	}
 }

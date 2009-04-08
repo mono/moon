@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows
 {
 	[TestClass]
-	public class SetterBaseCollectionTest
+	public partial class SetterBaseCollectionTest
 	{
 		[TestMethod]
 		public void Sealed ()

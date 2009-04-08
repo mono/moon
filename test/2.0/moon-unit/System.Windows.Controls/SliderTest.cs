@@ -42,7 +42,7 @@ using MoonTest.System.Windows.Controls.Primitives;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class SliderTest {
+	public partial class SliderTest {
 
 		[TestMethod]
 		public void Properties ()

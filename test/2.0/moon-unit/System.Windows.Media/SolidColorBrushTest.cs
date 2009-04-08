@@ -36,7 +36,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Media {
 
 	[TestClass]
-	public class SolidColorBrushTest {
+	public partial class SolidColorBrushTest {
 
 		[TestMethod]
 		public void DefaultCtor ()

@@ -38,7 +38,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class ItemsControlTest {
+	public partial class ItemsControlTest {
 
 		[TestMethod]
 		public void DefaultValues ()

@@ -17,7 +17,7 @@ using Microsoft.Silverlight.Testing;
 namespace MoonTest.System.Windows.Controls
 {
 	[TestClass]
-	public class GridTest : SilverlightTest
+	public partial class GridTest : SilverlightTest
 	{
 		class LayoutPoker : Panel
 		{

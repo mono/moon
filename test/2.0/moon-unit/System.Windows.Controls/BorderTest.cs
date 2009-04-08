@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls
 {
 	[TestClass]
-	public class BorderTest
+	public partial class BorderTest
 	{
 		[TestMethod]
 		public void InvalidValues()

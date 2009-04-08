@@ -38,7 +38,7 @@ using MoonTest.System.Windows.Controls.Primitives;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class ProgressBarTest {
+	public partial class ProgressBarTest {
 
 		[TestMethod]
 		public void ToStringTest ()

@@ -39,7 +39,7 @@ using Microsoft.Silverlight.Testing;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class ContentPresenterTest : SilverlightTest {
+	public partial class ContentPresenterTest : SilverlightTest {
 
 		[TestMethod]
 		[Asynchronous]

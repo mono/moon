@@ -38,7 +38,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls.Primitives {
 
 	[TestClass]
-	public class RepeatButtonTest {
+	public partial class RepeatButtonTest {
 
 		[TestMethod]
 		public void Delay ()

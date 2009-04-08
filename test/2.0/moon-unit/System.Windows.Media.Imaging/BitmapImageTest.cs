@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Media.Imaging {
 	[TestClass]
-	public class BitmapImageTest {
+	public partial class BitmapImageTest {
 		static Uri corruptImage = new Uri ("images/invalid-image-data.png", UriKind.Relative);
 		static Uri badUri = new Uri ("non-existent-uri.png", UriKind.Relative);
 		

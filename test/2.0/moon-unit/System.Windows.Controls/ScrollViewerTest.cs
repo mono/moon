@@ -36,7 +36,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class ScrollViewerTest {
+	public partial class ScrollViewerTest {
 
 		[TestMethod]
 		public void ReadOnlyProperties ()

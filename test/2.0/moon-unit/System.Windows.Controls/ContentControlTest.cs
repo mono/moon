@@ -36,7 +36,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class ContentControlTest {
+	public partial class ContentControlTest {
 
 		class ContentControlPoker : ContentControl {
 

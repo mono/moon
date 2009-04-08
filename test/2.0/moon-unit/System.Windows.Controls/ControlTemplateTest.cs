@@ -30,7 +30,7 @@ namespace MoonTest.System.Windows.Controls
 	}
 
 	[TestClass]
-	public class ControlTemplateTest
+	public partial class ControlTemplateTest
 	{
 		[TestMethod]
 		public void TargetTypeWithNamespace ()

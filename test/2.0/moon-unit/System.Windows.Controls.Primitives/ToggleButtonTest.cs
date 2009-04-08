@@ -39,7 +39,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls.Primitives {
 
 	[TestClass]
-	public class ToggleButtonTest {
+	public partial class ToggleButtonTest {
 
 		class ToggleButtonPoker : ToggleButton {
 

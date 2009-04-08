@@ -40,6 +40,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class ButtonTest {
+	public partial class ButtonTest {
 	}
 }

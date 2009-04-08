@@ -37,7 +37,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class TextBlockTest {
+	public partial class TextBlockTest {
 		double line_height;
 		
 		[TestInitialize]

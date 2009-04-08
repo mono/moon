@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows
 {
 	[TestClass]
-	public class ResourceDictionaryTest
+	public partial class ResourceDictionaryTest
 	{
 		[TestMethod]
 		public void AddDouble ()

@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Media
 {
 	[TestClass]
-	public class ImageBrushTest
+	public partial class ImageBrushTest
 	{
 		[TestMethod]
 		[MoonlightBug ("ImageSource is null on ML")]

@@ -36,7 +36,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Media {
 
 	[TestClass]
-	public class TransformGroupTest {
+	public partial class TransformGroupTest {
 
 		[TestMethod]
 		public void DefaultCtor ()

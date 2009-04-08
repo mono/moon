@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Shapes
 {
 	[TestClass]
-	public class RectangleTest
+	public partial class RectangleTest
 	{
 		[TestMethod]
 		public void MeasureTest1 ()

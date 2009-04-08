@@ -36,7 +36,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Controls {
 	[TestClass]
-	public class ListBoxTest {
+	public partial class ListBoxTest {
 		class ListBoxPoker : ListBox {
 			public bool Call_IsItemItsOwnContainerOverride (object item)
 			{

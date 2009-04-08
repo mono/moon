@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls
 {
 	[TestClass]
-	public class StackPanelTest {
+	public partial class StackPanelTest {
 		[TestMethod]
 		public void MeasureTest ()
 		{

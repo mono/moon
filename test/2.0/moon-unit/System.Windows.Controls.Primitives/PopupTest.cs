@@ -18,7 +18,7 @@ using System.Collections.Generic;
 namespace MoonTest.System.Windows.Controls.Primitives
 {
 	[TestClass]
-	public class PopupTest : Microsoft.Silverlight.Testing.SilverlightTest
+	public partial class PopupTest : Microsoft.Silverlight.Testing.SilverlightTest
 	{
 		[TestMethod]
 		public void Defaults ()

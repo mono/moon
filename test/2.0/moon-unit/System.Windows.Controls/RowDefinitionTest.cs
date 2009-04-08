@@ -37,7 +37,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public class RowDefinitionTest {
+	public partial class RowDefinitionTest {
 
 		private void CheckDefault (RowDefinition cd)
 		{

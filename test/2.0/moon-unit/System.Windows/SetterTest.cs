@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows
 {
 	[TestClass]
-	public class SetterTest {
+	public partial class SetterTest {
 
 		[TestMethod]
 		public void Defaults ()
