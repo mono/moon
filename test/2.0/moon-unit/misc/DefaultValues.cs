@@ -6737,7 +6737,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Image ()
         {
             Image widget = new Image ();
@@ -7038,7 +7037,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Canvas ()
         {
             Canvas widget = new Canvas ();
@@ -7383,7 +7381,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_TextBlock ()
         {
             TextBlock widget = new TextBlock ();
@@ -8156,7 +8153,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_InkPresenter ()
         {
             InkPresenter widget = new InkPresenter ();
@@ -8824,7 +8820,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_StackPanel ()
         {
             StackPanel widget = new StackPanel ();
@@ -10557,7 +10552,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_ItemsControl ()
         {
             ItemsControl widget = new ItemsControl ();
@@ -10889,7 +10883,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Border ()
         {
             Border widget = new Border ();
@@ -11274,7 +11267,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_ContentControl ()
         {
             ContentControl widget = new ContentControl ();
@@ -12139,7 +12131,6 @@ namespace MoonTest.System.Windows.Controls.Primitives
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Popup ()
         {
             Popup widget = new Popup ();
@@ -12499,7 +12490,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_UserControl ()
         {
             UserControl widget = new UserControl ();
@@ -12944,7 +12934,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Button ()
         {
             Button widget = new Button ();
@@ -13437,7 +13426,6 @@ namespace MoonTest.System.Windows.Controls.Primitives
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_ToggleButton ()
         {
             ToggleButton widget = new ToggleButton ();
@@ -14437,7 +14425,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_ComboBox ()
         {
             ComboBox widget = new ComboBox ();
@@ -16843,7 +16830,6 @@ namespace MoonTest.System.Windows.Controls.Primitives
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_RepeatButton ()
         {
             RepeatButton widget = new RepeatButton ();
@@ -17742,7 +17728,6 @@ namespace MoonTest.System.Windows.Controls.Primitives
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Thumb ()
         {
             Thumb widget = new Thumb ();
@@ -19060,7 +19045,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_ScrollViewer ()
         {
             ScrollViewer widget = new ScrollViewer ();
@@ -19542,7 +19526,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Slider ()
         {
             Slider widget = new Slider ();
@@ -20456,7 +20439,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_ProgressBar ()
         {
             ProgressBar widget = new ProgressBar ();
