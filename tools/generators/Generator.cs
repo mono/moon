@@ -1831,7 +1831,7 @@ class Generator {
 						result.Append ('\t');
 						result.Append (type.Name);
 						result.Append ("*");
-						result.Append (' ', 30 - type.Name.Length);
+						result.Append (' ', 40 - type.Name.Length);
 						result.Append ("As");
 						result.Append (type.Name);
 						result.Append (" () { checked_get_subclass (Type::");
