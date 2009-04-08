@@ -108,7 +108,7 @@ namespace System.Windows.Controls {
 
 		public Point LogicalToElementPoint (Point logicalPoint)
 		{
-			throw new NotImplementedException ();
+			return NativeMethods.multi_scale_image_logical_to_element_point (this.native, logicalPoint);
 		}
 
 		static object ImageFailedEvent = new object ();

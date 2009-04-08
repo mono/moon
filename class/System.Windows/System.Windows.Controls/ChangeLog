@@ -1,3 +1,7 @@
+2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleImage.cs: no longer throws NIE on LogicalToElementPoint
+
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
 	* ContentPresenter.cs: turns out my layout fears were unfounded.
