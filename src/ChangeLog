@@ -1,5 +1,15 @@
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
+	* provider.cpp (InheritedPropertyValueProvider::GetPropertyValue):
+	rewrite this substantially to make it work correctly and be more
+	efficient.  we no longer look up the hierarchy for properties
+	which aren't inheritable, and we only loop up the visual tree, not
+	the logical one (since that has issues when it comes to
+	templates).
+	(get_parent): nuke, it was a broken way to deal with parents.
+
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.h|.cpp (class UIElement): scrap that ill-advised
 	AutoCreator crap.  it's much simpler.  the default is actually
 	NULL, and the managed layer does the stupid mapping from NULL to

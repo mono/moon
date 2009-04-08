@@ -182,46 +182,22 @@ StylePropertyValueProvider::SealStyle (Style *style)
 //
 // InheritedPropertyValueProvider
 //
-
-static DependencyObject*
-get_parent (DependencyObject *obj)
-{
-	DependencyObject *parent = NULL;
-
-	if (obj->Is (Type::UIELEMENT))
-		parent = ((UIElement*)obj)->GetVisualParent ();
-
-	if (!parent && obj->Is (Type::FRAMEWORKELEMENT))
-		parent = ((FrameworkElement*)obj)->GetLogicalParent ();
-
-	// skip collections
-	if (!parent) {
-		DependencyObject *new_parent = obj->GetParent();
-		while (new_parent && new_parent->Is(Type::COLLECTION))
-			new_parent = new_parent->GetParent ();
-		parent = new_parent;
-	}
-
-	return parent;
-}
-
 Value*
 InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
-	DependencyObject *parent = get_parent (obj);
-
-	if (!parent)
-		return NULL;
-
 	int parentProperty = -1;
 
 	Value *parentValue = NULL;
+
+	bool inheritableProperty = false;
 
 #define INHERIT1(p) \
 	G_STMT_START {							\
 	if (property->GetId () == Control::p ||				\
 	    property->GetId () == TextBlock::p ||			\
 	    property->GetId () == Inline::p) {				\
+									\
+		inheritableProperty = true;				\
 									\
 		if (parent->Is (Type::CONTROL))				\
 			parentProperty = Control::p;			\
@@ -237,47 +213,86 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	G_STMT_START {							\
 	if (property->GetId () == Inline::p) {				\
 									\
+		inheritableProperty = true;				\
+									\
 		if (parent->Is (Type::TEXTBLOCK))			\
 			parentProperty = TextBlock::p;			\
 	}								\
 	} G_STMT_END
 
 #define INHERIT3(p) \
-	G_STMT_START {									\
-	if (property->GetId () == FrameworkElement::p) {				\
-		do {									\
-			if (parent->Is (Type::FRAMEWORKELEMENT)) {			\
-				Value *contextV = parent->ReadLocalValue (FrameworkElement::p); \
-				if (contextV)						\
-					return contextV;				\
-			}								\
-			parent = get_parent (parent);					\
-		} while (parent);							\
-	}										\
+	G_STMT_START {							\
+	if (property->GetId () == FrameworkElement::p) {		\
+									\
+		inheritableProperty = true;				\
+									\
+		if (parent->Is (Type::FRAMEWORKELEMENT))		\
+			parentProperty = FrameworkElement::p;		\
+	}								\
 	} G_STMT_END
 
 
-	INHERIT1 (ForegroundProperty);
-	INHERIT1 (FontFamilyProperty);
-	INHERIT1 (FontStretchProperty);
-	INHERIT1 (FontStyleProperty);
-	INHERIT1 (FontWeightProperty);
-	INHERIT1 (FontSizeProperty);
 
-	INHERIT2 (TextDecorationsProperty);
-	INHERIT2 (FontFilenameProperty);
+	DependencyObject *parent = NULL;
 
-	if (parentProperty != -1) {
-		parentValue = parent->ReadLocalValue (parentProperty);
+	if (obj->Is(Type::FRAMEWORKELEMENT)) {
+		// we loop up the visual tree
+		parent = ((FrameworkElement*)obj)->GetVisualParent();
+		if (parent) {
+			while (parent) {
+				INHERIT1 (ForegroundProperty);
+				INHERIT1 (FontFamilyProperty);
+				INHERIT1 (FontStretchProperty);
+				INHERIT1 (FontStyleProperty);
+				INHERIT1 (FontWeightProperty);
+				INHERIT1 (FontSizeProperty);
 
-		if (parentValue)
-			return parentValue;
-		else
+				INHERIT3 (DataContextProperty);
+
+				if (!inheritableProperty)
+					return NULL;
+
+				if (parentProperty != -1) {
+					parentValue = parent->ReadLocalValue (parentProperty);
+					if (parentValue)
+						return parentValue;
+				}
+
+				if (parent->Is(Type::FRAMEWORKELEMENT))
+					parent = ((FrameworkElement*)parent)->GetVisualParent();
+				else
+					parent = NULL;
+			}
+		}
+	}
+	else if (obj->Is(Type::INLINE)) {
+		// skip collections
+		DependencyObject *new_parent = obj->GetParent();
+		while (new_parent && new_parent->Is(Type::COLLECTION))
+			new_parent = new_parent->GetParent ();
+		parent = new_parent;
+
+		if (!parent)
+			return NULL;
+
+		INHERIT1 (ForegroundProperty);
+		INHERIT1 (FontFamilyProperty);
+		INHERIT1 (FontStretchProperty);
+		INHERIT1 (FontStyleProperty);
+		INHERIT1 (FontWeightProperty);
+		INHERIT1 (FontSizeProperty);
+
+		INHERIT2 (TextDecorationsProperty);
+		INHERIT2 (FontFilenameProperty);
+
+		if (!inheritableProperty)
+			return NULL;
+
+		if (parentProperty != -1) {
 			return parent->GetValue (parentProperty);
+		}
 	}
 	  
-	INHERIT3 (DataContextProperty);
-
 	return NULL;
 }
 
