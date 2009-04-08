@@ -419,6 +419,9 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			cairo_restore (cr);
 		}
 
+		if (!GetAllowDownloading ())
+			continue;
+
 		BitmapImageContext *bitmapimagectx;
 		if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
 			continue;
@@ -577,6 +580,9 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	}
 	cairo_restore (cr);
 	//	cairo_pop_group_to_source (cr);
+
+	if (!GetAllowDownloading ())
+		return;
 
 	BitmapImageContext *bitmapimagectx;
 	if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
@@ -755,6 +761,9 @@ MultiScaleImage::GetFreeBitmapImageContext ()
 void
 MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
+	if (args->GetId () == MultiScaleImage::AllowDownloadingProperty && args->GetNewValue () && args->GetNewValue()->AsBool ())
+		Invalidate();
+
 	if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
 		Emit (MultiScaleImage::ViewportChangedEvent);
 		Invalidate ();

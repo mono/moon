@@ -1,5 +1,11 @@
 2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp (MultiScaleImage::RenderSingle, 
+	MultiScaleImage::RenderCollection): do not start any new download if
+	AllowDownlodingProperty is false.
+
+2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.h|cpp: impplement missing LogicalToElementPoint
 
 2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
