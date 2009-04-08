@@ -1,3 +1,7 @@
+2009-04-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Remove agviewer and test-runner from the build.
+
 2009-04-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* masters/video-seek.html.png:

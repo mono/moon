@@ -1,5 +1,5 @@
 
-SUBDIRS=shocker agviewer test-runner
+SUBDIRS=shocker
 
 install-test-plugin:
 	$(MAKE) $(AM_MAKEFLAGS) -C shocker install-test-plugin
