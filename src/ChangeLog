@@ -1,3 +1,8 @@
+2009-04-08  Andreia Gaita  <avidigal@novell.com>
+
+	* dependencyobject.cpp: enable toggleref
+	conditionally (MOONLIGHT_ENABLE_TOGGLEREF)
+
 2009-04-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (IndexFontSubdirectory): Don't try deobfuscating if it
