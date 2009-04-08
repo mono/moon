@@ -696,11 +696,19 @@ tile_available (EventObject *sender, EventArgs *calldata, gpointer closure)
 }
 
 void
+MultiScaleImage::TileFailed (BitmapImage *bitmapimage)
+{
+	BitmapImageContext *ctx = GetBitmapImageContext (bitmapimage);
+	ctx->state = BitmapImageFree;
+	g_hash_table_insert (cache, new Uri(*(ctx->bitmapimage->GetUriSource())), NULL);
+	Invalidate ();
+}
+
+void
 tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	LOG_MSI ("Failed to download tile\n");
-	//cache a null
-	//Invalidate() so a new tile is dlded
+	LOG_MSI ("Failed to download tile %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
+	((MultiScaleImage *)closure)->TileFailed ((BitmapImage *)sender);
 }
 
 BitmapImageContext *

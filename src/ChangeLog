@@ -1,5 +1,10 @@
 2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp: if downloading a tile fail, cache a NULL surface
+	and move on
+
+2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: some additional debug info printing the state of
 	each BitmapImage
 
