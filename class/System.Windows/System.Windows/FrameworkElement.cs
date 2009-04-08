@@ -333,6 +333,10 @@ namespace System.Windows {
 		{
 			RemoveExpression (dp);
 			base.ClearValueImpl (dp);
+			if (dp == FrameworkElement.DataContextProperty) {
+				InvalidateLocalBindings ();
+				InvalidateSubtreeBindings ();
+			}
 		}
 
 		void RemoveExpression (DependencyProperty dp)

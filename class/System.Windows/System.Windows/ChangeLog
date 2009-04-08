@@ -1,3 +1,8 @@
+2009-04-08  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: When the datacontext is cleared in
+	  managed code, we need to invalidate all the bindings.
+
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
 	* UIElement.cs: very gross emulation of the behavior we see with

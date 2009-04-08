@@ -1,3 +1,9 @@
+2009-04-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: When the datacontext is
+	  cleared in managed code, we need to invalidate all the
+	  bindings.
+
 2009-04-08  Jackson Harper  <jackson@ximian.com>
 
 	* System.Windows.Media/ColorTest.cs: <Color> is only valid in

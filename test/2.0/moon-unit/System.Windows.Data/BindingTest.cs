@@ -367,7 +367,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void DataContext_ClearLocal ()
 		{
 			Binding b = new Binding("");
