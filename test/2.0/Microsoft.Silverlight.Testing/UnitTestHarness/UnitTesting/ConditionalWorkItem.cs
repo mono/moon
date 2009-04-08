@@ -27,7 +27,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting
         /// Construct a new conditional work item.
         /// </summary>
         /// <param name="conditionalMethod">Conditional delegate.</param>
-        public ConditionalWorkItem(Func<bool> conditionalMethod) : this(conditionalMethod, TimeSpan.FromSeconds(5), "")
+        public ConditionalWorkItem(Func<bool> conditionalMethod) : this(conditionalMethod, TimeSpan.FromSeconds(10), "")
         {
 
         }

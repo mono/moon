@@ -1,3 +1,8 @@
+2009-04-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ConditionalWorkItem.cs: Double conditional wait timeout,
+	  should make the slow x86 bots happier.
+
 2009-03-04  Geoff Norton  <gnorton@novell.com>
 
 	* CompositeWorkItem.cs: In the case that an async test throws
