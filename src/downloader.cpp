@@ -330,8 +330,9 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 	default:
 		break;
 	}
-	delete source;
+	
 	delete target;
+	
 	return retval;
 }
 

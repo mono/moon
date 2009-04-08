@@ -1,5 +1,8 @@
 2009-04-08  Jeffrey Stedfast  <fejj@novell.com>
 
+	* downloader.cpp (validate_policy): Don't delete source here, we
+	don't own it.
+
 	* glyphs.cpp (DownloaderComplete): Only bother setting a guid if
 	the file extension is .odttf. Also no need to stat() anymore.
 
