@@ -43,6 +43,7 @@ Border::MeasureOverride (Size availableSize)
 
 	desired = desired.GrowBy (border);
 
+	desired = desired.Min (availableSize);
 	desired = desired.Max (specified);
 	desired = desired.Min (specified);
 

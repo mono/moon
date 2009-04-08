@@ -1,7 +1,15 @@
+2009-04-07  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (MeasureOverride): use the star fraction of the
+	available size when measuring.
+
+	* border.cpp: restrict the return value to available size.
+
 2009-04-07  Geoff Norton  <gnorton@novell.com>
 
-	* pipeline.cpp|h: Ensure that we can post ReportSeekCompleted back to the
-	media thread from any thread.  Fixes seeking on SmoothHD sites.
+	* pipeline.cpp|h: Ensure that we can post ReportSeekCompleted back
+	to the media thread from any thread.  Fixes seeking on SmoothHD
+	sites.
 
 2009-04-07  Geoff Norton  <gnorton@novell.com>
 

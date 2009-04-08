@@ -89,6 +89,7 @@ Grid::MeasureOverride (Size availableSize)
 
 	int col_count = columns->GetCount ();
 	int row_count = rows->GetCount ();
+	Size total_stars = Size (0,0);
 
 	if (col_count == 0) {
 		columns = new ColumnDefinitionCollection ();
@@ -115,7 +116,9 @@ Grid::MeasureOverride (Size availableSize)
 		rowdef->SetActualHeight (0.0);
 
 		if (height->type == GridUnitTypePixel)
-                       rowdef->SetActualHeight (height->val);
+			rowdef->SetActualHeight (height->val);
+		if (height->type == GridUnitTypeStar)
+			total_stars.height += height->val;
 	}
 
 	for (int i = 0; i < col_count; i ++) {
@@ -126,7 +129,8 @@ Grid::MeasureOverride (Size availableSize)
 
 		if (width->type == GridUnitTypePixel)
 			coldef->SetActualWidth (width->val);
-
+		if (width->type == GridUnitTypeStar)
+			total_stars.width += width->val;
 	}
 	
 	magic = Size ();
@@ -166,7 +170,7 @@ Grid::MeasureOverride (Size availableSize)
 				break;
 			case GridUnitTypeStar:
 				stars.height += height->val;
-				child_size.height += rowdef->GetMaxHeight ();				
+				child_size.height += availableSize.height * stars.height / total_stars.height;
 				break;
 			}
 
@@ -189,14 +193,13 @@ Grid::MeasureOverride (Size availableSize)
 				break;
 			case GridUnitTypeStar:
 				stars.width += width->val;
-				child_size.width += coldef->GetMaxWidth ();
+				child_size.width += availableSize.width * stars.width / total_stars.width;
 				break;
 			}
 
 			min_size.width += coldef->GetMinWidth ();
 			max_size.width += coldef->GetMaxWidth ();
 		}
-		
 		
 		child_size = child_size.Min (max_size);
 		child_size = child_size.Max (min_size);
