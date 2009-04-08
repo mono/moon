@@ -134,8 +134,21 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 Point
 MultiScaleImage::ElementToLogicalPoint (Point elementPoint)
 {
-	return Point (GetViewportOrigin()->x + (double)elementPoint.x * GetViewportWidth () / GetActualWidth (),
-		      GetViewportOrigin()->y + (double)elementPoint.y * GetViewportWidth () / GetActualWidth ());
+	Point *vp_origin = GetViewportOrigin ();
+	double vp_width = GetViewportWidth ();
+	double actual_width = GetActualWidth ();
+	return Point (vp_origin->x + (double)elementPoint.x * vp_width / actual_width,
+		      vp_origin->y + (double)elementPoint.y * vp_width / actual_width);
+}
+
+Point
+MultiScaleImage::LogicalToElementPoint (Point logicalPoint)
+{
+	Point *vp_origin = GetViewportOrigin ();
+	double vp_width = GetViewportWidth ();
+	double actual_width = GetActualWidth ();
+	return Point ((logicalPoint.x - vp_origin->x) * actual_width / vp_width,
+		      (logicalPoint.y - vp_origin->y) * actual_width / vp_width);
 }
 
 //test if the cache contains a tile at the @filename key

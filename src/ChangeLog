@@ -1,5 +1,9 @@
 2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h|cpp: impplement missing LogicalToElementPoint
+
+2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: if downloading a tile fail, cache a NULL surface
 	and move on
 
