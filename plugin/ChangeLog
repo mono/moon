@@ -1,3 +1,10 @@
+2009-04-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin*.cpp|h: Use glib integer types rather than stdint.h types
+	especially see as how we aren't including stdint.h anywhere.
+
+	* plugin-class.cpp: Updated for slight Downloader API changes.
+
 2009-04-07  Larry Ewing  <lewing@novell.com>
 
 	* plugin-debug.cpp (reflect_value): Fix the markup for GRIDLENGTH
@@ -5,7 +12,8 @@
 
 2009-04-06  Geoff Norton  <gnorton@novell.com>
 
-	* plugin-debug.cpp: Ensure we set our deployment before poking in the surface
+	* plugin-debug.cpp: Ensure we set our deployment before poking in
+	the surface
 
 2009-04-03  Sebastien Pouliot  <sebastien@ximian.com>
 

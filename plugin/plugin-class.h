@@ -219,7 +219,7 @@ struct MoonlightObjectType : NPClass {
 	
 	void AddMapping (const MoonNameIdMapping *mapping, int count);
 
-	bool Enumerate (NPIdentifier **value, uint32_t *count);
+	bool Enumerate (NPIdentifier **value, guint32 *count);
 
 	int LookupName (NPIdentifier name);
 
@@ -249,7 +249,7 @@ struct MoonlightObject : NPObject {
 	
 	virtual bool HasMethod (NPIdentifier unmapped);
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 	int LookupName (NPIdentifier name) { return ((MoonlightObjectType *)_class)->LookupName (name); }
 	
 	EventListenerProxy *LookupEventProxy (int event_id);
@@ -404,7 +404,7 @@ struct MoonlightSettingsObject : MoonlightObject {
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
 
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 };
 
 
@@ -429,7 +429,7 @@ struct MoonlightContentObject : MoonlightObject {
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
 	
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 	
 	GHashTable *registered_scriptable_objects;
 };
@@ -457,7 +457,7 @@ struct MoonlightScriptControlObject : MoonlightObject {
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
 	
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 	
 	NPObject *settings;
 	NPObject *content;
@@ -511,7 +511,7 @@ struct MoonlightDependencyObjectObject : MoonlightEventObjectObject {
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
 
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 
 };
 
@@ -559,7 +559,7 @@ struct MoonlightMouseEventArgsObject : MoonlightRoutedEventArgs {
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 
 	MouseEventArgs *GetMouseEventArgs () { return (MouseEventArgs *) eo; };
 };
@@ -627,7 +627,7 @@ struct MoonlightCollectionObject : MoonlightDependencyObjectObject {
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 };
 
 /*** MoonlightStoryboardClass ***************************************************/
@@ -643,7 +643,7 @@ struct MoonlightStoryboardObject : MoonlightDependencyObjectObject {
 	}
 
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 };
 
 /*** MoonlightMediaElement ***************************************************/
@@ -660,7 +660,7 @@ struct MoonlightMediaElementObject : MoonlightDependencyObjectObject {
 	}
 
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 };
 
 /*** MoonlightImage ***************************************************/
@@ -677,7 +677,7 @@ struct MoonlightImageObject : MoonlightDependencyObjectObject {
 	}
 
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 };
 
@@ -695,7 +695,7 @@ struct MoonlightImageBrushObject : MoonlightDependencyObjectObject {
 	}
 
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 };
 
@@ -714,7 +714,7 @@ struct MoonlightDownloaderObject : MoonlightDependencyObjectObject {
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 };
 
 /*** MoonlightTextBlock ***************************************************/
@@ -731,7 +731,7 @@ struct MoonlightTextBlockObject : MoonlightDependencyObjectObject {
 	}
 
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 };
 
 /*** MoonlightStylusInfoType ***************************************************/
@@ -764,7 +764,7 @@ struct MoonlightStylusPointCollectionObject : MoonlightCollectionObject {
 	}
 
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 };
 
 
@@ -784,7 +784,7 @@ struct MoonlightStrokeCollectionObject : MoonlightCollectionObject {
 	}
 
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 };
 
 
@@ -804,7 +804,7 @@ struct MoonlightStrokeObject : MoonlightDependencyObjectObject {
 	}
 
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 };
 
 /*** MoonlightScriptableObject ***************************************************/
@@ -839,7 +839,7 @@ struct MoonlightScriptableObjectObject : MoonlightObject {
 
 	virtual bool HasMethod (NPIdentifier name);
 	virtual bool Invoke (int id, NPIdentifier name,
-			     const NPVariant *args, uint32_t argCount, NPVariant *result);
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 
 	gpointer managed_scriptable;
 	GHashTable *properties;
@@ -920,8 +920,8 @@ const char *html_get_element_text (PluginInstance *plugin, const char *element_i
 bool html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name);
 void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result);
 void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
-void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, uint32_t arg_count, Value *result);
-void html_object_invoke_self (PluginInstance *plugin, NPObject *npobj, Value *args, uint32_t arg_count, Value *result);
+void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, guint32 arg_count, Value *result);
+void html_object_invoke_self (PluginInstance *plugin, NPObject *npobj, Value *args, guint32 arg_count, Value *result);
 gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb, gpointer context);
 void html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener);
 void html_object_release (PluginInstance *plugin, NPObject *npobj);

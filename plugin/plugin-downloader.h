@@ -25,9 +25,9 @@ class PluginDownloader;
 
 G_BEGIN_DECLS
 
-uint32_t plugin_downloader_started (DownloaderResponse *response, gpointer state);
-uint32_t plugin_downloader_available (DownloaderResponse *response, gpointer state, char *buffer, uint32_t length);
-uint32_t plugin_downloader_finished (DownloaderResponse *response, gpointer state, gpointer data);
+guint32 plugin_downloader_started (DownloaderResponse *response, gpointer state);
+guint32 plugin_downloader_available (DownloaderResponse *response, gpointer state, char *buffer, guint32 length);
+guint32 plugin_downloader_finished (DownloaderResponse *response, gpointer state, gpointer data);
 
 G_END_DECLS
 
@@ -50,12 +50,12 @@ class PluginDownloader {
 	void Open (const char *verb, const char *uri, bool streaming);
 	void Send ();
 
-	uint32_t Read (char *buffer, uint32_t length);
+	guint32 Read (char *buffer, guint32 length);
 	void Started ();
 	void Finished (bool success, gpointer data, const char *uri);
 
 	void SetHttpHeader (const char *header, const char *value);
-	void SetBody (void *body, uint32_t length);
+	void SetBody (void *body, guint32 length);
 	
 	PluginInstance *GetPlugin ();
 

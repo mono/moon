@@ -23,7 +23,7 @@
 
 bool downloader_shutdown = false;
 
-uint32_t
+guint32
 plugin_downloader_started (DownloaderResponse *response, gpointer state)
 {
 	d(printf ("plugin_downloader_started (%p, %p).\n", response, state));
@@ -37,8 +37,8 @@ plugin_downloader_started (DownloaderResponse *response, gpointer state)
 	return DOWNLOADER_OK;
 }
 
-uint32_t
-plugin_downloader_available (DownloaderResponse *response, gpointer state, char *buffer, uint32_t length)
+guint32
+plugin_downloader_available (DownloaderResponse *response, gpointer state, char *buffer, guint32 length)
 {
 	d(printf ("plugin_downloader_available (%p, %p, %p, %u).\n", response, state, buffer, length));
 	PluginDownloader *pd = (PluginDownloader *)state;
@@ -50,7 +50,7 @@ plugin_downloader_available (DownloaderResponse *response, gpointer state, char 
 	return DOWNLOADER_ERR;
 }
 
-uint32_t
+guint32
 plugin_downloader_finished (DownloaderResponse *response, gpointer state, bool success, gpointer data, const char *uri)
 {
 	d(printf ("plugin_downloader_finished (%p, %p).\n", response, state));
@@ -102,7 +102,7 @@ plugin_downloader_send (gpointer state)
 }
 
 static void
-plugin_downloader_set_body (gpointer state, void *body, uint32_t length)
+plugin_downloader_set_body (gpointer state, void *body, guint32 length)
 {
 	d (printf ("plugin_downloader_set_body (%p)\n", state));
 	
@@ -245,8 +245,8 @@ PluginDownloader::getRequest ()
 	return this->request;
 }
 
-uint32_t
-PluginDownloader::Read (char *buffer, uint32_t length)
+guint32
+PluginDownloader::Read (char *buffer, guint32 length)
 {
 	d (printf ("PluginDownloader::Read (), this: %p, dl: %p\n", this, dl));
 	
@@ -287,7 +287,7 @@ PluginDownloader::SetHttpHeader (const char *header, const char *value)
 }
 
 void
-PluginDownloader::SetBody (void *body, uint32_t length)
+PluginDownloader::SetBody (void *body, guint32 length)
 {
 	d (printf ("PluginDownloader::SetBody (), this: %p, dl: %p\n", this, dl));
 	
@@ -318,15 +318,17 @@ void
 downloader_initialize (void)
 {
 	downloader_shutdown = false;
-	downloader_set_functions (
-		plugin_downloader_create_state,
-		plugin_downloader_destroy_state,
-		plugin_downloader_open,
-		plugin_downloader_send,
-		plugin_downloader_abort,
-		plugin_downloader_set_header,
-		plugin_downloader_set_body,
-		plugin_downloader_create_webrequest);
+	
+	Downloader::SetFunctions (
+		&plugin_downloader_create_state,
+		&plugin_downloader_destroy_state,
+		&plugin_downloader_open,
+		&plugin_downloader_send,
+		&plugin_downloader_abort,
+		&plugin_downloader_set_header,
+		&plugin_downloader_set_body,
+		&plugin_downloader_create_webrequest,
+		false);
 }
 
 void

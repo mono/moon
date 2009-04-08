@@ -41,7 +41,7 @@ char *NPN_strdup (const char *val);
 class PluginInstance
 {
  public:
-	PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mode);
+	PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mode);
 	~PluginInstance ();
 	
 	void Initialize (int argc, char *const argn[], char *const argv[]);
@@ -51,11 +51,11 @@ class PluginInstance
 	NPError GetValue (NPPVariable variable, void *result);
 	NPError SetValue (NPNVariable variable, void *value);
 	NPError SetWindow (NPWindow *window);
-	NPError NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype);
+	NPError NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, guint16 *stype);
 	NPError DestroyStream (NPStream *stream, NPError reason);
 	void StreamAsFile (NPStream *stream, const char *fname);
-	int32_t WriteReady (NPStream *stream);
-	int32_t Write (NPStream *stream, int32_t offset, int32_t len, void *buffer);
+	gint32 WriteReady (NPStream *stream);
+	gint32 Write (NPStream *stream, gint32 offset, gint32 len, void *buffer);
 	void UrlNotify (const char *url, NPReason reason, void *notifyData);
 	void Print (NPPrint *platformPrint);
 	int16_t EventHandle (void *event);
@@ -72,9 +72,9 @@ class PluginInstance
 	void      RemoveCleanupPointer (gpointer p);
 	
 	// [Obselete (this is obsolete in SL b2)]
-	uint32_t TimeoutAdd (int32_t interval, GSourceFunc callback, gpointer data);
+	guint32 TimeoutAdd (gint32 interval, GSourceFunc callback, gpointer data);
 	// [Obselete (this is obsolete in SL b2)]
-	void     TimeoutStop (uint32_t source_id);
+	void    TimeoutStop (guint32 source_id);
 	
 	void Properties ();
 	
@@ -105,8 +105,8 @@ class PluginInstance
 	NPWindow *GetWindow ();
 	Surface *GetSurface () { return surface; }
 	
-	int32_t GetActualHeight ();
-	int32_t GetActualWidth ();
+	gint32 GetActualHeight ();
+	gint32 GetActualWidth ();
 	
 	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 	
@@ -151,7 +151,7 @@ class PluginInstance
 
 	GSList *timers;
 
-  	uint16_t mode;         // NP_EMBED, NP_FULL, or NP_BACKGROUND
+  	guint16 mode;          // NP_EMBED, NP_FULL, or NP_BACKGROUND
 	NPWindow *window;      // Mozilla window object
 	NPP instance;          // Mozilla instance object
 	NPObject *rootobject;  // Mozilla jscript object wrapper
@@ -315,8 +315,8 @@ G_BEGIN_DECLS
 
 const char *get_plugin_dir (void);
 
-int32_t plugin_instance_get_actual_width  (PluginInstance *instance);
-int32_t plugin_instance_get_actual_height (PluginInstance *instance);
+gint32 plugin_instance_get_actual_width  (PluginInstance *instance);
+gint32 plugin_instance_get_actual_height (PluginInstance *instance);
 
 Surface *plugin_instance_get_surface (PluginInstance *instance);
 
@@ -330,7 +330,7 @@ void plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_acces
 						   bool *httpnet_access, bool *script_access);
 
 void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char **stack_trace, int num_frames);
-void *plugin_instance_load_url (PluginInstance *instance, char *url, int32_t *length);
+void *plugin_instance_load_url (PluginInstance *instance, char *url, gint32 *length);
 
 void *plugin_instance_evaluate (PluginInstance *instance, const char *code);
 

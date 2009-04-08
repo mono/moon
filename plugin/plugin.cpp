@@ -359,7 +359,7 @@ PluginInstance::Properties ()
 	gtk_widget_show_all (dialog);
 }
 
-PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, uint16_t mode)
+PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mode)
 {
 	this->instance = instance;
 	this->mode = mode;
@@ -434,7 +434,7 @@ PluginInstance::~PluginInstance ()
 	Deployment::SetCurrent (deployment);
 
 	for (p = timers; p != NULL; p = p->next){
-		uint32_t source_id = GPOINTER_TO_INT (p->data);
+		guint32 source_id = GPOINTER_TO_INT (p->data);
 
 		g_source_remove (source_id);
 	}
@@ -1039,7 +1039,7 @@ PluginInstance::SetPageURL ()
 
 
 NPError
-PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
+PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, guint16 *stype)
 {
 	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p)\n", type, stream, seekable, stype));
 
@@ -1348,7 +1348,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	}
 }
 
-int32_t
+gint32
 PluginInstance::WriteReady (NPStream *stream)
 {
 	nps (printf ("PluginInstance::WriteReady (%p)\n", stream));
@@ -1368,8 +1368,8 @@ PluginInstance::WriteReady (NPStream *stream)
 	return -1;
 }
 
-int32_t
-PluginInstance::Write (NPStream *stream, int32_t offset, int32_t len, void *buffer)
+gint32
+PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer)
 {
 	nps (printf ("PluginInstance::Write (%p, %i, %i, %p)\n", stream, offset, len, buffer));
 	
@@ -1578,13 +1578,13 @@ PluginInstance::SetMaxFrameRate (int value)
 	surface->GetTimeManager()->SetMaximumRefreshRate (MAX (value, 64));
 }
 
-int32_t
+gint32
 PluginInstance::GetActualHeight ()
 {
 	return surface ? surface->GetWindow()->GetHeight() : 0;
 }
 
-int32_t
+gint32
 PluginInstance::GetActualWidth ()
 {
 	return surface ? surface->GetWindow()->GetWidth() : 0;
@@ -1613,10 +1613,10 @@ PluginInstance::GetWindow ()
 }
 
 // [Obselete (this is obsolete in SL b2.)]
-uint32_t
-PluginInstance::TimeoutAdd (int32_t interval, GSourceFunc callback, gpointer data)
+guint32
+PluginInstance::TimeoutAdd (gint32 interval, GSourceFunc callback, gpointer data)
 {
-	uint32_t id;
+	guint32 id;
 
 #if GLIB_CHECK_VERSION(2,14,0)
 	if (interval > 1000 && ((interval % 1000) == 0))
@@ -1632,7 +1632,7 @@ PluginInstance::TimeoutAdd (int32_t interval, GSourceFunc callback, gpointer dat
 
 // [Obselete (this is obsolete in SL b2.)]
 void
-PluginInstance::TimeoutStop (uint32_t source_id)
+PluginInstance::TimeoutStop (guint32 source_id)
 {
 	g_source_remove (source_id);
 	timers = g_slist_remove (timers, GINT_TO_POINTER (source_id));
@@ -1645,13 +1645,13 @@ plugin_instance_get_surface (PluginInstance *instance)
 	return instance->GetSurface ();
 }
 
-int32_t
+gint32
 plugin_instance_get_actual_width (PluginInstance *instance)
 {
 	return instance->GetActualWidth ();
 }
 
-int32_t
+gint32
 plugin_instance_get_actual_height (PluginInstance *instance)
 {
 	return instance->GetActualHeight ();

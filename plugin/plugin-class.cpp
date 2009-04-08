@@ -134,11 +134,11 @@ decode_arg_type (const char **in)
  * @arglist or %false otherwise.
  **/
 static bool
-check_arg_list (const char *arglist, uint32_t argc, const NPVariant *argv)
+check_arg_list (const char *arglist, guint32 argc, const NPVariant *argv)
 {
 	const char *inptr = arglist;
 	MethodArgType mask;
-	uint32_t i = 0;
+	guint32 i = 0;
 	
 	// check all of the required arguments
 	while (*inptr && *inptr != '[' && i < argc) {
@@ -1296,7 +1296,7 @@ MoonlightMouseEventArgsObject::SetProperty (int id, NPIdentifier name, const NPV
 
 bool
 MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
-				       const NPVariant *args, uint32_t argCount,
+				       const NPVariant *args, guint32 argCount,
 				       NPVariant *result)
 {
 	MouseEventArgs *event_args = GetMouseEventArgs ();
@@ -1565,7 +1565,7 @@ MoonlightObject::HasMethod (NPIdentifier name)
 }
 
 bool
-MoonlightObject::Invoke (int id, NPIdentifier name, const NPVariant *args, uint32_t argCount, NPVariant *result)
+MoonlightObject::Invoke (int id, NPIdentifier name, const NPVariant *args, guint32 argCount, NPVariant *result)
 {
 	switch (id) {
 	case MoonId_ToString:
@@ -1675,7 +1675,7 @@ _remove_property (NPObject *npobj, NPIdentifier name)
 }
 
 static bool
-_enumerate (NPObject *npobj, NPIdentifier **value, uint32_t *count)
+_enumerate (NPObject *npobj, NPIdentifier **value, guint32 *count)
 {
 	_set_deployment (npobj);
 	return ((MoonlightObjectType*)npobj->_class)->Enumerate (value, count);
@@ -1683,7 +1683,7 @@ _enumerate (NPObject *npobj, NPIdentifier **value, uint32_t *count)
 
 static bool
 _invoke (NPObject *npobj, NPIdentifier name,
-	 const NPVariant *args, uint32_t argCount,
+	 const NPVariant *args, guint32 argCount,
 	 NPVariant *result)
 {
 	_set_deployment (npobj);
@@ -1694,7 +1694,7 @@ _invoke (NPObject *npobj, NPIdentifier name,
 
 static bool
 _invoke_default (NPObject *npobj,
-		 const NPVariant *args, uint32_t argCount,
+		 const NPVariant *args, guint32 argCount,
 		 NPVariant *result)
 {
 	_set_deployment (npobj);
@@ -1732,7 +1732,7 @@ MoonlightObjectType::MoonlightObjectType ()
 }
 
 bool
-MoonlightObjectType::Enumerate (NPIdentifier **value, uint32_t *count)
+MoonlightObjectType::Enumerate (NPIdentifier **value, guint32 *count)
 {
 	if (mapping_count == 0) {
 		*value = NULL;
@@ -1944,7 +1944,7 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 
 bool
 MoonlightScriptControlObject::Invoke (int id, NPIdentifier name,
-				      const NPVariant *args, uint32_t argCount,
+				      const NPVariant *args, guint32 argCount,
 				      NPVariant *result)
 {
 	switch (id) {
@@ -2105,7 +2105,7 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier name, const NPVariant
 
 bool
 MoonlightSettingsObject::Invoke (int id, NPIdentifier name,
-				 const NPVariant *args, uint32_t argCount, NPVariant *result)
+				 const NPVariant *args, guint32 argCount, NPVariant *result)
 {
 	switch (id) {
 	case MoonId_ToString:
@@ -2289,7 +2289,7 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier name, const NPVariant 
 
 bool
 MoonlightContentObject::Invoke (int id, NPIdentifier name,
-				const NPVariant *args, uint32_t argCount, NPVariant *result)
+				const NPVariant *args, guint32 argCount, NPVariant *result)
 {
 	PluginInstance *plugin = (PluginInstance*) instance->pdata;
 	
@@ -2690,7 +2690,7 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 
 bool
 MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
-					 const NPVariant *args, uint32_t argCount,
+					 const NPVariant *args, guint32 argCount,
 					 NPVariant *result)
 {
 	DependencyObject *dob = GetDependencyObject ();
@@ -3025,7 +3025,7 @@ MoonlightCollectionObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 
 bool
 MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
-				   const NPVariant *args, uint32_t argCount,
+				   const NPVariant *args, guint32 argCount,
 				   NPVariant *result)
 {
 	Collection *col = (Collection *) GetDependencyObject ();
@@ -3172,7 +3172,7 @@ moonlight_storyboard_mapping [] = {
 
 bool
 MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
-				   const NPVariant *args, uint32_t argCount,
+				   const NPVariant *args, guint32 argCount,
 				   NPVariant *result)
 {
 	Storyboard *sb = (Storyboard*)GetDependencyObject ();
@@ -3274,7 +3274,7 @@ moonlight_media_element_mapping [] = {
 
 bool
 MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
-				     const NPVariant *args, uint32_t argCount,
+				     const NPVariant *args, guint32 argCount,
 				     NPVariant *result)
 {
 	MediaElement *media = (MediaElement*)GetDependencyObject ();
@@ -3380,7 +3380,7 @@ MoonlightImageObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 
 bool
 MoonlightImageObject::Invoke (int id, NPIdentifier name,
-			      const NPVariant *args, uint32_t argCount,
+			      const NPVariant *args, guint32 argCount,
 			      NPVariant *result)
 {
 	Image *img = (Image *) GetDependencyObject ();
@@ -3456,7 +3456,7 @@ MoonlightImageBrushObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 
 bool
 MoonlightImageBrushObject::Invoke (int id, NPIdentifier name,
-				   const NPVariant *args, uint32_t argCount,
+				   const NPVariant *args, guint32 argCount,
 				   NPVariant *result)
 {
 	ImageBrush *img = (ImageBrush *) GetDependencyObject ();
@@ -3508,7 +3508,7 @@ static const MoonNameIdMapping moonlight_text_block_mapping[] = {
 
 bool
 MoonlightTextBlockObject::Invoke (int id, NPIdentifier name,
-				  const NPVariant *args, uint32_t argCount,
+				  const NPVariant *args, guint32 argCount,
 				  NPVariant *result)
 {
 	TextBlock *tb = (TextBlock *) GetDependencyObject ();
@@ -3608,7 +3608,7 @@ moonlight_stylus_point_collection_mapping [] = {
 };
 
 bool
-MoonlightStylusPointCollectionObject::Invoke (int id, NPIdentifier name, const NPVariant *args, uint32_t argCount, NPVariant *result)
+MoonlightStylusPointCollectionObject::Invoke (int id, NPIdentifier name, const NPVariant *args, guint32 argCount, NPVariant *result)
 {
 	StylusPointCollection *col = (StylusPointCollection *) GetDependencyObject ();
 	
@@ -3651,7 +3651,7 @@ moonlight_stroke_collection_mapping [] = {
 
 bool
 MoonlightStrokeCollectionObject::Invoke (int id, NPIdentifier name,
-	const NPVariant *args, uint32_t argCount, NPVariant *result)
+	const NPVariant *args, guint32 argCount, NPVariant *result)
 {
 	StrokeCollection *col = (StrokeCollection *) GetDependencyObject ();
 
@@ -3708,7 +3708,7 @@ moonlight_stroke_mapping [] = {
 
 bool
 MoonlightStrokeObject::Invoke (int id, NPIdentifier name,
-	const NPVariant *args, uint32_t argCount, NPVariant *result)
+	const NPVariant *args, guint32 argCount, NPVariant *result)
 {
 	Stroke *stroke = (Stroke *) GetDependencyObject ();
 	
@@ -3770,7 +3770,7 @@ bool
 MoonlightDownloaderObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	Downloader *downloader = (Downloader *) GetDependencyObject ();
-	guint64 size;
+	gint64 size;
 	char *text;
 	
 	switch (id) {
@@ -3780,7 +3780,7 @@ MoonlightDownloaderObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 			memcpy (s, text, size + 1);
 			g_free (text);
 			
-			STRINGN_TO_NPVARIANT (s, (uint32_t) size, *result);
+			STRINGN_TO_NPVARIANT (s, (guint32) size, *result);
 		} else {
 			NULL_TO_NPVARIANT (*result);
 		}
@@ -3793,12 +3793,12 @@ MoonlightDownloaderObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 
 bool
 MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
-				   const NPVariant *args, uint32_t argCount,
+				   const NPVariant *args, guint32 argCount,
 				   NPVariant *result)
 {
 	Downloader *downloader = (Downloader *) GetDependencyObject ();
 	char *part, *verb, *uri, *text;
-	guint64 size;
+	gint64 size;
 	
 	switch (id) {
 	case MoonId_Abort:
@@ -3847,7 +3847,7 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 			memcpy (s, text, size + 1);
 			g_free (text);
 			
-			STRINGN_TO_NPVARIANT (s, (uint32_t) size, *result);
+			STRINGN_TO_NPVARIANT (s, (guint32) size, *result);
 		} else {
 			NULL_TO_NPVARIANT (*result);
 		}
@@ -3994,12 +3994,12 @@ MoonlightScriptableObjectObject::HasMethod (NPIdentifier name)
 
 bool
 MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
-					 const NPVariant *args, uint32_t argCount,
+					 const NPVariant *args, guint32 argCount,
 					 NPVariant *result)
 {
 	ScriptableMethod *method = (ScriptableMethod*)g_hash_table_lookup (methods, name);
 	Value rv, **vargs = NULL;
-	uint32_t i;
+	guint32 i;
 	
 	if (!method)
 		return MoonlightObject::Invoke (id, name, args, argCount, result);
@@ -4181,7 +4181,7 @@ enumerate_html_object (NPP npp, NPObject *npobj, int recurse, int initial_recurs
 {
 	NPVariant npresult;
 	NPIdentifier *identifiers = NULL;
-	uint32_t id_count = 0;
+	guint32 id_count = 0;
 
 	if (recurse == 0)
 		return;
@@ -4197,7 +4197,7 @@ enumerate_html_object (NPP npp, NPObject *npobj, int recurse, int initial_recurs
 
 	if (NPN_Enumerate (npp, npobj, &identifiers, &id_count)) {
 		//printf ("%senumerate_html_object (%p, %p, %i, %i): Enumerating %i identifiers.\n", tab, npp, npobj, recurse, initial_recurse, id_count);
-		for (uint32_t i = 0; i < id_count; i++) {
+		for (guint32 i = 0; i < id_count; i++) {
 			if (NPN_IdentifierIsString (identifiers [i])) {
 				printf ("%s'%s': ", tab2, NPN_UTF8FromIdentifier (identifiers [i]));
 			} else {
@@ -4300,7 +4300,7 @@ html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 
 void
 html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
-		Value *args, uint32_t arg_count, Value *result)
+		Value *args, guint32 arg_count, Value *result)
 {
 	NPVariant npresult;
 	NPVariant *npargs = NULL;
@@ -4315,14 +4315,14 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 
 	if (arg_count) {
 		npargs = new NPVariant [arg_count];
-		for (uint32_t i = 0; i < arg_count; i++)
+		for (guint32 i = 0; i < arg_count; i++)
 			value_to_variant (npobj, &args [i], &npargs [i]);
 	}
 
 	bool ret = NPN_Invoke (npp, npobj, identifier, npargs, arg_count, &npresult);
 
 	if (arg_count) {
-		for (uint32_t i = 0; i < arg_count; i++)
+		for (guint32 i = 0; i < arg_count; i++)
 			NPN_ReleaseVariantValue (&npargs [i]);
 	}
 
@@ -4343,7 +4343,7 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 
 void
 html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
-		Value *args, uint32_t arg_count, Value *result)
+		Value *args, guint32 arg_count, Value *result)
 {
 	NPVariant npresult;
 	NPVariant *npargs = NULL;
@@ -4357,14 +4357,14 @@ html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
 
 	if (arg_count) {
 		npargs = new NPVariant [arg_count];
-		for (uint32_t i = 0; i < arg_count; i++)
+		for (guint32 i = 0; i < arg_count; i++)
 			value_to_variant (npobj, &args [i], &npargs [i]);
 	}
 
 	bool ret = NPN_InvokeDefault (npp, npobj, npargs, arg_count, &npresult);
 
 	if (arg_count) {
-		for (uint32_t i = 0; i < arg_count; i++)
+		for (guint32 i = 0; i < arg_count; i++)
 			NPN_ReleaseVariantValue (&npargs [i]);
 	}
 
