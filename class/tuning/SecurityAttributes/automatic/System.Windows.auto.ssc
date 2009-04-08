@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 454 methods
+# 455 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -131,6 +131,7 @@
 +SSC-M: System.Void System.Windows.Controls.MultiScaleImage::set_ViewportWidth(System.Double)
 +SSC-M: System.Void System.Windows.Controls.MultiScaleImage::ZoomAboutLogicalPoint(System.Double,System.Double,System.Double)
 +SSC-M: System.Windows.Point System.Windows.Controls.MultiScaleImage::ElementToLogicalPoint(System.Windows.Point)
++SSC-M: System.Windows.Point System.Windows.Controls.MultiScaleImage::LogicalToElementPoint(System.Windows.Point)
 +SSC-M: System.Void System.Windows.Controls.MultiScaleSubImage::.ctor()
 +SSC-M: System.Void System.Windows.Controls.MultiScaleSubImageCollection::.ctor()
 +SSC-M: System.Nullable`1<System.Boolean> System.Windows.Controls.OpenFileDialog::ShowDialog()

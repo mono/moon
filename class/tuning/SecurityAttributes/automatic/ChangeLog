@@ -1,3 +1,9 @@
+2009-04-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.sc, System.Windows.auto.ssc: Add new 
+	multi_scale_image_logical_to_element_point pinvoke (SC) and
+	its caller MultiScaleImage.LogicalToElementPoint (SSC)
+
 2009-04-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: Rename uielement_get_transform_to_uielement

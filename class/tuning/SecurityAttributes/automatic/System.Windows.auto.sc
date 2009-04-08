@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 473 methods needs to be decorated.
+# 474 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1404,6 +1404,9 @@
 
 # p/invoke declaration
 +SC-M: System.Windows.Point Mono.NativeMethods::multi_scale_image_element_to_logical_point(System.IntPtr,System.Windows.Point)
+
+# p/invoke declaration
++SC-M: System.Windows.Point Mono.NativeMethods::multi_scale_image_logical_to_element_point(System.IntPtr,System.Windows.Point)
 
 # p/invoke declaration
 +SC-M: System.Windows.Rect Mono.NativeMethods::geometry_get_bounds(System.IntPtr)
