@@ -324,10 +324,10 @@ TextBlock::MeasureOverride (Size availableSize)
 	Size constraint;
 	Size desired;
 	
-	if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23))) {
-		printf ("\nTextBlock::MeasureOverride(availableSize = { %f, %f })\n", availableSize.width, availableSize.height);
-		printf ("\tText = \"%s\";\n", text);
-	}
+	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23))) {
+	//	printf ("\nTextBlock::MeasureOverride(availableSize = { %f, %f })\n", availableSize.width, availableSize.height);
+	//	printf ("\tText = \"%s\";\n", text);
+	//}
 	
 	constraint = availableSize.GrowBy (-padding);
 	Layout (constraint);
@@ -352,10 +352,10 @@ TextBlock::ArrangeOverride (Size finalSize)
 	Size constraint;
 	Size arranged;
 	
-	if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23))) {
-		printf ("\nTextBlock::ArrangeOverride(finalSize = { %f, %f })\n", finalSize.width, finalSize.height);
-		printf ("\tText = \"%s\";\n", text);
-	}
+	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23))) {
+	//	printf ("\nTextBlock::ArrangeOverride(finalSize = { %f, %f })\n", finalSize.width, finalSize.height);
+	//	printf ("\tText = \"%s\";\n", text);
+	//}
 	
 	constraint = finalSize.GrowBy (-padding);
 	Layout (constraint);
@@ -363,8 +363,8 @@ TextBlock::ArrangeOverride (Size finalSize)
 	arranged = Size (actual_width, actual_height).GrowBy (padding);
 	arranged = arranged.Max (finalSize);
 	
-	if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
-		printf ("\treturn { %f, %f };\n", arranged.width, arranged.height);
+	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
+	//	printf ("\treturn { %f, %f };\n", arranged.width, arranged.height);
 	
 	return arranged;
 }
@@ -462,8 +462,8 @@ TextBlock::Layout (Size constraint)
 		layout->GetActualExtents (&actual_width, &actual_height);
 	}
 	
-	if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23)))
-		printf ("\tTextBlock::Layout(constraint = { %f, %f }) => %f, %f\n", constraint.width, constraint.height, actual_width, actual_height);
+	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23)))
+	//	printf ("\tTextBlock::Layout(constraint = { %f, %f }) => %f, %f\n", constraint.width, constraint.height, actual_width, actual_height);
 	
 	dirty = false;
 }
