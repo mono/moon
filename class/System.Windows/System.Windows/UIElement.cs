@@ -38,9 +38,9 @@ using Mono;
 namespace System.Windows {
 	public abstract partial class UIElement : DependencyObject {
 
-		public GeneralTransform RenderTransform {
+		public Transform RenderTransform {
 			get {
-				GeneralTransform t = (GeneralTransform)GetValue (RenderTransformProperty);
+				Transform t = (Transform)GetValue (RenderTransformProperty);
 				return t == null ? new MatrixTransform () : t;
 			}
 			set {

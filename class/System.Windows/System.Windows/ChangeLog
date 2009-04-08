@@ -1,3 +1,8 @@
+2009-04-08  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs (RenderTransform): oops, this property type is
+	Transform, not GeneralTransform.
+
 2009-04-08  Alan McGovern  <amcgovern@novell.com>
 
 	* FrameworkElement.cs: When the datacontext is cleared in
