@@ -731,6 +731,17 @@ FontDir::CacheFileInfo (const char *filename, FT_Open_Args *args, FT_Face face, 
 }
 
 static bool
+is_odttf (const char *name)
+{
+	size_t len = strlen (name);
+	
+	if (len > 6 && !g_ascii_strcasecmp (name + len - 6, ".odttf"))
+		return true;
+	
+	return false;
+}
+
+static bool
 IndexFontSubdirectory (const char *toplevel, GString *path, FontDir **out)
 {
 	FontDir *fontdir = *out;
@@ -771,7 +782,7 @@ IndexFontSubdirectory (const char *toplevel, GString *path, FontDir **out)
 		
 		if (FT_Open_Face (libft2, &args, 0, &face) != 0) {
 			// not a valid font file... is it maybe an obfuscated font?
-			if (!font_stream_set_guid (args.stream, dent->d_name)) {
+			if (!is_odttf (dent->d_name) || !font_stream_set_guid (args.stream, dent->d_name)) {
 				font_stream_destroy (args.stream);
 				goto next;
 			}

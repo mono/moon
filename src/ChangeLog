@@ -1,3 +1,8 @@
+2009-04-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (IndexFontSubdirectory): Don't try deobfuscating if it
+	isn't a .odttf file.
+
 2009-04-08  Geoff Norton  <gnorton@novell.com>
 
 	* pipeline.cpp: Ensure we dont try to decode if our stream has been
