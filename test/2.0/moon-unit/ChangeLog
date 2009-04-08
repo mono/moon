@@ -1,3 +1,8 @@
+2009-04-08  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows.Media/ColorTest.cs: <Color> is only valid in
+	certain situations (as a property of SolidColorBrush).
+
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
 	* misc/DefaultValues.cs:

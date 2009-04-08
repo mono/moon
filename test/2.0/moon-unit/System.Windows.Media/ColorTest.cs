@@ -51,11 +51,26 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		public void ParseValidColor ()
+		public void ParseValidColorAsTopLevel ()
 		{
 			Assert.Throws<XamlParseException> (delegate {
 				XamlReader.Load (@"<Color xmlns=""http://schemas.microsoft.com/client/2007"">#ffffff</Color>");
 			}, "bad xaml");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ParseValidColorAsResource ()
+		{
+			Assert.Throws<XamlParseException> (delegate {
+				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Name=""color"">#ffffff</Color></Canvas.Resources></Canvas>");
+			}, "bad xaml");
+		}
+
+		[TestMethod]
+		public void ParseValidColorAsProperty ()
+		{
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""><Canvas.Background><SolidColorBrush><Color>#ffffff</Color></SolidColorBrush></Canvas.Background></Canvas>");
 		}
 
 		class ColorFormatter : IFormatProvider, ICustomFormatter {
