@@ -1,3 +1,10 @@
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
+	* DefaultValues/Page.xaml.cs: output the tests as partial classes
+	instead of as 1 large DefaultValues class.  The method names
+	become more descriptive in this case, and we output 1 method per
+	type up the inheritance tree when we can.
+
 2009-04-06  Alan McGovern  <amcgovern@novell.com>
 
 	* PopupExample2/Page.xaml:
