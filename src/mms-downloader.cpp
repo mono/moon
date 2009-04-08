@@ -200,7 +200,7 @@ MmsDownloader::GetDownloadedFilename (const char *partname)
 }
 
 char *
-MmsDownloader::GetResponseText (const char *partname, guint64 *size)
+MmsDownloader::GetResponseText (const char *partname, gint64 *size)
 {
 	LOG_MMS ("MmsDownloader::GetResponseText ('%s', %p)\n", partname, size);
 	return NULL;

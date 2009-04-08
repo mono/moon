@@ -101,7 +101,7 @@ Inline::UpdateFontDescription ()
 	// FIXME: I hate having to do it this way, updating the font
 	// in OnPropertyChanged() was a much much better way to do
 	// things. *sigh*
-	font->SetFilename (GetFontFilename ());
+	font->SetFilename (GetFontFilename (), GetFontGUID ());
 	FontFamily *family = GetFontFamily ();
 	font->SetFamily (family ? family->source : NULL);
 	font->SetStyle (GetFontStyle ());
@@ -224,7 +224,7 @@ TextBlock::~TextBlock ()
 	delete font;
 	
 	if (downloader != NULL) {
-		downloader_abort (downloader);
+		downloader->Abort ();
 		downloader->unref ();
 	}
 }
@@ -255,6 +255,7 @@ TextBlock::SetFontSource (Downloader *downloader)
 		}
 	} else {
 		ClearValue (TextBlock::FontFilenameProperty);
+		ClearValue (TextBlock::FontGUIDProperty);
 		font->SetFilename (NULL);
 		UpdateFontDescriptions ();
 		
@@ -318,11 +319,15 @@ TextBlock::GetTransformOrigin ()
 Size
 TextBlock::MeasureOverride (Size availableSize)
 {
+	const char *text = layout->GetText ();
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size desired;
 	
-	//printf ("TextBlock::MeasureOverride(availableSize = { %f, %f })\n", availableSize.width, availableSize.height);
+	if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23))) {
+		printf ("\nTextBlock::MeasureOverride(availableSize = { %f, %f })\n", availableSize.width, availableSize.height);
+		printf ("\tText = \"%s\";\n", text);
+	}
 	
 	constraint = availableSize.GrowBy (-padding);
 	Layout (constraint);
@@ -331,25 +336,37 @@ TextBlock::MeasureOverride (Size availableSize)
 	SetActualWidth (actual_width);
 	
 	desired = Size (actual_width, actual_height).GrowBy (padding);
+	desired = desired.Min (availableSize);
 	
-	return desired.Min (availableSize);
+	if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
+		printf ("\treturn { %f, %f };\n", desired.width, desired.height);
+	
+	return desired;
 }
 
 Size
 TextBlock::ArrangeOverride (Size finalSize)
 {
+	const char *text = layout->GetText ();
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size arranged;
 	
-	//printf ("TextBlock::ArrangeOverride(finalSize = { %f, %f })\n", finalSize.width, finalSize.height);
+	if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23))) {
+		printf ("\nTextBlock::ArrangeOverride(finalSize = { %f, %f })\n", finalSize.width, finalSize.height);
+		printf ("\tText = \"%s\";\n", text);
+	}
 	
 	constraint = finalSize.GrowBy (-padding);
 	Layout (constraint);
 	
 	arranged = Size (actual_width, actual_height).GrowBy (padding);
+	arranged = arranged.Max (finalSize);
 	
-	return arranged.Max (finalSize);
+	if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
+		printf ("\treturn { %f, %f };\n", arranged.width, arranged.height);
+	
+	return arranged;
 }
 
 void
@@ -417,6 +434,8 @@ TextBlock::UpdateFontDescriptions ()
 void
 TextBlock::Layout (Size constraint)
 {
+	const char *text = layout->GetText ();
+	
 	if (was_set && !GetValueNoDefault (TextBlock::TextProperty)) {
 		// FIXME: Does this only apply if the Text is set to
 		// String.Empty?  If so, then TextLayout::Layout()
@@ -443,7 +462,8 @@ TextBlock::Layout (Size constraint)
 		layout->GetActualExtents (&actual_width, &actual_height);
 	}
 	
-	//printf ("TextBlock::Layout(constraint = { %f, %f }) => %f, %f\n", constraint.width, constraint.height, actual_width, actual_height);
+	if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23)))
+		printf ("\tTextBlock::Layout(constraint = { %f, %f }) => %f, %f\n", constraint.width, constraint.height, actual_width, actual_height);
 	
 	dirty = false;
 }
@@ -770,26 +790,41 @@ TextBlock::downloader_complete (EventObject *sender, EventArgs *calldata, gpoint
 void
 TextBlock::DownloaderComplete ()
 {
-	const char *filename, *path;
+	InternalDownloader *idl;
+	const char *path, *name;
+	char *filename;
 	struct stat st;
+	Uri *uri;
 	
-	/* the download was aborted */
-	if (!(path = downloader->getFileDownloader ()->GetUnzippedPath ()))
+	// the download was aborted
+	if (!(filename = downloader->GetDownloadedFilename (NULL)))
+		return;
+	
+	g_free (filename);
+	
+	if (!(idl = downloader->GetInternalDownloader ()))
+		return;
+	
+	if (!(idl->GetType () == InternalDownloader::FileDownloader))
+		return;
+	
+	if (!(path = ((FileDownloader *) idl)->GetUnzippedPath ()))
 		return;
 	
 	if (stat (path, &st) == -1)
 		return;
 	
-	// check for obfuscated fonts
-	if (S_ISREG (st.st_mode) && !downloader->getFileDownloader ()->IsDeobfuscated ()) {
-		if ((filename = downloader_deobfuscate_font (downloader, path)))
-			path = filename;
-		
-		downloader->getFileDownloader ()->SetDeobfuscated (true);
-	}
+	uri = downloader->GetUri ();
 	
-	font->SetFilename (path);
+	// if the font file is obfuscated, use the basename of the path
+	if (!(name = strrchr (uri->GetPath (), '/')))
+		name = uri->GetPath ();
+	else
+		name++;
+	
 	SetValue (TextBlock::FontFilenameProperty, path);
+	SetValue (TextBlock::FontGUIDProperty, name);
+	font->SetFilename (path, name);
 	UpdateFontDescriptions ();
 	dirty = true;
 	

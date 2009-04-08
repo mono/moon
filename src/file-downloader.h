@@ -21,15 +21,12 @@
 
 class FileDownloader : public InternalDownloader {
  private:
-	char *uri;
 	char *filename;
 	char *unzipdir;
+	char *uri;
 	
-	bool deobfuscated;
 	bool unlinkit;
 	bool unzipped;
-
-	InternalDownloader *internal_dl;
 	
 	bool DownloadedFileIsZipped ();
 	void CleanupUnzipDir ();
@@ -37,22 +34,19 @@ class FileDownloader : public InternalDownloader {
  public:
 	FileDownloader (Downloader *dl);
 	virtual ~FileDownloader ();
-
-	void Open (const char *verb, const char *uri);
-	void Write (void *buf, gint32 offset, gint32 n);
-	char *GetDownloadedFilename (const char *partname);
-	char *GetResponseText (const char *partname, guint64 *size);
+	
+	virtual void Open (const char *verb, const char *uri);
+	virtual void Write (void *buf, gint32 offset, gint32 n);
+	virtual char *GetDownloadedFilename (const char *partname);
+	virtual char *GetResponseText (const char *partname, gint64 *size);
 	virtual InternalDownloader::DownloaderType GetType () { return InternalDownloader::FileDownloader; }
 	
 	const char *GetDownloadedFile ();
-
-	bool IsDeobfuscated ();
-	void SetDeobfuscated (bool val);
-	void SetDeobfuscatedFile (const char *filename);
-
+	
 	const char *GetUnzippedPath ();
 
-	void setFilename (char *fname) { if (filename) g_free (filename); filename = g_strdup (fname); }
+	void SetFilename (char *fname) { g_free (filename); filename = g_strdup (fname); }
+	void SetUnlink (bool value) { unlinkit = value; }
 };
 
-#endif
+#endif /* __FILE_DOWNLOADER_H__ */

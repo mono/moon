@@ -145,7 +145,7 @@ DeepZoomImageTileSource::DeepZoomImageTileSource (Uri *uri, bool nested)
 DeepZoomImageTileSource::~DeepZoomImageTileSource ()
 {
 	if (downloader) {
-		downloader_abort (downloader);
+		downloader->Abort ();
 		downloader->unref ();
 	}		
 }
@@ -209,12 +209,14 @@ DeepZoomImageTileSource::download_uri (const char* url)
 void
 DeepZoomImageTileSource::DownloaderComplete ()
 {
-	const char *filename;
-
-	if (!(filename = downloader->getFileDownloader ()->GetDownloadedFile ()))
+	char *filename;
+	
+	if (!(filename = downloader->GetDownloadedFilename (NULL)))
 		return;
-
+	
 	Parse (filename);
+	
+	g_free (filename);
 }
 
 void

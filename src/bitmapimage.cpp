@@ -254,7 +254,7 @@ BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_n
 				downloader->Open ("GET", str, MediaPolicy);
 				g_free (str);
 			}
-			downloader->SetWriteFunc (pixbuf_write, NULL, this);
+			downloader->SetStreamFunctions (pixbuf_write, NULL, this);
 			downloader->Send ();
 		}
 	}

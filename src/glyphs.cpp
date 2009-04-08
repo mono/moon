@@ -476,24 +476,29 @@ Glyphs::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer 
 void
 Glyphs::DownloaderComplete ()
 {
-	const char *filename, *path;
+	const char *name;
+	char *filename;
 	struct stat st;
+	Uri *uri;
 	
-	/* the download was aborted */
-	if (!(filename = downloader->getFileDownloader ()->GetDownloadedFile ()))
+	// the download was aborted
+	if (!(filename = downloader->GetDownloadedFilename (NULL)))
 		return;
 	
-	if (stat (filename, &st) == -1 || !S_ISREG (st.st_mode))
+	if (stat (filename, &st) == -1 || !S_ISREG (st.st_mode)) {
+		g_free (filename);
 		return;
-	
-	if (!downloader->getFileDownloader ()->IsDeobfuscated ()) {
-		if ((path = downloader_deobfuscate_font (downloader, filename)))
-			filename = path;
-		
-		downloader->getFileDownloader ()->SetDeobfuscated (true);
 	}
 	
-	desc->SetFilename (filename);
+	uri = downloader->GetUri ();
+	
+	// if the font file is obfuscated, use the basename of the path
+	if (!(name = strrchr (uri->GetPath (), '/')))
+		name = uri->GetPath ();
+	else
+		name++;
+	
+	desc->SetFilename (filename, name);
 	desc->SetIndex (index);
 	dirty = true;
 	

@@ -230,7 +230,7 @@ g_ptr_array_insert (GPtrArray *array, guint index, void *item)
 	array->pdata[index] = item;
 }
 
-static ssize_t
+ssize_t
 write_all (int fd, char *buf, size_t len)
 {
 	size_t nwritten = 0;

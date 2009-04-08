@@ -26,17 +26,17 @@
 class FileDownloader;
 class Downloader;
 
-typedef void     (*downloader_write_func) (void *buf, gint32 offset, gint32 n, gpointer cb_data);
-typedef void     (*downloader_notify_size_func) (gint64 size, gpointer cb_data);
+typedef void     (* DownloaderWriteFunc) (void *buf, gint32 offset, gint32 n, gpointer cb_data);
+typedef void     (* DownloaderNotifySizeFunc) (gint64 size, gpointer cb_data);
 
-typedef gpointer (*downloader_create_state_func) (Downloader *dl);
-typedef void     (*downloader_destroy_state_func) (gpointer state);
-typedef void     (*downloader_open_func) (const char *verb, const char *uri, bool streaming, gpointer state);
-typedef void     (*downloader_send_func) (gpointer state);
-typedef void     (*downloader_abort_func) (gpointer state);
-typedef void     (*downloader_header_func) (gpointer state, const char *header, const char *value);
-typedef void     (*downloader_body_func) (gpointer state, void *body, guint32 length);
-typedef gpointer (*downloader_create_webrequest_func) (const char *method, const char *uri, gpointer context);
+typedef gpointer (* DownloaderCreateStateFunc) (Downloader *dl);
+typedef void     (* DownloaderDestroyStateFunc) (gpointer state);
+typedef void     (* DownloaderOpenFunc) (const char *verb, const char *uri, bool streaming, gpointer state);
+typedef void     (* DownloaderSendFunc) (gpointer state);
+typedef void     (* DownloaderAbortFunc) (gpointer state);
+typedef void     (* DownloaderHeaderFunc) (gpointer state, const char *header, const char *value);
+typedef void     (* DownloaderBodyFunc) (gpointer state, void *body, guint32 length);
+typedef gpointer (* DownloaderCreateWebRequestFunc) (const char *method, const char *uri, gpointer context);
 
 enum DownloaderAccessPolicy {
 	DownloaderPolicy,
@@ -49,19 +49,19 @@ enum DownloaderAccessPolicy {
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
 class Downloader : public DependencyObject {
-	static downloader_create_state_func create_state;
-	static downloader_destroy_state_func destroy_state;
-	static downloader_open_func open_func;
-	static downloader_send_func send_func;
-	static downloader_abort_func abort_func;
-	static downloader_header_func header_func;
-	static downloader_body_func body_func;
-	static downloader_create_webrequest_func request_func;
+	static DownloaderCreateStateFunc create_state;
+	static DownloaderDestroyStateFunc destroy_state;
+	static DownloaderOpenFunc open_func;
+	static DownloaderSendFunc send_func;
+	static DownloaderAbortFunc abort_func;
+	static DownloaderHeaderFunc header_func;
+	static DownloaderBodyFunc body_func;
+	static DownloaderCreateWebRequestFunc request_func;
 
 	// Set by the consumer
-	downloader_notify_size_func notify_size;
-	downloader_write_func write;
-	gpointer consumer_closure;
+	DownloaderNotifySizeFunc notify_size;
+	DownloaderWriteFunc writer;
+	gpointer user_data;
 	
 	// Set by the supplier.
 	gpointer downloader_state;
@@ -76,10 +76,12 @@ class Downloader : public DependencyObject {
 	char *buffer;
 	
 	char *failed_msg;
-	bool send_queued;
-	bool started;
-	bool aborted;
-	bool completed;
+	
+	int send_queued:1;
+	int completed:1;
+	int started:1;
+	int aborted:1;
+	
 	InternalDownloader *internal_dl;
 
 	DownloaderAccessPolicy access_policy;
@@ -91,16 +93,15 @@ class Downloader : public DependencyObject {
 	void SetStatus (int status);
 	
  public:
-	// Properties
-	/* @PropertyType=double,DefaultValue=0.0 */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int DownloadProgressProperty;
 	/* @PropertyType=string */
 	const static int ResponseTextProperty;
-	/* @PropertyType=gint32,DefaultValue=0 */
+	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors */
 	const static int StatusProperty;
-	/* @PropertyType=string,DefaultValue=\"\" */
+	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int StatusTextProperty;
-	/* @PropertyType=string */
+	/* @PropertyType=Uri,GenerateAccessors */
 	const static int UriProperty;
 	
 	// Events you can AddHandler to
@@ -112,7 +113,8 @@ class Downloader : public DependencyObject {
 	Downloader ();
 	
 	void Abort ();
-	char *GetResponseText (const char *Partname, guint64 *size);
+	char *GetResponseText (const char *Partname, gint64 *size);
+	char *GetDownloadedFilename (const char *partname);
 	void Open (const char *verb, const char *uri, DownloaderAccessPolicy policy);
 	void SendInternal ();
 	void Send ();
@@ -127,12 +129,19 @@ class Downloader : public DependencyObject {
 	void InternalOpen (const char *verb, const char *uri, bool streaming);
 	void InternalSetHeader (const char *header, const char *value);
 	void InternalSetBody (void *body, guint32 length);
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void Write (void *buf, gint32 offset, gint32 n);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void NotifyFinished (const char *final_uri);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void NotifyFailed (const char *msg);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void NotifySize (gint64 size);
-	char *GetDownloadedFilename (const char *partname);
+	
 	void SetFilename (const char *fname);
 	char *GetBuffer () { return buffer; }
 	gint64 GetSize () { return total; }
@@ -141,20 +150,22 @@ class Downloader : public DependencyObject {
 	
 	// This is called by the consumer of the downloaded data (the
 	// Image class for instance)
-	void SetWriteFunc (downloader_write_func write,
-			   downloader_notify_size_func notify_size,
-			   gpointer closure);
+	void SetStreamFunctions (DownloaderWriteFunc writer,
+				 DownloaderNotifySizeFunc notify_size,
+				 gpointer user_data);
 	
 	// This is called by the supplier of the downloaded data (the
 	// managed framework, the browser plugin, the demo test)
-	static void SetFunctions (downloader_create_state_func create_state,
-				  downloader_destroy_state_func destroy_state,
-				  downloader_open_func open,
-				  downloader_send_func send,
-				  downloader_abort_func abort,
-				  downloader_header_func header,
-				  downloader_body_func body,
-			          downloader_create_webrequest_func request,
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	static void SetFunctions (DownloaderCreateStateFunc create_state,
+				  DownloaderDestroyStateFunc destroy_state,
+				  DownloaderOpenFunc open,
+				  DownloaderSendFunc send,
+				  DownloaderAbortFunc abort,
+				  DownloaderHeaderFunc header,
+				  DownloaderBodyFunc body,
+			          DownloaderCreateWebRequestFunc request,
 				  bool only_if_not_set);
 		
 	bool Started ();
@@ -167,7 +178,7 @@ class Downloader : public DependencyObject {
 	gpointer GetDownloaderState () { return downloader_state; }
 	void     SetHttpStreamingFeatures (HttpStreamingFeatures features) { streaming_features = features; }
 	HttpStreamingFeatures GetHttpStreamingFeatures () { return streaming_features; }
-	downloader_create_webrequest_func GetRequestFunc () {return request_func; }
+	DownloaderCreateWebRequestFunc GetRequestFunc () {return request_func; }
 
 	//
 	// Property Accessors
@@ -178,20 +189,17 @@ class Downloader : public DependencyObject {
 	const char *GetStatusText ();
 	int GetStatus ();
 	
-	void SetUri (const char *uri);
-	const char *GetUri ();
-
-	// FIXME: This is exposed for text right now and should be cleaned up.
-	FileDownloader *getFileDownloader () { return (FileDownloader *) internal_dl; }
+	void SetUri (Uri *uri);
+	Uri *GetUri ();
 };
 
 class DownloaderResponse;
 class DownloaderRequest;
 
-typedef uint32_t (* DownloaderResponseStartedHandler) (DownloaderResponse *response, gpointer context);
-typedef uint32_t (* DownloaderResponseDataAvailableHandler) (DownloaderResponse *response, gpointer context, char *buffer, uint32_t length);
-typedef uint32_t (* DownloaderResponseFinishedHandler) (DownloaderResponse *response, gpointer context, bool success, gpointer data, const char *uri);
-typedef void (*DownloaderResponseHeaderVisitorCallback) (const char *header, const char *value);
+typedef guint32 (* DownloaderResponseStartedHandler) (DownloaderResponse *response, gpointer context);
+typedef guint32 (* DownloaderResponseDataAvailableHandler) (DownloaderResponse *response, gpointer context, char *buffer, guint32 length);
+typedef guint32 (* DownloaderResponseFinishedHandler) (DownloaderResponse *response, gpointer context, bool success, gpointer data, const char *uri);
+typedef void (* DownloaderResponseHeaderVisitorCallback) (const char *header, const char *value);
 
 class IDownloader {
  private:
@@ -259,51 +267,11 @@ class DownloaderRequest : public IDownloader {
 
 G_BEGIN_DECLS
 
-double downloader_get_download_progress (Downloader *dl);
-
-const char *downloader_get_status_text (Downloader *dl);
-int downloader_get_status (Downloader *dl);
-
-void downloader_set_uri (Downloader *dl, const char *uri);
-const char *downloader_get_uri (Downloader *dl);
-
-Surface *downloader_get_surface    (Downloader *dl);
-
-
-void  downloader_abort	       (Downloader *dl);
-char *downloader_get_downloaded_file (Downloader *dl);
-char *downloader_get_response_text   (Downloader *dl, const char *PartName, guint64 *size);
-char *downloader_get_response_file   (Downloader *dl, const char *PartName);
-//void  downloader_open		(Downloader *dl, const char *verb, const char *uri);
-void  downloader_send		(Downloader *dl);
+void downloader_init (void);
 
 //
 // Used to push data to the consumer
 //
-
-/* @GeneratePInvoke */
-void downloader_write		(Downloader *dl, void *buf, gint32 offset, gint32 n);
-void downloader_completed       (Downloader *dl, const char *filename);
-
-/* @GeneratePInvoke */
-void downloader_notify_size     (Downloader *dl, gint64 size);
-/* @GeneratePInvoke */
-void downloader_notify_finished (Downloader *dl, const char *filename);
-/* @GeneratePInvoke */
-void downloader_notify_error    (Downloader *dl, const char *msg);
-
-
-/* @GeneratePInvoke */
-void downloader_set_functions (downloader_create_state_func create_state,
-			       downloader_destroy_state_func destroy_state,
-			       downloader_open_func open,
-			       downloader_send_func send,
-			       downloader_abort_func abort,
-			       downloader_header_func header,
-			       downloader_body_func body,
-			       downloader_create_webrequest_func request);
-
-void downloader_init (void);
 
 void *downloader_create_webrequest (Downloader *dl, const char *method, const char *uri);
 
@@ -314,6 +282,8 @@ void downloader_request_set_body (DownloaderRequest *dr, void *body, int size);
 
 void downloader_response_set_header_visitor (DownloaderResponse *dr, DownloaderResponseHeaderVisitorCallback visitor);
 
+
+// FIXME: get rid of this
 const char *downloader_deobfuscate_font (Downloader *downloader, const char *path);
 
 G_END_DECLS

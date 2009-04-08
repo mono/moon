@@ -61,6 +61,8 @@ class Inline : public DependencyObject, public ITextAttributes {
 	// internal property to inherit the font filename between inlines and textblocks
  	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
 	const static int FontFilenameProperty;
+	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
+	const static int FontGUIDProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Inline ();
@@ -77,6 +79,9 @@ class Inline : public DependencyObject, public ITextAttributes {
 	
 	void SetFontFilename (const char *value);
 	const char *GetFontFilename ();
+	
+	void SetFontGUID (const char *value);
+	const char *GetFontGUID ();
 	
 	void SetFontSize (double value);
 	double GetFontSize ();
@@ -222,6 +227,8 @@ class TextBlock : public FrameworkElement {
 	// internal property to inherit the font filename between inlines and textblocks
  	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
 	const static int FontFilenameProperty;
+	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
+	const static int FontGUIDProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBlock ();
@@ -286,6 +293,9 @@ class TextBlock : public FrameworkElement {
 	
 	const char *GetFontFilename ();
 	void SetFontFilename (const char *value);
+	
+	const char *GetFontGUID ();
+	void SetFontGUID (const char *value);
 };
 
 #endif /* __TEXTBLOCK_H__ */

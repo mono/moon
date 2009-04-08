@@ -32,7 +32,10 @@ FileDownloader::FileDownloader (Downloader *dl) : InternalDownloader (dl)
 {
 	filename = NULL;
 	unzipdir = NULL;
+	uri = NULL;
+	
 	unzipped = false;
+	unlinkit = false;
 }
 
 FileDownloader::~FileDownloader ()
@@ -75,7 +78,7 @@ FileDownloader::DownloadedFileIsZipped ()
 }
 
 char *
-FileDownloader::GetResponseText (const char *partname, guint64 *size)
+FileDownloader::GetResponseText (const char *partname, gint64 *size)
 {
 	TextStream *stream;
 	char buffer[4096];
@@ -285,33 +288,6 @@ FileDownloader::GetUnzippedPath ()
 	return unzipdir;
 }
 
-bool
-FileDownloader::IsDeobfuscated ()
-{
-	return deobfuscated;
-}
-
-void
-FileDownloader::SetDeobfuscated (bool val)
-{
-	deobfuscated = val;
-}
-
-void
-FileDownloader::SetDeobfuscatedFile (const char *path)
-{
-	if (!filename || !path)
-		return;
-	
-	if (deobfuscated)
-		unlink (filename);
-	g_free (filename);
-	
-	filename = g_strdup (path);
-	deobfuscated = true;
-	unlinkit = true;
-}
-
 void
 FileDownloader::Open (const char *verb, const char *uri)
 {
@@ -323,7 +299,6 @@ FileDownloader::Open (const char *verb, const char *uri)
 		g_free (filename);
 	}
 	
-	deobfuscated = false;
 	unlinkit = false;
 	unzipped = false;
 	

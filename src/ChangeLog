@@ -1,3 +1,27 @@
+2009-04-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* provider.cpp (InheritedPropertyValueProvider): We need to
+	inherit FontGUIDProperty for Inlines as well.
+
+	* file-downloader.cpp|h: Cleaned up a bit, no longer needs font
+	deobfuscation features.
+
+	* glyphs.cpp (DownloaderCompleted): Don't need to call
+	downloader_deobfuscate_font() anymore. We only need to get the
+	GUID to set on the FontDescription.
+
+	* textblock.cpp (DownloaderCompleted): Same.
+
+	* font.cpp: Implemented our own FT_Stream that can handle reading
+	obfuscated fonts directly without the need to rewrite the file
+	first.
+	(TextFontDescription): Now has a GUID property for Glyphs and
+	TextBlock to use.
+
+	* downloader.cpp: Fixed to autogenerate the accessors and changed
+	the UriProperty type to a Uri to be consistent with other classes.
+	(GetDownloadedFilename): Work around the Mozilla 64k bug here too.
+
 2009-04-08  Geoff Norton  <gnorton@novell.com>
 
 	* deployment.cpp: Ensure that we restore to the current MonoDomain

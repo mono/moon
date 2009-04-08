@@ -166,12 +166,11 @@ CodecDownloader::DownloadFailed (EventObject *sender, EventArgs *args)
 void
 CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
 {
-	guint64 size;
-
 	gchar *downloaded_file = NULL;
 	gchar *codec_path = NULL;
 	gchar *codec_dir = NULL;
 	int codec_fd = 0;
+	gint64 size;
 	
 	LOG_UI ("CodecDownloader::DownloadCompleted ()\n");
 	

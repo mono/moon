@@ -1577,7 +1577,7 @@ ProgressiveSource::Dispose ()
 {	
 	if (downloader) {
 		downloader->RemoveAllHandlers (this);
-		downloader->SetWriteFunc (NULL, NULL, this);
+		downloader->SetStreamFunctions (NULL, NULL, this);
 		downloader->unref ();
 		downloader = NULL;
 	}
@@ -1601,7 +1601,7 @@ ProgressiveSource::Initialize ()
 	if (downloader) {
 		downloader->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedCallback, this);
 		downloader->AddHandler (Downloader::CompletedEvent, DownloadCompleteCallback, this);
-		downloader->SetWriteFunc (data_write, size_notify, this);
+		downloader->SetStreamFunctions (data_write, size_notify, this);
 				
 		if (!downloader->Started ())
 			downloader->Send ();

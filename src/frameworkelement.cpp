@@ -119,6 +119,7 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 			ClearValue (FrameworkElement::ActualHeightProperty);
 			ClearValue (FrameworkElement::ActualWidthProperty);
 		} else {
+			// FIXME: this breaks TextBlock's ActualWidth/Height in the TextBlockTest.cs:ComputeActualWidth() test
 			Size actual (GetMinWidth (), GetMinHeight ());
 			actual = actual.Max (GetWidth (), GetHeight ());
 			actual = actual.Min (GetMaxWidth (), GetMaxHeight ());

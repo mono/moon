@@ -545,6 +545,21 @@ DoubleKeyFrameCollection *double_key_frame_collection_new (void);
  **/
 Downloader *downloader_new (void);
 
+/* @GeneratePInvoke */
+void downloader_notify_failed (Downloader *instance, const char *msg);
+
+/* @GeneratePInvoke */
+void downloader_notify_finished (Downloader *instance, const char *final_uri);
+
+/* @GeneratePInvoke */
+void downloader_notify_size (Downloader *instance, gint64 size);
+
+/* @GeneratePInvoke */
+void downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, bool only_if_not_set);
+
+/* @GeneratePInvoke */
+void downloader_write (Downloader *instance, void *buf, gint32 offset, gint32 n);
+
 /**
  * DownloaderRequest
  **/

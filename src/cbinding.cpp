@@ -1177,6 +1177,53 @@ downloader_new (void)
 }
 
 
+void
+downloader_notify_failed (Downloader *instance, const char *msg)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->NotifyFailed (msg);
+}
+
+
+void
+downloader_notify_finished (Downloader *instance, const char *final_uri)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->NotifyFinished (final_uri);
+}
+
+
+void
+downloader_notify_size (Downloader *instance, gint64 size)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->NotifySize (size);
+}
+
+
+void
+downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, bool only_if_not_set)
+{
+	Downloader::SetFunctions (create_state, destroy_state, open, send, abort, header, body, request, only_if_not_set);
+}
+
+
+void
+downloader_write (Downloader *instance, void *buf, gint32 offset, gint32 n)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Write (buf, offset, n);
+}
+
+
 /**
  * DownloaderRequest
  **/

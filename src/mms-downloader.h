@@ -113,10 +113,10 @@ class MmsDownloader : public InternalDownloader {
 	MmsDownloader (Downloader *dl);
 	virtual ~MmsDownloader ();
 
-	void Open (const char *verb, const char *uri);
-	void Write (void *buf, gint32 offset, gint32 n);
-	char *GetDownloadedFilename (const char *partname);
-	char *GetResponseText (const char *partname, guint64 *size);
+	virtual void Open (const char *verb, const char *uri);
+	virtual void Write (void *buf, gint32 offset, gint32 n);
+	virtual char *GetDownloadedFilename (const char *partname);
+	virtual char *GetResponseText (const char *partname, gint64 *size);
 	virtual InternalDownloader::DownloaderType GetType () { return InternalDownloader::MmsDownloader; }
 
 	ASFParser *GetASFParser () { return parser; }
@@ -126,4 +126,4 @@ class MmsDownloader : public InternalDownloader {
 	guint64 GetRequestedPts ();
 };
 
-#endif
+#endif /* __MMS_DOWNLOADER_H__ */

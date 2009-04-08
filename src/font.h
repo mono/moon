@@ -45,9 +45,6 @@ enum FontMask {
 G_BEGIN_DECLS
 void font_init (void);
 void font_shutdown (void);
-
-bool DecodeObfuscatedFontGUID (const char *in, char *key);
-bool DeobfuscateFontFileWithGUID (const char *filename, const char *guid, FT_Face *pFace);
 G_END_DECLS
 
 struct GlyphBitmap;
@@ -177,6 +174,8 @@ class TextFontDescription {
 	// font attributes
 	char *family;
 	char *filename;
+	char *guid;
+	
 	FontStyles style;
 	FontWeights weight;
 	FontStretches stretch;
@@ -200,8 +199,10 @@ class TextFontDescription {
 	
 	bool IsDefault () const;
 	
+	const char *GetGUID () const;
+	
 	const char *GetFilename () const;
-	void SetFilename (const char *filename);
+	void SetFilename (const char *filename, const char *guid = NULL);
 	
 	int GetIndex () const;
 	void SetIndex (int index);

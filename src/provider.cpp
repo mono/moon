@@ -228,11 +228,9 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 			parentProperty = FrameworkElement::p;		\
 	}								\
 	} G_STMT_END
-
-
-
+	
 	DependencyObject *parent = NULL;
-
+	
 	if (obj->Is(Type::FRAMEWORKELEMENT)) {
 		// we loop up the visual tree
 		parent = ((FrameworkElement*)obj)->GetVisualParent();
@@ -279,7 +277,8 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 		INHERIT2 (TextDecorationsProperty);
 		INHERIT2 (FontFilenameProperty);
-
+		INHERIT2 (FontGUIDProperty);
+		
 		if (!inheritableProperty)
 			return NULL;
 

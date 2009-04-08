@@ -90,7 +90,7 @@ MediaBase::DownloaderAbort ()
 	if (downloader) {
 		downloader->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, this);
 		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
-		downloader->SetWriteFunc (NULL, NULL, NULL);
+		downloader->SetStreamFunctions (NULL, NULL, NULL);
 		downloader->Abort ();
 		downloader->unref ();
 		g_free (part_name);

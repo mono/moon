@@ -57,14 +57,14 @@
 // Downloader
 //
 
-downloader_create_state_func Downloader::create_state = NULL;
-downloader_destroy_state_func Downloader::destroy_state = NULL;
-downloader_open_func Downloader::open_func = NULL;
-downloader_send_func Downloader::send_func = NULL;
-downloader_abort_func Downloader::abort_func = NULL;
-downloader_header_func Downloader::header_func = NULL;
-downloader_body_func Downloader::body_func = NULL;
-downloader_create_webrequest_func Downloader::request_func = NULL;
+DownloaderCreateStateFunc Downloader::create_state = NULL;
+DownloaderDestroyStateFunc Downloader::destroy_state = NULL;
+DownloaderOpenFunc Downloader::open_func = NULL;
+DownloaderSendFunc Downloader::send_func = NULL;
+DownloaderAbortFunc Downloader::abort_func = NULL;
+DownloaderHeaderFunc Downloader::header_func = NULL;
+DownloaderBodyFunc Downloader::body_func = NULL;
+DownloaderCreateWebRequestFunc Downloader::request_func = NULL;
 
 Downloader::Downloader ()
 {
@@ -73,11 +73,11 @@ Downloader::Downloader ()
 	SetObjectType (Type::DOWNLOADER);
 
 	downloader_state = Downloader::create_state (this);
-	consumer_closure = NULL;
+	user_data = NULL;
 	context = NULL;
 	streaming_features = HttpStreamingFeaturesNone;
 	notify_size = NULL;
-	this->write = NULL;
+	writer = NULL;
 	internal_dl = NULL;
 	
 	send_queued = false;
@@ -137,11 +137,42 @@ Downloader::GetDownloadedFilename (const char *partname)
 {
 	LOG_DOWNLOADER ("Downloader::GetDownloadedFilename (%s)\n", filename);
 	
+	// This is a horrible hack to work around mozilla bug #444160
+	// Basically if a very small file is downloaded (<64KB in mozilla as of Jan5/09
+	// it can be inserted into a shared cache map, and served up to us without ever
+	// giving us the filename for a NP_ASFILE request.
+	if (buffer != NULL) {
+		FileDownloader *fdl = (FileDownloader *) internal_dl;
+		char *tmpfile;
+		int fd;
+		
+		tmpfile = g_build_filename (g_get_tmp_dir (), "mozilla-workaround-XXXXXX", NULL);
+		if ((fd = g_mkstemp (tmpfile)) == -1) {
+			g_free (tmpfile);
+			return NULL;
+		}
+		
+		if (write_all (fd, buffer, (size_t) total) == -1) {
+			unlink (tmpfile);
+			g_free (tmpfile);
+			close (fd);
+			return NULL;
+		}
+		
+		close (fd);
+		
+		fdl->SetFilename (tmpfile);
+		fdl->SetUnlink (true);
+		g_free (tmpfile);
+		g_free (buffer);
+		buffer = NULL;
+	}
+	
 	return internal_dl->GetDownloadedFilename (partname);
 }
 
 char *
-Downloader::GetResponseText (const char *PartName, guint64 *size)
+Downloader::GetResponseText (const char *PartName, gint64 *size)
 {
 	LOG_DOWNLOADER ("Downloader::GetResponseText (%s, %p)\n", PartName, size);
 
@@ -208,51 +239,46 @@ same_domain (const Uri *uri1, const Uri *uri2)
 }
 
 static bool
-check_redirection_policy (const char *uri, const char *final_uri, DownloaderAccessPolicy policy)
+check_redirection_policy (const Uri *uri, const char *final_uri, DownloaderAccessPolicy policy)
 {
 	if (!uri || !final_uri)
 		return true;
-
-	Uri *orig = new Uri ();
-	orig->Parse (uri);
-
+	
 	Uri *final = new Uri ();
 	final->Parse (final_uri);
 
 	bool retval = true;
-	switch(policy) {
+	switch (policy) {
 	case DownloaderPolicy:
 	case XamlPolicy:
 	case StreamingPolicy: //Streaming media
 		//Redirection allowed: same domain.
-		if (g_ascii_strcasecmp (uri, final_uri) == 0)
+		if (g_ascii_strcasecmp (uri->originalString, final_uri) == 0)
 			break;
-		if (!same_domain (orig, final))
+		if (!same_domain (uri, final))
 			retval = false;
 		break;
 	case MediaPolicy:
-		if (g_ascii_strcasecmp (uri, final_uri) != 0)
+		if (g_ascii_strcasecmp (uri->originalString, final_uri) != 0)
 			retval = false;
 		break;
 	default:
 		break;
 	}
-	delete orig;
+	
 	delete final;
+	
 	return retval;
 }
 
 static bool
-validate_policy (const char *location, const char *uri, DownloaderAccessPolicy policy)
+validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy policy)
 {
-	if (!location || !uri)
+	if (!location || !source)
 		return true;
 	
-	Uri *source = new Uri ();
-	source->Parse (uri);
 	if (source->GetHost () == NULL) {
 		//relative uri, not checking policy
-		delete source;
 		return true;
 	}
 
@@ -328,14 +354,19 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	failed_msg = NULL;
 	filename = NULL;
 	buffer = NULL;
-
+	
+	Uri *url = new Uri ();
+	if (!url->Parse (uri))
+		return;
+	
 	//FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
 	char *location = g_strdup (GetSurface()->GetSourceLocation ());
-	if (!validate_policy (location, uri, policy)) {
+	if (!validate_policy (location, url, policy)) {
 		LOG_DOWNLOADER ("aborting due to security policy violation\n");
 		failed_msg = g_strdup ("Security Policy Violation");
 		Abort ();
 		g_free (location);
+		delete url;
 		return;
 	}
 	g_free (location);
@@ -347,9 +378,10 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	}
 
 	send_queued = false;
-
-	SetUri (uri);
-
+	
+	SetUri (url);
+	delete url;
+	
 	internal_dl->Open (verb, uri);
 }
 
@@ -450,7 +482,7 @@ Downloader::SendNow ()
 void
 Downloader::Write (void *buf, gint32 offset, gint32 n)
 {
-	LOG_DOWNLOADER ("Downloader::Write (%p, %i, %i). Uri: %s\n", buf, offset, n, GetUri ());
+	LOG_DOWNLOADER ("Downloader::Write (%p, %i, %i). Uri: %s\n", buf, offset, n, GetUri ()->originalString);
 	
 	SetCurrentDeployment ();
 	
@@ -484,14 +516,14 @@ Downloader::InternalWrite (void *buf, gint32 offset, gint32 n)
 	
 	Emit (DownloadProgressChangedEvent);
 
-	if (write)
-		write (buf, offset, n, consumer_closure);
-
+	if (writer)
+		writer (buf, offset, n, user_data);
+	
 	// This is a horrible hack to work around mozilla bug #444160
 	// See Downloader::GetResponseText for an explanation
-	if (n == total && total < 65536) {
-		buffer = (char *) g_malloc (total);
-		memcpy (buffer, buf, total);
+	if (internal_dl->GetType () == InternalDownloader::FileDownloader && n == total && total < 65536) {
+		buffer = (char *) g_malloc ((size_t) total);
+		memcpy (buffer, buf, (size_t) total);
 	} 
 }
 
@@ -500,20 +532,17 @@ Downloader::SetFilename (const char *fname)
 {
 	LOG_DOWNLOADER ("Downloader::SetFilename (%s)\n", fname);
 	
-	if (buffer) {
-		g_free (buffer);
-		buffer = NULL;
-	}
-
-	if (filename)
-		g_free (filename);
-
+	g_free (filename);
+	g_free (buffer);
+	buffer = NULL;
+	
 	filename = g_strdup (fname);
-	((FileDownloader *)internal_dl)->setFilename (filename);
+	
+	((FileDownloader *)internal_dl)->SetFilename (filename);
 }
 
 void
-Downloader::NotifyFinished (const char* final_uri)
+Downloader::NotifyFinished (const char *final_uri)
 {
 	if (aborted)
 		return;
@@ -522,7 +551,7 @@ Downloader::NotifyFinished (const char* final_uri)
 	
 	if (!GetSurface ())
 		return;
-
+	
 	if (!check_redirection_policy (GetUri (), final_uri, access_policy)) {
 		LOG_DOWNLOADER ("aborting due to security policy violation\n");
 		failed_msg = g_strdup ("Security Policy Violation");
@@ -583,7 +612,7 @@ Downloader::NotifySize (gint64 size)
 		return;
 	
 	if (notify_size)
-		notify_size (size, consumer_closure);
+		notify_size (size, user_data);
 }
 
 bool
@@ -603,26 +632,26 @@ Downloader::Completed ()
 }
 
 void
-Downloader::SetWriteFunc (downloader_write_func write,
-			  downloader_notify_size_func notify_size,
-			  gpointer data)
+Downloader::SetStreamFunctions (DownloaderWriteFunc writer,
+				DownloaderNotifySizeFunc downloader_notify_size,
+				gpointer user_data)
 {
-	LOG_DOWNLOADER ("Downloader::SetWriteFunc\n");
+	LOG_DOWNLOADER ("Downloader::SetStreamFunctions\n");
 	
-	this->write = write;
 	this->notify_size = notify_size;
-	this->consumer_closure = data;
+	this->writer = writer;
+	this->user_data = user_data;
 }
 
 void
-Downloader::SetFunctions (downloader_create_state_func create_state,
-			  downloader_destroy_state_func destroy_state,
-			  downloader_open_func open,
-			  downloader_send_func send,
-			  downloader_abort_func abort,
-			  downloader_header_func header,
-			  downloader_body_func body,
-			  downloader_create_webrequest_func request,
+Downloader::SetFunctions (DownloaderCreateStateFunc create_state,
+			  DownloaderDestroyStateFunc destroy_state,
+			  DownloaderOpenFunc open,
+			  DownloaderSendFunc send,
+			  DownloaderAbortFunc abort,
+			  DownloaderHeaderFunc header,
+			  DownloaderBodyFunc body,
+			  DownloaderCreateWebRequestFunc request,
 			  bool only_if_not_set)
 {
 	LOG_DOWNLOADER ("Downloader::SetFunctions\n");
@@ -648,145 +677,6 @@ Downloader::SetFunctions (downloader_create_state_func create_state,
 	Downloader::request_func = request;
 }
 
-void
-Downloader::SetDownloadProgress (double progress)
-{
-	LOG_DOWNLOADER ("Downloader::SetDownloadProgress\n");
-	
-	SetValue (Downloader::DownloadProgressProperty, Value (progress));
-}
-
-double
-Downloader::GetDownloadProgress ()
-{
-	LOG_DOWNLOADER ("Downloader::GetDownloadProgress\n");
-	
-	return GetValue (Downloader::DownloadProgressProperty)->AsDouble ();
-}
-
-void
-Downloader::SetStatusText (const char *text)
-{
-	LOG_DOWNLOADER ("Downloader::SetStatusText\n");
-	
-	SetValue (Downloader::StatusTextProperty, Value (text));
-}
-
-const char *
-Downloader::GetStatusText ()
-{
-	LOG_DOWNLOADER ("Downloader::GetStatusText\n");
-	
-	Value *value = GetValue (Downloader::StatusTextProperty);
-	
-	return value ? value->AsString () : NULL;
-}
-
-void
-Downloader::SetStatus (int status)
-{
-	LOG_DOWNLOADER ("Downloader::SetStatus\n");
-	
-	SetValue (Downloader::StatusProperty, Value (status));
-}
-
-int
-Downloader::GetStatus ()
-{
-	LOG_DOWNLOADER ("Downloader::GetStatus\n");
-	
-	return GetValue (Downloader::StatusProperty)->AsInt32 ();
-}
-
-void
-Downloader::SetUri (const char *uri)
-{
-	LOG_DOWNLOADER ("Downloader::SetUri (%s)\n", uri);
-	
-	SetValue (Downloader::UriProperty, Value (uri));
-
-}
-
-const char *
-Downloader::GetUri ()
-{
-	LOG_DOWNLOADER ("Downloader::GetUri ()\n");
-	
-	Value *value = GetValue (Downloader::UriProperty);
-	
-	return value ? value->AsString () : NULL;
-}
-
-double
-downloader_get_download_progress (Downloader *dl)
-{
-	return dl->GetDownloadProgress ();
-}
-
-const char *
-downloader_get_status_text (Downloader *dl)
-{
-	return dl->GetStatusText ();
-}
-
-int
-downloader_get_status (Downloader *dl)
-{
-	return dl->GetStatus ();
-}
-
-void
-downloader_set_uri (Downloader *dl, const char *uri)
-{
-	dl->SetUri (uri);
-}
-
-const char *
-downloader_get_uri (Downloader *dl)
-{
-	return dl->GetUri ();
-}
-
-void
-downloader_abort (Downloader *dl)
-{
-	dl->Abort ();
-}
-
-char *
-downloader_get_response_text (Downloader *dl, const char *PartName, guint64 *size)
-{
-	return dl->GetResponseText (PartName, size);
-}
-
-//void
-//downloader_open (Downloader *dl, const char *verb, const char *uri)
-//{
-//	dl->Open (verb, uri);
-//}
-
-void
-downloader_send (Downloader *dl)
-{
-	if (!dl->Completed () && dl->Started ())
-		downloader_abort (dl);
-	
-	dl->Send ();
-}
-
-void
-downloader_set_functions (downloader_create_state_func create_state,
-			  downloader_destroy_state_func destroy_state,
-			  downloader_open_func open,
-			  downloader_send_func send,
-			  downloader_abort_func abort, 
-			  downloader_header_func header,
-			  downloader_body_func body,
-			  downloader_create_webrequest_func request)
-{
-	Downloader::SetFunctions (create_state, destroy_state,
-				  open, send, abort, header, body, request, false);
-}
 
 /*
  * DownloaderRequest / DownloaderResponse
@@ -841,8 +731,8 @@ DownloaderRequest::~DownloaderRequest ()
 	GetDeployment ()->UnregisterDownloader (this);
 }
 
-void
-*downloader_create_webrequest (Downloader *dl, const char *method, const char *uri)
+void *
+downloader_create_webrequest (Downloader *dl, const char *method, const char *uri)
 {
 	return dl->GetRequestFunc() (method, uri, dl->GetContext());
 }
@@ -964,57 +854,4 @@ downloader_init (void)
 				  dummy_downloader_header,
 				  dummy_downloader_body,
 				  dummy_downloader_create_web_request, true);
-}
-
-
-const char *
-downloader_deobfuscate_font (Downloader *downloader, const char *path)
-{
-	char *filename, guid[16];
-	const char *str;
-	GString *name;
-	Uri *uri;
-	int fd;
-	
-	if (!(str = downloader->GetUri ()))
-		return NULL;
-	
-	uri = new Uri ();
-	if (!uri->Parse (str) || !uri->GetPath ()) {
-		delete uri;
-		return NULL;
-	}
-	
-	if (!(str = strrchr (uri->GetPath (), '/')))
-		str = uri->GetPath ();
-	else
-		str++;
-	
-	if (!DecodeObfuscatedFontGUID (str, guid)) {
-		delete uri;
-		return NULL;
-	}
-	
-	name = g_string_new (str);
-	g_string_append (name, ".XXXXXX");
-	delete uri;
-	
-	filename = g_build_filename (g_get_tmp_dir (), name->str, NULL);
-	g_string_free (name, true);
-	
-	if ((fd = g_mkstemp (filename)) == -1) {
-		g_free (filename);
-		return NULL;
-	}
-	
-	if (CopyFileTo (path, fd) == -1 || !DeobfuscateFontFileWithGUID (filename, guid, NULL)) {
-		unlink (filename);
-		g_free (filename);
-		return NULL;
-	}
-	
-	downloader->getFileDownloader ()->SetDeobfuscatedFile (filename);
-	g_free (filename);
-	
-	return downloader->getFileDownloader ()->GetDownloadedFile ();
 }

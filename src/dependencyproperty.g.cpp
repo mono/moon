@@ -124,6 +124,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontSize", new Value (TEXTBLOCK_FONT_SIZE), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontGUID", Type::STRING);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontFilename", Type::STRING);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);
 	DependencyProperty::Register (this, Type::POPUP, "VerticalOffset", new Value (0.0), Type::DOUBLE);
@@ -294,6 +295,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::INLINE, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::INLINE, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
 	DependencyProperty::Register (this, Type::INLINE, "FontSize", new Value (TEXTBLOCK_FONT_SIZE), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::INLINE, "FontGUID", Type::STRING);
 	DependencyProperty::Register (this, Type::INLINE, "FontFilename", Type::STRING);
 	DependencyProperty::Register (this, Type::INLINE, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);
 	DependencyProperty::Register (this, Type::GRADIENTSTOP, "Offset", new Value (0.0), Type::DOUBLE);
@@ -303,7 +305,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::DRAWINGATTRIBUTES, "OutlineColor", new Value (Color (0x00000000)), Type::COLOR);
 	DependencyProperty::Register (this, Type::DRAWINGATTRIBUTES, "Height", new Value (3.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::DRAWINGATTRIBUTES, "Color", new Value (Color (0xFF000000)), Type::COLOR);
-	DependencyProperty::Register (this, Type::DOWNLOADER, "Uri", Type::STRING);
+	DependencyProperty::Register (this, Type::DOWNLOADER, "Uri", Type::URI);
 	DependencyProperty::Register (this, Type::DOWNLOADER, "StatusText", new Value (""), Type::STRING);
 	DependencyProperty::Register (this, Type::DOWNLOADER, "Status", new Value (0), Type::INT32);
 	DependencyProperty::Register (this, Type::DOWNLOADER, "ResponseText", Type::STRING);
@@ -499,307 +501,309 @@ const int TextBlock::FontWeightProperty = 68;
 const int TextBlock::FontStyleProperty = 69;
 const int TextBlock::FontStretchProperty = 70;
 const int TextBlock::FontSizeProperty = 71;
-const int TextBlock::FontFilenameProperty = 72;
-const int TextBlock::FontFamilyProperty = 73;
-const int Popup::VerticalOffsetProperty = 74;
-const int Popup::IsOpenProperty = 75;
-const int Popup::HorizontalOffsetProperty = 76;
-const int Popup::ChildProperty = 77;
-const int MediaElement::VolumeProperty = 78;
-const int MediaElement::StretchProperty = 79;
-const int MediaElement::SourceProperty = 80;
-const int MediaElement::RenderedFramesPerSecondProperty = 81;
-const int MediaElement::PositionProperty = 82;
-const int MediaElement::NaturalVideoWidthProperty = 83;
-const int MediaElement::NaturalVideoHeightProperty = 84;
-const int MediaElement::NaturalDurationProperty = 85;
-const int MediaElement::MarkersProperty = 86;
-const int MediaElement::IsMutedProperty = 87;
-const int MediaElement::DroppedFramesPerSecondProperty = 88;
-const int MediaElement::DownloadProgressProperty = 89;
-const int MediaElement::DownloadProgressOffsetProperty = 90;
-const int MediaElement::CurrentStateProperty = 91;
-const int MediaElement::CanSeekProperty = 92;
-const int MediaElement::CanPauseProperty = 93;
-const int MediaElement::BufferingTimeProperty = 94;
-const int MediaElement::BufferingProgressProperty = 95;
-const int MediaElement::BalanceProperty = 96;
-const int MediaElement::AutoPlayProperty = 97;
-const int MediaElement::AudioStreamIndexProperty = 98;
-const int MediaElement::AudioStreamCountProperty = 99;
-const int MediaElement::AttributesProperty = 100;
-const int Shape::StrokeThicknessProperty = 101;
-const int Shape::StrokeStartLineCapProperty = 102;
-const int Shape::StrokeProperty = 103;
-const int Shape::StrokeMiterLimitProperty = 104;
-const int Shape::StrokeLineJoinProperty = 105;
-const int Shape::StrokeEndLineCapProperty = 106;
-const int Shape::StrokeDashOffsetProperty = 107;
-const int Shape::StrokeDashCapProperty = 108;
-const int Shape::StrokeDashArrayProperty = 109;
-const int Shape::StretchProperty = 110;
-const int Shape::FillProperty = 111;
-const int MediaBase::StretchProperty = 112;
-const int MediaBase::SourceProperty = 113;
-const int MediaBase::DownloadProgressProperty = 114;
-const int Glyphs::UnicodeStringProperty = 115;
-const int Glyphs::StyleSimulationsProperty = 116;
-const int Glyphs::OriginYProperty = 117;
-const int Glyphs::OriginXProperty = 118;
-const int Glyphs::IndicesProperty = 119;
-const int Glyphs::FontUriProperty = 120;
-const int Glyphs::FontRenderingEmSizeProperty = 121;
-const int Glyphs::FillProperty = 122;
-const int Control::VerticalContentAlignmentProperty = 123;
-const int Control::TemplateProperty = 124;
-const int Control::TabNavigationProperty = 125;
-const int Control::TabIndexProperty = 126;
-const int Control::PaddingProperty = 127;
-const int Control::IsTabStopProperty = 128;
-const int Control::HorizontalContentAlignmentProperty = 129;
-const int Control::ForegroundProperty = 130;
-const int Control::FontWeightProperty = 131;
-const int Control::FontStyleProperty = 132;
-const int Control::FontStretchProperty = 133;
-const int Control::FontSizeProperty = 134;
-const int Control::FontFamilyProperty = 135;
-const int Control::DefaultStyleKeyProperty = 136;
-const int Control::BorderThicknessProperty = 137;
-const int Control::BorderBrushProperty = 138;
-const int Control::BackgroundProperty = 139;
-const int Panel::ChildrenProperty = 140;
-const int Panel::BackgroundProperty = 141;
-const int Border::PaddingProperty = 142;
-const int Border::CornerRadiusProperty = 143;
-const int Border::ChildProperty = 144;
-const int Border::BorderThicknessProperty = 145;
-const int Border::BorderBrushProperty = 146;
-const int Border::BackgroundProperty = 147;
-const int TimelineGroup::ChildrenProperty = 148;
-const int Setter::ValueProperty = 149;
-const int Setter::PropertyProperty = 150;
-const int Setter::ConvertedValueProperty = 151;
-const int Run::TextProperty = 152;
-const int RectangleGeometry::RectProperty = 153;
-const int RectangleGeometry::RadiusYProperty = 154;
-const int RectangleGeometry::RadiusXProperty = 155;
-const int PathGeometry::FillRuleProperty = 156;
-const int PathGeometry::FiguresProperty = 157;
-const int LineGeometry::StartPointProperty = 158;
-const int LineGeometry::EndPointProperty = 159;
-const int GeometryGroup::FillRuleProperty = 160;
-const int GeometryGroup::ChildrenProperty = 161;
-const int EllipseGeometry::RadiusYProperty = 162;
-const int EllipseGeometry::RadiusXProperty = 163;
-const int EllipseGeometry::CenterProperty = 164;
-const int FrameworkElement::WidthProperty = 165;
-const int FrameworkElement::VerticalAlignmentProperty = 166;
-const int FrameworkElement::StyleProperty = 167;
-const int FrameworkElement::MinWidthProperty = 168;
-const int FrameworkElement::MinHeightProperty = 169;
-const int FrameworkElement::MaxWidthProperty = 170;
-const int FrameworkElement::MaxHeightProperty = 171;
-const int FrameworkElement::MarginProperty = 172;
-const int FrameworkElement::LanguageProperty = 173;
-const int FrameworkElement::HorizontalAlignmentProperty = 174;
-const int FrameworkElement::HeightProperty = 175;
-const int FrameworkElement::DataContextProperty = 176;
-const int FrameworkElement::ActualWidthProperty = 177;
-const int FrameworkElement::ActualHeightProperty = 178;
-const int PowerEase::PowerProperty = 179;
-const int ExponentialEase::ExponentProperty = 180;
-const int ElasticEase::SpringinessProperty = 181;
-const int ElasticEase::OscillationsProperty = 182;
-const int BounceEase::BouncinessProperty = 183;
-const int BounceEase::BouncesProperty = 184;
-const int BackEase::AmplitudeProperty = 185;
-const int SplinePointKeyFrame::KeySplineProperty = 186;
-const int EasingPointKeyFrame::EasingFunctionProperty = 187;
-const int PointAnimationUsingKeyFrames::KeyFramesProperty = 188;
-const int SplineDoubleKeyFrame::KeySplineProperty = 189;
-const int EasingDoubleKeyFrame::EasingFunctionProperty = 190;
-const int DoubleAnimationUsingKeyFrames::KeyFramesProperty = 191;
-const int TimelineMarker::TypeProperty = 192;
-const int TimelineMarker::TimeProperty = 193;
-const int TimelineMarker::TextProperty = 194;
-const int Timeline::SpeedRatioProperty = 195;
-const int Timeline::RepeatBehaviorProperty = 196;
-const int Timeline::FillBehaviorProperty = 197;
-const int Timeline::DurationProperty = 198;
-const int Timeline::BeginTimeProperty = 199;
-const int Timeline::AutoReverseProperty = 200;
-const int StylusPoint::YProperty = 201;
-const int StylusPoint::XProperty = 202;
-const int StylusPoint::PressureFactorProperty = 203;
-const int StylusInfo::IsInvertedProperty = 204;
-const int StylusInfo::DeviceTypeProperty = 205;
-const int Style::TargetTypeProperty = 206;
-const int Style::SettersProperty = 207;
-const int Style::IsSealedProperty = 208;
-const int Stroke::StylusPointsProperty = 209;
-const int Stroke::DrawingAttributesProperty = 210;
-const int SetterBase::IsSealedProperty = 211;
-const int RowDefinition::MinHeightProperty = 212;
-const int RowDefinition::MaxHeightProperty = 213;
-const int RowDefinition::HeightProperty = 214;
-const int PathFigure::StartPointProperty = 215;
-const int PathFigure::SegmentsProperty = 216;
-const int PathFigure::IsFilledProperty = 217;
-const int PathFigure::IsClosedProperty = 218;
-const int NameScope::NameScopeProperty = 219;
-const int MultiScaleSubImage::ZIndexProperty = 220;
-const int MultiScaleSubImage::ViewportWidthProperty = 221;
-const int MultiScaleSubImage::ViewportOriginProperty = 222;
-const int MultiScaleSubImage::OpacityProperty = 223;
-const int MultiScaleSubImage::AspectRatioProperty = 224;
-const int MediaAttribute::ValueProperty = 225;
-const int Matrix::OffsetYProperty = 226;
-const int Matrix::OffsetXProperty = 227;
-const int Matrix::M22Property = 228;
-const int Matrix::M21Property = 229;
-const int Matrix::M12Property = 230;
-const int Matrix::M11Property = 231;
-const int KeySpline::ControlPoint2Property = 232;
-const int KeySpline::ControlPoint1Property = 233;
-const int InputMethod::IsInputMethodEnabledProperty = 234;
-const int Inline::TextDecorationsProperty = 235;
-const int Inline::LanguageProperty = 236;
-const int Inline::ForegroundProperty = 237;
-const int Inline::FontWeightProperty = 238;
-const int Inline::FontStyleProperty = 239;
-const int Inline::FontStretchProperty = 240;
-const int Inline::FontSizeProperty = 241;
-const int Inline::FontFilenameProperty = 242;
-const int Inline::FontFamilyProperty = 243;
-const int GradientStop::OffsetProperty = 244;
-const int GradientStop::ColorProperty = 245;
-const int Geometry::TransformProperty = 246;
-const int DrawingAttributes::WidthProperty = 247;
-const int DrawingAttributes::OutlineColorProperty = 248;
-const int DrawingAttributes::HeightProperty = 249;
-const int DrawingAttributes::ColorProperty = 250;
-const int Downloader::UriProperty = 251;
-const int Downloader::StatusTextProperty = 252;
-const int Downloader::StatusProperty = 253;
-const int Downloader::ResponseTextProperty = 254;
-const int Downloader::DownloadProgressProperty = 255;
-const int Deployment::SurfaceProperty = 256;
-const int Deployment::RuntimeVersionProperty = 257;
-const int Deployment::PartsProperty = 258;
-const int Deployment::ExternalCallersFromCrossDomainProperty = 259;
-const int Deployment::EntryPointTypeProperty = 260;
-const int Deployment::EntryPointAssemblyProperty = 261;
-const int ColumnDefinition::WidthProperty = 262;
-const int ColumnDefinition::MinWidthProperty = 263;
-const int ColumnDefinition::MaxWidthProperty = 264;
-const int Collection::CountProperty = 265;
-const int UIElement::VisibilityProperty = 266;
-const int UIElement::UseLayoutRoundingProperty = 267;
-const int UIElement::TriggersProperty = 268;
-const int UIElement::TagProperty = 269;
-const int UIElement::ResourcesProperty = 270;
-const int UIElement::RenderTransformProperty = 271;
-const int UIElement::RenderTransformOriginProperty = 272;
-const int UIElement::OpacityProperty = 273;
-const int UIElement::OpacityMaskProperty = 274;
-const int UIElement::IsHitTestVisibleProperty = 275;
-const int UIElement::CursorProperty = 276;
-const int UIElement::ClipProperty = 277;
-const int EasingFunctionBase::EasingModeProperty = 278;
-const int AssemblyPart::SourceProperty = 279;
-const int Application::ResourcesProperty = 280;
-const int SplineColorKeyFrame::KeySplineProperty = 281;
-const int EasingColorKeyFrame::EasingFunctionProperty = 282;
-const int ColorAnimationUsingKeyFrames::KeyFramesProperty = 283;
-const int BitmapImage::UriSourceProperty = 284;
-const int BitmapImage::ProgressProperty = 285;
-const int TranslateTransform::YProperty = 286;
-const int TranslateTransform::XProperty = 287;
-const int TransformGroup::ChildrenProperty = 288;
-const int TextBox::VerticalScrollBarVisibilityProperty = 289;
-const int TextBox::TextWrappingProperty = 290;
-const int TextBox::TextProperty = 291;
-const int TextBox::TextAlignmentProperty = 292;
-const int TextBox::SelectionStartProperty = 293;
-const int TextBox::SelectionLengthProperty = 294;
-const int TextBox::SelectionForegroundProperty = 295;
-const int TextBox::SelectionBackgroundProperty = 296;
-const int TextBox::SelectedTextProperty = 297;
-const int TextBox::MaxLengthProperty = 298;
-const int TextBox::IsReadOnlyProperty = 299;
-const int TextBox::HorizontalScrollBarVisibilityProperty = 300;
-const int TextBox::AcceptsReturnProperty = 301;
-const int Storyboard::TargetPropertyProperty = 302;
-const int Storyboard::TargetNameProperty = 303;
-const int SkewTransform::CenterYProperty = 304;
-const int SkewTransform::CenterXProperty = 305;
-const int SkewTransform::AngleYProperty = 306;
-const int SkewTransform::AngleXProperty = 307;
-const int SetterBaseCollection::IsSealedProperty = 308;
-const int ScaleTransform::ScaleYProperty = 309;
-const int ScaleTransform::ScaleXProperty = 310;
-const int ScaleTransform::CenterYProperty = 311;
-const int ScaleTransform::CenterXProperty = 312;
-const int RotateTransform::CenterYProperty = 313;
-const int RotateTransform::CenterXProperty = 314;
-const int RotateTransform::AngleProperty = 315;
-const int QuadraticBezierSegment::Point2Property = 316;
-const int QuadraticBezierSegment::Point1Property = 317;
-const int PolyQuadraticBezierSegment::PointsProperty = 318;
-const int PolyLineSegment::PointsProperty = 319;
-const int PolyBezierSegment::PointsProperty = 320;
-const int PointKeyFrame::ValueProperty = 321;
-const int PointKeyFrame::KeyTimeProperty = 322;
-const int PointAnimation::ToProperty = 323;
-const int PointAnimation::FromProperty = 324;
-const int PointAnimation::EasingFunctionProperty = 325;
-const int PointAnimation::ByProperty = 326;
-const int PasswordBox::SelectionStartProperty = 327;
-const int PasswordBox::SelectionLengthProperty = 328;
-const int PasswordBox::SelectionForegroundProperty = 329;
-const int PasswordBox::SelectionBackgroundProperty = 330;
-const int PasswordBox::SelectedTextProperty = 331;
-const int PasswordBox::PasswordProperty = 332;
-const int PasswordBox::PasswordCharProperty = 333;
-const int PasswordBox::MaxLengthProperty = 334;
-const int ObjectKeyFrame::ValueProperty = 335;
-const int ObjectKeyFrame::KeyTimeProperty = 336;
-const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 337;
-const int MatrixTransform::MatrixProperty = 338;
-const int LineSegment::PointProperty = 339;
-const int LayoutInformation::LayoutSlotProperty = 340;
-const int LayoutInformation::LayoutClipProperty = 341;
-const int LayoutInformation::LastMeasureProperty = 342;
-const int LayoutInformation::LastArrangeProperty = 343;
-const int EventTrigger::RoutedEventProperty = 344;
-const int EventTrigger::ActionsProperty = 345;
-const int DoubleKeyFrame::ValueProperty = 346;
-const int DoubleKeyFrame::KeyTimeProperty = 347;
-const int DoubleAnimation::ToProperty = 348;
-const int DoubleAnimation::FromProperty = 349;
-const int DoubleAnimation::EasingFunctionProperty = 350;
-const int DoubleAnimation::ByProperty = 351;
-const int DependencyObject::NameProperty = 352;
-const int DeepZoomImageTileSource::UriSourceProperty = 353;
-const int ControlTemplate::TargetTypeProperty = 354;
-const int ColorKeyFrame::ValueProperty = 355;
-const int ColorKeyFrame::KeyTimeProperty = 356;
-const int ColorAnimation::ToProperty = 357;
-const int ColorAnimation::FromProperty = 358;
-const int ColorAnimation::EasingFunctionProperty = 359;
-const int ColorAnimation::ByProperty = 360;
-const int BitmapSource::PixelWidthProperty = 361;
-const int BitmapSource::PixelHeightProperty = 362;
-const int BitmapSource::PixelFormatProperty = 363;
-const int BezierSegment::Point3Property = 364;
-const int BezierSegment::Point2Property = 365;
-const int BezierSegment::Point1Property = 366;
-const int BeginStoryboard::StoryboardProperty = 367;
-const int ArcSegment::SweepDirectionProperty = 368;
-const int ArcSegment::SizeProperty = 369;
-const int ArcSegment::RotationAngleProperty = 370;
-const int ArcSegment::PointProperty = 371;
-const int ArcSegment::IsLargeArcProperty = 372;
+const int TextBlock::FontGUIDProperty = 72;
+const int TextBlock::FontFilenameProperty = 73;
+const int TextBlock::FontFamilyProperty = 74;
+const int Popup::VerticalOffsetProperty = 75;
+const int Popup::IsOpenProperty = 76;
+const int Popup::HorizontalOffsetProperty = 77;
+const int Popup::ChildProperty = 78;
+const int MediaElement::VolumeProperty = 79;
+const int MediaElement::StretchProperty = 80;
+const int MediaElement::SourceProperty = 81;
+const int MediaElement::RenderedFramesPerSecondProperty = 82;
+const int MediaElement::PositionProperty = 83;
+const int MediaElement::NaturalVideoWidthProperty = 84;
+const int MediaElement::NaturalVideoHeightProperty = 85;
+const int MediaElement::NaturalDurationProperty = 86;
+const int MediaElement::MarkersProperty = 87;
+const int MediaElement::IsMutedProperty = 88;
+const int MediaElement::DroppedFramesPerSecondProperty = 89;
+const int MediaElement::DownloadProgressProperty = 90;
+const int MediaElement::DownloadProgressOffsetProperty = 91;
+const int MediaElement::CurrentStateProperty = 92;
+const int MediaElement::CanSeekProperty = 93;
+const int MediaElement::CanPauseProperty = 94;
+const int MediaElement::BufferingTimeProperty = 95;
+const int MediaElement::BufferingProgressProperty = 96;
+const int MediaElement::BalanceProperty = 97;
+const int MediaElement::AutoPlayProperty = 98;
+const int MediaElement::AudioStreamIndexProperty = 99;
+const int MediaElement::AudioStreamCountProperty = 100;
+const int MediaElement::AttributesProperty = 101;
+const int Shape::StrokeThicknessProperty = 102;
+const int Shape::StrokeStartLineCapProperty = 103;
+const int Shape::StrokeProperty = 104;
+const int Shape::StrokeMiterLimitProperty = 105;
+const int Shape::StrokeLineJoinProperty = 106;
+const int Shape::StrokeEndLineCapProperty = 107;
+const int Shape::StrokeDashOffsetProperty = 108;
+const int Shape::StrokeDashCapProperty = 109;
+const int Shape::StrokeDashArrayProperty = 110;
+const int Shape::StretchProperty = 111;
+const int Shape::FillProperty = 112;
+const int MediaBase::StretchProperty = 113;
+const int MediaBase::SourceProperty = 114;
+const int MediaBase::DownloadProgressProperty = 115;
+const int Glyphs::UnicodeStringProperty = 116;
+const int Glyphs::StyleSimulationsProperty = 117;
+const int Glyphs::OriginYProperty = 118;
+const int Glyphs::OriginXProperty = 119;
+const int Glyphs::IndicesProperty = 120;
+const int Glyphs::FontUriProperty = 121;
+const int Glyphs::FontRenderingEmSizeProperty = 122;
+const int Glyphs::FillProperty = 123;
+const int Control::VerticalContentAlignmentProperty = 124;
+const int Control::TemplateProperty = 125;
+const int Control::TabNavigationProperty = 126;
+const int Control::TabIndexProperty = 127;
+const int Control::PaddingProperty = 128;
+const int Control::IsTabStopProperty = 129;
+const int Control::HorizontalContentAlignmentProperty = 130;
+const int Control::ForegroundProperty = 131;
+const int Control::FontWeightProperty = 132;
+const int Control::FontStyleProperty = 133;
+const int Control::FontStretchProperty = 134;
+const int Control::FontSizeProperty = 135;
+const int Control::FontFamilyProperty = 136;
+const int Control::DefaultStyleKeyProperty = 137;
+const int Control::BorderThicknessProperty = 138;
+const int Control::BorderBrushProperty = 139;
+const int Control::BackgroundProperty = 140;
+const int Panel::ChildrenProperty = 141;
+const int Panel::BackgroundProperty = 142;
+const int Border::PaddingProperty = 143;
+const int Border::CornerRadiusProperty = 144;
+const int Border::ChildProperty = 145;
+const int Border::BorderThicknessProperty = 146;
+const int Border::BorderBrushProperty = 147;
+const int Border::BackgroundProperty = 148;
+const int TimelineGroup::ChildrenProperty = 149;
+const int Setter::ValueProperty = 150;
+const int Setter::PropertyProperty = 151;
+const int Setter::ConvertedValueProperty = 152;
+const int Run::TextProperty = 153;
+const int RectangleGeometry::RectProperty = 154;
+const int RectangleGeometry::RadiusYProperty = 155;
+const int RectangleGeometry::RadiusXProperty = 156;
+const int PathGeometry::FillRuleProperty = 157;
+const int PathGeometry::FiguresProperty = 158;
+const int LineGeometry::StartPointProperty = 159;
+const int LineGeometry::EndPointProperty = 160;
+const int GeometryGroup::FillRuleProperty = 161;
+const int GeometryGroup::ChildrenProperty = 162;
+const int EllipseGeometry::RadiusYProperty = 163;
+const int EllipseGeometry::RadiusXProperty = 164;
+const int EllipseGeometry::CenterProperty = 165;
+const int FrameworkElement::WidthProperty = 166;
+const int FrameworkElement::VerticalAlignmentProperty = 167;
+const int FrameworkElement::StyleProperty = 168;
+const int FrameworkElement::MinWidthProperty = 169;
+const int FrameworkElement::MinHeightProperty = 170;
+const int FrameworkElement::MaxWidthProperty = 171;
+const int FrameworkElement::MaxHeightProperty = 172;
+const int FrameworkElement::MarginProperty = 173;
+const int FrameworkElement::LanguageProperty = 174;
+const int FrameworkElement::HorizontalAlignmentProperty = 175;
+const int FrameworkElement::HeightProperty = 176;
+const int FrameworkElement::DataContextProperty = 177;
+const int FrameworkElement::ActualWidthProperty = 178;
+const int FrameworkElement::ActualHeightProperty = 179;
+const int PowerEase::PowerProperty = 180;
+const int ExponentialEase::ExponentProperty = 181;
+const int ElasticEase::SpringinessProperty = 182;
+const int ElasticEase::OscillationsProperty = 183;
+const int BounceEase::BouncinessProperty = 184;
+const int BounceEase::BouncesProperty = 185;
+const int BackEase::AmplitudeProperty = 186;
+const int SplinePointKeyFrame::KeySplineProperty = 187;
+const int EasingPointKeyFrame::EasingFunctionProperty = 188;
+const int PointAnimationUsingKeyFrames::KeyFramesProperty = 189;
+const int SplineDoubleKeyFrame::KeySplineProperty = 190;
+const int EasingDoubleKeyFrame::EasingFunctionProperty = 191;
+const int DoubleAnimationUsingKeyFrames::KeyFramesProperty = 192;
+const int TimelineMarker::TypeProperty = 193;
+const int TimelineMarker::TimeProperty = 194;
+const int TimelineMarker::TextProperty = 195;
+const int Timeline::SpeedRatioProperty = 196;
+const int Timeline::RepeatBehaviorProperty = 197;
+const int Timeline::FillBehaviorProperty = 198;
+const int Timeline::DurationProperty = 199;
+const int Timeline::BeginTimeProperty = 200;
+const int Timeline::AutoReverseProperty = 201;
+const int StylusPoint::YProperty = 202;
+const int StylusPoint::XProperty = 203;
+const int StylusPoint::PressureFactorProperty = 204;
+const int StylusInfo::IsInvertedProperty = 205;
+const int StylusInfo::DeviceTypeProperty = 206;
+const int Style::TargetTypeProperty = 207;
+const int Style::SettersProperty = 208;
+const int Style::IsSealedProperty = 209;
+const int Stroke::StylusPointsProperty = 210;
+const int Stroke::DrawingAttributesProperty = 211;
+const int SetterBase::IsSealedProperty = 212;
+const int RowDefinition::MinHeightProperty = 213;
+const int RowDefinition::MaxHeightProperty = 214;
+const int RowDefinition::HeightProperty = 215;
+const int PathFigure::StartPointProperty = 216;
+const int PathFigure::SegmentsProperty = 217;
+const int PathFigure::IsFilledProperty = 218;
+const int PathFigure::IsClosedProperty = 219;
+const int NameScope::NameScopeProperty = 220;
+const int MultiScaleSubImage::ZIndexProperty = 221;
+const int MultiScaleSubImage::ViewportWidthProperty = 222;
+const int MultiScaleSubImage::ViewportOriginProperty = 223;
+const int MultiScaleSubImage::OpacityProperty = 224;
+const int MultiScaleSubImage::AspectRatioProperty = 225;
+const int MediaAttribute::ValueProperty = 226;
+const int Matrix::OffsetYProperty = 227;
+const int Matrix::OffsetXProperty = 228;
+const int Matrix::M22Property = 229;
+const int Matrix::M21Property = 230;
+const int Matrix::M12Property = 231;
+const int Matrix::M11Property = 232;
+const int KeySpline::ControlPoint2Property = 233;
+const int KeySpline::ControlPoint1Property = 234;
+const int InputMethod::IsInputMethodEnabledProperty = 235;
+const int Inline::TextDecorationsProperty = 236;
+const int Inline::LanguageProperty = 237;
+const int Inline::ForegroundProperty = 238;
+const int Inline::FontWeightProperty = 239;
+const int Inline::FontStyleProperty = 240;
+const int Inline::FontStretchProperty = 241;
+const int Inline::FontSizeProperty = 242;
+const int Inline::FontGUIDProperty = 243;
+const int Inline::FontFilenameProperty = 244;
+const int Inline::FontFamilyProperty = 245;
+const int GradientStop::OffsetProperty = 246;
+const int GradientStop::ColorProperty = 247;
+const int Geometry::TransformProperty = 248;
+const int DrawingAttributes::WidthProperty = 249;
+const int DrawingAttributes::OutlineColorProperty = 250;
+const int DrawingAttributes::HeightProperty = 251;
+const int DrawingAttributes::ColorProperty = 252;
+const int Downloader::UriProperty = 253;
+const int Downloader::StatusTextProperty = 254;
+const int Downloader::StatusProperty = 255;
+const int Downloader::ResponseTextProperty = 256;
+const int Downloader::DownloadProgressProperty = 257;
+const int Deployment::SurfaceProperty = 258;
+const int Deployment::RuntimeVersionProperty = 259;
+const int Deployment::PartsProperty = 260;
+const int Deployment::ExternalCallersFromCrossDomainProperty = 261;
+const int Deployment::EntryPointTypeProperty = 262;
+const int Deployment::EntryPointAssemblyProperty = 263;
+const int ColumnDefinition::WidthProperty = 264;
+const int ColumnDefinition::MinWidthProperty = 265;
+const int ColumnDefinition::MaxWidthProperty = 266;
+const int Collection::CountProperty = 267;
+const int UIElement::VisibilityProperty = 268;
+const int UIElement::UseLayoutRoundingProperty = 269;
+const int UIElement::TriggersProperty = 270;
+const int UIElement::TagProperty = 271;
+const int UIElement::ResourcesProperty = 272;
+const int UIElement::RenderTransformProperty = 273;
+const int UIElement::RenderTransformOriginProperty = 274;
+const int UIElement::OpacityProperty = 275;
+const int UIElement::OpacityMaskProperty = 276;
+const int UIElement::IsHitTestVisibleProperty = 277;
+const int UIElement::CursorProperty = 278;
+const int UIElement::ClipProperty = 279;
+const int EasingFunctionBase::EasingModeProperty = 280;
+const int AssemblyPart::SourceProperty = 281;
+const int Application::ResourcesProperty = 282;
+const int SplineColorKeyFrame::KeySplineProperty = 283;
+const int EasingColorKeyFrame::EasingFunctionProperty = 284;
+const int ColorAnimationUsingKeyFrames::KeyFramesProperty = 285;
+const int BitmapImage::UriSourceProperty = 286;
+const int BitmapImage::ProgressProperty = 287;
+const int TranslateTransform::YProperty = 288;
+const int TranslateTransform::XProperty = 289;
+const int TransformGroup::ChildrenProperty = 290;
+const int TextBox::VerticalScrollBarVisibilityProperty = 291;
+const int TextBox::TextWrappingProperty = 292;
+const int TextBox::TextProperty = 293;
+const int TextBox::TextAlignmentProperty = 294;
+const int TextBox::SelectionStartProperty = 295;
+const int TextBox::SelectionLengthProperty = 296;
+const int TextBox::SelectionForegroundProperty = 297;
+const int TextBox::SelectionBackgroundProperty = 298;
+const int TextBox::SelectedTextProperty = 299;
+const int TextBox::MaxLengthProperty = 300;
+const int TextBox::IsReadOnlyProperty = 301;
+const int TextBox::HorizontalScrollBarVisibilityProperty = 302;
+const int TextBox::AcceptsReturnProperty = 303;
+const int Storyboard::TargetPropertyProperty = 304;
+const int Storyboard::TargetNameProperty = 305;
+const int SkewTransform::CenterYProperty = 306;
+const int SkewTransform::CenterXProperty = 307;
+const int SkewTransform::AngleYProperty = 308;
+const int SkewTransform::AngleXProperty = 309;
+const int SetterBaseCollection::IsSealedProperty = 310;
+const int ScaleTransform::ScaleYProperty = 311;
+const int ScaleTransform::ScaleXProperty = 312;
+const int ScaleTransform::CenterYProperty = 313;
+const int ScaleTransform::CenterXProperty = 314;
+const int RotateTransform::CenterYProperty = 315;
+const int RotateTransform::CenterXProperty = 316;
+const int RotateTransform::AngleProperty = 317;
+const int QuadraticBezierSegment::Point2Property = 318;
+const int QuadraticBezierSegment::Point1Property = 319;
+const int PolyQuadraticBezierSegment::PointsProperty = 320;
+const int PolyLineSegment::PointsProperty = 321;
+const int PolyBezierSegment::PointsProperty = 322;
+const int PointKeyFrame::ValueProperty = 323;
+const int PointKeyFrame::KeyTimeProperty = 324;
+const int PointAnimation::ToProperty = 325;
+const int PointAnimation::FromProperty = 326;
+const int PointAnimation::EasingFunctionProperty = 327;
+const int PointAnimation::ByProperty = 328;
+const int PasswordBox::SelectionStartProperty = 329;
+const int PasswordBox::SelectionLengthProperty = 330;
+const int PasswordBox::SelectionForegroundProperty = 331;
+const int PasswordBox::SelectionBackgroundProperty = 332;
+const int PasswordBox::SelectedTextProperty = 333;
+const int PasswordBox::PasswordProperty = 334;
+const int PasswordBox::PasswordCharProperty = 335;
+const int PasswordBox::MaxLengthProperty = 336;
+const int ObjectKeyFrame::ValueProperty = 337;
+const int ObjectKeyFrame::KeyTimeProperty = 338;
+const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 339;
+const int MatrixTransform::MatrixProperty = 340;
+const int LineSegment::PointProperty = 341;
+const int LayoutInformation::LayoutSlotProperty = 342;
+const int LayoutInformation::LayoutClipProperty = 343;
+const int LayoutInformation::LastMeasureProperty = 344;
+const int LayoutInformation::LastArrangeProperty = 345;
+const int EventTrigger::RoutedEventProperty = 346;
+const int EventTrigger::ActionsProperty = 347;
+const int DoubleKeyFrame::ValueProperty = 348;
+const int DoubleKeyFrame::KeyTimeProperty = 349;
+const int DoubleAnimation::ToProperty = 350;
+const int DoubleAnimation::FromProperty = 351;
+const int DoubleAnimation::EasingFunctionProperty = 352;
+const int DoubleAnimation::ByProperty = 353;
+const int DependencyObject::NameProperty = 354;
+const int DeepZoomImageTileSource::UriSourceProperty = 355;
+const int ControlTemplate::TargetTypeProperty = 356;
+const int ColorKeyFrame::ValueProperty = 357;
+const int ColorKeyFrame::KeyTimeProperty = 358;
+const int ColorAnimation::ToProperty = 359;
+const int ColorAnimation::FromProperty = 360;
+const int ColorAnimation::EasingFunctionProperty = 361;
+const int ColorAnimation::ByProperty = 362;
+const int BitmapSource::PixelWidthProperty = 363;
+const int BitmapSource::PixelHeightProperty = 364;
+const int BitmapSource::PixelFormatProperty = 365;
+const int BezierSegment::Point3Property = 366;
+const int BezierSegment::Point2Property = 367;
+const int BezierSegment::Point1Property = 368;
+const int BeginStoryboard::StoryboardProperty = 369;
+const int ArcSegment::SweepDirectionProperty = 370;
+const int ArcSegment::SizeProperty = 371;
+const int ArcSegment::RotationAngleProperty = 372;
+const int ArcSegment::PointProperty = 373;
+const int ArcSegment::IsLargeArcProperty = 374;
 
 UIElement *
 VisualBrush::GetVisual ()
@@ -1667,6 +1671,19 @@ void
 TextBlock::SetFontSize (double value)
 {
 	SetValue (TextBlock::FontSizeProperty, Value (value));
+}
+
+const char *
+TextBlock::GetFontGUID ()
+{
+	Value *value = GetValue (TextBlock::FontGUIDProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+TextBlock::SetFontGUID (const char *value)
+{
+	SetValue (TextBlock::FontGUIDProperty, Value (value));
 }
 
 const char *
@@ -3763,6 +3780,19 @@ Inline::SetFontSize (double value)
 }
 
 const char *
+Inline::GetFontGUID ()
+{
+	Value *value = GetValue (Inline::FontGUIDProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+Inline::SetFontGUID (const char *value)
+{
+	SetValue (Inline::FontGUIDProperty, Value (value));
+}
+
+const char *
 Inline::GetFontFilename ()
 {
 	Value *value = GetValue (Inline::FontFilenameProperty);
@@ -3881,6 +3911,59 @@ DrawingAttributes::SetColor (Color *value)
 {
 	if (!value) return;
 	SetValue (DrawingAttributes::ColorProperty, Value (*value));
+}
+
+Uri *
+Downloader::GetUri ()
+{
+	Value *value = GetValue (Downloader::UriProperty);
+	return value ? value->AsUri () : NULL;
+}
+
+void
+Downloader::SetUri (Uri *value)
+{
+	if (!value) return;
+	SetValue (Downloader::UriProperty, Value (*value));
+}
+
+const char *
+Downloader::GetStatusText ()
+{
+	Value *value = GetValue (Downloader::StatusTextProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+Downloader::SetStatusText (const char *value)
+{
+	SetValue (Downloader::StatusTextProperty, Value (value));
+}
+
+gint32
+Downloader::GetStatus ()
+{
+	Value *value = GetValue (Downloader::StatusProperty);
+	return value->AsInt32 ();
+}
+
+void
+Downloader::SetStatus (gint32 value)
+{
+	SetValue (Downloader::StatusProperty, Value (value));
+}
+
+double
+Downloader::GetDownloadProgress ()
+{
+	Value *value = GetValue (Downloader::DownloadProgressProperty);
+	return value->AsDouble ();
+}
+
+void
+Downloader::SetDownloadProgress (double value)
+{
+	SetValue (Downloader::DownloadProgressProperty, Value (value));
 }
 
 Surface *
