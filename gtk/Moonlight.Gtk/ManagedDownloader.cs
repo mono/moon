@@ -92,7 +92,7 @@ namespace Moonlight.Gtk {
 						if (!downloading)
 							return;
 						tick_call = null;
-						NativeMethods.downloader_notify_error (downloader, String.Format ("File `{0}' not found", fname));
+						NativeMethods.downloader_notify_failed (downloader, String.Format ("File `{0}' not found", fname));
 					}, IntPtr.Zero);
 				}
 				return;
@@ -153,7 +153,7 @@ namespace Moonlight.Gtk {
 				}
 			} catch (Exception e){
 				Console.Error.WriteLine ("There was an error {0}", e);
-				NativeMethods.downloader_notify_error (downloader, e.Message);
+				NativeMethods.downloader_notify_failed (downloader, e.Message);
 			}
 		}
 

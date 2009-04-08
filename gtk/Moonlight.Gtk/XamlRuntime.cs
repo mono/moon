@@ -52,7 +52,8 @@ namespace Moonlight.Gtk
                 ManagedDownloader.Abort,
                 ManagedDownloader.Header,
                 ManagedDownloader.Body,
-                ManagedDownloader.CreateWebRequest);
+                ManagedDownloader.CreateWebRequest,
+		false);
             
             DependencyObject.Initialize ();
         }
