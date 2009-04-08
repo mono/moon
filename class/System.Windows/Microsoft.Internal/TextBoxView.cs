@@ -29,7 +29,7 @@
 using System.Windows;
 
 namespace Microsoft.Internal {
-	public sealed partial class TextBoxView : FrameworkElement {
+	internal sealed partial class TextBoxView : FrameworkElement {
 		
 	}
 }
