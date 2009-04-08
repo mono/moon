@@ -56,6 +56,7 @@ class MultiScaleImage : public MediaBase {
 	DoubleAnimation *fadein_animation;
 
 	void SetIsDownloading (bool value);
+	void SetIsIdle (bool value);
 
  protected:
 	virtual ~MultiScaleImage ();
