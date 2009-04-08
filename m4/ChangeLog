@@ -1,3 +1,7 @@
+2009-04-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* testing.m4: We don't requrie dbus anymore.
+
 2009-04-03  Chris Toshok  <toshok@ximian.com>
 
 	* build-configuration.m4: remove the COMPATABILITY_BUGS stuff,

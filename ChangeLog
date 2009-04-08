@@ -1,3 +1,8 @@
+2009-04-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* configure.ac: Remove agviewer and test-runner from the
+	  build.
+
 2009-04-03  Aaron Bockover  <abockover@novell.com>
 
 	* configure.ac: gtksilver -> Moonlight.Gtk
