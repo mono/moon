@@ -1,3 +1,8 @@
+2009-04-08  Geoff Norton  <gnorton@novell.com>
+
+	* deployment.cpp: Ensure that we restore to the current MonoDomain
+	after creating a new deployment.
+
 2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.h|cpp: Set IsDownloading property according to the

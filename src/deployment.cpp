@@ -220,6 +220,7 @@ Deployment::Deployment (MonoDomain *domain)
 Deployment::Deployment()
 	: DependencyObject (this, Type::DEPLOYMENT)
 {
+	MonoDomain *current = mono_domain_get ();
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
 	char *domain_name = g_strdup_printf ("moonlight-%p", this);
 	mono_domain_set (root_domain, FALSE);
@@ -232,8 +233,9 @@ Deployment::Deployment()
 #else
 	domain = NULL;
 #endif
-
 	InnerConstructor ();
+
+	mono_domain_set (current, FALSE);
 }
 
 void
