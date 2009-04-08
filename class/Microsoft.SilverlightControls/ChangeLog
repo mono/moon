@@ -1,3 +1,8 @@
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: track
+	change to ContentPresenter.  _elementRoot -> _contentRoot.
+
 2009-04-07  Alan McGovern  <amcgovern@novell.com>
 
 	* SDKControls/Data/test/TestCases/DataGridTests_Unrestricted.cs:

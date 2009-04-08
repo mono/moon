@@ -139,7 +139,7 @@ namespace System.Windows.Controls
                 // additional element above what it returns for GetVisualChild. When
                 // doing the work for ArrangeOverride, that additional element must be 
                 // used instead.
-                _elementRoot;
+                _contentRoot;
 #endif 
             Debug.Assert(null != child);
             Rect desired = new Rect(

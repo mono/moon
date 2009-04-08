@@ -1,3 +1,14 @@
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
+	* ContentPresenter.cs: turns out my layout fears were unfounded.
+	Removing the grid will give us the same layout characteristics as
+	silverlight.  Alan was right about the different visual tree under
+	CP.  Duplicate this tree so that it matches SL in all 3 cases: 1)
+	UIElement content (directly a child of contentpresenter), 2)
+	string content (grid -> textblock), and 3) no content (no children
+	under contentpresenter.)  This simplifies PrepareContentPresenter
+	quite a bit.
+
 2009-04-06  Chris Toshok  <toshok@ximian.com>
 
 	* Control.cs (set_DefaultStyleKey): add a few more error

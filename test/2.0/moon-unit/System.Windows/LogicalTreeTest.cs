@@ -138,7 +138,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("contentPresenter.Content's logical (and visual) parent is currently the grid we create internally")]
 		public void LogicalParentTest7 ()
 		{
 			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();

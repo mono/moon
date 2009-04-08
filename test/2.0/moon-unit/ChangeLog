@@ -1,5 +1,15 @@
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
+	* misc/DefaultValues.cs:
+	ContentPresenterTest.Test_PropertyGetter_ContentPresenter works
+	now.
+
+	* System.Windows.Controls/ContentPresenterTest.cs: these work now.
+
+	* System.Windows/LogicalTreeTest.cs: LogicalParentTest7 works now.
+
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
 	* System.Windows/UIElementTest.cs: the RenderTransform tests work
 	now.
 

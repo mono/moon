@@ -43,7 +43,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void Test ()
 		{
 			bool loaded =false;
@@ -107,7 +106,6 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void NullContent ()
 		{
 			bool loaded = false;

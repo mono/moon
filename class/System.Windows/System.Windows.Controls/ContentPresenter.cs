@@ -56,36 +56,7 @@ namespace System.Windows.Controls
 	[ContentProperty ("Content")]
 	public class ContentPresenter : FrameworkElement
 	{ 
-		/// <summary> 
-		/// Root element of the panel that will contain the visual content.
-		/// </summary>
-		/// <remarks> 
-		/// Since a Control cannot change its content (i.e. it may only call 
-		/// InitializeFromXaml once to set its root), every ContentPresetner
-		/// will create a container as its root element regardless of the 
-		/// content that will be stuffed into it.  It's also worth noting that
-		/// there is no TemplatePartAttribute because the Template is write-once
-		/// and cannot be changed by users.  This field is marked internal for 
-		/// unit testing.
-		/// </remarks>
-		internal Grid _elementRoot; 
-
-		/// <summary> 
-		/// Visual representation of the Content currently being displayed.
-		/// </summary>
-		/// <remarks>This field is marked internal for unit testing.</remarks> 
-		internal UIElement _elementContent;
-
-		/// <summary> 
-		/// Visual representation of any text Content currently being displayed. 
-		/// </summary>
-		/// <remarks> 
-		/// The _elementText property is necessary in addition to the
-		/// _elementContent property because of all of all the font related
-		/// properties whose values need to be propogated into it by the 
-		/// ContentPresenter.  This field is marked internal for unit testing.
-		/// </remarks>
-		internal TextBlock _elementText; 
+		internal UIElement _contentRoot;
 
 #region Content
 		/// <summary> 
@@ -192,65 +163,45 @@ namespace System.Windows.Controls
 		/// </summary> 
 		private void PrepareContentPresenter() 
 		{
-			if (_elementRoot == null) {
-				_elementRoot = new Grid ();
-				_elementText = new TextBlock();
-				_elementRoot.Children.Add (_elementText);
-
-				NativeMethods.uielement_element_added (native, _elementRoot.native);
-				NativeMethods.uielement_set_subtree_object (native, _elementRoot.native);
-			}
-
-			// Remove the old content 
-			if (_elementContent != null) {
-				_elementRoot.Children.Remove(_elementContent); 
-				_elementContent = null; 
-			}
-			else {
-				_elementText.Text = null;
-			} 
-			
 			// Expand the ContentTemplate if it exists
 			DataTemplate template = ContentTemplate; 
 			object content = (template != null) ? 
 				template.LoadContent() :
 				Content; 
 
+			UIElement newContentRoot = null;
+
 			// Add the new content
 			UIElement element = content as UIElement; 
 			if (element != null) {
-				_elementContent = element; 
-				_elementRoot.Children.Add(_elementContent); 
-				_elementText.Visibility = Visibility.Collapsed;
-			} 
+				newContentRoot = element;
+			}
 			else if (content != null) {
-				_elementText.Visibility = Visibility.Visible; 
-				//
-				_elementText.Text = content.ToString();
-			} 
-			else  {
-				_elementText.Visibility = Visibility.Collapsed; 
+				TextBlock elementText = new TextBlock();
+				elementText.Text = content.ToString();
+
+				Grid grid = new Grid();
+				grid.Children.Add (elementText);
+
+				newContentRoot = grid;
+			}
+
+			if (newContentRoot == _contentRoot)
+				return;
+
+			if (_contentRoot != null) {
+				// clear the old content
+				NativeMethods.uielement_element_removed (native, _contentRoot.native);
+				NativeMethods.uielement_set_subtree_object (native, IntPtr.Zero);
+			}
+
+			_contentRoot = newContentRoot;
+
+			if (_contentRoot != null) {
+				// set the new content
+				NativeMethods.uielement_element_added (native, _contentRoot.native);
+				NativeMethods.uielement_set_subtree_object (native, _contentRoot.native);
 			}
 		}
-#if false
-		/// <summary>
-		/// Returns the specified contentPresenter element.
-		/// </summary> 
-		/// <param name="index">The index of the desired contentPresenter.</param> 
-		/// <returns>The contentPresenter element at the specified index value.</returns>
-		protected virtual DependencyObject GetVisualChild(int index) 
-		{
-			if (index != 0) {
-				throw new ArgumentOutOfRangeException("index");
-			}
- 
-			object content = Content; 
-			return (content == null) ?
-				null : 
-				((content is UIElement) ?
-				 _elementContent :
-				 _elementText); 
-		}
-#endif
 	}
 } 

@@ -11570,7 +11570,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_ContentPresenter ()
         {
             ContentPresenter widget = new ContentPresenter ();
