@@ -1,3 +1,10 @@
+2009-04-08  Alan McGovern  <amcgovern@novell.com>
+
+	* SDKControls/Data/test/TestCases/DataGridAutomationTest.cs:
+	* SDKControls/Data/test/TestCases/DataGridTests_RequireGT0.cs:
+	* SDKControls/Data/test/TestCases/DataGridTests_RequireGT1.cs:
+	  plant some [moonlightbug] attrs
+
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
 	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: track

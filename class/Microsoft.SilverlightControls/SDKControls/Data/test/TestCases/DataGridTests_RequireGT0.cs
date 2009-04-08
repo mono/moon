@@ -15,6 +15,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
 namespace System.Windows.Controls.Data.Test
 {
@@ -584,6 +585,7 @@ namespace System.Windows.Controls.Data.Test
         [TestMethod]
         [Asynchronous]
         [Description("Test that exercises the Row and Column header thickness")]
+        [MoonlightBug ("If we call InvalidateArrange/InvalidateMeasure, we don't actually re-arrange or re-measure")]
         public virtual void CheckHeaderThickness()
         {
             IEnumerable boundList = new TDataClassSource();
@@ -1428,6 +1430,7 @@ namespace System.Windows.Controls.Data.Test
         [TestMethod]
         [Asynchronous]
         [Description("Test that exercises the row height tests.")]
+        [MoonlightBug ("This hits a corner case with the Loaded event and so times out waiting for Loaded to fire")]
         public virtual void CheckRowHeights()
         {
             IEnumerable boundList = new TDataClassSource();

@@ -21,6 +21,7 @@ namespace System.Windows.Controls.Test
     /// This class runs the unit tests for DataGrid automation peers
     /// </summary>
     [TestClass]
+    [Ignore("Not implemented")]
     public class DataGridAutomationTest : SilverlightControlTest
     {
         #region DataGridAutomationPeer Tests
