@@ -1,5 +1,11 @@
 2009-04-08  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Remove tests which are
+	  just checking wierd textbox.Text behaviour - this is already
+	  covered in TextBox tests. It's nothing to do with bindings.
+
+2009-04-08  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: When the datacontext is
 	  cleared in managed code, we need to invalidate all the
 	  bindings.

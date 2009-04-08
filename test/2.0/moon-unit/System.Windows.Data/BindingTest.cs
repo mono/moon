@@ -208,41 +208,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug]
-		public void BindToText4 ()
-		{
-			Binding binding = new Binding (" ");
-			binding.Source = "string";
-			TextBox box = new TextBox { Text = "Blah" };
-			box.SetBinding (TextBox.TextProperty, binding);
-			Assert.AreEqual ("", box.GetValue (TextBox.TextProperty), "#1");
-		}
-
-		public void BindToText4b ()
-		{
-			Binding binding = new Binding (" ");
-			binding.Source = "string";
-			TextBox box = new TextBox { };
-			Assert.AreEqual (null, box.GetValue (TextBox.TextProperty), "#2");
-			box.SetBinding (TextBox.TextProperty, binding);
-			Assert.AreEqual (null, box.GetValue (TextBox.TextProperty), "#1");
-		}
-
-		[TestMethod]
-		[MoonlightBug]
-		public void BindToText4c ()
-		{
-			Binding binding = new Binding (" ");
-			binding.Source = "string";
-			TextBox box = new TextBox { Text = "Blah" };
-			Assert.AreEqual ("Blah", box.GetValue (TextBox.TextProperty), "#2");
-			box.SetValue (TextBox.TextProperty, null);
-			Assert.AreEqual ("", box.GetValue (TextBox.TextProperty), "#1");
-			box.ClearValue (TextBox.TextProperty);
-			Assert.AreEqual (null, box.GetValue (TextBox.TextProperty), "#3");
-		}
-
-		[TestMethod]
 		public void BindToText5 ()
 		{
 			Binding binding = new Binding (" ");
