@@ -1,6 +1,13 @@
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
 	* provider.cpp (InheritedPropertyValueProvider::GetPropertyValue):
+	almost had it that last time.  In the case where the parent has
+	that property, use GetValue on it instead of ReadLocalValue, which
+	won't pick up styles.
+
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
+	* provider.cpp (InheritedPropertyValueProvider::GetPropertyValue):
 	rewrite this substantially to make it work correctly and be more
 	efficient.  we no longer look up the hierarchy for properties
 	which aren't inheritable, and we only loop up the visual tree, not

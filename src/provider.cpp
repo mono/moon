@@ -187,8 +187,6 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
 	int parentProperty = -1;
 
-	Value *parentValue = NULL;
-
 	bool inheritableProperty = false;
 
 #define INHERIT1(p) \
@@ -252,11 +250,8 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 				if (!inheritableProperty)
 					return NULL;
 
-				if (parentProperty != -1) {
-					parentValue = parent->ReadLocalValue (parentProperty);
-					if (parentValue)
-						return parentValue;
-				}
+				if (parentProperty != -1)
+					return parent->GetValue (parentProperty);
 
 				if (parent->Is(Type::FRAMEWORKELEMENT))
 					parent = ((FrameworkElement*)parent)->GetVisualParent();
