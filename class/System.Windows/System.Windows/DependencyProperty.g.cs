@@ -270,11 +270,6 @@ namespace System.Windows {
 			set { SetValue (RenderTransformOriginProperty, value); }
 		}
 
-		public Transform RenderTransform {
-			get { return (Transform) GetValue (RenderTransformProperty); }
-			set { SetValue (RenderTransformProperty, value); }
-		}
-
 		public bool UseLayoutRounding {
 			get { return (bool) GetValue (UseLayoutRoundingProperty); }
 			set { SetValue (UseLayoutRoundingProperty, value); }
