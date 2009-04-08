@@ -177,6 +177,7 @@ MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile)
 	}
 
 	bictx->state = BitmapImageBusy;
+	SetIsDownloading (true);
 	bictx->bitmapimage->SetUriSource (tile);
 }
 
@@ -704,6 +705,11 @@ MultiScaleImage::TileOpened (BitmapImage *bitmapimage)
 {
 	BitmapImageContext *ctx = GetBitmapImageContext (bitmapimage);
 	ctx->state = BitmapImageDone;
+	GList *list;
+	bool is_downloading = false;
+	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
+		is_downloading |= (ctx->state == BitmapImageBusy);
+	SetIsDownloading (is_downloading);
 	Invalidate ();
 }
 
@@ -720,6 +726,11 @@ MultiScaleImage::TileFailed (BitmapImage *bitmapimage)
 	BitmapImageContext *ctx = GetBitmapImageContext (bitmapimage);
 	ctx->state = BitmapImageFree;
 	g_hash_table_insert (cache, new Uri(*(ctx->bitmapimage->GetUriSource())), NULL);
+	GList *list;
+	bool is_downloading = false;
+	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
+		is_downloading |= (ctx->state == BitmapImageBusy);
+	SetIsDownloading (is_downloading);
 	Invalidate ();
 }
 
@@ -911,6 +922,18 @@ MultiScaleImage::SetViewportOrigin (Point value)
 
 	pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->SetValue (value);
 	pan_sb->Begin ();
+}
+
+void
+MultiScaleImage::SetIsIdle (bool value)
+{
+	SetValue (MultiScaleImage::IsIdleProperty, Value (value));
+}
+
+void
+MultiScaleImage::SetIsDownloading (bool value)
+{
+	SetValue (MultiScaleImage::IsDownloadingProperty, Value (value));
 }
 
 

@@ -55,6 +55,8 @@ class MultiScaleImage : public MediaBase {
 	PointAnimationUsingKeyFrames *pan_animation;
 	DoubleAnimation *fadein_animation;
 
+	void SetIsDownloading (bool value);
+
  protected:
 	virtual ~MultiScaleImage ();
 

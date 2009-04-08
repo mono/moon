@@ -1,5 +1,10 @@
 2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h|cpp: Set IsDownloading property according to the
+	status of the downloaders
+
+2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp (MultiScaleImage::RenderSingle, 
 	MultiScaleImage::RenderCollection): do not start any new download if
 	AllowDownlodingProperty is false.
