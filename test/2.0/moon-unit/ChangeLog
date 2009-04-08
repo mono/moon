@@ -1,5 +1,10 @@
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
+	* System.Windows/UIElementTest.cs: the RenderTransform tests work
+	now.
+
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
 	* System.Windows/UIElementTest.cs: catch the exceptions in the
 	Loaded handlers and rethrow them from outside so the tests will
 	fail correctly and not add unhandled exception spew in the browser

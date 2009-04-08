@@ -182,7 +182,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("ML does not fallback to a MatrixTransform when property is set to null")]
 		public void RenderTransform_SemiNonNullable ()
 		{
 			ConcreteUIElement ui = new ConcreteUIElement ();
@@ -191,18 +190,18 @@ namespace MoonTest.System.Windows {
 			ui.RenderTransform = new ScaleTransform ();
 			Assert.IsTrue ((ui.RenderTransform is ScaleTransform), "RenderTransform/ScaleTransform");
 
-			// when set to null *using the property* it reverts to the default value
+			// when set to null, it reverts to the default value
 			ui.RenderTransform = null;
 			Assert.IsNotNull (ui.RenderTransform, "RenderTransform/NeverNull");
 			Assert.IsTrue ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/Null/Identity");
 
-			// but when set to null *using the DP* it really becomes null
+			// same behavior with the DP
 			ui.SetValue (UIElement.RenderTransformProperty, null);
 			Assert.IsNotNull (ui.RenderTransform, "RenderTransform/NeverNullDP");
+			Assert.IsTrue ((ui.RenderTransform as MatrixTransform).Matrix.IsIdentity, "RenderTransform/Null/IdentityDP");
 		}
 
 		[TestMethod]
-		[MoonlightBug ("ML has the property Matrix frozen")]
 		public void RenderTransform_Unfrozen ()
 		{
 			ConcreteUIElement ui = new ConcreteUIElement ();
@@ -210,7 +209,6 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("ML has the property Matrix frozen")]
 		public void NotDestructive ()
 		{
 			ConcreteUIElement ui = new ConcreteUIElement ();

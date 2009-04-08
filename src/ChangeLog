@@ -1,5 +1,12 @@
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.h|.cpp (class UIElement): scrap that ill-advised
+	AutoCreator crap.  it's much simpler.  the default is actually
+	NULL, and the managed layer does the stupid mapping from NULL to
+	new MatrixTransform.
+
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.h|.cpp (class UIElement): use an AutoCreator for
 	RenderTransformProperty.
 

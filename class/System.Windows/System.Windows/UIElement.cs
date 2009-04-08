@@ -38,6 +38,19 @@ using Mono;
 namespace System.Windows {
 	public abstract partial class UIElement : DependencyObject {
 
+		public GeneralTransform RenderTransform {
+			get {
+				GeneralTransform t = (GeneralTransform)GetValue (RenderTransformProperty);
+				return t == null ? new MatrixTransform () : t;
+			}
+			set {
+				if (value == null)
+					ClearValue (RenderTransformProperty);
+				else
+					SetValue (RenderTransformProperty, value);
+			}
+		}
+
 		public bool CaptureMouse ()
 		{
 			return NativeMethods.uielement_capture_mouse (native);

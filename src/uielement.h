@@ -411,7 +411,7 @@ public:
 	const static int OpacityProperty;
  	/* @PropertyType=Point,DefaultValue=Point (0\,0),GenerateAccessors */
 	const static int RenderTransformOriginProperty;
-	/* @PropertyType=Transform,GenerateAccessors,AutoCreator=UIElement::CreateDefaultRenderTransform */
+	/* @PropertyType=Transform,GenerateAccessors,GenerateManagedAccessors=false */
 	const static int RenderTransformProperty;
  	/* @PropertyType=Visibility,DefaultValue=VisibilityVisible,GenerateAccessors */
 	const static int VisibilityProperty;
@@ -545,7 +545,5 @@ public:
 
 	static void SetLastArrange (DependencyObject *item, Size *size);
 	static Size *GetLastArrange (DependencyObject *item);
-
-	static Value *CreateDefaultRenderTransform (DependencyObject *instance, DependencyProperty *property);
 };
 #endif /* __MOON_UIELEMENT_H__ */

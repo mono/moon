@@ -1,3 +1,14 @@
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs: very gross emulation of the behavior we see with
+	SL2's UIElement.RenderTransform.  It has to be done in managed
+	code because the plugin exposes the the null default from
+	unmanaged.  Also, note the "new MatrixTransform()".  this is in
+	fact the way they do it, because if you make changes to the
+	transform (say, transform.Matrix = new Matrix (...)) and then get
+	uielement.RenderTransform again, the changes are not reflected.
+	go team!
+
 2009-04-06  Chris Toshok  <toshok@ximian.com>
 
 	* UIElement.cs (TransformToVisual): remove the ArgumentException
