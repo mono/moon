@@ -1062,6 +1062,9 @@ MouseWheelEventArgs *mouse_wheel_event_args_new (void);
 Point multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point elementPoint);
 
 /* @GeneratePInvoke */
+Point multi_scale_image_logical_to_element_point (MultiScaleImage *instance, Point logicalPoint);
+
+/* @GeneratePInvoke */
 MultiScaleImage *multi_scale_image_new (void);
 
 /* @GeneratePInvoke */

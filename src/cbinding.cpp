@@ -2323,6 +2323,16 @@ multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point ele
 }
 
 
+Point
+multi_scale_image_logical_to_element_point (MultiScaleImage *instance, Point logicalPoint)
+{
+	if (instance == NULL)
+		return Point (0, 0);
+	
+	return instance->LogicalToElementPoint (logicalPoint);
+}
+
+
 MultiScaleImage *
 multi_scale_image_new (void)
 {

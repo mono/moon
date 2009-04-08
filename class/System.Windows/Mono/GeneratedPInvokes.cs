@@ -1075,6 +1075,10 @@ namespace Mono {
 		public extern static Point multi_scale_image_element_to_logical_point (IntPtr instance, Point elementPoint);
 
 		[DllImport ("moon")]
+		// Point multi_scale_image_logical_to_element_point (MultiScaleImage *instance, Point logicalPoint);
+		public extern static Point multi_scale_image_logical_to_element_point (IntPtr instance, Point logicalPoint);
+
+		[DllImport ("moon")]
 		// MultiScaleImage *multi_scale_image_new ();
 		public extern static IntPtr multi_scale_image_new ();
 
