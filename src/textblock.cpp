@@ -790,13 +790,13 @@ TextBlock::downloader_complete (EventObject *sender, EventArgs *calldata, gpoint
 void
 TextBlock::DownloaderComplete ()
 {
+	const char *path, *guid = NULL;
 	InternalDownloader *idl;
-	const char *path, *name;
 	char *filename;
-	struct stat st;
+	size_t len;
 	Uri *uri;
 	
-	// the download was aborted
+	// get the downloaded file path (enforces a mozilla workaround for files smaller than 64k)
 	if (!(filename = downloader->GetDownloadedFilename (NULL)))
 		return;
 	
@@ -808,23 +808,32 @@ TextBlock::DownloaderComplete ()
 	if (!(idl->GetType () == InternalDownloader::FileDownloader))
 		return;
 	
+	uri = downloader->GetUri ();
+	path = uri->GetPath ();
+	
+	len = path ? strlen (path) : 0;
+	
+	if (len > 6 && !g_ascii_strcasecmp (path + len - 6, ".odttf")) {
+		// if the font file is obfuscated, use the basename of the path as the guid
+		if (!(guid = strrchr (path, '/')))
+			guid = path;
+		else
+			guid++;
+	}
+	
+	// If the downloaded file was a zip file, this'll get the path to the
+	// extracted zip directory, else it will simply be the path to the
+	// downloaded file.
 	if (!(path = ((FileDownloader *) idl)->GetUnzippedPath ()))
 		return;
 	
-	if (stat (path, &st) == -1)
-		return;
-	
-	uri = downloader->GetUri ();
-	
-	// if the font file is obfuscated, use the basename of the path
-	if (!(name = strrchr (uri->GetPath (), '/')))
-		name = uri->GetPath ();
-	else
-		name++;
-	
 	SetValue (TextBlock::FontFilenameProperty, path);
-	SetValue (TextBlock::FontGUIDProperty, name);
-	font->SetFilename (path, name);
+	if (guid != NULL)
+		SetValue (TextBlock::FontGUIDProperty, guid);
+	else
+		ClearValue (TextBlock::FontGUIDProperty);
+	
+	font->SetFilename (path, guid);
 	UpdateFontDescriptions ();
 	dirty = true;
 	

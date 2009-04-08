@@ -1,5 +1,12 @@
 2009-04-08  Jeffrey Stedfast  <fejj@novell.com>
 
+	* glyphs.cpp (DownloaderComplete): Only bother setting a guid if
+	the file extension is .odttf. Also no need to stat() anymore.
+
+	* textblock.cpp (DownloaderComplete): Same.
+
+2009-04-08  Jeffrey Stedfast  <fejj@novell.com>
+
 	* provider.cpp (InheritedPropertyValueProvider): We need to
 	inherit FontGUIDProperty for Inlines as well.
 
