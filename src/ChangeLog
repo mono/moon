@@ -1,3 +1,8 @@
+2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: some additional debug info printing the state of
+	each BitmapImage
+
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
 	* provider.cpp (InheritedPropertyValueProvider::GetPropertyValue):
