@@ -128,7 +128,7 @@ class FileDownloadState {
 		if (fd == -1) {
 			const char *msg = g_strerror (errno);
 			printf ("downloader failed to open %s: %s\n", uri, msg);
-			downloader_notify_error (downloader, msg);
+			downloader->NotifyFailed (msg);
 			return;
 		}
 
@@ -137,12 +137,12 @@ class FileDownloadState {
 		close (fd);
 		this->uri = g_strdup (uri);
 		size = sb.st_size;
-		downloader_notify_size (downloader, size);
+		downloader->NotifySize (size);
 	}
 
 	void Send () {
 		if (uri != NULL)
-			downloader_notify_finished (downloader, uri);
+			downloader->NotifyFinished (uri);
 	}
 
 	void Close ()
@@ -223,7 +223,15 @@ static int LoadXaml (const char* file)
 
 	file = g_basename (file);
 
-	downloader_set_functions (downloader_create_state, downloader_destroy_state, downloader_open, downloader_send, downloader_abort, downloader_header, downloader_body, downloader_request);
+	Downloader::SetFunctions (downloader_create_state,
+				  downloader_destroy_state,
+				  downloader_open,
+				  downloader_send,
+				  downloader_abort,
+				  downloader_header,
+				  downloader_body,
+				  downloader_request,
+				  false);
 
 	Type::Kind et;
 
