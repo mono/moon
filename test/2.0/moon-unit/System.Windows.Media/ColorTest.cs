@@ -59,18 +59,21 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ParseValidColorAsResource ()
 		{
-			Assert.Throws<XamlParseException> (delegate {
-				XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Name=""color"">#ffffff</Color></Canvas.Resources></Canvas>");
-			}, "bad xaml");
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Resources><Color x:Name=""color"">#ffffff</Color></Canvas.Resources></Canvas>");
+		}
+
+		[TestMethod]
+		public void ParseValidColorAsContentProperty ()
+		{
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""><Canvas.Background><SolidColorBrush><Color>#ffffff</Color></SolidColorBrush></Canvas.Background></Canvas>");
 		}
 
 		[TestMethod]
 		public void ParseValidColorAsProperty ()
 		{
-			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""><Canvas.Background><SolidColorBrush><Color>#ffffff</Color></SolidColorBrush></Canvas.Background></Canvas>");
+			XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""><Canvas.Background><SolidColorBrush><SolidColorBrush.Color><Color>#ffffff</Color></SolidColorBrush.Color></SolidColorBrush></Canvas.Background></Canvas>");
 		}
 
 		class ColorFormatter : IFormatProvider, ICustomFormatter {
