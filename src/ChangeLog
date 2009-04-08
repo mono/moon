@@ -1,3 +1,10 @@
+2009-04-07  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h|.cpp (class UIElement): use an AutoCreator for
+	RenderTransformProperty.
+
+	* dependencyproperty.g.cpp: regen.
+	
 2009-04-07  Larry Ewing  <lewing@novell.com>
 
 	* grid.cpp (MeasureOverride): use the star fraction of the

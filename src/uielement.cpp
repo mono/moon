@@ -1255,3 +1255,9 @@ UIElement::TransformPoint (double *x, double *y)
 	
 	cairo_matrix_transform_point (&inverse, x, y);
 }
+
+Value *
+CreateDefaultRenderTransform (DependencyObject *instance, DependencyProperty *property)
+{
+	return Value::CreateUnrefPtr (new MatrixTransform ());
+}

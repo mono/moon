@@ -323,7 +323,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::UIELEMENT, "Triggers", NULL, Type::TRIGGER_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::Register (this, Type::UIELEMENT, "Tag", Type::OBJECT);
 	DependencyProperty::RegisterFull (this, Type::UIELEMENT, "Resources", NULL, Type::RESOURCE_DICTIONARY, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
-	DependencyProperty::Register (this, Type::UIELEMENT, "RenderTransform", new Value (new MatrixTransform ()), Type::TRANSFORM);
+	DependencyProperty::Register (this, Type::UIELEMENT, "RenderTransform", Type::TRANSFORM);
 	DependencyProperty::Register (this, Type::UIELEMENT, "RenderTransformOrigin", new Value (Point (0,0)), Type::POINT);
 	DependencyProperty::Register (this, Type::UIELEMENT, "Opacity", new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::UIELEMENT, "OpacityMask", Type::BRUSH);
