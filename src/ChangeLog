@@ -1,3 +1,8 @@
+2009-04-08  Geoff Norton  <gnorton@novell.com>
+
+	* pipeline.cpp: Ensure we dont try to decode if our stream has been
+	disposed.
+
 2009-04-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* downloader.cpp (validate_policy): Don't delete source here, we

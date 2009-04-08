@@ -2391,7 +2391,7 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 				continue;
 			stream->SetEnded (true);
 		}
-	} else {
+	} else if (!frame->stream->IsDisposed ()) {
 		decoder = frame->stream->GetDecoder ();
 		decoder->DecodeFrameAsync (frame);
 	}
