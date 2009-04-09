@@ -191,7 +191,7 @@ namespace Moonlight.Gtk
             
             return (DependencyObject)XamlLoader
                 .CreateManagedXamlLoader (surface, IntPtr.Zero)
-                .CreateDependencyObjectFromString (xaml, true);
+                .CreateObjectFromString (xaml, true) as DependencyObject;
         }
 
 #endregion

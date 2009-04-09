@@ -1,3 +1,7 @@
+2009-04-09  Jackson Harper  <jackson@ximian.com>
+
+	* Moonlight.Gtk/XamlHost.cs: New method name.
+
 2009-04-03  Aaron Bockover  <abockover@novell.com>
 
 	* Moonlight.Gtk/Desklets.cs: Fix namespace
