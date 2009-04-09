@@ -1,5 +1,10 @@
 2009-04-09  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ListBoxTest.cs: Add tests to listbox
+	  to figure out where it's failing.
+
+2009-04-09  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/FrameworkElementTest.cs:
 	* System.Windows.Controls/ItemsControlTest.cs: Move the
 	  BeforeRender test alongside the rest of the Loaded_* tests
