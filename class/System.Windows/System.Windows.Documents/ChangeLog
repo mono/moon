@@ -1,3 +1,8 @@
+2009-04-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* FontSource.cs: Changed to keep a StreamWrapper internally. We'll
+	need this for marashalling to unmanaged code.
+
 2009-02-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Inline.cs (Name): Implemented.

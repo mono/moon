@@ -31,12 +31,14 @@ using System.IO;
 
 namespace System.Windows.Documents {
 	public class FontSource {
-		Stream stream;
+		internal StreamWrapper wrapper;
 		
-		[MonoTODO ("does nothing but keeping a reference to a stream")]
 		public FontSource (Stream stream)
 		{
-			this.stream = stream;
+			if (stream != null)
+				wrapper = new StreamWrapper (stream);
+			else
+				wrapper = null;
 		}
 	}
 }
