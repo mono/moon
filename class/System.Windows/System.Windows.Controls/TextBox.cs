@@ -39,11 +39,6 @@ namespace System.Windows.Controls {
 			CursorPositionChanged += OnCursorPositionChanged;
 		}
 		
-		public FontSource FontSource {
-			// FIXME: throw new NotImplementedException ();
-			get; set;
-		}
-		
 		public string Text {
 			get {
 				return (string)GetValue (TextProperty) ?? "";

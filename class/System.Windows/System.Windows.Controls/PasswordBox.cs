@@ -42,11 +42,6 @@ namespace System.Windows.Controls
 	[TemplateVisualStateAttribute(Name = "Unfocused", GroupName = "FocusStates")]
 	public sealed partial class PasswordBox : Control
 	{
-		public FontSource FontSource {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
-		}
-		
 		public void SelectAll ()
 		{
 			NativeMethods.text_box_base_select_all (native);

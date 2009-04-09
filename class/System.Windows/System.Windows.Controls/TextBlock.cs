@@ -32,13 +32,6 @@ using System.Windows.Documents;
 
 namespace System.Windows.Controls {
 	public sealed partial class TextBlock : FrameworkElement {
-
-		[MonoTODO ("does nothing")]
-		public FontSource FontSource {
-			get { return null; }
-			set { ; }
-		}
-
 		protected override AutomationPeer OnCreateAutomationPeer ()
 		{
 			return new TextBlockAutomationPeer (this);
