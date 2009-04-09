@@ -33,11 +33,37 @@ using System.Windows.Controls;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using System.Windows.Media;
+using Microsoft.Silverlight.Testing;
+using System.Windows.Shapes;
+using System.Windows.Controls.Primitives;
+
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public partial class ScrollViewerTest {
+	public partial class ScrollViewerTest : SilverlightTest {
 
+		[TestMethod]
+		[Asynchronous]
+		public void AfterRender ()
+		{
+			ScrollViewer viewer = new ScrollViewer ();
+			CreateAsyncTest (viewer, delegate {
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (viewer), "#1");
+				Border border = (Border)VisualTreeHelper.GetChild (viewer, 0);
+
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (border), "#2");
+				Grid grid = (Grid) VisualTreeHelper.GetChild (border, 0);
+
+
+				Assert.AreEqual (4, VisualTreeHelper.GetChildrenCount (grid), "#3");
+				Assert.IsTrue (grid.Children [0] is ScrollContentPresenter, "#4");
+				Assert.IsTrue (grid.Children [1] is Rectangle, "#5");
+				Assert.IsTrue (grid.Children [2] is ScrollBar, "#6");
+				Assert.IsTrue (grid.Children [3] is ScrollBar, "#7");
+			});
+		}
+		
 		[TestMethod]
 		public void ReadOnlyProperties ()
 		{
