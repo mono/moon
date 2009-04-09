@@ -18,7 +18,7 @@ namespace Mono
 {	
 	internal class StreamWrapper
 	{
-		private Stream stream;
+		internal Stream stream;
 		private ManagedStreamCallbacks? callbacks;
 		private GCHandle handle;
 		

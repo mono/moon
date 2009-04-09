@@ -1,3 +1,7 @@
+2009-04-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Value.cs: Handle Kind.FONTSOURCE
+
 2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* GeneratedPInvokes.cs: regen

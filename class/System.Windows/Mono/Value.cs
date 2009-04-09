@@ -31,6 +31,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Documents;
 using System.Windows.Media.Animation;
 using System.Runtime.InteropServices;
 using System.Reflection;
@@ -39,6 +40,10 @@ namespace Mono {
 
 	internal struct UnmanagedFontFamily {
 		public IntPtr source;
+	}
+
+	internal struct UnmanagedFontSource {
+		public IntPtr stream;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -203,6 +208,19 @@ namespace Mono {
 				case Kind.FONTFAMILY: {
 					UnmanagedFontFamily *family = (UnmanagedFontFamily*)val->u.p;
 					return new FontFamily (family == null ? null : Helper.PtrToStringAuto (family->source));
+				}
+
+				case Kind.FONTSOURCE: {
+					UnmanagedFontSource *source = (UnmanagedFontSource *) val->u.p;
+					ManagedStreamCallbacks callbacks;
+					StreamWrapper wrapper;
+					
+					callbacks = new ManagedStreamCallbacks ();
+					Marshal.PtrToStructure (source->stream, callbacks);
+					
+					wrapper = (StreamWrapper) Helper.GCHandleFromIntPtr (callbacks.handle).Target;
+					
+					return new FontSource (wrapper.stream);
 				}
 
 				case Kind.PROPERTYPATH: {
@@ -459,6 +477,15 @@ namespace Mono {
 					value.k = Kind.FONTFAMILY;
 					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedFontFamily));
 					Marshal.StructureToPtr (family, value.u.p, false); // Unmanaged and managed structure layout is equal.
+				}
+				else if (v is FontSource) {
+					FontSource source = (FontSource) v;
+					
+					value.k = Kind.FONTSOURCE;
+					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedFontSource));
+					UnmanagedFontSource *ufs = (UnmanagedFontSource *) value.u.p;
+					ManagedStreamCallbacks callbacks = source.wrapper.GetCallbacks ();
+					Marshal.StructureToPtr (callbacks, ufs->stream, false);
 				}
 				else if (v is PropertyPath) {
 					PropertyPath propertypath = (PropertyPath) v;

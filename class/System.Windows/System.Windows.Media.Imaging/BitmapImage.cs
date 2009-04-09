@@ -62,7 +62,7 @@ namespace System.Windows.Media.Imaging
                                 UnregisterEvent (DownloadProgressEvent, "DownloadProgress", download_progress, value);
 			}
 		}
-			
+		
 		public event EventHandler<ExceptionRoutedEventArgs> ImageFailed {
 			add {
                                 RegisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);

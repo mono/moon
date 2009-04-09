@@ -693,6 +693,7 @@ namespace System.Windows.Controls {
 	}
 
 	partial class PasswordBox {
+		internal static readonly DependencyProperty FontSourceProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "FontSource", typeof (FontSource));
 		public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "MaxLength", typeof (int));
 		public static readonly DependencyProperty PasswordCharProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "PasswordChar", typeof (char));
 		public static readonly DependencyProperty PasswordProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "Password", typeof (string));
@@ -701,6 +702,11 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty SelectionForegroundProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionForeground", typeof (Brush));
 		internal static readonly DependencyProperty SelectionLengthProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionLength", typeof (int));
 		internal static readonly DependencyProperty SelectionStartProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionStart", typeof (int));
+
+		public FontSource FontSource {
+			get { return (FontSource) GetValue (FontSourceProperty); }
+			set { SetValue (FontSourceProperty, value); }
+		}
 
 		public int MaxLength {
 			get { return (int) GetValue (MaxLengthProperty); }
@@ -767,6 +773,7 @@ namespace System.Windows.Controls {
 	partial class TextBlock {
 		public static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontFamily", typeof (FontFamily));
 		public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontSize", typeof (double));
+		internal static readonly DependencyProperty FontSourceProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontSource", typeof (FontSource));
 		public static readonly DependencyProperty FontStretchProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontStretch", typeof (FontStretch));
 		public static readonly DependencyProperty FontStyleProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontStyle", typeof (FontStyle));
 		public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Lookup (Kind.TEXTBLOCK, "FontWeight", typeof (FontWeight));
@@ -788,6 +795,11 @@ namespace System.Windows.Controls {
 		public double FontSize {
 			get { return (double) GetValue (FontSizeProperty); }
 			set { SetValue (FontSizeProperty, value); }
+		}
+
+		public FontSource FontSource {
+			get { return (FontSource) GetValue (FontSourceProperty); }
+			set { SetValue (FontSourceProperty, value); }
 		}
 
 		public FontStretch FontStretch {
@@ -853,6 +865,7 @@ namespace System.Windows.Controls {
 
 	partial class TextBox {
 		public static readonly DependencyProperty AcceptsReturnProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "AcceptsReturn", typeof (bool));
+		internal static readonly DependencyProperty FontSourceProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "FontSource", typeof (FontSource));
 		internal static readonly DependencyProperty HorizontalScrollBarVisibilityProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "HorizontalScrollBarVisibility", typeof (ScrollBarVisibility));
 		public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "IsReadOnly", typeof (bool));
 		public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "MaxLength", typeof (int));
@@ -869,6 +882,11 @@ namespace System.Windows.Controls {
 		public bool AcceptsReturn {
 			get { return (bool) GetValue (AcceptsReturnProperty); }
 			set { SetValue (AcceptsReturnProperty, value); }
+		}
+
+		public FontSource FontSource {
+			get { return (FontSource) GetValue (FontSourceProperty); }
+			set { SetValue (FontSourceProperty, value); }
 		}
 
 		public ScrollBarVisibility HorizontalScrollBarVisibility {

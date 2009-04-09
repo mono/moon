@@ -37,10 +37,10 @@ namespace System.Windows.Documents {
 		
 		public FontSource (Stream stream)
 		{
-			if (stream != null)
-				wrapper = new StreamWrapper (stream);
-			else
-				wrapper = null;
+			if (stream == null)
+				throw new ArgumentNullException ("stream");
+			
+			wrapper = new StreamWrapper (stream);
 		}
 	}
 }
