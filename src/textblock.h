@@ -20,10 +20,11 @@
 #include <downloader.h>
 #include <moon-path.h>
 #include <thickness.h>
+#include <fontfamily.h>
+#include <fontsource.h>
 #include <layout.h>
 #include <brush.h>
 #include <font.h>
-#include <fontfamily.h>
 
 #define TEXTBLOCK_FONT_FAMILY  "Portable User Interface"
 #define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
@@ -58,9 +59,11 @@ class Inline : public DependencyObject, public ITextAttributes {
 	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullValidator */
 	const static int LanguageProperty;
 	
-	// internal property to inherit the font filename between inlines and textblocks
+	// internal properties to inherit the font filename/stream/guid between inlines and textblocks
  	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
 	const static int FontFilenameProperty;
+	/* @PropertyType=FontSource,GenerateManagedDP=false,GenerateAccessors */
+	const static int FontSourceProperty;
 	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
 	const static int FontGUIDProperty;
 	
@@ -77,12 +80,6 @@ class Inline : public DependencyObject, public ITextAttributes {
 	void SetFontFamily (FontFamily *value);
 	FontFamily *GetFontFamily ();
 	
-	void SetFontFilename (const char *value);
-	const char *GetFontFilename ();
-	
-	void SetFontGUID (const char *value);
-	const char *GetFontGUID ();
-	
 	void SetFontSize (double value);
 	double GetFontSize ();
 	
@@ -95,11 +92,20 @@ class Inline : public DependencyObject, public ITextAttributes {
 	void SetFontWeight (FontWeights value);
 	FontWeights GetFontWeight ();
 	
+	void SetFontSource (FontSource *source);
+	FontSource *GetFontSource ();
+	
 	void SetForeground (Brush *value);
 	Brush *GetForeground ();
 	
 	void SetTextDecorations (TextDecorations decorations);
 	TextDecorations GetTextDecorations ();
+	
+	void SetFontFilename (const char *value);
+	const char *GetFontFilename ();
+	
+	void SetFontGUID (const char *value);
+	const char *GetFontGUID ();
 	
 	//
 	// Non-DependencyProperty Accessors
@@ -205,6 +211,8 @@ class TextBlock : public FrameworkElement {
 	const static int FontStyleProperty;
  	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT,GenerateAccessors */
 	const static int FontWeightProperty;
+	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
+	const static int FontSourceProperty;
  	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
 	const static int ForegroundProperty;
  	/* @PropertyType=InlineCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
@@ -224,7 +232,7 @@ class TextBlock : public FrameworkElement {
  	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	const static int TextWrappingProperty;
 	
-	// internal property to inherit the font filename between inlines and textblocks
+	// internal properties to inherit the font filename/guid between inlines and textblocks
  	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
 	const static int FontFilenameProperty;
 	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
@@ -263,6 +271,9 @@ class TextBlock : public FrameworkElement {
 	
 	void SetFontWeight (FontWeights weight);
 	FontWeights GetFontWeight ();
+	
+	void SetFontSource (FontSource *source);
+	FontSource *GetFontSource ();
 	
 	void SetForeground (Brush *fg);
 	Brush *GetForeground ();

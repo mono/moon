@@ -16,6 +16,7 @@
 #include <glib.h>
 #include <cairo.h>
 
+#include "fontsource.h"
 #include "moon-path.h"
 #include "eventargs.h"
 #include "thickness.h"
@@ -319,6 +320,8 @@ class TextBox : public TextBoxBase {
  public:
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
 	const static int AcceptsReturnProperty;
+	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
+	const static int FontSourceProperty;
 	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int HorizontalScrollBarVisibilityProperty;
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
@@ -361,6 +364,9 @@ class TextBox : public TextBoxBase {
 	//
 	void SetAcceptsReturn (bool accept);
 	bool GetAcceptsReturn ();
+	
+	void SetFontSource (FontSource *source);
+	FontSource *GetFontSource ();
 	
 	void SetHorizontalScrollBarVisibility (ScrollBarVisibility visibility);
 	ScrollBarVisibility GetHorizontalScrollBarVisibility ();
@@ -440,6 +446,8 @@ class PasswordBox : public TextBoxBase {
 	virtual ~PasswordBox ();
 	
  public:
+	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
+	const static int FontSourceProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int MaxLengthProperty;
 	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
@@ -471,6 +479,9 @@ class PasswordBox : public TextBoxBase {
 	//
 	// Property Accesors
 	//
+	void SetFontSource (FontSource *source);
+	FontSource *GetFontSource ();
+	
 	void SetMaxLength (int length);
 	int GetMaxLength ();
 	

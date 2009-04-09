@@ -178,7 +178,7 @@ FileDownloader::GetDownloadedFilename (const char *partname)
 			goto exception2;
 		
 		// open the output file
-		if ((fd = open (path, O_CREAT | O_WRONLY, 0644)) == -1)
+		if ((fd = open (path, O_CREAT | O_WRONLY | O_TRUNC, 0600)) == -1)
 			goto exception3;
 		
 		// extract the file from the zip archive... (closes the fd on success and fail)

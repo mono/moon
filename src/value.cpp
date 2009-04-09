@@ -11,10 +11,13 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
-#include <string.h>
+#endif
+
 #include <cairo.h>
-#include <malloc.h>
+
+#include <string.h>
 #include <stdlib.h>
 
 #include "value.h"
@@ -29,6 +32,8 @@
 #include "grid.h"
 #include "cornerradius.h"
 #include "mono/metadata/object.h"
+#include "fontsource.h"
+#include "utils.h"
 
 /**
  * Value implementation
@@ -104,6 +109,13 @@ Value::Value (const Value& v)
 		if (v.u.fontfamily) {
 			u.fontfamily = g_new (FontFamily, 1);
 			u.fontfamily->source = g_strdup (v.u.fontfamily->source);
+		}
+		break;
+	case Type::FONTSOURCE:
+		if (v.u.fontsource) {
+			u.fontsource = g_new (FontSource, 1);
+			u.fontsource->stream = g_new (ManagedStreamCallbacks, 1);
+			memcpy (u.fontsource->stream, v.u.fontsource->stream, sizeof (ManagedStreamCallbacks));
 		}
 		break;
 	case Type::PROPERTYPATH:
@@ -259,6 +271,16 @@ Value::Value (FontFamily family)
 	SetIsNull (false);
 }
 
+Value::Value (FontSource source)
+{
+	Init ();
+	k = Type::FONTSOURCE;
+	u.fontsource = g_new (FontSource, 1);
+	u.fontsource->stream = g_new (ManagedStreamCallbacks, 1);
+	memcpy (u.fontsource->stream, source.stream, sizeof (ManagedStreamCallbacks));
+	SetIsNull (false);
+}
+
 Value::Value (PropertyPath propertypath)
 {
 	Init ();
@@ -399,6 +421,10 @@ Value::FreeValue ()
 		g_free (u.fontfamily->source);
 		g_free (u.fontfamily);
 		break;
+	case Type::FONTSOURCE:
+		g_free (u.fontsource->stream);
+		g_free (u.fontsource);
+		break;
 	case Type::PROPERTYPATH:
 		g_free (u.propertypath->path);
 		g_free (u.propertypath);
@@ -522,6 +548,8 @@ Value::operator== (const Value &v) const
 		return !strcmp (u.s, v.u.s);
 	case Type::FONTFAMILY:
 		return *u.fontfamily == *v.u.fontfamily;
+	case Type::FONTSOURCE:
+		return u.fontsource->stream->handle == v.u.fontsource->stream->handle;
 	case Type::PROPERTYPATH:
 		return *u.propertypath == *v.u.propertypath;
 	case Type::COLOR:

@@ -18,7 +18,8 @@
 
 /* @IncludeInKinds */
 struct FontFamily {
-public:
+	char *source;
+	
 	FontFamily (const char *source)
 	{
 		this->source = g_strdup (source);
@@ -38,9 +39,6 @@ public:
 	{
 		return strcmp (v.source, source) != 0;
 	}
-	
-	char *source;
 };
 
-
-#endif
+#endif /* __FONT_FAMILY_H__ */

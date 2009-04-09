@@ -1,3 +1,11 @@
+2009-04-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.h, textbox.h: Added FontSourceProperty.
+
+	* value.cpp|h: Added FontSource support.
+
+	* fontsource.h: Added.
+
 2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* cbinding.cpp|h: regenerated

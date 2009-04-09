@@ -280,6 +280,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::FFMPEGDEMUXER] = new Type (Type::FFMPEGDEMUXER, Type::IMEDIADEMUXER, false, "FfmpegDemuxer", "FFMPEGDEMUXER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::FILESOURCE] = new Type (Type::FILESOURCE, Type::IMEDIASOURCE, false, "FileSource", "FILESOURCE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::FONTFAMILY] = new Type (Type::FONTFAMILY, Type::OBJECT, true, "FontFamily", "FONTFAMILY", 0, 0, NULL, NULL, NULL);
+	types [(int) Type::FONTSOURCE] = new Type (Type::FONTSOURCE, Type::OBJECT, true, "FontSource", "FONTSOURCE", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::FONTSTRETCH] = new Type (Type::FONTSTRETCH, Type::OBJECT, false, "System.Windows.FontStretch", "FONTSTRETCH", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::FONTSTYLE] = new Type (Type::FONTSTYLE, Type::OBJECT, false, "System.Windows.FontStyle", "FONTSTYLE", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::FONTWEIGHT] = new Type (Type::FONTWEIGHT, Type::OBJECT, false, "System.Windows.FontWeight", "FONTWEIGHT", 0, 0, NULL, NULL, NULL);
