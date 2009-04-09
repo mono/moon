@@ -3607,6 +3607,16 @@ surface_is_loaded (Surface *instance)
 
 
 bool
+surface_is_user_initiated_event (Surface *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->IsUserInitiatedEvent ();
+}
+
+
+bool
 surface_is_version_supported (const char *version)
 {
 	return Surface::IsVersionSupported (version);

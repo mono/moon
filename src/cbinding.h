@@ -1616,6 +1616,9 @@ bool surface_in_main_thread (void);
 bool surface_is_loaded (Surface *instance);
 
 /* @GeneratePInvoke */
+bool surface_is_user_initiated_event (Surface *instance);
+
+/* @GeneratePInvoke */
 bool surface_is_version_supported (const char *version);
 
 /* @GeneratePInvoke */

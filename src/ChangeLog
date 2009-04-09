@@ -1,3 +1,12 @@
+2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* cbinding.cpp|h: regenerated
+	* openfile.cpp|h: Add save_file_dialog_show to implement
+	SaveFileDialog (SL3) and refactor the filter code to be	shared.
+	* runtime.cpp|h: Rename can_full_screen to user_initiated_event
+	since we need it for SaveFileDialog (and elsewhere too). Rename
+	setter and add a getter with a c binding.
+
 2009-04-09  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: We need to create Value*'s from strings/files now

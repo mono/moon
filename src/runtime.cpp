@@ -303,7 +303,7 @@ Surface::Surface (MoonWindow *window)
 	focus_tick_call_added = false;
 
 	full_screen = false;
-	can_full_screen = false;
+	user_initiated_event = false;
 
 	full_screen_message = NULL;
 	source_location = NULL;
@@ -640,7 +640,7 @@ Surface::Realloc ()
 void
 Surface::SetFullScreen (bool value)
 {
-	if (value && !can_full_screen) {
+	if (value && !IsUserInitiatedEvent ()) {
 		g_warning ("You're not allowed to switch to fullscreen from where you're doing it.");
 		return;
 	}
@@ -1589,7 +1589,7 @@ Surface::HandleUIButtonRelease (GdkEventButton *event)
 		return false;
 	}
 
-	SetCanFullScreen (true);
+	SetUserInitiatedEvent (true);
 	
 	if (mouse_event)
 		gdk_event_free (mouse_event);
@@ -1600,7 +1600,7 @@ Surface::HandleUIButtonRelease (GdkEventButton *event)
 			  true, true, true, mouse_event);
 
 	UpdateCursorFromInputList ();
-	SetCanFullScreen (false);
+	SetUserInitiatedEvent (false);
 
 	// XXX MS appears to do this here, which is completely stupid.
 	if (captured)
@@ -1620,7 +1620,7 @@ Surface::HandleUIButtonPress (GdkEventButton *event)
 		return false;
 	}
 
-	SetCanFullScreen (true);
+	SetUserInitiatedEvent (true);
 
 	if (mouse_event)
 		gdk_event_free (mouse_event);
@@ -1631,7 +1631,7 @@ Surface::HandleUIButtonPress (GdkEventButton *event)
 					 true, true, true, mouse_event);
 
 	UpdateCursorFromInputList ();
-	SetCanFullScreen (false);
+	SetUserInitiatedEvent (false);
 
 	return handled;
 }
@@ -1811,7 +1811,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 	}
 #endif
 	
-	SetCanFullScreen (true);
+	SetUserInitiatedEvent (true);
 	bool handled;
 
 	Keyboard::OnKeyPress (key);
@@ -1827,7 +1827,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 		handled = true;
 	}
 				    
-	SetCanFullScreen (false);
+	SetUserInitiatedEvent (false);
 	
 	return handled;
 }
@@ -1838,7 +1838,7 @@ Surface::HandleUIKeyRelease (GdkEventKey *event)
 	if (FullScreenKeyHandled (event))
 		return true;
 
-	SetCanFullScreen (true);
+	SetUserInitiatedEvent (true);
 	bool handled;
 
 	Key key = Keyboard::MapKeyValToKey (event->keyval);
@@ -1855,7 +1855,7 @@ Surface::HandleUIKeyRelease (GdkEventKey *event)
 		handled = true;
 	}
 	
-	SetCanFullScreen (false);
+	SetUserInitiatedEvent (false);
 	
 	return handled;
 }

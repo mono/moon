@@ -204,7 +204,11 @@ public:
 	bool GetFullScreen () { return full_screen; }
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetFullScreen (bool value);
-	void SetCanFullScreen (bool value) { can_full_screen = value; }
+
+	void SetUserInitiatedEvent (bool value) { user_initiated_event = value; }
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	bool IsUserInitiatedEvent () { return user_initiated_event; }
+
 	const char* GetSourceLocation ();
 	void SetSourceLocation (const char *location);
 	bool FullScreenKeyHandled (GdkEventKey *key);
@@ -333,7 +337,7 @@ private:
 	char *source_location;
 	// Should be set to true only while executing MouseLeftButtonDown, 
 	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
-	bool can_full_screen; 
+	bool user_initiated_event; 
 	
 	void UpdateFullScreen (bool value);
 	
