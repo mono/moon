@@ -2,7 +2,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007-2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,72 +25,36 @@
 //
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security;
 
-namespace System.Windows.Controls
-{
-	// It simply opens a native file dialog
+using Mono;
 
-	public sealed class OpenFileDialog
-	{
-		FileInfo[] files;
-		
-		bool allow_multiple_selection;
+namespace System.Windows.Controls {
+
+	public sealed class SaveFileDialog {
+
+		string default_ext = String.Empty;
 		string filter = String.Empty;
-		int filter_index;
-		
-		public OpenFileDialog ()
-		{
-		}
+		int filter_index = 1;
+		FileInfo file_info;
 
-		// it's not clear from doc or tests when this can return null
-		public bool? ShowDialog ()
-		{
-			IntPtr result = open_file_dialog_show ("Open",
-				allow_multiple_selection,
-				filter,
-				filter_index);
-
-			if (result == IntPtr.Zero){
-				// when called several times the previous results are still available after a Cancel
-				return false;
+		public string DefaultExt {
+			get { return default_ext; }
+			set {
+				if (String.IsNullOrEmpty (value)) {
+					default_ext = String.Empty;
+				} else if (value [0] == '.') {
+					default_ext = value.Substring (1);
+				} else {
+					default_ext = value;
+				}
 			}
-
-			uint inc = (uint) IntPtr.Size;
-			IntPtr p;
-			int n = 0;
-
-			for (uint ofs = 0; (p = Marshal.ReadIntPtr ((IntPtr)((ulong)result + ofs))) != IntPtr.Zero; ofs += inc)
-				n++;
-
-			files = new FileInfo [n];
-			for (uint i = 0, ofs = 0; (p = Marshal.ReadIntPtr ((IntPtr)((ulong)result + ofs))) != IntPtr.Zero; ofs += inc)
-				files [i++] = new FileInfo (Marshal.PtrToStringAnsi (p));
-			
-			Marshal.FreeHGlobal (result);
-			return true;
 		}
-
-		// selection results
 
 		public FileInfo File {
-			get {
-				return ((files == null) || (files.Length == 0)) ? null : files [0];
-			}
-		}
-
-		public IEnumerable<FileInfo> Files {
-			get { return files; }
-		}
-
-		// dialog options
-
-		public bool Multiselect {
-			get { return allow_multiple_selection; }
-			set { allow_multiple_selection = value; }
+			get { return file_info; }
 		}
 
 		public string Filter {
@@ -122,7 +86,33 @@ namespace System.Windows.Controls
 			}
 		}
 
+		public Stream OpenFile ()
+		{
+			if (file_info == null)
+				throw new InvalidOperationException ();
+
+			return file_info.OpenWrite ();
+		}
+
+		public bool? ShowDialog ()
+		{
+			// the dialog is displayed only if the action leading to this call was initiated directly from the user
+			if (!NativeMethods.surface_is_user_initiated_event (Deployment.Current.Surface.Native))
+				throw new SecurityException ("Action was not initiated by the user");
+
+			IntPtr result = save_file_dialog_show ("Save", filter, filter_index);
+
+			if (result == IntPtr.Zero)
+				return false;
+
+			file_info = new FileInfo (Marshal.PtrToStringAnsi (result));
+			Marshal.FreeHGlobal (result);
+			
+			return true;
+		}
+
 		[DllImport ("moon")]
-		static extern IntPtr open_file_dialog_show (string title, bool multsel, string filter, int idx);
+		static extern IntPtr save_file_dialog_show (string title, string filter, int idx);
 	}
 }
+

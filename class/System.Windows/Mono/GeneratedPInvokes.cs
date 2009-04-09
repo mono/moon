@@ -1621,6 +1621,11 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
+		// bool surface_is_user_initiated_event (Surface *instance);
+		public extern static bool surface_is_user_initiated_event (IntPtr instance);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
 		// bool surface_is_version_supported (const char *version);
 		public extern static bool surface_is_version_supported (string version);
 

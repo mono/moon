@@ -1,3 +1,8 @@
+2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Content.cs (IsFullScreen): Remove MonoTODO and FIXME since this 
+	check already exists in the runtime.
+
 2009-04-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Settings.cs: Implement EnableHTMLAccess and Windowless properties

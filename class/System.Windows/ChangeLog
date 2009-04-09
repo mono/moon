@@ -1,3 +1,7 @@
+2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add System.Windows.Controls/SaveFileDialog.cs
+
 2009-04-09  Mario Carrion  <mcarrion@novell.com>
 
 	* Makefile.am: Automation files added: DockPatternIdentifiers.cs,

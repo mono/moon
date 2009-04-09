@@ -63,9 +63,7 @@ namespace System.Windows.Interop {
 			get {
 				return NativeMethods.surface_get_full_screen (Deployment.Current.Surface.Native);
 			}
-			[MonoTODO ()]
 			set {
-				// FIXME: Stack walk here to ensure this is in response to a user generated event
 				NativeMethods.surface_set_full_screen (Deployment.Current.Surface.Native, value);
 			}
 		}

@@ -1,3 +1,9 @@
+2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* OpenFileDialog.cs: Free the memory we receive from 
+	open_file_dialog_show
+	* SaveFileDialog.cs: New. Silverlight 3 feature
+
 2009-04-08  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* MultiScaleImage.cs: no longer throws NIE on LogicalToElementPoint
