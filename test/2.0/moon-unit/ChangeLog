@@ -1,3 +1,7 @@
+2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/SaveFileDialogTest.cs: New.
+
 2009-04-09  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ScrollViewerTest.cs: Added test to
