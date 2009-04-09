@@ -1889,7 +1889,7 @@ namespace Mono {
 		public extern static IntPtr writeable_bitmap_new ();
 
 		[DllImport ("moon", EntryPoint="xaml_loader_create_from_file_with_error")]
-		// DependencyObject *xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
+		// Value *xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
 		private extern static IntPtr xaml_loader_create_from_file_with_error_ (IntPtr instance, string xaml, [MarshalAs (UnmanagedType.U1)] bool create_namescope, out Kind element_type, out MoonError error);
 		public static IntPtr xaml_loader_create_from_file (IntPtr instance, string xaml, bool create_namescope, out Kind element_type)
 		{
@@ -1902,7 +1902,7 @@ namespace Mono {
 		}
 
 		[DllImport ("moon", EntryPoint="xaml_loader_create_from_string_with_error")]
-		// DependencyObject *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
+		// Value *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
 		private extern static IntPtr xaml_loader_create_from_string_with_error_ (IntPtr instance, string xaml, [MarshalAs (UnmanagedType.U1)] bool create_namescope, out Kind element_type, out MoonError error);
 		public static IntPtr xaml_loader_create_from_string (IntPtr instance, string xaml, bool create_namescope, out Kind element_type)
 		{
@@ -1915,7 +1915,7 @@ namespace Mono {
 		}
 
 		[DllImport ("moon", EntryPoint="xaml_loader_hydrate_from_string_with_error")]
-		// DependencyObject *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
+		// Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
 		private extern static IntPtr xaml_loader_hydrate_from_string_with_error_ (IntPtr instance, string xaml, IntPtr obj, [MarshalAs (UnmanagedType.U1)] bool create_namescope, out Kind element_type, out MoonError error);
 		public static IntPtr xaml_loader_hydrate_from_string (IntPtr instance, string xaml, IntPtr obj, bool create_namescope, out Kind element_type)
 		{

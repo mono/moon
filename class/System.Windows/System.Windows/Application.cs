@@ -211,7 +211,7 @@ namespace System.Windows {
 						ManagedXamlLoader loader = new ManagedXamlLoader (type.Assembly, Deployment.Current.Surface.Native, PluginHost.Handle);
 
 						try {
-							rd = loader.CreateDependencyObjectFromString (generic_xaml, false) as ResourceDictionary;
+							rd = loader.CreateObjectFromString (generic_xaml, false) as ResourceDictionary;
 						}
 						catch (Exception e) {
 							Console.WriteLine ("failed generic.xaml parsing:");

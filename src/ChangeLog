@@ -1,3 +1,15 @@
+2009-04-09  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: We need to create Value*'s from strings/files now
+	instead of just creating dependencyobjects, it's legal to create a
+	managed object from xaml that isn't a DOB.
+	- Add a couple utility methods for creating just DOBs from
+	strings/files.
+	* cbinding.cpp: regen
+	* xap.cpp:
+	* template.cpp:
+	* runtime.cpp: Updated method names
+	
 2009-04-08  Geoff Norton  <gnorton@novell.com>
 
 	* downloader.cpp: Ensure that when someone subscribes to NotifySize

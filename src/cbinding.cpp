@@ -4296,7 +4296,7 @@ writeable_bitmap_new (void)
 /**
  * XamlLoader
  **/
-DependencyObject *
+Value *
 xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error)
 {
 	if (instance == NULL)
@@ -4308,7 +4308,7 @@ xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml,
 }
 
 
-DependencyObject *
+Value *
 xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error)
 {
 	if (instance == NULL)
@@ -4320,7 +4320,7 @@ xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xam
 }
 
 
-DependencyObject *
+Value *
 xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error)
 {
 	if (instance == NULL)

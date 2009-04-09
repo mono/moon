@@ -1783,9 +1783,9 @@ PluginXamlLoader::TryLoad (int *error)
 	GetSurface ()->Attach (NULL);
 	
 	if (GetFilename ()) {
-		element = CreateFromFile (GetFilename (), true, &element_type);
+		element = CreateDependencyObjectFromFile (GetFilename (), true, &element_type);
 	} else if (GetString ()) {
-		element = CreateFromString (GetString (), true, &element_type);
+		element = CreateDependencyObjectFromString (GetString (), true, &element_type);
 	} else {
 		*error = 1;
 		return NULL;

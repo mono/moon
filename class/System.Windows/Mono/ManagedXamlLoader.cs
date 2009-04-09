@@ -84,13 +84,13 @@ namespace Mono.Xaml
 		// 
 		// Creates a managed dependency object from the xaml.
 		// 
-		public override DependencyObject CreateDependencyObjectFromString (string xaml, bool createNamescope)
+		public override object CreateObjectFromString (string xaml, bool createNamescope)
 		{
 			if (xaml == null)
 				throw new ArgumentNullException ("xaml");
 
 			IntPtr top;
-			DependencyObject result;
+			object result;
 			Kind kind;
 			
 			DependencyObject.Initialize ();
@@ -100,26 +100,20 @@ namespace Mono.Xaml
 			if (top == IntPtr.Zero)
 				return null;
 
-			result = NativeDependencyObjectHelper.Lookup (kind, top) as DependencyObject;
-			
-			if (result != null) {
-				// Delete our reference, result already has one.
-				NativeMethods.event_object_unref (top);
-			}
-			
+			result = Value.ToObject (null, top);			
 			return result;
 		}
 
 		// 
 		// Creates a managed dependency object from the xaml in the file
 		// 
-		public override DependencyObject CreateDependencyObjectFromFile (string file, bool createNamescope)
+		public override object CreateObjectFromFile (string file, bool createNamescope)
 		{
 			if (file == null)
 				throw new ArgumentNullException ("file");
 
 			IntPtr top;
-			DependencyObject result;
+			object result;
 			Kind kind;
 			
 			DependencyObject.Initialize ();
@@ -129,13 +123,7 @@ namespace Mono.Xaml
 			if (top == IntPtr.Zero)
 				return null;
 
-			result = NativeDependencyObjectHelper.Lookup (kind, top) as DependencyObject;
-			
-			if (result != null) {
-				// Delete our reference, result already has one.
-				NativeMethods.event_object_unref (top);
-			}
-			
+			result = Value.ToObject (null, top);
 			return result;
 		}
 
@@ -597,6 +585,7 @@ namespace Mono.Xaml
 						break;
 					}
 					res = assembly.GetType (full_name);
+					Console.WriteLine ("type:  {0}  base:  {1}", res, res.BaseType);
 					if (res != null && !res.IsPublic)
 						res = null;
 				}

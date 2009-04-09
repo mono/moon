@@ -282,7 +282,7 @@ namespace Mono.Xaml
 		// 
 		// Creates a managed dependency object from the xaml.
 		// 
-		public abstract DependencyObject CreateDependencyObjectFromString (string xaml, bool createNamescope);
-		public abstract DependencyObject CreateDependencyObjectFromFile (string path, bool createNamescope);
+		public abstract object CreateObjectFromString (string xaml, bool createNamescope);
+		public abstract object CreateObjectFromFile (string path, bool createNamescope);
 	}
 }

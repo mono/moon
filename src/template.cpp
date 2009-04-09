@@ -84,7 +84,7 @@ FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource, List 
 		if (templateBindingSource)
 			templateBindingSource->ref ();
 		this->templateBindings = templateBindings;
-		DependencyObject *result = loader->CreateFromString (xaml_buffer, true, &dummy);
+		DependencyObject *result = loader->CreateDependencyObjectFromString (xaml_buffer, true, &dummy);
 
 		if (templateBindingSource)
 			templateBindingSource->unref ();

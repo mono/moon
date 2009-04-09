@@ -126,7 +126,7 @@ xap_create_from_file (XamlLoader *loader, const char *filename)
 
 	// Load the AppManifest file
 	char *manifest = g_build_filename (xap_dir, "AppManifest.xaml", NULL);
-	element = loader->CreateFromFile (manifest, false, &element_type);
+	element = loader->CreateDependencyObjectFromFile (manifest, false, &element_type);
 	g_free (manifest);
 
 	if (element_type != Type::DEPLOYMENT)

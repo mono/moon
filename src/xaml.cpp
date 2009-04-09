@@ -113,6 +113,7 @@ static bool handle_markup_in_managed (const char* attr_value);
 static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, DependencyProperty *prop, Value **value);
 static bool element_begins_buffering (const char* element);
 static bool is_managed_kind (Type::Kind kind);
+static bool is_legal_top_level_kind (Type::Kind kind);
 static bool is_static_resource_element (const char *el);
 static Value *lookup_resource_dictionary (ResourceDictionary *rd, const char *name, bool *exists);
 static void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *format, ...);
@@ -307,7 +308,7 @@ class XamlElementInstance : public List::Node {
 		this->value = NULL;
 		this->x_key = NULL;
 		this->x_name = NULL;
-		this->cleanup_value = true;
+		this->cleanup_value = false;
 		
 		children = new List ();
 	}
@@ -356,8 +357,10 @@ class XamlElementInstance : public List::Node {
 
 	virtual Value *GetAsValue ()
 	{
-		if (!value)
+		if (!value) {
 			value = new Value (item);
+			item->ref ();
+		}
 		return value;
 	}
 
@@ -1878,11 +1881,11 @@ xaml_parse_xmlns (const char* xmlns, char** type_name, char** ns, char** assembl
 	g_free (buffer);
 }
 
-DependencyObject *
+Value *
 XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 			    Type::Kind *element_type)
 {
-	DependencyObject *res = NULL;
+	Value *res = NULL;
 	XamlParserInfo *parser_info = NULL;
 	XML_Parser p = NULL;
 	bool first_read = true;
@@ -1956,7 +1959,7 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 	print_tree (parser_info->top_element, 0);
 	
 	if (parser_info->top_element) {
-		res = parser_info->top_element->GetAsDependencyObject ();
+		res = parser_info->top_element->GetAsValue ();
 		if (element_type)
 			*element_type = parser_info->top_element->info->GetKind ();
 
@@ -1964,8 +1967,6 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 			*element_type = Type::INVALID;
 			goto cleanup_and_return;
 		}
-		
-		res->ref ();
 	}
 	
  cleanup_and_return:
@@ -1988,23 +1989,43 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 	return res;
 }
 
-DependencyObject *
+Value *
 XamlLoader::CreateFromString (const char *xaml, bool create_namescope,
 			      Type::Kind *element_type)
 {
 	return HydrateFromString (xaml, NULL, create_namescope, element_type);
 }
 
+DependencyObject *
+value_to_dependency_object (Value *value)
+{
+	if (!value || !value->Is (Type::DEPENDENCY_OBJECT))
+		return NULL;
+	return value->AsDependencyObject ();
+}
+
+DependencyObject *
+XamlLoader::CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type)
+{
+	return value_to_dependency_object (CreateFromFile (xaml, create_namescope, element_type));
+}
+
+DependencyObject *
+XamlLoader::CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type)
+{
+	return value_to_dependency_object (CreateFromString (xaml, create_namescope, element_type));
+}
+
 /**
  * Hydrates an existing DependencyObject (@object) with the contents from the @xaml
  * data
  */
-DependencyObject *
+Value *
 XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS ("utf-8", '|');
 	XamlParserInfo *parser_info = NULL;
-	DependencyObject *res = NULL;
+	Value *res = NULL;
 	char *start = (char*)xaml;
 	char *prepend = NULL;
 	char *append = NULL;
@@ -2090,7 +2111,9 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 	print_tree (parser_info->top_element, 0);
 	
 	if (parser_info->top_element) {
-		res = parser_info->top_element->GetAsDependencyObject ();
+		if (is_legal_top_level_kind (parser_info->top_element->info->GetKind ()))
+			res = parser_info->top_element->GetAsValue ();
+
 		if (element_type)
 			*element_type = parser_info->top_element->info->GetKind ();
 
@@ -2103,8 +2126,6 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 				*element_type = Type::INVALID;
 			goto cleanup_and_return;
 		}
-		if (object == NULL)
-			res->ref ();
 	}
 
  cleanup_and_return:
@@ -2125,33 +2146,34 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 		g_free (prepend);
 	if (append)
 		g_free (append);
+
 	return res;
 }
 
-DependencyObject*
+Value *
 XamlLoader::CreateFromFileWithError (const char *xaml_file, bool create_namescope, Type::Kind *element_type, MoonError *error)
 {
-	DependencyObject *res = CreateFromFile (xaml_file, create_namescope, element_type);
+	Value *res = CreateFromFile (xaml_file, create_namescope, element_type);
 	if (error_args && error_args->error_code != -1) {
 		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
 	}
 	return res;
 }
 
-DependencyObject*
+Value *
 XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error)
 {
-	DependencyObject *res = CreateFromString (xaml, create_namescope, element_type);
+	Value *res = CreateFromString (xaml, create_namescope, element_type);
 	if (error_args && error_args->error_code != -1) {
 		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
 	}
 	return res;
 }
 
-DependencyObject*
+Value *
 XamlLoader::HydrateFromStringWithError (const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type, MoonError *error)
 {
-	DependencyObject *res = HydrateFromString (xaml, object, create_namescope, element_type);
+	Value *res = HydrateFromString (xaml, object, create_namescope, element_type);
 	if (error_args && error_args->error_code != -1) {
 		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
 	}
@@ -2912,6 +2934,14 @@ is_managed_kind (Type::Kind kind)
 	    kind == Type::DEPENDENCYPROPERTY)
 		return true;
 
+	return false;
+}
+
+static
+bool is_legal_top_level_kind (Type::Kind kind)
+{
+	if (kind == Type::MANAGED || kind == Type::OBJECT || Type::Find (kind)->IsSubclassOf (Type::DEPENDENCY_OBJECT))
+		return true;
 	return false;
 }
 

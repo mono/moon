@@ -150,16 +150,19 @@ class XamlLoader {
 
 	bool vm_loaded;
 
-	DependencyObject* CreateFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
-	DependencyObject* CreateFromString  (const char *xaml, bool create_namescope, Type::Kind *element_type);
-	DependencyObject* HydrateFromString (const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type);
+	DependencyObject* CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type);
+	DependencyObject* CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
+
+	Value* CreateFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
+	Value* CreateFromString  (const char *xaml, bool create_namescope, Type::Kind *element_type);
+	Value* HydrateFromString (const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyObject* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
+	Value* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyObject* CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
+	Value* CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
-	DependencyObject* HydrateFromStringWithError (const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
+	Value* HydrateFromStringWithError (const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);
 	
 	XamlLoaderCallbacks callbacks;
 	ParserErrorEventArgs *error_args;
