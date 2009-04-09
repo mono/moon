@@ -634,7 +634,7 @@ Downloader::Completed ()
 
 void
 Downloader::SetStreamFunctions (DownloaderWriteFunc writer,
-				DownloaderNotifySizeFunc downloader_notify_size,
+				DownloaderNotifySizeFunc notify_size,
 				gpointer user_data)
 {
 	LOG_DOWNLOADER ("Downloader::SetStreamFunctions\n");

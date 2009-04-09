@@ -1,5 +1,10 @@
 2009-04-08  Geoff Norton  <gnorton@novell.com>
 
+	* downloader.cpp: Ensure that when someone subscribes to NotifySize
+	they actually will get notified of the size.
+
+2009-04-08  Geoff Norton  <gnorton@novell.com>
+
 	* glyphs.cpp:  Ensure we dont pass an unitialized pointer to 
 	TextFontDescription::SetFilename
 
