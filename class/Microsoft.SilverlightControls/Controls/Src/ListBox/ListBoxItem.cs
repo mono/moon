@@ -64,14 +64,14 @@ namespace System.Windows.Controls
         /// </summary> 
         internal ListBox ParentListBox { get; set; }
 
-	internal bool IsFocused { get; set; }
+        internal bool IsFocused { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the ListBoxItem class. 
         /// </summary> 
         public ListBoxItem()
         { 
-	    DefaultStyleKey = typeof (ListBoxItem);
+        DefaultStyleKey = typeof (ListBoxItem);
 #if WPF
             KeyboardNavigation.SetDirectionalNavigation(this, KeyboardNavigationMode.Once);
             KeyboardNavigation.SetTabNavigation(this, KeyboardNavigationMode.Local); 
@@ -90,7 +90,7 @@ namespace System.Windows.Controls
         {
             base.OnApplyTemplate();
 
-	    // anything else here?
+        // anything else here?
         } 
 
         /// <summary>
@@ -138,13 +138,13 @@ namespace System.Windows.Controls
         /// <param name="e">The event data.</param>
         protected virtual void OnGotFocus(RoutedEventArgs e) 
         {
-		base.OnGotFocus(e);
-		IsFocused = true;
-		ChangeVisualState ();
+            base.OnGotFocus(e);
+            IsFocused = true;
+            ChangeVisualState ();
 
-		if (null != ParentListBox) {
-			ParentListBox.NotifyListItemGotFocus(this);
-		} 
+            if (null != ParentListBox) {
+                ParentListBox.NotifyListItemGotFocus(this);
+            } 
         }
 
         /// <summary> 
@@ -153,12 +153,12 @@ namespace System.Windows.Controls
         /// <param name="e">The event data.</param> 
         protected virtual void OnLostFocus(RoutedEventArgs e) 
         {
-		base.OnLostFocus (e);
-		IsFocused = false;
-		ChangeVisualState ();
-		if (null != ParentListBox) {
-			ParentListBox.NotifyListItemLostFocus(this); 
-		}
+            base.OnLostFocus (e);
+            IsFocused = false;
+            ChangeVisualState ();
+            if (null != ParentListBox) {
+                ParentListBox.NotifyListItemLostFocus(this); 
+            }
         }
  
         /// <summary>
@@ -180,18 +180,18 @@ namespace System.Windows.Controls
         /// </summary>
         internal void ChangeVisualState()
         {
-		if (!IsEnabled) {
-			VisualStateManager.GoToState (this, "Disabled", true);
-		}
-		else if (IsSelected) {
-			VisualStateManager.GoToState (this, "Selected", true);
-		}
-		else if (IsMouseOver) {
-			VisualStateManager.GoToState (this, "MouseOver", true);
-		}
-		else {
-			VisualStateManager.GoToState (this, "Normal", true);
-		}
-	}
+            if (!IsEnabled) {
+                VisualStateManager.GoToState (this, "Disabled", true);
+            }
+            else if (IsSelected) {
+                VisualStateManager.GoToState (this, "Selected", true);
+            }
+            else if (IsMouseOver) {
+                VisualStateManager.GoToState (this, "MouseOver", true);
+            }
+            else {
+                VisualStateManager.GoToState (this, "Normal", true);
+            }
+        }
     }
 }
