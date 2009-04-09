@@ -35,11 +35,122 @@ using System.Windows.Controls;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using System.Windows.Shapes;
+using System.Windows.Media;
+using Microsoft.Silverlight.Testing;
+using System.Windows.Controls.Primitives;
+
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public partial class ItemsControlTest {
+	public partial class ItemsControlTest : SilverlightTest {
 
+		[TestMethod]
+		[Asynchronous]
+		public void AfterRender ()
+		{
+			ItemsControl c = new ItemsControl ();
+			ListBoxItem item = new ListBoxItem {
+				Content = new Rectangle { Fill = new SolidColorBrush (Colors.Black), Width = 20, Height = 20 }
+			};
+			c.Items.Add (item);
+			CreateAsyncTest (c, () => {
+				ItemsPresenter itemsPresenter = (ItemsPresenter) VisualTreeHelper.GetChild (c, 0);
+				Assert.IsNotNull (itemsPresenter, "#2");
+
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (itemsPresenter), "#3");
+				StackPanel stackPanel = (StackPanel) VisualTreeHelper.GetChild (itemsPresenter, 0);
+				Assert.IsNotNull (stackPanel, "#4");
+
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (stackPanel), "#5");
+				Assert.AreEqual (item, VisualTreeHelper.GetChild (stackPanel, 0), "#6");
+
+
+				Grid grid = (Grid) VisualTreeHelper.GetChild (item, 0);
+				Assert.IsNotNull (grid, "#7");
+
+				Assert.AreEqual (4, VisualTreeHelper.GetChildrenCount (grid), "#8");
+				Assert.IsTrue (grid.Children [0] is Rectangle, "#10");
+				Assert.IsTrue (grid.Children [1] is Rectangle, "#11");
+				Assert.IsTrue (grid.Children [2] is ContentPresenter, "#12");
+				Assert.IsTrue (grid.Children [3] is Rectangle, "#13");
+
+				Assert.AreEqual (item.Content, VisualTreeHelper.GetChild (grid.Children[2], 0), "#14");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void AfterRender1 ()
+		{
+			ItemsControl c = new ItemsControl ();
+			TestPanel.Children.Add (c);
+			Enqueue (() => {
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (c), "#1");
+				ItemsPresenter itemsPresenter = (ItemsPresenter) VisualTreeHelper.GetChild (c, 0);
+				Assert.IsNotNull (itemsPresenter, "#2");
+
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (itemsPresenter), "#3");
+				StackPanel stackPanel = (StackPanel) VisualTreeHelper.GetChild (itemsPresenter, 0);
+				Assert.IsNotNull (stackPanel, "#4");
+
+				Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (stackPanel), "#5");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void AfterRender2 ()
+		{
+			ItemsControl c = new ItemsControl ();
+			ListBoxItem item = new ListBoxItem {
+				Content = new Rectangle { Fill = new SolidColorBrush (Colors.Black), Width = 20, Height = 20 }
+			};
+			TestPanel.Children.Add (c);
+			c.Items.Add (item);
+			Enqueue (() => {
+				ContentPresenter presenter = (ContentPresenter) VisualTreeHelper.GetParent ((Rectangle) item.Content);
+				Assert.IsNotNull (presenter, "#1");
+
+				Grid grid = (Grid) VisualTreeHelper.GetParent (presenter);
+				Assert.IsNotNull (grid, "#2");
+
+				ListBoxItem gitem = (ListBoxItem) VisualTreeHelper.GetParent (grid);
+				Assert.IsNotNull (gitem, "#3");
+
+				StackPanel panel = (StackPanel) VisualTreeHelper.GetParent (gitem);
+				Assert.IsNotNull (panel, "#4");
+
+				ItemsPresenter itempresenter = (ItemsPresenter) VisualTreeHelper.GetParent (panel);
+				Assert.IsNotNull (itempresenter, "#5");
+
+				Assert.AreEqual (c, VisualTreeHelper.GetParent (itempresenter), "#6");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void BeforeRender ()
+		{
+			bool loaded = false;
+			ItemsControl c = new ItemsControl ();
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (c), "#1");
+			c.Loaded += delegate { loaded = true; };
+			
+			ListBoxItem item = new ListBoxItem {
+				Content = new Rectangle { Fill = new SolidColorBrush (Colors.Black), Width = 20, Height = 20 }
+			};
+			c.Items.Add (item);
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (c), "#2");
+
+			TestPanel.Children.Add (c);
+			Assert.IsFalse (loaded, "#3");
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (c), "#4");
+		}
+		
 		[TestMethod]
 		public void DefaultValues ()
 		{
