@@ -29,6 +29,8 @@
 using System;
 using System.IO;
 
+using Mono;
+
 namespace System.Windows.Documents {
 	public class FontSource {
 		internal StreamWrapper wrapper;
