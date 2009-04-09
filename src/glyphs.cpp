@@ -476,7 +476,7 @@ Glyphs::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer 
 void
 Glyphs::DownloaderComplete ()
 {
-	const char *path, *guid;
+	const char *path, *guid = NULL;
 	char *filename;
 	size_t len;
 	Uri *uri;
@@ -485,7 +485,6 @@ Glyphs::DownloaderComplete ()
 	if (!(filename = downloader->GetDownloadedFilename (NULL)))
 		return;
 	
-	guid = NULL;
 	uri = downloader->GetUri ();
 	path = uri->GetPath ();
 	
