@@ -485,6 +485,7 @@ Glyphs::DownloaderComplete ()
 	if (!(filename = downloader->GetDownloadedFilename (NULL)))
 		return;
 	
+	guid = NULL;
 	uri = downloader->GetUri ();
 	path = uri->GetPath ();
 	
