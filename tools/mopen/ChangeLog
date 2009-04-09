@@ -1,3 +1,7 @@
+2009-04-09  Jackson Harper  <jackson@ximian.com>
+
+	* mopen1.cpp: New method name.
+
 2009-04-03  Aaron Bockover  <abockover@novell.com>
 
 	* mopen.cs: Updated to use the new Moonlight.Gtk APIs
