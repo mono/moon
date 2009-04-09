@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 474 methods needs to be decorated.
+# 476 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -108,6 +108,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::surface_is_loaded(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::surface_is_user_initiated_event(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::surface_is_version_supported(System.String)
@@ -1010,6 +1013,9 @@
 +SC-M: System.IntPtr System.Windows.Controls.OpenFileDialog::open_file_dialog_show(System.String,System.Boolean,System.String,System.Int32)
 
 # p/invoke declaration
++SC-M: System.IntPtr System.Windows.Controls.SaveFileDialog::save_file_dialog_show(System.String,System.String,System.Int32)
+
+# p/invoke declaration
 +SC-M: System.String Mono.NativeMethods::xaml_get_element_key(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
@@ -1091,7 +1097,7 @@
 +SC-M: System.Void Mono.NativeMethods::downloader_abort(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_notify_error(System.IntPtr,System.String)
++SC-M: System.Void Mono.NativeMethods::downloader_notify_failed(System.IntPtr,System.String)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::downloader_notify_finished(System.IntPtr,System.String)
@@ -1124,7 +1130,7 @@
 +SC-M: System.Void Mono.NativeMethods::downloader_send(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_set_functions(Mono.DownloaderCreateStateFunc,Mono.DownloaderDestroyStateFunc,Mono.DownloaderOpenFunc,Mono.DownloaderSendFunc,Mono.DownloaderAbortFunc,Mono.DownloaderHeaderFunc,Mono.DownloaderBodyFunc,Mono.DownloaderCreateWebRequestFunc)
++SC-M: System.Void Mono.NativeMethods::downloader_set_functions(Mono.DownloaderCreateStateFunc,Mono.DownloaderDestroyStateFunc,Mono.DownloaderOpenFunc,Mono.DownloaderSendFunc,Mono.DownloaderAbortFunc,Mono.DownloaderHeaderFunc,Mono.DownloaderBodyFunc,Mono.DownloaderCreateWebRequestFunc,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::downloader_want_events(System.IntPtr,Mono.NativeMethods/UpdateFunction,System.IntPtr)

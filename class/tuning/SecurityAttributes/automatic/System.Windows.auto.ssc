@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 455 methods
+# 457 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -142,6 +142,8 @@
 +SSC-M: System.Void System.Windows.Controls.RowDefinition::.ctor()
 +SSC-M: System.Double System.Windows.Controls.RowDefinition::get_ActualHeight()
 +SSC-M: System.Void System.Windows.Controls.RowDefinitionCollection::.ctor()
++SSC-M: System.IO.Stream System.Windows.Controls.SaveFileDialog::OpenFile()
++SSC-M: System.Nullable`1<System.Boolean> System.Windows.Controls.SaveFileDialog::ShowDialog()
 +SSC-M: System.Void System.Windows.Controls.TextBlock::.ctor()
 +SSC-M: System.Void System.Windows.Controls.TextBox::.ctor()
 +SSC-M: System.Void System.Windows.Controls.TextBox::Select(System.Int32,System.Int32)

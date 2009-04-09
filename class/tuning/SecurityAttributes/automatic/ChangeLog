@@ -1,3 +1,12 @@
+2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.auto.ssc: Remove Socket.Dispose (not needed anymore)
+	* System.Windows.auto.sc: Add surface_is_user_initiated_event, 
+	rename some downloaders p/invokes and fix signature for
+	downloader_set_functions
+	* System.Windows.auto.ssc: Add entries for SaveFileDialog OpenFile
+	and ShowDialog.
+
 2009-04-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc, System.Windows.auto.ssc: Add new 
