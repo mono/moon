@@ -36,6 +36,7 @@ using Mono.Moonlight.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
+using System.Windows.Shapes;
 
 namespace MoonTest.System.Windows {
 
@@ -149,6 +150,28 @@ namespace MoonTest.System.Windows {
 				f.SetValue (FrameworkElement.LanguageProperty, null);
 			}, "#2");
 		}
+		
+		
+		[TestMethod]
+		[MoonlightBug]
+		public void Loaded_itemscontrol ()
+		{
+			bool loaded = false;
+			ItemsControl c = new ItemsControl ();
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (c), "#1");
+			c.Loaded += delegate { loaded = true; };
+			
+			ListBoxItem item = new ListBoxItem {
+				Content = new Rectangle { Fill = new SolidColorBrush (Colors.Black), Width = 20, Height = 20 }
+			};
+			c.Items.Add (item);
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (c), "#2");
+
+			TestPanel.Children.Add (c);
+			Assert.IsFalse (loaded, "#3");
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (c), "#4");
+		}
+		
 
 		[TestMethod]
 		[Asynchronous]

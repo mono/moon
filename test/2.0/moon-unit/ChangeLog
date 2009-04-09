@@ -1,5 +1,12 @@
 2009-04-09  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/FrameworkElementTest.cs:
+	* System.Windows.Controls/ItemsControlTest.cs: Move the
+	  BeforeRender test alongside the rest of the Loaded_* tests
+	  as it's hitting a loaded bug.
+
+2009-04-09  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemsControlTest.cs: Add some tests
 	  to ensure the visual tree is correct for ItemsControl.
 

@@ -132,26 +132,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
-		public void BeforeRender ()
-		{
-			bool loaded = false;
-			ItemsControl c = new ItemsControl ();
-			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (c), "#1");
-			c.Loaded += delegate { loaded = true; };
-			
-			ListBoxItem item = new ListBoxItem {
-				Content = new Rectangle { Fill = new SolidColorBrush (Colors.Black), Width = 20, Height = 20 }
-			};
-			c.Items.Add (item);
-			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (c), "#2");
-
-			TestPanel.Children.Add (c);
-			Assert.IsFalse (loaded, "#3");
-			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (c), "#4");
-		}
-		
-		[TestMethod]
 		public void DefaultValues ()
 		{
 			ItemsControl ic = new ItemsControl ();
