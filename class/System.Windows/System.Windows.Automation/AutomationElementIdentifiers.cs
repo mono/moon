@@ -16,27 +16,27 @@ namespace System.Windows.Automation
 {
 	public static class AutomationElementIdentifiers
 	{		
-		public static readonly AutomationProperty AcceleratorKeyProperty /* TODO = ? */ ;
-		public static readonly AutomationProperty AccessKeyProperty /* TODO = ? */;
-		public static readonly AutomationProperty AutomationIdProperty /* TODO = ? */;
-		public static readonly AutomationProperty BoundingRectangleProperty /* TODO = ? */;
-		public static readonly AutomationProperty ClassNameProperty /* TODO = ? */;
-		public static readonly AutomationProperty ClickablePointProperty /* TODO = ? */;
-		public static readonly AutomationProperty ControlTypeProperty /* TODO = ? */;
-		public static readonly AutomationProperty HasKeyboardFocusProperty /* TODO = ? */;
-		public static readonly AutomationProperty HelpTextProperty /* TODO = ? */;
-		public static readonly AutomationProperty IsContentElementProperty /* TODO = ? */;
-		public static readonly AutomationProperty IsControlElementProperty /* TODO = ? */;
-		public static readonly AutomationProperty IsEnabledProperty /* TODO = ? */;
-		public static readonly AutomationProperty IsKeyboardFocusableProperty /* TODO = ? */;
-		public static readonly AutomationProperty IsOffscreenProperty /* TODO = ? */;
-		public static readonly AutomationProperty IsPasswordProperty /* TODO = ? */;
-		public static readonly AutomationProperty IsRequiredForFormProperty /* TODO = ? */;
-		public static readonly AutomationProperty ItemStatusProperty /* TODO = ? */;
-		public static readonly AutomationProperty ItemTypeProperty /* TODO = ? */;
-		public static readonly AutomationProperty LabeledByProperty /* TODO = ? */;
-		public static readonly AutomationProperty LocalizedControlTypeProperty /* TODO = ? */;
-		public static readonly AutomationProperty NameProperty /* TODO = ? */;
-		public static readonly AutomationProperty OrientationProperty /* TODO = ? */;
+		public static readonly AutomationProperty AcceleratorKeyProperty = new AutomationProperty ();
+		public static readonly AutomationProperty AccessKeyProperty = new AutomationProperty ();
+		public static readonly AutomationProperty AutomationIdProperty = new AutomationProperty ();
+		public static readonly AutomationProperty BoundingRectangleProperty  = new AutomationProperty ();
+		public static readonly AutomationProperty ClassNameProperty = new AutomationProperty ();
+		public static readonly AutomationProperty ClickablePointProperty  = new AutomationProperty ();
+		public static readonly AutomationProperty ControlTypeProperty = new AutomationProperty ();
+		public static readonly AutomationProperty HasKeyboardFocusProperty = new AutomationProperty ();
+		public static readonly AutomationProperty HelpTextProperty = new AutomationProperty ();
+		public static readonly AutomationProperty IsContentElementProperty = new AutomationProperty ();
+		public static readonly AutomationProperty IsControlElementProperty = new AutomationProperty ();
+		public static readonly AutomationProperty IsEnabledProperty = new AutomationProperty ();
+		public static readonly AutomationProperty IsKeyboardFocusableProperty = new AutomationProperty ();
+		public static readonly AutomationProperty IsOffscreenProperty = new AutomationProperty ();
+		public static readonly AutomationProperty IsPasswordProperty = new AutomationProperty ();
+		public static readonly AutomationProperty IsRequiredForFormProperty = new AutomationProperty ();
+		public static readonly AutomationProperty ItemStatusProperty = new AutomationProperty ();
+		public static readonly AutomationProperty ItemTypeProperty = new AutomationProperty ();
+		public static readonly AutomationProperty LabeledByProperty = new AutomationProperty ();
+		public static readonly AutomationProperty LocalizedControlTypeProperty = new AutomationProperty ();
+		public static readonly AutomationProperty NameProperty = new AutomationProperty ();
+		public static readonly AutomationProperty OrientationProperty = new AutomationProperty ();
 	}
 }

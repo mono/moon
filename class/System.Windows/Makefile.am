@@ -76,16 +76,29 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation/AutomationElementIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/AutomationProperties.cs		\
 	$(srcdir)/System.Windows.Automation/AutomationProperty.cs		\
+	$(srcdir)/System.Windows.Automation/DockPatternIdentifiers.cs			\
 	$(srcdir)/System.Windows.Automation/DockPosition.cs			\
 	$(srcdir)/System.Windows.Automation/ElementNotEnabledException.cs		\
 	$(srcdir)/System.Windows.Automation/ElementNotAvailableException.cs		\
 	$(srcdir)/System.Windows.Automation/ExpandCollapseState.cs		\
+	$(srcdir)/System.Windows.Automation/ExpandCollapsePatternIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/GridItemPatternIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/GridPatternIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/MultipleViewPatternIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/RangeValuePatternIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/RowOrColumnMajor.cs			\
 	$(srcdir)/System.Windows.Automation/ScrollAmount.cs			\
-	$(srcdir)/System.Windows.Automation/SelectionItemPatternIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/ScrollPatternIdentifiers.cs				\
+	$(srcdir)/System.Windows.Automation/SelectionItemPatternIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/SelectionPatternIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/TableItemPatternIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/TablePatternIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/TogglePatternIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/ToggleState.cs			\
+	$(srcdir)/System.Windows.Automation/TransformPatternIdentifiers.cs		\
+	$(srcdir)/System.Windows.Automation/ValuePatternIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/WindowInteractionState.cs		\
+	$(srcdir)/System.Windows.Automation/WindowPatternIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/WindowVisualState.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationEvents.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationOrientation.cs		\

@@ -1,3 +1,33 @@
+2009-04-09  Mario Carrion  <mcarrion@novell.com>
+
+	* Makefile.am: Automation files added: DockPatternIdentifiers.cs,
+	  ExpandCollapsePatternIdentifiers.cs, GridItemPatternIdentifiers.cs,
+	  GridPatternIdentifiers.cs, MultipleViewPatternIdentifiers.cs,
+	  RangeValuePatternIdentifiers.cs, TransformPatternIdentifiers.cs,
+	  SelectionPatternIdentifiers.cs, TableItemPatternIdentifiers.cs,
+	  TablePatternIdentifiers.cs, TogglePatternIdentifiers.cs,
+	  ValuePatternIdentifiers.cs and WindowPatternIdentifiers.cs.
+	* System.Windows.Automation/AutomationProperties.cs: Attached
+	  properties implemented.
+	* System.Windows.Automation/DockPatternIdentifiers.cs,
+	  System.Windows.Automation/GridPatternIdentifiers.cs, 
+	  System.Windows.Automation/GridItemPatternIdentifiers.cs, 
+	  System.Windows.Automation/ExpandCollapsePatternIdentifiers.cs, 
+	  System.Windows.Automation/RangeValuePatternIdentifiers.cs, 
+	  System.Windows.Automation/MultipleViewPatternIdentifiers.cs, 
+	  System.Windows.Automation/TableItemPatternIdentifiers.cs, 
+	  System.Windows.Automation/SelectionPatternIdentifiers.cs, 
+	  System.Windows.Automation/TablePatternIdentifiers.cs, 
+	  System.Windows.Automation/TogglePatternIdentifiers.cs, 
+	  System.Windows.Automation/TransformPatternIdentifiers.cs, 
+	  System.Windows.Automation/ValuePatternIdentifiers.cs, 
+	  System.Windows.Automation/WindowPatternIdentifiers.cs: 
+	  New files.
+	* System.Windows.Automation/SelectionItemPatternIdentifiers.cs, 
+	  System.Windows.Automation/ScrollPatternIdentifiers.cs, 
+	  System.Windows.Automation/AutomationElementIdentifiers.cs: static
+	  fields implemented.
+
 2009-04-08  Chris Toshok  <toshok@ximian.com>
 
 	* Microsoft.Internal/TextBoxView.cs: this shouldn't be public.

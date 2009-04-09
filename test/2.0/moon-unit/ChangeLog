@@ -3,6 +3,39 @@
 	* System.Windows.Controls/ScrollViewerTest.cs: Added test to
 	  make sure scrollviewer has the right visual tree.
 
+2009-04-09  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: New files added.
+	* System.Windows.Automation/WindowVisualStateTest.cs, 
+	  System.Windows.Automation/RangeValuePatternIdentifiersTest.cs, 
+	  System.Windows.Automation/TogglePatternIdentifiersTest.cs, 
+	  System.Windows.Automation/WindowPatternIdentifiersTest.cs,
+	  System.Windows.Automation/WindowInteractionStateTest.cs, 
+	  System.Windows.Automation/TablePatternIdentifiersTest.cs, 
+	  System.Windows.Automation/ValuePatternIdentifiersTest.cs, 
+	  System.Windows.Automation/TransformPatternIdentifiersTest.cs, 
+	  System.Windows.Automation/ToggleStateTest.cs, 
+	  System.Windows.Automation/GridItemPatternIdentifiersTest.cs, 
+	  System.Windows.Automation/TableItemPatternIdentifiersTest.cs, 
+	  System.Windows.Automation/SelectionPatternIdentifiersTest.cs, 
+	  System.Windows.Automation/SelectionItemPatternIdentifiersTest.cs, 
+	  System.Windows.Automation/ScrollPatternIdentifiersTest.cs, 
+	  System.Windows.Automation/ScrollAmountTest.cs, 
+	  System.Windows.Automation/RowOrColumnMajorTest.cs, 
+	  System.Windows.Automation/GridPatternIdentifiersTest.cs, 
+	  System.Windows.Automation/MultipleViewPatternIdentifiersTest.cs, 
+	  System.Windows.Automation/ExpandCollapsePatternIdentifiersTest.cs, 
+	  System.Windows.Automation/ExpandCollapseStateTest.cs, 
+	  System.Windows.Automation/DockPositionTest.cs, 
+	  System.Windows.Automation/DockPatternIdentifiersTest.cs, 
+	  System.Windows.Automation/AutomationPropertiesTest.cs, 
+	  System.Windows.Automation/AutomationElementIdentifiersTest.cs, 
+	  System.Windows.Automation.Peers/AutomationEventsTest.cs, 
+	  System.Windows.Automation.Peers/AutomationOrientationTest.cs, 
+	  System.Windows.Automation.Peers/PatternInterfaceTest.cs, 
+	  System.Windows.Automation.Peers/AutomationControlTypeTest.cs: Test
+	  files added.
+
 2009-04-09  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ListBoxTest.cs: Add tests to listbox

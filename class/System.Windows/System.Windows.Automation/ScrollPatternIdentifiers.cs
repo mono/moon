@@ -16,12 +16,12 @@ namespace System.Windows.Automation
 {
 	public static class ScrollPatternIdentifiers
 	{
-		public static readonly AutomationProperty HorizontallyScrollableProperty /* TODO = ? */ ;
-		public static readonly AutomationProperty HorizontalScrollPercentProperty /* TODO = ? */ ;
-		public static readonly AutomationProperty HorizontalViewSizeProperty /* TODO = ? */ ;
-		public static readonly AutomationProperty VerticallyScrollableProperty /* TODO = ? */ ;
-		public static readonly AutomationProperty VerticalScrollPercentProperty /* TODO = ? */ ;
-		public static readonly AutomationProperty VerticalViewSizeProperty /* TODO = ? */ ;
+		public static readonly AutomationProperty HorizontallyScrollableProperty = new AutomationProperty ();
+		public static readonly AutomationProperty HorizontalScrollPercentProperty = new AutomationProperty ();
+		public static readonly AutomationProperty HorizontalViewSizeProperty = new AutomationProperty ();
+		public static readonly AutomationProperty VerticallyScrollableProperty = new AutomationProperty ();
+		public static readonly AutomationProperty VerticalScrollPercentProperty = new AutomationProperty ();
+		public static readonly AutomationProperty VerticalViewSizeProperty = new AutomationProperty ();
 		public const double NoScroll = -1.0;
 	}
 }

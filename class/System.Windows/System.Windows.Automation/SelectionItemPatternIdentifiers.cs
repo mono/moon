@@ -16,7 +16,7 @@ namespace System.Windows.Automation
 {
 	public static class SelectionItemPatternIdentifiers
 	{
-		public static readonly AutomationProperty IsSelectedProperty /* = ? TODO */;
-		public static readonly AutomationProperty SelectionContainerProperty  /* = ? TODO */;
+		public static readonly AutomationProperty IsSelectedProperty = new AutomationProperty ();
+		public static readonly AutomationProperty SelectionContainerProperty  = new AutomationProperty ();
 	}
 }
