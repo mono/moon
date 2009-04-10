@@ -116,6 +116,7 @@ void
 Glyphs::CleanupDownloader ()
 {
 	if (downloader) {
+		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
 		downloader->Abort ();
 		downloader->unref ();
 		downloader = NULL;

@@ -174,6 +174,7 @@ class TextBlock : public FrameworkElement {
 	TextFontDescription *font;
 	Downloader *downloader;
 	TextLayout *layout;
+	//char *resource;
 	
 	double actual_height;
 	double actual_width;
@@ -190,9 +191,12 @@ class TextBlock : public FrameworkElement {
 	char *GetTextInternal (InlineCollection *inlines);
 	bool SetTextInternal (const char *text);
 	
+	//void SetFontSource (const char *resource);
+	
 	void UpdateLayoutAttributes ();
 	void UpdateFontDescriptions ();
 	
+	void CleanupDownloader ();
 	void DownloaderComplete ();
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);

@@ -1,3 +1,14 @@
+2009-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (CleanupDownloader): New helper method.
+	(SetFontSource): Use CleanupDownloader() and also clear the
+	FontSourceProperty since this will override that source.
+	(OnPropertyChanged): Parse the FontFamily name.
+	(DownloaderComplete): Use SetValue() correctly.
+
+	* glyphs.cpp (CleanupDownloader): Remove the CompletedEvent
+	handler.
+
 2009-04-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security.c: Move #if MONO_ENABLE_CORECLR_SECURITY to remove

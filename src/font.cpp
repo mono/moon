@@ -1010,7 +1010,7 @@ FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path
 		family = parse_font_family ((const char *) families[i]);
 		g_ptr_array_add (array, family);
 		
-		// FIXME: which style info should take prioriy?
+		// FIXME: which style info should take priority?
 		if (family->weight == FC_WEIGHT_NORMAL)
 			family->weight = style.weight;
 		if (family->width == FC_WIDTH_NORMAL)
