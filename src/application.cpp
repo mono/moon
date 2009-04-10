@@ -15,13 +15,19 @@
 #include <config.h>
 #endif
 
+#include <glib.h>
+#include <glib/gstdio.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 
 #include "application.h"
 #include "runtime.h"
 #include "deployment.h"
-#unclude "utils.h"
+#include "utils.h"
 #include "uri.h"
 
 
@@ -97,29 +103,28 @@ Application::GetResource (const char *name, int *size)
 char *
 Application::GetResourceAsPath (const char *name)
 {
-	char *resource, *dirname, *path, *filename;
-	const char *sep;
+	char *dirname, *path, *filename;
 	unzFile zipfile;
 	struct stat st;
 	gpointer buf;
-	int rv, fd;
 	int size;
+	int fd;
 	
 	if (!get_resource_cb || !name || !name[0])
 		return NULL;
 	
 	if (!resource_root) {
 		// create a root temp directory for our resource files
-		name = g_build_filename (g_get_tmp_dir (), "moonlight-app.XXXXXX", NULL);
-		if (!(resource_root = CreateTempDir (name))) {
-			g_free (name);
+		path = g_build_filename (g_get_tmp_dir (), "moonlight-app.XXXXXX", NULL);
+		if (!(resource_root = CreateTempDir (path))) {
+			g_free (path);
 			return NULL;
 		}
 	}
 	
 	// construct the path name for this resource
 	filename = g_strdup (name);
-	CanonicalizeFilename (filename);
+	CanonicalizeFilename (filename, -1);
 	path = g_build_filename (resource_root, filename, NULL);
 	g_free (filename);
 	
@@ -151,7 +156,7 @@ Application::GetResourceAsPath (const char *name)
 		return NULL;
 	}
 	
-	if (write_all (fd, buf, (size_t) size) == -1) {
+	if (write_all (fd, (char *) buf, (size_t) size) == -1) {
 		close (fd);
 		g_unlink (path);
 		g_free (path);
