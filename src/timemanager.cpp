@@ -162,6 +162,176 @@ TimeManager::InvokeTickCall ()
 	return true;
 }
 
+guint
+TimeManager::AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpointer tick_data)
+{
+	guint rv = g_timeout_add_full (priority, ms_interval, func, tick_data, NULL);
+	registered_timeouts = g_list_prepend (registered_timeouts, GUINT_TO_POINTER (rv));
+	return rv;
+}
+
+void
+TimeManager::RemoveTimeout (guint timeout_id)
+{
+	g_source_remove (timeout_id);
+	registered_timeouts = g_list_remove_all (registered_timeouts, GUINT_TO_POINTER (timeout_id));
+}
+
+void
+TimeManager::RemoveAllRegisteredTimeouts ()
+{
+	GList *t;
+	for (t = registered_timeouts; t; t = t->next)
+		g_source_remove (GPOINTER_TO_UINT (t->data));
+
+	g_list_free (registered_timeouts);
+	registered_timeouts = NULL;
+}
+
+void
+TimeManager::AddTickCall (TickCallHandler func, EventObject *tick_data)
+{
+	tick_calls.Push (new TickCall (func, tick_data));
+
+#if PUT_TIME_MANAGER_TO_SLEEP
+	flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
+	if (!source_tick_pending) {
+		source_tick_pending = true;
+		source->SetTimerFrequency (0);
+		source->Start();
+	}
+#endif
+}
+
+void
+TimeManager::RemoveTickCall (TickCallHandler func)
+{
+	tick_calls.Lock ();
+	List::Node * call = tick_calls.LinkedList ()->Find (find_tick_call, (void*)func);
+	if (call)
+		tick_calls.LinkedList ()->Remove (call);
+	tick_calls.Unlock ();
+}
+
+bool
+find_tick_call (List::Node *node, void *data)
+{
+	if (((TickCall*)node)->func == data)
+		return true;
+	return false;
+}
+
+void
+TimeManager::NeedRedraw ()
+{
+#if PUT_TIME_MANAGER_TO_SLEEP
+	flags = (TimeManagerOp)(flags | TIME_MANAGER_RENDER);
+	if (!source_tick_pending) {
+		source_tick_pending = true;
+		source->SetTimerFrequency (0);
+		source->Start();
+	}
+#endif
+}
+
+void
+TimeManager::NeedClockTick ()
+{
+#if PUT_TIME_MANAGER_TO_SLEEP
+	flags = (TimeManagerOp)(flags | TIME_MANAGER_UPDATE_CLOCKS);
+	if (!source_tick_pending) {
+		source_tick_pending = true;
+		source->SetTimerFrequency (0);
+		source->Start();
+	}
+#endif
+}
+
+
+static void
+spaces (int n)
+{
+	while (n--) putchar (' ');
+
+}
+
+static void
+output_clock (Clock *clock, int level)
+{
+	spaces (level);
+	printf (clock->Is(Type::CLOCKGROUP) ? "ClockGroup " : "Clock ");
+	printf ("(%p) ", clock);
+	if (clock->GetName ()) {
+		printf ("'%s' ", clock->GetName());
+	}
+
+	// getting the natural duration here upsets the clock, so let's not
+	// printf ("%lld / %lld (%.2f) ", clock->GetCurrentTime(), clock->GetNaturalDuration().GetTimeSpan(), clock->GetCurrentProgress());
+	printf ("%lld (%.2f) ", clock->GetCurrentTime(), clock->GetCurrentProgress());
+
+	printf ("%lld ", clock->GetBeginTime());
+
+	switch (clock->GetClockState()) {
+	case Clock::Active:
+		printf ("A");
+		break;
+	case Clock::Filling:
+		printf ("F");
+		break;
+	case Clock::Stopped:
+		printf ("S");
+		break;
+	}
+
+	if (clock->GetIsPaused())
+		printf (" (paused)");
+
+	if (clock->GetIsReversed())
+		printf (" (rev)");
+
+	printf ("\n");
+
+	if (clock->Is(Type::CLOCKGROUP)) {
+		ClockGroup *cg = (ClockGroup*)clock;
+		level += 2;
+		for (GList *l = cg->child_clocks; l; l = l->next) {
+// 			if (((Clock*)l->data)->GetClockState () != Clock::Stopped)
+				output_clock ((Clock*)l->data, level);
+		}
+	}
+}
+
+void
+TimeManager::ListClocks()
+{
+	printf ("Currently registered clocks:\n");
+	printf ("============================\n");
+
+	output_clock (root_clock, 2);
+
+	printf ("============================\n");
+}
+
+guint
+time_manager_add_timeout (TimeManager *manager, guint ms_interval, GSourceFunc func, gpointer tick_data)
+{
+	return manager->AddTimeout (G_PRIORITY_DEFAULT, ms_interval, func, tick_data);
+}
+
+void
+time_manager_remove_timeout (TimeManager *manager, guint timeout_id)
+{
+	manager->RemoveTimeout (timeout_id);
+}
+
+void
+time_manager_remove_tick_call (TimeManager *manager, TickCallHandler func)
+{
+	manager->RemoveTickCall (func);
+}
+
+
+#if NOT_ANYMORE
 void
 TimeManager::SourceTick ()
 {
@@ -338,172 +508,53 @@ TimeManager::SourceTick ()
 
 	last_global_time = current_global_time;
 }
-
-guint
-TimeManager::AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpointer tick_data)
-{
-	guint rv = g_timeout_add_full (priority, ms_interval, func, tick_data, NULL);
-	registered_timeouts = g_list_prepend (registered_timeouts, GUINT_TO_POINTER (rv));
-	return rv;
-}
-
+#else
 void
-TimeManager::RemoveTimeout (guint timeout_id)
+TimeManager::SourceTick ()
 {
-	g_source_remove (timeout_id);
-	registered_timeouts = g_list_remove_all (registered_timeouts, GUINT_TO_POINTER (timeout_id));
-}
+	TimeManagerOp current_flags = flags;
 
-void
-TimeManager::RemoveAllRegisteredTimeouts ()
-{
-	GList *t;
-	for (t = registered_timeouts; t; t = t->next)
-		g_source_remove (GPOINTER_TO_UINT (t->data));
-
-	g_list_free (registered_timeouts);
-	registered_timeouts = NULL;
-}
-
-void
-TimeManager::AddTickCall (TickCallHandler func, EventObject *tick_data)
-{
-	tick_calls.Push (new TickCall (func, tick_data));
-
-#if PUT_TIME_MANAGER_TO_SLEEP
-	flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
-	if (!source_tick_pending) {
-		source_tick_pending = true;
-		source->SetTimerFrequency (0);
-		source->Start();
+	if (current_flags & TIME_MANAGER_TICK_CALL) {
+		bool remaining_tick_calls = false;
+		do {
+			remaining_tick_calls = InvokeTickCall ();
+		} while (remaining_tick_calls);
 	}
+
+	if (current_flags & TIME_MANAGER_UPDATE_CLOCKS) {
+		STARTTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
+		current_global_time = source->GetNow();
+		current_global_time_usec = current_global_time / 10;
+
+		bool need_another_tick = root_clock->Tick ();
+		if (need_another_tick)
+			flags = (TimeManagerOp)(flags | TIME_MANAGER_UPDATE_CLOCKS);
+
+	
+		// ... then cause all clocks to raise the events they've queued up
+		root_clock->RaiseAccumulatedEvents ();
+		
+		applier->Apply ();
+		applier->Flush ();
+	
+		root_clock->RaiseAccumulatedCompleted ();
+
+		ENDTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
+	}
+
+	if (current_flags & TIME_MANAGER_UPDATE_INPUT) {
+		STARTTICKTIMER (tick_input, "TimeManager::Tick - Input");
+		Emit (UpdateInputEvent);
+		ENDTICKTIMER (tick_input, "TimeManager::Tick - Input");
+	}
+
+	if (current_flags & TIME_MANAGER_RENDER) {
+		// fprintf (stderr, "rendering\n"); fflush (stderr);
+		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
+		Emit (RenderEvent);
+		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
+	}
+	
+	last_global_time = current_global_time;
+}
 #endif
-}
-
-void
-TimeManager::RemoveTickCall (TickCallHandler func)
-{
-	tick_calls.Lock ();
-	List::Node * call = tick_calls.LinkedList ()->Find (find_tick_call, (void*)func);
-	if (call)
-		tick_calls.LinkedList ()->Remove (call);
-	tick_calls.Unlock ();
-}
-
-bool
-find_tick_call (List::Node *node, void *data)
-{
-	if (((TickCall*)node)->func == data)
-		return true;
-	return false;
-}
-
-void
-TimeManager::NeedRedraw ()
-{
-#if PUT_TIME_MANAGER_TO_SLEEP
-	flags = (TimeManagerOp)(flags | TIME_MANAGER_RENDER);
-	if (!source_tick_pending) {
-		source_tick_pending = true;
-		source->SetTimerFrequency (0);
-		source->Start();
-	}
-#endif
-}
-
-void
-TimeManager::NeedClockTick ()
-{
-#if PUT_TIME_MANAGER_TO_SLEEP
-	flags = (TimeManagerOp)(flags | TIME_MANAGER_UPDATE_CLOCKS);
-	if (!source_tick_pending) {
-		source_tick_pending = true;
-		source->SetTimerFrequency (0);
-		source->Start();
-	}
-#endif
-}
-
-
-static void
-spaces (int n)
-{
-	while (n--) putchar (' ');
-
-}
-
-static void
-output_clock (Clock *clock, int level)
-{
-	spaces (level);
-	printf (clock->Is(Type::CLOCKGROUP) ? "ClockGroup " : "Clock ");
-	printf ("(%p) ", clock);
-	if (clock->GetName ()) {
-		printf ("'%s' ", clock->GetName());
-	}
-
-	// getting the natural duration here upsets the clock, so let's not
-	// printf ("%lld / %lld (%.2f) ", clock->GetCurrentTime(), clock->GetNaturalDuration().GetTimeSpan(), clock->GetCurrentProgress());
-	printf ("%lld (%.2f) ", clock->GetCurrentTime(), clock->GetCurrentProgress());
-
-	printf ("%lld ", clock->GetBeginTime());
-
-	switch (clock->GetClockState()) {
-	case Clock::Active:
-		printf ("A");
-		break;
-	case Clock::Filling:
-		printf ("F");
-		break;
-	case Clock::Stopped:
-		printf ("S");
-		break;
-	}
-
-	if (clock->GetIsPaused())
-		printf (" (paused)");
-
-	if (clock->GetIsReversed())
-		printf (" (rev)");
-
-	printf ("\n");
-
-	if (clock->Is(Type::CLOCKGROUP)) {
-		ClockGroup *cg = (ClockGroup*)clock;
-		level += 2;
-		for (GList *l = cg->child_clocks; l; l = l->next) {
-// 			if (((Clock*)l->data)->GetClockState () != Clock::Stopped)
-				output_clock ((Clock*)l->data, level);
-		}
-	}
-}
-
-void
-TimeManager::ListClocks()
-{
-	printf ("Currently registered clocks:\n");
-	printf ("============================\n");
-
-	output_clock (root_clock, 2);
-
-	printf ("============================\n");
-}
-
-guint
-time_manager_add_timeout (TimeManager *manager, guint ms_interval, GSourceFunc func, gpointer tick_data)
-{
-	return manager->AddTimeout (G_PRIORITY_DEFAULT, ms_interval, func, tick_data);
-}
-
-void
-time_manager_remove_timeout (TimeManager *manager, guint timeout_id)
-{
-	manager->RemoveTimeout (timeout_id);
-}
-
-void
-time_manager_remove_tick_call (TimeManager *manager, TickCallHandler func)
-{
-	manager->RemoveTickCall (func);
-}
-

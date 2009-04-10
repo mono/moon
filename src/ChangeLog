@@ -1,3 +1,28 @@
+2009-04-10  Chris Toshok  <toshok@ximian.com>
+
+	* timemanager.cpp (TimeManager::SourceTick): just for kicks
+	completely rip out the clock smoothing code, and also emit all
+	tick calls (don't worry about how much time we're taking in them).
+	Lastly, emit tick calls *before* rendering.  we need to do this or
+	else the Loaded event won't be posted before we draw (when we
+	delay the loaded event, that is.) which leads to a great many
+	VisualTreeWalker warnings, since Panel::OnLoaded adds the dirty
+	flag for the initial children z-sorting.
+
+	* collection.cpp (VisualTreeWalker::Step): add a special case for
+	collection::count == index == 1, which is what we end up with on
+	uielement's with a subobject.  it won't be a collection child of a
+	panel, so it'll never be z-sorted, but since it's only 1 element
+	it doesn't need to be anyway.
+
+	* canvas.h|.cpp: move OnLoaded, ElementAdded, and ElementRemoved
+	to Panel.  Also, move the ZIndex OnCollectionItemChanged code into
+	panel as well.
+
+	* panel.h|.cpp: remove a couple of unused
+	decls (ChildAdded/ChildRemoved) and add the stuff we moved out of
+	canvas.h|cpp here.
+
 2009-04-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (OpenFaceByIndex): New helper function split out from

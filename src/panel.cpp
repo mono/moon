@@ -261,3 +261,57 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 		FrameworkElement::OnCollectionChanged (col, args);
 	}
 }
+
+
+void
+Panel::OnLoaded ()
+{
+	FrameworkElement::OnLoaded ();
+
+	if (GetSurface ()) {
+		// queue a resort based on ZIndex
+		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+	}
+}
+
+void
+Panel::ElementAdded (UIElement *item)
+{
+	FrameworkElement::ElementAdded (item);
+	
+	if (GetSurface ()) {
+		// queue a resort based on ZIndex
+		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+	}
+}
+
+void
+Panel::ElementRemoved (UIElement *item)
+{
+	FrameworkElement::ElementRemoved (item);
+	
+	if (GetSurface ()) {
+		// queue a resort based on ZIndex
+		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+	}
+}
+
+
+void
+Panel::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
+{
+	if (col == GetChildren()) {
+		// if a child changes its ZIndex property we need to resort our Children
+		if (args->GetId () == Canvas::ZIndexProperty) {
+			((UIElement *) obj)->Invalidate ();
+			if (GetSurface ()) {
+				// queue a resort based on ZIndex
+				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+			}
+			return;
+		}
+	}
+
+	FrameworkElement::OnCollectionItemChanged (col, obj, args);
+}
+

@@ -38,8 +38,6 @@ class Canvas : public Panel {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Canvas ();
 	
-	virtual void OnLoaded ();
-
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size availableSize);
 	virtual bool ClipToExtents () { return false; }
@@ -47,9 +45,6 @@ class Canvas : public Panel {
 	virtual void ShiftPosition (Point p);
 	virtual void ComputeBounds ();
 	
-	virtual void ElementAdded (UIElement *item);
-	virtual void ElementRemoved (UIElement *item);
-
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);

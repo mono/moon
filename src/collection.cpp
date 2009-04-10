@@ -757,6 +757,11 @@ VisualTreeWalker::Step ()
 		if (index < 0 || index >= count)
 			return NULL;
 
+		if (count == 1 && index == 1) {
+			index ++;
+			return collection->GetValueAt (0)->AsUIElement();
+		}
+
 		UIElementCollection *uiecollection = NULL;
 		if (direction != Logical) {
 			uiecollection = (UIElementCollection *)collection;

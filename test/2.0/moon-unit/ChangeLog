@@ -1,3 +1,9 @@
+2009-04-10  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs (MultipleStartStop):
+	stop the animations after the fifth time.
+	(MultipleStartStop2): remove duplicate test.
+
 2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Controls/SaveFileDialogTest.cs: New.

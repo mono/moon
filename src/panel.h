@@ -23,9 +23,6 @@ class Panel : public FrameworkElement {
 	//
 	UIElement *mouse_over;
 
-	void ChildAdded (UIElement *child);
-	void ChildRemoved (UIElement *child);
-
  protected:
 	virtual ~Panel ();
 
@@ -38,7 +35,9 @@ class Panel : public FrameworkElement {
 	
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Panel ();
-	
+
+	virtual void OnLoaded ();
+
 	virtual void ComputeBounds ();
 	virtual Size MeasureOverride (Size availableSize);
 
@@ -59,7 +58,11 @@ class Panel : public FrameworkElement {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
-	
+	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
+
+	virtual void ElementAdded (UIElement *item);
+	virtual void ElementRemoved (UIElement *item);
+
 	virtual DependencyObject *GetSubtreeObject ();
 	
 	//

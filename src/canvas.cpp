@@ -62,39 +62,6 @@ Canvas::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	NotifyListenersOfPropertyChange (args);
 }
 
-void
-Canvas::OnLoaded ()
-{
-	UIElement::OnLoaded ();
-
-	if (GetSurface ()) {
-		// queue a resort based on ZIndex
-		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
-	}
-}
-
-void
-Canvas::ElementAdded (UIElement *item)
-{
-	Panel::ElementAdded (item);
-	
-	if (GetSurface ()) {
-		// queue a resort based on ZIndex
-		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
-	}
-}
-
-void
-Canvas::ElementRemoved (UIElement *item)
-{
-	Panel::ElementRemoved (item);
-	
-	if (GetSurface ()) {
-		// queue a resort based on ZIndex
-		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
-	}
-}
-
 Size
 Canvas::MeasureOverride (Size availableSize)
 {
@@ -148,16 +115,10 @@ void
 Canvas::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
 	if (col == GetChildren()) {
-		// if a child changes its ZIndex property we need to resort our Children
-		if (args->GetId () == Canvas::ZIndexProperty) {
-			((UIElement *) obj)->Invalidate ();
-			if (GetSurface ()) {
-				// queue a resort based on ZIndex
-				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
-			}
-			return;
-		}
-		else if (args->GetId () == Canvas::TopProperty ||
+		// this used to contain ZIndex property checking, but
+		// it has been moved to Panel's implementation, since
+		// all panels allow ZIndex sorting of children.
+		if (args->GetId () == Canvas::TopProperty ||
 			 args->GetId () == Canvas::LeftProperty) {
 
 			UIElement *ui = (UIElement *) obj;

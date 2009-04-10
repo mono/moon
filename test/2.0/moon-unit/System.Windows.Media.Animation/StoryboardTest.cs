@@ -117,34 +117,11 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
 			a.Children.Add (animation);
 
-			a.Completed += delegate { count++; a.Begin (); };
+			a.Completed += delegate { count++; if (count < 5) a.Begin (); };
 
 			Enqueue (() => TestPanel.Children.Add (target));
 			Enqueue (() => a.Begin ());
 			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (2000));
-			EnqueueTestComplete ();
-		}
-		
-		[TestMethod]
-		[Asynchronous]
-		public void MultipleStartStop2 ()
-		{
-			int count = 0;
-
-			Rectangle target = new Rectangle ();
-
-			Storyboard a = new Storyboard ();
-			DoubleAnimation animation = new DoubleAnimation { From = 5, To = 100, Duration = new Duration (TimeSpan.FromMilliseconds (100)) };
-			Storyboard.SetTarget (animation, target);
-			Storyboard.SetTargetProperty (animation, new PropertyPath ("Width"));
-			a.Children.Add (animation);
-
-			a.Completed += delegate { count++; a.Begin (); };
-
-			Enqueue (() => TestPanel.Children.Add (target));
-			//Enqueue (() => TestPanel.Resources.Add ("SB", a));
-			Enqueue (() => a.Begin ());
-			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (1000));
 			EnqueueTestComplete ();
 		}
 		
