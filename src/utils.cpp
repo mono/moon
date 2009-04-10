@@ -300,7 +300,7 @@ ExtractFile (unzFile zip, int fd)
 bool
 ExtractAll (unzFile zip, const char *dir, bool canon)
 {
-	char *filename, *path;
+	char *filename, *dirname, *path;
 	unz_file_info info;
 	int fd;
 	
@@ -315,7 +315,7 @@ ExtractAll (unzFile zip, const char *dir, bool canon)
 		if (!(filename = (char *) g_malloc (info.size_filename + 1)))
 			return false;
 		
-		unzGetCurrentFileInfo (zipfile, NULL, filename, info.size_filename + 1, NULL, 0, NULL, 0);
+		unzGetCurrentFileInfo (zip, NULL, filename, info.size_filename + 1, NULL, 0, NULL, 0);
 		
 		if (canon)
 			CanonicalizeFilename (filename, info.size_filename);
@@ -345,7 +345,7 @@ ExtractAll (unzFile zip, const char *dir, bool canon)
 		}
 		
 		if (!ExtractFile (zip, fd)) {
-			unzCloseCurrentFile (zipfile);
+			unzCloseCurrentFile (zip);
 			return false;
 		}
 		
