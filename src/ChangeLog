@@ -1,3 +1,20 @@
+2009-04-09  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.cpp (UIElement::WalkTreeForLoaded): be more
+	descriptive with the "attempting to use a null application" thing.
+
+	* xaml.cpp (xaml_is_valid_event_name): sort these, and add a bunch
+	that were missing.  we need to make this less fragile, and have it
+	use the event strings in type-generated.cpp.
+	(end_element_handler): add more text to the line about attempting
+	to use a null application, so we can differentiate it from the
+	other one.
+
+	* timeline.h (class Timeline): BeginTime has, in fact, a default
+	value (of 0.)
+
+	* dependencyproperty.g.cpp: regen.
+
 2009-04-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.h, textbox.h: Added FontSourceProperty.

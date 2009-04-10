@@ -253,7 +253,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TIMELINE, "RepeatBehavior", new Value (RepeatBehavior ((double) 1)), Type::REPEATBEHAVIOR);
 	DependencyProperty::Register (this, Type::TIMELINE, "FillBehavior", new Value (FillBehaviorHoldEnd), Type::INT32);
 	DependencyProperty::Register (this, Type::TIMELINE, "Duration", new Value (Duration::Automatic), Type::DURATION);
-	DependencyProperty::Register (this, Type::TIMELINE, "BeginTime", Type::TIMESPAN);
+	DependencyProperty::Register (this, Type::TIMELINE, "BeginTime", new Value (0,Type::TIMESPAN), Type::TIMESPAN);
 	DependencyProperty::Register (this, Type::TIMELINE, "AutoReverse", new Value (false), Type::BOOL);
 	DependencyProperty::Register (this, Type::STYLUSPOINT, "Y", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::STYLUSPOINT, "X", new Value (0.0), Type::DOUBLE);

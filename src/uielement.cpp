@@ -654,7 +654,7 @@ UIElement::WalkTreeForLoaded (bool *delay)
 				ManagedTypeInfo *key = control->GetDefaultStyleKey ();
 				if (key) {
 					if (Application::GetCurrent () == NULL)
-						g_warning ("attempting to use a null application.");
+						g_warning ("attempting to use a null application when applying default style when emitting Loaded event.");
 					else
 						Application::GetCurrent()->ApplyDefaultStyle (control, key);
 				}

@@ -1679,7 +1679,7 @@ end_element_handler (void *data, const char *el)
 
 			if (key) {
 				if (Application::GetCurrent () == NULL)
-					g_warning ("attempting to use a null application.");
+					g_warning ("attempting to use a null application applying default style while parsing.");
 				else
 					Application::GetCurrent()->ApplyDefaultStyle (control, key);
 			}
@@ -4239,31 +4239,36 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 bool
 xaml_is_valid_event_name (const char *name)
 {
-	return (!strcmp (name, "ImageFailed") ||
-		!strcmp (name, "MediaEnded") ||
-		!strcmp (name, "MediaFailed") ||
-		!strcmp (name, "MediaOpened") ||
+	return (
 		!strcmp (name, "BufferingProgressChanged") ||
+		!strcmp (name, "Completed") ||
 		!strcmp (name, "CurrentStateChanged") ||
-		!strcmp (name, "DownloadProgressChanged") ||
-		!strcmp (name, "MarkerReached") ||
-		!strcmp (name, "Completed") ||
 		!strcmp (name, "DownloadFailed") ||
-		!strcmp (name, "FullScreenChange") ||
-		!strcmp (name, "Resize") ||
+		!strcmp (name, "DownloadProgressChanged") ||
 		!strcmp (name, "Error") ||
-		!strcmp (name, "Completed") ||
-		!strcmp (name, "ImageFailed") ||
+		!strcmp (name, "FullScreenChange") ||
 		!strcmp (name, "GotFocus") ||
+		!strcmp (name, "ImageFailed") ||
+		!strcmp (name, "ImageOpenFailed") ||
+		!strcmp (name, "ImageOpenSucceeded") ||
 		!strcmp (name, "KeyDown") ||
 		!strcmp (name, "KeyUp") ||
 		!strcmp (name, "Loaded") ||
 		!strcmp (name, "LostFocus") ||
+		!strcmp (name, "MarkerReached") ||
+		!strcmp (name, "MediaEnded") ||
+		!strcmp (name, "MediaFailed") ||
+		!strcmp (name, "MediaOpened") ||
+		!strcmp (name, "MotionFinished") ||
 		!strcmp (name, "MouseEnter") ||
 		!strcmp (name, "MouseLeave") ||
 		!strcmp (name, "MouseLeftButtonDown") ||
 		!strcmp (name, "MouseLeftButtonUp") ||
 		!strcmp (name, "MouseMove") ||
+		!strcmp (name, "Resize") ||
+		!strcmp (name, "SelectionChanged") ||
+		!strcmp (name, "TextChanged") ||
+		!strcmp (name, "ViewportChanged") ||
 
 		(((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) != 0)
 		 && (!strcmp (name, "MouseRightButtonDown") ||
