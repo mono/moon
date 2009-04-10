@@ -22,6 +22,7 @@
 
 #if PLUGIN_SL_2_0
 #include <mono/metadata/assembly.h>
+#include <mono/metadata/mono-config.h>
 #endif
 
 typedef NPError (*np_initialize_func) (void *a, void *b);
@@ -101,6 +102,10 @@ load (void)
 		fprintf (stderr, "Unable to load the libmoon %s\n", dlerror ());
 		return FALSE;
 	}
+
+	char* moon_config = g_strdup_printf("<?xml version=\"1.0\" encoding=\"utf-8\"?><configuration><dllmap dll=\"moon\" target=\"%s\" /></configuration>",moon_path,moon_path);
+	mono_config_parse_memory(moon_config);
+	g_free (moon_config);
 	g_free (moon_path);
 
 	g_free (plugin_dir);
