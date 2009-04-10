@@ -1,3 +1,7 @@
+2009-04-10  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp: Instead of unreffing just delete the value.
+
 2009-04-09  Jackson Harper  <jackson@ximian.com>
 
 	* plugin.cpp: Updated method names.

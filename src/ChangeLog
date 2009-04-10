@@ -1,3 +1,7 @@
+2009-04-10  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Let the XamlElementInstances cleanup their Values.
+
 2009-04-10  Chris Toshok  <toshok@ximian.com>
 
 	* timemanager.cpp (TimeManager::SourceTick): just for kicks

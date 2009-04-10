@@ -2347,7 +2347,6 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		}
 
 		MoonlightEventObjectObject *depobj = EventObjectCreateWrapper (instance, dep);
-		dep->unref ();
 		delete val;
 
 		OBJECT_TO_NPVARIANT (depobj, *result);

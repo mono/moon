@@ -308,7 +308,7 @@ class XamlElementInstance : public List::Node {
 		this->value = NULL;
 		this->x_key = NULL;
 		this->x_name = NULL;
-		this->cleanup_value = false;
+		this->cleanup_value = true;
 		
 		children = new List ();
 	}
@@ -359,7 +359,6 @@ class XamlElementInstance : public List::Node {
 	{
 		if (!value) {
 			value = new Value (item);
-			item->ref ();
 		}
 		return value;
 	}
@@ -1960,13 +1959,16 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 	
 	if (parser_info->top_element) {
 		res = parser_info->top_element->GetAsValue ();
+		// We want a copy because the old one is going to be deleted
+		res = new Value (*res);
+
 		if (element_type)
 			*element_type = parser_info->top_element->info->GetKind ();
 
 		if (parser_info->error_args) {
 			*element_type = Type::INVALID;
 			goto cleanup_and_return;
-		}
+		}	
 	}
 	
  cleanup_and_return:
@@ -2111,8 +2113,10 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 	print_tree (parser_info->top_element, 0);
 	
 	if (parser_info->top_element) {
-		if (is_legal_top_level_kind (parser_info->top_element->info->GetKind ()))
+		if (is_legal_top_level_kind (parser_info->top_element->info->GetKind ())) {
 			res = parser_info->top_element->GetAsValue ();
+			res = new Value (*res);
+		}
 
 		if (element_type)
 			*element_type = parser_info->top_element->info->GetKind ();
@@ -2121,6 +2125,7 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 			parser_info->error_args = new ParserErrorEventArgs ("No DependencyObject found", "", 0, 0, 1, "", "");
 
 		if (parser_info->error_args) {
+			delete res;
 			res = NULL;
 			if (element_type)
 				*element_type = Type::INVALID;

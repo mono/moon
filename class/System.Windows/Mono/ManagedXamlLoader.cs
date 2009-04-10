@@ -100,7 +100,12 @@ namespace Mono.Xaml
 			if (top == IntPtr.Zero)
 				return null;
 
-			result = Value.ToObject (null, top);			
+			result = Value.ToObject (null, top);
+			DependencyObject dob = result as DependencyObject;
+			if (dob != null) {
+				NativeMethods.event_object_unref (dob.native);
+			}
+
 			return result;
 		}
 
@@ -124,6 +129,11 @@ namespace Mono.Xaml
 				return null;
 
 			result = Value.ToObject (null, top);
+			DependencyObject dob = result as DependencyObject;
+			if (dob != null) {
+				NativeMethods.event_object_unref (dob.native);
+			}
+
 			return result;
 		}
 
