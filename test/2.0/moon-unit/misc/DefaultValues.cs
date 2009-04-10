@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Browser;
@@ -49,19 +49,10 @@ namespace MoonTest.System.Windows
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is TriggerActionCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            TriggerActionCollection widget = new TriggerActionCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -131,19 +122,10 @@ namespace MoonTest.System.Windows
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is AssemblyPartCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            AssemblyPartCollection widget = new AssemblyPartCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -185,13 +167,6 @@ namespace MoonTest.System.Windows
             Assert.AreEqual(false, widget.IsSealed, "IsSealed does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_SetterBase ()
-        {
-            Setter widget = new Setter ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows
@@ -206,19 +181,10 @@ namespace MoonTest.System.Windows
             Assert.AreEqual(false, widget.IsSealed, "IsSealed does not match the default value");
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is SetterBaseCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            SetterBaseCollection widget = new SetterBaseCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -250,19 +216,10 @@ namespace MoonTest.System.Windows.Ink
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is StrokeCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            StrokeCollection widget = new StrokeCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -295,19 +252,10 @@ namespace MoonTest.System.Windows.Media
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is DoubleCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            DoubleCollection widget = new DoubleCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -323,19 +271,10 @@ namespace MoonTest.System.Windows.Media
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is PointCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            PointCollection widget = new PointCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -558,19 +497,10 @@ namespace MoonTest.System.Windows.Media
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is TransformCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            TransformCollection widget = new TransformCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -960,19 +890,10 @@ namespace MoonTest.System.Windows.Media
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is PathSegmentCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            PathSegmentCollection widget = new PathSegmentCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -1045,19 +966,10 @@ namespace MoonTest.System.Windows.Media
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is PathFigureCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            PathFigureCollection widget = new PathFigureCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -1123,13 +1035,6 @@ namespace MoonTest.System.Windows.Media
             Assert.IsTrue(widget.Figures is PathFigureCollection, "Figures is not of the correct type");
             Assert.IsNull(widget.Transform, "Transform should have returned null");
             Assert.AreEqual("0,0,0,0", widget.Bounds.ToString (), "Bounds does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_Geometry ()
-        {
-            PathGeometry widget = new PathGeometry ();
-
         }
 
     }
@@ -1204,13 +1109,6 @@ namespace MoonTest.System.Windows.Media
             Assert.AreEqual("0,0,0,0", widget.Bounds.ToString (), "Bounds does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_Geometry ()
-        {
-            EllipseGeometry widget = new EllipseGeometry ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media
@@ -1283,13 +1181,6 @@ namespace MoonTest.System.Windows.Media
             Assert.AreEqual("0,0,0,0", widget.Bounds.ToString (), "Bounds does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_Geometry ()
-        {
-            RectangleGeometry widget = new RectangleGeometry ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media
@@ -1355,13 +1246,6 @@ namespace MoonTest.System.Windows.Media
             Assert.AreEqual("0,0,0,0", widget.Bounds.ToString (), "Bounds does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_Geometry ()
-        {
-            LineGeometry widget = new LineGeometry ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media
@@ -1375,19 +1259,10 @@ namespace MoonTest.System.Windows.Media
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is GeometryCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            GeometryCollection widget = new GeometryCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -1453,13 +1328,6 @@ namespace MoonTest.System.Windows.Media
             Assert.IsTrue(widget.Children is GeometryCollection, "Children is not of the correct type");
             Assert.IsNull(widget.Transform, "Transform should have returned null");
             Assert.AreEqual("0,0,0,0", widget.Bounds.ToString (), "Bounds does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_Geometry ()
-        {
-            GeometryGroup widget = new GeometryGroup ();
-
         }
 
     }
@@ -1535,13 +1403,6 @@ namespace MoonTest.System.Windows.Media
             Assert.IsTrue(widget.RelativeTransform is MatrixTransform, "RelativeTransform is not of the correct type");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_Brush ()
-        {
-            SolidColorBrush widget = new SolidColorBrush ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media
@@ -1598,19 +1459,10 @@ namespace MoonTest.System.Windows.Media
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is GradientStopCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            GradientStopCollection widget = new GradientStopCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -1738,17 +1590,15 @@ namespace MoonTest.System.Windows.Media
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_GradientBrush ()
-        {
-            LinearGradientBrush widget = new LinearGradientBrush ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_Brush ()
         {
             LinearGradientBrush widget = new LinearGradientBrush ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNotNull(widget.Transform, "Transform should not have returned null");
+            Assert.IsTrue(widget.Transform is MatrixTransform, "Transform is not of the correct type");
+            Assert.IsNotNull(widget.RelativeTransform, "RelativeTransform should not have returned null");
+            Assert.IsTrue(widget.RelativeTransform is MatrixTransform, "RelativeTransform is not of the correct type");
         }
 
     }
@@ -1890,17 +1740,15 @@ namespace MoonTest.System.Windows.Media
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_GradientBrush ()
-        {
-            RadialGradientBrush widget = new RadialGradientBrush ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_Brush ()
         {
             RadialGradientBrush widget = new RadialGradientBrush ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNotNull(widget.Transform, "Transform should not have returned null");
+            Assert.IsTrue(widget.Transform is MatrixTransform, "Transform is not of the correct type");
+            Assert.IsNotNull(widget.RelativeTransform, "RelativeTransform should not have returned null");
+            Assert.IsTrue(widget.RelativeTransform is MatrixTransform, "RelativeTransform is not of the correct type");
         }
 
     }
@@ -2011,17 +1859,14 @@ namespace MoonTest.System.Windows.Media
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_TileBrush ()
-        {
-            ImageBrush widget = new ImageBrush ();
-
-        }
-
-        [TestMethod]
+	[MoonlightBug]
         public void Test_PropertyGetter_Brush ()
         {
             ImageBrush widget = new ImageBrush ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Transform, "Transform should have returned null");
+            Assert.IsNull(widget.RelativeTransform, "RelativeTransform should have returned null");
         }
 
     }
@@ -2136,17 +1981,15 @@ namespace MoonTest.System.Windows.Media
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_TileBrush ()
-        {
-            VideoBrush widget = new VideoBrush ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_Brush ()
         {
             VideoBrush widget = new VideoBrush ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNotNull(widget.Transform, "Transform should not have returned null");
+            Assert.IsTrue(widget.Transform is MatrixTransform, "Transform is not of the correct type");
+            Assert.IsNotNull(widget.RelativeTransform, "RelativeTransform should not have returned null");
+            Assert.IsTrue(widget.RelativeTransform is MatrixTransform, "RelativeTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -2245,19 +2088,10 @@ namespace MoonTest.System.Windows.Media
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is TimelineMarkerCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            TimelineMarkerCollection widget = new TimelineMarkerCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -2345,7 +2179,6 @@ namespace MoonTest.System.Windows.Media.Animation
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_GetValue_Timeline ()
         {
             Storyboard widget = new Storyboard ();
@@ -2378,7 +2211,6 @@ namespace MoonTest.System.Windows.Media.Animation
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Storyboard ()
         {
             Storyboard widget = new Storyboard ();
@@ -2391,13 +2223,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.AreEqual((double) 1, widget.SpeedRatio, "SpeedRatio does not match the default value");
             Assert.AreEqual(FillBehavior.HoldEnd, widget.FillBehavior, "FillBehavior does not match the default value");
             Assert.AreEqual("1x", widget.RepeatBehavior.ToString (), "RepeatBehavior does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_Timeline ()
-        {
-            Storyboard widget = new Storyboard ();
-
         }
 
     }
@@ -2502,13 +2327,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.AreEqual("1x", widget.RepeatBehavior.ToString (), "RepeatBehavior does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_Timeline ()
-        {
-            DoubleAnimation widget = new DoubleAnimation ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media.Animation
@@ -2609,13 +2427,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.AreEqual((double) 1, widget.SpeedRatio, "SpeedRatio does not match the default value");
             Assert.AreEqual(FillBehavior.HoldEnd, widget.FillBehavior, "FillBehavior does not match the default value");
             Assert.AreEqual("1x", widget.RepeatBehavior.ToString (), "RepeatBehavior does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_Timeline ()
-        {
-            ColorAnimation widget = new ColorAnimation ();
-
         }
 
     }
@@ -2720,13 +2531,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.AreEqual("1x", widget.RepeatBehavior.ToString (), "RepeatBehavior does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_Timeline ()
-        {
-            PointAnimation widget = new PointAnimation ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media.Animation
@@ -2755,19 +2559,10 @@ namespace MoonTest.System.Windows.Media.Animation
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is ColorKeyFrameCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            ColorKeyFrameCollection widget = new ColorKeyFrameCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -2783,19 +2578,10 @@ namespace MoonTest.System.Windows.Media.Animation
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is DoubleKeyFrameCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            DoubleKeyFrameCollection widget = new DoubleKeyFrameCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -2811,19 +2597,10 @@ namespace MoonTest.System.Windows.Media.Animation
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is PointKeyFrameCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            PointKeyFrameCollection widget = new PointKeyFrameCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -2839,19 +2616,10 @@ namespace MoonTest.System.Windows.Media.Animation
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is ObjectKeyFrameCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            ObjectKeyFrameCollection widget = new ObjectKeyFrameCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -2927,13 +2695,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.AreEqual("1x", widget.RepeatBehavior.ToString (), "RepeatBehavior does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_Timeline ()
-        {
-            DoubleAnimationUsingKeyFrames widget = new DoubleAnimationUsingKeyFrames ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media.Animation
@@ -2977,13 +2738,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.AreEqual("Uniform", widget.KeyTime.ToString (), "KeyTime does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_DoubleKeyFrame ()
-        {
-            DiscreteDoubleKeyFrame widget = new DiscreteDoubleKeyFrame ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media.Animation
@@ -3025,13 +2779,6 @@ namespace MoonTest.System.Windows.Media.Animation
 
             Assert.AreEqual((double) 0, widget.Value, "Value does not match the default value");
             Assert.AreEqual("Uniform", widget.KeyTime.ToString (), "KeyTime does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_DoubleKeyFrame ()
-        {
-            LinearDoubleKeyFrame widget = new LinearDoubleKeyFrame ();
-
         }
 
     }
@@ -3098,13 +2845,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.IsTrue(widget.KeySpline is KeySpline, "KeySpline is not of the correct type");
             Assert.AreEqual((double) 0, widget.Value, "Value does not match the default value");
             Assert.AreEqual("Uniform", widget.KeyTime.ToString (), "KeyTime does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_DoubleKeyFrame ()
-        {
-            SplineDoubleKeyFrame widget = new SplineDoubleKeyFrame ();
-
         }
 
     }
@@ -3180,13 +2920,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.AreEqual("1x", widget.RepeatBehavior.ToString (), "RepeatBehavior does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_Timeline ()
-        {
-            ColorAnimationUsingKeyFrames widget = new ColorAnimationUsingKeyFrames ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media.Animation
@@ -3230,13 +2963,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.AreEqual("Uniform", widget.KeyTime.ToString (), "KeyTime does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_ColorKeyFrame ()
-        {
-            DiscreteColorKeyFrame widget = new DiscreteColorKeyFrame ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media.Animation
@@ -3278,13 +3004,6 @@ namespace MoonTest.System.Windows.Media.Animation
 
             Assert.AreEqual("#FF000000", widget.Value.ToString (), "Value does not match the default value");
             Assert.AreEqual("Uniform", widget.KeyTime.ToString (), "KeyTime does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_ColorKeyFrame ()
-        {
-            LinearColorKeyFrame widget = new LinearColorKeyFrame ();
-
         }
 
     }
@@ -3351,13 +3070,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.IsTrue(widget.KeySpline is KeySpline, "KeySpline is not of the correct type");
             Assert.AreEqual("#FF000000", widget.Value.ToString (), "Value does not match the default value");
             Assert.AreEqual("Uniform", widget.KeyTime.ToString (), "KeyTime does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_ColorKeyFrame ()
-        {
-            SplineColorKeyFrame widget = new SplineColorKeyFrame ();
-
         }
 
     }
@@ -3433,13 +3145,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.AreEqual("1x", widget.RepeatBehavior.ToString (), "RepeatBehavior does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_Timeline ()
-        {
-            PointAnimationUsingKeyFrames widget = new PointAnimationUsingKeyFrames ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media.Animation
@@ -3483,13 +3188,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.AreEqual("Uniform", widget.KeyTime.ToString (), "KeyTime does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_PointKeyFrame ()
-        {
-            DiscretePointKeyFrame widget = new DiscretePointKeyFrame ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media.Animation
@@ -3531,13 +3229,6 @@ namespace MoonTest.System.Windows.Media.Animation
 
             Assert.AreEqual("0,0", widget.Value.ToString (), "Value does not match the default value");
             Assert.AreEqual("Uniform", widget.KeyTime.ToString (), "KeyTime does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PointKeyFrame ()
-        {
-            LinearPointKeyFrame widget = new LinearPointKeyFrame ();
-
         }
 
     }
@@ -3604,13 +3295,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.IsTrue(widget.KeySpline is KeySpline, "KeySpline is not of the correct type");
             Assert.AreEqual("0,0", widget.Value.ToString (), "Value does not match the default value");
             Assert.AreEqual("Uniform", widget.KeyTime.ToString (), "KeyTime does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PointKeyFrame ()
-        {
-            SplinePointKeyFrame widget = new SplinePointKeyFrame ();
-
         }
 
     }
@@ -3686,13 +3370,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.AreEqual("1x", widget.RepeatBehavior.ToString (), "RepeatBehavior does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_Timeline ()
-        {
-            ObjectAnimationUsingKeyFrames widget = new ObjectAnimationUsingKeyFrames ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media.Animation
@@ -3734,13 +3411,6 @@ namespace MoonTest.System.Windows.Media.Animation
             Assert.IsNull(widget.Value, "Value should have returned null");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_ObjectKeyFrame ()
-        {
-            DiscreteObjectKeyFrame widget = new DiscreteObjectKeyFrame ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Media.Animation
@@ -3754,19 +3424,10 @@ namespace MoonTest.System.Windows.Media.Animation
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is TimelineCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            TimelineCollection widget = new TimelineCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -3782,19 +3443,10 @@ namespace MoonTest.System.Windows.Input
 
             Assert.AreEqual(false, widget.IsFixedSize, "IsFixedSize does not match the default value");
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
-            // exception generating test for Item
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
             Assert.AreEqual(false, widget.IsSynchronized, "IsSynchronized does not match the default value");
             Assert.IsNotNull(widget.SyncRoot, "SyncRoot should not have returned null");
             Assert.IsTrue(widget.SyncRoot is StylusPointCollection, "SyncRoot is not of the correct type");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_PresentationFrameworkCollection ()
-        {
-            StylusPointCollection widget = new StylusPointCollection ();
-
-            // exception generating test for Item
         }
 
     }
@@ -4124,24 +3776,45 @@ namespace MoonTest.System.Windows.Shapes
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Shape ()
-        {
-            Path widget = new Path ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             Path widget = new Path ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            Path widget = new Path ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -4467,24 +4140,45 @@ namespace MoonTest.System.Windows.Shapes
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Shape ()
-        {
-            Ellipse widget = new Ellipse ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             Ellipse widget = new Ellipse ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            Ellipse widget = new Ellipse ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -4854,24 +4548,45 @@ namespace MoonTest.System.Windows.Shapes
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Shape ()
-        {
-            Line widget = new Line ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             Line widget = new Line ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            Line widget = new Line ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -5227,24 +4942,45 @@ namespace MoonTest.System.Windows.Shapes
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Shape ()
-        {
-            Polygon widget = new Polygon ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             Polygon widget = new Polygon ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            Polygon widget = new Polygon ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -5600,24 +5336,45 @@ namespace MoonTest.System.Windows.Shapes
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Shape ()
-        {
-            Polyline widget = new Polyline ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             Polyline widget = new Polyline ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            Polyline widget = new Polyline ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -5973,24 +5730,45 @@ namespace MoonTest.System.Windows.Shapes
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Shape ()
-        {
-            Rectangle widget = new Rectangle ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             Rectangle widget = new Rectangle ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            Rectangle widget = new Rectangle ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -6296,17 +6074,21 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            Glyphs widget = new Glyphs ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_UIElement ()
         {
             Glyphs widget = new Glyphs ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -6438,13 +6220,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
         }
 
-        [TestMethod]
-        public void Test_PropertyGetter_Inline ()
-        {
-            Run widget = new Run ();
-
-        }
-
     }
 }
 namespace MoonTest.System.Windows.Documents
@@ -6530,13 +6305,6 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual("", widget.Name, "Name does not match the default value");
             Assert.IsNotNull(widget.Language, "Language should not have returned null");
             Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_Inline ()
-        {
-            LineBreak widget = new LineBreak ();
-
         }
 
     }
@@ -6782,17 +6550,21 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            Image widget = new Image ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_UIElement ()
         {
             Image widget = new Image ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -7082,24 +6854,45 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Panel ()
-        {
-            Canvas widget = new Canvas ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             Canvas widget = new Canvas ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            Canvas widget = new Canvas ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -7442,17 +7235,21 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            TextBlock widget = new TextBlock ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_UIElement ()
         {
             TextBlock widget = new TextBlock ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -7877,17 +7674,21 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            MediaElement widget = new MediaElement ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_UIElement ()
         {
             MediaElement widget = new MediaElement ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -8200,24 +8001,48 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Canvas ()
-        {
-            InkPresenter widget = new InkPresenter ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_Panel ()
         {
             InkPresenter widget = new InkPresenter ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            InkPresenter widget = new InkPresenter ();
-
+            Assert.IsNotNull(widget.Children, "Children should not have returned null");
+            Assert.IsTrue(widget.Children is UIElementCollection, "Children is not of the correct type");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -8225,6 +8050,17 @@ namespace MoonTest.System.Windows.Controls
         {
             InkPresenter widget = new InkPresenter ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -8513,17 +8349,21 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            MultiScaleImage widget = new MultiScaleImage ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_UIElement ()
         {
             MultiScaleImage widget = new MultiScaleImage ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -8866,24 +8706,45 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Panel ()
-        {
-            StackPanel widget = new StackPanel ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             StackPanel widget = new StackPanel ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            StackPanel widget = new StackPanel ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -9320,24 +9181,45 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            TextBox widget = new TextBox ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             TextBox widget = new TextBox ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            TextBox widget = new TextBox ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -9759,24 +9641,45 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            PasswordBox widget = new PasswordBox ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             PasswordBox widget = new PasswordBox ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            PasswordBox widget = new PasswordBox ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -9997,7 +9900,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_GetValue_Grid ()
         {
             Grid widget = new Grid ();
@@ -10006,7 +9908,7 @@ namespace MoonTest.System.Windows.Controls
             retval = widget.GetValue(Grid.ShowGridLinesProperty);
             Assert.IsNotNull(retval, "GetValue(Grid.ShowGridLinesProperty) should not have returned null");
             Assert.IsTrue(retval is bool, "GetValue(Grid.ShowGridLinesProperty) is not of the correct type");
-            Assert.AreEqual(false, retval, "GetValue(Grid.ShowGridLinesProperty) does not match the default value");
+            Assert.AreEqual(true, retval, "GetValue(Grid.ShowGridLinesProperty) does not match the default value");
             retval = widget.GetValue(Grid.RowProperty);
             Assert.IsNotNull(retval, "GetValue(Grid.RowProperty) should not have returned null");
             Assert.IsTrue(retval is int, "GetValue(Grid.RowProperty) is not of the correct type");
@@ -10136,7 +10038,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Grid ()
         {
             Grid widget = new Grid ();
@@ -10145,7 +10046,7 @@ namespace MoonTest.System.Windows.Controls
             Assert.IsTrue(widget.RowDefinitions is RowDefinitionCollection, "RowDefinitions is not of the correct type");
             Assert.IsNotNull(widget.ColumnDefinitions, "ColumnDefinitions should not have returned null");
             Assert.IsTrue(widget.ColumnDefinitions is ColumnDefinitionCollection, "ColumnDefinitions is not of the correct type");
-            Assert.AreEqual(false, widget.ShowGridLines, "ShowGridLines does not match the default value");
+            Assert.AreEqual(true, widget.ShowGridLines, "ShowGridLines does not match the default value");
             Assert.IsNotNull(widget.Children, "Children should not have returned null");
             Assert.IsTrue(widget.Children is UIElementCollection, "Children is not of the correct type");
             Assert.IsNull(widget.Background, "Background should have returned null");
@@ -10187,24 +10088,45 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Panel ()
-        {
-            Grid widget = new Grid ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             Grid widget = new Grid ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            Grid widget = new Grid ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -10619,24 +10541,45 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            ItemsControl widget = new ItemsControl ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             ItemsControl widget = new ItemsControl ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            ItemsControl widget = new ItemsControl ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -10931,17 +10874,21 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            Border widget = new Border ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_UIElement ()
         {
             Border widget = new Border ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -11330,24 +11277,45 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            ContentControl widget = new ContentControl ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             ContentControl widget = new ContentControl ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            ContentControl widget = new ContentControl ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -11606,17 +11574,21 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            ContentPresenter widget = new ContentPresenter ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_UIElement ()
         {
             ContentPresenter widget = new ContentPresenter ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -11855,17 +11827,21 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            ItemsPresenter widget = new ItemsPresenter ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_UIElement ()
         {
             ItemsPresenter widget = new ItemsPresenter ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -12177,17 +12153,21 @@ namespace MoonTest.System.Windows.Controls.Primitives
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            Popup widget = new Popup ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_UIElement ()
         {
             Popup widget = new Popup ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -12551,24 +12531,45 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            UserControl widget = new UserControl ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             UserControl widget = new UserControl ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            UserControl widget = new UserControl ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -13001,24 +13002,66 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_ButtonBase ()
-        {
-            Button widget = new Button ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_ContentControl ()
         {
             Button widget = new Button ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            Button widget = new Button ();
-
+            Assert.IsNull(widget.Content, "Content should have returned null");
+            Assert.IsNull(widget.ContentTemplate, "ContentTemplate should have returned null");
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -13026,13 +13069,41 @@ namespace MoonTest.System.Windows.Controls
         {
             Button widget = new Button ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            Button widget = new Button ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -13495,24 +13566,66 @@ namespace MoonTest.System.Windows.Controls.Primitives
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_ButtonBase ()
-        {
-            ToggleButton widget = new ToggleButton ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_ContentControl ()
         {
             ToggleButton widget = new ToggleButton ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            ToggleButton widget = new ToggleButton ();
-
+            Assert.IsNull(widget.Content, "Content should have returned null");
+            Assert.IsNull(widget.ContentTemplate, "ContentTemplate should have returned null");
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -13520,13 +13633,41 @@ namespace MoonTest.System.Windows.Controls.Primitives
         {
             ToggleButton widget = new ToggleButton ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            ToggleButton widget = new ToggleButton ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -13989,24 +14130,70 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_ToggleButton ()
-        {
-            CheckBox widget = new CheckBox ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_ButtonBase ()
         {
             CheckBox widget = new CheckBox ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_ContentControl ()
-        {
-            CheckBox widget = new CheckBox ();
-
+            Assert.AreEqual(ClickMode.Release, widget.ClickMode, "ClickMode does not match the default value");
+            Assert.AreEqual(false, widget.IsFocused, "IsFocused does not match the default value");
+            Assert.AreEqual(false, widget.IsMouseOver, "IsMouseOver does not match the default value");
+            Assert.AreEqual(false, widget.IsPressed, "IsPressed does not match the default value");
+            Assert.IsNull(widget.Content, "Content should have returned null");
+            Assert.IsNull(widget.ContentTemplate, "ContentTemplate should have returned null");
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -14014,13 +14201,60 @@ namespace MoonTest.System.Windows.Controls
         {
             CheckBox widget = new CheckBox ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            CheckBox widget = new CheckBox ();
-
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -14028,6 +14262,17 @@ namespace MoonTest.System.Windows.Controls
         {
             CheckBox widget = new CheckBox ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -14501,24 +14746,70 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Selector ()
-        {
-            ComboBox widget = new ComboBox ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_ItemsControl ()
         {
             ComboBox widget = new ComboBox ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            ComboBox widget = new ComboBox ();
-
+            Assert.IsNotNull(widget.Items, "Items should not have returned null");
+            Assert.IsTrue(widget.Items is ItemCollection, "Items is not of the correct type");
+            Assert.IsNull(widget.ItemTemplate, "ItemTemplate should have returned null");
+            Assert.IsNull(widget.ItemsPanel, "ItemsPanel should have returned null");
+            Assert.IsNull(widget.DisplayMemberPath, "DisplayMemberPath should have returned null");
+            Assert.IsNull(widget.ItemsSource, "ItemsSource should have returned null");
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -14526,13 +14817,41 @@ namespace MoonTest.System.Windows.Controls
         {
             ComboBox widget = new ComboBox ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            ComboBox widget = new ComboBox ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -14958,24 +15277,64 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_ContentControl ()
-        {
-            ListBoxItem widget = new ListBoxItem ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_Control ()
         {
             ListBoxItem widget = new ListBoxItem ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            ListBoxItem widget = new ListBoxItem ();
-
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -14983,6 +15342,17 @@ namespace MoonTest.System.Windows.Controls
         {
             ListBoxItem widget = new ListBoxItem ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -15394,24 +15764,66 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_ListBoxItem ()
-        {
-            ComboBoxItem widget = new ComboBoxItem ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_ContentControl ()
         {
             ComboBoxItem widget = new ComboBoxItem ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            ComboBoxItem widget = new ComboBoxItem ();
-
+            Assert.IsNull(widget.Content, "Content should have returned null");
+            Assert.IsNull(widget.ContentTemplate, "ContentTemplate should have returned null");
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -15419,13 +15831,41 @@ namespace MoonTest.System.Windows.Controls
         {
             ComboBoxItem widget = new ComboBoxItem ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            ComboBoxItem widget = new ComboBoxItem ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -15646,7 +16086,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_GetValue_Control ()
         {
             HyperlinkButton widget = new HyperlinkButton ();
@@ -15885,24 +16324,66 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_ButtonBase ()
-        {
-            HyperlinkButton widget = new HyperlinkButton ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_ContentControl ()
         {
             HyperlinkButton widget = new HyperlinkButton ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            HyperlinkButton widget = new HyperlinkButton ();
-
+            Assert.IsNull(widget.Content, "Content should have returned null");
+            Assert.IsNull(widget.ContentTemplate, "ContentTemplate should have returned null");
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -15910,13 +16391,41 @@ namespace MoonTest.System.Windows.Controls
         {
             HyperlinkButton widget = new HyperlinkButton ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            HyperlinkButton widget = new HyperlinkButton ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -16389,24 +16898,71 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Selector ()
-        {
-            ListBox widget = new ListBox ();
-
-        }
-
-        [TestMethod]
+	[MoonlightBug]
         public void Test_PropertyGetter_ItemsControl ()
         {
             ListBox widget = new ListBox ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            ListBox widget = new ListBox ();
-
+            Assert.IsNotNull(widget.Items, "Items should not have returned null");
+            Assert.IsTrue(widget.Items is ItemCollection, "Items is not of the correct type");
+            Assert.IsNull(widget.ItemTemplate, "ItemTemplate should have returned null");
+            Assert.IsNull(widget.ItemsPanel, "ItemsPanel should have returned null");
+            Assert.IsNull(widget.DisplayMemberPath, "DisplayMemberPath should have returned null");
+            Assert.IsNull(widget.ItemsSource, "ItemsSource should have returned null");
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -16414,13 +16970,41 @@ namespace MoonTest.System.Windows.Controls
         {
             ListBox widget = new ListBox ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            ListBox widget = new ListBox ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -16899,24 +17483,66 @@ namespace MoonTest.System.Windows.Controls.Primitives
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_ButtonBase ()
-        {
-            RepeatButton widget = new RepeatButton ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_ContentControl ()
         {
             RepeatButton widget = new RepeatButton ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            RepeatButton widget = new RepeatButton ();
-
+            Assert.IsNull(widget.Content, "Content should have returned null");
+            Assert.IsNull(widget.ContentTemplate, "ContentTemplate should have returned null");
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -16924,13 +17550,41 @@ namespace MoonTest.System.Windows.Controls.Primitives
         {
             RepeatButton widget = new RepeatButton ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            RepeatButton widget = new RepeatButton ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -17374,24 +18028,64 @@ namespace MoonTest.System.Windows.Controls.Primitives
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_RangeBase ()
-        {
-            ScrollBar widget = new ScrollBar ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_Control ()
         {
             ScrollBar widget = new ScrollBar ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            ScrollBar widget = new ScrollBar ();
-
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -17399,6 +18093,17 @@ namespace MoonTest.System.Windows.Controls.Primitives
         {
             ScrollBar widget = new ScrollBar ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -17791,24 +18496,45 @@ namespace MoonTest.System.Windows.Controls.Primitives
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_Control ()
-        {
-            Thumb widget = new Thumb ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             Thumb widget = new Thumb ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            Thumb widget = new Thumb ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -18292,25 +19018,70 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
-        public void Test_PropertyGetter_ToggleButton ()
-        {
-            RadioButton widget = new RadioButton ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_ButtonBase ()
         {
             RadioButton widget = new RadioButton ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_ContentControl ()
-        {
-            RadioButton widget = new RadioButton ();
-
+            Assert.AreEqual(ClickMode.Release, widget.ClickMode, "ClickMode does not match the default value");
+            Assert.AreEqual(false, widget.IsFocused, "IsFocused does not match the default value");
+            Assert.AreEqual(false, widget.IsMouseOver, "IsMouseOver does not match the default value");
+            Assert.AreEqual(false, widget.IsPressed, "IsPressed does not match the default value");
+            Assert.IsNull(widget.Content, "Content should have returned null");
+            Assert.IsNull(widget.ContentTemplate, "ContentTemplate should have returned null");
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -18318,13 +19089,60 @@ namespace MoonTest.System.Windows.Controls
         {
             RadioButton widget = new RadioButton ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            RadioButton widget = new RadioButton ();
-
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -18332,6 +19150,17 @@ namespace MoonTest.System.Windows.Controls
         {
             RadioButton widget = new RadioButton ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -18613,24 +19442,45 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_ContentPresenter ()
-        {
-            ScrollContentPresenter widget = new ScrollContentPresenter ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             ScrollContentPresenter widget = new ScrollContentPresenter ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_UIElement ()
-        {
-            ScrollContentPresenter widget = new ScrollContentPresenter ();
-
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -19120,24 +19970,64 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_ContentControl ()
-        {
-            ScrollViewer widget = new ScrollViewer ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_Control ()
         {
             ScrollViewer widget = new ScrollViewer ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            ScrollViewer widget = new ScrollViewer ();
-
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -19145,6 +20035,17 @@ namespace MoonTest.System.Windows.Controls
         {
             ScrollViewer widget = new ScrollViewer ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -19595,24 +20496,64 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_RangeBase ()
-        {
-            Slider widget = new Slider ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_Control ()
         {
             Slider widget = new Slider ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            Slider widget = new Slider ();
-
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -19620,6 +20561,17 @@ namespace MoonTest.System.Windows.Controls
         {
             Slider widget = new Slider ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -20045,24 +20997,64 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_ContentControl ()
-        {
-            ToolTip widget = new ToolTip ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_Control ()
         {
             ToolTip widget = new ToolTip ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            ToolTip widget = new ToolTip ();
-
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -20070,6 +21062,17 @@ namespace MoonTest.System.Windows.Controls
         {
             ToolTip widget = new ToolTip ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -20506,24 +21509,64 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        public void Test_PropertyGetter_RangeBase ()
-        {
-            ProgressBar widget = new ProgressBar ();
-
-        }
-
-        [TestMethod]
         public void Test_PropertyGetter_Control ()
         {
             ProgressBar widget = new ProgressBar ();
 
-        }
-
-        [TestMethod]
-        public void Test_PropertyGetter_FrameworkElement ()
-        {
-            ProgressBar widget = new ProgressBar ();
-
+            Assert.AreEqual(true, widget.IsTabStop, "IsTabStop does not match the default value");
+            Assert.AreEqual(true, widget.IsEnabled, "IsEnabled does not match the default value");
+            Assert.AreEqual(2147483647, widget.TabIndex, "TabIndex does not match the default value");
+            Assert.AreEqual(KeyboardNavigationMode.Local, widget.TabNavigation, "TabNavigation does not match the default value");
+            Assert.IsNull(widget.Template, "Template should have returned null");
+            Assert.AreEqual("0,0,0,0", widget.Padding.ToString (), "Padding does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.BorderThickness.ToString (), "BorderThickness does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Center, widget.HorizontalContentAlignment, "HorizontalContentAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Center, widget.VerticalContentAlignment, "VerticalContentAlignment does not match the default value");
+            Assert.IsNull(widget.Background, "Background should have returned null");
+            Assert.IsNull(widget.BorderBrush, "BorderBrush should have returned null");
+            Assert.IsNotNull(widget.FontFamily, "FontFamily should not have returned null");
+            Assert.AreEqual("Portable User Interface", widget.FontFamily.ToString (), "FontFamily does not match the default value");
+            Assert.AreEqual((double) 11, widget.FontSize, "FontSize does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStretch.ToString (), "FontStretch does not match the default value");
+            Assert.AreEqual("Normal", widget.FontStyle.ToString (), "FontStyle does not match the default value");
+            Assert.AreEqual("Normal", widget.FontWeight.ToString (), "FontWeight does not match the default value");
+            Assert.IsNotNull(widget.Foreground, "Foreground should not have returned null");
+            Assert.IsTrue(widget.Foreground is SolidColorBrush, "Foreground is not of the correct type");
+            Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
+            Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
+            Assert.IsNotNull(widget.Resources, "Resources should not have returned null");
+            Assert.IsTrue(widget.Resources is ResourceDictionary, "Resources is not of the correct type");
+            Assert.AreEqual((double) 0, widget.ActualWidth, "ActualWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.ActualHeight, "ActualHeight does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Width), "Width does not match the default value");
+            Assert.IsTrue(Double.IsNaN((double) widget.Height), "Height does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinWidth, "MinWidth does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxWidth), "MaxWidth does not match the default value");
+            Assert.AreEqual((double) 0, widget.MinHeight, "MinHeight does not match the default value");
+            Assert.IsTrue(Double.IsPositiveInfinity((double) widget.MaxHeight), "MaxHeight does not match the default value");
+            Assert.AreEqual(HorizontalAlignment.Stretch, widget.HorizontalAlignment, "HorizontalAlignment does not match the default value");
+            Assert.AreEqual(VerticalAlignment.Stretch, widget.VerticalAlignment, "VerticalAlignment does not match the default value");
+            Assert.AreEqual("0,0,0,0", widget.Margin.ToString (), "Margin does not match the default value");
+            Assert.IsNull(widget.Style, "Style should have returned null");
+            Assert.IsNull(widget.Parent, "Parent should have returned null");
+            Assert.IsNotNull(widget.Name, "Name should not have returned null");
+            Assert.AreEqual("", widget.Name, "Name does not match the default value");
+            Assert.IsNull(widget.Tag, "Tag should have returned null");
+            Assert.IsNull(widget.Cursor, "Cursor should have returned null");
+            Assert.IsNotNull(widget.Language, "Language should not have returned null");
+            Assert.AreEqual("en-us", widget.Language.IetfLanguageTag, "Language does not match the default value");
+            Assert.IsNull(widget.DataContext, "DataContext should have returned null");
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -20531,6 +21574,17 @@ namespace MoonTest.System.Windows.Controls
         {
             ProgressBar widget = new ProgressBar ();
 
+            Assert.AreEqual((double) 1, widget.Opacity, "Opacity does not match the default value");
+            Assert.IsNull(widget.Clip, "Clip should have returned null");
+            Assert.IsNull(widget.OpacityMask, "OpacityMask should have returned null");
+            Assert.AreEqual("0,0", widget.RenderTransformOrigin.ToString (), "RenderTransformOrigin does not match the default value");
+            Assert.AreEqual(true, widget.IsHitTestVisible, "IsHitTestVisible does not match the default value");
+            Assert.AreEqual(Visibility.Visible, widget.Visibility, "Visibility does not match the default value");
+            Assert.AreEqual("0,0", widget.RenderSize.ToString (), "RenderSize does not match the default value");
+            Assert.AreEqual(true, widget.UseLayoutRounding, "UseLayoutRounding does not match the default value");
+            Assert.AreEqual("0,0", widget.DesiredSize.ToString (), "DesiredSize does not match the default value");
+            Assert.IsNotNull(widget.RenderTransform, "RenderTransform should not have returned null");
+            Assert.IsTrue(widget.RenderTransform is MatrixTransform, "RenderTransform is not of the correct type");
         }
 
         [TestMethod]
@@ -20655,7 +21709,6 @@ namespace MoonTest.System.Windows
         {
             ResourceDictionary widget = new ResourceDictionary ();
 
-            // exception generating test for Item
             Assert.AreEqual(false, widget.IsReadOnly, "IsReadOnly does not match the default value");
             Assert.AreEqual(0, widget.Count, "Count does not match the default value");
         }
