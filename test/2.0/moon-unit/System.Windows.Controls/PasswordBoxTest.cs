@@ -54,7 +54,6 @@ namespace Mono.Moonlight.UnitTesting
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Defaults()
         {
             Assert.AreEqual(null, box.FontSource, "#1");
