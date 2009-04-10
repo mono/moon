@@ -328,7 +328,9 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	
 		//render here
 		LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
+		double fade = GetValue (MultiScaleImage::TileFadeProperty)->AsDouble();
 		if (from_layer >= 0) {
+
 			cairo_save (cr);
 			cairo_rectangle (cr, 0, 0, msi_w, msi_h);
 			cairo_clip (cr);
@@ -400,9 +402,13 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						cairo_set_source_surface (cr, image, 0, 0);
 						
 						double *opacity = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
+						double combined = 1.0;
 
-						if (opacity && *opacity > GetValue (MultiScaleImage::TileFadeProperty)->AsDouble()) 
-							cairo_paint_with_alpha (cr, MIN(1.0 - *opacity + GetValue(MultiScaleImage::TileFadeProperty)->AsDouble (), 1.0));
+						if (opacity && *opacity > fade) 
+							combined = MIN(1.0 - *opacity + fade, 1.0);
+
+						if (IS_TRANSLUCENT (combined))
+							cairo_paint_with_alpha (cr, combined);
 						else
 							cairo_paint (cr);
 						    
@@ -544,6 +550,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	cairo_scale (cr, 1.0 / im_w, 1.0 / im_w);
 
 	LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
+
+	double fade = GetValue (MultiScaleImage::TileFadeProperty)->AsDouble();
 	int layer_to_render = from_layer;
 	while (from_layer >= 0 && layer_to_render <= to_layer) {
 		int i, j;
@@ -570,10 +578,16 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				cairo_set_source_surface (cr, image, 0, 0);
 
 				double *opacity = (double*)(cairo_surface_get_user_data (image, &full_opacity_at_key));
-				if (opacity && *opacity > GetValue (MultiScaleImage::TileFadeProperty)->AsDouble()) {
-					cairo_paint_with_alpha (cr, MIN(1.0 - *opacity + GetValue(MultiScaleImage::TileFadeProperty)->AsDouble (), 1.0));
-				} else
+				double combined = 1.0;
+
+				if (opacity && *opacity > fade)
+					combined = MIN(1.0 - *opacity + fade, 1.0);
+
+				if (IS_TRANSLUCENT (combined))
+					cairo_paint_with_alpha (cr, combined);
+				else
 					cairo_paint (cr);
+
 				cairo_restore (cr);
 			}
 		}

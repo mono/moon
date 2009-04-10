@@ -1,4 +1,9 @@
-2009-04-10  Jeffrey Stedfast  <fejj@novell.com>
+2009-04-10  Larry Ewing  <lewing@novell.com>
+
+	* multiscaleimage.cpp: add a translucency check before calling
+	cairo_paint_with_alpha.
+
+2009-04-10  Jeffrey Stedfast  <fejj@novell.com>a
 
 	* textblock.cpp (SetFontSource): New method for setting a font
 	source via a resource name.
@@ -26,8 +31,8 @@
 	(OnPropertyChanged): Parse the FontFamily name.
 	(DownloaderComplete): Use SetValue() correctly.
 
-	* glyphs.cpp (CleanupDownloader): Remove the CompletedEvent
-	handler.
+	* glyphs.cpp (CleanupDownloader): Remove the ComedEvent
+	handler.u
 
 2009-04-10  Sebastien Pouliot  <sebastien@ximian.com>
 
