@@ -52,18 +52,22 @@ if INCLUDE_FFMPEG
 	cp -L $(avutil_libdir)/libavutil.so .xpinstall/plugins/moonlight/
 	cp -L $(avcodec_libdir)/libavcodec.so .xpinstall/plugins/moonlight/
 endif INCLUDE_FFMPEG
+
 if INCLUDE_BROWSER_MANAGED_CODE
 	cp -L $(mono_libdir)/libmono.so .xpinstall/plugins/moonlight/
-	mkdir -p .xpinstall/plugins/moonlight/mono/2.1/
-	cp -L $(mono_dlldir)/mono/2.1/mscorlib.dll .xpinstall/plugins/moonlight/mono/2.1/
-	find $(mono_dlldir)/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -package 2.1 -root .xpinstall/plugins/moonlight ';'
-	find $(top_builddir)/class/lib/2.1 -name \*.dll -exec gacutil -i '{}' -package 2.1 -root .xpinstall/plugins/moonlight ';'
-	find .xpinstall -name \*.mdb -exec rm '{}' ';'
+#	mkdir -p .xpinstall/plugins/moonlight/mono/2.1/
+#	cp -L $(mono_dlldir)/mono/2.1/mscorlib.dll .xpinstall/plugins/moonlight/mono/2.1/
+#	find $(mono_dlldir)/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -package 2.1 -root .xpinstall/plugins/moonlight ';'
+#	find $(top_builddir)/class/lib/2.1 -name \*.dll -exec gacutil -i '{}' -package 2.1 -root .xpinstall/plugins/moonlight ';'
+	cp -L $(mono_dlldir)/mono/2.1/*.dll .xpinstall/plugins/moonlight
+	cp -L $(top_builddir)/class/lib/2.1/*.dll .xpinstall/plugins/moonlight
+#	find .xpinstall -name \*.mdb -exec rm '{}' ';'
+
 	mkdir -p .xpinstall/plugins/moonlight/mono/2.0/
-	cp -L $(srcdir)/../moon.config .xpinstall/plugins/moonlight/mono/config
+#	cp -L $(srcdir)/../moon.config .xpinstall/plugins/moonlight/mono/config
 	cp -L $(mono_sysconfdir)/mono/2.0/machine.config .xpinstall/plugins/moonlight/mono/2.0/
 endif INCLUDE_BROWSER_MANAGED_CODE
-	find .xpinstall -name \*.so -exec strip '{}' ';'
+	find .xpinstall -name \*.so -exec strip '{}' ';'  # strip symbols
 	cd .xpinstall/ && zip -r9 ../$@ *
 
 clean-local:
