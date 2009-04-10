@@ -186,7 +186,7 @@ BitmapImage::UriSourceChanged ()
 	
 	if (current && uri) {
 		int size = 0;
-		unsigned char *buffer = (unsigned char *)current->GetResource (uri->GetPath (), &size);
+		unsigned char *buffer = (unsigned char *) current->GetResource (uri, &size);
 		if (size > 0) {
 			PixbufWrite (buffer, 0, size);
 			PixmapComplete ();

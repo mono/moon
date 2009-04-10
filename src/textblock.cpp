@@ -278,17 +278,23 @@ TextBlock::SetFontSource (const char *resource)
 	const char *guid = NULL;
 	char *filename;
 	size_t len;
+	Uri *uri;
 	
 	ClearValue (TextBlock::FontSourceProperty);
 	CleanupDownloader ();
 	
-	if (!application || !(filename = application->GetResourceAsPath (resource))) {
+	uri = new Uri ();
+	
+	if (!application || !uri->Parse (resource) || !(filename = application->GetResourceAsPath (uri))) {
 		ClearValue (TextBlock::FontFilenameProperty);
 		ClearValue (TextBlock::FontGUIDProperty);
 		font->SetFilename (NULL);
 		UpdateFontDescriptions ();
+		delete uri;
 		return;
 	}
+	
+	delete uri;
 	
 	// check if the resource is an obfuscated font
 	len = strlen (resource);

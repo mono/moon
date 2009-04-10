@@ -1,3 +1,21 @@
+2009-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uri.cpp (ToString): Made to accept const Uri*
+
+	* textblock.cpp (SetFontSource): Parse the resource string into a
+	Uri and pass that along to GetResourceAsPath().
+
+	* glyphs.cpp (SetFontResource): Parse the resource string into a
+	Uri and pass that along to GetResourceAsPath().
+
+	* bitmapimage.cpp (UriSourceChanged): Back to passing a Uri for
+	GetResource().
+
+	* application.cpp (GetResource): Oops, this really does need a Uri
+	argument.
+	(GetResourceAsPath): Use a Uri here too, and convert any ';' into
+	a '/'.
+
 2009-04-10  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Let the XamlElementInstances cleanup their Values.

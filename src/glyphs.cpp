@@ -719,11 +719,21 @@ Glyphs::SetFontResource (const char *resource)
 	const char *guid = NULL;
 	char *filename;
 	size_t len;
+	Uri *uri;
 	
-	if (!application || !(filename = application->GetResourceAsPath (resource))) {
-		desc->UnsetFields (FontMaskFilename | FontMaskIndex);
+	uri = new Uri ();
+	if (!uri->Parse (resource)) {
+		delete uri;
 		return;
 	}
+	
+	if (!application || !(filename = application->GetResourceAsPath (uri))) {
+		desc->UnsetFields (FontMaskFilename | FontMaskIndex);
+		delete uri;
+		return;
+	}
+	
+	delete uri;
 	
 	// check if the resource is an obfuscated font
 	len = strlen (resource);
