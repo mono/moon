@@ -52,8 +52,8 @@
 	(OnPropertyChanged): Parse the FontFamily name.
 	(DownloaderComplete): Use SetValue() correctly.
 
-	* glyphs.cpp (CleanupDownloader): Remove the ComedEvent
-	handler.u
+	* glyphs.cpp (CleanupDownloader): Remove the CompletedEvent
+	handler.
 
 2009-04-10  Sebastien Pouliot  <sebastien@ximian.com>
 
