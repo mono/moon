@@ -365,13 +365,16 @@ namespace DefaultValues {
 				bool emit_test = false;
 
 				for (int i = 0; i < properties.Length; i++) {
+					if (tested.ContainsKey (properties[i].Name))
+						continue;
+
 					try {
 						getter = properties[i].GetGetMethod ();
 					} catch {
 						getter = null;
 					}
 					
-					if (getter == null || getter.IsStatic || !getter.IsPublic)
+					if (getter == null || getter.IsStatic || !getter.IsPublic || getter.GetParameters().Length > 0)
 						continue;
 					
 					if (IgnoreType (getter.ReturnType))
@@ -394,7 +397,7 @@ namespace DefaultValues {
 							getter = null;
 						}
 					
-						if (getter == null || getter.IsStatic || !getter.IsPublic)
+						if (getter == null || getter.IsStatic || !getter.IsPublic || getter.GetParameters().Length > 0)
 							continue;
 					
 						if (IgnoreType (getter.ReturnType))
