@@ -543,7 +543,10 @@ namespace Mono {
 				}
 				else if ((v is FontStretch) || (v is FontStyle) || (v is FontWeight) || (v is PixelFormat)) {
 					value.k = Kind.INT32;
-					value.u.i32 = v.GetHashCode (); // unit tested as such
+					// this next line works because each of the above struct types implements
+					// GetHashCode by returning an enum value that maps directly to the enums
+					// we use in unmanaged code.
+					value.u.i32 = v.GetHashCode ();
 				}
 				else if (v is TextDecorationCollection) {
 					value.k = Kind.INT32;
