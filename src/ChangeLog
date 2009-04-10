@@ -1,3 +1,8 @@
+2009-04-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security.c: Move #if MONO_ENABLE_CORECLR_SECURITY to remove
+	all coreclr-related code from being compiled.
+
 2009-04-09  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (UIElement::WalkTreeForLoaded): be more

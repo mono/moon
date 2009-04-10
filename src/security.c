@@ -13,6 +13,8 @@
 #include "config.h"
 #include "security.h"
 
+#if MONO_ENABLE_CORECLR_SECURITY
+
 static struct stat platform_stat;
 
 const static char* platform_code_assemblies [] = {
@@ -76,7 +78,6 @@ determine_platform_image (const char *image_name)
 void
 security_enable_coreclr (const char *platform_dir)
 {
-#if MONO_ENABLE_CORECLR_SECURITY
 	if (g_getenv ("MOON_DISABLE_SECURITY") != NULL) {
 		g_warning ("CORECLR was DISABLED using MOON_DISABLE_SECURITY override");
 	} else if (g_path_is_absolute (platform_dir)) {
@@ -90,6 +91,14 @@ security_enable_coreclr (const char *platform_dir)
 	}
 
 	mono_assembly_setrootdir (platform_dir);
-#endif
 }
+
+#else
+
+void
+security_enable_coreclr (const char *platform_dir)
+{
+}
+
+#endif
 
