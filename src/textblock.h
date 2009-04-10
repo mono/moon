@@ -174,7 +174,6 @@ class TextBlock : public FrameworkElement {
 	TextFontDescription *font;
 	Downloader *downloader;
 	TextLayout *layout;
-	//char *resource;
 	
 	double actual_height;
 	double actual_width;

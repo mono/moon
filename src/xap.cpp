@@ -10,95 +10,48 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
-#include <config.h>
-#include <string.h>
-#include <malloc.h>
-#include <glib.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <glib.h>
+
+#include <string.h>
+#include <stdlib.h>
+
+#include "zip/unzip.h"
 #include "xaml.h"
 #include "error.h"
 #include "utils.h"
 #include "type.h"
-#include "zip/unzip.h"
 #include "xap.h"
 
 char *
 Xap::Unpack (const char *fname)
 {
+	unzFile zipfile;
 	char *xap_dir;
-
-	xap_dir = CreateTempDir (fname);
-	if (xap_dir == NULL)
-		return NULL;
-
-	unzFile zipfile = unzOpen (fname);
-	if (zipfile == NULL)
-		goto exception0;
-
-	if (unzGoToFirstFile (zipfile) != UNZ_OK)
-		goto exception1;
 	
-	if (unzOpenCurrentFile (zipfile) != UNZ_OK)
-		goto exception1;
-
-	do {
-		char *filename, *path, *dirname, *s;
-		unz_file_info finfo;
-		int fd;
-		
-		unzGetCurrentFileInfo (zipfile, &finfo, NULL, 0, NULL, 0, NULL, 0);
-		filename = (char *) g_malloc (finfo.size_filename + 2);
-		if (filename == 0)
-			goto exception1;
-		
-		unzGetCurrentFileInfo (zipfile, NULL, filename, finfo.size_filename+1, NULL, 0, NULL, 0);
-		
-		if (finfo.external_fa & (1 << 4)) {
-			g_free (filename);
-			continue;
-		}
-		
-		for (s = filename; *s; s++) {
-			if (*s == '\\')
-				*s = '/';
-		}
-		
-		path = g_build_filename (xap_dir, filename, NULL);
-		g_free (filename);
-		
-		dirname = g_path_get_dirname (path);
-		g_mkdir_with_parents (dirname, 0700);
-		g_free (dirname);
-		
-		fd = open (path, O_CREAT | O_WRONLY, 0644);
-		g_free (path);
-		
-		if (fd == -1)
-			goto exception1;
-		
-		if (unzOpenCurrentFile (zipfile) != UNZ_OK)
-			goto exception1;
-		
-		bool exc = ExtractFile (zipfile, fd);
-		unzCloseCurrentFile (zipfile);
-		if (exc == false)
-			goto exception1;
-	} while (unzGoToNextFile (zipfile) == UNZ_OK);
-	unzClose (zipfile);
-
+	if (!(xap_dir = CreateTempDir (fname)))
+		return NULL;
+	
+	if (!(zipfile = unzOpen (fname))) {
+		RemoveDir (xap_dir);
+		g_free (xap_dir);
+		return NULL;
+	}
+	
+	// FIXME: at some point we'll want to pass 'true' here (as part of the
+	// fix for case-insensitive resource access)
+	if (!ExtractAll (zipfile, xap_dir, false)) {
+		RemoveDir (xap_dir);
+		unzClose (zipfile);
+		g_free (xap_dir);
+		return NULL;
+	}
+	
 	return xap_dir;
-
- exception1:
-	unzClose (zipfile);
-
- exception0:
-	RemoveDir (xap_dir);
-	g_free (xap_dir);
-
-	return NULL;
 }
 
 Xap::Xap (XamlLoader *loader, char *xap_dir, DependencyObject *root)

@@ -35,7 +35,9 @@ public:
 	
 	void ApplyDefaultStyle (FrameworkElement *fwe, ManagedTypeInfo *key);
 	void ApplyStyle (FrameworkElement *fwe, Style *style);
-	gpointer GetResource (Uri *uri, int *size);
+	
+	gpointer GetResource (const char *name, int *size);
+	char *GetResourceAsPath (const char *name);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static Application *GetCurrent ();
@@ -55,6 +57,7 @@ private:
 	ApplyDefaultStyleCallback apply_default_style_cb;
 	ApplyStyleCallback apply_style_cb;
 	GetResourceCallback get_resource_cb;
+	char *resource_root;
 };
 
 #endif /* __APPLICATION_H__ */

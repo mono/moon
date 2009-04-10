@@ -201,7 +201,6 @@ TextBlock::TextBlock ()
 	providers[PropertyPrecedence_DynamicValue] = new TextBlockDynamicPropertyValueProvider (this);
 	
 	downloader = NULL;
-	//resource = NULL;
 	
 	layout = new TextLayout ();
 	
@@ -236,14 +235,6 @@ TextBlock::CleanupDownloader ()
 		downloader->unref ();
 		downloader = NULL;
 	}
-	
-#if 0
-	if (resource) {
-		unlink (resource);
-		g_free (resource);
-		resource = NULL;
-	}
-#endif
 }
 
 void
@@ -280,67 +271,40 @@ TextBlock::SetFontSource (Downloader *downloader)
 	}
 }
 
-#if 0
 void
 TextBlock::SetFontSource (const char *resource)
 {
-	Application *current = Application::GetCurrent ();
-	char *filename, *buffer, *path;
-	const char *name, *guid = NULL;
-	int buflen, fd;
+	Application *application = Application::GetCurrent ();
+	const char *guid = NULL;
+	char *filename;
 	size_t len;
 	
 	ClearValue (TextBlock::FontSourceProperty);
 	CleanupDownloader ();
 	
-	if (!(buffer = (char *) current->GetResource (resource, &buflen)))
+	if (!application || !(filename = application->GetResourceAsPath (resource))) {
+		ClearValue (TextBlock::FontFilenameProperty);
+		ClearValue (TextBlock::FontGUIDProperty);
 		return;
-	
-	// get the basename of the resource
-	if (!(name = strrchr (resource, '/')))
-		name = resource;
-	else
-		name++;
+	}
 	
 	// check if the resource is an obfuscated font
-	len = strlen (name);
-	if (len > 6 && !g_ascii_strcasecmp (name + len - 6, ".odttf"))
+	len = strlen (resource);
+	if (len > 6 && !g_ascii_strcasecmp (resource + len - 6, ".odttf"))
 		guid = name;
 	else
 		guid = NULL;
 	
-	// create a temp file to write the resource to
-	filename = g_strdup_printf ("%s.XXXXXX", name);
-	path = g_build_filename (g_get_tmp_dir (), filename, NULL);
-	g_free (filename);
-	
-	if ((fd = g_mkstemp (path)) == -1) {
-		g_free (buffer);
-		g_free (path);
-		return;
-	}
-	
-	if (write_all (fd, buffer, (size_t) buflen) == -1) {
-		g_free (buffer);
-		close (fd);
-		
-		unlink (path);
-		g_free (path);
-		return;
-	}
-	
-	close (fd);
-	
-	SetValue (TextBlock::FontFilenameProperty, Value (path));
+	SetValue (TextBlock::FontFilenameProperty, Value (filename));
 	if (guid != NULL)
 		SetValue (TextBlock::FontGUIDProperty, Value (guid));
 	else
 		ClearValue (TextBlock::FontGUIDProperty);
 	
-	font->SetFilename (path, guid);
-	this->resource = path;
+	font->SetFilename (filename, guid);
+	
+	g_free (filename);
 }
-#endif
 
 Size
 TextBlock::GetSize ()
@@ -691,13 +655,13 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetId () == TextBlock::FontFamilyProperty) {
 		FontFamily *family = args->GetNewValue() ? args->GetNewValue()->AsFontFamily () : NULL;
 		const char *family_name = NULL;
-		//char *resource;
+		char *resource;
 		
 		if (family && family->source && (family_name = strchr (family->source, '#'))) {
 			// FontFamily can reference a font resource in the form "<resource>#<family name>"
-			//resource = g_strndup (family->source, family_name - family->source);
-			//SetFontSource (resource);
-			//g_free (resource);
+			resource = g_strndup (family->source, family_name - family->source);
+			SetFontSource (resource);
+			g_free (resource);
 			family_name++;
 		} else if (family) {
 			family_name = family->source;

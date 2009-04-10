@@ -182,10 +182,11 @@ BitmapImage::UriSourceChanged ()
 {
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 	Application *current = Application::GetCurrent ();
-
-	if (current) {
+	Uri *uri = GetUriSource ();
+	
+	if (current && uri && !uri->isAbsolute) {
 		int size = 0;
-		unsigned char *buffer = (unsigned char *)current->GetResource (GetUriSource (), &size);
+		unsigned char *buffer = (unsigned char *)current->GetResource (uri->GetPath (), &size);
 		if (size > 0) {
 			PixbufWrite (buffer, 0, size);
 			PixmapComplete ();

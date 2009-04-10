@@ -250,6 +250,27 @@ write_all (int fd, char *buf, size_t len)
 	return nwritten;
 }
 
+const char *
+CanonicalizeFilename (char *filename, int n)
+{
+	char *inptr = filename;
+	char *inend;
+	
+	if (n < 0)
+		inend = inptr + strlen (inptr);
+	else
+		inend = inptr + n;
+	
+	while (inptr < inend) {
+		if (*inptr != '\\')
+			*inptr = g_ascii_tolower (*inptr);
+		else
+			*inptr = G_DIR_SEPARATOR;
+	}
+	
+	return filename;
+}
+
 bool
 ExtractFile (unzFile zip, int fd)
 {
@@ -276,6 +297,63 @@ ExtractFile (unzFile zip, int fd)
 	return true;
 }
 
+bool
+ExtractAll (unzFile zip, const char *dir, bool canon)
+{
+	char *filename, *path;
+	unz_file_info info;
+	int fd;
+	
+	if (unzGoToFirstFile (zipfile) != UNZ_OK)
+		return false;
+	
+	do {
+		unzGetCurrentFileInfo (zipfile, &info, NULL, 0, NULL, 0, NULL, 0);
+		if (info.external_fa & (1 << 4))
+			continue;
+		
+		if (!(filename = (char *) g_malloc (info.size_filename + 1)))
+			return false;
+		
+		unzGetCurrentFileInfo (zipfile, NULL, filename, info.size_filename + 1, NULL, 0, NULL, 0);
+		
+		if (canon)
+			CanonicalizeFilename (filename, info.size_filename);
+		
+		path = g_build_filename (dir, filename, NULL);
+		g_free (filename);
+		
+		dirname = g_path_get_dirname (path);
+		if (g_mkdir_with_parents (dirname, 0700) == -1 && errno != EEXIST) {
+			g_free (dirname);
+			g_free (path);
+			return false;
+		}
+		
+		g_free (dirname);
+		
+		if ((fd = open (path, O_CREAT | O_WRONLY | O_TRUNC, 0600)) == -1) {
+			g_free (path);
+			return false;
+		}
+		
+		g_free (path);
+		
+		if (unzOpenCurrentFile (zipfile) != UNZ_OK) {
+			close (fd);
+			return false;
+		}
+		
+		if (!ExtractFile (zipfile, fd)) {
+			unzCloseCurrentFile (zipfile);
+			return false;
+		}
+		
+		unzCloseCurrentFile (zipfile);
+	} while (unzGoToNextFile (zipfile) == UNZ_OK);
+	
+	return true;
+}
 
 char *
 MakeTempDir (char *tmpdir)
