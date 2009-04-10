@@ -304,11 +304,11 @@ ExtractAll (unzFile zip, const char *dir, bool canon)
 	unz_file_info info;
 	int fd;
 	
-	if (unzGoToFirstFile (zipfile) != UNZ_OK)
+	if (unzGoToFirstFile (zip) != UNZ_OK)
 		return false;
 	
 	do {
-		unzGetCurrentFileInfo (zipfile, &info, NULL, 0, NULL, 0, NULL, 0);
+		unzGetCurrentFileInfo (zip, &info, NULL, 0, NULL, 0, NULL, 0);
 		if (info.external_fa & (1 << 4))
 			continue;
 		
@@ -339,18 +339,18 @@ ExtractAll (unzFile zip, const char *dir, bool canon)
 		
 		g_free (path);
 		
-		if (unzOpenCurrentFile (zipfile) != UNZ_OK) {
+		if (unzOpenCurrentFile (zip) != UNZ_OK) {
 			close (fd);
 			return false;
 		}
 		
-		if (!ExtractFile (zipfile, fd)) {
+		if (!ExtractFile (zip, fd)) {
 			unzCloseCurrentFile (zipfile);
 			return false;
 		}
 		
-		unzCloseCurrentFile (zipfile);
-	} while (unzGoToNextFile (zipfile) == UNZ_OK);
+		unzCloseCurrentFile (zip);
+	} while (unzGoToNextFile (zip) == UNZ_OK);
 	
 	return true;
 }
