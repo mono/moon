@@ -291,7 +291,7 @@ TextBlock::SetFontSource (const char *resource)
 	// check if the resource is an obfuscated font
 	len = strlen (resource);
 	if (len > 6 && !g_ascii_strcasecmp (resource + len - 6, ".odttf"))
-		guid = name;
+		guid = resource;
 	else
 		guid = NULL;
 	

@@ -190,7 +190,7 @@ class TextBlock : public FrameworkElement {
 	char *GetTextInternal (InlineCollection *inlines);
 	bool SetTextInternal (const char *text);
 	
-	//void SetFontSource (const char *resource);
+	void SetFontSource (const char *resource);
 	
 	void UpdateLayoutAttributes ();
 	void UpdateFontDescriptions ();
