@@ -261,7 +261,7 @@ TextBlock::SetFontSource (Downloader *downloader)
 	} else {
 		ClearValue (TextBlock::FontFilenameProperty);
 		ClearValue (TextBlock::FontGUIDProperty);
-		font->SetFilename (NULL);
+		font->SetFilename (NULL, NULL);
 		UpdateFontDescriptions ();
 		
 		dirty = true;
@@ -285,6 +285,8 @@ TextBlock::SetFontSource (const char *resource)
 	if (!application || !(filename = application->GetResourceAsPath (resource))) {
 		ClearValue (TextBlock::FontFilenameProperty);
 		ClearValue (TextBlock::FontGUIDProperty);
+		font->SetFilename (NULL);
+		UpdateFontDescriptions ();
 		return;
 	}
 	
@@ -302,6 +304,7 @@ TextBlock::SetFontSource (const char *resource)
 		ClearValue (TextBlock::FontGUIDProperty);
 	
 	font->SetFilename (filename, guid);
+	UpdateFontDescriptions ();
 	
 	g_free (filename);
 }

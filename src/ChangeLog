@@ -1,3 +1,24 @@
+2009-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (OpenFaceByIndex): New helper function split out from
+	FontFace::LoadFontFace() which performs the FT_Open_Face() and
+	family name matching.
+	(OpenFaceByFamily): If we don't have an index, this function opens
+	all faces in the file and finds a matching font face based on
+	family.
+	(LoadFontFace): Use our new helper functions.
+
+	* textblock.cpp (SetFontSource): On fail, set the font filename to
+	NULL and call UpdateFontDescriptions() no matter what.
+
+	* font.cpp (UnsetFields): Allow unsetting of the font index.
+	(Merge): Merge the index separately.
+	(SetIndex): Set/unset the FontMaskIndex bit.
+
+	* glyphs.cpp (SetFontResource): New internal method to set a font
+	resource stream.
+	(OnPropertyChanged): Handle non-absolute Uris as resource streams.
+
 2009-04-10  Larry Ewing  <lewing@novell.com>
 
 	* multiscaleimage.cpp: add a translucency check before calling
