@@ -7,7 +7,7 @@
  * 
  */
 
-#ifndef __LIBMOON__H__
+#ifndef __LIBMOON_H__
 #define __LIBMOON_H__
 
 #include "animation.h"

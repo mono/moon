@@ -18,14 +18,20 @@ AC_DEFUN([MOONLIGHT_CHECK_TESTING],
 	dnl test suite
 	dnl
 	
-	with_testing=yes
-	if test x$with_ff3 = xyes; then
-		TEST_CHECK_MODULES(XULRUNNER, [mozilla-gtkmozembed mozilla-js], 
-			[failed to find FF3 development packages])
-	elif test x$with_ff2 = xyes; then
-		TEST_CHECK_MODULES(XULRUNNER, [xulrunner-gtkmozembed], 
-			[failed to find FF2 development packages])
-	fi
+	AC_ARG_WITH(testing, [  --with-testing=yes|no      Enable unit tests (defaults=yes)],[],[with_testing=yes])
+
+	if test x$with_testing = xyes; then
+
+		if test x$with_ff3 = xyes; then
+			TEST_CHECK_MODULES(XULRUNNER, [mozilla-gtkmozembed mozilla-js], 
+				[failed to find FF3 development packages])
+		elif test x$with_ff2 = xyes; then
+			TEST_CHECK_MODULES(XULRUNNER, [xulrunner-gtkmozembed], 
+				[failed to find FF2 development packages])
+		fi
+	else
+        testing_reason="(reason: disabled by user)"
+    fi
 
 	TEST_CHECK_MODULES(XTST, [xtst >= 1.0])
 	TEST_CHECK_MODULES(IMAGEMAGICK, [ImageMagick++ >= 6.2.8])
@@ -35,18 +41,24 @@ AC_DEFUN([MOONLIGHT_CHECK_TESTING],
 	dnl
 	dnl performance suite
 	dnl
-	
-	with_performance=yes
-	if test x$with_ff3 = xyes; then
-		PKG_CHECK_MODULES(XULRUNNER, [mozilla-gtkmozembed mozilla-js], [], [
+
+	AC_ARG_WITH(performance, [  --with-performance=yes|no      Enable performance tests (defaults=yes)],[],[with_performance=yes])
+
+	if test x$with_performance = xyes; then
+
+		if test x$with_ff3 = xyes; then
+			PKG_CHECK_MODULES(XULRUNNER, [mozilla-gtkmozembed mozilla-js], [], [
+				with_performance=no
+				performance-reason="(reason: failed to find FF3 development packages)"
+			])
+		else
 			with_performance=no
-			performance_reason="(reason: failed to find FF3 development packages)"
-		])
-	else
-		with_performance=no
-		performance_reason="(reason: performance suite requires FF3)"
+			performance_reason="(reason: performance suite requires FF3)"
+		fi
+    else
+        performance_reason="(reason: disabled by user)"
 	fi
-	
+
 	AM_CONDITIONAL(INCLUDE_PERFORMANCE,test x$with_performance = xyes)
 
 	dnl Look to see if the MS tests are installed
