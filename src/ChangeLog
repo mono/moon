@@ -1,5 +1,9 @@
 2009-04-11  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (OpenFaceByIndex): Don't leave any FT_Faces open on
+	fail. This is probably what was causing the crash on
+	font_shutdown().
+
 	* glyphs.cpp (SetFontResource): Now takes a Uri argument rather
 	than a string and returns a bool argument hinting at whether we
 	succeeded or not.

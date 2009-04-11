@@ -1146,11 +1146,10 @@ OpenFaceByIndex (const FcChar8 *filename, FT_Open_Args *args, int index, const c
 				fputc ('\n', stderr);
 			}
 #endif
-			
-			return false;
+		} else {
+			LOG_FONT (stderr, "no\n\t\t* not a scalable font\n");
 		}
 		
-		LOG_FONT (stderr, "no\n\t\t* not a scalable font\n");
 		FT_Done_Face (ftface);
 	} else {
 		LOG_FONT (stderr, "failed :(\n");
