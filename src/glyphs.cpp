@@ -689,65 +689,29 @@ Glyphs::SetIndicesInternal (const char *in)
 void
 Glyphs::DownloadFont (Surface *surface, Uri *uri)
 {
-	if ((downloader = surface->CreateDownloader ())) {
-		if (uri->GetFragment ()) {
-			if ((index = strtol (uri->GetFragment (), NULL, 10)) < 0 || index == LONG_MAX)
-				index = 0;
-		}
-		
-		char *str = uri->ToString (UriHideFragment);
-		downloader->Open ("GET", str, XamlPolicy);
-		g_free (str);
-		
-		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-		if (downloader->Started () || downloader->Completed ()) {
-			if (downloader->Completed ())
-				DownloaderComplete ();
+	if (uri) {
+		if ((downloader = surface->CreateDownloader ())) {
+			if (uri->GetFragment ()) {
+				if ((index = strtol (uri->GetFragment (), NULL, 10)) < 0 || index == LONG_MAX)
+					index = 0;
+			}
+			
+			char *str = uri->ToString (UriHideFragment);
+			downloader->Open ("GET", str, XamlPolicy);
+			g_free (str);
+			
+			downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+			if (downloader->Started () || downloader->Completed ()) {
+				if (downloader->Completed ())
+					DownloaderComplete ();
+			} else {
+				// This is what actually triggers the download
+				downloader->Send ();
+			}
 		} else {
-			// This is what actually triggers the download
-			downloader->Send ();
+			// we're shutting down
 		}
-	} else {
-		// we're shutting down
 	}
-}
-
-void
-Glyphs::SetFontResource (const char *resource)
-{
-	Application *application = Application::GetCurrent ();
-	const char *guid = NULL;
-	char *filename;
-	size_t len;
-	Uri *uri;
-	
-	uri = new Uri ();
-	if (!uri->Parse (resource)) {
-		delete uri;
-		return;
-	}
-	
-	if (!application || !(filename = application->GetResourceAsPath (uri))) {
-		desc->UnsetFields (FontMaskFilename | FontMaskIndex);
-		delete uri;
-		return;
-	}
-	
-	delete uri;
-	
-	// check if the resource is an obfuscated font
-	len = strlen (resource);
-	if (len > 6 && !g_ascii_strcasecmp (resource + len - 6, ".odttf"))
-		guid = resource;
-	else
-		guid = NULL;
-	
-	desc->SetFilename (filename, guid);
-	
-	// unknown face index
-	desc->UnsetFields (FontMaskIndex);
-	
-	g_free (filename);
 }
 
 void
@@ -786,29 +750,15 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		CleanupDownloader ();
 		index = 0;
 		
-		if (!Uri::IsNullOrEmpty (uri)) {
-			if (!uri->GetScheme ()) {
-				// need to create a downloader for this font...
-				if (surface) {
-					DownloadFont (surface, uri);
-					uri_changed = false;
-				} else {
-					// queue a font download
-					uri_changed = true;
-				}
-				
-				invalidate = false;
-			} else {
-				// this font is a resource stream
-				SetFontResource (uri->GetPath ());
-				uri_changed = false;
-				invalidate = true;
-			}
-		} else {
-			desc->UnsetFields (FontMaskFilename | FontMaskIndex);
+		if (surface) {
+			if (!Uri::IsNullOrEmpty (uri))
+				DownloadFont (surface, uri);
 			uri_changed = false;
-			invalidate = true;
+		} else {
+			uri_changed = true;
 		}
+		
+		invalidate = false;
 	} else if (args->GetId () == Glyphs::FillProperty) {
 		fill = args->GetNewValue() ? args->GetNewValue()->AsBrush() : NULL;
 	} else if (args->GetId () == Glyphs::UnicodeStringProperty) {

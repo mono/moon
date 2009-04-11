@@ -1109,81 +1109,6 @@ FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path
 	return false;
 }
 
-static bool
-OpenFaceByIndex (const FcChar8 *filename, FT_Open_Args *args, int index, const char **families, FT_Face *face)
-{
-	FT_Face ftface = NULL;
-	int i;
-	
-	LOG_FONT (stderr, "\t* loading font from `%s' (index=%d)... ", filename, index);
-	if (FT_Open_Face (libft2, args, index, &ftface) == 0) {
-		if (FT_IS_SCALABLE (ftface)) {
-			if (!families || !ftface->family_name) {
-				LOG_FONT (stderr, "success!\n");
-				*face = ftface;
-				return true;
-			}
-			
-			// make sure the font family name matches what was requested...
-			for (i = 0; families[i]; i++) {
-				if (!g_ascii_strcasecmp (ftface->family_name, families[i])) {
-					LOG_FONT (stderr, "success!\n");
-					*face = ftface;
-					return true;
-				}
-			}
-			
-#if DEBUG
-			if (debug_flags & RUNTIME_DEBUG_FONT) {
-				fprintf (stderr, "no\n\t\t* incorrect family: '%s' does not match any of: ",
-					 ftface->family_name);
-				for (i = 0; families[i]; i++) {
-					fputs (families[i], stderr);
-					if (families[i+1])
-						fputs (", ", stderr);
-				}
-				
-				fputc ('\n', stderr);
-			}
-#endif
-			
-			return false;
-		}
-		
-		LOG_FONT (stderr, "no\n\t\t* not a scalable font\n");
-		FT_Done_Face (ftface);
-	} else {
-		LOG_FONT (stderr, "failed :(\n");
-	}
-	
-	return false;
-}
-
-static bool
-OpenFaceByFamily (const FcChar8 *filename, FT_Open_Args *args, const char **families, FT_Face *face)
-{
-	FT_Face ftface = NULL;
-	int index, n;
-	
-	LOG_FONT (stderr, "\t* loading font from `%s'... ", filename);
-	if (FT_Open_Face (libft2, args, -1, &ftface) != 0) {
-		LOG_FONT (stderr, "failed :(\n");
-		return false;
-	}
-	
-	n = ftface->num_faces;
-	FT_Done_Face (ftface);
-	
-	for (index = 0; index < n; index++) {
-		font_stream_reset (args->stream);
-		
-		if (OpenFaceByIndex (filename, args, index, families, face))
-			return true;
-	}
-	
-	return false;
-}
-
 bool
 FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families)
 {
@@ -1193,6 +1118,7 @@ FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families
 	FT_Face ftface = NULL;
 	FT_Open_Args args;
 	FcResult result;
+	FT_Error err;
 	int index, i;
 	
 	if (FcPatternGetString (pattern, FC_FILE, 0, &filename) == FcResultMatch) {
@@ -1236,15 +1162,47 @@ FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families
 		
 		args.stream = font_stream_new ((const char *) filename, (const char *) guid);
 		
-		if (index >= 0) {
-			if (OpenFaceByIndex (filename, &args, index, families, &ftface))
-				break;
+		LOG_FONT (stderr, "\t* loading font from `%s' (index=%d)... ", filename, index);
+		if ((err = FT_Open_Face (libft2, &args, index, &ftface)) == 0) {
+			if (FT_IS_SCALABLE (ftface)) {
+				if (!families || !ftface->family_name) {
+					LOG_FONT (stderr, "success!\n");
+					break;
+				}
+				
+				// make sure the font family name matches what was requested...
+				for (i = 0; families[i]; i++) {
+					if (!g_ascii_strcasecmp (ftface->family_name, families[i]))
+						break;
+				}
+				
+				if (families[i]) {
+					LOG_FONT (stderr, "success!\n");
+					break;
+				}
+				
+#if DEBUG
+				if (debug_flags & RUNTIME_DEBUG_FONT) {
+					fprintf (stderr, "no\n\t\t* incorrect family: '%s' does not match any of: ",
+						ftface->family_name);
+					for (i = 0; families[i]; i++) {
+						fputs (families[i], stderr);
+						if (families[i+1])
+							fputs (", ", stderr);
+					}
+				
+					fputc ('\n', stderr);
+				}
+#endif
+			} else {
+				LOG_FONT (stderr, "no\n\t\t* not a scalable font\n");
+			}
+			
+			FT_Done_Face (ftface);
+			ftface = NULL;
 		} else {
-			if (OpenFaceByFamily (filename, &args, families, &ftface))
-				break;
+			LOG_FONT (stderr, "failed :(\n");
 		}
-		
-		font_stream_destroy (args.stream);
 		
 	 fail:
 		
@@ -1982,7 +1940,7 @@ TextFontDescription::TextFontDescription ()
 	weight = FontWeightsNormal;
 	stretch = FontStretchesNormal;
 	size = 14.666666984558105;
-	index = -1;
+	index = 0;
 }
 
 TextFontDescription::TextFontDescription (const char *str)
@@ -2071,10 +2029,8 @@ TextFontDescription::UnsetFields (guint8 mask)
 		filename = NULL;
 		g_free (guid);
 		guid = NULL;
+		index = 0;
 	}
-	
-	if (mask & FontMaskIndex)
-		index = -1;
 	
 	if (mask & FontMaskFamily) {
 		g_free (family);
@@ -2111,12 +2067,9 @@ TextFontDescription::Merge (TextFontDescription *desc, bool replace)
 			changed = true;
 		}
 		
-		set |= FontMaskFilename;
-	}
-	
-	if ((desc->set & FontMaskIndex) && (!(set & FontMaskIndex) || replace)) {
-		set |= FontMaskIndex;
 		index = desc->index;
+		
+		set |= FontMaskFilename;
 	}
 	
 	if ((desc->set & FontMaskFamily) && (!(set & FontMaskFamily) || replace)) {
@@ -2249,13 +2202,7 @@ TextFontDescription::SetIndex (int index)
 {
 	bool changed = this->index != index;
 	
-	if (index >= 0) {
-		set |= FontMaskIndex;
-		this->index = index;
-	} else {
-		set &= ~FontMaskIndex;
-		this->index = -1;
-	}
+	this->index = index;
 	
 	if (changed && font != NULL) {
 		font->unref ();
@@ -2413,8 +2360,7 @@ TextFontDescription::ToString () const
 	if (set & FontMaskFilename) {
 		g_string_append (str, "font:");
 		g_string_append (str, filename);
-		if (set & FontMaskIndex)
-			g_string_append_printf (str, "?index=%d", index);
+		g_string_append_printf (str, "?index=%d", index);
 	}
 	
 	if ((set & FontMaskFamily) && family) {

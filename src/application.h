@@ -36,8 +36,8 @@ public:
 	void ApplyDefaultStyle (FrameworkElement *fwe, ManagedTypeInfo *key);
 	void ApplyStyle (FrameworkElement *fwe, Style *style);
 	
-	gpointer GetResource (const Uri *uri, int *size);
-	char *GetResourceAsPath (const Uri *uri);
+	gpointer GetResource (const char *name, int *size);
+	char *GetResourceAsPath (const char *name);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static Application *GetCurrent ();

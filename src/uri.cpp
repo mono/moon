@@ -481,7 +481,7 @@ append_param (GQuark key_id, gpointer value, gpointer user_data)
 }
 
 char *
-Uri::ToString (UriToStringFlags flags) const
+Uri::ToString (UriToStringFlags flags)
 {
 	GString *string;
 	char *uri;
@@ -524,7 +524,7 @@ Uri::ToString (UriToStringFlags flags) const
 	}
 	
 	if (this->params)
-		g_datalist_foreach ((GData **) &this->params, append_param, string);
+		g_datalist_foreach (&this->params, append_param, string);
 	
 	if (this->query) {
 		g_string_append_c (string, '?');

@@ -18,12 +18,12 @@
 
 #include <frameworkelement.h>
 #include <downloader.h>
-#include <fontfamily.h>
 #include <moon-path.h>
 #include <thickness.h>
 #include <layout.h>
 #include <brush.h>
 #include <font.h>
+#include <fontfamily.h>
 
 /* @Namespace=System.Windows.Documents */
 class Glyphs : public FrameworkElement {
@@ -58,7 +58,6 @@ class Glyphs : public FrameworkElement {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
 	void DownloadFont (Surface *surface, Uri *uri);
-	void SetFontResource (const char *resource);
 	
  protected:
 	virtual ~Glyphs ();
