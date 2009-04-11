@@ -2,5 +2,5 @@
 
 # System.Net.WebRequest creates an instance of System.Windows.Browser.Net.BrowserHttpWebRequest (a non-visible type inside
 # System.Windows.Browser.dll, platform code) using reflection so it needs to be SC
-+SC-M: System.Type System.Net.WebRequest::GetBrowserHttpFromMoonlight()
++SC-M: System.Net.WebRequest System.Net.WebRequest::CreateBrowserWebRequest(System.Uri)
 

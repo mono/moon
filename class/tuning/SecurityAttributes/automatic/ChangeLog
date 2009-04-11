@@ -1,3 +1,7 @@
+2009-04-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.auto.ssc: Replace two entries with a single one.
+
 2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.auto.ssc: Remove Socket.Dispose (not needed anymore)

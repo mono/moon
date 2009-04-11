@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Net to call all [SecurityCritical] methods
-# 26 methods
+# 25 methods
 
 +SSC-M: System.Net.NetworkInformation.IPAddressInformationCollection System.Net.NetworkInformation.IPAddressInformationImplCollection::Win32FromAnycast(System.IntPtr)
 +SSC-M: System.Void System.Net.NetworkInformation.LinuxIPInterfaceProperties::ParseResolvConf()
@@ -25,5 +25,4 @@
 +SSC-M: System.Net.IPAddress System.Net.NetworkInformation.Win32UnicastIPAddressInformation::get_IPv4Mask()
 +SSC-M: System.Void System.Net.WebClient::OnOpenReadCompleted(System.Net.OpenReadCompletedEventArgs)
 +SSC-M: System.Void System.Net.WebClient::OnDownloadStringCompleted(System.Net.DownloadStringCompletedEventArgs)
-+SSC-M: System.Net.WebRequest System.Net.WebRequest::CreateBrowserHttpRequest(System.Uri)
-+SSC-M: System.Void System.Net.WebRequest::SetupProgressDelegate(System.Delegate)
++SSC-M: System.Net.WebRequest System.Net.WebRequest::Create(System.Uri)
