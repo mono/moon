@@ -87,6 +87,7 @@ struct FontStyleInfo {
 
 struct FontStream {
 	bool obfuscated;
+	//char *filename;
 	char guid[16];
 	FILE *fp;
 };
@@ -171,7 +172,7 @@ font_stream_read (FT_Stream stream, unsigned long offset, unsigned char *buffer,
 	
 	nread = fread (buffer, 1, count, fs->fp);
 	
-	if (offset < 32 && nread > 0 && fs->obfuscated) {
+	if (fs->obfuscated && offset < 32 && nread > 0) {
 		/* obfuscated font... need to deobfuscate */
 		unsigned long i = offset;
 		unsigned long j = 0;
@@ -209,6 +210,7 @@ font_stream_new (const char *filename, const char *guid)
 		return NULL;
 	
 	fs = (FontStream *) g_malloc (sizeof (FontStream));
+	//fs->filename = g_strdup (filename);
 	fs->obfuscated = false;
 	fs->fp = fp;
 	
@@ -231,6 +233,7 @@ font_stream_destroy (FT_Stream stream)
 {
 	FontStream *fs = (FontStream *) stream->descriptor.pointer;
 	
+	//g_free (fs->filename);
 	g_free (stream);
 	fclose (fs->fp);
 	g_free (fs);
@@ -279,7 +282,7 @@ struct FontDir {
 		g_free (key);
 	}
 	
-	void CacheFileInfo (const char *filename, FT_Open_Args *args, FT_Face face, bool obfuscated);
+	void CacheFileInfo (const char *filename, FT_Stream stream, FT_Face face, bool obfuscated);
 };
 
 GHashTable *FontFace::cache = NULL;
@@ -703,17 +706,22 @@ FontFile::~FontFile ()
 }
 
 void
-FontDir::CacheFileInfo (const char *filename, FT_Open_Args *args, FT_Face face, bool obfuscated)
+FontDir::CacheFileInfo (const char *filename, FT_Stream stream, FT_Face face, bool obfuscated)
 {
 	int i = 0, nfaces = face->num_faces;
 	FontFileFace *fface;
+	FT_Open_Args args;
 	FontFile *file;
 	
 	file = new FontFile (filename, obfuscated);
 	file->faces = g_ptr_array_new ();
 	
-	do {
-		if (i > 0 && FT_Open_Face (libft2, args, i, &face) != 0)
+	do {	
+		memset (&args, 0, sizeof (FT_Open_Args));
+		args.flags = FT_OPEN_STREAM;
+		args.stream = stream;
+		
+		if (i > 0 && FT_Open_Face (libft2, &args, i, &face) != 0)
 			break;
 		
 		LOG_FONT (stderr, "\t\t* caching font info for `%s'...\n", filename);
@@ -722,7 +730,7 @@ FontDir::CacheFileInfo (const char *filename, FT_Open_Args *args, FT_Face face, 
 		
 		FT_Done_Face (face);
 		
-		font_stream_reset (args->stream);
+		font_stream_reset (stream);
 		
 		i++;
 	} while (i < nfaces);
@@ -747,6 +755,7 @@ IndexFontSubdirectory (const char *toplevel, GString *path, FontDir **out)
 	FontDir *fontdir = *out;
 	struct dirent *dent;
 	FT_Open_Args args;
+	FT_Stream stream;
 	bool obfuscated;
 	struct stat st;
 	FT_Face face;
@@ -758,9 +767,6 @@ IndexFontSubdirectory (const char *toplevel, GString *path, FontDir **out)
 	
 	g_string_append_c (path, G_DIR_SEPARATOR);
 	len = path->len;
-	
-	memset (&args, 0, sizeof (FT_Open_Args));
-	args.flags = FT_OPEN_STREAM;
 	
 	while ((dent = readdir (dir))) {
 		if (!strcmp (dent->d_name, "..") ||
@@ -777,20 +783,29 @@ IndexFontSubdirectory (const char *toplevel, GString *path, FontDir **out)
 			goto next;
 		}
 		
-		args.stream = font_stream_new (path->str, NULL);
+		stream = font_stream_new (path->str, NULL);
+		
+		memset (&args, 0, sizeof (FT_Open_Args));
+		args.flags = FT_OPEN_STREAM;
+		args.stream = stream;
+		
 		obfuscated = false;
 		
 		if (FT_Open_Face (libft2, &args, 0, &face) != 0) {
 			// not a valid font file... is it maybe an obfuscated font?
-			if (!is_odttf (dent->d_name) || !font_stream_set_guid (args.stream, dent->d_name)) {
-				font_stream_destroy (args.stream);
+			if (!is_odttf (dent->d_name) || !font_stream_set_guid (stream, dent->d_name)) {
+				font_stream_destroy (stream);
 				goto next;
 			}
 			
-			font_stream_reset (args.stream);
+			font_stream_reset (stream);
+			
+			memset (&args, 0, sizeof (FT_Open_Args));
+			args.flags = FT_OPEN_STREAM;
+			args.stream = stream;
 			
 			if (FT_Open_Face (libft2, &args, 0, &face) != 0) {
-				font_stream_destroy (args.stream);
+				font_stream_destroy (stream);
 				goto next;
 			}
 			
@@ -801,9 +816,9 @@ IndexFontSubdirectory (const char *toplevel, GString *path, FontDir **out)
 			fontdir = new FontDir (toplevel);
 		
 		// cache font info
-		fontdir->CacheFileInfo (path->str, &args, face, obfuscated);
+		fontdir->CacheFileInfo (path->str, stream, face, obfuscated);
 		
-		font_stream_destroy (args.stream);
+		font_stream_destroy (stream);
 		
 	 next:
 		g_string_truncate (path, len);
@@ -1110,13 +1125,19 @@ FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path
 }
 
 static bool
-OpenFaceByIndex (const FcChar8 *filename, FT_Open_Args *args, int index, const char **families, FT_Face *face)
+OpenFaceByIndex (const FcChar8 *filename, FT_Stream stream, int index, const char **families, FT_Face *face)
 {
 	FT_Face ftface = NULL;
+	FT_Open_Args args;
 	int i;
 	
 	LOG_FONT (stderr, "\t* loading font from `%s' (index=%d)... ", filename, index);
-	if (FT_Open_Face (libft2, args, index, &ftface) == 0) {
+	
+	memset (&args, 0, sizeof (FT_Open_Args));
+	args.flags = FT_OPEN_STREAM;
+	args.stream = stream;
+	
+	if (FT_Open_Face (libft2, &args, index, &ftface) == 0) {
 		if (FT_IS_SCALABLE (ftface)) {
 			if (!families || !ftface->family_name) {
 				LOG_FONT (stderr, "success!\n");
@@ -1159,13 +1180,19 @@ OpenFaceByIndex (const FcChar8 *filename, FT_Open_Args *args, int index, const c
 }
 
 static bool
-OpenFaceByFamily (const FcChar8 *filename, FT_Open_Args *args, const char **families, FT_Face *face)
+OpenFaceByFamily (const FcChar8 *filename, FT_Stream stream, const char **families, FT_Face *face)
 {
 	FT_Face ftface = NULL;
+	FT_Open_Args args;
 	int index, n;
 	
-	LOG_FONT (stderr, "\t* loading font from `%s'... ", filename);
-	if (FT_Open_Face (libft2, args, -1, &ftface) != 0) {
+	LOG_FONT (stderr, "\t* loading font from `%s' by family...\n", filename);
+	
+	memset (&args, 0, sizeof (FT_Open_Args));
+	args.flags = FT_OPEN_STREAM;
+	args.stream = stream;
+	
+	if (FT_Open_Face (libft2, &args, -1, &ftface) != 0) {
 		LOG_FONT (stderr, "failed :(\n");
 		return false;
 	}
@@ -1174,9 +1201,9 @@ OpenFaceByFamily (const FcChar8 *filename, FT_Open_Args *args, const char **fami
 	FT_Done_Face (ftface);
 	
 	for (index = 0; index < n; index++) {
-		font_stream_reset (args->stream);
+		font_stream_reset (stream);
 		
-		if (OpenFaceByIndex (filename, args, index, families, face))
+		if (OpenFaceByIndex (filename, stream, index, families, face))
 			return true;
 	}
 	
@@ -1190,7 +1217,7 @@ FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families
 	FcChar8 *filename = NULL, *guid = NULL;
 	bool try_nofile = false;
 	FT_Face ftface = NULL;
-	FT_Open_Args args;
+	FT_Stream stream;
 	FcResult result;
 	int index, i;
 	
@@ -1220,9 +1247,6 @@ FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families
 		matched = pattern;
 	}
 	
-	memset (&args, 0, sizeof (FT_Open_Args));
-	args.flags = FT_OPEN_STREAM;
-	
 	do {
 		if (FcPatternGetString (matched, FC_FILE, 0, &filename) != FcResultMatch)
 			goto fail;
@@ -1233,17 +1257,17 @@ FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families
 		if (FcPatternGetString (matched, FONT_GUID, 0, &guid) != FcResultMatch)
 			guid = NULL;
 		
-		args.stream = font_stream_new ((const char *) filename, (const char *) guid);
+		stream = font_stream_new ((const char *) filename, (const char *) guid);
 		
 		if (index >= 0) {
-			if (OpenFaceByIndex (filename, &args, index, families, &ftface))
+			if (OpenFaceByIndex (filename, stream, index, families, &ftface))
 				break;
 		} else {
-			if (OpenFaceByFamily (filename, &args, families, &ftface))
+			if (OpenFaceByFamily (filename, stream, families, &ftface))
 				break;
 		}
 		
-		font_stream_destroy (args.stream);
+		font_stream_destroy (stream);
 		
 	 fail:
 		
@@ -1275,6 +1299,7 @@ FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families
 			FcPatternDestroy (fallback);
 			fallback = NULL;
 			filename = NULL;
+			ftface = NULL;
 			
 			try_nofile = false;
 			continue;

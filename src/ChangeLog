@@ -1,5 +1,9 @@
 2009-04-11  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp: Don't reuse FT_Open_Args. Changed things to pass
+	FT_Streams and setup their own FT_Open_Args instead. This solves
+	the crasher problems in the silverlight2 test harness.
+
 	* textblock.cpp (Inline::SetFontResource): New method to update
 	our FontFilenameProperty and FontGUIDProperties.
 	(Inline::OnPropertyChanged): Handle FontFamilyProperty changes
