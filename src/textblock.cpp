@@ -47,6 +47,67 @@ Inline::~Inline ()
 }
 
 void
+Inline::SetFontResource (const char *resource)
+{
+	Application *application = Application::GetCurrent ();
+	const char *guid = NULL;
+	char *filename;
+	size_t len;
+	Uri *uri;
+	
+	uri = new Uri ();
+	
+	if (!application || !uri->Parse (resource) || !(filename = application->GetResourceAsPath (uri))) {
+		ClearValue (TextBlock::FontFilenameProperty);
+		ClearValue (TextBlock::FontGUIDProperty);
+		delete uri;
+		return;
+	}
+	
+	delete uri;
+	
+	// check if the resource is an obfuscated font
+	len = strlen (resource);
+	if (len > 6 && !g_ascii_strcasecmp (resource + len - 6, ".odttf"))
+		guid = resource;
+	
+	SetValue (TextBlock::FontFilenameProperty, Value (filename));
+	if (guid != NULL)
+		SetValue (TextBlock::FontGUIDProperty, Value (guid));
+	else
+		ClearValue (TextBlock::FontGUIDProperty);
+	
+	g_free (filename);
+}
+
+void
+Inline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+{
+	if (args->GetProperty ()->GetOwnerType () != Type::INLINE) {
+		DependencyObject::OnPropertyChanged (args, error);
+		return;
+	}
+	
+	if (args->GetId () == Inline::FontFamilyProperty) {
+		FontFamily *family = args->GetNewValue() ? args->GetNewValue()->AsFontFamily () : NULL;
+		const char *family_name;
+		char *resource;
+		
+		if (family && family->source && (family_name = strchr (family->source, '#'))) {
+			// FontFamily can reference a font resource in the form "<resource>#<family name>"
+			resource = g_strndup (family->source, family_name - family->source);
+			SetFontResource (resource);
+			g_free (resource);
+		} else {
+			ClearValue (TextBlock::FontFilenameProperty);
+			ClearValue (TextBlock::FontGUIDProperty);
+		}
+	}
+	
+	NotifyListenersOfPropertyChange (args);
+}
+
+void
 Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (prop && prop->GetId () == Inline::ForegroundProperty) {
@@ -101,9 +162,18 @@ Inline::UpdateFontDescription ()
 	// FIXME: I hate having to do it this way, updating the font
 	// in OnPropertyChanged() was a much much better way to do
 	// things. *sigh*
-	font->SetFilename (GetFontFilename (), GetFontGUID ());
 	FontFamily *family = GetFontFamily ();
-	font->SetFamily (family ? family->source : NULL);
+	const char *family_name = NULL;
+
+	if (family && family->source) {
+		if (!(family_name = strchr (family->source, '#')))
+			family_name = family->source;
+		else
+			family_name++;
+	}
+	
+	font->SetFilename (GetFontFilename (), GetFontGUID ());
+	font->SetFamily (family_name);
 	font->SetStyle (GetFontStyle ());
 	font->SetWeight (GetFontWeight ());
 	font->SetSize (GetFontSize ());
@@ -272,7 +342,7 @@ TextBlock::SetFontSource (Downloader *downloader)
 }
 
 void
-TextBlock::SetFontSource (const char *resource)
+TextBlock::SetFontResource (const char *resource)
 {
 	Application *application = Application::GetCurrent ();
 	const char *guid = NULL;
@@ -300,8 +370,6 @@ TextBlock::SetFontSource (const char *resource)
 	len = strlen (resource);
 	if (len > 6 && !g_ascii_strcasecmp (resource + len - 6, ".odttf"))
 		guid = resource;
-	else
-		guid = NULL;
 	
 	SetValue (TextBlock::FontFilenameProperty, Value (filename));
 	if (guid != NULL)
@@ -669,7 +737,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (family && family->source && (family_name = strchr (family->source, '#'))) {
 			// FontFamily can reference a font resource in the form "<resource>#<family name>"
 			resource = g_strndup (family->source, family_name - family->source);
-			SetFontSource (resource);
+			SetFontResource (resource);
 			g_free (resource);
 			family_name++;
 		} else if (family) {

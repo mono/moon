@@ -38,6 +38,8 @@ class Inline : public DependencyObject, public ITextAttributes {
 	TextFontDescription *font;
 	bool autogen;
 	
+	void SetFontResource (const char *resource);
+	
  protected:
 	virtual ~Inline ();
 	
@@ -70,6 +72,7 @@ class Inline : public DependencyObject, public ITextAttributes {
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Inline ();
 	
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
 	virtual bool PermitsMultipleParents () { return false; }
@@ -190,7 +193,7 @@ class TextBlock : public FrameworkElement {
 	char *GetTextInternal (InlineCollection *inlines);
 	bool SetTextInternal (const char *text);
 	
-	void SetFontSource (const char *resource);
+	void SetFontResource (const char *resource);
 	
 	void UpdateLayoutAttributes ();
 	void UpdateFontDescriptions ();

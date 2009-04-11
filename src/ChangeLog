@@ -1,5 +1,17 @@
 2009-04-11  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textblock.cpp (Inline::SetFontResource): New method to update
+	our FontFilenameProperty and FontGUIDProperties.
+	(Inline::OnPropertyChanged): Handle FontFamilyProperty changes
+	that reference a resource.
+	(Inline::UpdateFontDescription): Parse out the family name from
+	the FontFamily::Source.
+
+2009-04-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (TextBlock::SetFontResource): Renamed from
+	SetFontSource() to be more accurate.
+
 	* font.cpp (OpenFaceByIndex): Don't leave any FT_Faces open on
 	fail. This is probably what was causing the crash on
 	font_shutdown().
