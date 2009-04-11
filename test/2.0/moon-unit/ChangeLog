@@ -1,3 +1,8 @@
+2009-04-11  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net/WebClientTest.cs: More test case including a test
+	for relative URI
+
 2009-04-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/DnsEndPoint.cs: New. Some unit tests.

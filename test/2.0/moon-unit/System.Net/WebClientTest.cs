@@ -80,6 +80,44 @@ Console.WriteLine ("wc.BaseAddress: {0}", wc.BaseAddress);
 		}
 
 		[TestMethod]
+		public void DownloadStringAsync_Null ()
+		{
+			WebClient wc = new WebClient ();
+			wc.DownloadStringCompleted += delegate (object sender, DownloadStringCompletedEventArgs e) {
+				Assert.Fail ("not called");
+			};
+
+			Assert.Throws<ArgumentNullException> (delegate {
+				wc.DownloadStringAsync (null);
+			}, "null");
+			Assert.Throws<ArgumentNullException> (delegate {
+				wc.DownloadStringAsync (null, String.Empty);
+			}, "null,object");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void DownloadStringAsync_Relative ()
+		{
+			WebClient wc = new WebClient ();
+			bool complete = false;
+			wc.DownloadStringCompleted += delegate (object sender, DownloadStringCompletedEventArgs e) {
+				CheckDefaults (wc);
+				Assert.IsFalse (e.Cancelled, "Cancelled");
+				Assert.IsTrue (e.Error is SecurityException, "Error");
+				Assert.IsNull (e.UserState, "UserState");
+				Assert.Throws<TargetInvocationException, SecurityException> (delegate {
+					Assert.IsNotNull (e.Result, "Result");
+				}, "Result");
+				complete = true;
+			};
+			Enqueue (() => { wc.DownloadStringAsync (new Uri ("/myfile", UriKind.Relative)); });
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
 		public void DownloadStringAsync ()
@@ -119,6 +157,237 @@ Console.WriteLine ("wc.BaseAddress: {0}", wc.BaseAddress);
 				complete = true;
 			};
 			Enqueue (() => { wc.DownloadStringAsync (new Uri ("http://www.mono-project.com"), String.Empty); });
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		public void OpenReadAsync_Null ()
+		{
+			WebClient wc = new WebClient ();
+			wc.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
+				Assert.Fail ("not called");
+			};
+
+			Assert.Throws<ArgumentNullException> (delegate {
+				wc.OpenReadAsync (null);
+			}, "null");
+			Assert.Throws<ArgumentNullException> (delegate {
+				wc.OpenReadAsync (null, String.Empty);
+			}, "null,object");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void OpenReadAsync ()
+		{
+			WebClient wc = new WebClient ();
+			bool complete = false;
+			wc.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
+				CheckDefaults (wc);
+				Assert.IsFalse (e.Cancelled, "Cancelled");
+				Assert.IsTrue (e.Error is SecurityException, "Error");
+				Assert.IsNull (e.UserState, "UserState");
+				Assert.Throws<TargetInvocationException, SecurityException> (delegate {
+					Assert.IsNotNull (e.Result, "Result");
+				}, "Result");
+				complete = true;
+			};
+			Enqueue (() => { wc.OpenReadAsync (new Uri ("http://www.mono-project.com")); });
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void OpenReadAsync_UserToken ()
+		{
+			WebClient wc = new WebClient ();
+			bool complete = false;
+			wc.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
+				CheckDefaults (wc);
+				Assert.IsFalse (e.Cancelled, "Cancelled");
+				Assert.IsTrue (e.Error is SecurityException, "Error");
+				Assert.AreEqual (String.Empty, e.UserState, "UserState");
+				Assert.Throws<TargetInvocationException, SecurityException> (delegate {
+					Assert.IsNotNull (e.Result, "Result");
+				}, "Result");
+				complete = true;
+			};
+			Enqueue (() => { wc.OpenReadAsync (new Uri ("http://www.mono-project.com"), String.Empty); });
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		public void OpenWriteAsync_Null ()
+		{
+			WebClient wc = new WebClient ();
+			wc.OpenWriteCompleted += delegate (object sender, OpenWriteCompletedEventArgs e) {
+				Assert.Fail ("not called");
+			};
+
+			Uri uri = new Uri ("http://www.mono-project.com");
+			// note: null method == POST
+			Assert.Throws<ArgumentNullException> (delegate {
+				wc.OpenWriteAsync (null, "POST");
+			}, "null,POST");
+			Assert.Throws<ArgumentNullException> (delegate {
+				wc.OpenWriteAsync (null, "POST", String.Empty);
+			}, "null,POST,object");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void OpenWriteAsync ()
+		{
+			WebClient wc = new WebClient ();
+			bool complete = false;
+			wc.OpenWriteCompleted += delegate (object sender, OpenWriteCompletedEventArgs e) {
+				CheckDefaults (wc);
+				Assert.IsFalse (e.Cancelled, "Cancelled");
+				Assert.IsNull (e.Error, "Error"); // weird
+				Assert.IsNull (e.UserState, "UserState");
+				Assert.IsNotNull (e.Result, "Result"); // weirder
+				complete = true;
+			};
+			Enqueue (() => { wc.OpenWriteAsync (new Uri ("http://www.mono-project.com"), null); });
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void OpenWriteAsync_BadMethod ()
+		{
+			WebClient wc = new WebClient ();
+			bool complete = false;
+			wc.OpenWriteCompleted += delegate (object sender, OpenWriteCompletedEventArgs e) {
+				CheckDefaults (wc);
+				Assert.IsFalse (e.Cancelled, "Cancelled");
+				Assert.IsTrue (e.Error is WebException, "Error");
+				Assert.IsTrue (e.Error.InnerException is NotSupportedException, "Error.InnerException");
+				Assert.IsNull (e.UserState, "UserState");
+				Assert.Throws<TargetInvocationException, WebException> (delegate {
+					Assert.IsNotNull (e.Result, "Result");
+				}, "Result");
+				complete = true;
+			};
+			Enqueue (() => { wc.OpenWriteAsync (new Uri ("http://www.mono-project.com"), "ZAP"); });
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void OpenWriteAsync_UserToken ()
+		{
+			WebClient wc = new WebClient ();
+			bool complete = false;
+			wc.OpenWriteCompleted += delegate (object sender, OpenWriteCompletedEventArgs e) {
+				CheckDefaults (wc);
+				Assert.IsFalse (e.Cancelled, "Cancelled");
+				Assert.IsNull (e.Error, "Error"); // weird
+				Assert.AreEqual (String.Empty, e.UserState, "UserState");
+				Assert.IsNotNull (e.Result, "Result"); // weirder
+				complete = true;
+			};
+			Enqueue (() => { wc.OpenWriteAsync (new Uri ("http://www.mono-project.com"), null, String.Empty); });
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		public void UploadStringAsync_Null ()
+		{
+			WebClient wc = new WebClient ();
+			wc.UploadStringCompleted += delegate (object sender, UploadStringCompletedEventArgs e) {
+				Assert.Fail ("not called");
+			};
+
+			Uri uri = new Uri ("http://www.mono-project.com");
+			Assert.Throws<ArgumentNullException> (delegate {
+				wc.UploadStringAsync (null, "data");
+			}, "null,data");
+			Assert.Throws<ArgumentNullException> (delegate {
+				wc.UploadStringAsync (null, "POST", "data");
+			}, "null,POST,data");
+			Assert.Throws<ArgumentNullException> (delegate {
+				wc.UploadStringAsync (uri, null);
+			}, "uri,null");
+			Assert.Throws<ArgumentNullException> (delegate {
+				wc.UploadStringAsync (uri, "POST", null);
+			}, "uri,POST,null");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void UploadStringAsync ()
+		{
+			WebClient wc = new WebClient ();
+			bool complete = false;
+			wc.UploadStringCompleted += delegate (object sender, UploadStringCompletedEventArgs e) {
+				CheckDefaults (wc);
+				Assert.IsFalse (e.Cancelled, "Cancelled");
+				Assert.IsTrue (e.Error is SecurityException, "Error");
+				Assert.IsNull (e.UserState, "UserState");
+				Assert.Throws<TargetInvocationException, SecurityException> (delegate {
+					Assert.IsNotNull (e.Result, "Result");
+				}, "Result");
+				complete = true;
+			};
+			Enqueue (() => { wc.UploadStringAsync (new Uri ("http://www.mono-project.com"), "data"); });
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void UploadStringAsync_BadMethod ()
+		{
+			WebClient wc = new WebClient ();
+			bool complete = false;
+			wc.UploadStringCompleted += delegate (object sender, UploadStringCompletedEventArgs e) {
+				CheckDefaults (wc);
+				Assert.IsFalse (e.Cancelled, "Cancelled");
+				Assert.IsTrue (e.Error is WebException, "Error");
+				Assert.IsTrue (e.Error.InnerException is NotSupportedException, "Error.InnerException");
+				Assert.IsNull (e.UserState, "UserState");
+				Assert.Throws<TargetInvocationException, WebException> (delegate {
+					Assert.IsNotNull (e.Result, "Result");
+				}, "Result");
+				complete = true;
+			};
+			Enqueue (() => { wc.UploadStringAsync (new Uri ("http://www.mono-project.com"), "ZAP", "data"); });
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void UploadStringAsync_UserToken ()
+		{
+			WebClient wc = new WebClient ();
+			bool complete = false;
+			wc.UploadStringCompleted += delegate (object sender, UploadStringCompletedEventArgs e) {
+				CheckDefaults (wc);
+				Assert.IsFalse (e.Cancelled, "Cancelled");
+				Assert.IsTrue (e.Error is SecurityException, "Error");
+				Assert.AreEqual (String.Empty, e.UserState, "UserState");
+				Assert.Throws<TargetInvocationException, SecurityException> (delegate {
+					Assert.IsNotNull (e.Result, "Result");
+				}, "Result");
+				complete = true;
+			};
+			Enqueue (() => { wc.UploadStringAsync (new Uri ("http://www.mono-project.com"), "POST", "data", String.Empty); });
 			EnqueueConditional (() => complete);
 			EnqueueTestComplete ();
 		}
