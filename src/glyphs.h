@@ -58,7 +58,7 @@ class Glyphs : public FrameworkElement {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
 	void DownloadFont (Surface *surface, Uri *uri);
-	void SetFontResource (const char *resource);
+	bool SetFontResource (const Uri *uri);
 	
  protected:
 	virtual ~Glyphs ();

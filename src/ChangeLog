@@ -1,3 +1,11 @@
+2009-04-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* glyphs.cpp (SetFontResource): Now takes a Uri argument rather
+	than a string and returns a bool argument hinting at whether we
+	succeeded or not.
+	(OnPropertyChanged): Only fall back on creating a downloader for
+	the font if the uri is not a resource.
+
 2009-04-11  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: If we are hydrating we don't need the extra ref.

@@ -712,35 +712,27 @@ Glyphs::DownloadFont (Surface *surface, Uri *uri)
 	}
 }
 
-void
-Glyphs::SetFontResource (const char *resource)
+bool
+Glyphs::SetFontResource (const Uri *uri)
 {
 	Application *application = Application::GetCurrent ();
-	const char *guid = NULL;
-	char *filename;
+	const char *name, *guid = NULL;
+	char *filename, *url;
 	size_t len;
-	Uri *uri;
 	
-	uri = new Uri ();
-	if (!uri->Parse (resource)) {
-		delete uri;
-		return;
-	}
-	
-	if (!application || !(filename = application->GetResourceAsPath (uri))) {
-		desc->UnsetFields (FontMaskFilename | FontMaskIndex);
-		delete uri;
-		return;
-	}
-	
-	delete uri;
+	if (!application || !(filename = application->GetResourceAsPath (uri)))
+		return false;
 	
 	// check if the resource is an obfuscated font
-	len = strlen (resource);
-	if (len > 6 && !g_ascii_strcasecmp (resource + len - 6, ".odttf"))
-		guid = resource;
+	url = uri->ToString ();
+	if (!(name = strrchr (url, '/')))
+		name = url;
 	else
-		guid = NULL;
+		name++;
+	
+	len = strlen (name);
+	if (len > 6 && !g_ascii_strcasecmp (name + len - 6, ".odttf"))
+		guid = name;
 	
 	desc->SetFilename (filename, guid);
 	
@@ -748,6 +740,9 @@ Glyphs::SetFontResource (const char *resource)
 	desc->UnsetFields (FontMaskIndex);
 	
 	g_free (filename);
+	g_free (url);
+	
+	return true;
 }
 
 void
@@ -787,7 +782,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		index = 0;
 		
 		if (!Uri::IsNullOrEmpty (uri)) {
-			if (!uri->GetScheme ()) {
+			if (!SetFontResource (uri)) {
 				// need to create a downloader for this font...
 				if (surface) {
 					DownloadFont (surface, uri);
@@ -799,8 +794,6 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				
 				invalidate = false;
 			} else {
-				// this font is a resource stream
-				SetFontResource (uri->GetPath ());
 				uri_changed = false;
 				invalidate = true;
 			}
