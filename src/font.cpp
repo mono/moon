@@ -717,7 +717,6 @@ FontDir::CacheFileInfo (const char *filename, FT_Stream stream, FT_Face face, bo
 	file->faces = g_ptr_array_new ();
 	
 	do {	
-		memset (&args, 0, sizeof (FT_Open_Args));
 		args.flags = FT_OPEN_STREAM;
 		args.stream = stream;
 		
@@ -785,7 +784,6 @@ IndexFontSubdirectory (const char *toplevel, GString *path, FontDir **out)
 		
 		stream = font_stream_new (path->str, NULL);
 		
-		memset (&args, 0, sizeof (FT_Open_Args));
 		args.flags = FT_OPEN_STREAM;
 		args.stream = stream;
 		
@@ -800,7 +798,6 @@ IndexFontSubdirectory (const char *toplevel, GString *path, FontDir **out)
 			
 			font_stream_reset (stream);
 			
-			memset (&args, 0, sizeof (FT_Open_Args));
 			args.flags = FT_OPEN_STREAM;
 			args.stream = stream;
 			
@@ -1112,7 +1109,6 @@ FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path
 		delete (FontFamilyInfo *) array->pdata[i];
 	g_ptr_array_free (array, true);
 	
-	memset (&args, 0, sizeof (FT_Open_Args));
 	args.stream = font_stream_new (file->path, file->obfuscated ? path_get_basename (file->path) : NULL);
 	args.flags = FT_OPEN_STREAM;
 	
@@ -1133,7 +1129,6 @@ OpenFaceByIndex (const FcChar8 *filename, FT_Stream stream, int index, const cha
 	
 	LOG_FONT (stderr, "\t* loading font from `%s' (index=%d)... ", filename, index);
 	
-	memset (&args, 0, sizeof (FT_Open_Args));
 	args.flags = FT_OPEN_STREAM;
 	args.stream = stream;
 	
@@ -1188,7 +1183,6 @@ OpenFaceByFamily (const FcChar8 *filename, FT_Stream stream, const char **famili
 	
 	LOG_FONT (stderr, "\t* loading font from `%s' by family...\n", filename);
 	
-	memset (&args, 0, sizeof (FT_Open_Args));
 	args.flags = FT_OPEN_STREAM;
 	args.stream = stream;
 	
