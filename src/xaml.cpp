@@ -2116,6 +2116,8 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 		if (is_legal_top_level_kind (parser_info->top_element->info->GetKind ())) {
 			res = parser_info->top_element->GetAsValue ();
 			res = new Value (*res);
+			if (res->Is (Type::DEPENDENCY_OBJECT) && object)
+				res->AsDependencyObject ()->unref ();
 		}
 
 		if (element_type)
