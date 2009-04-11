@@ -184,9 +184,9 @@ BitmapImage::UriSourceChanged ()
 	Application *current = Application::GetCurrent ();
 	Uri *uri = GetUriSource ();
 	
-	if (current && uri && !uri->isAbsolute) {
+	if (current && uri) {
 		int size = 0;
-		unsigned char *buffer = (unsigned char *)current->GetResource (uri->GetPath (), &size);
+		unsigned char *buffer = (unsigned char *) current->GetResource (uri, &size);
 		if (size > 0) {
 			PixbufWrite (buffer, 0, size);
 			PixmapComplete ();
@@ -195,7 +195,7 @@ BitmapImage::UriSourceChanged ()
 			return;
 		}
 	}
-
+	
 	if (surface == NULL) {
 		SetBitmapData (NULL);
 		return;
@@ -204,7 +204,7 @@ BitmapImage::UriSourceChanged ()
 	if (!(downloader = surface->CreateDownloader ()))
 		return;
 
-	SetDownloader (downloader, GetUriSource (), NULL);
+	SetDownloader (downloader, uri, NULL);
 	downloader->unref ();
 }
 

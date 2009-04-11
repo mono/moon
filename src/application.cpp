@@ -87,10 +87,12 @@ Application::ApplyStyle (FrameworkElement *fwe, Style *style)
 }
 
 gpointer
-Application::GetResource (const char *name, int *size)
+Application::GetResource (const Uri *uri, int *size)
 {
-	if (get_resource_cb && name && *name) {
-		gpointer ptr = get_resource_cb (name, size);
+	if (get_resource_cb && uri) {
+		char *url = uri->ToString ();
+		gpointer ptr = get_resource_cb (url, size);
+		g_free (url);
 		
 		return ptr;
 	}
@@ -101,16 +103,16 @@ Application::GetResource (const char *name, int *size)
 }
 
 char *
-Application::GetResourceAsPath (const char *name)
+Application::GetResourceAsPath (const Uri *uri)
 {
-	char *dirname, *path, *filename;
+	char *dirname, *path, *filename, *url;
 	unzFile zipfile;
 	struct stat st;
 	gpointer buf;
 	int size;
 	int fd;
 	
-	if (!get_resource_cb || !name || !name[0])
+	if (!get_resource_cb || !uri)
 		return NULL;
 	
 	if (!resource_root) {
@@ -123,8 +125,14 @@ Application::GetResourceAsPath (const char *name)
 	}
 	
 	// construct the path name for this resource
-	filename = g_strdup (name);
+	filename = uri->ToString ();
 	CanonicalizeFilename (filename, -1);
+	if (uri->GetQuery () != NULL) {
+		char *sc = strchr (filename, ';');
+		if (sc)
+			*sc = '/';
+	}
+	
 	path = g_build_filename (resource_root, filename, NULL);
 	g_free (filename);
 	
@@ -144,10 +152,14 @@ Application::GetResourceAsPath (const char *name)
 	g_free (dirname);
 	
 	// now we need to get the resource buffer and dump it to disk
-	if (!(buf = get_resource_cb (name, &size))) {
+	url = uri->ToString ();
+	if (!(buf = get_resource_cb (url, &size))) {
 		g_free (path);
+		g_free (url);
 		return NULL;
 	}
+	
+	g_free (url);
 	
 	// create and save the buffer to disk
 	if ((fd = open (path, O_WRONLY | O_CREAT | O_EXCL, 0600)) == -1) {

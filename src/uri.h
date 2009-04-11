@@ -37,8 +37,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Free ();
 
-	char *ToString (UriToStringFlags flags);
-	char *ToString () { return ToString ((UriToStringFlags) 0); }
+	char *ToString (UriToStringFlags flags) const;
+	char *ToString () const { return ToString ((UriToStringFlags) 0); }
 
 	static void Copy (const Uri *from, Uri *to);
 
@@ -61,7 +61,8 @@ public:
 	const char *GetPasswd () const { return passwd; }
 	const char *GetFragment () const { return fragment; }
 	const char *GetPath () const { return path; }
-
+	const char *GetQuery () const { return query; }
+	
 	bool isAbsolute;
 
 	char *scheme;

@@ -2,6 +2,24 @@
 
 	* xaml.cpp: If we are hydrating we don't need the extra ref.
 
+2009-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uri.cpp (ToString): Made to accept const Uri*
+
+	* textblock.cpp (SetFontSource): Parse the resource string into a
+	Uri and pass that along to GetResourceAsPath().
+
+	* glyphs.cpp (SetFontResource): Parse the resource string into a
+	Uri and pass that along to GetResourceAsPath().
+
+	* bitmapimage.cpp (UriSourceChanged): Back to passing a Uri for
+	GetResource().
+
+	* application.cpp (GetResource): Oops, this really does need a Uri
+	argument.
+	(GetResourceAsPath): Use a Uri here too, and convert any ';' into
+	a '/'.
+
 2009-04-10  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Let the XamlElementInstances cleanup their Values.
@@ -30,6 +48,27 @@
 	* panel.h|.cpp: remove a couple of unused
 	decls (ChildAdded/ChildRemoved) and add the stuff we moved out of
 	canvas.h|cpp here.
+
+2009-04-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (OpenFaceByIndex): New helper function split out from
+	FontFace::LoadFontFace() which performs the FT_Open_Face() and
+	family name matching.
+	(OpenFaceByFamily): If we don't have an index, this function opens
+	all faces in the file and finds a matching font face based on
+	family.
+	(LoadFontFace): Use our new helper functions.
+
+	* textblock.cpp (SetFontSource): On fail, set the font filename to
+	NULL and call UpdateFontDescriptions() no matter what.
+
+	* font.cpp (UnsetFields): Allow unsetting of the font index.
+	(Merge): Merge the index separately.
+	(SetIndex): Set/unset the FontMaskIndex bit.
+
+	* glyphs.cpp (SetFontResource): New internal method to set a font
+	resource stream.
+	(OnPropertyChanged): Handle non-absolute Uris as resource streams.
 
 2009-04-10  Larry Ewing  <lewing@novell.com>
 
@@ -64,8 +103,8 @@
 	(OnPropertyChanged): Parse the FontFamily name.
 	(DownloaderComplete): Use SetValue() correctly.
 
-	* glyphs.cpp (CleanupDownloader): Remove the ComedEvent
-	handler.u
+	* glyphs.cpp (CleanupDownloader): Remove the CompletedEvent
+	handler.
 
 2009-04-10  Sebastien Pouliot  <sebastien@ximian.com>
 
