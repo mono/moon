@@ -25,4 +25,4 @@
 +SSC-M: System.Net.IPAddress System.Net.NetworkInformation.Win32UnicastIPAddressInformation::get_IPv4Mask()
 +SSC-M: System.Void System.Net.WebClient::OnOpenReadCompleted(System.Net.OpenReadCompletedEventArgs)
 +SSC-M: System.Void System.Net.WebClient::OnDownloadStringCompleted(System.Net.DownloadStringCompletedEventArgs)
-+SSC-M: System.Net.WebRequest System.Net.WebRequest::Create(System.Uri)
++SSC-M: System.Net.WebRequest System.Net.WebRequest::CreateInternal(System.Uri,System.Boolean)

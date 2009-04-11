@@ -1,3 +1,7 @@
+2009-04-11  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net.auto.ssc: Logic moved, rename to CreateInternal
+
 2009-04-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.auto.ssc: Replace two entries with a single one.
