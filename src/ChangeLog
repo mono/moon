@@ -1,3 +1,10 @@
+2009-04-11  Chris Toshok  <toshok@ximian.com>
+
+	* provider.h|.cpp, dependencyobject.cpp: get rid of
+	PropertyPrecedence_Animation and the associated provider.  in SL,
+	animations are considered local values (and a choir of angels was
+	heard moaning as they fell on their swords).
+
 2009-04-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp: Don't reuse FT_Open_Args. Changed things to pass

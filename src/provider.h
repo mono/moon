@@ -20,7 +20,6 @@ class Style;
 struct Value;
 
 enum PropertyPrecedence {
-	PropertyPrecedence_Animation,
 	PropertyPrecedence_LocalValue,
 	PropertyPrecedence_DynamicValue, // use this level for types that need to compute property values lazily
 	PropertyPrecedence_Style,
@@ -30,7 +29,7 @@ enum PropertyPrecedence {
 
 	PropertyPrecedence_Count,
 
-	PropertyPrecedence_Highest = PropertyPrecedence_Animation
+	PropertyPrecedence_Highest = PropertyPrecedence_LocalValue
 };
 
 class PropertyValueProvider {
@@ -46,14 +45,6 @@ protected:
 	DependencyObject *obj;
 };
 
-
-class AnimationPropertyValueProvider : public PropertyValueProvider {
-public:
-	AnimationPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { };
-	virtual ~AnimationPropertyValueProvider () { };
-
-	virtual Value *GetPropertyValue (DependencyProperty *property);
-};
 
 class LocalPropertyValueProvider : public PropertyValueProvider {
 public:

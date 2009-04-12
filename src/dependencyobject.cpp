@@ -1684,7 +1684,6 @@ DependencyObject::Initialize ()
 {
 	providers = new PropertyValueProvider*[PropertyPrecedence_Count];
 
-	providers[PropertyPrecedence_Animation] = new AnimationPropertyValueProvider (this);
 	providers[PropertyPrecedence_LocalValue] = new LocalPropertyValueProvider (this);
 	providers[PropertyPrecedence_DynamicValue] = NULL;  // subclasses will set this if they need it.
 	providers[PropertyPrecedence_Style] = new StylePropertyValueProvider (this);

@@ -18,14 +18,6 @@
 #include "textblock.h"
 #include "style.h"
 
-Value*
-AnimationPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
-{
-	// look up the Applier/AnimationStorage for this object/property and return the value
-	return NULL;
-}
-
-
 //
 // LocalPropertyValueProvider
 //
