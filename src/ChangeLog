@@ -1,5 +1,8 @@
 2009-04-12  Jeffrey Stedfast  <fejj@novell.com>
 
+	* debug.cpp (hexdump_addr): New function to help toshok print a
+	hexdump of memory from gdb.
+
 	* textbox.cpp (TextBoxBase::SetFontResource): Set the font
 	filename/guid based on the resource provided.
 	(TextBoxBase::OnPropertyChanged): If a font resource is named in

@@ -34,9 +34,10 @@ void print_stack_trace_prefix (const char* prefix);
 
 G_BEGIN_DECLS
 
-char* get_stack_trace ();
-void print_stack_trace ();
-void enable_vm_stack_trace ();
+char* get_stack_trace (void);
+void print_stack_trace (void);
+void enable_vm_stack_trace (void);
+void hexdump_addr (void *addr, size_t n);
 
 G_END_DECLS
 

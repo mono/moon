@@ -25,6 +25,7 @@ G_END_DECLS
 #include <signal.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
+#include <ctype.h>
  
 #define MAX_STACK_FRAMES 30
 
@@ -38,7 +39,7 @@ G_END_DECLS
 static bool vm_stack_trace_enabled = false;
 
 void
-enable_vm_stack_trace ()
+enable_vm_stack_trace (void)
 {
 	vm_stack_trace_enabled = true;
 }
@@ -85,13 +86,82 @@ get_method_from_ip (void *ip)
 #endif
 }
 
-char* get_stack_trace () 
+char* get_stack_trace (void)
 {
 	return get_stack_trace_prefix ("\t"); 
 }
-void print_stack_trace ()
+
+void print_stack_trace (void)
 {
 	print_stack_trace_prefix ("\t");
+}
+
+static char tohex[16] = {
+	'0', '1', '2', '3', '4', '5', '6', '7',
+	'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+};
+
+void
+hexdump_addr (void *addr, size_t n)
+{
+	const unsigned char *mem = (const unsigned char *) addr;
+	char outbuf[80], *outptr;
+	unsigned char c;
+	size_t i, j;
+	
+	for (i = 0; i < n; i += 16) {
+		outptr = outbuf;
+		
+		// write out the offset
+		*outptr++ = tohex[(i >> 28) & 0xf];
+		*outptr++ = tohex[(i >> 24) & 0xf];
+		*outptr++ = tohex[(i >> 20) & 0xf];
+		*outptr++ = tohex[(i >> 16) & 0xf];
+		*outptr++ = tohex[(i >> 12) & 0xf];
+		*outptr++ = tohex[(i >> 8) & 0xf];
+		*outptr++ = tohex[(i >> 4) & 0xf];
+		*outptr++ = tohex[i & 0xf];
+		
+		// write out up to 16 hex-encoded octets
+		for (j = i; j < n && j < i + 16; j++) {
+			if ((j & 0x1) == 0)
+				*outptr++ = ' ';
+			
+			c = mem[j];
+			
+			*outptr++ = tohex[(c >> 4) & 0xf];
+			*outptr++ = tohex[c & 0xf];
+		}
+		
+		// pad out to the expected column
+		for ( ; j < i + 16; j++) {
+			if ((j & 0x1) == 0)
+				*outptr++ = ' ';
+			
+			*outptr++ = ' ';
+			*outptr++ = ' ';
+		}
+		
+		*outptr++ = ' ';
+		*outptr++ = ' ';
+		*outptr++ = ' ';
+		*outptr++ = ' ';
+		
+		// write out up to 16 raw octets
+		for (j = i; j < n && j < i + 16; j++) {
+			c = mem[j];
+			if (isprint ((int) c)) {
+				*outptr++ = (char) c;
+			} else {
+				*outptr++ = '.';
+			}
+		}
+		
+		*outptr++ = '\n';
+		*outptr = '\0';
+		
+		fputs (outbuf, stdout);
+	}
 }
 
 typedef struct Addr2LineData Addr2LineData;
