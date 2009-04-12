@@ -358,7 +358,7 @@ TextBlock::SetFontResource (const char *resource)
 	if (!application || !uri->Parse (resource) || !(filename = application->GetResourceAsPath (uri))) {
 		ClearValue (TextBlock::FontFilenameProperty);
 		ClearValue (TextBlock::FontGUIDProperty);
-		font->SetFilename (NULL);
+		font->SetFilename (NULL, NULL);
 		UpdateFontDescriptions ();
 		delete uri;
 		return;

@@ -1,3 +1,13 @@
+2009-04-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::SetFontResource): Set the font
+	filename/guid based on the resource provided.
+	(TextBoxBase::OnPropertyChanged): If a font resource is named in
+	the FontFamily property, then call SetFontResource() with the
+	provided resource name.
+	(TextBox::ClearFontSource): Clear the FontSourceProperty.
+	(PasswordBox::ClearFontSource): Same.
+
 2009-04-11  Chris Toshok  <toshok@ximian.com>
 
 	* provider.h|.cpp, dependencyobject.cpp: get rid of

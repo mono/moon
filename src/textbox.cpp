@@ -25,12 +25,13 @@
 
 #include "dependencyproperty.h"
 #include "contentcontrol.h"
+#include "timemanager.h"
 #include "runtime.h"
 #include "textbox.h"
 #include "border.h"
 #include "panel.h"
-#include "timemanager.h"
 #include "utils.h"
+#include "uri.h"
 
 
 //
@@ -1572,14 +1573,58 @@ TextBoxBase::EmitCursorPositionChanged (double height, double x, double y)
 }
 
 void
+TextBoxBase::SetFontResource (const char *resource)
+{
+	Application *application = Application::GetCurrent ();
+	const char *guid = NULL;
+	char *filename;
+	size_t len;
+	Uri *uri;
+	
+	ClearFontSource ();
+	
+	uri = new Uri ();
+	
+	if (!application || !uri->Parse (resource) || !(filename = application->GetResourceAsPath (uri))) {
+		font->SetFilename (NULL, NULL);
+		delete uri;
+		return;
+	}
+	
+	delete uri;
+	
+	// check if the resource is an obfuscated font
+	len = strlen (resource);
+	if (len > 6 && !g_ascii_strcasecmp (resource + len - 6, ".odttf"))
+		guid = resource;
+	
+	font->SetFilename (filename, guid);
+	
+	g_free (filename);
+}
+
+void
 TextBoxBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
 	
 	if (args->GetId () == Control::FontFamilyProperty) {
 		FontFamily *family = args->GetNewValue() ? args->GetNewValue()->AsFontFamily () : NULL;
+		const char *family_name = NULL;
+		char *resource;
+		
+		if (family && family->source && (family_name = strchr (family->source, '#'))) {
+			// FontFamily can reference a font resource in the form "<resource>#<family name>"
+			resource = g_strndup (family->source, family_name - family->source);
+			SetFontResource (resource);
+			g_free (resource);
+			family_name++;
+		} else if (family) {
+			family_name = family->source;
+		}
+		
 		changed = TextBoxModelChangedFont;
-		font->SetFamily (family ? family->source : NULL);
+		font->SetFamily (family_name);
 	} else if (args->GetId () == Control::FontSizeProperty) {
 		double size = args->GetNewValue()->AsDouble ();
 		changed = TextBoxModelChangedFont;
@@ -1897,6 +1942,12 @@ TextBox::SyncText ()
 	setvalue = false;
 	SetValue (TextBox::TextProperty, Value (text, true));
 	setvalue = true;
+}
+
+void
+TextBox::ClearFontSource ()
+{
+	ClearValue (TextBox::FontSourceProperty);
 }
 
 void
@@ -2240,6 +2291,12 @@ const char *
 PasswordBox::GetDisplayText ()
 {
 	return display->str;
+}
+
+void
+PasswordBox::ClearFontSource ()
+{
+	ClearValue (PasswordBox::FontSourceProperty);
 }
 
 void
