@@ -38,15 +38,6 @@
 #include FT_SYSTEM_H
 
 
-
-// TODO:
-//
-// 1. Figure out how to register a new key/value pair on an FcPattern (for GUID key)
-//
-// 2. Add API for TextFontDescription for setting a GUID
-//
-// 3. Set the GUID key on the FcPattern(s)
-
 #define FONT_FACE_SIZE 41.0
 
 #define DOUBLE_TO_26_6(d) ((FT_F26Dot6)((d) * 64.0))
