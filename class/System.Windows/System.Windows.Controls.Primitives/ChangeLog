@@ -1,3 +1,8 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ScrollEventHandler.cs: Delete files we got from MS' controls
+	  drop, and update project file to compile.
+
 2009-04-02  Alan McGovern  <amcgovern@novell.com>
 
 	* Popup.cs: Popups are treated as top level elements which are

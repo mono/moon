@@ -1,3 +1,12 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* VisualTransition.cs:
+	* VisualStateGroup.cs:
+	* VisualStateManager.cs:
+	* VisualStateChangedEventArgs.cs:
+	* TemplateVisualStateAttribute.cs: Delete files we got from
+	  MS' controls drop, and update project file to compile.
+
 2009-04-09  Jackson Harper  <jackson@ximian.com>
 
 	* Application.cs: Updated method name.

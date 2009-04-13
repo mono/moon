@@ -1,15 +1,15 @@
-<Project name="System.Windows" fileversion="2.0" language="C#" clr-version="Clr_2_1" targetFramework="2.1" ctype="DotNetProject">
+<Project name="System.Windows" fileversion="2.0" language="C#" targetFramework="2.0" ctype="DotNetProject">
   <Configurations active="Default">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Debug" signAssembly="True" assemblyKeyFile="/mono/main/src/moon-2.0/class/mono.snk" assembly="System.Windows" />
       <Build debugmode="True" target="Library" />
-      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Clr_2_1" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="True" generateoverflowchecks="True" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Release" assembly="System.Windows" />
       <Build debugmode="False" target="Library" />
-      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Clr_2_1" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="True" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
@@ -429,11 +429,89 @@
     <File name="Mono/MoonlightValueConverter.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/ToggleRef.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls.Primitives/IScrollInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/MediaAttribute.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/MediaAttributeCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PixelFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PixelFormatKind.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/PixelFormats.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/UnmanagedMatrix.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Imaging/BitmapSource.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Imaging/WriteableBitmap.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/CursorPositionChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/CursorPositionChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/BackEase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/BounceEase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Media.Animation/CircleEase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/CubicEase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/EasingColorKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/EasingDoubleKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/EasingFunctionBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/EasingMode.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/EasingPointKeyFrame.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/ElasticEase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/ExponentialEase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/IEasingFunction.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/PowerEase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/QuadraticEase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/QuarticEase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/QuinticEase.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media.Animation/SineEase.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/EasingFunctionWrapper.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Interop/PluginHost.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ButtonAutomationPeer.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ButtonBaseAutomationPeer.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/HyperlinkButtonAutomationPeer.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/RangeBaseAutomationPeer.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/RepeatButtonAutomationPeer.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/SliderAutomationPeer.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/TextBlockAutomationPeer.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ThumbAutomationPeer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Assembly/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="MS.Internal/Dummy.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Collections.ObjectModel/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Collections.Specialized/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.ComponentModel/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.IO/SimpleUnmanagedMemoryStream.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.IO.IsolatedStorage/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Automation/DockPatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/ExpandCollapsePatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/GridItemPatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/GridPatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/MultipleViewPatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/RangeValuePatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/SelectionPatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/TableItemPatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/TablePatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/TogglePatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/TransformPatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/ValuePatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation/WindowPatternIdentifiers.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Automation.Provider/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Controls/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Controls/MultiScaleSubImageCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls/SaveFileDialog.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Controls.Primitives/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Data/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Documents/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Hosting/Dummy.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Ink/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Input/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Input/MouseWheelEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/MouseWheelEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Input/StylusInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Media.Imaging/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Resources/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Shapes/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows.Threading/ChangeLog" subtype="Code" buildaction="Nothing" />
   </Contents>
   <References>
-    <ProjectReference type="Assembly" localcopy="True" specificVersion="False" refto="../lib/2.1/System.Windows.Browser.dll" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
-    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Windows.Browser, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Core" />
   </References>
 </Project>
