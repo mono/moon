@@ -1,5 +1,10 @@
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xamlg.mdp: Add a project for each tool, and clean up some of
+	  the existing projects.
+
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am: Fix install directories.
 
 2009-02-19  Geoff Norton  <gnorton@novell.com>

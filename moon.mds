@@ -12,26 +12,46 @@
       <Entry build="True" name="plugin" configuration="Debug" />
       <Entry build="True" name="System.Windows" configuration="Debug" />
       <Entry build="True" name="System.Windows.Browser" configuration="Debug" />
-      <Entry build="True" name="harness" configuration="Debug" />
       <Entry build="True" name="test" configuration="Debug" />
-      <Entry build="True" name="tools" configuration="Debug" />
       <Entry build="True" name="Moonlight Unit Tests" configuration="Debug" />
       <Entry build="False" name="Microsoft.Silverlight.Testing" configuration="Debug" />
       <Entry build="True" name="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" configuration="Debug" />
       <Entry build="True" name="Mono.Moonlight.UnitTesting" configuration="Debug" />
+      <Entry build="True" name="libshocker" configuration="Debug" />
+      <Entry build="True" name="tools/generator" configuration="Debug" />
+      <Entry build="True" name="tools/xamlg" configuration="Debug" />
+      <Entry build="True" name="tools/xaml2html" configuration="Debug" />
+      <Entry build="True" name="tools/unsign" configuration="Debug" />
+      <Entry build="True" name="tools/svg2xaml-gui" configuration="Debug" />
+      <Entry build="True" name="tools/svg2xaml" configuration="Debug" />
+      <Entry build="True" name="tools/respack" configuration="Debug" />
+      <Entry build="True" name="tools/mxap" configuration="Debug" />
+      <Entry build="True" name="tools/munxap" configuration="Debug" />
+      <Entry build="True" name="tools/mopen" configuration="Debug" />
+      <Entry build="True" name="tools/mopen1" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="src" configuration="Release" />
       <Entry build="True" name="plugin" configuration="Release" />
       <Entry build="True" name="System.Windows" configuration="Release" />
       <Entry build="True" name="System.Windows.Browser" configuration="Release" />
-      <Entry build="True" name="harness" configuration="Release" />
       <Entry build="True" name="test" configuration="Release" />
-      <Entry build="True" name="tools" configuration="Release" />
       <Entry build="True" name="Moonlight Unit Tests" configuration="Release" />
       <Entry build="False" name="Microsoft.Silverlight.Testing" configuration="Release" />
       <Entry build="True" name="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" configuration="Release" />
       <Entry build="True" name="Mono.Moonlight.UnitTesting" configuration="Release" />
+      <Entry build="True" name="libshocker" configuration="Release" />
+      <Entry build="True" name="tools/generator" configuration="Release" />
+      <Entry build="True" name="tools/xamlg" configuration="Release" />
+      <Entry build="True" name="tools/xaml2html" configuration="Release" />
+      <Entry build="True" name="tools/unsign" configuration="Release" />
+      <Entry build="True" name="tools/svg2xaml-gui" configuration="Release" />
+      <Entry build="True" name="tools/svg2xaml" configuration="Release" />
+      <Entry build="True" name="tools/respack" configuration="Release" />
+      <Entry build="True" name="tools/mxap" configuration="Release" />
+      <Entry build="True" name="tools/munxap" configuration="Release" />
+      <Entry build="True" name="tools/mopen" configuration="Release" />
+      <Entry build="True" name="tools/mopen1" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="src" single="True">
@@ -39,13 +59,23 @@
     <Execute type="None" entry="plugin" />
     <Execute type="None" entry="System.Windows" />
     <Execute type="None" entry="System.Windows.Browser" />
-    <Execute type="None" entry="harness" />
     <Execute type="None" entry="test" />
-    <Execute type="None" entry="tools" />
     <Execute type="None" entry="Moonlight Unit Tests" />
     <Execute type="None" entry="Microsoft.Silverlight.Testing" />
     <Execute type="None" entry="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" />
     <Execute type="None" entry="Mono.Moonlight.UnitTesting" />
+    <Execute type="None" entry="libshocker" />
+    <Execute type="None" entry="tools/generator" />
+    <Execute type="None" entry="tools/xamlg" />
+    <Execute type="None" entry="tools/xaml2html" />
+    <Execute type="None" entry="tools/unsign" />
+    <Execute type="None" entry="tools/svg2xaml-gui" />
+    <Execute type="None" entry="tools/svg2xaml" />
+    <Execute type="None" entry="tools/respack" />
+    <Execute type="None" entry="tools/mxap" />
+    <Execute type="None" entry="tools/munxap" />
+    <Execute type="None" entry="tools/mopen" />
+    <Execute type="None" entry="tools/mopen1" />
   </StartMode>
   <MonoDevelop.ChangeLogAddIn.ChangeLogInfo policy="UpdateNearestChangeLog" />
   <Entries>
@@ -53,12 +83,22 @@
     <Entry filename="plugin/plugin.mdp" />
     <Entry filename="class/System.Windows/System.Windows.mdp" />
     <Entry filename="class/System.Windows.Browser/System.Windows.Browser.mdp" />
-    <Entry filename="test/harness/harness.mdp" />
     <Entry filename="test/test.mdp" />
-    <Entry filename="tools/tools.mdp" />
     <Entry filename="test/2.0/moon-unit/moon-unit.mdp" />
     <Entry filename="test/2.0/Microsoft.Silverlight.Testing/UnitTestHarness/UnitTestHarness.mdp" />
     <Entry filename="test/2.0/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.csproj" />
     <Entry filename="test/2.0/Mono.Moonlight.UnitTesting/Mono.Moonlight.mdp" />
+    <Entry filename="test/harness/shocker/shocker.mdp" />
+    <Entry filename="tools/generators/generators.mdp" />
+    <Entry filename="tools/xamlg/xamlg.mdp" />
+    <Entry filename="tools/xaml2html/xaml2html.mdp" />
+    <Entry filename="tools/unsign/unsign.mdp" />
+    <Entry filename="tools/svg2xaml/svg2xaml-gui.mdp" />
+    <Entry filename="tools/svg2xaml/svg2xaml.mdp" />
+    <Entry filename="tools/respack/respack.mdp" />
+    <Entry filename="tools/mxap/mxap.mdp" />
+    <Entry filename="tools/munxap/munxap.mdp" />
+    <Entry filename="tools/mopen/mopen.mdp" />
+    <Entry filename="tools/mopen/mopen1.mdp" />
   </Entries>
 </Combine>

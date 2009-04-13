@@ -1,0 +1,40 @@
+<Project name="tools/generator" fileversion="2.0" language="C#" targetFramework="2.0" ctype="DotNetProject">
+  <Configurations active="Default">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Debug" assembly="generators" />
+      <Build debugmode="True" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="generators" />
+      <Build debugmode="False" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="." subtype="Directory" buildaction="Compile" />
+    <File name="Annotation.cs" subtype="Code" buildaction="Compile" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="FieldInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Generator.cs" subtype="Code" buildaction="Compile" />
+    <File name="GlobalInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="HeaderCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="Helper.cs" subtype="Code" buildaction="Compile" />
+    <File name="Log.cs" subtype="Code" buildaction="Compile" />
+    <File name="MemberInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="MethodInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="ParameterInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="SignatureType.cs" subtype="Code" buildaction="Compile" />
+    <File name="Tokenizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="TypeInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="TypeReference.cs" subtype="Code" buildaction="Compile" />
+    <File name="HOWTO" subtype="Code" buildaction="Nothing" />
+    <File name="README" subtype="Code" buildaction="Nothing" />
+    <File name="TODO" subtype="Code" buildaction="Nothing" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </References>
+</Project>

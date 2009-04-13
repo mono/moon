@@ -1,0 +1,52 @@
+<Project name="tools/munxap" fileversion="2.0" language="C#" targetFramework="2.0" ctype="DotNetProject">
+  <Configurations active="Default">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Debug" assembly="munxap" />
+      <Build debugmode="True" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="munxap" />
+      <Build debugmode="False" target="Exe" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="munxap.cs" subtype="Code" buildaction="Compile" />
+    <File name="View.cs" subtype="Code" buildaction="Compile" />
+    <File name="Zip.cs" subtype="Code" buildaction="Compile" />
+    <File name="../Options.cs" subtype="Code" buildaction="Compile" />
+    <File name="cm/c.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/d.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/e.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/en.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/f.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/i.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/m.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/mn.png" subtype="Code" buildaction="Nothing" />
+    <File name="cm/n.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/p.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/r.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/s.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/sc.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/se.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/sm.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/st.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/sx.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/tb.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/tm.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/tp.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/w.gif" subtype="Code" buildaction="Nothing" />
+    <File name="cm/y.gif" subtype="Code" buildaction="Nothing" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Cecil, Version=0.6.8.8607, Culture=neutral, PublicKeyToken=null" />
+  </References>
+</Project>

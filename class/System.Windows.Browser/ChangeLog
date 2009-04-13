@@ -1,3 +1,8 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Browser.mdp: Add a project for each tool, and
+	  clean up some of the existing projects.
+
 2009-03-27  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Do not install 2.1 in the GAC but in the plugin dir

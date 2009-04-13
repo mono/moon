@@ -1,5 +1,11 @@
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mopen.mdp:
+	* mopen1.mdp: Add a project for each tool, and clean up some
+	  of the existing projects.
+
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am: Fix install directories.
 
 2009-04-09  Jackson Harper  <jackson@ximian.com>

@@ -1,5 +1,10 @@
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* shocker.mdp: Add a project for each tool, and clean up some
+	  of the existing projects.
+
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* image-capture.h:
 	* image-capture.cpp: Add pinvokable CaptureSingleImage method.
 

@@ -1,3 +1,8 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* tools.mdp: Add a project for each tool, and clean up some of
+	  the existing projects.
+
 2009-03-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* tools.mdp: Updated.

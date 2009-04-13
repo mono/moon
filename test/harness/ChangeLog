@@ -1,5 +1,10 @@
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* harness.mdp: Add a project for each tool, and clean up some
+	  of the existing projects.
+
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* agviewer:
 	* agviewer/agserver.h:
 	* agviewer/.gitignore:

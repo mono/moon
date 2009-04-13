@@ -1,0 +1,38 @@
+<Project name="libshocker" fileversion="2.0" language="CPP" Target="Bin" ctype="CProject">
+  <Configurations active="Default">
+    <Configuration name="Debug" SourceDirectory="." ctype="CProjectConfiguration">
+      <Output directory="bin/Debug" output="shocker" />
+      <Build debugmode="True" target="SharedLibrary" />
+      <Execution runwithwarnings="True" consolepause="True" />
+      <CodeGeneration WarningLevel="Normal" WarningsAsErrors="False" OptimizationLevel="0" ExtraCompilerArguments="" ExtraLinkerArguments="" DefineSymbols="DEBUG MONODEVELOP" />
+    </Configuration>
+    <Configuration name="Release" SourceDirectory="." ctype="CProjectConfiguration">
+      <Output directory="bin/Release" output="shocker" />
+      <Build debugmode="False" target="SharedLibrary" />
+      <Execution runwithwarnings="True" consolepause="True" />
+      <CodeGeneration WarningLevel="Normal" WarningsAsErrors="False" OptimizationLevel="3" ExtraCompilerArguments="" ExtraLinkerArguments="" DefineSymbols="MONODEVELOP" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="." subtype="Directory" buildaction="Nothing" />
+    <File name="browser.cpp" subtype="Code" buildaction="Compile" />
+    <File name="browser.h" subtype="Code" buildaction="Nothing" />
+    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="image-capture.cpp" subtype="Code" buildaction="Compile" />
+    <File name="image-capture.h" subtype="Code" buildaction="Nothing" />
+    <File name="input.cpp" subtype="Code" buildaction="Compile" />
+    <File name="input.h" subtype="Code" buildaction="Nothing" />
+    <File name="logging.cpp" subtype="Code" buildaction="Compile" />
+    <File name="logging.h" subtype="Code" buildaction="Nothing" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="netscape.cpp" subtype="Code" buildaction="Compile" />
+    <File name="netscape.h" subtype="Code" buildaction="Nothing" />
+    <File name="plugin.cpp" subtype="Code" buildaction="Compile" />
+    <File name="plugin.h" subtype="Code" buildaction="Nothing" />
+    <File name="shocker.cpp" subtype="Code" buildaction="Compile" />
+    <File name="shocker.h" subtype="Code" buildaction="Nothing" />
+    <File name="shutdown-manager.cpp" subtype="Code" buildaction="Compile" />
+    <File name="shutdown-manager.h" subtype="Code" buildaction="Nothing" />
+  </Contents>
+  <compiler ctype="GppCompiler" />
+</Project>

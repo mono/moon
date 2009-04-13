@@ -1,5 +1,10 @@
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml2html.mdp: Add a project for each tool, and clean up
+	  some of the existing projects.
+
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am: Fix install directories.
 
 2008-12-12  Jackson Harper  <jackson@ximian.com>
