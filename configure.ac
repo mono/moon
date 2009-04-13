@@ -141,6 +141,8 @@ test/harness/shocker/Makefile
 test/objecttypes/Makefile
 test/parsertest/Makefile
 test/sizes/Makefile
+test/templates/Makefile
+test/templates/managed/Makefile
 tools/Makefile
 tools/generators/Makefile
 tools/mopen/Makefile

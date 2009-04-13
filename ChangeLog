@@ -1,5 +1,9 @@
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* configure.ac: Include the test templates in the build.
+
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* moon.mds: Add a project for each tool, and clean up some of
 	  the existing projects.
 
