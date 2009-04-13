@@ -1,5 +1,9 @@
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* timecode.mpeg: Move videos to test/media/video.
+
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* objecttypes:
 	* objecttypes/Makefile.am:
 	* objecttypes/objecttypes.cpp: This app isn't required
