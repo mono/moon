@@ -1,3 +1,13 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* agviewer:
+	* agviewer/agserver.h:
+	* agviewer/.gitignore:
+	* agviewer/Makefile.am:
+	* agviewer/agviewer.cpp:
+	* agviewer/AgserverObject.h:
+	* agviewer/AgserverObject.xml: Delete agviewer.
+
 2009-04-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Remove agviewer and test-runner from the build.
