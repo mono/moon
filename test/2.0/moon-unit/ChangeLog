@@ -3,6 +3,9 @@
 	* misc/Parsing/MiscParsingTestCanvas.xaml: Add a canvas element
 	named the_canvas, this name would conflict with the parent
 	canvas's name if we weren't in a separate namescope.
+	* misc/Parsing/MiscParsing.cs: Make sure that we are picking up
+	the correct element when we search in a managed element's
+	namescope.
 
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 

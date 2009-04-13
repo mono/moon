@@ -58,9 +58,11 @@ namespace MoonTest.Misc.Parsing
 			Assert.IsNull (page.FindName ("some_name"), "7");
 
 			//
-			// The managed element should be able to find itself
+			// Make sure we are picking up the sub element and not ourself
 			//
-			Assert.IsNotNull (canvas.FindName ("the_canvas"), "8");
+			Canvas sub_canvas = canvas.FindName ("the_canvas") as Canvas;
+			Assert.IsNotNull (sub_canvas, "8");
+			Assert.AreEqual (sub_canvas.Children.Count, 0, "9");
 		}
 	}
 }
