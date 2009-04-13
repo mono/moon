@@ -10,9 +10,7 @@
 		       	       <Setter.Value>
 			             <ControlTemplate TargetType="moon:MyTextBox">
 				       <Border>
-				         <moon:MyPanel x:Name="textboxCanvas">
-					   <Border x:Name="ContentElement" />
-					 </moon:MyPanel>
+				         <Border x:Name="ContentElement" />
 				       </Border>
 				     </ControlTemplate>
 		       	       </Setter.Value>
@@ -22,9 +20,7 @@
 		       <Setter Property="Template">
 		       	       <Setter.Value>
 			             <ControlTemplate TargetType="moon:MyTextBox">
-				       <moon:MyPanel x:Name="textboxCanvas">
-					 <Border x:Name="ContentElement" />
-				       </moon:MyPanel>
+				       <Border x:Name="ContentElement" />
 				     </ControlTemplate>
 		       	       </Setter.Value>
 		       </Setter>
