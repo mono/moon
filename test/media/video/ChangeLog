@@ -1,5 +1,13 @@
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* masters:
+	* masters/video-seek.html.png:
+	* masters/test-mediaopened.Master.png:
+	* masters/video-seek-7.html.master.png: Delete this directory,
+	  the files have been moved to test/harness/masters.
+
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* drtlist.xml: Delete old-style drtlists.
 
 2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
