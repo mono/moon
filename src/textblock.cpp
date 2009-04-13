@@ -345,7 +345,9 @@ void
 TextBlock::SetFontResource (const char *resource)
 {
 	Application *application = Application::GetCurrent ();
+	Downloader *downloader;
 	const char *guid = NULL;
+	Surface *surface;
 	char *filename;
 	size_t len;
 	Uri *uri;
@@ -356,11 +358,19 @@ TextBlock::SetFontResource (const char *resource)
 	uri = new Uri ();
 	
 	if (!application || !uri->Parse (resource) || !(filename = application->GetResourceAsPath (uri))) {
-		ClearValue (TextBlock::FontFilenameProperty);
-		ClearValue (TextBlock::FontGUIDProperty);
-		font->SetFilename (NULL, NULL);
-		UpdateFontDescriptions ();
+		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
+			downloader->Open ("GET", resource, XamlPolicy);
+			SetFontSource (downloader);
+			downloader->unref ();
+		} else {
+			ClearValue (TextBlock::FontFilenameProperty);
+			ClearValue (TextBlock::FontGUIDProperty);
+			font->SetFilename (NULL, NULL);
+			UpdateFontDescriptions ();
+		}
+		
 		delete uri;
+		
 		return;
 	}
 	
