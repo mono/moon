@@ -138,7 +138,6 @@ test/2.0/Microsoft.SilverlightControls/Controls.Extended.Test/Makefile
 test/2.0/Microsoft.SilverlightControls/site/Makefile
 test/harness/Makefile
 test/harness/shocker/Makefile
-test/objecttypes/Makefile
 test/parsertest/Makefile
 test/sizes/Makefile
 test/templates/Makefile
