@@ -226,7 +226,6 @@
     <File name="pipeline-asf.h" subtype="Code" buildaction="Nothing" />
     <File name="mediaelement.cpp" subtype="Code" buildaction="Compile" />
     <File name="mediaelement.h" subtype="Code" buildaction="Nothing" />
-    <File name="expression.h" subtype="Code" buildaction="Nothing" />
     <File name="validators.cpp" subtype="Code" buildaction="Compile" />
     <File name="provider.cpp" subtype="Code" buildaction="Compile" />
     <File name="provider.h" subtype="Code" buildaction="Nothing" />
@@ -241,7 +240,6 @@
     <File name="pipeline-nocodec-ui.h" subtype="Code" buildaction="Nothing" />
     <File name="pipeline-nocodec-ui.cpp" subtype="Code" buildaction="Nothing" />
     <File name="codec-url.h" subtype="Code" buildaction="Nothing" />
-    <File name="expression.cpp" subtype="Code" buildaction="Compile" />
     <File name="codec-version.h.in" subtype="Code" buildaction="Nothing" />
     <File name="fontfamily.h" subtype="Code" buildaction="Nothing" />
     <File name="mkcolor.cs" subtype="Code" buildaction="Nothing" />
@@ -259,6 +257,12 @@
     <File name="imagesource.h" subtype="Code" buildaction="Nothing" />
     <File name="writeablebitmap.cpp" subtype="Code" buildaction="Compile" />
     <File name="writeablebitmap.h" subtype="Code" buildaction="Nothing" />
+    <File name="easing.cpp" subtype="Code" buildaction="Compile" />
+    <File name="easing.h" subtype="Code" buildaction="Nothing" />
+    <File name="fontsource.h" subtype="Code" buildaction="Nothing" />
+    <File name="morton-layout-table.inc" subtype="Code" buildaction="Nothing" />
+    <File name="timemanager.cpp" subtype="Code" buildaction="Compile" />
+    <File name="timemanager.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
