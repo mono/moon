@@ -36,6 +36,31 @@
 
 #include "logging.h"
 
+LogProvider *LogProvider::instance = NULL;
+
+void
+LogProvider::CreateInstance (const char *test_name)
+{
+	g_return_if_fail (instance == NULL);
+	
+	instance = new LogProvider (test_name);
+}
+
+void
+LogProvider::DeleteInstance ()
+{
+	g_return_if_fail (instance != NULL);
+	
+	//delete instance;
+	//instance = NULL;
+}
+
+LogProvider *
+LogProvider::GetInstance ()
+{
+	return instance;
+}
+
 LogProvider::LogProvider (const char* test_name)
 {
 	this->test_name = strdup (test_name);
@@ -117,27 +142,32 @@ LogProvider::Log (const char* level, const char* msg)
 void 
 LogDebug (const char *message)
 {
-	printf ("[shocker] LogDebug: Not implemented\n");
+	g_return_if_fail (LogProvider::GetInstance () != NULL);
+	LogProvider::GetInstance ()->LogDebug (message);
 }
 
 void LogMessage (const char *message)
 {
-	printf ("[shocker] LogDebug: Not implemented\n");
+	g_return_if_fail (LogProvider::GetInstance () != NULL);
+	LogProvider::GetInstance ()->LogMessage (message);
 }
 
-void LogResult (gint32 result)
+void LogResult (LogProvider::TestResult result)
 {
-	printf ("[shocker] LogResult: Not implemented\n");
+	g_return_if_fail (LogProvider::GetInstance () != NULL);
+	LogProvider::GetInstance ()->LogResult (result);
 }
 
 void LogError (const char *message)
 {
-	printf ("[shocker] LogError: Not implemented\n");
+	g_return_if_fail (LogProvider::GetInstance () != NULL);
+	LogProvider::GetInstance ()->LogError (message);
 }
 
 void LogWarning (const char *message)
 {
-	printf ("[shocker] LogWarning: Not implemented\n");
+	g_return_if_fail (LogProvider::GetInstance () != NULL);
+	LogProvider::GetInstance ()->LogWarning (message);
 }
 
 void GetTestDefinition (char **result)

@@ -573,7 +573,7 @@ ShockerScriptableControlType *ShockerScriptableControlClass = NULL;
 
 ShockerScriptableControlObject::ShockerScriptableControlObject (NPP instance) : instance (instance), test_path (NULL)
 {	
-	log_provider = new LogProvider (GetTestPath ());
+	LogProvider::CreateInstance (GetTestPath ());
 	input_provider = new InputProvider ();
 	image_capture = new ImageCaptureProvider ();
 }
@@ -584,7 +584,7 @@ ShockerScriptableControlObject::~ShockerScriptableControlObject ()
 
 	delete input_provider;
 	delete image_capture;
-	delete log_provider;
+	LogProvider::DeleteInstance ();
 }
 
 InputProvider *
@@ -606,9 +606,7 @@ ShockerScriptableControlObject::GetImageCaptureProvider ()
 LogProvider *
 ShockerScriptableControlObject::GetLogProvider ()
 {
-	if (!log_provider)
-		log_provider = new LogProvider (GetTestPath ());
-	return log_provider;
+	return LogProvider::GetInstance ();
 }
 
 void
@@ -620,7 +618,8 @@ void
 ShockerScriptableControlObject::SignalShutdown ()
 {
 	delete input_provider; input_provider = NULL;
-	delete log_provider; log_provider = NULL;
+
+	LogProvider::DeleteInstance ();
 
 	shutdown_manager_queue_shutdown ();
 }

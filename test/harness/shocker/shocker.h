@@ -43,9 +43,6 @@ private:
 
 	InputProvider* input_provider;
 	ImageCaptureProvider* image_capture;
-	LogProvider* log_provider;
-
-
 };
 
 

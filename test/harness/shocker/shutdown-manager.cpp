@@ -136,3 +136,8 @@ shutdown_manager_queue_shutdown ()
 	}
 }
 
+void
+SignalShutdown (const char *window_name)
+{
+	shutdown_manager_queue_shutdown ();
+}

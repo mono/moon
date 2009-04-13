@@ -35,6 +35,11 @@
 #include <glib.h>
 
 class LogProvider {
+private:
+	LogProvider (const char *test_name);
+	virtual ~LogProvider ();
+	
+	static LogProvider *instance;
 public:
 	enum TestResult {
 		PASS = 1,
@@ -43,9 +48,10 @@ public:
 
 	static TestResult IntToResult (int i) { return (TestResult) i; }
 	static int TestResultToInt (TestResult result) { return (int) result; }
-
-	LogProvider (const char* test_name);
-	virtual ~LogProvider ();
+	
+	static void CreateInstance (const char *test_name);
+	static LogProvider *GetInstance ();
+	static void DeleteInstance ();
 
 	void LogMessage (const char* str);
 	void LogWarning (const char* str);
@@ -54,7 +60,6 @@ public:
 	void LogDebug (const char* str);
 
 	void LogResult (TestResult result);
-
 private:
 	void Log (const char* level, const char* msg);
 	
@@ -65,7 +70,7 @@ G_BEGIN_DECLS
 
 void LogDebug (const char *message);
 void LogMessage (const char *message);
-void LogResult (gint32 result);
+void LogResult (LogProvider::TestResult result);
 void LogError (const char *message);
 void LogWarning (const char *message);
 void GetTestDefinition (char **result);

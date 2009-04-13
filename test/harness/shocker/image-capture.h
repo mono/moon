@@ -99,6 +99,7 @@ private:
 
 G_BEGIN_DECLS
 void shocker_capture_image (const char *filename, int x, int y, int width, int height);
+void CaptureSingleImage (const char *directory, const char *filename, int x, int y, int width, int height, int delay);
 G_END_DECLS
 
 #endif  // __IMAGE_CAPTURE_H__

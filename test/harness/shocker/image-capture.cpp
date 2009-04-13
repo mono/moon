@@ -334,3 +334,14 @@ void shocker_capture_image (const char *filename, int x, int y, int width, int h
 	ScreenCaptureData sc (x, y, width, height);
 	sc.Capture (filename);
 }
+
+void
+CaptureSingleImage (const char *directory, const char *filename, int x, int y, int width, int height, int delay)
+{
+	if (directory != NULL && directory [0] != 0)
+		printf ("[shocker] CaptureSingleImage: a directory was specified, it will not be respected.\n");
+	if (delay != 0)
+		printf ("[shocker] CaptureSingleImage: a non-zero delay was specified, it will not be respected.\n"); // FIXME: implement delay
+	
+	shocker_capture_image (filename, x, y, width, height);
+}

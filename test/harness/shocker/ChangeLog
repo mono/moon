@@ -1,3 +1,17 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* image-capture.h:
+	* image-capture.cpp: Add pinvokable CaptureSingleImage method.
+
+	* logging.h:
+	* logging.cpp: Add pinvokable log methods.
+
+	* shocker.h:
+	* shocker.cpp: Updated according to new logger api.
+
+	* shutdown-manager.h:
+	* shutdown-manager.cpp: Add pinvokable SignalShutdown method.
+
 2009-04-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* logging.h:
