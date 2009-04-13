@@ -31,8 +31,8 @@ SUBDIRS = $(subdirs) \
 	m4 \
 	$(BUILD_TOOLS) \
 	src \
-	$(PLUGIN_SUBDIR) \
 	$(MONO_SUBDIRS) \
+	$(PLUGIN_SUBDIR) \
 	$(TOOLS_SUBDIR) \
 	$(TEST_SUBDIR) \
 	$(PERF_SUBDIR) \
