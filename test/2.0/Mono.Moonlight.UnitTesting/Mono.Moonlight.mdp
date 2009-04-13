@@ -25,8 +25,12 @@
     <File name="site/MoonLogProvider.aspx" subtype="Code" buildaction="Nothing" />
     <File name="site/MoonLogProvider.aspx.cs" subtype="Code" buildaction="Compile" />
     <File name="site/moon-unit-log.xsl" subtype="Code" buildaction="Nothing" />
+    <File name="Mono.Moonlight.UnitTesting/TestLogger.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono.Moonlight.UnitTesting/TestPlugin.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Windows, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Windows.Browser, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </References>
 </Project>

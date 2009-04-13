@@ -1,3 +1,8 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am:
+	* Mono.Moonlight.mdp: Updated.
+
 2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Mono.Moonlight.mdp: Update project files to build property

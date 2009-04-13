@@ -1,3 +1,8 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* TestLogger.cs:
+	* TestPlugin.cs: Add some helper classes/functions.
+
 2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MoonLogProvider.cs: Add a cwl for the harness.

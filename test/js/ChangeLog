@@ -1,3 +1,10 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* js/utils.js: Added support for detecting IE.
+
+	* js/testplugin.js: Added support for calculating upper left
+	  corner of the html page in IE.
+
 2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* js/testplugin.js: Make the plugin have non-empty size, so

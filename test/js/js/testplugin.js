@@ -160,8 +160,46 @@ function loadTestPlugin ()
 		mouseLeftClick : function () { _TestPlugin.mouseLeftClick (); },
 		mouseRightClick : function () { _TestPlugin.mouseRightClick (); },
 		sendKeyInput : function (a, b, c, d) { _TestPlugin.sendKeyInput (a, b, c, d); },
-		GetX : function () { return _TestPlugin.X; },
-		GetY : function () { return _TestPlugin.Y; }
+
+		GetX : function () {
+			return this.GetPluginPosition ().x;
+		},
+
+		GetY : function () {
+			return this.GetPluginPosition ().y;
+		},
+
+		GetPluginPosition : function ()
+		{
+			if (Plugin.Moonlight) {
+				return {x: _TestPlugin.X, y: _TestPlugin.Y };
+			} if (Host.IE) {
+				return this.GetPluginPositionIE ();
+			} else {
+				alert ("testplugin.js:GetPluginPosition: don't know how to get the position of the silverlight control in this browser (userAgent: " + navigator.userAgent + ") Moonlight: " + Host.Moonlight);
+				return {x: 0, y: 0};
+			}
+		},
+		
+		GetPluginPositionIE : function ()
+		{
+			var obj = document.getElementById ("_MoonlightControl"); // _TestPlugin;
+			
+			var r = { x: obj.offsetLeft, y: obj.offsetTop };
+			
+			var  p = obj.offsetParent;
+
+			while (p) {
+				r.x += p.offsetLeft;
+				r.y += p.offsetTop;
+				p = p.offsetParent;
+			}
+			
+			r.x += window.screenLeft;
+			r.y += window.screenTop;
+			
+			return r;
+		}
 	};
 
 	TestLogger = TestHost;

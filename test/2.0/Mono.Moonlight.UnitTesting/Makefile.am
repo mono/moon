@@ -7,7 +7,9 @@ SOURCES = \
 	$(srcdir)/Mono.Moonlight.UnitTesting/MoonlightBugAttribute.cs	\
 	$(srcdir)/Mono.Moonlight.UnitTesting/MoonLogProvider.cs			\
 	$(srcdir)/Mono.Moonlight.UnitTesting/SilverlightBugAttribute.cs	\
-	$(srcdir)/Mono.Moonlight.UnitTesting/Testing.cs
+	$(srcdir)/Mono.Moonlight.UnitTesting/Testing.cs	\
+	$(srcdir)/Mono.Moonlight.UnitTesting/TestLogger.cs	\
+	$(srcdir)/Mono.Moonlight.UnitTesting/TestPlugin.cs
 	
 EXTRA_DIST = \
 	$(SOURCES) \
