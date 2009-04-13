@@ -4,3 +4,6 @@
 # System.Windows.Browser.dll, platform code) using reflection so it needs to be SC
 +SC-M: System.Net.WebRequest System.Net.WebRequest::CreateBrowserWebRequest(System.Uri)
 
+# use of reflection to set the "progress_delegate" field
++SSC-M: System.Void System.Net.WebRequest::SetupProgressDelegate(System.Delegate)
+
