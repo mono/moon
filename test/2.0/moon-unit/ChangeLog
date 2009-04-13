@@ -1,3 +1,9 @@
+2009-04-13  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/MiscParsingTestCanvas.xaml: Add a canvas element
+	named the_canvas, this name would conflict with the parent
+	canvas's name if we weren't in a separate namescope.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* site/Web.config: Add a Web.config that allows debugging with

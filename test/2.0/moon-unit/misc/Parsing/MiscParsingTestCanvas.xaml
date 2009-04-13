@@ -3,5 +3,7 @@
    	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<TextBlock Name="the_block" />
+
+	<Canvas x:Name="the_canvas" />
 </Canvas>
 
