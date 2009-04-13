@@ -1,3 +1,8 @@
+2009-04-13  Geoff Norton  <gnorton@novell.com>
+
+	* deployment.cpp: Turn on MONO_IOMAP=case until we fix the iomapping
+	centrally.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* src.mdp: Updated.
