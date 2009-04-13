@@ -1,0 +1,19 @@
+Howto:
+
+* Create a test which takes a screenshot and has no managed code:
+- Copy and edit test-screenshot-template.html.
+
+* Create a managed test which takes a screenshot:
+- Copy and edit the template/managed directory.
+
+* Include the test in the harness:
+- Add a new test definition in silverlight2/Moonlight/drtlist.xml.
+
+* Create masters on Windows:
+- Start xsp2 in moon/test (on linux)
+- Checkout silverlight2/Moonlight/GenerateMasters (on Windows)
+- Execute Baseliner.exe, enter "http://<linux ip>:8080/templates/test-screenshot-template.html" and hit the button
+- After a few seconds a explorer window should open with the screenshot(s) taken.
+
+* Issues:
+- IE caches heavily and doesn't seem to work well with xsp, so you may need to clear IE's cache to get updated files.

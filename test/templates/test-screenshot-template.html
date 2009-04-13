@@ -1,0 +1,62 @@
+<html xmlns="http://www.w3.org/1999/xhtml" >
+	<head>
+		<title>Xaml screenshot</title>
+	</head>
+	<body scroll="no" style='border-width: 0px'>
+		<!--	You need to fix up the js paths when copying this file to a subdirectory	-->
+		<script type="text/javascript" src="../js/js/utils.js"></script>
+		<script type="text/javascript" src="../js/js/testplugin.js"></script>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue" Width="150" Height="150" >
+			</Canvas>
+		</script>
+
+		</script>
+
+		<script type="text/javascript">
+			var plugin_loaded = false;
+
+			window.moveTo (0,0);
+			window.resizeTo (screen.availWidth, screen.availHeight);
+			
+			function OnPluginError (sender, args)
+			{
+				TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+				TestLogger.LogResult (-1);
+				SignalShutdown ();
+			}
+
+			function OnPluginLoad (sender, args)
+			{
+				TestLogger.LogDebug ("OnPluginLoad");
+				plugin_loaded = true;
+			}
+
+			function TakeScreenshot ()
+			{
+				TestHost.TranslateCoordinates = true;
+				TestHost.CaptureSingleImage ("", "test-screenshot-template.png", 0, 0, 176, 175);
+				TestLogger.LogDebug ("Screenshot(s) taken, shutting down.");
+				SignalShutdown ();
+			}
+
+			function OnTestPluginReady ()
+			{
+				TestLogger.LogDebug ("OnTestPluginReady");
+
+				if (document.body == null || !plugin_loaded) {
+					window.setTimeout ( function () { OnTestPluginReady (); }, 10);
+					return;
+				}
+
+				setTimeout (TakeScreenshot, 10);
+			}
+		</script>
+		<embed type='application/x-silverlight' width='100' height='100' 
+			id='_MoonlightControl' Source='#xaml' OnError='OnPluginError' OnLoad='OnPluginLoad'
+			style=position:absolute;top:0px;left:0px;height:100%;width:100%;
+			background='white' >
+		</embed>
+	</body>
+</html>

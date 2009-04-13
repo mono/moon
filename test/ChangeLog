@@ -1,3 +1,17 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* templates:
+	* templates/README:
+	* templates/managed:
+	* templates/Makefile.am:
+	* templates/managed/App.xaml:
+	* templates/managed/Makefile.am:
+	* templates/managed/App.xaml.cs:
+	* templates/managed/Control.xaml:
+	* templates/managed/SampleTest.html:
+	* templates/managed/Control.xaml.cs:
+	* templates/test-screenshot-template.html: Add test templates.
+
 2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml/input-test.html:
