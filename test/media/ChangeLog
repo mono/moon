@@ -1,3 +1,7 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* drtlist.xml: Delete old-style drtlists.
+
 2008-07-01  Fernando Herrera  <fherrera@novell.com>
 
 	* apps/od-msn.html:

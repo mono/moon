@@ -1,5 +1,9 @@
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml/drtlist.xml: Delete old-style drtlists.
+
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* templates:
 	* templates/README:
 	* templates/managed:

@@ -1,5 +1,0 @@
-<DRTList>
-	<NestedTests inputFile="http://moonlightmedia:81/drtlist.xml" />
-	<NestedTests inputFile="media/audio/drtlist.xml" />
-	<NestedTests inputFile="media/video/drtlist.xml" />
-</DRTList>
