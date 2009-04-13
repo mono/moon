@@ -1,4 +1,4 @@
-moondir = $(prefix)/lib/moon
+moondir = $(pkglibdir)
 
 bin_PROGRAMS = mopen1
 mopen1_SOURCES = $(srcdir)/mopen1.cpp

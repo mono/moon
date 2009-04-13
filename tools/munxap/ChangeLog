@@ -1,3 +1,7 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Fix install directories.
+
 2009-03-11  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* munxap.cs: open top-level .xml too
