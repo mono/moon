@@ -43,7 +43,7 @@
 		dl = plugin.createObject ("Downloader");
 			
 		// Download a file
-		dl.Open ("GET", "../timecode.mpeg");
+		dl.Open ("GET", "../media/video/timecode.mpeg");
 		dl.AddEventListener ("Completed", "OnDownloadCompleted");
 		dl.AddEventListener ("DownloadProgressChanged", "OnDownloadProgressChanged");
 		dl.Send();

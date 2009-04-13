@@ -1,5 +1,12 @@
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml/test-dead-downloaders.html:
+	* xaml/test-downloaderprogress.html:
+	* xaml/test-setsource-with-downloader.html: Update path to
+	  timecode.mpeg.
+
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* cs:
 	* cs/tests:
 	* test.xaml:
