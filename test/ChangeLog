@@ -1,5 +1,21 @@
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* cs:
+	* cs/tests:
+	* test.xaml:
+	* cs/demo.cs:
+	* cs/Makefile:
+	* cs/.gitignore:
+	* cs/tests/ITest.cs:
+	* test-run-explorer.aspx:
+	* cs/tests/LineColorTest.cs:
+	* cs/tests/LinearBrushTest.cs:
+	* cs/tests/RadialBrushTest.cs:
+	* cs/tests/ZIndexChangeTest.cs:
+	* cs/tests/LineAnimationTest.cs: Delete old/obsolete code.
+
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Web.config: Help debugging a bit by not hiding exceptions.
 
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
