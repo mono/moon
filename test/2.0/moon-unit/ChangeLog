@@ -1,3 +1,8 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* site/Web.config: Add a Web.config that allows debugging with
+	  VS.
+
 2009-04-11  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Net/WebClientTest.cs: More test case including a test
