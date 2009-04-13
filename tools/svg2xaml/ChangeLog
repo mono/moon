@@ -1,3 +1,7 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Fix install directories.
+
 2008-01-12  Geoff Norton  <gnorton@novell.com>
 
 	* Makefile.am: Add support for linking against rsvg2-sharp 

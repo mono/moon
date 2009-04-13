@@ -1,3 +1,7 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Fix install directories.
+
 2009-04-01  Chris Toshok  <toshok@ximian.com>
 
 	* mxap.cs (CreateApplicationAssembly): add -d:DESKTOP to the gmcs

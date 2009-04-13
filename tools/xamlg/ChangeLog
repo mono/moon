@@ -1,3 +1,7 @@
+2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Fix install directories.
+
 2009-02-19  Geoff Norton  <gnorton@novell.com>
 
 	* xamlg.cs: Fix a off by 1 error if the rooted path ends in a /

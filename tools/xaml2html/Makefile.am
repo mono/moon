@@ -1,4 +1,4 @@
-moondir = $(prefix)/lib/moon
+moondir = $(pkglibdir)
 
 bin_SCRIPTS = xaml2html
 
