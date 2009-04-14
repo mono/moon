@@ -1,3 +1,8 @@
+2009-04-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* uri.cpp (Combine): strip leading ../ as we're already cutting the
+	filename off the base uri
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* type.h:

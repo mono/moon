@@ -429,8 +429,8 @@ Uri::Combine (const char *relative_path)
 	if (path && relative_path[0] != '/') {
 		if (!(filename = strrchr (path, '/')))
 			new_path = g_strdup (relative_path);
-		else	
-			new_path = g_strdup_printf ("%.*s/%s", filename - path, path, relative_path);
+		else
+			new_path = g_strdup_printf ("%.*s/%s", filename - path, path, g_str_has_prefix (relative_path, "../") ? relative_path+3 : relative_path);
 		g_free (path);
 		
 		path = new_path;
@@ -445,7 +445,7 @@ void
 Uri::Combine (const Uri *relative_uri)
 {
 	if (relative_uri->isAbsolute)
-		g_warning ("Uri::Combine (): Nor a relative Uri");
+		g_warning ("Uri::Combine (): Not a relative Uri");
 	Combine (relative_uri->path);
 }
 
