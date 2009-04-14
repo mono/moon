@@ -38,9 +38,14 @@ Control::~Control ()
 		delete bindings;
 }
 
-void
-Control::HitTest (cairo_t *cr, Rect r, List *uielement_list)
+bool
+Control::InsideObject (cairo_t *cr, double x, double y)
 {
+	/* 
+	 * Controls don't get hit themselves the rendered elements 
+	 * do and it bubbles up
+	 */
+	return false;
 }
 
 void

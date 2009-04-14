@@ -1,3 +1,13 @@
+2009-04-14  Larry Ewing  <lewing@novell.com>
+
+	* control.h:
+	* control.cpp (InsideObject): always return fals controls don't
+	handle the testing.  Fixes MSI navigation in
+	http://playboy.covertocover.com/
+	
+	* panel.h:
+	* panel.cpp: remove HitTest stubs.
+
 2009-04-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (layout_word_wrap): Added logic to for breaking after

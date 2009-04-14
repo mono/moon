@@ -39,7 +39,7 @@ public:
 
 	virtual bool IsLayoutContainer () { return true; }
 
-	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
+	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	

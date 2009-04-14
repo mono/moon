@@ -157,11 +157,6 @@ Panel::InsideObject (cairo_t *cr, double x, double y)
 	return false;
 }
 
-void
-Panel::HitTest (cairo_t *cr, Rect r, List *uielement_list)
-{
-}
-
 bool
 Panel::EmptyBackground ()
 {
