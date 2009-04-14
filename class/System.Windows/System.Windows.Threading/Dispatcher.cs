@@ -36,7 +36,7 @@ namespace System.Windows.Threading {
 		TickCallHandler callback;
 		Queue<DispatcherOperation> queuedOperations;
 		Surface surface;
-		uint source;
+		bool pending;
 
 		static Dispatcher main;
 		internal static Dispatcher Main {
@@ -91,10 +91,12 @@ namespace System.Windows.Threading {
 			lock (queuedOperations) {
 				op = new DispatcherOperation (d, args);
 				queuedOperations.Enqueue (op);
-				if (source == 0) {
+				if (!pending) {
 					if (callback == null)
 						callback = new TickCallHandler (dispatcher_callback);
-					source = NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (surface.Native), callback, IntPtr.Zero);
+					NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (surface.Native), 
+					                                                   callback, IntPtr.Zero);
+					pending = true;
 				}
 			}
 			return op;
@@ -129,7 +131,7 @@ namespace System.Windows.Threading {
 			lock (queuedOperations) {
 				ops = queuedOperations.ToArray ();
 				queuedOperations.Clear ();
-				source = 0;
+				pending = false;
 			}
 
 			foreach (DispatcherOperation op in ops) {

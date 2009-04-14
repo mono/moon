@@ -1,3 +1,8 @@
+2009-04-14  Andreia Gaita  <avidigal@novell.com>
+
+	* Dispatcher.cs: Fix add_tick_call pinvoke (no return val),
+	use flag to detect useless pinvoke calls instead.
+
 2009-03-30  Chris Toshok  <toshok@ximian.com>
 
 	* Dispatcher.cs: track move of TickCallHandler from
