@@ -55,6 +55,7 @@ int managed_stream_close_func (gpointer context, gpointer stream);
 
 int managed_stream_error_func (gpointer context, gpointer stream);
 
+/* @GeneratePInvoke */
 gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname);
 
 gboolean managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest);

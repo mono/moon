@@ -1170,6 +1170,16 @@ double_key_frame_collection_new (void)
 /**
  * Downloader
  **/
+void *
+downloader_create_web_request (Downloader *instance, const char *method, const char *uri)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->CreateWebRequest (method, uri);
+}
+
+
 Downloader *
 downloader_new (void)
 {
@@ -1244,6 +1254,56 @@ downloader_request_abort (DownloaderRequest *instance)
 }
 
 
+DownloaderResponse *
+downloader_request_get_downloader_response (DownloaderRequest *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetDownloaderResponse ();
+}
+
+
+bool
+downloader_request_get_response (DownloaderRequest *instance, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->GetResponse (started, available, finished, context);
+}
+
+
+const bool
+downloader_request_is_aborted (DownloaderRequest *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->IsAborted ();
+}
+
+
+void
+downloader_request_set_body (DownloaderRequest *instance, void *body, int size)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetBody (body, size);
+}
+
+
+void
+downloader_request_set_http_header (DownloaderRequest *instance, const char *name, const char *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetHttpHeader (name, value);
+}
+
+
 /**
  * DownloaderResponse
  **/
@@ -1282,6 +1342,16 @@ downloader_response_get_response_status_text (DownloaderResponse *instance)
 		return NULL;
 	
 	return instance->GetResponseStatusText ();
+}
+
+
+void
+downloader_response_set_header_visitor (DownloaderResponse *instance, DownloaderResponseHeaderVisitorCallback visitor)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetHeaderVisitor (visitor);
 }
 
 
@@ -3816,6 +3886,17 @@ time_manager_add_tick_call (TimeManager *instance, TickCallHandler handler, Even
 }
 
 
+guint
+time_manager_add_timeout (TimeManager *instance, gint priority, guint ms_interval, GSourceFunc func, gpointer timeout_data)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (guint) 0;
+	
+	return instance->AddTimeout (priority, ms_interval, func, timeout_data);
+}
+
+
 int
 time_manager_get_maximum_refresh_rate (TimeManager *instance)
 {
@@ -3824,6 +3905,26 @@ time_manager_get_maximum_refresh_rate (TimeManager *instance)
 		return (int) 0;
 	
 	return instance->GetMaximumRefreshRate ();
+}
+
+
+void
+time_manager_remove_tick_call (TimeManager *instance, TickCallHandler handler)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->RemoveTickCall (handler);
+}
+
+
+void
+time_manager_remove_timeout (TimeManager *instance, guint timeout_id)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->RemoveTimeout (timeout_id);
 }
 
 

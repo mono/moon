@@ -427,7 +427,8 @@ G_BEGIN_DECLS
 void     runtime_init (const char *platform_dir, guint64 flags);
 
 void     runtime_init_browser (const char *plugin_dir);
-void     runtime_init_desktop (void);
+/* @GeneratePInvoke */
+void     runtime_init_desktop ();
 
 GList   *runtime_get_surface_list (void);
 

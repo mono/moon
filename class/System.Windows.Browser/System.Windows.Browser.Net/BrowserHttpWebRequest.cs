@@ -58,18 +58,18 @@ namespace System.Windows.Browser.Net
 		BrowserHttpWebAsyncResult async_result;
 		ManualResetEvent wait_handle = new ManualResetEvent (false);
 		
-		NativeMethods.DownloaderResponseStartedDelegate started;
-		NativeMethods.DownloaderResponseAvailableDelegate available;
-		NativeMethods.DownloaderResponseFinishedDelegate finished;
+		DownloaderResponseStartedDelegate started;
+		DownloaderResponseAvailableDelegate available;
+		DownloaderResponseFinishedDelegate finished;
  		
 		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in Systme.Net
  		Delegate progress_delegate;
 
  		public BrowserHttpWebRequest (Uri uri)
  		{
-			started = new NativeMethods.DownloaderResponseStartedDelegate (OnAsyncResponseStartedSafe);
-			available = new NativeMethods.DownloaderResponseAvailableDelegate (OnAsyncDataAvailableSafe);
-			finished = new NativeMethods.DownloaderResponseFinishedDelegate (OnAsyncResponseFinishedSafe);
+			started = new DownloaderResponseStartedDelegate (OnAsyncResponseStartedSafe);
+			available = new DownloaderResponseAvailableDelegate (OnAsyncDataAvailableSafe);
+			finished = new DownloaderResponseFinishedDelegate (OnAsyncResponseFinishedSafe);
  			this.uri = uri;
 			managed = GCHandle.Alloc (this, GCHandleType.Normal);
 			aborted = false;
@@ -261,7 +261,7 @@ namespace System.Windows.Browser.Net
 		{
 			//FIXME: there's most probably a better way to do this.
 
-			string uri = Marshal.PtrToStringAnsi (NativeMethods.plugin_instance_get_source_location (PluginHost.Handle));
+			string uri = NativeMethods.plugin_instance_get_source_location (PluginHost.Handle);
 			return new Uri (uri.Substring (0, uri.LastIndexOf ("/") + 1));
 		}
 
@@ -292,7 +292,7 @@ namespace System.Windows.Browser.Net
 			downloader = NativeMethods.surface_create_downloader (XamlLoader.SurfaceInDomain);
 			if (downloader == null)
 				throw new NotSupportedException ("Failed to create unmanaged downloader");
-			native = NativeMethods.downloader_create_webrequest (downloader, method, request_uri.AbsoluteUri);
+			native = NativeMethods.downloader_create_web_request (downloader, method, request_uri.AbsoluteUri);
 			if (native == IntPtr.Zero)
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 

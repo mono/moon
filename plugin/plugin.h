@@ -59,9 +59,12 @@ class PluginInstance
 	void UrlNotify (const char *url, NPReason reason, void *notifyData);
 	void Print (NPPrint *platformPrint);
 	int16_t EventHandle (void *event);
-	void ReportException (char *msg, char *details, char **stack_trace, int num_frames);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void ReportException (char *msg, char *details, /* @MarshalAs=string[] */ char **stack_trace, int num_frames);
+	/* @GenerateCBinding,GeneratePInvoke */
 	void *Evaluate (const char *code);
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	NPObject *GetHost ();
 	
 	void      AddWrappedObject    (EventObject *obj, NPObject *wrapper);
@@ -79,9 +82,12 @@ class PluginInstance
 	void Properties ();
 	
 	// Property getters and setters
-	char *GetInitParams () { return this->initParams; }
-	char *GetSource () { return this->source; }
-	char *GetSourceLocation () { return this->source_location; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetInitParams () { return this->initParams; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetSource () { return this->source; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetSourceLocation () { return this->source_location; }
 	char *GetId () { return this->id; }
 	
 	void SetSource (const char *value);
@@ -91,8 +97,11 @@ class PluginInstance
 	bool GetEnableFramerateCounter ();
 	bool GetEnableRedrawRegions ();
 	void SetEnableRedrawRegions (bool value);
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetEnableHtmlAccess ();
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetAllowHtmlPopupWindow ();
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetWindowless ();
 	void SetMaxFrameRate (int value);
 	int  GetMaxFrameRate ();
@@ -103,9 +112,12 @@ class PluginInstance
 	MoonlightScriptControlObject *GetRootObject ();
 	NPP GetInstance ();
 	NPWindow *GetWindow ();
+	/* @GenerateCBinding,GeneratePInvoke */
 	Surface *GetSurface () { return surface; }
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	gint32 GetActualHeight ();
+	/* @GenerateCBinding,GeneratePInvoke */
 	gint32 GetActualWidth ();
 	
 	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
@@ -315,28 +327,12 @@ G_BEGIN_DECLS
 
 const char *get_plugin_dir (void);
 
-gint32 plugin_instance_get_actual_width  (PluginInstance *instance);
-gint32 plugin_instance_get_actual_height (PluginInstance *instance);
-
-Surface *plugin_instance_get_surface (PluginInstance *instance);
-
-char *plugin_instance_get_init_params  (PluginInstance *instance);
-char *plugin_instance_get_source  (PluginInstance *instance);
-char *plugin_instance_get_source_location  (PluginInstance *instance);
 char *plugin_instance_get_id (PluginInstance *instance);
-NPObject *plugin_instance_get_host (PluginInstance *instance);
 
 void plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_access,
 						   bool *httpnet_access, bool *script_access);
 
-void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char **stack_trace, int num_frames);
 void *plugin_instance_load_url (PluginInstance *instance, char *url, gint32 *length);
-
-void *plugin_instance_evaluate (PluginInstance *instance, const char *code);
-
-gboolean plugin_instance_get_enable_html_access (PluginInstance *instance);
-gboolean plugin_instance_get_allow_html_popup_window (PluginInstance *instance);
-gboolean plugin_instance_get_windowless (PluginInstance *instance);
 
 PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *surface);
 

@@ -1,3 +1,7 @@
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MultiScaleTileSource.cs: Generate all P/Invoke methods.
+
 2009-03-29  Geoff Norton  <gnorton@novell.com>
 
 	* PixelFormat.cs, PixelFormats.cs, PixelFormatKind.cs: New SL3 API

@@ -1638,53 +1638,10 @@ PluginInstance::TimeoutStop (guint32 source_id)
 	timers = g_slist_remove (timers, GINT_TO_POINTER (source_id));
 }
 
-
-Surface *
-plugin_instance_get_surface (PluginInstance *instance)
-{
-	return instance->GetSurface ();
-}
-
-gint32
-plugin_instance_get_actual_width (PluginInstance *instance)
-{
-	return instance->GetActualWidth ();
-}
-
-gint32
-plugin_instance_get_actual_height (PluginInstance *instance)
-{
-	return instance->GetActualHeight ();
-}
-
 char*
 plugin_instance_get_id (PluginInstance *instance)
 {
 	return instance->GetId ();
-}
-
-char*
-plugin_instance_get_init_params  (PluginInstance *instance)
-{
-	return instance->GetInitParams();
-}
-
-char*
-plugin_instance_get_source  (PluginInstance *instance)
-{
-	return instance->GetSource();
-}
-
-NPObject *
-plugin_instance_get_host (PluginInstance *instance)
-{
-	return instance->GetHost ();
-}
-
-char*
-plugin_instance_get_source_location  (PluginInstance *instance)
-{
-	return instance->GetSourceLocation();
 }
 
 void
@@ -1692,36 +1649,6 @@ plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_access,
 					      bool *httpnet_access, bool *script_access)
 {
 	*debug = *html_access = *httpnet_access = *script_access = false;
-}
-
-void
-plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char **stack_trace, int num_frames)
-{
-	instance->ReportException (msg, details, stack_trace, num_frames);
-}
-
-void *
-plugin_instance_evaluate (PluginInstance *instance, const char *code)
-{
-	return instance->Evaluate (code);
-}
-
-gboolean
-plugin_instance_get_enable_html_access (PluginInstance *instance)
-{
-	return instance->GetEnableHtmlAccess ();
-}
-
-gboolean
-plugin_instance_get_allow_html_popup_window (PluginInstance *instance)
-{
-	return instance->GetAllowHtmlPopupWindow ();
-}
-
-gboolean
-plugin_instance_get_windowless (PluginInstance *instance)
-{
-	return instance->GetWindowless ();
 }
 
 /*

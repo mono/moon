@@ -30,6 +30,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 
+using Mono;
+
 namespace System.Windows.Controls
 {
 	// It simply opens a native file dialog
@@ -49,7 +51,7 @@ namespace System.Windows.Controls
 		// it's not clear from doc or tests when this can return null
 		public bool? ShowDialog ()
 		{
-			IntPtr result = open_file_dialog_show ("Open",
+			IntPtr result = NativeMethods.open_file_dialog_show ("Open",
 				allow_multiple_selection,
 				filter,
 				filter_index);
@@ -121,8 +123,5 @@ namespace System.Windows.Controls
 				filter_index = value;
 			}
 		}
-
-		[DllImport ("moon")]
-		static extern IntPtr open_file_dialog_show (string title, bool multsel, string filter, int idx);
 	}
 }

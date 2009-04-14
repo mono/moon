@@ -1,3 +1,8 @@
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* PluginHost.cs:
+	* SilverlightHost.cs: Generate all P/Invoke methods.
+
 2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Content.cs (IsFullScreen): Remove MonoTODO and FIXME since this 

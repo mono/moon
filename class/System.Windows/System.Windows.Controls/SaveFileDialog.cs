@@ -100,19 +100,15 @@ namespace System.Windows.Controls {
 			if (!NativeMethods.surface_is_user_initiated_event (Deployment.Current.Surface.Native))
 				throw new SecurityException ("Action was not initiated by the user");
 
-			IntPtr result = save_file_dialog_show ("Save", filter, filter_index);
+			string result = NativeMethods.save_file_dialog_show ("Save", filter, filter_index);
 
-			if (result == IntPtr.Zero)
+			if (result == null)
 				return false;
 
-			file_info = new FileInfo (Marshal.PtrToStringAnsi (result));
-			Marshal.FreeHGlobal (result);
+			file_info = new FileInfo (result);
 			
 			return true;
 		}
-
-		[DllImport ("moon")]
-		static extern IntPtr save_file_dialog_show (string title, string filter, int idx);
 	}
 }
 

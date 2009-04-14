@@ -109,7 +109,7 @@ class Downloader : public DependencyObject {
 	const static int DownloadProgressChangedEvent;
 	const static int DownloadFailedEvent;
 	
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	Downloader ();
 	
 	void Abort ();
@@ -179,6 +179,8 @@ class Downloader : public DependencyObject {
 	void     SetHttpStreamingFeatures (HttpStreamingFeatures features) { streaming_features = features; }
 	HttpStreamingFeatures GetHttpStreamingFeatures () { return streaming_features; }
 	DownloaderCreateWebRequestFunc GetRequestFunc () {return request_func; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	void *CreateWebRequest (const char *method, const char *uri);
 
 	//
 	// Property Accessors
@@ -230,6 +232,7 @@ class DownloaderResponse : public IDownloader {
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void Abort () = 0;
 	virtual const bool IsAborted () { return this->aborted; }
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void SetHeaderVisitor (DownloaderResponseHeaderVisitorCallback visitor) = 0;
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual int GetResponseStatus () = 0;
@@ -257,10 +260,15 @@ class DownloaderRequest : public IDownloader {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void Abort () = 0;
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context) = 0;
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual const bool IsAborted () { return this->aborted; }
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void SetHttpHeader (const char *name, const char *value) = 0;
-	virtual void SetBody (void *body, int size) = 0;
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual void SetBody (/* @MarshalAs=byte[] */ void *body, int size) = 0;
+	/* @GenerateCBinding,GeneratePInvoke */
 	DownloaderResponse *GetDownloaderResponse () { return response; }
 	void SetDownloaderResponse (DownloaderResponse *value) { response = value; }
 };
@@ -268,20 +276,6 @@ class DownloaderRequest : public IDownloader {
 G_BEGIN_DECLS
 
 void downloader_init (void);
-
-//
-// Used to push data to the consumer
-//
-
-void *downloader_create_webrequest (Downloader *dl, const char *method, const char *uri);
-
-bool downloader_request_get_response (DownloaderRequest *dr, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
-bool downloader_request_is_aborted (DownloaderRequest *dr);
-void downloader_request_set_http_header (DownloaderRequest *dr, const char *name, const char *value);
-void downloader_request_set_body (DownloaderRequest *dr, void *body, int size);
-
-void downloader_response_set_header_visitor (DownloaderResponse *dr, DownloaderResponseHeaderVisitorCallback visitor);
-
 
 // FIXME: get rid of this
 const char *downloader_deobfuscate_font (Downloader *downloader, const char *path);

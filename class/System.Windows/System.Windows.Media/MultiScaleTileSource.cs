@@ -18,7 +18,7 @@ using System.Collections.Generic;
 namespace System.Windows.Media
 {	
 	public abstract partial class MultiScaleTileSource : DependencyObject
-	{
+	{		
 		internal long ImageWidth {
 			get { return NativeMethods.multi_scale_tile_source_get_image_width (this.native); }
 			set { NativeMethods.multi_scale_tile_source_set_image_width (this.native, value); }
@@ -48,7 +48,7 @@ namespace System.Windows.Media
 		System.Runtime.InteropServices.GCHandle handle;
 		void Initialize ()
 		{
-			NativeMethods.ImageUriFunc func = new NativeMethods.ImageUriFunc (GetImageUriSafe);
+			ImageUriFunc func = new Mono.ImageUriFunc (GetImageUriSafe);
 			handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
 			NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
 		}

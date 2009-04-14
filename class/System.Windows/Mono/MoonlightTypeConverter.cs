@@ -95,8 +95,7 @@ namespace Mono {
 				if (!NativeMethods.value_from_str (k,
 								   propertyName,
 								   (string)value,
-								   out unmanaged_value,
-								   true)) {
+								   out unmanaged_value)) {
 					Console.WriteLine ("could not convert value {0} to type {1} (property {1})", value, destinationType, propertyName);
 					return base.ConvertFrom (context, culture, value);
 				}

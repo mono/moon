@@ -77,11 +77,11 @@ namespace System.Windows.Interop {
 				if (PluginHost.Handle == IntPtr.Zero)
 					return null;
 
-				IntPtr raw = NativeMethods.plugin_instance_get_source_location (PluginHost.Handle);
-				if (raw == IntPtr.Zero)
+				string loc = NativeMethods.plugin_instance_get_source_location (PluginHost.Handle);
+				if (loc == null)
 					return null;
 
-				return new Uri (Marshal.PtrToStringAnsi (raw), UriKind.RelativeOrAbsolute);
+				return new Uri (loc, UriKind.RelativeOrAbsolute);
 			}
 		}
 	}

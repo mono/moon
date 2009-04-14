@@ -49,8 +49,8 @@ namespace System.Windows.Interop {
 
 		public static void SetPluginHandle (IntPtr value)
 		{
-			string location = Marshal.PtrToStringAnsi (NativeMethods.plugin_instance_get_source_location (value));
-			string uri = Marshal.PtrToStringAnsi (NativeMethods.plugin_instance_get_source (value));
+			string location = NativeMethods.plugin_instance_get_source_location (value);
+			string uri = NativeMethods.plugin_instance_get_source (value);
 
 			location = location.Substring (0, location.LastIndexOf ("/") + 1) + uri.Substring (0, uri.LastIndexOf ("/") + 1);
 

@@ -407,12 +407,14 @@ public:
 
 G_BEGIN_DECLS
 
+/* @GeneratePInvoke */
 bool type_get_value_type (Type::Kind type);
 DependencyObject *type_create_instance (Type *type);
 DependencyObject *type_create_instance_from_kind (Type::Kind kind);
 
 void types_init (void);
 const char *type_get_name (Type::Kind type);
+/* @GeneratePInvoke */
 bool type_is_dependency_object (Type::Kind type);
 
 /* @IncludeInKinds */

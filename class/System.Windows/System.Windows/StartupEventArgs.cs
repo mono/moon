@@ -41,8 +41,7 @@ namespace System.Windows {
 					char [] param_separator = new char [] { ',' };
 					char [] value_separator = new char [] { '=' };
 					
-					IntPtr raw = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);
-					string param_string = Marshal.PtrToStringAnsi (raw);
+					string param_string = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);
 					init_params = new Dictionary<string,string> ();
 					
 					// Console.WriteLine ("params = {0}", param_string);

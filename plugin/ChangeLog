@@ -1,3 +1,14 @@
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.h:
+	* plugin.cpp:
+	* plugin-class.h: Added @GeneratePInvoke to all methods used
+	  in managed code. For C++ methods also generate the
+	  corresponding C method.
+
+	* cbinding.h:
+	* cbinding.cpp: Regenerated.
+
 2009-04-10  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp: Instead of unreffing just delete the value.

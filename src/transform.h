@@ -318,7 +318,8 @@ class TransformGroup : public Transform {
 
 G_BEGIN_DECLS
 
-void   general_transform_transform_point (GeneralTransform *t, Point *p, Point *r);
+/* @GeneratePInvoke */
+void   general_transform_transform_point (GeneralTransform *t, /* @MarshalAs=Point,IsRef */ Point *p, /* @MarshalAs=Point,IsRef */ Point *r);
 
 G_END_DECLS
 

@@ -123,7 +123,7 @@ namespace Mono {
 			// XXX Add Special case for System.Type (see SetPropertyFromString)
 			//
 
-			bool result = NativeMethods.value_from_str_with_typename (TypeToMoonType (value_type), prop_name, value, out unmanaged_value, true);
+			bool result = NativeMethods.value_from_str_with_typename (TypeToMoonType (value_type), prop_name, value, out unmanaged_value);
 			if (!result)
 				error = string.Format ("unable to convert to type {0} from a string", value_type);
 
@@ -207,7 +207,7 @@ namespace Mono {
 			// parser will create a managed wrapper for the object and call SetPropertyFromValue with
 			// the managed object
 			//
-			bool result = NativeMethods.value_from_str_with_typename (TypeToMoonType (pi.PropertyType), pi.Name, value, out unmanaged_value, true);
+			bool result = NativeMethods.value_from_str_with_typename (TypeToMoonType (pi.PropertyType), pi.Name, value, out unmanaged_value);
 			if (!result) {
 				error = string.Format ("unable to convert to type {0} from a string", pi.PropertyType);
 			}

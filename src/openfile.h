@@ -17,8 +17,10 @@
 
 G_BEGIN_DECLS
 
+/* @GeneratePInvoke */
 char **open_file_dialog_show (const char *title, bool multsel, const char *filter, int idx);
 
+/* @GeneratePInvoke */
 char *save_file_dialog_show (const char *title, const char *filter, int idx);
 
 G_END_DECLS

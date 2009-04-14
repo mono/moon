@@ -1,3 +1,12 @@
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs:
+	* ParameterInfo.cs: Add support for specifying @MarshalAs,
+	  IsRef and IsOut on parameters. Marshal gbooleans better.
+	  Don't handle Surface* parameters automatically.
+
+	* TypeReference.cs: Added a bunch of new types.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* generators.mdp: Add a project for each tool, and clean up

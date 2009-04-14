@@ -513,7 +513,7 @@ namespace Mono.Xaml
 
 			object e = Enum.Parse (type, str_value);
 
-			NativeMethods.value_free_value (target_ptr);
+			NativeMethods.value_free_value2 (target_ptr);
 
 			unsafe {
 				Value *val = (Value *) target_ptr;

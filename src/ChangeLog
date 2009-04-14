@@ -1,3 +1,28 @@
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* type.h:
+	* size.h:
+	* xaml.h:
+	* utils.h:
+	* value.h:
+	* stylus.h:
+	* value.cpp:
+	* type.h.in:
+	* runtime.h:
+	* value.h.in:
+	* openfile.h:
+	* transform.h:
+	* tilesource.h:
+	* downloader.h:
+	* timemanager.h:
+	* downloader.cpp:
+	* timemanager.cpp: Added @GeneratePInvoke to all methods used
+	  in managed code. For C++ methods also generate the
+	  corresponding C method.
+
+	* cbinding.h:
+	* cbinding.cpp: Regenerated.
+
 2009-04-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.cpp (SetFontResource): If we cannot get the resource

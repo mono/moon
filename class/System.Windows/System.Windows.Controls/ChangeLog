@@ -1,3 +1,8 @@
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* OpenFileDialog.cs:
+	* SaveFileDialog.cs: Generate all P/Invoke methods.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ClickMode.cs:

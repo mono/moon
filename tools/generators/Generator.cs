@@ -1113,6 +1113,12 @@ class Generator {
 					string param_value = null;
 					do {
 						ParameterInfo parameter = new ParameterInfo ();
+						
+						while (tokenizer.CurrentToken.type == Token2Type.CommentProperty) {
+							parameter.Annotations.Add (tokenizer.CurrentToken.value);
+							tokenizer.Advance (true);
+						}
+						
 						if (tokenizer.Accept (Token2Type.Punctuation, ".") && tokenizer.Accept (Token2Type.Punctuation, ".") && tokenizer.Accept (Token2Type.Punctuation, ".")) {
 							// ... variable argument declaration
 							parameter.ParameterType = new TypeReference ("...");
@@ -1955,10 +1961,7 @@ class Generator {
 		
 		// Check for parameters we can automatically generate code for.
 		foreach (ParameterInfo parameter in cmethod.Parameters) {
-			if (parameter.Name == "surface" && parameter.ParameterType.Value == "Surface*") {
-				parameter.ManagedWrapperCode = "Mono.Xaml.XamlLoader.SurfaceInDomain";
-				generate_wrapper = true;
-			} else if (parameter.Name == "error" && parameter.ParameterType.Value == "MoonError*") {
+			if (parameter.Name == "error" && parameter.ParameterType.Value == "MoonError*") {
 				marshal_moonerror = true;
 				generate_wrapper = true;
 				error_parameter = parameter;
@@ -1994,6 +1997,9 @@ class Generator {
 		if (method.ReturnType.Value == "bool") {
 			text.Append (tabs);
 			text.AppendLine ("[return: MarshalAs (UnmanagedType.U1)]");
+		} else if (method.ReturnType.Value == "gboolean") {
+			text.Append (tabs);
+			text.AppendLine ("[return: MarshalAs (UnmanagedType.Bool)]");
 		}
 		
 		// Always output the native signature too, makes it easier to check if the generation is wrong.

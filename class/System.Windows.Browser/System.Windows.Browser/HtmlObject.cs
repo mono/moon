@@ -41,7 +41,7 @@ namespace System.Windows.Browser {
 			public HtmlObject obj;
 			public GCHandle handle;
 			public string event_name;
-			public static NativeMethods.DomEventCallback callback = new NativeMethods.DomEventCallback (DomEventHandler);
+			public static DomEventCallback callback = new DomEventCallback (DomEventHandler);
 
 			static void DomEventHandler (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, 
 				                             bool alt_key, bool ctrl_key, bool shift_key, int mouse_button, 
@@ -208,7 +208,7 @@ namespace System.Windows.Browser {
 			for (int i = 0; i < args.Length; i++)
 				ScriptableObjectWrapper.ValueFromObject (ref vargs [i], args [i]);
 
-			NativeMethods.html_object_invoke (WebApplication.Current.PluginHandle, handle, name, vargs, args.Length, out res);
+			NativeMethods.html_object_invoke (WebApplication.Current.PluginHandle, handle, name, vargs, (uint) args.Length, out res);
 
 			if (res.k != Mono.Kind.INVALID) {
 				object o = ScriptableObjectWrapper.ObjectFromValue<T> (res);
@@ -233,7 +233,7 @@ namespace System.Windows.Browser {
 			for (int i = 0; i < args.Length; i++)
 				ScriptableObjectWrapper.ValueFromObject (ref vargs [i], args [i]);
 
-			NativeMethods.html_object_invoke_self (WebApplication.Current.PluginHandle, handle, vargs, args.Length, out res);
+			NativeMethods.html_object_invoke_self (WebApplication.Current.PluginHandle, handle, vargs, (uint) args.Length, out res);
 
 			if (res.k != Mono.Kind.INVALID) {
 				object o = ScriptableObjectWrapper.ObjectFromValue<T> (res);

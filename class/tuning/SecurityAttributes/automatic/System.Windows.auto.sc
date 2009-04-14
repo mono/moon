@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 476 methods needs to be decorated.
+# 475 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -53,7 +53,7 @@
 +SC-M: System.Boolean Mono.NativeMethods::dependency_property_is_read_only(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::downloader_request_get_response(System.IntPtr,Mono.NativeMethods/DownloaderResponseStartedDelegate,Mono.NativeMethods/DownloaderResponseAvailableDelegate,Mono.NativeMethods/DownloaderResponseFinishedDelegate,System.IntPtr)
++SC-M: System.Boolean Mono.NativeMethods::downloader_request_get_response(System.IntPtr,Mono.DownloaderResponseStartedDelegate,Mono.DownloaderResponseAvailableDelegate,Mono.DownloaderResponseFinishedDelegate,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::downloader_request_is_aborted(System.IntPtr)
@@ -131,10 +131,10 @@
 +SC-M: System.Boolean Mono.NativeMethods::uri_parse(System.IntPtr,System.String,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::value_from_str(Mono.Kind,System.String,System.String,System.IntPtr&,System.Boolean)
++SC-M: System.Boolean Mono.NativeMethods::value_from_str(Mono.Kind,System.String,System.String,System.IntPtr&)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::value_from_str_with_typename(System.String,System.String,System.String,System.IntPtr&,System.Boolean)
++SC-M: System.Boolean Mono.NativeMethods::value_from_str_with_typename(System.String,System.String,System.String,System.IntPtr&)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::back_ease_ease_in_core(System.IntPtr,System.Double)
@@ -458,13 +458,13 @@
 +SC-M: System.IntPtr Mono.NativeMethods::double_key_frame_new()
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::downloader_create_webrequest(System.IntPtr,System.String,System.String)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::downloader_get_response_text(System.IntPtr,System.String,System.Int64&)
++SC-M: System.IntPtr Mono.NativeMethods::downloader_create_web_request(System.IntPtr,System.String,System.String)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::downloader_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::downloader_request_get_downloader_response(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::downloader_response_get_response_status_text_(System.IntPtr)
@@ -548,10 +548,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::hit_test_collection_new()
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::html_object_attach_event(System.IntPtr,System.IntPtr,System.String,Mono.NativeMethods/DomEventCallback,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::html_object_detach_event(System.IntPtr,System.String,System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::html_object_attach_event(System.IntPtr,System.IntPtr,System.String,Mono.DomEventCallback,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::image_brush_new()
@@ -650,6 +647,15 @@
 +SC-M: System.IntPtr Mono.NativeMethods::moon_window_gtk_new(System.Boolean,System.Int32,System.Int32,System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moonlight_object_to_npobject(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moonlight_scriptable_object_wrapper_create(System.IntPtr,System.IntPtr,Mono.InvokeDelegate,Mono.SetPropertyDelegate,Mono.GetPropertyDelegate,Mono.EventHandlerDelegate,Mono.EventHandlerDelegate)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moonlight_scriptable_object_wrapper_create_root(System.IntPtr,System.IntPtr,Mono.InvokeDelegate,Mono.SetPropertyDelegate,Mono.GetPropertyDelegate,Mono.EventHandlerDelegate,Mono.EventHandlerDelegate)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::mouse_event_args_get_stylus_info(System.IntPtr)
 
 # p/invoke declaration
@@ -681,6 +687,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::object_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::open_file_dialog_show(System.String,System.Boolean,System.String,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::panel_new()
@@ -716,16 +725,13 @@
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_host(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_id_(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_init_params_(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_init_params(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_source_(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_source(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_source_location(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_source_location_(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_surface(System.IntPtr)
@@ -810,6 +816,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::run_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::save_file_dialog_show_(System.String,System.String,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::scale_transform_new()
@@ -989,6 +998,12 @@
 +SC-M: System.IntPtr Mono.NativeMethods::writeable_bitmap_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::xaml_get_element_key_(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::xaml_get_element_name_(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_get_template_parent(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
@@ -1001,37 +1016,16 @@
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,System.IntPtr,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_new(System.String,System.String,System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_new_(System.String,System.String,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_lookup_named_item(System.IntPtr,System.IntPtr,System.String)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::xaml_uri_for_prefix_(System.IntPtr,System.String)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xap_unpack_(System.String)
-
-# p/invoke declaration
-+SC-M: System.IntPtr System.Windows.Controls.OpenFileDialog::open_file_dialog_show(System.String,System.Boolean,System.String,System.Int32)
-
-# p/invoke declaration
-+SC-M: System.IntPtr System.Windows.Controls.SaveFileDialog::save_file_dialog_show(System.String,System.String,System.Int32)
-
-# p/invoke declaration
-+SC-M: System.String Mono.NativeMethods::xaml_get_element_key(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.String Mono.NativeMethods::xaml_get_element_name(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.String Mono.NativeMethods::xaml_uri_for_prefix(System.IntPtr,System.String)
-
-# p/invoke declaration
-+SC-M: System.UInt32 Mono.NativeMethods::time_manager_add_tick_call(System.IntPtr,Mono.TickCallHandler,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.UInt32 Mono.NativeMethods::time_manager_add_timeout(System.IntPtr,System.Int32,Mono.NativeMethods/GSourceFunc,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.UInt32 Mono.NativeMethods::time_manager_remove_tick_call(System.IntPtr,Mono.TickCallHandler)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.ApplyDefaultStyleCallback,Mono.ApplyStyleCallback,Mono.GetResourceCallback)
@@ -1064,9 +1058,6 @@
 +SC-M: System.Void Mono.NativeMethods::collection_iterator_destroy(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::deep_zoom_image_tile_source_set_downloaded_cb(System.IntPtr,Mono.NativeMethods/DownloadedHandler)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_clear_value_(System.IntPtr,System.IntPtr,System.Boolean,Mono.MoonError&)
 
 # p/invoke declaration
@@ -1092,9 +1083,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dispatcher_timer_stop(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_abort(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::downloader_notify_failed(System.IntPtr,System.String)
@@ -1124,16 +1112,10 @@
 +SC-M: System.Void Mono.NativeMethods::downloader_response_free(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_response_set_header_visitor(System.IntPtr,Mono.NativeMethods/HeaderVisitor)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_send(System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::downloader_response_set_header_visitor(System.IntPtr,Mono.HeaderVisitor)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::downloader_set_functions(Mono.DownloaderCreateStateFunc,Mono.DownloaderDestroyStateFunc,Mono.DownloaderOpenFunc,Mono.DownloaderSendFunc,Mono.DownloaderAbortFunc,Mono.DownloaderHeaderFunc,Mono.DownloaderBodyFunc,Mono.DownloaderCreateWebRequestFunc,System.Boolean)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_want_events(System.IntPtr,Mono.NativeMethods/UpdateFunction,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::downloader_write(System.IntPtr,System.IntPtr,System.Int32,System.Int32)
@@ -1178,13 +1160,19 @@
 +SC-M: System.Void Mono.NativeMethods::general_transform_transform_point(System.IntPtr,System.Windows.Point&,System.Windows.Point&)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::html_object_detach_event(System.IntPtr,System.String,System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::html_object_get_property(System.IntPtr,System.IntPtr,System.String,Mono.Value&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::html_object_invoke(System.IntPtr,System.IntPtr,System.String,Mono.Value[],System.Int32,Mono.Value&)
++SC-M: System.Void Mono.NativeMethods::html_object_invoke(System.IntPtr,System.IntPtr,System.String,Mono.Value[],System.UInt32,Mono.Value&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::html_object_invoke_self(System.IntPtr,System.IntPtr,Mono.Value[],System.Int32,Mono.Value&)
++SC-M: System.Void Mono.NativeMethods::html_object_invoke_self(System.IntPtr,System.IntPtr,Mono.Value[],System.UInt32,Mono.Value&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::html_object_release(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::html_object_set_property(System.IntPtr,System.IntPtr,System.String,Mono.Value&)
@@ -1229,6 +1217,21 @@
 +SC-M: System.Void Mono.NativeMethods::moon_window_set_transparent(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::moonlight_scriptable_object_add_event(System.IntPtr,System.IntPtr,System.IntPtr,System.String)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::moonlight_scriptable_object_add_method(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.TypeCode,System.TypeCode[],System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::moonlight_scriptable_object_add_property(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.TypeCode,System.Boolean,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::moonlight_scriptable_object_emit_event(System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::moonlight_scriptable_object_register(System.IntPtr,System.String,System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::mouse_event_args_get_position(System.IntPtr,System.IntPtr,System.Double&,System.Double&)
 
 # p/invoke declaration
@@ -1244,7 +1247,7 @@
 +SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_height(System.IntPtr,System.Int64)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_uri_func(System.IntPtr,Mono.NativeMethods/ImageUriFunc)
++SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_uri_func(System.IntPtr,System.Windows.Media.MultiScaleTileSource/ImageUriFunc)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_width(System.IntPtr,System.Int64)
@@ -1269,9 +1272,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::runtime_init_desktop()
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::runtime_shutdown()
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::size_changed_event_args_get_new_size(System.IntPtr,System.Windows.Size&)
@@ -1331,7 +1331,10 @@
 +SC-M: System.Void Mono.NativeMethods::text_box_base_select_all(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::time_manager_remove_timeout(System.IntPtr,System.UInt32)
++SC-M: System.Void Mono.NativeMethods::time_manager_add_tick_call(System.IntPtr,Mono.TickCallHandler,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::time_manager_remove_tick_call(System.IntPtr,Mono.TickCallHandler)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::time_manager_set_maximum_refresh_rate(System.IntPtr,System.Int32)
@@ -1379,7 +1382,7 @@
 +SC-M: System.Void Mono.NativeMethods::value_free_value(Mono.Value&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::value_free_value(System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::value_free_value2(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::video_brush_set_source(System.IntPtr,System.IntPtr)
@@ -1394,16 +1397,10 @@
 +SC-M: System.Void Mono.NativeMethods::writeable_bitmap_unlock(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::xaml_loader_add_missing(System.IntPtr,System.String)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::xaml_loader_free(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::xaml_loader_set_callbacks(System.IntPtr,Mono.Xaml.XamlLoaderCallbacks)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::xaml_set_property_from_str(System.IntPtr,System.IntPtr,System.String)
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void System.IO.SimpleUnmanagedMemoryStream::.ctor(System.Byte*,System.Int64)

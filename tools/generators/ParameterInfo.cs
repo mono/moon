@@ -25,9 +25,17 @@ class ParameterInfo : MemberInfo {
 		if (type == SignatureType.PInvoke) {
 			if (ParameterType.Value == "bool")
 				text.Append ("[MarshalAs (UnmanagedType.U1)] ");
+			if (Annotations.ContainsKey ("IsOut"))
+				text.Append ("out ");
+			if (Annotations.ContainsKey ("IsRef"))
+				text.Append ("ref ");
 		}
 
-		ParameterType.Write (text, type);
+		if (type == SignatureType.PInvoke && Annotations.ContainsKey ("MarshalAs")) {
+			text.Append (Annotations ["MarshalAs"].Value);
+		} else {
+			ParameterType.Write (text, type);
+		}
 		if (type != SignatureType.Native || !ParameterType.IsPointer)
 			text.Append (" ");
 		text.Append (Name);

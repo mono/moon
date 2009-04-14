@@ -1,3 +1,10 @@
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc:
+	* System.Windows.Browser.auto.sc:
+	* System.Windows.Browser.auto.ssc: Regenerated.
+
 2009-04-11  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Net.auto.ssc: Logic moved, rename to CreateInternal

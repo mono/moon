@@ -117,6 +117,9 @@ class TypeReference {
 				IsOut = true;
 				managed_type = "MoonError";
 				break;
+			case "gboolean":
+				managed_type = "bool";
+				break;
 			case "Value*":
 				if (IsReturnType) {
 					managed_type = "IntPtr";
@@ -255,6 +258,36 @@ class TypeReference {
 				break;
 			case "DownloaderCreateWebRequestFunc":
 				managed_type = "Mono.DownloaderCreateWebRequestFunc";
+				break;
+			case "XamlLoaderCallbacks":
+				managed_type = "Xaml.XamlLoaderCallbacks";
+				break;
+			case "get_image_uri_func":
+				managed_type = "Mono.ImageUriFunc";
+				break;
+			case "TickCallHandler":
+				managed_type = "TickCallHandler";
+				break;
+			case "DownloaderResponseStartedHandler":
+				managed_type = "DownloaderResponseStartedDelegate";
+				break;
+			case "DownloaderResponseDataAvailableHandler":
+				managed_type = "DownloaderResponseAvailableDelegate";
+				break;
+			case "DownloaderResponseFinishedHandler":
+				managed_type = "DownloaderResponseFinishedDelegate";
+				break;
+			case "DownloaderResponseHeaderVisitorCallback":
+				managed_type = "HeaderVisitor";
+				break;
+			case "callback_dom_event*":
+				managed_type = "DomEventCallback";
+				break;
+			case "InvokeDelegate":
+			case "SetPropertyDelegate":
+			case "GetPropertyDelegate":
+			case "EventHandlerDelegate":
+				managed_type = Value;
 				break;
 			default:
 				if (Value.Contains ("*"))

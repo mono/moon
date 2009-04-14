@@ -603,6 +603,12 @@ value_free_value (Value* value)
 	value->FreeValue ();
 }
 
+void
+value_free_value2 (Value *value)
+{
+	value_free_value (value);
+}
+
 Value::~Value ()
 {
 	FreeValue ();

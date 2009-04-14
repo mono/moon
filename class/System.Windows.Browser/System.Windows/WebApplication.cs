@@ -69,8 +69,7 @@ namespace System.Windows
 		{
 			plugin_handle = PluginHost.Handle;
 
-			IntPtr raw = Mono.NativeMethods.plugin_instance_get_init_params (plugin_handle);
-			string initParams = Marshal.PtrToStringAnsi (raw);
+			string initParams = Mono.NativeMethods.plugin_instance_get_init_params (plugin_handle);
 			if (initParams != null) {
 				startup_args = new Dictionary<string,string> ();
 

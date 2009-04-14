@@ -1,3 +1,7 @@
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* StartupEventArgs.cs: Generate all P/Invoke methods.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* VisualTransition.cs:

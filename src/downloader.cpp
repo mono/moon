@@ -733,38 +733,9 @@ DownloaderRequest::~DownloaderRequest ()
 }
 
 void *
-downloader_create_webrequest (Downloader *dl, const char *method, const char *uri)
+Downloader::CreateWebRequest (const char *method, const char *uri)
 {
-	return dl->GetRequestFunc() (method, uri, dl->GetContext());
-}
-
-bool
-downloader_request_get_response (DownloaderRequest *dr, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context)
-{
-	return dr->GetResponse (started, available, finished, context);
-}
-
-void downloader_response_set_header_visitor (DownloaderResponse *dr, DownloaderResponseHeaderVisitorCallback visitor)
-{
-	dr->SetHeaderVisitor (visitor);
-}
-
-bool
-downloader_request_is_aborted (DownloaderRequest *dr)
-{
-	return dr->IsAborted ();
-}
-
-void
-downloader_request_set_http_header (DownloaderRequest *dr, const char *name, const char *value)
-{
-	dr->SetHttpHeader (name, value);
-}
-
-void
-downloader_request_set_body (DownloaderRequest *dr, void *body, int size)
-{
-	dr->SetBody (body, size);
+	return GetRequestFunc () (method, uri, GetContext ());
 }
 
 void

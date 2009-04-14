@@ -1,3 +1,13 @@
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
+	* Helper.cs:
+	* NativeMethods.cs:
+	* ManagedXamlLoader.cs:
+	* MoonlightTypeConverter.cs:
+	* MoonlightValueConverter.cs: Generate all P/Invoke methods.
+
 2009-04-10  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Unref objects after they are created in

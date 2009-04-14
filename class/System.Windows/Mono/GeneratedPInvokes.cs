@@ -11,6 +11,149 @@ namespace Mono {
 	{
 		/* moonplugin methods */
 	
+		[DllImport ("moonplugin")]
+		// void *plugin_instance_evaluate (PluginInstance *instance, const char *code);
+		public extern static IntPtr plugin_instance_evaluate (IntPtr instance, string code);
+
+		[DllImport ("moonplugin")]
+		// gint32 plugin_instance_get_actual_height (PluginInstance *instance);
+		public extern static int plugin_instance_get_actual_height (IntPtr instance);
+
+		[DllImport ("moonplugin")]
+		// gint32 plugin_instance_get_actual_width (PluginInstance *instance);
+		public extern static int plugin_instance_get_actual_width (IntPtr instance);
+
+		[DllImport ("moonplugin")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool plugin_instance_get_allow_html_popup_window (PluginInstance *instance);
+		public extern static bool plugin_instance_get_allow_html_popup_window (IntPtr instance);
+
+		[DllImport ("moonplugin")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool plugin_instance_get_enable_html_access (PluginInstance *instance);
+		public extern static bool plugin_instance_get_enable_html_access (IntPtr instance);
+
+		[DllImport ("moonplugin")]
+		// NPObject *plugin_instance_get_host (PluginInstance *instance);
+		public extern static IntPtr plugin_instance_get_host (IntPtr instance);
+
+		[DllImport ("moonplugin", EntryPoint="plugin_instance_get_init_params")]
+		// const char *plugin_instance_get_init_params (PluginInstance *instance);
+		private extern static IntPtr plugin_instance_get_init_params_ (IntPtr instance);
+		public static string plugin_instance_get_init_params (IntPtr instance)
+		{
+			IntPtr result;
+			result = plugin_instance_get_init_params_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moonplugin", EntryPoint="plugin_instance_get_source")]
+		// const char *plugin_instance_get_source (PluginInstance *instance);
+		private extern static IntPtr plugin_instance_get_source_ (IntPtr instance);
+		public static string plugin_instance_get_source (IntPtr instance)
+		{
+			IntPtr result;
+			result = plugin_instance_get_source_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moonplugin", EntryPoint="plugin_instance_get_source_location")]
+		// const char *plugin_instance_get_source_location (PluginInstance *instance);
+		private extern static IntPtr plugin_instance_get_source_location_ (IntPtr instance);
+		public static string plugin_instance_get_source_location (IntPtr instance)
+		{
+			IntPtr result;
+			result = plugin_instance_get_source_location_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moonplugin")]
+		// Surface *plugin_instance_get_surface (PluginInstance *instance);
+		public extern static IntPtr plugin_instance_get_surface (IntPtr instance);
+
+		[DllImport ("moonplugin")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool plugin_instance_get_windowless (PluginInstance *instance);
+		public extern static bool plugin_instance_get_windowless (IntPtr instance);
+
+		[DllImport ("moonplugin")]
+		// void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char* *stack_trace, int num_frames);
+		public extern static void plugin_instance_report_exception (IntPtr instance, string msg, string details, string[] stack_trace, int num_frames);
+
+		[DllImport ("moonplugin")]
+		// NPObject *moonlight_object_to_npobject (MoonlightObject *obj);
+		public extern static IntPtr moonlight_object_to_npobject (IntPtr obj);
+
+		[DllImport ("moonplugin")]
+		// MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create_root (PluginInstance *plugin, gpointer scriptable, InvokeDelegate invoke, SetPropertyDelegate setprop, GetPropertyDelegate getprop, EventHandlerDelegate addevent, EventHandlerDelegate removeevent);
+		public extern static IntPtr moonlight_scriptable_object_wrapper_create_root (IntPtr plugin, IntPtr scriptable, InvokeDelegate invoke, SetPropertyDelegate setprop, GetPropertyDelegate getprop, EventHandlerDelegate addevent, EventHandlerDelegate removeevent);
+
+		[DllImport ("moonplugin")]
+		// MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create (NPObject *parent, gpointer scriptable, InvokeDelegate invoke, SetPropertyDelegate setprop, GetPropertyDelegate getprop, EventHandlerDelegate addevent, EventHandlerDelegate removeevent);
+		public extern static IntPtr moonlight_scriptable_object_wrapper_create (IntPtr parent, IntPtr scriptable, InvokeDelegate invoke, SetPropertyDelegate setprop, GetPropertyDelegate getprop, EventHandlerDelegate addevent, EventHandlerDelegate removeevent);
+
+		[DllImport ("moonplugin")]
+		// void moonlight_scriptable_object_add_property (PluginInstance *plugin, MoonlightScriptableObjectObject *obj, gpointer property_handle, char *property_name, int property_type, bool can_read, bool can_write);
+		public extern static void moonlight_scriptable_object_add_property (IntPtr plugin, IntPtr obj, IntPtr property_handle, string property_name, TypeCode property_type, [MarshalAs (UnmanagedType.U1)] bool can_read, [MarshalAs (UnmanagedType.U1)] bool can_write);
+
+		[DllImport ("moonplugin")]
+		// void moonlight_scriptable_object_add_event (PluginInstance *plugin, MoonlightScriptableObjectObject *obj, gpointer event_handle, char *event_name);
+		public extern static void moonlight_scriptable_object_add_event (IntPtr plugin, IntPtr obj, IntPtr event_handle, string event_name);
+
+		[DllImport ("moonplugin")]
+		// void moonlight_scriptable_object_add_method (PluginInstance *plugin, MoonlightScriptableObjectObject *obj, gpointer method_handle, char *method_name, int method_return_type, int *method_parameter_types, int parameter_count);
+		public extern static void moonlight_scriptable_object_add_method (IntPtr plugin, IntPtr obj, IntPtr method_handle, string method_name, TypeCode method_return_type, TypeCode[] method_parameter_types, int parameter_count);
+
+		[DllImport ("moonplugin")]
+		// void moonlight_scriptable_object_register (PluginInstance *plugin, char *name, MoonlightScriptableObjectObject *obj);
+		public extern static void moonlight_scriptable_object_register (IntPtr plugin, string name, IntPtr obj);
+
+		[DllImport ("moonplugin")]
+		// void moonlight_scriptable_object_emit_event (PluginInstance *plugin, MoonlightScriptableObjectObject *obj, MoonlightScriptableObjectObject *event_args, NPObject *cb_obj);
+		public extern static void moonlight_scriptable_object_emit_event (IntPtr plugin, IntPtr obj, IntPtr event_args, IntPtr cb_obj);
+
+		[DllImport ("moonplugin")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name);
+		public extern static bool html_object_has_property (IntPtr plugin, IntPtr npobj, string name);
+
+		[DllImport ("moonplugin")]
+		// void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result);
+		public extern static void html_object_get_property (IntPtr plugin, IntPtr npobj, string name, out Mono.Value result);
+
+		[DllImport ("moonplugin")]
+		// void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
+		public extern static void html_object_set_property (IntPtr plugin, IntPtr npobj, string name, ref Value value);
+
+		[DllImport ("moonplugin")]
+		// void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, guint32 arg_count, Value *result);
+		public extern static void html_object_invoke (IntPtr plugin, IntPtr npobj, string name, Mono.Value[] args, uint arg_count, out Mono.Value result);
+
+		[DllImport ("moonplugin")]
+		// void html_object_invoke_self (PluginInstance *plugin, NPObject *npobj, Value *args, guint32 arg_count, Value *result);
+		public extern static void html_object_invoke_self (IntPtr plugin, IntPtr npobj, Mono.Value[] args, uint arg_count, out Mono.Value result);
+
+		[DllImport ("moonplugin")]
+		// gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb, gpointer context);
+		public extern static IntPtr html_object_attach_event (IntPtr plugin, IntPtr npobj, string name, DomEventCallback cb, IntPtr context);
+
+		[DllImport ("moonplugin")]
+		// void html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener);
+		public extern static void html_object_detach_event (IntPtr plugin, string name, IntPtr listener);
+
+		[DllImport ("moonplugin")]
+		// void html_object_release (PluginInstance *plugin, NPObject *npobj);
+		public extern static void html_object_release (IntPtr plugin, IntPtr npobj);
+
 	
 		/* libmoon methods */
 	
@@ -604,6 +747,14 @@ namespace Mono {
 		public extern static IntPtr double_key_frame_collection_new ();
 
 		[DllImport ("moon")]
+		// void *downloader_create_web_request (Downloader *instance, const char *method, const char *uri);
+		public extern static IntPtr downloader_create_web_request (IntPtr instance, string method, string uri);
+
+		[DllImport ("moon")]
+		// Downloader *downloader_new ();
+		public extern static IntPtr downloader_new ();
+
+		[DllImport ("moon")]
 		// void downloader_notify_failed (Downloader *instance, const char *msg);
 		public extern static void downloader_notify_failed (IntPtr instance, string msg);
 
@@ -632,6 +783,28 @@ namespace Mono {
 		public extern static void downloader_request_abort (IntPtr instance);
 
 		[DllImport ("moon")]
+		// DownloaderResponse *downloader_request_get_downloader_response (DownloaderRequest *instance);
+		public extern static IntPtr downloader_request_get_downloader_response (IntPtr instance);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool downloader_request_get_response (DownloaderRequest *instance, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
+		public extern static bool downloader_request_get_response (IntPtr instance, DownloaderResponseStartedDelegate started, DownloaderResponseAvailableDelegate available, DownloaderResponseFinishedDelegate finished, IntPtr context);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// const bool downloader_request_is_aborted (DownloaderRequest *instance);
+		public extern static bool downloader_request_is_aborted (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void downloader_request_set_body (DownloaderRequest *instance, void *body, int size);
+		public extern static void downloader_request_set_body (IntPtr instance, byte[] body, int size);
+
+		[DllImport ("moon")]
+		// void downloader_request_set_http_header (DownloaderRequest *instance, const char *name, const char *value);
+		public extern static void downloader_request_set_http_header (IntPtr instance, string name, string value);
+
+		[DllImport ("moon")]
 		// void downloader_response_free (DownloaderResponse *instance);
 		public extern static void downloader_response_free (IntPtr instance);
 
@@ -655,6 +828,10 @@ namespace Mono {
 			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
 			return s;
 		}
+
+		[DllImport ("moon")]
+		// void downloader_response_set_header_visitor (DownloaderResponse *instance, DownloaderResponseHeaderVisitorCallback visitor);
+		public extern static void downloader_response_set_header_visitor (IntPtr instance, HeaderVisitor visitor);
 
 		[DllImport ("moon")]
 		// double download_progress_event_args_get_progress (DownloadProgressEventArgs *instance);
@@ -1145,6 +1322,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// MultiScaleTileSource *multi_scale_tile_source_new ();
 		public extern static IntPtr multi_scale_tile_source_new ();
+
+		[DllImport ("moon")]
+		// void multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_image_uri_func func);
+		public extern static void multi_scale_tile_source_set_image_uri_func (IntPtr instance, Mono.ImageUriFunc func);
 
 		[DllImport ("moon")]
 		// void multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, long height);
@@ -1702,8 +1883,16 @@ namespace Mono {
 		public extern static IntPtr timeline_marker_collection_new ();
 
 		[DllImport ("moon")]
+		// void time_manager_add_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
+		public extern static void time_manager_add_tick_call (IntPtr instance, TickCallHandler handler, IntPtr tick_data);
+
+		[DllImport ("moon")]
 		// int time_manager_get_maximum_refresh_rate (TimeManager *instance);
 		public extern static int time_manager_get_maximum_refresh_rate (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void time_manager_remove_tick_call (TimeManager *instance, TickCallHandler handler);
+		public extern static void time_manager_remove_tick_call (IntPtr instance, TickCallHandler handler);
 
 		[DllImport ("moon")]
 		// void time_manager_set_maximum_refresh_rate (TimeManager *instance, int hz);
@@ -1939,6 +2128,143 @@ namespace Mono {
 		{
 			IntPtr result;
 			result = xap_unpack_ (fname);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon")]
+		// char* *open_file_dialog_show (const char *title, bool multsel, const char *filter, int idx);
+		public extern static IntPtr open_file_dialog_show (string title, [MarshalAs (UnmanagedType.U1)] bool multsel, string filter, int idx);
+
+		[DllImport ("moon", EntryPoint="save_file_dialog_show")]
+		// char *save_file_dialog_show (const char *title, const char *filter, int idx);
+		private extern static IntPtr save_file_dialog_show_ (string title, string filter, int idx);
+		public static string save_file_dialog_show (string title, string filter, int idx)
+		{
+			IntPtr result;
+			result = save_file_dialog_show_ (title, filter, idx);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon")]
+		// void runtime_init_desktop ();
+		public extern static void runtime_init_desktop ();
+
+		[DllImport ("moon")]
+		// void size_changed_event_args_get_prev_size (SizeChangedEventArgs *args, Size *prev_size);
+		public extern static void size_changed_event_args_get_prev_size (IntPtr args, ref Size prev_size);
+
+		[DllImport ("moon")]
+		// void size_changed_event_args_get_new_size (SizeChangedEventArgs *args, Size *new_size);
+		public extern static void size_changed_event_args_get_new_size (IntPtr args, ref Size new_size);
+
+		[DllImport ("moon")]
+		// void stroke_get_bounds (Stroke *stroke, Rect *bounds);
+		public extern static void stroke_get_bounds (IntPtr stroke, ref Rect bounds);
+
+		[DllImport ("moon")]
+		// void stroke_collection_get_bounds (StrokeCollection *collection, Rect *bounds);
+		public extern static void stroke_collection_get_bounds (IntPtr collection, ref Rect bounds);
+
+		[DllImport ("moon")]
+		// void general_transform_transform_point (GeneralTransform *t, Point *p, Point *r);
+		public extern static void general_transform_transform_point (IntPtr t, ref Point p, ref Point r);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool type_get_value_type (Type::Kind type);
+		public extern static bool type_get_value_type (Kind type);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool type_is_dependency_object (Type::Kind type);
+		public extern static bool type_is_dependency_object (Kind type);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.Bool)]
+		// gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname);
+		public extern static bool managed_unzip_stream_to_stream (ref ManagedStreamCallbacks source, ref ManagedStreamCallbacks dest, string partname);
+
+		[DllImport ("moon")]
+		// void value_free_value (Value *value);
+		public extern static void value_free_value (ref Value value);
+
+		[DllImport ("moon")]
+		// void value_free_value2 (Value *value);
+		public extern static void value_free_value2 (IntPtr value);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value* *v);
+		public extern static bool value_from_str_with_typename (string type_name, string prop_name, string str, out IntPtr v);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool value_from_str (Type::Kind type, const char *prop_name, const char *str, Value* *v);
+		public extern static bool value_from_str (Kind type, string prop_name, string str, out IntPtr v);
+
+		[DllImport ("moon")]
+		// XamlLoader *xaml_loader_new (const char *filename, const char *str, Surface *surface);
+		public extern static IntPtr xaml_loader_new (string filename, string str, IntPtr surface);
+
+		[DllImport ("moon")]
+		// void xaml_loader_free (XamlLoader *loader);
+		public extern static void xaml_loader_free (IntPtr loader);
+
+		[DllImport ("moon")]
+		// void xaml_loader_set_callbacks (XamlLoader *loader, XamlLoaderCallbacks callbacks);
+		public extern static void xaml_loader_set_callbacks (IntPtr loader, Xaml.XamlLoaderCallbacks callbacks);
+
+		[DllImport ("moon", EntryPoint="xaml_uri_for_prefix")]
+		// char *xaml_uri_for_prefix (void *parser, char *prefix);
+		private extern static IntPtr xaml_uri_for_prefix_ (IntPtr parser, string prefix);
+		public static string xaml_uri_for_prefix (IntPtr parser, string prefix)
+		{
+			IntPtr result;
+			result = xaml_uri_for_prefix_ (parser, prefix);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon")]
+		// Value *xaml_lookup_named_item (void *parser, void *element_instance, const char *name);
+		public extern static IntPtr xaml_lookup_named_item (IntPtr parser, IntPtr element_instance, string name);
+
+		[DllImport ("moon")]
+		// void *xaml_get_template_parent (void *parser, void *element_instance);
+		public extern static IntPtr xaml_get_template_parent (IntPtr parser, IntPtr element_instance);
+
+		[DllImport ("moon", EntryPoint="xaml_get_element_key")]
+		// char *xaml_get_element_key (void *parser, void *element_instance);
+		private extern static IntPtr xaml_get_element_key_ (IntPtr parser, IntPtr element_instance);
+		public static string xaml_get_element_key (IntPtr parser, IntPtr element_instance)
+		{
+			IntPtr result;
+			result = xaml_get_element_key_ (parser, element_instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon", EntryPoint="xaml_get_element_name")]
+		// char *xaml_get_element_name (void *parser, void *element_instance);
+		private extern static IntPtr xaml_get_element_name_ (IntPtr parser, IntPtr element_instance);
+		public static string xaml_get_element_name (IntPtr parser, IntPtr element_instance)
+		{
+			IntPtr result;
+			result = xaml_get_element_name_ (parser, element_instance);
 			if (result == IntPtr.Zero)
 				return null;
 			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string

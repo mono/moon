@@ -543,6 +543,10 @@ DoubleKeyFrameCollection *double_key_frame_collection_new (void);
 /**
  * Downloader
  **/
+/* @GeneratePInvoke */
+void *downloader_create_web_request (Downloader *instance, const char *method, const char *uri);
+
+/* @GeneratePInvoke */
 Downloader *downloader_new (void);
 
 /* @GeneratePInvoke */
@@ -569,6 +573,21 @@ void downloader_request_free (DownloaderRequest *instance);
 /* @GeneratePInvoke */
 void downloader_request_abort (DownloaderRequest *instance);
 
+/* @GeneratePInvoke */
+DownloaderResponse *downloader_request_get_downloader_response (DownloaderRequest *instance);
+
+/* @GeneratePInvoke */
+bool downloader_request_get_response (DownloaderRequest *instance, DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
+
+/* @GeneratePInvoke */
+const bool downloader_request_is_aborted (DownloaderRequest *instance);
+
+/* @GeneratePInvoke */
+void downloader_request_set_body (DownloaderRequest *instance, void *body, int size);
+
+/* @GeneratePInvoke */
+void downloader_request_set_http_header (DownloaderRequest *instance, const char *name, const char *value);
+
 /**
  * DownloaderResponse
  **/
@@ -583,6 +602,9 @@ int downloader_response_get_response_status (DownloaderResponse *instance);
 
 /* @GeneratePInvoke */
 const char *downloader_response_get_response_status_text (DownloaderResponse *instance);
+
+/* @GeneratePInvoke */
+void downloader_response_set_header_visitor (DownloaderResponse *instance, DownloaderResponseHeaderVisitorCallback visitor);
 
 /**
  * DownloadProgressEventArgs
@@ -1126,6 +1148,7 @@ int multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance);
 /* @GeneratePInvoke */
 MultiScaleTileSource *multi_scale_tile_source_new (void);
 
+/* @GeneratePInvoke */
 void multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_image_uri_func func);
 
 /* @GeneratePInvoke */
@@ -1711,10 +1734,18 @@ TimelineMarkerCollection *timeline_marker_collection_new (void);
 /**
  * TimeManager
  **/
+/* @GeneratePInvoke */
 void time_manager_add_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
+
+guint time_manager_add_timeout (TimeManager *instance, gint priority, guint ms_interval, GSourceFunc func, gpointer timeout_data);
 
 /* @GeneratePInvoke */
 int time_manager_get_maximum_refresh_rate (TimeManager *instance);
+
+/* @GeneratePInvoke */
+void time_manager_remove_tick_call (TimeManager *instance, TickCallHandler handler);
+
+void time_manager_remove_timeout (TimeManager *instance, guint timeout_id);
 
 /* @GeneratePInvoke */
 void time_manager_set_maximum_refresh_rate (TimeManager *instance, int hz);

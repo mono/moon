@@ -34,18 +34,6 @@ using Mono;
 
 namespace System.Windows.Browser
 {
-
-	delegate void InvokeDelegate (IntPtr obj_handle, IntPtr method_handle,
-								[MarshalAs (UnmanagedType.LPStr)] string name,
-								[MarshalAs (UnmanagedType.LPArray, SizeParamIndex = 4)]
-								IntPtr[] args,
-								int arg_count,
-								ref Value return_value);
-
-	delegate void SetPropertyDelegate (IntPtr obj_handle, string name, ref Value value);
-	delegate void GetPropertyDelegate (IntPtr obj_handle, string name, ref Value value);
-	delegate void EventHandlerDelegate (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure);
-	
 	internal class ScriptableObjectWrapper : ScriptObject {
 
 		static InvokeDelegate invoke = new InvokeDelegate (InvokeFromUnmanagedSafe);
@@ -86,7 +74,7 @@ namespace System.Windows.Browser
 
 			obj_handle = GCHandle.Alloc (this);
 			if (parent == IntPtr.Zero) {
-				moon_handle = ScriptableNativeMethods.wrapper_create_root (
+				moon_handle = NativeMethods.moonlight_scriptable_object_wrapper_create_root (
 							WebApplication.Current.PluginHandle,
 							(IntPtr) obj_handle,
 							invoke,
@@ -95,7 +83,7 @@ namespace System.Windows.Browser
 							add_event,
 							remove_event);
 			} else {
-				moon_handle = ScriptableNativeMethods.wrapper_create (parent,
+				moon_handle = NativeMethods.moonlight_scriptable_object_wrapper_create (parent,
 							(IntPtr) obj_handle,
 							invoke,
 							set_prop,
@@ -103,18 +91,18 @@ namespace System.Windows.Browser
 							add_event,
 							remove_event);
 			}
-			handle = ScriptableNativeMethods.moonlight_object_to_npobject (moon_handle);
+			handle = NativeMethods.moonlight_object_to_npobject (moon_handle);
 			WebApplication.CachedObjects [handle] = new WeakReference (this);
 		}
 
 		public void Register (string scriptKey)
 		{
-			ScriptableNativeMethods.register (WebApplication.Current.PluginHandle, scriptKey, moon_handle);
+			NativeMethods.moonlight_scriptable_object_register (WebApplication.Current.PluginHandle, scriptKey, moon_handle);
 		}
 
 		public static IntPtr MoonToNPObj (IntPtr ptr)
 		{
-			return ScriptableNativeMethods.moonlight_object_to_npobject (ptr);
+			return NativeMethods.moonlight_object_to_npobject (ptr);
 		}
 
 		public void AddProperty (PropertyInfo pi)
@@ -128,7 +116,7 @@ namespace System.Windows.Browser
 			}
 
 			properties[name] = pi;
-			ScriptableNativeMethods.add_property (WebApplication.Current.PluginHandle,
+			NativeMethods.moonlight_scriptable_object_add_property (WebApplication.Current.PluginHandle,
 									moon_handle,
 									IntPtr.Zero,
 									name,
@@ -146,7 +134,7 @@ namespace System.Windows.Browser
 			    ScriptableMemberAttribute att = (ScriptableMemberAttribute) ei.GetCustomAttributes (typeof (ScriptableMemberAttribute), false)[0];
 				name = (att.ScriptAlias ?? name);
 			}
-			ScriptableNativeMethods.add_event (WebApplication.Current.PluginHandle,
+			NativeMethods.moonlight_scriptable_object_add_event (WebApplication.Current.PluginHandle,
 									moon_handle,
 									(IntPtr)event_handle,
 									name);
@@ -154,7 +142,7 @@ namespace System.Windows.Browser
 
 		public void AddMethod (string name, TypeCode[] args, TypeCode ret_type)
 		{
-			ScriptableNativeMethods.add_method (
+			NativeMethods.moonlight_scriptable_object_add_method (
 								WebApplication.Current.PluginHandle,
 								moon_handle,
 								IntPtr.Zero,
@@ -185,7 +173,7 @@ namespace System.Windows.Browser
 			}
 			methods[name].Add (mi);
 
-			ScriptableNativeMethods.add_method (WebApplication.Current.PluginHandle,
+			NativeMethods.moonlight_scriptable_object_add_method (WebApplication.Current.PluginHandle,
 								moon_handle,
 								IntPtr.Zero,
 								name,
@@ -589,7 +577,7 @@ namespace System.Windows.Browser
 
 				//Console.WriteLine ("emitting scriptable event!");
 
-				ScriptableNativeMethods.emit_event (WebApplication.Current.PluginHandle,
+				NativeMethods.moonlight_scriptable_object_emit_event (WebApplication.Current.PluginHandle,
 								    scriptable_handle,
 								    event_wrapper.MoonHandle,
 								    closure);
@@ -597,64 +585,5 @@ namespace System.Windows.Browser
 		}
 
 #endregion
-
-		class ScriptableNativeMethods {
-			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_wrapper_create_root")]
-			public static extern IntPtr wrapper_create_root (IntPtr plugin, IntPtr obj_handle,
-									InvokeDelegate invoke,
-									SetPropertyDelegate set_prop,
-									GetPropertyDelegate get_prop,
-									EventHandlerDelegate add_event,
-									EventHandlerDelegate remove_event);
-
-			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_wrapper_create")]
-			public static extern IntPtr wrapper_create (IntPtr parent_handle, IntPtr obj_handle,
-									InvokeDelegate invoke,
-									SetPropertyDelegate set_prop,
-									GetPropertyDelegate get_prop,
-									EventHandlerDelegate add_event,
-									EventHandlerDelegate remove_event);
-
-			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_add_property")]
-			public static extern void add_property (IntPtr plugin_handle,
-								IntPtr wrapper,
-								IntPtr property_handle,
-								string property_name,
-								TypeCode property_type,
-								bool readable,
-								bool writable);
-
-			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_add_event")]
-			public static extern void add_event (IntPtr plugin_handle,
-								IntPtr wrapper,
-								IntPtr event_handle,
-								string event_name);
-
-			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_add_method")]
-			public static extern void add_method (IntPtr plugin_handle,
-								IntPtr wrapper,
-								IntPtr method_handle,
-								string method_name,
-								TypeCode method_return_type,
-								TypeCode[] method_parameter_types,
-								int parameter_count);
-
-			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_emit_event")]
-			public static extern void emit_event (IntPtr plugin_handle,
-								IntPtr scriptable_obj,
-								IntPtr event_wrapper,
-								IntPtr closure);
-
-			[DllImport ("moonplugin", EntryPoint = "moonlight_scriptable_object_register")]
-			public static extern void register (IntPtr plugin_handle,
-								string name,
-								IntPtr wrapper);
-
-			[DllImport ("moonplugin", EntryPoint = "moonlight_object_to_npobject")]
-			public static extern IntPtr moonlight_object_to_npobject (IntPtr obj);
-
-			[DllImport ("moonplugin", EntryPoint = "npobject_to_moonlight_object")]
-			public static extern IntPtr npobject_to_moonlight_object (IntPtr obj);	
-		}
 	}
 }

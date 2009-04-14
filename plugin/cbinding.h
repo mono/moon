@@ -7,8 +7,48 @@
 
 #include <glib.h>
 // This should probably be changed to somehow not include c++ headers.
+#include "plugin.h"
 
 G_BEGIN_DECLS
+
+/**
+ * PluginInstance
+ **/
+/* @GeneratePInvoke */
+void *plugin_instance_evaluate (PluginInstance *instance, const char *code);
+
+/* @GeneratePInvoke */
+gint32 plugin_instance_get_actual_height (PluginInstance *instance);
+
+/* @GeneratePInvoke */
+gint32 plugin_instance_get_actual_width (PluginInstance *instance);
+
+/* @GeneratePInvoke */
+bool plugin_instance_get_allow_html_popup_window (PluginInstance *instance);
+
+/* @GeneratePInvoke */
+bool plugin_instance_get_enable_html_access (PluginInstance *instance);
+
+/* @GeneratePInvoke */
+NPObject *plugin_instance_get_host (PluginInstance *instance);
+
+/* @GeneratePInvoke */
+const char *plugin_instance_get_init_params (PluginInstance *instance);
+
+/* @GeneratePInvoke */
+const char *plugin_instance_get_source (PluginInstance *instance);
+
+/* @GeneratePInvoke */
+const char *plugin_instance_get_source_location (PluginInstance *instance);
+
+/* @GeneratePInvoke */
+Surface *plugin_instance_get_surface (PluginInstance *instance);
+
+/* @GeneratePInvoke */
+bool plugin_instance_get_windowless (PluginInstance *instance);
+
+/* @GeneratePInvoke */
+void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char* *stack_trace, int num_frames);
 
 
 G_END_DECLS

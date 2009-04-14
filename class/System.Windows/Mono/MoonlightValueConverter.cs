@@ -58,7 +58,7 @@ namespace Mono {
 				string str_value = value as string;
 				if (str_value != null) {
 					IntPtr value_ptr;
-					if (NativeMethods.value_from_str (Deployment.Current.Types.TypeToKind (targetType), null, str_value, out value_ptr, true)) {
+					if (NativeMethods.value_from_str (Deployment.Current.Types.TypeToKind (targetType), null, str_value, out value_ptr)) {
 						value = Value.ToObject (targetType, value_ptr);
 						return value;
 					}

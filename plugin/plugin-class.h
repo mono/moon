@@ -857,9 +857,11 @@ struct MoonlightScriptableObjectObject : MoonlightObject {
 G_BEGIN_DECLS
 
 // These are meant to be called by System.Silverlight.dll
+/* @GeneratePInvoke */
 NPObject * moonlight_object_to_npobject (MoonlightObject *obj);
 MoonlightObject * npobject_to_moonlight_object (NPObject *npobj);
 
+/* @GeneratePInvoke */
 MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create_root (PluginInstance *plugin, gpointer scriptable,
 									     InvokeDelegate invoke,
 									     SetPropertyDelegate setprop,
@@ -867,6 +869,7 @@ MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create_root
 									     EventHandlerDelegate addevent,
 									     EventHandlerDelegate removeevent);
 
+/* @GeneratePInvoke */
 MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create (NPObject *parent, gpointer scriptable,
 									     InvokeDelegate invoke,
 									     SetPropertyDelegate setprop,
@@ -874,31 +877,36 @@ MoonlightScriptableObjectObject *moonlight_scriptable_object_wrapper_create (NPO
 									     EventHandlerDelegate addevent,
 									     EventHandlerDelegate removeevent);
 
+/* @GeneratePInvoke */
 void moonlight_scriptable_object_add_property (PluginInstance *plugin,
 					       MoonlightScriptableObjectObject *obj,
 					       gpointer property_handle,
 					       char *property_name,
-					       int property_type,
+					       /* @MarshalAs=TypeCode */ int property_type,
 					       bool can_read,
 					       bool can_write);
 
+/* @GeneratePInvoke */
 void moonlight_scriptable_object_add_event (PluginInstance *plugin,
 					    MoonlightScriptableObjectObject *obj,
 					    gpointer event_handle,
 					    char *event_name);
 
+/* @GeneratePInvoke */
 void moonlight_scriptable_object_add_method (PluginInstance *plugin,
 					     MoonlightScriptableObjectObject *obj,
 					     gpointer method_handle,
 					     char *method_name,
-					     int method_return_type,
-					     int *method_parameter_types,
+					     /* @MarshalAs=TypeCode */ int method_return_type,
+					     /* @MarshalAs=TypeCode[] */ int *method_parameter_types,
 					     int parameter_count);
 
+/* @GeneratePInvoke */
 void moonlight_scriptable_object_register (PluginInstance *plugin,
 					   char *name,
 					   MoonlightScriptableObjectObject *obj);
 
+/* @GeneratePInvoke */
 void moonlight_scriptable_object_emit_event (PluginInstance *plugin,
 					     MoonlightScriptableObjectObject *obj,
 					     MoonlightScriptableObjectObject *event_args,
@@ -916,14 +924,21 @@ typedef void callback_dom_event (gpointer context, char *name, int client_x, int
 const char *html_get_element_text (PluginInstance *plugin, const char *element_id);
 
 // These are meant to be called by System.Silverlight.dll
-
+/* @GeneratePInvoke */
 bool html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name);
-void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *result);
+/* @GeneratePInvoke */
+void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, /* @MarshalAs=Mono.Value,IsOut */ Value *result);
+/* @GeneratePInvoke */
 void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
-void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, guint32 arg_count, Value *result);
-void html_object_invoke_self (PluginInstance *plugin, NPObject *npobj, Value *args, guint32 arg_count, Value *result);
+/* @GeneratePInvoke */
+void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, /* @MarshalAs=Mono.Value[] */ Value *args, guint32 arg_count, /* @MarshalAs=Mono.Value,IsOut */ Value *result);
+/* @GeneratePInvoke */
+void html_object_invoke_self (PluginInstance *plugin, NPObject *npobj, /* @MarshalAs=Mono.Value[] */ Value *args, guint32 arg_count, /* @MarshalAs=Mono.Value,IsOut */ Value *result);
+/* @GeneratePInvoke */
 gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb, gpointer context);
+/* @GeneratePInvoke */
 void html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener);
+/* @GeneratePInvoke */
 void html_object_release (PluginInstance *plugin, NPObject *npobj);
 
 /*** Browser interaction utility classes ***/

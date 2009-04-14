@@ -1,3 +1,8 @@
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* HtmlObject.cs:
+	* ScriptableObjectWrapper.cs: Generate all P/Invoke methods.
+
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
 	* HtmlWindow.cs: use string.IsNullOrEmpty instead of just checking

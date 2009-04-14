@@ -37,14 +37,17 @@ public:
 	virtual TimeSpan GetLastTime ()        { return last_global_time - start_time; }
 	TimeSpan GetCurrentTimeUsec () { return current_global_time_usec - start_time_usec; }
 
-	/* @GenerateCBinding, GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke */
 	void AddTickCall (TickCallHandler handler, EventObject *tick_data);
+	/* @GenerateCBinding,GeneratePInvoke */
 	void RemoveTickCall (TickCallHandler handler);
 
 	void NeedRedraw ();
 	void NeedClockTick ();
 
+	/* @GenerateCBinding, GeneratePInvoke */
 	guint AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpointer timeout_data);
+	/* @GenerateCBinding, GeneratePInvoke */
 	void RemoveTimeout (guint timeout_id);
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal,Version=2 */
@@ -107,11 +110,7 @@ private:
 
 G_BEGIN_DECLS
 
-void time_manager_remove_tick_call (TimeManager *manager, TickCallHandler handler);
 bool find_tick_call (List::Node *node, void *data);
-guint time_manager_add_timeout (TimeManager *manager, guint32 interval, GSourceFunc handler, gpointer obj);
-void time_manager_remove_timeout (TimeManager *manager, guint32 source_id);
-
 
 G_END_DECLS
 

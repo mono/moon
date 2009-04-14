@@ -312,25 +312,6 @@ TimeManager::ListClocks()
 	printf ("============================\n");
 }
 
-guint
-time_manager_add_timeout (TimeManager *manager, guint ms_interval, GSourceFunc func, gpointer tick_data)
-{
-	return manager->AddTimeout (G_PRIORITY_DEFAULT, ms_interval, func, tick_data);
-}
-
-void
-time_manager_remove_timeout (TimeManager *manager, guint timeout_id)
-{
-	manager->RemoveTimeout (timeout_id);
-}
-
-void
-time_manager_remove_tick_call (TimeManager *manager, TickCallHandler func)
-{
-	manager->RemoveTickCall (func);
-}
-
-
 #if NOT_ANYMORE
 void
 TimeManager::SourceTick ()

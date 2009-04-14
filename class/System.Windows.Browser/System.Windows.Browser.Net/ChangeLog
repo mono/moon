@@ -1,3 +1,7 @@
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BrowserHttpWebRequest.cs: Generate all P/Invoke methods.
+
 2009-02-22 Geoff Norton  <gnorton@novell.com>
 
 	* BrowserHttpWebRequest.cs: Ensure that we can find the presnse of 

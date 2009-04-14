@@ -62,7 +62,7 @@ class MultiScaleTileSource : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	void SetTileOverlap (int overlap);
 
-	/* @GenerateCBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	void set_image_uri_func (get_image_uri_func func);
 };
 
