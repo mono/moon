@@ -125,59 +125,6 @@ utf8_getc (const char **in, size_t inlen)
 	return u;
 }
 
-static inline int
-utf8_strlen (const char *str, int length)
-{
-	const char *inend = str + length;
-	const char *inptr = str;
-	int count = 0;
-	
-	while (inptr < inend) {
-		// invalid chars do not count toward our total
-		if (utf8_getc (&inptr, inend - inptr) != (gunichar) -1)
-			count++;
-	}
-	
-	return count;
-}
-
-static inline const char *
-utf8_find_last_word (const char *str, int len)
-{
-	GUnicodeBreakType btype = G_UNICODE_BREAK_UNKNOWN;
-	const char *last_word = str;
-	const char *inend = str + len;
-	const char *inptr = str;
-	bool in_word = false;
-	const char *pchar;
-	gunichar c;
-	
-	while (inptr < inend) {
-		pchar = inptr;
-		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
-			continue;
-		
-		if (btype == G_UNICODE_BREAK_COMBINING_MARK) {
-			// ignore zero-width spaces
-			if ((btype = g_unichar_break_type (c)) == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
-				btype = G_UNICODE_BREAK_COMBINING_MARK;
-		} else {
-			btype = g_unichar_break_type (c);
-		}
-		
-		if (!BreakSpace (c, btype)) {
-			if (!in_word) {
-				last_word = pchar;
-				in_word = true;
-			}
-		} else {
-			in_word = false;
-		}
-	}
-	
-	return last_word;
-}
-
 
 //
 // TextLayoutGlyphCluster
@@ -271,7 +218,6 @@ TextLayout::TextLayout ()
 	wrapping = TextWrappingNoWrap;
 	selection_length = 0;
 	selection_start = 0;
-	last_word = NULL;
 	avail_width = INFINITY;
 	max_height = INFINITY;
 	max_width = INFINITY;
@@ -437,7 +383,6 @@ TextLayout::SetText (const char *str, int len)
 		length = 0;
 	}
 	
-	last_word = NULL;
 	count = -1;
 	
 	actual_height = NAN;
@@ -656,7 +601,6 @@ struct LayoutWord {
 	GArray *break_ops;     // TextWrappingWrap only
 	
 	// <input>
-	const char *last_word; // TextWrappingWrap only
 	double line_advance;
 	TextFont *font;
 	
@@ -1266,25 +1210,8 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		
 		if (!isinf (max_width) && word->line_advance >= max_width) {
 			d(printf ("\tjust exceeded max width: %s\n", debug->str));
-			
-			if (inptr <= word->last_word) {
-				// not the last word, safe to break apart
-				d(printf ("\tnot last word, so applying wrap logic...\n"));
-				wrap = true;
-				break;
-			} else if (!line_start) {
-				// last word, but not located at the beginning of the line...
-				//printf ("\tlast word, but going to wrap at the beginning\n");
-				//g_string_free (debug, true);
-				//word->advance = 0.0;
-				//word->length = 0;
-				//return true;
-				wrap = true;
-				break;
-			} else {
-				// last word, at the beginning of the line - DO NOT BREAK
-				d(printf ("\tthis is the last word, so no wrapping allowed\n"));
-			}
+			wrap = true;
+			break;
 		}
 	}
 	
@@ -1478,46 +1405,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	return true;
 }
 
-static const char *
-FindLastWord (List *attributes, const char *text, int length)
-{
-	TextLayoutAttributes *attrs = (TextLayoutAttributes *) attributes->Last ();
-	const char *inend = text + length;
-	const char *inptr, *pchar;
-	GUnicodeBreakType btype;
-	const char *last_word;
-	gunichar c;
-	
-	// get a rough iea of where the last 'word' starts
-	last_word = utf8_find_last_word (text, length);
-	
-	// we now need to scan backwards through the attribute runs... if
-	// the word is split between attribute runs (aka TextBlock Runs),
-	// then we must treat the last run with a portion of the word
-	// as the starting location of the last word.
-	while (attrs && last_word < text + attrs->start) {
-		pchar = inptr = text + attrs->start;
-		
-		// find the first valid unichar
-		while (inptr < inend) {
-			if ((c = utf8_getc (&inptr, inend - inptr)) != (gunichar) -1)
-				break;
-			pchar = inptr;
-		}
-		
-		btype = g_unichar_break_type (c);
-		if (inptr < inend && !BreakSpace (c, btype)) {
-			// woot, we found the beginning of the last word segment
-			last_word = pchar;
-			break;
-		}
-		
-		attrs = (TextLayoutAttributes *) attrs->prev;
-	}
-	
-	return last_word;
-}
-
 void
 TextLayout::LayoutWrap ()
 {
@@ -1535,11 +1422,7 @@ TextLayout::LayoutWrap ()
 	if (!(attrs = (TextLayoutAttributes *) attributes->First ()) || attrs->start != 0)
 		return;
 	
-	if (last_word == NULL)
-		last_word = FindLastWord (attributes, text, length);
-	
 	word.break_ops = g_array_new (false, false, sizeof (WordBreakOpportunity));
-	word.last_word = last_word;
 	
 	line = new TextLayoutLine (this, 0, 0);
 	if (OverrideLineHeight ())

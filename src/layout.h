@@ -112,7 +112,6 @@ class TextLayout {
 	LineStackingStrategy strategy;
 	TextAlignment alignment;
 	TextWrapping wrapping;
-	const char *last_word;
 	int selection_length;
 	int selection_start;
 	double avail_width;

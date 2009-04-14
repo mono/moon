@@ -1,3 +1,12 @@
+2009-04-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (utf8_strlen): Removed, this has never been sued.
+	(utf8_find_last_word): Removed. No longer needed - Silverlight 2.0
+	no longer has this wrapping bug.
+	(layout_word_wrap): Don't need to check if we're at the last word
+	in the textblock because Silverlight 2.0 fixed this bug.
+	(FindLastWord): Removed, no longer needed.
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.h:
