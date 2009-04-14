@@ -193,7 +193,8 @@ PlaylistEntry::InitializeWithStream (ManagedStreamCallbacks *callbacks)
 	
 	source = new ManagedStreamSource (media, callbacks);
 	media->Initialize (source);
-	media->OpenAsync ();
+	if (!media->HasReportedError ())
+		media->OpenAsync ();
 	media->unref ();
 	source->unref ();
 }
@@ -215,7 +216,8 @@ PlaylistEntry::InitializeWithUri (const char *uri)
 	media = new Media (root);
 	Initialize (media);
 	media->Initialize (uri);
-	media->OpenAsync ();
+	if (!media->HasReportedError ())
+		media->OpenAsync ();
 	media->unref ();
 }
 
@@ -231,7 +233,8 @@ PlaylistEntry::InitializeWithDownloader (Downloader *dl, const char *PartName)
 	media = new Media (root);
 	Initialize (media);
 	media->Initialize (dl, PartName);
-	media->OpenAsync ();
+	if (!media->HasReportedError ())
+		media->OpenAsync ();
 	media->unref ();
 }
 
@@ -249,7 +252,8 @@ PlaylistEntry::InitializeWithDemuxer (IMediaDemuxer *demuxer)
 	
 	Initialize (media);
 	media->Initialize (demuxer);
-	media->OpenAsync ();
+	if (!media->HasReportedError ())
+		media->OpenAsync ();
 }
 
 void

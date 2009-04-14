@@ -1,5 +1,11 @@
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.h:
+	* playlist.cpp: Don't try to open the media if an error has
+	  been reported.
+
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.h:
 	* mediaplayer.cpp:
 	* mediaelement.cpp: Check for markers with a timeout instead

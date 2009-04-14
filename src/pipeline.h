@@ -646,6 +646,8 @@ public:
 	void ReportErrorOccurred (const char *message);
 	void ReportErrorOccurred (MediaResult result);
 	
+	bool HasReportedError () { return error_reported; }
+	
 	const static int OpeningEvent;
 	const static int OpenCompletedEvent;
 	const static int SeekingEvent;
