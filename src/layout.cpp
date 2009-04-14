@@ -614,12 +614,12 @@ struct LayoutWord {
 	TextFont *font;
 	
 	// <input/output>
-	guint32 prev;
+	guint32 prev;          // previous glyph index; used for kerning
 	
 	// <output>
-	double advance;
-	int length;
-	int count;
+	double advance;        // the advance-width of the 'word'
+	int length;            // length of the word in bytes
+	int count;             // length of the word in unichars
 };
 
 static inline void
@@ -1183,7 +1183,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			continue;
 		
 		if (btype == G_UNICODE_BREAK_COMBINING_MARK) {
-			// ignore zero-width spaces
+			// ignore zero-width spaces by combining them with the current glyph
 			if ((btype = g_unichar_break_type (c)) == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
 				btype = G_UNICODE_BREAK_COMBINING_MARK;
 		} else {
@@ -1207,6 +1207,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		d(g_string_append_unichar (debug, c));
 		word->count++;
 		
+		// a Combining Class of 0 means start of a new glyph
 		if ((cc = unichar_combining_class (c)) != 0 && glyphs > 0) {
 			// this char gets combined with the previous glyph
 			new_glyph = false;
