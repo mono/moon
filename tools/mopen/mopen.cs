@@ -134,7 +134,7 @@ class MonoOpen {
 			test [0] = "--sync";
 
 		Application.Init ("mopen", ref test);
-		XamlRuntime.Init ();
+		MoonlightRuntime.Init ();
 		window = new Window (file);
 		window.SetDefaultSize (400, 400);
 
@@ -152,16 +152,16 @@ class MonoOpen {
 			Application.Quit ();
 		};
 
-		XamlHost xaml_host = new XamlHost ();
+		MoonlightHost moon_host = new MoonlightHost ();
 
 		try {
-			xaml_host.LoadXamlFromFile (file);
+			moon_host.LoadXamlFromFile (file);
 		} catch (Exception e) {
 			Console.Error.WriteLine ("mopen: Could not load xaml: {0}", e.Message);
 			return 1;
 		}
 
-		FrameworkElement top = xaml_host.Content;
+		FrameworkElement top = moon_host.Content;
 
 		if (parse_only)
 			return 0;
@@ -172,13 +172,13 @@ class MonoOpen {
 			height = (int) top.Height;
 
 		if (width > 0 && height > 0) {
-			xaml_host.SetSizeRequest (width, height);
+			moon_host.SetSizeRequest (width, height);
 			window.Resize (width, height);
 		} 
 
 		if (transparent){
-			xaml_host.AppPaintable = true;
-			xaml_host.Transparent = true;
+			moon_host.AppPaintable = true;
+			moon_host.Transparent = true;
 		}
 
 		if (desklet) {
@@ -187,7 +187,7 @@ class MonoOpen {
 			top.MouseMove += new MouseEventHandler (HandleMouseMove);
 		}
 
-		window.Add (xaml_host);
+		window.Add (moon_host);
 
 		window.ShowAll ();
 
@@ -235,7 +235,7 @@ class MonoOpen {
 			test [0] = "--sync";
 
 		Application.Init ("mopen", ref test);
-		XamlRuntime.Init ();
+		MoonlightRuntime.Init ();
 		window = new Window (file);
 		window.SetDefaultSize (400, 400);
 
@@ -253,16 +253,16 @@ class MonoOpen {
 			Application.Quit ();
 		};
 
-		XamlHost xaml_host = new XamlHost ();
+		MoonlightHost moon_host = new MoonlightHost ();
 
 		try {
-			xaml_host.LoadXap (file);
+			moon_host.LoadXap (file);
 		} catch (Exception e) {
 			Console.Error.WriteLine ("mopen: Could not load xaml: {0}", e.Message);
 			return 1;
 		}
 
-		System.Windows.Application app = xaml_host.Application;
+		System.Windows.Application app = moon_host.Application;
 		FrameworkElement top = (FrameworkElement)app.RootVisual;
 
 		if (parse_only)
@@ -274,13 +274,13 @@ class MonoOpen {
 			height = (int) top.Height;
 
 		if (width > 0 && height > 0) {
-			xaml_host.SetSizeRequest (width, height);
+			moon_host.SetSizeRequest (width, height);
 			window.Resize (width, height);
 		} 
 
 		if (transparent){
-			xaml_host.AppPaintable = true;
-			xaml_host.Transparent = true;
+			moon_host.AppPaintable = true;
+			moon_host.Transparent = true;
 		}
 
 		if (desklet) {
@@ -289,7 +289,7 @@ class MonoOpen {
 			top.MouseMove += new MouseEventHandler (HandleMouseMove);
 		}
 
-		window.Add (xaml_host);
+		window.Add (moon_host);
 
 		window.ShowAll ();
 
