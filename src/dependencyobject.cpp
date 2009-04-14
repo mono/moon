@@ -1283,14 +1283,19 @@ DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 	g_hash_table_foreach (local_values, unregister_depobj_names, from_ns);
 }
 
-void
+bool
 DependencyObject::SetName (const char* name, NameScope *scope)
 {
 	DependencyProperty *property = GetDeployment ()->GetTypes ()->GetProperty (NameProperty);
-	Value *new_value = new Value (name);
 
+	if (scope->FindName (name))
+		return false;
+
+	Value *new_value = new Value (name);
 	SetValue (property, new_value);
 	scope->RegisterName (name, this);
+
+	return true;
 }
 
 Value *

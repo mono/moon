@@ -928,7 +928,11 @@ class XNamespace : public XamlNamespace {
 
 			if (item->IsDependencyObject ()) {
 				NameScope *scope = item->GetParentNameScope (p);
-				item->GetAsDependencyObject ()->SetName (value, scope);
+				if (!item->GetAsDependencyObject ()->SetName (value, scope)) {
+					parser_error (p, item->element_name, NULL, 2007,
+						      "You can't specify x:Name along with x:Key, or x:Key twice.");
+					return false;
+				}
 				return true;
 			}
 
