@@ -586,6 +586,13 @@ unichar_combining_class (gunichar c)
 	return 0;
 }
 
+enum WordType {
+	WORD_TYPE_UNKNOWN,
+	WORD_TYPE_ALPHABETIC,
+	WORD_TYPE_IDEOGRAPHIC,
+	WORD_TYPE_HANGUL,
+};
+
 struct WordBreakOpportunity {
 	GUnicodeBreakType btype;
 	const char *inptr;
@@ -599,6 +606,8 @@ struct WordBreakOpportunity {
 struct LayoutWord {
 	// <internal use>
 	GArray *break_ops;     // TextWrappingWrap only
+	
+	WordType type;
 	
 	// <input>
 	double line_advance;
@@ -1092,6 +1101,38 @@ TextLayout::LayoutNoWrap ()
 	count = offset;
 }
 
+static WordType
+word_type (GUnicodeBreakType btype)
+{
+	switch (btype) {
+	case G_UNICODE_BREAK_ALPHABETIC:
+		return WORD_TYPE_ALPHABETIC;
+	case G_UNICODE_BREAK_IDEOGRAPHIC:
+		return WORD_TYPE_IDEOGRAPHIC;
+	case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
+	case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
+		return WORD_TYPE_HANGUL;
+	default:
+		return WORD_TYPE_UNKNOWN;
+	}
+}
+
+static bool
+word_type_changed (WordType type, GUnicodeBreakType btype)
+{
+	switch (btype) {
+	case G_UNICODE_BREAK_ALPHABETIC:
+		return type != WORD_TYPE_ALPHABETIC;
+	case G_UNICODE_BREAK_IDEOGRAPHIC:
+		return type != WORD_TYPE_IDEOGRAPHIC;
+	case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
+	case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
+		return type != WORD_TYPE_HANGUL;
+	default:
+		return false;
+	}
+}
+
 /**
  * layout_word_wrap:
  * @word: word state
@@ -1125,6 +1166,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	int cc;
 	
 	g_array_set_size (word->break_ops, 0);
+	word->type = WORD_TYPE_UNKNOWN;
 	word->advance = 0.0;
 	word->count = 0;
 	
@@ -1149,6 +1191,15 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		}
 		
 		if (BreakSpace (c, btype)) {
+			inptr = start;
+			break;
+		}
+		
+		if (word->type == WORD_TYPE_UNKNOWN) {
+			// record our word-type
+			word->type = word_type (btype);
+		} else if (word_type_changed (word->type, btype)) {
+			// changing word-types, don't continue
 			inptr = start;
 			break;
 		}
@@ -1213,6 +1264,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			wrap = true;
 			break;
 		}
+		
+		if (btype == G_UNICODE_BREAK_CLOSE_PUNCTUATION)
+			break;
 	}
 	
 	if (!wrap) {
@@ -1358,10 +1412,34 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				return true;
 			}
 			break;
-		case G_UNICODE_BREAK_IDEOGRAPHIC:
+		case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
+		case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
+		case G_UNICODE_BREAK_NON_STARTER:
 		case G_UNICODE_BREAK_HYPHEN:
 		case G_UNICODE_BREAK_AFTER:
 			if (i < word->break_ops->len) {
+				// we can safely break after this character
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				word->prev = op.prev;
+				
+				return true;
+			}
+			break;
+		case G_UNICODE_BREAK_ALPHABETIC:
+			// only break if we have no choice...
+			if (line_start && i < word->break_ops->len) {
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				word->prev = op.prev;
+				
+				return true;
+			}
+			break;
+		case G_UNICODE_BREAK_IDEOGRAPHIC:
+			if (i < word->break_ops->len && btype != G_UNICODE_BREAK_NON_STARTER) {
 				// we can safely break after this character
 				word->length = (op.inptr - in);
 				word->advance = op.advance;

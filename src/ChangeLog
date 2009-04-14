@@ -1,3 +1,8 @@
+2009-04-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (layout_word_wrap): Added support for Hangul and
+	ideographic word breaking. Improves test #208 quite a bit.
+
 2009-04-14  Larry Ewing  <lewing@novell.com>
 
 	* control.h:
