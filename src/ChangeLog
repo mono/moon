@@ -1,3 +1,9 @@
+2009-04-14  Jackson Harper  <jackson@ximian.com>
+
+	* dependencyobject.cpp|h: Add a return value for SetName with
+	namescope, returns false if there is an error.
+	* xaml.cpp: Check the return value of SetName
+
 2009-04-14  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* uri.cpp (Combine): strip leading ../ as we're already cutting the
