@@ -1,5 +1,10 @@
 2009-04-14  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (layout_word_wrap): Fixed word-break logic for
+	ambiguous break-types. Fixes second column of text in test #208.
+
+2009-04-14  Jeffrey Stedfast  <fejj@novell.com>
+
 	* layout.cpp (layout_word_wrap): Fixed word-breaking around a
 	BREAK_BEFORE_AND_AFTER. Fixes one of the test cases in test #209.
 

@@ -1481,6 +1481,17 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				return !BreakSpace (c, btype);
 			}
 			break;
+		case G_UNICODE_BREAK_AMBIGUOUS:
+			// do not break between characters with ambiguous break-types
+			if (i < word->break_ops->len && btype != G_UNICODE_BREAK_AMBIGUOUS) {
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				word->prev = op.prev;
+				
+				return true;
+			}
+			break;
 		default:
 			// only break if we have no choice...
 			if (line_start) {
