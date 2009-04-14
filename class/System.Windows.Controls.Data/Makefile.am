@@ -5,7 +5,7 @@ assemblysl = ../lib/2.1/$(assembly).dll
 endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
-assemblydesktop = ../lib/3.0/$(assembly).dll
+assemblydesktop = ../lib/moonlight/$(assembly).dll
 endif
 
 assemblies = $(assemblysl) $(assemblydesktop)
@@ -14,10 +14,10 @@ noinst_DATA = $(assemblies)
 
 CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:System.Core -r:System.Windows -d:AGCLR -unsafe
 
-GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
+GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
-monoloc = `pkg-config --variable=libdir mono`/mono/3.0
+monoloc = `pkg-config --variable=libdir mono`/mono/moonlight
 
 MSSDKCONTROLS=$(srcdir)/../Microsoft.SilverlightControls/SDKControls/Data/src
 
@@ -100,7 +100,7 @@ EXTRA_DIST = $(system_windows_controls_data_sources) 			\
 
 System.Windows.Controls.Resource.resources: $(MSSDKCONTROLS)/Resource.resx
 	resgen2 $(MSSDKCONTROLS)/Resource.resx System.Windows.Controls.Resource.resources
-	
+
 $(assembly).g.resources: $(MSSDKCONTROLS)/themes/generic.xaml
 	mono $(top_builddir)/tools/respack/respack.exe $@ $(MSSDKCONTROLS)/themes/generic.xaml,themes/generic.xaml
 
@@ -113,7 +113,7 @@ $(assemblysl): $(system_windows_controls_data_sources) Makefile $(top_builddir)/
 	$(SMCS) -target:library -out:$@ $(system_windows_controls_data_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../winfx3.pub -delaysign+ $(RESOURCES)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
-$(assemblydesktop): $(system_windows_controls_data_sources) Makefile $(top_builddir)/class/lib/3.0/System.Windows.dll
+$(assemblydesktop): $(system_windows_controls_data_sources) Makefile $(top_builddir)/class/lib/moonlight/System.Windows.dll
 	$(GMCS) -target:library -out:$@ $(system_windows_controls_data_sources) -keyfile:$(srcdir)/../mono.snk
 
 clean-local:
@@ -129,7 +129,7 @@ endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
 install-desktop:
-	$(GACUTIL) /i $(assemblydesktop) /f /package 3.0
+	$(GACUTIL) /i $(assemblydesktop) /f /package moonlight
 else
 install-desktop:
 endif

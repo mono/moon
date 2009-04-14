@@ -10,7 +10,7 @@ sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
 endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
-assemblydesktop = ../lib/3.0/$(assembly).dll
+assemblydesktop = ../lib/moonlight/$(assembly).dll
 endif
 
 assemblies = $(assemblysl) $(assemblydesktop)
@@ -19,7 +19,7 @@ noinst_DATA = $(assemblies)
 
 CSCFLAGS = /codepage:65001 -d:SANITY -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -d:AGCLR -unsafe
 
-GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0 -d:NET_3_0
+GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight -d:NET_3_0
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
@@ -563,7 +563,7 @@ endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
 install-desktop:
-	$(GACUTIL) /i $(assemblydesktop) /f /package 3.0
+	$(GACUTIL) /i $(assemblydesktop) /f /package moonlight
 else
 install-desktop:
 endif
@@ -576,12 +576,12 @@ uninstall-local:
 check-code: check-static check-dynamic
 
 check-static:
-	gmcs $(srcdir)/scripts/checks.cs -r:../lib/3.0/System.Windows.dll -out:check-static.exe
-	MONO_PATH=../lib/3.0:$$MONO_PATH mono --debug check-static.exe
+	gmcs $(srcdir)/scripts/checks.cs -r:../lib/moonlight/System.Windows.dll -out:check-static.exe
+	MONO_PATH=../lib/moonlight:$$MONO_PATH mono --debug check-static.exe
 	> check-static
 
 check-dynamic:
-	gmcs $(srcdir)/scripts/checks.cs -r:../lib/3.0/System.Windows.dll -out:check-static.exe
+	gmcs $(srcdir)/scripts/checks.cs -r:../lib/moonlight/System.Windows.dll -out:check-static.exe
 	mono --debug check-static.exe generate-test-code > tester.cs
-	gmcs tester.cs -r:../lib/3.0/System.Windows.dll -debug:full -nowarn:219
-	MONO_PATH=../lib/3.0:$$MONO_PATH mono --debug tester.exe
+	gmcs tester.cs -r:../lib/moonlight/System.Windows.dll -debug:full -nowarn:219
+	MONO_PATH=../lib/moonlight:$$MONO_PATH mono --debug tester.exe

@@ -17,7 +17,7 @@ EXTRA_DIST = mono.pub winfx3.pub msfinal.pub mono.snk silverlight.pub
 
 if INCLUDE_DESKTOP_MANAGED_CODE
 all-local:
-	-mkdir -p lib/3.0
+	-mkdir -p lib/moonlight
 endif
 
 if INCLUDE_BROWSER_MANAGED_CODE

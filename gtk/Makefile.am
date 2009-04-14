@@ -1,4 +1,4 @@
-moonlight_gtkdir = $(prefix)/lib/mono/moon
+moonlight_gtkdir = $(prefix)/lib/mono/moonlight
 pkgconfigdir     = $(prefix)/lib/pkgconfig
 monodocdir       = $(prefix)/lib/monodoc/sources
 
@@ -34,10 +34,10 @@ clean-local:
 
 moonlight_gtk_SNK = $(srcdir)/moonlight-gtk.snk
 
-Moonlight.Gtk.dll: $(moonlight_gtk_dll_CS) $(top_builddir)/class/lib/3.0/System.Windows.dll
+Moonlight.Gtk.dll: $(moonlight_gtk_dll_CS) $(top_builddir)/class/lib/moonlight/System.Windows.dll
 	gmcs -debug -out:$@ -target:library -unsafe -doc:moonlight-gtk.xml \
 		-keyfile:$(moonlight_gtk_SNK) -pkg:gtk-sharp-2.0 \
-		-r:$(top_builddir)/class/lib/3.0/System.Windows.dll \
+		-r:$(top_builddir)/class/lib/moonlight/System.Windows.dll \
 		$(moonlight_gtk_dll_CS)
 
 MONODOCER = MONO_PATH="../class/lib/3.0:$$MONO_PATH" monodocer

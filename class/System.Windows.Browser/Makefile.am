@@ -7,7 +7,7 @@ sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
 endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
-assemblydesktop = ../lib/3.0/$(assembly).dll
+assemblydesktop = ../lib/moonlight/$(assembly).dll
 endif
 
 assemblies = $(assemblysl) $(assemblydesktop)
@@ -16,10 +16,10 @@ noinst_DATA = $(assemblies)
 
 CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:System.Windows -d:AGCLR -unsafe
 
-GMCS = gmcs $(CSCFLAGS) -lib:../lib/3.0
+GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
-monoloc = `pkg-config --variable=libdir mono`/mono/3.0
+monoloc = `pkg-config --variable=libdir mono`/mono/moonlight
 nunit = -r:$(monoloc)/nunit.framework.dll -r:$(monoloc)/nunit.core.dll -r:$(monoloc)/nunit.util.dll 
 
 system_windows_browser_sources =					\
@@ -86,7 +86,7 @@ $(assemblysl): $(assemblysl_raw) $(sl_secattr)
 	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
-$(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/3.0/System.Windows.dll
+$(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/moonlight/System.Windows.dll
 	$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -keyfile:$(srcdir)/../mono.snk
 
 clean-local:
@@ -103,7 +103,7 @@ endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
 install-desktop:
-	$(GACUTIL) /i $(assemblydesktop) /f /package 3.0
+	$(GACUTIL) /i $(assemblydesktop) /f /package moonlight
 else
 install-desktop:
 endif
