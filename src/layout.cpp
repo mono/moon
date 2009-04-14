@@ -1320,20 +1320,22 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		switch (op.btype) {
 		case G_UNICODE_BREAK_NEXT_LINE:
 		case G_UNICODE_BREAK_UNKNOWN:
-			// break after this char
-			word->length = (op.inptr - in);
-			word->advance = op.advance;
-			word->count = op.count;
-			word->prev = op.prev;
-			
-			// if the following break-type is SPACE, then return
-			// false; otherwise let our caller know to wrap.
-			return !BreakSpace (c, btype);
+			if (i < word->break_ops->len) {
+				// break after this char
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				word->prev = op.prev;
+				
+				// if the following break-type is SPACE, then return
+				// false; otherwise let our caller know to wrap.
+				return !BreakSpace (c, btype);
+			}
+			break;
 		case G_UNICODE_BREAK_BEFORE_AND_AFTER:
 		case G_UNICODE_BREAK_EXCLAMATION:
-			//case G_UNICODE_BREAK_AFTER:
 			// only break after this char if there are chars before it
-			if (line_start && i > 1) {
+			if (line_start && i > 1 && i < word->break_ops->len) {
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
@@ -1348,6 +1350,19 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			if (i > 1) {
 				// break after the previous glyph
 				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				word->prev = op.prev;
+				
+				return true;
+			}
+			break;
+		case G_UNICODE_BREAK_IDEOGRAPHIC:
+		case G_UNICODE_BREAK_HYPHEN:
+		case G_UNICODE_BREAK_AFTER:
+			if (i < word->break_ops->len) {
+				// we can safely break after this character
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
