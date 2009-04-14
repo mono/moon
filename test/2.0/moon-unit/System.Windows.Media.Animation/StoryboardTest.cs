@@ -121,7 +121,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 			Enqueue (() => TestPanel.Children.Add (target));
 			Enqueue (() => a.Begin ());
-			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (2000));
+			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (5000));
 			EnqueueTestComplete ();
 		}
 		
