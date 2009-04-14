@@ -2,8 +2,8 @@ desklet = glassymonitor
 entrypoint=Desklets.GlassyMonitor.App
 
 DESKTOP_ASSEMBLIES=-r:$(top_builddir)/gtk/Moonlight.Gtk.dll \
-		   -r:$(top_builddir)/class/lib/3.0/System.Windows.dll \
-		   -r:$(top_builddir)/class/lib/3.0/System.Windows.Browser.dll
+		   -r:$(top_builddir)/class/lib/moonlight/System.Windows.dll \
+		   -r:$(top_builddir)/class/lib/moonlight/System.Windows.Browser.dll
 
 noinst_DATA = default.xaml $(desklet).xap
 
@@ -13,7 +13,7 @@ EXTRA_DIST =		\
 	App.xaml
 
 run: $(desklet).xap
-	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(LD_LIBRARY_PATH) MONO_PATH=$(top_builddir)/gtk:$(top_builddir)/class/lib/3.0:$(MONO_PATH) mono ../../../tools/mopen/mopen.exe -d $(desklet).xap
+	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(LD_LIBRARY_PATH) MONO_PATH=$(top_builddir)/gtk:$(top_builddir)/class/lib/moonlight:$(MONO_PATH) mono ../../../tools/mopen/mopen.exe -d $(desklet).xap
 
 $(desklet).xap: $(srcdir)/$(desklet).cs $(srcdir)/default.xaml $(srcdir)/App.xaml
 	mono ../../../tools/mxap/mxap.exe --desktop --entry-point-type=$(entrypoint) --builddirhack=$(top_builddir) $(DESKTOP_ASSEMBLIES) $(srcdir)
