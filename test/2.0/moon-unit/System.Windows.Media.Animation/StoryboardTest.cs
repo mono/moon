@@ -121,6 +121,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 			Enqueue (() => TestPanel.Children.Add (target));
 			Enqueue (() => a.Begin ());
+			/* This should really run in < 1s, but that doesn't work on very slow machines (x86 buildbots for instance) */
 			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (5000));
 			EnqueueTestComplete ();
 		}

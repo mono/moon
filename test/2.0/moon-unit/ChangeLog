@@ -1,5 +1,10 @@
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add a
+	  comment to try to hopefully satisfy everybody.
+
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Set
 	  timeout to 5s instead of 2s. 5 * 0.1s > 2s on very slow
 	  machines.
