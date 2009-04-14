@@ -247,14 +247,6 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	for (i = 0; i < GetSubImages ()->GetCount (); i++) {
 		MultiScaleSubImage *sub_image = (MultiScaleSubImage*)g_ptr_array_index (GetSubImages ()->z_sorted, i);
 
-		//if the subimage is unparsed, trigger the download
-		//FIXME: THIS NOT REQUIRED FOR LAYERS << MaxTileLayer
-//		if (sub_image->source->GetImageWidth () < 0) {
-//			((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_subimage_handle_parsed, this);
-//			((DeepZoomImageTileSource*)sub_image->source)->Download ();
-//			continue;
-//		}
-
 		double subvp_ox = sub_image->GetViewportOrigin()->x;
 		double subvp_oy = sub_image->GetViewportOrigin()->y;
 		double subvp_w = sub_image->GetViewportWidth();
@@ -436,6 +428,13 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		//Get the next tile...
 		while (from_layer < optimal_layer) {
 			from_layer ++;
+
+			//if the subimage is unparsed, trigger the download
+			if (from_layer > ((DeepZoomImageTileSource *)source)->GetMaxLevel () && !((DeepZoomImageTileSource *)sub_image->source)->IsDownloaded () ) {
+				((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_subimage_handle_parsed, this);
+				((DeepZoomImageTileSource*)sub_image->source)->Download ();
+				break;
+			}
 
 			double v_tile_w = tile_width * (double)(1 << (layers - from_layer)) * sub_vp.width / sub_w;
 			double v_tile_h = tile_height * (double)(1 << (layers - from_layer)) * sub_vp.width / sub_w;
