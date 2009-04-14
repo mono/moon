@@ -70,16 +70,15 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
+		[Ignore ("Loaded Corner Case - The template has already been applied under SL even though the rules say it shouldn't be")]
 		public void TemplateChild ()
 		{
 			ListBoxPoker box = new ListBoxPoker ();
-
-			CreateAsyncTest (box,
-				() => {
-					DependencyObject o = box.GetTemplateChild ("ScrollViewer");
-					Assert.IsNotNull (o);
-				});
+			
+			CreateAsyncTest (box, () => {
+				DependencyObject o = box.GetTemplateChild ("ScrollViewer");
+				Assert.IsNotNull (o);
+			});
 		}
 		
 		[TestMethod]
