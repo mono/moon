@@ -1,3 +1,7 @@
+2009-04-14  Jackson Harper  <jackson@ximian.com>
+
+	* moonlight-gtk.pc.in: Fix assembly name.
+
 2009-04-09  Jackson Harper  <jackson@ximian.com>
 
 	* Moonlight.Gtk/XamlHost.cs: New method name.

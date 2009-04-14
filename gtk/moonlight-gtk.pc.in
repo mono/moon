@@ -1,4 +1,4 @@
 Name: Gtk# Silverlight Binding.
 Description: Gtk# binding for the Silverlight Libraries in Mono.
 Version: @VERSION@
-Libs: -r:@prefix@/lib/mono/moon/gtksilver.dll
+Libs: -r:@prefix@/lib/mono/moon/Moonlight.Gtk.dll
