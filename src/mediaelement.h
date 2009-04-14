@@ -35,6 +35,8 @@ class MediaElement : public FrameworkElement {
 	MediaPlayer *mplayer;
 	PlaylistRoot *playlist;
 	
+	// 
+	guint32 marker_timeout;
 	// When checking if a marker has been reached, we need to 
 	// know the last time the check was made, to see if 
 	// the marker's pts hit the region.
@@ -76,6 +78,9 @@ class MediaElement : public FrameworkElement {
 	
 	void Reinitialize (); // not thread-safe
 	
+	void SetMarkerTimeout (bool start); // not thread-safe
+	static gboolean MarkerTimeout (gpointer context); // not thread-safe
+	
 	// Media event handlers	
 		
 	EVENTHANDLER (MediaElement, Opening, PlaylistRoot, EventArgs); // Not thread-safe
@@ -104,6 +109,7 @@ class MediaElement : public FrameworkElement {
 	static MediaResult AddStreamedMarkerCallback (MediaClosure *closure); // Thread-safe
 	void CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *col, bool remove); // Not thread-safe
 	void CheckMarkers (guint64 from, guint64 to); // Not thread-safe
+	void CheckMarkers (); // Not thread-safe
 	void ReadMarkers (Media *media, IMediaDemuxer *demuxer); // Not thread-safe
 	
 	//
@@ -237,7 +243,6 @@ class MediaElement : public FrameworkElement {
 	bool IsMissingCodecs (); // Not thread-safe
 	
 	void SetPlayRequested (); // Not thread-safe
-	void CheckMarkers (); // Not thread-safe
 	
 	static const char *GetStateName (MediaState state); // Thread-safe
 	

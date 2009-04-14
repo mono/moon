@@ -1,3 +1,11 @@
+2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.h:
+	* mediaplayer.cpp:
+	* mediaelement.cpp: Check for markers with a timeout instead
+	  of after rendering a frame, this way markers also work with
+	  audio-only media.
+
 2009-04-14  Jackson Harper  <jackson@ximian.com>
 
 	* dependencyobject.cpp|h: Add a return value for SetName with

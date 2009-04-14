@@ -732,10 +732,6 @@ MediaPlayer::AdvanceFrame ()
 		element->SetRenderedFramesPerSecond (rendered_frames_per_second);
 	}
 	
-	// TODO: this needs to be done some other way,
-	// this doesn't work for media without video (markers + audio, but no video). 
-	element->CheckMarkers ();
-	
 	return;
 }
 

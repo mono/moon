@@ -27,6 +27,7 @@
 #include "deployment.h"
 #include "mediaplayer.h"
 #include "timeline.h"
+#include "timemanager.h"
 
 /*
  * MarkerNode
@@ -70,6 +71,7 @@ MediaElement::MediaElement ()
 	playlist = NULL;
 	flags = UseMediaWidth | UseMediaHeight;
 		
+	marker_timeout = 0;
 	mplayer = NULL;
 	
 	Reinitialize ();
@@ -201,6 +203,46 @@ MediaElement::ReadMarkers (Media *media, IMediaDemuxer *demuxer)
 	LOG_MEDIAELEMENT ("MediaElement::ReadMarkers (): setting %d markers.\n", markers->GetCount ());
 	SetMarkers (markers);
 	markers->unref ();
+}
+
+gboolean
+MediaElement::MarkerTimeout (gpointer context)
+{
+	VERIFY_MAIN_THREAD;
+	((MediaElement *) context)->SetCurrentDeployment ();
+	((MediaElement *) context)->CheckMarkers ();
+	return TRUE;
+}
+
+void
+MediaElement::SetMarkerTimeout (bool start)
+{
+	TimeManager *tm;
+	Surface *surface;
+	
+	VERIFY_MAIN_THREAD;
+	
+	surface = GetDeployment ()->GetSurface ();
+	
+	if (surface == NULL)
+		return;
+	
+	tm = surface->GetTimeManager ();
+	
+	g_return_if_fail (tm != NULL);
+	
+	if (start) {
+		if (marker_timeout == 0) {
+			marker_timeout = tm->AddTimeout (G_PRIORITY_DEFAULT, 33, MarkerTimeout, this);
+			ref (); // add a ref to self
+		}
+	} else { // stop
+		if (marker_timeout != 0) {
+			tm->RemoveTimeout (marker_timeout);
+			marker_timeout = 0;
+			unref (); // unref self
+		}
+	}
 }
 
 void
@@ -386,6 +428,7 @@ MediaElement::Reinitialize ()
 	
 	previous_position = 0;
 	
+	SetMarkerTimeout (false);
 	if ((markers = GetMarkers ()))
 		markers->Clear ();
 	
@@ -1000,6 +1043,8 @@ MediaElement::SeekingHandler (PlaylistRoot *playlist, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::SeekingHandler ()\n");
 	VERIFY_MAIN_THREAD;
+	
+	SetMarkerTimeout (false);
 }
 
 void
@@ -1012,6 +1057,7 @@ MediaElement::SeekCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 		playlist->PlayAsync ();
 	
 	seek_to_position = -1;
+	SetMarkerTimeout (true);
 }
 
 void
@@ -1019,6 +1065,8 @@ MediaElement::PlayHandler (PlaylistRoot *playlist, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::PlayHandler ()\n");
 	VERIFY_MAIN_THREAD;
+	
+	SetMarkerTimeout (true);
 	
 	SetState (MediaStatePlaying);
 	Emit (CurrentStateChangedEvent);
@@ -1029,6 +1077,8 @@ MediaElement::PauseHandler (PlaylistRoot *playlist, EventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::PauseHandler ()\n");
 	VERIFY_MAIN_THREAD;
+	
+	SetMarkerTimeout (false);
 	
 	SetState (MediaStatePaused);
 	Emit (CurrentStateChangedEvent);
@@ -1049,6 +1099,8 @@ MediaElement::StopHandler (PlaylistRoot *playlist, EventArgs *args)
 	g_return_if_fail (entry != NULL);
 		
 	SetProperties (entry->GetMedia ());
+	
+	SetMarkerTimeout (false);
 	
 	SetState (MediaStateStopped);
 	Emit (CurrentStateChangedEvent);
