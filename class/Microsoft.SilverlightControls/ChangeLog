@@ -1,3 +1,8 @@
+2009-04-14  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: the name of the
+	  ScrollViewer element has changed.
+
 2009-04-09  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ListBox/ListBoxItem.cs: Normalise the

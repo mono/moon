@@ -1,5 +1,10 @@
 2009-04-14  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ListBoxTest.cs: Remove MoonlightBug
+	  from the tests which pass now.
+
+2009-04-14  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ListBoxTest.cs: Update the test,
 	  it's actually a corner case
 
