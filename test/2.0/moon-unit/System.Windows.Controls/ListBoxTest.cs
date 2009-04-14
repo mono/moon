@@ -84,6 +84,7 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void AfterRender ()
 		{
 			ListBox c = new ListBox ();
