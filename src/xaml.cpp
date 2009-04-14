@@ -3285,7 +3285,7 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::MULTISCALETILESOURCE:
 	case Type::DEEPZOOMIMAGETILESOURCE: {
 		// As far as I know the only thing you can create here is a URI based DeepZoomImageTileSource
-		// Uri starting with a '/' in xaml.cpp are still relative to the .xap uri (as tested on SL :/ )
+		// Uri starting with a '/' in xaml are still relative to the source uri (as tested on SL :/ )
 		Uri *uri = new Uri ();
 		if (!uri->Parse (g_str_has_prefix (str, "/") ? str+1 : str)) {
 			delete uri;
