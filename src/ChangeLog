@@ -1,3 +1,10 @@
+2009-04-14  Andreia Gaita  <avidigal@novell.com>
+
+	* pipeline-ffmpeg.cpp: check avcodec_decode_audio2 return value: 0
+	indicates frame could not be decoded. fixes uninitialized buffer
+	size leading to huge memory allocation and abort. kudos to
+	Alp Toker for spotting this.
+
 2009-04-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (layout_word_wrap): Added support for Hangul and

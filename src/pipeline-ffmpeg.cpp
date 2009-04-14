@@ -422,7 +422,7 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 
 			length = avcodec_decode_audio2 (context, (gint16 *) audio_buffer, &buffer_size, mf->buffer+offset, frame_size);
 
-			if (length < 0 || buffer_size < frame_size) {
+			if (length <= 0 || buffer_size < frame_size) {
 				//Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding audio frame (length: %d, frame_size. %d, buflen: %u).", length, frame_size, mf->buflen);
 				ReportErrorOccurred (MEDIA_CODEC_ERROR);
 				return;
