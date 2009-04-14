@@ -1,3 +1,8 @@
+2009-04-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (layout_word_wrap): Fixed word-breaking around a
+	BREAK_BEFORE_AND_AFTER. Fixes one of the test cases in test #209.
+
 2009-04-14  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* deepzoomimagetilesource.h: expose IsDownloaded()
