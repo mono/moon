@@ -1,3 +1,8 @@
+2009-04-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* configure.ac: swap definition order of variables for PERF_TOOL so I
+	can keep building it
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Revert r131611, it breaks 'make install'.
