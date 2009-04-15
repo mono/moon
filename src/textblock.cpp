@@ -207,7 +207,7 @@ Inline::Equals (Inline *item)
 	return true;
 }
 
-void
+bool
 Inline::UpdateFontDescription ()
 {
 	// FIXME: I hate having to do it this way, updating the font
@@ -215,7 +215,8 @@ Inline::UpdateFontDescription ()
 	// things. *sigh*
 	FontFamily *family = GetFontFamily ();
 	const char *family_name = NULL;
-
+	bool changed = false;
+	
 	if (family && family->source) {
 		if (!(family_name = strchr (family->source, '#')))
 			family_name = family->source;
@@ -223,12 +224,25 @@ Inline::UpdateFontDescription ()
 			family_name++;
 	}
 	
-	font->SetFilename (GetFontFilename (), GetFontGUID ());
-	font->SetFamily (family_name);
-	font->SetStyle (GetFontStyle ());
-	font->SetWeight (GetFontWeight ());
-	font->SetSize (GetFontSize ());
-	font->SetStretch (GetFontStretch ());
+	if (font->SetFilename (GetFontFilename (), GetFontGUID ()))
+		changed = true;
+	
+	if (font->SetFamily (family_name))
+		changed = true;
+	
+	if (font->SetStyle (GetFontStyle ()))
+		changed = true;
+	
+	if (font->SetWeight (GetFontWeight ()))
+		changed = true;
+	
+	if (font->SetSize (GetFontSize ()))
+		changed = true;
+	
+	if (font->SetStretch (GetFontStretch ()))
+		changed = true;
+	
+	return changed;
 }
 
 void
@@ -649,18 +663,25 @@ TextBlock::UpdateLayoutAttributes ()
 	layout->SetTextAttributes (runs);
 }
 
-void
+bool
 TextBlock::UpdateFontDescriptions ()
 {
 	InlineCollection *inlines = GetInlines ();
+	bool changed = false;
 	Inline *item;
 	
 	if (inlines != NULL) {
 		for (int i = 0; i < inlines->GetCount (); i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
-			item->UpdateFontDescription ();
+			if (item->UpdateFontDescription ())
+				changed = true;
 		}
+		
+		if (changed)
+			layout->ResetState ();
 	}
+	
+	return changed;
 }
 
 void

@@ -1,5 +1,28 @@
 2009-04-15  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBoxBase::DownloaderComplete): Instead of
+	invalidating the TextBoxBase, we need to emit an event to let the
+	TextBoxView know our font has changed.
+	(TextBoxView::OnModelChanged): Reset state on the layout when the
+	font changes (since it has no way of knowing that the font has
+	changed otherwise).
+
+	* textblock.cpp (Inline::UpdateFontDescription): Return true if
+	the font has changed or false otherwise.
+	(TextBlock::UpdateFontDescriptions): If any of the fonts changed,
+	return true and reset the state on the TextLayout.
+
+	* font.cpp (TextFontDescription::Set*): Return true if the font
+	has changed or false otherwise.
+
+	* layout.cpp (TextLayout::ResetState): New method to reset the
+	state of a TextLayout. Normally the state only gets reset if a
+	layout property chanegs, but sometimes it is necessary to notify
+	the TextLayout engine of a state change in one of the
+	TextLayoutAttributes.
+
+2009-04-15  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp (TextBoxBase::SetFontResource): If the font isn't a
 	xap resource, download it from the web.
 

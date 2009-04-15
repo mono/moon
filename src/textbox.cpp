@@ -1630,8 +1630,7 @@ TextBoxBase::DownloaderComplete ()
 	
 	font->SetFilename (path, guid);
 	
-	UpdateBounds (true);
-	Invalidate ();
+	Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedFont, NULL));
 }
 
 void
@@ -2899,6 +2898,7 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 		break;
 	case TextBoxModelChangedFont:
 		// font changed, need to recalculate layout/bounds
+		layout->ResetState ();
 		dirty = true;
 		break;
 	case TextBoxModelChangedText:

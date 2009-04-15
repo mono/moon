@@ -254,6 +254,13 @@ TextLayout::ClearLines ()
 	g_ptr_array_set_size (lines, 0);
 }
 
+void
+TextLayout::ResetState ()
+{
+	actual_height = NAN;
+	actual_width = NAN;
+}
+
 bool
 TextLayout::SetLineStackingStrategy (LineStackingStrategy mode)
 {
@@ -262,8 +269,7 @@ TextLayout::SetLineStackingStrategy (LineStackingStrategy mode)
 	
 	strategy = mode;
 	
-	actual_height = NAN;
-	actual_width = NAN;
+	ResetState ();
 	
 	return true;
 }
@@ -298,8 +304,7 @@ TextLayout::SetTextWrapping (TextWrapping mode)
 	
 	wrapping = mode;
 	
-	actual_height = NAN;
-	actual_width = NAN;
+	ResetState ();
 	
 	return true;
 }
@@ -312,8 +317,7 @@ TextLayout::SetLineHeight (double height)
 	
 	line_height = height;
 	
-	actual_height = NAN;
-	actual_width = NAN;
+	ResetState ();
 	
 	return true;
 }
@@ -326,8 +330,7 @@ TextLayout::SetMaxHeight (double height)
 	
 	max_height = height;
 	
-	actual_height = NAN;
-	actual_width = NAN;
+	ResetState ();
 	
 	return true;
 }
@@ -346,8 +349,7 @@ TextLayout::SetMaxWidth (double width)
 	
 	max_width = width;
 	
-	actual_height = NAN;
-	actual_width = NAN;
+	ResetState ();
 	
 	return true;
 }
@@ -362,8 +364,7 @@ TextLayout::SetTextAttributes (List *attrs)
 	
 	attributes = attrs;
 	
-	actual_height = NAN;
-	actual_width = NAN;
+	ResetState ();
 	
 	return true;
 }
@@ -385,8 +386,7 @@ TextLayout::SetText (const char *str, int len)
 	
 	count = -1;
 	
-	actual_height = NAN;
-	actual_width = NAN;
+	ResetState ();
 	
 	return true;
 }

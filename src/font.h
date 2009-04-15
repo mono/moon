@@ -203,26 +203,26 @@ class TextFontDescription {
 	const char *GetGUID () const;
 	
 	const char *GetFilename () const;
-	void SetFilename (const char *filename, const char *guid = NULL);
+	bool SetFilename (const char *filename, const char *guid = NULL);
 	
 	int GetIndex () const;
-	void SetIndex (int index);
+	bool SetIndex (int index);
 	
 	char **GetFamilies () const;
 	const char *GetFamily () const;
-	void SetFamily (const char *family);
+	bool SetFamily (const char *family);
 	
 	FontStyles GetStyle () const;
-	void SetStyle (FontStyles style);
+	bool SetStyle (FontStyles style);
 	
 	FontWeights GetWeight () const;
-	void SetWeight (FontWeights weight);
+	bool SetWeight (FontWeights weight);
 	
 	FontStretches GetStretch () const;
-	void SetStretch (FontStretches stretch);
+	bool SetStretch (FontStretches stretch);
 	
 	double GetSize () const;
-	void SetSize (double size);
+	bool SetSize (double size);
 	
 	char *ToString () const;
 };

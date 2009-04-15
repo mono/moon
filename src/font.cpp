@@ -2213,7 +2213,7 @@ TextFontDescription::GetFilename () const
 	return NULL;
 }
 
-void
+bool
 TextFontDescription::SetFilename (const char *filename, const char *guid)
 {
 	bool changed;
@@ -2245,6 +2245,8 @@ TextFontDescription::SetFilename (const char *filename, const char *guid)
 		font->unref ();
 		font = NULL;
 	}
+	
+	return changed;
 }
 
 int
@@ -2253,7 +2255,7 @@ TextFontDescription::GetIndex () const
 	return index;
 }
 
-void
+bool
 TextFontDescription::SetIndex (int index)
 {
 	bool changed = this->index != index;
@@ -2270,6 +2272,8 @@ TextFontDescription::SetIndex (int index)
 		font->unref ();
 		font = NULL;
 	}
+	
+	return changed;
 }
 
 char **
@@ -2298,7 +2302,7 @@ TextFontDescription::GetFamily () const
 	return "Lucida Sans Unicode, Lucida Sans";
 }
 
-void
+bool
 TextFontDescription::SetFamily (const char *family)
 {
 	bool changed;
@@ -2326,6 +2330,8 @@ TextFontDescription::SetFamily (const char *family)
 		font->unref ();
 		font = NULL;
 	}
+	
+	return changed;
 }
 
 FontStyles
@@ -2334,7 +2340,7 @@ TextFontDescription::GetStyle () const
 	return style;
 }
 
-void
+bool
 TextFontDescription::SetStyle (FontStyles style)
 {
 	bool changed = this->style != style;
@@ -2346,6 +2352,8 @@ TextFontDescription::SetStyle (FontStyles style)
 		font->unref ();
 		font = NULL;
 	}
+	
+	return changed;
 }
 
 FontWeights
@@ -2354,7 +2362,7 @@ TextFontDescription::GetWeight () const
 	return weight;
 }
 
-void
+bool
 TextFontDescription::SetWeight (FontWeights weight)
 {
 	bool changed = this->weight != weight;
@@ -2366,6 +2374,8 @@ TextFontDescription::SetWeight (FontWeights weight)
 		font->unref ();
 		font = NULL;
 	}
+	
+	return changed;
 }
 
 FontStretches
@@ -2374,7 +2384,7 @@ TextFontDescription::GetStretch () const
 	return stretch;
 }
 
-void
+bool
 TextFontDescription::SetStretch (FontStretches stretch)
 {
 	bool changed = this->stretch != stretch;
@@ -2386,6 +2396,8 @@ TextFontDescription::SetStretch (FontStretches stretch)
 		font->unref ();
 		font = NULL;
 	}
+	
+	return changed;
 }
 
 double
@@ -2394,7 +2406,7 @@ TextFontDescription::GetSize () const
 	return size;
 }
 
-void
+bool
 TextFontDescription::SetSize (double size)
 {
 	bool changed = this->size != size;
@@ -2406,6 +2418,8 @@ TextFontDescription::SetSize (double size)
 		font->unref ();
 		font = NULL;
 	}
+	
+	return changed;
 }
 
 char *

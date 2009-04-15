@@ -134,7 +134,7 @@ class Inline : public DependencyObject, public ITextAttributes {
 	//
 	// Convenience Methods
 	//
-	void UpdateFontDescription ();
+	bool UpdateFontDescription ();
 	
 	virtual bool Equals (Inline *item);
 };
@@ -203,7 +203,7 @@ class TextBlock : public FrameworkElement {
 	void SetFontResource (const char *resource);
 	
 	void UpdateLayoutAttributes ();
-	void UpdateFontDescriptions ();
+	bool UpdateFontDescriptions ();
 	
 	void CleanupDownloader ();
 	void DownloaderComplete ();

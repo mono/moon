@@ -185,6 +185,7 @@ class TextLayout {
 	
 	void Render (cairo_t *cr, const Point &origin, const Point &offset);
 	void Select (int start, int length, bool byte_offsets = false);
+	void ResetState ();
 	void Layout ();
 	
 	double HorizontalAlignment (double line_width);
