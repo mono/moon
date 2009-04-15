@@ -1,3 +1,8 @@
+2009-04-15  Alan McGovern  <amcgovern@novell.com>
+
+	* utils.cpp: We need to increment the pointer otherwise we
+	  loop forever.
+
 2009-04-15  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* downloader.cpp (Downloader::Open): make the relative uris relative to

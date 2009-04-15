@@ -263,9 +263,9 @@ CanonicalizeFilename (char *filename, int n)
 	
 	while (inptr < inend) {
 		if (*inptr != '\\')
-			*inptr = g_ascii_tolower (*inptr);
+			*inptr++ = g_ascii_tolower (*inptr);
 		else
-			*inptr = G_DIR_SEPARATOR;
+			*inptr++ = G_DIR_SEPARATOR;
 	}
 	
 	return filename;
