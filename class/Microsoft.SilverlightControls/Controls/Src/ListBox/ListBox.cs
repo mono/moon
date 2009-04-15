@@ -50,7 +50,7 @@ namespace System.Windows.Controls
         /// Identifies the optional ScrollViewer element from the template.
         /// </summary>
         internal ScrollViewer ElementScrollViewer { get; set; } 
-        private const string ElementScrollViewerName = "ScrollViewerElement";
+        private const string ElementScrollViewerName = "ScrollViewer";
 
         /// <summary> 
         /// Maps objects in the Items collection to the corresponding 
@@ -185,7 +185,7 @@ namespace System.Windows.Controls
             base.OnApplyTemplate(); 
             ElementScrollViewer = GetTemplateChild(ElementScrollViewerName) as ScrollViewer;
             if (null != ElementScrollViewer)
-            { 
+            {
                 ElementScrollViewer.TemplatedParentHandlesScrolling = true;
                 // Update ScrollViewer values
                 ElementScrollViewer.HorizontalScrollBarVisibility = ScrollViewer.GetHorizontalScrollBarVisibility(this); 
