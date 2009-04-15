@@ -204,21 +204,59 @@ Run::Equals (Inline *item)
 	return true;
 }
 
-Size
-TextBlock::ComputeActualSize ()
-{
-	Thickness padding = *GetPadding ();
-	Size result = FrameworkElement::ComputeActualSize ();
 
-	if (dirty) {
-		Size constraint;
+//
+// TextBlockDynamicPropertyValueProvider
+//
 
-		constraint = GetSize ().GrowBy (-padding);
-		Layout (constraint);
-		result = Size (actual_width, actual_height);
+class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
+	Value *actual_height_value;
+	Value *actual_width_value;
+	
+ public:
+	TextBlockDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj)
+	{
+		actual_height_value = NULL;
+		actual_width_value = NULL;
 	}
 	
-	result = result.GrowBy (padding);
+	virtual ~TextBlockDynamicPropertyValueProvider ()
+	{
+		delete actual_height_value;
+		delete actual_width_value;
+	}
+	
+	virtual Value *GetPropertyValue (DependencyProperty *property)
+	{
+		if (property->GetId () != FrameworkElement::ActualHeightProperty && property->GetId () != FrameworkElement::ActualWidthProperty)
+			return NULL;
+		
+		TextBlock *tb = (TextBlock *) obj;
+		Thickness padding = *tb->GetPadding ();
+		
+		if (tb->dirty) {
+			Size constraint;
+			
+			constraint = tb->GetSize ().GrowBy (-padding);
+			
+			delete actual_height_value;
+			actual_height_value = NULL;
+			delete actual_width_value;
+			actual_width_value = NULL;
+			
+			tb->Layout (constraint);
+		}
+		
+		if (property->GetId () == FrameworkElement::ActualHeightProperty) {
+			if (!actual_height_value)
+				actual_height_value = new Value (tb->actual_height + padding.top + padding.bottom);
+			return actual_height_value;
+		} else {
+			if (!actual_width_value)
+				actual_width_value = new Value (tb->actual_width + padding.left + padding.right);
+			return actual_width_value;
+		}
+	}
 };
 
 
@@ -229,6 +267,8 @@ TextBlock::ComputeActualSize ()
 TextBlock::TextBlock ()
 {
 	SetObjectType (Type::TEXTBLOCK);
+	
+	providers[PropertyPrecedence_DynamicValue] = new TextBlockDynamicPropertyValueProvider (this);
 	
 	downloader = NULL;
 	

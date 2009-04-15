@@ -44,7 +44,10 @@ MediaBase::MediaBase ()
 	source.queued = false;
 	downloader = NULL;
 	part_name = NULL;
+	updating_size_from_media = false;
 	allow_downloads = false;
+	use_media_height = true;
+	use_media_width = true;
 	source_changed = false;
 }
 
@@ -289,8 +292,7 @@ Image::ImageOpened ()
 	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 
-	InvalidateMeasure ();
-	Invalidate ();
+	UpdateSize ();
 }
 
 void
@@ -323,6 +325,38 @@ void
 Image::SetSource (Downloader *downloader, const char *PartName)
 {
 	MediaBase::SetSource (downloader, PartName);
+}
+
+void
+Image::UpdateSize ()
+{
+	/* XXX FIXME horrible hack to keep old world charm until canvas logic is updated */
+	if (GetVisualParent () && GetVisualParent ()->Is (Type::CANVAS)) {
+		updating_size_from_media = true;
+		
+		if (use_media_width) {
+			Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
+			
+			if (!use_media_height)
+				SetWidth ((double) GetSource ()->GetPixelWidth () * height->AsDouble () / (double) GetSource ()->GetPixelHeight ());
+			else
+				SetWidth ((double) GetSource ()->GetPixelWidth ());
+		}
+		
+		if (use_media_height) {
+			Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
+			
+			if (!use_media_width)
+				SetHeight ((double) GetSource ()->GetPixelHeight () * width->AsDouble () / (double) GetSource ()->GetPixelWidth ());
+			else
+				SetHeight ((double) GetSource ()->GetPixelHeight ());
+		}
+		
+		updating_size_from_media = false;
+	}
+	
+	InvalidateMeasure ();
+	Invalidate ();
 }
 
 void
@@ -375,20 +409,6 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_pattern_destroy (pattern);
 
 	source->Unlock ();
-}
-
-Size
-Image::ComputeActualSize ()
-{
-	Size result = MediaBase::ComputeActualSize ();
-
-	if (GetSource () && GetSource ()->GetSurface (NULL)) {
-		Size available = Size (INFINITY, INFINITY);
-		available = available.Min (GetWidth (), GetHeight ());
-		result = MeasureOverride (available);
-	}
-
-	return result;
 }
 
 Size
@@ -520,7 +540,13 @@ Image::GetCoverageBounds ()
 void
 Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
-	if (args->GetId () == Image::SourceProperty) {
+	if (args->GetId () == FrameworkElement::HeightProperty) {
+		if (!updating_size_from_media)
+			use_media_height = args->GetNewValue() == NULL;
+	} else if (args->GetId () == FrameworkElement::WidthProperty) {
+		if (!updating_size_from_media)
+			use_media_width = args->GetNewValue() == NULL;
+	} else if (args->GetId () == Image::SourceProperty) {
 		ImageSource *source = args->GetNewValue () ? args->GetNewValue ()->AsImageSource () : NULL; 
 		ImageSource *old = args->GetOldValue () ? args->GetOldValue ()->AsImageSource () : NULL;
 

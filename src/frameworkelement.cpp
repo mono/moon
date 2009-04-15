@@ -24,59 +24,9 @@
 #include "style.h"
 #include "validators.h"
 
-class FrameworkElementProvider : public PropertyValueProvider {
-	Value *actual_height_value;
-	Value *actual_width_value;
-	Size last;
-
- public:
-	FrameworkElementProvider (DependencyObject *obj) : PropertyValueProvider (obj)
-	{
-		actual_height_value = NULL;
-		actual_width_value = NULL;
-		last = Size (-INFINITY, -INFINITY);
-	}
-	
-	virtual ~FrameworkElementProvider ()
-	{
-		delete actual_height_value;
-		delete actual_width_value;
-	}
-	
-	virtual Value *GetPropertyValue (DependencyProperty *property)
-	{
-		if (property->GetId () != FrameworkElement::ActualHeightProperty && 
-		    property->GetId () != FrameworkElement::ActualWidthProperty)
-			return NULL;
-		
-		FrameworkElement *element = (FrameworkElement *) obj;
-
-		Size actual = element->ComputeActualSize ();
-
-		if (last != actual) {
-			if (actual_height_value)
-				delete actual_height_value;
-			
-			if (actual_width_value)
-				delete actual_width_value;
-				
-			actual_height_value = new Value (actual.height);
-			actual_width_value = new Value (actual.width);
-		}
-		
-		if (property->GetId () == FrameworkElement::ActualHeightProperty) {
-			return actual_height_value;
-		} else {
-			return actual_width_value;
-		}
-	}
-};
-
 FrameworkElement::FrameworkElement ()
 {
 	SetObjectType (Type::FRAMEWORKELEMENT);
-
-	providers[PropertyPrecedence_DynamicValue] = new FrameworkElementProvider (this);
 
 	default_style_applied = false;
 	measure_cb = NULL;
@@ -165,8 +115,17 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		   transform needs to be updated as well. */
 		FullInvalidate (p->x != 0.0 || p->y != 0.0);
 
-		ClearValue (FrameworkElement::ActualHeightProperty);
-		ClearValue (FrameworkElement::ActualWidthProperty);
+		if (IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ())) {
+			ClearValue (FrameworkElement::ActualHeightProperty);
+			ClearValue (FrameworkElement::ActualWidthProperty);
+		} else {
+			// FIXME: this breaks TextBlock's ActualWidth/Height in the TextBlockTest.cs:ComputeActualWidth() test
+			Size actual (GetMinWidth (), GetMinHeight ());
+			actual = actual.Max (GetWidth (), GetHeight ());
+			actual = actual.Min (GetMaxWidth (), GetMaxHeight ());
+			SetActualWidth (actual.width);
+			SetActualHeight (actual.height);
+		}
 
 		InvalidateMeasure ();
 	}
@@ -213,26 +172,13 @@ FrameworkElement::GetSubtreeBounds ()
 	return bounds;
 }
 
-Size
-FrameworkElement::ComputeActualSize ()
-{
-	if (IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ()))
-		return Size (0,0);
-
-	Size actual (GetMinWidth (), GetMinHeight ());
-	actual = actual.Max (GetWidth (), GetHeight ());
-	actual = actual.Min (GetMaxWidth (), GetMaxHeight ());
-
-	return actual;
-}
-
 bool
 FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 {
 	double width = GetActualWidth ();
 	double height = GetActualHeight ();
 	double nx = x, ny = y;
-
+	
 	TransformPoint (&nx, &ny);
 	if (nx < 0 || ny < 0 || nx > width || ny > height)
 		return false;
@@ -480,6 +426,12 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	/* XXX FIXME horrible hack */
 	if (!(IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ()))) {
+		Size actual (GetMinWidth (), GetMinHeight ());
+		actual = actual.Max (GetWidth (), GetHeight ());
+		actual = actual.Min (GetMaxWidth (), GetMaxHeight ());
+		SetActualWidth (actual.width);
+		SetActualHeight (actual.height);
+		SetRenderSize (Size (0,0));
 		return;
 	}
 

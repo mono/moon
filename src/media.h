@@ -114,7 +114,10 @@ class MediaBase : public FrameworkElement {
 	Downloader *downloader;
 	char *part_name;
 	
+	int updating_size_from_media:1;
 	int allow_downloads:1;
+	int use_media_height:1;
+	int use_media_width:1;
 	int source_changed:1;
 	
 	virtual ~MediaBase ();
@@ -183,6 +186,7 @@ class Image : public MediaBase {
  protected:
 	virtual ~Image ();
 	
+	void UpdateSize ();
  public:
  	/* @PropertyType=ImageSource,AutoCreator=Image::CreateDefaultImageSource,GenerateAccessors */
 	const static int SourceProperty;
@@ -206,7 +210,6 @@ class Image : public MediaBase {
 	
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
-	virtual Size ComputeActualSize ();
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	

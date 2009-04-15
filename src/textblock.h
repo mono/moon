@@ -255,7 +255,6 @@ class TextBlock : public FrameworkElement {
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
-	virtual Size ComputeActualSize ();
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);

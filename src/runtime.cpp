@@ -550,7 +550,6 @@ Surface::AttachLayer (UIElement *layer)
 		layers->Insert (0, Value(layer));
 	else
 		layers->Add (Value (layer));
-
 	layer->SetSurface (this);
 	layer->FullInvalidate (true);
 

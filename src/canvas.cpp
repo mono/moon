@@ -72,8 +72,7 @@ Canvas::MeasureOverride (Size availableSize)
 		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 		
-		if (child->IsLayoutContainer ())
-			child->Measure (childSize);
+		child->Measure (childSize);
 	}
 
 	Size desired = Size (0,0);
