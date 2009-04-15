@@ -493,4 +493,3 @@ src/Makefile
 ])
 
 AC_OUTPUT
-CAIRO_REPORT
