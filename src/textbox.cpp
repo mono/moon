@@ -24,6 +24,7 @@
 #include <errno.h>
 
 #include "dependencyproperty.h"
+#include "file-downloader.h"
 #include "contentcontrol.h"
 #include "timemanager.h"
 #include "runtime.h"
@@ -536,6 +537,8 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	font->SetStyle (CONTROL_FONT_STYLE);
 	font->SetSize (CONTROL_FONT_SIZE);
 	
+	downloader = NULL;
+	
 	contentElement = NULL;
 	
 	undo = new TextBoxUndoStack (10);
@@ -569,10 +572,23 @@ TextBoxBase::~TextBoxBase ()
 	RemoveHandler (UIElement::KeyDownEvent, TextBoxBase::key_down, this);
 	RemoveHandler (UIElement::KeyUpEvent, TextBoxBase::key_up, this);
 	
+	CleanupDownloader ();
+	
 	delete buffer;
 	delete undo;
 	delete redo;
 	delete font;
+}
+
+void
+TextBoxBase::CleanupDownloader ()
+{
+	if (downloader) {
+		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
+		downloader->Abort ();
+		downloader->unref ();
+		downloader = NULL;
+	}
 }
 
 double
@@ -1573,10 +1589,83 @@ TextBoxBase::EmitCursorPositionChanged (double height, double x, double y)
 }
 
 void
+TextBoxBase::DownloaderComplete ()
+{
+	const char *path, *guid = NULL;
+	InternalDownloader *idl;
+	char *filename;
+	size_t len;
+	Uri *uri;
+	
+	// get the downloaded file path (enforces a mozilla workaround for files smaller than 64k)
+	if (!(filename = downloader->GetDownloadedFilename (NULL)))
+		return;
+	
+	g_free (filename);
+	
+	if (!(idl = downloader->GetInternalDownloader ()))
+		return;
+	
+	if (!(idl->GetType () == InternalDownloader::FileDownloader))
+		return;
+	
+	uri = downloader->GetUri ();
+	path = uri->GetPath ();
+	
+	len = path ? strlen (path) : 0;
+	
+	if (len > 6 && !g_ascii_strcasecmp (path + len - 6, ".odttf")) {
+		// if the font file is obfuscated, use the basename of the path as the guid
+		if (!(guid = strrchr (path, '/')))
+			guid = path;
+		else
+			guid++;
+	}
+	
+	// If the downloaded file was a zip file, this'll get the path to the
+	// extracted zip directory, else it will simply be the path to the
+	// downloaded file.
+	if (!(path = ((FileDownloader *) idl)->GetUnzippedPath ()))
+		return;
+	
+	font->SetFilename (path, guid);
+	
+	UpdateBounds (true);
+	Invalidate ();
+}
+
+void
+TextBoxBase::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	((TextBoxBase *) closure)->DownloaderComplete ();
+}
+
+void
+TextBoxBase::SetFontSource (Downloader *downloader)
+{
+	if (downloader) {
+		this->downloader = downloader;
+		downloader->ref ();
+		
+		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+		if (downloader->Started () || downloader->Completed ()) {
+			if (downloader->Completed ())
+				DownloaderComplete ();
+		} else {
+			// This is what actually triggers the download
+			downloader->Send ();
+		}
+	} else {
+		font->SetFilename (NULL, NULL);
+	}
+}
+
+void
 TextBoxBase::SetFontResource (const char *resource)
 {
 	Application *application = Application::GetCurrent ();
 	const char *guid = NULL;
+	Surface *surface;
 	char *filename;
 	size_t len;
 	Uri *uri;
@@ -1586,8 +1675,16 @@ TextBoxBase::SetFontResource (const char *resource)
 	uri = new Uri ();
 	
 	if (!application || !uri->Parse (resource) || !(filename = application->GetResourceAsPath (uri))) {
-		font->SetFilename (NULL, NULL);
+		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
+			downloader->Open ("GET", resource, XamlPolicy);
+			SetFontSource (downloader);
+			downloader->unref ();
+		} else {
+			font->SetFilename (NULL, NULL);
+		}
+		
 		delete uri;
+		
 		return;
 	}
 	

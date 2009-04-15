@@ -126,6 +126,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	DependencyObject *contentElement;
 	
 	TextFontDescription *font;
+	Downloader *downloader;
 	TextBoxUndoStack *undo;
 	TextBoxUndoStack *redo;
 	int selection_anchor;
@@ -205,6 +206,12 @@ class TextBoxBase : public Control, public ITextAttributes {
 	void SyncAndEmit ();
 	
 	void SetFontResource (const char *resource);
+	void SetFontSource (Downloader *downloader);
+	
+	void CleanupDownloader ();
+	void DownloaderComplete ();
+	
+	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
 	//
 	// Protected Property Accessors
