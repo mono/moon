@@ -376,7 +376,8 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	}
 
 	//FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
-	char *location = url->ToString ();
+	char *location;
+	(location = g_strdup(GetSurface ()->GetXapLocation ())) || (location = g_strdup(GetSurface ()->GetSourceLocation ()));
 	if (!validate_policy (location, url, policy)) {
 		LOG_DOWNLOADER ("aborting due to security policy violation\n");
 		failed_msg = g_strdup ("Security Policy Violation");
