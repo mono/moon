@@ -1,5 +1,10 @@
 2009-04-15  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemsControlTest.cs: Hitting a
+	  security exception so mark as failing for the moment.
+
+2009-04-15  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ListBoxTest.cs: Reenable the tests
 	  which are now passing.
 
