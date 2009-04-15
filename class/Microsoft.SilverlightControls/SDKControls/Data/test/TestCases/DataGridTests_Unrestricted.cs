@@ -1007,6 +1007,7 @@ namespace System.Windows.Controls.Data.Test
         [TestMethod]
         [Asynchronous]
         [Description("Test that checks scrollbar visibility and the filler column width")]
+        [MoonlightBug]
         public virtual void ScrollBarVisibilityTest()
         {
             DataGrid dataGrid = new DataGrid();

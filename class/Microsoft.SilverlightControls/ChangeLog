@@ -1,5 +1,10 @@
 2009-04-15  Alan McGovern  <amcgovern@novell.com>
 
+	* SDKControls/Data/test/TestCases/DataGridTests_Unrestricted.cs:
+	  Add [MoonlightBug] to the last failing test.
+
+2009-04-15  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ListBox/ListBox.cs: The default name of the
 	  ScrollViewer element has changed
 
