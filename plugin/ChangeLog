@@ -1,3 +1,7 @@
+2009-04-15  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* plugin.cpp (PluginInstance::LoadXAP): set the surface xap_location
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.h:

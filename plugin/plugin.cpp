@@ -1136,6 +1136,9 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 		return;
 	}
 
+	if (surface)
+		surface->SetXapLocation (url);
+
 	if (source_location)
 		g_free (source_location);
 	source_location = g_strdup (url);
