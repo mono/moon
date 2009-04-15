@@ -1,3 +1,12 @@
+2009-04-15  Alan McGovern  <amcgovern@novell.com>
+
+	* Events.cs: All unhandled exceptions should go through the
+	  UnhandledException event - this allows moonunit tests which
+	  throw exceptions in callbacks to fail properly. I don't want
+	  to remove our current error reporting as having a big error
+	  message on screen is good for debugging. If people are happy
+	  about removing the current reporting, just nuke the if/else.
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerated.

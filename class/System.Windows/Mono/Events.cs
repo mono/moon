@@ -51,6 +51,7 @@ namespace Mono {
 					handler (a, b, c);
 				} catch (Exception ex) {
 					try {
+						Application.OnUnhandledException (Application.Current, ex);
 						if (IsPlugin ())
 							ReportException (ex);
 						else
