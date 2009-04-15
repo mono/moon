@@ -1,3 +1,11 @@
+2009-04-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.sc: xaml_loader_new (rename), 
+	multi_scale_tile_source_set_image_uri_func (argument changes)
+	* System.Windows.auto.ssc: Add XamlLoader.CreateNativeLoader (to
+	replace xaml_loader_new). Add ItemsControl.InvokeLoaded and remove
+	SetItemsPresenter
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.auto.sc:

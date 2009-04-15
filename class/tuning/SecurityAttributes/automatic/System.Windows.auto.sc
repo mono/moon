@@ -1016,7 +1016,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,System.IntPtr,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_new_(System.String,System.String,System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_new(System.String,System.String,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_lookup_named_item(System.IntPtr,System.IntPtr,System.String)
@@ -1247,7 +1247,7 @@
 +SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_height(System.IntPtr,System.Int64)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_uri_func(System.IntPtr,System.Windows.Media.MultiScaleTileSource/ImageUriFunc)
++SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_uri_func(System.IntPtr,Mono.ImageUriFunc)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_width(System.IntPtr,System.Int64)
