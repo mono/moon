@@ -308,6 +308,8 @@ Surface::Surface (MoonWindow *window)
 	full_screen_message = NULL;
 	source_location = NULL;
 
+	xap_location = NULL;
+
 	fps_report = fps_report_default;
 	fps_data = NULL;
 
@@ -361,6 +363,8 @@ Surface::~Surface ()
 	delete input_list;
 	
 	g_free (source_location);
+
+	g_free (xap_location);
 
 	if (fullscreen_window)
 		delete fullscreen_window;
@@ -754,6 +758,19 @@ Surface::SetSourceLocation (const char* location)
 {
 	g_free (source_location);
 	source_location = g_strdup (location);
+}
+
+const char*
+Surface::GetXapLocation ()
+{
+	return xap_location;
+}
+
+void
+Surface::SetXapLocation (const char* location)
+{
+	g_free (xap_location);
+	xap_location = g_strdup (location);
 }
 
 void 

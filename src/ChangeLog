@@ -1,3 +1,7 @@
+2009-04-15  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* runtime.h|cpp (Surface): xap_location, Get() and Set()
+
 2009-04-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (layout_word_wrap): Fixed word-break logic for

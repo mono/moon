@@ -212,6 +212,9 @@ public:
 	const char* GetSourceLocation ();
 	void SetSourceLocation (const char *location);
 	bool FullScreenKeyHandled (GdkEventKey *key);
+
+	const char* GetXapLocation ();
+	void SetXapLocation (const char *location);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TimeManager *GetTimeManager () { return time_manager; }
@@ -330,6 +333,9 @@ private:
 	
 	// the currently shown cursor
 	MouseCursor cursor;
+
+	// xap location, to help forging the right uris for downloaders
+	char *xap_location;
 	
 	// Fullscreen support
 	bool full_screen;
