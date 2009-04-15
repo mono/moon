@@ -13,6 +13,7 @@ using System.Windows.Controls.Test;
 using System.Windows.Media;
 using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
 namespace System.Windows.Controls.Data.Test
 {

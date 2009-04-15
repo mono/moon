@@ -1,6 +1,11 @@
 2009-04-15  Alan McGovern  <amcgovern@novell.com>
 
 	* SDKControls/Data/test/TestCases/DataGridTests_Unrestricted.cs:
+	  Add a missing using statement
+
+2009-04-15  Alan McGovern  <amcgovern@novell.com>
+
+	* SDKControls/Data/test/TestCases/DataGridTests_Unrestricted.cs:
 	  Add [MoonlightBug] to the last failing test.
 
 2009-04-15  Alan McGovern  <amcgovern@novell.com>
