@@ -442,6 +442,8 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (25, 25), c.DesiredSize, "c desired1");
 			Assert.AreEqual (new Size (50,50), new Size (r.ActualWidth, r.ActualHeight),"r actual0");
 			Assert.AreEqual (new Size (50,50), r.RenderSize, "r render");
+			Assert.AreEqual (DependencyProperty.UnsetValue, r.ReadLocalValue (FrameworkElement.ActualWidthProperty), "local r.actualwidth");
+			Assert.AreEqual (DependencyProperty.UnsetValue, c.ReadLocalValue (FrameworkElement.ActualWidthProperty), "local c.actualwidth");
 		}
 
 		[TestMethod]
