@@ -232,5 +232,20 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual ("SelectionChangedEvent", box.methods [i++].MethodName, "#14." + i);
 			Assert.AreEqual ("SelectionChangedEvent", box.methods [i++].MethodName, "#14." + i);
 		}
+		
+		[TestMethod]
+		public void SelectedItemTest2 ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			object o = new object ();
+			box.Items.Add (o);
+			box.SelectedItem = o;
+			box.methods.Clear ();
+			box.SelectedItem = null;
+			Assert.AreEqual (1, box.methods.Count, "#1");
+			Assert.AreEqual ("SelectionChangedEvent", box.methods [0].MethodName, "#2");
+			Assert.AreEqual (null, box.SelectedItem, "#3");
+			Assert.AreEqual (-1, box.SelectedIndex, "#4");
+		}
 	}
 }

@@ -100,7 +100,7 @@ namespace System.Windows.Controls.Primitives {
 			changing = true;
 			try {
 				int index = e.NewValue == null ? -1 : Items.IndexOf (e.NewValue);
-				if (index == -1) {
+				if (index == -1 && e.NewValue != null) {
 					SelectedIndex = e.OldValue == null ? -1 : Items.IndexOf (e.OldValue);
 					if (e.OldValue == null)
 						ClearValue (SelectedItemProperty);

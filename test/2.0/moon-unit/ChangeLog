@@ -1,5 +1,10 @@
 2009-04-15  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ComboBoxTest.cs: If the new value is
+	  null, Selector should not revert to the old value.
+
+2009-04-15  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemsControlTest.cs: Hitting a
 	  security exception so mark as failing for the moment.
 
