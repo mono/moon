@@ -38,12 +38,52 @@ Inline::Inline ()
 {
 	SetObjectType (Type::INLINE);
 	font = new TextFontDescription ();
+	downloader = NULL;
 	autogen = false;
 }
 
 Inline::~Inline ()
 {
+	CleanupDownloader ();
+	
 	delete font;
+}
+
+void
+Inline::CleanupDownloader ()
+{
+	if (downloader) {
+		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
+		downloader->Abort ();
+		downloader->unref ();
+		downloader = NULL;
+	}
+}
+
+void
+Inline::SetFontSource (Downloader *downloader)
+{
+	if (this->downloader == downloader)
+		return;
+	
+	CleanupDownloader ();
+	
+	if (downloader) {
+		this->downloader = downloader;
+		downloader->ref ();
+		
+		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+		if (downloader->Started () || downloader->Completed ()) {
+			if (downloader->Completed ())
+				DownloaderComplete ();
+		} else {
+			// This is what actually triggers the download
+			downloader->Send ();
+		}
+	} else {
+		ClearValue (Inline::FontFilenameProperty);
+		ClearValue (Inline::FontGUIDProperty);
+	}
 }
 
 void
@@ -51,16 +91,27 @@ Inline::SetFontResource (const char *resource)
 {
 	Application *application = Application::GetCurrent ();
 	const char *guid = NULL;
+	Surface *surface;
 	char *filename;
 	size_t len;
 	Uri *uri;
 	
+	CleanupDownloader ();
+	
 	uri = new Uri ();
 	
 	if (!application || !uri->Parse (resource) || !(filename = application->GetResourceAsPath (uri))) {
-		ClearValue (TextBlock::FontFilenameProperty);
-		ClearValue (TextBlock::FontGUIDProperty);
+		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
+			downloader->Open ("GET", resource, XamlPolicy);
+			SetFontSource (downloader);
+			downloader->unref ();
+		} else {
+			ClearValue (Inline::FontFilenameProperty);
+			ClearValue (Inline::FontGUIDProperty);
+		}
+		
 		delete uri;
+		
 		return;
 	}
 	
@@ -71,11 +122,11 @@ Inline::SetFontResource (const char *resource)
 	if (len > 6 && !g_ascii_strcasecmp (resource + len - 6, ".odttf"))
 		guid = resource;
 	
-	SetValue (TextBlock::FontFilenameProperty, Value (filename));
+	SetValue (Inline::FontFilenameProperty, Value (filename));
 	if (guid != NULL)
-		SetValue (TextBlock::FontGUIDProperty, Value (guid));
+		SetValue (Inline::FontGUIDProperty, Value (guid));
 	else
-		ClearValue (TextBlock::FontGUIDProperty);
+		ClearValue (Inline::FontGUIDProperty);
 	
 	g_free (filename);
 }
@@ -99,8 +150,8 @@ Inline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			SetFontResource (resource);
 			g_free (resource);
 		} else {
-			ClearValue (TextBlock::FontFilenameProperty);
-			ClearValue (TextBlock::FontGUIDProperty);
+			ClearValue (Inline::FontFilenameProperty);
+			ClearValue (Inline::FontGUIDProperty);
 		}
 	}
 	
@@ -179,6 +230,60 @@ Inline::UpdateFontDescription ()
 	font->SetSize (GetFontSize ());
 	font->SetStretch (GetFontStretch ());
 }
+
+void
+Inline::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	((Inline *) closure)->DownloaderComplete ();
+}
+
+void
+Inline::DownloaderComplete ()
+{
+	const char *path, *guid = NULL;
+	InternalDownloader *idl;
+	char *filename;
+	size_t len;
+	Uri *uri;
+	
+	// get the downloaded file path (enforces a mozilla workaround for files smaller than 64k)
+	if (!(filename = downloader->GetDownloadedFilename (NULL)))
+		return;
+	
+	g_free (filename);
+	
+	if (!(idl = downloader->GetInternalDownloader ()))
+		return;
+	
+	if (!(idl->GetType () == InternalDownloader::FileDownloader))
+		return;
+	
+	uri = downloader->GetUri ();
+	path = uri->GetPath ();
+	
+	len = path ? strlen (path) : 0;
+	
+	if (len > 6 && !g_ascii_strcasecmp (path + len - 6, ".odttf")) {
+		// if the font file is obfuscated, use the basename of the path as the guid
+		if (!(guid = strrchr (path, '/')))
+			guid = path;
+		else
+			guid++;
+	}
+	
+	// If the downloaded file was a zip file, this'll get the path to the
+	// extracted zip directory, else it will simply be the path to the
+	// downloaded file.
+	if (!(path = ((FileDownloader *) idl)->GetUnzippedPath ()))
+		return;
+	
+	SetValue (Inline::FontFilenameProperty, Value (path));
+	if (guid != NULL)
+		SetValue (Inline::FontGUIDProperty, Value (guid));
+	else
+		ClearValue (Inline::FontGUIDProperty);
+}
+
 
 
 //

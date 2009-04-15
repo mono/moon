@@ -1,3 +1,8 @@
+2009-04-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (Inline::SetFontResource): If the font isn't a xap
+	resource, download it from the web.
+
 2009-04-15  Larry Ewing  <lewing@novell.com>
 
 	* dirty.cpp (UpdateLayout): a quick hack to get popups sizing

@@ -36,9 +36,16 @@
 /* @Namespace=System.Windows.Documents */
 class Inline : public DependencyObject, public ITextAttributes {
 	TextFontDescription *font;
+	Downloader *downloader;
 	bool autogen;
 	
 	void SetFontResource (const char *resource);
+	void SetFontSource (Downloader *downloader);
+	
+	void CleanupDownloader ();
+	void DownloaderComplete ();
+	
+	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
  protected:
 	virtual ~Inline ();
