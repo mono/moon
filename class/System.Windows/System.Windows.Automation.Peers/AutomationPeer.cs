@@ -68,7 +68,11 @@ namespace System.Windows.Automation.Peers {
 
 		public string GetName ()
 		{
-			return GetNameCore ();
+			AutomationPeer labeledByPeer = GetLabeledBy ();
+			if (labeledByPeer != null)
+				return labeledByPeer.GetName () ?? string.Empty;
+			else
+				return GetNameCore ();
 		}
 
 		public string GetItemType ()

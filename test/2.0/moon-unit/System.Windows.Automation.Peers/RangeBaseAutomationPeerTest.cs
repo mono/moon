@@ -40,7 +40,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 	public class RangeBaseAutomationPeerTest {
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Null ()
 		{
 			Assert.Throws<NullReferenceException> (delegate {

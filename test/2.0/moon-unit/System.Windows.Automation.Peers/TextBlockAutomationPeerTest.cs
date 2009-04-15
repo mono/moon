@@ -67,7 +67,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Null ()
 		{
 			Assert.Throws<NullReferenceException> (delegate {
@@ -94,9 +93,15 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void GetName ()
 		{
-			TextBlockAutomationPeerPoker tbap = new TextBlockAutomationPeerPoker (new TextBlock ());
+			TextBlock  textblock = new TextBlock ();
+			TextBlockAutomationPeerPoker tbap = new TextBlockAutomationPeerPoker (textblock);
 			Assert.AreEqual (String.Empty, tbap.GetName (), "GetName");
 			Assert.AreEqual (String.Empty, tbap.GetNameCore_ (), "GetNameCore");
+
+			string textBlockname = "Textblock name!";
+			textblock.Text = textBlockname;
+			Assert.AreEqual (textBlockname, tbap.GetName (), "GetName #1");
+			Assert.AreEqual (textBlockname, tbap.GetNameCore_ (), "GetNameCore #1");
 		}
 
 		[TestMethod]

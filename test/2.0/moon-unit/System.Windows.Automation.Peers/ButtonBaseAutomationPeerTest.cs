@@ -52,7 +52,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Null ()
 		{
 			Assert.Throws<NullReferenceException> (delegate {

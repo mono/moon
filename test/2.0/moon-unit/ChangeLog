@@ -1,3 +1,20 @@
+2009-04-15  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationControlTypeTest.cs: 
+	Testing literal values.
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs: 
+	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: 
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs: 
+	* System.Windows.Automation.Peers/RangeBaseAutomationPeerTest.cs: 
+	* System.Windows.Automation.Peers/RepeatButtonAutomationPeerTest.cs: 
+	* System.Windows.Automation.Peers/ThumbAutomationPeerTest.cs: 
+	* System.Windows.Automation.Peers/SliderAutomationPeerTest.cs: 
+	MoonlightBug attribute removed.
+	* System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: 
+	Testing GetName implementation.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Testing implemented methods.
+
 2009-04-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ComboBoxTest.cs: If the new value is

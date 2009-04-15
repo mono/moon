@@ -24,18 +24,21 @@
 //
 
 using System;
-using System.Windows;
 using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Controls;
 
 namespace System.Windows.Automation.Peers {
 
-	[MonoTODO]
 	public class FrameworkElementAutomationPeer : AutomationPeer {
 
 		private UIElement owner;
 
 		public FrameworkElementAutomationPeer (FrameworkElement owner)
 		{
+			if (owner == null)
+				throw new NullReferenceException ("owner");
 			this.owner = owner;
 		}
 
@@ -45,22 +48,26 @@ namespace System.Windows.Automation.Peers {
 
 		protected override string GetNameCore ()
 		{
-			return String.Empty;
+			return owner.GetValue (AutomationProperties.NameProperty) as string ?? string.Empty;
 		}
 
 		protected override string GetItemTypeCore ()
 		{
-			throw new NotImplementedException ();
+			return owner.GetValue (AutomationProperties.ItemTypeProperty) as string ?? string.Empty;
 		}
 
 		protected override AutomationPeer GetLabeledByCore ()
 		{
-			return null;
+			UIElement labeledBy = owner.GetValue (AutomationProperties.LabeledByProperty) as UIElement;
+			if (labeledBy != null)
+				return FrameworkElementAutomationPeer.CreatePeerForElement (labeledBy);
+			else
+				return null;
 		}
 
 		protected override List<AutomationPeer> GetChildrenCore ()
 		{
-			throw new NotImplementedException ();
+			return null;
 		}
 
 		public override object GetPattern (PatternInterface pattern)
@@ -77,62 +84,64 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override string GetAcceleratorKeyCore ()
 		{
-			throw new NotImplementedException ();
+			return owner.GetValue (AutomationProperties.AcceleratorKeyProperty) as string ?? string.Empty;
 		}
 		
 		protected override string GetAccessKeyCore ()
 		{
-			throw new NotImplementedException ();
+			return owner.GetValue (AutomationProperties.AccessKeyProperty) as string ?? string.Empty;
 		}
 		
 		protected override AutomationControlType GetAutomationControlTypeCore ()
 		{
-			throw new NotImplementedException ();
+			return AutomationControlType.Custom;
 		}
 		
 		protected override string GetAutomationIdCore ()
 		{
-			throw new NotImplementedException ();
+			return owner.GetValue (AutomationProperties.AutomationIdProperty) as string ?? string.Empty;
 		}
 		
 		protected override Rect GetBoundingRectangleCore ()
 		{
-			throw new NotImplementedException ();
+			return new Rect (0, 0, 0, 0);
 		}
 		
 		protected override string GetClassNameCore ()
 		{
-			throw new NotImplementedException ();
+			return owner.GetValue (AutomationProperties.NameProperty) as string ?? string.Empty;
 		}
 		
 		protected override Point GetClickablePointCore ()
 		{
-			throw new NotImplementedException ();
+			return new Point (0, 0);
 		}
 		
 		protected override string GetHelpTextCore ()
 		{
-			throw new NotImplementedException ();
+			return owner.GetValue (AutomationProperties.HelpTextProperty) as string ?? string.Empty;
 		}
 		
 		protected override string GetItemStatusCore ()
 		{
-			throw new NotImplementedException ();
+			return owner.GetValue (AutomationProperties.ItemStatusProperty) as string ?? string.Empty;
 		}
 		
 		protected override string GetLocalizedControlTypeCore ()
 		{
-			throw new NotImplementedException ();
+			// LAMESPEC: http://msdn.microsoft.com/en-us/library/ms743581.aspx
+			// "CamelCase" literal values should be "camel case", not "camelcase"
+			return GetAutomationControlType ().ToString ().ToLower ();
 		}
 		
 		protected override AutomationOrientation GetOrientationCore ()
 		{
-			throw new NotImplementedException ();
+			return AutomationOrientation.None;
 		}
 		
 		protected override bool HasKeyboardFocusCore ()
 		{
-			throw new NotImplementedException ();
+			return false;
 		}
 		
 		protected override bool IsContentElementCore ()
@@ -147,7 +156,7 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool IsEnabledCore ()
 		{
-			throw new NotImplementedException ();
+			return true;
 		}
 		
 		protected override bool IsKeyboardFocusableCore ()
@@ -157,22 +166,25 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool IsOffscreenCore ()
 		{
-			throw new NotImplementedException ();
+			return false;
 		}
 		
 		protected override bool IsPasswordCore ()
 		{
-			throw new NotImplementedException ();
+			return false;
 		}
 		
 		protected override bool IsRequiredForFormCore ()
 		{
-			throw new NotImplementedException ();
+			bool? isRequired = (bool?) owner.GetValue (AutomationProperties.IsRequiredForFormProperty);
+			return isRequired.HasValue ? isRequired.Value : false;
 		}
 		
 		protected override void SetFocusCore ()
 		{
-			throw new NotImplementedException ();
+			Control ownerAsControl = owner as Control;
+			if (ownerAsControl != null)
+				ownerAsControl.Focus ();
 		}
 		
 		public static AutomationPeer CreatePeerForElement (UIElement element)

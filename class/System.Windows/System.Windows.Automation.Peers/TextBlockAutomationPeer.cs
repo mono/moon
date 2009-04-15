@@ -1,5 +1,5 @@
 //
-// System.Windows.Automation.Peers.ButtonBaseAutomationPeer
+// System.Windows.Automation.Peers.TextBlockAutomationPeer
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -36,6 +36,7 @@ namespace System.Windows.Automation.Peers {
 		public TextBlockAutomationPeer (TextBlock owner)
 			: base (owner)
 		{
+			this.owner = owner;
 		}
 
 		protected override AutomationControlType GetAutomationControlTypeCore ()
@@ -50,12 +51,14 @@ namespace System.Windows.Automation.Peers {
 
 		protected override string GetNameCore ()
 		{
-			return String.Empty;
+			return owner.Text ?? base.GetNameCore ();
 		}
 
 		protected override bool IsControlElementCore ()
 		{
 			return true;
 		}
+
+		private TextBlock owner;
 	}
 }

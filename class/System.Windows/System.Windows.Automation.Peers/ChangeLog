@@ -1,3 +1,11 @@
+2009-04-15  Mario Carrion  <mcarrion@novell.com>
+
+	* AutomationPeer.cs: Fixed recursive GetName. Requesting LabeledBy 
+	before calling GetNameCore.
+	* TextBlockAutomationPeer.cs: Partial implementation to pass tests.
+	* FrameworkElementAutomationPeer.cs: NotImplemented methods done,
+	match SL2 implementation.
+
 2009-03-27  Jb Evain  <jbevain@novell.com>
 
 	* HyperlinkButtonAutomationPeer.cs: add stub.

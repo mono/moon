@@ -28,7 +28,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Automation.Peers;
+using System.Windows.Controls;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -81,5 +83,84 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.AreEqual (37, (int) AutomationControlType.TitleBar, "AutomationControlType.TitleBar");
 			Assert.AreEqual (38, (int) AutomationControlType.Separator, "AutomationControlType.Separator");
 		}
+
+		[TestMethod]
+		public void LiteralValues ()
+		{
+			TestLiteralValue (AutomationControlType.Button, "button");
+			TestLiteralValue (AutomationControlType.Calendar, "calendar");
+			TestLiteralValue (AutomationControlType.CheckBox, "checkbox");
+			TestLiteralValue (AutomationControlType.ComboBox, "combobox");
+			TestLiteralValue (AutomationControlType.Edit, "edit");
+			TestLiteralValue (AutomationControlType.Hyperlink, "hyperlink");
+			TestLiteralValue (AutomationControlType.Image, "image");
+			TestLiteralValue (AutomationControlType.ListItem, "listitem");
+			TestLiteralValue (AutomationControlType.List, "list");
+			TestLiteralValue (AutomationControlType.Menu, "menu");
+			TestLiteralValue (AutomationControlType.MenuBar, "menubar");
+			TestLiteralValue (AutomationControlType.MenuItem, "menuitem");
+			TestLiteralValue (AutomationControlType.ProgressBar, "progressbar");
+			TestLiteralValue (AutomationControlType.RadioButton, "radiobutton");
+			TestLiteralValue (AutomationControlType.ScrollBar, "scrollbar");
+			TestLiteralValue (AutomationControlType.Slider, "slider");
+			TestLiteralValue (AutomationControlType.Spinner, "spinner");
+			TestLiteralValue (AutomationControlType.StatusBar, "statusbar");
+			TestLiteralValue (AutomationControlType.Tab, "tab");
+			TestLiteralValue (AutomationControlType.Text, "text");
+			TestLiteralValue (AutomationControlType.ToolBar, "toolbar");
+			TestLiteralValue (AutomationControlType.ToolTip, "tooltip");
+			TestLiteralValue (AutomationControlType.Tree, "tree");
+			TestLiteralValue (AutomationControlType.TreeItem, "treeitem");
+			TestLiteralValue (AutomationControlType.Custom, "custom");
+			TestLiteralValue (AutomationControlType.Group, "group");
+			TestLiteralValue (AutomationControlType.Thumb, "thumb");
+			TestLiteralValue (AutomationControlType.DataGrid, "datagrid");
+			TestLiteralValue (AutomationControlType.DataItem, "dataitem");
+			TestLiteralValue (AutomationControlType.SplitButton, "splitbutton");
+			TestLiteralValue (AutomationControlType.Window, "window");
+			TestLiteralValue (AutomationControlType.Pane, "pane");
+			TestLiteralValue (AutomationControlType.Header, "header");
+			TestLiteralValue (AutomationControlType.HeaderItem, "headeritem");
+			TestLiteralValue (AutomationControlType.Table, "table");
+			TestLiteralValue (AutomationControlType.TitleBar, "titlebar");
+			TestLiteralValue (AutomationControlType.Separator, "separator");
+		}
+
+		public class ConcreteFrameworkElement : FrameworkElement {
+			
+			protected override AutomationPeer OnCreateAutomationPeer ()
+			{
+				return new ConcreteFrameworkElementAutomationPeer (this);
+			}
+		}
+
+		public class ConcreteFrameworkElementAutomationPeer : FrameworkElementAutomationPeer {
+
+			public ConcreteFrameworkElementAutomationPeer (ConcreteFrameworkElement fe)
+				: base (fe)
+			{
+			}
+
+			protected override AutomationControlType GetAutomationControlTypeCore ()
+			{
+				return ControlType;
+			}
+
+			public AutomationControlType ControlType {
+				private get;
+				set;
+			}
+		}
+
+		private void TestLiteralValue (AutomationControlType controlType, string localizedValue)
+		{
+
+			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
+			ConcreteFrameworkElementAutomationPeer peer 
+				= FrameworkElementAutomationPeer.CreatePeerForElement (fe) as ConcreteFrameworkElementAutomationPeer;
+			peer.ControlType = controlType;
+			Assert.AreEqual (localizedValue, peer.GetLocalizedControlType (), string.Format ("Literal value: '{0}'", localizedValue));
+		}
+
 	}
 }
