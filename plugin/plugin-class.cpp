@@ -1937,6 +1937,12 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 		}
 		return false;
 	}
+	case MoonId_InitParams: {
+		char *init_params = STRDUP_FROM_VARIANT (*value);
+		plugin->SetInitParams (init_params);
+		g_free (init_params);
+		return true;
+	}
 	default:
 		return MoonlightObject::SetProperty (id, name, value);
 	}
@@ -2043,9 +2049,8 @@ MoonlightSettingsObject::GetProperty (int id, NPIdentifier name, NPVariant *resu
 		BOOLEAN_TO_NPVARIANT (plugin->GetEnableHtmlAccess (), *result);
 		return true;
 
-	// not implemented yet, just return 0.
 	case MoonId_MaxFrameRate:
-		INT32_TO_NPVARIANT (0, *result);
+		INT32_TO_NPVARIANT (plugin->GetMaxFrameRate (), *result);
 		return true;
 
 	case MoonId_Version:
@@ -2080,6 +2085,7 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier name, const NPVariant
 	}
 	// Cant be set after initialization so return true
 	case MoonId_EnableFramerateCounter:
+		plugin->SetEnableFramerateCounter (NPVARIANT_TO_BOOLEAN (*value));
 		return true;
  
 	case MoonId_EnableRedrawRegions:

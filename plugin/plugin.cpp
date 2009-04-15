@@ -397,6 +397,7 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	// blog says the default is 60: http://blogs.msdn.com/seema/archive/2007/10/07/perf-debugging-tips-enableredrawregions-a-performance-bug-in-videobrush.aspx
 	// testing seems to confirm that the default is 60.
 	maxFrameRate = 60;
+	enable_framerate_counter = false;
 	
 	vm_missing_file = NULL;
 	xaml_loader = NULL;
@@ -456,6 +457,7 @@ PluginInstance::~PluginInstance ()
 
 	g_free (background);
 	g_free (id);
+	g_free (initParams);
 	delete xaml_loader;
 
 #if PLUGIN_SL_2_0
@@ -522,7 +524,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			continue;
 		}
 		else if (!g_ascii_strcasecmp (argn[i], "initParams")) {
-			initParams = argv[i];
+			initParams = g_strdup (argv[i]);
 		}
 		else if (!g_ascii_strcasecmp (argn[i], "onLoad")) {
 			onLoad = argv[i];
@@ -1007,6 +1009,13 @@ PluginInstance::CreateDownloader (PluginInstance *instance)
 		printf ("PluginInstance::CreateDownloader (%p): Unable to create contextual downloader.\n", instance);
 		return new Downloader ();
 	}
+}
+
+void
+PluginInstance::SetInitParams (const char *value)
+{
+	g_free (initParams);
+	initParams = g_strdup (value);
 }
 
 void
@@ -1525,7 +1534,13 @@ PluginInstance::SetBackground (const char *value)
 bool
 PluginInstance::GetEnableFramerateCounter ()
 {
-	return false;
+	return enable_framerate_counter;
+}
+
+void
+PluginInstance::SetEnableFramerateCounter (bool value)
+{
+	enable_framerate_counter = value;
 }
 
 bool

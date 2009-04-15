@@ -1,3 +1,8 @@
+2009-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp: Don't support versions of the type "1.0..0".
+	  Fixes a test case in MS DRT #21.
+
 2009-04-15  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* downloader.cpp (Downloader::Open): fix the argument passed to

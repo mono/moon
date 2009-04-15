@@ -1,3 +1,10 @@
+2009-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.h:
+	* plugin.cpp:
+	* plugin-class.cpp: Implement some missing js properties.
+	  Almost completely fixes MS DRT #21.
+
 2009-04-15  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* plugin.cpp (PluginInstance::LoadXAP): set the surface xap_location

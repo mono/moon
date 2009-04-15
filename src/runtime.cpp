@@ -1935,7 +1935,7 @@ Surface::IsVersionSupported (const char *version_list)
 	versions = g_strsplit (version_list, ".", 4);
 
 	supported = versions [0] != NULL && versions [1] != NULL;
-
+	
 	if (supported) {
 		for (int k = 0; k < 4; k++) {
 			numbers [k] = 0;
@@ -1943,7 +1943,12 @@ Surface::IsVersionSupported (const char *version_list)
 			
 			if (version == NULL)
 				break;
-						
+			
+			if (version [0] == 0) {
+				supported = false;
+				break;
+			}
+			
 			// Only allow ascii 0-9 characters in the numbers
 			for (int i = 0; version [i] != 0; i++) {
 				if (version [i] < '0' || version [i] > '9') {

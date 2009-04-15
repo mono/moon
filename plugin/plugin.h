@@ -84,6 +84,7 @@ class PluginInstance
 	// Property getters and setters
 	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetInitParams () { return this->initParams; }
+	void SetInitParams (const char *value);
 	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetSource () { return this->source; }
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -95,6 +96,7 @@ class PluginInstance
 	char *GetBackground ();
 	bool SetBackground (const char *value);
 	bool GetEnableFramerateCounter ();
+	void SetEnableFramerateCounter (bool value);
 	bool GetEnableRedrawRegions ();
 	void SetEnableRedrawRegions (bool value);
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -187,6 +189,7 @@ class PluginInstance
 	bool windowless;
 	bool enable_html_access;
 	bool allow_html_popup_window;
+	bool enable_framerate_counter;
 	int maxFrameRate;
 
 	BrowserBridge *bridge;
