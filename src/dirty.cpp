@@ -444,7 +444,7 @@ Surface::UpdateLayout ()
 		layer->Measure (available);
 		Size desired = layer->GetDesiredSize ();
 		
-		if (layer->IsLayoutContainer ())
+		if (i == 0 && layer->IsLayoutContainer ())
 			desired = desired.Max (available);
 		
 		layer->Arrange (Rect (Canvas::GetLeft (layer),
