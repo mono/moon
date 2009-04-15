@@ -83,15 +83,15 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void AfterRender ()
 		{
 			ListBox c = new ListBox ();
 			ListBoxItem item = new ListBoxItem {
 				Content = new Rectangle { Fill = new SolidColorBrush (Colors.Black), Width = 20, Height = 20 }
 			};
+			
 			TestPanel.Children.Add (c);
-			c.Items.Add (item);
+			Enqueue (() => c.Items.Add (item));
 			Enqueue (() => {
 				Console.WriteLine ("Starting");
 				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (c), "#1");
@@ -162,7 +162,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void AfterRender2 ()
 		{
 			ListBox c = new ListBox ();

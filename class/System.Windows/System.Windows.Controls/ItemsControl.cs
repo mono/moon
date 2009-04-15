@@ -56,6 +56,7 @@ namespace System.Windows.Controls {
 			DefaultStyleKey = typeof (ItemsControl);
 		}
 
+		bool loaded = false;
 		internal override void InvokeLoaded ()
 		{
 			base.InvokeLoaded ();
@@ -64,16 +65,16 @@ namespace System.Windows.Controls {
 			// (which is nothing but an ItemsPresenter)
 			// here.  but only do it if we don't have a
 			// template in our style.
-			if (Template == null)
-				SetItemsPresenter (new ItemsPresenter ());
+			if (Template == null) {
+				ItemsPresenter presenter = new ItemsPresenter ();
+				NativeMethods.uielement_element_added (native, presenter.native);
+				NativeMethods.uielement_set_subtree_object (native, presenter.native);
+			}
 		}
 		
 		internal void SetItemsPresenter (ItemsPresenter presenter)
 		{
 			_presenter = presenter;
-			NativeMethods.uielement_element_added (native, _presenter.native);
-			NativeMethods.uielement_set_subtree_object (native, _presenter.native);
-
 			AddItemsToPresenter (Items, 0);
 		}
 

@@ -1,3 +1,8 @@
+2009-04-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs: Reenable the tests
+	  which are now passing.
+
 2009-04-14  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ListBoxTest.cs: Remove MoonlightBug

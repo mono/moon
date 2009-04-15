@@ -1,3 +1,12 @@
+2009-04-15  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: When an ItemsControl is templated, don't
+	  replace the templated visual tree with the ItemsPresenters
+	  visual tree.
+
+	* ItemsPresenter.cs: ItemsPresenter should search the visual
+	  tree, not logical tree, when trying to find its ItemsControl
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* OpenFileDialog.cs:

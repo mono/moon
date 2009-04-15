@@ -26,6 +26,7 @@
 using Mono;
 using System;
 using System.Windows;
+using System.Windows.Media;
 
 namespace System.Windows.Controls
 {
@@ -41,11 +42,9 @@ namespace System.Windows.Controls
 		{
 			PreparePresenter ();
 
-			FrameworkElement parent = Parent as FrameworkElement;
-
-			while (parent != null && !(parent is ItemsControl)) {
-				parent = parent.Parent as FrameworkElement;
-			}
+			FrameworkElement parent = this;
+			while (parent != null && !(parent is ItemsControl))
+				parent = VisualTreeHelper.GetParent (parent) as FrameworkElement;
 
 			if (parent != null)
 				(parent as ItemsControl).SetItemsPresenter (this);
