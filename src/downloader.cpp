@@ -246,6 +246,7 @@ check_redirection_policy (const Uri *uri, const char *final_uri, DownloaderAcces
 	
 	Uri *final = new Uri ();
 	final->Parse (final_uri);
+	char *struri = NULL;
 
 	bool retval = true;
 	switch (policy) {
@@ -253,18 +254,22 @@ check_redirection_policy (const Uri *uri, const char *final_uri, DownloaderAcces
 	case XamlPolicy:
 	case StreamingPolicy: //Streaming media
 		//Redirection allowed: same domain.
-		if (g_ascii_strcasecmp (uri->originalString, final_uri) == 0)
+		struri = uri->ToString ();
+		if (g_ascii_strcasecmp (struri, final_uri) == 0)
 			break;
 		if (!same_domain (uri, final))
 			retval = false;
 		break;
 	case MediaPolicy:
-		if (g_ascii_strcasecmp (uri->originalString, final_uri) != 0)
+		struri = uri->ToString ();
+		if (g_ascii_strcasecmp (struri, final_uri) != 0)
 			retval = false;
 		break;
 	default:
 		break;
 	}
+
+	g_free (struri);
 	
 	delete final;
 	
@@ -360,8 +365,18 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	if (!url->Parse (uri))
 		return;
 	
+	if (!url->isAbsolute) {
+		const char *source_location = NULL;
+		source_location = GetSurface ()->GetXapLocation ();
+		if (source_location) {
+			if (!url->Parse (source_location))
+				return;
+			url->Combine (uri);
+		}
+	}
+
 	//FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
-	char *location = g_strdup (GetSurface()->GetSourceLocation ());
+	char *location = url->ToString ();
 	if (!validate_policy (location, url, policy)) {
 		LOG_DOWNLOADER ("aborting due to security policy violation\n");
 		failed_msg = g_strdup ("Security Policy Violation");
@@ -381,9 +396,10 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	send_queued = false;
 	
 	SetUri (url);
+	char *struri = url->ToString ();
+	internal_dl->Open (verb, struri);
+	g_free (struri);
 	delete url;
-	
-	internal_dl->Open (verb, uri);
 }
 
 void
@@ -483,7 +499,9 @@ Downloader::SendNow ()
 void
 Downloader::Write (void *buf, gint32 offset, gint32 n)
 {
-	LOG_DOWNLOADER ("Downloader::Write (%p, %i, %i). Uri: %s\n", buf, offset, n, GetUri ()->originalString);
+	char* struri = NULL;
+	LOG_DOWNLOADER ("Downloader::Write (%p, %i, %i). Uri: %s\n", buf, offset, n, (struri = GetUri ()->ToString ()));
+	g_free (struri);
 	
 	SetCurrentDeployment ();
 	

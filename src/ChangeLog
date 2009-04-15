@@ -1,5 +1,12 @@
 2009-04-15  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* downloader.cpp (Downloader::Open): make the relative uris relative to
+	the xaplocation
+	(check_redirection_policy, Downloader::Write): don't use
+	uri->originalString, but uri->ToString ()
+
+2009-04-15  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* runtime.h|cpp (Surface): xap_location, Get() and Set()
 
 2009-04-14  Jeffrey Stedfast  <fejj@novell.com>
