@@ -47,7 +47,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("Hitting a security error")]
+		[Ignore ("Hitting a security error")]
 		public void AfterRender ()
 		{
 			ItemsControl c = new ItemsControl ();
@@ -83,7 +83,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("Hitting a security error")]
+		[Ignore ("Hitting a security error")]
 		public void AfterRender1 ()
 		{
 			ItemsControl c = new ItemsControl ();
@@ -104,7 +104,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("Hitting a security error")]
+		[Ignore ("Hitting a security error")]
 		public void AfterRender2 ()
 		{
 			ItemsControl c = new ItemsControl ();
