@@ -1,3 +1,10 @@
+2009-04-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (layout_word_wrap): The HANGUL enums weren't added to
+	glib until 2.10, so so guard to allow building on systems with
+	older versions of glib. Also merged BREAK_NEXT_LINE and
+	BREAK_UNKNOWN into the BREAK_AFTER group.
+
 2009-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp: Don't support versions of the type "1.0..0".

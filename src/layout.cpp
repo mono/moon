@@ -1109,9 +1109,14 @@ word_type (GUnicodeBreakType btype)
 		return WORD_TYPE_ALPHABETIC;
 	case G_UNICODE_BREAK_IDEOGRAPHIC:
 		return WORD_TYPE_IDEOGRAPHIC;
+#if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 10)
 	case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
 	case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
+	case G_UNICODE_BREAK_HANGUL_L_JAMO:
+	case G_UNICODE_BREAK_HANGUL_V_JAMO:
+	case G_UNICODE_BREAK_HANGUL_T_JAMO:
 		return WORD_TYPE_HANGUL;
+#endif
 	default:
 		return WORD_TYPE_UNKNOWN;
 	}
@@ -1125,9 +1130,14 @@ word_type_changed (WordType type, GUnicodeBreakType btype)
 		return type != WORD_TYPE_ALPHABETIC;
 	case G_UNICODE_BREAK_IDEOGRAPHIC:
 		return type != WORD_TYPE_IDEOGRAPHIC;
+#if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 10)
 	case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
 	case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
+	case G_UNICODE_BREAK_HANGUL_L_JAMO:
+	case G_UNICODE_BREAK_HANGUL_V_JAMO:
+	case G_UNICODE_BREAK_HANGUL_T_JAMO:
 		return type != WORD_TYPE_HANGUL;
+#endif
 	default:
 		return false;
 	}
@@ -1373,20 +1383,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		}
 		
 		switch (op.btype) {
-		case G_UNICODE_BREAK_NEXT_LINE:
-		case G_UNICODE_BREAK_UNKNOWN:
-			if (i < word->break_ops->len) {
-				// break after this glyph
-				word->length = (op.inptr - in);
-				word->advance = op.advance;
-				word->count = op.count;
-				word->prev = op.prev;
-				
-				// if the following break-type is SPACE, then return
-				// false; otherwise let our caller know to wrap.
-				return !BreakSpace (c, btype);
-			}
-			break;
 		case G_UNICODE_BREAK_BEFORE_AND_AFTER:
 			if (i > 1 && i == word->break_ops->len) {
 				// break after the previous glyph
@@ -1431,9 +1427,16 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				return true;
 			}
 			break;
+#if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 10)
 		case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
 		case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
+		case G_UNICODE_BREAK_HANGUL_L_JAMO:
+		case G_UNICODE_BREAK_HANGUL_V_JAMO:
+		case G_UNICODE_BREAK_HANGUL_T_JAMO:
+#endif
 		case G_UNICODE_BREAK_NON_STARTER:
+		case G_UNICODE_BREAK_NEXT_LINE:
+		case G_UNICODE_BREAK_UNKNOWN:
 		case G_UNICODE_BREAK_HYPHEN:
 		case G_UNICODE_BREAK_AFTER:
 			if (i < word->break_ops->len) {
