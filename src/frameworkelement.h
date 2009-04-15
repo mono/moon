@@ -103,6 +103,7 @@ public:
 	virtual Size MeasureOverride (Size availableSize);
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Size ArrangeOverride (Size finalSize);
+	virtual Size ComputeActualSize ();
 
 	virtual bool UpdateLayout ();
 	

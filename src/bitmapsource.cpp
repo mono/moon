@@ -74,6 +74,9 @@ BitmapSource::GetSurface (cairo_t *cr)
 
 	if (native_surface)
 		return native_surface;
+	
+	if (cr == NULL)
+		return image_surface;
 
 	native_surface = cairo_surface_create_similar (cairo_get_target (cr), CAIRO_CONTENT_COLOR_ALPHA, GetPixelWidth (), GetPixelHeight ());
 	cairo_t *context = cairo_create (native_surface);
