@@ -34,6 +34,7 @@ using System.Windows.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Shapes;
 using Mono.Moonlight.UnitTesting;
+using System.Collections.Specialized;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -155,7 +156,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void TestOverrides ()
 		{
 			FakeComboBox b = new FakeComboBox ();
@@ -189,7 +189,22 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		public void AddTest ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			box.Items.Add ("blah");
+			Assert.AreEqual (1, box.methods.Count, "#1");
+			Assert.AreEqual ("OnItemsChanged", box.methods [0].MethodName, "#2");
+			NotifyCollectionChangedEventArgs e = (NotifyCollectionChangedEventArgs) box.methods [0].MethodParams[0];
+			Assert.AreEqual (null, e.OldItems, "#3");
+			Assert.AreEqual (-1, e.OldStartingIndex, "#4");
+			Assert.IsNotNull (e.NewItems, "#5");
+			Assert.AreEqual (1, e.NewItems.Count, "#6");
+			Assert.AreEqual ("blah", e.NewItems [0], "#7");
+			Assert.AreEqual (0, e.NewStartingIndex, "#8");
+		}
+		
+		[TestMethod]
 		public void SelectedItemTest ()
 		{
 			FakeComboBox box = new FakeComboBox ();

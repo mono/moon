@@ -52,6 +52,7 @@ namespace System.Windows.Controls.Primitives {
 
 		internal Selector ()
 		{
+			Items.ItemsChanged += (o, e) => OnItemsChanged (e);
 		}
 
 		public int SelectedIndex {
