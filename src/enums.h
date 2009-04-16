@@ -83,7 +83,7 @@ enum StyleSimulations {
 	StyleSimulationsNone       = 0,
 	StyleSimulationsBold       = (1 << 0),
 	StyleSimulationsItalic     = (1 << 1),
-	StyleSimulationsBoldItalic = (1 << 2),
+	StyleSimulationsBoldItalic = (StyleSimulationsBold | StyleSimulationsItalic),
 };
 
 enum TextAlignment {
