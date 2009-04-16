@@ -124,9 +124,7 @@ namespace System.Windows.Controls.Primitives {
 			if (h != null)
 				h (o, e);
 		}
-		
 
-		[MonoTODO]
 		public static bool GetIsSelectionActive (DependencyObject element)
 		{
 			if (element == null)
@@ -136,7 +134,9 @@ namespace System.Windows.Controls.Primitives {
 			if (s == null)
 				return false;
 
-			// FIXME: return true if focused (but there's no public IsFocused available)
+			// Nothing appears to make this return true on SL. 'SelectionActive' appears to bear
+			// no relation to Control.Focus, and clicking on the selector/items in selector does
+			// not make this return true.
 			return false;
 		}
 
