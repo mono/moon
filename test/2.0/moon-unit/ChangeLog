@@ -1,5 +1,10 @@
 2009-04-16  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ListBoxTest.cs: Add a test for
+	  parenting when Selectors are involved.
+
+2009-04-16  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ListBoxTest.cs: Add a test for focus
 	  which reveals a parenting bug.
 

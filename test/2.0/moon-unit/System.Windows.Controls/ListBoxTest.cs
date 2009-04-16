@@ -317,6 +317,26 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Parent bug - we're not parenting listboxitems correctly")]
+		public void ParentTest ()
+		{
+			ListBox box = new ListBox ();
+			Rectangle r = new Rectangle ();
+			ListBoxItem item = new ListBoxItem { Content = r };
+			Assert.IsNull (item.Parent, "#1");
+			Assert.AreEqual (item, r.Parent, "#2");
+			box.Items.Add (item);
+			Assert.AreEqual (item, r.Parent, "#3");
+			Assert.IsNotNull (item.Parent, "#4");
+			box.SelectedItem = item;
+			Assert.AreEqual (item, r.Parent, "#5");
+			Assert.IsNotNull (item.Parent, "#6");
+			box.SelectedItem = null;
+			Assert.AreEqual (item, r.Parent, "#7");
+			Assert.IsNotNull (item.Parent, "#8");
+		}
+		
+		[TestMethod]
 		[MoonlightBug]
 		public void PrepareContainerForItemOverride_defaults ()
 		{
