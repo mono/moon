@@ -339,10 +339,10 @@ surface_destroyed (EventObject *sender, EventArgs *args, gpointer closure)
 }
 
 static void
-remove_destroyed_handler (Surface *surface, GObject *window)
+remove_destroyed_handler (PluginInstance *plugin, GObject *window)
 {
 	Deployment::SetCurrent (plugin->GetDeployment ());
-	surface->RemoveHandler (EventObject::DestroyedEvent, surface_destroyed, window);
+	plugin->GetSurface ()->RemoveHandler (EventObject::DestroyedEvent, surface_destroyed, window);
 	Deployment::SetCurrent (NULL);
 }
 
@@ -369,7 +369,7 @@ plugin_debug (PluginInstance *plugin)
 	Deployment::SetCurrent (plugin->GetDeployment ());
 
 	surface->AddHandler (EventObject::DestroyedEvent, surface_destroyed, tree_win);
-	g_object_weak_ref (G_OBJECT (tree_win), (GWeakNotify) remove_destroyed_handler, surface);
+	g_object_weak_ref (G_OBJECT (tree_win), (GWeakNotify) remove_destroyed_handler, plugin);
 	
 	GtkTreeStore *tree_store = gtk_tree_store_new (NUM_COLUMNS,
 						       G_TYPE_STRING,
