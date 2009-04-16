@@ -1,5 +1,9 @@
 2009-04-16  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ListBox/ListBox.cs: Cosmetic
+
+2009-04-16  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ListBox/ListBox.cs: Remove some public methods
 	  which no longer exist.
 

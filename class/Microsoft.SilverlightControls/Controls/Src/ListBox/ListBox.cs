@@ -156,15 +156,7 @@ namespace System.Windows.Controls
             ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
         } 
  
-#if WPF
-        public override void OnApplyTemplate() 
-#else
-        /// <summary>
-        /// Invoked whenever application code or internal processes call 
-        /// ApplyTemplate.
-        /// </summary>
-        public override void OnApplyTemplate() 
-#endif 
+        public override void OnApplyTemplate()
         {
             base.OnApplyTemplate(); 
             ElementScrollViewer = GetTemplateChild(ElementScrollViewerName) as ScrollViewer;
