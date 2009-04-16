@@ -584,8 +584,8 @@ TextBlock::MeasureOverride (Size availableSize)
 	desired = Size (actual_width, actual_height).GrowBy (padding);
 	desired = desired.Min (availableSize);
 	
-	if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
-		printf ("\treturn { %f, %f };\n", desired.width, desired.height);
+	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
+	//	printf ("\treturn { %f, %f };\n", desired.width, desired.height);
 	
 	return desired;
 }
