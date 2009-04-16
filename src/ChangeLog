@@ -1,3 +1,8 @@
+2009-04-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* enums.h (enum StyleSimulations): Added Bold, Italic, and
+	BoldItalic.
+
 2009-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: IMediaDemuxer::SetStreams: ref the streams. We

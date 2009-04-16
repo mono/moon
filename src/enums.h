@@ -80,7 +80,10 @@ enum PixelFormats {
 };
 
 enum StyleSimulations {
-	StyleSimulationsNone
+	StyleSimulationsNone       = 0,
+	StyleSimulationsBold       = (1 << 0),
+	StyleSimulationsItalic     = (1 << 0),
+	StyleSimulationsBoldItalic = (1 << 0),
 };
 
 enum TextAlignment {

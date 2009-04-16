@@ -214,6 +214,9 @@ static enum_map_t stretch_map [] = {
 
 static enum_map_t style_simulations_map [] = {
 	MAP_ENUM (StyleSimulations, None),
+	MAP_ENUM_FULL ("BoldSimulation", StyleSimulationsBold),
+	MAP_ENUM_FULL ("ItalicSimulation", StyleSimulationsItalic),
+	MAP_ENUM_FULL ("BoldItalicSimulation", StyleSimulationsBoldItalic),
 	END_MAPPING
 };
 
