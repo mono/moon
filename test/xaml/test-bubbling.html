@@ -23,7 +23,7 @@
     var mouseDownCount;
 
     var token_to_remove;
-	var root;
+	var root = null;
 
     function mouseLeftButtonDownCount (sender, args)
     {
@@ -401,7 +401,7 @@
 
       function QueueTestReady ()
       {
-          if (document.body == null) {
+          if (document.body == null || root == null) {
               window.setTimeout ("QueueTestReady ()", 100);
               return;
           }

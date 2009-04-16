@@ -1,3 +1,8 @@
+2009-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* xaml/test-bubbling.html: Make sure the test doesn't start
+	  before OnLoaded has been raised. Fixes some random failures.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml/test-dead-downloaders.html:
