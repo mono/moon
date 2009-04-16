@@ -62,7 +62,7 @@ namespace MoonTest.Misc.Parsing
 			//
 			Canvas sub_canvas = canvas.FindName ("the_canvas") as Canvas;
 			Assert.IsNotNull (sub_canvas, "8");
-			Assert.AreEqual (sub_canvas.Children.Count, 0, "9");
+			Assert.AreEqual (0, sub_canvas.Children.Count, "9");
 		}
 	}
 }
