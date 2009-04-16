@@ -35,6 +35,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Shapes;
 using Mono.Moonlight.UnitTesting;
 using System.Collections.Specialized;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -112,7 +113,7 @@ namespace MoonTest.System.Windows.Controls {
 	}
 
 	[TestClass]
-	public partial class ComboBoxTest {
+	public partial class ComboBoxTest : SilverlightTest {
 
 		[TestMethod]
 		public void DefaultValues ()
@@ -202,6 +203,23 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (1, e.NewItems.Count, "#6");
 			Assert.AreEqual ("blah", e.NewItems [0], "#7");
 			Assert.AreEqual (0, e.NewStartingIndex, "#8");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void FocusTest ()
+		{
+			ComboBox box = new ComboBox ();
+			Assert.IsFalse (ComboBox.GetIsSelectionActive (box));
+			CreateAsyncTest (box,
+				() => Assert.IsTrue (box.Focus (), "#1"),
+				() => {
+					Assert.IsFalse (ComboBox.GetIsSelectionActive (box), "#2");
+					box.Items.Add ("string");
+					box.SelectedItem = box.Items [0];
+				},
+				() => Assert.IsFalse (ComboBox.GetIsSelectionActive (box), "#3")
+			);
 		}
 		
 		[TestMethod]
