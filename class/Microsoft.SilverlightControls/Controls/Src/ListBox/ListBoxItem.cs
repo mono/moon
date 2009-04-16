@@ -97,7 +97,7 @@ namespace System.Windows.Controls
         /// Called when the user presses the left mouse button over the ListBoxItem. 
         /// </summary>
         /// <param name="e">The event data.</param>
-        protected virtual void OnMouseLeftButtonDown(MouseButtonEventArgs e) 
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) 
         { 
             if (!e.Handled)
             { 
@@ -106,7 +106,7 @@ namespace System.Windows.Controls
                 { 
                     if (null != ParentListBox)
                     {
-                        ParentListBox.NotifyListItemClicked(this); 
+                        ParentListBox.NotifyListItemClicked(this);
                     } 
                 }
             } 
@@ -116,7 +116,7 @@ namespace System.Windows.Controls
         /// Called when the mouse pointer enters the bounds of this element.
         /// </summary>
         /// <param name="e">The event data.</param> 
-        protected virtual void OnMouseEnter(MouseEventArgs e) 
+        protected override void OnMouseEnter(MouseEventArgs e) 
         {
             IsMouseOver = true; 
             ChangeVisualState();
@@ -126,7 +126,7 @@ namespace System.Windows.Controls
         /// Called when the mouse pointer leaves the bounds of this element.
         /// </summary> 
         /// <param name="e">The event data.</param> 
-        protected virtual void OnMouseLeave(MouseEventArgs e)
+        protected override void OnMouseLeave(MouseEventArgs e)
         { 
             IsMouseOver = false;
             ChangeVisualState();
@@ -136,7 +136,7 @@ namespace System.Windows.Controls
         /// Called when the control got focus. 
         /// </summary> 
         /// <param name="e">The event data.</param>
-        protected virtual void OnGotFocus(RoutedEventArgs e) 
+        protected override void OnGotFocus(RoutedEventArgs e) 
         {
             base.OnGotFocus(e);
             IsFocused = true;
@@ -151,7 +151,7 @@ namespace System.Windows.Controls
         /// Called when the control lost focus.
         /// </summary>
         /// <param name="e">The event data.</param> 
-        protected virtual void OnLostFocus(RoutedEventArgs e) 
+        protected override void OnLostFocus(RoutedEventArgs e) 
         {
             base.OnLostFocus (e);
             IsFocused = false;
