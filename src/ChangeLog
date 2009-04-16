@@ -1,3 +1,9 @@
+2009-04-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* openfile.cpp|h: Add a dialog requester to increase isolated
+	storage quota. Add function to recursively compute the total size
+	of a directory, which is used to check quota in IS.
+
 2009-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: mono_gc_invoke_finalizers may cause the
