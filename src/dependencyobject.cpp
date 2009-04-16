@@ -2081,8 +2081,11 @@ DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 {
 	if (DependencyObject::NameProperty == args->GetId ()) {
 		NameScope *scope = FindNameScope ();
-		if (scope && args->GetNewValue())
+		if (scope && args->GetNewValue()) {
+			if (args->GetOldValue ())
+				scope->UnregisterName (args->GetOldValue ()->AsString ());
 			scope->RegisterName (args->GetNewValue()->AsString (), this);
+		}
 	}
 
 	NotifyListenersOfPropertyChange (args);
