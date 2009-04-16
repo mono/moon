@@ -144,12 +144,13 @@ namespace System.Windows.Controls
             TabNavigation = KeyboardNavigationMode.Once; 
             // Focusable not supported by Silverlight
 #endif
+            SelectionChanged += delegate(object sender, SelectionChangedEventArgs e) {
+                object removed = e.RemovedItems.Count == 1 ? e.RemovedItems [0] : null;
+                object added  = e.AddedItems.Count == 1 ? e.AddedItems [0] : null;
+                OnSelectedItemChanged (removed, added);
+            };
             IsTabStop = false; 
-            ObservableCollection<object> observableCollection = new ObservableCollection<object>(); 
-            observableCollection.CollectionChanged += new NotifyCollectionChangedEventHandler(OnSelectedItemsCollectionChanged);
-	    //            SetValue(SelectedItemsProperty, observableCollection); 
-//            SelectedIndex = -1;
-//            SelectionMode = SelectionMode.Single;
+
             // Set default values for ScrollViewer attached properties 
             ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
             ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
@@ -375,29 +376,6 @@ namespace System.Windows.Controls
                 _listBoxItemOldFocus = null; 
             }
         }
- 
-        /// <summary>
-        /// Selects the specified item in response to user input.
-        /// </summary> 
-        /// <param name="item">Item from the Items collection.</param> 
-        private void SetSelectedItem(object item)
-        { 
-            SelectedItem = item;
-            if (null != item)
-            { 
-                ListBoxItem listBoxItem = item as ListBoxItem;
-                if (null == listBoxItem)
-                { 
-                    listBoxItem = ObjectToListBoxItem[item]; 
-                }
-                Debug.Assert(null != listBoxItem); 
-#if WPF
-                Keyboard.Focus(listBoxItem);
-#else 
-                listBoxItem.Focus();
-#endif
-            } 
-        } 
 
         /// <summary> 
         /// Causes the object to scroll into view.
@@ -457,13 +435,13 @@ namespace System.Windows.Controls
             {
                 if (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) 
                 {
-                    SetSelectedItem(null);
+                    SelectedItem = null;
                 } 
             } 
             else
             { 
                 object item = listBoxItem.Item ?? listBoxItem;
-                SetSelectedItem(item);
+                SelectedItem = item;
                 ScrollIntoView(item); 
             }
         }
@@ -528,11 +506,11 @@ namespace System.Windows.Controls
                                 {
                                     if ((ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) && listBoxItem.IsSelected)
                                     { 
-                                        SetSelectedItem(null); 
+                                        SelectedItem = null; 
                                     }
                                     else 
                                     {
-                                        SetSelectedItem(listBoxItem.Item ?? listBoxItem);
+                                        SelectedItem  = listBoxItem.Item ?? listBoxItem;
                                     } 
                                     handled = true;
                                 }
@@ -647,106 +625,19 @@ namespace System.Windows.Controls
         } 
 
         /// <summary>
-        /// Called when the SelectedIndex property has changed. 
-        /// </summary> 
-        /// <param name="oldValue">The value of the property before the change.</param>
-        /// <param name="newValue">The value of the property after the change.</param> 
-        protected virtual void OnSelectedIndexChanged(int oldValue, int newValue)
-        {
-            object oldValueItem = ((-1 != oldValue) && (oldValue < Items.Count)) ? Items[oldValue] : null; 
-            object newValueItem = (-1 != newValue) ? Items[newValue] : null;
-            ProcessSelectionPropertyChange(SelectedIndexProperty, oldValueItem, newValueItem);
-        } 
- 
-        /// <summary>
-        /// Called when the SelectedItem property has changed. 
-        /// </summary>
-        /// <param name="oldValue">The value of the property before the change.</param>
-        /// <param name="newValue">The value of the property after the change.</param> 
-        protected virtual void OnSelectedItemChanged(object oldValue, object newValue) 
-        {
-            ProcessSelectionPropertyChange(SelectedItemProperty, oldValue, newValue); 
-        }
-
-        /// <summary>
         /// Perform the actions necessary to handle a selection property change. 
         /// </summary>
-        /// <param name="changedProperty">Selection property that changed.</param>
         /// <param name="oldValue">Old value of the property.</param> 
         /// <param name="newValue">New value of the property.</param>
-        private void ProcessSelectionPropertyChange(DependencyProperty changedProperty, object oldValue, object newValue)
+        private void OnSelectedItemChanged(object oldValue, object newValue)
         { 
-            // Avoid recursion 
-            if (!_processingSelectionPropertyChange)
-            { 
-                try
-                {
-                    _processingSelectionPropertyChange = true; 
-
-                    // Trace the removed/added items for SelectionChanged
-                    List<object> removedItems = new List<object>(); 
-                    List<object> addedItems = new List<object>(); 
-
-                    // If old value present, update the associated ListBoxItem 
-                    if (null != oldValue)
-                    {
-                        ListBoxItem oldListBoxItem = GetListBoxItemForObject(oldValue); 
-                        if (null != oldListBoxItem)
-                        {
-                            oldListBoxItem.IsSelected = false; 
-                        } 
-                        removedItems.Add(oldValue);
-                    } 
-
-                    // If new value present, update the associated ListBoxItem
-                    object newSelectedItem = null; 
-                    int newSelectedIndex = -1;
-                    if (null != newValue)
-                    { 
-                        ListBoxItem newListBoxItem = GetListBoxItemForObject(newValue); 
-                        if (null != newListBoxItem)
-                        { 
-                            newListBoxItem.IsSelected = true;
-                        }
-                        newSelectedItem = newValue; 
-                        newSelectedIndex = Items.IndexOf(newSelectedItem);
-                        addedItems.Add(newValue);
-                    } 
- 
-                    // Update the *other* associated ListBox properties
-                    if (SelectedIndexProperty != changedProperty) 
-                    {
-                        SelectedIndex = newSelectedIndex;
-                    } 
-                    if (SelectedItemProperty != changedProperty)
-                    {
-                        SelectedItem = newSelectedItem; 
-                    } 
-                    //SelectedItems.Clear();
-                    if (-1 != newSelectedIndex) 
-                    {
-			    //                        SelectedItems.Add(newValue);
-                    } 
-                }
-                finally 
-                {
-                    _processingSelectionPropertyChange = false;
-                } 
-            } 
-        }
- 
-        /// <summary>
-        /// Called when the SelectedItems property has changed.
-        /// </summary> 
-        /// <param name="oldValue">The value of the property before the change.</param>
-        /// <param name="newValue">The value of the property after the change.</param>
-        protected virtual void OnSelectedItemsChanged(IList oldValue, IList newValue) 
-        { 
-            if (null != oldValue)
-            { 
-                throw new InvalidOperationException(Resource.ListBox_OnSelectedItemsChanged_ReadOnly);
+            if (oldValue != null) {
+                GetListBoxItemForObject (oldValue).IsSelected = false;
             }
-        } 
+            if (newValue != null) {
+                GetListBoxItemForObject (newValue).IsSelected = true;
+            }
+        }
 
 #if false
         /// <summary>
