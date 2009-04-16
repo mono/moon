@@ -639,34 +639,6 @@ namespace System.Windows.Controls
             }
         }
 
-#if false
-        /// <summary>
-        /// Implements the SelectionModeProperty PropertyChangedCallback. 
-        /// </summary> 
-        /// <param name="d">The DependencyObject for which the property changed.</param>
-        /// <param name="e">Provides data for DependencyPropertyChangedEventArgs.</param> 
-        private static void OnSelectionModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ListBox listBox = d as ListBox; 
-            Debug.Assert(null != listBox);
-            Debug.Assert(typeof(SelectionMode).IsInstanceOfType(e.OldValue));
-            Debug.Assert(typeof(SelectionMode).IsInstanceOfType(e.NewValue)); 
-            listBox.OnSelectionModeChanged((SelectionMode)e.OldValue, (SelectionMode)e.NewValue); 
-        }
- 
-        /// <summary>
-        /// Called when the SelectionMode property has changed.
-        /// </summary> 
-        /// <param name="oldValue">The value of the property before the change.</param>
-        /// <param name="newValue">The value of the property after the change.</param>
-        protected override void OnSelectionModeChanged(SelectionMode oldValue, SelectionMode newValue) 
-        { 
-            if (SelectionMode.Single != newValue)
-            { 
-                throw new ArgumentException(Resource.ListBox_OnSelectionModeChanged_OnlySingleSelection);
-            }
-        } 
-#endif
         /// <summary>
         /// Implements the ItemContainerStyleProperty PropertyChangedCallback. 
         /// </summary> 
@@ -686,7 +658,7 @@ namespace System.Windows.Controls
         /// </summary> 
         /// <param name="oldItemContainerStyle">The value of the property before the change.</param>
         /// <param name="newItemContainerStyle">The value of the property after the change.</param>
-        protected virtual void OnItemContainerStyleChanged(Style oldItemContainerStyle, Style newItemContainerStyle) 
+        void OnItemContainerStyleChanged(Style oldItemContainerStyle, Style newItemContainerStyle) 
         { 
             foreach (object item in Items)
             { 
@@ -728,7 +700,7 @@ namespace System.Windows.Controls
         /// </summary> 
         /// <param name="oldValue">The value of the property before the change.</param>
         /// <param name="newValue">The value of the property after the change.</param>
-        protected virtual void OnIsSelectionActiveChanged(bool oldValue, bool newValue) 
+        void OnIsSelectionActiveChanged(bool oldValue, bool newValue) 
         {
             if (_readOnlyDependencyPropertyChangesAllowed)
             { 
