@@ -341,7 +341,9 @@ surface_destroyed (EventObject *sender, EventArgs *args, gpointer closure)
 static void
 remove_destroyed_handler (Surface *surface, GObject *window)
 {
+	Deployment::SetCurrent (plugin->GetDeployment ());
 	surface->RemoveHandler (EventObject::DestroyedEvent, surface_destroyed, window);
+	Deployment::SetCurrent (NULL);
 }
 
 void
