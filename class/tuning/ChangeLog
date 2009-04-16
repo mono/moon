@@ -1,3 +1,8 @@
+2009-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Create the directory we're actually putting the
+	  files in.
+
 2009-04-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Unbreak the build on OS11.0.
