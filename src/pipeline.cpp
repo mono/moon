@@ -3195,6 +3195,9 @@ IMediaDemuxer::SetStreams (IMediaStream** streams, int count)
 {
 	this->streams = streams;
 	this->stream_count = count;
+	
+	for (int i = 0; i < count; i++)
+		this->streams [i]->ref ();
 }
 
 gint32
