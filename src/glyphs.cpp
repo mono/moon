@@ -70,7 +70,7 @@ GlyphAttr::GlyphAttr ()
 Glyphs::Glyphs ()
 {
 	SetObjectType (Type::GLYPHS);
-
+	
 	desc = new TextFontDescription ();
 	desc->SetSize (0.0);
 	downloader = NULL;
@@ -82,6 +82,7 @@ Glyphs::Glyphs ()
 	text = NULL;
 	index = 0;
 	
+	style_simulations = StyleSimulationsNone;
 	origin_y_specified = false;
 	origin_x = 0.0;
 	origin_y = 0.0;
@@ -91,7 +92,6 @@ Glyphs::Glyphs ()
 	left = 0.0;
 	top = 0.0;
 	
-	simulation_none	= true;
 	uri_changed = false;
 	invalid = false;
 	dirty = false;
@@ -153,12 +153,6 @@ Glyphs::Layout ()
 		path = NULL;
 	}
 	
-	// Silverlight only renders for None (other, invalid, values do not render anything)
-	if (!simulation_none) {
-		invalid = true;
-		return;
-	}
-	
 	if (!desc->GetFilename () || desc->GetSize () == 0.0) {
 		// required font fields have not been set
 		return;
@@ -174,6 +168,7 @@ Glyphs::Layout ()
 		return;
 	}
 	
+	// FIXME: we need to somehow apply style simulations
 	font = desc->GetFont ();
 	
 	// scale Advance, uOffset and vOffset units to pixels
@@ -830,11 +825,8 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		origin_y_specified = true;
 		dirty = true;
 	} else if (args->GetId () == Glyphs::StyleSimulationsProperty) {
-		// Silverlight 1.0 does not implement this property but, if present, 
-		// requires it to be 0 (or else nothing is displayed)
-		bool none = (args->GetNewValue()->AsInt32 () == StyleSimulationsNone);
-		dirty = (none != simulation_none);
-		simulation_none = none;
+		style_simulations = (args->GetNewValue ()->AsInt32 () & StyleSimulationsBoldItalic);
+		dirty = true;
 	}
 	
 	if (invalidate)

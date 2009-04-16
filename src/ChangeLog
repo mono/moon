@@ -1,5 +1,8 @@
 2009-04-16  Jeffrey Stedfast  <fejj@novell.com>
 
+	* glyphs.cpp (Layout): Don't bail if we have something other than
+	StyleSimulationsNone.
+
 	* enums.h (enum StyleSimulations): Added Bold, Italic, and
 	BoldItalic.
 
