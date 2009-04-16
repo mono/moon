@@ -1100,9 +1100,11 @@ TextBlock::DownloaderComplete ()
 		ClearValue (TextBlock::FontGUIDProperty);
 	
 	font->SetFilename (path, guid);
-	UpdateFontDescriptions ();
-	dirty = true;
 	
-	UpdateBounds (true);
-	Invalidate ();
+	if (UpdateFontDescriptions ()) {
+		dirty = true;
+		
+		UpdateBounds (true);
+		Invalidate ();
+	}
 }

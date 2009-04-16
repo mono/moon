@@ -1,3 +1,9 @@
+2009-04-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (DownloaderComplete): Only invalidate/etc if any
+	of our inlines' fonts have changed - if they all override the font
+	family, then there's no need to redraw.
+
 2009-04-16  Jackson Harper  <jackson@ximian.com>
 
 	* dependencyobject.cpp: Unregister the old name when we set an
