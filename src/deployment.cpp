@@ -119,6 +119,8 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		mono_debug_init (MONO_DEBUG_FORMAT_MONO);
 	
 		root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");
+		
+		LOG_DEPLOYMENT ("Deployment::Initialize (): Root domain is %p\n", root_domain);
 	}
 	else {
 #endif
@@ -374,6 +376,10 @@ Deployment::Dispose ()
 
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
 	mono_gc_invoke_finalizers ();
+
+	// mono_gc_invoke_finalizers can cause the current appdomain to change
+	// which will cause Deployment::GetCurrent to return null (or another deployment).
+	Deployment::SetCurrent (this); 
 #endif
 
 	if (current_app != NULL)
