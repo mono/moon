@@ -7,3 +7,6 @@
 # use of reflection to set the "progress_delegate" field
 +SSC-M: System.Void System.Net.WebRequest::SetupProgressDelegate(System.Delegate)
 
+# temporary hack for people not using HEAD
++SSC-M: System.Net.WebRequest System.Net.WebRequest::CreateInternal(System.Uri,System.Boolean)
+
