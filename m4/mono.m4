@@ -42,6 +42,8 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 		], [
 			AM_CONDITIONAL(HAVE_RSVG_SHARP, false)
 		])
+	else
+		AM_CONDITIONAL(HAVE_RSVG_SHARP, false)
 	fi
 
 	if test "x$desktop_support" = xno -a "x$browser_support" = xno; then

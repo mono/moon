@@ -1,3 +1,8 @@
+2009-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mono.m4: Set HAVE_RSVG_SHARP in all code paths. Fixes
+	  configure with --disable-desktop-support.
+
 2009-04-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* testing.m4: We don't requrie dbus anymore.
