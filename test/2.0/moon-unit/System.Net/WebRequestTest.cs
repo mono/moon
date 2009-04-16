@@ -28,8 +28,10 @@
 
 using System;
 using System.IO;
+using System.IO.IsolatedStorage;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -69,7 +71,7 @@ namespace MoonTest.System.Net {
 			set { throw new NotImplementedException (); }
 		}
 
-		public override global::System.IO.Stream EndGetRequestStream (IAsyncResult asyncResult)
+		public override Stream EndGetRequestStream (IAsyncResult asyncResult)
 		{
 			throw new NotImplementedException ();
 		}
@@ -97,6 +99,106 @@ namespace MoonTest.System.Net {
 		{
 			return new ConcreteWebRequest (uri);
 		}
+	}
+
+	class IsolatedAsyncResult : IAsyncResult {
+
+		public IsolatedAsyncResult (object state)
+		{
+			AsyncState = state;
+		}
+
+		public object AsyncState {
+			get; internal set;
+		}
+
+		public WaitHandle AsyncWaitHandle {
+			get { return new ManualResetEvent (true); }
+		}
+
+		public bool CompletedSynchronously {
+			get { return true; }
+		}
+
+		public bool IsCompleted {
+			get { return true; }
+		}
+	}
+
+	class IsolatedStorageWebRequest : WebRequest, IWebRequestCreate {
+
+		private Uri uri;
+
+		public IsolatedStorageWebRequest ()
+		{
+		}
+
+		internal IsolatedStorageWebRequest (Uri uri)
+		{
+			this.uri = uri;
+		}
+
+		public override Uri RequestUri {
+			get { return uri; }
+		}
+
+		WebRequest IWebRequestCreate.Create (Uri uri)
+		{
+			return new IsolatedStorageWebRequest (uri);
+		}
+
+		public override void Abort ()
+		{
+		}
+
+		public override IAsyncResult BeginGetRequestStream (AsyncCallback callback, object state)
+		{
+			return new IsolatedAsyncResult (state);
+		}
+
+		public override IAsyncResult BeginGetResponse (AsyncCallback callback, object state)
+		{
+			return new IsolatedAsyncResult (state);
+		}
+
+		public override string ContentType { get; set; }
+
+		public override Stream EndGetRequestStream (IAsyncResult asyncResult)
+		{
+			IsolatedStorageFile isf = null;
+			switch (uri.Host) {
+			case "site":
+				isf = IsolatedStorageFile.GetUserStoreForSite ();
+				break;
+			case "application":
+				isf = IsolatedStorageFile.GetUserStoreForApplication ();
+				break;
+			default:
+				throw new NotImplementedException ();
+			}
+
+			Stream s = null;
+			switch (Method){
+			case "LOAD":
+				s = isf.OpenFile (uri.LocalPath, FileMode.Open, FileAccess.Read);
+				break;
+			case "SAVE":
+				s = isf.OpenFile (uri.LocalPath, FileMode.OpenOrCreate, FileAccess.Write);
+				break;
+			default:
+				throw new NotImplementedException ();
+			}
+			return s;
+		}
+
+		public override WebResponse EndGetResponse (IAsyncResult asyncResult)
+		{
+			return null;
+		}
+
+		public override WebHeaderCollection Headers { get; set; }
+
+		public override string Method { get; set; }
 	}
 
 	[TestClass]
@@ -200,6 +302,43 @@ namespace MoonTest.System.Net {
 			Assert.AreEqual ("https://localhost/", wr.RequestUri.OriginalString, "RequestUri");
 			// works but it's not using our ConcreteWebRequest but an internal type
 			Assert.IsFalse (wr is ConcreteWebRequest, "ConcreteWebRequest");
+		}
+
+		[TestMethod]
+		public void CustomIsolatedStorageWebRequest ()
+		{
+			IWebRequestCreate creator = (IWebRequestCreate) new IsolatedStorageWebRequest ();
+			Assert.IsTrue (WebRequest.RegisterPrefix ("iso", creator), "iso-1");
+			Assert.IsFalse (WebRequest.RegisterPrefix ("iso", creator), "iso-2");
+
+			WebRequest wr = WebRequest.Create (new Uri ("iso://site/data.log"));
+			wr.Method = "SAVE";
+
+			IAsyncResult result = wr.BeginGetRequestStream (null, String.Empty);
+			result.AsyncWaitHandle.WaitOne ();
+			Stream s = wr.EndGetRequestStream (result);
+
+			using (StreamWriter sw = new StreamWriter (s)) {
+				sw.WriteLine ("hello");
+			}
+
+			result = wr.BeginGetResponse (null, String.Empty);
+			result.AsyncWaitHandle.WaitOne ();
+			Assert.IsNull (wr.EndGetResponse (result), "Response-Write");
+
+			wr.Method = "LOAD";
+			// should be in response but that would require a lot of extra code ;-)
+			result = wr.BeginGetRequestStream (null, String.Empty);
+			result.AsyncWaitHandle.WaitOne ();
+			s = wr.EndGetRequestStream (result);
+
+			using (StreamReader sr = new StreamReader (s)) {
+				Assert.IsTrue (sr.ReadToEnd ().StartsWith ("hello"), "ReadToEnd");
+			}
+
+			result = wr.BeginGetResponse (null, String.Empty);
+			result.AsyncWaitHandle.WaitOne ();
+			Assert.IsNull (wr.EndGetResponse (result), "Response-Read");
 		}
 	}
 }

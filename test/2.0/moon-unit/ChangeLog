@@ -1,3 +1,12 @@
+2009-04-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebClientTest.cs: Uncomment BaseAddress check. Fix
+	some tests.
+	* System.Net/WebRequestTest.cs: Add tests using a custom 
+	WebRequest that use isolated storage.
+	* System.IO.IsolatedStorage/IsolatedStorageFileTest.cs: More test
+	cases.
+
 2009-04-16  Jackson Harper  <jackson@ximian.com>
 
 	* misc/Parsing/MiscParsingTest.cs: Change arg order so message

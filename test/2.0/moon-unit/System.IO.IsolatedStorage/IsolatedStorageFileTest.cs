@@ -99,6 +99,13 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
 
+			Assert.Throws<ArgumentNullException> (delegate {
+				isf.CreateFile (null);
+			}, "null");
+			Assert.Throws<ArgumentException> (delegate {
+				isf.CreateFile (String.Empty);
+			}, "Empty");
+
 			try {
 				isf.DeleteFile ("create-file");
 			} catch (IsolatedStorageException) {
@@ -140,9 +147,15 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		public void DirectoryDelete ()
+		public void DeleteDirectory ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+
+			Assert.Throws<ArgumentNullException> (delegate { 
+				isf.DeleteDirectory (null);
+			}, "null");
+			isf.DeleteDirectory (String.Empty);
+
 			Assert.IsFalse (isf.DirectoryExists ("dir-exist"), "Before/Exists(dir-exist)");
 			isf.CreateDirectory ("dir-exist");
 			Assert.IsTrue (isf.DirectoryExists ("dir-exist"), "After/Exists(dir-exist)");
@@ -157,9 +170,40 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		public void DeleteFile ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+
+			Assert.Throws<ArgumentNullException> (delegate {
+				isf.DeleteFile (null);
+			}, "null");
+			Assert.Throws<IsolatedStorageException> (delegate {
+				isf.DeleteFile (String.Empty);
+			}, "Empty");
+
+			Assert.IsFalse (isf.FileExists ("file-exist"), "Before/Exists(file-exist)");
+			using (IsolatedStorageFileStream s = isf.CreateFile ("file-exist")) {
+				Assert.IsTrue (isf.FileExists ("file-exist"), "After/Exists(file-exist)");
+			}
+			isf.DeleteFile ("file-exist");
+			Assert.IsFalse (isf.FileExists ("file-exist"), "Delete/Exists(file-exist)");
+
+			isf.Remove ();
+			Assert.Throws (delegate { isf.DeleteFile ("does not exists"); }, typeof (IsolatedStorageException), "Remove");
+
+			isf.Dispose ();
+			Assert.Throws (delegate { isf.DeleteFile ("does not exists"); }, typeof (ObjectDisposedException), "Dispose");
+		}
+
+		[TestMethod]
 		public void DirectoryExists ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+
+			Assert.Throws<NullReferenceException> (delegate {
+				isf.DirectoryExists (null);
+			}, "null");
+			Assert.IsTrue (isf.DirectoryExists (String.Empty), "Empty");
 
 			Assert.IsFalse (isf.DirectoryExists ("does not exists"), "DirectoryExists(doesnotexists)");
 			Assert.IsFalse (isf.DirectoryExists ("dir-exist"), "DirectoryExists(dir-exist)");
@@ -193,6 +237,11 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		public void FileExists ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+
+			Assert.Throws<NullReferenceException> (delegate {
+				isf.FileExists (null);
+			}, "null");
+			Assert.IsFalse (isf.FileExists (String.Empty), "Empty");
 
 			Assert.IsFalse (isf.FileExists ("does not exists"), "FileExists(doesnotexists)");
 

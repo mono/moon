@@ -43,8 +43,7 @@ namespace MoonTest.System.Net {
 		private void CheckDefaults (WebClient wc)
 		{
 			Assert.IsTrue (wc.AllowReadStreamBuffering, "AllowReadStreamBuffering");
-//			Assert.IsTrue (wc.BaseAddress.EndsWith ("/moon-unit.xap"), "BaseAddress");
-Console.WriteLine ("wc.BaseAddress: {0}", wc.BaseAddress);
+			Assert.IsTrue (wc.BaseAddress.EndsWith ("/moon-unit.xap"), "BaseAddress");
 			Assert.AreEqual ("utf-8", wc.Encoding.WebName, "Encoding");
 			Assert.AreEqual (0, wc.Headers.Count, "Headers");
 			Assert.IsFalse (wc.IsBusy, "IsBusy");
@@ -105,13 +104,16 @@ Console.WriteLine ("wc.BaseAddress: {0}", wc.BaseAddress);
 			wc.DownloadStringCompleted += delegate (object sender, DownloadStringCompletedEventArgs e) {
 				CheckDefaults (wc);
 				Assert.IsFalse (e.Cancelled, "Cancelled");
-				Assert.IsTrue (e.Error is SecurityException, "Error");
+				Assert.IsTrue (e.Error is WebException, "Error");
+				Assert.IsTrue (e.Error.InnerException is NotSupportedException, "Error.InnerException");
 				Assert.IsNull (e.UserState, "UserState");
 				Assert.Throws<TargetInvocationException, SecurityException> (delegate {
 					Assert.IsNotNull (e.Result, "Result");
 				}, "Result");
 				complete = true;
 			};
+			// FIXME: relative works only if the BaseAddress can be used to make an absolute Uri
+			// e.g. it won't work if the original Uri is a file://
 			Enqueue (() => { wc.DownloadStringAsync (new Uri ("/myfile", UriKind.Relative)); });
 			EnqueueConditional (() => complete);
 			EnqueueTestComplete ();
