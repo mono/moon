@@ -282,6 +282,29 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void Focusable ()
+		{
+			bool loaded = false;
+			ListBoxItem item = new ListBoxItem { Content = "Hello World" };
+			item.Loaded += delegate { loaded = true; };
+			
+			ListBox box = new ListBox ();
+			box.Items.Add (item);
+			TestPanel.Children.Add (box);
+			
+			EnqueueConditional (() => loaded);
+			Enqueue (() => {
+				Assert.IsTrue (item.Focus (), "#1");
+				box.SelectedItem = item;
+				box.SelectedItem = null;
+				Assert.IsTrue (item.Focus (), "#2");
+			});
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
 		public void GetContainerForItem ()
 		{
 			ListBoxPoker poker = new ListBoxPoker ();

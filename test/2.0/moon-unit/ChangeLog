@@ -1,3 +1,8 @@
+2009-04-16  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs: Add a test for focus
+	  which reveals a parenting bug.
+
 2009-04-15  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/AutomationControlTypeTest.cs: 
