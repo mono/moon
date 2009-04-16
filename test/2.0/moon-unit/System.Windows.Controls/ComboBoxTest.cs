@@ -61,6 +61,11 @@ namespace MoonTest.System.Windows.Controls {
 			return (Size) methods.Last ().ReturnValue;
 		}
 
+		public void ClearContainerForItemOverride_ (global::System.Windows.DependencyObject element, object item)
+		{
+			ClearContainerForItemOverride (element, item);
+		}
+
 		protected override void ClearContainerForItemOverride (global::System.Windows.DependencyObject element, object item)
 		{
 			methods.Add (new Value { MethodParams = new object [] { element, item } });

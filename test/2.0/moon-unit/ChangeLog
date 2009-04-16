@@ -1,5 +1,13 @@
 2009-04-16  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls/ItemsControlTest.cs: Implement
+	  ClearContainerForItemOverride and fix some more virtual ->
+	  override issues.
+
+2009-04-16  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest.cs: Add a test to try
 	  and make GetIsSelectionActive to return true.
 

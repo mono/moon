@@ -42,10 +42,15 @@ using System.Windows.Controls.Primitives;
 namespace MoonTest.System.Windows.Controls {
 	[TestClass]
 	public partial class ListBoxTest : SilverlightTest {
-		class ListBoxPoker : ListBox {
+		public class ListBoxPoker : ListBox {
 			public bool Call_IsItemItsOwnContainerOverride (object item)
 			{
 				return base.IsItemItsOwnContainerOverride (item);
+			}
+
+			public void ClearContainerForItemOverride_ (DependencyObject element, object item)
+			{
+				ClearContainerForItemOverride (element, item);
 			}
 
 			public DependencyObject Call_GetContainerForItemOverride ()

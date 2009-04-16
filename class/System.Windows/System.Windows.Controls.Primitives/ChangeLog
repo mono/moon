@@ -1,5 +1,10 @@
 2009-04-16  Alan McGovern  <amcgovern@novell.com>
 
+	* Selector.cs: Implement ClearContainerForItemOverride and fix
+	  some more virtual -> override issues.
+
+2009-04-16  Alan McGovern  <amcgovern@novell.com>
+
 	* Selector.cs: Nothing appears to make
 	  Selector.GetIsSelectionActive return true. The documentation
 	  offers no hints either.

@@ -140,8 +140,15 @@ namespace System.Windows.Controls.Primitives {
 			return false;
 		}
 
-		protected virtual void ClearContainerForItemOverride (DependencyObject element, object item)
+		protected override void ClearContainerForItemOverride (DependencyObject element, object item)
 		{
+			base.ClearContainerForItemOverride (element, item);
+			if (element == null)
+				throw new NullReferenceException ();
+			
+			ListBoxItem lbItem = (ListBoxItem) element;
+			lbItem.Content = null;
+			lbItem.IsSelected = false;
 		}
 		
 		protected virtual void OnItemsChanged (NotifyCollectionChangedEventArgs e)
