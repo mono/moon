@@ -103,7 +103,7 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 			str = buf = g_strdup_printf ("<b>%d</b>", value->AsInt32 ());
 			break;
 		case Type::INT64:
-			str = buf = g_strdup_printf ("<b>%lld</b>", value->AsInt64 ());
+			str = buf = g_strdup_printf ("<b>%lld</b>", (long long int) value->AsInt64 ());
 			break;
 		case Type::TIMESPAN: {
 			char *ts_string = timespan_to_str (value->AsTimeSpan());
@@ -112,7 +112,7 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 			break;
 		}
 		case Type::UINT64:
-			str = buf = g_strdup_printf ("<b>%llu</b>", value->AsUInt64 ());
+			str = buf = g_strdup_printf ("<b>%llu</b>", (unsigned long long int) value->AsUInt64 ());
 			break;
 		case Type::STRING:
 			str = buf = g_strdup_printf ("<b>%s</b>", value->AsString ());

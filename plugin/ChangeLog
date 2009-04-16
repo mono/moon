@@ -1,3 +1,7 @@
+2009-04-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-debug.cpp (reflect_value): Hush formatter warnings.
+
 2009-04-16  Geoff Norton  <gnorton@novell.com>
 
 	* plugin-debug.cpp: Avoid having a null deployment in remove_destroyed.
