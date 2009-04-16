@@ -254,6 +254,7 @@ namespace Mono {
 			case Kind.CONTROLTEMPLATE: return new ControlTemplate (raw);
 			case Kind.CUBICEASE: return new CubicEase (raw);
 			case Kind.DATATEMPLATE: return new DataTemplate (raw);
+			case Kind.DEEPZOOMIMAGETILESOURCE: return new DeepZoomImageTileSource (raw);
 			case Kind.DEPLOYMENT: return new Deployment (raw);
 			case Kind.DISCRETECOLORKEYFRAME: return new DiscreteColorKeyFrame (raw);
 			case Kind.DISCRETEDOUBLEKEYFRAME: return new DiscreteDoubleKeyFrame (raw);
