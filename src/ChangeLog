@@ -4,11 +4,6 @@
 	  current appdomain to change, so restore it afterwards. Fixes
 	  a rare, random crash upon shutdown.
 
-2009-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
-	* layout.h:
-	* layout.cpp: Reverting r131679, it breaks MS DRT #26.
-
 2009-04-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxBase::DownloaderComplete): Instead of
