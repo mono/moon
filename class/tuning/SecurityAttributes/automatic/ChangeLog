@@ -1,3 +1,8 @@
+2009-04-16  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net.auto.ssc: Logic (re)moved, rename to Create.
+	Add WebClient.ctor to set up BaseAddress.
+
 2009-04-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: xaml_loader_new (rename), 
