@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 226 methods
+# 228 methods
 
 +SSC-M: System.Void Microsoft.Win32.KeyHandler::.ctor(Microsoft.Win32.RegistryKey,System.String)
 +SSC-M: System.Void Microsoft.Win32.KeyHandler::Load()
@@ -117,11 +117,15 @@
 +SSC-M: Microsoft.Win32.SafeHandles.SafeFileHandle System.IO.FileStream::get_SafeFileHandle()
 +SSC-M: System.Void System.IO.FileSystemInfo::Refresh(System.Boolean)
 +SSC-M: System.Int32 System.IO.IntPtrStream::Read(System.Byte[],System.Int32,System.Int32)
-+SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorageFile::.ctor(System.String,System.String)
-+SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorageFile::.cctor()
-+SSC-M: System.String System.IO.IsolatedStorage.IsolatedStorageFile::TryDirectory(System.String)
-+SSC-M: System.IO.IsolatedStorage.IsolatedStorageFile System.IO.IsolatedStorage.IsolatedStorageFile::GetUserStoreForApplication()
-+SSC-M: System.IO.IsolatedStorage.IsolatedStorageFile System.IO.IsolatedStorage.IsolatedStorageFile::GetUserStoreForSite()
++SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::.cctor()
++SSC-M: System.String System.IO.IsolatedStorage.IsolatedStorage::GetIsolatedStorageRoot()
++SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::SetupSite(System.String)
++SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::LoadConfiguration()
++SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::SaveConfiguration()
++SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::SetupApplication(System.String,System.String,System.String)
++SSC-M: System.String System.IO.IsolatedStorage.IsolatedStorage::TryDirectory(System.String)
++SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::Remove(System.String)
++SSC-M: System.Int64 System.IO.IsolatedStorage.IsolatedStorage::get_Current()
 +SSC-M: System.String System.IO.IsolatedStorage.IsolatedStorageFile::Verify(System.String)
 +SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorageFile::CreateDirectory(System.String)
 +SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorageFile::DeleteDirectory(System.String)
@@ -132,9 +136,7 @@
 +SSC-M: System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetDirectoryNames(System.String)
 +SSC-M: System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetFileNames()
 +SSC-M: System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetFileNames(System.String)
-+SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorageFile::Remove()
-+SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorageFile::ReadStoreData()
-+SSC-M: System.Void System.IO.IsolatedStorage.IsolatedStorageFile::UpdateStoreData()
++SSC-M: System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::IncreaseQuotaTo(System.Int64)
 +SSC-M: System.String System.IO.Path::WindowsDriveAdjustment(System.String)
 +SSC-M: System.String System.IO.Path::InsecureGetFullPath(System.String)
 +SSC-M: System.String System.IO.Path::GetPathRoot(System.String)

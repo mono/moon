@@ -1,3 +1,9 @@
+2009-04-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.sc: New p/invoke for isolated storage
+	* mscorlib.auto.ssc: Changes for isolated storage
+	* System.Windows.auto.ssc: Signature change for anonymous method
+
 2009-04-16  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Net.auto.ssc: Logic (re)moved, rename to Create.

@@ -177,7 +177,7 @@
 +SSC-M: System.Boolean System.Windows.Deployment::InitializeDeployment()
 +SSC-M: System.Boolean System.Windows.Deployment::LoadAssemblies()
 +SSC-M: System.Boolean System.Windows.Deployment::CreateApplication()
-+SSC-M: System.Void System.Windows.Deployment::<LoadAssemblies>m__1D(System.Object,System.Net.OpenReadCompletedEventArgs)
++SSC-M: System.Void System.Windows.Deployment::<LoadAssemblies>m__1E(System.Object,System.Net.OpenReadCompletedEventArgs)
 +SSC-M: System.Void System.Windows.Documents.Glyphs::.ctor()
 +SSC-M: System.Void System.Windows.Documents.Inline::.ctor()
 +SSC-M: System.Void System.Windows.Documents.InlineCollection::.ctor()

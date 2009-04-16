@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 145 methods needs to be decorated.
+# 147 methods needs to be decorated.
 
 # [VISIBLE] overrides 'System.Boolean System.Runtime.InteropServices.CriticalHandle::get_IsInvalid()'.
 +SC-M: System.Boolean Microsoft.Win32.SafeHandles.CriticalHandleMinusOneIsInvalid::get_IsInvalid()
@@ -30,6 +30,9 @@
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Boolean System.Double::ParseImpl(System.Byte*,System.Double&)
+
+# p/invoke declaration
++SC-M: System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::isolated_storage_increase_quota_to(System.String,System.String)
 
 # using 'System.Security.RuntimeDeclSecurityActions*' as a parameter type
 +SC-M: System.Boolean System.Security.SecurityManager::GetLinkDemandSecurity(System.Reflection.MethodBase,System.Security.RuntimeDeclSecurityActions*,System.Security.RuntimeDeclSecurityActions*)
@@ -231,6 +234,9 @@
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Int32 System.Text.UTF8Encoding::InternalGetChars(System.Byte*,System.Int32,System.Char*,System.Int32,System.UInt32&,System.UInt32&,System.Object,System.Text.DecoderFallbackBuffer&,System.Byte[]&,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.Int64 System.IO.IsolatedStorage.IsolatedStorage::isolated_storage_get_current_usage(System.String)
 
 # [VISIBLE] implements 'System.IO.FileStream System.Runtime.InteropServices._Assembly::GetFile(System.String)'.
 +SC-M: System.IO.FileStream System.Reflection.Assembly::GetFile(System.String)
