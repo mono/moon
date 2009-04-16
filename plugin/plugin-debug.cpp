@@ -303,6 +303,8 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 	GtkTreeIter iter;
 	DependencyObject *el;
 
+	Deployment::SetCurrent (plugin->GetDeployment ());
+
 	if (plugin->GetSurface()->debug_selected_element) {
 		UIElement *el = plugin->GetSurface()->debug_selected_element;
 		el->Invalidate (el->GetSubtreeBounds().GrowBy(1).RoundOut());
@@ -326,6 +328,8 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 		ui->ref ();
 		plugin->GetSurface()->debug_selected_element = ui;
 	}
+
+	Deployment::SetCurrent (NULL);
 }
 
 static void

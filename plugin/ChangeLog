@@ -1,3 +1,7 @@
+2009-04-16  Geoff Norton  <gnorton@novell.com>
+
+	* plugin-debug.cpp: Avoid having a null deployment in selection_changed.
+
 2009-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.h:
