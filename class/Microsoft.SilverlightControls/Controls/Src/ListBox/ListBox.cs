@@ -70,11 +70,6 @@ namespace System.Windows.Controls
         private Dictionary<object, ListBoxItem> _objectToListBoxItem; 
 
         /// <summary>
-        /// Occurs when the selection of a ListBox changes. 
-        /// </summary> 
-        public event SelectionChangedEventHandler SelectionChanged;
- 
-        /// <summary>
         /// Set to true iff the ProcessingSelectionPropertyChange method is executing (to prevent recursion)
         /// </summary> 
         private bool _processingSelectionPropertyChange;
@@ -150,18 +145,6 @@ namespace System.Windows.Controls
             // Focusable not supported by Silverlight
 #endif
             IsTabStop = false; 
-            KeyDown += delegate(object sender, KeyEventArgs e)
-            {
-                OnKeyDown(e); 
-            }; 
-            GotFocus += delegate(object sender, RoutedEventArgs e)
-            { 
-                OnGotFocus(e);
-            };
-            LostFocus += delegate(object sender, RoutedEventArgs e) 
-            {
-                OnLostFocus(e);
-            }; 
             ObservableCollection<object> observableCollection = new ObservableCollection<object>(); 
             observableCollection.CollectionChanged += new NotifyCollectionChangedEventHandler(OnSelectedItemsCollectionChanged);
 	    //            SetValue(SelectedItemsProperty, observableCollection); 
@@ -369,7 +352,7 @@ namespace System.Windows.Controls
         /// Called when the control got focus.
         /// </summary>
         /// <param name="e">The event data.</param> 
-        protected virtual void OnGotFocus(RoutedEventArgs e) 
+        protected override void OnGotFocus(RoutedEventArgs e) 
         {
             SetIsSelectionActive(this, true); 
         }
@@ -378,7 +361,7 @@ namespace System.Windows.Controls
         /// Called when the control lost focus.
         /// </summary>
         /// <param name="e">The event data.</param> 
-        protected virtual void OnLostFocus(RoutedEventArgs e) 
+        protected override void OnLostFocus(RoutedEventArgs e) 
         {
             SetIsSelectionActive(this, false); 
             if (_suppressNextLostFocus)
@@ -515,26 +498,13 @@ namespace System.Windows.Controls
             _focusedIndex = -1; 
             _listBoxItemOldFocus = listBoxItemOldFocus; 
         }
- 
-        /// <summary>
-        /// Responds to a list box selection change by raising a SelectionChanged event.
-        /// </summary> 
-        /// <param name="e">Provides data for SelectionChangedEventArgs.</param>
-        protected virtual void OnSelectionChanged(SelectionChangedEventArgs e)
-        { 
-            SelectionChangedEventHandler handler = SelectionChanged; 
-            if (null != handler)
-            { 
-                handler(this, e);
-            }
-        } 
 
         /// <summary>
         /// Responds to the KeyDown event. 
         /// </summary> 
         /// <param name="e">Provides data for KeyEventArgs.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification="Straightforward switch-based key handling method that barely triggers the warning")] 
-        protected virtual void OnKeyDown(KeyEventArgs e)
+        protected override void OnKeyDown(KeyEventArgs e)
         {
             if (!e.Handled) 
             {
@@ -757,13 +727,6 @@ namespace System.Windows.Controls
                     {
 			    //                        SelectedItems.Add(newValue);
                     } 
-
-                    // Notify of SelectionChanged
-                    OnSelectionChanged(new SelectionChangedEventArgs( 
-#if WPF 
-                        System.Windows.Controls.ListBox.SelectedEvent,
-#endif 
-                        removedItems, addedItems));
                 }
                 finally 
                 {
@@ -805,7 +768,7 @@ namespace System.Windows.Controls
         /// </summary> 
         /// <param name="oldValue">The value of the property before the change.</param>
         /// <param name="newValue">The value of the property after the change.</param>
-        protected virtual void OnSelectionModeChanged(SelectionMode oldValue, SelectionMode newValue) 
+        protected override void OnSelectionModeChanged(SelectionMode oldValue, SelectionMode newValue) 
         { 
             if (SelectionMode.Single != newValue)
             { 
