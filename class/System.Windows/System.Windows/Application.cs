@@ -365,18 +365,23 @@ namespace System.Windows {
 				throw new ArgumentNullException ("resourceUri");
 			
 			MemoryStream ms = new MemoryStream ();
-			ManagedStreamCallbacks source;
-			ManagedStreamCallbacks dest;
+			ManagedStreamCallbacks source_cb;
+			ManagedStreamCallbacks dest_cb;
 			StreamWrapper source_wrapper;
 			StreamWrapper dest_wrapper;
+			Stream source;
 
-			source_wrapper = new StreamWrapper (zipPackageStreamResourceInfo.Stream);
+			source = zipPackageStreamResourceInfo.Stream;
+
+			source_wrapper = new StreamWrapper (source);
 			dest_wrapper = new StreamWrapper (ms);
 
-			source = source_wrapper.GetCallbacks ();
-			dest = dest_wrapper.GetCallbacks ();
+			source_cb = source_wrapper.GetCallbacks ();
+			dest_cb = dest_wrapper.GetCallbacks ();
 
-			if (NativeMethods.managed_unzip_stream_to_stream (ref source, ref dest, uriResource.ToString ())) {
+			if (NativeMethods.managed_unzip_stream_to_stream (ref source_cb, ref dest_cb, uriResource.ToString ())) {
+				if (source.CanSeek)
+					source.Seek (0, SeekOrigin.Begin);
 				ms.Seek (0, SeekOrigin.Begin);
 				return new StreamResourceInfo (ms, null);
 			}
