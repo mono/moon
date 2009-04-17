@@ -1,3 +1,10 @@
+2009-04-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.ssc: Remove some Helper.* methods and add
+	Application.Terminate (which calls Directory.Delete)
+	* System.Windows.Browser.auto.ssc: Remove ScriptableObjectWrapper.
+	ValueFromObject since it does not use Marshal anymore.
+
 2009-04-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.sc: New p/invoke for isolated storage

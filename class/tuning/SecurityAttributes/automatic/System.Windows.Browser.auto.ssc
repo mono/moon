@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows.Browser to call all [SecurityCritical] methods
-# 38 methods
+# 37 methods
 
 +SSC-M: T System.Windows.Browser.HtmlObject::GetPropertyInternal(System.IntPtr,System.String)
 +SSC-M: System.Void System.Windows.Browser.HtmlObject::SetPropertyInternal(System.IntPtr,System.String,System.Object)
@@ -32,7 +32,6 @@
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::AddMethod(System.String,System.TypeCode[],System.TypeCode)
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::AddMethod(System.Reflection.MethodInfo)
 +SSC-M: System.Object System.Windows.Browser.ScriptableObjectWrapper::ObjectFromValue(Mono.Value)
-+SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::ValueFromObject(Mono.Value&,System.Object)
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::InvokeFromUnmanaged(System.IntPtr,System.IntPtr,System.String,System.IntPtr[],System.Int32,Mono.Value&)
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::SetPropertyFromUnmanaged(System.IntPtr,System.String,Mono.Value&)
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::GetPropertyFromUnmanaged(System.IntPtr,System.String,Mono.Value&)
