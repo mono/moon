@@ -96,7 +96,8 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 			Enqueue (() => TestPanel.Children.Add (target));
 			Enqueue (() => a.Begin ());
-			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (2000));
+			/* This should really run in < 1s, but that doesn't work on very slow machines (x86 buildbots for instance) */
+			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (5000));
 			
 			// We should move exactly 50 pixels but can overshoot the target by > 10%.
 			Enqueue (() => Assert.IsBetween (40, 60, target.Width, "#1"));

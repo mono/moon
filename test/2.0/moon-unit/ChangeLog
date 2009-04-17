@@ -1,3 +1,8 @@
+2009-04-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Fix
+	  another test which times out on slow machines.
+
 2009-04-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System/UriTest.cs: New. Test cases to ensure some behavior that
