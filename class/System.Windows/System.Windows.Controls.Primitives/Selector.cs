@@ -55,6 +55,10 @@ namespace System.Windows.Controls.Primitives {
 			Items.ItemsChanged += (o, e) => OnItemsChanged (e);
 		}
 
+		internal bool IsSelectionActive {
+			get; set;
+		}
+		
 		public int SelectedIndex {
 			get { return (int)GetValue(SelectedIndexProperty); }
 			set { SetValue (SelectedIndexProperty, value); }
@@ -131,13 +135,7 @@ namespace System.Windows.Controls.Primitives {
 				throw new ArgumentNullException ("element");
 
 			Selector s = (element as Selector);
-			if (s == null)
-				return false;
-
-			// Nothing appears to make this return true on SL. 'SelectionActive' appears to bear
-			// no relation to Control.Focus, and clicking on the selector/items in selector does
-			// not make this return true.
-			return false;
+			return s == null ? false : s.IsSelectionActive;
 		}
 
 		protected override void ClearContainerForItemOverride (DependencyObject element, object item)

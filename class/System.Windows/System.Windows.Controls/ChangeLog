@@ -1,3 +1,9 @@
+2009-04-17  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Make IsSelectionActive work. Also make showing
+	  the popup work. Currently no items are being displayed in
+	  the popup as the ItemsPresenter is never getting loaded.
+
 2009-04-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* SaveFileDialog.cs: Implement DefaultExtbehavior

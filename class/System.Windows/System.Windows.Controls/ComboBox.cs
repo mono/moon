@@ -158,6 +158,10 @@ namespace System.Windows.Controls
 
 		protected virtual void OnDropDownClosed (EventArgs e)
 		{
+			if (_popup != null)
+				_popup.IsOpen = false;
+			Focus ();
+			
 			EventHandler h = DropDownClosed;
 			if (h != null)
 				h (this, e);
@@ -165,6 +169,16 @@ namespace System.Windows.Controls
 		
 		protected virtual void OnDropDownOpened (EventArgs e)
 		{
+			if (_popup != null)
+				_popup.IsOpen = true;
+			ComboBoxItem t = SelectedItem as ComboBoxItem;
+			if (t == null && Items.Count > 0)
+				t = Items [0] as ComboBoxItem;
+			
+			if (t != null)
+				t.Focus ();
+			else 
+				Console.WriteLine ("Nothing to focus");
 			EventHandler h = DropDownOpened;
 			if (h != null)
 				h (this, e);
@@ -198,6 +212,7 @@ namespace System.Windows.Controls
 		
 		public override void OnApplyTemplate ()
 		{
+			base.OnApplyTemplate ();
 			_contentPresenter = GetTemplateChild ("ContentPresenter") as ContentPresenter;
 			_popup = GetTemplateChild ("Popup") as Popup;
 			_contentPresenterBorder = GetTemplateChild ("ContentPresenterBorder") as FrameworkElement;
@@ -220,6 +235,7 @@ namespace System.Windows.Controls
 		{
 			base.OnLostFocus (e);
 			isFocused = false;
+			IsSelectionActive = _popup.IsOpen;
 			UpdateVisualState (true);
 		}
 		
@@ -240,6 +256,8 @@ namespace System.Windows.Controls
 		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
 			base.OnMouseLeftButtonDown (e);
+			Focus ();
+			IsSelectionActive = true;
 			IsDropDownOpen = true;
 			UpdateVisualState (true);
 		}
