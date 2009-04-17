@@ -1,3 +1,9 @@
+2009-04-17  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs (InitializeDeployment): in the plugin/xap case,
+	call NativeMethods.deployment_set_is_loaded_from_xap so that the
+	unmanaged code can tell we came from a xap.
+
 2009-04-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Application.cs: Set AppDomain "xap_uri" to the application
@@ -12,12 +18,6 @@
 
 	* Application.cs: Ensure we rewind the source stream when
 	we're done with it.  Fixes #326
-
-2009-04-17  Chris Toshok  <toshok@ximian.com>
-
-	* Deployment.cs (InitializeDeployment): in the plugin/xap case,
-	call NativeMethods.deployment_set_is_loaded_from_xap so that the
-	unmanaged code can tell we came from a xap.
 
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
