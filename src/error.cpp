@@ -35,7 +35,7 @@ ErrorEventArgs::~ErrorEventArgs ()
 //
 
 ImageErrorEventArgs::ImageErrorEventArgs (const char *msg)
-  : ErrorEventArgs (ImageError, 0, msg)
+  : ErrorEventArgs (ImageError, 4001, msg)
 {
 	SetObjectType(Type::IMAGEERROREVENTARGS);
 }
