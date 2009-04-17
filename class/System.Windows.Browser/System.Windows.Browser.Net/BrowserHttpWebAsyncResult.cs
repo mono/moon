@@ -104,7 +104,7 @@ namespace System.Windows.Browser.Net
 		{
 			completed = true;
 
-			Helper.ThreadMemoryBarrier ();
+			Thread.MemoryBarrier ();
 
 			if (wait_handle != null)
 				wait_handle.Set ();

@@ -241,7 +241,7 @@ namespace Mono.Xaml
 				return  null;
 
 			if (Helper.GCHandleInDomain (target_ptr)) {
-				GCHandle handle = Helper.GCHandleFromIntPtr (target_ptr);
+				GCHandle handle = GCHandle.FromIntPtr (target_ptr);
 				return handle.Target;
 			}
 			else {

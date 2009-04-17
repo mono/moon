@@ -213,21 +213,6 @@ namespace Mono {
 			}
 		}
 
-		public static string GetStackTrace ()
-		{
-			return Environment.StackTrace;
-		}
-
-		public static void ThreadMemoryBarrier ()
-		{
-			Thread.MemoryBarrier ();
-		}
-
-		public static IntPtr AllocHGlobal (int cb)
-		{
-			return Marshal.AllocHGlobal (cb);
-		}
-
 		static MethodInfo inDomain;
 
 		public static bool GCHandleInDomain (IntPtr ptr)
@@ -259,16 +244,6 @@ namespace Mono {
 		public static void FreeHGlobal (IntPtr ptr)
 		{
 			Marshal.FreeHGlobal (ptr);
-		}
-
-		public static string PtrToStringAuto (IntPtr ptr)
-		{
-			return Marshal.PtrToStringAuto (ptr);
-		}
-
-		public static void DeleteDirectory (string path)
-		{
-			Directory.Delete (path, true);
 		}
 
 		public static IntPtr StreamToIntPtr (Stream stream)

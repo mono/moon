@@ -177,11 +177,11 @@ namespace Mono {
 
 				case Kind.MANAGED:
 					IntPtr managed_object = val->u.p;
-					GCHandle handle = Helper.GCHandleFromIntPtr (managed_object);
+					GCHandle handle = GCHandle.FromIntPtr (managed_object);
 					return handle.Target;
 
 				case Kind.STRING: {
-					string str = Helper.PtrToStringAuto (val->u.p);
+					string str = Marshal.PtrToStringAuto (val->u.p);
 					if (type == null)
 						return str;
 					
@@ -196,18 +196,18 @@ namespace Mono {
 					UnmanagedUri *uri = (UnmanagedUri*)val->u.p;
 					return uri->originalString == IntPtr.Zero
 						? new Uri("", UriKind.Relative)
-						: new Uri (Helper.PtrToStringAuto (uri->originalString),
+						: new Uri (Marshal.PtrToStringAuto (uri->originalString),
 							   uri->isAbsolute ? UriKind.Absolute : UriKind.Relative);
 				}
 
 				case Kind.XMLLANGUAGE: {
-					string str = Helper.PtrToStringAuto (val->u.p);
+					string str = Marshal.PtrToStringAuto (val->u.p);
 					return XmlLanguage.GetLanguage (str);
 				}
 
 				case Kind.FONTFAMILY: {
 					UnmanagedFontFamily *family = (UnmanagedFontFamily*)val->u.p;
-					return new FontFamily (family == null ? null : Helper.PtrToStringAuto (family->source));
+					return new FontFamily (family == null ? null : Marshal.PtrToStringAuto (family->source));
 				}
 
 				case Kind.FONTSOURCE: {
@@ -218,7 +218,7 @@ namespace Mono {
 					callbacks = new ManagedStreamCallbacks ();
 					Marshal.PtrToStructure (source->stream, callbacks);
 					
-					wrapper = (StreamWrapper) Helper.GCHandleFromIntPtr (callbacks.handle).Target;
+					wrapper = (StreamWrapper) GCHandle.FromIntPtr (callbacks.handle).Target;
 					
 					return new FontSource (wrapper.stream);
 				}
@@ -229,7 +229,7 @@ namespace Mono {
 						return new PropertyPath (null);
 					if (propertypath->property != IntPtr.Zero)
 						return null;
-					return new PropertyPath (Helper.PtrToStringAuto (propertypath->pathString));
+					return new PropertyPath (Marshal.PtrToStringAuto (propertypath->pathString));
 				}
 
 				case Kind.POINT: {
@@ -300,8 +300,8 @@ namespace Mono {
 					if (type_info == null)
 						return null;
 
-					string assembly_name = Helper.PtrToStringAuto (type_info->assembly_name);
-					string full_name = Helper.PtrToStringAuto (type_info->full_name);
+					string assembly_name = Marshal.PtrToStringAuto (type_info->assembly_name);
+					string full_name = Marshal.PtrToStringAuto (type_info->full_name);
 
 					Assembly asm = Application.GetAssembly (assembly_name);
 					if (asm != null)
@@ -412,37 +412,37 @@ namespace Mono {
 				else if (v is Rect) {
 					Rect rect = (Rect) v;
 					value.k = Kind.RECT;
-					value.u.p = Helper.AllocHGlobal (sizeof (Rect));
+					value.u.p = Marshal.AllocHGlobal (sizeof (Rect));
 					Marshal.StructureToPtr (rect, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is Size) {
 					Size size = (Size) v;
 					value.k = Kind.SIZE;
-					value.u.p = Helper.AllocHGlobal (sizeof (Size));
+					value.u.p = Marshal.AllocHGlobal (sizeof (Size));
 					Marshal.StructureToPtr (size, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is CornerRadius) {
 					CornerRadius corner = (CornerRadius) v;
 					value.k = Kind.CORNERRADIUS;
-					value.u.p = Helper.AllocHGlobal (sizeof (CornerRadius));
+					value.u.p = Marshal.AllocHGlobal (sizeof (CornerRadius));
 					Marshal.StructureToPtr (corner, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is Point) {
 					Point pnt = (Point) v;
 					value.k = Kind.POINT;
-					value.u.p = Helper.AllocHGlobal (sizeof (Point));
+					value.u.p = Marshal.AllocHGlobal (sizeof (Point));
 					Marshal.StructureToPtr (pnt, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is Thickness) {
 					Thickness thickness = (Thickness)v;
 					value.k = Kind.THICKNESS;
-					value.u.p = Helper.AllocHGlobal (sizeof (Thickness));
+					value.u.p = Marshal.AllocHGlobal (sizeof (Thickness));
 					Marshal.StructureToPtr (thickness, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is Color) {
 					Color c = (Color) v;
 					value.k = Kind.COLOR;
-					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedColor));
+					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedColor));
 					UnmanagedColor* color = (UnmanagedColor*) value.u.p;
 					color->r = c.R / 255.0f;
 					color->g = c.G / 255.0f;
@@ -457,32 +457,32 @@ namespace Mono {
 				else if (v is Duration) {
 					Duration d = (Duration) v;
 					value.k = Kind.DURATION;
-					value.u.p = Helper.AllocHGlobal (sizeof (Duration));
+					value.u.p = Marshal.AllocHGlobal (sizeof (Duration));
 					Marshal.StructureToPtr (d, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is KeyTime) {
 					KeyTime k = (KeyTime) v;
 					value.k = Kind.KEYTIME;
-					value.u.p = Helper.AllocHGlobal (sizeof (KeyTime));
+					value.u.p = Marshal.AllocHGlobal (sizeof (KeyTime));
 					Marshal.StructureToPtr (k, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is RepeatBehavior) {
 					RepeatBehavior d = (RepeatBehavior) v;
 					value.k = Kind.REPEATBEHAVIOR;
-					value.u.p = Helper.AllocHGlobal (sizeof (RepeatBehavior));
+					value.u.p = Marshal.AllocHGlobal (sizeof (RepeatBehavior));
 					Marshal.StructureToPtr (d, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is FontFamily) {
 					FontFamily family = (FontFamily) v;
 					value.k = Kind.FONTFAMILY;
-					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedFontFamily));
+					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontFamily));
 					Marshal.StructureToPtr (family, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if (v is FontSource) {
 					FontSource source = (FontSource) v;
 					
 					value.k = Kind.FONTSOURCE;
-					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedFontSource));
+					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontSource));
 					UnmanagedFontSource *ufs = (UnmanagedFontSource *) value.u.p;
 					ManagedStreamCallbacks callbacks = source.wrapper.GetCallbacks ();
 					Marshal.StructureToPtr (callbacks, ufs->stream, false);
@@ -490,7 +490,7 @@ namespace Mono {
 				else if (v is PropertyPath) {
 					PropertyPath propertypath = (PropertyPath) v;
 					value.k = Kind.PROPERTYPATH;
-					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedPropertyPath));
+					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedPropertyPath));
 
 					UnmanagedPropertyPath *upp = (UnmanagedPropertyPath *) value.u.p;
 					upp->property = propertypath.NativeDP;
@@ -503,7 +503,7 @@ namespace Mono {
 					Uri uri = (Uri) v;
 
 					value.k = Kind.URI;
-					value.u.p = Helper.AllocHGlobal (sizeof (UnmanagedUri));
+					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedUri));
 
 					UnmanagedUri *uuri = (UnmanagedUri*)value.u.p;
 					uuri->scheme = IntPtr.Zero;
@@ -538,7 +538,7 @@ namespace Mono {
 				else if (v is GridLength) {
 					GridLength gl = (GridLength) v;
 					value.k = Kind.GRIDLENGTH;
-					value.u.p = Helper.AllocHGlobal (sizeof (GridLength));
+					value.u.p = Marshal.AllocHGlobal (sizeof (GridLength));
 					Marshal.StructureToPtr (gl, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
 				else if ((v is FontStretch) || (v is FontStyle) || (v is FontWeight) || (v is PixelFormat)) {
@@ -560,7 +560,7 @@ namespace Mono {
 					mti.full_name = StringToIntPtr (t.FullName);
 
 					value.k = Kind.MANAGEDTYPEINFO;
-					value.u.p = Helper.AllocHGlobal (sizeof (ManagedTypeInfo));
+					value.u.p = Marshal.AllocHGlobal (sizeof (ManagedTypeInfo));
 					Marshal.StructureToPtr (mti, value.u.p, false);
 				}
 				else {
@@ -581,7 +581,7 @@ namespace Mono {
 		private static IntPtr StringToIntPtr (string str)
 		{
 			byte [] bytes = System.Text.Encoding.UTF8.GetBytes (str);
-			IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
+			IntPtr result = Marshal.AllocHGlobal (bytes.Length + 1);
 			Marshal.Copy (bytes, 0, result, bytes.Length);
 			Marshal.WriteByte (result, bytes.Length, 0);
 

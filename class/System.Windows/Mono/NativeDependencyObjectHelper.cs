@@ -196,7 +196,7 @@ namespace Mono {
 			INativeDependencyObjectWrapper wrapper = (INativeDependencyObjectWrapper) CreateObject (k, ptr);
 			if (wrapper == null){
 				Report.Warning ("System.Windows: Returning a null object, did not know how to construct {0}", k);
-				Report.Warning (Helper.GetStackTrace ());
+				Report.Warning (Environment.StackTrace);
 			}
 
 			return wrapper;

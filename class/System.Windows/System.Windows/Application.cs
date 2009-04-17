@@ -101,7 +101,7 @@ namespace System.Windows {
 				Exit (this, EventArgs.Empty);
 			
 			try {
-				Helper.DeleteDirectory (Deployment.Current.XapDir);
+				Directory.Delete (Deployment.Current.XapDir, true);
 				Deployment.Current.XapDir = null;
 			} catch {
 			}
@@ -132,8 +132,8 @@ namespace System.Windows {
 			ManagedTypeInfo type_info = (ManagedTypeInfo)Marshal.PtrToStructure (type_info_ptr, typeof (ManagedTypeInfo));
 			Type type = null;
 
-			string assembly_name = Helper.PtrToStringAuto (type_info.assembly_name);
-			string full_name = Helper.PtrToStringAuto (type_info.full_name);
+			string assembly_name = Marshal.PtrToStringAuto (type_info.assembly_name);
+			string full_name = Marshal.PtrToStringAuto (type_info.full_name);
 
 			Assembly asm = Application.GetAssembly (assembly_name);
 			if (asm == null) {

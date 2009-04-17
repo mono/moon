@@ -68,7 +68,7 @@ namespace Mono
 			}
 			
 			if (gchandle_ptr != IntPtr.Zero) {
-				Helper.GCHandleFromIntPtr (gchandle_ptr).Free ();
+				GCHandle.FromIntPtr (gchandle_ptr).Free ();
 				gchandle_ptr = IntPtr.Zero;
 			}
 		}

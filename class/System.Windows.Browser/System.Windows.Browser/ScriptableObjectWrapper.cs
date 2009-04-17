@@ -266,36 +266,18 @@ namespace System.Windows.Browser
 
 			switch (Type.GetTypeCode (o.GetType())) {
 			case TypeCode.Boolean:
-				v.k = Kind.BOOL;
-				v.u.i32 = ((bool) o) ? 1 : 0;
-				break;
-			case TypeCode.Double:
-				v.k = Kind.DOUBLE;
-				v.u.d = (double)o;
-				break;
+			case TypeCode.Double:		
 			case TypeCode.Int32:
-				v.k = Kind.INT32;
-				v.u.i32 = (int)o;
-				break;
-			case TypeCode.UInt32:
-				v.k = Kind.UINT32;
-				v.u.ui32 = (uint)o;
-				break;
+			case TypeCode.UInt32:			
 			case TypeCode.Int64:
-				v.k = Kind.INT64;
-				v.u.i64 = (long)o;
-				break;
-			case TypeCode.UInt64:
-				v.k = Kind.UINT64;
-				v.u.ui64 = (ulong)o;
-				break;
+			case TypeCode.UInt64:			
 			case TypeCode.String:
-				v.k = Kind.STRING;
-				byte[] bytes = System.Text.Encoding.UTF8.GetBytes (o as string);
-				IntPtr result = Helper.AllocHGlobal (bytes.Length + 1);
-				Marshal.Copy (bytes, 0, result, bytes.Length);
-				Marshal.WriteByte (result, bytes.Length, 0);
-				v.u.p = result;
+				//
+				// XXX - jackson: I left the switch in because Value.FromObject allows way more types
+				// than this method used to.
+				//
+				
+				v = Value.FromObject (o);
 				break;
 			case TypeCode.Object:
 				//Console.Write ("Trying to marshal managed object {0}...", o.GetType ().FullName);
@@ -308,10 +290,8 @@ namespace System.Windows.Browser
 					v.u.p = wrapper.Handle;
 					v.k = Kind.NPOBJ;
 				} else {
-					GCHandle handle = new GCHandle ();
-					handle.Target = o;
-					v.u.p = Helper.GCHandleToIntPtr (handle);
-					v.k = Kind.MANAGED;
+					// This should create an object of type MANAGED
+					v = Value.FromObject (o);
 				}
 				//Console.WriteLine ("  Marshalled as {0}", v.k);
 				break;

@@ -107,7 +107,7 @@ namespace System.Windows.Media
 		static void CloseMediaInternal (IntPtr instance)
 		{
 			try {
-				GCHandle handle = Mono.Helper.GCHandleFromIntPtr (instance);
+				GCHandle handle = GCHandle.FromIntPtr (instance);
 				((MediaStreamSource) handle.Target).CloseMediaInternal ();
 			} catch (Exception ex) {
 				try {
@@ -120,7 +120,7 @@ namespace System.Windows.Media
 		static void GetDiagnosticAsyncInternal (IntPtr instance, MediaStreamSourceDiagnosticKind diagnosticKind)
 		{
 			try {
-				GCHandle handle = Mono.Helper.GCHandleFromIntPtr (instance);
+				GCHandle handle = GCHandle.FromIntPtr (instance);
 				((MediaStreamSource) handle.Target).GetDiagnosticAsyncInternal (diagnosticKind);
 			} catch (Exception ex) {
 				try {
@@ -133,7 +133,7 @@ namespace System.Windows.Media
 		static void GetSampleAsyncInternal (IntPtr instance, MediaStreamType mediaStreamType)
 		{
 			try {
-				GCHandle handle = Mono.Helper.GCHandleFromIntPtr (instance);
+				GCHandle handle = GCHandle.FromIntPtr (instance);
 				((MediaStreamSource) handle.Target).GetSampleAsyncInternal (mediaStreamType);
 			} catch (Exception ex) {
 				try {
@@ -146,7 +146,7 @@ namespace System.Windows.Media
 		static void OpenMediaAsyncInternal (IntPtr instance, IntPtr demuxer)
 		{
 			try {
-				GCHandle handle = Mono.Helper.GCHandleFromIntPtr (instance);
+				GCHandle handle = GCHandle.FromIntPtr (instance);
 				((MediaStreamSource) handle.Target).OpenMediaAsyncInternal (demuxer);
 			} catch (Exception ex) {
 				try {
@@ -159,7 +159,7 @@ namespace System.Windows.Media
 		static void SeekAsyncInternal (IntPtr instance, long seekToTime)
 		{
 			try {
-				GCHandle handle = Mono.Helper.GCHandleFromIntPtr (instance);
+				GCHandle handle = GCHandle.FromIntPtr (instance);
 				((MediaStreamSource) handle.Target).SeekAsyncInternal (seekToTime);
 			} catch (Exception ex) {
 				try {
@@ -172,7 +172,7 @@ namespace System.Windows.Media
 		static void SwitchMediaStreamAsyncInternal (IntPtr instance, MediaStreamDescription mediaStreamDescription)
 		{
 			try {
-				GCHandle handle = Mono.Helper.GCHandleFromIntPtr (instance);
+				GCHandle handle = GCHandle.FromIntPtr (instance);
 				((MediaStreamSource) handle.Target).SwitchMediaStreamAsyncInternal (mediaStreamDescription);
 			} catch (Exception ex) {
 				try {
