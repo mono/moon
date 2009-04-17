@@ -316,6 +316,7 @@ namespace Moonlight {
 			
 			zip_args.AppendFormat (" AppManifest.xaml ");
 			zip_args.AppendFormat (" {0}.dll ", ApplicationName);
+			zip_args.AppendFormat (" {0}.dll.mdb ", ApplicationName);
 
 			return RunProcess ("zip", zip_args.ToString ());
 			

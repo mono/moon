@@ -1,3 +1,7 @@
+2009-04-17  Larry Ewing  <lewing@novell.com>
+
+	* mxap.cs: add the .mdb file to the list of genertated files.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mxap.mdp: Add a project for each tool, and clean up some of
