@@ -15,6 +15,7 @@
 
 #include "panel.h"
 
+/* @ContentProperty="Child" */
 /*@Namespace=System.Windows.Controls.Primitives*/
 class Popup : public FrameworkElement {
  public:

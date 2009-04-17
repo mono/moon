@@ -273,6 +273,7 @@ namespace System.Windows.Controls {
 }
 
 namespace System.Windows.Controls.Primitives {
+	[ContentProperty ("Child")]
 	partial class Popup {
 		public Popup () : base (NativeMethods.popup_new ()) {}
 		internal Popup (IntPtr raw) : base (raw) {}

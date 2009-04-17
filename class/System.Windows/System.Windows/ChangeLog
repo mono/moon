@@ -1,3 +1,8 @@
+2009-04-17  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyObject.g.cs: Correctly mark Popup.Child as its
+	  Content property.
+
 2009-04-17  Geoff Norton  <gnorton@novell.com>
 
 	* Application.cs: Ensure we rewind the source stream when

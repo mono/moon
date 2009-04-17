@@ -392,7 +392,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::POLYLINE] = new Type (Type::POLYLINE, Type::SHAPE, false, "Polyline", "POLYLINE", 0, 20, NULL, (create_inst_func *) polyline_new, NULL);
 	types [(int) Type::POLYLINESEGMENT] = new Type (Type::POLYLINESEGMENT, Type::PATHSEGMENT, false, "PolyLineSegment", "POLYLINESEGMENT", 0, 1, NULL, (create_inst_func *) poly_line_segment_new, NULL);
 	types [(int) Type::POLYQUADRATICBEZIERSEGMENT] = new Type (Type::POLYQUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, "PolyQuadraticBezierSegment", "POLYQUADRATICBEZIERSEGMENT", 0, 1, NULL, (create_inst_func *) poly_quadratic_bezier_segment_new, NULL);
-	types [(int) Type::POPUP] = new Type (Type::POPUP, Type::FRAMEWORKELEMENT, false, "Popup", "POPUP", 1, 21, Popup_Events, (create_inst_func *) popup_new, NULL);
+	types [(int) Type::POPUP] = new Type (Type::POPUP, Type::FRAMEWORKELEMENT, false, "Popup", "POPUP", 1, 21, Popup_Events, (create_inst_func *) popup_new, "Child");
 	types [(int) Type::POWEREASE] = new Type (Type::POWEREASE, Type::EASINGFUNCTIONBASE, false, "PowerEase", "POWEREASE", 0, 1, NULL, (create_inst_func *) power_ease_new, NULL);
 	types [(int) Type::PROGRESSIVESOURCE] = new Type (Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, "ProgressiveSource", "PROGRESSIVESOURCE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::PROPERTYPATH] = new Type (Type::PROPERTYPATH, Type::OBJECT, true, "PropertyPath", "PROPERTYPATH", 0, 0, NULL, NULL, NULL);

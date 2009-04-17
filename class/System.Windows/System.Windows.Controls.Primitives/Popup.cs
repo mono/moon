@@ -33,7 +33,6 @@ using System.Windows.Markup;
 
 namespace System.Windows.Controls.Primitives {
 
-	[ContentPropertyAttribute("Child", true)]
 	public sealed partial class Popup : FrameworkElement
 	{
 		static UnmanagedEventHandler DoNothing = delegate { };

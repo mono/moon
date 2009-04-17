@@ -1,3 +1,9 @@
+2009-04-17  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.h:
+	* type-generated.cpp: Correctly mark Popup.Child as its
+	  Content property.
+
 2009-04-17  Geoff Norton  <gnorton@novell.com>
 
 	* media.cpp: Ensure that we invalidate the image if the
