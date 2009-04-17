@@ -4393,6 +4393,19 @@ start_parse:
 			if (prop->GetId () == DependencyObject::NameProperty) {
 				// XXX toshok - I don't like doing this here... but it fixes airlines.
 				item->SetKey (attr[i+1]);
+
+				// XXX jackson - This shouldn't be here, it should be somewhere in the Name property
+				// handler, but moving it there doesn't work properly because items are not always parented
+				// so for now I'll set it here, and the case where someone modifies the NameProperty in code
+				// won't work properly (but isn't very common).
+
+				NameScope *scope = item->GetParentNameScope (p);
+				if (!item->GetAsDependencyObject ()->SetName (attr [i+1], scope)) {
+					parser_error (p, item->element_name, NULL, 2007,
+						      "You can't specify x:Name along with x:Key, or x:Key twice.");
+					return;
+				}
+				continue;
 			}
 
 			if (prop->IsReadOnly ()) {

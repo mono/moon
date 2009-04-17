@@ -1,3 +1,11 @@
+2009-04-17  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: When we are setting the Name property use the same
+	trick we are using for setting the x:Name property.  Grabbing the
+	parent element and making sure we get registered in that
+	namescope.  This isn't perfect, but should fix 95% of the managed
+	namescope problems.
+
 2009-04-17  Alan McGovern  <amcgovern@novell.com>
 
 	* popup.h:
