@@ -1,3 +1,7 @@
+2009-04-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* UnitTestHarness.csproj: Updated.
+
 2009-03-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* UnitTestHarness.csproj: Update project files to build

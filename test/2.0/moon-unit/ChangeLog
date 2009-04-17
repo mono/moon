@@ -1,5 +1,10 @@
 2009-04-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* moon-unit.mdp:
+	* moon-unit.csproj: Updated.
+
+2009-04-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Threading: Add a test case for not crashing when a
 	  thread doesn't handle an exception.
 

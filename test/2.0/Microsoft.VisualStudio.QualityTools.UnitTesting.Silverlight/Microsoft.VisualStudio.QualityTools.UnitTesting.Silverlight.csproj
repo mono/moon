@@ -16,7 +16,8 @@
     <ValidateXaml>true</ValidateXaml>
     <ThrowErrorsInValidation>false</ThrowErrorsInValidation>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>moonlight.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -91,15 +92,17 @@
     <Compile Include="System.Data\DataRow.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\moonlight.snk">
+      <Link>moonlight.snk</Link>
+    </None>
     <None Include="Microsoft.VisualStudio.TestTools.UnitTesting.Web\ChangeLog" />
     <None Include="Microsoft.VisualStudio.TestTools.UnitTesting\ChangeLog" />
-    <None Include="moonlight.snk" />
     <None Include="System.Data.Common\ChangeLog" />
     <None Include="System.Data\ChangeLog" />
     <None Include="Makefile.am" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties/" />
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -29,7 +29,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;SILVERLIGHT</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -54,6 +54,7 @@
     <Reference Include="system" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Controls, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
@@ -90,6 +91,12 @@
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileStreamTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageSettingsTest.cs" />
+    <Compile Include="System.Net\DnsEndPointTest.cs" />
+    <Compile Include="System.Net\HttpWebRequestTest.cs" />
+    <Compile Include="System.Net\WebClientTest.cs" />
+    <Compile Include="System.Net\WebHeaderCollectionTest.cs" />
+    <Compile Include="System.Net\WebRequestTest.cs" />
+    <Compile Include="System.Threading\ThreadTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\AutomationControlTypeTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\AutomationEventsTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\AutomationOrientationTest.cs" />
@@ -129,6 +136,7 @@
     <Compile Include="System.Windows.Automation\WindowPatternIdentifiersTest.cs" />
     <Compile Include="System.Windows.Automation\WindowVisualStateTest.cs" />
     <Compile Include="System.Windows.Browser\ScriptableTest.cs" />
+    <Compile Include="System.Windows.Browser\ScriptObjectTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\ButtonBaseTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\PopupTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\RangeBaseTest.cs" />
@@ -146,9 +154,11 @@
     <Compile Include="System.Windows.Controls\ControlTemplateTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTest.cs" />
     <Compile Include="System.Windows.Controls\GridTest.cs" />
+    <Compile Include="System.Windows.Controls\ImageTest.cs" />
     <Compile Include="System.Windows.Controls\InkPresenterTest.cs" />
     <Compile Include="System.Windows.Controls\ItemCollectionTest.cs" />
     <Compile Include="System.Windows.Controls\ItemsControlTest.cs" />
+    <Compile Include="System.Windows.Controls\ListBoxTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.SlowStream.cs" />
     <Compile Include="System.Windows.Controls\OpenFileDialogTest.cs" />
@@ -159,6 +169,7 @@
     <Compile Include="System.Windows.Controls\ScrollViewerTest.cs" />
     <Compile Include="System.Windows.Controls\SliderTest.cs" />
     <Compile Include="System.Windows.Controls\StackPanelTest.cs" />
+    <Compile Include="System.Windows.Controls\TabControlTests.cs" />
     <Compile Include="System.Windows.Controls\TextBlockTest.cs" />
     <Compile Include="System.Windows.Controls\TextBoxTest.cs" />
     <Compile Include="System.Windows.Controls\UIElementCollectionTest.cs" />
@@ -211,6 +222,7 @@
     <Compile Include="System.Windows.Threading\CrossThreadAccessTest.cs" />
     <Compile Include="System.Windows.Threading\DispatcherTest.cs" />
     <Compile Include="System.Windows\ApplicationTest.cs" />
+    <Compile Include="System.Windows\AssemblyPartTest.cs" />
     <Compile Include="System.Windows\CornerRadiusTest.cs" />
     <Compile Include="System.Windows\DependencyObjectTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyAttachedTest.cs" />
@@ -221,6 +233,7 @@
     <Compile Include="System.Windows\FontWeigthsTest.cs" />
     <Compile Include="System.Windows\FrameworkElementTest.cs" />
     <Compile Include="System.Windows\GridLengthTest.cs" />
+    <Compile Include="System.Windows\LogicalTreeTest.cs" />
     <Compile Include="System.Windows\PointTest.cs" />
     <Compile Include="System.Windows\PropertyPathTest.cs" />
     <Compile Include="System.Windows\PresentationFrameworkCollectionTest.cs" />
@@ -231,6 +244,10 @@
     <Compile Include="System.Windows\SetterTest.cs" />
     <Compile Include="System.Windows\SizeTest.cs" />
     <Compile Include="System.Windows\StyleTest.cs" />
+    <Compile Include="System.Windows\StyleTest2.cs" />
+    <Compile Include="System.Windows\StyleTest3.cs" />
+    <Compile Include="System.Windows\StyleTest4.cs" />
+    <Compile Include="System.Windows\StyleTest5.cs" />
     <Compile Include="System.Windows\TemplatePartAttributeTest.cs" />
     <Compile Include="System.Windows\TextDecorationsTest.cs" />
     <Compile Include="System.Windows\ThicknessTest.cs" />
@@ -428,10 +445,18 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="System.Windows.Controls\ControlTemplateTest.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
     <Page Include="System.Windows.Data\BindingConverter.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Resource Include="System.Windows\XamlStyle.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System.Windows.Ink\" />
