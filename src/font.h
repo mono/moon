@@ -31,6 +31,7 @@ class TextFontDescription;
 // Silverlight accepts negative values ]0,-475[ as bold and everything over 1023 as normal
 #define FONT_LOWER_BOLD_LIMIT	-475
 #define FONT_UPPER_BOLD_LIMIT	1024
+#define GLYPH_CACHE_SIZE         256
 
 enum FontMask {
 	FontMaskFamily   = (1 << 0),
@@ -127,7 +128,7 @@ class TextFont {
 	FontFace *face;
 	double size;
 	
-	GlyphInfo glyphs[256];
+	GlyphInfo glyphs[GLYPH_CACHE_SIZE];
 	int nglyphs;
 	
 	TextFont (FontFace *face, FcPattern *pattern);

@@ -1,3 +1,8 @@
+2009-04-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.h: Changed the glyph cache size to be #defined rather than
+	hard-coded everywhere.
+
 2009-04-17  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: When we are setting the Name property use the same

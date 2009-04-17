@@ -1847,7 +1847,7 @@ TextFont::GetGlyphInfo (gunichar unichar, guint32 index)
 	if (!face->LoadGlyph (size, &glyph))
 		return NULL;
 	
-	if (nglyphs == 256) {
+	if (nglyphs == GLYPH_CACHE_SIZE) {
 		// need to expire the least requested glyph (which will be the last element in the array after sorting)
 		qsort (glyphs, nglyphs, sizeof (GlyphInfo), glyphsort);
 		slot = &glyphs[nglyphs - 1];
