@@ -1,3 +1,8 @@
+2009-04-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: Set AppDomain "xap_uri" to the application
+	identity URI (needed by isolated storage inside mscorlib).
+
 2009-04-17  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.g.cs: Correctly mark Popup.Child as its
