@@ -308,8 +308,6 @@ Surface::Surface (MoonWindow *window)
 	full_screen_message = NULL;
 	source_location = NULL;
 
-	xap_location = NULL;
-
 	fps_report = fps_report_default;
 	fps_data = NULL;
 
@@ -363,8 +361,6 @@ Surface::~Surface ()
 	delete input_list;
 	
 	g_free (source_location);
-
-	g_free (xap_location);
 
 	if (fullscreen_window)
 		delete fullscreen_window;
