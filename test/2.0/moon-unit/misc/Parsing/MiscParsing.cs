@@ -33,7 +33,6 @@ namespace MoonTest.Misc.Parsing
 	public class MiscParsingTest : SilverlightTest
 	{
 		[TestMethod]
-		[MoonlightBug]
 		public void FindNameOfManagedControl ()
 		{
 			MiscParsingTestPage page = new MiscParsingTestPage ();

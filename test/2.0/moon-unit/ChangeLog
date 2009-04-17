@@ -1,5 +1,9 @@
 2009-04-17  Jackson Harper  <jackson@ximian.com>
 
+	* misc/Parsing/MiscParsing.cs: This test passes now.
+
+2009-04-17  Jackson Harper  <jackson@ximian.com>
+
 	* misc/Parsing/MiscParsingCanvas.xaml: Part of this test was
 	missing, we need to ensure that we are pulling the sub element
 	that is also named 'the_canvas' here.
