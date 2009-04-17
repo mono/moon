@@ -160,6 +160,7 @@ namespace System.Windows {
 			if (!ReadManifest ())
 				return false;
 
+			NativeMethods.deployment_set_is_loaded_from_xap (native, true);
 			return LoadAssemblies ();
 		}
 

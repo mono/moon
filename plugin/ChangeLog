@@ -10,6 +10,12 @@
 
 	* plugin-debug.cpp: Avoid having a null deployment in selection_changed.
 
+2009-04-17  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.h|.cpp: remove loaded_xap field, and use
+	GetDeployment()->IsLoadedFromXap().  Also, switch from
+	Surface::SetXapLocation to Deployment::SetXapLocation.
+
 2009-04-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.h:

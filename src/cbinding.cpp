@@ -1047,6 +1047,16 @@ deployment_set_current_application (Deployment *instance, Application *value)
 }
 
 
+void
+deployment_set_is_loaded_from_xap (Deployment *instance, bool flag)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetIsLoadedFromXap (flag);
+}
+
+
 /**
  * DiscreteColorKeyFrame
  **/

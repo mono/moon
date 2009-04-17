@@ -95,6 +95,13 @@ public:
 	void TrackObjectCreated (EventObject *obj);
 	void TrackObjectDestroyed (EventObject *obj);
 
+	bool IsLoadedFromXap ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetIsLoadedFromXap (bool flag);
+
+	void SetXapLocation (const char *location);
+	const char *GetXapLocation ();
+
 	const static int ShuttingDownEvent;
 
 protected:
@@ -112,6 +119,10 @@ private:
 	Application* current_app;
 	MonoDomain *domain;
 	List *downloaders;
+
+	bool is_loaded_from_xap;
+	// xap location, to help forging the right uris for downloaders
+	char *xap_location;
 
 #if GLIB_CHECK_VERSION(2,10,0)
 	volatile gpointer pending_unrefs;

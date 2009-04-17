@@ -203,8 +203,6 @@ class PluginInstance
 	PluginXamlLoader *xaml_loader;
 	Deployment   *deployment;
 #if PLUGIN_SL_2_0
-	bool xap_loaded;
-
 	MonoAssembly *system_windows_assembly;
 
 	static bool mono_is_loaded;

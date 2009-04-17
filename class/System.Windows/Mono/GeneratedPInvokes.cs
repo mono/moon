@@ -699,6 +699,10 @@ namespace Mono {
 		public extern static void deployment_set_current_application (IntPtr instance, IntPtr value);
 
 		[DllImport ("moon")]
+		// void deployment_set_is_loaded_from_xap (Deployment *instance, bool flag);
+		public extern static void deployment_set_is_loaded_from_xap (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool flag);
+
+		[DllImport ("moon")]
 		// DiscreteColorKeyFrame *discrete_color_key_frame_new ();
 		public extern static IntPtr discrete_color_key_frame_new ();
 

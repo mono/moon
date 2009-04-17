@@ -98,6 +98,17 @@
 	* dirty.cpp (UpdateLayout): a quick hack to get popups sizing
 	correctly.
 
+2009-04-17  Chris Toshok  <toshok@ximian.com>
+
+	* deployment.h|.cpp (class Deployment): add IsLoadedFromXap
+	getter/setter here, and move XapLocation from surface to here.
+
+	* runtime.h|.cpp: remove SetXapLocation/GetXapLocation.
+
+	* downloader.cpp: use Deployment::GetXapLocation
+
+	* cbinding.h|chinding.cpp: regen.
+
 2009-04-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (layout_word_wrap): The HANGUL enums weren't added to

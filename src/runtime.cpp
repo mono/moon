@@ -760,19 +760,6 @@ Surface::SetSourceLocation (const char* location)
 	source_location = g_strdup (location);
 }
 
-const char*
-Surface::GetXapLocation ()
-{
-	return xap_location;
-}
-
-void
-Surface::SetXapLocation (const char* location)
-{
-	g_free (xap_location);
-	xap_location = g_strdup (location);
-}
-
 void 
 Surface::HideFullScreenMessage ()
 {

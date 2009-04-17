@@ -245,6 +245,8 @@ Deployment::Deployment()
 void
 Deployment::InnerConstructor ()
 {
+	is_loaded_from_xap = false;
+	xap_location = NULL;
 	current_app = NULL;
 	pending_unrefs = NULL;
 	objects_created = 0;
@@ -296,6 +298,8 @@ accumulate_last_n (gpointer key,
 
 Deployment::~Deployment()
 {
+	g_free (xap_location);
+
 	pthread_mutex_lock (&hash_mutex);
 	g_hash_table_remove (current_hash, domain);
 	pthread_mutex_unlock (&hash_mutex);
@@ -549,6 +553,31 @@ Deployment::TrackObjectDestroyed (EventObject *obj)
 
 	Track ("Destroyed", "");
 #endif
+}
+
+bool
+Deployment::IsLoadedFromXap ()
+{
+	return is_loaded_from_xap;
+}
+
+void
+Deployment::SetIsLoadedFromXap (bool flag)
+{
+	is_loaded_from_xap = flag;
+}
+
+void
+Deployment::SetXapLocation (const char *location)
+{
+	g_free (xap_location);
+	xap_location = g_strdup (location);
+}
+
+const char*
+Deployment::GetXapLocation ()
+{
+	return xap_location;
 }
 
 /*

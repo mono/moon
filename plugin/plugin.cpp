@@ -402,8 +402,6 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	vm_missing_file = NULL;
 	xaml_loader = NULL;
 #if PLUGIN_SL_2_0
-	xap_loaded = false;
-
 	system_windows_assembly = NULL;
 
 	moon_load_xaml =
@@ -1145,23 +1143,19 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 		return;
 	}
 
-	if (surface)
-		surface->SetXapLocation (url);
-
 	if (source_location)
 		g_free (source_location);
 	source_location = g_strdup (url);
 
 	ManagedInitializeDeployment (fname);
-	xap_loaded = true;
+	GetDeployment()->SetXapLocation (url);
 }
 
 void
 PluginInstance::DestroyApplication ()
 {
-	if (xap_loaded)
+	if (GetDeployment()->IsLoadedFromXap())
 		ManagedDestroyApplication ();
-	xap_loaded = false;
 }
 #endif
 

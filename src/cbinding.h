@@ -474,6 +474,9 @@ void deployment_set_current (Deployment *value);
 /* @GeneratePInvoke */
 void deployment_set_current_application (Deployment *instance, Application *value);
 
+/* @GeneratePInvoke */
+void deployment_set_is_loaded_from_xap (Deployment *instance, bool flag);
+
 /**
  * DiscreteColorKeyFrame
  **/
