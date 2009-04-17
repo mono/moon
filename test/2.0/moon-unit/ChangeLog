@@ -1,5 +1,11 @@
 2009-04-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* App.xaml.cs: Add support for testing unhandled exceptions by
+	  temporarily removing the unhandled exception handler from
+	  the harness.
+
+2009-04-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Fix
 	  another test which times out on slow machines.
 

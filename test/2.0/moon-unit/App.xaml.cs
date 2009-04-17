@@ -20,16 +20,25 @@ namespace Mono.Moonlight.UnitTesting
 {
 	public partial class App : Application
 	{
+		public static App Instance;
+	
 		public App()
 		{
+			Instance = this;
 			this.Startup += this.Application_Startup;
-
+			
 			InitializeComponent();
 		}
 
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
 			this.RootVisual = Testing.CreateTestPage (this);
+		}
+
+		public event EventHandler<ApplicationUnhandledExceptionEventArgs> CustomUnhandledExceptionHandler
+		{
+			add { Testing.CustomUnhandledExceptionHandler += value; }
+			remove { Testing.CustomUnhandledExceptionHandler -= value; }
 		}
 	}
 

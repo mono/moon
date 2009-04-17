@@ -43,6 +43,7 @@ using System.Windows.Shapes;
 using Microsoft.Silverlight.Testing;
 using Microsoft.Silverlight.Testing.Harness;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing.UnitTesting.Harness;
 
 namespace Mono.Moonlight.UnitTesting
 {
@@ -50,15 +51,40 @@ namespace Mono.Moonlight.UnitTesting
 	{
 		static MoonLogProvider moonlog;
 		static UIElement test_page;
+		static UnitTestSettings settings;
+		static UnitTestHarness harness;
+
+		// for tests which test that a unhandled application exception is raised,
+		// we need to disable the harness' handling of the unhandled application exception,
+		// otherwise those tests will always fail. So we have a custom unhandled exception
+		// event, which, if anybody is listening is raised, and if nobody is listening
+		// the harness handles it.
+		static int custom_unhandled_exception_handler_counter;
+		static EventHandler<ApplicationUnhandledExceptionEventArgs> custom_unhandled_exception_handler;
+
+		public static event EventHandler<ApplicationUnhandledExceptionEventArgs> CustomUnhandledExceptionHandler
+		{
+			add { 
+				custom_unhandled_exception_handler += value;
+				custom_unhandled_exception_handler_counter++;
+				harness.InterceptAllExceptions = false;
+			}
+			remove {
+				custom_unhandled_exception_handler -= value;
+				custom_unhandled_exception_handler_counter--;
+				harness.InterceptAllExceptions = custom_unhandled_exception_handler_counter == 0;
+			}
+		}
 
 		public static UIElement CreateTestPage (Application app)
 		{
-			UnitTestSettings settings = new UnitTestSettings ();
+			settings = new UnitTestSettings ();
 			
 			app.UnhandledException += Application_UnhandledException;
 			
 			moonlog = new MoonLogProvider ();
-			settings.TestHarness = new Microsoft.Silverlight.Testing.UnitTesting.Harness.UnitTestHarness ();
+			harness = new Microsoft.Silverlight.Testing.UnitTesting.Harness.UnitTestHarness ();
+			settings.TestHarness = harness; 
 			settings.TestAssemblies.Add (app.GetType ().Assembly);
 			UnitTestSystem.PrepareCustomLogProviders (settings);
 			settings.LogProviders.Add (moonlog);
@@ -96,6 +122,11 @@ namespace Mono.Moonlight.UnitTesting
 		
 		private static void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
 		{
+			if (custom_unhandled_exception_handler_counter != 0) {
+				custom_unhandled_exception_handler (sender, e);
+				return;
+			}
+
 			// If the app is running outside of the debugger then report the exception using
 			// the browser's exception mechanism. On IE this will display it a yellow alert 
 			// icon in the status bar and Firefox will display a script error.
