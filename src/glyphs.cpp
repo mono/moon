@@ -218,7 +218,7 @@ Glyphs::Layout ()
 			i = 0;
 			do {
 				if (attr && (attr->set & Index)) {
-					if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
+					if (!(glyph = font->GetGlyphInfoByIndex (attr->index, (StyleSimulations) style_simulations)))
 						goto next1;
 				} else if (cluster) {
 					// indexes MUST be specified for each glyph in a cluster
@@ -227,8 +227,7 @@ Glyphs::Layout ()
 					path = NULL;
 					goto done;
 				} else {
-					glyph = font->GetGlyphInfo (*c);
-					if (!glyph)
+					if (!(glyph = font->GetGlyphInfo (*c, (StyleSimulations) style_simulations)))
 						goto next1;
 				}
 				
@@ -314,7 +313,7 @@ Glyphs::Layout ()
 			goto done;
 		}
 		
-		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
+		if (!(glyph = font->GetGlyphInfoByIndex (attr->index, (StyleSimulations) style_simulations)))
 			goto next;
 		
 		y1 = y0;

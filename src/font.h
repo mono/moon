@@ -64,7 +64,8 @@ struct GlyphInfo {
 	guint32 index;
 	GlyphMetrics metrics;
 	moon_path *path;
-	int requested;
+	int simulations:2;
+	int requested:30;
 };
 
 struct FontFaceExtents {
@@ -113,7 +114,7 @@ class FontFace {
 	
 	double Kerning (double size, gunichar left, gunichar right);
 	void GetExtents (double size, FontFaceExtents *extents);
-	bool LoadGlyph (double size, GlyphInfo *glyph);
+	bool LoadGlyph (double size, GlyphInfo *glyph, StyleSimulations sims = StyleSimulationsNone);
 };
 
 
@@ -143,9 +144,9 @@ class TextFont {
 	
 	static TextFont *Load (const TextFontDescription *desc);
 	
-	GlyphInfo *GetGlyphInfo (gunichar unichar);
-	GlyphInfo *GetGlyphInfoByIndex (guint32 index);
-	GlyphInfo *GetGlyphInfo (gunichar unichar, guint32 index);
+	GlyphInfo *GetGlyphInfo (gunichar unichar, StyleSimulations sims = StyleSimulationsNone);
+	GlyphInfo *GetGlyphInfoByIndex (guint32 index, StyleSimulations sims = StyleSimulationsNone);
+	GlyphInfo *GetGlyphInfo (gunichar unichar, guint32 index, StyleSimulations sims = StyleSimulationsNone);
 	
 	bool HasGlyph (gunichar unichar);
 	

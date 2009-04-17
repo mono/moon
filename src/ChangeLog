@@ -1,3 +1,17 @@
+2009-04-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* glyphs.cpp (Layout): Pass our StyleSimulations along to
+	GetGlyphInfo() so that we can simulate Bold or Italics as the user
+	has requested.
+
+	* font.cpp (FontFace::LoadGlyph): Now takes a StyleSimulations
+	argument (which defaults to None). Adjust the glyph for Bold
+	and/or Italics if requested.
+	(TextFont::GetGlyphInfo): Now takes a StyleSimulations
+	argument (which defaults to None). When looking up the glyph in
+	the cache, make sure that the simulations also match. When loading
+	a new glyph, pass along the StyleSimulations.
+
 2009-04-17  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp (Surface): remove references to removed variable.

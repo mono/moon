@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "zip/unzip.h"
 #include "moon-path.h"
@@ -36,6 +37,7 @@
 
 #include FT_OUTLINE_H
 #include FT_SYSTEM_H
+#include FT_GLYPH_H
 
 
 #define FONT_FACE_SIZE 41.0
@@ -52,9 +54,16 @@ static FcObjectType guid_object = {
 	FONT_GUID, FcTypeString
 };
 
-static const FT_Matrix invert_y = {
-        65535, 0,
-        0, -65535,
+#define EMBOLDEN_STRENGTH 0.75
+#define EMBOLDEN_STRENGTH_26_6 DOUBLE_TO_26_6 (EMBOLDEN_STRENGTH)
+#define EMBOLDEN_STRENGTH_16_16 DOUBLE_TO_16_16 (EMBOLDEN_STRENGTH)
+
+#define ITALIC_SLANT -17.5
+#define ITALIC_SLANT_RADIANS (ITALIC_SLANT * M_PI / 180.0)
+
+static const FT_Matrix italicize = {
+	DOUBLE_TO_16_16 (1.0), DOUBLE_TO_16_16 (tan (ITALIC_SLANT_RADIANS)),
+	DOUBLE_TO_16_16 (0.0), DOUBLE_TO_16_16 (1.0)
 };
 
 #define LOAD_FLAGS (FT_LOAD_NO_BITMAP | /*FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT |*/ FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_TARGET_NORMAL)
@@ -1593,9 +1602,11 @@ static const FT_Outline_Funcs outline_funcs = {
 };
 
 bool
-FontFace::LoadGlyph (double size, GlyphInfo *glyph)
+FontFace::LoadGlyph (double size, GlyphInfo *glyph, StyleSimulations sims)
 {
 	FT_Glyph_Metrics *metrics;
+	FT_Fixed hori_adj = 0;
+	FT_Pos bbox_adj = 0;
 	FT_Matrix matrix;
 	double scale;
 	
@@ -1624,10 +1635,20 @@ FontFace::LoadGlyph (double size, GlyphInfo *glyph)
 	if (FT_Render_Glyph (face->glyph, FT_RENDER_MODE_NORMAL) != 0)
 		return false;
 	
-	matrix.xx = (FT_Fixed) (65535 * scale);
+	// invert the glyph over the y-axis and scale
+	matrix.xx = DOUBLE_TO_16_16 (scale);
 	matrix.xy = 0;
-	matrix.yy = (FT_Fixed) (-65535 * scale);
 	matrix.yx = 0;
+	matrix.yy = -DOUBLE_TO_16_16 (scale);
+	
+	if ((sims & StyleSimulationsBold) != 0) {
+		FT_Outline_Embolden (&face->glyph->outline, EMBOLDEN_STRENGTH_26_6);
+		hori_adj = EMBOLDEN_STRENGTH_16_16;
+		bbox_adj = EMBOLDEN_STRENGTH_26_6;
+	}
+	
+	if ((sims & StyleSimulationsItalic) != 0)
+		FT_Matrix_Multiply (&italicize, &matrix);
 	
 	glyph->path = moon_path_new (8);
 	FT_Outline_Transform (&face->glyph->outline, &matrix);
@@ -1638,9 +1659,9 @@ FontFace::LoadGlyph (double size, GlyphInfo *glyph)
 	glyph->metrics.horiBearingX = DOUBLE_FROM_26_6 (metrics->horiBearingX) * scale;
 	glyph->metrics.horiBearingY = DOUBLE_FROM_26_6 (metrics->horiBearingY) * scale;
 	// always prefer linearHoriAdvance over horiAdvance since the later is rounded to an integer
-	glyph->metrics.horiAdvance = DOUBLE_FROM_16_16 (face->glyph->linearHoriAdvance) * scale;
-	glyph->metrics.height = DOUBLE_FROM_26_6 (metrics->height) * scale;
-	glyph->metrics.width = DOUBLE_FROM_26_6 (metrics->width) * scale;
+	glyph->metrics.horiAdvance = DOUBLE_FROM_16_16 (face->glyph->linearHoriAdvance + hori_adj) * scale;
+	glyph->metrics.height = DOUBLE_FROM_26_6 (metrics->height + bbox_adj) * scale;
+	glyph->metrics.width = DOUBLE_FROM_26_6 (metrics->width + bbox_adj) * scale;
 	
 	return true;
 }
@@ -1823,7 +1844,7 @@ glyphsort (const void *v1, const void *v2)
 }
 
 GlyphInfo *
-TextFont::GetGlyphInfo (gunichar unichar, guint32 index)
+TextFont::GetGlyphInfo (gunichar unichar, guint32 index, StyleSimulations sims)
 {
 	GlyphInfo glyph, *slot;
 	int i;
@@ -1832,19 +1853,20 @@ TextFont::GetGlyphInfo (gunichar unichar, guint32 index)
 		return NULL;
 	
 	for (i = 0; i < nglyphs; i++) {
-		if (glyphs[i].index == index) {
+		if (glyphs[i].index == index && (StyleSimulations) glyphs[i].simulations == sims) {
 			slot = &glyphs[i];
 			slot->requested++;
 			return slot;
 		}
 	}
 	
+	glyph.simulations = sims;
 	glyph.unichar = unichar;
 	glyph.index = index;
 	glyph.requested = 1;
 	glyph.path = NULL;
 	
-	if (!face->LoadGlyph (size, &glyph))
+	if (!face->LoadGlyph (size, &glyph, sims))
 		return NULL;
 	
 	if (nglyphs == GLYPH_CACHE_SIZE) {
@@ -1864,11 +1886,11 @@ TextFont::GetGlyphInfo (gunichar unichar, guint32 index)
 }
 
 static GlyphInfo ZeroWidthNoBreakSpace = {
-	0xFEFF, 0, { 0.0, 0.0, 0.0, 0.0, 0.0 }, NULL, 0
+	0xFEFF, 0, { 0.0, 0.0, 0.0, 0.0, 0.0 }, NULL, 0, 0
 };
 
 GlyphInfo *
-TextFont::GetGlyphInfo (gunichar unichar)
+TextFont::GetGlyphInfo (gunichar unichar, StyleSimulations sims)
 {
 	guint32 index;
 	
@@ -1877,17 +1899,17 @@ TextFont::GetGlyphInfo (gunichar unichar)
 	
 	index = face->GetCharIndex (unichar);
 	
-	return GetGlyphInfo (unichar, index);
+	return GetGlyphInfo (unichar, index, sims);
 }
 
 GlyphInfo *
-TextFont::GetGlyphInfoByIndex (guint32 index)
+TextFont::GetGlyphInfoByIndex (guint32 index, StyleSimulations sims)
 {
 	gunichar unichar;
 	
 	unichar = face->GetCharFromIndex (index);
 	
-	return GetGlyphInfo (unichar, index);
+	return GetGlyphInfo (unichar, index, sims);
 }
 
 bool
