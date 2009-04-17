@@ -1,5 +1,10 @@
 2009-04-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* System.Threading: Add a test case for not crashing when a
+	  thread doesn't handle an exception.
+
+2009-04-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* App.xaml.cs: Add support for testing unhandled exceptions by
 	  temporarily removing the unhandled exception handler from
 	  the harness.
