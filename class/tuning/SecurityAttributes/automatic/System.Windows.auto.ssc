@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 458 methods
+# 459 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -173,6 +173,7 @@
 +SSC-M: Mono.Types System.Windows.Deployment::get_Types()
 +SSC-M: System.Boolean System.Windows.Deployment::ReadManifest()
 +SSC-M: System.Boolean System.Windows.Deployment::InitializeDeployment()
++SSC-M: System.Boolean System.Windows.Deployment::InitializeDeployment(System.IntPtr,System.String)
 +SSC-M: System.Boolean System.Windows.Deployment::LoadAssemblies()
 +SSC-M: System.Boolean System.Windows.Deployment::CreateApplication()
 +SSC-M: System.Void System.Windows.Deployment::<LoadAssemblies>m__1E(System.Object,System.Net.OpenReadCompletedEventArgs)

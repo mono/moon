@@ -1,3 +1,10 @@
+2009-04-17  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.auto.sc: Add new deployment_set_is_loaded_from_xap 
+	p/invoke
+	* System.Windows.auto.ssc: Add Deployment.InitializeDeployment, 
+	caller to previous p/invoke
+
 2009-04-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.ssc: Remove some Helper.* methods and add
