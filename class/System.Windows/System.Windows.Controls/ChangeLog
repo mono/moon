@@ -1,3 +1,7 @@
+2009-04-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* SaveFileDialog.cs: Implement DefaultExtbehavior
+
 2009-04-15  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs: When an ItemsControl is templated, don't

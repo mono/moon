@@ -105,6 +105,12 @@ namespace System.Windows.Controls {
 			if (result == null)
 				return false;
 
+			// if we have a "default extension" specified and that we're not replacing an existing file
+			if (!String.IsNullOrEmpty (default_ext) && !System.IO.File.Exists (result)) {
+				// and that the file has no extention, then we supply our default
+				if (String.IsNullOrEmpty (Path.GetExtension (result)))
+					result = Path.ChangeExtension (result, default_ext);
+			}
 			file_info = new FileInfo (result);
 			
 			return true;
