@@ -1,5 +1,10 @@
 2009-04-17  Geoff Norton  <gnorton@novell.com>
 
+	* media.cpp: Ensure that we invalidate the image if the
+	BitmapImage has already been parsed (like from a SetSource call)
+
+2009-04-17  Geoff Norton  <gnorton@novell.com>
+
 	* error.cpp: Image errors use the code 4001, fixes #97
 
 2009-04-16  Jeffrey Stedfast  <fejj@novell.com>

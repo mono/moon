@@ -559,6 +559,11 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			((BitmapImage *)source)->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 			((BitmapImage *)source)->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			((BitmapImage *)source)->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+
+			if (((BitmapImage *)source)->GetPixelWidth () > 0 && ((BitmapImage *)source)->GetPixelHeight () > 0) {
+				ImageOpened ();
+				UpdateSize ();
+			}
 		}
 	}
 
