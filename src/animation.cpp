@@ -331,8 +331,6 @@ Animation::AllocateClock()
 				      Storyboard::GetTargetProperty (this) == NULL ? NULL : Storyboard::GetTargetProperty (this)->path);
 	clock->SetValue (DependencyObject::NameProperty, name);
 
-	AttachCompletedHandler ();
-
 	g_free (name);
 	return clock;
 }
