@@ -1,4 +1,4 @@
-olivedir  = $(prefix)/lib/mono/3.0
+desktopdir = $(prefix)/lib/mono/$(PACKAGE)
 silverdir = $(prefix)/lib/mono/2.1
 
 pkgconfigdir = $(prefix)/lib/pkgconfig
@@ -12,7 +12,7 @@ silver.pc: $(srcdir)/silver.pc.in Makefile
 	mv $@.tmp $@
 
 silverdesktop.pc: $(srcdir)/silverdesktop.pc.in Makefile
-	sed -e "s,@olivedir@,$(olivedir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/silverdesktop.pc.in > $@.tmp
+	sed -e "s,@desktopdir@,$(desktopdir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/silverdesktop.pc.in > $@.tmp
 	mv $@.tmp $@
 
 CLEANFILES =			\
