@@ -324,12 +324,14 @@ AnimationClock::~AnimationClock ()
 Clock*
 Animation::AllocateClock()
 {
-	Clock *clock = new AnimationClock (this);
+	clock = new AnimationClock (this);
 	char *name = g_strdup_printf ("AnimationClock for %s, targetobj = %p/%s, targetprop = %s", GetTypeName(),
 				      Storyboard::GetTargetName(this) == NULL ? NULL : FindName (Storyboard::GetTargetName(this)),
 				      Storyboard::GetTargetName(this),
 				      Storyboard::GetTargetProperty (this) == NULL ? NULL : Storyboard::GetTargetProperty (this)->path);
 	clock->SetValue (DependencyObject::NameProperty, name);
+
+	AttachCompletedHandler ();
 
 	g_free (name);
 	return clock;
