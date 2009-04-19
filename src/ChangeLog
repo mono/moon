@@ -1,3 +1,9 @@
+2009-04-19  Chris Toshok  <toshok@ximian.com>
+
+	* provider.cpp (InheritedPropertyValueProvider::GetPropertyValue):
+	inlines inherit their Language from the textblock, and textblocks
+	inherit it from frameworkelements.  part of fix for drt #952.
+
 2009-04-18  Chris Toshok  <toshok@ximian.com>
 
 	* clock.h|.cpp: move to the holy grail of a functional clock

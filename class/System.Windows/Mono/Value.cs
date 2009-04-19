@@ -524,7 +524,7 @@ namespace Mono {
 				else if (v is XmlLanguage) {
 					XmlLanguage lang = (XmlLanguage) v;
 					
-					value.k = Kind.XMLLANGUAGE;
+					value.k = Kind.STRING;
 					
 					value.u.p = StringToIntPtr (lang.IetfLanguageTag);
 				}

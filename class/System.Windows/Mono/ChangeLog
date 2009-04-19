@@ -1,3 +1,10 @@
+2009-04-19  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs (FromObject): until we're marshaling XmlLanguages as
+	something other than a string, we need to set the kind of the
+	Value to STRING.  This along with the provider.cpp fix fixes DRT
+	952.
+
 2009-04-18  Chris Toshok  <toshok@ximian.com>
 
 	* GeneratedPInvokes.cs: regen.

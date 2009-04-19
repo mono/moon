@@ -235,6 +235,8 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 				INHERIT1 (FontWeightProperty);
 				INHERIT1 (FontSizeProperty);
 
+				INHERIT3 (LanguageProperty);
+
 				INHERIT3 (DataContextProperty);
 
 				if (!inheritableProperty)
@@ -267,6 +269,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 		INHERIT1 (FontWeightProperty);
 		INHERIT1 (FontSizeProperty);
 
+		INHERIT2 (LanguageProperty);
 		INHERIT2 (TextDecorationsProperty);
 		INHERIT2 (FontFilenameProperty);
 		INHERIT2 (FontGUIDProperty);
