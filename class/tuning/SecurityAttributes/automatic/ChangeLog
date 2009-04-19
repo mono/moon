@@ -1,3 +1,9 @@
+2009-04-18  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.auto.sc: track new timeline/storyboard changes.
+
+	* System.Windows.auto.ssc: track new timeline/storyboard changes.
+
 2009-04-17  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.auto.sc: Add new deployment_set_is_loaded_from_xap 

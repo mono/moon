@@ -36,10 +36,27 @@ Timeline::Timeline ()
 	had_parent = false;
 	manual_target = NULL;
 	timeline_status = TIMELINE_STATUS_OK;
+	clock = NULL;
 }
 
 Timeline::~Timeline ()
 {
+}
+
+Clock*
+Timeline::AllocateClock ()
+{
+	clock = new Clock (this);
+	
+	AttachCompletedHandler ();
+
+	return clock;
+}
+
+Clock*
+Timeline::GetClock ()
+{
+	return clock;
 }
 
 bool
@@ -55,7 +72,7 @@ Timeline::Validate ()
 	// FIXME This should prolly be changed to a more generic if BeginTime > Duration
 	// Need to investigate, though SL checking seems to be very selective
 	if (duration->HasTimeSpan () && duration->GetTimeSpan () == 0 && 
-	    this->HasBeginTime () && this->GetBeginTime () > 0)
+	    this->GetBeginTime () > 0)
 		return false;
 
 	return true;
@@ -111,12 +128,6 @@ Timeline::GetNaturalDurationCore (Clock *clock)
 	return Duration::Automatic;
 }
 
-bool
-Timeline::HasBeginTime ()
-{
-	return GetValue (Timeline::BeginTimeProperty) != NULL;
-}
-
 TimeSpan
 Timeline::GetBeginTime ()
 {
@@ -124,6 +135,30 @@ Timeline::GetBeginTime ()
 	return v == NULL ? 0LL : v->AsTimeSpan();
 }
 
+void
+Timeline::AttachCompletedHandler ()
+{
+	clock->AddHandler (Clock::CompletedEvent, clock_completed, this);
+}
+
+void
+Timeline::DetachCompletedHandler ()
+{
+	clock->RemoveHandler (Clock::CompletedEvent, clock_completed, this);
+}
+
+void
+Timeline::clock_completed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	Timeline *timeline = (Timeline *) closure;
+	timeline->OnClockCompleted ();
+}
+
+void
+Timeline::OnClockCompleted ()
+{
+	Emit (Timeline::CompletedEvent);
+}
 
 /* timeline group */
 
@@ -141,14 +176,14 @@ TimelineGroup::AllocateClock ()
 {
 	TimelineCollection *collection = GetChildren ();
 	ClockGroup *group = new ClockGroup (this);
-	Clock *clock;
-	
-	for (int i = 0; i < collection->GetCount (); i++) {
-		clock = collection->GetValueAt (i)->AsTimeline ()->AllocateClock ();
-		group->AddChild (clock);
-		clock->unref ();
-	}
-	
+
+	this->clock = group;
+
+	for (int i = 0; i < collection->GetCount (); i++)
+		group->AddChild (collection->GetValueAt (i)->AsTimeline ()->AllocateClock ());
+
+	group->AddHandler (Clock::CompletedEvent, clock_completed, this);
+
 	return group;
 }
 
@@ -183,22 +218,24 @@ TimelineGroup::RemoveChild (Timeline *child)
 	children->Remove (child);
 }
 
+void
+TimelineGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
+{
+	if (col == GetChildren()) {
+		if (args->GetChangedAction() == CollectionChangedActionAdd ||
+		    args->GetChangedAction() == CollectionChangedActionReplace) {
+			Timeline *timeline = args->GetNewItem()->AsTimeline ();
+			if (timeline)
+				timeline->SetHadParent (true);
+		}
+	}
+}
+
+
 TimelineCollection::TimelineCollection ()
 {
 	SetObjectType (Type::TIMELINE_COLLECTION);
 }
-
-bool
-TimelineCollection::AddedToCollection (Value *value, MoonError *error)
-{
-	if (!DependencyObjectCollection::AddedToCollection (value, error))
-		return false;
-
-	if (value && !value->GetIsNull())
-		value->AsTimeline ()->SetHadParent (true);
-	return true;
-}
-
 
 TimelineCollection::~TimelineCollection ()
 {
@@ -290,28 +327,25 @@ DispatcherTimer::Start ()
 	stopped = false;
 
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-	ClockGroup * group = surface->GetTimeManager()->GetRootClock();
+	ClockGroup *group = surface->GetTimeManager()->GetRootClock();
 
 	if (root_clock) {
 		root_clock->Reset ();
-		root_clock->AddHandler (root_clock->CompletedEvent, OnTick, this);
 		root_clock->BeginOnTick ();
 	} else {
 
-	    root_clock = TimelineGroup::AllocateClock ();
+	    root_clock = AllocateClock ();
 	    char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
 	    root_clock->SetValue (DependencyObject::NameProperty, name);
 	    g_free (name);
-	    root_clock->AddHandler (root_clock->CompletedEvent, OnTick, this);
 
-	    group->ComputeBeginTime ();
 	    group->AddChild (root_clock);
 
 	    root_clock->BeginOnTick ();
 	}
 
 	if (group->GetClockState() != Clock::Active)
-		group->Begin ();
+		group->Begin (group->GetCurrentTime());
 }
 
 void
@@ -319,30 +353,28 @@ DispatcherTimer::Stop ()
 {
 	stopped = true;
 	started = false;
-
-	if (root_clock)
-		root_clock->RemoveHandler (root_clock->CompletedEvent, OnTick, this);
 }
 
 void
 DispatcherTimer::Run ()
 {
+	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+	ClockGroup *group = surface->GetTimeManager()->GetRootClock();
+
 	started = false;
 	stopped = false;
 	root_clock->Reset ();
-	root_clock->Begin ();
+	root_clock->Begin (group->GetCurrentTime());
 }
 
 void
-DispatcherTimer::OnTick (EventObject *sender, EventArgs *calldata, gpointer closure)
+DispatcherTimer::OnClockCompleted ()
 {
-	DispatcherTimer *obj = (DispatcherTimer *) closure;
+	SetStarted (false);
+	Emit (DispatcherTimer::TickEvent);
 
-	obj->SetStarted (false);
-	obj->Emit (obj->TickEvent);
-
-	if (!obj->IsStopped () && !obj->IsStarted ())
-		obj->Run ();
+	if (!IsStopped () && !IsStarted ())
+		Run ();
 }
 
 Duration
@@ -355,9 +387,9 @@ DispatcherTimer::~DispatcherTimer ()
 {
 	if (root_clock) {
 		Stop ();
-		ClockGroup *group = root_clock->GetParentClock();
-		if (group)
-			group->RemoveChild (root_clock);
+		Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+		ClockGroup *group = surface->GetTimeManager()->GetRootClock();
+		group->RemoveChild (root_clock);
 		root_clock->unref ();
 		root_clock = NULL;
 	}

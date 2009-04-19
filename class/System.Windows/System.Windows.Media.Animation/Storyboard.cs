@@ -68,15 +68,9 @@ namespace System.Windows.Media.Animation {
 			NativeMethods.storyboard_seek (native, timespan.Ticks);
 		}
 
-		public TimelineCollection Children {
-			get {
-				return (TimelineCollection) GetValue (ChildrenProperty);
-			}
-		}
-
 		public void SeekAlignedToLastTick (TimeSpan seekTime)
 		{
-			throw new NotImplementedException ();
+			NativeMethods.storyboard_seek_aligned_to_last_tick (native, seekTime.Ticks);
 		}
 		
 		public void SkipToFill ()
@@ -88,7 +82,23 @@ namespace System.Windows.Media.Animation {
 		{
 			NativeMethods.storyboard_stop (native);
 		}
+
+		public TimeSpan GetCurrentTime ()
+		{
+			return new TimeSpan (NativeMethods.storyboard_get_current_time (native));
+		}
 		
+		public ClockState GetCurrentState ()
+		{
+			return (ClockState) NativeMethods.storyboard_get_current_state (native);
+		}
+		
+		public TimelineCollection Children {
+			get {
+				return (TimelineCollection) GetValue (ChildrenProperty);
+			}
+		}
+
 		public static void SetTarget (Timeline timeline, DependencyObject target)
 		{
 			if (timeline == null)
@@ -130,6 +140,7 @@ namespace System.Windows.Media.Animation {
 			return (PropertyPath) element.GetValue (TargetPropertyProperty);
 		}
 
+		// Hack for VSM.
 		internal static DependencyProperty GetTargetDependencyProperty (Timeline element)
 		{
 			if (element == null)
@@ -137,15 +148,6 @@ namespace System.Windows.Media.Animation {
 			IntPtr ptr = NativeMethods.storyboard_get_target_dependency_property (element.native);
 			return ptr == IntPtr.Zero ? null : DependencyProperty.Lookup (ptr);
 		}
-		
-		public TimeSpan GetCurrentTime ()
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public ClockState GetCurrentState ()
-		{
-			return (ClockState) NativeMethods.storyboard_get_current_state (native);
-		}
+
 	}
 }

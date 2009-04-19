@@ -39,16 +39,18 @@ namespace System.Windows.Media.Animation {
 
 		private static void UnmanagedCompleted (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			Storyboard sb = (Storyboard) Helper.ObjectFromIntPtr (closure);
-			sb.InvokeCompleted ();
+			Timeline timeline = (Timeline) NativeDependencyObjectHelper.FromIntPtr (closure);
+
+			timeline.InvokeCompleted ();
 		}
 
-		private DependencyObject manualTarget;
 		internal DependencyObject ManualTarget {
-			get { return manualTarget; }
+			get {
+				IntPtr manual = NativeMethods.timeline_get_manual_target (native);
+				return (DependencyObject)Helper.ObjectFromIntPtr (manual);
+			}
 			set {
 				NativeMethods.timeline_set_manual_target (native, value == null ? IntPtr.Zero : value.native);
-				manualTarget = value;
 			}
 		}
 		

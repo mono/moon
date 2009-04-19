@@ -1,3 +1,13 @@
+2009-04-18  Chris Toshok  <toshok@ximian.com>
+
+	* Storyboard.cs: reorder things a bit to group
+	methods/properties/etc together (and put internal things at the
+	end).  Also, implement SeekAlignedToLastTick.
+
+	* Timeline.cs: don't use Helper.ObjectFromIntPtr, use
+	NativeDependencyObjectHelper.FromIntPtr, and don't cache the
+	manual target.  get and set it using the pinvoke.
+
 2009-04-05  Chris Toshok  <toshok@ximian.com>
 
 	* EasingFunctionBase.cs (Initialize): call

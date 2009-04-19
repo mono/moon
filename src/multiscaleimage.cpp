@@ -118,9 +118,9 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 	LOG_MSI ("\nzoomabout logical %f  (%f, %f)\n", zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
 
 	if (zoom_sb)
-		zoom_sb->Pause ();
+		zoom_sb->PauseWithError (NULL);
 	if (pan_sb)
-		pan_sb->Pause ();
+		pan_sb->PauseWithError (NULL);
 
 
 	double width = GetViewportWidth () / zoomIncrementFactor;
@@ -654,7 +654,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			tlc->Add (fadein_animation);
 			fadein_sb->SetChildren(tlc);
 		} else {
-			fadein_sb->Pause ();
+			fadein_sb->PauseWithError (NULL);
 		}
 
 		//LOG_MSI ("animating Fade from %f to %f\n\n", GetValue(MultiScaleImage::TileFadeProperty)->AsDouble(), GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
@@ -662,7 +662,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		fadein_animation->SetFrom (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble());
 		fadein_animation->SetTo (*to);
 
-		fadein_sb->Begin();
+		fadein_sb->BeginWithError(NULL);
 
 		cairo_surface_set_user_data (surface, &full_opacity_at_key, to, g_free);
 		LOG_MSI ("caching %s\n", tile->ToString ());
@@ -897,13 +897,13 @@ MultiScaleImage::SetViewportWidth (double value)
 		tlc->Add (zoom_animation);
 		zoom_sb->SetChildren(tlc);
 	} else {
-		zoom_sb->Pause ();
+		zoom_sb->PauseWithError (NULL);
 	}
 
 	LOG_MSI ("animating zoom from %f to %f\n\n", GetViewportWidth(), value)	
 
 	zoom_animation->GetKeyFrames ()->GetValueAt (0)->AsSplineDoubleKeyFrame ()->SetValue (value);
-	zoom_sb->Begin();
+	zoom_sb->BeginWithError (NULL);
 }
 
 void
@@ -931,10 +931,10 @@ MultiScaleImage::SetViewportOrigin (Point value)
 		tlc->Add (pan_animation);
 		pan_sb->SetChildren(tlc);
 	} else
-		pan_sb->Pause ();
+		pan_sb->PauseWithError (NULL);
 
 	pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->SetValue (value);
-	pan_sb->Begin ();
+	pan_sb->BeginWithError (NULL);
 }
 
 void

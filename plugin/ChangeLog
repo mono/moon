@@ -1,3 +1,8 @@
+2009-04-18  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightStoryboardObject::Invoke): track
+	storyboard changes.
+
 2009-04-17  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.h|.cpp: remove loaded_xap field, and use

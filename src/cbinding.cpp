@@ -3347,6 +3347,17 @@ storyboard_get_current_state (Storyboard *instance)
 }
 
 
+TimeSpan
+storyboard_get_current_time (Storyboard *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (TimeSpan) 0;
+	
+	return instance->GetCurrentTime ();
+}
+
+
 DependencyProperty *
 storyboard_get_target_dependency_property (Storyboard *instance)
 {
@@ -3382,6 +3393,18 @@ storyboard_resume_with_error (Storyboard *instance, MoonError *error)
 
 
 void
+storyboard_seek_aligned_to_last_tick_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error)
+{
+	if (instance == NULL)
+		return;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called storyboard_seek_aligned_to_last_tick_with_error () with error == NULL.");
+	instance->SeekAlignedToLastTickWithError (timespan, error);
+}
+
+
+void
 storyboard_seek_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error)
 {
 	if (instance == NULL)
@@ -3394,12 +3417,14 @@ storyboard_seek_with_error (Storyboard *instance, TimeSpan timespan, MoonError *
 
 
 void
-storyboard_skip_to_fill (Storyboard *instance)
+storyboard_skip_to_fill_with_error (Storyboard *instance, MoonError *error)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SkipToFill ();
+	if (error == NULL)
+		g_warning ("Moonlight: Called storyboard_skip_to_fill_with_error () with error == NULL.");
+	instance->SkipToFillWithError (error);
 }
 
 

@@ -1,3 +1,7 @@
+2009-04-18  Chris Toshok  <toshok@ximian.com>
+
+	* GeneratedPInvokes.cs: regen.
+
 2009-04-15  Alan McGovern  <amcgovern@novell.com>
 
 	* Events.cs: All unhandled exceptions should go through the

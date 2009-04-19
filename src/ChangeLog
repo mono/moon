@@ -1,3 +1,37 @@
+2009-04-18  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h|.cpp: move to the holy grail of a functional clock
+	setup.  this removes Clock::Tick and related additive machinery
+	that introduces errors into various calculations.  instead we use
+	the fact that a child's time can be expressed as a function of its
+	parent's time.  more calculation per-frame, perhaps, but less
+	problems wrt inflection points like autoreverse/repeat points.
+	This removes *tons* of difficult to read and impossible to
+	understand code, and brings clocks and clockgroups a lot closer.
+	Docs coming soon to a source file near you.
+
+	* timeline.h|.cpp: various clock-related changes.  2 notables are
+	the fact that all Timelines have a completed event now instead of
+	just storyboards (because Clocks are also emitting completed now,
+	not just ClockGroups), and DispatcherTimers now subclass from
+	Timeline instead of TimelineGroup.  We also use a virtual method
+	instead of an event handler for ticking DispatcherTimers.
+	
+	* animation.h|.cpp: more clock fallout.  Also, rewrite
+	HookupAnimationsRecurse so that we propagate the current
+	target/property as parameters instead of requiring a search back
+	up the tree at ever level.
+
+	* timemanager.cpp: more clock rewrite stuff.  Set the surface
+	clockgroup's duration to forever instead of automatic, and switch
+	from ->Tick to ->UpdateFromParentTime.
+	
+	* multiscaleimage.cpp: track changes to storyboard api (basically
+	i removed the non-WithError methods.. maybe i should put them
+	back?)
+
+	* cbinding.h|.cpp, type-generated.cpp: regen.
+
 2009-04-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* glyphs.cpp (Layout): Pass our StyleSimulations along to

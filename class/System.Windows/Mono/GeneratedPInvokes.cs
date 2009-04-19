@@ -1645,6 +1645,10 @@ namespace Mono {
 		public extern static int storyboard_get_current_state (IntPtr instance);
 
 		[DllImport ("moon")]
+		// TimeSpan storyboard_get_current_time (Storyboard *instance);
+		public extern static long storyboard_get_current_time (IntPtr instance);
+
+		[DllImport ("moon")]
 		// DependencyProperty *storyboard_get_target_dependency_property (Storyboard *instance);
 		public extern static IntPtr storyboard_get_target_dependency_property (IntPtr instance);
 
@@ -1670,6 +1674,17 @@ namespace Mono {
 				throw CreateManagedException (error);
 		}
 
+		[DllImport ("moon", EntryPoint="storyboard_seek_aligned_to_last_tick_with_error")]
+		// void storyboard_seek_aligned_to_last_tick_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error);
+		private extern static void storyboard_seek_aligned_to_last_tick_with_error_ (IntPtr instance, long timespan, out MoonError error);
+		public static void storyboard_seek_aligned_to_last_tick (IntPtr instance, long timespan)
+		{
+					MoonError error;
+			storyboard_seek_aligned_to_last_tick_with_error_ (instance, timespan, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
+
 		[DllImport ("moon", EntryPoint="storyboard_seek_with_error")]
 		// void storyboard_seek_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error);
 		private extern static void storyboard_seek_with_error_ (IntPtr instance, long timespan, out MoonError error);
@@ -1681,9 +1696,16 @@ namespace Mono {
 				throw CreateManagedException (error);
 		}
 
-		[DllImport ("moon")]
-		// void storyboard_skip_to_fill (Storyboard *instance);
-		public extern static void storyboard_skip_to_fill (IntPtr instance);
+		[DllImport ("moon", EntryPoint="storyboard_skip_to_fill_with_error")]
+		// void storyboard_skip_to_fill_with_error (Storyboard *instance, MoonError *error);
+		private extern static void storyboard_skip_to_fill_with_error_ (IntPtr instance, out MoonError error);
+		public static void storyboard_skip_to_fill (IntPtr instance)
+		{
+					MoonError error;
+			storyboard_skip_to_fill_with_error_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
 
 		[DllImport ("moon", EntryPoint="storyboard_stop_with_error")]
 		// void storyboard_stop_with_error (Storyboard *instance, MoonError *error);

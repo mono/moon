@@ -876,38 +876,32 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Storyboard ();
 	
-	bool Begin ();
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool BeginWithError (MoonError *error);
 
-	void Pause ();
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void PauseWithError (MoonError *error);
-	
-	void Resume ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void ResumeWithError (MoonError *error);
 
-	void Seek (TimeSpan timespan);
-
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SeekWithError (TimeSpan timespan, MoonError *error);
 
-	void Stop ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SeekAlignedToLastTickWithError (TimeSpan timespan, MoonError *error);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SkipToFillWithError (MoonError *error);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void StopWithError (MoonError *error);
-	
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	TimeSpan GetCurrentTime ();
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetCurrentState ();
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SkipToFill ();
-	
-	virtual Clock *AllocateClock ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyProperty *GetTargetDependencyProperty ();
@@ -921,11 +915,10 @@ protected:
 	virtual ~Storyboard ();
 
 private:
-	static void storyboard_completed (EventObject *sender, EventArgs *calldata, gpointer data);
-	
-	bool HookupAnimationsRecurse (Clock *clock, MoonError *error);
+	bool HookupAnimationsRecurse (Clock *clock,
+				      DependencyObject *targetObject, PropertyPath *targetPropertyPath,
+				      MoonError *error);
 	void TeardownClockGroup ();
-	Clock *clock;
 	Clock *root_clock;
 };
 
@@ -968,7 +961,6 @@ public:
 	bool IsLonely () { return (targetobj == NULL); };
 	bool IsCurrentStorage ();
 	Value* GetResetValue ();
-	void UpdatePropertyValueWith (Value *v);
 	Value* GetStopValue (void);
 	void DetachFromPrevStorage (void);
 
@@ -994,7 +986,6 @@ private:
 class AnimationClock : public Clock {
 public:
 	AnimationClock (Animation *timeline);
-	virtual void ExtraRepeatAction ();
 	virtual void OnSurfaceDetach ();
 	virtual void OnSurfaceReAttach ();
 
@@ -1003,7 +994,7 @@ public:
 	bool HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
 
 	virtual void Stop ();
-	virtual void Begin ();
+	virtual void Begin (TimeSpan parentTime);
 
 protected:
 	virtual ~AnimationClock ();

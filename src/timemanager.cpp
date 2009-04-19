@@ -82,7 +82,7 @@ TimeManager::TimeManager ()
 	applier = new Applier ();
 
 	timeline = new ParallelTimeline();
-	timeline->SetDuration (Duration::Automatic);
+	timeline->SetDuration (Duration::Forever);
 	root_clock = new ClockGroup (timeline, true);
 	char *name = g_strdup_printf ("Surface clock group for time manager (%p)", this);
 	root_clock->SetValue(DependencyObject::NameProperty, name);
@@ -269,7 +269,7 @@ output_clock (Clock *clock, int level)
 	// printf ("%lld / %lld (%.2f) ", clock->GetCurrentTime(), clock->GetNaturalDuration().GetTimeSpan(), clock->GetCurrentProgress());
 	printf ("%lld (%.2f) ", clock->GetCurrentTime(), clock->GetCurrentProgress());
 
-	printf ("%lld ", clock->GetBeginTime());
+	printf ("%lld ", clock->GetTimeline()->GetBeginTime());
 
 	switch (clock->GetClockState()) {
 	case Clock::Active:
@@ -285,9 +285,6 @@ output_clock (Clock *clock, int level)
 
 	if (clock->GetIsPaused())
 		printf (" (paused)");
-
-	if (clock->GetIsReversed())
-		printf (" (rev)");
 
 	printf ("\n");
 
@@ -507,9 +504,16 @@ TimeManager::SourceTick ()
 		current_global_time = source->GetNow();
 		current_global_time_usec = current_global_time / 10;
 
+		root_clock->UpdateFromParentTime (GetCurrentTime());
+
+#if false
+		/* FIXME: we weren't actually using this (the putting
+		   the time manager to sleep stuff) before, but we
+		   should get it working at some point. */
 		bool need_another_tick = root_clock->Tick ();
 		if (need_another_tick)
 			flags = (TimeManagerOp)(flags | TIME_MANAGER_UPDATE_CLOCKS);
+#endif
 
 	
 		// ... then cause all clocks to raise the events they've queued up
@@ -535,6 +539,10 @@ TimeManager::SourceTick ()
 		Emit (RenderEvent);
 		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
 	}
+
+#if CLOCK_DEBUG
+	ListClocks ();
+#endif
 	
 	last_global_time = current_global_time;
 }

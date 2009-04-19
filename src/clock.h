@@ -14,8 +14,6 @@
 #ifndef MOON_CLOCK_H
 #define MOON_CLOCK_H
 
-#include "applier.h"
-#include "timesource.h"
 #include <glib.h>
 #include <stdint.h>
 #include "collection.h"
@@ -182,7 +180,6 @@ private:
 class TimeManager;
 class Timeline;
 class TimelineGroup;
-class Applier;
 
 /* our clock is a mixture of the WPF Clock and ClockController
    classes.  as such, all clocks are controllable */
@@ -194,15 +191,12 @@ public:
 	ClockGroup* GetParentClock ()     { return parent_clock; }
 	double      GetCurrentProgress () { return progress; }
 	virtual TimeSpan    GetCurrentTime ()     { return current_time; }
-	virtual TimeSpan    GetLastTime ()        { return last_time; }
 	Timeline*   GetTimeline ()        { return timeline; }
 	Duration    GetNaturalDuration ();
 	bool        GetIsPaused ()        { return is_paused; }
 	bool        GetHasStarted ()      { return has_started; }
 	bool        GetWasStopped ()      { return was_stopped; }
 	void        ClearHasStarted ()    { has_started = false; }
-	bool        GetIsReversed ()      { return !forward; }
-	TimeSpan    GetBeginTime ()       { return begin_time; }
 	TimeManager* GetTimeManager ()    { return time_manager; }
 	virtual void OnSurfaceDetach ()   {};
 	virtual void OnSurfaceReAttach () {};
@@ -216,31 +210,25 @@ public:
 	};
 	ClockState GetClockState () { return state; }
 
-	TimeSpan GetParentTime ();
-	TimeSpan GetLastParentTime ();
-
-	virtual void SpeedChanged () { }
-
 	// ClockController methods
-	virtual void Begin ();
+	virtual void Begin (TimeSpan parentTime);
 	void Pause ();
-	void Remove ();
 	void Resume ();
 	virtual void Seek (TimeSpan timespan);
+	virtual void SeekAlignedToLastTick (TimeSpan timespan);
 	virtual void SkipToFill ();
 	virtual void Stop ();
 
 	void BeginOnTick (bool begin = true);
 	bool GetBeginOnTick () { return begin_on_tick; }
-	void SoftStop ();
 
-	virtual void ComputeBeginTime ();
+	void SetRootParentTime (TimeSpan parentTime);
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
 	virtual void RaiseAccumulatedCompleted ();
 	virtual void ExtraRepeatAction () {};
-	virtual bool Tick ();
+	virtual void UpdateFromParentTime (TimeSpan parentTime);
 	void SetParentClock (ClockGroup *parent) { parent_clock = parent; }
 	virtual void SetTimeManager (TimeManager *manager) { time_manager = manager; }
 	virtual void Reset ();
@@ -248,72 +236,72 @@ public:
 	// Events you can AddHandler to
 	const static int CurrentTimeInvalidatedEvent;
 	const static int CurrentStateInvalidatedEvent;
-	const static int CurrentGlobalSpeedInvalidatedEvent;
 	const static int CompletedEvent;
 
 protected:
 	virtual ~Clock ();
 
 	TimeSpan ComputeNewTime ();
-	void ClampTime ();
-	void CalcProgress ();
-	virtual void DoRepeat (TimeSpan time);
 
-	void SetClockState (ClockState state) { this->state = state; QueueEvent (CURRENT_STATE_INVALIDATED); }
-	void SetCurrentTime (TimeSpan ts) { this->current_time = ts; QueueEvent (CURRENT_TIME_INVALIDATED); }
-	void SetSpeed (double speed) { this->speed = speed; QueueEvent (CURRENT_GLOBAL_SPEED_INVALIDATED); }
+	void FillOnNextTick ();
 
-	virtual void Completed ();
+	void SetClockState (ClockState state);
+	void SetCurrentTime (TimeSpan ts);
+
+	void Completed ();
 	
 	// events to queue up
 	enum {
-		CURRENT_GLOBAL_SPEED_INVALIDATED = 0x01,
-		CURRENT_STATE_INVALIDATED        = 0x02,
-		CURRENT_TIME_INVALIDATED         = 0x04,
-		REMOVE_REQUESTED                 = 0x08,
+		CURRENT_STATE_INVALIDATED        = 0x01,
+		CURRENT_TIME_INVALIDATED         = 0x02
 	};
-	void QueueEvent (int event) { queued_events |= event; }
+	void QueueEvent (int event);
 
 	bool calculated_natural_duration;
 	Duration natural_duration;
 
-	TimeSpan begintime;
+	TimeSpan root_parent_time;
 	bool begin_on_tick;
+
+	// the start time of the current pause
+	TimeSpan begin_pause_time;
+
+	// the total amount of pause time we've accumulated
+	TimeSpan accumulated_pause_time;
 
 	ClockState state;
 
 	double progress;
 
 	TimeSpan current_time;
-	TimeSpan last_time;
 
 	bool seeking;
 	TimeSpan seek_time;
 
-	double speed;
-
-	double repeat_count;
-	TimeSpan repeat_time;
-	TimeSpan start_time;
-
 private:
+	bool emit_completed;
+	bool has_completed;
 	TimeManager *time_manager;
 	ClockGroup *parent_clock;
 	
 	bool is_paused;
+
 	bool has_started;
 	bool was_stopped;
 	Timeline *timeline;
 	int queued_events;
 
-	bool forward;  // if we're presently working our way from 0.0 progress to 1.0.  false if reversed
+	// for clocks with repeatbehavior that's not Forever and
+	// durations that aren't forever, this represents the time at
+	// which we'll hit our Fill.
+	TimeSpan fillTime;
 };
 
 
 /* @Namespace=None,ManagedDependencyProperties=None */
 class ClockGroup : public Clock {
 public:
-	ClockGroup (TimelineGroup *timeline, bool never_fill = false);
+	ClockGroup (TimelineGroup *timeline, bool timeManagerClockGroup = false);
 
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
@@ -321,19 +309,18 @@ public:
 
 	virtual void SetTimeManager (TimeManager *manager);
 
-	virtual void Begin ();
+	virtual void Begin (TimeSpan parentTime);
 	virtual void Seek (TimeSpan timespan);
 	virtual void SkipToFill ();
 	virtual void Stop ();
 	virtual void OnSurfaceDetach ();
 	virtual void OnSurfaceReAttach ();
 
-	virtual void ComputeBeginTime ();
-
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
 	virtual void RaiseAccumulatedCompleted ();
-	virtual bool Tick ();
+
+	virtual void UpdateFromParentTime (TimeSpan parentTime);
 
 	GList *child_clocks;
 
@@ -342,14 +329,10 @@ public:
 protected:
 	virtual ~ClockGroup ();
 
-	virtual void DoRepeat (TimeSpan time);
-	virtual void Completed ();
-	
 private:
 	TimelineGroup *timeline;
-	bool emit_completed;
 	bool idle_hint;
-	bool never_fill;
+	bool timemanager_clockgroup;
 };
 
 #endif /* MOON_CLOCK_H */

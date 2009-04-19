@@ -116,18 +116,6 @@ AnimationStorage::update_property_value (EventObject *, EventArgs *, gpointer cl
 }
 
 void
-AnimationStorage::UpdatePropertyValueWith (Value *v)
-{
-	if (targetobj == NULL)
-		return;
-
-	if (v != NULL && timeline->GetTimelineStatus () == Timeline::TIMELINE_STATUS_OK) {
-		Applier *applier = clock->GetTimeManager ()->GetApplier ();
-		applier->AddPropertyChange (targetobj, targetprop, new Value (*v), APPLIER_PRECEDENCE_ANIMATION);
-	}
-}
-
-void
 AnimationStorage::UpdatePropertyValue ()
 {
 	if (targetobj == NULL)
@@ -184,7 +172,7 @@ void
 AnimationStorage::DetachUpdateHandler ()
 {
 	if (clock != NULL) {
-		clock->RemoveHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
+		clock->RemoveHandler (Clock::CurrentTimeInvalidatedEvent, update_property_value, this);
 	}
 }
 
@@ -192,7 +180,7 @@ void
 AnimationStorage::ReAttachUpdateHandler ()
 {
 	if (clock != NULL) {
-		clock->AddHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
+		clock->AddHandler (Clock::CurrentTimeInvalidatedEvent, update_property_value, this);
 	}
 }
 
@@ -286,18 +274,6 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 	return true;
 }
 
-void
-AnimationClock::ExtraRepeatAction ()
-{
-	if (storage) {
-		Value *v = timeline->GetTargetValue (storage->GetStopValue ());
-		if (v) {
-			storage->UpdatePropertyValueWith (v);
-			delete v;
-		}
-	}
-}
-
 Value*
 AnimationClock::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestinationValue)
 {
@@ -318,9 +294,9 @@ AnimationClock::Stop ()
 }
 
 void
-AnimationClock::Begin ()
+AnimationClock::Begin (TimeSpan parentTime)
 {
-	Clock::Begin ();
+	Clock::Begin (parentTime);
 }
 
 AnimationClock::~AnimationClock ()
@@ -354,6 +330,9 @@ Animation::AllocateClock()
 				      Storyboard::GetTargetName(this),
 				      Storyboard::GetTargetProperty (this) == NULL ? NULL : Storyboard::GetTargetProperty (this)->path);
 	clock->SetValue (DependencyObject::NameProperty, name);
+
+	AttachCompletedHandler ();
+
 	g_free (name);
 	return clock;
 }
@@ -386,24 +365,27 @@ Animation::GetNaturalDurationCore (Clock* clock)
 Storyboard::Storyboard ()
 {
 	SetObjectType (Type::STORYBOARD);
-
-	clock = NULL;
-	root_clock = NULL;
 }
 
 Storyboard::~Storyboard ()
 {
-	if (root_clock) {
+	if (clock) {
 		//printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
-		Stop ();
+		StopWithError (/* ignore any error */ NULL);
 		TeardownClockGroup ();
 	}
+}
+
+TimeSpan
+Storyboard::GetCurrentTime ()
+{
+	return GetClock() ? GetClock()->GetCurrentTime () : 0;
 }
 
 int
 Storyboard::GetCurrentState ()
 {
-	return clock ? clock->GetClockState () : Clock::Stopped;
+	return GetClock() ? GetClock()->GetClockState () : Clock::Stopped;
 }
 
 DependencyProperty *
@@ -414,78 +396,77 @@ Storyboard::GetTargetDependencyProperty ()
 }
 
 bool
-Storyboard::HookupAnimationsRecurse (Clock *clock, MoonError *error)
+Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObject, PropertyPath *targetPropertyPath, MoonError *error)
 {
-	switch (clock->GetObjectType ()) {
-	case Type::ANIMATIONCLOCK: {
-		AnimationClock *ac = (AnimationClock*)clock;
+	DependencyObject *localTargetObject = NULL;
+	PropertyPath *localTargetPropertyPath = NULL;
 
-		PropertyPath *targetProperty = NULL;
-		const char *targetName = NULL;
-		DependencyObject *o = NULL; 
-		DependencyObject *real_target_o = NULL;
-		DependencyProperty *prop = NULL;
+	Timeline *timeline = clock->GetTimeline ();
 
-		for (Clock *c = ac; c; c = c->GetParentClock()) {
-			targetProperty = Storyboard::GetTargetProperty (c->GetTimeline());
-			if (targetProperty)
-				break;
+	/* get the target object at this level */
+	if (timeline->HasManualTarget ()) 
+		localTargetObject = timeline->GetManualTarget ();
+	else {
+		const char *targetName = Storyboard::GetTargetName (timeline);
+		if (targetName)
+			localTargetObject = FindName (targetName);
+	}
+
+	/* get the target property path at this level */
+	localTargetPropertyPath = Storyboard::GetTargetProperty (timeline);
+
+
+	/* override the object and property passed from our parent here */
+	if (localTargetObject != NULL)
+		targetObject = localTargetObject;
+
+	if (localTargetPropertyPath != NULL)
+		targetPropertyPath = localTargetPropertyPath;
+
+
+	if (clock->Is (Type::CLOCKGROUP)) {
+		for (GList *l = ((ClockGroup*)clock)->child_clocks; l; l = l->next) {
+			if (!HookupAnimationsRecurse ((Clock*)l->data,
+						      targetObject,
+						      targetPropertyPath,
+						      error))
+				return false;
 		}
+	}
+	else {
+		DependencyProperty *prop = NULL;
+		DependencyObject *realTargetObject;
 
-		if (!targetProperty) {
+		if (!targetPropertyPath) {
 			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Target Property has not been specified.");
 			g_warning ("No target property!");
 			return false;
 		}
 
-		for (Clock *c = ac; c; c = c->GetParentClock()) {
-
-			Timeline *tl = c->GetTimeline ();
-
-			if (tl->HasManualTarget ()) 
-				o = tl->GetManualTarget ();
-			else {
-				targetName = Storyboard::GetTargetName (tl);
-				if (targetName)
-					o = FindName (targetName);
-			}
-
-			if (o)
-				break;
-		}
-
-		if (!o) {
+		if (!targetObject) {
 			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "No Target or TargetName has been specified");
-			g_warning ("No object named %s!", targetName);
 			return false;
 		}
 
-		real_target_o = o;
-		prop = resolve_property_path (&real_target_o, targetProperty);
+		realTargetObject = targetObject;
 
-		if (!prop || !real_target_o) {
+		prop = resolve_property_path (&realTargetObject, targetPropertyPath);
+
+		if (!prop || !realTargetObject) {
 			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "TargetProperty could not be resolved");
-			g_warning ("No property named %s on object %s, which has type %s!", targetProperty->path, targetName, o->GetTypeName());
+			g_warning ("No property path %s on object of type type %s!",
+				   targetPropertyPath->path, targetObject->GetTypeName());
 			return false;
 		}
 
-		((Animation*)ac->GetTimeline())->Resolve ();
+		if (clock->Is(Type::ANIMATIONCLOCK)) {
+			Animation *animation = (Animation*)timeline;
 
-		if (! ac->HookupStorage (real_target_o, prop))
-			return false;
+			animation->Resolve ();
 
-		break;
-	}
-	case Type::CLOCKGROUP: {
-		ClockGroup *cg = (ClockGroup*)clock;
-		for (GList *l = cg->child_clocks; l; l = l->next)
-			if (!HookupAnimationsRecurse ((Clock*)l->data, error))
+			if (!((AnimationClock*)clock)->HookupStorage (realTargetObject, prop))
 				return false;
-		break;
-	}
-	default:
-		g_warning ("Invalid object type (%d) for the specified clock", clock->GetObjectType ());
-		break;
+		}
 	}
 	
 	return true;
@@ -494,29 +475,13 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, MoonError *error)
 void
 Storyboard::TeardownClockGroup ()
 {
-	if (root_clock) {
-		ClockGroup *group = root_clock->GetParentClock();
+	if (GetClock()) {
+		Clock *c = GetClock ();
+		ClockGroup *group = c->GetParentClock();
 		if (group)
-			group->RemoveChild (root_clock);
-		root_clock->unref ();
-		root_clock = NULL;
+			group->RemoveChild (c);
+		clock = NULL;
 	}
-
-	clock = NULL;
-}
-
-void
-Storyboard::storyboard_completed (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	Storyboard *sb = (Storyboard *) closure;
-	
-	// Only teardown the clocks if the whole storyboard is stopped.
-	// Otherwise just remove from parent not be affected by it's 
-	// state changes
-	if (sb->root_clock->GetClockState () == Clock::Stopped)
-		sb->TeardownClockGroup ();
-	
-	sb->Emit (sb->CompletedEvent);
 }
 
 bool
@@ -542,10 +507,10 @@ Storyboard::BeginWithError (MoonError *error)
 	/* destroy the clock hierarchy and recreate it to restart.
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
-	if (root_clock) {
-		root_clock->RemoveHandler (root_clock->CompletedEvent, storyboard_completed, this);
+	if (clock) {
+		DetachCompletedHandler ();
 		TeardownClockGroup ();
-    }
+	}
 #endif
 
 	if (Validate () == false)
@@ -557,24 +522,19 @@ Storyboard::BeginWithError (MoonError *error)
 	// This creates the clock tree for the hierarchy.  if a
 	// Timeline A is a child of TimelineGroup B, then Clock cA
 	// will be a child of ClockGroup cB.
-	root_clock = AllocateClock ();
+	Clock *root_clock = AllocateClock ();
 	char *name = g_strdup_printf ("Storyboard, named '%s'", GetName());
 	root_clock->SetValue (DependencyObject::NameProperty, name);
 	g_free (name);
-	root_clock->AddHandler (root_clock->CompletedEvent, storyboard_completed, this);
 
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.
-	if (!HookupAnimationsRecurse (root_clock, error))
+	if (!HookupAnimationsRecurse (root_clock, NULL, NULL, error))
 		return false;
-
-	group->ComputeBeginTime ();
 
 	group->AddChild (root_clock);
 
-	if (HasBeginTime ())
-		root_clock->ComputeBeginTime ();
-	else
+	if (GetBeginTime() == 0)
 		root_clock->BeginOnTick ();
 
 	// we delay starting the surface's ClockGroup until the first
@@ -582,32 +542,10 @@ Storyboard::BeginWithError (MoonError *error)
 	// between timelines that explicitly set a BeginTime and those
 	// that don't (and so default to 00:00:00).
 	if (group->GetClockState() != Clock::Active) {
-		group->Begin ();
+		group->Begin (Deployment::GetCurrent()->GetSurface()->GetTimeManager()->GetRootClock()->GetCurrentTime());
 	}
 
 	return true;
-}
-
-bool
-Storyboard::Begin ()
-{
-	MoonError error;
-	bool ret = Storyboard::BeginWithError (&error);
-	error.Clear ();
-	return ret;
-}
-
-Clock *
-Storyboard::AllocateClock ()
-{
-	return (clock = ParallelTimeline::AllocateClock ());
-}
-
-void
-Storyboard::Pause ()
-{
-	if (root_clock)
-		root_clock->Pause ();
 }
 
 void
@@ -617,14 +555,8 @@ Storyboard::PauseWithError (MoonError *error)
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Pause a Storyboard which is not the root Storyboard.");
 		return;
 	}
-	Pause ();
-}
-
-void
-Storyboard::Resume ()
-{
-	if (root_clock)
-		root_clock->Resume ();
+	if (clock)
+		clock->Pause ();
 }
 
 void
@@ -634,15 +566,8 @@ Storyboard::ResumeWithError (MoonError *error)
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Resume a Storyboard which is not the root Storyboard.");
 		return;
 	}
-	if (root_clock)
-		root_clock->Resume ();
-}
-
-void
-Storyboard::Seek (TimeSpan timespan)
-{
-	if (root_clock)
-		root_clock->Seek (timespan);
+	if (clock)
+		clock->Resume ();
 }
 
 void
@@ -652,25 +577,30 @@ Storyboard::SeekWithError (TimeSpan timespan, MoonError *error)
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Seek a Storyboard which is not the root Storyboard.");
 		return;
 	}
-	if (root_clock)
-		root_clock->Seek (timespan);
+	if (clock)
+		clock->Seek (timespan);
 }
 
 void
-Storyboard::SkipToFill ()
+Storyboard::SeekAlignedToLastTickWithError (TimeSpan timespan, MoonError *error)
 {
-	if (root_clock) {
-		root_clock->SkipToFill ();
+	if (GetHadParent ()) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Seek a Storyboard which is not the root Storyboard.");
+		return;
 	}
+	if (clock)
+		clock->SeekAlignedToLastTick (timespan);
 }
 
 void
-Storyboard::Stop ()
+Storyboard::SkipToFillWithError (MoonError *error)
 {
-	if (root_clock) {
-		root_clock->RemoveHandler (root_clock->CompletedEvent, storyboard_completed, this);
-		root_clock->Stop ();
-		TeardownClockGroup ();
+	if (GetHadParent ()) {
+		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot SkipToFill a Storyboard which is not the root Storyboard.");
+		return;
+	}
+	if (clock) {
+		clock->SkipToFill ();
 	}
 }
 
@@ -681,7 +611,11 @@ Storyboard::StopWithError (MoonError *error)
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Stop a Storyboard which is not the root Storyboard.");
 		return;
 	}
-	Stop ();
+	if (clock) {
+		DetachCompletedHandler ();
+		clock->Stop ();
+		TeardownClockGroup ();
+	}
 }
 
 BeginStoryboard::BeginStoryboard ()
@@ -697,8 +631,10 @@ void
 BeginStoryboard::Fire ()
 {
 	Storyboard *sb = GetStoryboard ();
-	if (sb)
-		sb->Begin ();
+	if (sb) {
+		// FIXME I'd imagine we should be bubbling this error/exception upward, no?
+		sb->BeginWithError (NULL);
+	}
 }
 
 

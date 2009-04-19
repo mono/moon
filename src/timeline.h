@@ -18,12 +18,7 @@
 
 /* @Namespace=System.Windows.Media.Animation */
 class Timeline : public DependencyObject {
-	DependencyObject *manual_target;
-	
- protected:
-	virtual ~Timeline ();
-
- public:
+public:
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int AutoReverseProperty;
  	/* @PropertyType=TimeSpan,Nullable,DefaultValue=0\,Type::TIMESPAN */
@@ -44,7 +39,6 @@ class Timeline : public DependencyObject {
 	bool GetAutoReverse ();
 	
 	TimeSpan GetBeginTime ();
-	bool HasBeginTime ();
 	
 	void SetDuration (Duration duration);
 	Duration *GetDuration ();
@@ -64,8 +58,10 @@ class Timeline : public DependencyObject {
 	Duration GetNaturalDuration (Clock *clock);
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 	
-	virtual Clock *AllocateClock () { return new Clock (this); }
+	virtual Clock *AllocateClock ();
 	virtual bool Validate ();
+
+	Clock* GetClock ();
 
 	enum TimelineStatus {
 		TIMELINE_STATUS_OK, 
@@ -85,33 +81,41 @@ class Timeline : public DependencyObject {
 	// events
 	const static int CompletedEvent;
 
+protected:
+	virtual ~Timeline ();
 
- private:
+	void AttachCompletedHandler ();
+	void DetachCompletedHandler ();
+
+	virtual void OnClockCompleted ();
+
+	static void clock_completed (EventObject *sender, EventArgs *calldata, gpointer closure);
+
+	Clock *clock;
+
+private:
  	bool had_parent;
 	TimelineStatus timeline_status;
+	DependencyObject *manual_target;
 };
 
 
 /* @Namespace=System.Windows.Media.Animation */
 class TimelineCollection : public DependencyObjectCollection {
- protected:
-	virtual ~TimelineCollection ();
-
- public:
+public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineCollection ();
 	
-	virtual bool AddedToCollection (Value *value, MoonError *error);
 	virtual Type::Kind GetElementType() { return Type::TIMELINE; }
+
+protected:
+	virtual ~TimelineCollection ();
 };
 
 
 /* @Namespace=None,ManagedDependencyProperties=None */
 class TimelineGroup : public Timeline {
- protected:
-	virtual ~TimelineGroup ();
-	
- public:
+public:
 	/* @PropertyType=TimelineCollection,AutoCreateValue,GenerateAccessors */
 	const static int ChildrenProperty;
 	
@@ -123,34 +127,36 @@ class TimelineGroup : public Timeline {
 	
 	void AddChild (Timeline *child);
 	void RemoveChild (Timeline *child);
+
+	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	
 	//
 	// Property Accessors
 	//
 	void SetChildren (TimelineCollection *children);
 	TimelineCollection *GetChildren ();
+
+protected:
+	virtual ~TimelineGroup ();
 };
 
 
 /* @Namespace=None */
 class ParallelTimeline : public TimelineGroup {
- protected:
-	virtual ~ParallelTimeline ();
-
- public:
+public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	ParallelTimeline ();
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
+
+protected:
+	virtual ~ParallelTimeline ();
 };
 
 
 /* @Namespace=System.Windows.Media */
 class TimelineMarker : public DependencyObject {
- protected:
-	virtual ~TimelineMarker ();
-
- public:
+public:
  	/* @PropertyType=string,GenerateAccessors */
 	const static int TextProperty;
  	/* @PropertyType=TimeSpan,GenerateAccessors */
@@ -172,20 +178,15 @@ class TimelineMarker : public DependencyObject {
 	
 	void SetType (const char *type);
 	const char *GetType ();
+
+protected:
+	virtual ~TimelineMarker ();
 };
 
 
 /* @Namespace=Mono,Version=2 */
-class DispatcherTimer : public TimelineGroup {
-	Clock *root_clock;
-	static void OnTick (EventObject *sender, EventArgs *calldata, gpointer data);
-	bool stopped;
-	bool started;
-
- protected:
-	virtual ~DispatcherTimer ();
-
- public:
+class DispatcherTimer : public Timeline {
+public:
 	/* @GenerateCBinding,GeneratePInvoke,MainThread,Version=2 */
 	DispatcherTimer ();
 
@@ -203,6 +204,16 @@ class DispatcherTimer : public TimelineGroup {
 	void Run ();
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
+
+protected:
+	virtual ~DispatcherTimer ();
+
+	virtual void OnClockCompleted ();
+
+private:
+	Clock *root_clock;
+	bool stopped;
+	bool started;
 };
 
 #endif /* MOON_TIMELINE_H */

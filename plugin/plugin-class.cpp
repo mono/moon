@@ -3185,11 +3185,14 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 				   const NPVariant *args, guint32 argCount,
 				   NPVariant *result)
 {
+	// FIXME: all the WithError calls should be using a MoonError,
+	// which we convert to a JS exception and throw if there's a
+	// problem.
 	Storyboard *sb = (Storyboard*)GetDependencyObject ();
 
 	switch (id) {
 	case MoonId_Begin:
-		if (argCount != 0 || !sb->Begin ())
+		if (argCount != 0 || !sb->BeginWithError (NULL))
 			THROW_JS_EXCEPTION ("begin");
 		
 		VOID_TO_NPVARIANT (*result);
@@ -3199,7 +3202,7 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 0)
 			THROW_JS_EXCEPTION ("pause");
 
-		sb->Pause ();
+		sb->PauseWithError (NULL);
 
 		VOID_TO_NPVARIANT (*result);
 
@@ -3208,7 +3211,7 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 0)
 			THROW_JS_EXCEPTION ("resume");
 
-		sb->Resume ();
+		sb->ResumeWithError (NULL);
 
 		VOID_TO_NPVARIANT (*result);
 
@@ -3231,7 +3234,7 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 				THROW_JS_EXCEPTION ("seek");
 		}
 		
-		sb->Seek (ts);
+		sb->SeekWithError (ts, NULL);
 
 		VOID_TO_NPVARIANT (*result);
 
@@ -3241,7 +3244,7 @@ MoonlightStoryboardObject::Invoke (int id, NPIdentifier name,
 		if (argCount != 0)
 			THROW_JS_EXCEPTION ("stop");
 
-		sb->Stop ();
+		sb->StopWithError (NULL);
 
 		VOID_TO_NPVARIANT (*result);
 

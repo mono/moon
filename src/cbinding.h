@@ -1523,6 +1523,9 @@ bool storyboard_begin_with_error (Storyboard *instance, MoonError *error);
 int storyboard_get_current_state (Storyboard *instance);
 
 /* @GeneratePInvoke */
+TimeSpan storyboard_get_current_time (Storyboard *instance);
+
+/* @GeneratePInvoke */
 DependencyProperty *storyboard_get_target_dependency_property (Storyboard *instance);
 
 /* @GeneratePInvoke */
@@ -1532,10 +1535,13 @@ void storyboard_pause_with_error (Storyboard *instance, MoonError *error);
 void storyboard_resume_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */
+void storyboard_seek_aligned_to_last_tick_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error);
+
+/* @GeneratePInvoke */
 void storyboard_seek_with_error (Storyboard *instance, TimeSpan timespan, MoonError *error);
 
 /* @GeneratePInvoke */
-void storyboard_skip_to_fill (Storyboard *instance);
+void storyboard_skip_to_fill_with_error (Storyboard *instance, MoonError *error);
 
 /* @GeneratePInvoke */
 void storyboard_stop_with_error (Storyboard *instance, MoonError *error);

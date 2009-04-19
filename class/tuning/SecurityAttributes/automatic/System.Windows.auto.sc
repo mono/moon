@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 476 methods needs to be decorated.
+# 478 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -264,6 +264,9 @@
 
 # p/invoke declaration
 +SC-M: System.Int64 Mono.NativeMethods::multi_scale_tile_source_get_image_width(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int64 Mono.NativeMethods::storyboard_get_current_time(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::application_get_current()
@@ -1289,10 +1292,13 @@
 +SC-M: System.Void Mono.NativeMethods::storyboard_resume_with_error_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::storyboard_seek_aligned_to_last_tick_with_error_(System.IntPtr,System.Int64,Mono.MoonError&)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::storyboard_seek_with_error_(System.IntPtr,System.Int64,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::storyboard_skip_to_fill(System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::storyboard_skip_to_fill_with_error_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::storyboard_stop_with_error_(System.IntPtr,Mono.MoonError&)

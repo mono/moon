@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 459 methods
+# 462 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -46,7 +46,9 @@
 +SSC-M: System.Boolean Mono.NativeMethods::storyboard_begin(System.IntPtr)
 +SSC-M: System.Void Mono.NativeMethods::storyboard_pause(System.IntPtr)
 +SSC-M: System.Void Mono.NativeMethods::storyboard_resume(System.IntPtr)
++SSC-M: System.Void Mono.NativeMethods::storyboard_seek_aligned_to_last_tick(System.IntPtr,System.Int64)
 +SSC-M: System.Void Mono.NativeMethods::storyboard_seek(System.IntPtr,System.Int64)
++SSC-M: System.Void Mono.NativeMethods::storyboard_skip_to_fill(System.IntPtr)
 +SSC-M: System.Void Mono.NativeMethods::storyboard_stop(System.IntPtr)
 +SSC-M: System.IntPtr Mono.NativeMethods::uielement_get_transform_to_uielement(System.IntPtr,System.IntPtr)
 +SSC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file(System.IntPtr,System.String,System.Boolean,Mono.Kind&)
@@ -288,10 +290,11 @@
 +SSC-M: System.Void System.Windows.Media.Animation.SplineDoubleKeyFrame::.ctor()
 +SSC-M: System.Void System.Windows.Media.Animation.SplinePointKeyFrame::.ctor()
 +SSC-M: System.Void System.Windows.Media.Animation.Storyboard::.ctor()
-+SSC-M: System.Void System.Windows.Media.Animation.Storyboard::SkipToFill()
-+SSC-M: System.Windows.DependencyProperty System.Windows.Media.Animation.Storyboard::GetTargetDependencyProperty(System.Windows.Media.Animation.Timeline)
++SSC-M: System.TimeSpan System.Windows.Media.Animation.Storyboard::GetCurrentTime()
 +SSC-M: System.Windows.Media.Animation.ClockState System.Windows.Media.Animation.Storyboard::GetCurrentState()
++SSC-M: System.Windows.DependencyProperty System.Windows.Media.Animation.Storyboard::GetTargetDependencyProperty(System.Windows.Media.Animation.Timeline)
 +SSC-M: System.Void System.Windows.Media.Animation.Timeline::.ctor()
++SSC-M: System.Windows.DependencyObject System.Windows.Media.Animation.Timeline::get_ManualTarget()
 +SSC-M: System.Void System.Windows.Media.Animation.Timeline::set_ManualTarget(System.Windows.DependencyObject)
 +SSC-M: System.Void System.Windows.Media.Animation.TimelineCollection::.ctor()
 +SSC-M: System.Void System.Windows.Media.ArcSegment::.ctor()
