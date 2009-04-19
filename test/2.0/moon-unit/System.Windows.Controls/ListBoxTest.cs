@@ -174,7 +174,7 @@ namespace MoonTest.System.Windows.Controls {
 				Content = new Rectangle { Fill = new SolidColorBrush (Colors.Black), Width = 20, Height = 20 }
 			};
 			TestPanel.Children.Add (c);
-			c.Items.Add (item);
+			Enqueue (() => c.Items.Add (item));
 			Enqueue (() => {
 
 				ContentPresenter presenter = (ContentPresenter) VisualTreeHelper.GetParent ((Rectangle) item.Content);
