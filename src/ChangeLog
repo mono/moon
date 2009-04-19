@@ -1,3 +1,9 @@
+2009-04-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (DefaultFontSize): New function to get the default
+	font size for a TextBlock (or Inline) based on the Silverlight
+	context (XAP vs XAML).
+
 2009-04-19  Chris Toshok  <toshok@ximian.com>
 
 	* provider.cpp (InheritedPropertyValueProvider::GetPropertyValue):

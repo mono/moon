@@ -30,8 +30,7 @@
 #define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
 #define TEXTBLOCK_FONT_WEIGHT  FontWeightsNormal
 #define TEXTBLOCK_FONT_STYLE   FontStylesNormal
-//#define TEXTBLOCK_FONT_SIZE    14.666666984558105
-#define TEXTBLOCK_FONT_SIZE    11.0
+#define TEXTBLOCK_FONT_SIZE    14.666666984558105
 
 /* @Namespace=System.Windows.Documents */
 class Inline : public DependencyObject, public ITextAttributes {
@@ -53,7 +52,7 @@ class Inline : public DependencyObject, public ITextAttributes {
  public:
  	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
 	const static int FontFamilyProperty;
- 	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE,GenerateAccessors */
+ 	/* @PropertyType=double,AutoCreator=TextBlock::CreateDefaultFontSize,GenerateAccessors */
 	const static int FontSizeProperty;
  	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH,GenerateAccessors */
 	const static int FontStretchProperty;
@@ -216,7 +215,7 @@ class TextBlock : public FrameworkElement {
  public:
  	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
 	const static int FontFamilyProperty;
- 	/* @PropertyType=double,DefaultValue=TEXTBLOCK_FONT_SIZE,GenerateAccessors */
+ 	/* @PropertyType=double,AutoCreator=TextBlock::CreateDefaultFontSize,GenerateAccessors */
 	const static int FontSizeProperty;
  	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH,GenerateAccessors */
 	const static int FontStretchProperty;
@@ -255,6 +254,8 @@ class TextBlock : public FrameworkElement {
 	TextBlock ();
 	
 	void SetFontSource (Downloader *downloader);
+	
+	static Value *CreateDefaultFontSize (DependencyObject *obj, DependencyProperty *property);
 	
 	//
 	// Overrides

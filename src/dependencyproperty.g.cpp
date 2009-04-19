@@ -124,7 +124,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontSource", Type::FONTSOURCE);
-	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontSize", new Value (TEXTBLOCK_FONT_SIZE), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::TEXTBLOCK, "FontSize", NULL, Type::DOUBLE, false, false, false, NULL, NULL, TextBlock::CreateDefaultFontSize, false, false);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontGUID", Type::STRING);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontFilename", Type::STRING);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);
@@ -296,7 +296,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::INLINE, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::INLINE, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
 	DependencyProperty::Register (this, Type::INLINE, "FontSource", Type::FONTSOURCE);
-	DependencyProperty::Register (this, Type::INLINE, "FontSize", new Value (TEXTBLOCK_FONT_SIZE), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::INLINE, "FontSize", NULL, Type::DOUBLE, false, false, false, NULL, NULL, TextBlock::CreateDefaultFontSize, false, false);
 	DependencyProperty::Register (this, Type::INLINE, "FontGUID", Type::STRING);
 	DependencyProperty::Register (this, Type::INLINE, "FontFilename", Type::STRING);
 	DependencyProperty::Register (this, Type::INLINE, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);

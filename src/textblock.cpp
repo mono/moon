@@ -23,6 +23,7 @@
 
 #include "file-downloader.h"
 #include "textblock.h"
+#include "control.h"
 #include "runtime.h"
 #include "color.h"
 #include "utils.h"
@@ -413,6 +414,17 @@ TextBlock::~TextBlock ()
 	
 	delete layout;
 	delete font;
+}
+
+Value *
+TextBlock::CreateDefaultFontSize (DependencyObject *obj, DependencyProperty *property)
+{
+	Deployment *deployment;
+	
+	if ((deployment = Deployment::GetCurrent ()) && deployment->IsLoadedFromXap ())
+		return new Value (CONTROL_FONT_SIZE);
+	
+	return new Value (TEXTBLOCK_FONT_SIZE);
 }
 
 void
