@@ -319,6 +319,11 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		g_free (uri_string);
 		break;
 	}
+	case Type::FONTFAMILY: {
+		char *family = v->AsFontFamily() ? v->AsFontFamily()->source : NULL;
+		string_to_npvariant (family ? family : "", result);
+		break;
+	}
 	case Type::COLOR: {
 		Color *c = v->AsColor ();
 		gint32 color = ((((gint32)(c->a * 255.0)) << 24) | (((gint32)(c->r * 255.0)) << 16) | 
