@@ -64,10 +64,11 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[MoonlightBug ("temporarily marked 'bug' until I test on Windows to verify behavior")]
-		public void LineBreakTranslatesToCR ()
+		public void LineBreakTranslatesToUnicodeLineSeparator ()
 		{
 			TextBlock tb = new TextBlock ();
 			Run run = new Run ();
+			string expected;
 			
 			run.Text = "this is line 1";
 			tb.Inlines.Add (run);
@@ -76,7 +77,9 @@ namespace MoonTest.System.Windows.Controls {
 			run.Text = "this is line 2";
 			tb.Inlines.Add (run);
 			
-			Assert.AreEqual ("this is line 1\rthis is line 2", tb.Text, "LineBreak should be translated to a CR");
+			expected = String.Format ("this is line 1{0}this is line 2", (char) 8232);
+			
+			Assert.AreEqual (expected, tb.Text, "LineBreak should be translated to a unicode line separator");
 		}
 		
 		[TestMethod]
@@ -84,10 +87,22 @@ namespace MoonTest.System.Windows.Controls {
 		public void SettingTextNeverCreatesMoreThanOneRun ()
 		{
 			TextBlock tb = new TextBlock ();
+			Run run;
 			
 			tb.Text = "this is line 1\rthis is line 2";
+			run = (Run) tb.Inlines[0];
+			Assert.AreEqual (1, tb.Inlines.Count, "1. Setting Text property should never create more than 1 Run");
+			Assert.AreEqual ("this is line 1\rthis is line 2", run.Text, "1. The Run's Text should remain unchanged");
 			
-			Assert.AreEqual (1, tb.Inlines.Count, "Setting Text property should never create more than 1 Run");
+			tb.Text = "this is line 1\nthis is line 2";
+			run = (Run) tb.Inlines[0];
+			Assert.AreEqual (1, tb.Inlines.Count, "2. Setting Text property should never create more than 1 Run");
+			Assert.AreEqual ("this is line 1\nthis is line 2", run.Text, "2. The Run's Text should remain unchanged");
+			
+			tb.Text = "this is line 1\r\nthis is line 2";
+			run = (Run) tb.Inlines[0];
+			Assert.AreEqual (1, tb.Inlines.Count, "3. Setting Text property should never create more than 1 Run");
+			Assert.AreEqual ("this is line 1\r\nthis is line 2", run.Text, "3. The Run's Text should remain unchanged");
 		}
 		
 		[TestMethod]
