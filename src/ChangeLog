@@ -1,3 +1,8 @@
+2009-04-20  Chris Toshok  <toshok@ximian.com>
+
+	* security.c (security_enable_coreclr): version the
+	MOON_DISABLE_SECURITY variable.
+
 2009-04-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.cpp (TextBlock): Removed cached TextFontDescription

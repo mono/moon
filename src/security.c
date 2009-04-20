@@ -78,8 +78,8 @@ determine_platform_image (const char *image_name)
 void
 security_enable_coreclr (const char *platform_dir)
 {
-	if (g_getenv ("MOON_DISABLE_SECURITY") != NULL) {
-		g_warning ("CORECLR was DISABLED using MOON_DISABLE_SECURITY override");
+	if (g_getenv ("MOON_DISABLE_SECURITY_PREVIEW1") != NULL) {
+		g_warning ("CORECLR was DISABLED using MOON_DISABLE_SECURITY_PREVIEW1 override");
 	} else if (g_path_is_absolute (platform_dir)) {
 		memset (&platform_stat, 0, sizeof (platform_stat));
 		if (stat (platform_dir, &platform_stat) == 0) {
