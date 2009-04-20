@@ -91,6 +91,8 @@ typedef Value* AutoCreator  (DependencyObject *instance, DependencyProperty *pro
 class AutoCreators {
 public:
 	static AutoCreator default_autocreator;
+
+	static AutoCreator CreateDefaultFontSize;
 };
 
 class AutoCreatePropertyValueProvider : public PropertyValueProvider {

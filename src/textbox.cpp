@@ -531,11 +531,11 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	AddHandler (UIElement::KeyUpEvent, TextBoxBase::key_up, this);
 	
 	font = new TextFontDescription ();
-	font->SetFamily (CONTROL_FONT_FAMILY);
-	font->SetStretch (CONTROL_FONT_STRETCH);
-	font->SetWeight (CONTROL_FONT_WEIGHT);
-	font->SetStyle (CONTROL_FONT_STYLE);
-	font->SetSize (CONTROL_FONT_SIZE);
+	font->SetFamily (GetFontFamily()->source);
+	font->SetStretch (GetFontStretch());
+	font->SetWeight (GetFontWeight());
+	font->SetStyle (GetFontStyle());
+	font->SetSize (GetFontSize());
 	
 	downloader = NULL;
 	

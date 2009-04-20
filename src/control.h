@@ -25,7 +25,6 @@
 #define CONTROL_FONT_STRETCH FontStretchesNormal
 #define CONTROL_FONT_WEIGHT  FontWeightsNormal
 #define CONTROL_FONT_STYLE   FontStylesNormal
-#define CONTROL_FONT_SIZE    11.0
 
 //
 // Control Class
@@ -121,7 +120,7 @@ public:
 	const static int BorderThicknessProperty;
 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(CONTROL_FONT_FAMILY),GenerateAccessors */
 	const static int FontFamilyProperty;
-	/* @PropertyType=double,DefaultValue=CONTROL_FONT_SIZE,GenerateAccessors */
+	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
 	const static int FontSizeProperty;
 	/* @PropertyType=FontStretch,DefaultValue=CONTROL_FONT_STRETCH,GenerateAccessors */
 	const static int FontStretchProperty;

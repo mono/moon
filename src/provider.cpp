@@ -392,3 +392,18 @@ AutoCreators::default_autocreator (DependencyObject *instance, DependencyPropert
 
 	return Value::CreateUnrefPtr (type->CreateInstance ());
 }
+
+#define XAML_FONT_SIZE    14.666666984558105
+#define XAP_FONT_SIZE     11.0
+
+Value *
+AutoCreators::CreateDefaultFontSize (DependencyObject *obj, DependencyProperty *property)
+{
+	Deployment *deployment;
+	
+	if ((deployment = Deployment::GetCurrent ()) && deployment->IsLoadedFromXap ())
+		return new Value (XAP_FONT_SIZE);
+	
+	return new Value (XAML_FONT_SIZE);
+}
+

@@ -1,5 +1,25 @@
 2009-04-20  Chris Toshok  <toshok@ximian.com>
 
+	* provider.h|cpp (AutoCreators::CreateDefaultFontSize): move the
+	textblock autocreator here, and stop using TextBlock vs. Control
+	for the font size names, as both textblock and controls have the
+	varying font size.  There's also no reason to make them public
+	anymore.  if you want the font size, just call GetFontSize().
+
+	* control.h: FontSize uses an autocreator now, and remove the
+	#define.
+
+	* textbox.cpp (TextBoxBase::Initialize): use GetFontSize() instead
+	of the #define, and while we're at it just replace the other
+	defines with calls to the getters too.
+
+	* textblock.h|.cpp: remove the autocreator (it's in provider.cpp
+	now), and the #define for font_size.
+
+	* dependencyproperty.g.cpp: regen.
+	
+2009-04-20  Chris Toshok  <toshok@ximian.com>
+
 	* security.c (security_enable_coreclr): version the
 	MOON_DISABLE_SECURITY variable.
 

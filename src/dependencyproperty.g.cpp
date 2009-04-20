@@ -124,7 +124,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontSource", Type::FONTSOURCE);
-	DependencyProperty::RegisterFull (this, Type::TEXTBLOCK, "FontSize", NULL, Type::DOUBLE, false, false, false, NULL, NULL, TextBlock::CreateDefaultFontSize, false, false);
+	DependencyProperty::RegisterFull (this, Type::TEXTBLOCK, "FontSize", NULL, Type::DOUBLE, false, false, false, NULL, NULL, AutoCreators::CreateDefaultFontSize, false, false);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontGUID", Type::STRING);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontFilename", Type::STRING);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);
@@ -188,7 +188,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::CONTROL, "FontWeight", new Value (CONTROL_FONT_WEIGHT), Type::INT32);
 	DependencyProperty::Register (this, Type::CONTROL, "FontStyle", new Value (CONTROL_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::CONTROL, "FontStretch", new Value (CONTROL_FONT_STRETCH), Type::INT32);
-	DependencyProperty::Register (this, Type::CONTROL, "FontSize", new Value (CONTROL_FONT_SIZE), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::CONTROL, "FontSize", NULL, Type::DOUBLE, false, false, false, NULL, NULL, AutoCreators::CreateDefaultFontSize, false, false);
 	DependencyProperty::Register (this, Type::CONTROL, "FontFamily", new Value (FontFamily(CONTROL_FONT_FAMILY)), Type::FONTFAMILY);
 	DependencyProperty::Register (this, Type::CONTROL, "DefaultStyleKey", Type::MANAGEDTYPEINFO);
 	DependencyProperty::Register (this, Type::CONTROL, "BorderThickness", new Value (Thickness(0.0)), Type::THICKNESS);
@@ -296,7 +296,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::INLINE, "FontStyle", new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::INLINE, "FontStretch", new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
 	DependencyProperty::Register (this, Type::INLINE, "FontSource", Type::FONTSOURCE);
-	DependencyProperty::RegisterFull (this, Type::INLINE, "FontSize", NULL, Type::DOUBLE, false, false, false, NULL, NULL, TextBlock::CreateDefaultFontSize, false, false);
+	DependencyProperty::RegisterFull (this, Type::INLINE, "FontSize", NULL, Type::DOUBLE, false, false, false, NULL, NULL, AutoCreators::CreateDefaultFontSize, false, false);
 	DependencyProperty::Register (this, Type::INLINE, "FontGUID", Type::STRING);
 	DependencyProperty::Register (this, Type::INLINE, "FontFilename", Type::STRING);
 	DependencyProperty::Register (this, Type::INLINE, "FontFamily", new Value (FontFamily(TEXTBLOCK_FONT_FAMILY)), Type::FONTFAMILY);

@@ -405,17 +405,6 @@ TextBlock::~TextBlock ()
 	delete layout;
 }
 
-Value *
-TextBlock::CreateDefaultFontSize (DependencyObject *obj, DependencyProperty *property)
-{
-	Deployment *deployment;
-	
-	if ((deployment = Deployment::GetCurrent ()) && deployment->IsLoadedFromXap ())
-		return new Value (CONTROL_FONT_SIZE);
-	
-	return new Value (TEXTBLOCK_FONT_SIZE);
-}
-
 void
 TextBlock::CleanupDownloader ()
 {
