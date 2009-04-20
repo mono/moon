@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 462 methods
+# 465 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -379,6 +379,9 @@
 +SSC-M: System.Void System.Windows.Media.QuadraticBezierSegment::.ctor()
 +SSC-M: System.Void System.Windows.Media.RadialGradientBrush::.ctor()
 +SSC-M: System.Void System.Windows.Media.RectangleGeometry::.ctor()
++SSC-M: System.Void System.Windows.Media.RenderingEventArgs::.ctor(System.IntPtr)
++SSC-M: System.Void System.Windows.Media.RenderingEventArgs::Finalize()
++SSC-M: System.TimeSpan System.Windows.Media.RenderingEventArgs::get_RenderingTime()
 +SSC-M: System.Void System.Windows.Media.RotateTransform::.ctor()
 +SSC-M: System.Void System.Windows.Media.ScaleTransform::.ctor()
 +SSC-M: System.Void System.Windows.Media.SkewTransform::.ctor()

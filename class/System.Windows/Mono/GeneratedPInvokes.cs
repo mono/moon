@@ -1491,6 +1491,10 @@ namespace Mono {
 		// RectangleGeometry *rectangle_geometry_new ();
 		public extern static IntPtr rectangle_geometry_new ();
 
+		[DllImport ("moon")]
+		// TimeSpan rendering_event_args_get_rendering_time (RenderingEventArgs *instance);
+		public extern static long rendering_event_args_get_rendering_time (IntPtr instance);
+
 		[DllImport ("moon", EntryPoint="resource_dictionary_add_with_error")]
 		[return: MarshalAs (UnmanagedType.U1)]
 		// bool resource_dictionary_add_with_error (ResourceDictionary *instance, const char *key, Value *value, MoonError *error);

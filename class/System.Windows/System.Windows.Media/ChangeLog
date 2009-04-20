@@ -1,3 +1,10 @@
+2009-04-19  Chris Toshok  <toshok@ximian.com>
+
+	* CompositionTarget.cs (UnmanagedRendering): create a
+	RenderingEventArgs.
+
+	* RenderingEventArgs.cs: flesh this out.
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MultiScaleTileSource.cs: Generate all P/Invoke methods.

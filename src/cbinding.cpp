@@ -3018,6 +3018,20 @@ rectangle_geometry_new (void)
 
 
 /**
+ * RenderingEventArgs
+ **/
+TimeSpan
+rendering_event_args_get_rendering_time (RenderingEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (TimeSpan) 0;
+	
+	return instance->GetRenderingTime ();
+}
+
+
+/**
  * ResourceDictionary
  **/
 bool

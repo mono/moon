@@ -239,6 +239,7 @@ class QuinticEase;
 class RadialGradientBrush;
 class Rectangle;
 class RectangleGeometry;
+class RenderingEventArgs;
 class ResourceDictionary;
 class RotateTransform;
 class RoutedEventArgs;
@@ -578,6 +579,7 @@ public:
 	RadialGradientBrush*                     AsRadialGradientBrush () { checked_get_subclass (Type::RADIALGRADIENTBRUSH, RadialGradientBrush) }
 	Rectangle*                               AsRectangle () { checked_get_subclass (Type::RECTANGLE, Rectangle) }
 	RectangleGeometry*                       AsRectangleGeometry () { checked_get_subclass (Type::RECTANGLEGEOMETRY, RectangleGeometry) }
+	RenderingEventArgs*                      AsRenderingEventArgs () { checked_get_subclass (Type::RENDERINGEVENTARGS, RenderingEventArgs) }
 	ResourceDictionary*                      AsResourceDictionary () { checked_get_subclass (Type::RESOURCE_DICTIONARY, ResourceDictionary) }
 	RotateTransform*                         AsRotateTransform () { checked_get_subclass (Type::ROTATETRANSFORM, RotateTransform) }
 	RoutedEventArgs*                         AsRoutedEventArgs () { checked_get_subclass (Type::ROUTEDEVENTARGS, RoutedEventArgs) }

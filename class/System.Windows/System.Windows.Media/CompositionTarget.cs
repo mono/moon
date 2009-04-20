@@ -24,7 +24,7 @@ namespace System.Windows.Media
 		{
 			EventHandler h = (EventHandler)events[RenderingEvent];
 			if (h != null) {
-				h (null, EventArgs.Empty);
+				h (null, new RenderingEventArgs (calldata));
 			}
 		}
 

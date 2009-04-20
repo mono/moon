@@ -1,3 +1,13 @@
+2009-04-19  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.auto.sc: add new
+	rendering_event_args_get_rendering_time p/invoke.
+
+	* System.Windows.auto.ssc: add
+	System.Windows.Media.RenderingEventArgs::get_RenderingTime, caller
+	of the previous p/invoke. Also add ctor and finalizer for
+	System.Windows.Media.RenderingEventArgs.
+	
 2009-04-18  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows.auto.sc: track new timeline/storyboard changes.

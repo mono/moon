@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 478 methods needs to be decorated.
+# 479 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -264,6 +264,9 @@
 
 # p/invoke declaration
 +SC-M: System.Int64 Mono.NativeMethods::multi_scale_tile_source_get_image_width(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int64 Mono.NativeMethods::rendering_event_args_get_rendering_time(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int64 Mono.NativeMethods::storyboard_get_current_time(System.IntPtr)

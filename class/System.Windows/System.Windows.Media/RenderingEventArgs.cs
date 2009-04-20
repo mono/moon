@@ -11,18 +11,30 @@
  */
 
 using System;
+using Mono;
 
 namespace System.Windows.Media
 {	
 	public class RenderingEventArgs : EventArgs
 	{
-		
-		internal RenderingEventArgs()
+		internal IntPtr native;
+
+		internal RenderingEventArgs (IntPtr raw)
 		{
+			native = raw;
+			NativeMethods.event_object_ref (native);
+		}
+
+		~RenderingEventArgs ()
+		{
+			if (native != IntPtr.Zero) {
+				NativeMethods.event_object_unref (native);
+				native = IntPtr.Zero;
+			}
 		}
 
 		public TimeSpan RenderingTime {
-			get { throw new NotImplementedException (); }
+			get { return new TimeSpan (NativeMethods.rendering_event_args_get_rendering_time (native)); }
 		}
 	}
 }

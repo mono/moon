@@ -29,6 +29,24 @@ EventArgs::~EventArgs ()
 {
 }
 
+RenderingEventArgs::RenderingEventArgs (TimeSpan renderingTime)
+{
+	SetObjectType(Type::RENDERINGEVENTARGS);
+
+	this->renderingTime = renderingTime;
+}
+
+RenderingEventArgs::~RenderingEventArgs ()
+{
+}
+
+TimeSpan
+RenderingEventArgs::GetRenderingTime ()
+{
+	return renderingTime;
+}
+
+
 
 CollectionChangedEventArgs::CollectionChangedEventArgs ()
 {

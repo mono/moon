@@ -1370,6 +1370,12 @@ Rectangle *rectangle_new (void);
 RectangleGeometry *rectangle_geometry_new (void);
 
 /**
+ * RenderingEventArgs
+ **/
+/* @GeneratePInvoke */
+TimeSpan rendering_event_args_get_rendering_time (RenderingEventArgs *instance);
+
+/**
  * ResourceDictionary
  **/
 /* @GeneratePInvoke */

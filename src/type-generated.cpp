@@ -404,6 +404,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::RECT] = new Type (Type::RECT, Type::OBJECT, true, "Rect", "RECT", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::RECTANGLE] = new Type (Type::RECTANGLE, Type::SHAPE, false, "Rectangle", "RECTANGLE", 0, 20, NULL, (create_inst_func *) rectangle_new, NULL);
 	types [(int) Type::RECTANGLEGEOMETRY] = new Type (Type::RECTANGLEGEOMETRY, Type::GEOMETRY, false, "RectangleGeometry", "RECTANGLEGEOMETRY", 0, 1, NULL, (create_inst_func *) rectangle_geometry_new, NULL);
+	types [(int) Type::RENDERINGEVENTARGS] = new Type (Type::RENDERINGEVENTARGS, Type::EVENTARGS, false, "RenderingEventArgs", "RENDERINGEVENTARGS", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::REPEATBEHAVIOR] = new Type (Type::REPEATBEHAVIOR, Type::OBJECT, true, "RepeatBehavior", "REPEATBEHAVIOR", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::RESOURCE_DICTIONARY] = new Type (Type::RESOURCE_DICTIONARY, Type::COLLECTION, false, "ResourceDictionary", "RESOURCE_DICTIONARY", 0, 3, NULL, (create_inst_func *) resource_dictionary_new, NULL);
 	types [(int) Type::ROTATETRANSFORM] = new Type (Type::ROTATETRANSFORM, Type::TRANSFORM, false, "RotateTransform", "ROTATETRANSFORM", 0, 1, NULL, (create_inst_func *) rotate_transform_new, NULL);

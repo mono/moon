@@ -37,6 +37,22 @@ protected:
 	virtual ~EventArgs ();
 };
 
+/* @Namespace=None */
+class RenderingEventArgs : public EventArgs {
+public:
+	RenderingEventArgs (TimeSpan renderingTime);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	TimeSpan GetRenderingTime ();
+
+protected:
+	virtual ~RenderingEventArgs ();
+
+private:
+
+	TimeSpan renderingTime;
+};
+
 enum CollectionChangedAction {
 	CollectionChangedActionAdd,
 	CollectionChangedActionRemove,
