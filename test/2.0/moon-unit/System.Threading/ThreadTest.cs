@@ -43,7 +43,6 @@ namespace MoonTest.System.Threading
 		static EventHandler<ApplicationUnhandledExceptionEventArgs> ex_handler;
 
 		[TestMethod]
-		[Ignore] // We don't pass this quite yet.
 		[Asynchronous]
 		public void ThreadExceptionTest ()
 		{
