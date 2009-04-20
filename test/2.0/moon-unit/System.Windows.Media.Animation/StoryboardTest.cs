@@ -1146,15 +1146,17 @@ namespace MoonTest.System.Windows.Media.Animation {
 			int start = 0;
 
 			Enqueue (() => TestPanel.Children.Add (c));
-			Enqueue (() => { start = Environment.TickCount; storyboard.Begin (); });
-			EnqueueConditional (()=> Environment.TickCount - start > 300);
+			Enqueue (() => storyboard.Begin ());
+			EnqueueConditional (()=> storyboard.GetCurrentState() == ClockState.Active);
+			Enqueue (() => start = Environment.TickCount);
+			EnqueueConditional (()=> Environment.TickCount - start > 200);
 			Enqueue (() => {
 				double ms = storyboard.GetCurrentTime ().TotalMilliseconds;
 				Assert.IsGreater (200, ms, "More than 200ms");
 				Assert.AreEqual (ms, ((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, "#2");
 				Assert.AreEqual (ms, ((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, "#3");
 			});
-			EnqueueConditional (() => Environment.TickCount - start > 1100);
+			EnqueueConditional (() => Environment.TickCount - start > 1000);
 			Enqueue (() => {
 				double ms = storyboard.GetCurrentTime ().TotalMilliseconds;
 				Assert.IsGreater (1000, ms, "More than 1000ms");
