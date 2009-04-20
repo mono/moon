@@ -1,3 +1,8 @@
+2009-04-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* System.Windows.Controls/TextBlockTest.cs: Added some tests to
+	check some Text/Inlines behavior.
+
 2009-04-18  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: fixed a lot of

@@ -30,6 +30,7 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -37,7 +38,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public partial class TextBlockTest {
+	public partial class _TextBlockTest {
 		double line_height;
 		
 		[TestInitialize]
@@ -60,7 +61,35 @@ namespace MoonTest.System.Windows.Controls {
 			TextBlock tb = new TextBlock ();
 			tb.FontFamily = null;
 		}
-
+		
+		[TestMethod]
+		[MoonlightBug ("temporarily marked 'bug' until I test on Windows to verify behavior")]
+		public void LineBreakTranslatesToCR ()
+		{
+			TextBlock tb = new TextBlock ();
+			Run run = new Run ();
+			
+			run.Text = "this is line 1";
+			tb.Inlines.Add (run);
+			tb.Inlines.Add (new LineBreak ());
+			run = new Run ();
+			run.Text = "this is line 2";
+			tb.Inlines.Add (run);
+			
+			Assert.AreEqual ("this is line 1\rthis is line 2", tb.Text, "LineBreak should be translated to a CR");
+		}
+		
+		[TestMethod]
+		[MoonlightBug ("temporarily marked 'bug' until I test on Windows to verify behavior")]
+		public void SettingTextNeverCreatesMoreThanOneRun ()
+		{
+			TextBlock tb = new TextBlock ();
+			
+			tb.Text = "this is line 1\rthis is line 2";
+			
+			Assert.AreEqual (1, tb.Inlines.Count, "Setting Text property should never create more than 1 Run");
+		}
+		
 		[TestMethod]
 		//[MoonlightBug ("Extents are slightly off (27,17) instead of (28,16), likely due to font metrics")]
 		public void MeasureTest ()
