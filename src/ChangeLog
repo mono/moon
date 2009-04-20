@@ -1,5 +1,12 @@
 2009-04-20  Chris Toshok  <toshok@ximian.com>
 
+	* clock.cpp (Clock::UpdateFromParentTime): comment the hell out of
+	this method.  Also, don't multiply to compute localTime only to
+	turn around and divide to compute normalizedTime.  normalizedTime
+	is always the factor we multiply natural_duration_timespan by.
+
+2009-04-20  Chris Toshok  <toshok@ximian.com>
+
 	* provider.h|cpp (AutoCreators::CreateDefaultFontSize): move the
 	textblock autocreator here, and stop using TextBlock vs. Control
 	for the font size names, as both textblock and controls have the

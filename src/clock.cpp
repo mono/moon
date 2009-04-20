@@ -139,14 +139,47 @@ Clock::GetNaturalDuration ()
 void
 Clock::UpdateFromParentTime (TimeSpan parentTime)
 {
+#define CLAMP_NORMALIZED_TIME do {			\
+	if (normalizedTime < 0.0) normalizedTime = 0.0; \
+	if (normalizedTime > 1.0) normalizedTime = 1.0; \
+} while (0)
+
+	//
+	// The idea behind this method is that it is possible (and
+	// easier, and clearer) to apply a simple function to our
+	// parent clock's time to calculate our own time.
+	//
+	// We also calculate our progress (MS uses the term
+	// "normalized time"), a value in the range [0-1] at the same
+	// time.
+	//
+	// This clock's localTime runs from the range
+	// [0-natural_duration] for natural_durations with timespans,
+	// and [0-$forever] for Forever durations.  Automatic
+	// durations are translated into timespans.
+
+	// if we're currently paused there's nothing at all to do.
 	if (is_paused)
 		return;
 
-	double normalizedTime = 0.0;
-	TimeSpan localTime = (parentTime - root_parent_time - timeline->GetBeginTime()) * timeline->GetSpeedRatio();
+	// root_parent_time is the time we were added to our parent clock.
+	// timeline->GetBeginTime() is expressed in the time-space of the parent clock.
+	//
+	// subtracting those two translates our start time to 0
+	//
+	// we then have to account for our accumulated pause time, and
+	// scale the whole thing by our speed ratio.
+	//
+	// the result is a timespan unaffected by repeatbehavior or
+	// autoreverse.  it is simple the timespan our clock has been
+	// running.
+	TimeSpan localTime = (parentTime - root_parent_time - timeline->GetBeginTime() - accumulated_pause_time) * timeline->GetSpeedRatio();
 
-	localTime -= accumulated_pause_time * timeline->GetSpeedRatio();
-
+	// the clock doesn't update and we don't progress if the
+	// translated local time is before our begin time.  Keep in
+	// mind that this can happen *after* a clock has started,
+	// since parentTime isn't strictly increasing.  It can
+	// decrease and represent a time before our start time.
 	if (localTime < 0)
 		return;
 
@@ -159,10 +192,23 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	if (GetClockState () == Clock::Stopped)
 		return;
 
+	double normalizedTime = 0.0;
+
+
+	// we only do the bulk of the work if the duration has a
+	// timespan.  if we're automatic/forever, our normalizedTime
+	// stays pegged at 0.0, and our localTime progresses
+	// undisturbed.  i.e. a RepeatBehavior="2x" means nothing if
+	// the Duration of the animation is forever.
 	if (GetNaturalDuration().HasTimeSpan()) {
 		TimeSpan natural_duration_timespan = GetNaturalDuration().GetTimeSpan();
 		
 		if (natural_duration_timespan <= 0) {
+			// for clocks with instantaneous begin times/durations, expressable like so:
+			//     <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" BeginTime="00:00:00" Duration="00:00:00" />
+			// we keep our localtime pegged at 0 (FIXME:
+			// without filling?) and our normalizedTime at
+			// 1.  The latter makes sure that value is applied in full.
  			localTime = 0;
  			normalizedTime = 1.0;
 		}
@@ -170,7 +216,22 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 			RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
 
 			if (!repeat->IsForever() && localTime >= fillTime) {
+				// fillTime represents the local time
+				// at which the number of repeats
+				// (expressed either as a timespan or
+				// e.g. "2x") and autoreverses have
+				// completed.  i.e. it's the
+				// $natural_duration * $repeat_count
+				// for repeat behaviors with counts,
+				// and $repeat_duration for repeat
+				// behaviors with timespans.
+
+				// if the timeline is auto-reversible,
+				// we always end at localTime = 0.
+				// Otherwise we know it's fillTime.
 				localTime = timeline->GetAutoReverse () ? 0 : fillTime;
+				normalizedTime = (double)localTime / natural_duration_timespan;
+				CLAMP_NORMALIZED_TIME;
 				if (GetClockState () == Clock::Active) {
 					FillOnNextTick ();
 					Completed ();
@@ -185,36 +246,107 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 					int ti = (int)t;
 					double fract = t - ti;
 
+					// This block of code is the first time where localTime is translated
+					// into per-repeat/per-autoreverse segments.  We do it here because it
+					// allows us to use a cute hack for determining if we're ascending or
+					// descending.
+					//
+					// for instance:
+
+					// <storyboard duration="00:00:12">
+					//   <doubleanimation begintime="00:00:00" repeatbehavior="2x" autoreverse="<below>" duration="00:00:03" />
+					// </storyboard>
+					//
+					//  autoreverse = true                       autoreverse = false
+					// 0  / 3 = 0        = 0                  0 / 3 = 0           = 0
+					// 1  / 3 = .333     > 0.333              1 / 3 = .333        > 0.333
+					// 2  / 3 = .666     > 0.666              2 / 3 = .666        > 0.666
+					// 3  / 3 = 1        = 1                  3 / 3 = 1           = 1
+					// 4  / 3 = 1.33     < 0.666              4 / 3 = 1.33        > 0.333
+					// 5  / 3 = 1.66     < 0.333              5 / 3 = 1.66        > 0.666
+					// 6  / 3 = 2        = 0                  6 / 3 = 2           = 1
+					// 7  / 3 = 2.33     > 0.333
+					// 8  / 3 = 2.66     > 0.666
+					// 9  / 3 = 3        = 1
+					// 10 / 3 = 3.33     > 0.666
+					// 11 / 3 = 3.66     > 0.333
+					// 12 / 3 = 4        = 0
+
+
+					// a little explanation:  the $localtime / $natural_duration = $foo is done
+					// to factor out the repeat count.  we know that the time within a given repeated
+					// run is just the fractional part of that (if the result has a fraction), or 0 or 1.
+
+					// the >,<,= column above represents whether we're increasing, decreasing, or at an
+					// end-point, respectively.
+
 					if (timeline->GetAutoReverse()) {
+						// left column above
 						if (ti & 1) {
-							if (ti == t)
+							// e.g:
+							// 3  / 3 = 1        = 1    
+							// 4  / 3 = 1.33     < 0.666
+							// 5  / 3 = 1.66     < 0.333
+
+							// we know we're either at normalized time 1 (at our duration), or we're descending,
+							// based on if there's a fractional component.
+							if (ti == t) {
+								normalizedTime = 1.0;
 								localTime = natural_duration_timespan;
-							else 
+							}
+							else {
 								/* we're descending */
-								localTime = (1 - fract) * natural_duration_timespan;
+								normalizedTime = 1.0 - fract;
+								CLAMP_NORMALIZED_TIME;
+								localTime = normalizedTime * natural_duration_timespan;
+							}
 						}
 						else {
-							if (ti == t)
+							// e.g:
+							// 6  / 3 = 2        = 0    
+							// 7  / 3 = 2.33     > 0.333
+							// 8  / 3 = 2.66     > 0.666
+
+							// we know we're either at normalizd time 0 (at our start time), or we're ascending,
+							// based on if there's a fractional component.
+							if (ti == t) {
+								normalizedTime = 0.0;
 								localTime = 0;
-							else
+							}
+							else {
 								/* we're ascending */
-								localTime = fract * natural_duration_timespan;
+								normalizedTime = fract;
+								CLAMP_NORMALIZED_TIME;
+								localTime = normalizedTime * natural_duration_timespan;
+							}
 						}
 					}
 					else {
-						if (ti == t)
+						// e.g.:
+						// 0 / 3 = 0           = 0
+						// 1 / 3 = .333        > 0.333
+						// 2 / 3 = .666        > 0.666
+						// 3 / 3 = 1           = 1
+						// 4 / 3 = 1.33        > 0.333
+						// 5 / 3 = 1.66        > 0.666
+						// 6 / 3 = 2           = 1
+
+						// we're always ascending here (since autoreverse is off), and we know we're > 0,
+						// so we don't need to concern ourselves with that case.  At the integer points we're
+						// at our duration, and otherwise we're at the fractional value.
+						if (ti == t) {
+							normalizedTime = 1.0;
 							localTime = natural_duration_timespan;
-						else
+						}
+						else {
 							/* we're ascending */
-							localTime = fract * natural_duration_timespan;
+							normalizedTime = fract;
+							CLAMP_NORMALIZED_TIME;
+							localTime = normalizedTime * natural_duration_timespan;
+						}
 					}
 				}
 			}
-
-			normalizedTime = (double)localTime / natural_duration_timespan;
-
-			if (normalizedTime < 0.0) normalizedTime = 0.0;
-			if (normalizedTime > 1.0) normalizedTime = 1.0;
 		}
 	}
 
