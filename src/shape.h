@@ -79,7 +79,7 @@ class Shape : public FrameworkElement {
  public: 
  	/* @PropertyType=Brush,GenerateAccessors */
 	const static int FillProperty;
- 	/* @PropertyType=Stretch,DefaultValue=StretchNone,GenerateAccessors */
+ 	/* @PropertyType=Stretch,AutoCreator=Shape::CreateDefaultStretch,GenerateAccessors */
 	const static int StretchProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
 	const static int StrokeProperty;
@@ -181,6 +181,8 @@ class Shape : public FrameworkElement {
 	
 	void SetStrokeThickness (double thickness);
 	double GetStrokeThickness ();
+
+	static Value* CreateDefaultStretch (DependencyObject *instance, DependencyProperty *property);
 };
 
 

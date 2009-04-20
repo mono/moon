@@ -801,6 +801,15 @@ Shape::InvalidateSurfaceCache (void)
 	}
 }
 
+Value *
+Shape::CreateDefaultStretch (DependencyObject *instance, DependencyProperty *property)
+{
+	if (instance->Is (Type::RECTANGLE) || instance->Is (Type::ELLIPSE))
+		return new Value (StretchFill);
+	else
+		return new Value (StretchNone);
+}
+
 //
 // Ellipse
 //
@@ -808,7 +817,6 @@ Shape::InvalidateSurfaceCache (void)
 Ellipse::Ellipse ()
 {
 	SetObjectType (Type::ELLIPSE);
-	SetStretch (StretchFill);
 }
 
 /*
@@ -925,7 +933,6 @@ Ellipse::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 Rectangle::Rectangle ()
 {
 	SetObjectType (Type::RECTANGLE);
-	SetStretch (StretchFill);
 }
 
 /*

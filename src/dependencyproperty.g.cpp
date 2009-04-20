@@ -164,7 +164,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::SHAPE, "StrokeDashOffset", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::SHAPE, "StrokeDashCap", new Value (PenLineCapFlat), Type::INT32);
 	DependencyProperty::Register (this, Type::SHAPE, "StrokeDashArray", Type::DOUBLE_COLLECTION);
-	DependencyProperty::Register (this, Type::SHAPE, "Stretch", new Value (StretchNone), Type::INT32);
+	DependencyProperty::RegisterFull (this, Type::SHAPE, "Stretch", NULL, Type::INT32, false, false, false, NULL, NULL, Shape::CreateDefaultStretch, false, false);
 	DependencyProperty::Register (this, Type::SHAPE, "Fill", Type::BRUSH);
 	DependencyProperty::Register (this, Type::MEDIABASE, "Stretch", new Value (StretchUniform), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::MEDIABASE, "Source", NULL, Type::STRING, false, false, true, NULL, NULL, NULL, false, false);

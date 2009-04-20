@@ -1,3 +1,12 @@
+2009-04-19  Chris Toshok  <toshok@ximian.com>
+
+	* shape.cpp|.h (Shape::CreateDefaultStretch): create the proper
+	default for the various shapes (Fill if a rectangle or ellipse,
+	None for all other types).  Fixes part of DRT #508.
+	(Rectangle::Rectangle): don't set the default value as a local
+	value.
+	(Ellipse::Ellipse): same.
+
 2009-04-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.cpp (DefaultFontSize): New function to get the default
