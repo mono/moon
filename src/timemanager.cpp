@@ -536,7 +536,7 @@ TimeManager::SourceTick ()
 	if (current_flags & TIME_MANAGER_RENDER) {
 		// fprintf (stderr, "rendering\n"); fflush (stderr);
 		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
-		Emit (RenderEvent);
+		Emit (RenderEvent, new RenderingEventArgs (get_now()));
 		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
 	}
 
