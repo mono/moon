@@ -81,7 +81,7 @@ security_enable_coreclr (const char *platform_dir)
 	if (g_getenv ("MOON_DISABLE_SECURITY_PREVIEW_01") != NULL) {
 		g_warning ("CORECLR was DISABLED using MOON_DISABLE_SECURITY_PREVIEW_01 override");
 		g_warning ("this disables both code verification and metadata verification on code\n"
-			   "downloaded from untrusted sources, and therefor opens up your machine\n"
+			   "downloaded from untrusted sources, and therefore opens up your machine\n"
 			   "to a wide variety of attack vectors. Don't do this unless you know what\n"
 			   "you're doing!");
 	} else if (g_path_is_absolute (platform_dir)) {
