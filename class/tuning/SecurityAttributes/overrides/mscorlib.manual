@@ -11,3 +11,5 @@
 # corlib now use (internal)SafeFileHandle which inherits a SC type (SafeHandleZeroOrMinusOneIsInvalid)
 +SC-T: Microsoft.Win32.SafeHandles.SafeFileHandle
 
+# corlib calls System.Windows.Application.OnUnhandledException using reflection
++SSC-M: System.Void System.Threading.Thread::StartSafe()

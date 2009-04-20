@@ -1,3 +1,8 @@
+2009-04-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mscorlib.manual: Add a SSC override to let Thread use
+	  reflection.
+
 2008-04-13  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.manual: Add SSC to WebRequest.SetupProgressDelegate 
