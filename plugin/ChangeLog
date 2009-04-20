@@ -1,3 +1,8 @@
+2009-04-20  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (plugin_menu_about): use a preview link for preview
+	releases.
+
 2009-04-18  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (value_to_variant): add support for FontFamily.

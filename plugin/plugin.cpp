@@ -96,7 +96,12 @@ plugin_menu_about (PluginInstance *plugin)
 	gtk_about_dialog_set_version (about, VERSION);
 
 	gtk_about_dialog_set_copyright (about, "Copyright 2007-2008 Novell, Inc. (http://www.novell.com/)");
-	gtk_about_dialog_set_website (about, "http://mono-project.com/Moonlight");
+#if FINAL_RELEASE
+	gtk_about_dialog_set_website (about, "http://moonlight-project.com/");
+#else
+	gtk_about_dialog_set_website (about, "http://moonlight-project.com/Preview");
+#endif
+
 	gtk_about_dialog_set_website_label (about, "Project Website");
 
 	gtk_about_dialog_set_authors (about, moonlight_authors);
