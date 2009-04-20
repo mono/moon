@@ -1,3 +1,8 @@
+2009-04-20  Chris Toshok  <toshok@ximian.com>
+
+	* timeline.cpp: fix up DispatcherTimers after I broke them by
+	removing the clock event.
+
 2009-04-19  Chris Toshok  <toshok@ximian.com>
 
 	* eventargs.h|.cpp: add RenderingEventArgs type.

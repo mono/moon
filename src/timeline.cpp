@@ -327,25 +327,22 @@ DispatcherTimer::Start ()
 	stopped = false;
 
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-	ClockGroup *group = surface->GetTimeManager()->GetRootClock();
 
 	if (root_clock) {
 		root_clock->Reset ();
 		root_clock->BeginOnTick ();
 	} else {
+		ClockGroup *group = surface->GetTimeManager()->GetRootClock();
 
-	    root_clock = AllocateClock ();
-	    char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
-	    root_clock->SetValue (DependencyObject::NameProperty, name);
-	    g_free (name);
+		root_clock = AllocateClock ();
+		char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
+		root_clock->SetValue (DependencyObject::NameProperty, name);
+		g_free (name);
 
-	    group->AddChild (root_clock);
+		group->AddChild (root_clock);
 
-	    root_clock->BeginOnTick ();
+		root_clock->BeginOnTick ();
 	}
-
-	if (group->GetClockState() != Clock::Active)
-		group->Begin (group->GetCurrentTime());
 }
 
 void
@@ -370,10 +367,12 @@ DispatcherTimer::Run ()
 void
 DispatcherTimer::OnClockCompleted ()
 {
-	SetStarted (false);
+	if (IsStopped())
+		return;
+
 	Emit (DispatcherTimer::TickEvent);
 
-	if (!IsStopped () && !IsStarted ())
+	if (IsStarted ())
 		Run ();
 }
 
