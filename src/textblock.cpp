@@ -211,9 +211,6 @@ Inline::Equals (Inline *item)
 bool
 Inline::UpdateFontDescription ()
 {
-	// FIXME: I hate having to do it this way, updating the font
-	// in OnPropertyChanged() was a much much better way to do
-	// things. *sigh*
 	FontFamily *family = GetFontFamily ();
 	const char *family_name = NULL;
 	bool changed = false;
@@ -399,13 +396,6 @@ TextBlock::TextBlock ()
 	setvalue = true;
 	was_set = false;
 	dirty = true;
-	
-	font = new TextFontDescription ();
-	font->SetFamily (TEXTBLOCK_FONT_FAMILY);
-	font->SetStretch (TEXTBLOCK_FONT_STRETCH);
-	font->SetWeight (TEXTBLOCK_FONT_WEIGHT);
-	font->SetStyle (TEXTBLOCK_FONT_STYLE);
-	font->SetSize (TEXTBLOCK_FONT_SIZE);
 }
 
 TextBlock::~TextBlock ()
@@ -413,7 +403,6 @@ TextBlock::~TextBlock ()
 	CleanupDownloader ();
 	
 	delete layout;
-	delete font;
 }
 
 Value *
@@ -462,7 +451,6 @@ TextBlock::SetFontSource (Downloader *downloader)
 	} else {
 		ClearValue (TextBlock::FontFilenameProperty);
 		ClearValue (TextBlock::FontGUIDProperty);
-		font->SetFilename (NULL, NULL);
 		UpdateFontDescriptions ();
 		
 		dirty = true;
@@ -496,7 +484,6 @@ TextBlock::SetFontResource (const char *resource)
 		} else {
 			ClearValue (TextBlock::FontFilenameProperty);
 			ClearValue (TextBlock::FontGUIDProperty);
-			font->SetFilename (NULL, NULL);
 			UpdateFontDescriptions ();
 		}
 		
@@ -513,15 +500,14 @@ TextBlock::SetFontResource (const char *resource)
 		guid = resource;
 	
 	SetValue (TextBlock::FontFilenameProperty, Value (filename));
+	g_free (filename);
+	
 	if (guid != NULL)
 		SetValue (TextBlock::FontGUIDProperty, Value (guid));
 	else
 		ClearValue (TextBlock::FontGUIDProperty);
 	
-	font->SetFilename (filename, guid);
 	UpdateFontDescriptions ();
-	
-	g_free (filename);
 }
 
 Size
@@ -702,18 +688,36 @@ TextBlock::Layout (Size constraint)
 	const char *text = layout->GetText ();
 	
 	if (was_set && !GetValueNoDefault (TextBlock::TextProperty)) {
-		// FIXME: Does this only apply if the Text is set to
-		// String.Empty?  If so, then TextLayout::Layout()
-		// will handle this for us...
-		
 		// If the Text property had been set once upon a time,
 		// but is currently empty, Silverlight seems to set
 		// the ActualHeight property to the font height. See
 		// bug #405514 for details.
-		TextFont *font = this->font->GetFont ();
+		TextFontDescription *desc = new TextFontDescription ();
+		const char *family_name;
+		FontFamily *family;
+		TextFont *font;
+		
+		if ((family = GetFontFamily ()) && family->source) {
+			if (!(family_name = strchr (family->source, '#')))
+				family_name = family->source;
+			else
+				family_name++;
+		} else {
+			family_name = NULL;
+		}
+		
+		desc->SetFilename (GetFontFilename (), GetFontGUID ());
+		desc->SetStretch (GetFontStretch ());
+		desc->SetWeight (GetFontWeight ());
+		desc->SetStyle (GetFontStyle ());
+		desc->SetSize (GetFontSize ());
+		desc->SetFamily (family_name);
+		
+		font = desc->GetFont ();
 		actual_height = font->Height ();
 		actual_width = 0.0;
 		font->unref ();
+		delete desc;
 	} else if (!was_set) {
 		// If the Text property has never been set, then its
 		// extents should both be 0.0. See bug #435798 for
@@ -887,34 +891,22 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			resource = g_strndup (family->source, family_name - family->source);
 			SetFontResource (resource);
 			g_free (resource);
-			family_name++;
-		} else if (family) {
-			family_name = family->source;
 		}
 		
-		font->SetFamily (family_name);
-		UpdateFontDescriptions ();
-		dirty = true;
+		if (UpdateFontDescriptions ())
+			dirty = true;
 	} else if (args->GetId () == TextBlock::FontSizeProperty) {
-		double size = args->GetNewValue()->AsDouble ();
-		font->SetSize (size);
-		UpdateFontDescriptions ();
-		dirty = true;
+		if (UpdateFontDescriptions ())
+			dirty = true;
 	} else if (args->GetId () == TextBlock::FontStretchProperty) {
-		FontStretches stretch = (FontStretches) args->GetNewValue()->AsInt32 ();
-		font->SetStretch (stretch);
-		UpdateFontDescriptions ();
-		dirty = true;
+		if (UpdateFontDescriptions ())
+			dirty = true;
 	} else if (args->GetId () == TextBlock::FontStyleProperty) {
-		FontStyles style = (FontStyles) args->GetNewValue()->AsInt32 ();
-		font->SetStyle (style);
-		UpdateFontDescriptions ();
-		dirty = true;
+		if (UpdateFontDescriptions ())
+			dirty = true;
 	} else if (args->GetId () == TextBlock::FontWeightProperty) {
-		FontWeights weight = (FontWeights) args->GetNewValue()->AsInt32 ();
-		font->SetWeight (weight);
-		UpdateFontDescriptions ();
-		dirty = true;
+		if (UpdateFontDescriptions ())
+			dirty = true;
 	} else if (args->GetId () == TextBlock::TextProperty) {
 		if (setvalue) {
 			// result of a change to the TextBlock.Text property
@@ -1110,8 +1102,6 @@ TextBlock::DownloaderComplete ()
 		SetValue (TextBlock::FontGUIDProperty, Value (guid));
 	else
 		ClearValue (TextBlock::FontGUIDProperty);
-	
-	font->SetFilename (path, guid);
 	
 	if (UpdateFontDescriptions ()) {
 		dirty = true;

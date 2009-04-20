@@ -80,7 +80,7 @@ class Inline : public DependencyObject, public ITextAttributes {
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
-
+	
 	virtual bool PermitsMultipleParents () { return false; }
 	
 	//
@@ -180,7 +180,6 @@ class TextBlockDynamicPropertyValueProvider;
 class TextBlock : public FrameworkElement {
 	friend class TextBlockDynamicPropertyValueProvider;
 	
-	TextFontDescription *font;
 	Downloader *downloader;
 	TextLayout *layout;
 	

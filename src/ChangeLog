@@ -1,3 +1,9 @@
+2009-04-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (TextBlock): Removed cached TextFontDescription
+	since it's only ever used in 1 place and even then it's a corner
+	case.
+
 2009-04-20  Chris Toshok  <toshok@ximian.com>
 
 	* timeline.cpp: fix up DispatcherTimers after I broke them by
