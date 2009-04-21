@@ -93,6 +93,11 @@ TUNER_STEPS = \
 	Mono.Tuner.RemoveSerialization,Mono.Tuner:OutputStep	\
 	Mono.Tuner.CheckVisibility,Mono.Tuner
 
+if HAVE_MONO_BASIC
+$(MONO_BASIC_DLLFILES):
+	$(MAKE) -C $(MONO_BASIC_PATH)/tools/moonlight tune
+endif
+
 $(WORKING_FILES): $(INPUT_FILES)
 	-mkdir -p $(WORKING_DIR)
 	for i in $(INPUT_FILES); do cp -p $$i $$i.mdb $(WORKING_DIR); done
