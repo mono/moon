@@ -1,3 +1,10 @@
+2009-04-21  Alan McGovern  <amcgovern@novell.com>
+
+	* collection.h: HitTestCollection should override
+	  RemovedFromCollection the same way it overrides
+	  AddedToCollection so that items added/removed from the
+	  collection are not reparented.
+
 2009-04-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deepzoomimagetilesource.cpp: Fix a crash in MS DRT #545.

@@ -286,6 +286,7 @@ protected:
 class HitTestCollection : public UIElementCollection {
  protected:
 	virtual bool AddedToCollection (Value *value, MoonError *error) { return true; }
+	virtual void RemovedFromCollection (Value *value) {}
 	virtual ~HitTestCollection () {}
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
