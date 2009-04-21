@@ -1,13 +1,11 @@
 SUBDIRS = . test samples firefox
 
-if PLUGIN_INSTALL
-SUBDIRS += install
-endif
-
 CLEANFILES =
 
 pluginlibdir=$(pkglibdir)/plugin
 pluginlib_LTLIBRARIES = libmoonplugin.la libmoonloader.la
+
+noinst_LTLIBRARIES = libmoonpluginxpi.la libmoonloaderxpi.la
 
 pluginlib_DATA=README
 
@@ -19,20 +17,31 @@ INCLUDES = \
 	$(PLUGIN_CFLAGS) \
 	-Wall
 
+
+#--- libmoonloader ----------------------
 libmoonloader_la_LDFLAGS = \
 	-avoid-version
 
-libmoonloader_la_LIBADD = -ldl $(LOADER_LIBS)
+libmoonloader_la_LIBADD = -ldl $(top_builddir)/src/libmoon.la $(LOADER_LIBS)
 
 libmoonloader_la_SOURCES = \
 	plugin-proxy.cpp
 
+#--- libmoonloaderxpi -------------------
+libmoonloaderxpi_la_LDFLAGS = $(libmoonloader_la_LDFLAGS)
+
+libmoonloaderxpi_la_LIBADD = $(libmoonloader_la_LIBADD)
+
+libmoonloaderxpi_la_SOURCES = \
+	plugin-proxy-xpi.cpp \
+	plugin-proxy.cpp
+
+#--- libmoonplugin ----------------------
+
 libmoonplugin_la_LDFLAGS = \
 	-avoid-version
 
-if !PLUGIN_INSTALL
 MAYBE_LIBMOON = $(top_builddir)/src/libmoon.la
-endif
 
 libmoonplugin_la_LIBADD = $(MAYBE_LIBMOON) $(PLUGIN_LIBS)
 
@@ -58,11 +67,22 @@ libmoonplugin_la_SOURCES = \
 	windowless.cpp		\
 	windowless.h
 
+
+#--- libmoonplugin ----------------------
+libmoonpluginxpi_la_LDFLAGS = $(libmoonplugin_la_LDFLAGS)
+
+libmoonpluginxpi_la_LIBADD = $(PLUGIN_LIBS) 
+
+libmoonpluginxpi_la_SOURCES = $(libmoonplugin_la_SOURCES)
+
 # custom install rule
 test-plugin: libmoonloader.la libmoonplugin.la
 	mkdir -p ~/.mozilla/plugins
 	-rm -f ~/.mozilla/plugins/libmoon.so ~/.mozilla/plugins/libmoonplugin.so ~/.mozilla/plugins/libmoonloader.so
 	cp .libs/libmoonloader.so ~/.mozilla/plugins
+
+#user-plugin: libmoonloaderxpi.la libmoonpluginxpi.la
+#	$(MAKE) $(AM_MAKEFLAGS) -C install
 
 untest-plugin:
 	-rm -rf ~/.mozilla/plugins/libmoonplugin.so

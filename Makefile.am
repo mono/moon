@@ -10,7 +10,7 @@ PERF_SUBDIR += perf
 endif INCLUDE_PERFORMANCE
 endif
 
-if !PLUGIN_INSTALL
+#if !PLUGIN_INSTALL
 if INCLUDE_DESKTOP_MANAGED_CODE
 MONO_SUBDIRS += gtk man data
 MONO_EXAMPLES = examples
@@ -21,7 +21,7 @@ TEST_SUBDIR = test
 endif INCLUDE_TESTING
 
 TOOLS_SUBDIR = tools
-endif !PLUGIN_INSTALL
+#endif !PLUGIN_INSTALL
 
 if HAVE_MOZILLA
 PLUGIN_SUBDIR += plugin
@@ -31,8 +31,8 @@ SUBDIRS = $(subdirs) \
 	m4 \
 	$(BUILD_TOOLS) \
 	src \
-	$(PLUGIN_SUBDIR) \
 	$(MONO_SUBDIRS) \
+	$(PLUGIN_SUBDIR) \
 	$(TOOLS_SUBDIR) \
 	$(TEST_SUBDIR) \
 	$(PERF_SUBDIR) \
@@ -60,4 +60,7 @@ run-ms-tests:
 
 run-perf: 
 	$(MAKE) $(AM_MAKEFLAGS) -C perf run-perf
+
+user-plugin:
+	$(MAKE) $(AM_MAKEFLAGS) -C plugin user-plugin
 

@@ -9,7 +9,7 @@ mono_sysconfdir = `pkg-config --variable=sysconfdir mono`
 novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.rdf \
 				$(srcdir)/icon.png \
 				$(srcdir)/chrome.manifest \
-				../.libs/libmoonloader.so \
+				../.libs/libmoonloaderxpi.so \
 				../.libs/libmoonplugin.so \
 				$(top_builddir)/src/.libs/libmoon.so
 
@@ -31,15 +31,18 @@ if INCLUDE_BROWSER_MANAGED_CODE
 novell_moonlight_xpi_CONTENTS += $(srcdir)/../moon.config
 endif INCLUDE_BROWSER_MANAGED_CODE
 
+
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
-	-rm -f $@
-	-rm -rf .xpinstall/
+	rm -f $@
+	rm -rf .xpinstall/
+	rm -f novell-moonlight.xpi
+
 	mkdir -p .xpinstall/plugins/moonlight/
 	cp -L $(srcdir)/install.rdf .xpinstall/
 	cp -L $(srcdir)/chrome.manifest .xpinstall/
 	mkdir -p .xpinstall/skin/
 	cp -L $(srcdir)/icon.png .xpinstall/skin/
-	cp -L ../.libs/libmoonloader.so .xpinstall/plugins/
+	cp -L ../.libs/libmoonloaderxpi.so .xpinstall/plugins/
 	cp -L ../.libs/libmoonplugin.so .xpinstall/plugins/moonlight/
 	cp -L $(top_builddir)/src/.libs/libmoon.so .xpinstall/plugins/moonlight/
 if HAVE_GECKO_1_8
