@@ -300,46 +300,6 @@ namespace System.Windows.Controls
                 ObjectToListBoxItem.Remove(item);
             }
         } 
- 
-        /*
-        /// <summary> 
-        /// Invoked when the Items property changes.
-        /// </summary>
-        /// <param name="e">Information about the change.</param> 
-        /// <remarks>Not supported by Silverlight. When this is supported,
-        /// the workarounds in PrepareContainerForItemOverride and
-        /// ClearContainerForItemOverride can be removed.</remarks> 
-        protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e) 
-        {
-            base.OnItemsChanged(e); 
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add: 
-                    if (e.NewStartingIndex <= SelectedIndex)
-                    {
-                        try 
-                        { 
-                            _processingSelectionPropertyChange = true;
-                            SelectedIndex = Items.IndexOf(SelectedItem); 
-                        }
-                        finally
-                        { 
-                            _processingSelectionPropertyChange = false;
-                        }
-                    } 
-                    break; 
-                case NotifyCollectionChangedAction.Remove:
-                    if (e.OldItems.Contains(SelectedItem)) 
-                    {
-                        SelectedItem = null;
-                    } 
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    SelectedIndex = -1; 
-                    break; 
-            }
-        } 
-        */
 
         /// <summary> 
         /// Called when the control got focus.
