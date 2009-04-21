@@ -38,7 +38,6 @@ using System.Windows.Shapes;
 using System.Windows.Media;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Controls.Primitives;
-using System.Windows.Markup;
 
 namespace MoonTest.System.Windows.Controls {
 	[TestClass]
@@ -320,20 +319,6 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (((ListBoxItem)container).Content, "content is null");
 			Assert.IsFalse (((ListBoxItem)container).IsSelected, "!isselected");
 			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (container), "no children"); // its template hasn't been applied
-		}
-
-		[TestMethod]
-		public void GetContainerForItem3 ()
-		{
-			ListBoxPoker list = new ListBoxPoker ();
-			list.ApplyTemplate ();
-			list.ItemContainerStyle = new Style (typeof (ListBoxItem));
-			DependencyObject oItem = list.Call_GetContainerForItemOverride ();
-			Assert.IsNotNull (oItem, "#1");
-			Assert.IsInstanceOfType (oItem, typeof (ListBoxItem), "#2");
-			ListBoxItem item = (ListBoxItem) oItem;
-			Assert.IsNull (item.Content, "#3");
-			Assert.AreSame (list.ItemContainerStyle, item.Style, "#4");
 		}
 
 		[TestMethod]
