@@ -94,8 +94,7 @@ TUNER_STEPS = \
 	Mono.Tuner.CheckVisibility,Mono.Tuner
 
 $(WORKING_FILES): $(INPUT_FILES)
-	-mkdir -p $(OUTPUT_DIR)
-	echo input=$@ output=$?
+	-mkdir -p $(WORKING_DIR)
 	for i in $(INPUT_FILES); do cp -p $$i $$i.mdb $(WORKING_DIR); done
 	touch $(WORKING_FILES)
 
