@@ -1,3 +1,12 @@
+2009-04-21  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: split up the
+	timing sensitive tests such that we're only testing 1 point at a
+	time.  This should make them resilient to timing problems on the
+	slow bot machines while still testing the same behavior.  Also,
+	remove the TickCount usage from CurrentTime, as it's not a
+	reliable means of checking things, even on fast machines.
+
 2009-04-21  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: Remove

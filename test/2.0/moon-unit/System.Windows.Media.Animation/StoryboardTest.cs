@@ -146,8 +146,8 @@ namespace MoonTest.System.Windows.Media.Animation {
 			a.Completed += delegate { Console.WriteLine ("Completed: {0}", count+1); count++; if(count != 5) a.Begin (); };
 
 			Enqueue (() => {Console.WriteLine ("Starting our one"); a.Begin (); });
-			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (1500));
-			Enqueue (() => Assert.AreEqual (100, target.Width, "#1"));
+			EnqueueConditional (() => count == 5, TimeSpan.FromMilliseconds (1500), "#1");
+			Enqueue (() => Assert.AreEqual (100, target.Width, "#2"));
 			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); a.Stop (); });
 			EnqueueTestComplete ();
 		}
@@ -657,7 +657,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
-		public void NestedStoryboardState ()
+		public void NestedStoryboardState1 ()
 		{
 			Canvas c = CreateStoryboard ();
 			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
@@ -677,19 +677,60 @@ namespace MoonTest.System.Windows.Media.Animation {
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#1.1");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [0]).GetCurrentState (), "#1.2");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#1.3");
-				Enqueue (() => Assert.IsGreater (0, ((Rectangle) c.Children [0]).Width, "#1.4"));
+				Assert.IsGreater (0, ((Rectangle) c.Children [0]).Width, "#1.4");
+				sb.Stop ();
 			});
 
-			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1250; }, TimeSpan.FromMilliseconds (1200));
+
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void NestedStoryboardState2 ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
+			TestPanel.Children.Add (c);
+
+			((Rectangle) c.Children [0]).Width = 0;
+
+			Enqueue ( delegate {
+				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#0");
+				sb.Begin ();
+			});
+			
+			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1250; }, TimeSpan.FromMilliseconds (1800));
 			Enqueue (delegate {
 				// Animation1: 1250/1000, Animation2: 1250/2000
 				Assert.IsGreater (1, sb.GetCurrentTime ().TotalSeconds, "#2.0");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#2.1");
 				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#2.2");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#2.3");
+				sb.Stop ();
 			});
 
-			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1350; }, TimeSpan.FromMilliseconds (300));
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void NestedStoryboardState3 ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
+			TestPanel.Children.Add (c);
+
+			((Rectangle) c.Children [0]).Width = 0;
+
+			Enqueue ( delegate {
+				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#0");
+				sb.Begin ();
+			});
+			
+			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1350; }, TimeSpan.FromMilliseconds (1800));
 			Enqueue (delegate {
 				// Animation1: 1350/1000, Animation2: 1350/2000
 				Assert.IsGreater (1, sb.GetCurrentTime ().TotalSeconds, "#3.0");
@@ -705,7 +746,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
-		public void CurrentState ()
+		public void CurrentState1 ()
 		{
 			Canvas c = CreateStoryboard ();
 			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
@@ -716,22 +757,58 @@ namespace MoonTest.System.Windows.Media.Animation {
 				sb.Begin ();
 			});
 
-			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 300; });
+			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 300; }, TimeSpan.FromMilliseconds (600));
 			Enqueue (delegate {
 				// Animation1: 300/1000, Animation2: 300/2000
 				Assert.IsLess (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity1");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#2");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [0]).GetCurrentState (), "#3");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#4");
+				sb.Stop ();
 			});
 
-			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1250; });
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void CurrentState2 ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
+			TestPanel.Children.Add (c);
+
+			Enqueue (delegate {
+				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#1");
+				sb.Begin ();
+			});
+
+			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1250; }, TimeSpan.FromMilliseconds (1800));
 			Enqueue (delegate {
 				// Animation1: 1250/1000, Animation2: 1250/2000
 				Assert.IsGreater (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity2");
 				Assert.AreEqual (ClockState.Active, sb.GetCurrentState (), "#5");
 				Assert.AreEqual (ClockState.Filling, ((Storyboard) sb.Children [0]).GetCurrentState (), "#6");
 				Assert.AreEqual (ClockState.Active, ((Storyboard) sb.Children [1]).GetCurrentState (), "#7");
+				sb.Stop ();
+			});
+
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void CurrentState3 ()
+		{
+			Canvas c = CreateStoryboard ();
+			Storyboard sb = (Storyboard) c.Resources ["Storyboard"];
+			TestPanel.Children.Add (c);
+
+			Enqueue (delegate {
+				Assert.AreEqual (ClockState.Stopped, sb.GetCurrentState (), "#1");
+				sb.Begin ();
 			});
 
 			Enqueue (delegate {
@@ -741,7 +818,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 				TestPanel.Resources.Clear ();
 			});
 
-			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1350; });
+			EnqueueConditional (delegate { return sb.GetCurrentTime ().TotalMilliseconds > 1350; }, TimeSpan.FromMilliseconds (1800));
 			Enqueue (delegate {
 				// Animation1: 1350/1000, Animation2: 1350/2000
 				Assert.IsGreater (1, sb.GetCurrentTime ().TotalSeconds, "#Sanity3");
@@ -1143,49 +1220,40 @@ namespace MoonTest.System.Windows.Media.Animation {
 		{
 			Canvas c = CreateStoryboard ();
 			Storyboard storyboard = (Storyboard) c.Resources ["Storyboard"];
-			int start = 0;
 
 			Enqueue (() => TestPanel.Children.Add (c));
 			Enqueue (() => storyboard.Begin ());
 			EnqueueConditional (()=> storyboard.GetCurrentState() == ClockState.Active);
-			Enqueue (() => start = Environment.TickCount);
-			EnqueueConditional (()=> Environment.TickCount - start > 200);
+			EnqueueConditional (delegate { return storyboard.GetCurrentTime ().TotalMilliseconds > 200; }, TimeSpan.FromMilliseconds (600));
 			Enqueue (() => {
 				double ms = storyboard.GetCurrentTime ().TotalMilliseconds;
-				Assert.IsGreater (200, ms, "More than 200ms");
-				Assert.AreEqual (ms, ((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, "#2");
-				Assert.AreEqual (ms, ((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, "#3");
+				Assert.AreEqual (ms, ((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, "#1");
+				Assert.AreEqual (ms, ((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, "#2");
+				storyboard.Stop ();
 			});
-			EnqueueConditional (() => Environment.TickCount - start > 1000);
-			Enqueue (() => {
-				double ms = storyboard.GetCurrentTime ().TotalMilliseconds;
-				Assert.IsGreater (1000, ms, "More than 1000ms");
-				Assert.AreEqual (1000, ((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, "#4");
-				Assert.AreEqual (ms, ((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, "#5");
-			});
+
 			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
 			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("this is probably another timing sensitive bug")]
+		[MoonlightBug]
 		public void CurrentTime_AutoReverse ()
 		{
 			Canvas c = CreateStoryboard ();
 			Storyboard storyboard = (Storyboard) c.Resources ["Storyboard"];
-			int start = 0;
 
 			storyboard.AutoReverse = true;
 
 			Enqueue (() => TestPanel.Children.Add (c));
-			Enqueue (() => { start = Environment.TickCount; storyboard.Begin (); });
-			EnqueueConditional (()=> Environment.TickCount - start > 1000);
+			Enqueue (() => { storyboard.Begin (); });
+			EnqueueConditional (delegate { return storyboard.GetCurrentTime ().TotalMilliseconds > 1000; }, TimeSpan.FromMilliseconds (1500));
 			Enqueue (() => {
 				double ms = storyboard.GetCurrentTime ().TotalMilliseconds;
-				Assert.IsGreater (1000, ms, "More than 1000ms");
 				Assert.AreEqual (ms, ((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, "#2");
 				Assert.AreEqual (ms, ((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, "#3");
+				storyboard.Stop ();
 			});
 			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
 			EnqueueTestComplete ();
