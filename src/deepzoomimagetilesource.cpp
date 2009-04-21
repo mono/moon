@@ -157,7 +157,9 @@ DeepZoomImageTileSource::Download ()
 	if (downloaded)
 		return;
 	char *stringuri;
-	if ((stringuri = GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsUri ()->ToString ())) {
+	Value *value = GetValue (DeepZoomImageTileSource::UriSourceProperty);
+	Uri *uri = value ? GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsUri () : NULL;
+	if (uri && (stringuri = uri->ToString ())) {
 		downloaded = true;
 		download_uri (stringuri);
 		g_free (stringuri);
