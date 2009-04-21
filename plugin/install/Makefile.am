@@ -9,9 +9,9 @@ mono_sysconfdir = `pkg-config --variable=sysconfdir mono`
 novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.rdf \
 				$(srcdir)/icon.png \
 				$(srcdir)/chrome.manifest \
-				../.libs/libmoonloaderxpi.so \
-				../.libs/libmoonplugin.so \
-				$(top_builddir)/src/.libs/libmoon.so
+				$(top_builddir)/plugin/.libs/libmoonloaderxpi.so \
+				$(top_builddir)/plugin/.libs/libmoonpluginxpi.so \
+				$(top_builddir)/src/.libs/libmoonxpi.so
 
 if HAVE_GECKO_1_8
 novell_moonlight_xpi_CONTENTS += ../firefox/ff2/.libs/libmoonplugin-ff2bridge.so
@@ -43,8 +43,8 @@ novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
 	mkdir -p .xpinstall/skin/
 	cp -L $(srcdir)/icon.png .xpinstall/skin/
 	cp -L ../.libs/libmoonloaderxpi.so .xpinstall/plugins/
-	cp -L ../.libs/libmoonplugin.so .xpinstall/plugins/moonlight/
-	cp -L $(top_builddir)/src/.libs/libmoon.so .xpinstall/plugins/moonlight/
+	cp -L ../.libs/libmoonpluginxpi.so .xpinstall/plugins/moonlight/
+	cp -L $(top_builddir)/src/.libs/libmoonxpi.so .xpinstall/plugins/moonlight/
 if HAVE_GECKO_1_8
 	cp -L ../firefox/ff2/.libs/libmoonplugin-ff2bridge.so .xpinstall/plugins/moonlight/
 endif HAVE_GECKO_1_8
@@ -70,7 +70,7 @@ if INCLUDE_BROWSER_MANAGED_CODE
 #	cp -L $(srcdir)/../moon.config .xpinstall/plugins/moonlight/mono/config
 	cp -L $(mono_sysconfdir)/mono/2.0/machine.config .xpinstall/plugins/moonlight/mono/2.0/
 endif INCLUDE_BROWSER_MANAGED_CODE
-	find .xpinstall -name \*.so -exec strip '{}' ';'  # strip symbols
+#	find .xpinstall -name \*.so -exec strip '{}' ';'  # strip symbols
 	cd .xpinstall/ && zip -r9 ../$@ *
 
 clean-local:

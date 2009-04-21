@@ -61,7 +61,7 @@
 #define LOADER_QUOTE(x) #x
 #define LOADER_RENAMED_NAME(x) LOADER_QUOTE(Plugin_##x)
 
-// define his to 1 if we're building the xpi, leave it 0 if we're not
+// define this to 1 if we're building the xpi, leave it 0 if we're not
 #ifndef PLUGIN_INSTALL
 #define PLUGIN_INSTALL 0
 #endif

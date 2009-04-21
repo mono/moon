@@ -61,6 +61,7 @@ run-ms-tests:
 run-perf: 
 	$(MAKE) $(AM_MAKEFLAGS) -C perf run-perf
 
-user-plugin:
+user-plugin: 
+	$(MAKE) $(AM_MAKEFLAGS) -C src libmoonxpi.la
 	$(MAKE) $(AM_MAKEFLAGS) -C plugin user-plugin
 

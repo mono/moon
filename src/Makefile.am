@@ -1,7 +1,7 @@
 libmoon_includedir=$(includedir)/libmoon
 
 lib_LTLIBRARIES = libmoon.la
-noinst_LTLIBRARIES = libmoonxpi.la
+EXTRA_LTLIBRARIES = libmoonxpi.la
 
 INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(srcdir)/asf
 
@@ -240,8 +240,12 @@ EXTRA_DIST = \
 	zip/ChangeLogUnzip \
 	$(libmoon_include_headers)
 
+
 libmoon_la_LIBADD = $(MOON_LIBS)
 
-libmoonxpi_la_LIBADD = $(MOON_LIBS)
+libmoonxpi_la_LDFLAGS = -rpath /nowhere
+
+libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS)
 
 libmoonxpi_la_SOURCES = $(libmoon_la_SOURCES)
+
