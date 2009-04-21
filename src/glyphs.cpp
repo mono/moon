@@ -168,7 +168,6 @@ Glyphs::Layout ()
 		return;
 	}
 	
-	// FIXME: we need to somehow apply style simulations
 	font = desc->GetFont ();
 	
 	// scale Advance, uOffset and vOffset units to pixels
