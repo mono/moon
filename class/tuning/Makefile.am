@@ -42,7 +42,7 @@ MONO_BASIC_TUNER_ASSEMBLIES = Microsoft.VisualBasic
 MONO_BASIC_DLLFILES = $(MONO_BASIC_PATH)/class/lib/2.1/Microsoft.VisualBasic.dll
 endif
 
-TUNER_ASSEMBLIES = $(MCS_ASSEMBLIES) $(MONO_BASIC_ASSEMBLIES)
+TUNER_ASSEMBLIES = $(MCS_ASSEMBLIES) $(MONO_BASIC_TUNER_ASSEMBLIES)
 
 TUNER_MASTERS = $(TUNER_ASSEMBLIES:%=masterinfos/%.info)
 
@@ -96,13 +96,15 @@ TUNER_STEPS = \
 $(WORKING_FILES): $(INPUT_FILES)
 	-mkdir -p $(WORKING_DIR)
 	for i in $(INPUT_FILES); do cp -p $$i $$i.mdb $(WORKING_DIR); done
+	-rm $(WORKING_DIR)/Microsoft.VisualBasic.dll.mdb
 	touch $(WORKING_FILES)
 
 $(OUTPUT_FILES): $(WORKING_FILES) $(SECURITY_ATTRIBUTES_INFO)
 	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
 	for i in $(DLLFILES); do sn -q -R $(OUTPUT_DIR)/$$i ../mono.snk; done
 	-mkdir -p $(MCS_OUTPUT_DIR)
-	for i in $(OUTPUT_FILES); do cp -p $$i $(MCS_OUTPUT_DIR) && cp -p $$i.mdb $(MCS_OUTPUT_DIR); done
+	for i in $(OUTPUT_FILES); do cp -p $$i $(MCS_OUTPUT_DIR); done
+	for i in $(OUTPUT_FILES); do cp -p $$i.mdb $(MCS_OUTPUT_DIR) || true; done
 
 $(TUNER_INSTALL_DIR):
 	-mkdir -p $(TUNER_INSTALL_DIR)
