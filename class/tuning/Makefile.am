@@ -23,7 +23,7 @@ SECURITY_ATTRIBUTES_INFO = \
 	SecurityAttributes/System.Xml.secattr \
 	SecurityAttributes/Microsoft.VisualBasic.secattr
 
-TUNER_ASSEMBLIES =	\
+MCS_ASSEMBLIES = \
 	mscorlib	\
 	System	\
 	System.Net	\
@@ -35,12 +35,14 @@ TUNER_ASSEMBLIES =	\
 	System.ServiceModel.Web	\
 	Mono.CompilerServices.SymbolWriter
 
-MCS_DLLFILES = $(TUNER_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_2_1_raw/%.dll)
+MCS_DLLFILES = $(MCS_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_2_1_raw/%.dll)
 
 if HAVE_MONO_BASIC
-TUNER_ASSEMBLIES += Microsoft.VisualBasic
+MONO_BASIC_TUNER_ASSEMBLIES = Microsoft.VisualBasic
 MONO_BASIC_DLLFILES = $(MONO_BASIC_PATH)/class/lib/2.1/Microsoft.VisualBasic.dll
 endif
+
+TUNER_ASSEMBLIES = $(MCS_ASSEMBLIES) $(MONO_BASIC_ASSEMBLIES)
 
 TUNER_MASTERS = $(TUNER_ASSEMBLIES:%=masterinfos/%.info)
 
