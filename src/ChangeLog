@@ -1,5 +1,7 @@
 2009-04-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* glyphs.cpp (Layout): Fixed scaling calculation.
+
 	* layout.cpp (Layout): Merged LayoutWrapWithOverflow, LayoutNoWrap
 	and LayoutWrap. The different word-wrapping behaviors are, as
 	before, handled in different subroutines but the outer loops are

@@ -171,7 +171,7 @@ Glyphs::Layout ()
 	font = desc->GetFont ();
 	
 	// scale Advance, uOffset and vOffset units to pixels
-	scale = desc->GetSize () * 20.0 / 2048.0;
+	scale = round (desc->GetSize ()) / 100.0;
 	
 	right = origin_x;
 	left = origin_x;
