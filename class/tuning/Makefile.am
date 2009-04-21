@@ -107,7 +107,7 @@ $(OUTPUT_FILES): $(WORKING_FILES) $(SECURITY_ATTRIBUTES_INFO)
 $(TUNER_INSTALL_DIR):
 	-mkdir -p $(TUNER_INSTALL_DIR)
 
-END_INSTALL_TARGETS = 
+END_INSTALL_TARGETS = \
 	inst-mscorlib.dll	\
 	inst-mono-smcs.exe	\
 	inst-System.dll	\
