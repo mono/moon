@@ -69,7 +69,10 @@ static const char *unicode_break_types[] = {
 };
 #endif
 
+#define UnicharIsLineBreak(c) ((c) == '\r' || (c) == '\n' || (c) == 0x2028)
+
 #define BreakSpace(c, btype) (c == '\t' || btype == G_UNICODE_BREAK_SPACE || btype == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
+
 
 /*
  * Silverlight does not apply any kerning on a DOT, so we exclude them
@@ -622,6 +625,29 @@ struct LayoutWord {
 	int count;             // length of the word in unichars
 };
 
+static inline bool
+IsLineBreak (const char *text, size_t left, size_t *n_bytes, size_t *n_chars)
+{
+	const char *inptr = text;
+	gunichar c;
+	
+	if ((c = utf8_getc (&inptr, left)) == (gunichar) -1)
+		return false;
+	
+	if (!UnicharIsLineBreak (c))
+		return false;
+	
+	if (c == '\r' && *inptr == '\n') {
+		*n_bytes = 2;
+		*n_chars = 2;
+	} else {
+		*n_bytes = (size_t) (inptr - text);
+		*n_chars = 1;
+	}
+	
+	return true;
+}
+
 static inline void
 layout_word_init (LayoutWord *word, double line_advance, guint32 prev)
 {
@@ -654,14 +680,16 @@ layout_word_lwsp (LayoutWord *word, const char *in, const char *inend)
 	word->count = 0;
 	
 	while (inptr < inend) {
-		// check for line-breaks
-		if (*inptr == '\r' || *inptr == '\n')
-			break;
-		
-		// ignore invalid chars
 		start = inptr;
-		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
+		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1) {
+			// ignore invalid chars
 			continue;
+		}
+		
+		if (UnicharIsLineBreak (c)) {
+			inptr = start;
+			break;
+		}
 		
 		btype = g_unichar_break_type (c);
 		if (!BreakSpace (c, btype)) {
@@ -734,13 +762,16 @@ layout_word_overflow (LayoutWord *word, const char *in, const char *inend, doubl
 	word->count = 0;
 	
 	while (inptr < inend) {
-		if (*inptr == '\r' || *inptr == '\n')
-			break;
-		
-		// ignore invalid chars
 		start = inptr;
-		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
+		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1) {
+			// ignore invalid chars
 			continue;
+		}
+		
+		if (UnicharIsLineBreak (c)) {
+			inptr = start;
+			break;
+		}
 		
 		if (btype == G_UNICODE_BREAK_COMBINING_MARK) {
 			// ignore zero-width spaces
@@ -795,6 +826,7 @@ TextLayout::LayoutWrapWithOverflow ()
 {
 	TextLayoutAttributes *attrs, *nattrs;
 	const char *inptr, *inend;
+	size_t n_bytes, n_chars;
 	TextLayoutLine *line;
 	TextLayoutRun *run;
 	LayoutWord word;
@@ -839,22 +871,11 @@ TextLayout::LayoutWrapWithOverflow ()
 			// layout until eoln or until we reach max_width
 			while (inptr < inend) {
 				// check for line-breaks
-				if (*inptr == '\r') {
+				if (IsLineBreak (inptr, inend - inptr, &n_bytes, &n_chars)) {
+					run->count += n_chars;
+					offset += n_chars;
+					inptr += n_bytes;
 					linebreak = true;
-					run->count++;
-					offset++;
-					inptr++;
-					if (*inptr == '\n') {
-						run->count++;
-						offset++;
-						inptr++;
-					}
-					break;
-				} else if (*inptr == '\n') {
-					linebreak = true;
-					run->count++;
-					offset++;
-					inptr++;
 					break;
 				}
 				
@@ -995,32 +1016,25 @@ TextLayout::LayoutNoWrap ()
 			
 			// layout until eoln
 			while (inptr < inend) {
+				if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1) {
+					// ignore invalid chars
+					continue;
+				}
+				
+				run->count++;
+				offset++;
+				
 				// check for line-breaks
-				if (*inptr == '\r') {
-					linebreak = true;
-					run->count++;
-					offset++;
-					inptr++;
-					if (*inptr == '\n') {
+				if (UnicharIsLineBreak (c)) {
+					if (c == '\r' && *inptr == '\n') {
 						run->count++;
 						offset++;
 						inptr++;
 					}
-					break;
-				} else if (*inptr == '\n') {
+					
 					linebreak = true;
-					run->count++;
-					offset++;
-					inptr++;
 					break;
 				}
-				
-				// ignore invalid chars
-				if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
-					continue;
-				
-				run->count++;
-				offset++;
 				
 				// treat tab as a single space
 				if (c == '\t')
@@ -1184,13 +1198,16 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	d(debug = g_string_new (""));
 	
 	while (inptr < inend) {
-		if (*inptr == '\r' || *inptr == '\n')
-			break;
-		
-		// ignore invalid chars
 		start = inptr;
-		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
+		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1) {
+			// ignore invalid chars
 			continue;
+		}
+		
+		if (UnicharIsLineBreak (c)) {
+			inptr = start;
+			break;
+		}
 		
 		if (btype == G_UNICODE_BREAK_COMBINING_MARK) {
 			// ignore zero-width spaces by combining them with the current glyph
@@ -1297,16 +1314,17 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	// need to know the btype of the char after the char that
 	// exceeded the width limit.
 	while (inptr < inend) {
-		if (*inptr == '\r' || *inptr == '\n') {
-			btype = G_UNICODE_BREAK_SPACE;
-			c = *inptr;
-			break;
+		start = inptr;
+		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1) {
+			// ignore invalid chars
+			continue;
 		}
 		
-		// ignore invalid chars
-		start = inptr;
-		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
-			continue;
+		if (UnicharIsLineBreak (c)) {
+			btype = G_UNICODE_BREAK_SPACE;
+			inptr = start;
+			break;
+		}
 		
 		btype = g_unichar_break_type (c);
 		if (BreakSpace (c, btype) || unichar_combining_class (c) == 0) {
@@ -1536,6 +1554,7 @@ TextLayout::LayoutWrap ()
 {
 	TextLayoutAttributes *attrs, *nattrs;
 	const char *inptr, *inend;
+	size_t n_bytes, n_chars;
 	TextLayoutLine *line;
 	TextLayoutRun *run;
 	LayoutWord word;
@@ -1584,22 +1603,11 @@ TextLayout::LayoutWrap ()
 			// layout until eoln or until we reach max_width
 			while (inptr < inend) {
 				// check for line-breaks
-				if (*inptr == '\r') {
+				if (IsLineBreak (inptr, inend - inptr, &n_bytes, &n_chars)) {
+					run->count += n_chars;
+					offset += n_chars;
+					inptr += n_bytes;
 					linebreak = true;
-					run->count++;
-					offset++;
-					inptr++;
-					if (*inptr == '\n') {
-						run->count++;
-						offset++;
-						inptr++;
-					}
-					break;
-				} else if (*inptr == '\n') {
-					linebreak = true;
-					run->count++;
-					offset++;
-					inptr++;
 					break;
 				}
 				
@@ -1835,11 +1843,11 @@ GenerateGlyphCluster (TextFont *font, guint32 *kern, const char *text, int start
 	
 	// count how many path data items we'll need to allocate
 	while (inptr < inend) {
-		if (*inptr == '\r' || *inptr == '\n')
-			break;
-		
 		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
 			continue;
+		
+		if (UnicharIsLineBreak (c))
+			break;
 		
 		// treat tab as a single space
 		if (c == '\t')
@@ -1858,11 +1866,11 @@ GenerateGlyphCluster (TextFont *font, guint32 *kern, const char *text, int start
 		inptr = text + start;
 		
 		while (inptr < inend) {
-			if (*inptr == '\r' || *inptr == '\n')
-				break;
-			
 			if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
 				continue;
+			
+			if (UnicharIsLineBreak (c))
+				break;
 			
 			// treat tab as a single space
 			if (c == '\t')
@@ -1939,11 +1947,12 @@ void
 TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttributes *attrs, const char *text, double x, double y)
 {
 	TextFont *font = attrs->Font ();
+	const char *inend, *prev;
 	GlyphInfo *glyph;
 	Brush *brush;
+	gunichar c;
 	double y0;
 	Rect area;
-	int crlf;
 	
 	if (length == 0)
 		return;
@@ -1957,9 +1966,14 @@ TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttr
 	if (selected) {
 		area = Rect (origin.x, origin.y, advance, font->Height ());
 		
-		// extend the selection bg by the width of a SPACE if it includes CRLF
-		crlf = start + length - 1;
-		if (text[crlf] == '\r' || text[crlf] == '\n') {
+		// extend the selection background by the width of a SPACE if it includes CRLF
+		inend = text + start + length;
+		if ((prev = g_utf8_find_prev_char (text + start, inend)))
+			c = utf8_getc (&prev, inend - prev);
+		else
+			c = (gunichar) -1;
+		
+		if (UnicharIsLineBreak (c)) {
 			if ((glyph = font->GetGlyphInfo (' ')))
 				area.width += glyph->metrics.horiAdvance;
 		}
@@ -2237,12 +2251,14 @@ TextLayoutLine::GetCursorFromX (const Point &offset, double x)
 		font = run->attrs->Font ();
 		
 		while (inptr < inend) {
-			if (*inptr == '\r' || *inptr == '\n')
-				break;
-			
 			ch = inptr;
 			if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
 				continue;
+			
+			if (UnicharIsLineBreak (c)) {
+				inptr = ch;
+				break;
+			}
 			
 			cursor++;
 			
@@ -2278,12 +2294,20 @@ TextLayoutLine::GetCursorFromX (const Point &offset, double x)
 		inend = text + run->start + run->length;
 		inptr = text + run->start;
 		
-		if (inend > inptr && inend[-1] == '\n') {
+		if ((ch = g_utf8_find_prev_char (inptr, inend)))
+			c = utf8_getc (&ch, inend - ch);
+		else
+			c = (gunichar) -1;
+		
+		if (c == '\n') {
 			cursor--;
 			inend--;
-		}
-		
-		if (inend > inptr && inend[-1] == '\r') {
+			
+			if (inend > inptr && inend[-1] == '\r') {
+				cursor--;
+				inend--;
+			}
+		} else if (UnicharIsLineBreak (c)) {
 			cursor--;
 			inend--;
 		}
@@ -2312,8 +2336,8 @@ Rect
 TextLayout::GetCursor (const Point &offset, int index)
 {
 	const char *cursor = g_utf8_offset_to_pointer (text, index);
+	const char *inptr, *inend, *pchar;
 	double height, x0, y0, y1;
-	const char *inptr, *inend;
 	TextLayoutLine *line;
 	TextLayoutRun *run;
 	GlyphInfo *glyph;
@@ -2344,9 +2368,13 @@ TextLayout::GetCursor (const Point &offset, int index)
 		if (cursor >= inend) {
 			// maybe the cursor is on the next line...
 			if ((i + 1) == lines->len) {
-				// we are on the last line...
-				if ((inend > text + line->start) &&
-				    (inend[-1] == '\r' || inend[-1] == '\n')) {
+				// we are on the last line... get the previous unichar
+				if ((pchar = g_utf8_find_prev_char (text + line->start, inend)))
+					c = utf8_getc (&pchar, inend - pchar);
+				else
+					c = (gunichar) -1;
+				
+				if (UnicharIsLineBreak (c)) {
 					// cursor is on the next line by itself
 					x0 = offset.x + HorizontalAlignment (0.0);
 					y0 += line->height;

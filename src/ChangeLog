@@ -1,3 +1,14 @@
+2009-04-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (SetTextInternal): Don't break the string into
+	multiple inlines, Silverlight shoves the entire string into a
+	single Run no matter what.
+	(GetTextInternal): Map LineBreaks to the Unicode LineSeparator
+	character instead of \n to match Silverlight behavior.
+
+	* layout.cpp: Fixed various loops and checks to properly handle
+	any type of unicode line-breaking character.
+
 2009-04-21  Alan McGovern  <amcgovern@novell.com>
 
 	* collection.h: HitTestCollection should override
