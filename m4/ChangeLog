@@ -1,5 +1,9 @@
 2009-04-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mono.m4: Space, be gone.
+
+2009-04-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mono.m4: Add support for --with-mono-basic-path=<path>
 
 2009-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>

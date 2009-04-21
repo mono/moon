@@ -33,11 +33,11 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 			
 		if test "x$with_mono_basic_path" = "xno"; then
 			AC_WARNING(You need to set the path to mono-basic to include Microsoft.VisualBasic.dll in your Moonlight install)
-			with_mono_basic_path = "no"
+			with_mono_basic_path="no"
 		else
 			if test ! -d "$with_mono_basic_path"; then
 				AC_WARNING(The path to mono-basic does not exist, you need to set it to an existing directory to include Microsoft.VisualBasic.dll in your Moonlight install)
-				with_mono_basic_path = "no"
+				with_mono_basic_path="no"
 			fi
 		fi
 
