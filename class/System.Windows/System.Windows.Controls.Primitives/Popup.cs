@@ -30,6 +30,8 @@ using Mono;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Markup;
+using System.Windows.Media;
+using System.Windows.Input;
 
 namespace System.Windows.Controls.Primitives {
 
@@ -42,7 +44,11 @@ namespace System.Windows.Controls.Primitives {
 		
 		EventHandler closed_event;
 		EventHandler opened_event;
+		
+		internal event EventHandler ClickedOutside;
 
+		Canvas _clickCatcher;
+		
 		public event EventHandler Closed {
 			add {
 				if (EventList [IsOpenChangedEvent] == null)
@@ -77,6 +83,41 @@ namespace System.Windows.Controls.Primitives {
 			EventHandler h = IsOpen ? opened_event : closed_event;
 			if (h != null)
 				h (this, EventArgs.Empty);
+		}
+		
+		internal void CatchClickedOutside ()
+		{
+			RearrangePopup ();
+		}
+		
+		void RearrangePopup ()
+		{
+			if (Child == null)
+				return;
+			
+			UIElement child = Child;
+			Canvas root = new Canvas ();
+			_clickCatcher = new Canvas { Background = new SolidColorBrush (Colors.Transparent) };
+			Child = root;
+			root.Children.Add (_clickCatcher);
+			root.Children.Add (child);
+			
+			Child = root;
+
+			_clickCatcher.MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e) {
+				EventHandler h = ClickedOutside;
+				if (h != null)
+					h (this, EventArgs.Empty);
+			};
+			
+			Application.Current.Host.Content.Resized += (o, e) => UpdateDimensions ();
+			UpdateDimensions ();
+		}
+		
+		void UpdateDimensions ()
+		{
+			_clickCatcher.Height = Application.Current.Host.Content.ActualHeight;
+			_clickCatcher.Width = Application.Current.Host.Content.ActualWidth;
 		}
 	}
 }

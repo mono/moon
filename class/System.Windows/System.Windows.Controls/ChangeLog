@@ -1,3 +1,9 @@
+2009-04-21  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Add logic to allow clicks outside of the popup
+	  to be caught using a transparent canvas. This allows
+	  combobox to close its popup correctly.
+
 2009-04-17  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs: Make IsSelectionActive work. Also make showing
