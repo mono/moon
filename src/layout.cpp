@@ -625,6 +625,8 @@ struct LayoutWord {
 	int count;             // length of the word in unichars
 };
 
+typedef bool (* LayoutWordCallback) (LayoutWord *word, const char *in, const char *inend, double max_width);
+
 static inline bool
 IsLineBreak (const char *text, size_t left, size_t *n_bytes, size_t *n_chars)
 {
@@ -656,7 +658,7 @@ layout_word_init (LayoutWord *word, double line_advance, guint32 prev)
 }
 
 /**
- * layout_word_lwsp:
+ * layout_lwsp:
  * @word: #LayoutWord context
  * @in: input text
  * @inend: end of input text
@@ -664,7 +666,7 @@ layout_word_init (LayoutWord *word, double line_advance, guint32 prev)
  * Measures a word containing nothing but LWSP.
  **/
 static void
-layout_word_lwsp (LayoutWord *word, const char *in, const char *inend)
+layout_lwsp (LayoutWord *word, const char *in, const char *inend)
 {
 	guint32 prev = word->prev;
 	GUnicodeBreakType btype;
@@ -674,7 +676,7 @@ layout_word_lwsp (LayoutWord *word, const char *in, const char *inend)
 	double advance;
 	gunichar c;
 	
-	d(printf ("\nlayout_word_lwsp():\n"));
+	d(printf ("\nlayout_lwsp():\n"));
 	
 	word->advance = 0.0;
 	word->count = 0;
@@ -743,8 +745,8 @@ layout_word_lwsp (LayoutWord *word, const char *in, const char *inend)
  *
  * Calculates the advance of the current word.
  *
- * Returns: %true if the caller should create a new line for this word
- * or %false otherwise.
+ * Returns: %true if the caller should create a new line for the
+ * remainder of the word or %false otherwise.
  **/
 static bool
 layout_word_overflow (LayoutWord *word, const char *in, const char *inend, double max_width)
@@ -821,292 +823,81 @@ layout_word_overflow (LayoutWord *word, const char *in, const char *inend, doubl
 	return false;
 }
 
-void
-TextLayout::LayoutWrapWithOverflow ()
+/**
+ * layout_word_nowrap:
+ * @word: #LayoutWord context
+ * @in: input text
+ * @inend = end of input text
+ * @max_width: max allowable width for a line
+ *
+ * Calculates the advance of the current word.
+ *
+ * Returns: %true if the caller should create a new line for the
+ * remainder of the word or %false otherwise.
+ **/
+static bool
+layout_word_nowrap (LayoutWord *word, const char *in, const char *inend, double max_width)
 {
-	TextLayoutAttributes *attrs, *nattrs;
-	const char *inptr, *inend;
-	size_t n_bytes, n_chars;
-	TextLayoutLine *line;
-	TextLayoutRun *run;
-	LayoutWord word;
-	TextFont *font;
-	bool linebreak;
-	int offset = 0;
-	guint32 prev;
-	
-	if (!(attrs = (TextLayoutAttributes *) attributes->First ()) || attrs->start != 0)
-		return;
-	
-	line = new TextLayoutLine (this, 0, 0);
-	if (OverrideLineHeight ())
-		line->height = line_height;
-	
-	g_ptr_array_add (lines, line);
-	inptr = text;
-	
-	do {
-		nattrs = (TextLayoutAttributes *) attrs->next;
-		inend = text + (nattrs ? nattrs->start : length);
-		run = new TextLayoutRun (line, attrs, inptr - text);
-		g_ptr_array_add (line->runs, run);
-		
-		word.font = font = attrs->Font ();
-		
-		if (!OverrideLineHeight ()) {
-			line->descend = MIN (line->descend, font->Descender ());
-			line->height = MAX (line->height, font->Height ());
-		}
-		
-		if (*inptr == '\0') {
-			actual_height += line->height;
-			break;
-		}
-		
-		// layout until attrs change
-		while (inptr < inend) {
-			linebreak = false;
-			prev = 0;
-			
-			// layout until eoln or until we reach max_width
-			while (inptr < inend) {
-				// check for line-breaks
-				if (IsLineBreak (inptr, inend - inptr, &n_bytes, &n_chars)) {
-					run->count += n_chars;
-					offset += n_chars;
-					inptr += n_bytes;
-					linebreak = true;
-					break;
-				}
-				
-				layout_word_init (&word, line->advance, prev);
-				
-				if (layout_word_overflow (&word, inptr, inend, max_width)) {
-					// force a line wrap...
-					is_wrapped = true;
-					linebreak = true;
-					break;
-				}
-				
-				if (word.length > 0) {
-					// append the word to the run/line
-					line->advance += word.advance;
-					line->width = line->advance;
-					run->advance += word.advance;
-					run->count += word.count;
-					offset += word.count;
-					
-					inptr += word.length;
-					prev = word.prev;
-				}
-				
-				// now append any trailing lwsp
-				layout_word_init (&word, line->advance, prev);
-				
-				layout_word_lwsp (&word, inptr, inend);
-				
-				if (word.length > 0) {
-					line->advance += word.advance;
-					run->advance += word.advance;
-					run->count += word.count;
-					offset += word.count;
-					
-					inptr += word.length;
-					prev = word.prev;
-					
-					// LWSP only counts toward line width if it is underlined
-					if (attrs->IsUnderlined ())
-						line->width = line->advance;
-				}
-			}
-			
-			// the current run has ended
-			run->length = inptr - (text + run->start);
-			
-			if (linebreak || *inptr == '\0') {
-				// update actual width extents
-				if (*inptr == '\0') {
-					// ActualWidth extents only include trailing lwsp on the last line
-					actual_width = MAX (actual_width, line->advance);
-				} else {
-					// not the last line, so don't include trailing lwsp
-					actual_width = MAX (actual_width, line->width);
-				}
-				
-				// update actual height extents
-				actual_height += line->height;
-				
-				if (*inptr != '\0') {
-					// more text to layout... which means we'll need a new line
-					line = new TextLayoutLine (this, inptr - text, offset);
-					if (OverrideLineHeight ())
-						line->height = line_height;
-					
-					g_ptr_array_add (lines, line);
-				}
-				
-				if (inptr < inend) {
-					// more text to layout with the current attrs...
-					if (!OverrideLineHeight ()) {
-						line->descend = font->Descender ();
-						line->height = font->Height ();
-					}
-					
-					run = new TextLayoutRun (line, attrs, inptr - text);
-					g_ptr_array_add (line->runs, run);
-				}
-			}
-		}
-		
-		attrs = nattrs;
-	} while (*inptr != '\0');
-	
-	count = offset;
-}
-
-void
-TextLayout::LayoutNoWrap ()
-{
-	TextLayoutAttributes *attrs, *nattrs;
-	const char *inptr, *inend;
-	TextLayoutLine *line;
-	TextLayoutRun *run;
+	GUnicodeBreakType btype = G_UNICODE_BREAK_UNKNOWN;
+	guint32 prev = word->prev;
+	const char *inptr = in;
+	const char *start;
 	GlyphInfo *glyph;
-	TextFont *font;
-	bool linebreak;
 	double advance;
-	int offset = 0;
-	guint32 prev;
 	gunichar c;
 	
-	if (!(attrs = (TextLayoutAttributes *) attributes->First ()) || attrs->start != 0)
-		return;
+	// Note: since we don't ever need to wrap, no need to keep track of word-type
+	word->type = WORD_TYPE_UNKNOWN;
+	word->advance = 0.0;
+	word->count = 0;
 	
-	line = new TextLayoutLine (this, 0, 0);
-	if (OverrideLineHeight ())
-		line->height = line_height;
-	
-	g_ptr_array_add (lines, line);
-	inptr = text;
-	
-	do {
-		nattrs = (TextLayoutAttributes *) attrs->next;
-		inend = text + (nattrs ? nattrs->start : length);
-		run = new TextLayoutRun (line, attrs, inptr - text);
-		g_ptr_array_add (line->runs, run);
-		
-		font = attrs->Font ();
-		if (!OverrideLineHeight ()) {
-			line->descend = MIN (line->descend, font->Descender ());
-			line->height = MAX (line->height, font->Height ());
+	while (inptr < inend) {
+		start = inptr;
+		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1) {
+			// ignore invalid chars
+			continue;
 		}
 		
-		if (*inptr == '\0') {
-			actual_height += line->height;
+		if (UnicharIsLineBreak (c)) {
+			inptr = start;
 			break;
 		}
 		
-		// layout until attrs change
-		while (inptr < inend) {
-			linebreak = false;
-			prev = 0;
-			
-			// layout until eoln
-			while (inptr < inend) {
-				if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1) {
-					// ignore invalid chars
-					continue;
-				}
-				
-				run->count++;
-				offset++;
-				
-				// check for line-breaks
-				if (UnicharIsLineBreak (c)) {
-					if (c == '\r' && *inptr == '\n') {
-						run->count++;
-						offset++;
-						inptr++;
-					}
-					
-					linebreak = true;
-					break;
-				}
-				
-				// treat tab as a single space
-				if (c == '\t')
-					c = ' ';
-				
-				// ignore glyphs the font doesn't contain...
-				if (!(glyph = font->GetGlyphInfo (c)))
-					continue;
-				
-				// calculate total glyph advance
-				advance = glyph->metrics.horiAdvance;
-				if ((prev != 0) && APPLY_KERNING (c))
-					advance += font->Kerning (prev, glyph->index);
-				else if (glyph->metrics.horiBearingX < 0)
-					advance -= glyph->metrics.horiBearingX;
-				
-				line->advance += advance;
-				run->advance += advance;
-				prev = glyph->index;
-				
-				// LWSP only counts toward line width if it is underlined
-				if (c != ' ' || attrs->IsUnderlined ())
-					line->width = line->advance;
-			}
-			
-			// the current run has ended
-			run->length = inptr - (text + run->start);
-			
-			if (linebreak || *inptr == '\0') {
-				// update actual width extents
-				if (*inptr == '\0') {
-					// ActualWidth extents only include trailing lwsp on the last line
-					actual_width = MAX (actual_width, line->advance);
-				} else {
-					// not the last line, so don't include trailing lwsp
-					actual_width = MAX (actual_width, line->width);
-				}
-				
-				// update actual height extents
-				actual_height += line->height;
-				
-				if (linebreak) {
-					// more text to layout... which means we'll need a new line
-					line = new TextLayoutLine (this, inptr - text, offset);
-					
-					if (!OverrideLineHeight ()) {
-						if (*inptr == '\0' || inptr < inend) {
-							line->descend = font->Descender ();
-							line->height = font->Height ();
-						}
-					} else {
-						line->height = line_height;
-					}
-					
-					g_ptr_array_add (lines, line);
-					prev = 0;
-				}
-				
-				if (inptr < inend) {
-					// more text to layout with the current attrs...
-					if (!OverrideLineHeight ()) {
-						line->descend = font->Descender ();
-						line->height = font->Height ();
-					}
-					
-					run = new TextLayoutRun (line, attrs, inptr - text);
-					g_ptr_array_add (line->runs, run);
-				}
-			}
+		if (btype == G_UNICODE_BREAK_COMBINING_MARK) {
+			// ignore zero-width spaces
+			if ((btype = g_unichar_break_type (c)) == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
+				btype = G_UNICODE_BREAK_COMBINING_MARK;
+		} else {
+			btype = g_unichar_break_type (c);
 		}
 		
-		attrs = nattrs;
-	} while (*inptr != '\0');
+		if (BreakSpace (c, btype)) {
+			inptr = start;
+			break;
+		}
+		
+		word->count++;
+		
+		// ignore glyphs the font doesn't contain...
+		if (!(glyph = word->font->GetGlyphInfo (c)))
+			continue;
+		
+		// calculate total glyph advance
+		advance = glyph->metrics.horiAdvance;
+		if ((prev != 0) && APPLY_KERNING (c))
+			advance += word->font->Kerning (prev, glyph->index);
+		else if (glyph->metrics.horiBearingX < 0)
+			advance -= glyph->metrics.horiBearingX;
+		
+		word->line_advance += advance;
+		word->advance += advance;
+		prev = glyph->index;
+	}
 	
-	count = offset;
+	word->length = (inptr - in);
+	word->prev = prev;
+	
+	return false;
 }
 
 static WordType
@@ -1543,10 +1334,69 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	return true;
 }
 
+#if DEBUG
+static const char *wrap_modes[3] = {
+	"WrapWithOverflow",
+	"NoWrap",
+	"Wrap"
+};
+
+static void
+print_lines (GPtrArray *lines)
+{
+	TextLayoutLine *line;
+	TextLayoutRun *run;
+	const char *text;
+	double y = 0.0;
+	
+	for (guint i = 0; i < lines->len; i++) {
+		line = (TextLayoutLine *) lines->pdata[i];
+		
+		printf ("Line (top=%f, height=%f, advance=%f, offset=%d):\n", y, line->height, line->advance, line->offset);
+		for (guint j = 0; j < line->runs->len; j++) {
+			run = (TextLayoutRun *) line->runs->pdata[j];
+			
+			text = line->layout->GetText () + run->start;
+			
+			printf ("\tRun (advance=%f): \"", run->advance);
+			for (const char *s = text; s < text + run->length; s++) {
+				switch (*s) {
+				case '\r':
+					fputs ("\\r", stdout);
+					break;
+				case '\n':
+					fputs ("\\n", stdout);
+					break;
+				case '\t':
+					fputs ("\\t", stdout);
+					break;
+				case '"':
+					fputs ("\\\"", stdout);
+					break;
+				default:
+					fputc (*s, stdout);
+					break;
+				}
+			}
+			printf ("\"\n");
+		}
+		
+		y += line->height;
+	}
+}
+#endif
+
+static LayoutWordCallback layout_word_behavior[] = {
+	layout_word_overflow,
+	layout_word_nowrap,
+	layout_word_wrap
+};
+
 void
-TextLayout::LayoutWrap ()
+TextLayout::Layout ()
 {
 	TextLayoutAttributes *attrs, *nattrs;
+	LayoutWordCallback layout_word;
 	const char *inptr, *inend;
 	size_t n_bytes, n_chars;
 	TextLayoutLine *line;
@@ -1558,10 +1408,26 @@ TextLayout::LayoutWrap ()
 	guint32 prev;
 	bool wrapped;
 	
-	if (!(attrs = (TextLayoutAttributes *) attributes->First ()) || attrs->start != 0)
+	if (!isnan (actual_width))
 		return;
 	
-	word.break_ops = g_array_new (false, false, sizeof (WordBreakOpportunity));
+	actual_height = 0.0;
+	actual_width = 0.0;
+	is_wrapped = false;
+	ClearLines ();
+	count = 0;
+	
+	if (!text || !(attrs = (TextLayoutAttributes *) attributes->First ()) || attrs->start != 0)
+		return;
+	
+	d(printf ("TextLayout::Layout(): wrap mode = %s, wrapping to %f pixels\n", wrap_modes[wrapping], max_width));
+	
+	if (wrapping == TextWrappingWrap)
+		word.break_ops = g_array_new (false, false, sizeof (WordBreakOpportunity));
+	else
+		word.break_ops = NULL;
+	
+	layout_word = layout_word_behavior[wrapping];
 	
 	line = new TextLayoutLine (this, 0, 0);
 	if (OverrideLineHeight ())
@@ -1607,7 +1473,8 @@ TextLayout::LayoutWrap ()
 				
 				layout_word_init (&word, line->advance, prev);
 				
-				if (layout_word_wrap (&word, inptr, inend, max_width)) {
+				// lay out the next word
+				if (layout_word (&word, inptr, inend, max_width)) {
 					// force a line wrap...
 					is_wrapped = true;
 					wrapped = true;
@@ -1628,7 +1495,7 @@ TextLayout::LayoutWrap ()
 				// now append any trailing lwsp
 				layout_word_init (&word, line->advance, prev);
 				
-				layout_word_lwsp (&word, inptr, inend);
+				layout_lwsp (&word, inptr, inend);
 				
 				if (word.length > 0) {
 					line->advance += word.advance;
@@ -1704,109 +1571,10 @@ TextLayout::LayoutWrap ()
 		attrs = nattrs;
 	} while (*inptr != '\0');
 	
-	g_array_free (word.break_ops, true);
+	if (word.break_ops != NULL)
+		g_array_free (word.break_ops, true);
 	
 	count = offset;
-}
-
-#if DEBUG
-static void
-print_lines (GPtrArray *lines)
-{
-	TextLayoutLine *line;
-	TextLayoutRun *run;
-	const char *text;
-	double y = 0.0;
-	
-	for (guint i = 0; i < lines->len; i++) {
-		line = (TextLayoutLine *) lines->pdata[i];
-		
-		printf ("Line (top=%f, height=%f, advance=%f, offset=%d):\n", y, line->height, line->advance, line->offset);
-		for (guint j = 0; j < line->runs->len; j++) {
-			run = (TextLayoutRun *) line->runs->pdata[j];
-			
-			text = line->layout->GetText () + run->start;
-			
-			printf ("\tRun (advance=%f): \"", run->advance);
-			for (const char *s = text; s < text + run->length; s++) {
-				switch (*s) {
-				case '\r':
-					fputs ("\\r", stdout);
-					break;
-				case '\n':
-					fputs ("\\n", stdout);
-					break;
-				case '\t':
-					fputs ("\\t", stdout);
-					break;
-				case '"':
-					fputs ("\\\"", stdout);
-					break;
-				default:
-					fputc (*s, stdout);
-					break;
-				}
-			}
-			printf ("\"\n");
-		}
-		
-		y += line->height;
-	}
-}
-#endif
-
-void
-TextLayout::Layout ()
-{
-	if (!isnan (actual_width))
-		return;
-	
-	actual_height = 0.0;
-	actual_width = 0.0;
-	is_wrapped = false;
-	ClearLines ();
-	count = 0;
-	
-	if (text == NULL)
-		return;
-	
-	switch (wrapping) {
-	case TextWrappingWrapWithOverflow:
-#if DEBUG
-		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
-			if (!isinf (max_width))
-				printf ("TextLayout::LayoutWrapWithOverflow(%f)\n", max_width);
-			else
-				printf ("TextLayout::LayoutWrapWithOverflow()\n");
-		}
-#endif
-		LayoutWrapWithOverflow ();
-		break;
-	case TextWrappingNoWrap:
-#if DEBUG
-		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
-			if (!isinf (max_width))
-				printf ("TextLayout::LayoutWrapNoWrap(%f)\n", max_width);
-			else
-				printf ("TextLayout::LayoutNoWrap()\n");
-		}
-#endif
-		LayoutNoWrap ();
-		break;
-	case TextWrappingWrap:
-	// Silverlight default is to wrap for invalid values
-	default:
-#if DEBUG
-		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
-			if (!isinf (max_width))
-				printf ("TextLayout::LayoutWrap(%f)\n", max_width);
-			else
-				printf ("TextLayout::LayoutWrap()\n");
-		}
-#endif
-		LayoutWrap ();
-		break;
-	}
 	
 #if DEBUG
 	if (debug_flags & RUNTIME_DEBUG_LAYOUT) {

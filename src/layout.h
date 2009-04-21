@@ -134,10 +134,6 @@ class TextLayout {
 	void ClearCache ();
 	void ClearLines ();
 	
-	void LayoutWrapWithOverflow ();
-	void LayoutNoWrap ();
-	void LayoutWrap ();
-	
  public:
 	TextLayout ();
 	~TextLayout ();

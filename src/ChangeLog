@@ -1,3 +1,10 @@
+2009-04-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (Layout): Merged LayoutWrapWithOverflow, LayoutNoWrap
+	and LayoutWrap. The different word-wrapping behaviors are, as
+	before, handled in different subroutines but the outer loops are
+	all now merged.
+
 2009-04-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.cpp (SetTextInternal): Don't break the string into
