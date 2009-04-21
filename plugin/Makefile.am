@@ -5,7 +5,7 @@ CLEANFILES =
 pluginlibdir=$(pkglibdir)/plugin
 pluginlib_LTLIBRARIES = libmoonplugin.la libmoonloader.la
 
-EXTRA_LTLIBRARIES = libmoonpluginxpi.la libmoonloaderxpi.la
+noinst_LTLIBRARIES = libmoonpluginxpi.la libmoonloaderxpi.la
 
 pluginlib_DATA=README
 
