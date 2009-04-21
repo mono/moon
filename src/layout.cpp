@@ -924,9 +924,6 @@ TextLayout::LayoutWrapWithOverflow ()
 			run->length = inptr - (text + run->start);
 			
 			if (linebreak || *inptr == '\0') {
-				// the current line has ended
-				line->length = inptr - (text + line->start);
-				
 				// update actual width extents
 				if (*inptr == '\0') {
 					// ActualWidth extents only include trailing lwsp on the last line
@@ -1064,9 +1061,6 @@ TextLayout::LayoutNoWrap ()
 			run->length = inptr - (text + run->start);
 			
 			if (linebreak || *inptr == '\0') {
-				// the current line has ended
-				line->length = inptr - (text + line->start);
-				
 				// update actual width extents
 				if (*inptr == '\0') {
 					// ActualWidth extents only include trailing lwsp on the last line
@@ -1665,9 +1659,6 @@ TextLayout::LayoutWrap ()
 				wrapped = false;
 			
 			if (linebreak || wrapped || *inptr == '\0') {
-				// the current line has ended
-				line->length = inptr - (text + line->start);
-				
 				// update actual width extents
 				if (*inptr == '\0') {
 					// ActualWidth extents only include trailing lwsp on the last line
