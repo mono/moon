@@ -1,3 +1,8 @@
+2009-04-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Microsoft.VisualBasic.auto.sc:
+	* Microsoft.VisualBasic.auto.ssc: Added.
+
 2009-04-19  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows.auto.sc: add new

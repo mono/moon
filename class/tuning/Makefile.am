@@ -35,11 +35,21 @@ TUNER_ASSEMBLIES =	\
 	System.ServiceModel.Web	\
 	Mono.CompilerServices.SymbolWriter
 
+MCS_DLLFILES = $(TUNER_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_2_1_raw/%.dll)
+
+if HAVE_MONO_BASIC
+TUNER_ASSEMBLIES += Microsoft.VisualBasic
+MONO_BASIC_DLLFILES = $(MONO_BASIC_PATH)/class/lib/2.1/Microsoft.VisualBasic.dll
+endif
+
 TUNER_MASTERS = $(TUNER_ASSEMBLIES:%=masterinfos/%.info)
 
 EXTRA_DIST = $(TUNER_DESCS) $(TUNER_MASTERS)
 
-WORKING_DIR = $(MCS_PATH)/class/lib/net_2_1_raw
+# We copy all the files to be tuned into our working directory
+# this way it's easier to tune assemblies which comes from 
+# different sources (mcs, mono-basic)
+WORKING_DIR = ../lib/2.1_raw
 OUTPUT_DIR = ../lib/2.1
 MCS_OUTPUT_DIR = $(MCS_PATH)/class/lib/net_2_1
 
@@ -48,6 +58,7 @@ DLLFILES = $(TUNER_ASSEMBLIES:%=%.dll)
 FILES = smcs.exe $(DLLFILES)
 WORKING_FILES = $(FILES:%=$(WORKING_DIR)/%)
 OUTPUT_FILES = $(FILES:%=$(OUTPUT_DIR)/%)
+INPUT_FILES = $(MCS_PATH)/class/lib/net_2_1_raw/smcs.exe $(MCS_DLLFILES) $(MONO_BASIC_DLLFILES)
 
 TUNER_INSTALL_DIR = $(DESTDIR)$(prefix)/lib/mono/2.1
 
@@ -80,16 +91,22 @@ TUNER_STEPS = \
 	Mono.Tuner.RemoveSerialization,Mono.Tuner:OutputStep	\
 	Mono.Tuner.CheckVisibility,Mono.Tuner
 
+$(WORKING_FILES): $(INPUT_FILES)
+	-mkdir -p $(OUTPUT_DIR)
+	echo input=$@ output=$?
+	for i in $(INPUT_FILES); do cp -p $$i $$i.mdb $(WORKING_DIR); done
+	touch $(WORKING_FILES)
+
 $(OUTPUT_FILES): $(WORKING_FILES) $(SECURITY_ATTRIBUTES_INFO)
 	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
 	for i in $(DLLFILES); do sn -q -R $(OUTPUT_DIR)/$$i ../mono.snk; done
 	-mkdir -p $(MCS_OUTPUT_DIR)
-	for i in $(OUTPUT_FILES); do cp $$i $(MCS_OUTPUT_DIR) && cp $$i.mdb $(MCS_OUTPUT_DIR); done
+	for i in $(OUTPUT_FILES); do cp -p $$i $(MCS_OUTPUT_DIR) && cp -p $$i.mdb $(MCS_OUTPUT_DIR); done
 
 $(TUNER_INSTALL_DIR):
 	-mkdir -p $(TUNER_INSTALL_DIR)
 
-end-install:	\
+END_INSTALL_TARGETS = 
 	inst-mscorlib.dll	\
 	inst-mono-smcs.exe	\
 	inst-System.dll	\
@@ -101,6 +118,12 @@ end-install:	\
 	inst-System.ServiceModel.dll	\
 	inst-System.ServiceModel.Web.dll	\
 	inst-Mono.CompilerServices.SymbolWriter.dll
+	
+if HAVE_MONO_BASIC
+END_INSTALL_TARGETS += inst-Microsoft.VisualBasic.dll
+endif
+
+end-install: $(END_INSTALL_TARGETS)
 
 inst-mono-%: $(OUTPUT_DIR)/%
 	-mkdir -p $(prefix)/lib/mono/2.1

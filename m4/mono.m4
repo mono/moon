@@ -8,6 +8,9 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 	if test "x$browser_support" = xyes; then
 		MONO_REQUIRED_VERSION=$MONO_REQUIRED_BROWSER_VERSION
 
+		dnl 
+		dnl path to mcs checkout
+		dnl 
 		AC_ARG_WITH(mcspath, AC_HELP_STRING([--with-mcspath=<path>], []),
 			[], [with_mcspath=../mcs])
 
@@ -21,8 +24,34 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 
 		MCS_PATH=$(cd "$with_mcspath" && pwd)
 		AC_SUBST(MCS_PATH)
+	
+		dnl
+		dnl path to mono-basic checkout
+		dnl
+		AC_ARG_WITH(mono_basic_path, AC_HELP_STRING([--with-mono-basic-path=<path>], []),
+			[], [with_mono_basic_path=../mono-basic])
+			
+		if test "x$with_mono_basic_path" = "xno"; then
+			AC_WARNING(You need to set the path to mono-basic to include Microsoft.VisualBasic.dll in your Moonlight install)
+			with_mono_basic_path = "no"
+		else
+			if test ! -d "$with_mono_basic_path"; then
+				AC_WARNING(The path to mono-basic does not exist, you need to set it to an existing directory to include Microsoft.VisualBasic.dll in your Moonlight install)
+				with_mono_basic_path = "no"
+			fi
+		fi
+
+		if test "x$with_mono_basic_path" = "xno"; then
+			AM_CONDITIONAL([HAVE_MONO_BASIC], false)
+		else
+			MONO_BASIC_PATH=$(cd "$with_mono_basic_path" && pwd)
+			AC_SUBST(MONO_BASIC_PATH)
+			AM_CONDITIONAL([HAVE_MONO_BASIC], true)
+		fi
 
 		AC_DEFINE([PLUGIN_SL_2_0], [1], [Enable Silverlight 2.0 support for the plugin])
+	else
+		AM_CONDITIONAL([HAVE_MONO_BASIC], false)
 	fi
 
 	MOON_ARG_ENABLED_BY_DEFAULT([desktop-support], [Disable support for Moonlight-based desktop applications])

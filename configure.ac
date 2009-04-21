@@ -214,6 +214,7 @@ EOF
 if test x$browser_support = xyes; then
 cat <<EOF
             Path to mcs tree: $with_mcspath
+            Path to mono-basic tree: $with_mono_basic_path
 EOF
 fi
 cat <<EOF
