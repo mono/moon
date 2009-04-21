@@ -1,5 +1,2068 @@
 <?xml version="1.0"?>
 <assemblies>
   <assembly name="Microsoft.VisualBasic" version="2.0.5.0">
+    <attributes>
+      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
+      <attribute name="System.Reflection.AssemblyDefaultAliasAttribute" />
+      <attribute name="System.Reflection.AssemblyDescriptionAttribute" />
+      <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
+      <attribute name="System.Reflection.AssemblyTitleAttribute" />
+      <attribute name="System.CLSCompliantAttribute" />
+      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+      <attribute name="System.Reflection.AssemblyProductAttribute" />
+      <attribute name="System.Diagnostics.DebuggableAttribute" />
+      <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
+      <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
+        <properties>
+          <property name="WrapNonExceptionThrows" value="True" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
+      <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
+      <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
+      <attribute name="System.Resources.SatelliteContractVersionAttribute" />
+      <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
+      <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
+    </attributes>
+    <namespaces>
+      <namespace name="Microsoft.VisualBasic">
+        <classes>
+          <class name="CallType" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="Get" attrib="32854" fieldtype="Microsoft.VisualBasic.CallType" value="2" />
+              <field name="Let" attrib="32854" fieldtype="Microsoft.VisualBasic.CallType" value="4" />
+              <field name="Method" attrib="32854" fieldtype="Microsoft.VisualBasic.CallType" value="1" />
+              <field name="Set" attrib="32854" fieldtype="Microsoft.VisualBasic.CallType" value="8" />
+            </fields>
+          </class>
+          <class name="Collection" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.Reflection.DefaultMemberAttribute" />
+              <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
+            </attributes>
+            <interfaces>
+              <interface name="System.Collections.IEnumerable" />
+              <interface name="System.Collections.ICollection" />
+              <interface name="System.Collections.IList" />
+            </interfaces>
+            <constructors>
+              <constructor name=".ctor()" attrib="6150">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Count" attrib="0" ptype="System.Int32" params="">
+                <methods>
+                  <method name="get_Count()" attrib="2054" returntype="System.Int32">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Item" attrib="0" ptype="System.Object" params="System.Object">
+                <methods>
+                  <method name="get_Item(System.Object)" attrib="2182" returntype="System.Object">
+                    <parameters>
+                      <parameter name="Index" position="0" attrib="0" type="System.Object" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="Item" attrib="0" ptype="System.Object" params="System.Int32">
+                <methods>
+                  <method name="get_Item(System.Int32)" attrib="2182" returntype="System.Object">
+                    <parameters>
+                      <parameter name="Index" position="0" attrib="0" type="System.Int32" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="Item" attrib="0" ptype="System.Object" params="System.String">
+                <methods>
+                  <method name="get_Item(System.String)" attrib="2182" returntype="System.Object">
+                    <parameters>
+                      <parameter name="Key" position="0" attrib="0" type="System.String" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Add(System.Object, System.String, System.Object, System.Object)" attrib="6" returntype="System.Void">
+                <parameters>
+                  <parameter name="Item" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Key" position="1" attrib="4112" type="System.String" optional="true" defaultValue="NULL" />
+                  <parameter name="Before" position="2" attrib="4112" type="System.Object" optional="true" defaultValue="NULL" />
+                  <parameter name="After" position="3" attrib="4112" type="System.Object" optional="true" defaultValue="NULL" />
+                </parameters>
+              </method>
+              <method name="Clear()" attrib="6" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="Contains(System.String)" attrib="6" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Key" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="GetEnumerator()" attrib="6" returntype="System.Collections.IEnumerator">
+                <parameters />
+              </method>
+              <method name="Remove(System.Int32)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="Index" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Remove(System.String)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="Key" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="CompareMethod" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="Binary" attrib="32854" fieldtype="Microsoft.VisualBasic.CompareMethod" value="0" />
+              <field name="Text" attrib="32854" fieldtype="Microsoft.VisualBasic.CompareMethod" value="1" />
+            </fields>
+          </class>
+          <class name="Constants" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute" />
+            </attributes>
+            <fields>
+              <field name="vbArray" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="8192" />
+              <field name="vbBack" attrib="32854" fieldtype="System.String" value="&#x8;" />
+              <field name="vbBinaryCompare" attrib="32854" fieldtype="Microsoft.VisualBasic.CompareMethod" value="0" />
+              <field name="vbBoolean" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="11" />
+              <field name="vbByte" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="17" />
+              <field name="vbCr" attrib="32854" fieldtype="System.String" value="&#xD;" />
+              <field name="vbCrLf" attrib="32854" fieldtype="System.String" value="&#xD;&#xA;" />
+              <field name="vbCurrency" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="6" />
+              <field name="vbDate" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="7" />
+              <field name="vbDecimal" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="14" />
+              <field name="vbDouble" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="5" />
+              <field name="vbEmpty" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="0" />
+              <field name="vbFalse" attrib="32854" fieldtype="Microsoft.VisualBasic.TriState" value="0" />
+              <field name="vbFirstFourDays" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstWeekOfYear" value="2" />
+              <field name="vbFirstFullWeek" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstWeekOfYear" value="3" />
+              <field name="vbFirstJan1" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstWeekOfYear" value="1" />
+              <field name="vbFormFeed" attrib="32854" fieldtype="System.String" value="&#xC;" />
+              <field name="vbFriday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="6" />
+              <field name="vbGeneralDate" attrib="32854" fieldtype="Microsoft.VisualBasic.DateFormat" value="0" />
+              <field name="vbGet" attrib="32854" fieldtype="Microsoft.VisualBasic.CallType" value="2" />
+              <field name="vbInteger" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="3" />
+              <field name="vbLet" attrib="32854" fieldtype="Microsoft.VisualBasic.CallType" value="4" />
+              <field name="vbLf" attrib="32854" fieldtype="System.String" value="&#xA;" />
+              <field name="vbLong" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="20" />
+              <field name="vbLongDate" attrib="32854" fieldtype="Microsoft.VisualBasic.DateFormat" value="1" />
+              <field name="vbLongTime" attrib="32854" fieldtype="Microsoft.VisualBasic.DateFormat" value="3" />
+              <field name="vbMethod" attrib="32854" fieldtype="Microsoft.VisualBasic.CallType" value="1" />
+              <field name="vbMonday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="2" />
+              <field name="vbNewLine" attrib="32854" fieldtype="System.String" value="&#xD;&#xA;" />
+              <field name="vbNull" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="1" />
+              <field name="vbNullChar" attrib="32854" fieldtype="System.String" value="&#x0;" />
+              <field name="vbNullString" attrib="32854" fieldtype="System.String" value="" />
+              <field name="vbObject" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="9" />
+              <field name="vbObjectError" attrib="32854" fieldtype="System.Int32" value="-2147221504" />
+              <field name="vbSaturday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="7" />
+              <field name="vbSet" attrib="32854" fieldtype="Microsoft.VisualBasic.CallType" value="8" />
+              <field name="vbShortDate" attrib="32854" fieldtype="Microsoft.VisualBasic.DateFormat" value="2" />
+              <field name="vbShortTime" attrib="32854" fieldtype="Microsoft.VisualBasic.DateFormat" value="4" />
+              <field name="vbSingle" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="4" />
+              <field name="vbString" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="8" />
+              <field name="vbSunday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="1" />
+              <field name="vbTab" attrib="32854" fieldtype="System.String" value="	" />
+              <field name="vbTextCompare" attrib="32854" fieldtype="Microsoft.VisualBasic.CompareMethod" value="1" />
+              <field name="vbThursday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="5" />
+              <field name="vbTrue" attrib="32854" fieldtype="Microsoft.VisualBasic.TriState" value="-1" />
+              <field name="vbTuesday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="3" />
+              <field name="vbUseDefault" attrib="32854" fieldtype="Microsoft.VisualBasic.TriState" value="-2" />
+              <field name="vbUserDefinedType" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="36" />
+              <field name="vbUseSystem" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstWeekOfYear" value="0" />
+              <field name="vbUseSystemDayOfWeek" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="0" />
+              <field name="vbVariant" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="12" />
+              <field name="vbVerticalTab" attrib="32854" fieldtype="System.String" value="&#xB;" />
+              <field name="vbWednesday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="4" />
+            </fields>
+          </class>
+          <class name="ControlChars" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="Back" attrib="32854" fieldtype="System.Char" value="&#x8;" />
+              <field name="Cr" attrib="32854" fieldtype="System.Char" value="&#xD;" />
+              <field name="CrLf" attrib="32854" fieldtype="System.String" value="&#xD;&#xA;" />
+              <field name="FormFeed" attrib="32854" fieldtype="System.Char" value="&#xC;" />
+              <field name="Lf" attrib="32854" fieldtype="System.Char" value="&#xA;" />
+              <field name="NewLine" attrib="32854" fieldtype="System.String" value="&#xD;&#xA;" />
+              <field name="NullChar" attrib="32854" fieldtype="System.Char" value="&#x0;" />
+              <field name="Quote" attrib="32854" fieldtype="System.Char" value="&quot;" />
+              <field name="Tab" attrib="32854" fieldtype="System.Char" value="	" />
+              <field name="VerticalTab" attrib="32854" fieldtype="System.Char" value="&#xB;" />
+            </fields>
+            <constructors>
+              <constructor name=".ctor()" attrib="6150">
+                <parameters />
+              </constructor>
+            </constructors>
+          </class>
+          <class name="Conversion" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute" />
+            </attributes>
+            <methods>
+              <method name="ErrorToString(System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="ErrorNumber" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="ErrorToString()" attrib="22" static="true" returntype="System.String">
+                <parameters />
+              </method>
+              <method name="Fix(System.Single)" attrib="22" static="true" returntype="System.Single">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Single" />
+                </parameters>
+              </method>
+              <method name="Fix(System.Decimal)" attrib="22" static="true" returntype="System.Decimal">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Decimal" />
+                </parameters>
+              </method>
+              <method name="Fix(System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Fix(System.Double)" attrib="22" static="true" returntype="System.Double">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Double" />
+                </parameters>
+              </method>
+              <method name="Fix(System.Int16)" attrib="22" static="true" returntype="System.Int16">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int16" />
+                </parameters>
+              </method>
+              <method name="Fix(System.Int32)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Fix(System.Int64)" attrib="22" static="true" returntype="System.Int64">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int64" />
+                </parameters>
+              </method>
+              <method name="Hex(System.Int16)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int16" />
+                </parameters>
+              </method>
+              <method name="Hex(System.UInt16)" attrib="22" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.UInt16" />
+                </parameters>
+              </method>
+              <method name="Hex(System.Byte)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Byte" />
+                </parameters>
+              </method>
+              <method name="Hex(System.SByte)" attrib="22" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.SByte" />
+                </parameters>
+              </method>
+              <method name="Hex(System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Hex(System.UInt64)" attrib="22" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.UInt64" />
+                </parameters>
+              </method>
+              <method name="Hex(System.Object)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Hex(System.UInt32)" attrib="22" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.UInt32" />
+                </parameters>
+              </method>
+              <method name="Hex(System.Int64)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int64" />
+                </parameters>
+              </method>
+              <method name="Int(System.Int64)" attrib="22" static="true" returntype="System.Int64">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int64" />
+                </parameters>
+              </method>
+              <method name="Int(System.Int32)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Int(System.Int16)" attrib="22" static="true" returntype="System.Int16">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int16" />
+                </parameters>
+              </method>
+              <method name="Int(System.Double)" attrib="22" static="true" returntype="System.Double">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Double" />
+                </parameters>
+              </method>
+              <method name="Int(System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Int(System.Decimal)" attrib="22" static="true" returntype="System.Decimal">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Decimal" />
+                </parameters>
+              </method>
+              <method name="Int(System.Single)" attrib="22" static="true" returntype="System.Single">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Single" />
+                </parameters>
+              </method>
+              <method name="Str(System.Object)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Val(System.Object)" attrib="22" static="true" returntype="System.Double">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Val(System.Char)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="Val(System.String)" attrib="22" static="true" returntype="System.Double">
+                <parameters>
+                  <parameter name="InputStr" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="DateAndTime" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute" />
+            </attributes>
+            <properties>
+              <property name="DateString" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_DateString()" attrib="2070" static="true" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Now" attrib="0" ptype="System.DateTime" params="">
+                <methods>
+                  <method name="get_Now()" attrib="2070" static="true" returntype="System.DateTime">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="TimeOfDay" attrib="0" ptype="System.DateTime" params="">
+                <methods>
+                  <method name="get_TimeOfDay()" attrib="2070" static="true" returntype="System.DateTime">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Timer" attrib="0" ptype="System.Double" params="">
+                <methods>
+                  <method name="get_Timer()" attrib="2070" static="true" returntype="System.Double">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="TimeString" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_TimeString()" attrib="2070" static="true" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Today" attrib="0" ptype="System.DateTime" params="">
+                <methods>
+                  <method name="get_Today()" attrib="2070" static="true" returntype="System.DateTime">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="DateAdd(System.String, System.Double, System.Object)" attrib="22" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="Interval" position="0" attrib="0" type="System.String" />
+                  <parameter name="Number" position="1" attrib="0" type="System.Double" />
+                  <parameter name="DateValue" position="2" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="DateAdd(Microsoft.VisualBasic.DateInterval, System.Double, System.DateTime)" attrib="22" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="Interval" position="0" attrib="0" type="Microsoft.VisualBasic.DateInterval" />
+                  <parameter name="Number" position="1" attrib="0" type="System.Double" />
+                  <parameter name="DateValue" position="2" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="DateDiff(System.String, System.Object, System.Object, Microsoft.VisualBasic.FirstDayOfWeek, Microsoft.VisualBasic.FirstWeekOfYear)" attrib="22" static="true" returntype="System.Int64">
+                <parameters>
+                  <parameter name="Interval" position="0" attrib="0" type="System.String" />
+                  <parameter name="Date1" position="1" attrib="0" type="System.Object" />
+                  <parameter name="Date2" position="2" attrib="0" type="System.Object" />
+                  <parameter name="DayOfWeek" position="3" attrib="4112" type="Microsoft.VisualBasic.FirstDayOfWeek" optional="true" defaultValue="1" />
+                  <parameter name="WeekOfYear" position="4" attrib="4112" type="Microsoft.VisualBasic.FirstWeekOfYear" optional="true" defaultValue="1" />
+                </parameters>
+              </method>
+              <method name="DateDiff(Microsoft.VisualBasic.DateInterval, System.DateTime, System.DateTime, Microsoft.VisualBasic.FirstDayOfWeek, Microsoft.VisualBasic.FirstWeekOfYear)" attrib="22" static="true" returntype="System.Int64">
+                <parameters>
+                  <parameter name="Interval" position="0" attrib="0" type="Microsoft.VisualBasic.DateInterval" />
+                  <parameter name="Date1" position="1" attrib="0" type="System.DateTime" />
+                  <parameter name="Date2" position="2" attrib="0" type="System.DateTime" />
+                  <parameter name="DayOfWeek" position="3" attrib="4112" type="Microsoft.VisualBasic.FirstDayOfWeek" optional="true" defaultValue="1" />
+                  <parameter name="WeekOfYear" position="4" attrib="4112" type="Microsoft.VisualBasic.FirstWeekOfYear" optional="true" defaultValue="1" />
+                </parameters>
+              </method>
+              <method name="DatePart(System.String, System.Object, Microsoft.VisualBasic.FirstDayOfWeek, Microsoft.VisualBasic.FirstWeekOfYear)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Interval" position="0" attrib="0" type="System.String" />
+                  <parameter name="DateValue" position="1" attrib="0" type="System.Object" />
+                  <parameter name="DayOfWeek" position="2" attrib="4112" type="Microsoft.VisualBasic.FirstDayOfWeek" optional="true" defaultValue="1" />
+                  <parameter name="WeekOfYear" position="3" attrib="4112" type="Microsoft.VisualBasic.FirstWeekOfYear" optional="true" defaultValue="1" />
+                </parameters>
+              </method>
+              <method name="DatePart(Microsoft.VisualBasic.DateInterval, System.DateTime, Microsoft.VisualBasic.FirstDayOfWeek, Microsoft.VisualBasic.FirstWeekOfYear)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Interval" position="0" attrib="0" type="Microsoft.VisualBasic.DateInterval" />
+                  <parameter name="DateValue" position="1" attrib="0" type="System.DateTime" />
+                  <parameter name="FirstDayOfWeekValue" position="2" attrib="4112" type="Microsoft.VisualBasic.FirstDayOfWeek" optional="true" defaultValue="1" />
+                  <parameter name="FirstWeekOfYearValue" position="3" attrib="4112" type="Microsoft.VisualBasic.FirstWeekOfYear" optional="true" defaultValue="1" />
+                </parameters>
+              </method>
+              <method name="DateSerial(System.Int32, System.Int32, System.Int32)" attrib="22" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="Year" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="Month" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="Day" position="2" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="DateValue(System.String)" attrib="22" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="StringDate" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="Day(System.DateTime)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="DateValue" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="Hour(System.DateTime)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="TimeValue" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="Minute(System.DateTime)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="TimeValue" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="Month(System.DateTime)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="DateValue" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="MonthName(System.Int32, System.Boolean)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Month" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="Abbreviate" position="1" attrib="4112" type="System.Boolean" optional="true" defaultValue="False" />
+                </parameters>
+              </method>
+              <method name="Second(System.DateTime)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="TimeValue" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="TimeSerial(System.Int32, System.Int32, System.Int32)" attrib="22" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="Hour" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="Minute" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="Second" position="2" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="TimeValue(System.String)" attrib="22" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="StringTime" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="Weekday(System.DateTime, Microsoft.VisualBasic.FirstDayOfWeek)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="DateValue" position="0" attrib="0" type="System.DateTime" />
+                  <parameter name="DayOfWeek" position="1" attrib="4112" type="Microsoft.VisualBasic.FirstDayOfWeek" optional="true" defaultValue="1" />
+                </parameters>
+              </method>
+              <method name="WeekdayName(System.Int32, System.Boolean, Microsoft.VisualBasic.FirstDayOfWeek)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Weekday" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="Abbreviate" position="1" attrib="4112" type="System.Boolean" optional="true" defaultValue="False" />
+                  <parameter name="FirstDayOfWeekValue" position="2" attrib="4112" type="Microsoft.VisualBasic.FirstDayOfWeek" optional="true" defaultValue="0" />
+                </parameters>
+              </method>
+              <method name="Year(System.DateTime)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="DateValue" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="DateFormat" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="GeneralDate" attrib="32854" fieldtype="Microsoft.VisualBasic.DateFormat" value="0" />
+              <field name="LongDate" attrib="32854" fieldtype="Microsoft.VisualBasic.DateFormat" value="1" />
+              <field name="LongTime" attrib="32854" fieldtype="Microsoft.VisualBasic.DateFormat" value="3" />
+              <field name="ShortDate" attrib="32854" fieldtype="Microsoft.VisualBasic.DateFormat" value="2" />
+              <field name="ShortTime" attrib="32854" fieldtype="Microsoft.VisualBasic.DateFormat" value="4" />
+            </fields>
+          </class>
+          <class name="DateInterval" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="Day" attrib="32854" fieldtype="Microsoft.VisualBasic.DateInterval" value="4" />
+              <field name="DayOfYear" attrib="32854" fieldtype="Microsoft.VisualBasic.DateInterval" value="3" />
+              <field name="Hour" attrib="32854" fieldtype="Microsoft.VisualBasic.DateInterval" value="7" />
+              <field name="Minute" attrib="32854" fieldtype="Microsoft.VisualBasic.DateInterval" value="8" />
+              <field name="Month" attrib="32854" fieldtype="Microsoft.VisualBasic.DateInterval" value="2" />
+              <field name="Quarter" attrib="32854" fieldtype="Microsoft.VisualBasic.DateInterval" value="1" />
+              <field name="Second" attrib="32854" fieldtype="Microsoft.VisualBasic.DateInterval" value="9" />
+              <field name="Weekday" attrib="32854" fieldtype="Microsoft.VisualBasic.DateInterval" value="6" />
+              <field name="WeekOfYear" attrib="32854" fieldtype="Microsoft.VisualBasic.DateInterval" value="5" />
+              <field name="Year" attrib="32854" fieldtype="Microsoft.VisualBasic.DateInterval" value="0" />
+            </fields>
+          </class>
+          <class name="ErrObject" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <properties>
+              <property name="Description" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_Description()" attrib="2054" returntype="System.String">
+                    <parameters />
+                  </method>
+                  <method name="set_Description(System.String)" attrib="2054" returntype="System.Void">
+                    <parameters>
+                      <parameter name="Value" position="0" attrib="0" type="System.String" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="Erl" attrib="0" ptype="System.Int32" params="">
+                <methods>
+                  <method name="get_Erl()" attrib="2054" returntype="System.Int32">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="Number" attrib="0" ptype="System.Int32" params="">
+                <methods>
+                  <method name="get_Number()" attrib="2054" returntype="System.Int32">
+                    <parameters />
+                  </method>
+                  <method name="set_Number(System.Int32)" attrib="2054" returntype="System.Void">
+                    <parameters>
+                      <parameter name="Value" position="0" attrib="0" type="System.Int32" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Clear()" attrib="6" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="GetException()" attrib="6" returntype="System.Exception">
+                <parameters />
+              </method>
+              <method name="Raise(System.Int32, System.Object)" attrib="6" returntype="System.Void">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="Description" position="1" attrib="4112" type="System.Object" optional="true" defaultValue="NULL" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="FirstDayOfWeek" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="Friday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="6" />
+              <field name="Monday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="2" />
+              <field name="Saturday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="7" />
+              <field name="Sunday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="1" />
+              <field name="System" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="0" />
+              <field name="Thursday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="5" />
+              <field name="Tuesday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="3" />
+              <field name="Wednesday" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstDayOfWeek" value="4" />
+            </fields>
+          </class>
+          <class name="FirstWeekOfYear" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="FirstFourDays" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstWeekOfYear" value="2" />
+              <field name="FirstFullWeek" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstWeekOfYear" value="3" />
+              <field name="Jan1" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstWeekOfYear" value="1" />
+              <field name="System" attrib="32854" fieldtype="Microsoft.VisualBasic.FirstWeekOfYear" value="0" />
+            </fields>
+          </class>
+          <class name="Globals" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute" />
+            </attributes>
+            <properties>
+              <property name="ScriptEngine" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_ScriptEngine()" attrib="2070" static="true" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="ScriptEngineBuildVersion" attrib="0" ptype="System.Int32" params="">
+                <methods>
+                  <method name="get_ScriptEngineBuildVersion()" attrib="2070" static="true" returntype="System.Int32">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="ScriptEngineMajorVersion" attrib="0" ptype="System.Int32" params="">
+                <methods>
+                  <method name="get_ScriptEngineMajorVersion()" attrib="2070" static="true" returntype="System.Int32">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="ScriptEngineMinorVersion" attrib="0" ptype="System.Int32" params="">
+                <methods>
+                  <method name="get_ScriptEngineMinorVersion()" attrib="2070" static="true" returntype="System.Int32">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+          </class>
+          <class name="HideModuleNameAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="AllowMultiple" value="False" />
+                  <property name="Inherited" value="False" />
+                </properties>
+              </attribute>
+            </attributes>
+            <constructors>
+              <constructor name=".ctor()" attrib="6150">
+                <parameters />
+              </constructor>
+            </constructors>
+          </class>
+          <class name="Information" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute" />
+            </attributes>
+            <methods>
+              <method name="Erl()" attrib="22" static="true" returntype="System.Int32">
+                <parameters />
+              </method>
+              <method name="Err()" attrib="22" static="true" returntype="Microsoft.VisualBasic.ErrObject">
+                <parameters />
+              </method>
+              <method name="IsArray(System.Object)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="VarName" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="IsDate(System.Object)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="IsDBNull(System.Object)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="IsError(System.Object)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="IsNothing(System.Object)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="IsReference(System.Object)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="LBound(System.Array, System.Int32)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Array" position="0" attrib="0" type="System.Array" />
+                  <parameter name="Rank" position="1" attrib="4112" type="System.Int32" optional="true" defaultValue="1" />
+                </parameters>
+              </method>
+              <method name="UBound(System.Array, System.Int32)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Array" position="0" attrib="0" type="System.Array" />
+                  <parameter name="Rank" position="1" attrib="4112" type="System.Int32" optional="true" defaultValue="1" />
+                </parameters>
+              </method>
+              <method name="VarType(System.Object)" attrib="22" static="true" returntype="Microsoft.VisualBasic.VariantType">
+                <parameters>
+                  <parameter name="VarName" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="Interaction" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute" />
+            </attributes>
+            <methods>
+              <method name="Choose(System.Double, System.Object[])" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Index" position="0" attrib="0" type="System.Double" />
+                  <parameter name="Choice" position="1" attrib="0" type="System.Object[]">
+                    <attributes>
+                      <attribute name="System.ParamArrayAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="IIf(System.Boolean, System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Boolean" />
+                  <parameter name="TruePart" position="1" attrib="0" type="System.Object" />
+                  <parameter name="FalsePart" position="2" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Partition(System.Int64, System.Int64, System.Int64, System.Int64)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int64" />
+                  <parameter name="Start" position="1" attrib="0" type="System.Int64" />
+                  <parameter name="Stop" position="2" attrib="0" type="System.Int64" />
+                  <parameter name="Interval" position="3" attrib="0" type="System.Int64" />
+                </parameters>
+              </method>
+              <method name="Switch(System.Object[])" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="VarExpr" position="0" attrib="0" type="System.Object[]">
+                    <attributes>
+                      <attribute name="System.ParamArrayAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="MyGroupCollectionAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="AllowMultiple" value="False" />
+                  <property name="Inherited" value="False" />
+                </properties>
+              </attribute>
+            </attributes>
+            <constructors>
+              <constructor name=".ctor(System.String, System.String, System.String, System.String)" attrib="6150">
+                <parameters>
+                  <parameter name="typeToCollect" position="0" attrib="0" type="System.String" />
+                  <parameter name="createInstanceMethodName" position="1" attrib="0" type="System.String" />
+                  <parameter name="disposeInstanceMethodName" position="2" attrib="0" type="System.String" />
+                  <parameter name="defaultInstanceAlias" position="3" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="CreateMethod" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_CreateMethod()" attrib="2054" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="DefaultInstanceAlias" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_DefaultInstanceAlias()" attrib="2054" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="DisposeMethod" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_DisposeMethod()" attrib="2054" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="MyGroupName" attrib="0" ptype="System.String" params="">
+                <methods>
+                  <method name="get_MyGroupName()" attrib="2054" returntype="System.String">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+          </class>
+          <class name="Strings" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute" />
+            </attributes>
+            <methods>
+              <method name="AscW(System.Char)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="String" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="AscW(System.String)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="String" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ChrW(System.Int32)" attrib="22" static="true" returntype="System.Char">
+                <parameters>
+                  <parameter name="CharCode" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Filter(System.String[], System.String, System.Boolean, Microsoft.VisualBasic.CompareMethod)" attrib="22" static="true" returntype="System.String[]">
+                <parameters>
+                  <parameter name="Source" position="0" attrib="0" type="System.String[]" />
+                  <parameter name="Match" position="1" attrib="0" type="System.String" />
+                  <parameter name="Include" position="2" attrib="4112" type="System.Boolean" optional="true" defaultValue="True" />
+                  <parameter name="Compare" position="3" attrib="4112" type="Microsoft.VisualBasic.CompareMethod" optional="true" defaultValue="0">
+                    <attributes>
+                      <attribute name="Microsoft.VisualBasic.CompilerServices.OptionCompareAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="Filter(System.Object[], System.String, System.Boolean, Microsoft.VisualBasic.CompareMethod)" attrib="22" static="true" returntype="System.String[]">
+                <parameters>
+                  <parameter name="Source" position="0" attrib="0" type="System.Object[]" />
+                  <parameter name="Match" position="1" attrib="0" type="System.String" />
+                  <parameter name="Include" position="2" attrib="4112" type="System.Boolean" optional="true" defaultValue="True" />
+                  <parameter name="Compare" position="3" attrib="4112" type="Microsoft.VisualBasic.CompareMethod" optional="true" defaultValue="0">
+                    <attributes>
+                      <attribute name="Microsoft.VisualBasic.CompilerServices.OptionCompareAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="Format(System.Object, System.String)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Style" position="1" attrib="4112" type="System.String" optional="true" defaultValue="" />
+                </parameters>
+              </method>
+              <method name="FormatCurrency(System.Object, System.Int32, Microsoft.VisualBasic.TriState, Microsoft.VisualBasic.TriState, Microsoft.VisualBasic.TriState)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                  <parameter name="NumDigitsAfterDecimal" position="1" attrib="4112" type="System.Int32" optional="true" defaultValue="-1" />
+                  <parameter name="IncludeLeadingDigit" position="2" attrib="4112" type="Microsoft.VisualBasic.TriState" optional="true" defaultValue="-2" />
+                  <parameter name="UseParensForNegativeNumbers" position="3" attrib="4112" type="Microsoft.VisualBasic.TriState" optional="true" defaultValue="-2" />
+                  <parameter name="GroupDigits" position="4" attrib="4112" type="Microsoft.VisualBasic.TriState" optional="true" defaultValue="-2" />
+                </parameters>
+              </method>
+              <method name="FormatDateTime(System.DateTime, Microsoft.VisualBasic.DateFormat)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.DateTime" />
+                  <parameter name="NamedFormat" position="1" attrib="4112" type="Microsoft.VisualBasic.DateFormat" optional="true" defaultValue="0" />
+                </parameters>
+              </method>
+              <method name="FormatNumber(System.Object, System.Int32, Microsoft.VisualBasic.TriState, Microsoft.VisualBasic.TriState, Microsoft.VisualBasic.TriState)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                  <parameter name="NumDigitsAfterDecimal" position="1" attrib="4112" type="System.Int32" optional="true" defaultValue="-1" />
+                  <parameter name="IncludeLeadingDigit" position="2" attrib="4112" type="Microsoft.VisualBasic.TriState" optional="true" defaultValue="-2" />
+                  <parameter name="UseParensForNegativeNumbers" position="3" attrib="4112" type="Microsoft.VisualBasic.TriState" optional="true" defaultValue="-2" />
+                  <parameter name="GroupDigits" position="4" attrib="4112" type="Microsoft.VisualBasic.TriState" optional="true" defaultValue="-2" />
+                </parameters>
+              </method>
+              <method name="FormatPercent(System.Object, System.Int32, Microsoft.VisualBasic.TriState, Microsoft.VisualBasic.TriState, Microsoft.VisualBasic.TriState)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                  <parameter name="NumDigitsAfterDecimal" position="1" attrib="4112" type="System.Int32" optional="true" defaultValue="-1" />
+                  <parameter name="IncludeLeadingDigit" position="2" attrib="4112" type="Microsoft.VisualBasic.TriState" optional="true" defaultValue="-2" />
+                  <parameter name="UseParensForNegativeNumbers" position="3" attrib="4112" type="Microsoft.VisualBasic.TriState" optional="true" defaultValue="-2" />
+                  <parameter name="GroupDigits" position="4" attrib="4112" type="Microsoft.VisualBasic.TriState" optional="true" defaultValue="-2" />
+                </parameters>
+              </method>
+              <method name="GetChar(System.String, System.Int32)" attrib="22" static="true" returntype="System.Char">
+                <parameters>
+                  <parameter name="str" position="0" attrib="0" type="System.String" />
+                  <parameter name="Index" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="InStr(System.String, System.String, Microsoft.VisualBasic.CompareMethod)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="String1" position="0" attrib="0" type="System.String" />
+                  <parameter name="String2" position="1" attrib="0" type="System.String" />
+                  <parameter name="Compare" position="2" attrib="4112" type="Microsoft.VisualBasic.CompareMethod" optional="true" defaultValue="0">
+                    <attributes>
+                      <attribute name="Microsoft.VisualBasic.CompilerServices.OptionCompareAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="InStr(System.Int32, System.String, System.String, Microsoft.VisualBasic.CompareMethod)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Start" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="String1" position="1" attrib="0" type="System.String" />
+                  <parameter name="String2" position="2" attrib="0" type="System.String" />
+                  <parameter name="Compare" position="3" attrib="4112" type="Microsoft.VisualBasic.CompareMethod" optional="true" defaultValue="0">
+                    <attributes>
+                      <attribute name="Microsoft.VisualBasic.CompilerServices.OptionCompareAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="InStrRev(System.String, System.String, System.Int32, Microsoft.VisualBasic.CompareMethod)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="StringCheck" position="0" attrib="0" type="System.String" />
+                  <parameter name="StringMatch" position="1" attrib="0" type="System.String" />
+                  <parameter name="Start" position="2" attrib="4112" type="System.Int32" optional="true" defaultValue="-1" />
+                  <parameter name="Compare" position="3" attrib="4112" type="Microsoft.VisualBasic.CompareMethod" optional="true" defaultValue="0">
+                    <attributes>
+                      <attribute name="Microsoft.VisualBasic.CompilerServices.OptionCompareAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="Join(System.Object[], System.String)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="SourceArray" position="0" attrib="0" type="System.Object[]" />
+                  <parameter name="Delimiter" position="1" attrib="4112" type="System.String" optional="true" defaultValue=" " />
+                </parameters>
+              </method>
+              <method name="Join(System.String[], System.String)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="SourceArray" position="0" attrib="0" type="System.String[]" />
+                  <parameter name="Delimiter" position="1" attrib="4112" type="System.String" optional="true" defaultValue=" " />
+                </parameters>
+              </method>
+              <method name="LCase(System.Char)" attrib="22" static="true" returntype="System.Char">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="LCase(System.String)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="Left(System.String, System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="str" position="0" attrib="0" type="System.String" />
+                  <parameter name="Length" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Len(System.String)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="LSet(System.String, System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Source" position="0" attrib="0" type="System.String" />
+                  <parameter name="Length" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="LTrim(System.String)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="str" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="Mid(System.String, System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="str" position="0" attrib="0" type="System.String" />
+                  <parameter name="Start" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Mid(System.String, System.Int32, System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="str" position="0" attrib="0" type="System.String" />
+                  <parameter name="Start" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="Length" position="2" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Replace(System.String, System.String, System.String, System.Int32, System.Int32, Microsoft.VisualBasic.CompareMethod)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.String" />
+                  <parameter name="Find" position="1" attrib="0" type="System.String" />
+                  <parameter name="Replacement" position="2" attrib="0" type="System.String" />
+                  <parameter name="Start" position="3" attrib="4112" type="System.Int32" optional="true" defaultValue="1" />
+                  <parameter name="Count" position="4" attrib="4112" type="System.Int32" optional="true" defaultValue="-1" />
+                  <parameter name="Compare" position="5" attrib="4112" type="Microsoft.VisualBasic.CompareMethod" optional="true" defaultValue="0">
+                    <attributes>
+                      <attribute name="Microsoft.VisualBasic.CompilerServices.OptionCompareAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="Right(System.String, System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="str" position="0" attrib="0" type="System.String" />
+                  <parameter name="Length" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="RSet(System.String, System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Source" position="0" attrib="0" type="System.String" />
+                  <parameter name="Length" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="RTrim(System.String)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="str" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="Space(System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="Split(System.String, System.String, System.Int32, Microsoft.VisualBasic.CompareMethod)" attrib="22" static="true" returntype="System.String[]">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.String" />
+                  <parameter name="Delimiter" position="1" attrib="4112" type="System.String" optional="true" defaultValue=" " />
+                  <parameter name="Limit" position="2" attrib="4112" type="System.Int32" optional="true" defaultValue="-1" />
+                  <parameter name="Compare" position="3" attrib="4112" type="Microsoft.VisualBasic.CompareMethod" optional="true" defaultValue="0">
+                    <attributes>
+                      <attribute name="Microsoft.VisualBasic.CompilerServices.OptionCompareAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="StrComp(System.String, System.String, Microsoft.VisualBasic.CompareMethod)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="String1" position="0" attrib="0" type="System.String" />
+                  <parameter name="String2" position="1" attrib="0" type="System.String" />
+                  <parameter name="Compare" position="2" attrib="4112" type="Microsoft.VisualBasic.CompareMethod" optional="true" defaultValue="0">
+                    <attributes>
+                      <attribute name="Microsoft.VisualBasic.CompilerServices.OptionCompareAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="StrDup(System.Int32, System.String)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="Character" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="StrDup(System.Int32, System.Char)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="Character" position="1" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="StrDup(System.Int32, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Int32" />
+                  <parameter name="Character" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="StrReverse(System.String)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="Trim(System.String)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="str" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="UCase(System.Char)" attrib="22" static="true" returntype="System.Char">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="UCase(System.String)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="TriState" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="False" attrib="32854" fieldtype="Microsoft.VisualBasic.TriState" value="0" />
+              <field name="True" attrib="32854" fieldtype="Microsoft.VisualBasic.TriState" value="-1" />
+              <field name="UseDefault" attrib="32854" fieldtype="Microsoft.VisualBasic.TriState" value="-2" />
+            </fields>
+          </class>
+          <class name="VariantType" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="Array" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="8192" />
+              <field name="Boolean" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="11" />
+              <field name="Byte" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="17" />
+              <field name="Char" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="18" />
+              <field name="Currency" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="6" />
+              <field name="DataObject" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="13" />
+              <field name="Date" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="7" />
+              <field name="Decimal" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="14" />
+              <field name="Double" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="5" />
+              <field name="Empty" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="0" />
+              <field name="Error" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="10" />
+              <field name="Integer" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="3" />
+              <field name="Long" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="20" />
+              <field name="Null" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="1" />
+              <field name="Object" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="9" />
+              <field name="Short" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="2" />
+              <field name="Single" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="4" />
+              <field name="String" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="8" />
+              <field name="UserDefinedType" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="36" />
+              <field name="Variant" attrib="32854" fieldtype="Microsoft.VisualBasic.VariantType" value="12" />
+            </fields>
+          </class>
+          <class name="VBMath" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute" />
+            </attributes>
+            <methods>
+              <method name="Randomize()" attrib="22" static="true" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="Randomize(System.Double)" attrib="22" static="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Double" />
+                </parameters>
+              </method>
+              <method name="Rnd()" attrib="22" static="true" returntype="System.Single">
+                <parameters />
+              </method>
+              <method name="Rnd(System.Single)" attrib="22" static="true" returntype="System.Single">
+                <parameters>
+                  <parameter name="Number" position="0" attrib="0" type="System.Single" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+        </classes>
+      </namespace>
+      <namespace name="Microsoft.VisualBasic.CompilerServices">
+        <classes>
+          <class name="Conversions" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <methods>
+              <method name="ChangeType(System.Object, System.Type)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                  <parameter name="TargetType" position="1" attrib="0" type="System.Type" />
+                </parameters>
+              </method>
+              <method name="FromCharAndCount(System.Char, System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Char" />
+                  <parameter name="Count" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="FromCharArray(System.Char[])" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Char[]" />
+                </parameters>
+              </method>
+              <method name="FromCharArraySubset(System.Char[], System.Int32, System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Char[]" />
+                  <parameter name="StartIndex" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="Length" position="2" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="ToBoolean(System.String)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToBoolean(System.Object)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToByte(System.String)" attrib="22" static="true" returntype="System.Byte">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToByte(System.Object)" attrib="22" static="true" returntype="System.Byte">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToChar(System.Object)" attrib="22" static="true" returntype="System.Char">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToChar(System.String)" attrib="22" static="true" returntype="System.Char">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToCharArrayRankOne(System.Object)" attrib="22" static="true" returntype="System.Char[]">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToCharArrayRankOne(System.String)" attrib="22" static="true" returntype="System.Char[]">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToDate(System.String)" attrib="22" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToDate(System.Object)" attrib="22" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToDecimal(System.String)" attrib="22" static="true" returntype="System.Decimal">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToDecimal(System.Boolean)" attrib="22" static="true" returntype="System.Decimal">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ToDecimal(System.Object)" attrib="22" static="true" returntype="System.Decimal">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToDouble(System.Object)" attrib="22" static="true" returntype="System.Double">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToDouble(System.String)" attrib="22" static="true" returntype="System.Double">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToGenericParameter(System.Object)" attrib="22" static="true" returntype="T">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToInteger(System.Object)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToInteger(System.String)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToLong(System.String)" attrib="22" static="true" returntype="System.Int64">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToLong(System.Object)" attrib="22" static="true" returntype="System.Int64">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToSByte(System.String)" attrib="22" static="true" returntype="System.SByte">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToSByte(System.Object)" attrib="22" static="true" returntype="System.SByte">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToShort(System.String)" attrib="22" static="true" returntype="System.Int16">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToShort(System.Object)" attrib="22" static="true" returntype="System.Int16">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToSingle(System.Object)" attrib="22" static="true" returntype="System.Single">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToSingle(System.String)" attrib="22" static="true" returntype="System.Single">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Int64)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Int64" />
+                </parameters>
+              </method>
+              <method name="ToString(System.UInt64)" attrib="22" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.UInt64" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Single)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Single" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Double)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Double" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Decimal)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Decimal" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Decimal, System.Globalization.NumberFormatInfo)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Decimal" />
+                  <parameter name="NumberFormat" position="1" attrib="0" type="System.Globalization.NumberFormatInfo" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Object)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Single, System.Globalization.NumberFormatInfo)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Single" />
+                  <parameter name="NumberFormat" position="1" attrib="0" type="System.Globalization.NumberFormatInfo" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Double, System.Globalization.NumberFormatInfo)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Double" />
+                  <parameter name="NumberFormat" position="1" attrib="0" type="System.Globalization.NumberFormatInfo" />
+                </parameters>
+              </method>
+              <method name="ToString(System.DateTime)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.DateTime" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Char)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Byte)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Byte" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Boolean)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ToString(System.UInt32)" attrib="22" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.UInt32" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Int16)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Int16" />
+                </parameters>
+              </method>
+              <method name="ToUInteger(System.String)" attrib="22" static="true" returntype="System.UInt32">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToUInteger(System.Object)" attrib="22" static="true" returntype="System.UInt32">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToULong(System.String)" attrib="22" static="true" returntype="System.UInt64">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToULong(System.Object)" attrib="22" static="true" returntype="System.UInt64">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ToUShort(System.String)" attrib="22" static="true" returntype="System.UInt16">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToUShort(System.Object)" attrib="22" static="true" returntype="System.UInt16">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="DesignerGeneratedAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="AllowMultiple" value="False" />
+                  <property name="Inherited" value="False" />
+                </properties>
+              </attribute>
+            </attributes>
+            <constructors>
+              <constructor name=".ctor()" attrib="6150">
+                <parameters />
+              </constructor>
+            </constructors>
+          </class>
+          <class name="IncompleteInitialization" type="class" base="System.Exception" sealed="true" charset="Ansi" layout="Auto">
+            <constructors>
+              <constructor name=".ctor()" attrib="6150">
+                <parameters />
+              </constructor>
+              <constructor name=".ctor(System.String, System.Exception)" attrib="6150">
+                <parameters>
+                  <parameter name="message" position="0" attrib="0" type="System.String" />
+                  <parameter name="innerException" position="1" attrib="0" type="System.Exception" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.String)" attrib="6150">
+                <parameters>
+                  <parameter name="message" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
+            </constructors>
+          </class>
+          <class name="InternalErrorException" type="class" base="System.Exception" sealed="true" charset="Ansi" layout="Auto">
+            <constructors>
+              <constructor name=".ctor()" attrib="6150">
+                <parameters />
+              </constructor>
+              <constructor name=".ctor(System.String, System.Exception)" attrib="6150">
+                <parameters>
+                  <parameter name="message" position="0" attrib="0" type="System.String" />
+                  <parameter name="innerException" position="1" attrib="0" type="System.Exception" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor(System.String)" attrib="6150">
+                <parameters>
+                  <parameter name="message" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </constructor>
+            </constructors>
+          </class>
+          <class name="LikeOperator" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <methods>
+              <method name="LikeObject(System.Object, System.Object, Microsoft.VisualBasic.CompareMethod)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Source" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Pattern" position="1" attrib="0" type="System.Object" />
+                  <parameter name="CompareOption" position="2" attrib="0" type="Microsoft.VisualBasic.CompareMethod" />
+                </parameters>
+              </method>
+              <method name="LikeString(System.String, System.String, Microsoft.VisualBasic.CompareMethod)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Source" position="0" attrib="0" type="System.String" />
+                  <parameter name="Pattern" position="1" attrib="0" type="System.String" />
+                  <parameter name="CompareOption" position="2" attrib="0" type="Microsoft.VisualBasic.CompareMethod" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="NewLateBinding" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <methods>
+              <method name="LateCall(System.Object, System.Type, System.String, System.Object[], System.String[], System.Type[], System.Boolean[], System.Boolean)" attrib="22" static="true" returntype="System.Object">
+                <attributes>
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Type" position="1" attrib="0" type="System.Type" />
+                  <parameter name="MemberName" position="2" attrib="0" type="System.String" />
+                  <parameter name="Arguments" position="3" attrib="0" type="System.Object[]" />
+                  <parameter name="ArgumentNames" position="4" attrib="0" type="System.String[]" />
+                  <parameter name="TypeArguments" position="5" attrib="0" type="System.Type[]" />
+                  <parameter name="CopyBack" position="6" attrib="0" type="System.Boolean[]" />
+                  <parameter name="IgnoreReturn" position="7" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="LateCanEvaluate(System.Object, System.Type, System.String, System.Object[], System.Boolean, System.Boolean)" attrib="22" static="true" returntype="System.Boolean">
+                <attributes>
+                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="instance" position="0" attrib="0" type="System.Object" />
+                  <parameter name="type" position="1" attrib="0" type="System.Type" />
+                  <parameter name="memberName" position="2" attrib="0" type="System.String" />
+                  <parameter name="arguments" position="3" attrib="0" type="System.Object[]" />
+                  <parameter name="allowFunctionEvaluation" position="4" attrib="0" type="System.Boolean" />
+                  <parameter name="allowPropertyEvaluation" position="5" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="LateGet(System.Object, System.Type, System.String, System.Object[], System.String[], System.Type[], System.Boolean[])" attrib="22" static="true" returntype="System.Object">
+                <attributes>
+                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Type" position="1" attrib="0" type="System.Type" />
+                  <parameter name="MemberName" position="2" attrib="0" type="System.String" />
+                  <parameter name="Arguments" position="3" attrib="0" type="System.Object[]" />
+                  <parameter name="ArgumentNames" position="4" attrib="0" type="System.String[]" />
+                  <parameter name="TypeArguments" position="5" attrib="0" type="System.Type[]" />
+                  <parameter name="CopyBack" position="6" attrib="0" type="System.Boolean[]" />
+                </parameters>
+              </method>
+              <method name="LateIndexGet(System.Object, System.Object[], System.String[])" attrib="22" static="true" returntype="System.Object">
+                <attributes>
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Arguments" position="1" attrib="0" type="System.Object[]" />
+                  <parameter name="ArgumentNames" position="2" attrib="0" type="System.String[]" />
+                </parameters>
+              </method>
+              <method name="LateIndexSet(System.Object, System.Object[], System.String[])" attrib="22" static="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Arguments" position="1" attrib="0" type="System.Object[]" />
+                  <parameter name="ArgumentNames" position="2" attrib="0" type="System.String[]" />
+                </parameters>
+              </method>
+              <method name="LateIndexSetComplex(System.Object, System.Object[], System.String[], System.Boolean, System.Boolean)" attrib="22" static="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Arguments" position="1" attrib="0" type="System.Object[]" />
+                  <parameter name="ArgumentNames" position="2" attrib="0" type="System.String[]" />
+                  <parameter name="OptimisticSet" position="3" attrib="0" type="System.Boolean" />
+                  <parameter name="RValueBase" position="4" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="LateSet(System.Object, System.Type, System.String, System.Object[], System.String[], System.Type[])" attrib="22" static="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Type" position="1" attrib="0" type="System.Type" />
+                  <parameter name="MemberName" position="2" attrib="0" type="System.String" />
+                  <parameter name="Arguments" position="3" attrib="0" type="System.Object[]" />
+                  <parameter name="ArgumentNames" position="4" attrib="0" type="System.String[]" />
+                  <parameter name="TypeArguments" position="5" attrib="0" type="System.Type[]" />
+                </parameters>
+              </method>
+              <method name="LateSet(System.Object, System.Type, System.String, System.Object[], System.String[], System.Type[], System.Boolean, System.Boolean, Microsoft.VisualBasic.CallType)" attrib="22" static="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Type" position="1" attrib="0" type="System.Type" />
+                  <parameter name="MemberName" position="2" attrib="0" type="System.String" />
+                  <parameter name="Arguments" position="3" attrib="0" type="System.Object[]" />
+                  <parameter name="ArgumentNames" position="4" attrib="0" type="System.String[]" />
+                  <parameter name="TypeArguments" position="5" attrib="0" type="System.Type[]" />
+                  <parameter name="OptimisticSet" position="6" attrib="0" type="System.Boolean" />
+                  <parameter name="RValueBase" position="7" attrib="0" type="System.Boolean" />
+                  <parameter name="CallType" position="8" attrib="0" type="Microsoft.VisualBasic.CallType" />
+                </parameters>
+              </method>
+              <method name="LateSetComplex(System.Object, System.Type, System.String, System.Object[], System.String[], System.Type[], System.Boolean, System.Boolean)" attrib="22" static="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Type" position="1" attrib="0" type="System.Type" />
+                  <parameter name="MemberName" position="2" attrib="0" type="System.String" />
+                  <parameter name="Arguments" position="3" attrib="0" type="System.Object[]" />
+                  <parameter name="ArgumentNames" position="4" attrib="0" type="System.String[]" />
+                  <parameter name="TypeArguments" position="5" attrib="0" type="System.Type[]" />
+                  <parameter name="OptimisticSet" position="6" attrib="0" type="System.Boolean" />
+                  <parameter name="RValueBase" position="7" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="ObjectFlowControl" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <methods>
+              <method name="CheckForSyncLockOnValueType(System.Object)" attrib="22" static="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+            </methods>
+            <classes>
+              <class name="ForLoopControl" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+                <methods>
+                  <method name="ForLoopInitObj(System.Object, System.Object, System.Object, System.Object, System.Object&amp;, System.Object&amp;)" attrib="22" static="true" returntype="System.Boolean">
+                    <parameters>
+                      <parameter name="Counter" position="0" attrib="0" type="System.Object" />
+                      <parameter name="Start" position="1" attrib="0" type="System.Object" />
+                      <parameter name="Limit" position="2" attrib="0" type="System.Object" />
+                      <parameter name="StepValue" position="3" attrib="0" type="System.Object" />
+                      <parameter name="LoopForResult" position="4" attrib="0" type="System.Object&amp;" direction="ref" />
+                      <parameter name="CounterResult" position="5" attrib="0" type="System.Object&amp;" direction="ref" />
+                    </parameters>
+                  </method>
+                  <method name="ForNextCheckDec(System.Decimal, System.Decimal, System.Decimal)" attrib="22" static="true" returntype="System.Boolean">
+                    <parameters>
+                      <parameter name="count" position="0" attrib="0" type="System.Decimal" />
+                      <parameter name="limit" position="1" attrib="0" type="System.Decimal" />
+                      <parameter name="StepValue" position="2" attrib="0" type="System.Decimal" />
+                    </parameters>
+                  </method>
+                  <method name="ForNextCheckObj(System.Object, System.Object, System.Object&amp;)" attrib="22" static="true" returntype="System.Boolean">
+                    <parameters>
+                      <parameter name="Counter" position="0" attrib="0" type="System.Object" />
+                      <parameter name="LoopObj" position="1" attrib="0" type="System.Object" />
+                      <parameter name="CounterResult" position="2" attrib="0" type="System.Object&amp;" direction="ref" />
+                    </parameters>
+                  </method>
+                  <method name="ForNextCheckR4(System.Single, System.Single, System.Single)" attrib="22" static="true" returntype="System.Boolean">
+                    <parameters>
+                      <parameter name="count" position="0" attrib="0" type="System.Single" />
+                      <parameter name="limit" position="1" attrib="0" type="System.Single" />
+                      <parameter name="StepValue" position="2" attrib="0" type="System.Single" />
+                    </parameters>
+                  </method>
+                  <method name="ForNextCheckR8(System.Double, System.Double, System.Double)" attrib="22" static="true" returntype="System.Boolean">
+                    <parameters>
+                      <parameter name="count" position="0" attrib="0" type="System.Double" />
+                      <parameter name="limit" position="1" attrib="0" type="System.Double" />
+                      <parameter name="StepValue" position="2" attrib="0" type="System.Double" />
+                    </parameters>
+                  </method>
+                </methods>
+              </class>
+            </classes>
+          </class>
+          <class name="Operators" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <methods>
+              <method name="AddObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="AndObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="CompareObject(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="CompareObjectEqual(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="CompareObjectGreater(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="CompareObjectGreaterEqual(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="CompareObjectLess(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="CompareObjectLessEqual(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="CompareObjectNotEqual(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="CompareString(System.String, System.String, System.Boolean)" attrib="22" static="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.String" />
+                  <parameter name="Right" position="1" attrib="0" type="System.String" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ConcatenateObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ConditionalCompareObjectEqual(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ConditionalCompareObjectGreater(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ConditionalCompareObjectGreaterEqual(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ConditionalCompareObjectLess(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ConditionalCompareObjectLessEqual(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ConditionalCompareObjectNotEqual(System.Object, System.Object, System.Boolean)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                  <parameter name="TextCompare" position="2" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="DivideObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ExponentObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="IntDivideObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="LeftShiftObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Operand" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Amount" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="ModObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="MultiplyObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="NegateObject(System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Operand" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="NotObject(System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Operand" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="OrObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="PlusObject(System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Operand" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="RightShiftObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Operand" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Amount" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="SubtractObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="XorObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Left" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Right" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="OptionCompareAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="AllowMultiple" value="False" />
+                  <property name="Inherited" value="False" />
+                </properties>
+              </attribute>
+            </attributes>
+            <constructors>
+              <constructor name=".ctor()" attrib="6150">
+                <parameters />
+              </constructor>
+            </constructors>
+          </class>
+          <class name="OptionTextAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="AllowMultiple" value="False" />
+                  <property name="Inherited" value="False" />
+                </properties>
+              </attribute>
+            </attributes>
+            <constructors>
+              <constructor name=".ctor()" attrib="6150">
+                <parameters />
+              </constructor>
+            </constructors>
+          </class>
+          <class name="ProjectData" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <methods>
+              <method name="ClearProjectError()" attrib="22" static="true" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="CreateProjectError(System.Int32)" attrib="22" static="true" returntype="System.Exception">
+                <parameters>
+                  <parameter name="hr" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="SetProjectError(System.Exception, System.Int32)" attrib="150" static="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="ex" position="0" attrib="0" type="System.Exception" />
+                  <parameter name="lErl" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="SetProjectError(System.Exception)" attrib="150" static="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="ex" position="0" attrib="0" type="System.Exception" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="StandardModuleAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute">
+                <properties>
+                  <property name="AllowMultiple" value="False" />
+                  <property name="Inherited" value="False" />
+                </properties>
+              </attribute>
+            </attributes>
+            <constructors>
+              <constructor name=".ctor()" attrib="6150">
+                <parameters />
+              </constructor>
+            </constructors>
+          </class>
+          <class name="StaticLocalInitFlag" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="State" attrib="6" fieldtype="System.Int16" />
+            </fields>
+            <constructors>
+              <constructor name=".ctor()" attrib="6150">
+                <parameters />
+              </constructor>
+            </constructors>
+          </class>
+          <class name="Utils" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <methods>
+              <method name="CopyArray(System.Array, System.Array)" attrib="22" static="true" returntype="System.Array">
+                <parameters>
+                  <parameter name="arySrc" position="0" attrib="0" type="System.Array" />
+                  <parameter name="aryDest" position="1" attrib="0" type="System.Array" />
+                </parameters>
+              </method>
+              <method name="GetResourceString(System.String, System.String[])" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="ResourceKey" position="0" attrib="0" type="System.String" />
+                  <parameter name="Args" position="1" attrib="0" type="System.String[]">
+                    <attributes>
+                      <attribute name="System.ParamArrayAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="MethodToString(System.Reflection.MethodBase)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Method" position="0" attrib="0" type="System.Reflection.MethodBase" />
+                </parameters>
+              </method>
+              <method name="ThrowException(System.Int32)" attrib="22" static="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="hr" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="Versioned" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
+            <methods>
+              <method name="CallByName(System.Object, System.String, Microsoft.VisualBasic.CallType, System.Object[])" attrib="22" static="true" returntype="System.Object">
+                <parameters>
+                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
+                  <parameter name="MethodName" position="1" attrib="0" type="System.String" />
+                  <parameter name="UseCallType" position="2" attrib="0" type="Microsoft.VisualBasic.CallType" />
+                  <parameter name="Arguments" position="3" attrib="0" type="System.Object[]">
+                    <attributes>
+                      <attribute name="System.ParamArrayAttribute" />
+                    </attributes>
+                  </parameter>
+                </parameters>
+              </method>
+              <method name="IsNumeric(System.Object)" attrib="22" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="SystemTypeName(System.String)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="VbName" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="TypeName(System.Object)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="VbTypeName(System.String)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="SystemName" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+        </classes>
+      </namespace>
+    </namespaces>
   </assembly>
 </assemblies>
