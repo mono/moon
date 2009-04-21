@@ -38,7 +38,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public partial class _TextBlockTest {
+	public partial class TextBlockTest {
 		double line_height;
 		
 		[TestInitialize]
@@ -63,7 +63,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 		
 		[TestMethod]
-		[MoonlightBug ("temporarily marked 'bug' until I test on Windows to verify behavior")]
 		public void LineBreakTranslatesToUnicodeLineSeparator ()
 		{
 			TextBlock tb = new TextBlock ();
@@ -83,10 +82,10 @@ namespace MoonTest.System.Windows.Controls {
 		}
 		
 		[TestMethod]
-		[MoonlightBug ("temporarily marked 'bug' until I test on Windows to verify behavior")]
 		public void SettingTextNeverCreatesMoreThanOneRun ()
 		{
 			TextBlock tb = new TextBlock ();
+			string text;
 			Run run;
 			
 			tb.Text = "this is line 1\rthis is line 2";
@@ -103,6 +102,23 @@ namespace MoonTest.System.Windows.Controls {
 			run = (Run) tb.Inlines[0];
 			Assert.AreEqual (1, tb.Inlines.Count, "3. Setting Text property should never create more than 1 Run");
 			Assert.AreEqual ("this is line 1\r\nthis is line 2", run.Text, "3. The Run's Text should remain unchanged");
+			
+			// now try using the exact same line separator that LineBreak maps to
+			tb.Inlines.Clear ();
+			run.Text = "this is line 1";
+			tb.Inlines.Add (run);
+			tb.Inlines.Add (new LineBreak ());
+			run = new Run ();
+			run.Text = "this is line 2";
+			tb.Inlines.Add (run);
+			
+			text = tb.Text;
+			tb.ClearValue (TextBlock.TextProperty);
+			
+			tb.Text = text;
+			run = (Run) tb.Inlines[0];
+			Assert.AreEqual (1, tb.Inlines.Count, "4. Setting Text property should never create more than 1 Run");
+			Assert.AreEqual (text, run.Text, "4. The Run's Text should remain unchanged");
 		}
 		
 		[TestMethod]
