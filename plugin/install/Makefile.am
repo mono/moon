@@ -58,12 +58,9 @@ endif INCLUDE_FFMPEG
 
 if INCLUDE_BROWSER_MANAGED_CODE
 	cp -L $(mono_libdir)/libmono.so .xpinstall/plugins/moonlight/
-#	mkdir -p .xpinstall/plugins/moonlight/mono/2.1/
-#	cp -L $(mono_dlldir)/mono/2.1/mscorlib.dll .xpinstall/plugins/moonlight/mono/2.1/
-#	find $(mono_dlldir)/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -package 2.1 -root .xpinstall/plugins/moonlight ';'
-#	find $(top_builddir)/class/lib/2.1 -name \*.dll -exec gacutil -i '{}' -package 2.1 -root .xpinstall/plugins/moonlight ';'
-#	cp -L $(mono_dlldir)/mono/2.1/*.dll .xpinstall/plugins/moonlight
 	cp -L $(top_builddir)/class/lib/2.1/*.dll .xpinstall/plugins/moonlight
+
+	cd .xpinstall/plugins/moonlight && rm -f System.Windows.dll System.Windows.Data.dll System.Xml.Linq.dll
 #	find .xpinstall -name \*.mdb -exec rm '{}' ';'
 
 	mkdir -p .xpinstall/plugins/moonlight/mono/2.0/
