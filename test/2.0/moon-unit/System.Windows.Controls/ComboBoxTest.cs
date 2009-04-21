@@ -37,9 +37,6 @@ using Mono.Moonlight.UnitTesting;
 using System.Collections.Specialized;
 using Microsoft.Silverlight.Testing;
 
-using System.Windows.Media;
-using System.Windows.Controls.Primitives;
-
 namespace MoonTest.System.Windows.Controls {
 
 	public struct Value {
@@ -73,11 +70,6 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			methods.Add (new Value { MethodParams = new object [] { element, item } });
 			base.ClearContainerForItemOverride (element, item);
-		}
-		
-		public DependencyObject GetTemplateChild (string name)
-		{
-			return base.GetTemplateChild (name);
 		}
 
 		protected override global::System.Windows.DependencyObject GetContainerForItemOverride ()
@@ -133,82 +125,6 @@ namespace MoonTest.System.Windows.Controls {
 	[TestClass]
 	public partial class ComboBoxTest : SilverlightTest {
 
-		[TestMethod]
-		[Asynchronous]
-		public void AfterRender ()
-		{
-			FakeComboBox box = new FakeComboBox ();
-			CreateAsyncTest (box,
-				() => box.ApplyTemplate (),
-				() => {
-					int c1 = VisualTreeHelper.GetChildrenCount (box); // 1
-					Assert.AreEqual (1, c1, "#1");
-					Grid o1 = (Grid) VisualTreeHelper.GetChild (box, 0);
-					Assert.IsNotNull (o1, "#1");
-
-					int c2 = VisualTreeHelper.GetChildrenCount (o1); // 4
-					Assert.AreEqual (4, c2, "#1");
-
-					Border o2 = (Border)VisualTreeHelper.GetChild (o1, 0);
-					Popup popup = (Popup) VisualTreeHelper.GetChild (o1, 3);
-					Assert.IsNotNull (o2, "#1");
-					Assert.IsNotNull (popup, "#1");
-
-					int c3 = VisualTreeHelper.GetChildrenCount (o2); // 1
-					Assert.AreEqual (1, c3, "#1");
-					Grid o3 = (Grid) VisualTreeHelper.GetChild (o2, 0);
-					Assert.IsNotNull (o3, "#1");
-
-					int c4 = VisualTreeHelper.GetChildrenCount (o3); // 2
-					Assert.AreEqual (2, c4, "#1");
-					ToggleButton o4 = (ToggleButton) VisualTreeHelper.GetChild (o3, 0);
-					Assert.IsNotNull (o4, "#1");
-
-					int c5 = VisualTreeHelper.GetChildrenCount (o4); // 1
-					Assert.AreEqual (1, c5, "#1");
-					Grid o5 = (Grid) VisualTreeHelper.GetChild (o4, 0);
-					Assert.IsNotNull (o5, "#1");
-
-					int c6 = VisualTreeHelper.GetChildrenCount (o5); // 9
-					Assert.AreEqual (9, c6, "#1");
-					ContentPresenter o6 = (ContentPresenter) VisualTreeHelper.GetChild (o5, 7);
-					Assert.IsNotNull (o6, "#1");
-
-					Assert.IsNotNull (o5);
-				});
-		}
-		
-		[TestMethod]
-		[Asynchronous]
-		public void AfterRender2 ()
-		{
-			FakeComboBox box = new FakeComboBox ();
-			CreateAsyncTest (box,
-				() => box.ApplyTemplate (),
-				() => {
-					Popup popup = (Popup) box.GetTemplateChild ("Popup");
-
-					ScrollViewer viewer = (ScrollViewer)box.GetTemplateChild ("ScrollViewer");
-					Assert.IsNotNull (viewer, "#1");
-
-					Assert.IsNotNull (viewer.Parent, "#2");
-					Border popupBorder = (Border)viewer.Parent;
-					Assert.AreEqual (popupBorder, VisualTreeHelper.GetParent (viewer), "#3");
-
-					Assert.IsNotNull (popupBorder.Parent, "#4");
-					Canvas canvas = (Canvas) popupBorder.Parent;
-					Assert.AreSame(canvas, VisualTreeHelper.GetParent (popupBorder));
-
-					Assert.IsNotNull (canvas.Parent, "#5");
-					Assert.AreSame (popup, canvas.Parent, "#6");
-					Assert.IsNull (VisualTreeHelper.GetParent (canvas));
-
-					Assert.AreEqual (2, canvas.Children.Count, "#7");
-					Canvas subCanvas = (Canvas) canvas.Children [0];
-					Assert.AreEqual (0, subCanvas.Children.Count, "#8");
-				});
-		}
-		
 		[TestMethod]
 		public void DefaultValues ()
 		{
@@ -386,18 +302,6 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual ("SelectionChangedEvent", box.methods [0].MethodName, "#2");
 			Assert.AreEqual (null, box.SelectedItem, "#3");
 			Assert.AreEqual (-1, box.SelectedIndex, "#4");
-		}
-		
-		[TestMethod]
-		[Asynchronous]
-		public void StateChangeTest ()
-		{
-			ComboBox box = new ComboBox ();
-			CreateAsyncTest (box,
-			                 () => box.IsDropDownOpen = true,
-			                 () => box.IsDropDownOpen = false,
-			                 () => VisualStateManager.GoToState (box, "FocusedDropDown", true)
-			);
 		}
 	}
 }

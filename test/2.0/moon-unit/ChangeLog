@@ -19,11 +19,6 @@
 	  MoonlightBug from these three storyboard tests as they are
 	  showing up as unexpected successes.
 
-2009-04-21  Alan McGovern  <amcgovern@novell.com>
-
-	* System.Windows.Controls/ComboBoxTest.cs: Commit new tests
-	  for ComboBox which are now passing.
-
 2009-04-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* System.Windows.Controls/TextBlockTest.cs: Added some tests to
