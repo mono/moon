@@ -83,6 +83,11 @@ namespace MoonTest.System.Windows.Controls {
 			return base.IsItemItsOwnContainerOverride (item);
 		}
 
+		public DependencyObject GetContainerForItemOverride_ ()
+		{
+			return base.GetContainerForItemOverride ();
+		}
+
 		protected override global::System.Windows.Size MeasureOverride (global::System.Windows.Size availableSize)
 		{
 			return base.MeasureOverride (availableSize);
@@ -225,6 +230,19 @@ namespace MoonTest.System.Windows.Controls {
 				},
 				() => Assert.IsFalse (ComboBox.GetIsSelectionActive (box), "#3")
 			);
+		}
+		
+		[TestMethod]
+		public void GetContainerTest ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			box.ItemContainerStyle = new Style (typeof (ComboBoxItem));
+			DependencyObject oItem = box.GetContainerForItemOverride_ ();
+			Assert.IsNotNull (oItem, "#1");
+			Assert.IsInstanceOfType (oItem, typeof (ComboBoxItem), "#2");
+			ComboBoxItem item = (ComboBoxItem) oItem;
+			Assert.IsNull (item.Content, "#3");
+			Assert.AreNotSame (box.ItemContainerStyle, item.Style, "#4");
 		}
 		
 		[TestMethod]
