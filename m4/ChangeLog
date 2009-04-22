@@ -1,3 +1,8 @@
+2009-04-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* testing.m4: Sles 10 has ImageMagick 6.2.5. Let's see if that
+	  version works.
+
 2009-04-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mono.m4: Space, be gone.
