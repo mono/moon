@@ -1,5 +1,8 @@
 2009-04-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (utf8_getc): When inptr goes beyond bounds, update
+	the 'in' ptr to inend.
+
 	* utils.cpp (CanonicalizeFilename): Fixed some undefined behavior.
 
 2009-04-22  Rusty Howell  <rhowell@novell.com>

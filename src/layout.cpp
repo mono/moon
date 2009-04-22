@@ -104,8 +104,10 @@ utf8_getc (const char **in, size_t inlen)
 		u = r;
 		m = 0x7f80;    /* used to mask out the length bits */
 		do {
-			if (inptr >= inend)
+			if (inptr >= inend) {
+				*in = (const char *) inend;
 				return 0;
+			}
 			
 			c = *inptr++;
 			if ((c & 0xc0) != 0x80)
