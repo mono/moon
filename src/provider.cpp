@@ -171,114 +171,141 @@ StylePropertyValueProvider::SealStyle (Style *style)
 }
 
 
+static bool
+IsPropertyInherited (int propertyId)
+{
+#define PROP_CTI(p) G_STMT_START { \
+	if (propertyId == Control::p) return true; \
+	if (propertyId == TextBlock::p) return true; \
+	if (propertyId == Inline::p) return true; \
+	} G_STMT_END
+		
+#define PROP_F(p) G_STMT_START { \
+	if (propertyId == FrameworkElement::p) return true; \
+	} G_STMT_END
+
+#define PROP_I(p) G_STMT_START { \
+	if (propertyId == Inline::p) return true; \
+	} G_STMT_END
+
+	PROP_CTI (ForegroundProperty);
+	PROP_CTI (FontFamilyProperty);
+	PROP_CTI (FontStretchProperty);
+	PROP_CTI (FontStyleProperty);
+	PROP_CTI (FontWeightProperty);
+	PROP_CTI (FontSizeProperty);
+
+	PROP_F (LanguageProperty);
+	PROP_F (DataContextProperty);
+
+	PROP_I (LanguageProperty);
+	PROP_I (TextDecorationsProperty);
+	PROP_I (FontFilenameProperty);
+	PROP_I (FontGUIDProperty);
+
+	return false;
+}
+
 //
 // InheritedPropertyValueProvider
 //
 Value*
 InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 {
-	int parentProperty = -1;
+	int propertyId = property->GetId ();
 
-	bool inheritableProperty = false;
+	if (!IsPropertyInherited (propertyId))
+		return NULL;
 
-#define INHERIT1(p) \
+	int parentPropertyId = -1;
+
+	Types *types =  Deployment::GetCurrent()->GetTypes();
+
+#define INHERIT_CT_CT(p) \
 	G_STMT_START {							\
 	if (property->GetId () == Control::p ||				\
-	    property->GetId () == TextBlock::p ||			\
-	    property->GetId () == Inline::p) {				\
+	    property->GetId () == TextBlock::p)				\
 									\
-		inheritableProperty = true;				\
-									\
-		if (parent->Is (Type::CONTROL))				\
-			parentProperty = Control::p;			\
-		else if (parent->Is (Type::TEXTBLOCK))			\
-			parentProperty = TextBlock::p;			\
-		else if (parent->Is (Type::INLINE))			\
-			parentProperty = Inline::p;			\
+		if (types->IsSubclassOf (parent->GetObjectType(), Type::CONTROL)) \
+			parentPropertyId = Control::p;			\
+		else if (types->IsSubclassOf (parent->GetObjectType(), Type::TEXTBLOCK)) \
+			parentPropertyId = TextBlock::p;			\
+		else if (types->IsSubclassOf (parent->GetObjectType(), Type::INLINE)) \
+			parentPropertyId = Inline::p;			\
 	}								\
 	} G_STMT_END
 
 
-#define INHERIT2(p) \
+#define INHERIT_I_T(p) \
 	G_STMT_START {							\
 	if (property->GetId () == Inline::p) {				\
 									\
-		inheritableProperty = true;				\
-									\
-		if (parent->Is (Type::TEXTBLOCK))			\
-			parentProperty = TextBlock::p;			\
+		if (types->IsSubclassOf (parent->GetObjectType(), Type::TEXTBLOCK)) \
+			parentPropertyId = TextBlock::p;			\
 	}								\
 	} G_STMT_END
 
-#define INHERIT3(p) \
+#define INHERIT_F_F(p) \
 	G_STMT_START {							\
 	if (property->GetId () == FrameworkElement::p) {		\
 									\
-		inheritableProperty = true;				\
-									\
-		if (parent->Is (Type::FRAMEWORKELEMENT))		\
-			parentProperty = FrameworkElement::p;		\
+		if (types->IsSubclassOf (parent->GetObjectType(), Type::FRAMEWORKELEMENT)) \
+			parentPropertyId = FrameworkElement::p;		\
 	}								\
 	} G_STMT_END
 	
 	DependencyObject *parent = NULL;
-	
-	if (obj->Is(Type::FRAMEWORKELEMENT)) {
+
+	if (types->IsSubclassOf (obj->GetObjectType(), Type::FRAMEWORKELEMENT)) {
 		// we loop up the visual tree
 		parent = ((FrameworkElement*)obj)->GetVisualParent();
 		if (parent) {
 			while (parent) {
-				INHERIT1 (ForegroundProperty);
-				INHERIT1 (FontFamilyProperty);
-				INHERIT1 (FontStretchProperty);
-				INHERIT1 (FontStyleProperty);
-				INHERIT1 (FontWeightProperty);
-				INHERIT1 (FontSizeProperty);
+				INHERIT_CTI_CTI (ForegroundProperty);
+				INHERIT_CTI_CTI (FontFamilyProperty);
+				INHERIT_CTI_CTI (FontStretchProperty);
+				INHERIT_CTI_CTI (FontStyleProperty);
+				INHERIT_CTI_CTI (FontWeightProperty);
+				INHERIT_CTI_CTI (FontSizeProperty);
 
-				INHERIT3 (LanguageProperty);
+				INHERIT_F_F (LanguageProperty);
 
-				INHERIT3 (DataContextProperty);
+				INHERIT_F_F (DataContextProperty);
 
-				if (!inheritableProperty)
-					return NULL;
+				if (parentPropertyId != -1)
+					return parent->GetValue (parentPropertyId);
 
-				if (parentProperty != -1)
-					return parent->GetValue (parentProperty);
-
-				if (parent->Is(Type::FRAMEWORKELEMENT))
+				if (types->IsSubclassOf (parent->GetObjectType(), Type::FRAMEWORKELEMENT))
 					parent = ((FrameworkElement*)parent)->GetVisualParent();
 				else
 					parent = NULL;
 			}
 		}
 	}
-	else if (obj->Is(Type::INLINE)) {
+	else if (types->IsSubclassOf (obj->GetObjectType(), Type::INLINE)) {
 		// skip collections
 		DependencyObject *new_parent = obj->GetParent();
-		while (new_parent && new_parent->Is(Type::COLLECTION))
+		while (new_parent && types->IsSubclassOf (new_parent->GetObjectType(), Type::COLLECTION))
 			new_parent = new_parent->GetParent ();
 		parent = new_parent;
 
 		if (!parent)
 			return NULL;
 
-		INHERIT1 (ForegroundProperty);
-		INHERIT1 (FontFamilyProperty);
-		INHERIT1 (FontStretchProperty);
-		INHERIT1 (FontStyleProperty);
-		INHERIT1 (FontWeightProperty);
-		INHERIT1 (FontSizeProperty);
+		INHERIT_I_T (ForegroundProperty);
+		INHERIT_I_T (FontFamilyProperty);
+		INHERIT_I_T (FontStretchProperty);
+		INHERIT_I_T (FontStyleProperty);
+		INHERIT_I_T (FontWeightProperty);
+		INHERIT_I_T (FontSizeProperty);
 
-		INHERIT2 (LanguageProperty);
-		INHERIT2 (TextDecorationsProperty);
-		INHERIT2 (FontFilenameProperty);
-		INHERIT2 (FontGUIDProperty);
+		INHERIT_I_T (LanguageProperty);
+		INHERIT_I_T (TextDecorationsProperty);
+		INHERIT_I_T (FontFilenameProperty);
+		INHERIT_I_T (FontGUIDProperty);
 		
-		if (!inheritableProperty)
-			return NULL;
-
-		if (parentProperty != -1) {
-			return parent->GetValue (parentProperty);
+		if (parentPropertyId != -1) {
+			return parent->GetValue (parentPropertyId);
 		}
 	}
 	  

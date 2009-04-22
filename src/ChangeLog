@@ -1,3 +1,13 @@
+2009-04-21  Chris Toshok  <toshok@ximian.com>
+
+	* provider.cpp:
+	(InheritedPropertyValueProvider::GetPropertyValue): gross changes,
+	but hopefully worth the hotspot reduction.  do fast checks to see
+	if we're even dealing with a property that's inheritable first.
+	cache the Types* pointer instead of indirectly fetching it
+	repeatedly (thanks to calling EO::Is - call Types::IsSubclassOf
+	directly instead.)
+
 2009-04-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* glyphs.cpp (Layout): Fixed scaling calculation.
