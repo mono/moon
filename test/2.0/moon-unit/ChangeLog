@@ -1,3 +1,9 @@
+2009-04-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add two
+	  ignores for storyboard tests which are flapping. I think
+	  toshok already fixed the other flaps.
+
 2009-04-21  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: sigh, increase

@@ -770,6 +770,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("This flaps on x86")]
 		public void CurrentState2 ()
 		{
 			Canvas c = CreateStoryboard ();
@@ -1213,6 +1214,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("This flaps on x86")]
 		public void CurrentTime ()
 		{
 			Canvas c = CreateStoryboard ();
