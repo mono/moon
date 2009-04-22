@@ -658,6 +658,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("this test is timing sensitive and we can't help that.  we need a way to tell the harness that it's flapping")]
 		public void NestedStoryboardState1 ()
 		{
 			Canvas c = CreateStoryboard ();
@@ -688,6 +689,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("this test is timing sensitive and we can't help that.  we need a way to tell the harness that it's flapping")]
 		public void NestedStoryboardState2 ()
 		{
 			Canvas c = CreateStoryboard ();
@@ -716,6 +718,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("this test is timing sensitive and we can't help that.  we need a way to tell the harness that it's flapping")]
 		public void NestedStoryboardState3 ()
 		{
 			Canvas c = CreateStoryboard ();
