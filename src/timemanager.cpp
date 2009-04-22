@@ -19,11 +19,10 @@
 #include "timesource.h"
 #include "runtime.h"
 
-#define TIME_TICK 0
-#define USE_SMOOTHING 1
-//#define PUT_TIME_MANAGER_TO_SLEEP 1
+#define TIMERS 0
+#define PUT_TIME_MANAGER_TO_SLEEP 0
 
-#if TIME_TICK
+#if TIMERS
 #define STARTTICKTIMER(id,str) STARTTIMER(id,str)
 #define ENDTICKTIMER(id,str) ENDTIMER(it,str)
 #else
@@ -58,6 +57,28 @@ class TickCall : public List::Node {
 };
 
 
+class RootClockGroup : public ClockGroup
+{
+public:
+	RootClockGroup (TimelineGroup *timeline) : ClockGroup (timeline, true) { }
+
+	virtual bool UpdateFromParentTime (TimeSpan parentTime)
+	{
+		bool rv = ClockGroup::UpdateFromParentTime (parentTime);
+
+		bool children_rv = false;
+		for (GList *l = child_clocks; l; l = l->next) {
+			Clock *clock = (Clock*)l->data;
+			children_rv = clock->UpdateFromParentTime (current_time) || children_rv;
+		}
+
+		return rv && children_rv;
+	}
+
+protected:
+	virtual ~RootClockGroup () { }
+};
+
 TimeManager::TimeManager ()
 {
 	SetObjectType (Type::TIMEMANAGER);
@@ -83,7 +104,7 @@ TimeManager::TimeManager ()
 
 	timeline = new ParallelTimeline();
 	timeline->SetDuration (Duration::Forever);
-	root_clock = new ClockGroup (timeline, true);
+	root_clock = new RootClockGroup (timeline);
 	char *name = g_strdup_printf ("Surface clock group for time manager (%p)", this);
 	root_clock->SetValue(DependencyObject::NameProperty, name);
 	g_free (name);
@@ -197,7 +218,7 @@ TimeManager::AddTickCall (TickCallHandler func, EventObject *tick_data)
 	flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
 	if (!source_tick_pending) {
 		source_tick_pending = true;
-		source->SetTimerFrequency (0);
+		source->SetTimerFrequency (current_timeout);
 		source->Start();
 	}
 #endif
@@ -210,6 +231,13 @@ TimeManager::RemoveTickCall (TickCallHandler func)
 	List::Node * call = tick_calls.LinkedList ()->Find (find_tick_call, (void*)func);
 	if (call)
 		tick_calls.LinkedList ()->Remove (call);
+#if PUT_TIME_MANAGER_TO_SLEEP
+	if (tick_calls.IsEmpty()) {
+		flags = (TimeManagerOp)(flags & ~TIME_MANAGER_TICK_CALL);
+		if (flags == 0 && source_tick_pending)
+			source->Stop();
+	}
+#endif
 	tick_calls.Unlock ();
 }
 
@@ -228,7 +256,7 @@ TimeManager::NeedRedraw ()
 	flags = (TimeManagerOp)(flags | TIME_MANAGER_RENDER);
 	if (!source_tick_pending) {
 		source_tick_pending = true;
-		source->SetTimerFrequency (0);
+		source->SetTimerFrequency (current_timeout);
 		source->Start();
 	}
 #endif
@@ -241,7 +269,7 @@ TimeManager::NeedClockTick ()
 	flags = (TimeManagerOp)(flags | TIME_MANAGER_UPDATE_CLOCKS);
 	if (!source_tick_pending) {
 		source_tick_pending = true;
-		source->SetTimerFrequency (0);
+		source->SetTimerFrequency (current_timeout);
 		source->Start();
 	}
 #endif
@@ -309,188 +337,29 @@ TimeManager::ListClocks()
 	printf ("============================\n");
 }
 
-#if NOT_ANYMORE
+void
+TimeManager::AddClock (Clock *clock)
+{
+	root_clock->AddChild (clock);
+
+	// we delay starting the surface's ClockGroup until the first
+	// child has been added.  otherwise we run into timing issues
+	// between timelines that explicitly set a BeginTime and those
+	// that don't (and so default to 00:00:00).
+	if (root_clock->GetClockState() != Clock::Active)
+		root_clock->Begin (GetCurrentTime());
+
+	NeedClockTick ();
+}
+
 void
 TimeManager::SourceTick ()
 {
-// 	printf ("TimeManager::SourceTick\n");
-	STARTTICKTIMER (tick, "TimeManager::Tick");
-	TimeSpan pre_tick = source->GetNow();
-
 	TimeManagerOp current_flags = flags;
 
 #if PUT_TIME_MANAGER_TO_SLEEP
 	flags = (TimeManagerOp)0;
 #endif
-
-	source_tick_pending = false;
-
-	if (current_flags & TIME_MANAGER_UPDATE_CLOCKS) {
-		STARTTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
-		current_global_time = source->GetNow();
-		current_global_time_usec = current_global_time / 10;
-
-		bool need_another_tick = root_clock->Tick ();
-		if (need_another_tick)
-			flags = (TimeManagerOp)(flags | TIME_MANAGER_UPDATE_CLOCKS);
-
-	
-		// ... then cause all clocks to raise the events they've queued up
-		root_clock->RaiseAccumulatedEvents ();
-		
-		applier->Apply ();
-		applier->Flush ();
-	
-		root_clock->RaiseAccumulatedCompleted ();
-
-#if PUT_TIME_MANAGER_TO_SLEEP
-		// kind of a hack to make sure we render animation
-		// changes in the same tick as when they happen.
-		if (flags & TIME_MANAGER_RENDER) {
-			current_flags = (TimeManagerOp)(current_flags | TIME_MANAGER_RENDER);
-			flags = (TimeManagerOp)(flags & ~TIME_MANAGER_RENDER);
-		}
-#endif
-
-		ENDTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
-	}
-
-	if (current_flags & TIME_MANAGER_UPDATE_INPUT) {
-		STARTTICKTIMER (tick_input, "TimeManager::Tick - Input");
-		Emit (UpdateInputEvent);
-		ENDTICKTIMER (tick_input, "TimeManager::Tick - Input");
-	}
-
-	if (current_flags & TIME_MANAGER_RENDER) {
-		// fprintf (stderr, "rendering\n"); fflush (stderr);
-		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
-		Emit (RenderEvent);
-		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
-	}
-	
-	TimeSpan post_tick = source->GetNow ();
-	TimeSpan xt = post_tick - pre_tick;
-	TimeSpan target;
-	
-	// Flush as many async operations from our queue as we can in
-	// the time we have left for rendering this frame.
-	//
-	// Note: If this is our first frame, we allow 1/10 of a second
-	// to process queued operations regardless of how much time we
-	// have remaining to render this frame and we also do not
-	// include the time taken to flush async operations in the FPS
-	// smoothing calculation.
-	
-	if (first_tick)
-		target = post_tick + (TIMESPANTICKS_IN_SECOND / 10);
-	else
-		target = pre_tick + (TIMESPANTICKS_IN_SECOND / max_fps);
-	
-	if (current_flags & TIME_MANAGER_TICK_CALL) {
-		STARTTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
-		bool remaining_tick_calls;
-		TimeSpan now = post_tick;
-		//int fired = 0;
-		
-		// Invoke as many async tick calls as we can in the remaining time alotted for rendering this frame
-		do {
-			remaining_tick_calls = InvokeTickCall ();
-			now = get_now ();
-			//fired++;
-		} while (remaining_tick_calls && now < target);
-
-		if (remaining_tick_calls) {
-			flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
-			//printf ("Render Statistics:\n");
-			//printf ("\ttime alotted per render pass = %d (%d FPS), time needed for render = %lld, time remaining for tick-calls = %lld\n",
-			//	(TIMESPANTICKS_IN_SECOND / max_fps), max_fps, xt, target - post_tick);
-			//printf ("\tfired %d TickCalls in %lld usec\n", fired, now - post_tick);
-		}
-		
-		if (!first_tick) {
-			// update our post_tick and time-elapsed variables
-			xt = now - pre_tick;
-			post_tick = now;
-		}
-		
-		ENDTICKTIMER (tick_call, "TimeManager::Tick - InvokeTickCall");
-	}
-	
-#if CLOCK_DEBUG
-	ListClocks ();
-#endif
-
-	ENDTICKTIMER (tick, "TimeManager::Tick");
-	
-	/* implement an exponential moving average by way of simple
-	   exponential smoothing:
-
-	   s(0) = x(0)
-	   s(t) = alpha * x(t) + (1 - alpha) * s(t-1)
-
-	   where 0 < alpha < 1.
-
-	   see http://en.wikipedia.org/wiki/Exponential_smoothing.
-	*/
-#if USE_SMOOTHING
-#define SMOOTHING_ALPHA 0.03 /* we probably want to play with this value some.. - toshok */
-#define TIMEOUT_ERROR_DELTA 20 /* how far off of the current_timeout can we be */
-	
-	/* the s(0) case */
-	if (first_tick) {
-		first_tick = false;
-		previous_smoothed = FPS_TO_DELAY (max_fps);
-		return;
-	}
-
-	/* the s(t) case */
-	TimeSpan current_smoothed = (TimeSpan)(SMOOTHING_ALPHA * xt + (1 - SMOOTHING_ALPHA) * previous_smoothed);
-
-	/* current_smoothed now contains the prediction for what our next delay should be */
-	
-	
-	int suggested_timeout = current_smoothed / 10000;
-	if (suggested_timeout < FPS_TO_DELAY (max_fps)) {
-		suggested_timeout = FPS_TO_DELAY (max_fps);
-	}
-	else if (suggested_timeout > FPS_TO_DELAY (MINIMUM_FPS)) {
-		suggested_timeout = FPS_TO_DELAY (MINIMUM_FPS);
-	}
-
-	current_timeout = suggested_timeout;
-	
-#if PUT_TIME_MANAGER_TO_SLEEP
-	// set up the next timeout here, but only if we need to
-	if (flags || registered_timeouts) {
-		source->SetTimerFrequency (MAX (0, current_timeout - xt / 10000));
-		source->Start();
-		source_tick_pending = true;
-	}
-	else {
-		printf ("no work to do, TimeManager going to sleep\n");
-		source->Stop ();
-	}
-#else
-		source->SetTimerFrequency (MAX (0, current_timeout - xt / 10000));
-#endif
-	
-	previous_smoothed = current_smoothed;
-
-#if SHOW_SMOOTHING_COST
-	TimeSpan post_smooth = source->GetNow();
-
-	printf ("for a clock tick of %lld, we spent %lld computing the smooth delay\n",
-		xt, post_smooth - post_tick);
-#endif
-#endif
-
-	last_global_time = current_global_time;
-}
-#else
-void
-TimeManager::SourceTick ()
-{
-	TimeManagerOp current_flags = flags;
 
 	if (current_flags & TIME_MANAGER_TICK_CALL) {
 		bool remaining_tick_calls = false;
@@ -504,17 +373,10 @@ TimeManager::SourceTick ()
 		current_global_time = source->GetNow();
 		current_global_time_usec = current_global_time / 10;
 
-		root_clock->UpdateFromParentTime (GetCurrentTime());
+		bool need_another_tick = root_clock->UpdateFromParentTime (GetCurrentTime());
 
-#if false
-		/* FIXME: we weren't actually using this (the putting
-		   the time manager to sleep stuff) before, but we
-		   should get it working at some point. */
-		bool need_another_tick = root_clock->Tick ();
 		if (need_another_tick)
-			flags = (TimeManagerOp)(flags | TIME_MANAGER_UPDATE_CLOCKS);
-#endif
-
+			NeedClockTick ();
 	
 		// ... then cause all clocks to raise the events they've queued up
 		root_clock->RaiseAccumulatedEvents ();
@@ -523,6 +385,10 @@ TimeManager::SourceTick ()
 		applier->Flush ();
 	
 		root_clock->RaiseAccumulatedCompleted ();
+
+#if CLOCK_DEBUG
+		ListClocks ();
+#endif
 
 		ENDTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 	}
@@ -540,10 +406,5 @@ TimeManager::SourceTick ()
 		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
 	}
 
-#if CLOCK_DEBUG
-	ListClocks ();
-#endif
-	
 	last_global_time = current_global_time;
 }
-#endif

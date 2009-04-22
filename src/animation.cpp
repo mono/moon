@@ -487,23 +487,11 @@ Storyboard::TeardownClockGroup ()
 bool
 Storyboard::BeginWithError (MoonError *error)
 {
-	ClockGroup *group = NULL;
-
 	if (GetHadParent ()) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Begin a Storyboard which is not the root Storyboard.");
 		return false;
 	}
 	
-#if 0
-	if (root_clock && root_clock->GetClockState() == Clock::Stopped) {
-		group->ComputeBeginTime ();
-		root_clock->Begin();
-		if (root_clock->GetParentClock()->GetClockState() != Clock::Active) {
-			root_clock->GetParentClock()->Begin();
-		}
-		return false;
-	}
-#else
 	/* destroy the clock hierarchy and recreate it to restart.
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
@@ -511,13 +499,9 @@ Storyboard::BeginWithError (MoonError *error)
 		DetachCompletedHandler ();
 		TeardownClockGroup ();
 	}
-#endif
 
 	if (Validate () == false)
 		return false;
-
-	if (!group)
-		group = Deployment::GetCurrent()->GetSurface()->GetTimeManager()->GetRootClock();
 
 	// This creates the clock tree for the hierarchy.  if a
 	// Timeline A is a child of TimelineGroup B, then Clock cA
@@ -532,18 +516,10 @@ Storyboard::BeginWithError (MoonError *error)
 	if (!HookupAnimationsRecurse (root_clock, NULL, NULL, error))
 		return false;
 
-	group->AddChild (root_clock);
+	Deployment::GetCurrent()->GetSurface()->GetTimeManager()->AddClock (root_clock);
 
 	if (GetBeginTime() == 0)
 		root_clock->BeginOnTick ();
-
-	// we delay starting the surface's ClockGroup until the first
-	// child has been added.  otherwise we run into timing issues
-	// between timelines that explicitly set a BeginTime and those
-	// that don't (and so default to 00:00:00).
-	if (group->GetClockState() != Clock::Active) {
-		group->Begin (Deployment::GetCurrent()->GetSurface()->GetTimeManager()->GetRootClock()->GetCurrentTime());
-	}
 
 	return true;
 }

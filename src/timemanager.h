@@ -31,7 +31,8 @@ public:
 	void Shutdown ();
 
 	TimeSource *GetSource() { return source; }
-	ClockGroup *GetRootClock() { return root_clock; }
+
+	void AddClock (Clock *clock);
 
 	virtual TimeSpan GetCurrentTime ()     { return current_global_time - start_time; }
 	virtual TimeSpan GetLastTime ()        { return last_global_time - start_time; }

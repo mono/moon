@@ -1,3 +1,43 @@
+2009-04-22  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h|cpp (Clock::UpdateFromParentTime): returns a bool now,
+	with true meaning "i need another tick."
+	(ClockGroup::UpdateFromParentTime): same.
+
+	* timeline.cpp (DispatcherTimer::Start): use the timemanager to
+	add the clock.
+	(DispatcherTimer::Run): use the root_clock's parent clock here to
+	simplify the code a bit.
+	(DispatcherTimer::~DispatcherTimer): same.
+
+	* animation.cpp (Storyboard::BeginWithError): simplify this a bit.
+	we don't care about groups, just add it to the deployment's
+	timemanager.
+
+	* timemanager.h|cpp (class RootClockGroup): new class to represent
+	the root clock group created by a time manager to house all other
+	clocks in a surface.  It has slightly different behavior from a
+	normal clock group, particularly wrt putting the timemanager to
+	sleep.
+	(TimeManager::TimeManager): create a RootClockGroup.
+	(TimeManager::RemoveTickCall): if we're putting the time manager
+	to sleep, check to see if this was the last tick call, and clear
+	the flag (and stop the source if the flags are now empty).
+	(TimeManager::NeedRedraw): now that clock smoothing isn't used,
+	source->SetTimerFrequency() can't be called with whatever timeout
+	we like and have it migrrate back to the user-specified time.  so
+	change 0 to current_time.
+	(TimeManager::NeedClockTick): same.
+	(TimeManager::AddTickCall): same.
+	(TimeManager::SourceTick): remove the #if'ed out version with
+	clock smoothing, and add back in the stuff to put the time manager
+	to sleep (currently ifdef'ed out still)
+	(TimeManager::AddClock): move the logic to delay the root clock
+	group here out of Storyboard::Begin.  This is because we also want
+	to do this with DispatcherTimers as well.  Given that there is no
+	TimeManager::GetRootClock anymore, this is the only api to add
+	child clocks.
+
 2009-04-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (utf8_getc): When inptr goes beyond bounds, update

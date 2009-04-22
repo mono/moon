@@ -228,7 +228,7 @@ public:
 	virtual void RaiseAccumulatedEvents ();
 	virtual void RaiseAccumulatedCompleted ();
 	virtual void ExtraRepeatAction () {};
-	virtual void UpdateFromParentTime (TimeSpan parentTime);
+	virtual bool UpdateFromParentTime (TimeSpan parentTime);
 	void SetParentClock (ClockGroup *parent) { parent_clock = parent; }
 	virtual void SetTimeManager (TimeManager *manager) { time_manager = manager; }
 	virtual void Reset ();
@@ -320,7 +320,7 @@ public:
 	virtual void RaiseAccumulatedEvents ();
 	virtual void RaiseAccumulatedCompleted ();
 
-	virtual void UpdateFromParentTime (TimeSpan parentTime);
+	virtual bool UpdateFromParentTime (TimeSpan parentTime);
 
 	GList *child_clocks;
 

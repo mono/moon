@@ -326,20 +326,18 @@ DispatcherTimer::Start ()
 	started = true;
 	stopped = false;
 
-	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-
 	if (root_clock) {
 		root_clock->Reset ();
 		root_clock->BeginOnTick ();
 	} else {
-		ClockGroup *group = surface->GetTimeManager()->GetRootClock();
+		Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 
 		root_clock = AllocateClock ();
 		char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
 		root_clock->SetValue (DependencyObject::NameProperty, name);
 		g_free (name);
 
-		group->AddChild (root_clock);
+		surface->GetTimeManager()->AddClock (root_clock);
 
 		root_clock->BeginOnTick ();
 	}
@@ -355,13 +353,10 @@ DispatcherTimer::Stop ()
 void
 DispatcherTimer::Run ()
 {
-	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-	ClockGroup *group = surface->GetTimeManager()->GetRootClock();
-
 	started = false;
 	stopped = false;
 	root_clock->Reset ();
-	root_clock->Begin (group->GetCurrentTime());
+	root_clock->Begin (root_clock->GetParentClock()->GetCurrentTime());
 }
 
 void
@@ -386,9 +381,8 @@ DispatcherTimer::~DispatcherTimer ()
 {
 	if (root_clock) {
 		Stop ();
-		Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-		ClockGroup *group = surface->GetTimeManager()->GetRootClock();
-		group->RemoveChild (root_clock);
+		if (root_clock->GetParentClock())
+			root_clock->GetParentClock()->RemoveChild (root_clock);
 		root_clock->unref ();
 		root_clock = NULL;
 	}

@@ -136,7 +136,7 @@ Clock::GetNaturalDuration ()
 	return natural_duration;
 }
 
-void
+bool
 Clock::UpdateFromParentTime (TimeSpan parentTime)
 {
 #define CLAMP_NORMALIZED_TIME do {			\
@@ -160,7 +160,7 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 
 	// if we're currently paused there's nothing at all to do.
 	if (is_paused)
-		return;
+		return true;
 
 	// root_parent_time is the time we were added to our parent clock.
 	// timeline->GetBeginTime() is expressed in the time-space of the parent clock.
@@ -181,7 +181,7 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	// since parentTime isn't strictly increasing.  It can
 	// decrease and represent a time before our start time.
 	if (localTime < 0)
-		return;
+		return true;
 
 	if (!GetHasStarted() && !GetWasStopped() && (GetBeginOnTick() || timeline->GetBeginTime () <= parentTime)) {
 		if (GetBeginOnTick())
@@ -190,7 +190,7 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	}
 
 	if (GetClockState () == Clock::Stopped)
-		return;
+		return false;
 
 	double normalizedTime = 0.0;
 
@@ -352,12 +352,17 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 
 	SetCurrentTime (localTime);
 	progress = normalizedTime;
+
+	return true;
 }
 
 void
 Clock::BeginOnTick (bool begin)
 {
 	begin_on_tick = begin;
+
+	// tell the time manager that we need another tick
+	time_manager->NeedClockTick ();
 }
 
 void
@@ -601,6 +606,7 @@ void
 ClockGroup::AddChild (Clock *clock)
 {
 	clock->SetRootParentTime (GetCurrentTime ());
+	clock->SetParentClock (this);
 
 	child_clocks = g_list_append (child_clocks, clock);
 	clock->ref ();
@@ -679,17 +685,19 @@ ClockGroup::Stop ()
 	Clock::Stop ();
 }
 
-void
+bool
 ClockGroup::UpdateFromParentTime (TimeSpan parentTime)
 {
-	Clock::UpdateFromParentTime (parentTime);
+	bool rv = Clock::UpdateFromParentTime (parentTime);
 
 	if (GetClockState() != Clock::Stopped) {
 		for (GList *l = child_clocks; l; l = l->next) {
 			Clock *clock = (Clock*)l->data;
-			clock->UpdateFromParentTime (current_time);
+			rv = clock->UpdateFromParentTime (current_time) || rv;
 		}
 	}
+
+	return rv;
 }
 
 void
