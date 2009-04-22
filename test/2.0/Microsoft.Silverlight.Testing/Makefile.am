@@ -210,7 +210,7 @@ REFERENCES = \
 	-r:System.Xml \
 	-r:$(CURDIR)/System.Xml.Linq.dll \
 	-r:System.Core \
-	-r:$(builddir)/../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
+	-r:$(top_builddir)/test/2.0/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 
 BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
 		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll

@@ -1,3 +1,8 @@
+2009-04-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Use $(top_builddir) instead of $(builddir).
+	  Makes sles 10 happier.
+
 2009-03-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Sign these assemblies, this way they can be
