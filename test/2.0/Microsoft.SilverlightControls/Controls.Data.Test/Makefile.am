@@ -48,7 +48,7 @@ test.dll: test.g.resources $(SOURCES)
 
 $(assembly).xap: test.dll
 	rm -f $(assembly).xap
-	zip -j -MM $(assembly).xap \
+	zip -j $(assembly).xap \
 		test.dll* \
 		$(MANIFEST)	\
 		$(srcdir)/../Controls.Test.Common/Controls.Test.Common.dll*	\

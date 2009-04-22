@@ -51,7 +51,7 @@ $(assembly).dll: System.Windows.Controls.Extended.Test.Resource.resources $(asse
 
 $(assembly).xap: $(assembly).dll
 	rm -f $(assembly).xap
-	zip -j -MM $(assembly).xap \
+	zip -j $(assembly).xap \
 		$(assembly).dll* \
 		$(MANIFEST)	\
 		$(srcdir)/../Controls.Test.Common/Controls.Test.Common.dll*	\
