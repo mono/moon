@@ -1,0 +1,8 @@
+This is a custom hacked up version of pprof from google-perftools.
+I have extended it to interoperate with XDEBUG so that we can get
+managed symbols in our profiles.
+
+Usage:
+
+1. Generate your profile while running with MONO_XDEBUG=1 enabled
+2. moonprof -xdb=/path/to/xdb.s /usr/lib/firefox/firefox /path/to/your.profile
