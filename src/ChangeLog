@@ -1,3 +1,9 @@
+2009-04-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (OnPropertyChanged): Clamp our SelectionStart and
+	SelectionLength values as they come in. Apparently this is what
+	Silverlight does too.
+
 2009-04-22  Chris Toshok  <toshok@ximian.com>
 
 	* clock.h|cpp (Clock::UpdateFromParentTime): returns a bool now,

@@ -2102,6 +2102,18 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		length = abs (selection_cursor - selection_anchor);
 		start = args->GetNewValue()->AsInt32 ();
 		
+		if (start > buffer->len) {
+			// clamp the selection start offset to a valid value
+			SetSelectionStart (buffer->len);
+			return;
+		}
+		
+		if (start + length > buffer->len) {
+			// clamp the selection length to a valid value
+			length = buffer->len - start;
+			SetSelectionLength (length);
+		}
+		
 		// When set programatically, anchor is always the
 		// start and cursor is always the end
 		selection_cursor = start + length;
@@ -2118,6 +2130,13 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == TextBox::SelectionLengthProperty) {
 		start = MIN (selection_anchor, selection_cursor);
 		length = args->GetNewValue()->AsInt32 ();
+		
+		if (start + length > buffer->len) {
+			// clamp the selection length to a valid value
+			length = buffer->len - start;
+			SetSelectionLength (length);
+			return;
+		}
 		
 		// When set programatically, anchor is always the
 		// start and cursor is always the end
