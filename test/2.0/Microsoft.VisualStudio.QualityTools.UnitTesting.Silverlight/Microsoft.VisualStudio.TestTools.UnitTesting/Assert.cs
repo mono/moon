@@ -328,10 +328,20 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 				throw new AssertFailedException (msg);
 			}
 		}
+
+		public static void IsInstanceOfType<T> (object value)
+		{
+			IsInstanceOfType (value, typeof (T));
+		}
 		
 		public static void IsInstanceOfType (object value, Type expectedType)
 		{
 			IsInstanceOfType (value, expectedType, null);
+		}
+
+		public static void IsInstanceOfType<T> (object value, string message)
+		{
+			IsInstanceOfType (value, typeof (T), message);
 		}
 
 		public static void IsInstanceOfType (object value, Type expectedType, string message)
