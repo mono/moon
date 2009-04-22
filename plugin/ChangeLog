@@ -1,3 +1,11 @@
+2009-04-22  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.h: moon the #include <glib.h> here from windowless so
+	we can guarantee glibconfig.h has been included before we check
+	GLIB_SIZEOF_VOID_P.
+
+	* windowless.h: drop the include glib.h from here.
+
 2009-04-22  Rusty Howell  <rhowell@novell.com>
 
 	* make builds separate binaries for xpi

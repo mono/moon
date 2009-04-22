@@ -14,8 +14,6 @@
 #ifndef __MOON_WINDOWLESS__
 #define __MOON_WINDOWLESS__
 
-#include <glib.h>
-
 #include "moonlight.h"
 #include "runtime.h"
 #include "plugin.h"
