@@ -695,6 +695,11 @@ class XamlElementInstanceValueType : public XamlElementInstance {
 
 	virtual Value *GetAsValue ()
 	{
+		if (value == NULL) {
+			// we are an empty element (e.g.  <sys:String></sys:String>).  do type specific magic here.
+			CreateValueItemFromString ("");
+		}
+
 		return value;
 	}
 
@@ -2983,38 +2988,49 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 		*v = NULL;
 		return true;
 	}
-	
+
+	char *s = g_strdup (str);
+
+	if (type == Type::OBJECT || type == Type::STRING) {
+		// object and string use the literal string
+	}
+	else {
+		// everything else depends on the string being stripped
+		g_strstrip (s);
+	}
+
 	switch (type) {
 	case Type::OBJECT: {
 		// not much more can do here, unless we want to try to
 		// probe str to see if it's actually meant to be a
 		// specific type.  just assume it's a string.
-		*v = new Value (str);
+		*v = new Value (s);
 		break;
 	}
 
 	case Type::BOOL: {
 		bool b;
-		if (!g_ascii_strcasecmp ("true", str))
+		if (!g_ascii_strcasecmp ("true", s))
 			b = true;
-		else if (!g_ascii_strcasecmp ("false", str))
+		else if (!g_ascii_strcasecmp ("false", s))
 			b = false;
 		else {
 			// Check if it's a string representing a decimal value
 			gint64 l;
 
 			errno = 0;
-			l = strtol (str, &endptr, 10);
+			l = strtol (s, &endptr, 10);
 
-			if (errno || endptr == str || *endptr || l > G_MAXINT32 || l < G_MININT32)
+			if (errno || endptr == s || *endptr || l > G_MAXINT32 || l < G_MININT32) {
+				g_free (s);
 				return false;
+			}
 
 			if (l == 0)
 				b = false;
 			else
 				b = true;
 		}
-				
 
 		*v = new Value (b);
 		break;
@@ -3023,21 +3039,25 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 		double d;
 
 		// empty string should not reset default values with 0
-		if (IS_NULL_OR_EMPTY(str))
+		if (IS_NULL_OR_EMPTY(s)) {
+			g_free(s);
 			return true;
+		}
 
 		errno = 0;
-		d = g_ascii_strtod (str, &endptr); 
+		d = g_ascii_strtod (s, &endptr); 
 		
-		
-		if (errno || endptr == str || *endptr) {
-			if ((!strcmp (prop_name, "Width") || !strcmp (prop_name, "Height"))
-			    && !g_ascii_strcasecmp (str, "Auto"))
+		if (errno || endptr == s || *endptr) {
+			if (prop_name
+			    && (!strcmp (prop_name, "Width") || !strcmp (prop_name, "Height"))
+			    && !g_ascii_strcasecmp (s, "Auto"))
 				d = NAN;
-			else 
+			else {
+				g_free (s);
 				return false;
+			}
 		}
-		
+
 		*v = new Value (d);
 		break;
 	}
@@ -3045,10 +3065,12 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 		gint64 l;
 
 		errno = 0;
-		l = strtol (str, &endptr, 10);
+		l = strtol (s, &endptr, 10);
 
-		if (errno || endptr == str)
+		if (errno || endptr == s) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (l, Type::INT64);
 		break;
@@ -3056,8 +3078,10 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::TIMESPAN: {
 		TimeSpan ts;
 
-		if (!time_span_from_str (str, &ts))
+		if (!time_span_from_str (s, &ts)) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (ts, Type::TIMESPAN);
 		break;
@@ -3065,18 +3089,21 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::INT32: {
 		int i;
 
-		if (g_ascii_isalpha (str[0]) && prop_name) {
-			i = enums_str_to_int (prop_name, str);
+		if (g_ascii_isalpha (s[0]) && prop_name) {
+			i = enums_str_to_int (prop_name, s);
 			if (i == -1) {
 //				g_warning ("'%s' enum is not valid on '%s' property", str, prop_name);
+				g_free (s);
 				return false;
 			}
 		} else {
 			errno = 0;
-			long l = strtol (str, &endptr, 10);
+			long l = strtol (s, &endptr, 10);
 
-			if (errno || endptr == str)
+			if (errno || endptr == s) {
+				g_free (s);
 				return false;
+			}
 
 			i = (int) l;
 		}
@@ -3089,9 +3116,11 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 		break;
 	}
 	case Type::COLOR: {
-		Color *c = color_from_str (str);
-		if (c == NULL)
+		Color *c = color_from_str (s);
+		if (c == NULL) {
+			g_free (s);
 			return false;
+		}
 		*v = new Value (*c);
 		delete c;
 		break;
@@ -3099,8 +3128,10 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::REPEATBEHAVIOR: {
 		RepeatBehavior rb = RepeatBehavior::Forever;
 
-		if (!repeat_behavior_from_str (str, &rb))
+		if (!repeat_behavior_from_str (s, &rb)) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (rb);
 		break;
@@ -3108,8 +3139,10 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::DURATION: {
 		Duration d = Duration::Forever;
 
-		if (!duration_from_str (str, &d))
+		if (!duration_from_str (s, &d)) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (d);
 		break;
@@ -3117,8 +3150,10 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::KEYTIME: {
 		KeyTime kt = KeyTime::Paced;
 
-		if (!keytime_from_str (str, &kt))
+		if (!keytime_from_str (s, &kt)) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (kt);
 		break;
@@ -3126,8 +3161,10 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::KEYSPLINE: {
 		KeySpline *ks;
 
-		if (!key_spline_from_str (str, &ks))
+		if (!key_spline_from_str (s, &ks)) {
+			g_free (s);
 			return false;
+		}
 
 		*v = Value::CreateUnrefPtr (ks);
 		break;
@@ -3136,10 +3173,12 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::SOLIDCOLORBRUSH: {
 		// Only solid color brushes can be specified using attribute syntax
 		SolidColorBrush *scb = new SolidColorBrush ();
-		Color *c = color_from_str (str);
+		Color *c = color_from_str (s);
 		
-		if (c == NULL)
+		if (c == NULL) {
+			g_free (s);
 			return false;
+		}
 		
 		scb->SetColor (c);
 		delete c;
@@ -3151,26 +3190,32 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::POINT: {
 		Point p;
 
-		if (!Point::FromStr (str, &p))
+		if (!Point::FromStr (s, &p)) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (p);
 		break;
 	}
 	case Type::SIZE: {
-		Size s;
+		Size size;
 
-		if (!Size::FromStr (str, &s))
+		if (!Size::FromStr (s, &size)) {
+			g_free (s);
 			return false;
+		}
 
-		*v = new Value (s);
+		*v = new Value (size);
 		break;
 	}
 	case Type::RECT: {
 		Rect rect;
 
-		if (!Rect::FromStr (str, &rect))
+		if (!Rect::FromStr (s, &rect)) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (rect);
 		break;
@@ -3178,7 +3223,8 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::URI: {
 		Uri *uri = new Uri ();
 
-		if (!uri->Parse (str)) {
+		if (!uri->Parse (s)) {
+			g_free (s);
 			delete uri;
 			return false;
 		}
@@ -3188,30 +3234,38 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 		break;
 	}
 	case Type::DOUBLE_COLLECTION: {
-		DoubleCollection *doubles = DoubleCollection::FromStr (str);
-		if (!doubles)
+		DoubleCollection *doubles = DoubleCollection::FromStr (s);
+		if (!doubles) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (doubles);
 		doubles->unref ();
 		break;
 	}
 	case Type::POINT_COLLECTION: {
-		PointCollection *points = PointCollection::FromStr (str);
-		if (!points)
+		PointCollection *points = PointCollection::FromStr (s);
+		if (!points) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (points);
 		points->unref ();
 		break;
 	}
 	case Type::TRANSFORM: {
-		if (IS_NULL_OR_EMPTY(str))
+		if (IS_NULL_OR_EMPTY(s)) {
+			g_free (s);
 			return true;
+		}
 
-		Matrix *mv = matrix_from_str (str);
-		if (!mv)
+		Matrix *mv = matrix_from_str (s);
+		if (!mv) {
+			g_free (s);
 			return false;
+		}
 
 		MatrixTransform *t = new MatrixTransform ();
 		t->SetValue (MatrixTransform::MatrixProperty, Value (mv));
@@ -3223,19 +3277,23 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	}
 	case Type::MATRIX: {
 		// note: unlike TRANSFORM this creates an empty, identity, matrix for an empty string
-		Matrix *matrix = matrix_from_str (str);
-		if (!matrix)
+		Matrix *matrix = matrix_from_str (s);
+		if (!matrix) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (matrix);
 		matrix->unref ();
 		break;
 	}
 	case Type::GEOMETRY: {
-		Geometry *geometry = geometry_from_str (str);
+		Geometry *geometry = geometry_from_str (s);
 
-		if (!geometry)
+		if (!geometry) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (geometry);
 		geometry->unref ();
@@ -3244,8 +3302,10 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::THICKNESS: {
 		Thickness t;
 
-		if (!Thickness::FromStr (str, &t))
+		if (!Thickness::FromStr (s, &t)) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (t);
 		break;
@@ -3253,8 +3313,10 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::CORNERRADIUS: {
 		CornerRadius c;
 
-		if (!CornerRadius::FromStr (str, &c))
+		if (!CornerRadius::FromStr (s, &c)) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (c);
 		break;
@@ -3262,8 +3324,10 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::GRIDLENGTH: {
 		GridLength grid_length;
 
-		if (!grid_length_from_str (str, &grid_length))
+		if (!grid_length_from_str (s, &grid_length)) {
+			g_free (s);
 			return false;
+		}
 
 		*v = new Value (grid_length);
 		break;
@@ -3274,7 +3338,8 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 
 		Uri *uri = new Uri ();
 
-		if (!uri->Parse (str)) {
+		if (!uri->Parse (s)) {
+			g_free (s);
 			delete uri;
 			return false;
 		}
@@ -3291,7 +3356,8 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 		// As far as I know the only thing you can create here is a URI based DeepZoomImageTileSource
 		// Uri starting with a '/' in xaml are still relative to the source uri (as tested on SL :/ )
 		Uri *uri = new Uri ();
-		if (!uri->Parse (g_str_has_prefix (str, "/") ? str+1 : str)) {
+		if (!uri->Parse (g_str_has_prefix (s, "/") ? s+1 : s)) {
+			g_free (s);
 			delete uri;
 			return false;
 		}
@@ -3301,18 +3367,22 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 		break;
 	}
 	case Type::FONTFAMILY: {
-		*v = new Value (FontFamily (str)); 
+		*v = new Value (FontFamily (s)); 
 		break;
 	}
 	case Type::PROPERTYPATH: {
-		*v = new Value (PropertyPath (str));
+		*v = new Value (PropertyPath (s));
 		break;
 	}
 	default:
 		// we don't care about NULL or empty values
-		return IS_NULL_OR_EMPTY(str);
+		if (!IS_NULL_OR_EMPTY (s)) {
+			g_free (s);
+			return false;
+		}
 	}
 
+	g_free (s);
 	return true;
 }
 
@@ -4060,6 +4130,12 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 				}
 
 				Value *child_as_value = child->GetAsValue ();
+
+				if (!child_as_value) {
+					// XXX don't know the proper values here...
+					return parser_error (p, child->element_name, NULL, 2007,
+							     "Error adding child to ResourceDictionary");
+				}
 
 				bool added = dict->AddWithError (key, child_as_value, &err);
 				if (!added)

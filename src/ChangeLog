@@ -1,3 +1,16 @@
+2009-04-22  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (dependency_object_add_child): guard against adding an
+	empty Value to a resource dictionary.  this happen when you have
+	no content on a primitive type (<sys:Bool></sys:Bool>) and
+	value_from_str can't deal with parsing an empty string.
+	(value_from_str): for non-object/non-string types, we need to
+	strip leading/trailing whitespace before attempting to parse. this
+	allows things like: <sys:Bool> true </sys:Bool>
+	(class XamlElementInstanceValueType): for empty elements the value
+	will have never been set.  try to set it here using an empty
+	string.
+
 2009-04-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (OnPropertyChanged): Clamp our SelectionStart and
@@ -23,7 +36,7 @@
 	* timemanager.h|cpp (class RootClockGroup): new class to represent
 	the root clock group created by a time manager to house all other
 	clocks in a surface.  It has slightly different behavior from a
-	normal clock group, particularly wrt putting the timemanager to
+	noprmal clock group, particularly wrt putting the timemanager to
 	sleep.
 	(TimeManager::TimeManager): create a RootClockGroup.
 	(TimeManager::RemoveTickCall): if we're putting the time manager

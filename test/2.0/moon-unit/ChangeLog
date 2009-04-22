@@ -1,3 +1,8 @@
+2009-04-22  Chris Toshok  <toshok@ximian.com>
+
+	* misc/Parsing/PrimitiveTest.cs: enable this test, and add some
+	MoonlightBugs for the tests we fail.
+
 2009-04-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Use $(top_builddir) instead of $(builddir).

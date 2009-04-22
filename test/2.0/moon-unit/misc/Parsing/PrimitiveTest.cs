@@ -14,7 +14,6 @@ using Microsoft.Silverlight.Testing;
 namespace MoonTest.Misc
 {
 	[TestClass]
-	[Ignore]
 	public class PrimitiveTest : SilverlightTest
 	{
 
@@ -51,6 +50,7 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
+		[MoonlightBug ("we don't throw an exception")]
 		public void ParseStringKeyAndName ()
 		{
 			Assert.Throws<XamlParseException> (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
@@ -92,6 +92,7 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
+		[MoonlightBug ("we don't throw an exception")]
 		public void ParseStringNonNamespace ()
 		{
 			// Can't get away with not setting the namespace
@@ -101,6 +102,7 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
+		[MoonlightBug ("we don't throw an exception")]
 		public void ParseStringNamespaceAssemblyReversed ()
 		{
 			// Can't get away with not setting the namespace
@@ -146,6 +148,7 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
+		[MoonlightBug ("we throw an exception")]
 		public void ParseEmptyInt ()
 		{
 			Canvas c;
@@ -324,6 +327,7 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
+		[MoonlightBug ("we throw an exception")]
 		public void ParseEmptyDouble ()
 		{
 			Canvas c;
@@ -358,6 +362,7 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
+		[MoonlightBug ("we don't throw an exception")]
 		public void ParseDoubleHex ()
 		{
 			Assert.Throws<XamlParseException> (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
