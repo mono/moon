@@ -221,10 +221,11 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 	Types *types =  Deployment::GetCurrent()->GetTypes();
 
-#define INHERIT_CT_CT(p) \
+#define INHERIT_CTI_CTI(p) \
 	G_STMT_START {							\
 	if (property->GetId () == Control::p ||				\
-	    property->GetId () == TextBlock::p)				\
+	    property->GetId () == TextBlock::p ||			\
+	    property->GetId () == Inline::p) {				\
 									\
 		if (types->IsSubclassOf (parent->GetObjectType(), Type::CONTROL)) \
 			parentPropertyId = Control::p;			\
