@@ -1,5 +1,10 @@
 2009-04-22  Chris Toshok  <toshok@ximian.com>
 
+	* misc/Parsing/PrimitiveTest.cs: add ParseIntOnlyWhitespace, and
+	remove the MoonlightBug from ParseEmptyInt.
+
+2009-04-22  Chris Toshok  <toshok@ximian.com>
+
 	* misc/Parsing/PrimitiveTest.cs: enable this test, and add some
 	MoonlightBugs for the tests we fail.
 

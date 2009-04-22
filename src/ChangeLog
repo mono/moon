@@ -1,5 +1,10 @@
 2009-04-22  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (value_from_str): permit empty int32's (they're 0).
+	add comment about empty doubles.
+
+2009-04-22  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp (dependency_object_add_child): guard against adding an
 	empty Value to a resource dictionary.  this happen when you have
 	no content on a primitive type (<sys:Bool></sys:Bool>) and

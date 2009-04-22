@@ -3039,6 +3039,8 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 		double d;
 
 		// empty string should not reset default values with 0
+		//
+		// FIXME: this causes a 2.0 unit test to fail (PrimitiveTest.ParseEmptyDouble)
 		if (IS_NULL_OR_EMPTY(s)) {
 			g_free(s);
 			return true;
@@ -3089,7 +3091,10 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	case Type::INT32: {
 		int i;
 
-		if (g_ascii_isalpha (s[0]) && prop_name) {
+		if (IS_NULL_OR_EMPTY(s)) {
+			i = 0;
+		}
+		else if (g_ascii_isalpha (s[0]) && prop_name) {
 			i = enums_str_to_int (prop_name, s);
 			if (i == -1) {
 //				g_warning ("'%s' enum is not valid on '%s' property", str, prop_name);

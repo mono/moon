@@ -148,7 +148,6 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
-		[MoonlightBug ("we throw an exception")]
 		public void ParseEmptyInt ()
 		{
 			Canvas c;
@@ -157,6 +156,24 @@ namespace MoonTest.Misc
 			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
 						   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
  						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:Int32 x:Key=""int""></sys:Int32></Canvas.Resources></Canvas>");
+
+			
+			Assert.AreEqual (1, c.Resources.Count, "1");
+			Assert.IsNotNull (c.Resources ["int"], "2");
+
+			i = (int) c.Resources ["int"];
+			Assert.AreEqual (i, 0, "3");
+		}
+
+		[TestMethod]
+		public void ParseIntOnlyWhitespace ()
+		{
+			Canvas c;
+			int i;
+
+			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+ 						   xmlns:sys=""clr-namespace:System;assembly=mscorlib""><Canvas.Resources><sys:Int32 x:Key=""int""> </sys:Int32></Canvas.Resources></Canvas>");
 
 			
 			Assert.AreEqual (1, c.Resources.Count, "1");
@@ -327,7 +344,7 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
-		[MoonlightBug ("we throw an exception")]
+		[MoonlightBug ("Moonlight doesn't permit empty doubles (perhaps because of the plugin?)")]
 		public void ParseEmptyDouble ()
 		{
 			Canvas c;
@@ -362,7 +379,7 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
-		[MoonlightBug ("we don't throw an exception")]
+		[MoonlightBug ("Moonlight permits doubles in hex format (thanks to strtod)")]
 		public void ParseDoubleHex ()
 		{
 			Assert.Throws<XamlParseException> (delegate { XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
