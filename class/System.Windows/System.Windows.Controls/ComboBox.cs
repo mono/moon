@@ -192,11 +192,7 @@ namespace System.Windows.Controls
 
 		protected override DependencyObject GetContainerForItemOverride ()
 		{
-			ComboBoxItem cbItem = new ComboBoxItem ();
-			if (null != ItemContainerStyle) {
-				cbItem.Style = ItemContainerStyle;
-			}
-			return cbItem;
+			return new ComboBoxItem ();;
 		}
 		
 		protected override bool IsItemItsOwnContainerOverride (object item)

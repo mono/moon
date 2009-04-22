@@ -1,5 +1,10 @@
 2009-04-22  Alan McGovern  <amcgovern@novell.com>
 
+	* ComboBox.cs: ComboBox should return a new ComboBoxItem
+	  without applying the container style.
+
+2009-04-22  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsPresenter.cs: After some extensive testing in
 	  silverlight, I think this change is correct. When templating
 	  ComboBox, the Popup used to display the items has no visual
