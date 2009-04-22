@@ -43,14 +43,14 @@ load (void)
 #if PLUGIN_INSTALL
 	Dl_info dlinfo;
 	if (dladdr((void *) &load, &dlinfo) == 0) {
-		fprintf (stderr, "Unable to find the location of libmoonloader %s\n", dlerror ());
+		fprintf (stderr, "Unable to find the location of libmoonloaderxpi %s\n", dlerror ());
 		return FALSE;
 	}
 
 	char *plugin_dir;
 	plugin_dir = g_build_filename (g_path_get_dirname(dlinfo.dli_fname), "moonlight", NULL);
 
-	plugin_path = g_build_filename (plugin_dir, "libmoonplugin.so", NULL);
+	plugin_path = g_build_filename (plugin_dir, "libmoonpluginxpi.so", NULL);
 
 #if INCLUDE_FFMPEG
 	// load libavutil
@@ -96,14 +96,14 @@ load (void)
 #endif
 
 	// load libmoon
-	char *moon_path = g_build_filename (plugin_dir, "libmoon.so", NULL);
+	char *moon_path = g_build_filename (plugin_dir, "libmoonxpi.so", NULL);
 	void *real_moon = dlopen (moon_path, RTLD_LAZY | RTLD_GLOBAL);
 	if (real_moon == NULL){
-		fprintf (stderr, "Unable to load the libmoon %s\n", dlerror ());
+		fprintf (stderr, "Unable to load the libmoonxpi %s\n", dlerror ());
 		return FALSE;
 	}
 
-	char* moon_config = g_strdup_printf("<?xml version=\"1.0\" encoding=\"utf-8\"?><configuration><dllmap dll=\"moon\" target=\"%s\" /></configuration>",moon_path,moon_path);
+	char* moon_config = g_strdup_printf("<?xml version=\"1.0\" encoding=\"utf-8\"?><configuration><dllmap dll=\"moon\" target=\"%s\" /></configuration>",moon_path);
 	mono_config_parse_memory(moon_config);
 	g_free (moon_config);
 	g_free (moon_path);

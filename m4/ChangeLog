@@ -1,3 +1,7 @@
+2009-04-22  Rusty Howell   <rhowell@novell.com>
+
+	* Removed --enable-user-plugin from firefox-xpi.m4
+
 2009-04-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* testing.m4: Sles 10 has ImageMagick 6.2.5. Let's see if that

@@ -1,3 +1,7 @@
+2009-04-22  Rusty Howell  <rhowell@novell.com>
+
+	* building libmoonxpi for the FF plugin
+
 2009-04-21  Chris Toshok  <toshok@ximian.com>
 
 	* provider.cpp:

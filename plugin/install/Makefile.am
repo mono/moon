@@ -9,9 +9,9 @@ mono_sysconfdir = `pkg-config --variable=sysconfdir mono`
 novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.rdf \
 				$(srcdir)/icon.png \
 				$(srcdir)/chrome.manifest \
-				../.libs/libmoonloader.so \
-				../.libs/libmoonplugin.so \
-				$(top_builddir)/src/.libs/libmoon.so
+				$(top_builddir)/plugin/.libs/libmoonloaderxpi.so \
+				$(top_builddir)/plugin/.libs/libmoonpluginxpi.so \
+				$(top_builddir)/src/.libs/libmoonxpi.so
 
 if HAVE_GECKO_1_8
 novell_moonlight_xpi_CONTENTS += ../firefox/ff2/.libs/libmoonplugin-ff2bridge.so
@@ -31,17 +31,20 @@ if INCLUDE_BROWSER_MANAGED_CODE
 novell_moonlight_xpi_CONTENTS += $(srcdir)/../moon.config
 endif INCLUDE_BROWSER_MANAGED_CODE
 
+
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
-	-rm -f $@
-	-rm -rf .xpinstall/
+	rm -f $@
+	rm -rf .xpinstall/
+	rm -f novell-moonlight.xpi
+
 	mkdir -p .xpinstall/plugins/moonlight/
 	cp -L $(srcdir)/install.rdf .xpinstall/
 	cp -L $(srcdir)/chrome.manifest .xpinstall/
 	mkdir -p .xpinstall/skin/
 	cp -L $(srcdir)/icon.png .xpinstall/skin/
-	cp -L ../.libs/libmoonloader.so .xpinstall/plugins/
-	cp -L ../.libs/libmoonplugin.so .xpinstall/plugins/moonlight/
-	cp -L $(top_builddir)/src/.libs/libmoon.so .xpinstall/plugins/moonlight/
+	cp -L ../.libs/libmoonloaderxpi.so .xpinstall/plugins/
+	cp -L ../.libs/libmoonpluginxpi.so .xpinstall/plugins/moonlight/
+	cp -L $(top_builddir)/src/.libs/libmoonxpi.so .xpinstall/plugins/moonlight/
 if HAVE_GECKO_1_8
 	cp -L ../firefox/ff2/.libs/libmoonplugin-ff2bridge.so .xpinstall/plugins/moonlight/
 endif HAVE_GECKO_1_8
@@ -55,19 +58,16 @@ endif INCLUDE_FFMPEG
 
 if INCLUDE_BROWSER_MANAGED_CODE
 	cp -L $(mono_libdir)/libmono.so .xpinstall/plugins/moonlight/
-#	mkdir -p .xpinstall/plugins/moonlight/mono/2.1/
-#	cp -L $(mono_dlldir)/mono/2.1/mscorlib.dll .xpinstall/plugins/moonlight/mono/2.1/
-#	find $(mono_dlldir)/mono/2.1 -name \*.dll -and -not -name mscorlib.dll -exec gacutil -i '{}' -package 2.1 -root .xpinstall/plugins/moonlight ';'
-#	find $(top_builddir)/class/lib/2.1 -name \*.dll -exec gacutil -i '{}' -package 2.1 -root .xpinstall/plugins/moonlight ';'
-#	cp -L $(mono_dlldir)/mono/2.1/*.dll .xpinstall/plugins/moonlight
 	cp -L $(top_builddir)/class/lib/2.1/*.dll .xpinstall/plugins/moonlight
+
+	cd .xpinstall/plugins/moonlight && rm -f System.Windows.dll System.Windows.Data.dll System.Xml.Linq.dll
 #	find .xpinstall -name \*.mdb -exec rm '{}' ';'
 
 	mkdir -p .xpinstall/plugins/moonlight/mono/2.0/
 #	cp -L $(srcdir)/../moon.config .xpinstall/plugins/moonlight/mono/config
 	cp -L $(mono_sysconfdir)/mono/2.0/machine.config .xpinstall/plugins/moonlight/mono/2.0/
 endif INCLUDE_BROWSER_MANAGED_CODE
-	find .xpinstall -name \*.so -exec strip '{}' ';'  # strip symbols
+#	find .xpinstall -name \*.so -exec strip '{}' ';'  # strip symbols
 	cd .xpinstall/ && zip -r9 ../$@ *
 
 clean-local:
