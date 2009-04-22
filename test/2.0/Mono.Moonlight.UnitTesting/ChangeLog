@@ -1,3 +1,7 @@
+2009-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: builddir -> top_builddir.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am:

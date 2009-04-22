@@ -25,8 +25,8 @@ CLEANFILES = \
 KEYFILE = $(srcdir)/../moonlight.snk
 
 REFERENCES = \
-	-r:$(builddir)/Microsoft.Silverlight.Testing.dll							\
-	-r:$(builddir)/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight	
+	-r:$(top_builddir)/test/2.0/Mono.Moonlight.UnitTesting/Microsoft.Silverlight.Testing.dll							\
+	-r:$(top_builddir)/test/2.0/Mono.Moonlight.UnitTesting/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight	
 
 Mono.Moonlight.UnitTesting.dll: $(SOURCES) Makefile.am Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll
 	MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(SMCS) $(SOURCES) $(REFERENCES) -delaysign+ -keyfile:$(KEYFILE) -target:library -out:$@ -debug:full
