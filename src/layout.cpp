@@ -595,6 +595,7 @@ enum WordType {
 	WORD_TYPE_UNKNOWN,
 	WORD_TYPE_ALPHABETIC,
 	WORD_TYPE_IDEOGRAPHIC,
+	WORD_TYPE_NUMERIC,
 	WORD_TYPE_HANGUL,
 };
 
@@ -910,6 +911,8 @@ word_type (GUnicodeBreakType btype)
 		return WORD_TYPE_ALPHABETIC;
 	case G_UNICODE_BREAK_IDEOGRAPHIC:
 		return WORD_TYPE_IDEOGRAPHIC;
+	case G_UNICODE_BREAK_NUMERIC:
+		return WORD_TYPE_NUMERIC;
 #if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 10)
 	case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
 	case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
@@ -931,6 +934,8 @@ word_type_changed (WordType type, GUnicodeBreakType btype)
 		return type != WORD_TYPE_ALPHABETIC;
 	case G_UNICODE_BREAK_IDEOGRAPHIC:
 		return type != WORD_TYPE_IDEOGRAPHIC;
+	case G_UNICODE_BREAK_NUMERIC:
+		return type != WORD_TYPE_NUMERIC;
 #if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 10)
 	case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
 	case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
@@ -996,10 +1001,26 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			break;
 		}
 		
+		// check the previous break-type
 		if (btype == G_UNICODE_BREAK_COMBINING_MARK) {
 			// ignore zero-width spaces by combining them with the current glyph
-			if ((btype = g_unichar_break_type (c)) == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
+			btype = g_unichar_break_type (c);
+			if (btype == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
 				btype = G_UNICODE_BREAK_COMBINING_MARK;
+		} else if (btype == G_UNICODE_BREAK_CLOSE_PUNCTUATION) {
+			// if anything other than an infix separator come after a close-punctuation, then the 'word' is done
+			btype = g_unichar_break_type (c);
+			if (btype != G_UNICODE_BREAK_INFIX_SEPARATOR) {
+				inptr = start;
+				break;
+			}
+		} else if (btype == G_UNICODE_BREAK_INFIX_SEPARATOR) {
+			// if anything other than numbers come after an infix separator, the 'word' is done
+			btype = g_unichar_break_type (c);
+			if (btype != G_UNICODE_BREAK_NUMERIC) {
+				inptr = start;
+				break;
+			}
 		} else {
 			btype = g_unichar_break_type (c);
 		}
@@ -1079,9 +1100,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			wrap = true;
 			break;
 		}
-		
-		if (btype == G_UNICODE_BREAK_CLOSE_PUNCTUATION)
-			break;
 	}
 	
 	if (!wrap) {
@@ -1209,7 +1227,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			}
 		case G_UNICODE_BREAK_EXCLAMATION:
 			// only break after this char if there are glyphs before it
-			if (line_start && i > 1 && i < word->break_ops->len) {
+			if (i > 1 && i < word->break_ops->len) {
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
@@ -1230,6 +1248,46 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				word->prev = op.prev;
 				
 				return true;
+			}
+			break;
+		case G_UNICODE_BREAK_CLOSE_PUNCTUATION:
+			if (i < word->break_ops->len && btype != G_UNICODE_BREAK_INFIX_SEPARATOR) {
+				// we can safely break after this character
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				word->prev = op.prev;
+				
+				return true;
+			}
+			
+			if (i > 1) {
+				// we can never break before a closing punctuation, so skip past prev char
+				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
+				i--;
+			}
+			break;
+		case G_UNICODE_BREAK_INFIX_SEPARATOR:
+			if (i < word->break_ops->len && btype != G_UNICODE_BREAK_NUMERIC) {
+				// we can safely break after this character
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				word->prev = op.prev;
+				
+				return true;
+			}
+			
+			if (i > 1) {
+				// we can never break before an infix, skip past prev char
+				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
+				if (op.btype == G_UNICODE_BREAK_INFIX_SEPARATOR ||
+				    op.btype == G_UNICODE_BREAK_CLOSE_PUNCTUATION) {
+					// unless previous char is one of these special types...
+					op = g_array_index (word->break_ops, WordBreakOpportunity, i - 1);
+				} else {
+					i--;
+				}
 			}
 			break;
 #if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 10)
@@ -1268,6 +1326,17 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_IDEOGRAPHIC:
 			if (i < word->break_ops->len && btype != G_UNICODE_BREAK_NON_STARTER) {
 				// we can safely break after this character
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				word->prev = op.prev;
+				
+				return true;
+			}
+			break;
+		case G_UNICODE_BREAK_NUMERIC:
+			// only break if we have no choice...
+			if (line_start && i < word->break_ops->len && btype != G_UNICODE_BREAK_INFIX_SEPARATOR) {
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;

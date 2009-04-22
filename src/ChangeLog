@@ -1,3 +1,8 @@
+2009-04-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (layout_word_wrap): Add a bit more logic for infix
+	separators. Finishes off MSDRT 208.
+
 2009-04-22  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (value_from_str): permit empty int32's (they're 0).
