@@ -175,17 +175,7 @@ namespace System.Windows {
 
 				if (part.Source[0] == '/') {
 					WebClient client = new WebClient ();
-					client.OpenReadCompleted  += delegate (object sender, OpenReadCompletedEventArgs e) {
-						Deployment d = Deployment.Current;
-						AssemblyPart a = new AssemblyPart ();
-						Assembly asm = a.Load (e.Result);
-						
-						if (EntryAssembly == null && asm.GetName ().Name == EntryPointAssembly)
-							EntryAssembly = asm;
-
-						if (d.Assemblies.Count == Parts.Count + 1)
-							d.CreateApplication ();
-					};
+					client.OpenReadCompleted += new OpenReadCompletedEventHandler (OnOpenReadCompleted);
 					client.OpenReadAsync (new Uri (PluginHost.RootUri, new Uri (part.Source))); 
 					delay_load = true;
 				} else {
@@ -208,6 +198,20 @@ namespace System.Windows {
 				return true;
 
 			return CreateApplication ();
+		}
+
+		// stop using an anonymous method since its name keeps changing and this code is [SecuritySafeCritical]
+		internal void OnOpenReadCompleted (object sender, OpenReadCompletedEventArgs e) 
+		{
+			AssemblyPart a = new AssemblyPart ();
+			Assembly asm = a.Load (e.Result);
+						
+			if (EntryAssembly == null && asm.GetName ().Name == EntryPointAssembly)
+				EntryAssembly = asm;
+
+			Deployment d = Deployment.Current;
+			if (d.Assemblies.Count == Parts.Count + 1)
+				d.CreateApplication ();
 		}
 
 		internal bool CreateApplication () {

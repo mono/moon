@@ -1,3 +1,9 @@
+2009-04-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Deployment.cs: Do not use an anomymous method that needs to
+	be decorated with [SecuritySafeCritical] since its name can
+	change over time.
+
 2009-04-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Application.cs: Make OnUnhandledException not leak
