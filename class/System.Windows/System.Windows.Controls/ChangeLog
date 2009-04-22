@@ -1,3 +1,15 @@
+2009-04-22  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsPresenter.cs: After some extensive testing in
+	  silverlight, I think this change is correct. When templating
+	  ComboBox, the Popup used to display the items has no visual
+	  parent but does have a logical parent. Therefore the only
+	  way to connect the ItemsPresenter to the ItemsControl is to
+	  fall back to the logical parent when the VisualParent is
+	  null. I'm not sure if this is popup specific behaviour or if
+	  this is true for all controls which have a null visual
+	  parent but non-null logical parent.
+
 2009-04-17  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs: Make IsSelectionActive work. Also make showing

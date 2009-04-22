@@ -44,7 +44,7 @@ namespace System.Windows.Controls
 
 			FrameworkElement parent = this;
 			while (parent != null && !(parent is ItemsControl))
-				parent = VisualTreeHelper.GetParent (parent) as FrameworkElement;
+				parent = VisualTreeHelper.GetParent (parent) as FrameworkElement ?? parent.Parent as FrameworkElement ;
 
 			if (parent != null)
 				(parent as ItemsControl).SetItemsPresenter (this);
