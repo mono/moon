@@ -231,7 +231,7 @@ namespace System.Windows.Controls
 		{
 			base.OnLostFocus (e);
 			isFocused = false;
-			IsSelectionActive = _popup.IsOpen;
+			IsSelectionActive = _popup == null ? false : _popup.IsOpen;
 			UpdateVisualState (true);
 		}
 		

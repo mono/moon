@@ -1,5 +1,10 @@
 2009-04-22  Alan McGovern  <amcgovern@novell.com>
 
+	* ComboBox.cs: Add missing nullcheck around access to a
+	  templated part.
+
+2009-04-22  Alan McGovern  <amcgovern@novell.com>
+
 	* ComboBox.cs: ComboBox should return a new ComboBoxItem
 	  without applying the container style.
 
