@@ -8,10 +8,10 @@
 			<BeginStoryboard>
 				<Storyboard>
 					<DoubleAnimationUsingKeyFrames Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Top)">
-            <LinearDoubleKeyFrame KeyTime="0:0:0" Value="10"/>
-            <LinearDoubleKeyFrame KeyTime="0:0:1" Value="50"/>
-          </DoubleAnimationUsingKeyFrames>
-				<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" To="500" Duration="00:00:5"/>
+            					<LinearDoubleKeyFrame KeyTime="0:0:0" Value="10"/>
+            					<LinearDoubleKeyFrame KeyTime="0:0:1" Value="50"/>
+          				</DoubleAnimationUsingKeyFrames>
+					<DoubleAnimation Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" To="500" Duration="00:00:5"/>
 				</Storyboard>
 			</BeginStoryboard>
 		</EventTrigger>
