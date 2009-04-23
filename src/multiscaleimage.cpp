@@ -889,7 +889,7 @@ MultiScaleImage::SetViewportWidth (double value)
 		zoom_animation->SetDuration (Duration::FromSeconds (4));
 		zoom_animation->SetKeyFrames (new DoubleKeyFrameCollection ());
 		SplineDoubleKeyFrame *keyframe = new SplineDoubleKeyFrame ();
-		keyframe->SetKeySpline (new KeySpline (0, 1.0, 0, 1.0));
+		keyframe->SetKeySpline (new KeySpline (.05, .5, 0, 1.0));
 		keyframe->SetKeyTime (KeyTime::FromPercent (1.0));
 		zoom_animation->GetKeyFrames ()->Add (keyframe);
 
@@ -923,7 +923,7 @@ MultiScaleImage::SetViewportOrigin (Point value)
 		pan_animation->SetDuration (Duration::FromSeconds (4));
 		pan_animation->SetKeyFrames (new PointKeyFrameCollection ());
 		SplinePointKeyFrame *keyframe = new SplinePointKeyFrame ();
-		keyframe->SetKeySpline (new KeySpline (0, 1.0, 0, 1.0));
+		keyframe->SetKeySpline (new KeySpline (.05, .5, 0, 1.0));
 		keyframe->SetKeyTime (KeyTime::FromPercent (1.0));
 		pan_animation->GetKeyFrames ()->Add (keyframe);
 
