@@ -1,3 +1,11 @@
+2009-04-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (layout_word_wrap): Don't ignore Zero-Width spaces
+	anymore, that was a 1.0-thing and can no longer be used. Also
+	added support for non-breaking-glue classes as well as rules for
+	breaking on combining-marks, open-punctuation, contingents,
+	quotations, prefixes, and words starting with an infix.
+
 2009-04-23  Chris Toshok  <toshok@ximian.com>
 
 	* animation.cpp|.h, clock.cpp|.h: remove

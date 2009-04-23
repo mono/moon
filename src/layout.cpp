@@ -975,6 +975,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	WordBreakOpportunity op;
 	const char *inptr = in;
 	const char *start;
+	bool fixed = false;
 	bool wrap = false;
 	GlyphInfo *glyph;
 #if DEBUG
@@ -984,7 +985,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	int glyphs = 0;
 	bool new_glyph;
 	gunichar c;
-	int cc;
 	
 	g_array_set_size (word->break_ops, 0);
 	word->type = WORD_TYPE_UNKNOWN;
@@ -1007,12 +1007,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		}
 		
 		// check the previous break-type
-		if (btype == G_UNICODE_BREAK_COMBINING_MARK) {
-			// ignore zero-width spaces by combining them with the current glyph
-			btype = g_unichar_break_type (c);
-			if (btype == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
-				btype = G_UNICODE_BREAK_COMBINING_MARK;
-		} else if (btype == G_UNICODE_BREAK_CLOSE_PUNCTUATION) {
+		if (btype == G_UNICODE_BREAK_CLOSE_PUNCTUATION) {
 			// if anything other than an infix separator come after a close-punctuation, then the 'word' is done
 			btype = g_unichar_break_type (c);
 			if (btype != G_UNICODE_BREAK_INFIX_SEPARATOR) {
@@ -1020,11 +1015,21 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				break;
 			}
 		} else if (btype == G_UNICODE_BREAK_INFIX_SEPARATOR) {
-			// if anything other than numbers come after an infix separator, the 'word' is done
 			btype = g_unichar_break_type (c);
-			if (btype != G_UNICODE_BREAK_NUMERIC) {
-				inptr = start;
-				break;
+			if (word->type == WORD_TYPE_NUMERIC) {
+				// only accept numbers after the infix
+				if (btype != G_UNICODE_BREAK_NUMERIC) {
+					inptr = start;
+					break;
+				}
+			} else if (word->type == WORD_TYPE_UNKNOWN) {
+				// only accept alphanumerics after the infix
+				if (btype != G_UNICODE_BREAK_ALPHABETIC && btype != G_UNICODE_BREAK_NUMERIC) {
+					inptr = start;
+					break;
+				}
+				
+				fixed = true;
 			}
 		} else {
 			btype = g_unichar_break_type (c);
@@ -1048,7 +1053,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		word->count++;
 		
 		// a Combining Class of 0 means start of a new glyph
-		if ((cc = unichar_combining_class (c)) != 0 && glyphs > 0) {
+		if (glyphs > 0 && unichar_combining_class (c) != 0) {
 			// this char gets combined with the previous glyph
 			new_glyph = false;
 		} else {
@@ -1060,10 +1065,12 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
 			if (c < 128 && isprint ((int) c))
 				printf ("\tunichar = %c; btype = %s, new glyph = %s; cc = %d; isspace = %s\n", (char) c,
-					unicode_break_types[btype], new_glyph ? "true" : "false", cc, g_unichar_isspace (c) ? "true" : "false");
+					unicode_break_types[btype], new_glyph ? "true" : "false", unichar_combining_class (c),
+					g_unichar_isspace (c) ? "true" : "false");
 			else
 				printf ("\tunichar = 0x%.4X; btype = %s, new glyph = %s; cc = %d; isspace = %s\n", c,
-					unicode_break_types[btype], new_glyph ? "true" : "false", cc, g_unichar_isspace (c) ? "true" : "false");
+					unicode_break_types[btype], new_glyph ? "true" : "false", unichar_combining_class (c),
+					g_unichar_isspace (c) ? "true" : "false");
 		}
 #endif
 		
@@ -1217,6 +1224,14 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				
 				return true;
 			}
+		case G_UNICODE_BREAK_NON_BREAKING_GLUE:
+			// cannot break before or after this character
+			if (i > 1) {
+				// skip past previous glyph
+				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
+				i--;
+			}
+			break;
 		case G_UNICODE_BREAK_INSEPARABLE:
 			// only restriction is no breaking between inseparables unelss we have to
 			if (line_start && i < word->break_ops->len) {
@@ -1282,7 +1297,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			break;
 		case G_UNICODE_BREAK_ALPHABETIC:
 			// only break if we have no choice...
-			if (line_start && i < word->break_ops->len) {
+			if ((line_start || fixed) && i < word->break_ops->len) {
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
@@ -1324,8 +1339,13 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				return true;
 			}
 			break;
+		case G_UNICODE_BREAK_OPEN_PUNCTUATION:
+		case G_UNICODE_BREAK_COMBINING_MARK:
+		case G_UNICODE_BREAK_CONTINGENT:
 		case G_UNICODE_BREAK_AMBIGUOUS:
-			// do not break after characters with ambiguous break-types.
+		case G_UNICODE_BREAK_QUOTATION:
+		case G_UNICODE_BREAK_PREFIX:
+			// do not break after characters with these break-types.
 			break;
 		default:
 			d(printf ("Unhandled Unicode break-type: %s\n", unicode_break_types[op.btype]));
