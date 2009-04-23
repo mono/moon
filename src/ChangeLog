@@ -1,5 +1,10 @@
 2009-04-23  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp|.h, clock.cpp|.h: remove
+	OnSurfaceAttach/OnSurfaceDetach.  They're no longer used.
+
+2009-04-23  Chris Toshok  <toshok@ximian.com>
+
 	* clock.cpp (ClockGroup::UpdateFromParentTime): cache the current
 	clock state and use that to tell whether to update the child
 	clocks on this tick.  Clock::UpdateFromParentTime will change it

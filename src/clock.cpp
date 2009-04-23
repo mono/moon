@@ -581,28 +581,6 @@ ClockGroup::ClockGroup (TimelineGroup *timeline, bool timemanager_clockgroup)
 }
 
 void
-ClockGroup::OnSurfaceDetach ()
-{
-	Clock::OnSurfaceDetach ();
-
-	for (GList *l = child_clocks; l; l = l->next) {
-		Clock *c = (Clock*)l->data;
-		c->OnSurfaceDetach ();
-	}
-}
-
-void
-ClockGroup::OnSurfaceReAttach ()
-{
-	Clock::OnSurfaceReAttach ();
-
-	for (GList *l = child_clocks; l; l = l->next) {
-		Clock *c = (Clock*)l->data;
-		c->OnSurfaceReAttach ();
-	}
-}
-
-void
 ClockGroup::AddChild (Clock *clock)
 {
 	clock->SetRootParentTime (GetCurrentTime ());

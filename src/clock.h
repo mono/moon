@@ -198,8 +198,6 @@ public:
 	bool        GetWasStopped ()      { return was_stopped; }
 	void        ClearHasStarted ()    { has_started = false; }
 	TimeManager* GetTimeManager ()    { return time_manager; }
-	virtual void OnSurfaceDetach ()   {};
-	virtual void OnSurfaceReAttach () {};
 
 	TimeSpan begin_time;
 
@@ -313,8 +311,6 @@ public:
 	virtual void Seek (TimeSpan timespan);
 	virtual void SkipToFill ();
 	virtual void Stop ();
-	virtual void OnSurfaceDetach ();
-	virtual void OnSurfaceReAttach ();
 
 	/* these shouldn't be used.  they're called by the TimeManager and parent Clocks */
 	virtual void RaiseAccumulatedEvents ();
