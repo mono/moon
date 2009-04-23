@@ -1,5 +1,15 @@
 2009-04-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (GetGlyphInfo): Don't special-case
+	ZeroWidthNonBreakingSpace anymore. Rely on the font for this
+	glyph. That seems to be what SL2 does now...
+
+	* layout.cpp (layout_word_wrap): Fixed logic for word-joiners and
+	implemenetd a forced-wrap if we can't find a suitable place to
+	wrap.
+
+2009-04-23  Jeffrey Stedfast  <fejj@novell.com>
+
 	* layout.cpp (layout_word_wrap): Don't treat special numeric
 	punctuation as the start of a numeric word until we see what lays
 	beyond it.

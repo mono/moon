@@ -1885,17 +1885,17 @@ TextFont::GetGlyphInfo (gunichar unichar, guint32 index, StyleSimulations sims)
 	return slot;
 }
 
-static GlyphInfo ZeroWidthNoBreakSpace = {
-	0xFEFF, 0, { 0.0, 0.0, 0.0, 0.0, 0.0 }, NULL, 0, 0
-};
+//static GlyphInfo ZeroWidthNoBreakSpace = {
+//	0xFEFF, 0, { 0.0, 0.0, 0.0, 0.0, 0.0 }, NULL, 0, 0
+//};
 
 GlyphInfo *
 TextFont::GetGlyphInfo (gunichar unichar, StyleSimulations sims)
 {
 	guint32 index;
 	
-	if (unichar == 0xFEFF)
-		return &ZeroWidthNoBreakSpace;
+	//if (unichar == 0xFEFF)
+	//	return &ZeroWidthNoBreakSpace;
 	
 	index = face->GetCharIndex (unichar);
 	

@@ -1011,6 +1011,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	const char *inptr = in;
 	const char *start;
 	GUnicodeType ctype;
+	bool force = false;
 	bool fixed = false;
 	bool wrap = false;
 	GlyphInfo *glyph;
@@ -1067,6 +1068,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				
 				fixed = true;
 			}
+		} else if (btype == G_UNICODE_BREAK_WORD_JOINER) {
+			btype = g_unichar_break_type (c);
+			fixed = true;
 		} else {
 			btype = g_unichar_break_type (c);
 		}
@@ -1228,6 +1232,8 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		return true;
 	}
 	
+ retry:
+	
 	// search backwards for the best break point
 	d(printf ("\tscanning over %d break opportunities...\n", word->break_ops->len));
 	for (guint i = word->break_ops->len; i > 0; i--) {
@@ -1263,7 +1269,17 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				return true;
 			}
 		case G_UNICODE_BREAK_NON_BREAKING_GLUE:
-			// cannot break before or after this character
+		case G_UNICODE_BREAK_WORD_JOINER:
+			// cannot break before or after this character (unless forced)
+			if (force && i < word->break_ops->len) {
+				word->length = (op.inptr - in);
+				word->advance = op.advance;
+				word->count = op.count;
+				word->prev = op.prev;
+				
+				return true;
+			}
+			
 			if (i > 1) {
 				// skip past previous glyph
 				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
@@ -1366,9 +1382,14 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				return true;
 			}
 			break;
-		case G_UNICODE_BREAK_WORD_JOINER:
-			// only break if there is nothing before it
-			if (i == 1) {
+		case G_UNICODE_BREAK_OPEN_PUNCTUATION:
+		case G_UNICODE_BREAK_COMBINING_MARK:
+		case G_UNICODE_BREAK_CONTINGENT:
+		case G_UNICODE_BREAK_AMBIGUOUS:
+		case G_UNICODE_BREAK_QUOTATION:
+		case G_UNICODE_BREAK_PREFIX:
+			// do not break after characters with these break-types (unless forced)
+			if (force && i < word->break_ops->len) {
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
@@ -1376,14 +1397,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				
 				return true;
 			}
-			break;
-		case G_UNICODE_BREAK_OPEN_PUNCTUATION:
-		case G_UNICODE_BREAK_COMBINING_MARK:
-		case G_UNICODE_BREAK_CONTINGENT:
-		case G_UNICODE_BREAK_AMBIGUOUS:
-		case G_UNICODE_BREAK_QUOTATION:
-		case G_UNICODE_BREAK_PREFIX:
-			// do not break after characters with these break-types.
 			break;
 		default:
 			d(printf ("Unhandled Unicode break-type: %s\n", unicode_break_types[op.btype]));
@@ -1418,6 +1431,12 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		
 		btype = op.btype;
 		c = op.c;
+	}
+	
+	if (!line_start && !force) {
+		d(printf ("\tcouldn't find a good place to break but we must force a break, retrying...\n"));
+		force = true;
+		goto retry;
 	}
 	
 	d(printf ("\tcouldn't find a good place to break, defaulting to breaking before the word start\n"));
