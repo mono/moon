@@ -1,3 +1,12 @@
+2009-04-23  Aaron Bockover  <abock@gnome.org>
+
+	* firefox-xpi.m4:
+
+2009-04-23  Aaron Bockover  <abockover@novell.com>
+
+	* firefox-xpi.m4: Fix regression that allows building without
+	any browser support
+
 2009-04-22  Rusty Howell   <rhowell@novell.com>
 
 	* Removed --enable-user-plugin from firefox-xpi.m4

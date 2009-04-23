@@ -62,5 +62,9 @@ run-perf:
 	$(MAKE) $(AM_MAKEFLAGS) -C perf run-perf
 
 user-plugin: 
+if PLUGIN_INSTALL
 	$(MAKE) $(AM_MAKEFLAGS) -C plugin user-plugin
+else
+	@echo "Error: You must configure with Firefox 2 or 3 support"; exit 1
+endif
 

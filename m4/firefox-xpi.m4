@@ -4,12 +4,13 @@ AC_DEFUN([MOONLIGHT_CHECK_FIREFOX_XPI],
 	avcodec_libdir="$(pkg-config --variable=libdir libavcodec)"
 	AC_SUBST([avutil_libdir])
 	AC_SUBST([avcodec_libdir])
-	
-	AM_CONDITIONAL(PLUGIN_INSTALL, [test x$user_plugin = xyes])
 
+	user_plugin="yes"
 	if test x$with_ff3 = xno -a x$with_ff2 = xno; then
-		AC_MSG_ERROR([Building the plugin installer requires Firefox2 or Firefox3 support.])
+		user_plugin="no"
 	fi
+
+	AM_CONDITIONAL(PLUGIN_INSTALL, [test x$user_plugin = xyes])
 		
 	case "$target_os" in
 		*linux*)
