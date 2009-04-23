@@ -986,8 +986,6 @@ private:
 class AnimationClock : public Clock {
 public:
 	AnimationClock (Animation *timeline);
-	virtual void OnSurfaceDetach ();
-	virtual void OnSurfaceReAttach ();
 
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
 
