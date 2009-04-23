@@ -1,5 +1,11 @@
 2009-04-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (layout_word_wrap): Don't treat special numeric
+	punctuation as the start of a numeric word until we see what lays
+	beyond it.
+
+2009-04-23  Jeffrey Stedfast  <fejj@novell.com>
+
 	* layout.cpp (layout_word_wrap): Don't ignore Zero-Width spaces
 	anymore, that was a 1.0-thing and can no longer be used. Also
 	added support for non-breaking-glue classes as well as rules for

@@ -67,6 +67,39 @@ static const char *unicode_break_types[] = {
 	"G_UNICODE_BREAK_HANGUL_LV_SYLLABLE",
 	"G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE"
 };
+
+static const char *unicode_char_types[] = {
+	"G_UNICODE_CONTROL",
+	"G_UNICODE_FORMAT",
+	"G_UNICODE_UNASSIGNED",
+	"G_UNICODE_PRIVATE_USE",
+	"G_UNICODE_SURROGATE",
+	"G_UNICODE_LOWERCASE_LETTER",
+	"G_UNICODE_MODIFIER_LETTER",
+	"G_UNICODE_OTHER_LETTER",
+	"G_UNICODE_TITLECASE_LETTER",
+	"G_UNICODE_UPPERCASE_LETTER",
+	"G_UNICODE_COMBINING_MARK",
+	"G_UNICODE_ENCLOSING_MARK",
+	"G_UNICODE_NON_SPACING_MARK",
+	"G_UNICODE_DECIMAL_NUMBER",
+	"G_UNICODE_LETTER_NUMBER",
+	"G_UNICODE_OTHER_NUMBER",
+	"G_UNICODE_CONNECT_PUNCTUATION",
+	"G_UNICODE_DASH_PUNCTUATION",
+	"G_UNICODE_CLOSE_PUNCTUATION",
+	"G_UNICODE_FINAL_PUNCTUATION",
+	"G_UNICODE_INITIAL_PUNCTUATION",
+	"G_UNICODE_OTHER_PUNCTUATION",
+	"G_UNICODE_OPEN_PUNCTUATION",
+	"G_UNICODE_CURRENCY_SYMBOL",
+	"G_UNICODE_MODIFIER_SYMBOL",
+	"G_UNICODE_MATH_SYMBOL",
+	"G_UNICODE_OTHER_SYMBOL",
+	"G_UNICODE_LINE_SEPARATOR",
+	"G_UNICODE_PARAGRAPH_SEPARATOR",
+	"G_UNICODE_SPACE_SEPARATOR"
+};
 #endif
 
 #define UnicharIsLineBreak(c) ((c) == '\r' || (c) == '\n' || (c) == 0x2028)
@@ -706,11 +739,11 @@ layout_lwsp (LayoutWord *word, const char *in, const char *inend)
 #if DEBUG
 		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
 			if (c < 128 && isprint ((int) c))
-				printf ("\tunichar = %c; btype = %s, isspace = %s\n", (char) c,
-					unicode_break_types[btype], g_unichar_isspace (c) ? "true" : "false");
+				printf ("\tunichar = %c; btype = %s, ctype = %s\n", (char) c,
+					unicode_break_types[btype], unicode_char_types[g_unichar_type (c)]);
 			else
-				printf ("\tunichar = 0x%.4X; btype = %s, isspace = %s\n", c,
-					unicode_break_types[btype], g_unichar_isspace (c) ? "true" : "false");
+				printf ("\tunichar = 0x%.4X; btype = %s, ctype = %s\n", c,
+					unicode_break_types[btype], unicode_char_types[g_unichar_type (c)]);
 		}
 #endif
 		
@@ -905,7 +938,7 @@ layout_word_nowrap (LayoutWord *word, const char *in, const char *inend, double 
 }
 
 static WordType
-word_type (GUnicodeBreakType btype)
+word_type (GUnicodeType ctype, GUnicodeBreakType btype)
 {
 	switch (btype) {
 	case G_UNICODE_BREAK_ALPHABETIC:
@@ -913,6 +946,8 @@ word_type (GUnicodeBreakType btype)
 	case G_UNICODE_BREAK_IDEOGRAPHIC:
 		return WORD_TYPE_IDEOGRAPHIC;
 	case G_UNICODE_BREAK_NUMERIC:
+		if (ctype == G_UNICODE_OTHER_PUNCTUATION)
+			return WORD_TYPE_UNKNOWN;
 		return WORD_TYPE_NUMERIC;
 	case G_UNICODE_BREAK_INSEPARABLE:
 		return WORD_TYPE_INSEPARABLE;
@@ -930,12 +965,12 @@ word_type (GUnicodeBreakType btype)
 }
 
 static bool
-word_type_changed (WordType type, GUnicodeBreakType btype)
+word_type_changed (WordType wtype, GUnicodeType ctype, GUnicodeBreakType btype)
 {
-	WordType ntype;
+	WordType type;
 	
-	if ((ntype = word_type (btype)) != WORD_TYPE_UNKNOWN)
-		return type != ntype;
+	if ((type = word_type (ctype, btype)) != WORD_TYPE_UNKNOWN)
+		return type != wtype;
 	
 	switch (type) {
 	case WORD_TYPE_INSEPARABLE:
@@ -975,6 +1010,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	WordBreakOpportunity op;
 	const char *inptr = in;
 	const char *start;
+	GUnicodeType ctype;
 	bool fixed = false;
 	bool wrap = false;
 	GlyphInfo *glyph;
@@ -1040,10 +1076,12 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			break;
 		}
 		
+		ctype = g_unichar_type (c);
+		
 		if (word->type == WORD_TYPE_UNKNOWN) {
 			// record our word-type
-			word->type = word_type (btype);
-		} else if (word_type_changed (word->type, btype)) {
+			word->type = word_type (ctype, btype);
+		} else if (word_type_changed (word->type, ctype, btype)) {
 			// changing word-types, don't continue
 			inptr = start;
 			break;
@@ -1066,11 +1104,11 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			if (c < 128 && isprint ((int) c))
 				printf ("\tunichar = %c; btype = %s, new glyph = %s; cc = %d; isspace = %s\n", (char) c,
 					unicode_break_types[btype], new_glyph ? "true" : "false", unichar_combining_class (c),
-					g_unichar_isspace (c) ? "true" : "false");
+					unicode_char_types[ctype]);
 			else
 				printf ("\tunichar = 0x%.4X; btype = %s, new glyph = %s; cc = %d; isspace = %s\n", c,
 					unicode_break_types[btype], new_glyph ? "true" : "false", unichar_combining_class (c),
-					g_unichar_isspace (c) ? "true" : "false");
+					unicode_char_types[ctype]);
 		}
 #endif
 		
