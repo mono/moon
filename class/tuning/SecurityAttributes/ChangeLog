@@ -1,3 +1,7 @@
+2009-04-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* detect-sc.cs: Call AddSearchDirectory on the input directory
+
 2009-03-27  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Makefile.am: Use the plugin directory as the assembly source

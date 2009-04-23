@@ -273,6 +273,7 @@ class Program {
 			}
 
 			AssemblyDefinition ad = AssemblyFactory.GetAssembly (fullpath);
+			(ad.Resolver as BaseAssemblyResolver).AddSearchDirectory (args [0]);
 			ProcessAssembly (ad);
 
 			string outfile = Path.Combine (output, assembly) + ".auto.sc";
