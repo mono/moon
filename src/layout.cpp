@@ -1433,7 +1433,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		c = op.c;
 	}
 	
-	if (!line_start && !force) {
+	if (line_start && !force) {
 		d(printf ("\tcouldn't find a good place to break but we must force a break, retrying...\n"));
 		force = true;
 		goto retry;
