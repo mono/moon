@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 465 methods
+# 466 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -228,6 +228,7 @@
 +SSC-M: System.Double System.Windows.Interop.Content::get_ActualWidth()
 +SSC-M: System.Boolean System.Windows.Interop.Content::get_IsFullScreen()
 +SSC-M: System.Void System.Windows.Interop.Content::set_IsFullScreen(System.Boolean)
++SSC-M: System.Void System.Windows.Interop.PluginHost::SetPluginHandle(System.IntPtr)
 +SSC-M: System.Boolean System.Windows.Interop.Settings::get_EnableHTMLAccess()
 +SSC-M: System.Int32 System.Windows.Interop.Settings::get_MaxFrameRate()
 +SSC-M: System.Void System.Windows.Interop.Settings::set_MaxFrameRate(System.Int32)
