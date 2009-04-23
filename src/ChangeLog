@@ -1,5 +1,13 @@
 2009-04-23  Chris Toshok  <toshok@ximian.com>
 
+	* clock.cpp (ClockGroup::UpdateFromParentTime): cache the current
+	clock state and use that to tell whether to update the child
+	clocks on this tick.  Clock::UpdateFromParentTime will change it
+	out from under us, and child clocks won't get updated the last
+	time when we switch to Filling or Stopped.
+
+2009-04-23  Chris Toshok  <toshok@ximian.com>
+
 	* animation.cpp (Animation::AllocateClock): remove the name
 	setting from here, since it only works here if the target/property
 	were set on the animation itself.
