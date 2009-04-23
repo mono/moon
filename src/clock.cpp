@@ -690,11 +690,25 @@ ClockGroup::UpdateFromParentTime (TimeSpan parentTime)
 {
 	bool rv = Clock::UpdateFromParentTime (parentTime);
 
-	if (GetClockState() != Clock::Stopped) {
-		for (GList *l = child_clocks; l; l = l->next) {
-			Clock *clock = (Clock*)l->data;
+	// ClockGroups (which correspond to storyboards generally)
+	// only cause their children to update (and therefore for
+	// animations to hold/progress their value) if they are
+	// active.  if they're stopped or paused, it's simple -
+	// nothing should happens.
+	//
+	// but it also happens when the clockgroup is in the Filling
+	// state.  This means that you can attach a handler to
+	// Storyboard.Completed and inside the handler modify a
+	// property that an animation under that storyboard was
+	// targetting.  and the new setting isnt clobbered by the
+	// animation like it would be if the storyboard was active.
+
+	bool update_child_clocks = (GetClockState () == Clock::Active && !GetIsPaused());
+
+	for (GList *l = child_clocks; l; l = l->next) {
+		Clock *clock = (Clock*)l->data;
+		if (update_child_clocks || clock->Is(Type::CLOCKGROUP))
 			rv = clock->UpdateFromParentTime (current_time) || rv;
-		}
 	}
 
 	return rv;
