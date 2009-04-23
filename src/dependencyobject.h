@@ -76,6 +76,7 @@ private:
 class EventObject {
 private:
 	enum Flags {
+		MultiThreadedSafe = 1 << 29, // if the dtor can be called on any thread
 		Attached = 1 << 30,
 		Disposed = 1 << 31,
 		IdMask = ~(Attached | Disposed),
@@ -173,6 +174,7 @@ public:
 	bool IsAttached ();
 	void SetIsAttached (bool value);
 	bool IsDisposed ();
+	bool IsMultiThreadedSafe () { return (flags & MultiThreadedSafe) != 0; }
 	
 	Deployment *GetDeployment ();
 	void SetCurrentDeployment (bool domain = true);
@@ -190,6 +192,7 @@ protected:
 	virtual ~EventObject ();
 	EventObject ();
 	EventObject (Type::Kind type);
+	EventObject (Type::Kind type, bool multi_threaded_safe);
 	EventObject (Deployment *deployment);
 	EventObject (Deployment *deployment, Type::Kind type);
 	

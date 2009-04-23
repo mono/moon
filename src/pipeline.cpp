@@ -1833,7 +1833,7 @@ MemorySource::PeekInternal (void *buffer, guint32 n)
  */ 
 
 MediaClosure::MediaClosure (Media *media, MediaCallback *callback, MediaCallback *finished, EventObject *context)
-	: EventObject (Type::MEDIACLOSURE)
+	: EventObject (Type::MEDIACLOSURE, true)
 {
 	g_return_if_fail (callback != NULL);
 	g_return_if_fail (media != NULL);
@@ -1850,7 +1850,7 @@ MediaClosure::MediaClosure (Media *media, MediaCallback *callback, MediaCallback
 }
 
 MediaClosure::MediaClosure (Media *media, MediaCallback *callback, EventObject *context)
-	: EventObject (Type::MEDIACLOSURE)
+	: EventObject (Type::MEDIACLOSURE, true)
 {
 	g_return_if_fail (callback != NULL);
 	g_return_if_fail (media != NULL);

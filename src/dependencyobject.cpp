@@ -79,6 +79,13 @@ EventObject::EventObject (Type::Kind type)
 	Initialize (NULL, type);
 }
 
+EventObject::EventObject (Type::Kind type, bool multi_threaded_safe)
+{
+	Initialize (NULL, type);
+	if (multi_threaded_safe)
+		flags |= (gint32) MultiThreadedSafe;
+}
+
 EventObject::EventObject (Deployment *deployment)
 {
 	Initialize (deployment, Type::EVENTOBJECT);
@@ -352,7 +359,7 @@ EventObject::unref ()
 		printf ("EventObject::unref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
 #endif
 
-	if (!Surface::InMainThread ()) {
+	if (!IsMultiThreadedSafe () && !Surface::InMainThread ()) {
 		unref_delayed ();
 		return;
 	}

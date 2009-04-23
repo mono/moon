@@ -1,3 +1,11 @@
+2009-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.h:
+	* dependencyobject.cpp: Add a way to mark allow objects to be
+	  deleted on any thread, not just the main thread.
+
+	* pipeline.cpp: MediaClosures can be deleted on any thread.
+
 2009-04-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (layout_word_wrap): Add a bit more logic for infix
