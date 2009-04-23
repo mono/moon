@@ -1606,6 +1606,9 @@ TextLayout::Layout ()
 					prev = word.prev;
 				}
 				
+				if (wrapped)
+					break;
+				
 				// now append any trailing lwsp
 				layout_word_init (&word, line->advance, prev);
 				
@@ -1624,20 +1627,10 @@ TextLayout::Layout ()
 					if (attrs->IsUnderlined ())
 						line->width = line->advance;
 				}
-				
-				if (wrapped)
-					break;
 			}
 			
 			// the current run has ended
 			run->length = inptr - (text + run->start);
-			
-			// if we wrapped at the end of a run but
-			// there's still more text, let the next run
-			// decide whether or not to wrap (as it may
-			// start with lwsp).
-			if (wrapped && inptr == inend && *inptr != '\0')
-				wrapped = false;
 			
 			if (linebreak || wrapped || *inptr == '\0') {
 				// update actual width extents

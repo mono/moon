@@ -1,5 +1,11 @@
 2009-04-23  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (Layout): Silverlight 2.0 no longer starts plotting
+	lwsp after going beyond the width constraint. Fixes the
+	tests in the far right in MS DRT 206.
+
+2009-04-23  Jeffrey Stedfast  <fejj@novell.com>
+
 	* font.cpp (GetGlyphInfo): Don't special-case
 	ZeroWidthNonBreakingSpace anymore. Rely on the font for this
 	glyph. That seems to be what SL2 does now...
