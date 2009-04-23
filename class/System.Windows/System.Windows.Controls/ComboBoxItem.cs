@@ -40,10 +40,7 @@ namespace System.Windows.Controls
 	{
 		public ComboBoxItem ()
 		{
-		}
-
-		protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e)
-		{
+			
 		}
 	}
 }
