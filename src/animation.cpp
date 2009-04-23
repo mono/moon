@@ -224,24 +224,6 @@ AnimationStorage::~AnimationStorage ()
 	}
 }
 
-void
-AnimationClock::OnSurfaceDetach ()
-{
-	Clock::OnSurfaceDetach ();
-
-	if (storage)
-		storage->DetachUpdateHandler ();
-}
-
-void
-AnimationClock::OnSurfaceReAttach ()
-{
-	Clock::OnSurfaceReAttach ();
-
-	if (storage)
-		storage->ReAttachUpdateHandler ();
-}
-
 AnimationClock::AnimationClock (Animation *timeline)
   : Clock (timeline)
 {
