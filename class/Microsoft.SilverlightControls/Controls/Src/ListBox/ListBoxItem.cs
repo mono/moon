@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input; 
 using System.Windows.Media.Animation;
+using System.Windows.Controls.Primitives;
 
 #if WPF 
 using PropertyChangedCallback = System.Windows.FrameworkPropertyMetadata;
@@ -62,7 +63,7 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Identifies the parent ListBox.
         /// </summary> 
-        internal ListBox ParentListBox { get; set; }
+        internal Selector ParentSelector { get; set; }
 
         internal bool IsFocused { get; set; }
 
@@ -104,9 +105,9 @@ namespace System.Windows.Controls
                 e.Handled = true;
                 if (Focus())
                 { 
-                    if (null != ParentListBox)
+                    if (null != ParentSelector)
                     {
-                        ParentListBox.NotifyListItemClicked(this);
+                        ParentSelector.NotifyListItemClicked(this);
                     } 
                 }
             } 
@@ -142,8 +143,8 @@ namespace System.Windows.Controls
             IsFocused = true;
             ChangeVisualState ();
 
-            if (null != ParentListBox) {
-                ParentListBox.NotifyListItemGotFocus(this);
+            if (null != ParentSelector) {
+                ParentSelector.NotifyListItemGotFocus(this);
             } 
         }
 
@@ -156,8 +157,8 @@ namespace System.Windows.Controls
             base.OnLostFocus (e);
             IsFocused = false;
             ChangeVisualState ();
-            if (null != ParentListBox) {
-                ParentListBox.NotifyListItemLostFocus(this); 
+            if (null != ParentSelector) {
+                ParentSelector.NotifyListItemLostFocus(this); 
             }
         }
  

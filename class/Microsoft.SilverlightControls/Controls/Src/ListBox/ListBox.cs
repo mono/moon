@@ -209,7 +209,7 @@ namespace System.Windows.Controls
             ListBoxItem listBoxItem = element as ListBoxItem; 
             Debug.Assert(null != listBoxItem);
             // Prepare the ListBoxItem state
-            listBoxItem.ParentListBox = this; 
+            listBoxItem.ParentSelector = this; 
             // Prepare the ListBoxItem wrapper 
             bool setContent = true;
             if (listBoxItem != item) 
@@ -293,7 +293,7 @@ namespace System.Windows.Controls
             } 
             // Clear the ListBoxItem state 
             listBoxItem.IsSelected = false;
-            listBoxItem.ParentListBox = null; 
+            listBoxItem.ParentSelector = null; 
             if (listBoxItem != item)
             {
                 Debug.Assert(ObjectToListBoxItem.ContainsKey(item)); 
@@ -381,7 +381,7 @@ namespace System.Windows.Controls
         /// Called by ListBoxItem instances when they are clicked.
         /// </summary>
         /// <param name="listBoxItem">The ListBoxItem.</param> 
-        internal void NotifyListItemClicked(ListBoxItem listBoxItem) 
+        internal override void NotifyListItemClicked(ListBoxItem listBoxItem) 
         {
             if (listBoxItem.IsSelected)
             {
@@ -402,7 +402,7 @@ namespace System.Windows.Controls
         /// Called by ListBoxItem instances when they get focus
         /// </summary> 
         /// <param name="listBoxItemNewFocus">ListBoxItem that got focus</param>
-        internal void NotifyListItemGotFocus(ListBoxItem listBoxItemNewFocus)
+        internal override void NotifyListItemGotFocus(ListBoxItem listBoxItemNewFocus)
         { 
             // Track the focused index 
             _focusedIndex = Items.IndexOf(listBoxItemNewFocus.Item ?? listBoxItemNewFocus);
@@ -410,7 +410,7 @@ namespace System.Windows.Controls
             // Select the focused ListBoxItem iff transitioning from another focused ListBoxItem 
             if ((null != listBoxItemNewFocus) && 
                 (null != _listBoxItemOldFocus) &&
-                (this == _listBoxItemOldFocus.ParentListBox) && 
+                (this == _listBoxItemOldFocus.ParentSelector) && 
                 (listBoxItemNewFocus != _listBoxItemOldFocus))
             {
                 SelectedItem = listBoxItemNewFocus.Item ?? listBoxItemNewFocus; 
@@ -422,7 +422,7 @@ namespace System.Windows.Controls
         /// Called by ListBoxItem instances when they lose focus 
         /// </summary>
         /// <param name="listBoxItemOldFocus">ListBoxItem that lost focus</param>
-        internal void NotifyListItemLostFocus(ListBoxItem listBoxItemOldFocus) 
+        internal override void NotifyListItemLostFocus(ListBoxItem listBoxItemOldFocus) 
         {
             // Stop tracking state
             _focusedIndex = -1; 

@@ -151,6 +151,23 @@ namespace System.Windows.Controls.Primitives {
 		
 		protected virtual void OnItemsChanged (NotifyCollectionChangedEventArgs e)
 		{
+			
+		}
+		
+
+		internal virtual void NotifyListItemClicked(ListBoxItem listBoxItem) 
+		{
+			
+		}
+		
+		internal virtual void NotifyListItemGotFocus(ListBoxItem listBoxItemNewFocus)
+		{
+			
+		}
+		
+		internal virtual void NotifyListItemLostFocus(ListBoxItem listBoxItemOldFocus)
+		{
+			
 		}
 	}
 }
