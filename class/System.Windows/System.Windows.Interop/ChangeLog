@@ -1,3 +1,10 @@
+2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* PluginHost.cs: Initialize "xap_uri" when we set the plugin 
+	handle. This makes it available sooner (than Application) to
+	use WebClient in Deployement.
+	* SilverlightHost.cs: Use PluginHost to return Source Uri.
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* PluginHost.cs:

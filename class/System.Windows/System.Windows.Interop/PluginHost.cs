@@ -1,10 +1,10 @@
 //
-// BrowserHost.cs
+// PluginHost.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2007, 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -46,15 +46,23 @@ namespace System.Windows.Interop {
 	internal static class PluginHost {
 		static IntPtr plugin_handle;
 		static Uri root_uri;
+		static Uri source_uri;
 
 		public static void SetPluginHandle (IntPtr value)
 		{
-			string location = NativeMethods.plugin_instance_get_source_location (value);
-			string uri = NativeMethods.plugin_instance_get_source (value);
-
-			location = location.Substring (0, location.LastIndexOf ("/") + 1) + uri.Substring (0, uri.LastIndexOf ("/") + 1);
-
 			plugin_handle = value;
+
+			string location = NativeMethods.plugin_instance_get_source_location (value);
+			// full uri including xap
+			source_uri = new Uri (location, UriKind.RelativeOrAbsolute);
+
+			// IsolatedStorage (inside mscorlib.dll) needs some information about the XAP file
+			// to initialize it's application and site directory storage. WebClient is another user of this
+			AppDomain.CurrentDomain.SetData ("xap_uri", GetApplicationIdentity (source_uri));
+
+			string uri = NativeMethods.plugin_instance_get_source (value);
+			location = location.Substring (0, location.LastIndexOf ("/") + 1) + uri.Substring (0, uri.LastIndexOf ("/") + 1);
+			// xap-less uri
 			root_uri = new Uri (location);
 		}
 
@@ -68,6 +76,21 @@ namespace System.Windows.Interop {
 			get {
 				return root_uri;
 			}
+		}
+
+		public static Uri SourceUri {
+			get {
+				return source_uri;
+			}
+		}
+
+		// used by IsolatedStorage (who has no access to the Uri class)
+		static string GetApplicationIdentity (Uri uri)
+		{
+			if ((uri.Scheme == "http" && uri.Port == 80) || (uri.Scheme == "https" && uri.Port == 443) || (uri.Port == -1))
+				return String.Format ("{0}://{1}{2}", uri.Scheme, uri.DnsSafeHost, uri.AbsolutePath);
+			else
+				return String.Format ("{0}://{1}:{2}{3}", uri.Scheme, uri.DnsSafeHost, uri.Port, uri.AbsolutePath);
 		}
 	}
 }

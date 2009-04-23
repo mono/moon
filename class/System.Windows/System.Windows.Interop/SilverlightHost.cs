@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008, 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -73,16 +73,7 @@ namespace System.Windows.Interop {
 		}
 
 		public Uri Source {
-			get {
-				if (PluginHost.Handle == IntPtr.Zero)
-					return null;
-
-				string loc = NativeMethods.plugin_instance_get_source_location (PluginHost.Handle);
-				if (loc == null)
-					return null;
-
-				return new Uri (loc, UriKind.RelativeOrAbsolute);
-			}
+			get { return PluginHost.SourceUri; }
 		}
 	}
 }

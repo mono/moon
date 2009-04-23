@@ -74,13 +74,6 @@ namespace System.Windows {
 			if (Current == null) {
 				Current = this;
 
-				if (Host.Source != null) {
-					// IsolatedStorage (inside mscorlib.dll) needs some information about the XAP file
-					// to initialize it's application and site directory storage.
-					AppDomain ad = AppDomain.CurrentDomain;
-					ad.SetData ("xap_uri", GetApplicationIdentity (Host.Source));
-				}
-
 				SynchronizationContext context = new System.Windows.Threading.DispatcherSynchronizationContext ();
 				SynchronizationContext.SetSynchronizationContext (context);
 			} else {
@@ -511,16 +504,6 @@ namespace System.Windows {
 
 		private static readonly DependencyProperty ResourcesProperty =
 			DependencyProperty.Lookup (Kind.APPLICATION, "Resources", typeof (ResourceDictionary));
-
-
-		// used by IsolatedStorage (who has no access to the Uri class)
-		static string GetApplicationIdentity (Uri uri)
-		{
-			if ((uri.Scheme == "http" && uri.Port == 80) || (uri.Scheme == "https" && uri.Port == 443) || (uri.Port == -1))
-				return String.Format ("{0}://{1}{2}", uri.Scheme, uri.DnsSafeHost, uri.AbsolutePath);
-			else
-				return String.Format ("{0}://{1}:{2}{3}", uri.Scheme, uri.DnsSafeHost, uri.Port, uri.AbsolutePath);
-		}
 
 #region "INativeDependencyObjectWrapper interface"
 		IntPtr _native;

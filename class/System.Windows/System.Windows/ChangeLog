@@ -1,3 +1,9 @@
+2009-04-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: Move "xap_uri" initialization to PluginHost 
+	since WebClient can be used (Deployment.LoadAssemblies) before 
+	the Application instance is created (e.g. python webide).
+
 2009-04-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Deployment.cs: Do not use an anomymous method that needs to
