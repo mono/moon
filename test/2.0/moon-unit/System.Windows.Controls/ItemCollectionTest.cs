@@ -33,6 +33,7 @@ using System.Windows.Controls;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows.Shapes;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -360,6 +361,23 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.Throws<ArgumentException> (delegate {
 					ic.Contains (null);
 				}, "contains/null");
+		}
+		
+		[TestMethod]
+		public void ParentTest ()
+		{
+			ItemsControl c = new ItemsControl ();
+			FrameworkElement item = new ComboBoxItem ();
+			c.Items.Add (item);
+			Assert.AreSame (c, item.Parent, "#1");
+
+			item = new Rectangle ();
+			c.Items.Add (item);
+			Assert.AreSame (c, item.Parent, "#2");
+
+			item = new MoonTest.System.Windows.Controls.ContentControlTest.ConcreteFrameworkElement ();
+			c.Items.Add (item);
+			Assert.AreSame (c, item.Parent, "#3");
 		}
 	}
 }
