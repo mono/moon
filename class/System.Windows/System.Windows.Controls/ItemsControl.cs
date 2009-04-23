@@ -102,7 +102,7 @@ namespace System.Windows.Controls {
 				items = new ItemCollection ();
 				items.SetReadOnly();
 				items.ItemsChanged += delegate (object o, NotifyCollectionChangedEventArgs e) {
-					OnItemsChanged (e);
+					InvokeItemsChanged (e);
 				};
 
 				foreach (var v in newSource) {
@@ -159,25 +159,54 @@ namespace System.Windows.Controls {
 
 		protected virtual void OnItemsChanged (NotifyCollectionChangedEventArgs e)
 		{
-			if (_presenter == null || _presenter._elementRoot == null)
-				return;
-
-			StackPanel panel = _presenter._elementRoot;
-
+			
+		}
+		
+		void InvokeItemsChanged (NotifyCollectionChangedEventArgs e)
+		{
 			switch (e.Action) {
-			case NotifyCollectionChangedAction.Reset:
-				// the list has gone away, so clear the children of the panel
-				panel.Children.Clear ();
-				break;
 			case NotifyCollectionChangedAction.Add:
-				AddItemsToPresenter (e.NewItems, e.NewStartingIndex);
+				SetLogicalParent (native, e.NewItems);
 				break;
 			case NotifyCollectionChangedAction.Remove:
-				RemoveItemsFromPresenter (e.OldItems, e.OldStartingIndex);
+				SetLogicalParent (IntPtr.Zero, e.OldItems);
 				break;
 			case NotifyCollectionChangedAction.Replace:
-				DependencyObject element = panel.Children[e.NewStartingIndex];
+				SetLogicalParent (IntPtr.Zero, e.OldItems);
+				SetLogicalParent (native, e.NewItems);
 				break;
+			}
+			
+			if (_presenter != null && _presenter._elementRoot != null) {
+
+				StackPanel panel = _presenter._elementRoot;
+	
+				switch (e.Action) {
+				case NotifyCollectionChangedAction.Reset:
+					// the list has gone away, so clear the children of the panel
+					panel.Children.Clear ();
+					break;
+				case NotifyCollectionChangedAction.Add:
+					AddItemsToPresenter (e.NewItems, e.NewStartingIndex);
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					RemoveItemsFromPresenter (e.OldItems, e.OldStartingIndex);
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					DependencyObject element = panel.Children[e.NewStartingIndex];
+					break;
+				}
+			}
+			
+			OnItemsChanged (e);
+		}
+		
+		void SetLogicalParent (IntPtr parent, IList items)
+		{
+			foreach (object o in items) {
+				FrameworkElement el = o as FrameworkElement;
+				if (el != null)
+					Mono.NativeMethods.framework_element_set_logical_parent (el.native, parent);
 			}
 		}
 
@@ -252,7 +281,7 @@ namespace System.Windows.Controls {
 					items = new ItemCollection ();
 					itemsIsDataBound = false;
 					items.ItemsChanged += delegate (object o, NotifyCollectionChangedEventArgs e) {
-						OnItemsChanged (e);
+						InvokeItemsChanged (e);
 					};
 				}
 				return items;

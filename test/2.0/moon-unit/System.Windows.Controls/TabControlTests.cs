@@ -63,7 +63,6 @@ namespace Mono.Moonlight
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Bad parenting")]
 		public void SelectedIndex ()
 		{
 			TabItem item;

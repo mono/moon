@@ -267,7 +267,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("DO needs special support for setting parents")]
 		public void Methods_Control ()
 		{
 			Slider a = new Slider ();

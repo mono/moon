@@ -1,3 +1,9 @@
+2009-04-23  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: FrameworkElements added to an
+	  ItemsCollection need to have their logical parent set to the
+	  ItemsControl.
+
 2009-04-22  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs: Add missing nullcheck around access to a

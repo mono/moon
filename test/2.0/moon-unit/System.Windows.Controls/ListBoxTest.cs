@@ -322,7 +322,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Parent bug - we're not parenting listboxitems correctly")]
 		public void ParentTest ()
 		{
 			ListBox box = new ListBox ();
