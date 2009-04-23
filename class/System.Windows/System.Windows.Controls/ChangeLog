@@ -1,5 +1,11 @@
 2009-04-23  Alan McGovern  <amcgovern@novell.com>
 
+	* ComboBox.cs: Allow popups to use a transparent canvas to
+	  catch clicks outside of the popup area. ComboBox uses this
+	  to close its popup.
+
+2009-04-23  Alan McGovern  <amcgovern@novell.com>
+
 	* ComboBoxItem.cs: Removing unnecessary override
 
 2009-04-23  Alan McGovern  <amcgovern@novell.com>

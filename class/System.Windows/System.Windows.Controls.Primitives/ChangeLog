@@ -1,5 +1,11 @@
 2009-04-23  Alan McGovern  <amcgovern@novell.com>
 
+	* Popup.cs: Allow popups to use a transparent canvas to catch
+	  clicks outside of the popup area. ComboBox uses this to
+	  close its popup.
+
+2009-04-23  Alan McGovern  <amcgovern@novell.com>
+
 	* Selector.cs: Move the Notify* methods into Selector as both
 	  Listbox and ComboBox require the same API.
 

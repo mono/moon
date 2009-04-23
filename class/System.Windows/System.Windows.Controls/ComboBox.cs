@@ -29,6 +29,7 @@ using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace System.Windows.Controls
 {
@@ -223,6 +224,11 @@ namespace System.Windows.Controls
 			_popup = GetTemplateChild ("Popup") as Popup;
 			_contentPresenterBorder = GetTemplateChild ("ContentPresenterBorder") as FrameworkElement;
 			_dropDownToggle = GetTemplateChild ("DropDownToggle") as ToggleButton;
+			
+			if (_popup != null) {
+				_popup.CatchClickedOutside ();
+				_popup.ClickedOutside += delegate { IsDropDownOpen = false; };
+			}
 		}
 		
 		protected override AutomationPeer OnCreateAutomationPeer ()
