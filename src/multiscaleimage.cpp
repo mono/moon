@@ -653,6 +653,9 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			TimelineCollection *tlc = new TimelineCollection ();
 			tlc->Add (fadein_animation);
 			fadein_sb->SetChildren(tlc);
+#if DEBUG
+			fadein_sb->SetName ("Multiscale Fade-In");
+#endif
 		} else {
 			fadein_sb->PauseWithError (NULL);
 		}
@@ -865,7 +868,7 @@ MultiScaleImage::EmitMotionFinished ()
 	Emit (MultiScaleImage::MotionFinishedEvent);
 }
 
-void
+static void
 motion_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	MultiScaleImage *msi = (MultiScaleImage *) closure;
@@ -884,7 +887,7 @@ MultiScaleImage::SetViewportWidth (double value)
 		zoom_sb = new Storyboard ();
 		zoom_sb->SetManualTarget (this);
 		zoom_sb->SetTargetProperty (zoom_sb, new PropertyPath ("(MultiScaleImage.ViewportWidth)"));
-		zoom_sb->AddHandler (zoom_sb->CompletedEvent, motion_finished, this);
+		zoom_sb->AddHandler (Storyboard::CompletedEvent, motion_finished, this);
 		zoom_animation = new DoubleAnimationUsingKeyFrames ();
 		zoom_animation->SetDuration (Duration::FromSeconds (4));
 		zoom_animation->SetKeyFrames (new DoubleKeyFrameCollection ());
@@ -896,6 +899,9 @@ MultiScaleImage::SetViewportWidth (double value)
 		TimelineCollection *tlc = new TimelineCollection ();
 		tlc->Add (zoom_animation);
 		zoom_sb->SetChildren(tlc);
+#if DEBUG
+		zoom_sb->SetName ("Multiscale Zoom");
+#endif
 	} else {
 		zoom_sb->PauseWithError (NULL);
 	}
@@ -918,7 +924,7 @@ MultiScaleImage::SetViewportOrigin (Point value)
 		pan_sb = new Storyboard ();
 		pan_sb->SetManualTarget (this);
 		pan_sb->SetTargetProperty (pan_sb, new PropertyPath ("(MultiScaleImage.ViewportOrigin)"));
-		pan_sb->AddHandler (pan_sb->CompletedEvent, motion_finished, this);
+		pan_sb->AddHandler (Storyboard::CompletedEvent, motion_finished, this);
 		pan_animation = new PointAnimationUsingKeyFrames ();
 		pan_animation->SetDuration (Duration::FromSeconds (4));
 		pan_animation->SetKeyFrames (new PointKeyFrameCollection ());
@@ -930,6 +936,9 @@ MultiScaleImage::SetViewportOrigin (Point value)
 		TimelineCollection *tlc = new TimelineCollection ();
 		tlc->Add (pan_animation);
 		pan_sb->SetChildren(tlc);
+#if DEBUG
+		pan_sb->SetName ("Multiscale Pan");
+#endif
 	} else
 		pan_sb->PauseWithError (NULL);
 

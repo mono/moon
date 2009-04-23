@@ -1,5 +1,13 @@
 2009-04-23  Chris Toshok  <toshok@ximian.com>
 
+	* multiscaleimage.cpp (MultiScaleImage::SetViewportWidth): use
+	Class::Event instead of instance->Event.  also set the name of the
+	storyboard in debug mode.
+	(MultiScaleImage::SetViewportOrigin): same.
+	(motion_finished): make static.
+
+2009-04-23  Chris Toshok  <toshok@ximian.com>
+
 	* clock.cpp (ClockGroup::UpdateFromParentTime): only tick child
 	clocks (not clockgroups, mind you) if we're active and not paused.
 	Fixes animations reverting in lutz's deep zoom demo.
