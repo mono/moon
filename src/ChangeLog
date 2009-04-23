@@ -1,5 +1,11 @@
 2009-04-23  Chris Toshok  <toshok@ximian.com>
 
+	* animation.cpp (Animation::AllocateClock): remove the name
+	setting from here, since it only works here if the target/property
+	were set on the animation itself.
+	(AnimationClock::HookupStorage): and move it here, when we know
+	both the target and property.
+
 	* multiscaleimage.cpp (MultiScaleImage::SetViewportWidth): use
 	Class::Event instead of instance->Event.  also set the name of the
 	storyboard in debug mode.

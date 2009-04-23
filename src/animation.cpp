@@ -270,6 +270,14 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 		return false;
 	}
 
+	char *name = g_strdup_printf ("AnimationClock for %s, targetobj = %p/%s, targetprop = %s", GetTypeName(),
+				      targetobj,
+				      targetobj->GetName(),
+				      targetprop->GetName());
+	SetName (name);
+
+	g_free (name);
+
 	storage = new AnimationStorage (this, timeline, targetobj, targetprop);
 	return true;
 }
@@ -325,15 +333,9 @@ Clock*
 Animation::AllocateClock()
 {
 	clock = new AnimationClock (this);
-	char *name = g_strdup_printf ("AnimationClock for %s, targetobj = %p/%s, targetprop = %s", GetTypeName(),
-				      Storyboard::GetTargetName(this) == NULL ? NULL : FindName (Storyboard::GetTargetName(this)),
-				      Storyboard::GetTargetName(this),
-				      Storyboard::GetTargetProperty (this) == NULL ? NULL : Storyboard::GetTargetProperty (this)->path);
-	clock->SetValue (DependencyObject::NameProperty, name);
 
 	AttachCompletedHandler ();
 
-	g_free (name);
 	return clock;
 }
 
