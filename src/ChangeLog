@@ -1,3 +1,11 @@
+2009-04-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	Lots of fixage for MS DRT #209
+
+	* layout.cpp (layout_word_wrap): Fixed for inseparables,
+	exclamations, ambiguous, and postfix. Also removed the
+	glyph->index == 0 hack that was there for Silverlight 1.0
+
 2009-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.h:

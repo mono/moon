@@ -595,6 +595,7 @@ enum WordType {
 	WORD_TYPE_UNKNOWN,
 	WORD_TYPE_ALPHABETIC,
 	WORD_TYPE_IDEOGRAPHIC,
+	WORD_TYPE_INSEPARABLE,
 	WORD_TYPE_NUMERIC,
 	WORD_TYPE_HANGUL,
 };
@@ -913,6 +914,8 @@ word_type (GUnicodeBreakType btype)
 		return WORD_TYPE_IDEOGRAPHIC;
 	case G_UNICODE_BREAK_NUMERIC:
 		return WORD_TYPE_NUMERIC;
+	case G_UNICODE_BREAK_INSEPARABLE:
+		return WORD_TYPE_INSEPARABLE;
 #if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 10)
 	case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
 	case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
@@ -929,24 +932,26 @@ word_type (GUnicodeBreakType btype)
 static bool
 word_type_changed (WordType type, GUnicodeBreakType btype)
 {
-	switch (btype) {
-	case G_UNICODE_BREAK_ALPHABETIC:
-		return type != WORD_TYPE_ALPHABETIC;
-	case G_UNICODE_BREAK_IDEOGRAPHIC:
-		return type != WORD_TYPE_IDEOGRAPHIC;
-	case G_UNICODE_BREAK_NUMERIC:
-		return type != WORD_TYPE_NUMERIC;
-#if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 10)
-	case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
-	case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
-	case G_UNICODE_BREAK_HANGUL_L_JAMO:
-	case G_UNICODE_BREAK_HANGUL_V_JAMO:
-	case G_UNICODE_BREAK_HANGUL_T_JAMO:
-		return type != WORD_TYPE_HANGUL;
-#endif
+	WordType ntype;
+	
+	if ((ntype = word_type (btype)) != WORD_TYPE_UNKNOWN)
+		return type != ntype;
+	
+	switch (type) {
+	case WORD_TYPE_INSEPARABLE:
+		// only allow inseparables in an "inseparable" word.
+		return true;
+	case WORD_TYPE_NUMERIC:
+		// if btype is anything other than an infix, then the word
+		// type has changed.
+		if (btype != G_UNICODE_BREAK_INFIX_SEPARATOR)
+			return true;
+		break;
 	default:
-		return false;
+		break;
 	}
+	
+	return false;
 }
 
 /**
@@ -1192,19 +1197,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		}
 #endif
 		
-		if (op.index == 0) {
-			// Silverlight ignores breaking rules for glyphs that
-			// the font doesn't contain.
-			word->length = (op.inptr - in);
-			word->advance = op.advance;
-			word->count = op.count;
-			word->prev = op.prev;
-			
-			// if the following break-type is SPACE, then return
-			// false; otherwise let our caller know to wrap.
-			return !BreakSpace (c, btype);
-		}
-		
 		switch (op.btype) {
 		case G_UNICODE_BREAK_BEFORE_AND_AFTER:
 			if (i > 1 && i == word->break_ops->len) {
@@ -1225,17 +1217,15 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				
 				return true;
 			}
-		case G_UNICODE_BREAK_EXCLAMATION:
-			// only break after this char if there are glyphs before it
-			if (i > 1 && i < word->break_ops->len) {
+		case G_UNICODE_BREAK_INSEPARABLE:
+			// only restriction is no breaking between inseparables unelss we have to
+			if (line_start && i < word->break_ops->len) {
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
 				word->prev = op.prev;
 				
-				// if the following break-type is SPACE, then return
-				// false; otherwise let our caller know to wrap.
-				return !BreakSpace (c, btype);
+				return true;
 			}
 			break;
 		case G_UNICODE_BREAK_BEFORE:
@@ -1290,28 +1280,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				}
 			}
 			break;
-#if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 10)
-		case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
-		case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
-		case G_UNICODE_BREAK_HANGUL_L_JAMO:
-		case G_UNICODE_BREAK_HANGUL_V_JAMO:
-		case G_UNICODE_BREAK_HANGUL_T_JAMO:
-#endif
-		case G_UNICODE_BREAK_NON_STARTER:
-		case G_UNICODE_BREAK_NEXT_LINE:
-		case G_UNICODE_BREAK_UNKNOWN:
-		case G_UNICODE_BREAK_HYPHEN:
-		case G_UNICODE_BREAK_AFTER:
-			if (i < word->break_ops->len) {
-				// we can safely break after this character
-				word->length = (op.inptr - in);
-				word->advance = op.advance;
-				word->count = op.count;
-				word->prev = op.prev;
-				
-				return true;
-			}
-			break;
 		case G_UNICODE_BREAK_ALPHABETIC:
 			// only break if we have no choice...
 			if (line_start && i < word->break_ops->len) {
@@ -1353,41 +1321,39 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				word->count = op.count;
 				word->prev = op.prev;
 				
-				// if the following break-type is SPACE, then return
-				// false; otherwise let our caller know to wrap.
-				return !BreakSpace (c, btype);
+				return true;
 			}
 			break;
 		case G_UNICODE_BREAK_AMBIGUOUS:
-			// do not break between characters with ambiguous break-types
-			if (i < word->break_ops->len && btype != G_UNICODE_BREAK_AMBIGUOUS) {
+			// do not break after characters with ambiguous break-types.
+			break;
+		default:
+			d(printf ("Unhandled Unicode break-type: %s\n", unicode_break_types[op.btype]));
+			// fall thru to the "default" behavior
+			
+#if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 10)
+		case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
+		case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
+		case G_UNICODE_BREAK_HANGUL_L_JAMO:
+		case G_UNICODE_BREAK_HANGUL_V_JAMO:
+		case G_UNICODE_BREAK_HANGUL_T_JAMO:
+#endif
+		case G_UNICODE_BREAK_NON_STARTER:
+		case G_UNICODE_BREAK_EXCLAMATION:
+		case G_UNICODE_BREAK_MANDATORY:
+		case G_UNICODE_BREAK_NEXT_LINE:
+		case G_UNICODE_BREAK_UNKNOWN:
+		case G_UNICODE_BREAK_POSTFIX:
+		case G_UNICODE_BREAK_HYPHEN:
+		case G_UNICODE_BREAK_AFTER:
+			if (i < word->break_ops->len) {
+				// we can safely break after this character
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
 				word->prev = op.prev;
 				
 				return true;
-			}
-			break;
-		default:
-			// only break if we have no choice...
-			if (line_start) {
-				if (i > 1) {
-					// break after the previous glyph
-					btype = op.btype;
-					op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
-				} else {
-					// break after this char
-				}
-				
-				word->length = (op.inptr - in);
-				word->advance = op.advance;
-				word->count = op.count;
-				word->prev = op.prev;
-				
-				// if the following break-type is SPACE, then return
-				// false; otherwise let our caller know to wrap.
-				return !BreakSpace (c, btype);
 			}
 			break;
 		}
