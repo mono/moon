@@ -419,13 +419,26 @@ namespace Moonlight {
 				Resources.Add (v.Substring (comma + 1), v.Substring (0, comma)); 
 			}
 		}
-		
+
+		static void DoClean (string app)
+		{
+			File.Delete (app + ".dll");
+			File.Delete (app + ".dll.mdb");
+			File.Delete (app + ".g.resources");
+			File.Delete (app + ".html");
+			File.Delete (app + ".xap");
+			File.Delete ("AppManifest.xaml");
+			foreach (string path in Directory.GetFiles (Directory.GetCurrentDirectory(), "*.g.cs"))
+				File.Delete(path);
+		}
+
 		public static int Main (string [] args)
 		{
 			MXap mxap = new MXap ();
 			bool help = false;
+			bool clean = false;
 			mxap.Cd = Directory.GetCurrentDirectory ();
-			
+
 			var p = new OptionSet () {
 				{ "h|?|help", v => help = v != null },
 				{ "generate-html", v => mxap.GenerateHtml = v != null },
@@ -439,7 +452,8 @@ namespace Moonlight {
 				{ "r:|reference:", v => mxap.ExternalAssemblies.Add (v) },
 				{ "l|list-generated", v => mxap.ListGenerated = v != null },
 				{ "v|verbose", v => mxap.Verbose =  v != null },
-				{ "res|resource:", v => mxap.AddResource (v) }
+				{ "res|resource:", v => mxap.AddResource (v) },
+				{ "clean", "Removes generated files. Use with caution!", v => clean = v != null }
 			};
 
 			List<string> extra = null;
@@ -452,6 +466,11 @@ namespace Moonlight {
 
 			if (help){
 				ShowHelp (p);
+				return 0;
+			}
+
+			if (clean) {
+				DoClean (mxap.ApplicationName);
 				return 0;
 			}
 

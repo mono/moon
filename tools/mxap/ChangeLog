@@ -1,3 +1,7 @@
+2009-04-24  Andreia Gaita  <avidigal@novell.com>
+
+	* mxap.cs: add --clean to clean up generated files
+
 2009-04-17  Larry Ewing  <lewing@novell.com>
 
 	* mxap.cs: add the .mdb file to the list of genertated files.
