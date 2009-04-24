@@ -1,3 +1,8 @@
+2009-04-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.ServiceModel.auto.ssc: Remove ServiceModel.ClientBase<T>
+	static ctor - it's no longer needed with head.
+
 2009-04-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.ssc: Add PluginHost.SetPluginHandle
