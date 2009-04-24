@@ -1,5 +1,12 @@
 2009-04-24  Alan McGovern  <amcgovern@novell.com>
 
+	* runtime.cpp: When a layer is being detached, don't try to
+	  invalidate its bounds if the active window has already been
+	  torn down. Fixes the case where a popup is open while the
+	  window is being torn down.
+
+2009-04-24  Alan McGovern  <amcgovern@novell.com>
+
 	* popup.h:
 	* popup.cpp: When the popup is detached from the surface, it
 	  should automatically close if it is open.

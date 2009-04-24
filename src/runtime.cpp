@@ -558,7 +558,8 @@ Surface::DetachLayer (UIElement *layer)
 {
 	layers->Remove (Value (layer));
 	layer->SetSurface (NULL);
-	Invalidate (layer->GetBounds ());
+	if (active_window)
+		Invalidate (layer->GetBounds ());
 }
 
 void
