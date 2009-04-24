@@ -1,3 +1,10 @@
+2009-04-24  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Microsoft.VisualBasic.auto.sc: Update header (version and pk token)
+	* System.auto.ssc: Remove regex CILCompiler.CreateEvalMethod
+	* System.Net.auto.[sc|ssc]: Remove unneeded p/invokes [SC] and their
+	callers [SSC] for System.Net.NetworkInformation namespace
+
 2009-04-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.ServiceModel.auto.ssc: Remove ServiceModel.ClientBase<T>
