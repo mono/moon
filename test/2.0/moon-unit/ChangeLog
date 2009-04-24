@@ -1,3 +1,9 @@
+2009-04-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System/UriTest.cs: More tests for relative URI
+	* System.Net/EndPointTest.cs: New.
+	* System.Net/IPEndPointTest.cs: New.
+
 2009-04-24  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ComboBoxTest.cs: Ensure that the

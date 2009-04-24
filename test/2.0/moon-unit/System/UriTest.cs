@@ -194,6 +194,102 @@ namespace MoonTest.System {
 			Assert.AreEqual ("monkey:s3kr3t", uri.UserInfo, "UserInfo");
 			Assert.AreEqual (uri.AbsoluteUri, uri.ToString (), "ToString");
 		}
+
+		[TestMethod]
+		public void Relative ()
+		{
+			Uri relative = new Uri ("/Moonlight", UriKind.Relative);
+
+			Assert.Throws<UriFormatException> (delegate {
+				new Uri ("/Moonlight");
+			}, "string");
+			Assert.Throws<UriFormatException> (delegate {
+				new Uri ("/Moonlight", UriKind.Absolute);
+			}, "string,Absolute");
+
+			Assert.Throws<ArgumentNullException> (delegate {
+				new Uri (null, "/Moonlight");
+			}, "null,string");
+			Assert.Throws<ArgumentNullException> (delegate {
+				new Uri (null, relative);
+			}, "null,Uri");
+
+			Assert.Throws<ArgumentOutOfRangeException> (delegate {
+				new Uri (relative, "/Moonlight");
+			}, "Uri,string");
+			Assert.Throws<ArgumentOutOfRangeException> (delegate {
+				new Uri (relative, relative);
+			}, "Uri,Uri");
+
+			Assert.Throws<ArgumentOutOfRangeException> (delegate {
+				new Uri (relative, (string)null);
+			}, "Uri,string-null");
+			Assert.Throws<ArgumentOutOfRangeException> (delegate {
+				new Uri (relative, (Uri)null);
+			}, "Uri,Uri-null");
+		}
+
+		private void CheckRelativeUri (Uri uri)
+		{
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.IsNotNull (uri.AbsolutePath);
+			}, "AbsolutePath");
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.IsNotNull (uri.AbsoluteUri);
+			}, "AbsoluteUri");
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.IsNotNull (uri.DnsSafeHost);
+			}, "DnsSafeHost");
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.IsNotNull (uri.Fragment);
+			}, "Fragment");
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.IsNotNull (uri.Host);
+			}, "Host");
+
+			Assert.IsFalse (uri.IsAbsoluteUri, "IsAbsoluteUri");
+
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.IsNotNull (uri.IsUnc);
+			}, "IsUnc");
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.IsNotNull (uri.LocalPath);
+			}, "LocalPath");
+
+			Assert.AreEqual ("/Moonlight", uri.OriginalString, "OriginalString");
+
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.IsNotNull (uri.Port);
+			}, "Port");
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.IsNotNull (uri.Query);
+			}, "Query");
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.IsNotNull (uri.Scheme);
+			}, "Scheme");
+
+			Assert.IsFalse (uri.UserEscaped, "UserEscaped");
+
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.IsNotNull (uri.UserInfo);
+			}, "UserInfo");
+
+			Assert.AreEqual ("/Moonlight", uri.ToString (), "ToString");
+		}
+
+		[TestMethod]
+		public void Relative_AsRelative ()
+		{
+			Uri uri = new Uri ("/Moonlight", UriKind.Relative);
+			CheckRelativeUri (uri);
+		}
+
+		[TestMethod]
+		public void Relative_AsRelativeOrAbsolute ()
+		{
+			Uri uri = new Uri ("/Moonlight", UriKind.RelativeOrAbsolute);
+			CheckRelativeUri (uri);
+		}
 	}
 }
 
