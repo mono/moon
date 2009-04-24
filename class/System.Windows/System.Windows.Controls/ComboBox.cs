@@ -65,6 +65,10 @@ namespace System.Windows.Controls
 		public event EventHandler DropDownClosed;
 		public event EventHandler DropDownOpened;
 
+		ComboBoxItem DisplayedItem {
+			get; set;
+		}
+		
 		public bool IsDropDownOpen {
 			get { return (bool) GetValue (IsDropDownOpenProperty); }
 			set { SetValue (IsDropDownOpenProperty, value); }
@@ -101,7 +105,8 @@ namespace System.Windows.Controls
 		{
 			DefaultStyleKey = typeof (ComboBox);
 
-			Loaded += delegate { UpdateVisualState (false); };
+			Loaded += delegate { UpdateVisualState (false); UpdateDisplayedItem (); };
+			SelectionChanged += delegate { UpdateDisplayedItem (); };
 		}
 
 		#region Property Changed Handlers
@@ -113,6 +118,7 @@ namespace System.Windows.Controls
 			else
 				OnDropDownClosed (EventArgs.Empty);
 
+			UpdateDisplayedItem ();
 			UpdateVisualState (true);
 		}
 		
@@ -200,7 +206,7 @@ namespace System.Windows.Controls
 
 		protected override DependencyObject GetContainerForItemOverride ()
 		{
-			return new ComboBoxItem ();;
+			return new ComboBoxItem ();
 		}
 		
 		protected override bool IsItemItsOwnContainerOverride (object item)
@@ -214,6 +220,7 @@ namespace System.Windows.Controls
 			base.NotifyListItemClicked (listBoxItem);
 			IsDropDownOpen = false;
 			SelectedItem = listBoxItem;
+			UpdateDisplayedItem ();
 		}
 		
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
@@ -285,14 +292,50 @@ namespace System.Windows.Controls
 		{
 			if (e.Key == Key.Enter ||
 			    e.Key == Key.Space) {
-				Console.WriteLine ("open the popup here");
 				IsDropDownOpen = true;
 				UpdateVisualState (true);
 			}
 			else
 				base.OnKeyDown (e);
 		}
-		
+
+		void UpdateDisplayedItem ()
+		{
+			object content = null;
+			Console.WriteLine ("Updating...");
+
+			// Can't do anything with no content presenter
+			if (_contentPresenter == null) {
+				Console.WriteLine ("Bailing out - no presenter");
+				return;
+			}
+			
+			// Clear out any existing displayed item
+			if (DisplayedItem != null) {
+				Console.WriteLine ("Putting: {0} back into {1}", ((FrameworkElement) _contentPresenter.Content).Name, DisplayedItem.Name);
+				content = _contentPresenter.Content;
+				_contentPresenter.Content = null;
+				DisplayedItem.Content = content;
+				DisplayedItem = null;
+			}
+
+			// If nothing is selected or popup is open bail out
+			if (SelectedItem == null || IsDropDownOpen) {
+				Console.WriteLine ("Bailing out: {0}/{1}", SelectedItem==null ? "<NULL>" : ((FrameworkElement)SelectedItem).Name, IsDropDownOpen);
+				return;
+			}
+			_contentPresenter.Content = null;
+			DisplayedItem = SelectedItem as ComboBoxItem;
+			if (DisplayedItem != null) {
+				Console.WriteLine ("Displaying: {0} from {1}", ((FrameworkElement) DisplayedItem.Content).Name, DisplayedItem.Name);
+					content = DisplayedItem.Content;
+					DisplayedItem.Content = null;
+				_contentPresenter.Content = content;
+			} else {
+				Console.WriteLine ("Displaying actual {0}", SelectedIndex);
+				_contentPresenter.Content = SelectedItem;
+			}
+		}
 
 		ContentPresenter _contentPresenter;
 		Popup _popup;

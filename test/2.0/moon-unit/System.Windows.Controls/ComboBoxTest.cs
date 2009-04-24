@@ -36,6 +36,8 @@ using System.Windows.Shapes;
 using Mono.Moonlight.UnitTesting;
 using System.Collections.Specialized;
 using Microsoft.Silverlight.Testing;
+using System.Windows.Media;
+using System.Text;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -208,6 +210,196 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (1, e.NewItems.Count, "#6");
 			Assert.AreEqual ("blah", e.NewItems [0], "#7");
 			Assert.AreEqual (0, e.NewStartingIndex, "#8");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemParentTest ()
+		{
+			ComboBox box = new ComboBox ();
+			ComboBoxItem item = new ComboBoxItem { Content = "Just a string" };
+			box.Items.Add (item);
+			Assert.IsNull (VisualTreeHelper.GetParent (item), "#1");
+			Assert.AreSame (box, item.Parent, "#2");
+			CreateAsyncTest (box,
+				() => {
+					Assert.IsNull (VisualTreeHelper.GetParent (item), "#3");
+					Assert.AreSame (box, item.Parent, "#4");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemParentTest2 ()
+		{
+			bool loaded = false;
+			Rectangle content = new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush (Colors.Green) };
+			ComboBoxItem item = new ComboBoxItem { Content = content };
+			ComboBox box = new ComboBox ();
+			box.Items.Add (item);
+			box.Loaded += (o, e) => loaded = true;
+
+			TestPanel.Children.Add (box);
+
+			Assert.IsNull (VisualTreeHelper.GetParent (item), "#1");
+			Assert.AreSame (box, item.Parent, "#2");
+			Assert.AreEqual (item, content.Parent, "#3");
+			Assert.IsNull (VisualTreeHelper.GetParent (content), "#4");
+			EnqueueConditional (() => loaded, "#5");
+			Enqueue (() => Assert.IsNull (VisualTreeHelper.GetParent (item), "#6"));
+			Enqueue (() => Assert.AreSame (box, item.Parent, "#7"));
+			Enqueue (() => {
+				Assert.IsNull (VisualTreeHelper.GetParent (content), "#8");
+				Assert.AreEqual (item, content.Parent, "#9");
+				Assert.AreSame (box, item.Parent, "#10");
+			});
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ItemParentTest2b ()
+		{
+			bool loaded = false;
+			Rectangle content = new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush (Colors.Green) };
+			ComboBoxItem item = new ComboBoxItem { Content = content };
+			ComboBox box = new ComboBox ();
+			box.Items.Add (item);
+			box.SelectedIndex = 0;
+			box.Loaded += (o, e) => loaded = true;
+			
+			TestPanel.Children.Add (box);
+
+			Assert.IsNull (VisualTreeHelper.GetParent (item), "#1");
+			Assert.AreSame (box, item.Parent, "#2");
+			Assert.AreEqual (item, content.Parent, "#3");
+			Assert.IsNull (VisualTreeHelper.GetParent (content), "#4");
+			EnqueueConditional (() => loaded, "#5");
+			Enqueue (() => Assert.IsNull (VisualTreeHelper.GetParent (item), "#6"));
+			Enqueue (() => Assert.AreSame (box, item.Parent, "#7"));
+			Enqueue (() => {
+				Assert.IsNull (VisualTreeHelper.GetParent (item), "#11");
+				Assert.IsNotNull (VisualTreeHelper.GetParent (content), "#8");
+				Assert.IsInstanceOfType<ContentPresenter> (VisualTreeHelper.GetParent (content), "#8b");
+				Assert.AreEqual (item, content.Parent, "#9");
+				Assert.AreSame (box, item.Parent, "#10");
+				box.SelectedItem = null;
+			});
+			Enqueue (() => {
+				Assert.IsNull (VisualTreeHelper.GetParent (item), "#11");
+				Assert.IsNull (VisualTreeHelper.GetParent (content), "#12");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemParentTest3 ()
+		{
+			bool loaded = false;
+			bool opened = false;
+			Rectangle content = new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush (Colors.Green) };
+			ComboBoxItem item = new ComboBoxItem { Content = content, Name = "Item" };
+			ComboBox box = new ComboBox ();
+			box.Items.Add (item);
+			box.DropDownOpened += (o, e) => opened = true;
+			box.DropDownClosed += (o, e) => opened = false;
+			box.Loaded += (o, e) => loaded = true;
+
+			TestPanel.Children.Add (box);
+			EnqueueConditional (() => loaded, "#3");
+			Enqueue (() => box.IsDropDownOpen = true);
+			EnqueueConditional (() => opened);
+			Enqueue (() => {
+				AssertItemHasPresenter (box, item);
+				Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount ((Rectangle) item.Content));
+			});
+			Enqueue (() => Assert.AreSame (box, item.Parent, "#5"));
+			EnqueueTestComplete ();
+		}
+
+		void AssertItemHasPresenter (ComboBox box, ComboBoxItem item)
+		{
+			Assert.AreEqual (box, item.Parent, "#a");
+			Assert.IsInstanceOfType<StackPanel> (VisualTreeHelper.GetParent (item), "#b");
+			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (item), "#c");
+			Grid grid = (Grid) VisualTreeHelper.GetChild (item, 0);
+
+			Assert.AreEqual (4, grid.Children.Count, "#d");
+			ContentPresenter presenter = (ContentPresenter) grid.Children [2];
+			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (presenter), "#e");
+			Assert.AreSame (VisualTreeHelper.GetChild (presenter, 0), item.Content, "#f");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemParentTest4 ()
+		{
+			bool loaded = false;
+			bool opened = false;
+			Rectangle content = new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush (Colors.Green) };
+			ComboBoxItem item = new ComboBoxItem { Content = content };
+			ComboBox box = new ComboBox ();
+			box.Items.Add (item);
+			box.DropDownOpened += (o, e) => opened = true;
+			box.DropDownClosed += (o, e) => opened = false;
+			box.Loaded += (o, e) => loaded = true;
+
+			TestPanel.Children.Add (box);
+
+			Assert.IsNull (VisualTreeHelper.GetParent (item), "#1");
+			Assert.AreSame (box, item.Parent, "#2");
+
+			EnqueueConditional (() => loaded, "#3");
+			Enqueue (() => Assert.IsNull (VisualTreeHelper.GetParent (item), "#4"));
+			Enqueue (() => Assert.AreSame (box, item.Parent, "#5"));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemParentTest5 ()
+		{
+			bool loaded = false;
+			bool opened = false;
+			Rectangle content = new Rectangle {
+				Fill = new SolidColorBrush (Colors.Brown),
+				Width = 100,
+				Height = 50
+			};
+			FakeComboBox box = new FakeComboBox { Width = 50, Height = 50 };
+			ComboBoxItem item = new ComboBoxItem { Content = content };
+			StringBuilder sb = new StringBuilder ();
+			box.DropDownOpened += delegate { opened = true; };
+			box.DropDownClosed += delegate { opened = false; };
+			box.Items.Add (item);
+			box.SelectedIndex = 0;
+			box.Loaded += delegate { loaded = true; };
+			TestPanel.Children.Add (box);
+
+			
+			EnqueueConditional (() => loaded);
+			Enqueue (() => box.ApplyTemplate ());
+			Enqueue (() => box.IsDropDownOpen = true);
+			EnqueueConditional (() => opened);
+			Enqueue (() => Assert.IsNotNull (VisualTreeHelper.GetParent (item), "#0"));
+			Enqueue (() => Assert.IsInstanceOfType<StackPanel> (VisualTreeHelper.GetParent (item), "#1"));
+			Enqueue (() => Assert.AreSame (box, item.Parent, "#2"));
+			Enqueue (() => Assert.AreEqual (content, item.Content, "#2b"));
+			Enqueue (() => Assert.AreEqual (item, content.Parent, "2c"));
+			Enqueue (() => Assert.IsInstanceOfType<ContentPresenter> (VisualTreeHelper.GetParent ((Rectangle) item.Content), "#3"));
+			Enqueue (() => Assert.AreSame (item, ((Rectangle) item.Content).Parent, "#4"));
+
+			Enqueue (() => box.IsDropDownOpen = false);
+			EnqueueConditional (() => !opened, "#5");
+			
+			Enqueue (() => Assert.IsNotNull (VisualTreeHelper.GetParent (item), "#6"));
+			Enqueue (() => Assert.IsInstanceOfType<StackPanel> (VisualTreeHelper.GetParent (item), "#6b"));
+			Enqueue (() => Assert.AreSame (box, item.Parent, "#7"));
+			Enqueue (() => Assert.IsNull (item.Content, "#8"));
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
