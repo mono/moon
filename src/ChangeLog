@@ -1,3 +1,9 @@
+2009-04-24  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.h:
+	* popup.cpp: When the popup is detached from the surface, it
+	  should automatically close if it is open.
+
 2009-04-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (Layout): Silverlight 2.0 no longer starts plotting
