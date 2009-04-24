@@ -17,6 +17,8 @@ namespace Moonlight {
 		private List<string> csharp_files;
 		private List<string> xaml_files;
 		private Dictionary<string, string> resources;
+		private Dictionary<string, string> assembly_resources;
+		private Dictionary<string, string> content_resources;
 		private string top_builddir = null; // Defaults to null
 		private bool desktop = false; // Defaults to false
 		private bool generate_html = true; // Defaults to true
@@ -109,7 +111,7 @@ namespace Moonlight {
 				return external_assemblies;
 			}
 		}
-		
+
 		public List<string> MdbFiles {
 			get {
 				if (mdb_files == null)
@@ -141,7 +143,23 @@ namespace Moonlight {
 				return resources;
 			}
 		}
-		
+
+		public Dictionary<string, string> AssemblyResources {
+			get {
+				if (assembly_resources == null)
+					assembly_resources = new Dictionary<string, string> ();
+				return assembly_resources;
+			}
+		}
+
+		public Dictionary<string, string> ContentResources {
+			get {
+				if (content_resources == null)
+					content_resources = new Dictionary<string, string> ();
+				return content_resources;
+			}
+		}
+
 		public int Run ()
 		{
 			return (CreateManifest ()
@@ -262,7 +280,7 @@ namespace Moonlight {
 			foreach (string asm in ReferenceAssemblies) {
 				compiler_args.AppendFormat (" -r:\"{0}\" ", asm);
 			}
-			
+
 			foreach (string asm in ExternalAssemblies) {
 				compiler_args.AppendFormat (" -r:{0} ", asm);
 			}
@@ -287,6 +305,9 @@ namespace Moonlight {
 			}
 
 			compiler_args.AppendFormat (" -resource:{0}.g.resources ", ApplicationName);
+
+			foreach (KeyValuePair<string, string> pair in AssemblyResources)
+				compiler_args.AppendFormat (" -resource:\"{0},{1}\"", pair.Value, pair.Key);
 
 			if (desktop)
 				return RunProcess ("gmcs", compiler_args.ToString());
@@ -313,13 +334,15 @@ namespace Moonlight {
 			foreach (string mdb in MdbFiles) {
 				zip_args.AppendFormat (" {0} ", Path.GetFileName (mdb));
 			}
-			
+
 			zip_args.AppendFormat (" AppManifest.xaml ");
 			zip_args.AppendFormat (" {0}.dll ", ApplicationName);
 			zip_args.AppendFormat (" {0}.dll.mdb ", ApplicationName);
 
+			foreach (KeyValuePair<string, string> pair in ContentResources)
+				zip_args.AppendFormat (" -j " + pair.Value);
+
 			return RunProcess ("zip", zip_args.ToString ());
-			
 		}
 
 		public bool CreateHtmlWrapper ()
@@ -411,13 +434,54 @@ namespace Moonlight {
 			
 			if (string.IsNullOrEmpty (v))
 				return;
-			
+
 			comma = v.IndexOf (',');
 			if (comma == -1) {
 				Resources.Add (Path.GetFileName (v), v);
 			} else {
 				Resources.Add (v.Substring (comma + 1), v.Substring (0, comma)); 
 			}
+		}
+
+		void ParseResource (string v, out string name, out string filename)
+		{
+			bool local = Path.GetFullPath (v).StartsWith (Path.GetFullPath ("."));
+			int comma = v.IndexOf (',');
+			if (comma == -1) {
+				if (local)
+					name = ApplicationName + "." + v.Replace ('/', '.');
+				else
+					name = ApplicationName + "." + Path.GetFileName (v);
+				filename = v;
+			} else {
+				name = v.Substring (comma + 1);
+				filename = v.Substring (0, comma);
+			}
+		}
+
+		void AddAssemblyResource (string v)
+		{
+			if (string.IsNullOrEmpty (v))
+				return;
+
+			string name, filename;
+			ParseResource (v, out name, out filename);
+			AssemblyResources.Add (name, filename);
+		}
+
+		void AddContentResource (string v)
+		{
+			if (string.IsNullOrEmpty (v))
+				return;
+
+			string name, filename;
+			ParseResource (v, out name, out filename);
+
+			if (!Directory.Exists ("obj"))
+				Directory.CreateDirectory ("obj");
+
+			File.Copy (filename, Path.Combine ("obj", name), true);
+			ContentResources.Add (name, Path.Combine ("obj", name));
 		}
 
 		static void DoClean (string app)
@@ -453,6 +517,8 @@ namespace Moonlight {
 				{ "l|list-generated", v => mxap.ListGenerated = v != null },
 				{ "v|verbose", v => mxap.Verbose =  v != null },
 				{ "res|resource:", v => mxap.AddResource (v) },
+				{ "ares|assembly-resource:", v => mxap.AddAssemblyResource (v) },
+				{ "cres|content-resource:", v => mxap.AddContentResource (v) },
 				{ "clean", "Removes generated files. Use with caution!", v => clean = v != null }
 			};
 
