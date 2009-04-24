@@ -1,3 +1,7 @@
+2009-04-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ScriptObject.cs: handle field should not be visible.
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* HtmlObject.cs:

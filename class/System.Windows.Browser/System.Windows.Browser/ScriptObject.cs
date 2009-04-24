@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace System.Windows.Browser {
 	public class ScriptObject {
-		protected IntPtr handle;
+		internal IntPtr handle;
 		string script_key;
 		object managed;
 
