@@ -64,12 +64,12 @@ INPUT_FILES = $(MCS_PATH)/class/lib/net_2_1_raw/smcs.exe $(MCS_DLLFILES) $(MONO_
 
 TUNER_INSTALL_DIR = $(DESTDIR)$(prefix)/lib/mono/2.1
 
-all-local: $(WORKING_FILES) $(OUTPUT_FILES)
+all-local: output.stamp
 
 install-data-local: $(TUNER_INSTALL_DIR) end-install
 
 clean-local:
-	rm -f $(OUTPUT_FILES) tune.stamp tune.stampt
+	rm -f $(OUTPUT_FILES) tune.stamp tune.stampt working.stamp output.stamp
 
 uninstall-local:
 	for i in $(DLLFILES); do $(GACUTIL) /u $$i; done
@@ -93,23 +93,25 @@ TUNER_STEPS = \
 	Mono.Tuner.RemoveSerialization,Mono.Tuner:OutputStep	\
 	Mono.Tuner.CheckVisibility,Mono.Tuner
 
+basic.stamp:
 if HAVE_MONO_BASIC
-$(MONO_BASIC_DLLFILES):
 	$(MAKE) -C $(MONO_BASIC_PATH)/tools/moonlight tune
 endif
+	touch basic.stamp
 
-$(WORKING_FILES): $(INPUT_FILES)
+working.stamp: basic.stamp $(INPUT_FILES)
 	-mkdir -p $(WORKING_DIR)
 	for i in $(INPUT_FILES); do cp -p $$i $$i.mdb $(WORKING_DIR); done
 	-rm $(WORKING_DIR)/Microsoft.VisualBasic.dll.mdb
-	touch $(WORKING_FILES)
+	touch $(WORKING_FILES) working.stamp
 
-$(OUTPUT_FILES): $(WORKING_FILES) $(SECURITY_ATTRIBUTES_INFO)
+output.stamp: working.stamp $(SECURITY_ATTRIBUTES_INFO)
 	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
 	for i in $(DLLFILES); do sn -q -R $(OUTPUT_DIR)/$$i ../mono.snk; done
 	-mkdir -p $(MCS_OUTPUT_DIR)
 	for i in $(OUTPUT_FILES); do cp -p $$i $(MCS_OUTPUT_DIR); done
 	for i in $(OUTPUT_FILES); do cp -p $$i.mdb $(MCS_OUTPUT_DIR) || true; done
+	touch output.stamp
 
 $(TUNER_INSTALL_DIR):
 	-mkdir -p $(TUNER_INSTALL_DIR)

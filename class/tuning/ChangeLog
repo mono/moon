@@ -1,3 +1,8 @@
+2009-04-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Makefile.am: Fixed to work with make -j (altho it could use love
+	to make it actually take advantage of the parallel makes).
+
 2009-04-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Build Microsoft.VisualBasic.dll if it hasn't
