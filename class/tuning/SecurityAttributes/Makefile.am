@@ -74,20 +74,20 @@ MERGED_SECURITY_ATTRIBUTES_INFO = \
 all: merge.exe $(MERGED_SECURITY_ATTRIBUTES_INFO)
 
 Moonlight.SecurityModel.dll: $(securitymodel_sources)
-	gmcs $(CECIL) -r:System.Core.dll -t:library -out:$@ $(securitymodel_sources)
+	gmcs $(CECIL) -debug -r:System.Core.dll -t:library -out:$@ $(securitymodel_sources)
 
 find-sc.exe: find-sc.cs Moonlight.SecurityModel.dll
-	gmcs find-sc.cs -out:$@ $(LIBS)
+	gmcs find-sc.cs -debug -out:$@ $(LIBS)
 
 compat: find-sc.exe
 	mkdir -p compatibility
 	mono find-sc.exe $(SILVERLIGHT_PLATFORM_CODE) compatibility
 
 detect-sc.exe: detect-sc.cs Moonlight.SecurityModel.dll
-	gmcs detect-sc.cs -out:$@ $(LIBS)
+	gmcs detect-sc.cs -debug -out:$@ $(LIBS)
 
 detect-ssc.exe: detect-ssc.cs Moonlight.SecurityModel.dll
-	gmcs detect-ssc.cs -out:$@ $(LIBS)
+	gmcs detect-ssc.cs -debug -out:$@ $(LIBS)
 
 detect: detect-sc.exe detect-ssc.exe
 	mkdir -p automatic
@@ -95,7 +95,7 @@ detect: detect-sc.exe detect-ssc.exe
 	mono detect-ssc.exe $(MOONLIGHT_PLATFORM_CODE) automatic
 
 merge.exe: merge.cs Moonlight.SecurityModel.dll
-	gmcs merge.cs -out:$@ $(LIBS)
+	gmcs merge.cs -debug -out:$@ $(LIBS)
 
 $(MERGED_SECURITY_ATTRIBUTES_INFO): $(SECATTRS) merge.exe
 	mono merge.exe . .

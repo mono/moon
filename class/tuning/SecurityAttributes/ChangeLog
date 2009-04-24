@@ -1,3 +1,7 @@
+2009-04-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: compile tools with --debug
+
 2009-04-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* detect-sc.cs: Call AddSearchDirectory on the input directory
