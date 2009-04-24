@@ -1,3 +1,9 @@
+2009-04-24  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/MiscParsing.cs:
+	* misc/Parsing/MiscParsingAnimation.xaml: New test for managed
+	namespaces in property paths.
+
 2009-04-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System/UriTest.cs: More tests for relative URI

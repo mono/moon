@@ -1,0 +1,18 @@
+<Canvas x:Class="MoonTest.Misc.Parsing.MiscParsingTestAnimation"
+    	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+   	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:moon="clr-namespace:MoonTest.Misc.Parsing">
+
+	<Canvas.Resources>
+	    <Storyboard x:Name="the_storyboard">
+                <DoubleAnimation x:Name="the_animation"
+		     Duration="0::0"
+                     Storyboard.TargetName="the_control"
+                     Storyboard.TargetProperty="(moon:ManagedUserControl.HalfHeight)"
+                     To="25" />
+             </Storyboard>
+	</Canvas.Resources>
+
+	<moon:HalfHeightControl x:Name="the_control" HalfHeight="10" />
+</Canvas>
+

@@ -48,8 +48,9 @@ XAML_RESOURCES= \
 	-res:misc/Events/Event_Private.xaml,misc/Events/Event_Private.xaml \
 	-res:misc/Events/Event_Protected.xaml,misc/Events/Event_Protected.xaml \
 	-res:misc/Events/Event_RoutedEventArgs.xaml,misc/Events/Event_RoutedEventArgs.xaml	\
-	-res:misc/Parsing/MiscParsingTestPage.xaml,misc/Parsing/MiscParsingTestPage.xaml	\
+	-res:misc/Parsing/MiscParsingAnimation.xaml,misc/Parsing/MiscParsingAnimation.xaml	\
 	-res:misc/Parsing/MiscParsingCanvas.xaml,misc/Parsing/MiscParsingCanvas.xaml	\
+	-res:misc/Parsing/MiscParsingTestPage.xaml,misc/Parsing/MiscParsingTestPage.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_A1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_A1.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_A2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_A2.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_A3.xaml,System.Windows/DependencyPropertyTest_ManagedTest_A3.xaml	\
