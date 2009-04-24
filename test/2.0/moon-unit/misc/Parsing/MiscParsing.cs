@@ -116,7 +116,6 @@ namespace MoonTest.Misc.Parsing
 			Enqueue (() => s.Begin ());
 			Enqueue (() => Assert.AreEqual (25, control.HalfHeight, "#4"));
 
-			// OK, this shouldn't work and makes little sense, but it does (notice the xmlns)
 			Enqueue (() => s.Stop ());
 			Enqueue (() => Storyboard.SetTargetProperty (the_animation, new PropertyPath ("(monkey:ManagedUserControl.HalfHeigh)")));
 			Enqueue (() => Assert.Throws<InvalidOperationException> (() => s.Begin ()));
