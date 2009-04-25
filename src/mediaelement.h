@@ -328,7 +328,7 @@ class MediaElementPropertyValueProvider : public PropertyValueProvider {
 	Value *GetPosition ();
 	Value *GetCurrentState ();
  public:
-	MediaElementPropertyValueProvider (MediaElement *obj);
+	MediaElementPropertyValueProvider (MediaElement *obj, PropertyPrecedence precedence);
 	virtual ~MediaElementPropertyValueProvider ();
 	virtual Value *GetPropertyValue (DependencyProperty *property);
 };

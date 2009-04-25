@@ -22,8 +22,8 @@
 // LocalPropertyValueProvider
 //
 
-LocalPropertyValueProvider::LocalPropertyValueProvider (DependencyObject *obj)
-	: PropertyValueProvider (obj)
+LocalPropertyValueProvider::LocalPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
+	: PropertyValueProvider (obj, precedence)
 {
 	// XXX maybe move the "DependencyObject::current_values" hash table here?
 }
@@ -43,8 +43,8 @@ LocalPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 // StylePropertyValueProvider
 //
 
-StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj)
-	: PropertyValueProvider (obj)
+StylePropertyValueProvider::StylePropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
+	: PropertyValueProvider (obj, precedence)
 {
 	style_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 					    (GDestroyNotify)NULL,
@@ -128,7 +128,7 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop)
 void
 StylePropertyValueProvider::SealStyle (Style *style)
 {
-	style->Seal();
+	style->Seal ();
 
 	SetterBaseCollection *setters = style->GetSetters ();
 	if (!setters)
@@ -148,9 +148,10 @@ StylePropertyValueProvider::SealStyle (Style *style)
 			continue;
 		
 		Setter *setter = setterBase->AsSetter ();
-		Value *value;
 
 		DependencyProperty *setter_property;
+		Value *value;
+
 		if (!(value = setter->GetValue (Setter::PropertyProperty)))
 			continue;
 
@@ -165,8 +166,8 @@ StylePropertyValueProvider::SealStyle (Style *style)
 		setter->ref ();
 		g_hash_table_insert (style_hash, setter_property, setter);
 
-		// let the DO know the property might have changed
- 		obj->ProviderValueChanged (PropertyPrecedence_Style, setter_property, NULL, setter_value, true, NULL);
+		MoonError error;
+		obj->ProviderValueChanged (precedence, setter_property, NULL, setter_value, true, &error);
 	}
 }
 
@@ -358,8 +359,8 @@ dispose_value (gpointer key, gpointer value, gpointer data)
 	return true;
 }
 
-AutoCreatePropertyValueProvider::AutoCreatePropertyValueProvider (DependencyObject *obj)
-	: PropertyValueProvider (obj)
+AutoCreatePropertyValueProvider::AutoCreatePropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
+	: PropertyValueProvider (obj, precedence)
 {
 	auto_values = g_hash_table_new (g_direct_hash, g_direct_equal);
 }
@@ -394,7 +395,7 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 	g_hash_table_insert (auto_values, property, value);
 	
-	obj->ProviderValueChanged (PropertyPrecedence_AutoCreate, property, NULL, value, true, NULL);
+	obj->ProviderValueChanged (precedence, property, NULL, value, true, NULL);
 	
 	return value;
 }

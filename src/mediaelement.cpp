@@ -76,7 +76,7 @@ MediaElement::MediaElement ()
 	
 	Reinitialize ();
 	
-	providers [PropertyPrecedence_DynamicValue] = new MediaElementPropertyValueProvider (this);
+	providers [PropertyPrecedence_DynamicValue] = new MediaElementPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	// Note: BufferingTime and Position need to be set in the ctor
 	// so that ReadLocalValue() will get these values.
@@ -1515,8 +1515,8 @@ MediaElement::ReportErrorOccurred (const char *args)
  * MediaElementPropertyValueProvider
  */
 
-MediaElementPropertyValueProvider::MediaElementPropertyValueProvider (MediaElement *element)
-	: PropertyValueProvider (element)
+MediaElementPropertyValueProvider::MediaElementPropertyValueProvider (MediaElement *element, PropertyPrecedence precedence)
+	: PropertyValueProvider (element, precedence)
 {
 	position = NULL;
 	current_state = NULL;

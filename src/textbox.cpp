@@ -1953,7 +1953,7 @@ class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 	Value *selection_foreground;
 	
  public:
-	TextBoxDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj)
+	TextBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : PropertyValueProvider (obj, precedence)
 	{
 		selection_background = NULL;
 		selection_foreground = NULL;
@@ -1993,7 +1993,7 @@ class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 
 TextBox::TextBox ()
 {
-	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this);
+	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	Initialize (Type::TEXTBOX, "System.Windows.Controls.TextBox");
 }
@@ -2265,7 +2265,7 @@ class PasswordBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 	Value *selection_foreground;
 	
  public:
-	PasswordBoxDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj)
+	PasswordBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : PropertyValueProvider (obj, precedence)
 	{
 		selection_background = NULL;
 		selection_foreground = NULL;
@@ -2305,7 +2305,7 @@ class PasswordBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 
 PasswordBox::PasswordBox ()
 {
-	providers[PropertyPrecedence_DynamicValue] = new PasswordBoxDynamicPropertyValueProvider (this);
+	providers[PropertyPrecedence_DynamicValue] = new PasswordBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	Initialize (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox");
 	

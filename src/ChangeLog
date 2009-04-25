@@ -1,3 +1,40 @@
+2009-04-24  Chris Toshok  <toshok@ximian.com>
+
+	It turns out the granularity of overriding in styles is at the
+	setter level, not the style level.  so if you have a local style
+	with a setter for Background, it doesn't overwrite the default
+	style setters for, say, Foreground.  We handle this by having two
+	style providers, with the local style provider overriding the
+	default style provider.
+	
+	* frameworkelement.cpp (FrameworkElement::FrameworkElement):
+	initialize both of the style providers (at both LocalStyle and
+	DefaultStyle levels.)
+	(FrameworkElement::OnPropertyChanged): call ApplyStyle on the new
+	style (so that values are converted in managed-land), and seal it
+	at the local style level.
+	(FrameworkElement::SetDefaultStyle): same blob here, but seal it
+	at the default style level.
+
+	* dependencyobject.cpp (DependencyObject::Initialize): pass
+	precedences to the providers in their ctors, and also don't
+	initialize a style provider here.  This saves us from having a
+	style provider on anything except frameworkelement subclasses.
+
+	* mediaelement.h|.cpp, textbox.cpp, textblock.cpp: add the
+	precedence ctor arg to property value providers.
+
+	* provider.h: provider ctors now take both an object and a
+	precedence level.  that way they know what precedence level to
+	notify changes on (this is mostly for the style provider, but it
+	moves all the precedence level logic to the spot where we create
+	the provider, not in the provider code itself.)
+
+	* provider.cpp: add all the precedence ctor args.
+	(StylePropertyValueProvider::SealStyle): call ProviderValueChanged
+	with the precedence we were initialized with.
+	(AutoCreatePropertyValueProvider::GetPropertyValue): same.
+	
 2009-04-24  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.cpp: When a layer is being detached, don't try to

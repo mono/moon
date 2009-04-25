@@ -1696,12 +1696,15 @@ DependencyObject::Initialize ()
 {
 	providers = new PropertyValueProvider*[PropertyPrecedence_Count];
 
-	providers[PropertyPrecedence_LocalValue] = new LocalPropertyValueProvider (this);
+	providers[PropertyPrecedence_LocalValue] = new LocalPropertyValueProvider (this, PropertyPrecedence_LocalValue);
 	providers[PropertyPrecedence_DynamicValue] = NULL;  // subclasses will set this if they need it.
-	providers[PropertyPrecedence_Style] = new StylePropertyValueProvider (this);
-	providers[PropertyPrecedence_Inherited] = new InheritedPropertyValueProvider (this);
-	providers[PropertyPrecedence_DefaultValue] = new DefaultValuePropertyValueProvider (this);
-	providers[PropertyPrecedence_AutoCreate] = new AutoCreatePropertyValueProvider (this);
+
+	providers[PropertyPrecedence_LocalStyle] = NULL;  // this is a frameworkelement specific thing
+	providers[PropertyPrecedence_DefaultStyle] = NULL;  // this is a frameworkelement specific thing
+
+	providers[PropertyPrecedence_Inherited] = new InheritedPropertyValueProvider (this, PropertyPrecedence_Inherited);
+	providers[PropertyPrecedence_DefaultValue] = new DefaultValuePropertyValueProvider (this, PropertyPrecedence_DefaultValue);
+	providers[PropertyPrecedence_AutoCreate] = new AutoCreatePropertyValueProvider (this, PropertyPrecedence_AutoCreate);
 	
 	local_values = g_hash_table_new (g_direct_hash, g_direct_equal);
 	listener_list = NULL;

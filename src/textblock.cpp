@@ -336,7 +336,7 @@ class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
 	Value *actual_width_value;
 	
  public:
-	TextBlockDynamicPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj)
+	TextBlockDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : PropertyValueProvider (obj, precedence)
 	{
 		actual_height_value = NULL;
 		actual_width_value = NULL;
@@ -390,7 +390,7 @@ TextBlock::TextBlock ()
 {
 	SetObjectType (Type::TEXTBLOCK);
 	
-	providers[PropertyPrecedence_DynamicValue] = new TextBlockDynamicPropertyValueProvider (this);
+	providers[PropertyPrecedence_DynamicValue] = new TextBlockDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	downloader = NULL;
 	

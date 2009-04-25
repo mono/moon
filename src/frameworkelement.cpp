@@ -33,6 +33,9 @@ FrameworkElement::FrameworkElement ()
 	arrange_cb = NULL;
 	bounds_with_children = Rect ();
 	logical_parent = NULL;
+
+	providers[PropertyPrecedence_LocalStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_LocalStyle);
+	providers[PropertyPrecedence_DefaultStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_DefaultStyle);
 }
 
 FrameworkElement::~FrameworkElement ()
@@ -138,7 +141,10 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 				// in the style, so we might end up
 				// with lots of property notifications
 				// here (reentrancy ok?)
-				((StylePropertyValueProvider*)providers[PropertyPrecedence_Style])->SealStyle (s);
+
+				Application::GetCurrent()->ApplyStyle (this, s);
+
+				((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->SealStyle (s);
 			}
 		}
 	}
@@ -558,9 +564,9 @@ FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, 
 void
 FrameworkElement::SetDefaultStyle (Style *style)
 {
-	if (!GetStyle()) {
+	if (style) {
 		Application::GetCurrent()->ApplyStyle (this, style);
-		((StylePropertyValueProvider*)providers[PropertyPrecedence_Style])->SealStyle (style);
+		default_style_applied = true;
+		((StylePropertyValueProvider*)providers[PropertyPrecedence_DefaultStyle])->SealStyle (style);
 	}
-	default_style_applied = true;
 }

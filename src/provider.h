@@ -22,7 +22,10 @@ struct Value;
 enum PropertyPrecedence {
 	PropertyPrecedence_LocalValue,
 	PropertyPrecedence_DynamicValue, // use this level for types that need to compute property values lazily
-	PropertyPrecedence_Style,
+
+	PropertyPrecedence_LocalStyle,
+	PropertyPrecedence_DefaultStyle,
+
 	PropertyPrecedence_Inherited,
 	PropertyPrecedence_DefaultValue,
 	PropertyPrecedence_AutoCreate,
@@ -34,7 +37,7 @@ enum PropertyPrecedence {
 
 class PropertyValueProvider {
 public:
-	PropertyValueProvider (DependencyObject *_obj) : obj(_obj) { }
+	PropertyValueProvider (DependencyObject *_obj, PropertyPrecedence _precedence) : obj(_obj), precedence(_precedence) { }
 	virtual ~PropertyValueProvider () { }
 
 	virtual Value *GetPropertyValue (DependencyProperty *property) = 0;
@@ -43,12 +46,13 @@ public:
 
 protected:
 	DependencyObject *obj;
+	PropertyPrecedence precedence;
 };
 
 
 class LocalPropertyValueProvider : public PropertyValueProvider {
 public:
-	LocalPropertyValueProvider (DependencyObject *obj);
+	LocalPropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence);
 	virtual ~LocalPropertyValueProvider ();
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
@@ -56,7 +60,7 @@ public:
 
 class StylePropertyValueProvider : public PropertyValueProvider {
 public:
-	StylePropertyValueProvider (DependencyObject *obj);
+	StylePropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence);
 	virtual ~StylePropertyValueProvider ();
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
@@ -72,7 +76,7 @@ private:
 
 class InheritedPropertyValueProvider : public PropertyValueProvider {
 public:
-	InheritedPropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { };
+	InheritedPropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence) : PropertyValueProvider (obj, precedence) { };
 	virtual ~InheritedPropertyValueProvider () { };
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
@@ -80,7 +84,7 @@ public:
 
 class DefaultValuePropertyValueProvider : public PropertyValueProvider {
 public:
-	DefaultValuePropertyValueProvider (DependencyObject *obj) : PropertyValueProvider (obj) { };
+	DefaultValuePropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence) : PropertyValueProvider (obj, precedence) { };
 	virtual ~DefaultValuePropertyValueProvider () { };
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
@@ -99,7 +103,7 @@ class AutoCreatePropertyValueProvider : public PropertyValueProvider {
  public:
 	GHashTable *auto_values;
 	
-	AutoCreatePropertyValueProvider (DependencyObject *obj);
+	AutoCreatePropertyValueProvider (DependencyObject *obj, PropertyPrecedence _precedence);
 	virtual ~AutoCreatePropertyValueProvider ();
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
