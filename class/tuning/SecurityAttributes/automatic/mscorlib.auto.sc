@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 147 methods needs to be decorated.
+# 132 methods needs to be decorated.
 
 # [VISIBLE] overrides 'System.Boolean System.Runtime.InteropServices.CriticalHandle::get_IsInvalid()'.
 +SC-M: System.Boolean Microsoft.Win32.SafeHandles.CriticalHandleMinusOneIsInvalid::get_IsInvalid()
@@ -57,51 +57,6 @@
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Byte[] System.BitConverter::GetBytes(System.Byte*,System.Int32)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegCloseKey(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegConnectRegistry(System.String,System.IntPtr,System.IntPtr&)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegCreateKey(System.IntPtr,System.String,System.IntPtr&)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegDeleteKey(System.IntPtr,System.String)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegDeleteValue(System.IntPtr,System.String)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegEnumKey(System.IntPtr,System.Int32,System.Text.StringBuilder,System.Int32)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegEnumValue(System.IntPtr,System.Int32,System.Text.StringBuilder,System.Int32&,System.IntPtr,Microsoft.Win32.RegistryValueKind&,System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegFlushKey(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegOpenKeyEx(System.IntPtr,System.String,System.IntPtr,System.Int32,System.IntPtr&)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegQueryValueEx(System.IntPtr,System.String,System.IntPtr,Microsoft.Win32.RegistryValueKind&,System.Byte[],System.Int32&)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegQueryValueEx(System.IntPtr,System.String,System.IntPtr,Microsoft.Win32.RegistryValueKind&,System.Int32&,System.Int32&)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegQueryValueEx(System.IntPtr,System.String,System.IntPtr,Microsoft.Win32.RegistryValueKind&,System.IntPtr,System.Int32&)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegSetValueEx(System.IntPtr,System.String,System.IntPtr,Microsoft.Win32.RegistryValueKind,System.Byte[],System.Int32)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegSetValueEx(System.IntPtr,System.String,System.IntPtr,Microsoft.Win32.RegistryValueKind,System.Int32&,System.Int32)
-
-# p/invoke declaration
-+SC-M: System.Int32 Microsoft.Win32.Win32RegistryApi::RegSetValueEx(System.IntPtr,System.String,System.IntPtr,Microsoft.Win32.RegistryValueKind,System.String,System.Int32)
 
 # localloc
 +SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::Compare(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)

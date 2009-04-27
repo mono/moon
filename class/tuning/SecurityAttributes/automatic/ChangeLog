@@ -1,3 +1,9 @@
+2009-04-27  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.auto.sc: Remove p/invokes required for registry support
+	* mscorlib.auto.ssc: Remove Registry and some Environment entries.
+	Synchronized with mono/mcs r132691
+
 2009-04-24  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Microsoft.VisualBasic.auto.sc: Update header (version and pk token)
