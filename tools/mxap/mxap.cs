@@ -562,6 +562,9 @@ namespace Moonlight {
 			List<string> resources = new List<string>();
 			List<string> aresources = new List<string>();
 			List<string> cresources = new List<string>();
+			string resourceFile = null;
+			string aresourceFile = null;
+			string cresourceFile = null;
 
 			mxap.Cd = Directory.GetCurrentDirectory ();
 
@@ -573,6 +576,9 @@ namespace Moonlight {
 				{ "generate-manifest", v => mxap.GenerateManifest = v != null },
 				{ "entry-point-type=", v => mxap.EntryPointType = v },
 				{ "cs-sources=", v => mxap.CSSources = v },
+				{ "res-sources=", v => resourceFile = v },
+				{ "ares-sources=", v => aresourceFile = v },
+				{ "cres-sources=", v => cresourceFile = v },
 				{ "desktop", v => mxap.Desktop = v != null },
 				{ "builddirhack=", v => mxap.TopBuildDir = v },
 				{ "r:|reference:", v => mxap.ExternalAssemblies.Add (v) },
@@ -631,6 +637,18 @@ namespace Moonlight {
 				Directory.CreateDirectory (mxap.TmpDir);
 				RecursiveCopy (mxap.WorkingDir, "", mxap.TmpDir);
 			}
+
+			if (resourceFile != null)
+				foreach (string res in File.ReadAllLines (resourceFile))
+					mxap.AddResource (res);
+
+			if (aresourceFile != null)
+				foreach (string res in File.ReadAllLines (aresourceFile))
+					mxap.AddAssemblyResource (res);
+
+			if (cresourceFile != null)
+				foreach (string res in File.ReadAllLines (cresourceFile))
+					mxap.AddContentResource (res);
 
 			foreach (string res in resources) {
 				mxap.AddResource (res);

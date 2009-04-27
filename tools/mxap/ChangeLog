@@ -1,5 +1,10 @@
 2009-04-27  Andreia Gaita  <avidigal@novell.com>
 
+	* mxap.cs: Add -res-source,-ares-sources,-cres-sources to specify
+	files from which to read list of normal/assembly/content resources.
+
+2009-04-27  Andreia Gaita  <avidigal@novell.com>
+
 	* mxap.cs: Fix resource support so that files that go on .g.resources
 	and those that go on the zip have the full path stored as well.
 	Use a temporary directory so all files can be in their proper places
