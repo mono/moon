@@ -265,6 +265,27 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void ClearContainerForItemOverride ()
+		{
+			ListBoxTest.ListBoxPoker box = new ListBoxTest.ListBoxPoker ();
+
+			ListBoxItem listItem = new ListBoxItem { Content = "Content", IsSelected = true };
+			ComboBoxItem comboItem = new ComboBoxItem { Content = "Content", IsSelected = true };
+
+			Assert.Throws<NullReferenceException> (() => box.ClearContainerForItemOverride_ (null, null), "#1");
+			Assert.Throws<InvalidCastException> (() => box.ClearContainerForItemOverride_ (new Rectangle (), null), "#2");
+
+			box.ClearContainerForItemOverride_ (listItem, null);
+			box.ClearContainerForItemOverride_ (comboItem, null);
+
+			Assert.IsNull (listItem.Content, "#3");
+			Assert.IsNull (comboItem.Content, "#4");
+
+			Assert.IsFalse (listItem.IsSelected, "#5");
+			Assert.IsFalse (comboItem.IsSelected, "#6");
+		}
+
+		[TestMethod]
 		public void DefaultValues ()
 		{
 			ListBox lb = new ListBox();
