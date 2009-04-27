@@ -365,6 +365,18 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (-1, ic.EventArgs.OldStartingIndex, "OldStartingIndex-7");
 		}
 
+		class FE : FrameworkElement { }
+		[TestMethod]
+		public void OwnContainerTest ()
+		{
+			ItemsControlPoker box = new ItemsControlPoker ();
+			Assert.IsFalse (box.IsItemItsOwnContainerOverride_ (null), "#1");
+			Assert.IsFalse (box.IsItemItsOwnContainerOverride_ (new object ()), "#2");
+			Assert.IsTrue (box.IsItemItsOwnContainerOverride_ (new ListBoxItem ()), "#3");
+			Assert.IsTrue (box.IsItemItsOwnContainerOverride_ (new ComboBoxItem ()), "#4");
+			Assert.IsTrue (box.IsItemItsOwnContainerOverride_ (new FE ()), "#5");
+		}
+		
 		[TestMethod]
 		public void ItemsSource ()
 		{

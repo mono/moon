@@ -322,6 +322,17 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void OwnContainerTest ()
+		{
+			ListBoxPoker box = new ListBoxPoker ();
+			Assert.IsFalse (box.Call_IsItemItsOwnContainerOverride (null), "#1");
+			Assert.IsFalse (box.Call_IsItemItsOwnContainerOverride (new object ()), "#2");
+			Assert.IsTrue (box.Call_IsItemItsOwnContainerOverride (new ListBoxItem ()), "#3");
+			Assert.IsTrue (box.Call_IsItemItsOwnContainerOverride (new ComboBoxItem ()), "#4");
+			Assert.IsFalse (box.Call_IsItemItsOwnContainerOverride (new Rectangle ()), "#5");
+		}
+		
+		[TestMethod]
 		public void ParentTest ()
 		{
 			ListBox box = new ListBox ();
