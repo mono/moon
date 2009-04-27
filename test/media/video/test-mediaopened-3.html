@@ -30,7 +30,7 @@
 	var downloaded = [false, false, false, false, false, false, false, false, false];
 	var start_time = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 	// Playing P, Stopped S, Paused W, Closed C, Opening O, Buffering B, Error E
-	var valid_states = ["SP" /* Will get both Stopped and Playing states */, "P", "S", "S", "P", "P", "PW" /* May be either Playing or Paused */, "S", "W"];
+	var valid_states = ["PW", "P", "P", "W", "P", "P", "PW", "W", "P"];
 
 	var interval = null;
 	var current_test = -1;
@@ -403,7 +403,7 @@
 
 <div>
 <embed type="application/x-silverlight" width="1280" height="720"
-     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>

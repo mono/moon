@@ -4,7 +4,23 @@
 
 		<script type="text/xaml" id="xaml">
 			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
-			<MediaElement x:Name="media" Source="timecode-long.wmv" AutoPlay="False"
+			<MediaElement x:Name="media1" Source="timecode-long.wmv" AutoPlay="False"
+				MediaOpened="OnMediaOpened" 
+				MediaFailed="OnMediaFailed" 
+				MediaEnded="OnMediaEnded"
+				CurrentStateChanged="OnCurrentStateChanged" 
+				BufferingProgressChanged="OnBufferingProgressChanged"
+				DownloadProgressChanged="OnDownloadProgressChanged"
+				MarkerReached="OnMarkerReached"/>
+			<MediaElement x:Name="media2" Source="timecode-long.wmv" AutoPlay="False"
+				MediaOpened="OnMediaOpened" 
+				MediaFailed="OnMediaFailed" 
+				MediaEnded="OnMediaEnded"
+				CurrentStateChanged="OnCurrentStateChanged" 
+				BufferingProgressChanged="OnBufferingProgressChanged"
+				DownloadProgressChanged="OnDownloadProgressChanged"
+				MarkerReached="OnMarkerReached"/>
+			<MediaElement x:Name="media3" Source="timecode-long.wmv" AutoPlay="False"
 				MediaOpened="OnMediaOpened" 
 				MediaFailed="OnMediaFailed" 
 				MediaEnded="OnMediaEnded"
@@ -19,7 +35,14 @@
 		<script language="javascript" src="../../js/js/testplugin.js"></script>
 		<script language="javascript">
 
-		var mediaElement = null;
+		/*
+			We use 3 media elements, one for each property, because SL2 (not SL1) has a bug where the first exception sets the exception message,
+			and subsequent exceptions (on the same media element), gets the same message as the first exception.
+		*/
+
+		var mediaElement1 = null;
+		var mediaElement2 = null;
+		var mediaElement3 = null;
 		var failed = false;
 		var DownloadProgressChanged = 0;
 		var MarkerReached = 1;
@@ -31,7 +54,8 @@
 		var events = [0, 0, 0, 0, 0, 0, 0];
 		var names = ["DownloadProgressChanged", "MarkerReached", "BufferingProgressChanged", "CurrentStateChanged", "MediaOpened", "MediaFailed", "MediaEnded"];
 		var test1 = [0, 0, 0, 0, 0, 0, 0];
-
+		var opened_events = 0;
+		
 		function RunTests ()
 		{
 			Test1 ();
@@ -46,34 +70,34 @@
 
 			ClearEvents ();
 			try {
-				mediaElement.BufferingProgress = 0.5;
+				mediaElement1.BufferingProgress = 0.5;
 				LogError ("Was able to set BufferingProgress, an exception should have been raised");
 			} catch (ex) {
 				msg = ExceptionToString (ex);
 				if (msg.indexOf ("AG_E_RUNTIME_SETVALUE : BufferingProgress") < 0)
-					LogError ("Expected exception message to contain: 'AG_E_RUNTIME_SETVALUE : BufferingProgress" + "', but got '" + msg + "'");
+					LogError ("1 Expected exception message to contain: 'AG_E_RUNTIME_SETVALUE : BufferingProgress" + "', but got '" + msg + "'");
 			}
 			AssertEvents (test1);
 
 			ClearEvents ();
 			try {
-				mediaElement.DownloadProgress = 0.5;
+				mediaElement2.DownloadProgress = 0.5;
 				LogError ("Was able to set DownloadProgress, an exception should have been raised");
 			} catch (ex) {
 				msg = ExceptionToString (ex);
 				if (msg.indexOf ("AG_E_RUNTIME_SETVALUE : DownloadProgress") < 0)
-					LogError ("Expected exception message to contain: 'AG_E_RUNTIME_SETVALUE : DownloadProgress', but got '" + msg + "'");
+					LogError ("2 Expected exception message to contain: 'AG_E_RUNTIME_SETVALUE : DownloadProgress', but got '" + msg + "'");
 			}
 			AssertEvents (test1);
 
 			ClearEvents ();
 			try {
-				mediaElement.CurrentState = "Closed";
+				mediaElement3.CurrentState = "Closed";
 				LogError ("Was able to set CurrentState, an exception should have been raised");
 			} catch (ex) {
 				msg = ExceptionToString (ex);
 				if (msg.indexOf ("AG_E_RUNTIME_SETVALUE : CurrentState") < 0)
-					LogError ("Expected exception message to contain: 'AG_E_RUNTIME_SETVALUE : CurrentState', but got '" + msg + "'");
+					LogError ("3 Expected exception message to contain: 'AG_E_RUNTIME_SETVALUE : CurrentState', but got '" + msg + "'");
 			}
 			AssertEvents (test1);
 		}
@@ -120,7 +144,10 @@
 		{
 			events [MediaOpened]++;
 			TestLogger.LogDebug ("OnMediaOpened");
-			RunTests ();
+			
+			opened_events++;
+			if (opened_events == 3)
+				RunTests ();
 		}
 
 		function OnMediaFailed (sender, args)
@@ -138,7 +165,9 @@
 		function OnPluginLoad (sender, args)
 		{
 			TestLogger.LogDebug ("OnPluginLoad");
-			mediaElement = sender.findName ("media");
+			mediaElement1 = sender.findName ("media1");
+			mediaElement2 = sender.findName ("media2");
+			mediaElement3 = sender.findName ("media3");
 			setTimeout ("timeOut ();", 30000);
 		}
 
@@ -175,12 +204,6 @@
              background="green" >
         </embed>
     </div>
-<!--
-    <div>
-        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
-        </embed>
-    </div>
--->
   </body>
 </html>
 

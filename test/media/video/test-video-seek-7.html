@@ -1,5 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <title>Test file</title>
@@ -7,7 +5,7 @@
       <script src="../../js/js/utils.js"></script>
       <script src="../../js/js/testplugin.js"></script>
 </head>
-<body>
+<body scroll="no" style='border-width: 0px'>
 
 <script type="text/xaml" id="xaml">
 	<?xml version="1.0"?>
@@ -64,7 +62,7 @@
 	function OnPluginLoaded (o, e)
 	{
 		TestLogger.LogDebug ("OnPluginLoaded");
-		plugin = document.getElementById ("JoltActiveX");
+		plugin = document.getElementById ("_MoonlightControl");
 		mediaElement = plugin.content.findName ("TestVideo");
 		mediaElement.AutoPlay = false;
 		mediaElement.Source = "timecode-long.wmv";
@@ -93,15 +91,10 @@
 
 <div>
 <embed type="application/x-silverlight" width="1280" height="720"
-     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>
-<!--
-<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
->
-</embed>
--->
 </body>
 </html>
 

@@ -1,3 +1,43 @@
+2009-04-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* test-misc.html:
+	* test-states.html:
+	* test-autoplay.html:
+	* test-video-seek.html:
+	* test-mediaopened.html:
+	* test-double-stop.html:
+	* test-mms-failure.html:
+	* test-video-seek-7.html:
+	* test-mediaopened-3.html:
+	* test-yuv-converter.html:
+	* test-stopped-media.html:
+	* test-mediaopened-2.html:
+	* test-video-only-seek.html:
+	* test-bufferingprogress.html:
+	* test-playlist-with-base.html:
+	* test-playlist-with-base-10.asx:
+	* test-playlist-with-base-08.asx:
+	* test-playlist-with-base-09.asx:
+	* test-playlist-with-base-13.asx:
+	* test-playlist-with-base-12.asx:
+	* test-playlist-with-base-11.asx:
+	* test-playlist-with-base-07.asx:
+	* test-playlist-with-base-04.asx:
+	* test-playlist-with-base-01.asx:
+	* test-playlist-with-base-06.asx:
+	* test-playlist-with-base-05.asx:
+	* test-state-after-setsource.html:
+	* test-playlist-with-duration.html:
+	* test-asf-demuxer-big-markers.html:
+	* test-playlist-autoplayed-stop.html:
+	* test-playlist-live-with-duration.asx:
+	* test-reset-media-element-source.html:
+	* test-playlist-live-with-duration.html:
+	* test-asf-demuxer-shuffled-payloads.html:
+	* test-downloadprogress-on-small-files.html:
+	* test-download-and-buffering-progress-on-big-files.html:
+	  Fixed tests to run and pass in MS' 2.0 harness.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* timecode.mpeg: Move videos to test/media/video.

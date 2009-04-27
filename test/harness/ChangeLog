@@ -1,3 +1,9 @@
+2009-04-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* masters/test-mediaopened.Master.png:
+	* masters/video-seek-7.html.master.png:
+	* masters/test-yuv-converterMaster.png: Regenerated.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* harness.mdp: Add a project for each tool, and clean up some

@@ -1,5 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <title>Video seek test</title>
@@ -7,7 +5,7 @@
       <script src="../../js/js/utils.js"></script>
       <script src="../../js/js/testplugin.js"></script>
 </head>
-<body>
+<body scroll="no" style='border-width: 0px'>
 
 <script type="text/xaml" id="xaml">
 	<?xml version="1.0"?>
@@ -23,14 +21,15 @@
 	var ready = false;
 	var mediaElement = null;
 	var plugin = null;
+	var mediaOpened = false;
 	
-	var end_test_timeout = "";
 	var failed = false;
 	
 	function QueueEndTest ()
 	{
-		if (end_test_timeout != "") {
-			removeTimeout (end_test_timeout);
+		if (!mediaOpened) {
+			setTimeout (QueueEndTest, 500);
+			return;
 		}
 		setTimeout ("EndTest ();", 1000);
 	}
@@ -61,18 +60,18 @@
 	function OnPluginLoaded (o, e)
 	{
 		TestLogger.LogDebug ("OnPluginLoaded");
-		plugin = document.getElementById ("JoltActiveX");
+		plugin = document.getElementById ("_MoonlightControl");
 		mediaElement = plugin.content.findName ("TestVideo");
 		mediaElement.addEventListener ("MediaOpened", "OnMediaOpened");
 		mediaElement.addEventListener ("MediaFailed", "OnMediaFailed");
 		TestLogger.LogDebug ("OnPluginLoaded: Done");
 		setTimeout ("StartTest ();", 500);
-		QueueEndTest ();
 	}
 
 	function OnMediaOpened (obj, args)
 	{
 		TestLogger.LogDebug ("OnMediaOpened: " + mediaElement.Source);
+		mediaOpened = true;
 	}
 
 	function OnMediaFailed (obj, args)
@@ -86,7 +85,7 @@
 
 <div>
 <embed type="application/x-silverlight" width="1280" height="720"
-     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>

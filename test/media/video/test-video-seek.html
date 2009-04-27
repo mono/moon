@@ -1,5 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <title>Video seek test</title>
@@ -7,7 +5,7 @@
       <script src="../../js/js/utils.js"></script>
       <script src="../../js/js/testplugin.js"></script>
 </head>
-<body>
+<body scroll="no" style='border-width: 0px'>
 
 <script type="text/xaml" id="xaml">
 	<?xml version="1.0"?>
@@ -99,7 +97,7 @@
 
 		diff = Math.abs (mediaElement.Position.Seconds - current_pos);
 
-		if (diff < 0.000001) {
+		if (diff < 0.00001) {
 			result &= true;
 			TestLogger.LogDebug ("Set position to " + current_pos + " and successfully got back " + mediaElement.Position.Seconds + " (diff: " + diff + ")");
 		} else {
@@ -109,7 +107,7 @@
 		seeked = true;
 
 		seeks_done++;
-		setTimeout ("logResult ();", 100);
+		setTimeout ("logResult ();", 500);
 	}
 
 	function OnTestPluginReady ()
@@ -128,7 +126,7 @@
 	function OnPluginLoaded (o, e)
 	{
 		TestLogger.LogDebug ("OnPluginLoaded");
-		plugin = document.getElementById ("JoltActiveX");
+		plugin = document.getElementById ("_MoonlightControl");
 		mediaElement = plugin.content.findName ("TestVideo");
 		mediaElement.addEventListener ("MediaOpened", "onMediaOpened");
 		mediaElement.AutoPlay = false;
@@ -154,7 +152,7 @@
 
 <div>
 <embed type="application/x-silverlight" width="1280" height="720"
-     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>

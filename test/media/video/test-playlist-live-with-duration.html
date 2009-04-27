@@ -33,6 +33,7 @@
 				TestLogger.LogError ("Difference between start time and end time is " + (end_time - start_time) / 1000 + " s, should be at most 2.5 seconds");
 				failed++;
 			} else {
+				TestHost.TranslateCoordinates = true;
 				TestHost.CaptureSingleImage ("", "test-playlist-live-with-duration.html.png", 0, 0, 200, 200);
 			}
 			TestLogger.LogResult (failed ? -1 : 1);
@@ -74,8 +75,8 @@
 		function OnMediaOpened (sender, args)
 		{
 			TestLogger.LogDebug ("OnMediaOpened: " + sender.Source + ", NaturalDuration: " + sender.NaturalDuration.Seconds);
-			if (sender.NaturalDuration.Seconds != 0) {
-				TestLogger.LogError ("Expected NaturalDuration to be 0.00 s, but it is " + sender.NaturalDuration.Seconds + " s");
+			if (sender.NaturalDuration.Seconds != 1.0) {
+				TestLogger.LogError ("Expected NaturalDuration to be 1.00 s, but it is " + sender.NaturalDuration.Seconds + " s");
 				failed++;
 			}
 		}
@@ -98,7 +99,7 @@
 			TestLogger.LogDebug ("OnPluginLoad");
 			assertForMediaServer ();
 			SetTimer (30000);
-			plugin = document.getElementById ("MLControl");
+			plugin = document.getElementById ("_MoonlightControl");
 			mediaElement = plugin.content.findName ("media");
 			mediaElement.Source = "test-playlist-live-with-duration.asx";
 		}
@@ -120,12 +121,12 @@
 		</script>
 	</head>
 
-  <body>
+  <body scroll="no" style='border-width: 0px'>
     <div id="ML">
         <embed type="application/x-silverlight"
              width="200"
              height="200"
-             id="MLControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
              style="position:absolute; left:0px; top:0px"
              background="green" >
         </embed>

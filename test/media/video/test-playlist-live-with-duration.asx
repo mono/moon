@@ -1,10 +1,4 @@
 <ASX version="3.0">
-<!--
-  <ENTRY>
-    <DURATION VALUE="00:00:02" />
-    <REF HREF="http://moonlightmedia:81/source/coral_reef.wmv" />
-  </ENTRY>
--->
   <ENTRY>
     <DURATION VALUE="00:00:1" />
     <REF HREF="mms://MOONLIGHTMEDIA/LiveStream" />

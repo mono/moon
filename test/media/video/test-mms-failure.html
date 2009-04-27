@@ -4,7 +4,7 @@
 
 		<script type="text/xaml" id="xaml">
 			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
-			<MediaElement Source="mms://localhost:8080/media/video/timecode-short-wmv9.wmv" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" />
+			<MediaElement Source="mms://moonlightmedia:81/source/bear_mini.wmv" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" />
 			</Canvas>
 		</script>
 
@@ -36,7 +36,7 @@
 		function OnPluginLoad (sender, args)
 		{
 			TestLogger.LogDebug ("OnPluginLoad");
-			setTimeout ("timeOut ();", 2000);
+			setTimeout ("timeOut ();", 30000);
 		}
 
 		function OnPluginError (sender, args)
@@ -59,12 +59,6 @@
              background="green" >
         </embed>
     </div>
-<!--
-    <div>
-        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
-        </embed>
-    </div>
--->
   </body>
 </html>
 

@@ -87,7 +87,7 @@
 	function OnPluginLoaded (o, e)
 	{
 		TestLogger.LogDebug ("OnPluginLoaded");
-		plugin = document.getElementById ("JoltActiveX");
+		plugin = document.getElementById ("_MoonlightControl");
 		mediaElement = plugin.content.findName ("TestVideo");
 		mediaElement.addEventListener ("MediaOpened", "OnMediaOpened");
 		mediaElement.addEventListener ("MediaFailed", "OnMediaFailed");
@@ -113,7 +113,7 @@
 
 <div>
 <embed type="application/x-silverlight" width="1280" height="720"
-     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>

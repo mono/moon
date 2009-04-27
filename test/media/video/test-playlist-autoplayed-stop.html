@@ -33,12 +33,12 @@
 				}
 				
 				if (mediaElement.NaturalDuration.Seconds > 2) {
-					TestLogger.LogError ("Expected the first video to remain the first after a Stop.");
+					TestLogger.LogError ("Expected the first video to remain the first after a Stop (NaturalDuration: " + mediaElement.NaturalDuration.Seconds + "s)");
 					failed++;
 				}
 
-				if (mediaElement.CurrentState != "Stopped") {
-					TestLogger.LogError ("Expected CurrentState to be 'Stopped' after stopping");
+				if (mediaElement.CurrentState != "Paused") {
+					TestLogger.LogError ("Expected CurrentState to be 'Paused' after stopping, but it is '" + mediaElement.CurrentState + "'");
 					failed++;
 				}
 			}
@@ -65,7 +65,7 @@
 					TestLogger.LogError ("OnMediaOpened: Stop shouldn't be done sync");
 					failure++;
 				}
-				setTimeout ("EndTest ('done');", 2500);
+				setTimeout ("EndTest ('done');", 4000);
 			}
 		}
 

@@ -4,8 +4,8 @@
 
 		<script type="text/xaml" id="xaml">
 			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
-			<MediaElement x:Name="A" AutoPlay="True"  MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" CurrentStateChanged="OnCurrentStateChanged" Canvas.Top="0"   />
-			<MediaElement x:Name="B" AutoPlay="False" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" CurrentStateChanged="OnCurrentStateChanged" Canvas.Top="100" />
+			<MediaElement x:Name="A" Height="100" Width="100" AutoPlay="True"  MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" CurrentStateChanged="OnCurrentStateChanged" Canvas.Top="0"   />
+			<MediaElement x:Name="B" Height="100" Width="100" AutoPlay="False" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" CurrentStateChanged="OnCurrentStateChanged" Canvas.Top="100" />
 			</Canvas>
 		</script>
 
@@ -16,9 +16,10 @@
 		var statesA = [];
 		var statesB = [];
 		var expectedA = ["Opening", "Playing", "Paused"];
-		var expectedB = ["Opening", "Playing", "Stopped", "[Play called]", "Playing", "Paused"];
+		var expectedB = ["Opening", "Paused", "[Play called]", "Playing", "Paused"];
 		var A = null, B = null;
 		var doneA = false, doneB = false;
+		var openedB = 0; // 0 = not opened, 1 = opened, waiting, 2 = ready to go
 		var lastA = "", lastB = "";
 		var failed = false;
 
@@ -27,12 +28,23 @@
 			var src = "timecode-short-vc1-adv.wmv";
 			A.Source = src;
 			B.Source = src;
-			setTimeout (function ()
-				{
-					TestLogger.LogDebug ("Calling B.Play ()");
-					statesB.push ("[Play called]");
-					B.Play ();
-				}, 1000);
+			
+			setTimeout (StartB, 1000);
+		}
+
+		function StartB ()
+		{
+			TestLogger.LogDebug ("StartB, opened: " + openedB);
+			if (openedB != 2) {
+				if (openedB == 1)
+					openedB = 2; // when we go into state 1, wait a "tick" before call play
+				setTimeout (StartB, 500);
+				return;
+			}
+			
+			TestLogger.LogDebug ("Calling B.Play ()");
+			statesB.push ("[Play called]");
+			B.Play ();
 		}
 
 		function OnCurrentStateChanged (sender, args)
@@ -56,6 +68,9 @@
 		function OnMediaOpened (sender, args)
 		{
 			TestLogger.LogDebug ("OnMediaOpened () " + sender.Name);
+			
+			if (sender.Name == "B")
+				openedB = 1;
 		}
 
 		function OnMediaFailed (sender, args)

@@ -23,9 +23,9 @@
 		var current_result = "";
 		var results = [
 			"", 
-			"MediaFailed: Error Type:    MediaError, Error Message: AG_E_UNKNOWN_ERROR, Error Code:    1001", 
-			"MediaFailed: Error Type:    MediaError, Error Message: AG_E_UNKNOWN_ERROR, Error Code:    1001", 
-			"MediaFailed: Error Type:    MediaError, Error Message: AG_E_UNKNOWN_ERROR, Error Code:    1001", 
+			"MediaFailed: Error Type:    MediaError, Error Message: AG_E_NETWORK_ERROR, Error Code:    4001", 
+			"MediaFailed: Error Type:    MediaError, Error Message: AG_E_NETWORK_ERROR, Error Code:    4001", 
+			"MediaFailed: Error Type:    MediaError, Error Message: AG_E_NETWORK_ERROR, Error Code:    4001", 
 			"MediaOpened",
 			"MediaOpened",
 			"MediaOpened",
@@ -110,7 +110,7 @@
 		{
 			if (timeout) 
 				clearTimeout (timeout);
-			timeout = setTimeout ("timeOut ();", 20000);
+			timeout = setTimeout ("timeOut ();", 60000);
 		}
 
 		function OnPluginError (sender, args)
@@ -156,12 +156,6 @@
         </embed>
 -->
     </div>
-<!--
-    <div>
-        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
-        </embed>
-    </div>
--->
   </body>
 </html>
 

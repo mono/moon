@@ -24,7 +24,7 @@
 	var plugin = null;
 	var current_test = -1;
 	var media_opened_count = [0, 0, 0, 0, 0, 0, 0];
-	var expected = [false, true, true, true, true, false, false];
+	var expected = [false, true, false, true, true, false, false];
 	var played = [false, false, false, false, false, false, false];
 	var updated = [0, 0, 0, 0, 0, 0, 0, 0];
 	var downloaded = [0, 0, 0, 0, 0, 0, 0];
@@ -152,7 +152,7 @@
 	function OnPluginLoaded (o, e)
 	{
 		Log ("OnPluginLoaded");
-		plugin = document.getElementById ("JoltActiveX");
+		plugin = document.getElementById ("_MoonlightControl");
 		mediaElement = plugin.content.findName ("TestVideo");
 		NextTest ();
 		setInterval ("Tick ();", 100);
@@ -305,7 +305,7 @@
 
 <div style="position:absolute; left:0px; top:0px">
 	<embed type="application/x-silverlight" width="1280" height="720"
-	id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+	id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
 	background="#CCCCCC">
 	</embed>
 	<div > </div>

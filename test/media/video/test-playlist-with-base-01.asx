@@ -1,4 +1,4 @@
 <ASX version="3.0">
-  <BASE HREF="localhost:8080/media/video/" />
+  <BASE HREF="moon-perf:80/media/video/" />
   <ENTRYREF HREF="timecode-short.wmv" />
 </ASX>

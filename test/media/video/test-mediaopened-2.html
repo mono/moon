@@ -25,15 +25,17 @@
 	var live_src = "mms://moonlightmedia/LiveStream";
 	var mediaElement = null;
 	var steps_left = [2, 2, 2, 2, 2, 2];
-	var success = [false, false, false, false, false, false];
+	var success = [true, true, true, true, true, true];
 	var autoplay = [false, true, false, true, false, true];
 	var sources = [pl_src, pl_src, norm_src, norm_src, live_src, live_src];
+	var opened_state = ["Paused", "Playing", "Paused", "Playing", "Stopped", "Playing"];
 	var updated = [0, 0, 0, 0, 0, 0];
 	var interval = null;
 	var current_test = -1;
 
 /*
- * Testing that we always get a CurrentStateChanged event with CurrentState = 'Playing' before we get a MediaOpened event (for the first MediaOpened of a source)
+ * Testing that we nevert get a CurrentStateChanged event with CurrentState != 'Opening' before we get a MediaOpened event (for the first MediaOpened of a source)
+ * and that in the MediaOpened event CurrentState != 'Opening', but Stopped, Playing or Paused
  * 
  * Test 0: Load a playlist (Autoplay = false)
  * Test 1: Load a playlist (Autoplay = true)
@@ -90,7 +92,7 @@
 		case 5:
 			switch (steps_left [current_test]) {
 			case 2:
-				if (updated [current_test] + 5000 < getNow ()) {
+				if (updated [current_test] + 15000 < getNow ()) {
 					TestLogger.LogError ("Test #" + current_test + " timed out.");
 					steps_left [current_test]--;
 				}
@@ -118,7 +120,7 @@
 	
 	function OnMediaOpened (obj, args)
 	{
-		TestLogger.LogDebug ("OnMediaOpened: " + obj.Source);
+		TestLogger.LogDebug ("OnMediaOpened: " + obj.Source + ", CurrentState: " + obj.CurrentState);
 
 		switch (current_test) {
 		case 0:
@@ -129,7 +131,10 @@
 		case 5:
 			switch (steps_left [current_test]) {
 			case 2:
-				TestLogger.LogError ("Test #" + current_test + " failed");
+				if (obj.CurrentState != opened_state [current_test]) {
+					TestLogger.LogError ("Test #" + current_test + " failed, expected CurrentState to be " + opened_state [current_test] + " in MediaOpened, but it was: " + obj.CurrentState);
+					success [current_test] = false;
+				}
 				steps_left [current_test]--;
 				NextTest ();
 				break;
@@ -168,9 +173,9 @@
 		case 5:
 			switch (steps_left [current_test]) {
 			case 2:
-				if (sender.CurrentState == "Playing") {
-					success [current_test] = true;
-					steps_left [current_test]--;
+				if (sender.CurrentState != "Opening") {
+					TestLogger.LogError ("Test #" + current_test + " failed: got a CurrentStateChanged with state: " + sender.CurrentState + " before the MediaOpened event");
+					success [current_test] = false;
 				}
 				break;
 			}
@@ -199,16 +204,10 @@
 
 <div>
 <embed type="application/x-silverlight" width="1280" height="720"
-     id="JoltActiveX" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>
-
-<!--
-<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
->
-</embed>
--->
 </body>
 
 </html>

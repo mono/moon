@@ -26,6 +26,7 @@
 				TestLogger.LogError ("Difference between start time and end time is " + (end_time - start_time) / 1000 + " s, should be at most 2.5 seconds");
 				failed++;
 			} else {
+				TestHost.TranslateCoordinates = true;
 				TestHost.CaptureSingleImage ("", "test-playlist-with-duration.html.png", 0, 0, 200, 200);
 			}
 			if (failed)
@@ -88,23 +89,16 @@
 		</script>
 	</head>
 
-  <body>
+<body scroll="no" style='border-width: 0px'>
     <div id="ML">
         <embed type="application/x-silverlight"
              width="200"
              height="200"
-             id="MLControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
              style="position:absolute; left:0px; top:0px"
              background="green" >
         </embed>
-
     </div>
-<!--
-    <div>
-        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
-        </embed>
-    </div>
--->
   </body>
 </html>
 
