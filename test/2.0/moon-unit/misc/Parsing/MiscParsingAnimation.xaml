@@ -8,11 +8,11 @@
                 <DoubleAnimation x:Name="the_animation"
 		     Duration="0::0"
                      Storyboard.TargetName="the_control"
-                     Storyboard.TargetProperty="(moon:HalfHeightControl.HalfHeight)"
+                     Storyboard.TargetProperty="(moon:HalfDimensionsControl.HalfHeight)"
                      To="25" />
              </Storyboard>
 	</Canvas.Resources>
 
-	<moon:HalfHeightControl x:Name="the_control" HalfHeight="10" />
+	<moon:HalfDimensionsControl x:Name="the_control" HalfHeight="10" />
 </Canvas>
 
