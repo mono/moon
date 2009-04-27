@@ -38,18 +38,29 @@ namespace MoonTest.Misc.Parsing
 		}
 	}
 
-	public class HalfHeightControl : UserControl {
+	public class HalfDimensionsControl : UserControl {
 
-		public static readonly DependencyProperty HalfHeightProperty = DependencyProperty.RegisterAttached ("HalfHeight", typeof (double), typeof (HalfHeightControl), new PropertyMetadata (OnHalfHeightChanged));
+		public static readonly DependencyProperty HalfHeightProperty = DependencyProperty.RegisterAttached ("HalfHeight", typeof (double), typeof (HalfDimensionsControl), new PropertyMetadata (OnHalfHeightChanged));
+		public static readonly DependencyProperty HalfWidthProperty = DependencyProperty.RegisterAttached ("HalfWidth", typeof (double), typeof (HalfDimensionsControl), new PropertyMetadata (OnHalfWidthChanged));
 
 		public double HalfHeight {
 			get { return (double) GetValue (HalfHeightProperty); }
 			set { SetValue (HalfHeightProperty, value); }
 		}
 
+		public double HalfWidth {
+			get { return (double) GetValue (HalfWidthProperty); }
+			set { SetValue (HalfWidthProperty, value); }
+		}
+
 		public static void OnHalfHeightChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
 		{
 			(sender as FrameworkElement).Height = (double) args.NewValue * 2;
+		}
+
+		public static void OnHalfWidthChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			(sender as FrameworkElement).Width = (double) args.NewValue * 2;
 		}
 	}
 
@@ -91,19 +102,19 @@ namespace MoonTest.Misc.Parsing
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
-		public void ResolveManagedPropertyPath1 ()
+		public void ResolveManagedPropertyPath2 ()
 		{
 			MiscParsingTestAnimation page = new MiscParsingTestAnimation ("/moon-unit;component/misc/Parsing/MiscParsingAnimation.xaml");
 
 			Storyboard s = (Storyboard) page.FindName ("the_storyboard");
-			HalfHeightControl control = (HalfHeightControl) page.FindName ("the_control");
+			HalfDimensionsControl control = (HalfDimensionsControl) page.FindName ("the_control");
 			DoubleAnimation the_animation = (DoubleAnimation) page.FindName ("the_animation");
 			
 			s.Begin ();
 			Enqueue (() => Assert.AreEqual (25, control.HalfHeight, "#1"));
 
 			// Make sure the path isn't magically expanded by the parser
-			Enqueue (() => Assert.AreEqual ("(moon:ManagedUserControl.HalfHeight)", Storyboard.GetTargetProperty (the_animation).Path, "#2"));
+			Enqueue (() => Assert.AreEqual ("(moon:HalfDimensionsControl.HalfHeight)", Storyboard.GetTargetProperty (the_animation).Path, "#2"));
 
 			// Try setting the path programmatically (reset it first)
 			Enqueue (() => s.Stop ());
@@ -112,13 +123,67 @@ namespace MoonTest.Misc.Parsing
 			Enqueue (() => Assert.AreEqual (25, control.Height, "#3"));
 
 			Enqueue (() => s.Stop ());
-			Enqueue (() => Storyboard.SetTargetProperty (the_animation, new PropertyPath ("(moon:ManagedUserControl.HalfHeight)")));
+			Enqueue (() => Storyboard.SetTargetProperty (the_animation, new PropertyPath ("(moon:HalfDimensionsControl.HalfWidth)")));
 			Enqueue (() => s.Begin ());
-			Enqueue (() => Assert.AreEqual (25, control.HalfHeight, "#4"));
+			Enqueue (() => Assert.AreEqual (25, control.HalfWidth, "#4"));
 
 			Enqueue (() => s.Stop ());
-			Enqueue (() => Storyboard.SetTargetProperty (the_animation, new PropertyPath ("(monkey:ManagedUserControl.HalfHeigh)")));
+			Enqueue (() => Storyboard.SetTargetProperty (the_animation, new PropertyPath ("(monkey:HalfDimensionsControl.HalfHeigh)")));
 			Enqueue (() => Assert.Throws<InvalidOperationException> (() => s.Begin ()));
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ResolveManagedPropertyPathInCode ()
+		{
+			MiscParsingTestAnimation page = new MiscParsingTestAnimation ("/moon-unit;component/misc/Parsing/MiscParsingAnimation.xaml");
+
+			Storyboard s = (Storyboard) page.FindName ("the_storyboard");
+			HalfDimensionsControl control = (HalfDimensionsControl) page.FindName ("the_control");
+
+			DoubleAnimation the_animation = new DoubleAnimation ();
+
+			the_animation.Duration = new Duration (new TimeSpan (0));
+			the_animation.To = 25;
+
+			s.Children.Clear ();
+			s.Children.Add (the_animation);
+
+			Storyboard.SetTarget (the_animation, control);
+			Storyboard.SetTargetProperty (the_animation, new PropertyPath ("(moon:HalfDimensionsControl.HalfHeight)"));
+			
+			Enqueue (() => s.Begin ());
+			Enqueue (() => Assert.AreEqual (25, control.HalfHeight, "#1"));
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ResolveManagedPropertyPathInCodeFull ()
+		{
+			Storyboard s = new Storyboard ();
+			HalfDimensionsControl control = new HalfDimensionsControl ();
+
+			control.Name = "the_control";
+
+			DoubleAnimation the_animation = new DoubleAnimation ();
+
+			the_animation.Duration = new Duration (new TimeSpan (0));
+			the_animation.To = 25;
+
+			s.Children.Clear ();
+			s.Children.Add (the_animation);
+
+			Storyboard.SetTarget (the_animation, control);
+			Storyboard.SetTargetProperty (the_animation, new PropertyPath ("(monkeylovesballs:HalfDimensionsControl.HalfHeight)"));
+			
+			Enqueue (() => s.Begin ());
+			Enqueue (() => Assert.AreEqual (25, control.HalfHeight, "#1"));
 
 			EnqueueTestComplete ();
 		}
