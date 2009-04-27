@@ -1,3 +1,7 @@
+2009-04-27  Geoff Norton  <gnorton@novell.com>
+
+	* codec-url.h, pipeline-ui.cpp: Update for 1.9p1
+
 2009-04-24  Chris Toshok  <toshok@ximian.com>
 
 	It turns out the granularity of overriding in styles is at the

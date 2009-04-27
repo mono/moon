@@ -25,7 +25,7 @@
 #include "debug.h"
 #include "codec-url.h"
 
-#define EULA_URL "http://go.microsoft.com/fwlink/?LinkId=133817"
+#define EULA_URL "http://go.microsoft.com/fwlink/?LinkId=149579"
 
 bool CodecDownloader::running = false;
 

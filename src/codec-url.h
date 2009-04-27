@@ -15,10 +15,10 @@
 
 #if defined (__linux__)
 #  if defined (__i386__)
-#    define CODEC_URL "http://go.microsoft.com/fwlink/?LinkId=133186"
+#    define CODEC_URL "http://go.microsoft.com/fwlink/?LinkId=149561"
 #  endif
 #  if defined (__x86_64__)
-#    define CODEC_URL "http://go.microsoft.com/fwlink/?LinkId=133816"
+#    define CODEC_URL "http://go.microsoft.com/fwlink/?LinkId=149563"
 #  endif
 #endif
 
