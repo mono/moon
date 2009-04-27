@@ -1,5 +1,10 @@
 2009-04-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* masters/test-playlist-with-duration.Master.png: Added
+	  missing master file.
+
+2009-04-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* masters/test-mediaopened.Master.png:
 	* masters/video-seek-7.html.master.png:
 	* masters/test-yuv-converterMaster.png: Regenerated.
