@@ -1,3 +1,8 @@
+2009-04-27  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: Add some more NUnit
+	  tests on ComboBox.
+
 2009-04-24  Jackson Harper  <jackson@ximian.com>
 
 	* misc/Parsing/MiscParsing.cs:

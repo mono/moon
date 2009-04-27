@@ -38,6 +38,7 @@ using System.Collections.Specialized;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Media;
 using System.Text;
+using System.Windows.Media.Animation;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -50,6 +51,10 @@ namespace MoonTest.System.Windows.Controls {
 	public class FakeComboBox : ComboBox {
 		public List<Value> methods = new List<Value> ();
 
+		public DependencyObject ContainerItem {
+			get; set;
+		}
+		
 		public FakeComboBox ()
 		{
 			this.SelectionChanged += delegate { methods.Add (new Value { MethodName = "SelectionChangedEvent" }); };
@@ -76,6 +81,9 @@ namespace MoonTest.System.Windows.Controls {
 
 		protected override global::System.Windows.DependencyObject GetContainerForItemOverride ()
 		{
+			if (ContainerItem != null)
+				return ContainerItem;
+			
 			methods.Add (new Value { ReturnValue = base.GetContainerForItemOverride () });
 			return (DependencyObject) methods.Last ().ReturnValue;
 		}
@@ -210,6 +218,78 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (1, e.NewItems.Count, "#6");
 			Assert.AreEqual ("blah", e.NewItems [0], "#7");
 			Assert.AreEqual (0, e.NewStartingIndex, "#8");
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[Ignore ("Throws an internal exception of type MS.Internal.WrappedException. Can/should we replicate this?")]
+		public void ContainerItemTest ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			box.ApplyTemplate ();
+			box.ContainerItem = new Storyboard ();
+			CreateAsyncTest (box,
+				() => box.IsDropDownOpen = true,
+				() => Assert.Throws<Exception> (() => box.Items.Add (new object ()))
+			);
+		}
+
+		class ConcreteFrameworkElement : FrameworkElement { }
+
+		[TestMethod]
+		[Asynchronous]
+		public void ContainerItemTest2 ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			box.ApplyTemplate ();
+			box.ContainerItem = new ConcreteFrameworkElement (); 
+			CreateAsyncTest (box,
+				() => box.IsDropDownOpen = true,
+				() => Assert.Throws<InvalidCastException> (() => box.Items.Add (new object ()))
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ContainerItemTest3 ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			box.ApplyTemplate ();
+			box.ContainerItem = new ListBoxItem ();
+			CreateAsyncTest (box,
+				() => box.IsDropDownOpen = true,
+				() => box.Items.Add (new object ())
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ContainerItemTest4 ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			box.ApplyTemplate ();
+			box.ContainerItem = new Rectangle ();
+			CreateAsyncTest (box,
+				() => box.IsDropDownOpen = true,
+				() => Assert.Throws<InvalidCastException> (() => box.Items.Add (new object ()))
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[Ignore ("Throws an internal exception of type MS.Internal.WrappedException. Can/should we replicate this?")]
+		public void ContainerItemTest5 ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			box.ApplyTemplate ();
+			box.ContainerItem = new ComboBoxItem ();
+			CreateAsyncTest (box,
+				() => box.IsDropDownOpen = true,
+				() => {
+					box.Items.Add (new object ()); },
+				() => {
+					box.Items.Add (new object ()); }
+			);
 		}
 
 		[TestMethod]
