@@ -245,6 +245,13 @@ DependencyProperty::SetPropertyChangedCallback (NativePropertyChangedHandler *ch
 	this->changed_callback = changed_callback;
 }
 
+Type *
+lookup_type (DependencyObject *lu, const char* name)
+{
+	// For now, just do this
+	return Type::Find (name);
+}
+
 //
 // Everything inside of a ( ) resolves to a DependencyProperty, if there is a
 // '.' after the property, we get the object, and continue resolving from there
@@ -267,6 +274,9 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 		return propertypath->property;
 
 	const char *path = propertypath->path;
+	if (propertypath->expanded_path)
+		path = propertypath->expanded_path;
+
 	const char *inend = path + strlen (path);
 	register const char *inptr = path;
 	const char *start, *prop = path;
@@ -279,8 +289,8 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 	Type *type = NULL;
 	int index;
 	bool paren_open = false;
-	
-	
+	bool tick_open = false;
+
 	while (inptr < inend) {
 		switch (*inptr++) {
 		case '(':
@@ -289,7 +299,19 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 		case ')':
 			paren_open = false;
 			break;
+		case '\'':
+			// Ticks are only legal in expanded paths, so we should just fail here
+			if (!propertypath->expanded_path) {
+				g_warning ("The ' character is not legal in property paths.");
+				break;
+			}
+
+			tick_open = !tick_open;
+			break;
 		case '.':
+			if (tick_open)
+				continue;
+
 			// resolve the dependency property
 			if (res) {
 				// make sure that we are getting what we expect
@@ -336,9 +358,17 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 			expression_found = true;
 			start = inptr - 1;
 
-			while (inptr < inend && *inptr != '.' && (!paren_open || *inptr != ')') && *inptr != '[')
+			while (inptr < inend && (*inptr != '.' || tick_open) && (!paren_open || *inptr != ')') && *inptr != '[') {
+				if (*inptr == '\'') {
+					tick_open = !tick_open;
+					if (!tick_open) {
+						inptr++;
+						break;
+					}
+				}
 				inptr++;
-			
+			}
+
 			if (inptr == start)
 				goto error;
 
@@ -351,15 +381,27 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 					// http://election.msn.com/podium08.aspx.
 					type = Type::Find ("TextBlock");
 				} else {
-					name = g_strndup (start, inptr - start);
-					type = Type::Find (name);
+					const char *s = inptr;
+					if (*(inptr -1) == '\'' && !tick_open) {
+						s = inptr - 1;
+					}
+					name = g_strndup (start, s - start);
+					type = lookup_type (lu, name);
 					g_free (name);
 				}
 				
 				inptr++;
 				start = inptr;
-				while (inptr < inend && (!paren_open || *inptr != ')') && *inptr != '.')
+				while (inptr < inend && (!paren_open || *inptr != ')') && (*inptr != '.' || tick_open)) {
+					if (*inptr == '\'') {
+						tick_open = !tick_open;
+						if (!tick_open) {
+							inptr++;
+							break;
+						}
+					}
 					inptr++;
+				}
 				
 				if (inptr == start)
 					goto error;
@@ -393,12 +435,9 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 	}
 	
 	*o = lu;
-	
 	return res;
 	
  error:
-	
-	*o = NULL;
-	
+	*o = NULL;	
 	return NULL;
 }

@@ -49,6 +49,7 @@ namespace Mono {
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct UnmanagedPropertyPath {
 		public IntPtr pathString;
+		public IntPtr expandedPathString;
 		public IntPtr property;
 	}
 
@@ -498,6 +499,7 @@ namespace Mono {
 						upp->pathString = StringToIntPtr (propertypath.Path);
 					else
 						upp->pathString = IntPtr.Zero;
+					upp->expandedPathString = IntPtr.Zero;
 				}
 				else if (v is Uri) {
 					Uri uri = (Uri) v;

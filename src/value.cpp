@@ -122,6 +122,7 @@ Value::Value (const Value& v)
 		if (v.u.propertypath) {
 			u.propertypath = g_new (PropertyPath, 1);
 			u.propertypath->path = g_strdup (v.u.propertypath->path);
+			u.propertypath->expanded_path = g_strdup (v.u.propertypath->expanded_path);
 			u.propertypath->property = v.u.propertypath->property;
 		}
 		break;
@@ -287,6 +288,7 @@ Value::Value (PropertyPath propertypath)
 	k = Type::PROPERTYPATH;
 	u.propertypath = g_new (PropertyPath, 1);
 	u.propertypath->path = g_strdup (propertypath.path);
+	u.propertypath->expanded_path = g_strdup (propertypath.expanded_path);
 	u.propertypath->property = propertypath.property;
 	SetIsNull (false);
 }
@@ -432,6 +434,7 @@ Value::FreeValue ()
 	case Type::PROPERTYPATH:
 		if (u.propertypath) {
 			g_free (u.propertypath->path);
+			g_free (u.propertypath->expanded_path);
 			g_free (u.propertypath);
 		}
 		break;

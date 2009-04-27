@@ -105,6 +105,7 @@ static const char* begin_buffering_element_names [] = {
 	NULL
 };
 
+static bool value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop_name, const char *str, Value **v);
 static bool dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 static void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child);
 static void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
@@ -858,6 +859,9 @@ class XNamespace : public XamlNamespace {
 	virtual char *FindTypeName (const char **attr, char **xmlns)
 	{
 		char *res = NULL;
+
+		if (!attr)
+			return NULL;
 
 		for (int i = 0; attr [i]; i += 2) {
 			char *ns = strchr (attr [i], '|');
@@ -2978,8 +2982,87 @@ value_from_str_with_typename (const char *type_name, const char *prop_name, cons
 	return value_from_str (t->GetKind (), prop_name, str, v);
 }
 
+char *
+expand_property_path (XamlParserInfo *p, PropertyPath *path)
+{
+	if (!path->path)
+		return NULL;
+
+	bool expanded = false;
+	GString *res = g_string_new (path->path);
+
+	int len = strlen (res->str);
+	for (int i = 0; i < len; i++) {
+		if (res->str [i] == ':') {
+			int e = i;
+			int s = i - 1;
+			int te = i + 1;
+			for ( ; s > 0; s--) {
+				if (!g_ascii_isalnum (res->str [s]))
+					break;
+			}
+
+			for ( ; te < len; te++) {
+				if (!g_ascii_isalpha (res->str [te]) || res->str [te] == '_')
+					break;
+			}
+
+			char *prefix = g_strndup (res->str + s + 1, e - s - 1);
+			char *type = g_strndup (res->str + e + 1, te - e - 1);
+
+			res = g_string_erase (res, s + 1, te - s - 1);
+
+			XamlNamespace *ns = (XamlNamespace *) g_hash_table_find (p->namespace_map, namespace_for_prefix, prefix);
+			if (!ns) {
+				g_free (prefix);
+				g_free (type);
+				g_string_free (res, true);
+				return NULL;
+			}
+
+			XamlElementInfo *info = ns->FindElement (p, type, NULL, false);
+
+			if (!info) {
+				g_free (prefix);
+				g_free (type);
+				g_string_free (res, true);
+				return NULL;
+			}
+			
+			char *uri = g_strdup_printf ("'%s'", Type::Find (info->GetKind ())->GetName ());
+
+			res = g_string_insert (res, s + 1, uri);
+			i = s + 1 + strlen (uri);
+			len = strlen (res->str);
+
+			delete info;
+			g_free (uri);
+			g_free (prefix);
+			g_free (type);
+
+			expanded = true;
+		}
+	}
+
+	if (!expanded) {
+		g_string_free (res, true);
+		return NULL;
+	}
+
+	char *expanded_str = res->str;
+	g_string_free (res, false);
+
+	return expanded_str;
+}
+
 bool
 value_from_str (Type::Kind type, const char *prop_name, const char *str, Value **v)
+{
+	return value_from_str_with_parser (NULL, type, prop_name, str, v);
+}
+
+static bool
+value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop_name, const char *str, Value **v)
 {
 	char *endptr;
 	*v = NULL;
@@ -3376,7 +3459,9 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 		break;
 	}
 	case Type::PROPERTYPATH: {
-		*v = new Value (PropertyPath (s));
+		PropertyPath *path = new PropertyPath (s);
+		path->expanded_path = expand_property_path (p, path);
+		*v = new Value (*path);
 		break;
 	}
 	default:
@@ -4521,7 +4606,7 @@ start_parse:
 				continue;
 
 			if (!v && !need_managed)
-				value_from_str (prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v);
+				value_from_str_with_parser (p, prop->GetPropertyType(), prop->GetName(), attr [i + 1], &v);
 
 			Type::Kind propKind = prop->GetPropertyType ();
 			Type::Kind itemKind = item->info->GetKind();

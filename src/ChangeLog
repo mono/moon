@@ -1,3 +1,18 @@
+2009-04-27  Jackson Harper  <jackson@ximian.com>
+
+	* value.cpp: property path's have expanded paths that need to be
+	copied, freed, ect now.
+	* propertypath.h: Add an expanded path to the property path, this
+	is a path with managed types marked with namespaces expanded into
+	full names. So 'moon:MyType' becomes something like
+	'MoonNamespace.MyType'.
+	* dependencyproperty.cpp: If an expanded path is available use
+	that for property path parsing.  Also added support for the ' mark
+	for escaping full type names (otherwise full names could not have
+	'.'s). The ' can only be used in expanded paths.
+	* xaml.cpp: When parsing property paths expand out managed
+	namespaces if possible.
+
 2009-04-27  Geoff Norton  <gnorton@novell.com>
 
 	* value.cpp: Its possible for these pointers to be 0x0 here, so
