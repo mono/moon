@@ -126,6 +126,11 @@ namespace MoonTest.System.Windows.Controls {
 			base.OnItemsChanged (e);
 		}
 
+		public void PrepareContainerForItemOverride_ (DependencyObject element, object item)
+		{
+			PrepareContainerForItemOverride (element, item);
+		}
+
 		protected override void PrepareContainerForItemOverride (global::System.Windows.DependencyObject element, object item)
 		{
 			base.PrepareContainerForItemOverride (element, item);
@@ -513,6 +518,85 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsFalse (box.IsItemItsOwnContainerOverride_ (new ListBoxItem ()), "#3");
 			Assert.IsTrue (box.IsItemItsOwnContainerOverride_ (new ComboBoxItem ()), "#4");
 			Assert.IsFalse (box.IsItemItsOwnContainerOverride_ (new Rectangle ()), "#5");
+		}
+		
+		[TestMethod]
+		public void PrepareContainerForItemOverrideTest ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			Assert.Throws <NullReferenceException> (() => box.PrepareContainerForItemOverride_ (null, null));
+		}
+
+		[TestMethod]
+		public void PrepareContainerForItemOverrideTest2 ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			Assert.Throws<InvalidCastException> (() => box.PrepareContainerForItemOverride_ (new Rectangle (), null));
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void PrepareContainerForItemOverrideTest3 ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			ComboBoxItem item = new ComboBoxItem ();
+			Assert.IsNull (item.Style);
+			Assert.IsNull (item.Content);
+			Assert.IsNull (item.ContentTemplate);
+			box.PrepareContainerForItemOverride_ (item, null);
+			Assert.IsNull (item.Style);
+			Assert.IsNull (item.Content);
+			Assert.IsNotNull (item.ContentTemplate);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void PrepareContainerForItemOverrideTest4 ()
+		{
+			FakeComboBox box = new FakeComboBox { ItemContainerStyle = new Style (typeof (ListBoxItem)) };
+			box.ItemContainerStyle.Setters.Add (new Setter { Property = Canvas.LeftProperty, Value = 10.5 });
+			ComboBoxItem item = new ComboBoxItem ();
+			Assert.IsNull (item.Style);
+			Assert.IsNull (item.Content);
+			Assert.IsNull (item.ContentTemplate);
+
+			box.PrepareContainerForItemOverride_ (item, null);
+
+			Assert.AreSame (box.ItemContainerStyle, item.Style);
+			Assert.IsNull (item.Content);
+			Assert.IsNotNull (item.ContentTemplate);
+		}
+
+		[TestMethod]
+		public void PrepareContainerForItemOverrideTest5 ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			ComboBoxItem item = new ComboBoxItem ();
+			box.PrepareContainerForItemOverride_ (item, item);
+			Assert.IsNull (item.Content);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void PrepareContainerForItemOverrideTest6 ()
+		{
+			Rectangle rect = new Rectangle ();
+			FakeComboBox box = new FakeComboBox ();
+			ComboBoxItem item = new ComboBoxItem ();
+			Assert.IsNull (item.Content);
+			box.PrepareContainerForItemOverride_ (item, rect);
+			Assert.AreSame (item.Content, rect);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void PrepareContainerForItemOverrideTest7 ()
+		{
+			Rectangle rect = new Rectangle ();
+			FakeComboBox box = new FakeComboBox ();
+			box.Items.Add (rect);
+			ComboBoxItem item = new ComboBoxItem ();
+			Assert.Throws<InvalidOperationException> (() => box.PrepareContainerForItemOverride_ (item, rect));
 		}
 		
 		[TestMethod]
