@@ -418,16 +418,22 @@ Value::FreeValue ()
 		g_free (u.color);
 		break;
 	case Type::FONTFAMILY:
-		g_free (u.fontfamily->source);
-		g_free (u.fontfamily);
+		if (u.fontfamily) {
+			g_free (u.fontfamily->source);
+			g_free (u.fontfamily);
+		}
 		break;
 	case Type::FONTSOURCE:
-		g_free (u.fontsource->stream);
-		g_free (u.fontsource);
+		if (u.fontsource) {
+			g_free (u.fontsource->stream);
+			g_free (u.fontsource);
+		}
 		break;
 	case Type::PROPERTYPATH:
-		g_free (u.propertypath->path);
-		g_free (u.propertypath);
+		if (u.propertypath) {
+			g_free (u.propertypath->path);
+			g_free (u.propertypath);
+		}
 		break;
 	case Type::POINT:
 		g_free (u.point);

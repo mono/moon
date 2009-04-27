@@ -1,5 +1,11 @@
 2009-04-27  Geoff Norton  <gnorton@novell.com>
 
+	* value.cpp: Its possible for these pointers to be 0x0 here, so
+	we need to guard against a invalid dereference causing a SIGSEGV
+	fixes moon-unit with toggleref on.
+
+2009-04-27  Geoff Norton  <gnorton@novell.com>
+
 	* codec-url.h, pipeline-ui.cpp: Update for 1.9p1
 
 2009-04-24  Chris Toshok  <toshok@ximian.com>
