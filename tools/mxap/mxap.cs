@@ -29,6 +29,7 @@ namespace Moonlight {
 		private string entry_point_type = null;
 		private string cs_sources;
 		private string cd;
+		private bool in_place = true;
 		const string RuntimeVersion = "2.0.31005.0";
 
 		public string CSSources {
@@ -160,14 +161,22 @@ namespace Moonlight {
 			}
 		}
 
-		public int Run ()
+		public string TmpDir { get; set; }
+		public string WorkingDir { get; set; }
+		public string OutputDir { get; set; }
+		public bool InPlace {
+			get { return in_place; }
+			set { in_place = value; }
+		}
+
+		public bool Run ()
 		{
 			return (CreateManifest ()
 				&& CreateCodeBehind ()
 				&& CreateResources ()
 				&& CreateApplicationAssembly ()
 				&& CreateXap ()
-				&& CreateHtmlWrapper ()) ? 0 : 1;
+				&& CreateHtmlWrapper ());
 		}
 
 		public bool CreateManifest ()
@@ -222,7 +231,7 @@ namespace Moonlight {
 				StringBuilder xamlg_args = new StringBuilder ();
 
 				xamlg_args.AppendFormat (" -sl2app:{0} ", ApplicationName);
-				xamlg_args.AppendFormat (" -root:{0} ", Cd);
+				xamlg_args.AppendFormat (" -root:{0} ", WorkingDir);
 
 				foreach (string xaml_file in XamlFiles) {
 					if (Path.GetFileName (xaml_file) == "AppManifest.xaml")
@@ -325,7 +334,6 @@ namespace Moonlight {
 			}
 
 			StringBuilder zip_args = new StringBuilder ();
-
 			zip_args.AppendFormat (" {0}.xap ", ApplicationName);
 
 			foreach (string asm in ReferenceAssemblies) {
@@ -340,7 +348,7 @@ namespace Moonlight {
 			zip_args.AppendFormat (" {0}.dll.mdb ", ApplicationName);
 
 			foreach (KeyValuePair<string, string> pair in ContentResources)
-				zip_args.AppendFormat (" -j " + pair.Value);
+				zip_args.AppendFormat (" " + pair.Value);
 
 			return RunProcess ("zip", zip_args.ToString ());
 		}
@@ -430,33 +438,33 @@ namespace Moonlight {
 
 		void AddResource (string v)
 		{
-			int comma;
-			
 			if (string.IsNullOrEmpty (v))
 				return;
 
-			comma = v.IndexOf (',');
-			if (comma == -1) {
-				Resources.Add (Path.GetFileName (v), v);
-			} else {
-				Resources.Add (v.Substring (comma + 1), v.Substring (0, comma)); 
-			}
-		}
-
-		void ParseResource (string v, out string name, out string filename)
-		{
+			string name, filename;
 			bool local = Path.GetFullPath (v).StartsWith (Path.GetFullPath ("."));
 			int comma = v.IndexOf (',');
 			if (comma == -1) {
-				if (local)
-					name = ApplicationName + "." + v.Replace ('/', '.');
-				else
-					name = ApplicationName + "." + Path.GetFileName (v);
-				filename = v;
+				if (local) {
+					name = v;
+					filename = v;
+				} else {
+					name = filename = Path.GetFileName (v);
+					if (!InPlace)
+						File.Copy (v, Path.Combine (TmpDir, Path.GetFileName (v)));
+					else
+						File.Copy (v, Path.Combine (WorkingDir, Path.GetFileName (v)));
+				}
 			} else {
 				name = v.Substring (comma + 1);
 				filename = v.Substring (0, comma);
+				if (!InPlace) {
+					File.Copy (filename, Path.Combine (TmpDir, Path.GetFileName (filename)));
+					filename = Path.Combine (TmpDir, Path.GetFileName (filename));
+				}
 			}
+
+			Resources.Add (name, filename);
 		}
 
 		void AddAssemblyResource (string v)
@@ -465,7 +473,30 @@ namespace Moonlight {
 				return;
 
 			string name, filename;
-			ParseResource (v, out name, out filename);
+
+			bool local = Path.GetFullPath (v).StartsWith (Path.GetFullPath ("."));
+			int comma = v.IndexOf (',');
+			if (comma == -1) {
+				if (local) {
+					name = ApplicationName + "." + v.Replace ('/', '.');
+					filename = v;
+				} else {
+					name = ApplicationName + "." + Path.GetFileName (v);
+					filename = Path.GetFileName (v);
+					if (!InPlace)
+						File.Copy (v, Path.Combine (TmpDir, filename));
+					else
+						File.Copy (v, Path.Combine (WorkingDir, filename));
+				}
+			} else {
+				name = v.Substring (comma + 1);
+				filename = v.Substring (0, comma);
+				if (!InPlace) {
+					File.Copy (filename, Path.Combine (TmpDir, Path.GetFileName (filename)));
+					filename = Path.Combine (TmpDir, Path.GetFileName (filename));
+				}
+			}
+
 			AssemblyResources.Add (name, filename);
 		}
 
@@ -475,13 +506,29 @@ namespace Moonlight {
 				return;
 
 			string name, filename;
-			ParseResource (v, out name, out filename);
+			bool local = Path.GetFullPath (v).StartsWith (Path.GetFullPath ("."));
+			int comma = v.IndexOf (',');
+			if (comma == -1) {
+				if (local) {
+					name = v;
+					filename = v;
+				} else {
+					name = filename = Path.GetFileName (v);
+					if (!InPlace)
+						File.Copy (v, Path.Combine (TmpDir, Path.GetFileName (v)));
+					else
+						File.Copy (v, Path.Combine (WorkingDir, Path.GetFileName (v)));
+				}
+			} else {
+				name = v.Substring (comma + 1);
+				filename = v.Substring (0, comma);
+				if (!InPlace) {
+					File.Copy (filename, Path.Combine (TmpDir, Path.GetFileName (filename)));
+					filename = Path.Combine (TmpDir, Path.GetFileName (filename));
+				}
+			}
 
-			if (!Directory.Exists ("obj"))
-				Directory.CreateDirectory ("obj");
-
-			File.Copy (filename, Path.Combine ("obj", name), true);
-			ContentResources.Add (name, Path.Combine ("obj", name));
+			ContentResources.Add (name, filename);
 		}
 
 		static void DoClean (string app)
@@ -496,11 +543,26 @@ namespace Moonlight {
 				File.Delete(path);
 		}
 
+		static void RecursiveCopy (string source, string dir, string dest)
+		{
+			foreach (string file in Directory.GetFiles (source + dir))
+				File.Copy (file, Path.Combine (dest + dir, Path.GetFileName (file)));
+			foreach (string d in Directory.GetDirectories (source + dir)) {
+				string d1 = d.Replace (source, "");
+				Directory.CreateDirectory (dest + d1);
+				RecursiveCopy (source, d1, dest);
+			}
+		}
+
 		public static int Main (string [] args)
 		{
 			MXap mxap = new MXap ();
 			bool help = false;
 			bool clean = false;
+			List<string> resources = new List<string>();
+			List<string> aresources = new List<string>();
+			List<string> cresources = new List<string>();
+
 			mxap.Cd = Directory.GetCurrentDirectory ();
 
 			var p = new OptionSet () {
@@ -516,10 +578,12 @@ namespace Moonlight {
 				{ "r:|reference:", v => mxap.ExternalAssemblies.Add (v) },
 				{ "l|list-generated", v => mxap.ListGenerated = v != null },
 				{ "v|verbose", v => mxap.Verbose =  v != null },
-				{ "res|resource:", v => mxap.AddResource (v) },
-				{ "ares|assembly-resource:", v => mxap.AddAssemblyResource (v) },
-				{ "cres|content-resource:", v => mxap.AddContentResource (v) },
-				{ "clean", "Removes generated files. Use with caution!", v => clean = v != null }
+				{ "res|resource:", v => resources.Add (v) },
+				{ "ares|assembly-resource:", v => aresources.Add (v) },
+				{ "cres|content-resource:", v => cresources.Add (v) },
+				{ "clean", "Removes generated files. Use with caution!", v => clean = v != null },
+				{ "out:|output-dir:", v => mxap.OutputDir = v },
+				{ "inplace", "Don't use a temporary directory", v => mxap.InPlace = v != null }
 			};
 
 			List<string> extra = null;
@@ -541,23 +605,60 @@ namespace Moonlight {
 			}
 
 			if (extra.Count > 0)
-				mxap.Cd = extra [0];
+				mxap.Cd = Path.GetFullPath (extra [0]);
 
 			if (mxap.TopBuildDir == null && mxap.ExternalAssemblies.Count > 0) {
 				Console.Error.WriteLine ("--reference requires --builddirhack");
 				return 1;
 			}
 
-			mxap.ReferenceAssemblies.AddRange (Directory.GetFiles (mxap.Cd, "*.dll"));
-			mxap.XamlFiles.AddRange (Directory.GetFiles (mxap.Cd, "*.xaml"));
+			if (mxap.OutputDir == null)
+				mxap.OutputDir = mxap.Cd;
+			else
+				mxap.OutputDir = Path.GetFullPath (mxap.OutputDir);
+
+			Directory.SetCurrentDirectory (mxap.Cd);
+			mxap.WorkingDir = mxap.Cd;
+			if (mxap.Verbose)
+				Console.WriteLine ("Using source directory " + mxap.WorkingDir);
+
+			if (!mxap.InPlace) {
+				mxap.TmpDir = Path.Combine (Path.GetTempPath(), Path.GetRandomFileName ());
+
+				if (mxap.Verbose)
+					Console.WriteLine ("Using temporary directory " + mxap.TmpDir);
+
+				Directory.CreateDirectory (mxap.TmpDir);
+				RecursiveCopy (mxap.WorkingDir, "", mxap.TmpDir);
+			}
+
+			foreach (string res in resources) {
+				mxap.AddResource (res);
+			}
+
+			foreach (string res in aresources) {
+				mxap.AddAssemblyResource (res);
+			}
+
+			foreach (string res in cresources) {
+				mxap.AddContentResource (res);
+			}
+
+			if (!mxap.InPlace) {
+				Directory.SetCurrentDirectory (mxap.TmpDir);
+				mxap.WorkingDir = mxap.TmpDir;
+			}
+
+			mxap.ReferenceAssemblies.AddRange (Directory.GetFiles (mxap.WorkingDir, "*.dll"));
+			mxap.XamlFiles.AddRange (Directory.GetFiles (mxap.WorkingDir, "*.xaml"));
 			if (mxap.CSSources == null) {
-				mxap.CSharpFiles.AddRange (Directory.GetFiles (mxap.Cd, "*.cs"));
+				mxap.CSharpFiles.AddRange (Directory.GetFiles (mxap.WorkingDir, "*.cs"));
 			} else {
 				mxap.CSharpFiles.AddRange (File.ReadAllLines (mxap.CSSources));
 			}
-			
+
 			if (mxap.IncludeMdb)
-				mxap.MdbFiles.AddRange (Directory.GetFiles (mxap.Cd, "*.mdb"));
+				mxap.MdbFiles.AddRange (Directory.GetFiles (mxap.WorkingDir, "*.mdb"));
 
 			if (mxap.XamlFiles.Count == 0 || mxap.CSharpFiles.Count == 0) {
 				Console.Error.WriteLine ("No XAML files or C# files found");
@@ -566,15 +667,37 @@ namespace Moonlight {
 			}
 
 			// Make sure we didn't add the Application assembly into the referenced assemblies
-			DirectoryInfo info = new DirectoryInfo (mxap.Cd);
+			DirectoryInfo info = new DirectoryInfo (mxap.WorkingDir);
 
-			if (mxap.ReferenceAssemblies.Contains (Path.Combine (mxap.Cd, info.Name + ".dll")))
-				mxap.ReferenceAssemblies.Remove (Path.Combine (mxap.Cd, info.Name + ".dll"));
+			if (mxap.ReferenceAssemblies.Contains (Path.Combine (mxap.WorkingDir, info.Name + ".dll")))
+				mxap.ReferenceAssemblies.Remove (Path.Combine (mxap.WorkingDir, info.Name + ".dll"));
 
+			if (!mxap.Run ())
+				return 1;
 
-			return mxap.Run ();
+			if (mxap.Verbose)
+				Console.WriteLine ("Using Output directory " + mxap.OutputDir);
+
+			if (!Directory.Exists (mxap.OutputDir)) {
+				Console.WriteLine ("warning: output directory doesn't exist, defaulting to source directory " + mxap.Cd + " ...");
+				mxap.OutputDir = mxap.Cd;
+			}
+
+			if (!mxap.InPlace || mxap.Cd != mxap.OutputDir) {
+				string app = mxap.ApplicationName;
+				File.Copy (Path.Combine (mxap.WorkingDir, app + ".dll"), Path.Combine (mxap.OutputDir, app + ".dll"), true);
+				File.Copy (Path.Combine (mxap.WorkingDir, app + ".dll.mdb"), Path.Combine (mxap.OutputDir, app + ".dll.mdb"), true);
+				File.Copy (Path.Combine (mxap.WorkingDir, app + ".g.resources"), Path.Combine (mxap.OutputDir, app + ".g.resources"), true);
+				File.Copy (Path.Combine (mxap.WorkingDir, app + ".html"), Path.Combine (mxap.OutputDir, app + ".html"), true);
+				File.Copy (Path.Combine (mxap.WorkingDir, app + ".xap"), Path.Combine (mxap.OutputDir, app + ".xap"), true);
+				File.Copy (Path.Combine (mxap.WorkingDir, "AppManifest.xaml"), Path.Combine (mxap.OutputDir, "AppManifest.xaml"), true);
+				foreach (string file in Directory.GetFiles (mxap.WorkingDir, "*.g.cs"))
+					File.Copy (file, Path.Combine (mxap.OutputDir, Path.GetFileName (file)), true);
+
+				if (!mxap.InPlace)
+					Directory.Delete (mxap.TmpDir, true);
+			}
+			return 0;
 		}
 	}
 }
-
-

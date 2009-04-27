@@ -1,3 +1,12 @@
+2009-04-27  Andreia Gaita  <avidigal@novell.com>
+
+	* mxap.cs: Fix resource support so that files that go on .g.resources
+	and those that go on the zip have the full path stored as well.
+	Use a temporary directory so all files can be in their proper places
+	before zipping (external resource files, assembly resources, etc).
+	Add -out|output-dir to optionally put the resulting generated files
+	in a different place.
+
 2009-04-24  Andreia Gaita  <avidigal@novell.com>
 
 	* mxap.cs: Add --ares|--assembly-resource and --cres|--content-resource
