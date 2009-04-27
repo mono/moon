@@ -264,10 +264,33 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
-		[TestMethod]
 		public void ClearContainerForItemOverride ()
 		{
-			ListBoxTest.ListBoxPoker box = new ListBoxTest.ListBoxPoker ();
+			ListBoxPoker ic = new ListBoxPoker ();
+			ic.ClearContainerForItemOverride_ (null, null);
+			ic.ClearContainerForItemOverride_ (null, new object ());
+			ic.ClearContainerForItemOverride_ (ic, null);
+		}
+
+		[TestMethod]
+		public void ClearContainerForItemOverride2 ()
+		{
+			ListBoxPoker ic = new ListBoxPoker ();
+			ListBoxItem item = new ListBoxItem ();
+			item.Content = new object ();
+			item.ContentTemplate = new DataTemplate ();
+			item.Style = new Style (typeof (ListBoxItem));
+			ic.ClearContainerForItemOverride_ (item, item);
+			Assert.IsNull (item.Content);
+			Assert.IsNotNull (item.Style);
+			Assert.IsNotNull (item.ContentTemplate);
+			ic.ClearContainerForItemOverride_ (item, null);
+		}
+
+		[TestMethod]
+		public void ClearContainerForItemOverride3 ()
+		{
+			ListBoxPoker box = new ListBoxPoker ();
 
 			ListBoxItem listItem = new ListBoxItem { Content = "Content", IsSelected = true };
 			ComboBoxItem comboItem = new ComboBoxItem { Content = "Content", IsSelected = true };

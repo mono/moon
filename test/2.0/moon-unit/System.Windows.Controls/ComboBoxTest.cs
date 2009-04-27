@@ -233,6 +233,45 @@ namespace MoonTest.System.Windows.Controls {
 		[TestMethod]
 		public void ClearContainerForItemOverride ()
 		{
+			FakeComboBox ic = new FakeComboBox ();
+			Assert.Throws<NullReferenceException> (() => ic.ClearContainerForItemOverride_ (null, null));
+			Assert.Throws<NullReferenceException> (() => ic.ClearContainerForItemOverride_ (null, new object ()));
+			Assert.Throws<InvalidCastException> (() => ic.ClearContainerForItemOverride_ (ic, null));
+		}
+
+		[TestMethod]
+		public void ClearContainerForItemOverride2 ()
+		{
+			FakeComboBox ic = new FakeComboBox ();
+			ListBoxItem item = new ListBoxItem ();
+			item.Content = new object ();
+			item.ContentTemplate = new DataTemplate ();
+			item.Style = new Style (typeof (ListBoxItem));
+			ic.ClearContainerForItemOverride_ (item, item);
+			Assert.IsNull (item.Content);
+			Assert.IsNotNull (item.Style);
+			Assert.IsNotNull (item.ContentTemplate);
+			ic.ClearContainerForItemOverride_ (item, null);
+		}
+
+		[TestMethod]
+		public void ClearContainerForItemOverride3 ()
+		{
+			FakeComboBox ic = new FakeComboBox { ItemContainerStyle = new Style (typeof (ListBoxItem)) };
+			ListBoxItem item = new ListBoxItem ();
+			item.Content = new object ();
+			item.ContentTemplate = new DataTemplate ();
+			item.Style = ic.ItemContainerStyle;
+			ic.ClearContainerForItemOverride_ (item, item);
+			Assert.IsNull (item.Content);
+			Assert.IsNotNull (item.Style);
+			Assert.IsNotNull (item.ContentTemplate);
+			ic.ClearContainerForItemOverride_ (item, null);
+		}
+
+		[TestMethod]
+		public void ClearContainerForItemOverride4 ()
+		{
 			FakeComboBox box = new FakeComboBox ();
 
 			ListBoxItem listItem = new ListBoxItem { Content = "Content", IsSelected = true };
