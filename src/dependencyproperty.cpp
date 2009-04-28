@@ -248,8 +248,28 @@ DependencyProperty::SetPropertyChangedCallback (NativePropertyChangedHandler *ch
 Type *
 lookup_type (DependencyObject *lu, const char* name)
 {
-	// For now, just do this
-	return Type::Find (name);
+	Type *t = Type::Find (name);
+
+	if (t)
+		return t;
+
+	//
+	// If we are dealing with a managed type and we don't have the full namespace
+	// we just verify that the type name matches the lookup type.
+	//
+
+	char *tname = strchr (name, ':');
+	if (!tname || ! *(++tname))
+		return NULL;
+
+	const char *luname = lu->GetTypeName ();
+	int lulen = strlen (luname);
+	int tlen = strlen (tname);
+
+	if (lulen < tlen || strcmp (luname + lulen - tlen, tname))
+		return NULL;
+
+	return lu->GetType ();
 }
 
 //

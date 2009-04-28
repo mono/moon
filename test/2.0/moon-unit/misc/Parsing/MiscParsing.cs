@@ -101,7 +101,6 @@ namespace MoonTest.Misc.Parsing
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ResolveManagedPropertyPath2 ()
 		{
 			MiscParsingTestAnimation page = new MiscParsingTestAnimation ("/moon-unit;component/misc/Parsing/MiscParsingAnimation.xaml");
@@ -136,7 +135,6 @@ namespace MoonTest.Misc.Parsing
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ResolveManagedPropertyPathInCode ()
 		{
 			MiscParsingTestAnimation page = new MiscParsingTestAnimation ("/moon-unit;component/misc/Parsing/MiscParsingAnimation.xaml");
@@ -163,7 +161,6 @@ namespace MoonTest.Misc.Parsing
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ResolveManagedPropertyPathInCodeFull ()
 		{
 			Storyboard s = new Storyboard ();

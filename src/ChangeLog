@@ -1,3 +1,10 @@
+2009-04-28  Jackson Harper  <jackson@ximian.com>
+
+	* dependencyproperty.cpp: When resolving property paths if we
+	don't have enough info to lookup the correct managed type we just
+	verify that the current lookup object has the correct type name,
+	excluding namespace.
+
 2009-04-28  Alan McGovern  <amcgovern@novell.com>
 
 	* cbinding.h:
