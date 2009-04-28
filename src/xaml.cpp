@@ -966,7 +966,14 @@ class XNamespace : public XamlNamespace {
 					      "Cannot specify x:Class type '%s' on value type element.", value);
 				return false;
 			}
-				
+
+			if (p->top_element != item) {
+				// HAH: what a useless error message
+				parser_error (p, item->element_name, attr, 2012,
+					      "Unknown attribute %s on element %s.", attr, item->element_name);
+				return false;
+			}
+
 			// While hydrating, we do not need to create the toplevel class, its created already
 			if (p->hydrating)
 				return true;
