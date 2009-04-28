@@ -1,11 +1,42 @@
 2009-04-28  Larry Ewing  <lewing@novell.com>
 
-	* src/dependencyobject.cpp:
-	* src/mediaelement.cpp:
-	* src/mediaplayer.cpp:
-	* src/textbox.cpp:
-	* src/timesource.cpp:
-	* src/timesource.h: rework the priority of our event queue so that
+	* uielement.cpp
+	* uielement.h:
+	* dirty.cpp:
+	* runtime.cpp:
+	* runtime.h:
+	* frameworkelement.h:
+	* frameworkelement.cpp: add FrameworkProvider for actual*
+	values.  Rework layout using the actual* values and add a first
+	pass at looping layout.
+
+	* collection.cpp:
+	* collection.h: Add a deep tree walker that allows you to walk the
+	entire tree without recursing.
+	
+	* media.cpp:
+	* media.h:
+	* shape.cpp:
+	* shape.h:
+	* canvas.h:
+	* canvas.cpp: rework layout logic for the new providers and handle
+	more of the corner cases.
+
+	* textblock.h:
+	* textblock.cpp: Remove the old Actual* provider since we use the
+	generic one now.  Go a bit crazy with Invalidations until they can
+	be reworked.
+
+	* eventargs.cpp: stop using IsAnythingDirty.
+	
+2009-04-28  Larry Ewing  <lewing@novell.com>
+
+	* dependencyobject.cpp:
+	* mediaelement.cpp:
+	* mediaplayer.cpp:
+	* textbox.cpp:
+	* timesource.cpp:
+	* timesource.h: rework the priority of our event queue so that
 	we end up being more responsive to input and give the browser a
 	chance to do things like repaint.
 

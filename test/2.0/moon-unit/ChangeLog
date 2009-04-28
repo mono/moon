@@ -1,3 +1,9 @@
+2009-04-28  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Controls/*:
+	* System.Windows/:
+	* misc/DefaultValues.cs: update results.
+
 2009-04-28  Jackson Harper  <jackson@ximian.com>
 
 	* misc/Parsing/MiscParsing.cs: These tests work now.
