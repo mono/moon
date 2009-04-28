@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 466 methods
+# 468 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -104,6 +104,8 @@
 +SSC-M: System.Double System.Windows.Controls.ColumnDefinition::get_ActualWidth()
 +SSC-M: System.Void System.Windows.Controls.ColumnDefinitionCollection::.ctor()
 +SSC-M: System.Void System.Windows.Controls.ContentControl::.ctor()
++SSC-M: System.Boolean System.Windows.Controls.ContentControl::get_ContentSetsParent()
++SSC-M: System.Void System.Windows.Controls.ContentControl::set_ContentSetsParent(System.Boolean)
 +SSC-M: System.Void System.Windows.Controls.ContentControl/ContentChangedEventArgs::.ctor(System.IntPtr)
 +SSC-M: System.Void System.Windows.Controls.ContentControl/ContentChangedEventArgs::Finalize()
 +SSC-M: System.Object System.Windows.Controls.ContentControl/ContentChangedEventArgs::get_OldContent()
