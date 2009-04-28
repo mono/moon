@@ -188,15 +188,16 @@ TextLayoutGlyphCluster::~TextLayoutGlyphCluster ()
 // TextLayoutRun
 //
 
-TextLayoutRun::TextLayoutRun (TextLayoutLine *_line, TextLayoutAttributes *_attrs, int _start)
+TextLayoutRun::TextLayoutRun (TextLayoutLine *_line, TextLayoutAttributes *_attrs, int _byte_offset, int _char_offset)
 {
 	clusters = g_ptr_array_new ();
+	byte_offset = _byte_offset;
+	char_offset = _char_offset;
+	byte_count = 0;
+	char_count = 0;
 	attrs = _attrs;
-	start = _start;
 	line = _line;
 	advance = 0.0;
-	length = 0;
-	count = 0;
 }
 
 TextLayoutRun::~TextLayoutRun ()
@@ -221,17 +222,18 @@ TextLayoutRun::ClearCache ()
 // TextLayoutLine
 //
 
-TextLayoutLine::TextLayoutLine (TextLayout *_layout, int _start, int _offset)
+TextLayoutLine::TextLayoutLine (TextLayout *_layout, int _byte_offset, int _char_offset)
 {
 	runs = g_ptr_array_new ();
 	layout = _layout;
-	offset = _offset;
-	start = _start;
+	byte_offset = _byte_offset;
+	char_offset = _char_offset;
+	byte_count = 0;
+	char_count = 0;
 	advance = 0.0;
 	descend = 0.0;
 	height = 0.0;
 	width = 0.0;
-	length = 0;
 }
 
 TextLayoutLine::~TextLayoutLine ()
@@ -265,9 +267,9 @@ TextLayout::TextLayout ()
 	attributes = NULL;
 	lines = g_ptr_array_new ();
 	is_wrapped = true;
+	byte_count = 0;
+	char_count = 0;
 	text = NULL;
-	length = 0;
-	count = 0;
 }
 
 TextLayout::~TextLayout ()
@@ -413,16 +415,16 @@ TextLayout::SetText (const char *str, int len)
 	g_free (text);
 	
 	if (str) {
-		length = len == -1 ? strlen (str) : len;
-		text = (char *) g_malloc (length + 1);
-		memcpy (text, str, length);
-		text[length] = '\0';
+		byte_count = len == -1 ? strlen (str) : len;
+		text = (char *) g_malloc (byte_count + 1);
+		memcpy (text, str, byte_count);
+		text[byte_count] = '\0';
 	} else {
+		byte_count = 0;
 		text = NULL;
-		length = 0;
 	}
 	
-	count = -1;
+	char_count = -1;
 	
 	ResetState ();
 	
@@ -462,7 +464,7 @@ UpdateSelection (GPtrArray *lines, TextRegion *pre, TextRegion *post)
 	for (i = 0; i < lines->len; i++) {
 		line = (TextLayoutLine *) lines->pdata[i];
 		
-		if (pre->start >= line->start + line->length) {
+		if (pre->start >= line->byte_offset + line->byte_count) {
 			// pre-region not on this line...
 			continue;
 		}
@@ -470,13 +472,13 @@ UpdateSelection (GPtrArray *lines, TextRegion *pre, TextRegion *post)
 		for (j = 0; j < line->runs->len; j++) {
 			run = (TextLayoutRun *) line->runs->pdata[j];
 			
-			if (pre->start >= run->start + run->length) {
+			if (pre->start >= run->byte_offset + run->byte_count) {
 				// pre-region not in this run...
 				continue;
 			}
 			
-			if (pre->start <= run->start) {
-				if (pre->start + pre->length >= run->start + run->length) {
+			if (pre->start <= run->byte_offset) {
+				if (pre->start + pre->length >= run->byte_offset + run->byte_count) {
 					// run is fully contained within the pre-region
 					if (run->clusters->len == 1) {
 						cluster = (TextLayoutGlyphCluster *) run->clusters->pdata[0];
@@ -491,7 +493,7 @@ UpdateSelection (GPtrArray *lines, TextRegion *pre, TextRegion *post)
 				run->ClearCache ();
 			}
 			
-			if (pre->start + pre->length <= run->start + run->length)
+			if (pre->start + pre->length <= run->byte_offset + run->byte_count)
 				break;
 		}
 	}
@@ -500,7 +502,7 @@ UpdateSelection (GPtrArray *lines, TextRegion *pre, TextRegion *post)
 	for ( ; i < lines->len; i++, j = 0) {
 		line = (TextLayoutLine *) lines->pdata[i];
 		
-		if (post->start >= line->start + line->length) {
+		if (post->start >= line->byte_offset + line->byte_count) {
 			// pre-region not on this line...
 			continue;
 		}
@@ -508,13 +510,13 @@ UpdateSelection (GPtrArray *lines, TextRegion *pre, TextRegion *post)
 		for ( ; j < line->runs->len; j++) {
 			run = (TextLayoutRun *) line->runs->pdata[j];
 			
-			if (post->start >= run->start + run->length) {
+			if (post->start >= run->byte_offset + run->byte_count) {
 				// post-region not in this run...
 				continue;
 			}
 			
-			if (post->start <= run->start) {
-				if (post->start + post->length >= run->start + run->length) {
+			if (post->start <= run->byte_offset) {
+				if (post->start + post->length >= run->byte_offset + run->byte_count) {
 					// run is fully contained within the pre-region
 					if (run->clusters->len == 1) {
 						cluster = (TextLayoutGlyphCluster *) run->clusters->pdata[0];
@@ -529,7 +531,7 @@ UpdateSelection (GPtrArray *lines, TextRegion *pre, TextRegion *post)
 				run->ClearCache ();
 			}
 			
-			if (post->start + post->length <= run->start + run->length)
+			if (post->start + post->length <= run->byte_offset + run->byte_count)
 				break;
 		}
 	}
@@ -658,8 +660,8 @@ struct LayoutWord {
 	
 	// <output>
 	double advance;        // the advance-width of the 'word'
-	int length;            // length of the word in bytes
-	int count;             // length of the word in unichars
+	int byte_count;
+	int char_count;
 };
 
 typedef bool (* LayoutWordCallback) (LayoutWord *word, const char *in, const char *inend, double max_width);
@@ -716,7 +718,7 @@ layout_lwsp (LayoutWord *word, const char *in, const char *inend)
 	d(printf ("\nlayout_lwsp():\n"));
 	
 	word->advance = 0.0;
-	word->count = 0;
+	word->char_count = 0;
 	
 	while (inptr < inend) {
 		start = inptr;
@@ -747,7 +749,7 @@ layout_lwsp (LayoutWord *word, const char *in, const char *inend)
 		}
 #endif
 		
-		word->count++;
+		word->char_count++;
 		
 		// treat tab as a single space
 		if (c == '\t')
@@ -769,7 +771,7 @@ layout_lwsp (LayoutWord *word, const char *in, const char *inend)
 		prev = glyph->index;
 	}
 	
-	word->length = (inptr - in);
+	word->byte_count = (inptr - in);
 	word->prev = prev;
 }
 
@@ -798,7 +800,7 @@ layout_word_overflow (LayoutWord *word, const char *in, const char *inend, doubl
 	gunichar c;
 	
 	word->advance = 0.0;
-	word->count = 0;
+	word->char_count = 0;
 	
 	while (inptr < inend) {
 		start = inptr;
@@ -825,7 +827,7 @@ layout_word_overflow (LayoutWord *word, const char *in, const char *inend, doubl
 			break;
 		}
 		
-		word->count++;
+		word->char_count++;
 		
 		// ignore glyphs the font doesn't contain...
 		if (!(glyph = word->font->GetGlyphInfo (c)))
@@ -845,7 +847,7 @@ layout_word_overflow (LayoutWord *word, const char *in, const char *inend, doubl
 		// can create a new line to layout this word into.
 		if (!line_start && !isinf (max_width) && (word->line_advance + advance) >= max_width) {
 			word->advance = 0.0;
-			word->length = 0;
+			word->byte_count = 0;
 			return true;
 		}
 		
@@ -854,7 +856,7 @@ layout_word_overflow (LayoutWord *word, const char *in, const char *inend, doubl
 		prev = glyph->index;
 	}
 	
-	word->length = (inptr - in);
+	word->byte_count = (inptr - in);
 	word->prev = prev;
 	
 	return false;
@@ -886,7 +888,7 @@ layout_word_nowrap (LayoutWord *word, const char *in, const char *inend, double 
 	// Note: since we don't ever need to wrap, no need to keep track of word-type
 	word->type = WORD_TYPE_UNKNOWN;
 	word->advance = 0.0;
-	word->count = 0;
+	word->char_count = 0;
 	
 	while (inptr < inend) {
 		start = inptr;
@@ -913,7 +915,7 @@ layout_word_nowrap (LayoutWord *word, const char *in, const char *inend, double 
 			break;
 		}
 		
-		word->count++;
+		word->char_count++;
 		
 		// ignore glyphs the font doesn't contain...
 		if (!(glyph = word->font->GetGlyphInfo (c)))
@@ -931,7 +933,7 @@ layout_word_nowrap (LayoutWord *word, const char *in, const char *inend, double 
 		prev = glyph->index;
 	}
 	
-	word->length = (inptr - in);
+	word->byte_count = (inptr - in);
 	word->prev = prev;
 	
 	return false;
@@ -1026,7 +1028,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	g_array_set_size (word->break_ops, 0);
 	word->type = WORD_TYPE_UNKNOWN;
 	word->advance = 0.0;
-	word->count = 0;
+	word->char_count = 0;
 	
 	d(printf ("\nlayout_word_wrap():\n"));
 	d(debug = g_string_new (""));
@@ -1092,7 +1094,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		}
 		
 		d(g_string_append_unichar (debug, c));
-		word->count++;
+		word->char_count++;
 		
 		// a Combining Class of 0 means start of a new glyph
 		if (glyphs > 0 && unichar_combining_class (c) != 0) {
@@ -1134,7 +1136,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		if (new_glyph) {
 			op.index = glyph ? glyph->index : 0;
 			op.advance = word->advance;
-			op.count = word->count;
+			op.count = word->char_count;
 			op.inptr = inptr;
 			op.btype = btype;
 			op.prev = prev;
@@ -1158,7 +1160,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	
 	if (!wrap) {
 		d(g_string_free (debug, true));
-		word->length = (inptr - in);
+		word->byte_count = (inptr - in);
 		word->prev = prev;
 		return false;
 	}
@@ -1192,7 +1194,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		}
 		
 		d(g_string_append_unichar (debug, c));
-		word->count++;
+		word->char_count++;
 		
 		if ((glyph = word->font->GetGlyphInfo (c))) {
 			// calculate total glyph advance
@@ -1227,7 +1229,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	// we can't break any smaller than a single glyph
 	if (line_start && glyphs == 1) {
 		d(printf ("\tsince this is the first glyph on the line, can't break any smaller than that...\n"));
-		word->length = (inptr - in);
+		word->byte_count = (inptr - in);
 		word->prev = prev;
 		return true;
 	}
@@ -1253,17 +1255,17 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			if (i > 1 && i == word->break_ops->len) {
 				// break after the previous glyph
 				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
-				word->length = (op.inptr - in);
+				word->byte_count = (op.inptr - in);
 				word->advance = op.advance;
-				word->count = op.count;
+				word->char_count = op.count;
 				word->prev = op.prev;
 				
 				return true;
 			} else if (i < word->break_ops->len) {
 				// break after this glyph
-				word->length = (op.inptr - in);
+				word->byte_count = (op.inptr - in);
 				word->advance = op.advance;
-				word->count = op.count;
+				word->char_count = op.count;
 				word->prev = op.prev;
 				
 				return true;
@@ -1272,9 +1274,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_WORD_JOINER:
 			// cannot break before or after this character (unless forced)
 			if (force && i < word->break_ops->len) {
-				word->length = (op.inptr - in);
+				word->byte_count = (op.inptr - in);
 				word->advance = op.advance;
-				word->count = op.count;
+				word->char_count = op.count;
 				word->prev = op.prev;
 				
 				return true;
@@ -1289,9 +1291,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_INSEPARABLE:
 			// only restriction is no breaking between inseparables unelss we have to
 			if (line_start && i < word->break_ops->len) {
-				word->length = (op.inptr - in);
+				word->byte_count = (op.inptr - in);
 				word->advance = op.advance;
-				word->count = op.count;
+				word->char_count = op.count;
 				word->prev = op.prev;
 				
 				return true;
@@ -1301,9 +1303,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			if (i > 1) {
 				// break after the previous glyph
 				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
-				word->length = (op.inptr - in);
+				word->byte_count = (op.inptr - in);
 				word->advance = op.advance;
-				word->count = op.count;
+				word->char_count = op.count;
 				word->prev = op.prev;
 				
 				return true;
@@ -1312,9 +1314,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_CLOSE_PUNCTUATION:
 			if (i < word->break_ops->len && btype != G_UNICODE_BREAK_INFIX_SEPARATOR) {
 				// we can safely break after this character
-				word->length = (op.inptr - in);
+				word->byte_count = (op.inptr - in);
 				word->advance = op.advance;
-				word->count = op.count;
+				word->char_count = op.count;
 				word->prev = op.prev;
 				
 				return true;
@@ -1329,9 +1331,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_INFIX_SEPARATOR:
 			if (i < word->break_ops->len && btype != G_UNICODE_BREAK_NUMERIC) {
 				// we can safely break after this character
-				word->length = (op.inptr - in);
+				word->byte_count = (op.inptr - in);
 				word->advance = op.advance;
-				word->count = op.count;
+				word->char_count = op.count;
 				word->prev = op.prev;
 				
 				return true;
@@ -1352,9 +1354,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_ALPHABETIC:
 			// only break if we have no choice...
 			if ((line_start || fixed) && i < word->break_ops->len) {
-				word->length = (op.inptr - in);
+				word->byte_count = (op.inptr - in);
 				word->advance = op.advance;
-				word->count = op.count;
+				word->char_count = op.count;
 				word->prev = op.prev;
 				
 				return true;
@@ -1363,9 +1365,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_IDEOGRAPHIC:
 			if (i < word->break_ops->len && btype != G_UNICODE_BREAK_NON_STARTER) {
 				// we can safely break after this character
-				word->length = (op.inptr - in);
+				word->byte_count = (op.inptr - in);
 				word->advance = op.advance;
-				word->count = op.count;
+				word->char_count = op.count;
 				word->prev = op.prev;
 				
 				return true;
@@ -1374,9 +1376,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_NUMERIC:
 			// only break if we have no choice...
 			if (line_start && i < word->break_ops->len && btype != G_UNICODE_BREAK_INFIX_SEPARATOR) {
-				word->length = (op.inptr - in);
+				word->byte_count = (op.inptr - in);
 				word->advance = op.advance;
-				word->count = op.count;
+				word->char_count = op.count;
 				word->prev = op.prev;
 				
 				return true;
@@ -1390,9 +1392,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_PREFIX:
 			// do not break after characters with these break-types (unless forced)
 			if (force && i < word->break_ops->len) {
-				word->length = (op.inptr - in);
+				word->byte_count = (op.inptr - in);
 				word->advance = op.advance;
-				word->count = op.count;
+				word->char_count = op.count;
 				word->prev = op.prev;
 				
 				return true;
@@ -1419,9 +1421,9 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_AFTER:
 			if (i < word->break_ops->len) {
 				// we can safely break after this character
-				word->length = (op.inptr - in);
+				word->byte_count = (op.inptr - in);
 				word->advance = op.advance;
-				word->count = op.count;
+				word->char_count = op.count;
 				word->prev = op.prev;
 				
 				return true;
@@ -1442,8 +1444,8 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	d(printf ("\tcouldn't find a good place to break, defaulting to breaking before the word start\n"));
 	
 	word->advance = 0.0;
-	word->length = 0;
-	word->count = 0;
+	word->byte_count = 0;
+	word->char_count = 0;
 	
 	return true;
 }
@@ -1466,14 +1468,14 @@ print_lines (GPtrArray *lines)
 	for (guint i = 0; i < lines->len; i++) {
 		line = (TextLayoutLine *) lines->pdata[i];
 		
-		printf ("Line (top=%f, height=%f, advance=%f, offset=%d):\n", y, line->height, line->advance, line->offset);
+		printf ("Line (top=%f, height=%f, advance=%f, offset=%d):\n", y, line->height, line->advance, line->char_offset);
 		for (guint j = 0; j < line->runs->len; j++) {
 			run = (TextLayoutRun *) line->runs->pdata[j];
 			
-			text = line->layout->GetText () + run->start;
+			text = line->layout->GetText () + run->byte_offset;
 			
 			printf ("\tRun (advance=%f): \"", run->advance);
-			for (const char *s = text; s < text + run->length; s++) {
+			for (const char *s = text; s < text + run->byte_count; s++) {
 				switch (*s) {
 				case '\r':
 					fputs ("\\r", stdout);
@@ -1529,7 +1531,7 @@ TextLayout::Layout ()
 	actual_width = 0.0;
 	is_wrapped = false;
 	ClearLines ();
-	count = 0;
+	char_count = 0;
 	
 	if (!text || !(attrs = (TextLayoutAttributes *) attributes->First ()) || attrs->start != 0)
 		return;
@@ -1552,8 +1554,8 @@ TextLayout::Layout ()
 	
 	do {
 		nattrs = (TextLayoutAttributes *) attrs->next;
-		inend = text + (nattrs ? nattrs->start : length);
-		run = new TextLayoutRun (line, attrs, inptr - text);
+		inend = text + (nattrs ? nattrs->start : byte_count);
+		run = new TextLayoutRun (line, attrs, inptr - text, offset);
 		g_ptr_array_add (line->runs, run);
 		
 		word.font = font = attrs->Font ();
@@ -1578,7 +1580,11 @@ TextLayout::Layout ()
 			while (inptr < inend) {
 				// check for line-breaks
 				if (IsLineBreak (inptr, inend - inptr, &n_bytes, &n_chars)) {
-					run->count += n_chars;
+					line->byte_count += n_bytes;
+					run->byte_count += n_bytes;
+					line->char_count += n_chars;
+					run->char_count += n_chars;
+					
 					offset += n_chars;
 					inptr += n_bytes;
 					linebreak = true;
@@ -1594,15 +1600,19 @@ TextLayout::Layout ()
 					wrapped = true;
 				}
 				
-				if (word.length > 0) {
+				if (word.byte_count > 0) {
 					// append the word to the run/line
 					line->advance += word.advance;
-					line->width = line->advance;
 					run->advance += word.advance;
-					run->count += word.count;
-					offset += word.count;
+					line->byte_count += word.byte_count;
+					run->byte_count += word.byte_count;
+					line->char_count += word.char_count;
+					run->char_count += word.char_count;
 					
-					inptr += word.length;
+					line->width = line->advance;
+					
+					offset += word.char_count;
+					inptr += word.byte_count;
 					prev = word.prev;
 				}
 				
@@ -1614,13 +1624,16 @@ TextLayout::Layout ()
 				
 				layout_lwsp (&word, inptr, inend);
 				
-				if (word.length > 0) {
+				if (word.byte_count > 0) {
 					line->advance += word.advance;
 					run->advance += word.advance;
-					run->count += word.count;
-					offset += word.count;
+					line->byte_count += word.byte_count;
+					run->byte_count += word.byte_count;
+					line->char_count += word.char_count;
+					run->char_count += word.char_count;
 					
-					inptr += word.length;
+					offset += word.char_count;
+					inptr += word.byte_count;
 					prev = word.prev;
 					
 					// LWSP only counts toward line width if it is underlined
@@ -1628,9 +1641,6 @@ TextLayout::Layout ()
 						line->width = line->advance;
 				}
 			}
-			
-			// the current run has ended
-			run->length = inptr - (text + run->start);
 			
 			if (linebreak || wrapped || *inptr == '\0') {
 				// update actual width extents
@@ -1669,7 +1679,7 @@ TextLayout::Layout ()
 					}
 					
 					// more text to layout with the current attrs...
-					run = new TextLayoutRun (line, attrs, inptr - text);
+					run = new TextLayoutRun (line, attrs, inptr - text, offset);
 					g_ptr_array_add (line->runs, run);
 				}
 			}
@@ -1681,7 +1691,7 @@ TextLayout::Layout ()
 	if (word.break_ops != NULL)
 		g_array_free (word.break_ops, true);
 	
-	count = offset;
+	char_count = offset;
 	
 #if DEBUG
 	if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
@@ -1771,8 +1781,8 @@ TextLayoutRun::GenerateCache ()
 	int selection_length = line->layout->GetSelectionLength ();
 	int selection_start = line->layout->GetSelectionStart ();
 	const char *text = line->layout->GetText ();
-	const char *inend = text + start + length;
-	const char *inptr = text + start;
+	const char *inptr = text + byte_offset;
+	const char *inend = inptr + byte_count;
 	TextFont *font = attrs->Font ();
 	TextLayoutGlyphCluster *cluster;
 	const char *selection_end;
@@ -1780,13 +1790,13 @@ TextLayoutRun::GenerateCache ()
 	int len;
 	
 	// cache the glyph cluster leading up to the selection
-	if (selection_length == 0 || start < selection_start) {
+	if (selection_length == 0 || byte_offset < selection_start) {
 		if (selection_length > 0)
-			len = MIN (selection_start - start, length);
+			len = MIN (selection_start - byte_offset, byte_count);
 		else
-			len = length;
+			len = byte_count;
 		
-		cluster = GenerateGlyphCluster (font, &prev, text, start, len);
+		cluster = GenerateGlyphCluster (font, &prev, text, byte_offset, len);
 		g_ptr_array_add (clusters, cluster);
 		inptr += len;
 	}
@@ -2093,8 +2103,8 @@ TextLayoutLine::GetCursorFromX (const Point &offset, double x)
 	x0 = offset.x + layout->HorizontalAlignment (advance);
 	
 	text = layout->GetText ();
-	inptr = text + start;
-	cursor = this->offset;
+	inptr = text + byte_offset;
+	cursor = char_offset;
 	
 	for (i = 0; i < runs->len; i++) {
 		run = (TextLayoutRun *) runs->pdata[i];
@@ -2105,15 +2115,15 @@ TextLayoutLine::GetCursorFromX (const Point &offset, double x)
 		}
 		
 		// x is beyond this run
-		cursor += run->count;
-		inptr += run->length;
+		cursor += run->char_count;
+		inptr += run->byte_count;
 		x0 += run->advance;
 		run = NULL;
 	}
 	
 	if (run != NULL) {
-		inptr = text + run->start;
-		inend = inptr + run->length;
+		inptr = text + run->byte_offset;
+		inend = inptr + run->byte_count;
 		font = run->attrs->Font ();
 		
 		while (inptr < inend) {
@@ -2157,8 +2167,8 @@ TextLayoutLine::GetCursorFromX (const Point &offset, double x)
 	} else if (i > 0) {
 		// x is beyond the end of the last run
 		run = (TextLayoutRun *) runs->pdata[i - 1];
-		inend = text + run->start + run->length;
-		inptr = text + run->start;
+		inend = text + run->byte_offset + run->byte_count;
+		inptr = text + run->byte_offset;
 		
 		if ((ch = g_utf8_find_prev_char (inptr, inend)))
 			c = utf8_getc (&ch, inend - ch);
@@ -2193,7 +2203,7 @@ TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 		return 0;
 	
 	if (!(line = GetLineFromY (offset, y)))
-		return count;
+		return char_count;
 	
 	return line->GetCursorFromX (offset, x);
 }
@@ -2201,17 +2211,17 @@ TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 Rect
 TextLayout::GetCursor (const Point &offset, int index)
 {
-	const char *cursor = g_utf8_offset_to_pointer (text, index);
 	const char *inptr, *inend, *pchar;
 	double height, x0, y0, y1;
 	TextLayoutLine *line;
 	TextLayoutRun *run;
 	GlyphInfo *glyph;
 	TextFont *font;
+	int cursor = 0;
 	guint32 prev;
 	gunichar c;
 	
-	//printf ("TextLayout::GetCursor (%d)\n", index);
+	//printf ("TextLayout::GetCursor (%d);\n", index);
 	
 	x0 = offset.x;
 	y0 = offset.y;
@@ -2220,7 +2230,6 @@ TextLayout::GetCursor (const Point &offset, int index)
 	
 	for (guint i = 0; i < lines->len; i++) {
 		line = (TextLayoutLine *) lines->pdata[i];
-		inend = text + line->start + line->length;
 		
 		// adjust x0 for horizontal alignment
 		x0 = offset.x + HorizontalAlignment (line->advance);
@@ -2229,13 +2238,16 @@ TextLayout::GetCursor (const Point &offset, int index)
 		y1 = y0 + line->height + line->descend;
 		height = line->height;
 		
-		//printf ("\tline: left=%.2f, top=%.2f, baseline=%.2f, start index=%d\n", x0, y0, y1, line->offset);
+		//printf ("\tline #%u: left=%.2f, top=%.2f, baseline=%.2f, start index=%d, count=%d\n", i, x0, y0, y1, line->char_offset, line->char_count);
 		
-		if (cursor >= inend) {
+		if (index >= cursor + line->char_count) {
 			// maybe the cursor is on the next line...
 			if ((i + 1) == lines->len) {
 				// we are on the last line... get the previous unichar
-				if ((pchar = g_utf8_find_prev_char (text + line->start, inend)))
+				inptr = text + line->byte_offset;
+				inend = inptr + line->byte_count;
+				
+				if ((pchar = g_utf8_find_prev_char (inptr, inend)))
 					c = utf8_getc (&pchar, inend - pchar);
 				else
 					c = (gunichar) -1;
@@ -2252,6 +2264,7 @@ TextLayout::GetCursor (const Point &offset, int index)
 				break;
 			}
 			
+			cursor += line->char_count;
 			y0 += line->height;
 			continue;
 		}
@@ -2259,26 +2272,29 @@ TextLayout::GetCursor (const Point &offset, int index)
 		// cursor is on this line...
 		for (guint j = 0; j < line->runs->len; j++) {
 			run = (TextLayoutRun *) line->runs->pdata[j];
-			inend = text + run->start + run->length;
 			
-			if (cursor >= inend) {
+			if (index >= cursor + run->char_count) {
 				// maybe the cursor is in the next run...
+				cursor += run->char_count;
 				x0 += run->advance;
 				continue;
 			}
 			
 			// cursor is in this run...
+			inptr = text + run->byte_offset;
+			inend = inptr + run->byte_count;
 			font = run->attrs->Font ();
-			inptr = text + run->start;
 			prev = 0;
 			
-			while (inptr < cursor) {
-				if ((c = utf8_getc (&inptr, cursor - inptr)) == (gunichar) -1)
+			while (cursor < index) {
+				if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
 					continue;
 				
 				// we treat tabs as a single space
 				if (c == '\t')
 					c = ' ';
+				
+				cursor++;
 				
 				if (!(glyph = font->GetGlyphInfo (c)))
 					continue;
