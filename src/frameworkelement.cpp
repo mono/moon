@@ -627,7 +627,7 @@ FrameworkElement::UpdateLayout ()
 
 	Surface *surface = element->GetSurface ();
 
-	printf ("\n UpdateLayout: ");
+	//printf ("\n UpdateLayout: ");
 	bool updated = false;
 	int i = 0;
 	while (i < 250) {
@@ -636,7 +636,7 @@ FrameworkElement::UpdateLayout ()
 		List *updated_list = new List ();
 		List *size_list = new List ();
 		
-		printf ("\u267c");
+		//printf ("\u267c");
 		i++;
 		DeepTreeWalker measure_walker (element);
 		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
@@ -743,7 +743,7 @@ FrameworkElement::UpdateLayout ()
 	if (i > 250)
 		g_warning ("***********************************************************************leaving");
 
-	printf ("\n");
+	//	printf ("\n");
 
 	return true;
 }
