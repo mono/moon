@@ -1,5 +1,10 @@
 2009-04-28  Alan McGovern  <amcgovern@novell.com>
 
+	* ComboBoxItem.cs: MouseUp should result in the popup being
+	  closed but the selection is not changed.
+
+2009-04-28  Alan McGovern  <amcgovern@novell.com>
+
 	* ContentControl.cs: Add the ability to stop ContentControl
 	  from automatically setting the LogicalParent when a
 	  FrameworkElement is added as the Content.
