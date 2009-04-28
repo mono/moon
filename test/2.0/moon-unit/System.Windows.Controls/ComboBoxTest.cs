@@ -600,13 +600,13 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			FakeComboBox box = new FakeComboBox ();
 			ComboBoxItem item = new ComboBoxItem ();
-			Assert.IsNull (item.Style);
-			Assert.IsNull (item.Content);
-			Assert.IsNull (item.ContentTemplate);
+			Assert.IsNull (item.Style, "#1");
+			Assert.IsNull (item.Content, "#2");
+			Assert.IsNull (item.ContentTemplate, "#3");
 			box.PrepareContainerForItemOverride_ (item, null);
-			Assert.IsNull (item.Style);
-			Assert.IsNull (item.Content);
-			Assert.IsNotNull (item.ContentTemplate);
+			Assert.IsNull (item.Style, "#4");
+			Assert.IsNull (item.Content, "#5");
+			Assert.IsNotNull (item.ContentTemplate, "#6");
 		}
 
 		[TestMethod]
@@ -616,15 +616,15 @@ namespace MoonTest.System.Windows.Controls {
 			FakeComboBox box = new FakeComboBox { ItemContainerStyle = new Style (typeof (ListBoxItem)) };
 			box.ItemContainerStyle.Setters.Add (new Setter { Property = Canvas.LeftProperty, Value = 10.5 });
 			ComboBoxItem item = new ComboBoxItem ();
-			Assert.IsNull (item.Style);
-			Assert.IsNull (item.Content);
-			Assert.IsNull (item.ContentTemplate);
+			Assert.IsNull (item.Style, "#1");
+			Assert.IsNull (item.Content, "#2");
+			Assert.IsNull (item.ContentTemplate, "#3");
 
 			box.PrepareContainerForItemOverride_ (item, null);
 
-			Assert.AreSame (box.ItemContainerStyle, item.Style);
-			Assert.IsNull (item.Content);
-			Assert.IsNotNull (item.ContentTemplate);
+			Assert.AreSame (box.ItemContainerStyle, item.Style, "#4");
+			Assert.IsNull (item.Content, "#5");
+			Assert.IsNotNull (item.ContentTemplate, "#6");
 		}
 
 		[TestMethod]
@@ -637,26 +637,24 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void PrepareContainerForItemOverrideTest6 ()
 		{
 			Rectangle rect = new Rectangle ();
 			FakeComboBox box = new FakeComboBox ();
 			ComboBoxItem item = new ComboBoxItem ();
-			Assert.IsNull (item.Content);
+			Assert.IsNull (item.Content, "#1");
 			box.PrepareContainerForItemOverride_ (item, rect);
-			Assert.AreSame (item.Content, rect);
+			Assert.AreSame (item.Content, rect, "#2");
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void PrepareContainerForItemOverrideTest7 ()
 		{
 			Rectangle rect = new Rectangle ();
 			FakeComboBox box = new FakeComboBox ();
 			box.Items.Add (rect);
 			ComboBoxItem item = new ComboBoxItem ();
-			Assert.Throws<InvalidOperationException> (() => box.PrepareContainerForItemOverride_ (item, rect));
+			Assert.Throws<InvalidOperationException> (() => box.PrepareContainerForItemOverride_ (item, rect), "#2");
 		}
 		
 		[TestMethod]

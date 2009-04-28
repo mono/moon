@@ -219,7 +219,7 @@ namespace System.Windows.Controls
 			Console.WriteLine ("List item clicked");
 			base.NotifyListItemClicked (listBoxItem);
 			IsDropDownOpen = false;
-			SelectedItem = listBoxItem;
+			SelectedItem = listBoxItem.Item ?? listBoxItem;
 			UpdateDisplayedItem ();
 		}
 		
@@ -227,6 +227,11 @@ namespace System.Windows.Controls
 		{
 			base.PrepareContainerForItemOverride (element, item);
 			ListBoxItem cb = (ListBoxItem) element;
+			cb.Item = item;
+			cb.Style = ItemContainerStyle;
+			cb.ContentTemplate = ItemTemplate;
+			if (element != item)
+				cb.Content = item;
 			cb.ParentSelector = this;
 		}
 
@@ -242,6 +247,16 @@ namespace System.Windows.Controls
 			if (_popup != null) {
 				_popup.CatchClickedOutside ();
 				_popup.ClickedOutside += delegate { IsDropDownOpen = false; };
+			}
+			if (_dropDownToggle != null) {
+				_dropDownToggle.MouseLeftButtonDown += (o, e) => {
+					Console.WriteLine ("Toggle toggled");
+					IsDropDownOpen = true;
+				};
+				_dropDownToggle.Click += delegate {
+						Console.WriteLine ("Clicked");
+						IsDropDownOpen = true;
+				};
 			}
 		}
 		
@@ -325,16 +340,15 @@ namespace System.Windows.Controls
 				return;
 			}
 			_contentPresenter.Content = null;
-			DisplayedItem = SelectedItem as ComboBoxItem;
-			if (DisplayedItem != null) {
-				Console.WriteLine ("Displaying: {0} from {1}", ((FrameworkElement) DisplayedItem.Content).Name, DisplayedItem.Name);
-					content = DisplayedItem.Content;
-					DisplayedItem.Content = null;
-				_contentPresenter.Content = content;
-			} else {
-				Console.WriteLine ("Displaying actual {0}", SelectedIndex);
-				_contentPresenter.Content = SelectedItem;
+			DisplayedItem = GetContainerItem (SelectedIndex) as ComboBoxItem;
+			if (DisplayedItem == null) {
+				Console.WriteLine ("** ERROR **: There should be one container for each item");
+				return;
 			}
+			Console.WriteLine ("Displaying: {0} from {1}", ((FrameworkElement) DisplayedItem.Content).Name, DisplayedItem.Name);
+			content = DisplayedItem.Content;
+			DisplayedItem.Content = null;
+			_contentPresenter.Content = content;
 		}
 
 		ContentPresenter _contentPresenter;

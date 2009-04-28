@@ -152,6 +152,15 @@ namespace System.Windows.Controls {
 			return new ContentPresenter ();
 		}
 
+		internal ListBoxItem GetContainerItem (int index)
+		{
+			if (_presenter == null || _presenter._elementRoot == null)
+				return null;
+			
+			ListBoxItem item = _presenter._elementRoot.Children [index] as ListBoxItem;
+			return item;
+		}
+		
 		protected virtual bool IsItemItsOwnContainerOverride (object item)
 		{
 			return (item is FrameworkElement);
@@ -218,23 +227,23 @@ namespace System.Windows.Controls {
 			StackPanel panel = _presenter._elementRoot;
 			for (int i = 0; i < newItems.Count; i ++) {
 				object item = newItems[i];
-				object element;
-
+				DependencyObject container = null;
+				
 				if (IsItemItsOwnContainerOverride (item)) {
 					Console.WriteLine("item is its own container");
-					element = item;
+					container = (DependencyObject) item;
 				}
 				else {
 					Console.WriteLine ("creating a container for it.");
-					element = GetContainerForItemOverride ();
+					container = GetContainerForItemOverride ();
+					
+					ContentControl c = container as ContentControl;
+					if (c != null)
+						c.ContentSetsParent = false;
 				}
 
-				PrepareContainerForItemOverride (element as DependencyObject, item);
-
-				if (element is UIElement) {
-					Console.WriteLine ("inserting {0} at index {1}", element, newIndex + i);
-					panel.Children.Insert (newIndex + i, (UIElement)element);
-				}
+				panel.Children.Insert (newIndex + i, (UIElement) container);
+				PrepareContainerForItemOverride (container as DependencyObject, item);
 			}
 		}
 
