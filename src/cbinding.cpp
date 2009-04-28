@@ -631,6 +631,26 @@ content_control_new (void)
 }
 
 
+bool
+content_control_get_content_sets_parent (ContentControl *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->GetContentSetsParent ();
+}
+
+
+void
+content_control_set_content_sets_parent (ContentControl *instance, bool value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetContentSetsParent (value);
+}
+
+
 /**
  * Control
  **/

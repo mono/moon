@@ -80,6 +80,11 @@ namespace System.Windows.Controls {
 			cc.OnContentChanged (args.OldContent, args.NewContent);
 		}
 		
+		internal bool ContentSetsParent {
+			get { return (bool) Mono.NativeMethods.content_control_get_content_sets_parent (native); }
+			set { Mono.NativeMethods.content_control_set_content_sets_parent (native, value); }
+		}
+		
 		void Initialize ()
 		{
 			Events.AddHandler (this, "ContentChanged", content_changed);
@@ -89,7 +94,6 @@ namespace System.Windows.Controls {
 		{
 			// no-op
 		}
-
 
 		internal override void InvokeOnApplyTemplate ()
 		{

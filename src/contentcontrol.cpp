@@ -17,6 +17,7 @@ ContentControl::ContentControl ()
 {
 	ManagedTypeInfo *type_info = new ManagedTypeInfo ("System.Windows", "System.Windows.Controls.ContentControl");
 	
+	SetContentSetsParent (true);
 	SetObjectType (Type::CONTENTCONTROL);
 	SetDefaultStyleKey (type_info);
 }
@@ -34,12 +35,12 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 	}
 	
 	if (args->GetId () == ContentControl::ContentProperty) {
-		if (args->GetOldValue() && args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
+		if (GetContentSetsParent () && args->GetOldValue() && args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
 			args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
 			if (error->number)
 				return;
 		}
-		if (args->GetNewValue() && args->GetNewValue()->Is(Type::FRAMEWORKELEMENT)) {
+		if (GetContentSetsParent () && args->GetNewValue() && args->GetNewValue()->Is(Type::FRAMEWORKELEMENT)) {
 			args->GetNewValue()->AsFrameworkElement()->SetLogicalParent (this, error);
 			if (error->number)
 				return;

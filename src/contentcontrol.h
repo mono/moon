@@ -58,10 +58,18 @@ class ContentControl : public Control {
 	void SetContentTemplate (DataTemplate *t);
 	DataTemplate *GetContentTemplate ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetContentSetsParent (bool value) { content_sets_parent = value; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool GetContentSetsParent () { return content_sets_parent; }
+	
 	//
 	// Events
 	//
 	const static int ContentChangedEvent;
+
+  private:
+	bool content_sets_parent;
 };
 
 #endif /* __CONTENT_CONTROL_H__ */

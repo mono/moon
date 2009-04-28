@@ -321,6 +321,12 @@ Value *content_changed_event_args_get_old_content (ContentChangedEventArgs *inst
 /* @GeneratePInvoke */
 ContentControl *content_control_new (void);
 
+/* @GeneratePInvoke */
+bool content_control_get_content_sets_parent (ContentControl *instance);
+
+/* @GeneratePInvoke */
+void content_control_set_content_sets_parent (ContentControl *instance, bool value);
+
 /**
  * Control
  **/
