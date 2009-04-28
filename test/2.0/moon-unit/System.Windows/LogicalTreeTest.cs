@@ -31,6 +31,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 using Mono.Moonlight.UnitTesting;
 
@@ -219,6 +220,23 @@ namespace MoonTest.System.Windows {
 			FrameworkElement b_child = (FrameworkElement)VisualTreeHelper.GetChild (b, 0);
 
 			Assert.IsNull (b_child.Parent, "1");
+		}
+		
+		[TestMethod]
+		[MoonlightBug]
+		public void LogicalParentTest10 ()
+		{
+			ComboBox first = new ComboBox ();
+			StackPanel second = new StackPanel ();
+			Rectangle r = new Rectangle ();
+			first.Items.Add (r);
+			second.Children.Add (r);
+
+			// When the item is removed from the combobox, its parent
+			// should be set to the StackPanel immediately
+			Assert.AreEqual (first, r.Parent, "#1");
+			first.Items.Remove (r);
+			Assert.AreEqual (second, r.Parent, "#2");
 		}
 
 		[TestMethod]

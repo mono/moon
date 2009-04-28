@@ -1,5 +1,11 @@
 2009-04-28  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/LogicalTreeTest.cs: Add LogicalParent test
+	  which demonstrates an issue I've noticed while implementing
+	  ComboBox.
+
+2009-04-28  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemsControlTest.cs: Remove the
 	  ignore because these tests are working fine now.
 
