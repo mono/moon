@@ -2668,7 +2668,7 @@ TextBoxView::ConnectBlinkTimeout (guint multiplier)
 	if (!surface || !(manager = surface->GetTimeManager ()))
 		return;
 	
-	blink_timeout = manager->AddTimeout (G_PRIORITY_DEFAULT, timeout, TextBoxView::blink, this);
+	blink_timeout = manager->AddTimeout (MOON_PRIORITY_DEFAULT, timeout, TextBoxView::blink, this);
 }
 
 void

@@ -823,7 +823,7 @@ MediaPlayer::SetTimeout (gint32 timeout /* set to 0 to clear */)
 		if (time_manager == NULL) {
 			g_warning ("MediaPlayer::SetTimeout (): Could not set timeout (no time manager).\n");
 		} else {
-			advance_frame_timeout_id = time_manager->AddTimeout (G_PRIORITY_DEFAULT - 10, timeout, AdvanceFrameCallback, this);
+			advance_frame_timeout_id = time_manager->AddTimeout (MOON_PRIORITY_DEFAULT, timeout, AdvanceFrameCallback, this);
 		}
 	}
 }

@@ -233,7 +233,7 @@ MediaElement::SetMarkerTimeout (bool start)
 	
 	if (start) {
 		if (marker_timeout == 0) {
-			marker_timeout = tm->AddTimeout (G_PRIORITY_DEFAULT, 33, MarkerTimeout, this);
+			marker_timeout = tm->AddTimeout (MOON_PRIORITY_DEFAULT, 33, MarkerTimeout, this);
 			ref (); // add a ref to self
 		}
 	} else { // stop

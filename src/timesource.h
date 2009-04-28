@@ -16,6 +16,10 @@
 #include "clock.h"
 #include "deployment.h"
 
+#define MOON_PRIORITY_HIGH G_PRIORITY_DEFAULT
+#define MOON_PRIORITY_DEFAULT G_PRIORITY_HIGH_IDLE
+#define MOON_PRIORITY_IDLE G_PRIORITY_IDLE
+
 class TimeSource : public EventObject {
  protected:
 	virtual ~TimeSource ();

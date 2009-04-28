@@ -727,7 +727,7 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 		data->event_id = event_id;
 		data->calldata = calldata;
 		data->only_unemitted = only_unemitted;
-		surface->GetTimeManager ()->AddTimeout (G_PRIORITY_DEFAULT, 1, EmitCallback, data);
+		surface->GetTimeManager ()->AddTimeout (MOON_PRIORITY_HIGH, 1, EmitCallback, data);
 		return false;
 	}
 

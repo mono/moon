@@ -1,3 +1,14 @@
+2009-04-28  Larry Ewing  <lewing@novell.com>
+
+	* src/dependencyobject.cpp:
+	* src/mediaelement.cpp:
+	* src/mediaplayer.cpp:
+	* src/textbox.cpp:
+	* src/timesource.cpp:
+	* src/timesource.h: rework the priority of our event queue so that
+	we end up being more responsive to input and give the browser a
+	chance to do things like repaint.
+
 2009-04-28  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Don't allow x:Class on non top level elements.
