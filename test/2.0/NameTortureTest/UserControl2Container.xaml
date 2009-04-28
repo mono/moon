@@ -1,0 +1,11 @@
+<UserControl x:Class="NameTortureTest.UserControl2Container"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Name="userControl2Container"
+>
+
+   <UserControl x:Name="userControl2" x:Class="NameTortureTest.UserControl2">
+     <Border x:Name="border" />
+   </UserControl>
+
+</UserControl>

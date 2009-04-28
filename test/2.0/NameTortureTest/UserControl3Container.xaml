@@ -1,0 +1,12 @@
+<UserControl x:Class="NameTortureTest.UserControl3Container"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:NameTortureTest"
+>
+  <UserControl.Resources>
+    <SolidColorBrush x:Name="backgroundBrush" Color="Green" />
+  </UserControl.Resources>
+
+  <local:UserControl3 x:Name="userControl3" Brush="{StaticResource backgroundBrush}" />
+
+</UserControl>
