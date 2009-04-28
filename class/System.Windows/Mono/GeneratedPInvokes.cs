@@ -453,6 +453,15 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
+		// bool content_control_get_content_sets_parent (ContentControl *instance);
+		public extern static bool content_control_get_content_sets_parent (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void content_control_set_content_sets_parent (ContentControl *instance, bool value);
+		public extern static void content_control_set_content_sets_parent (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
 		// bool control_apply_template (Control *instance);
 		public extern static bool control_apply_template (IntPtr instance);
 
