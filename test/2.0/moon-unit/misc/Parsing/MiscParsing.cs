@@ -180,7 +180,7 @@ namespace MoonTest.Misc.Parsing
 			s.Children.Add (the_animation);
 
 			Storyboard.SetTarget (the_animation, control);
-			Storyboard.SetTargetProperty (the_animation, new PropertyPath ("(monkeylovesballs:HalfDimensionsControl.HalfHeight)"));
+			Storyboard.SetTargetProperty (the_animation, new PropertyPath ("(monkeylove:HalfDimensionsControl.HalfHeight)"));
 			
 			Enqueue (() => s.Begin ());
 			Enqueue (() => Assert.AreEqual (25, control.HalfHeight, "#1"));
