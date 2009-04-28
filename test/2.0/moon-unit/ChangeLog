@@ -1,5 +1,11 @@
 2009-04-28  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemsControlTest.cs: Ensure that
+	  PrepareContainerForItemOverride is handling both
+	  ContentControls and ContentPresenters correctly.
+
+2009-04-28  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest.cs: Remove MoonlightBug
 	  from two tests which pass now.
 

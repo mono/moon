@@ -43,7 +43,7 @@ using System.Windows.Controls.Primitives;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public partial class ItemsControlTest : SilverlightTest {
+	public partial class ___ItemsControlTest : SilverlightTest {
 
 		[TestMethod]
 		[Asynchronous]
@@ -381,7 +381,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void PrepareContainerForItemOverrideTest4 ()
 		{
 			ItemsControlPoker box = new ItemsControlPoker ();
@@ -390,23 +389,13 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (item.Content);
 			Assert.IsNull (item.ContentTemplate);
 
-			box.PrepareContainerForItemOverride_ (item, null);
-
-			Assert.IsNotNull (item.Content);
-			Assert.IsNotNull (item.ContentTemplate);
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest5 ()
-		{
-			ItemsControlPoker box = new ItemsControlPoker ();
-			ComboBoxItem item = new ComboBoxItem ();
 			box.PrepareContainerForItemOverride_ (item, item);
+
 			Assert.IsNull (item.Content);
+			Assert.IsNull (item.ContentTemplate);
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void PrepareContainerForItemOverrideTest6 ()
 		{
 			Rectangle rect = new Rectangle ();
@@ -418,7 +407,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void PrepareContainerForItemOverrideTest7 ()
 		{
 			Rectangle rect = new Rectangle ();
@@ -426,6 +414,47 @@ namespace MoonTest.System.Windows.Controls {
 			box.Items.Add (rect);
 			ComboBoxItem item = new ComboBoxItem ();
 			Assert.Throws<InvalidOperationException> (() => box.PrepareContainerForItemOverride_ (item, rect));
+		}
+		
+		[TestMethod]
+		[MoonlightBug]
+		public void PrepareContainerForItemOverrideTest8 ()
+		{
+			ItemsControlPoker box = new ItemsControlPoker ();
+			ContentPresenter item = new ContentPresenter ();
+			Assert.IsNull (item.Style, "#1");
+			Assert.IsNull (item.Content, "#2");
+			Assert.IsNull (item.ContentTemplate, "#3");
+			box.PrepareContainerForItemOverride_ (item, null);
+			Assert.IsNull (item.Style, "#4");
+			Assert.IsNotNull (item.Content, "#5"); // What's this? A placeholder when using a null item?
+			Assert.IsNotNull (item.ContentTemplate, "#6");
+		}
+
+		[TestMethod]
+		public void PrepareContainerForItemOverrideTest9 ()
+		{
+			ItemsControlPoker box = new ItemsControlPoker ();
+			ContentPresenter item = new ContentPresenter ();
+			Assert.IsNull (item.Style);
+			Assert.IsNull (item.Content);
+			Assert.IsNull (item.ContentTemplate);
+
+			box.PrepareContainerForItemOverride_ (item, item);
+
+			Assert.IsNull (item.Content);
+			Assert.IsNull (item.ContentTemplate);
+		}
+
+		[TestMethod]
+		public void PrepareContainerForItemOverrideTest10 ()
+		{
+			Rectangle rect = new Rectangle ();
+			ItemsControlPoker box = new ItemsControlPoker ();
+			ContentPresenter item = new ContentPresenter ();
+			Assert.IsNull (item.Content);
+			box.PrepareContainerForItemOverride_ (item, rect);
+			Assert.AreSame (item.Content, rect);
 		}
 		
 		[TestMethod]

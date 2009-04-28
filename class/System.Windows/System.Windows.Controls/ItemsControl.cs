@@ -259,9 +259,13 @@ namespace System.Windows.Controls {
 
 		protected virtual void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
+			if (element == item)
+				return;
+			
 			ContentPresenter presenter = element as ContentPresenter;
+			ContentControl control = element as ContentControl;
 
-			if (presenter != null && presenter != item) {
+			if (presenter != null) {
 
 				bool setContent = true;
 
@@ -281,6 +285,11 @@ namespace System.Windows.Controls {
 
 				if (setContent)
 					presenter.Content = item;
+			} else if (control != null) {
+				if (ItemTemplate != null) {
+					control.ContentTemplate = ItemTemplate;
+				}
+				control.Content = item;
 			}
 		}
 
