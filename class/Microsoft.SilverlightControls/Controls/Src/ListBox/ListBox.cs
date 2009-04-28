@@ -206,7 +206,7 @@ namespace System.Windows.Controls
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item) 
         {
             base.PrepareContainerForItemOverride(element, item);
-            ListBoxItem listBoxItem = element as ListBoxItem; 
+            ListBoxItem listBoxItem = (ListBoxItem) element; 
             Debug.Assert(null != listBoxItem);
             // Prepare the ListBoxItem state
             listBoxItem.ParentSelector = this; 

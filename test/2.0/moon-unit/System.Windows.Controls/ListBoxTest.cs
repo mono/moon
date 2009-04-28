@@ -403,7 +403,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void PrepareContainerForItemOverrideTest2 ()
 		{
 			ListBoxPoker box = new ListBoxPoker ();
@@ -426,7 +425,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void PrepareContainerForItemOverrideTest4 ()
 		{
 			ListBoxPoker box = new ListBoxPoker { ItemContainerStyle = new Style (typeof (ListBoxItem)) };
@@ -436,11 +434,11 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (item.Content);
 			Assert.IsNull (item.ContentTemplate);
 
-			box.Call_PrepareContainerForItemOverride (item, null);
+			box.Call_PrepareContainerForItemOverride (item, item);
 
 			Assert.AreSame (box.ItemContainerStyle, item.Style);
-			Assert.IsNotNull (item.Content);
-			Assert.IsNotNull (item.ContentTemplate);
+			Assert.IsNull (item.Content);
+			Assert.IsNull (item.ContentTemplate);
 		}
 
 		[TestMethod]
