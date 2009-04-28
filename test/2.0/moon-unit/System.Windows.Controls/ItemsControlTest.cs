@@ -43,11 +43,10 @@ using System.Windows.Controls.Primitives;
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public partial class ___ItemsControlTest : SilverlightTest {
+	public partial class ItemsControlTest : SilverlightTest {
 
 		[TestMethod]
 		[Asynchronous]
-		[Ignore ("Hitting a security error")]
 		public void AfterRender ()
 		{
 			ItemsControl c = new ItemsControl ();
@@ -83,7 +82,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[Ignore ("Hitting a security error")]
 		public void AfterRender1 ()
 		{
 			ItemsControl c = new ItemsControl ();
@@ -104,7 +102,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[Ignore ("Hitting a security error")]
 		public void AfterRender2 ()
 		{
 			ItemsControl c = new ItemsControl ();
