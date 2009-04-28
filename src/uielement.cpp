@@ -149,8 +149,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 	  
 	if (args->GetId () == UIElement::OpacityProperty) {
-		UpdateTotalRenderVisibility ();
-		Invalidate (GetSubtreeBounds ());
+		InvalidateVisibility ();
 	} else if (args->GetId () == UIElement::VisibilityProperty) {
 		// note: invalid enum values are only validated in 1.1 (managed code),
 		// the default value for VisibilityProperty is VisibilityCollapsed
@@ -159,24 +158,22 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			flags |= UIElement::RENDER_VISIBLE;
 		else
 			flags &= ~UIElement::RENDER_VISIBLE;
-		InvalidateMeasure ();
-		UpdateTotalRenderVisibility();
-		Invalidate (GetSubtreeBounds ());
+
+		InvalidateVisibility ();
 	} else if (args->GetId () == UIElement::IsHitTestVisibleProperty) {
 		if (args->GetNewValue()->AsBool())
 			flags |= UIElement::HIT_TEST_VISIBLE;
 		else
 			flags &= ~UIElement::HIT_TEST_VISIBLE;
+
 		UpdateTotalHitTestVisibility();
 	} else if (args->GetId () == UIElement::ClipProperty) {
-		Invalidate(GetSubtreeBounds());
-		// force invalidation even if the bounding rectangle
-		// changes (since the clip can be concave)
-		UpdateBounds (true);
+		InvalidateClip ();
 	} else if (args->GetId () == UIElement::OpacityMaskProperty) {
 		opacityMask = args->GetNewValue() ? args->GetNewValue()->AsBrush() : NULL;
-		Invalidate (GetSubtreeBounds ());
-	} else if (args->GetId () == UIElement::RenderTransformProperty || args->GetId () == UIElement::RenderTransformOriginProperty) {
+		InvalidateMask ();
+	} else if (args->GetId () == UIElement::RenderTransformProperty 
+		   || args->GetId () == UIElement::RenderTransformOriginProperty) {
 		UpdateTransform ();
 	}
 	else if (args->GetId () == UIElement::TriggersProperty) {
@@ -244,10 +241,12 @@ UIElement::DumpHierarchy (UIElement *obj)
 void
 UIElement::UpdateBounds (bool force_redraw)
 {
-	InvalidateMeasure ();
+	//InvalidateMeasure ();
+	//InvalidateArrange ();
 
-	if (GetSurface ())
-		GetSurface ()->AddDirtyElement (this, DirtyBounds);
+	Surface *surface = GetSurface ();
+	if (surface)
+		surface->AddDirtyElement (this, DirtyBounds);
 
 	force_invalidate_of_new_bounds |= force_redraw;
 }
@@ -255,8 +254,9 @@ UIElement::UpdateBounds (bool force_redraw)
 void
 UIElement::UpdateTotalRenderVisibility ()
 {
-	if (GetSurface())
-		GetSurface()->AddDirtyElement (this, DirtyRenderVisibility);
+	Surface *surface = GetSurface ();
+	if (surface)
+		surface->AddDirtyElement (this, DirtyRenderVisibility);
 }
 
 void
@@ -323,6 +323,8 @@ UIElement::ComputeTotalHitTestVisibility ()
 void
 UIElement::UpdateTransform ()
 {
+	InvalidateArrange ();
+
 	if (GetSurface()) {
 		GetSurface()->AddDirtyElement (this, DirtyLocalTransform);
 	}
@@ -388,8 +390,9 @@ UIElement::ComputeTransform ()
 	
 	if (moonlight_flags & RUNTIME_INIT_USE_UPDATE_POSITION)
 		TransformBounds (&old, &absolute_xform);
-	else
+	else {
 		UpdateBounds ();
+	}
 }
 
 void
@@ -413,13 +416,10 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 		UpdateTransform ();
 	}
 	else if (prop && prop->GetId () == UIElement::ClipProperty) {
-		Invalidate(GetSubtreeBounds());
-		// force invalidation even if the bounding rectangle
-		// changes (since the clip can be concave)
-		UpdateBounds (true);
+		InvalidateClip ();
 	}
 	else if (prop && prop->GetId () == UIElement::OpacityMaskProperty) {
-	        Invalidate ();
+		InvalidateMask ();
 	}
 	
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
@@ -439,7 +439,7 @@ UIElement::SetVisualParent (UIElement *visual_parent)
 	this->visual_parent = visual_parent;
 
 	if (visual_parent && visual_parent->GetSurface () != GetSurface())
-			SetSurface (visual_parent->GetSurface());
+		SetSurface (visual_parent->GetSurface());
 }
 
 void
@@ -460,7 +460,9 @@ UIElement::SetSubtreeObject (DependencyObject *value)
 void
 UIElement::ElementRemoved (UIElement *item)
 {
+	// Invalidate ourself in the size of the item's subtree
 	Invalidate (item->GetSubtreeBounds());
+
 	if (GetSurface ())
 		GetSurface()->RemoveDirtyElement (item);
 	item->CacheInvalidateHint ();
@@ -504,53 +506,102 @@ UIElement::ElementAdded (UIElement *item)
 
 	UpdateBounds (true);
 	InvalidateMeasure ();
+	item->UpdateTransform ();
 	item->InvalidateMeasure ();
+	item->InvalidateArrange ();
 }
 
 void
 UIElement::InvalidateMeasure ()
 {
-	if (GetVisualParent ())
-		GetVisualParent ()->InvalidateMeasure ();
-
-	this->dirty_flags |= DirtyMeasure;
+	dirty_flags |= DirtyMeasure;
 }
 
 void
 UIElement::InvalidateArrange ()
 {
-	if (GetVisualParent ())
-		GetVisualParent ()->InvalidateArrange ();
-
-	this->dirty_flags |= DirtyArrange;
+	dirty_flags |= DirtyArrange;
 }
 
 void
 UIElement::DoMeasure ()
 {
-	// Measuring implies Arranging
-	InvalidateArrange();
+	Size *last = LayoutInformation::GetLastMeasure (this);
+	UIElement *parent = GetVisualParent ();
+	Size infinite (INFINITY, INFINITY);
+
+	if (IsLayoutContainer () && !GetSurface () && !last && !parent) {
+		last = &infinite;
+	}
+	
+      	if (last) {
+		Size previous_desired = GetDesiredSize ();
+
+		// This will be a noop on non layout elements
+		Measure (*last);
+		
+		if (previous_desired == GetDesiredSize ())
+		    return;
+	}
+
+	// a canvas doesn't care about the child size changing like this
+	if (parent && ((IsLayoutContainer () && !last) || !parent->Is (Type::CANVAS)))
+		parent->InvalidateMeasure ();
+
+	dirty_flags &= ~DirtyMeasure;
 }
 
 void
 UIElement::DoArrange ()
 {
+	Rect *last = LayoutInformation::GetLayoutSlot (this);
+	Size previous_render = Size ();
+	UIElement *parent = GetVisualParent ();
+	Rect viewport;
+
+	if (!parent) {
+		Size desired = Size ();
+		Size available = Size ();
+		Surface *surface = GetSurface ();
+
+		if (IsLayoutContainer ()) {
+			desired = GetDesiredSize ();
+			if (surface && this == surface->GetToplevel ())
+				desired = desired.Max (*LayoutInformation::GetLastMeasure (this));
+		} else {
+			FrameworkElement *fe = (FrameworkElement*)this;
+			desired = Size (fe->GetActualWidth (), fe->GetActualHeight ());
+		}
+		
+		viewport = Rect (Canvas::GetLeft (this),
+				 Canvas::GetTop (this), 
+				 desired.width, desired.height);
+
+		last = &viewport;
+	}
+
+	if (last) {
+		previous_render = GetRenderSize ();
+		Arrange (*last);
+
+		if (previous_render == GetRenderSize ())
+			return;
+	}
+	
+	if (parent && ((IsLayoutContainer () || !last) || !parent->Is (Type::CANVAS)))
+		parent->InvalidateArrange ();
+	
+	if (!last)
+		return;
+
+	LayoutInformation::SetLastRenderSize (this, &previous_render);
 }
+
+
 
 bool
 UIElement::UpdateLayout ()
 {
-	bool rv = false;
-
-	if (dirty_flags & DirtyMeasure)
-		DoMeasure ();
-
-	if (dirty_flags & DirtyArrange) {
-		DoArrange ();
-		rv = true;
-	}
-
-	return rv;
 }
 
 bool 
@@ -681,6 +732,7 @@ UIElement::WalkTreeForLoaded (bool *delay)
 	return load_list;
 }
 
+
 void
 UIElement::OnLoaded ()
 {
@@ -770,6 +822,50 @@ UIElement::Invalidate ()
 {
 	Invalidate (bounds);
 }
+
+/*
+void
+UIElement::InvalidatePaint ()
+{
+	Invalidate ();
+}
+*/
+
+void
+UIElement::InvalidateSubtreePaint ()
+{
+	Invalidate (GetSubtreeBounds ());
+}
+
+void
+UIElement::InvalidateClip ()
+{
+	InvalidateSubtreePaint ();
+	UpdateBounds (true);
+}
+
+void
+UIElement::InvalidateMask ()
+{
+	InvalidateSubtreePaint ();
+}
+
+void
+UIElement::InvalidateVisibility ()
+{
+	UpdateTotalRenderVisibility ();
+	InvalidateSubtreePaint ();
+}
+
+/*
+void
+UIElement::InvalidateIntrisicSize ()
+{
+	InvalidateMeasure ();
+	InvalidateArrange ();
+	UpdateBounds (true);
+}
+*/
 
 void
 UIElement::HitTest (cairo_t *cr, Point p, List *uielement_list)

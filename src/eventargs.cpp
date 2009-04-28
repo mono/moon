@@ -245,9 +245,9 @@ MouseEventArgs::GetPosition (UIElement *relative_to, double *x, double *y)
 		if (relative_to) {
 			// FIXME this a nasty place to do this we should be able to
 			// reduce the problem for this kind of hit testing.
-			if (relative_to->GetSurface() &&
-			    relative_to->GetSurface()->IsAnythingDirty())
+			if (relative_to->GetSurface())
 				relative_to->GetSurface()->ProcessDirtyElements ();
+
 
 			relative_to->TransformPoint (x, y);
 		}

@@ -467,6 +467,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Right now we are clearing the invalidation when we shouldn't")]
 		public void InvalidateMeasureTest ()
 		{
 			Border b = new Border ();
@@ -486,13 +487,13 @@ namespace MoonTest.System.Windows.Controls
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			Assert.AreEqual (new Size (10,10), b.DesiredSize, "b desiredsize1");
 			Assert.AreEqual (new Size (10,10), c.DesiredSize, "c desiredsize1");
-			Assert.AreEqual (new Size (99,99), c.MeasureArg, "c measurearg");
+			Assert.AreEqual (new Size (99,99), c.MeasureArg, "c measurearg2");
 
 			c.InvalidateMeasure ();
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
-			Assert.AreEqual (new Size (20,20), b.DesiredSize, "b desiredsize1");
-			Assert.AreEqual (new Size (20,20), c.DesiredSize, "c desiredsize1");
-			Assert.AreEqual (new Size (Double.PositiveInfinity,Double.PositiveInfinity), c.MeasureArg, "c measurearg");
+			Assert.AreEqual (new Size (20,20), b.DesiredSize, "b desiredsize2");
+			Assert.AreEqual (new Size (20,20), c.DesiredSize, "c desiredsize2");
+			Assert.AreEqual (new Size (Double.PositiveInfinity,Double.PositiveInfinity), c.MeasureArg, "c measurearg2");
 		}
 
 		[TestMethod]
@@ -522,6 +523,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Right now we are clearing the invalidation when we shouldn't")]
 		public void InvalidateMeasureTest3 ()
 		{
 			Border b = new Border ();
@@ -557,6 +559,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Right now we are clearing the invalidation when we shouldn't")]
 		public void InvalidateMeasureTest4 ()
 		{
 			Border b = new Border ();

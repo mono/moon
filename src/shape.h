@@ -63,6 +63,14 @@ class Shape : public FrameworkElement {
 	moon_path *path;
 	virtual void InvalidatePathCache (bool free = false);
 	void InvalidateSurfaceCache (void);
+	void InvalidateNaturalBounds ();
+	void InvalidateFillBounds ();
+	void InvalidateStrokeBounds ();
+	void InvalidateStretch ();
+	
+	Rect GetStretchExtents ();
+	Rect GetNaturalBounds ();
+	
 	bool IsCandidateForCaching (void);
 
 	virtual Rect ComputeShapeBounds (bool logical) { return ComputeShapeBounds (logical, NULL); }
@@ -71,12 +79,12 @@ class Shape : public FrameworkElement {
 	virtual void ShiftPosition (Point p);
 	virtual void TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current);
 
-	cairo_matrix_t stretch_transform;
 	virtual Rect ComputeStretchBounds ();
 	
 	DoubleCollection *GetStrokeDashArray ();
 	Rect natural_bounds;
  public: 
+	cairo_matrix_t stretch_transform;
  	/* @PropertyType=Brush,GenerateAccessors */
 	const static int FillProperty;
  	/* @PropertyType=Stretch,AutoCreator=Shape::CreateDefaultStretch,GenerateAccessors */
@@ -102,10 +110,14 @@ class Shape : public FrameworkElement {
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Shape ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual Transform *GetGeometryTransform ();
 	
 	//
 	// Overrides from UIElement.
 	//
+	virtual Size ComputeActualSize ();
 	virtual Size MeasureOverride (Size Availablesize);
 	virtual Size ArrangeOverride (Size finalSize);
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
@@ -138,6 +150,7 @@ class Shape : public FrameworkElement {
 	virtual void CacheInvalidateHint (void);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	virtual Point GetTransformOrigin ();
 
 	// State helpers
 	bool IsEmpty () { return (flags & UIElement::SHAPE_EMPTY); };

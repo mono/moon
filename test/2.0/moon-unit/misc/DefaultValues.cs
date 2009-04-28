@@ -3718,7 +3718,6 @@ namespace MoonTest.System.Windows.Shapes
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Path ()
         {
             Path widget = new Path ();
@@ -4083,7 +4082,6 @@ namespace MoonTest.System.Windows.Shapes
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Ellipse ()
         {
             Ellipse widget = new Ellipse ();
@@ -4487,7 +4485,6 @@ namespace MoonTest.System.Windows.Shapes
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Line ()
         {
             Line widget = new Line ();
@@ -4882,7 +4879,6 @@ namespace MoonTest.System.Windows.Shapes
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Polygon ()
         {
             Polygon widget = new Polygon ();
@@ -5276,7 +5272,6 @@ namespace MoonTest.System.Windows.Shapes
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Polyline ()
         {
             Polyline widget = new Polyline ();
@@ -5671,7 +5666,6 @@ namespace MoonTest.System.Windows.Shapes
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Rectangle ()
         {
             Rectangle widget = new Rectangle ();

@@ -56,10 +56,24 @@ Canvas::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 
 	if (args->GetId () == Canvas::TopProperty 
 	    || args->GetId () == Canvas::LeftProperty) {
-		if (GetVisualParent () == NULL)
+		if (GetVisualParent () == NULL) {
 			UpdateTransform ();
+			InvalidateArrange ();
+		}
 	}
 	NotifyListenersOfPropertyChange (args);
+}
+
+bool
+Canvas::IsLayoutContainer ()
+{
+	VisualTreeWalker walker = VisualTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		if (child->IsLayoutContainer ())
+			return true;
+	}
+
+	return false;
 }
 
 Size
@@ -72,7 +86,14 @@ Canvas::MeasureOverride (Size availableSize)
 		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 		
-		child->Measure (childSize);
+		if (child->Is (Type::CANVAS) || child->IsLayoutContainer ())
+			child->Measure (childSize);
+		else {
+			if (child->dirty_flags & DirtyMeasure) {
+				child->dirty_flags &= ~DirtyMeasure;
+				child->InvalidateArrange ();
+			}
+		}
 	}
 
 	Size desired = Size (0,0);
@@ -94,18 +115,25 @@ Canvas::ArrangeOverride (Size finalSize)
 	arranged = arranged.Min (specified);
 
 	// XXX ugly hack to maintain compat
-	if (!GetVisualParent() && !GetSurface ())
-		return arranged;
+	//if (!GetVisualParent() && !GetSurface ())
+	//	return arranged;
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
-	while (UIElement *child = walker.Step ()) {
+	while (FrameworkElement *child = (FrameworkElement *)walker.Step ()) {
 		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 
-		Size desired = child->GetDesiredSize ();
-		Rect child_final = Rect (GetLeft (child), GetTop (child), desired.width, desired.height);
-
-		child->Arrange (child_final);
+		if (child->Is (Type::CANVAS) || child->IsLayoutContainer ()) {
+			Size desired = child->GetDesiredSize ();
+			Rect child_final = Rect (GetLeft (child), GetTop (child), desired.width, desired.height);
+			child->Arrange (child_final);
+		} else {
+			//g_warning ("arranging %s %g,%g", child->GetTypeName (),child->GetActualWidth (), child->GetActualHeight ());
+			Rect child_final = Rect (GetLeft (child), GetTop (child), 
+						 child->GetActualWidth (),
+						 child->GetActualHeight ());
+			child->Arrange (child_final);
+		}
 	}
 
 	return arranged;
@@ -119,12 +147,26 @@ Canvas::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Propert
 		// it has been moved to Panel's implementation, since
 		// all panels allow ZIndex sorting of children.
 		if (args->GetId () == Canvas::TopProperty ||
-			 args->GetId () == Canvas::LeftProperty) {
-
+		    args->GetId () == Canvas::LeftProperty) {
 			UIElement *ui = (UIElement *) obj;
-
-			ui->UpdateTransform ();
+			
 			ui->InvalidateArrange ();
+			Rect *last = LayoutInformation::GetLayoutSlot (ui);
+			if (last) {
+				Rect updated = Rect (GetLeft (ui), 
+						     GetTop (ui), 
+						     last->width, last->height);
+
+				if (args->GetId () == Canvas::TopProperty)
+					updated.y = args->GetNewValue()->AsDouble ();
+				else
+					updated.x = args->GetNewValue()->AsDouble ();
+
+				LayoutInformation::SetLayoutSlot (ui, &updated);
+			} else {	
+				InvalidateArrange ();
+			}
+			UpdateBounds ();
 			return;
 		}
 	}

@@ -24,6 +24,54 @@
 #include "style.h"
 #include "validators.h"
 
+FrameworkElementProvider::FrameworkElementProvider (DependencyObject *obj, PropertyPrecedence precedence) : PropertyValueProvider (obj, precedence)
+{
+	actual_height_value = NULL;
+	actual_width_value = NULL;
+	last = Size (-INFINITY, -INFINITY);
+}
+	
+FrameworkElementProvider::~FrameworkElementProvider ()
+{
+	delete actual_height_value;
+	delete actual_width_value;
+}
+	
+Value *
+FrameworkElementProvider::GetPropertyValue (DependencyProperty *property)
+{
+	if (property->GetId () != FrameworkElement::ActualHeightProperty && 
+	    property->GetId () != FrameworkElement::ActualWidthProperty)
+		return NULL;
+	
+	FrameworkElement *element = (FrameworkElement *) obj;
+
+	Size actual = last.IsEmpty () ? Size () : last;
+	Surface *surface = obj->GetSurface ();
+
+	if (!LayoutInformation::GetLastMeasure (obj) || (surface && surface->IsTopLevel (element) && obj->Is (Type::PANEL)))
+		actual = element->ComputeActualSize ();
+
+	if (last != actual) {
+		last = actual;
+
+		if (actual_height_value)
+			delete actual_height_value;
+		
+		if (actual_width_value)
+			delete actual_width_value;
+		
+		actual_height_value = new Value (actual.height);
+		actual_width_value = new Value (actual.width);
+	}
+	
+	if (property->GetId () == FrameworkElement::ActualHeightProperty) {
+		return actual_height_value;
+	} else {
+		return actual_width_value;
+	}
+};
+
 FrameworkElement::FrameworkElement ()
 {
 	SetObjectType (Type::FRAMEWORKELEMENT);
@@ -36,6 +84,7 @@ FrameworkElement::FrameworkElement ()
 
 	providers[PropertyPrecedence_LocalStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_LocalStyle);
 	providers[PropertyPrecedence_DefaultStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_DefaultStyle);
+	providers[PropertyPrecedence_DynamicValue] = new FrameworkElementProvider (this, PropertyPrecedence_DynamicValue);
 }
 
 FrameworkElement::~FrameworkElement ()
@@ -93,7 +142,6 @@ FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 	return UIElement::SetValueWithErrorImpl (property, value, error);
 }
 
-
 void
 FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
@@ -117,20 +165,26 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		   transform is someplace other than (0,0), the
 		   transform needs to be updated as well. */
 		FullInvalidate (p->x != 0.0 || p->y != 0.0);
-
-		if (IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ())) {
-			ClearValue (FrameworkElement::ActualHeightProperty);
-			ClearValue (FrameworkElement::ActualWidthProperty);
+		
+		FrameworkElement *visual_parent = (FrameworkElement *)GetVisualParent ();
+		if (visual_parent) {
+			if (visual_parent->Is (Type::CANVAS)) {
+				if (!IsLayoutContainer ()) {
+					ClearValue (FrameworkElement::ActualHeightProperty);
+					ClearValue (FrameworkElement::ActualWidthProperty);
+				}
+				InvalidateMeasure ();
+				InvalidateArrange ();
+			} else {
+				visual_parent->InvalidateMeasure ();
+				InvalidateMeasure ();
+				InvalidateArrange ();
+			}
 		} else {
-			// FIXME: this breaks TextBlock's ActualWidth/Height in the TextBlockTest.cs:ComputeActualWidth() test
-			Size actual (GetMinWidth (), GetMinHeight ());
-			actual = actual.Max (GetWidth (), GetHeight ());
-			actual = actual.Min (GetMaxWidth (), GetMaxHeight ());
-			SetActualWidth (actual.width);
-			SetActualHeight (actual.height);
+			InvalidateMeasure ();
+			InvalidateArrange ();
 		}
-
-		InvalidateMeasure ();
+		UpdateBounds ();
 	}
 	else if (args->GetId () == FrameworkElement::StyleProperty) {
 		if (args->GetNewValue()) {
@@ -178,13 +232,28 @@ FrameworkElement::GetSubtreeBounds ()
 	return bounds;
 }
 
+Size
+FrameworkElement::ComputeActualSize ()
+{
+	UIElement *parent = GetVisualParent ();
+
+	if (IsLayoutContainer () || (parent && !parent->Is (Type::CANVAS)))
+		return Size (0,0);
+
+	Size actual (GetMinWidth (), GetMinHeight ());
+	actual = actual.Max (GetWidth (), GetHeight ());
+	actual = actual.Min (GetMaxWidth (), GetMaxHeight ());
+
+	return actual;
+}
+
 bool
 FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 {
 	double width = GetActualWidth ();
 	double height = GetActualHeight ();
 	double nx = x, ny = y;
-	
+
 	TransformPoint (&nx, &ny);
 	if (nx < 0 || ny < 0 || nx > width || ny > height)
 		return false;
@@ -283,6 +352,7 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 FrameworkElement::Measure (Size availableSize)
 {
+	//g_warning ("measuring %p %s %g,%g", this, GetTypeName (), availableSize.width, availableSize.height);
 	if (Is(Type::CONTROL)) {
 		Control *control = (Control*)this;
 
@@ -292,10 +362,19 @@ FrameworkElement::Measure (Size availableSize)
 		}
 	}
 
+	if (!IsLayoutContainer ()) {
+		UIElement *parent = GetVisualParent ();
+		
+		if (!parent || parent->Is (Type::CANVAS)) {
+			InvalidateArrange ();
+			UpdateBounds ();
+			dirty_flags &= ~DirtyMeasure;
+			return;
+		}
+	}
 
 	Size *last = LayoutInformation::GetLastMeasure (this);
-	bool domeasure = this->dirty_flags & DirtyMeasure;
-	
+	bool domeasure = (this->dirty_flags & DirtyMeasure) > 0;
 
 	domeasure |= last ? ((*last).width != availableSize.width) && ((*last).height != availableSize.height) : true;
 
@@ -307,7 +386,7 @@ FrameworkElement::Measure (Size availableSize)
 	InvalidateArrange ();
 	UpdateBounds ();
 
-	this->dirty_flags &= ~DirtyMeasure;
+	dirty_flags &= ~DirtyMeasure;
 
 	Size specified = Size (GetWidth (), GetHeight ());
 	Thickness margin = *GetMargin ();
@@ -323,12 +402,6 @@ FrameworkElement::Measure (Size availableSize)
 		size = (*measure_cb)(size);
 	else
 		size = MeasureOverride (size);
-
-	/* XXX FIXME horrible hack */
-	if (!(IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ()))) {
-		SetDesiredSize (Size (0,0));
-		return;
-	}
 
 	// postcondition the results
 	size = size.Min (specified);
@@ -382,6 +455,7 @@ FrameworkElement::MeasureOverride (Size availableSize)
 void
 FrameworkElement::Arrange (Rect finalRect)
 {
+	//g_warning ("arranging %p %s %g,%g,%g,%g", this, GetTypeName (), finalRect.x, finalRect.y, finalRect.width, finalRect.height);
 	Rect *slot = LayoutInformation::GetLayoutSlot (this);
 	bool doarrange = this->dirty_flags & DirtyArrange;
 	
@@ -398,10 +472,10 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	if (!doarrange)
 		return;
-	
 
 	LayoutInformation::SetLayoutSlot (this, &finalRect);
-	LayoutInformation::SetLayoutClip (this, NULL);
+	ClearValue (LayoutInformation::LayoutClipProperty);
+	//LayoutInformation::SetLayoutClip (this, NULL);
 
 	this->dirty_flags &= ~DirtyArrange;
 
@@ -410,6 +484,8 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	cairo_matrix_init_translate (&layout_xform, child_rect.x, child_rect.y);
 	UpdateTransform ();
+	UpdateBounds ();
+	this->dirty_flags &= ~DirtyArrange;
 
 	Size offer (child_rect.width, child_rect.height);
 	Size response;
@@ -428,18 +504,13 @@ FrameworkElement::Arrange (Rect finalRect)
 	else
 		response = ArrangeOverride (offer);
 
-	Size old (GetActualWidth (), GetActualHeight ());
-
 	/* XXX FIXME horrible hack */
-	if (!(IsLayoutContainer () || (GetVisualParent () && GetVisualParent ()->IsLayoutContainer ()))) {
-		Size actual (GetMinWidth (), GetMinHeight ());
-		actual = actual.Max (GetWidth (), GetHeight ());
-		actual = actual.Min (GetMaxWidth (), GetMaxHeight ());
-		SetActualWidth (actual.width);
-		SetActualHeight (actual.height);
-		SetRenderSize (Size (0,0));
-		return;
+	UIElement *parent = GetVisualParent ();
+	if (!IsLayoutContainer ()) {
+		if (!parent || parent->Is (Type::CANVAS))
+			return;
 	}
+	Size old (GetActualWidth (), GetActualHeight ());
 
 	if (IsLayoutContainer () && GetUseLayoutRounding ()) {
 		response.width = round (response.width);
@@ -543,15 +614,138 @@ FrameworkElement::ArrangeOverride (Size finalSize)
 bool
 FrameworkElement::UpdateLayout ()
 {
-	bool rv = UIElement::UpdateLayout ();
+	UIElement *element = this;
+	UIElement *parent = NULL;
 
-	if (rv) {
-		// we only emit the event if either a measure or
-		// arrange pass was done.
-		Emit (LayoutUpdatedEvent);
+	// Seek to the top
+	while ((parent = element->GetVisualParent ())) {
+		if (parent->Is (Type::CANVAS))
+			break;
+
+		element = parent;
 	}
 
-	return rv;
+	Surface *surface = element->GetSurface ();
+
+	printf ("\n UpdateLayout: ");
+	bool updated = false;
+	int i = 0;
+	while (i < 250) {
+		List *measure_list = new List ();
+		List *arrange_list = new List ();
+		List *updated_list = new List ();
+		List *size_list = new List ();
+		
+		printf ("\u267c");
+		i++;
+		DeepTreeWalker measure_walker (element);
+		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
+			if (!child->GetRenderVisible ())
+				continue;
+
+			if (child->dirty_flags & DirtyMeasure) {
+				UIElement *parent = child->GetVisualParent ();
+				if (child->IsLayoutContainer () || (parent && !parent->Is (Type::CANVAS))) {
+					measure_list->Prepend (new UIElementNode (child));
+					//g_warning ("adding %p, %s", child, child->GetTypeName ());
+				}
+			}
+
+			if (!measure_list->IsEmpty ())
+				continue;
+			
+			if (child->dirty_flags & DirtyArrange)
+				arrange_list->Prepend (new UIElementNode (child));
+			
+			if (!arrange_list->IsEmpty ())
+				continue;
+			
+			if (LayoutInformation::GetLastRenderSize (child))
+				size_list->Prepend (new UIElementNode (child));
+			
+			if (!size_list->IsEmpty ())
+				continue;
+		
+			if (updated)
+				updated_list->Prepend (new UIElementNode (child));
+		}
+		if (!measure_list->IsEmpty ()) {
+			if (surface)
+				surface->needs_measure = false;
+			while (UIElementNode* node = (UIElementNode*)measure_list->First ()) {
+				measure_list->Unlink (node);
+				
+				node->uielement->DoMeasure ();
+				//if (node->uielement->GetVisuaParent ()->dirty_flags & dirty_measure)
+				//	node->Prepend (new UIElementNode (parent));
+				
+				updated = true;
+				delete (node);
+			}
+		} else if (!arrange_list->IsEmpty ()) {
+			if (surface)
+				surface->needs_arrange = false;
+			while (UIElementNode *node = (UIElementNode*)arrange_list->First ()) {
+				arrange_list->Unlink (node);
+				
+				if (surface && surface->needs_measure)
+					break;
+				
+				node->uielement->DoArrange ();
+				//if (node->uielement->GetVisuaParent ()->dirty_flags & dirty_arrange)
+				//	node->Prepend (new UIElementNode (parent));
+			
+				updated = true;
+				delete (node);
+			}
+		} else if (!size_list->IsEmpty ()) {
+			while (UIElementNode *node = (UIElementNode*)size_list->First ()) {
+				size_list->Unlink (node);
+				FrameworkElement *fe = (FrameworkElement*) node->uielement;
+
+				if (surface && (surface->needs_measure || surface->needs_arrange))
+					break;
+
+				updated = true;
+				SizeChangedEventArgs *args = new SizeChangedEventArgs (*LayoutInformation::GetLastRenderSize (fe), fe->GetRenderSize ());
+				fe->Emit (FrameworkElement::SizeChangedEvent, args);
+				fe->ClearValue (LayoutInformation::LastRenderSizeProperty, false);
+				
+				delete (node);
+			}
+		} else if (!updated_list->IsEmpty ()) {
+			while (UIElementNode *node = (UIElementNode*)updated_list->First ()) {
+				updated_list->Unlink (node);
+				FrameworkElement *fe = (FrameworkElement*)node->uielement;
+
+				if (surface && (surface->needs_measure || surface->needs_arrange))
+					break;
+
+				updated = false;
+				fe->Emit (LayoutUpdatedEvent);
+				delete (node);
+			}
+			break;
+		} else {
+			delete measure_list;
+			delete arrange_list;
+			delete size_list;
+			delete updated_list;
+			break;
+		}
+		       
+		delete measure_list;
+		delete arrange_list;
+		delete size_list;
+		delete updated_list;
+	}
+
+	if (i > 250)
+		g_warning ("***********************************************************************leaving");
+
+	printf ("\n");
+
+	return true;
 }
 
 void

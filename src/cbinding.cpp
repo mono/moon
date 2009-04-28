@@ -3267,6 +3267,16 @@ setter_base_collection_new (void)
 /**
  * Shape
  **/
+Transform *
+shape_get_geometry_transform (Shape *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetGeometryTransform ();
+}
+
+
 Shape *
 shape_new (void)
 {

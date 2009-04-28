@@ -103,7 +103,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void InvalidateArrange ()
 		{
 			bool loaded = false;
@@ -122,7 +121,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void InvalidateMeasure ()
 		{
 			bool loaded = false;
@@ -383,7 +381,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void LayoutUpdated ()
 		{
 			bool layoutUpdated = false;

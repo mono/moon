@@ -101,6 +101,8 @@ public:
 	
 	virtual bool EnableAntiAlias() { return true; }
 
+	virtual void SetSurface (Surface *s);
+
 	// UpdateTotalRenderVisibility:
 	//   Updates the opacity and render visibility on this item based on 
 	//   its parent's opacity and visibility as well as the value of its 
@@ -110,34 +112,34 @@ public:
 	void ComputeTotalRenderVisibility ();
 	bool GetActualTotalRenderVisibility ();
 
-	void UpdateTotalHitTestVisibility ();
-	void ComputeTotalHitTestVisibility ();
-	bool GetActualTotalHitTestVisibility ();
-	
-	virtual void SetSurface (Surface *s);
-
-	//
-	// UpdateTransform:
-	//   Updates the absolute_xform for this item
-	//
-	void UpdateTransform ();
-
-	void ComputeLocalTransform ();
-
-	void ComputeTransform ();
-	virtual void TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current);
-
 	//
 	// GetRenderVisible:
 	//   Returns true if the Visibility property of this item is "Visible", and false otherwise
 	//
 	bool GetRenderVisible () { return (flags & UIElement::TOTAL_RENDER_VISIBLE) != 0; }
 
+
+	// UpdateTotalHitTestVisibility:
+	//   Updates the hit testability of the item based on the you know..
+	//   The hit test flag.
+	void UpdateTotalHitTestVisibility ();
+	void ComputeTotalHitTestVisibility ();
+	bool GetActualTotalHitTestVisibility ();
+
 	//
 	// GetHitTestVisible:
 	//   Returns true if the IsHitTestVisible property of this item true, and false otherwise
 	//
 	bool GetHitTestVisible () { return (flags & UIElement::TOTAL_HIT_TEST_VISIBLE) != 0; }
+	
+	//
+	// UpdateTransform:
+	//   Updates the absolute_xform for this item
+	//
+	void UpdateTransform ();
+	void ComputeLocalTransform ();
+	void ComputeTransform ();
+	virtual void TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current);
 
 	//
 	// IsLoaded:
@@ -145,7 +147,6 @@ public:
 	//   surface and is part of the visual hierarchy.
 	//
 	bool IsLoaded () { return (flags & UIElement::IS_LOADED) != 0; }
-
 	void ClearLoaded ();
 
 	//
@@ -165,7 +166,6 @@ public:
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
 	void DoRender (cairo_t *cr, Region *region);
-	
 	bool UseBackToFront ();
 
 	//
@@ -198,7 +198,6 @@ public:
 	//   its bounds.
 	//
 	void UpdateBounds (bool force_redraw_of_new_bounds = false);
-
 	// 
 	// ComputeBounds:
 	//   Updates the bounding box for the given item, this uses the parent
@@ -209,14 +208,6 @@ public:
 	// 
 	virtual void ComputeBounds ();
 
-	// 
-	// GetExtents:
-	//   returns the extents of the current item in relative coordinates.
-	// 
-	Rect GetExtents () { return extents.Transform (&local_xform); }
-	virtual bool ClipToExtents () { return false; };
-	virtual bool IsLayoutContainer () { return GetSubtreeObject () != NULL; }
-	
 	// 
 	// GetBounds:
 	//   returns the current bounding box for the given item in surface 
@@ -243,6 +234,14 @@ public:
 	// returns the bounding box in global coordinates that opaquely covered by this object
 	//
 	virtual Rect GetCoverageBounds () { return Rect (); }
+
+
+	//
+	// IsLayoutContainer:
+	//   returns true if the container has children that require a measure
+	//   pass.
+	virtual bool IsLayoutContainer () { return GetSubtreeObject () != NULL; }
+
 
 	// HitTest
 
@@ -294,6 +293,14 @@ public:
 	// Invalidates the entire bounding rectangle of this element
 	//
 	void Invalidate ();
+
+	// 
+	// Invalidates the paint region of the element and its subtree
+	//
+	void InvalidateSubtreePaint ();
+	void InvalidateMask ();
+	void InvalidateClip ();
+	void InvalidateVisibility ();
 
 	//
 	// GetTransformOrigin:
@@ -533,6 +540,8 @@ public:
 	const static int LastMeasureProperty;
 	/* @PropertyType=Size,Attached,GenerateAccessors */
 	const static int LastArrangeProperty;
+	/* @PropertyType=Size,Attached,GenerateAccessors */
+	const static int LastRenderSizeProperty;
 
 	static void SetLayoutClip (DependencyObject *item, Geometry *clip);
 	static Geometry* GetLayoutClip (DependencyObject *item);
@@ -545,5 +554,11 @@ public:
 
 	static void SetLastArrange (DependencyObject *item, Size *size);
 	static Size *GetLastArrange (DependencyObject *item);
+
+	static void SetLastRenderSize (DependencyObject *item, Size *size);
+	static Size *GetLastRenderSize (DependencyObject *item);
+
+	static void SetBounds (DependencyObject *item, Rect *bounds);
+	static Rect *GetBounds (DependencyObject *item);
 };
 #endif /* __MOON_UIELEMENT_H__ */

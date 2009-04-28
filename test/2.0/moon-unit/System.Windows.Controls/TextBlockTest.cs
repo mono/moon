@@ -403,7 +403,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("After setting Width/MaxWidth, Moonlight wraps while Silverlight doesn't")]
 		public void ComputeActualWidth ()
 		{
 			var tb = new TextBlock ();

@@ -413,7 +413,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ArrangeTest_ChildLargerThanFinalRect ()
 		{
 			Border c = new Border ();
@@ -441,10 +440,32 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual (new Size (25, 25), r.DesiredSize, "r desired1");
 			Assert.AreEqual (new Size (25, 25), c.DesiredSize, "c desired1");
-			Assert.AreEqual (new Size (50,50), new Size (r.ActualWidth, r.ActualHeight),"r actual0");
+			Assert.AreEqual (new Size (50,50), new Size (r.ActualWidth, r.ActualHeight),"r actual1");
 			Assert.AreEqual (new Size (50,50), r.RenderSize, "r render");
+			r.Width = 25;
+
+			Assert.AreEqual (new Size (50,50), new Size (r.ActualWidth, r.ActualHeight),"r actual2");
+			Assert.AreEqual (new Size (50,50), r.RenderSize, "r render");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ArrangeTest_ChildLargerThanFinalRect_LocalValue ()
+		{
+			Border c = new Border ();
+			Rectangle r = new Rectangle ();
+
+			c.Child = r;
+
+			r.Width = 50;
+			r.Height = 50;
+
+			c.Measure (new Size (25, 25));
+			c.Arrange (new Rect (0, 0, 25, 25));
+
 			Assert.AreEqual (DependencyProperty.UnsetValue, r.ReadLocalValue (FrameworkElement.ActualWidthProperty), "local r.actualwidth");
 			Assert.AreEqual (DependencyProperty.UnsetValue, c.ReadLocalValue (FrameworkElement.ActualWidthProperty), "local c.actualwidth");
+
 		}
 
 		[TestMethod]

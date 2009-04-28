@@ -108,6 +108,28 @@ Shape::~Shape ()
 	InvalidatePathCache (true);
 }
 
+Point
+Shape::GetTransformOrigin ()
+{
+	if (GetStretch () != StretchNone)
+		return FrameworkElement::GetTransformOrigin ();
+
+	return Point (0,0);
+}
+
+Transform *
+Shape::GetGeometryTransform ()
+{
+	Matrix *matrix = new Matrix (&stretch_transform);
+	
+	MatrixTransform *transform = new MatrixTransform ();
+
+	transform->SetValue (MatrixTransform::MatrixProperty, matrix);
+	matrix->unref ();
+
+	return transform;
+}
+
 void
 Shape::Draw (cairo_t *cr)
 {
@@ -202,7 +224,7 @@ Shape::Fill (cairo_t *cr, bool do_op)
 
 	Draw (cr);
 	if (do_op) {
-		fill->SetupBrush (cr, extents);
+		fill->SetupBrush (cr, GetStretchExtents ());
 		cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
 		fill->Fill (cr, true);
 	}
@@ -220,7 +242,7 @@ Shape::ComputeStretchBounds ()
 	bool autodim = isnan (GetWidth ());
 
 	Stretch stretch = GetStretch ();
-	Rect shape_bounds = natural_bounds;
+	Rect shape_bounds = GetNaturalBounds ();
 
 	if (shape_bounds.width <= 0.0 || shape_bounds.height <= 0.0) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
@@ -228,6 +250,14 @@ Shape::ComputeStretchBounds ()
 	}
 	
 	Size framework (GetActualWidth (), GetActualHeight ());
+	Size specified = Size (GetWidth (), GetHeight ());
+
+	if (GetVisualParent () && GetVisualParent()->Is (Type::CANVAS)) {
+		if (!isnan (specified.width))
+			framework.width = specified.width;
+		if (!isnan (specified.height))
+			framework.height = specified.height;
+	}
 
 	framework.width = framework.width == 0.0 ? shape_bounds.width : framework.width;
 	framework.height = framework.height == 0.0 ? shape_bounds.height : framework.height;
@@ -329,7 +359,7 @@ void
 Shape::Stroke (cairo_t *cr, bool do_op)
 {
 	if (do_op) {
-		stroke->SetupBrush (cr, extents);
+		stroke->SetupBrush (cr, GetStretchExtents ());
 		stroke->Stroke (cr);
 	}
 }
@@ -338,6 +368,15 @@ void
 Shape::Clip (cairo_t *cr)
 {
 	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
+	Rect specified = Rect (0, 0, GetWidth (), GetHeight ());
+	
+	/*
+	if (!IsDegenerate () && !isnan (specified.width) && !isnan (specified.height)) {
+		specified.Draw (cr);
+		cairo_clip (cr);
+	}
+	*/
+
 	if (!layout_clip)
 		return;
 
@@ -424,7 +463,6 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cached_cr = cairo_create (cached_surface);
 		
 		cairo_set_matrix (cached_cr, &absolute_xform);
-		Clip (cached_cr);
 		
 		ret = DrawShape (cached_cr, do_op);
 		
@@ -438,6 +476,10 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cairo_pattern_t *cached_pattern = NULL;
 
 		cached_pattern = cairo_pattern_create_for_surface (cached_surface);
+		cairo_set_matrix (cr, &absolute_xform);
+		if (do_op)
+			Clip (cr);
+
 		cairo_identity_matrix (cr);
 		cairo_set_source (cr, cached_pattern);
 		cairo_pattern_destroy (cached_pattern);
@@ -482,15 +524,63 @@ Shape::ShiftPosition (Point p)
 	FrameworkElement::ShiftPosition (p);
 }
 
+
+Size
+Shape::ComputeActualSize ()
+{
+	Size desired = FrameworkElement::ComputeActualSize ();
+	Rect shape_bounds = GetNaturalBounds ();
+	double sx = 1.0;
+	double sy = 1.0;
+
+	if (!GetSurface ()) //|| LayoutInformation::GetLastMeasure (this) != NULL)
+		return desired;
+
+	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE))
+		return desired;
+
+	if (shape_bounds.width <= 0 && shape_bounds.height <= 0)
+		return desired;
+
+	if (GetStretch () == StretchNone && shape_bounds.width > 0 && shape_bounds.height > 0)
+		return Size (shape_bounds.width, shape_bounds.height);
+
+	/* don't stretch to infinite size */
+	if (isinf (desired.width))
+		desired.width = shape_bounds.width;
+	if (isinf (desired.height))
+		desired.height = shape_bounds.height;
+	
+	/* compute the scaling */
+	if (shape_bounds.width > 0)
+		sx = desired.width / shape_bounds.width;
+	if (shape_bounds.height > 0)
+		sy = desired.height / shape_bounds.height;
+
+	switch (GetStretch ()) {
+	case StretchUniform:
+		sx = sy = MIN (sx, sy);
+		break;
+	case StretchUniformToFill:
+		sx = sy = MAX (sx, sy);
+		break;
+	default:
+		break;
+	}
+
+	desired = desired.Min (shape_bounds.width * sx, shape_bounds.height * sy);
+
+	return desired;
+}
+
 Size
 Shape::MeasureOverride (Size availableSize)
 {
 	Size desired = availableSize;
-	Rect shape_bounds = natural_bounds = ComputeShapeBounds (false, NULL);
+	Rect shape_bounds = GetNaturalBounds ();
 	double sx = 0.0;
 	double sy = 0.0;
 
-	/* XXX this should probably be handled in canvas */
 	if (!GetVisualParent () || !GetVisualParent ()->IsLayoutContainer ())
 		return FrameworkElement::MeasureOverride (availableSize);
 
@@ -529,11 +619,12 @@ Size
 Shape::ArrangeOverride (Size finalSize)
 {
 	Size arranged = finalSize;
-	Rect shape_bounds = natural_bounds;
+	Rect shape_bounds = GetNaturalBounds ();
 	double sx = 1.0;
 	double sy = 1.0;
 
-	InvalidatePathCache ();
+	//if (!LayoutInformation::GetLastMeasure (this))
+	//	MeasureOverride (finalSize);
 
 	if (GetStretch () == StretchNone) {
 	        arranged = Size (shape_bounds.x + shape_bounds.width,
@@ -571,6 +662,11 @@ Shape::ArrangeOverride (Size finalSize)
 	}
 
 	arranged = Size (shape_bounds.width * sx, shape_bounds.height * sy);
+	
+	if ((Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) && LayoutInformation::GetLastMeasure (this)) {
+		extents = Rect (0,0, arranged.width, arranged.height);
+		UpdateBounds ();
+	}
 
 	return arranged;
 }
@@ -579,17 +675,13 @@ void
 Shape::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 {
 	InvalidateSurfaceCache ();
-	bounds = IntersectBoundsWithClipPath (extents, false).Transform (current);
+	bounds_with_children = bounds = IntersectBoundsWithClipPath (GetStretchExtents (), false).Transform (current);
 }
 
 void
 Shape::ComputeBounds ()
 {
-	cairo_matrix_init_identity (&stretch_transform);
-	InvalidateSurfaceCache ();
-	
-	extents = ComputeStretchBounds ();
-	bounds_with_children = bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+	bounds_with_children = bounds = IntersectBoundsWithClipPath (GetStretchExtents (), false).Transform (&absolute_xform);
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
@@ -645,8 +737,8 @@ Shape::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 void
 Shape::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {
-	*height = extents.height;
-	*width = extents.width;
+	*height = GetStretchExtents ().height;
+	*width = GetStretchExtents ().width;
 }
 
 bool
@@ -655,7 +747,7 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 	bool ret = false;
 
 	TransformPoint (&x, &y);
-	if (!extents.PointInside (x, y))
+	if (!GetStretchExtents ().PointInside (x, y))
 		return false;
 
 	Geometry *clip = GetClip ();
@@ -696,28 +788,19 @@ void
 Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::SHAPE) {
-		if ((args->GetId () == FrameworkElement::HeightProperty) || (args->GetId () == FrameworkElement::WidthProperty))
-			InvalidatePathCache ();
+		if ((args->GetId () == FrameworkElement::HeightProperty) 
+		    || (args->GetId () == FrameworkElement::WidthProperty))
+			InvalidateStretch ();
 
-		if (args->GetId () == UIElement::OpacityProperty) {
-			double value = args->GetNewValue()->AsDouble ();
-			if (IS_INVISIBLE (value))
-				InvalidateSurfaceCache ();
-		} else {
-			if (args->GetId () == UIElement::VisibilityProperty) {
-				int value = args->GetNewValue()->AsInt32 ();
-				if (value != VisibilityVisible)
-					InvalidateSurfaceCache ();
-			}
-		}
+		// CacheInvalidateHint should handle visibility changes in
+		// DirtyRenderVisibility 
 
 		FrameworkElement::OnPropertyChanged (args, error);
 		return;
 	}
 
 	if (args->GetId () == Shape::StretchProperty) {
-		InvalidatePathCache ();
-		UpdateBounds (true);
+		InvalidateStretch ();
 	}
 	else if (args->GetId () == Shape::StrokeProperty) {
 		Brush *new_stroke = args->GetNewValue() ? args->GetNewValue()->AsBrush () : NULL;
@@ -728,33 +811,30 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			// some shapes need to reclaculate the offset
 			// (based on stroke thickness) to start
 			// painting.
-			InvalidatePathCache ();
-			UpdateBounds ();
+			InvalidateStrokeBounds ();
                } else
 			InvalidateSurfaceCache ();
 		
-
 		stroke = new_stroke;
 	} else if (args->GetId () == Shape::FillProperty) {
 		Brush *new_fill = args->GetNewValue() ? args->GetNewValue()->AsBrush () : NULL;
 
 		if (!fill || !new_fill) {
-			InvalidatePathCache ();
-			UpdateBounds ();
+			InvalidateFillBounds ();
 		} else
 			InvalidateSurfaceCache ();
 			
 		fill = args->GetNewValue() ? args->GetNewValue()->AsBrush() : NULL;
 	} else if (args->GetId () == Shape::StrokeThicknessProperty) {
-		InvalidatePathCache ();
-		UpdateBounds ();
+		// do we invalidate the path here for Type::RECT and Type::ELLIPSE 
+		// in case they degenerate?  Or do we need it for line caps too
+		InvalidateStrokeBounds ();
 	} else if (args->GetId () == Shape::StrokeDashCapProperty
 		   || args->GetId () == Shape::StrokeEndLineCapProperty
 		   || args->GetId () == Shape::StrokeLineJoinProperty
 		   || args->GetId () == Shape::StrokeMiterLimitProperty
 		   || args->GetId () == Shape::StrokeStartLineCapProperty) {
-		UpdateBounds ();
-		InvalidatePathCache ();
+		InvalidateStrokeBounds ();
 	}
 	
 	Invalidate ();
@@ -774,6 +854,52 @@ Shape::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pr
 }
 
 void
+Shape::InvalidateStretch ()
+{
+	extents = Rect (0, 0, -INFINITY, -INFINITY);
+	cairo_matrix_init_identity (&stretch_transform);
+	InvalidateMeasure ();
+	InvalidatePathCache ();
+}
+
+Rect 
+Shape::GetStretchExtents ()
+{
+	if (extents.IsEmpty ())
+		extents = ComputeStretchBounds ();
+	
+	return extents;
+}
+
+void
+Shape::InvalidateStrokeBounds ()
+{
+	InvalidateNaturalBounds ();
+}
+
+void
+Shape::InvalidateFillBounds ()
+{
+	InvalidateNaturalBounds ();
+}
+
+void
+Shape::InvalidateNaturalBounds ()
+{
+	natural_bounds = Rect (0, 0, -INFINITY, -INFINITY);
+	InvalidateStretch ();
+}
+
+Rect
+Shape::GetNaturalBounds ()
+{
+	if (natural_bounds.IsEmpty ())
+		natural_bounds = ComputeShapeBounds (false, NULL);
+	
+	return natural_bounds;
+}
+
+void
 Shape::InvalidatePathCache (bool free)
 {
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
@@ -785,7 +911,13 @@ Shape::InvalidatePathCache (bool free)
 			moon_path_clear (path);
 		}
 	}
-
+	
+	// we always pass true here because in some cases
+	// while the bounds may not have change the rendering
+	// still may have
+	UpdateBounds (true);
+	InvalidateMeasure ();
+	InvalidateArrange ();
 	InvalidateSurfaceCache ();
 }
 
@@ -826,8 +958,7 @@ Ellipse::Ellipse ()
 Rect
 Ellipse::ComputeStretchBounds ()
 {
-       Rect shape_bounds = ComputeShapeBounds (false);
-       return shape_bounds;
+       return ComputeShapeBounds (false);
 }
 
 Rect
@@ -914,13 +1045,16 @@ Ellipse::BuildPath ()
 void
 Ellipse::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
+	/*
 	DependencyProperty *prop = args->GetProperty ();
 
 	if ((prop->GetId () == Shape::StrokeThicknessProperty) || (prop->GetId () == Shape::StretchProperty) ||
 		(prop->GetId () == FrameworkElement::WidthProperty) || (prop->GetId () == FrameworkElement::HeightProperty)) {
+		// FIXME why are we building the path here?
 		BuildPath ();
 		InvalidateSurfaceCache ();
 	}
+	*/
 
 	// Ellipse has no property of it's own
 	Shape::OnPropertyChanged (args, error);
@@ -943,7 +1077,7 @@ Rect
 Rectangle::ComputeStretchBounds ()
 {
 	Rect shape_bounds = ComputeShapeBounds (false);
-	return shape_bounds;
+	return ComputeShapeBounds (false);
 }
 
 Rect
@@ -1100,7 +1234,6 @@ Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 
 	if ((args->GetId () == Rectangle::RadiusXProperty) || (args->GetId () == Rectangle::RadiusYProperty)) {
 		InvalidatePathCache ();
-		// note: changing the X and/or Y radius doesn't affect the bounds
 	}
 
 	Invalidate ();
@@ -1129,10 +1262,13 @@ line_draw_cap (cairo_t *cr, Shape* shape, PenLineCap cap, double x1, double y1, 
 	if (cap == PenLineCapFlat)
 		return;
 
+	cairo_save (cr);
+	cairo_transform (cr, &(shape->stretch_transform));
 	if (cap == PenLineCapRound) {
-		cairo_set_line_cap (cr, convert_line_cap (cap));
 		cairo_move_to (cr, x1, y1);
 		cairo_line_to (cr, x1, y1);
+		cairo_restore (cr);
+		cairo_set_line_cap (cr, convert_line_cap (cap));
 		shape->Stroke (cr, true);
 		return;
 	}
@@ -1160,9 +1296,10 @@ line_draw_cap (cairo_t *cr, Shape* shape, PenLineCap cap, double x1, double y1, 
 		}
 		sy1 = m * sx1 + y1 - (m * x1);
 	}
-	cairo_set_line_cap (cr, convert_line_cap (cap));
 	cairo_move_to (cr, x1, y1);
 	cairo_line_to (cr, sx1, sy1);
+	cairo_restore (cr);
+	cairo_set_line_cap (cr, convert_line_cap (cap));
 	shape->Stroke (cr, true);
 }
 
@@ -1190,6 +1327,7 @@ Line::DrawShape (cairo_t *cr, bool do_op)
 	if (dashes && (dashes->GetCount() > 0))
 		dashed = true;
 
+	
 	//if (do_op && !(start == end && start == dash)) {
 	if (do_op && (start != end || (dashed && !(start == end && start == dash)))) {
 		double x1 = GetX1 ();
@@ -1382,8 +1520,7 @@ Line::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	    args->GetId () == Line::X2Property ||
 	    args->GetId () == Line::Y1Property ||
 	    args->GetId () == Line::Y2Property) {
-		InvalidatePathCache ();
-		UpdateBounds (true);
+		InvalidateNaturalBounds ();
 	}
 
 	NotifyListenersOfPropertyChange (args);
@@ -1530,8 +1667,7 @@ Polygon::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if (args->GetId () == Polygon::PointsProperty) {
-		InvalidatePathCache ();
-		UpdateBounds (true /* force one here, even if the bounds don't change */);
+		InvalidateNaturalBounds ();
 	}
 
 	Invalidate ();
@@ -1541,14 +1677,9 @@ Polygon::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 void
 Polygon::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetPoints()) {
-		Shape::OnCollectionChanged (col, args);
-		return;
-	}
-	
-	InvalidatePathCache ();
-	UpdateBounds (true);
-	Invalidate ();
+	Shape::OnCollectionChanged (col, args);
+
+	InvalidateNaturalBounds ();
 }
 
 void
@@ -1556,8 +1687,7 @@ Polygon::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Proper
 {
 	Shape::OnCollectionItemChanged (col, obj, args);
 	
-	UpdateBounds (true);
-	Invalidate ();
+	InvalidateNaturalBounds ();
 }
 
 //
@@ -1664,8 +1794,7 @@ Polyline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if (args->GetId () == Polyline::PointsProperty) {
-		InvalidatePathCache ();
-		UpdateBounds (true /* force one here, even if the bounds don't change */);
+		InvalidateNaturalBounds ();
 	}
 
 	Invalidate ();
@@ -1680,9 +1809,7 @@ Polyline::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args
 		return;
 	}
 	
-	InvalidatePathCache ();
-	UpdateBounds (true);
-	Invalidate ();
+	InvalidateNaturalBounds ();
 }
 
 void
@@ -1690,8 +1817,7 @@ Polyline::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prope
 {
 	Shape::OnCollectionItemChanged (col, obj, args);
 	
-	UpdateBounds (true);
-	Invalidate ();
+	InvalidateNaturalBounds ();
 }
 
 //
@@ -1712,6 +1838,7 @@ Path::SetupLine (cairo_t* cr)
 // * none 
 // FIXME: actually it depends on the geometry, another level of optimization awaits ;-)
 // e.g. close geometries don't need to setup line caps, 
+
 //	line join/miter	don't applies to curve, like EllipseGeometry
 bool
 Path::DrawShape (cairo_t *cr, bool do_op)
@@ -1815,8 +1942,7 @@ Path::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		return;
 	}
 
-	InvalidatePathCache ();
-	FullInvalidate (false);
+	InvalidateNaturalBounds ();
 
 	NotifyListenersOfPropertyChange (args);
 }
@@ -1825,8 +1951,7 @@ void
 Path::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
 	if (prop && prop->GetId () == Path::DataProperty) {
-		InvalidatePathCache ();
-		FullInvalidate (false);
+		InvalidateNaturalBounds ();
 	}
 	else
 		Shape::OnSubPropertyChanged (prop, obj, subobj_args);

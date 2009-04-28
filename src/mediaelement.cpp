@@ -461,6 +461,23 @@ MediaElement::GetTransformOrigin ()
 }
 
 Size
+MediaElement::ComputeActualSize ()
+{
+	Size result = FrameworkElement::ComputeActualSize ();
+	Size specified = Size (GetWidth (), GetHeight ());
+
+	if (mplayer) {
+		Size available = Size (INFINITY, INFINITY);
+		available = available.Min (specified);
+		result = MeasureOverride (available);
+	}
+
+	//g_warning ("actual is %g,%g", result.width, result.height);
+
+	return result;
+}
+
+Size
 MediaElement::MeasureOverride (Size availableSize)
 {
 	Size desired = availableSize;
@@ -512,7 +529,8 @@ MediaElement::ArrangeOverride (Size finalSize)
 	double sx = 1.0;
 	double sy = 1.0;
 
-
+	g_warning ("In arrange finalSize = %g,%g", finalSize.width, finalSize.height);
+	
 	if (mplayer)
 		shape_bounds = Rect (0, 0, 
 				     mplayer->GetVideoWidth (), 
@@ -615,12 +633,21 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 		paint = paint.Transform (&inv);
 	}
 	*/
-
+	
+	Size specified = Size (GetWidth (), GetHeight ());
+	if (GetVisualParent () && GetVisualParent()->Is (Type::CANVAS)) {
+		if (!isnan (specified.width))
+			paint.width = specified.width;
+		
+		if (!isnan (specified.height))
+			paint.height = specified.height;
+	}
+	
 	image_brush_compute_pattern_matrix (&matrix, 
 					    paint.width, paint.height, 
 					    video.width, video.height,
-					    stretch, AlignmentXCenter, AlignmentYCenter, NULL, NULL);
-	
+					    stretch, AlignmentXCenter,
+					    AlignmentYCenter, NULL, NULL);
 	
 	pattern = cairo_pattern_create_for_surface (surface);	
 	
@@ -1011,31 +1038,9 @@ MediaElement::SetProperties (Media *media)
 	mplayer->SetMuted (GetIsMuted ());
 	mplayer->SetVolume (GetVolume ());
 
-	/* XXX FIXME horrible hack to keep old world charm until canvas logic is updated */
-	if (GetVisualParent () && GetVisualParent ()->Is (Type::CANVAS)) {
-		flags |= UpdatingSizeFromMedia;
-
-		if (flags & UseMediaWidth) {
-			Value *height = GetValueNoDefault (FrameworkElement::HeightProperty);
-			
-			if (!(flags & UseMediaHeight))
-				SetWidth ((double) mplayer->GetVideoWidth() * height->AsDouble () / (double) mplayer->GetVideoHeight());
-			else
-				SetWidth ((double) mplayer->GetVideoWidth());
-		}
-		
-		if (flags & UseMediaHeight) {
-			Value *width = GetValueNoDefault (FrameworkElement::WidthProperty);
-			
-			if (!(flags & UseMediaWidth))
-				SetHeight ((double) mplayer->GetVideoHeight() * width->AsDouble () / (double) mplayer->GetVideoWidth());
-			else
-				SetHeight ((double) mplayer->GetVideoHeight());
-		}
-		
-		flags &= ~UpdatingSizeFromMedia;
-	}
+	UpdateBounds ();
 	InvalidateMeasure ();
+	InvalidateArrange ();
 }
 
 void
@@ -1133,6 +1138,11 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 	SetDownloadProgressOffset (0);
 	SetRenderedFramesPerSecond (0);
 	SetDroppedFramesPerSecond (0);
+
+	UpdateBounds ();
+	InvalidateMeasure ();
+	InvalidateArrange ();
+
 	SetState (MediaStateError);
 	
 	if (args)
@@ -1459,20 +1469,6 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 	} else if (args->GetId () == MediaElement::VolumeProperty) {
 		if (mplayer)
 			mplayer->SetVolume (args->GetNewValue()->AsDouble ());
-	} else if (args->GetId () == FrameworkElement::HeightProperty) {
-		if (!(flags & UpdatingSizeFromMedia)) {
-			if (args->GetNewValue() == NULL)
-				flags |= UseMediaHeight;
-			else
-				flags &= ~UseMediaHeight;
-		}
-	} else if (args->GetId () == FrameworkElement::WidthProperty) {
-		if (!(flags & UpdatingSizeFromMedia)) {
-			if (args->GetNewValue() == NULL)
-				flags |= UseMediaWidth;
-			else
-				flags &= ~UseMediaWidth;
-		}
 	}
 	
 	if (args->GetProperty ()->GetOwnerType() != Type::MEDIAELEMENT) {
@@ -1516,7 +1512,7 @@ MediaElement::ReportErrorOccurred (const char *args)
  */
 
 MediaElementPropertyValueProvider::MediaElementPropertyValueProvider (MediaElement *element, PropertyPrecedence precedence)
-	: PropertyValueProvider (element, precedence)
+	: FrameworkElementProvider (element, precedence)
 {
 	position = NULL;
 	current_state = NULL;
@@ -1539,8 +1535,8 @@ MediaElementPropertyValueProvider::GetPropertyValue (DependencyProperty *propert
 		
 	if (property->GetId () == MediaElement::CurrentStateProperty)
 		return GetCurrentState ();
-	
-	return NULL;
+
+	return FrameworkElementProvider::GetPropertyValue (property);
 }
 
 Value *

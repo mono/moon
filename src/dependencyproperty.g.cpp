@@ -400,6 +400,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::LINESEGMENT, "Point", Type::POINT);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LayoutSlot", NULL, Type::RECT, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LayoutClip", NULL, Type::GEOMETRY, true, false, false, NULL, NULL, NULL, false, false);
+	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LastRenderSize", NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LastMeasure", NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LastArrange", NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false, false);
 	DependencyProperty::Register (this, Type::EVENTTRIGGER, "RoutedEvent", Type::STRING);
@@ -781,37 +782,38 @@ const int MatrixTransform::MatrixProperty = 344;
 const int LineSegment::PointProperty = 345;
 const int LayoutInformation::LayoutSlotProperty = 346;
 const int LayoutInformation::LayoutClipProperty = 347;
-const int LayoutInformation::LastMeasureProperty = 348;
-const int LayoutInformation::LastArrangeProperty = 349;
-const int EventTrigger::RoutedEventProperty = 350;
-const int EventTrigger::ActionsProperty = 351;
-const int DoubleKeyFrame::ValueProperty = 352;
-const int DoubleKeyFrame::KeyTimeProperty = 353;
-const int DoubleAnimation::ToProperty = 354;
-const int DoubleAnimation::FromProperty = 355;
-const int DoubleAnimation::EasingFunctionProperty = 356;
-const int DoubleAnimation::ByProperty = 357;
-const int DependencyObject::NameProperty = 358;
-const int DeepZoomImageTileSource::UriSourceProperty = 359;
-const int ControlTemplate::TargetTypeProperty = 360;
-const int ColorKeyFrame::ValueProperty = 361;
-const int ColorKeyFrame::KeyTimeProperty = 362;
-const int ColorAnimation::ToProperty = 363;
-const int ColorAnimation::FromProperty = 364;
-const int ColorAnimation::EasingFunctionProperty = 365;
-const int ColorAnimation::ByProperty = 366;
-const int BitmapSource::PixelWidthProperty = 367;
-const int BitmapSource::PixelHeightProperty = 368;
-const int BitmapSource::PixelFormatProperty = 369;
-const int BezierSegment::Point3Property = 370;
-const int BezierSegment::Point2Property = 371;
-const int BezierSegment::Point1Property = 372;
-const int BeginStoryboard::StoryboardProperty = 373;
-const int ArcSegment::SweepDirectionProperty = 374;
-const int ArcSegment::SizeProperty = 375;
-const int ArcSegment::RotationAngleProperty = 376;
-const int ArcSegment::PointProperty = 377;
-const int ArcSegment::IsLargeArcProperty = 378;
+const int LayoutInformation::LastRenderSizeProperty = 348;
+const int LayoutInformation::LastMeasureProperty = 349;
+const int LayoutInformation::LastArrangeProperty = 350;
+const int EventTrigger::RoutedEventProperty = 351;
+const int EventTrigger::ActionsProperty = 352;
+const int DoubleKeyFrame::ValueProperty = 353;
+const int DoubleKeyFrame::KeyTimeProperty = 354;
+const int DoubleAnimation::ToProperty = 355;
+const int DoubleAnimation::FromProperty = 356;
+const int DoubleAnimation::EasingFunctionProperty = 357;
+const int DoubleAnimation::ByProperty = 358;
+const int DependencyObject::NameProperty = 359;
+const int DeepZoomImageTileSource::UriSourceProperty = 360;
+const int ControlTemplate::TargetTypeProperty = 361;
+const int ColorKeyFrame::ValueProperty = 362;
+const int ColorKeyFrame::KeyTimeProperty = 363;
+const int ColorAnimation::ToProperty = 364;
+const int ColorAnimation::FromProperty = 365;
+const int ColorAnimation::EasingFunctionProperty = 366;
+const int ColorAnimation::ByProperty = 367;
+const int BitmapSource::PixelWidthProperty = 368;
+const int BitmapSource::PixelHeightProperty = 369;
+const int BitmapSource::PixelFormatProperty = 370;
+const int BezierSegment::Point3Property = 371;
+const int BezierSegment::Point2Property = 372;
+const int BezierSegment::Point1Property = 373;
+const int BeginStoryboard::StoryboardProperty = 374;
+const int ArcSegment::SweepDirectionProperty = 375;
+const int ArcSegment::SizeProperty = 376;
+const int ArcSegment::RotationAngleProperty = 377;
+const int ArcSegment::PointProperty = 378;
+const int ArcSegment::IsLargeArcProperty = 379;
 
 UIElement *
 VisualBrush::GetVisual ()
@@ -5112,6 +5114,22 @@ LayoutInformation::SetLayoutClip (DependencyObject *obj, Geometry *value)
 {
 	if (!obj) return;
 	obj->SetValue (LayoutInformation::LayoutClipProperty, Value (value));
+}
+
+Size *
+LayoutInformation::GetLastRenderSize (DependencyObject *obj)
+{
+	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LastRenderSizeProperty);
+	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::LastRenderSizeProperty)->GetDefaultValue();
+	return value ? value->AsSize () : NULL;
+}
+
+void
+LayoutInformation::SetLastRenderSize (DependencyObject *obj, Size *value)
+{
+	if (!obj) return;
+	if (!value) return;
+	obj->SetValue (LayoutInformation::LastRenderSizeProperty, Value (*value));
 }
 
 Size *

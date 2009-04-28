@@ -189,8 +189,6 @@ class TextBlock : public FrameworkElement {
 	int was_set:1;
 	int dirty:1;
 	
-	Size GetSize ();
-	
 	void Layout (Size constraint);
 	void Paint (cairo_t *cr);
 	
@@ -259,7 +257,7 @@ class TextBlock : public FrameworkElement {
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
-	virtual void ComputeBounds ();
+	virtual Size ComputeActualSize ();
 	virtual Point GetTransformOrigin ();
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);

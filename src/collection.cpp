@@ -815,6 +815,36 @@ VisualTreeWalker::~VisualTreeWalker()
 }
 
 
+DeepTreeWalker::DeepTreeWalker (UIElement *top)
+{
+	walk_list = new List ();
+	walk_list->Append (new UIElementNode (top));
+}
+
+UIElement *
+DeepTreeWalker::Step ()
+{
+	UIElementNode *next = (UIElementNode*)walk_list->First ();
+	
+	if (!next)
+		return NULL;
+
+	UIElement *current = next->uielement;
+	walk_list->Unlink (next);
+	delete next;
+	
+	VisualTreeWalker walker (current);
+	while (UIElement *child = walker.Step ())
+		walk_list->Prepend (new UIElementNode (child));
+
+	return current;
+}
+
+DeepTreeWalker::~DeepTreeWalker ()
+{
+	delete walk_list;
+}
+
 //
 // Manual C-Bindings
 //

@@ -1604,6 +1604,10 @@ namespace Mono {
 		public extern static IntPtr setter_base_collection_new ();
 
 		[DllImport ("moon")]
+		// Transform *shape_get_geometry_transform (Shape *instance);
+		public extern static IntPtr shape_get_geometry_transform (IntPtr instance);
+
+		[DllImport ("moon")]
 		// Shape *shape_new ();
 		public extern static IntPtr shape_new ();
 

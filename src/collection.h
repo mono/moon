@@ -195,6 +195,15 @@ protected:
 	VisualTreeWalkerDirection direction;
 };
 
+class DeepTreeWalker {
+public:
+	DeepTreeWalker (UIElement *top);
+	UIElement *Step ();
+	~DeepTreeWalker ();
+protected:
+	List *walk_list;
+};
+
 /* @Namespace=System.Windows */
 class TriggerCollection : public DependencyObjectCollection {
  protected:

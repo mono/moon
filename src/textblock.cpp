@@ -326,62 +326,6 @@ Run::Equals (Inline *item)
 	return true;
 }
 
-
-//
-// TextBlockDynamicPropertyValueProvider
-//
-
-class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
-	Value *actual_height_value;
-	Value *actual_width_value;
-	
- public:
-	TextBlockDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : PropertyValueProvider (obj, precedence)
-	{
-		actual_height_value = NULL;
-		actual_width_value = NULL;
-	}
-	
-	virtual ~TextBlockDynamicPropertyValueProvider ()
-	{
-		delete actual_height_value;
-		delete actual_width_value;
-	}
-	
-	virtual Value *GetPropertyValue (DependencyProperty *property)
-	{
-		if (property->GetId () != FrameworkElement::ActualHeightProperty && property->GetId () != FrameworkElement::ActualWidthProperty)
-			return NULL;
-		
-		TextBlock *tb = (TextBlock *) obj;
-		Thickness padding = *tb->GetPadding ();
-		
-		if (tb->dirty) {
-			Size constraint;
-			
-			constraint = tb->GetSize ().GrowBy (-padding);
-			
-			delete actual_height_value;
-			actual_height_value = NULL;
-			delete actual_width_value;
-			actual_width_value = NULL;
-			
-			tb->Layout (constraint);
-		}
-		
-		if (property->GetId () == FrameworkElement::ActualHeightProperty) {
-			if (!actual_height_value)
-				actual_height_value = new Value (tb->actual_height + padding.top + padding.bottom);
-			return actual_height_value;
-		} else {
-			if (!actual_width_value)
-				actual_width_value = new Value (tb->actual_width + padding.left + padding.right);
-			return actual_width_value;
-		}
-	}
-};
-
-
 //
 // TextBlock
 //
@@ -389,8 +333,6 @@ class TextBlockDynamicPropertyValueProvider : public PropertyValueProvider {
 TextBlock::TextBlock ()
 {
 	SetObjectType (Type::TEXTBLOCK);
-	
-	providers[PropertyPrecedence_DynamicValue] = new TextBlockDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	downloader = NULL;
 	
@@ -504,24 +446,10 @@ TextBlock::SetFontResource (const char *resource)
 	UpdateFontDescriptions ();
 }
 
-Size
-TextBlock::GetSize ()
-{
-	Size size = Size (GetWidth (), GetHeight ());
-	
-	if (isnan (size.height))
-		size.height = INFINITY;
-	
-	if (isnan (size.width))
-		size.width = INFINITY;
-	
-	return size;
-}
-
 void
 TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 {
-	layout->SetAvailableWidth (GetActualWidth ());
+	//layout->SetAvailableWidth (GetActualWidth ());
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
@@ -536,16 +464,6 @@ TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 	*height = actual_height;
 }
 
-void
-TextBlock::ComputeBounds ()
-{
-	Size total = Size (actual_width, actual_height);
-	total.GrowBy (*GetPadding ());
-	extents = Rect (0,0,total.width, total.height);
-	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-	bounds_with_children = bounds;
-}
-
 Point
 TextBlock::GetTransformOrigin ()
 {
@@ -553,6 +471,27 @@ TextBlock::GetTransformOrigin ()
 	return Point (actual_width * user_xform_origin->x, 
 		      actual_height * user_xform_origin->y);
 }
+
+Size
+TextBlock::ComputeActualSize ()
+{
+	Thickness padding = *GetPadding ();
+	Size result = FrameworkElement::ComputeActualSize ();
+
+	//if (dirty) {
+	if (!LayoutInformation::GetLastMeasure (this)) {
+		Size constraint = Size (INFINITY, INFINITY).Min (GetWidth (), GetHeight ());
+
+		constraint = constraint.GrowBy (-padding);
+		Layout (constraint);
+	}
+		//}
+	
+	result = Size (actual_width, actual_height);
+	result = result.GrowBy (padding);
+
+	return result;
+};
 
 Size
 TextBlock::MeasureOverride (Size availableSize)
@@ -570,10 +509,11 @@ TextBlock::MeasureOverride (Size availableSize)
 	constraint = availableSize.GrowBy (-padding);
 	Layout (constraint);
 	
-	SetActualHeight (actual_height);
-	SetActualWidth (actual_width);
-	
 	desired = Size (actual_width, actual_height).GrowBy (padding);
+	
+	SetActualHeight (desired.height);
+	SetActualWidth (desired.width);
+
 	desired = desired.Min (availableSize);
 	
 	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
@@ -617,6 +557,8 @@ TextBlock::UpdateLayoutAttributes ()
 	Inline *item;
 	List *runs;
 	
+	InvalidateMeasure ();
+	InvalidateArrange ();
 	runs = new List ();
 	
 	if (inlines != NULL) {
@@ -672,7 +614,13 @@ TextBlock::UpdateFontDescriptions ()
 		if (changed)
 			layout->ResetState ();
 	}
-	
+
+	//ClearValue (TextBlock::ActualWidthProperty);
+	//ClearValue (TextBlock::ActualHeightProperty);
+	InvalidateMeasure ();
+	InvalidateArrange ();
+	UpdateBounds (true);
+	dirty = true;
 	return changed;
 }
 
@@ -737,12 +685,13 @@ TextBlock::Paint (cairo_t *cr)
 	Thickness *padding = GetPadding ();
 	Point offset (padding->left, padding->top);
 	
+	cairo_set_matrix (cr, &absolute_xform);
 	layout->Render (cr, GetOriginPoint (), offset);
 	
 	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
 		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
 		cairo_set_line_width (cr, 1);
-		cairo_rectangle (cr, 0, 0, actual_width, actual_height);
+		cairo_rectangle (cr, padding->left, padding->top, actual_width, actual_height);
 		cairo_stroke (cr);
 	}
 }
@@ -820,20 +769,23 @@ TextBlock::SetTextInternal (const char *text)
 void
 TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
+	//if (dirty)
+	//	g_error ("entering changed while dirty");
+
 	bool invalidate = true;
-	
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args, error);
+		/*
 		if (args->GetId () == FrameworkElement::WidthProperty) {
-			if (layout->SetMaxWidth (args->GetNewValue()->AsDouble ()))
-				dirty = true;
+			//if (layout->SetMaxWidth (args->GetNewValue()->AsDouble ()))
+			//	dirty = true;
 			
 			UpdateBounds (true);
 		}
-		
+		*/
 		return;
 	}
-	
+
 	if (args->GetId () == TextBlock::FontFamilyProperty) {
 		FontFamily *family = args->GetNewValue() ? args->GetNewValue()->AsFontFamily () : NULL;
 		const char *family_name = NULL;
@@ -874,6 +826,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			}
 		} else {
 			// result of a change to the TextBlock.Inlines property
+			InvalidateArrange ();
 			UpdateLayoutAttributes ();
 			invalidate = false;
 		}
@@ -907,9 +860,12 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 	
 	if (invalidate) {
-		if (dirty)
+		if (dirty) {
+			InvalidateMeasure ();
+			InvalidateArrange ();
 			UpdateBounds (true);
-		
+		}
+
 		Invalidate ();
 	}
 	
@@ -933,10 +889,10 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 	bool update_bounds = false;
 	bool update_text = false;
 	
-	if (col != inlines) {
+	//if (col != inlines) {
 		FrameworkElement::OnCollectionChanged (col, args);
-		return;
-	}
+		//	return;
+		//}
 	
 	switch (args->GetChangedAction()) {
 	case CollectionChangedActionAdd:
@@ -964,9 +920,9 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 		setvalue = true;
 	}
 	
-	if (update_bounds)
-		UpdateBounds (true);
-	
+	InvalidateMeasure ();
+	InvalidateArrange ();
+	UpdateBounds (true);
 	Invalidate ();
 }
 
@@ -975,10 +931,10 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 {
 	InlineCollection *inlines = GetInlines ();
 	
-	if (col != inlines) {
+	//if (col != inlines) {
 		FrameworkElement::OnCollectionItemChanged (col, obj, args);
-		return;
-	}
+		//	return;
+		//}
 	
 	if (args->GetId () != Inline::ForegroundProperty) {
 		if (args->GetId () == Run::TextProperty) {
@@ -994,6 +950,8 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 		
 		// All non-Foreground property changes require
 		// recalculating layout which can change the bounds.
+		InvalidateMeasure ();
+		InvalidateArrange ();
 		UpdateBounds (true);
 		dirty = true;
 	} else {
@@ -1019,6 +977,10 @@ TextBlock::DownloaderComplete ()
 	size_t len;
 	Uri *uri;
 	
+	dirty = true;
+	InvalidateMeasure ();
+	InvalidateArrange ();
+
 	// get the downloaded file path (enforces a mozilla workaround for files smaller than 64k)
 	if (!(filename = downloader->GetDownloadedFilename (NULL)))
 		return;

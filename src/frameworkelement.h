@@ -48,8 +48,7 @@ public:
 	const static int MinHeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
 	const static int MinWidthProperty;
-	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */
-	const static int VerticalAlignmentProperty;
+	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */	const static int VerticalAlignmentProperty;
 	/* @PropertyType=Style,Version=2.0,GenerateAccessors,Validator=StyleValidator */
 	const static int StyleProperty;
 	
@@ -103,6 +102,7 @@ public:
 	virtual Size MeasureOverride (Size availableSize);
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Size ArrangeOverride (Size finalSize);
+	virtual Size ComputeActualSize ();
 
 	virtual bool UpdateLayout ();
 	
@@ -167,5 +167,17 @@ private:
 
 	DependencyObject  *logical_parent;
 };
+
+class FrameworkElementProvider : public PropertyValueProvider {
+	Value *actual_height_value;
+	Value *actual_width_value;
+	Size last;
+
+ public:
+	FrameworkElementProvider (DependencyObject *obj, PropertyPrecedence precedence);
+	virtual ~FrameworkElementProvider ();
+	virtual Value *GetPropertyValue (DependencyProperty *property);
+};
+
 
 #endif /* __FRAMEWORKELEMENT_H__ */

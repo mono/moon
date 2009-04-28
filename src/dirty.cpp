@@ -151,13 +151,6 @@ DirtyLists::Clear (bool freeNodes)
 	lists->Clear (freeNodes);
 }
 
-bool
-Surface::IsAnythingDirty ()
-{
-	//return !down_dirty->IsEmpty() || !up_dirty->IsEmpty() || toplevel->dirty_flags & (DirtyMeasure | DirtyArrange);
-	return !down_dirty->IsEmpty() || !up_dirty->IsEmpty();
-}
-
 void
 Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 {
@@ -209,7 +202,7 @@ Surface::RemoveDirtyElement (UIElement *element)
 ** There are 2 types of changes that need to propagate around the
 ** tree.
 **
-** 1. Those changes that need to be propagated from parent to children
+** 1. Those changes that needs to be propagated from parent to children
 **    (transformation, opacity).  We call these Downward Changes, and
 **    the elements are placed in the down_dirty list.
 **
@@ -244,6 +237,7 @@ Surface::ProcessDownDirtyElements ()
 			el->dirty_flags &= ~DirtyRenderVisibility;
 
 			el->UpdateBounds ();
+
 			// Since we are not included in our parents subtree when we
 			// are collapsed we need to notify our parent that things may
 			// have changed
@@ -251,6 +245,10 @@ Surface::ProcessDownDirtyElements ()
 				el->GetVisualParent ()->UpdateBounds ();
 
 			el->ComputeTotalRenderVisibility ();
+
+			if (!el->GetRenderVisible ())
+				el->CacheInvalidateHint ();
+
 			AddDirtyElement (el, DirtyNewBounds);
 
 			PropagateDirtyFlagToChildren (el, DirtyRenderVisibility);
@@ -383,7 +381,7 @@ Surface::ProcessUpDirtyElements ()
 				el->force_invalidate_of_new_bounds = false;
 				// Invalidate everything including the
 				// visible area of our children.
-				el->Invalidate (el->GetSubtreeBounds ());
+				el->InvalidateSubtreePaint ();
 			}
 		}
 		if (el->dirty_flags & DirtyNewBounds) {
@@ -438,25 +436,43 @@ Surface::UpdateLayout ()
 {
 	for (int i = 0; i < layers->GetCount (); i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
+
+		Size *last = LayoutInformation::GetLastMeasure (layer);
+		Size available = Size (active_window->GetWidth (), active_window->GetHeight ());
+		if (!last || (*last != available)) {
+			layer->InvalidateMeasure ();
+			LayoutInformation::SetLastMeasure (layer, &Size (active_window->GetWidth (), active_window->GetHeight ()));
+		}
+
+		layer->UpdateLayout ();
+		/*
 		Size available = Size (active_window->GetWidth (),
 				       active_window->GetHeight ());
 		
-		layer->Measure (available);
-		Size desired = layer->GetDesiredSize ();
+		Size desired = Size ();
 		
-		if (i == 0 && layer->IsLayoutContainer ())
-			desired = desired.Max (available);
+		if (layer->IsLayoutContainer ()) {
+			layer->Measure (available);
+			desired = layer->GetDesiredSize ();
+			if (i == 0)
+				desired = desired.Max (available);
+		} else {
+			desired = Size (layer->GetActualWidth (), layer->GetActualHeight ());
+		}
 		
 		layer->Arrange (Rect (Canvas::GetLeft (layer),
 				      Canvas::GetTop (layer), 
 				      desired.width, desired.height));
+		*/
 	}
 }
 
-void
+bool
 Surface::ProcessDirtyElements ()
 {
 	UpdateLayout ();
+	bool dirty = down_dirty->IsEmpty() || !up_dirty->IsEmpty();
 	ProcessDownDirtyElements ();
 	ProcessUpDirtyElements ();
+	return dirty;
 }

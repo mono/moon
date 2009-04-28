@@ -268,14 +268,15 @@ public:
 	void AddDirtyElement (UIElement *element, DirtyType dirt);
 	void UpdateLayout ();
 	void RemoveDirtyElement (UIElement *element);
-	void ProcessDirtyElements ();
+	bool ProcessDirtyElements ();
 	void PropagateDirtyFlagToChildren (UIElement *element, DirtyType dirt);
-	bool IsAnythingDirty ();
 
 	static pthread_t main_thread;
 	/* @GenerateCBinding,GeneratePInvoke */
 	static bool InMainThread () { return (pthread_equal (main_thread, pthread_self ()) || pthread_equal (main_thread, NULL)); }
-	
+
+	bool needs_measure;
+	bool needs_arrange;
 protected:
 	// The current window we are drawing to
 	MoonWindow *active_window;

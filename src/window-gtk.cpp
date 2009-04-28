@@ -29,7 +29,8 @@ MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent)
 MoonWindowGtk::~MoonWindowGtk ()
 {
 	DisableEvents ();
-	gtk_widget_destroy (widget);
+	if (widget != NULL)
+		gtk_widget_destroy (widget);
 }
 
 GdkWindow *

@@ -33,7 +33,11 @@ using System.Windows.Media;
 namespace System.Windows.Shapes {
 	public abstract partial class Shape : FrameworkElement {
 		public virtual Transform GeometryTransform {
-			get { throw new NotImplementedException (); }
+			get { 
+				IntPtr t = NativeMethods.shape_get_geometry_transform (native);
+				
+				return (MatrixTransform) NativeDependencyObjectHelper.Lookup (Kind.MATRIXTRANSFORM, t);
+			}
 		}
 	}
 }

@@ -254,7 +254,7 @@ namespace MoonTest.System.Windows.Controls
 			c.Arrange (new Rect (0,0,c.DesiredSize.Width,c.DesiredSize.Height));
 
 			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
-			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual3");
 			Assert.AreEqual (new Size (0,0), c.RenderSize, "c render");
 		}
 

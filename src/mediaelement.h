@@ -207,6 +207,7 @@ class MediaElement : public FrameworkElement {
 	virtual Point GetTransformOrigin ();
 
 	virtual Rect GetCoverageBounds ();
+	virtual Size ComputeActualSize ();
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 	
@@ -321,10 +322,11 @@ class MediaElement : public FrameworkElement {
  * MediaElementPropertyValueProvider
  */
  
-class MediaElementPropertyValueProvider : public PropertyValueProvider {
+class MediaElementPropertyValueProvider : public FrameworkElementProvider {
  private:
  	Value *position;
  	Value *current_state;
+
 	Value *GetPosition ();
 	Value *GetCurrentState ();
  public:

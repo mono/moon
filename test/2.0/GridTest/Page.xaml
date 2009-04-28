@@ -1,7 +1,7 @@
 ﻿<Canvas x:Class="GridTest.Page"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    Width="400" Height="300" Background="Orange">
+    Background="Orange">
   <Grid Canvas.Top="100" Canvas.Left="100" Background="Purple">
     <Grid.ColumnDefinitions>
         <ColumnDefinition />
@@ -100,5 +100,8 @@
   </Rectangle>
   <Border Grid.Column="0" Background="Purple"/>
 </Grid>
+<Border Width="50" Height="50" Canvas.Top="350" Background="LightBlue">
+  <Canvas Background="DarkRed"/>
+</Border>
 </Canvas>
 

@@ -276,6 +276,8 @@ Surface::Surface (MoonWindow *window)
 	main_thread = pthread_self ();
 	
 	zombie = false;
+	needs_measure = false;
+	needs_arrange = false;
 	downloader_context = NULL;
 	downloaders = NULL;
 	background_color = NULL;
@@ -546,6 +548,7 @@ Surface::AttachLayer (UIElement *layer)
 		layers->Insert (0, Value(layer));
 	else
 		layers->Add (Value (layer));
+
 	layer->SetSurface (this);
 	layer->FullInvalidate (true);
 
@@ -811,14 +814,11 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 	bool dirty = false;
 
 	GDK_THREADS_ENTER ();
-	if (s->IsAnythingDirty ()) {
-		if (s->zombie) {
-			s->up_dirty->Clear (true);
-			s->down_dirty->Clear (true);
-		} else {
-			s->ProcessDirtyElements ();
-			dirty = true;
-		}
+	if (s->zombie) {
+		s->up_dirty->Clear (true);
+		s->down_dirty->Clear (true);
+	} else {
+		dirty = s->ProcessDirtyElements ();
 	}
 
 	if (s->expose_handoff) {
@@ -1281,8 +1281,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		return false;
 
 	// FIXME this should probably use mouse event args
-	if (IsAnythingDirty())
-		ProcessDirtyElements();
+	ProcessDirtyElements();
 
 	if (captured) {
 		// if the mouse is captured, the input_list doesn't ever

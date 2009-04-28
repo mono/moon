@@ -192,7 +192,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.UI
                     "Copy result details",
                     delegate(object sender, HtmlEventArgs args)
                     {
-                        HtmlPage.Window.Alert(Inspector.Result.ToString());
+			    //HtmlPage.Window.Alert(Inspector.Result.ToString());
                     });
                 StyleActionLink(copy);
                 actions.Controls.Add(copy);

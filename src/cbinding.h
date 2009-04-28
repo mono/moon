@@ -1478,6 +1478,9 @@ SetterBaseCollection *setter_base_collection_new (void);
  * Shape
  **/
 /* @GeneratePInvoke */
+Transform *shape_get_geometry_transform (Shape *instance);
+
+/* @GeneratePInvoke */
 Shape *shape_new (void);
 
 /**

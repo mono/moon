@@ -424,6 +424,15 @@ Glyphs::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_restore (cr);
 }
 
+Size
+Glyphs::ComputeActualSize ()
+{
+	if (dirty)
+		Layout ();
+
+	return Size (left + width, top + height);
+}
+
 void 
 Glyphs::ComputeBounds ()
 {
