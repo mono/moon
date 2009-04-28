@@ -626,9 +626,9 @@ TextBoxBase::CursorDown (int cursor, bool page)
 		// go to the end of the last line
 		line = view->GetLineFromIndex (view->GetLineCount () - 1);
 		
-		for (cur = line->char_offset, i = 0; i < line->runs->len; i++) {
+		for (cur = line->offset, i = 0; i < line->runs->len; i++) {
 			run = (TextLayoutRun *) line->runs->pdata[i];
-			cur += run->char_count;
+			cur += run->count;
 		}
 		
 		have_offset = false;

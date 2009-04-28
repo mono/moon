@@ -77,8 +77,7 @@ struct TextLayoutGlyphCluster {
 };
 
 struct TextLayoutLine {
-	int byte_offset, byte_count;
-	int char_offset, char_count;
+	int start, length, offset;
 	TextLayout *layout;
 	GPtrArray *runs;
 	double advance;
@@ -86,7 +85,7 @@ struct TextLayoutLine {
 	double height;
 	double width;
 	
-	TextLayoutLine (TextLayout *layout, int byte_offset, int char_offset);
+	TextLayoutLine (TextLayout *layout, int start, int offset);
 	~TextLayoutLine ();
 	
 	void Render (cairo_t *cr, const Point &origin, double left, double top);
@@ -96,13 +95,12 @@ struct TextLayoutLine {
 
 struct TextLayoutRun {
 	TextLayoutAttributes *attrs;
-	int byte_offset, byte_count;
-	int char_offset, char_count;
+	int start, length, count;
 	TextLayoutLine *line;
 	GPtrArray *clusters;
 	double advance;
 	
-	TextLayoutRun (TextLayoutLine *line, TextLayoutAttributes *attrs, int byte_offset, int char_offset);
+	TextLayoutRun (TextLayoutLine *line, TextLayoutAttributes *attrs, int start);
 	~TextLayoutRun ();
 	
 	void Render (cairo_t *cr, const Point &origin, double x, double y);
@@ -122,9 +120,9 @@ class TextLayout {
 	double max_width;
 	List *attributes;
 	bool is_wrapped;
-	int byte_count;
-	int char_count;
 	char *text;
+	int length;
+	int count;
 	
 	// cached data
 	double actual_height;
