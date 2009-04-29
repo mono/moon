@@ -6,15 +6,16 @@ Installing Dependencies
 	profiles: Silverlight 1.0 and 2.0).
 
 	You will need the following dependencies:
-		libexpat-devel
-		glib2-devel
+		libexpat
+		glib2
+		gtk+
 		gtk-sharp2
 		rsvg2-sharp
-		ImageMagick-devel
-		mozilla-xulrunner190-devel
-		mozilla-xulrunner181-devel
+	
+	To build the mozilla plugin you will need xulrunner packages 
+	for your requisity firefox version.
 
-	You also need the alsa-devel package for Audio support.
+	You will need alsa or pulse-audio for audio support.
 
 Build Mono
 ==========
@@ -28,7 +29,6 @@ Build Mono
 		svn co svn://anonsvn.mono-project.com/source/trunk/mono-basic
 
 	In mono, do the usual ./autogen.sh && make && make install
-	By default, mono is configured --with-moonlight=yes
 
 	See http://mono-project.com/Parallel_Mono_Environments 
 	for tips on running in multiple Mono environments
@@ -108,10 +108,7 @@ Building the .xpi
 
 	To build a mozilla plugin installer (XPI), you must have the Firefox
 	packages installed. Building the xpi builds a modified libmoon and 
-	libmoonloader that the xpi will use. The Firefox packages required
-	for this are:
-		Firefox 3: mozilla-xulrunner190, mozilla-xulrunner190-devel
-		Firefox 2: mozilla-xulrunner181, mozilla-xulrunner181-devel
+	libmoonloader that the xpi will use.
 
 	When you configured, you should have seen something like this:
 
