@@ -1,13 +1,3 @@
-2009-04-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
-	* audio.h:
-	* audio.cpp: When looping over playing nodes, don't include
-	  nodes in the Waiting state.
-
-	* audio-alsa.cpp: when Played, update the poll list. The state
-	  might not actually have changed if only the Waiting flag was
-	  switched.
-
 2009-04-28  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp

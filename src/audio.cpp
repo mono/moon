@@ -740,14 +740,14 @@ AudioSources::GetNext (bool only_playing)
 	// Check the last node returned from GetNext
 	if (last_node != NULL && last_node->next != NULL) {
 		node = (AudioListNode *) last_node->next;
-		if (node->generation != current_generation && (!only_playing || node->source->IsPlaying ()))
+		if (node->generation != current_generation && (!only_playing || node->source->GetState () == AudioPlaying))
 			goto cleanup;
 	}
 	
 	// Loop through all the nodes looking for a node not in the
 	// current generation.
 	node = (AudioListNode *) list.First ();
-	while (node != NULL && (node->generation == current_generation || (only_playing && !node->source->IsPlaying ()))) {
+	while (node != NULL && (node->generation == current_generation || (only_playing && node->source->GetState () != AudioPlaying))) {
 		node = (AudioListNode *) node->next;
 	}
 	
@@ -755,7 +755,7 @@ AudioSources::GetNext (bool only_playing)
 	// return list.First () in an infinite loop while we're downloading / buffering.
 	// (due to the while loop above not clearing out the first value (list.First ()) if the condition is false and there's no other 
 	// node which satifies the condition)
-	if (only_playing && node != NULL && !node->source->IsPlaying ())
+	if (only_playing && node != NULL && node->source->GetState () != AudioPlaying)
 		node = NULL;
 
 cleanup:

@@ -360,7 +360,6 @@ AlsaSource::StateChanged (AudioState old_state)
 void
 AlsaSource::Played ()
 {
-	player->UpdatePollList ();
 }
 
 void
