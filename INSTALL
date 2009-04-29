@@ -1,79 +1,58 @@
-Moonlight: Core Support
+Installing Dependencies
 =======================
 
 	To build Moonlight, you need to install a few dependencies for
 	the basic runtime engine (this is needed to support both API
 	profiles: Silverlight 1.0 and 2.0).
 
-   * Dependencies:
-		
-	You must install ffmpeg, from:
-
-		svn://svn.mplayerhq.hu/ffmpeg/trunk
-		Revision: 10885 is known to work
-
-		svn co -r 10885 svn://svn.mplayerhq.hu/ffmpeg/trunk ffmpeg
-
-	Then configure ffmpeg:
-
-		./configure --enable-shared
-
-	Build and install ffmpeg:
-
-			make && make install
+	You will need the following dependencies:
+		libexpat-devel
+		glib2-devel
+		gtk-sharp2
+		rsvg2-sharp
+		ImageMagick-devel
+		mozilla-xulrunner190-devel
+		mozilla-xulrunner181-devel
 
 	You also need the alsa-devel package for Audio support.
 
-	To build a mozilla plugin installer (XPI) configure with
-	--enable-user-plugin and build as above.  This modifies the libraries
-	to open the libraries it needs from ~/.mozilla/plugins and builds an
-	unsigned .xpi file which you may use to install the plugin in your
-	browser.
+Build Mono
+==========
 
-	To install the plugin open the plugin/novell-moonlight.xpi with	your
-	mozilla-based browser and follow the prompts.
+	You currently need a working Mono from svn. The latest known working 
+	revision is r132992. Check #moonlight for more info
 
-Configuration Options
+	Check out mono,mcs,mono-basic from svn
+		svn co -rREV svn://anonsvn.mono-project.com/source/trunk/mono
+		svn co -rREV svn://anonsvn.mono-project.com/source/trunk/mcs
+		svn co svn://anonsvn.mono-project.com/source/trunk/mono-basic
+
+	In mono, do the usual ./autogen.sh && make && make install
+	By default, mono is configured --with-moonlight=yes
+
+	See http://mono-project.com/Parallel_Mono_Environments 
+	for tips on running in multiple Mono environments
+
+	Make mono-basic 
+		./autogen.sh && make && make install
+
+
+Moonlight Configuration Options
 =====================
+	We do not support building moonlight 1.0 from HEAD anymore.
+	For only Moonlight 1.0 support, checkout our branch at
+	svn://anonsvn.mono-project.com/source/branches/moon-1-0
 
-	--enable-user-plugin
+	Moonlight is now focused on Silverlight 2.0 support. Moonlight needs
+	to know where to find the mcs and mono-basic directories. 
 
-		The plugin can be built in two ways: one designed to 
-		go into the centralized location for all plugins
-		(relative to a prefix directory) or another that works
-		from the user's plugin directory (~/.mozilla/plugins/)
+	--with-mcspath=<path>
 
-		If you use this option, the makefiles will also build
-		a Mozilla XPI file that can be used to install the plugin.
+		By default moon looks for ../mcs. 
 
-		For this to actually work you'll need to build a local version
-		of ffmpeg with a few changes, mostly to the way it links.
-		A patch is included (ffmpeg.patch) with the neccessary changes.
-		PKG_CONFIG_PATH must include your build of ffmpeg when you
-		configure moonlight.
+	--with-mono-basic-path=<path>
 
-		We build ffmpeg with ./configure --disable-static --enable-shared --disable-ffmpeg --disable-ffserver --disable-ffplay --disable-zlib --disable-network --disable-vhook --disable-debug --disable-muxers --disable-encoders --disable-demuxers --disable-bsfs --disable-protocols
-
-	--with-managed=yes,no,desktop,browser
-
-		Controls how Moonlight is compiled:
-
-		no	 Only builds Moonlight 1.0, with no managed code.
-
-		yes	 Builds Moonlight 2.0 with both desktop and plugin
-		 	 assemblies
-
-		desktop  Only builds the desktop assemblies (GtkSilver widget).
-
-		browser	 Only builds the assemblies required for the browser
-		 	 plugin.
-
-		
-	--with-ffmpeg=yes,no
-
-		By default Moonlight will build with media support using ffmpeg.
-
-		Use this flag to disable all use of ffmpeg.
+		By default moon looks for ../mono-basic.
 
 	--with-alsa=yes,no
 
@@ -85,18 +64,14 @@ Configuration Options
 		To enable audio using the Pulse Audio stack, this can
 		be mixed with --with-alsa=yes
 
+	--with-testing=yes,no
 
-Moonlight: Silverlight 2.0 API support
-======================================
+		Enable/disable unit tests (default=yes)
 
-	If you want to support the Silverlight 2.0 API (managed
-	support, this includes the Mono runtime and .NET APIs to run
-	apps) you will need to:
+	--with-performance=yes|no
 
-		* Install Mono from SVN (you need both the mono and
-	  	  mcs modules).
+		Enable/disable the performance tests (default=yes)
 
-		  Use the --with-moonlight=yes option to configure
 
 
 
@@ -108,9 +83,9 @@ Installing Moonlight
 
 	Configure the build system by running ./configure with any
 	configuration options you might want (see the "Configuration
-	Options" section). For example, a typical command might be:
+	Options" section). For example, a typical configure might be:
 
-		./configure --with-managed=yes
+		./configure --prefix=/usr/local --with-mcs-path=<path/to/mcs>
 
 	Once ./configure has finished, you'll need to actually compile
 	and install Moonlight using the following command:
@@ -123,4 +98,33 @@ Installing Moonlight
 
 		make test-plugin
 
-	Moonlight should now be properly installed and ready to be used.
+Building the .xpi
+================
+
+	To build a mozilla plugin installer (XPI) you must have t
+	to open the libraries it needs from ~/.mozilla/plugins and builds an
+	unsigned .xpi file which you may use to install the plugin in your
+	browser.
+
+	To build a mozilla plugin installer (XPI), you must have the Firefox
+	packages installed. Building the xpi builds a modified libmoon and 
+	libmoonloader that the xpi will use. The Firefox packages required
+	for this are:
+		Firefox 3: mozilla-xulrunner190, mozilla-xulrunner190-devel
+		Firefox 2: mozilla-xulrunner181, mozilla-xulrunner181-devel
+
+	When you configured, you should have seen something like this:
+
+		Browser Support:
+			Firefox: yes
+	          Plugin Installer (.xpi): yes
+	          Gecko 1.8 (Firefox 2): no (reason: missing FF2 development packages)
+	          Gecko 1.9 (Firefox 3): yes 
+
+	After you run make, then run make user-plugin
+
+	The plugin is located at moon/plugin/install/novell-moonlight.xpi
+
+	To install the plugin open the .xpi with your mozilla-based browser
+	and follow the prompts. Moonlight should now be properly installed 
+	and ready to be used.
