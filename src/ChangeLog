@@ -1,3 +1,16 @@
+2009-04-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes some cursor position/selection bugs
+
+	* layout.cpp (TextLayoutLine): Initialize a new member variable
+	'count' to 0.
+	(Layout): Update line->count (needed for the reworking of
+	GetCursor) and line->length (which was the cause of the bugs)
+	variables as we go. Switch to doing this for run->length too.
+	(GetCursor): Reworked a bit to use character indexes to help us
+	find the correct cursor position rather than using byte offsets
+	which were more awkward.
+
 2009-04-28  Chris Toshok  <toshok@ximian.com>
 
 	* dirty.cpp (Surface::UpdateLayout): quiet g++ about taking the

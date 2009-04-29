@@ -232,6 +232,7 @@ TextLayoutLine::TextLayoutLine (TextLayout *_layout, int _start, int _offset)
 	height = 0.0;
 	width = 0.0;
 	length = 0;
+	count = 0;
 }
 
 TextLayoutLine::~TextLayoutLine ()
@@ -1466,13 +1467,13 @@ print_lines (GPtrArray *lines)
 	for (guint i = 0; i < lines->len; i++) {
 		line = (TextLayoutLine *) lines->pdata[i];
 		
-		printf ("Line (top=%f, height=%f, advance=%f, offset=%d):\n", y, line->height, line->advance, line->offset);
+		printf ("Line (top=%f, height=%f, advance=%f, offset=%d, count=%d):\n", y, line->height, line->advance, line->offset, line->count);
 		for (guint j = 0; j < line->runs->len; j++) {
 			run = (TextLayoutRun *) line->runs->pdata[j];
 			
 			text = line->layout->GetText () + run->start;
 			
-			printf ("\tRun (advance=%f): \"", run->advance);
+			printf ("\tRun (advance=%f, start=%d, length=%d): \"", run->advance, run->start, run->length);
 			for (const char *s = text; s < text + run->length; s++) {
 				switch (*s) {
 				case '\r':
@@ -1578,6 +1579,9 @@ TextLayout::Layout ()
 			while (inptr < inend) {
 				// check for line-breaks
 				if (IsLineBreak (inptr, inend - inptr, &n_bytes, &n_chars)) {
+					line->length += n_bytes;
+					run->length += n_bytes;
+					line->count += n_chars;
 					run->count += n_chars;
 					offset += n_chars;
 					inptr += n_bytes;
@@ -1597,11 +1601,14 @@ TextLayout::Layout ()
 				if (word.length > 0) {
 					// append the word to the run/line
 					line->advance += word.advance;
-					line->width = line->advance;
 					run->advance += word.advance;
+					line->width = line->advance;
+					line->length += word.length;
+					run->length += word.length;
+					line->count += word.count;
 					run->count += word.count;
-					offset += word.count;
 					
+					offset += word.count;
 					inptr += word.length;
 					prev = word.prev;
 				}
@@ -1617,9 +1624,12 @@ TextLayout::Layout ()
 				if (word.length > 0) {
 					line->advance += word.advance;
 					run->advance += word.advance;
+					line->length += word.length;
+					run->length += word.length;
+					line->count += word.count;
 					run->count += word.count;
-					offset += word.count;
 					
+					offset += word.count;
 					inptr += word.length;
 					prev = word.prev;
 					
@@ -1628,9 +1638,6 @@ TextLayout::Layout ()
 						line->width = line->advance;
 				}
 			}
-			
-			// the current run has ended
-			run->length = inptr - (text + run->start);
 			
 			if (linebreak || wrapped || *inptr == '\0') {
 				// update actual width extents
@@ -2201,13 +2208,13 @@ TextLayout::GetCursorFromXY (const Point &offset, double x, double y)
 Rect
 TextLayout::GetCursor (const Point &offset, int index)
 {
-	const char *cursor = g_utf8_offset_to_pointer (text, index);
 	const char *inptr, *inend, *pchar;
 	double height, x0, y0, y1;
 	TextLayoutLine *line;
 	TextLayoutRun *run;
 	GlyphInfo *glyph;
 	TextFont *font;
+	int cursor = 0;
 	guint32 prev;
 	gunichar c;
 	
@@ -2231,10 +2238,13 @@ TextLayout::GetCursor (const Point &offset, int index)
 		
 		//printf ("\tline: left=%.2f, top=%.2f, baseline=%.2f, start index=%d\n", x0, y0, y1, line->offset);
 		
-		if (cursor >= inend) {
+		if (index >= cursor + line->count) {
 			// maybe the cursor is on the next line...
 			if ((i + 1) == lines->len) {
 				// we are on the last line... get the previous unichar
+				inptr = text + line->start;
+				inend = inptr + line->length;
+				
 				if ((pchar = g_utf8_find_prev_char (text + line->start, inend)))
 					c = utf8_getc (&pchar, inend - pchar);
 				else
@@ -2252,6 +2262,7 @@ TextLayout::GetCursor (const Point &offset, int index)
 				break;
 			}
 			
+			cursor += line->count;
 			y0 += line->height;
 			continue;
 		}
@@ -2261,8 +2272,9 @@ TextLayout::GetCursor (const Point &offset, int index)
 			run = (TextLayoutRun *) line->runs->pdata[j];
 			inend = text + run->start + run->length;
 			
-			if (cursor >= inend) {
+			if (index >= cursor + run->count) {
 				// maybe the cursor is in the next run...
+				cursor += run->count;
 				x0 += run->advance;
 				continue;
 			}
@@ -2272,9 +2284,11 @@ TextLayout::GetCursor (const Point &offset, int index)
 			inptr = text + run->start;
 			prev = 0;
 			
-			while (inptr < cursor) {
-				if ((c = utf8_getc (&inptr, cursor - inptr)) == (gunichar) -1)
+			while (cursor < index) {
+				if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
 					continue;
+				
+				cursor++;
 				
 				// we treat tabs as a single space
 				if (c == '\t')

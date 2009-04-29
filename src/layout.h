@@ -77,7 +77,7 @@ struct TextLayoutGlyphCluster {
 };
 
 struct TextLayoutLine {
-	int start, length, offset;
+	int start, length, offset, count;
 	TextLayout *layout;
 	GPtrArray *runs;
 	double advance;
