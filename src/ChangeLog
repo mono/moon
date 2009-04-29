@@ -1,8 +1,3 @@
-2009-04-28  Chris Toshok  <toshok@ximian.com>
-
-	* textblock.cpp (TextBlock::SetTextInternal): Inlines is
-	autocreated, so we can't use ReadLocalValue to get the collection.
-
 2009-04-28  Geoff Norton  <gnorton@novell.com>
 
 	* popup.cpp: We cannot access this local value here since its been
