@@ -420,6 +420,8 @@ EventObject::RemoveToggleRefNotifier ()
 static bool object_id_fetched = false;
 static int object_id = -1;
 static const char *track_object_type = NULL;
+static bool use_visi_output = false;
+static bool track_all = false;
 
 #define OBJECT_TRACK_ID (0)
 
@@ -435,11 +437,23 @@ EventObject::Track (const char* done, const char* typname)
 		if (sval)
 			object_id = atoi (sval);
 		track_object_type = getenv ("MOONLIGHT_OBJECT_TRACK_TYPE");
+		use_visi_output = (getenv ("MOONLIGHT_OBJECT_TRACK_VISI") != NULL);
+		track_all = (getenv ("MOONLIGHT_OBJECT_TRACK_ALL") != NULL);
 	}
+
+	if (track_all)
+		printf ("%p\t%s tracked object of type '%s': %i, current refcount: %i deployment: %p\n", this, done, typname, id, refcount, deployment);
+
 	if (id == object_id || (track_object_type != NULL && typname != NULL && strcmp (typname, track_object_type) == 0)) {
-		char *st = get_stack_trace ();
-		printf ("%s tracked object of type '%s': %i, current refcount: %i deployment: %p\n%s", done, typname, id, refcount, deployment, st);
-		g_free (st);
+		if (!track_all)
+			printf ("%p\t%s tracked object of type '%s': %i, current refcount: %i deployment: %p\n", this, done, typname, id, refcount, deployment);
+
+		if (!use_visi_output) {
+			char *st = get_stack_trace ();
+			printf("%s", st);
+			g_free (st);
+		} else
+			print_reftrace (done, typname, refcount, false);
 	}
 }
 

@@ -1,5 +1,10 @@
 2009-04-29  Andreia Gaita  <avidigal@novell.com>
 
+	* dependencyobject.cpp: Add MOONLIGHT_OBJECT_TRACK_VISI for outputting
+	parseable stacktraces for later visualization
+
+2009-04-29  Andreia Gaita  <avidigal@novell.com>
+
 	* debug.[cpp|h]: Add libunwind-backed output for tracing ref/unref
 	calls in a nice way, for later parsing and visualization.
 
