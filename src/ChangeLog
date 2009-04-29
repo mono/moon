@@ -1,3 +1,9 @@
+2009-04-29  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.h:
+	* popup.cpp: Remove the attached layer correctly when the
+	  surface is being nulled on a Popup. 
+
 2009-04-29  Geoff Norton  <gnorton@novell.com>
 
 	* style.cpp:

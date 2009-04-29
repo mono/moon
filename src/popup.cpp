@@ -14,7 +14,15 @@
 Popup::Popup ()
 {
 	SetObjectType (Type::POPUP);
+	shutting_down = false;
 	visible = false;
+	GetDeployment ()->AddHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
+}
+
+void
+Popup::Dispose ()
+{
+	GetDeployment ()->RemoveHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
 }
 
 void
@@ -55,6 +63,12 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 }
 
 void
+Popup::ShuttingDownHandler (Deployment *sender, EventArgs *args)
+{
+	shutting_down = true;
+}
+
+void
 Popup::Hide (UIElement *child)
 {
 	if (!visible)
@@ -69,6 +83,9 @@ Popup::Hide (UIElement *child)
 void
 Popup::SetSurface (Surface *s)
 {
+	 if (!shutting_down && !s && GetIsOpen ())
+	 	SetIsOpen (false);
+
 	FrameworkElement::SetSurface (s);
 }
 

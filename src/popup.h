@@ -15,6 +15,7 @@
 
 #include "panel.h"
 
+
 /* @ContentProperty="Child" */
 /*@Namespace=System.Windows.Controls.Primitives*/
 class Popup : public FrameworkElement {
@@ -30,6 +31,7 @@ class Popup : public FrameworkElement {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Popup ();
+	virtual void Dispose ();
 
 	//
 	// Property Accessors
@@ -52,8 +54,10 @@ class Popup : public FrameworkElement {
 
 	const static int IsOpenChangedEvent;
  private:
+	EVENTHANDLER (Popup, ShuttingDown, Deployment, EventArgs);
  	void Hide (UIElement *child);
  	void Show (UIElement *child);
+ 	bool shutting_down;
 	bool visible;
 };
 
