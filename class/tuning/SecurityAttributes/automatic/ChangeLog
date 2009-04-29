@@ -1,3 +1,8 @@
+2009-04-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.auto.[sc|ssc]: Add p/invokes and managed getter for
+	System.Windows.Shapes.Shape.GeometryTransform
+
 2009-04-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.[sc|ssc]: Add p/invokes and managed getter and

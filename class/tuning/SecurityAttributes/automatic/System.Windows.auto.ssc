@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 468 methods
+# 469 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -445,6 +445,7 @@
 +SSC-M: System.Void System.Windows.Shapes.Polyline::.ctor()
 +SSC-M: System.Void System.Windows.Shapes.Rectangle::.ctor()
 +SSC-M: System.Void System.Windows.Shapes.Shape::.ctor()
++SSC-M: System.Windows.Media.Transform System.Windows.Shapes.Shape::get_GeometryTransform()
 +SSC-M: System.Void System.Windows.SizeChangedEventArgs::.ctor()
 +SSC-M: System.Windows.Size System.Windows.SizeChangedEventArgs::get_NewSize()
 +SSC-M: System.Windows.Size System.Windows.SizeChangedEventArgs::get_PreviousSize()
