@@ -365,7 +365,7 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Use a GridSplitter in a Grid that does not necessarily have its ColumnDefinitions or RowDefinitions initialized")]
         [Asynchronous]
-	[KnownFailure ("regressed after layout landing")]
+	[MoonlightBug ("regressed after layout landing")]
         public void VariableNumbersOfColumnsAndRows()
         {
             // Check the cases where a vertical GridSplitter is used in a Grid with 0,1, and n columns

@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Windows.Controls.Primitives;
 using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Moonlight.UnitTesting;
 
 namespace System.Windows.Controls.Test
 {
@@ -74,7 +75,7 @@ namespace System.Windows.Controls.Test
         [TestMethod]
         [Description("Verify GridSplitter Functionality.")]
         [Asynchronous]
-	[KnownFailure ("regressed after layout landing")]
+	[MoonlightBug ("regressed after layout landing")]
         public void GridSplitterTest()
         {
             Grid grid = new Grid();
