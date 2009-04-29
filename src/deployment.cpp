@@ -376,19 +376,14 @@ Deployment::Dispose ()
 	
 	AbortAllDownloaders ();
 	
-	mono_gc_collect (mono_gc_max_generation ());
-
-#if MONO_ENABLE_APP_DOMAIN_CONTROL
-	mono_gc_invoke_finalizers ();
-
-	// mono_gc_invoke_finalizers can cause the current appdomain to change
-	// which will cause Deployment::GetCurrent to return null (or another deployment).
-	Deployment::SetCurrent (this); 
-#endif
-
 	if (current_app != NULL)
 		current_app->Dispose ();
 		
+#if MONO_ENABLE_APP_DOMAIN_CONTROL
+	if (domain != root_domain)
+		mono_domain_finalize (domain, -1);
+#endif
+
 	EventObject::Dispose ();
 }
 

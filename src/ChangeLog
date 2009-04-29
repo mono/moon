@@ -1,3 +1,9 @@
+2009-04-28  Geoff Norton  <gnorton@novell.com>
+
+	* deployment.cpp: Now that we properly shut down the clocks and 
+	media threads, we can finalize the domain here instead of pumping
+	the GC.
+
 2009-04-28  Chris Toshok  <toshok@ximian.com>
 
 	* dirty.cpp (Surface::UpdateLayout): quiet g++ about taking the
