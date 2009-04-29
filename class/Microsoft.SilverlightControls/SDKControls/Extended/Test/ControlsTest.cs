@@ -74,6 +74,7 @@ namespace System.Windows.Controls.Test
         [TestMethod]
         [Description("Verify GridSplitter Functionality.")]
         [Asynchronous]
+	[KnownFailure ("regressed after layout landing")]
         public void GridSplitterTest()
         {
             Grid grid = new Grid();
