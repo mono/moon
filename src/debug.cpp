@@ -409,9 +409,6 @@ get_stack_trace_prefix (const char* prefix)
 	char **names;
 	
 	address_count = backtrace (ips, MAX_STACK_FRAMES);
-	for (int i = 0; i < address_count; i++) {
-		printf ("ip = 0x%lx\n", (long) ips[i]);
-	}
 
 	for (int i = 2; i < address_count; i++) {
 		ip = ips [i];
