@@ -29,12 +29,6 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public partial class Canvas : Panel {
-
-		static internal Canvas FromPtr (IntPtr raw)
-		{
-			return new Canvas (raw, false);
-		}
-	
 		public static double GetLeft (UIElement element)
 		{
 			return (double) element.GetValue (Canvas.LeftProperty);
