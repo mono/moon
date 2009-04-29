@@ -736,14 +736,11 @@ TextBlock::GetTextInternal (InlineCollection *inlines)
 bool
 TextBlock::SetTextInternal (const char *text)
 {
-	Value *value = ReadLocalValue (TextBlock::InlinesProperty);
-	InlineCollection *curInlines = value ? value->AsInlineCollection () : NULL;
-	InlineCollection *inlines = NULL;
-	Run *run;
+	InlineCollection *curInlines = GetInlines ();
 	
 	if (text && text[0]) {
-		inlines = new InlineCollection ();
-		run = new Run ();
+		InlineCollection *inlines = new InlineCollection ();
+		Run *run = new Run ();
 		
 		run->SetText (text);
 		inlines->Add (run);
