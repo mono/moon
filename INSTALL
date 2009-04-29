@@ -101,14 +101,9 @@ Installing Moonlight
 Building the .xpi
 ================
 
-	To build a mozilla plugin installer (XPI) you must have t
-	to open the libraries it needs from ~/.mozilla/plugins and builds an
-	unsigned .xpi file which you may use to install the plugin in your
-	browser.
-
 	To build a mozilla plugin installer (XPI), you must have the Firefox
 	packages installed. Building the xpi builds a modified libmoon and 
-	libmoonloader that the xpi will use.
+	libmoonloader that the xpi will use. 
 
 	When you configured, you should have seen something like this:
 
