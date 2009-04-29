@@ -92,7 +92,7 @@ namespace System.Windows.Media
 			media_element = mediaElement;
 		
 			handle = GCHandle.Alloc (this);
-			demuxer = NativeMethods.media_element_set_demuxer_source (media_element.native, Helper.GCHandleToIntPtr (handle), closeMediaCallback, getDiagnosticAsyncCallback, getSampleAsyncCallback, openMediaAsyncCallback, seekAsyncCallback, switchMediaStreamAsyncCallback);
+			demuxer = NativeMethods.media_element_set_demuxer_source (media_element.native, GCHandle.ToIntPtr (handle), closeMediaCallback, getDiagnosticAsyncCallback, getSampleAsyncCallback, openMediaAsyncCallback, seekAsyncCallback, switchMediaStreamAsyncCallback);
 			
 			if (demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ("MediaStreamSource: Could not create native demuxer.");

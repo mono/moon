@@ -349,7 +349,7 @@ namespace Mono {
 
 					GCHandle handle = GCHandle.Alloc (v);
 					value.k = Kind.MANAGED;
-					value.u.p = Helper.GCHandleToIntPtr (handle);
+					value.u.p = GCHandle.ToIntPtr (handle);
 					return value;
 				}
 
@@ -574,7 +574,7 @@ namespace Mono {
 					// or register a callback on the surface for the unmanaged code to call.
 					GCHandle handle = GCHandle.Alloc (v);
 					value.k = Kind.MANAGED;
-					value.u.p = Helper.GCHandleToIntPtr (handle);
+					value.u.p = GCHandle.ToIntPtr (handle);
 				}
 			}
 			return value;

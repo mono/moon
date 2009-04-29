@@ -49,7 +49,7 @@ namespace System.Windows.Browser {
 				                             IntPtr domEvent)
 			{
 				try {
-					GCHandle handle = Helper.GCHandleFromIntPtr (context);
+					GCHandle handle = GCHandle.FromIntPtr (context);
 					EventInfo info = (EventInfo) handle.Target;
 					if (info.handler != null) {
 						info.handler (info.obj, EventArgs.Empty);
@@ -93,7 +93,7 @@ namespace System.Windows.Browser {
 				info.event_name = eventName;
 				info.wrapper = NativeMethods.html_object_attach_event (WebApplication.Current.PluginHandle, 
 				                                                       obj.Handle, info.EventNameMozilla, 
-				                                                       callback, Helper.GCHandleToIntPtr (info.handle));
+				                                                       callback, GCHandle.ToIntPtr (info.handle));
 
 				if (info.wrapper == IntPtr.Zero) {
 					info.handle.Free ();

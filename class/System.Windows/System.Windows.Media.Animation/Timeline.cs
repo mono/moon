@@ -47,7 +47,7 @@ namespace System.Windows.Media.Animation {
 		internal DependencyObject ManualTarget {
 			get {
 				IntPtr manual = NativeMethods.timeline_get_manual_target (native);
-				return (DependencyObject)Helper.ObjectFromIntPtr (manual);
+				return (DependencyObject) NativeDependencyObjectHelper.FromIntPtr (manual);
 			}
 			set {
 				NativeMethods.timeline_set_manual_target (native, value == null ? IntPtr.Zero : value.native);

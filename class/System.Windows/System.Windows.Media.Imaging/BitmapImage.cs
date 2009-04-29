@@ -86,17 +86,17 @@ namespace System.Windows.Media.Imaging
                 static UnmanagedEventHandler image_opened = Events.CreateSafeHandler (image_opened_cb);
 
                 private static void download_progress_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
-			BitmapImage b = (BitmapImage) Helper.ObjectFromIntPtr (closure);
+			BitmapImage b = (BitmapImage) NativeDependencyObjectHelper.FromIntPtr (closure);
                         b.RaiseDownloadProgress (new DownloadProgressEventArgs (calldata));
                 }
                 
 		private static void image_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
-			BitmapImage b = (BitmapImage) Helper.ObjectFromIntPtr (closure);
+			BitmapImage b = (BitmapImage) NativeDependencyObjectHelper.FromIntPtr (closure);
                         b.RaiseImageFailed (new ExceptionRoutedEventArgs (calldata));
                 }
 		
 		private static void image_opened_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
-			BitmapImage b = (BitmapImage) Helper.ObjectFromIntPtr (closure);
+			BitmapImage b = (BitmapImage) NativeDependencyObjectHelper.FromIntPtr (closure);
                         b.RaiseImageOpened (new RoutedEventArgs (calldata));
                 }
 

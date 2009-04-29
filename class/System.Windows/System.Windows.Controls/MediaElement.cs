@@ -174,7 +174,7 @@ namespace System.Windows.Controls {
 
 		private static void buffering_progress_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeBufferingProgressChanged ();
+			((MediaElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeBufferingProgressChanged ();
 		}
 		
 		private void InvokeBufferingProgressChanged ()
@@ -186,7 +186,7 @@ namespace System.Windows.Controls {
 		
 		private static void current_state_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeCurrentStateChanged ();
+			((MediaElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeCurrentStateChanged ();
 		}
 		
 		private void InvokeCurrentStateChanged ()
@@ -198,7 +198,7 @@ namespace System.Windows.Controls {
 		
 		private static void download_progress_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeDownloadProgressChanged ();
+			((MediaElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeDownloadProgressChanged ();
 		}
 		
 		private void InvokeDownloadProgressChanged ()
@@ -210,7 +210,7 @@ namespace System.Windows.Controls {
 
 		private static void marker_reached_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeMarkerReached (calldata);
+			((MediaElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeMarkerReached (calldata);
 		}
 		
 		private void InvokeMarkerReached (IntPtr calldata)
@@ -227,7 +227,7 @@ namespace System.Windows.Controls {
 		
 		private static void media_opened_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeMediaOpened ();
+			((MediaElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeMediaOpened ();
 		}
 		
 		private void InvokeMediaOpened ()
@@ -239,7 +239,7 @@ namespace System.Windows.Controls {
 		
 		private static void media_ended_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeMediaEnded ();
+			((MediaElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeMediaEnded ();
 		}
 		
 		private void InvokeMediaEnded ()
@@ -251,7 +251,7 @@ namespace System.Windows.Controls {
 		
 		private static void media_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) Helper.ObjectFromIntPtr (closure)).InvokeMediaFailed ();
+			((MediaElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeMediaFailed ();
 		}
 		
 		private void InvokeMediaFailed ()

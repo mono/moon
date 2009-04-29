@@ -74,7 +74,7 @@ namespace System.Windows.Controls {
 		
 		static void content_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			ContentControl cc = (ContentControl) Helper.ObjectFromIntPtr (closure);
+			ContentControl cc = (ContentControl) NativeDependencyObjectHelper.FromIntPtr (closure);
 			ContentChangedEventArgs args = new ContentChangedEventArgs (calldata);
 			
 			cc.OnContentChanged (args.OldContent, args.NewContent);

@@ -40,7 +40,7 @@ namespace Mono
 			ManagedStreamCallbacks callbacks;
 			if (!this.callbacks.HasValue) {
 				handle = GCHandle.Alloc (this);
-				callbacks.handle = Helper.GCHandleToIntPtr (handle);
+				callbacks.handle = GCHandle.ToIntPtr (handle);
 				callbacks.CanRead = CanRead;
 				callbacks.CanSeek = CanSeek;
 				callbacks.Length = Length;

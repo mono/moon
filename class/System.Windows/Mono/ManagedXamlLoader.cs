@@ -520,7 +520,7 @@ namespace Mono.Xaml
 
 				GCHandle handle = GCHandle.Alloc (e);
 				val->k = Kind.MANAGED;
-				val->u.p = Helper.GCHandleToIntPtr (handle);
+				val->u.p = GCHandle.ToIntPtr (handle);
 			}
 
 			return true;
@@ -612,6 +612,98 @@ namespace Mono.Xaml
 				res = Application.GetComponentTypeFromName (full_name);
 
 			return res;
+		}
+
+		private void SetCLRPropertyFromString (object target, PropertyInfo pi, string value, out string error, out IntPtr unmanaged_value)
+		{
+			unmanaged_value = IntPtr.Zero;
+			error = null;
+
+			// if the property has a TypeConverter
+			// associated with it (or the property's type
+			// does), try to use that first
+			TypeConverter converter = Helper.GetConverterFor (pi, pi.PropertyType);
+			if (converter != null && converter.CanConvertFrom (typeof (string))) {
+				try {
+					pi.SetValue (target, converter.ConvertFrom (null, Helper.DefaultCulture, value), null);
+				} catch (Exception e) {
+					error = e.ToString ();
+				}
+				return;
+			}
+
+			//
+			// If the property is a simple IConvertible type we might
+			// be able to just convert it in managed code.
+			//
+			if (typeof (IConvertible).IsAssignableFrom (pi.PropertyType)) {
+				object res = MoonlightTypeConverter.ValueFromConvertible (pi.PropertyType, value);
+				if (res != null) {
+					try {
+						pi.SetValue (target, res, null);
+					} catch (Exception e) {
+						error = e.ToString ();
+					}
+					return;
+				}
+			}
+			else if (pi.PropertyType == typeof (object)) {
+				try {
+					pi.SetValue (target, (object)value, null);
+				} catch (Exception e) {
+					error = e.ToString ();
+				}
+				return;
+			}
+
+			if (pi.PropertyType.IsEnum) {
+				try {
+					pi.SetValue (target, Enum.Parse (pi.PropertyType, value), null);
+				} catch (Exception e) {
+					error = e.ToString ();
+				}
+				return;
+			}
+
+			// special case System.Type properties (like
+			// Style.TargetType and
+			// ControlTemplate.TargetType)
+			//
+			// XXX this isn't working.
+			//
+			if (pi.PropertyType == typeof (Type)) {
+
+				// try to find the type based on the name
+				Type t = Application.GetComponentTypeFromName (value);
+
+				if (t != null) {
+					try {
+						pi.SetValue (target, t, null);
+					} catch (Exception e) {
+						error = e.ToString ();
+					}
+					return;
+				}
+			}
+
+			//
+			// lastly, attempt to create an unmanaged Value* object, if one is created, the managed
+			// parser will create a managed wrapper for the object and call SetPropertyFromValue with
+			// the managed object
+			//
+			bool result = NativeMethods.value_from_str_with_typename (TypeToMoonType (pi.PropertyType), pi.Name, value, out unmanaged_value);
+			if (!result) {
+				error = string.Format ("unable to convert to type {0} from a string", pi.PropertyType);
+			}
+		}
+
+		private string TypeToMoonType (Type t)
+		{
+			if (t == typeof (double))
+				return "double";
+			if (t == typeof (bool))
+				return "bool";
+			return t.Name;
 		}
 
 		//
@@ -805,7 +897,7 @@ namespace Mono.Xaml
 					return true;
 				}
 
-				Helper.SetPropertyFromString (target, pi, str_value, out error, out unmanaged_value);
+				SetCLRPropertyFromString (target, pi, str_value, out error, out unmanaged_value);
 
 				if (error == null && unmanaged_value != IntPtr.Zero)
 					obj_value = Value.ToObject (null, unmanaged_value);

@@ -101,7 +101,7 @@ namespace System.Windows.Controls {
 		
 		static void cursor_position_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			TextBox textbox = (TextBox) Helper.ObjectFromIntPtr (closure);
+			TextBox textbox = (TextBox) NativeDependencyObjectHelper.FromIntPtr (closure);
 			CursorPositionChangedEventArgs args = new CursorPositionChangedEventArgs (calldata);
 			
 			textbox.InvokeCursorPositionChanged (args);
@@ -126,7 +126,7 @@ namespace System.Windows.Controls {
 		
 		static void selection_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			TextBox textbox = (TextBox) Helper.ObjectFromIntPtr (closure);
+			TextBox textbox = (TextBox) NativeDependencyObjectHelper.FromIntPtr (closure);
 			RoutedEventArgs args = new RoutedEventArgs (calldata);
 			
 			textbox.InvokeSelectionChanged (args);
@@ -151,7 +151,7 @@ namespace System.Windows.Controls {
 		
 		static void text_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			TextBox textbox = (TextBox) Helper.ObjectFromIntPtr (closure);
+			TextBox textbox = (TextBox) NativeDependencyObjectHelper.FromIntPtr (closure);
 			TextChangedEventArgs args = new TextChangedEventArgs (calldata);
 			
 			textbox.InvokeTextChanged (args);

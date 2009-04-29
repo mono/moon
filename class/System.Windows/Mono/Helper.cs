@@ -41,11 +41,6 @@ namespace Mono {
 	internal static class Helper {
 		internal static System.Globalization.CultureInfo DefaultCulture = System.Globalization.CultureInfo.GetCultureInfo ("en-US");
 		
-		public static TypeConverter GetConverterFor (Type target_type)
-		{
-			return GetConverterFor (null, target_type);
-		}
-
 		public static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
 		{
 			Attribute[] attrs;
@@ -98,121 +93,6 @@ namespace Mono {
 			return converter;
 		}
 
-		public static bool IsAssignableToIConvertible (Type type)
-		{
-			return typeof (IConvertible).IsAssignableFrom (type);
-		}
-
-		public static object ValueFromString (Type value_type, string value, string prop_name, out string error, out IntPtr unmanaged_value)
-		{
-			unmanaged_value = IntPtr.Zero;
-			error = null;
-
-			TypeConverter converter = GetConverterFor (value_type, value_type);
-			if (converter != null && converter.CanConvertFrom (typeof (string))) {
-				return converter.ConvertFrom (value);
-			}
-
-			if (IsAssignableToIConvertible (value_type)) {
-				object res = ValueFromConvertible (value_type, value);
-				if (res != null)
-					return res;
-			}
-
-			//
-			// XXX Add Special case for System.Type (see SetPropertyFromString)
-			//
-
-			bool result = NativeMethods.value_from_str_with_typename (TypeToMoonType (value_type), prop_name, value, out unmanaged_value);
-			if (!result)
-				error = string.Format ("unable to convert to type {0} from a string", value_type);
-
-			return null;
-		}
-
-		public static void SetPropertyFromString (object target, PropertyInfo pi, string value, out string error, out IntPtr unmanaged_value)
-		{
-			unmanaged_value = IntPtr.Zero;
-			error = null;
-
-			// if the property has a TypeConverter
-			// associated with it (or the property's type
-			// does), try to use that first
-			TypeConverter converter = GetConverterFor (pi, pi.PropertyType);
-			if (converter != null && converter.CanConvertFrom (typeof (string))) {
-				try {
-					pi.SetValue (target, converter.ConvertFrom (null, DefaultCulture, value), null);
-				} catch (Exception e) {
-					error = e.ToString ();
-				}
-				return;
-			}
-
-			//
-			// If the property is a simple IConvertible type we might
-			// be able to just convert it in managed code.
-			//
-			if (IsAssignableToIConvertible (pi.PropertyType)) {
-				object res = ValueFromConvertible (pi.PropertyType, value);
-				if (res != null) {
-					try {
-						pi.SetValue (target, res, null);
-					} catch (Exception e) {
-						error = e.ToString ();
-					}
-					return;
-				}
-			}
-			else if (pi.PropertyType == typeof (object)) {
-				try {
-					pi.SetValue (target, (object)value, null);
-				} catch (Exception e) {
-					error = e.ToString ();
-				}
-				return;
-			}
-
-			if (pi.PropertyType.IsEnum) {
-				try {
-					pi.SetValue (target, Enum.Parse (pi.PropertyType, value), null);
-				} catch (Exception e) {
-					error = e.ToString ();
-				}
-				return;
-			}
-
-			// special case System.Type properties (like
-			// Style.TargetType and
-			// ControlTemplate.TargetType)
-			//
-			// XXX this isn't working.
-			//
-			if (pi.PropertyType == typeof (Type)) {
-
-				// try to find the type based on the name
-				Type t = Application.GetComponentTypeFromName (value);
-
-				if (t != null) {
-					try {
-						pi.SetValue (target, t, null);
-					} catch (Exception e) {
-						error = e.ToString ();
-					}
-					return;
-				}
-			}
-
-			//
-			// lastly, attempt to create an unmanaged Value* object, if one is created, the managed
-			// parser will create a managed wrapper for the object and call SetPropertyFromValue with
-			// the managed object
-			//
-			bool result = NativeMethods.value_from_str_with_typename (TypeToMoonType (pi.PropertyType), pi.Name, value, out unmanaged_value);
-			if (!result) {
-				error = string.Format ("unable to convert to type {0} from a string", pi.PropertyType);
-			}
-		}
-
 		static MethodInfo inDomain;
 
 		public static bool GCHandleInDomain (IntPtr ptr)
@@ -224,26 +104,6 @@ namespace Mono {
 			}
 
 			return (bool)inDomain.Invoke (null, new object[1] { (int)ptr });
-		}
-
-		public static GCHandle GCHandleFromIntPtr (IntPtr ptr)
-		{
-			return GCHandle.FromIntPtr (ptr);
-		}
-
-		public static IntPtr GCHandleToIntPtr (GCHandle handle)
-		{
-			return GCHandle.ToIntPtr (handle);
-		}
-
-		public static object ObjectFromIntPtr (IntPtr ptr)
-		{
-			return NativeDependencyObjectHelper.Lookup (ptr);
-		}
-		
-		public static void FreeHGlobal (IntPtr ptr)
-		{
-			Marshal.FreeHGlobal (ptr);
 		}
 
 		public static IntPtr StreamToIntPtr (Stream stream)
@@ -263,50 +123,6 @@ namespace Mono {
 			} while (nread != 0);
 
 			return buf;
-		}
-
-		public static object ValueFromConvertible (Type type, IConvertible value)
-		{
-			if (type == typeof (string))
-				return Convert.ToString (value);
-			if (type == typeof (bool))
-				return Convert.ToBoolean (value);
-			if (type == typeof (byte))
-				return Convert.ToByte (value);
-			if (type == typeof (char))
-				return Convert.ToChar (value);
-			if (type == typeof (DateTime))
-				return Convert.ToDateTime (value);
-			if (type == typeof (Decimal))
-				return Convert.ToDecimal (value);
-			if (type == typeof (double))
-				return Convert.ToDouble (value);
-			if (type == typeof (Int16))
-				return Convert.ToInt16 (value);
-			if (type == typeof (Int32))
-				return Convert.ToInt32 (value);
-			if (type == typeof (Int64))
-				return Convert.ToInt64 (value);
-			if (type == typeof (SByte))
-				return Convert.ToSByte (value);
-			if (type == typeof (Single))
-				return Convert.ToSingle (value);
-			if (type == typeof (UInt16))
-				return Convert.ToUInt16 (value);
-			if (type == typeof (UInt32))
-				return Convert.ToUInt32 (value);
-			if (type == typeof (UInt64))
-				return Convert.ToUInt64 (value);
-			return null;
-		}
-
-		private static string TypeToMoonType (Type t)
-		{
-			if (t == typeof (double))
-				return "double";
-			if (t == typeof (bool))
-				return "bool";
-			return t.Name;
 		}
 	}
 }

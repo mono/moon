@@ -1,3 +1,10 @@
+2009-04-29  Chris Toshok  <toshok@ximian.com>
+
+	* Helper.cs: take a whack to this class, removing most everything
+	in it.
+
+	* everything-else: track changes to Helper.cs
+
 2009-04-28  Geoff Norton  <gnorton@novell.com>
 
 	* Value.cs:

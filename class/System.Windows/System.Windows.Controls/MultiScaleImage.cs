@@ -170,27 +170,27 @@ namespace System.Windows.Controls {
 
 		static void image_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MultiScaleImage) Helper.ObjectFromIntPtr (closure)).InvokeImageFailed ();
+			((MultiScaleImage) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeImageFailed ();
 		}
 
 
 		static void image_open_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
-			((MultiScaleImage) Helper.ObjectFromIntPtr (closure)).InvokeImageOpenFailed ();
+			((MultiScaleImage) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeImageOpenFailed ();
 		}
 
 		static void image_open_succeeded_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MultiScaleImage) Helper.ObjectFromIntPtr (closure)).InvokeImageOpenSucceeded ();
+			((MultiScaleImage) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeImageOpenSucceeded ();
 		}
 
 		static void motion_finished_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MultiScaleImage) Helper.ObjectFromIntPtr (closure)).InvokeMotionFinished ();
+			((MultiScaleImage) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeMotionFinished ();
 		}
 
 		static void viewport_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MultiScaleImage) Helper.ObjectFromIntPtr (closure)).InvokeViewportChanged ();
+			((MultiScaleImage) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeViewportChanged ();
 		}
 
 		void InvokeImageFailed ()

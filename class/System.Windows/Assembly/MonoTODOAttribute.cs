@@ -34,6 +34,7 @@
 
 namespace System {
 	
+#if !NET_2_1
 	[AttributeUsage (AttributeTargets.All, AllowMultiple=true)]
 	internal class MonoTODOAttribute : Attribute {
 
@@ -117,4 +118,5 @@ namespace System {
 			get { return base.Comment; }
 		}
 	}
+#endif
 }

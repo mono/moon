@@ -90,7 +90,7 @@ namespace Mono {
 
 		static void template_applied_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			Control c = (Control) Helper.ObjectFromIntPtr (closure);
+			Control c = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
 			c.InvokeOnApplyTemplate ();
 		}
 
@@ -103,43 +103,43 @@ namespace Mono {
 
 		static void current_state_changing_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			VisualStateGroup e = (VisualStateGroup) Helper.ObjectFromIntPtr (closure);
+			VisualStateGroup e = (VisualStateGroup) NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.RaiseCurrentStateChanging (new VisualStateChangedEventArgs (calldata));
 		}
 		
 		static void current_state_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			VisualStateGroup e = (VisualStateGroup) Helper.ObjectFromIntPtr (closure);
+			VisualStateGroup e = (VisualStateGroup) NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.RaiseCurrentStateChanged (new VisualStateChangedEventArgs (calldata));
 		}
 		
 		static void got_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement)Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement)NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeGotFocus (new RoutedEventArgs (calldata));
 		}
 
 		static void lost_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement)Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement)NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeLostFocus (new RoutedEventArgs (calldata));
 		}
 
 		static void lost_mouse_capture_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeLostMouseCapture (new MouseEventArgs (calldata));
 		}
 		
 		static void layout_updated_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			FrameworkElement e = (FrameworkElement)Helper.ObjectFromIntPtr (closure);
+			FrameworkElement e = (FrameworkElement)NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeLayoutUpdated ();
 		}
 
 		static void loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			FrameworkElement e = (FrameworkElement)Helper.ObjectFromIntPtr (closure);
+			FrameworkElement e = (FrameworkElement)NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeLoaded ();
 			
 			Content.InvokeResize ();
@@ -147,69 +147,69 @@ namespace Mono {
 
 		static void mouse_leave_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement)Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement)NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeMouseLeave (new MouseEventArgs (calldata));
 		}
 
 		static void key_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeKeyUp (new KeyEventArgs (calldata));
 		}
 
 		static void key_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeKeyDown (new KeyEventArgs (calldata));
 		}
 
 		static void mouse_motion_notify_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeMouseMove (new MouseEventArgs (calldata));
 		}
 		
 		static void mouse_left_button_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeMouseLeftButtonDown (new MouseButtonEventArgs (calldata));
 		}
 		
 		static void mouse_left_button_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeMouseLeftButtonUp (new MouseButtonEventArgs (calldata));
 		}
 
 #if NET_3_0
 		static void mouse_right_button_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeMouseRightButtonDown (new MouseButtonEventArgs (calldata));
 		}
 		
 		static void mouse_right_button_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeMouseRightButtonUp (new MouseButtonEventArgs (calldata));
 		}
 
 		static void mouse_wheel_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeMouseWheel (new MouseWheelEventArgs (calldata));
 		}
 #endif
 		
 		static void mouse_enter_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			UIElement e = (UIElement) Helper.ObjectFromIntPtr (closure);
+			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeMouseEnter (new MouseEventArgs (calldata));
 		}
 
 		static void size_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			FrameworkElement e = (FrameworkElement)Helper.ObjectFromIntPtr (closure);
+			FrameworkElement e = (FrameworkElement)NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeSizeChanged (new SizeChangedEventArgs (calldata));
 		}
 

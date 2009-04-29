@@ -76,7 +76,7 @@ namespace Mono
 		public MoonError (Exception ex)
 		{
 			GCHandle handle = GCHandle.Alloc (ex);
-			gchandle_ptr = Helper.GCHandleToIntPtr (handle);
+			gchandle_ptr = GCHandle.ToIntPtr (handle);
 			number = 9;
 			code = 0;
 			message = IntPtr.Zero;

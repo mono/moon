@@ -63,7 +63,7 @@ namespace Mono {
 			if (sourceType == typeof(Color) && destinationType.IsAssignableFrom(typeof(SolidColorBrush)))
 				return true;
 
-			if (Helper.IsAssignableToIConvertible (sourceType) && Helper.IsAssignableToIConvertible (destinationType))
+			if (IsAssignableToIConvertible (sourceType) && IsAssignableToIConvertible (destinationType))
 				return true;
 
 			return base.CanConvertFrom (context, sourceType);
@@ -106,13 +106,53 @@ namespace Mono {
 			else if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
 				return new SolidColorBrush ((Color)value);
 			}
-			else if (Helper.IsAssignableToIConvertible (value.GetType ()) && Helper.IsAssignableToIConvertible (destinationType))
-				return Helper.ValueFromConvertible (destinationType, (IConvertible) value);
+			else if (IsAssignableToIConvertible (value.GetType ()) && IsAssignableToIConvertible (destinationType))
+				return ValueFromConvertible (destinationType, (IConvertible) value);
 			else if (!base.CanConvertFrom (context, value.GetType ())) {
 				Console.Error.WriteLine ("MoonlightTypeConverter: Cannot convert from type {0} to type {1}", value.GetType(), destinationType);
 			}
 
 			return base.ConvertFrom (context, culture, value);
+		}
+			
+		public static bool IsAssignableToIConvertible (Type type)
+		{
+			return typeof (IConvertible).IsAssignableFrom (type);
+		}
+
+		public static object ValueFromConvertible (Type type, IConvertible value)
+		{
+			if (type == typeof (string))
+				return Convert.ToString (value);
+			if (type == typeof (bool))
+				return Convert.ToBoolean (value);
+			if (type == typeof (byte))
+				return Convert.ToByte (value);
+			if (type == typeof (char))
+				return Convert.ToChar (value);
+			if (type == typeof (DateTime))
+				return Convert.ToDateTime (value);
+			if (type == typeof (Decimal))
+				return Convert.ToDecimal (value);
+			if (type == typeof (double))
+				return Convert.ToDouble (value);
+			if (type == typeof (Int16))
+				return Convert.ToInt16 (value);
+			if (type == typeof (Int32))
+				return Convert.ToInt32 (value);
+			if (type == typeof (Int64))
+				return Convert.ToInt64 (value);
+			if (type == typeof (SByte))
+				return Convert.ToSByte (value);
+			if (type == typeof (Single))
+				return Convert.ToSingle (value);
+			if (type == typeof (UInt16))
+				return Convert.ToUInt16 (value);
+			if (type == typeof (UInt32))
+				return Convert.ToUInt32 (value);
+			if (type == typeof (UInt64))
+				return Convert.ToUInt64 (value);
+			return null;
 		}
 	}
 

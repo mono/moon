@@ -54,7 +54,7 @@ namespace System.Windows.Controls {
 		
 		private static void image_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
 			// XXX we need to marshal calldata to an ErrorEventArgs struct
-			((Image) Helper.ObjectFromIntPtr (closure)).InvokeImageFailed (/* XXX and pass it here*/);
+			((Image) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeImageFailed (/* XXX and pass it here*/);
 		}
 		
 		private void InvokeImageFailed (/* XXX ErrorEventArgs args */)

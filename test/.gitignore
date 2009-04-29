@@ -7,8 +7,8 @@ Makefile
 /html_report
 /shocker-log.txt
 /comparison_report.html
-.deps/
-.libs/
+.deps
+.libs
 /uris
 /uris-uri-test.o
 /regression_report.txt

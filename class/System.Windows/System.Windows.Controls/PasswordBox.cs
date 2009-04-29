@@ -60,7 +60,7 @@ namespace System.Windows.Controls
 		
 		static void password_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			PasswordBox passwordbox = (PasswordBox) Helper.ObjectFromIntPtr (closure);
+			PasswordBox passwordbox = (PasswordBox) NativeDependencyObjectHelper.FromIntPtr (closure);
 			RoutedEventArgs args = new RoutedEventArgs (calldata);
 			
 			passwordbox.InvokePasswordChanged (args);

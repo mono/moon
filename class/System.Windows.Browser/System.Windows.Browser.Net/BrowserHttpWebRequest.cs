@@ -157,7 +157,7 @@ namespace System.Windows.Browser.Net
 		
 		static uint OnAsyncResponseStarted (IntPtr native, IntPtr context)
 		{
-			GCHandle handle = Helper.GCHandleFromIntPtr (context);
+			GCHandle handle = GCHandle.FromIntPtr (context);
 			BrowserHttpWebRequest obj = (BrowserHttpWebRequest) handle.Target;
 			
 			try {
@@ -184,7 +184,7 @@ namespace System.Windows.Browser.Net
 		
 		static uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
 		{
-			GCHandle handle = Helper.GCHandleFromIntPtr (context);
+			GCHandle handle = GCHandle.FromIntPtr (context);
 			BrowserHttpWebRequest obj = (BrowserHttpWebRequest) handle.Target;
 			
 			try {
@@ -210,7 +210,7 @@ namespace System.Windows.Browser.Net
 		
 		static uint OnAsyncDataAvailable (IntPtr native, IntPtr context, IntPtr data, uint length)
 		{
-			GCHandle handle = Helper.GCHandleFromIntPtr (context);
+			GCHandle handle = GCHandle.FromIntPtr (context);
 			BrowserHttpWebRequest obj = (BrowserHttpWebRequest) handle.Target;
 			
 			try {
@@ -308,7 +308,7 @@ namespace System.Windows.Browser.Net
 				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
 			
-			NativeMethods.downloader_request_get_response (native, started, available, finished, Helper.GCHandleToIntPtr (managed));
+			NativeMethods.downloader_request_get_response (native, started, available, finished, GCHandle.ToIntPtr (managed));
 
 			wait_handle.Set ();
 		}
