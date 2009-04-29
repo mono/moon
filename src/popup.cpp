@@ -69,9 +69,6 @@ Popup::Hide (UIElement *child)
 void
 Popup::SetSurface (Surface *s)
 {
-	if (!s && GetIsOpen ())
-		SetIsOpen (false);
-		
 	FrameworkElement::SetSurface (s);
 }
 

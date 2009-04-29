@@ -1,5 +1,10 @@
 2009-04-28  Geoff Norton  <gnorton@novell.com>
 
+	* popup.cpp: We cannot access this local value here since its been
+	cleared in our dispose call.
+
+2009-04-28  Geoff Norton  <gnorton@novell.com>
+
 	* deployment.cpp: Now that we properly shut down the clocks and 
 	media threads, we can finalize the domain here instead of pumping
 	the GC.
