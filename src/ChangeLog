@@ -1,3 +1,7 @@
+2009-04-29  Alan McGovern  <alan.mcgovern@gmail.com>
+
+	* popup.cpp: Forgot to call the base Dispose method.
+
 2009-04-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.cpp (SetTextInternal): Protect everything from

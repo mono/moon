@@ -23,6 +23,7 @@ void
 Popup::Dispose ()
 {
 	GetDeployment ()->RemoveHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
+	FrameworkElement::Dispose ();
 }
 
 void
