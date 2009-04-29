@@ -931,10 +931,10 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 {
 	InlineCollection *inlines = GetInlines ();
 	
-	//if (col != inlines) {
+	if (col != inlines) {
 		FrameworkElement::OnCollectionItemChanged (col, obj, args);
-		//	return;
-		//}
+		return;
+	}
 	
 	if (args->GetId () != Inline::ForegroundProperty) {
 		if (args->GetId () == Run::TextProperty) {
