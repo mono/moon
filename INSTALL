@@ -34,7 +34,7 @@ Build Mono
 	for tips on running in multiple Mono environments
 
 	Make mono-basic 
-		./autogen.sh && make && make install
+		./configure && make && make install
 
 
 Moonlight Configuration Options
