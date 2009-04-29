@@ -889,10 +889,10 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 	bool update_bounds = false;
 	bool update_text = false;
 	
-	//if (col != inlines) {
+	if (col != inlines) {
 		FrameworkElement::OnCollectionChanged (col, args);
-		//	return;
-		//}
+		return;
+	}
 	
 	switch (args->GetChangedAction()) {
 	case CollectionChangedActionAdd:
