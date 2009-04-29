@@ -1,3 +1,8 @@
+2009-04-28  Chris Toshok  <toshok@ximian.com>
+
+	* dirty.cpp (Surface::UpdateLayout): quiet g++ about taking the
+	address of a temporary.
+
 2009-04-28  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp

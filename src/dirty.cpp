@@ -441,7 +441,8 @@ Surface::UpdateLayout ()
 		Size available = Size (active_window->GetWidth (), active_window->GetHeight ());
 		if (!last || (*last != available)) {
 			layer->InvalidateMeasure ();
-			LayoutInformation::SetLastMeasure (layer, &Size (active_window->GetWidth (), active_window->GetHeight ()));
+			Size size(active_window->GetWidth (), active_window->GetHeight ());
+			LayoutInformation::SetLastMeasure (layer, &size);
 		}
 
 		layer->UpdateLayout ();
