@@ -6,3 +6,7 @@
 /*.la
 /*.lo
 /*.o
+/pixman-combine32.c
+/pixman-combine32.h
+/pixman-combine64.c
+/pixman-combine64.h
