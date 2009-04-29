@@ -75,6 +75,8 @@ private:
 	void Close (); // Closes the window and unrefs ourself
 	void Show ();// Shows the codec installation ui and refs ourself
 	
+	bool VerifyDownload (const char *filename);
+
 	CodecDownloader (Surface *surface);
 	virtual ~CodecDownloader ();
 

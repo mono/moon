@@ -1,3 +1,10 @@
+2009-04-29  Geoff Norton  <gnorton@novell.com>
+
+	* pipeline-ui.cpp|h: If the codec download ends prematurely, dlopen
+	nicely crashes on a incomplete .so (thanks).  As such we're going to
+	sha1 the expected binary before blindly installing it to gatekeep
+	against this.
+
 2009-04-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes some cursor position/selection bugs

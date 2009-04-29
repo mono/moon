@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <mono/utils/mono-digest.h>
 
 #include "codec-version.h"
 #include "pipeline-ui.h"
@@ -26,6 +27,18 @@
 #include "codec-url.h"
 
 #define EULA_URL "http://go.microsoft.com/fwlink/?LinkId=149579"
+
+#if defined (__linux__)
+#  if defined (__i386__)
+const unsigned char codec_sha1sum[] = {0xaf, 0x0b, 0x02, 0x21, 0x7b, 0xbe, 0xa7, 0xeb, 0x1a, 0x1b, 0xc2, 0xe5, 0x51, 0xd0, 0x06, 0xc3, 0x82, 0xed, 0xe0, 0x03};
+#  elif defined (__x86_64__)
+const unsigned char codec_sha1sum[] = {0xa8, 0x43, 0xcf, 0x69, 0x55, 0xc7, 0x05, 0xa6, 0xa0, 0xd7, 0xde, 0xb7, 0x2f, 0x2e, 0x10, 0x2a, 0x55, 0x17, 0xbf, 0x9e};
+#  else
+const unsigned char codec_sha1sum[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+#  endif
+#else 
+const unsigned char codec_sha1sum[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+#endif
 
 bool CodecDownloader::running = false;
 
@@ -163,6 +176,46 @@ CodecDownloader::DownloadFailed (EventObject *sender, EventArgs *args)
 	state = 6;
 }
 
+bool
+CodecDownloader::VerifyDownload (const char *filename)
+{
+        MonoSHA1Context ctx;
+	guchar digest[20];
+	guchar buffer[4096];
+	int fd;
+	ssize_t nread;
+
+	if ((fd = open (filename, O_RDONLY)) == -1)
+		return false;
+
+        mono_sha1_init (&ctx);
+	do {
+		do {
+			nread = read (fd, buffer, sizeof (buffer));
+		} while (nread == -1 && errno == EINTR);
+
+		if (nread == -1) {
+			close (fd);
+			return false;
+		}
+
+		if (nread == 0)
+			break;
+
+		mono_sha1_update (&ctx, buffer, nread);
+	} while (true);
+
+	close (fd);
+
+        mono_sha1_final (&ctx, digest);
+
+	for (int i = 0; i < 20; i++) 
+		if (digest [i] != codec_sha1sum [i])
+			return false;
+
+	return true;
+}
+
 void
 CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
 {
@@ -200,7 +253,10 @@ CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
 
 		errno = 0;
 
-		if (g_mkdir_with_parents (codec_dir, 0700) == -1 ||
+		if (!VerifyDownload (downloaded_file)) {
+			SetHeader ("An error occurred when installing the software");
+			SetMessage ("We could not verify the downloaded binary.  Please try again later.");
+                } else if (g_mkdir_with_parents (codec_dir, 0700) == -1 ||
 			(codec_fd = open (codec_path, O_CREAT | O_TRUNC | O_WRONLY, 0700)) == -1 ||
 			CopyFileTo (downloaded_file, codec_fd) == -1) {
 			SetHeader ("An error occurred when installing the software");
