@@ -31,6 +31,20 @@ if INCLUDE_BROWSER_MANAGED_CODE
 novell_moonlight_xpi_CONTENTS += $(srcdir)/../moon.config
 endif INCLUDE_BROWSER_MANAGED_CODE
 
+SDK_DLLS = 		\
+	System.Data.Services.Client.dll	\
+	System.Json.dll	\
+	System.Runtime.Serialization.Json.dll		\
+	System.ServiceModel.PollingDuplex.dll		\
+	System.ServiceModel.Syndication.dll			\
+	System.Windows.Controls.Data.Design.dll		\
+	System.Windows.Controls.Data.dll			\
+	System.Windows.Controls.Design.dll			\
+	System.Windows.Controls.dll>	\
+	System.Windows.VisualStudio.Design.dll		\
+	System.Xml.Linq.dll				\
+	System.Xml.Serialization.dll	\
+	System.Xml.Utils.dll
 
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
 	rm -f $@
@@ -60,7 +74,7 @@ if INCLUDE_BROWSER_MANAGED_CODE
 	cp -L $(mono_libdir)/libmono.so .xpinstall/plugins/moonlight/
 	cp -L $(top_builddir)/class/lib/2.1/*.dll .xpinstall/plugins/moonlight
 
-	cd .xpinstall/plugins/moonlight && rm -f System.Windows.dll System.Windows.Data.dll System.Xml.Linq.dll
+	cd .xpinstall/plugins/moonlight && rm -f $(SDK_DLLS)
 #	find .xpinstall -name \*.mdb -exec rm '{}' ';'
 
 	mkdir -p .xpinstall/plugins/moonlight/mono/2.0/
