@@ -514,7 +514,11 @@ void print_reftrace (const char * act, const char * typname, int refcount, bool 
 
 		unw_get_reg(&cursor, UNW_REG_IP, &ip);
 		unw_get_reg(&cursor, UNW_REG_SP, &sp);
+#if (__i386__)
 		unw_get_reg(&cursor, UNW_X86_EBP, &bp);
+#elif (__amd64__)
+		unw_get_reg(&cursor, UNW_X86_64_RBP, &bp);
+#endif
 
 		unw_get_proc_name (&cursor, framename, sizeof(framename), 0);
 

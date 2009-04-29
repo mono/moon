@@ -2,6 +2,10 @@
 
 	* popup.cpp: Forgot to call the base Dispose method.
 
+2009-04-29  Geoff Norton  <gnorton@novell.com>
+
+	* debug.cpp: Not everyone in the world is 32-bit intel.
+
 2009-04-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.cpp (SetTextInternal): Protect everything from
