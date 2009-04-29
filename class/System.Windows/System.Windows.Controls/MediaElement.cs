@@ -220,7 +220,7 @@ namespace System.Windows.Controls {
 			if (h == null)
 				return;
 			
-			TimelineMarker marker = new TimelineMarker (calldata);
+			TimelineMarker marker = new TimelineMarker (calldata, false);
 			
 			h (this, new TimelineMarkerRoutedEventArgs (marker));
 		}

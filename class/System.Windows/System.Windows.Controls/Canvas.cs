@@ -32,7 +32,7 @@ namespace System.Windows.Controls {
 
 		static internal Canvas FromPtr (IntPtr raw)
 		{
-			return new Canvas (raw);
+			return new Canvas (raw, false);
 		}
 	
 		public static double GetLeft (UIElement element)

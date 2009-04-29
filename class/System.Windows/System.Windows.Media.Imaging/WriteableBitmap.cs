@@ -40,14 +40,14 @@ namespace System.Windows.Media.Imaging
 		IntPtr buffer;
 		bool rendered;
 
-		public WriteableBitmap (BitmapSource source) : base (NativeMethods.writeable_bitmap_new ())
+		public WriteableBitmap (BitmapSource source) : base (NativeMethods.writeable_bitmap_new (), true)
 		{
 			rendered = true;
 			if (source != null)
 				NativeMethods.writeable_bitmap_initialize_from_bitmap_source (native, source.native);
 		}
 
-		public WriteableBitmap (int width, int height, PixelFormat format) : base (NativeMethods.writeable_bitmap_new ())
+		public WriteableBitmap (int width, int height, PixelFormat format) : base (NativeMethods.writeable_bitmap_new (), true)
 		{
 			PixelWidth = width;
 			PixelHeight = height;

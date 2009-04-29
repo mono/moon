@@ -35,7 +35,7 @@ namespace System.Windows.Media.Imaging
 {
 	public sealed partial class BitmapImage : BitmapSource
 	{
-		public BitmapImage (Uri uriSource) : base (NativeMethods.bitmap_image_new ())
+		public BitmapImage (Uri uriSource) : base (NativeMethods.bitmap_image_new (), true)
 		{
 			UriSource = uriSource;
 		}
