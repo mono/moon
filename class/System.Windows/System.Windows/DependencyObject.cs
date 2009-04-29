@@ -82,10 +82,17 @@ namespace System.Windows {
 			NativeMethods.event_object_set_object_type (native, GetKind ());
 		}
 
-		internal DependencyObject (IntPtr raw)
+		internal DependencyObject (IntPtr raw, bool dropref)
 		{
 			native = raw;
 			NativeMethods.event_object_set_object_type (native, GetKind ());
+			// NOTE: This is horrible.  The managed case:
+			//	DependencyObject do = new DependencyObject ();
+			// Creates 2 refs, 1 in the dependency_object_new call, and 1 in the toggleref
+			// As such we need to drop the one from the new call, since we are self-managed
+			// by the toggleref here.
+			if (dropref)
+				NativeMethods.event_object_unref (native);
 		}
 
 		internal void Free ()

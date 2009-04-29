@@ -1,3 +1,9 @@
+2009-04-28  Geoff Norton  <gnorton@novell.com>
+
+	* DependencyObject.(g).cs: If an object is created in managed code
+	it would have 2 refs, 1 from the new, and 1 from the toggleref.
+	We need to drop one of these so the toggleref manages the object
+
 2009-04-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Application.cs: Move "xap_uri" initialization to PluginHost 
