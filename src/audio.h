@@ -171,6 +171,8 @@ class AudioSource : public EventObject {
 	void SetAudioStream (AudioStream *value);
 	AudioStream *GetAudioStream ();
 
+	bool IsPlaying () { return GetState () == AudioPlaying && !GetFlag (AudioWaiting); }
+
 	virtual const char *GetTypeName () { return "AudioSource"; }
 };
 
