@@ -105,7 +105,6 @@ namespace System.Windows {
 				}
 				if (tref != null)
 					tref.Free ();
-				this.native = IntPtr.Zero;
 				GC.SuppressFinalize (this);
 			}
 		}

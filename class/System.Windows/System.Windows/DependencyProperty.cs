@@ -43,7 +43,6 @@ namespace System.Windows {
 		IntPtr native;
 		Type property_type;
 		Type declaring_type; 
-		object default_value;
 		bool? attached;
 		ValueValidator validator;
 		
@@ -59,10 +58,7 @@ namespace System.Windows {
 			this.name = name;
 			
 			properties.Add (handle, this);
-			
-			this.default_value = Value.ToObject (property_type, NativeMethods.dependency_property_get_default_value (handle));
-			if (default_value == null && this.property_type.IsValueType && !IsNullable)
-				this.default_value = Activator.CreateInstance (property_type);
+
 			//Console.WriteLine ("DependencyProperty.DependencyProperty ({0:X}, {1}, {2})", handle, property_type.FullName, declaring_type.FullName);
 		}
 		
@@ -358,7 +354,13 @@ namespace System.Windows {
 		}
 				
 		internal object DefaultValue {
-			get { return default_value; }
+			get {
+				object default_value = Value.ToObject (property_type, NativeMethods.dependency_property_get_default_value (native));
+				if (default_value == null && this.property_type.IsValueType && !IsNullable)
+					default_value = Activator.CreateInstance (property_type);
+
+				return default_value;
+			}
 		}
 
 		internal bool IsReadOnly {

@@ -1,3 +1,16 @@
+2009-04-29  Geoff Norton  <gnorton@novell.com>
+
+	* Application.cs: Ensure we set the local before we register the native
+	value, otherwise we never create the toggleref on ourself (we try to make
+	it on IntPtr.Zero)
+	* DependencyObject.cs: This call is unnecessary and causes some invalid
+	registrations downstream.
+	* DependencyProperty.cs: We should not take a strong ref to the object
+	as we'd never be able to collect it, lets create the managed object on
+	demand.
+	* Deployment.cs: This is an invalid unref now that Application is properly
+	registering its toggleref handler.
+
 2009-04-28  Geoff Norton  <gnorton@novell.com>
 
 	* DependencyObject.(g).cs: If an object is created in managed code

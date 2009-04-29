@@ -262,7 +262,6 @@ namespace System.Windows {
 
 			Events.InitSurface (Surface.Native);
 			SetCurrentApplication (instance);
-			NativeMethods.event_object_unref (instance.NativeHandle);
 
 			return true;
 		}

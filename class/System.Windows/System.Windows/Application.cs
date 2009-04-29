@@ -515,9 +515,9 @@ namespace System.Windows {
 					throw new InvalidOperationException ("Application.native is already set");
 				}
 
-				NativeDependencyObjectHelper.AddNativeMapping (value, this);
-
 				_native = value;
+
+				NativeDependencyObjectHelper.AddNativeMapping (value, this);
 			}
 		}
 
