@@ -5,6 +5,16 @@
 	sha1 the expected binary before blindly installing it to gatekeep
 	against this.
 
+2009-04-29  Rolf Bjarne Kvinge  <RKvinge at novell.com>
+
+	* audio.h:
+	* audio.cpp: When looping over playing nodes, don't include
+	nodes in the Waiting state.
+
+	* audio-alsa.cpp: when Played, update the poll list. The state
+	might not actually have changed if only the Waiting flag was
+	switched.
+
 2009-04-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes some cursor position/selection bugs
