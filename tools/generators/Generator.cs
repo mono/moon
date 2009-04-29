@@ -129,7 +129,7 @@ class Generator {
 				text.Append (type.ManagedName.Replace ("`1", ""));
 				text.Append (" () : base (NativeMethods.");
 				text.Append (type.C_Constructor);
-				text.Append (" ())");
+				text.Append (" (), true)");
 				if (call_initialize) {
 					text.AppendLine ();
 					text.AppendLine ("\t\t{");
@@ -143,7 +143,7 @@ class Generator {
 			// Internal ctor
 			text.Append ("\t\tinternal ");
 			text.Append (type.ManagedName.Replace ("`1", ""));
-			text.Append (" (IntPtr raw) : base (raw)");
+			text.Append (" (IntPtr raw, bool dropref) : base (raw, dropref)");
 			if (call_initialize) {
 				text.AppendLine ();
 				text.AppendLine ("\t\t{");

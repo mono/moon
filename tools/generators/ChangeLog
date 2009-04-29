@@ -1,3 +1,9 @@
+2009-04-28  Geoff Norton  <gnorton@novell.com>
+
+	* Generator.cs: Modify the default IntPtr ctor to denote 
+	wether we've being created in managed and need to retain a ref
+	or not.
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs:
