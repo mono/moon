@@ -102,6 +102,7 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop)
 	while (iter->Next () && (setterBase = iter->GetCurrent (&err))) {
 		if (err) {
 	 		// Something bad happened - what to do?
+			delete iter;
 			return;
 	 	}
 
@@ -119,9 +120,12 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop)
 			// the hash holds a ref
 			setter->ref ();
 			g_hash_table_insert (style_hash, property, setter);
+			delete iter;
 			return;
 		}
 	}
+
+	delete iter;
 	
 }
 
@@ -141,6 +145,7 @@ StylePropertyValueProvider::SealStyle (Style *style)
 	while (iter->Next () && (setterBase = iter->GetCurrent (&err))) {
 		if (err) {
 	 		// Something bad happened - what to do?
+			delete iter;
 			return;
 	 	}
 
@@ -169,6 +174,8 @@ StylePropertyValueProvider::SealStyle (Style *style)
 		MoonError error;
 		obj->ProviderValueChanged (precedence, setter_property, NULL, setter_value, true, &error);
 	}
+
+	delete iter;
 }
 
 

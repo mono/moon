@@ -59,6 +59,8 @@ SetterBaseCollection::Seal ()
 		SetterBase *setter = current->AsSetterBase ();
 		setter->Seal ();
 	}
+
+	delete iter;
 }
 
 bool

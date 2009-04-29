@@ -4191,32 +4191,22 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 				return;
 
 			Value *col_v = obj->GetValue (dep);
+			if (!col_v) {
+				DependencyObject *c_obj = col_type->CreateInstance ();
+				obj->SetValue (dep, Value::CreateUnrefPtr (c_obj));
+				col_v = obj->GetValue (dep);
+				c_obj->unref ();
+			}
+			Collection *col = col_v->AsCollection ();
 			MoonError err;
 
 			if (col_type->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
-				Collection *col = NULL;
-
-				if (!col_v) {
-					col = (Collection *) col_type->CreateInstance ();
-					obj->SetValue (dep, Value (col));
-				} else {
-					col = (Collection *) col_v->AsCollection ();
-				}
-
 				Value child_val (child->GetAsDependencyObject ());
 				if (-1 == col->AddWithError (&child_val, &err))
 					return parser_error (p, child->element_name, NULL, err.code, err.message);
 			}
 			else if (col_type->IsSubclassOf (Type::RESOURCE_DICTIONARY)) {
-				ResourceDictionary *dict = NULL;
-
-				if (!col_v) {
-					dict = (ResourceDictionary*) col_type->CreateInstance ();
-					obj->SetValue (dep, Value (dict));
-				}
-				else {
-					dict = (ResourceDictionary*) col_v->AsResourceDictionary ();
-				}
+				ResourceDictionary *dict = (ResourceDictionary *)col;
 
 				const char *key = get_key_from_child (child);
 

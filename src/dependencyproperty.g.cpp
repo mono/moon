@@ -4017,6 +4017,19 @@ Deployment::SetSurface (Surface *value)
 	SetValue (Deployment::SurfaceProperty, Value (value));
 }
 
+AssemblyPartCollection *
+Deployment::GetParts ()
+{
+	Value *value = GetValue (Deployment::PartsProperty);
+	return value ? value->AsAssemblyPartCollection () : NULL;
+}
+
+void
+Deployment::SetParts (AssemblyPartCollection *value)
+{
+	SetValue (Deployment::PartsProperty, Value (value));
+}
+
 GridLength *
 ColumnDefinition::GetWidth ()
 {

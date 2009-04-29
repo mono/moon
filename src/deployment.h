@@ -55,7 +55,7 @@ public:
 	const static int EntryPointAssemblyProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
 	const static int EntryPointTypeProperty;
- 	/* @PropertyType=AssemblyPartCollection,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=AssemblyPartCollection,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int PartsProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
 	const static int RuntimeVersionProperty;
@@ -72,6 +72,10 @@ public:
 	
 	Surface *GetSurface ();
 	void SetSurface (Surface *surface);
+	
+	AssemblyPartCollection *GetParts ();
+	void SetParts (AssemblyPartCollection *col);
+
 
 	Application* GetCurrentApplication ();
 	/* @GenerateCBinding,GeneratePInvoke */

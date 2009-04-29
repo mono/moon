@@ -17,6 +17,7 @@
 #include "debug.h"
 #include "utils.h"
 #include "security.h"
+#include "namescope.h"
 
 #include <stdlib.h>
 #include <mono/jit/jit.h>
@@ -330,10 +331,11 @@ Deployment::~Deployment()
 
 #if OBJECT_TRACKING
 	pthread_mutex_destroy (&objects_alive_mutex);
-	g_hash_table_destroy (EventObject::objects_alive);
+	g_hash_table_destroy (objects_alive);
 #endif
 
-	delete types;
+	// FIXME: Deleting the types deletes the DPs and types, which could use us.  We need to move this somewhere
+	// delete types;
 }
 
 #if OBJECT_TRACKING
@@ -373,6 +375,9 @@ Deployment::Dispose ()
 	LOG_DEPLOYMENT ("Deployment::Dispose (): %p\n", this);
 	
 	Emit (ShuttingDownEvent);
+
+	if (IsDisposed ())
+		return;
 	
 	AbortAllDownloaders ();
 	
@@ -383,6 +388,12 @@ Deployment::Dispose ()
 	if (domain != root_domain)
 		mono_domain_finalize (domain, -1);
 #endif
+
+	if (GetParts ())
+		SetParts (NULL);
+	
+	if (GetValue (NameScope::NameScopeProperty))
+		SetValue (NameScope::NameScopeProperty, NULL);
 
 	EventObject::Dispose ();
 }
