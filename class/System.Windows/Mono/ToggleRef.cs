@@ -47,7 +47,6 @@ namespace Mono
 		
 		public void Initialize () {
 			NativeMethods.event_object_add_toggle_ref_notifier (handle, ToggleNotifyCallback);
-			NativeMethods.event_object_unref (handle);
 		}
 
 		public bool IsAlive {

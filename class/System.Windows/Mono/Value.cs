@@ -291,7 +291,7 @@ namespace Mono {
 				}
 
 				case Kind.MEDIAATTRIBUTE_COLLECTION: {
-					MediaAttributeCollection attrs = new MediaAttributeCollection (val->u.p);
+					MediaAttributeCollection attrs = new MediaAttributeCollection (val->u.p, false);
 					return attrs.AsDictionary ();
 				}
 
