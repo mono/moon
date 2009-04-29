@@ -29,6 +29,12 @@ G_END_DECLS
  
 #define MAX_STACK_FRAMES 30
 
+#ifdef HAVE_UNWIND
+#define UNW_LOCAL_ONLY
+#include <libunwind.h>
+#include <demangle.h>
+#endif
+
 #if DEBUG
 
 #if SL_2_0
@@ -42,6 +48,36 @@ void
 enable_vm_stack_trace (void)
 {
 	vm_stack_trace_enabled = true;
+}
+
+static char*
+get_method_name_from_ip (void *ip)
+{
+	if (!vm_stack_trace_enabled)
+		return NULL;
+
+#if MONO_STACK_ENABLED
+	MonoJitInfo *ji;
+	MonoMethod *mi;
+	char *method;
+	char *res;
+	MonoDomain *domain = mono_domain_get ();
+
+	ji = mono_jit_info_table_find (domain, (char*) ip);
+	if (!ji) {
+		return NULL;
+	}
+	mi = mono_jit_info_get_method (ji);
+	method = mono_method_full_name (mi, TRUE);
+
+	res = g_strdup_printf ("%s", method);
+
+	g_free (method);
+
+	return res;
+#else
+	return NULL;
+#endif
 }
 
 static char*
@@ -373,6 +409,9 @@ get_stack_trace_prefix (const char* prefix)
 	char **names;
 	
 	address_count = backtrace (ips, MAX_STACK_FRAMES);
+	for (int i = 0; i < address_count; i++) {
+		printf ("ip = 0x%lx\n", (long) ips[i]);
+	}
 
 	for (int i = 2; i < address_count; i++) {
 		ip = ips [i];
@@ -417,6 +456,153 @@ print_stack_trace_prefix (const char* prefix)
 	char* st = get_stack_trace_prefix (prefix);
 	printf (st);
 	g_free (st);
+}
+
+#ifdef HAVE_UNWIND
+
+enum FrameType {
+	UKNOWN = 0,
+	INSTANCE = 1,
+	STATIC = 2,
+	MONO = 3,
+	C = 4
+};
+
+struct Frame : List::Node {
+	long ptr;
+	char *name;
+	FrameType type;
+	virtual ~Frame () {
+		g_free (name);
+	}
+
+	virtual char * ToString () {
+		return g_strdup_printf ("%d|%1x|%s", type, ptr, name);
+	}
+};
+
+struct Frames : List::Node {
+	List *list;
+	char *act;
+	char *typname;
+	int refcount;
+	virtual ~Frames () {
+		g_free (act);
+		g_free (typname);
+		delete (list);
+	}
+};
+
+List *allframes = NULL;
+#endif
+
+void print_reftrace (const char * act, const char * typname, int refcount, bool keep) {
+
+#ifdef HAVE_UNWIND
+
+	unw_cursor_t cursor; unw_context_t uc;
+	unw_word_t ip, sp, bp;
+
+	unw_getcontext(&uc);
+	unw_init_local(&cursor, &uc);
+
+	char framename [1024];
+	Frame *frame;
+	List *frames = new List ();
+
+	int count = 0;
+	while (unw_step(&cursor) > 0 && count < MAX_STACK_FRAMES) {
+
+		frame = new Frame ();
+
+		unw_get_reg(&cursor, UNW_REG_IP, &ip);
+		unw_get_reg(&cursor, UNW_REG_SP, &sp);
+		unw_get_reg(&cursor, UNW_X86_EBP, &bp);
+
+		unw_get_proc_name (&cursor, framename, sizeof(framename), 0);
+
+		if (!*framename) {
+			if (mono_domain_get ()) {
+				frame->ptr = (long)ip;
+				char * ret = get_method_name_from_ip ((void*)ip);
+				frame->name = g_strdup (ret);
+				g_free (ret);
+				frame->type = MONO;
+			} else
+				continue;
+		} else {
+
+			char * demangled = cplus_demangle (framename, 0);
+			if (demangled) {
+				if (strstr (demangled, ":") > 0) {
+					frame->ptr = *(int*)(bp+8);
+					frame->name = g_strdup (demangled);
+					frame->type = INSTANCE;
+				} else {
+					frame->ptr = (long)bp;
+					frame->name = g_strdup (demangled);
+					frame->type = STATIC;
+				}
+			} else {
+				frame->ptr = (long)bp;
+				frame->name = g_strdup (framename);
+				frame->type = C;
+			}
+
+		}
+		frames->Append (frame);
+		count++;
+	}
+
+	if (keep) {
+		if (allframes == NULL)
+			allframes = new List ();
+		if (allframes->Length() % 50)
+			dump_frames ();
+		Frames *f = new Frames ();
+		f->list = frames;
+		f->act = g_strdup (act);
+		f->typname = g_strdup (typname);
+		f->refcount = refcount;
+		allframes->Append (f);
+	} else {
+
+		printf("trace:%s|%s|%d;", act, typname,refcount);
+		frame = (Frame*)frames->First ();
+		while (frame != NULL) {
+			char *s = frame->ToString ();
+			printf ("%s;", s);
+			g_free(s);
+			frame = (Frame*)frame->next;
+		}
+		printf ("\n");
+
+		delete frames;
+	}
+#endif
+}
+
+
+void dump_frames (void)
+{
+#if HAVE_UNWIND
+	Frames *frames = (Frames*)allframes->First ();
+	while (frames != NULL) {
+		printf("trace:%s|%s|%d;", frames->act, frames->typname, frames->refcount);
+		Frame *frame = (Frame*)frames->list->First ();
+		while (frame != NULL) {
+			char *s = frame->ToString ();
+			printf ("%s;", s);
+			g_free(s);
+			frame = (Frame*)frame->next;
+		}
+		printf ("\n");
+		frames = (Frames*)frames->next;
+	}
+	allframes->Clear (true);
+	//delete (frames);
+	//frames = NULL;
+#endif
 }
 
 #if SANITY

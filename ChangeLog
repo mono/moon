@@ -1,3 +1,7 @@
+2009-04-29  Andreia Gaita  <avidigal@novell.com>
+
+	* configure.ac: Add libunwind checks
+
 2009-04-23  Aaron Bockover  <abockover@novell.com>
 
 	* Makefile.am: Only enable the user-plugin target if 

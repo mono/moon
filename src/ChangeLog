@@ -1,3 +1,8 @@
+2009-04-29  Andreia Gaita  <avidigal@novell.com>
+
+	* debug.[cpp|h]: Add libunwind-backed output for tracing ref/unref
+	calls in a nice way, for later parsing and visualization.
+
 2009-04-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes some cursor position/selection bugs

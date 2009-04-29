@@ -32,6 +32,9 @@
 char* get_stack_trace_prefix (const char* prefix);
 void print_stack_trace_prefix (const char* prefix); 
 
+void print_reftrace (const char * type, const char * typname, int refcount, bool keep);
+void dump_frames (void);
+
 G_BEGIN_DECLS
 
 char* get_stack_trace (void);
@@ -45,6 +48,8 @@ G_END_DECLS
 
 #define print_stack_trace()
 #define enable_vm_stack_trace()
+#define print_reftrace (const char * type, const char * typname, int refcount, bool keep)
+#define dump_frames (void)
 
 #endif /* DEBUG */
 

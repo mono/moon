@@ -1,3 +1,7 @@
+2009-04-29  Andreia Gaita  <avidigal@novell.com>
+
+	* unwind.m4: Add libunwind checks
+
 2009-04-23  Aaron Bockover  <abock@gnome.org>
 
 	* firefox-xpi.m4:
