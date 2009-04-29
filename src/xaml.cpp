@@ -1618,12 +1618,13 @@ create_resource_list (XamlParserInfo *p)
 	XamlElementInstance *walk = p->current_element;
 
 	while (walk) {
-		if (walk->element_type == XamlElementInstance::ELEMENT && Type::Find (walk->info->GetKind ())->IsSubclassOf (Type::FRAMEWORKELEMENT)) {
+		Types * types = Deployment::GetCurrent ()->GetTypes ();
+		if (walk->element_type == XamlElementInstance::ELEMENT && types->IsSubclassOf (walk->info->GetKind (), Type::FRAMEWORKELEMENT)) {
 			ResourceDictionary *rd = (ResourceDictionary *) walk->GetAsDependencyObject ()->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
 			if (g_slist_index (list, rd) == -1)
 				list = g_slist_prepend (list, rd);
 		}
-		if (walk->element_type == XamlElementInstance::ELEMENT && Type::Find (walk->info->GetKind ())->IsSubclassOf (Type::RESOURCE_DICTIONARY)) {
+		if (walk->element_type == XamlElementInstance::ELEMENT && types->IsSubclassOf (walk->info->GetKind (), Type::RESOURCE_DICTIONARY)) {
 			ResourceDictionary *rd = (ResourceDictionary *) walk->GetAsDependencyObject ();
 			if (g_slist_index (list, rd) == -1)
 				list = g_slist_prepend (list, walk->GetAsDependencyObject ());
@@ -2967,7 +2968,7 @@ is_managed_kind (Type::Kind kind)
 static
 bool is_legal_top_level_kind (Type::Kind kind)
 {
-	if (kind == Type::MANAGED || kind == Type::OBJECT || Type::Find (kind)->IsSubclassOf (Type::DEPENDENCY_OBJECT))
+	if (kind == Type::MANAGED || kind == Type::OBJECT || Type::IsSubclassOf (kind, Type::DEPENDENCY_OBJECT))
 		return true;
 	return false;
 }
@@ -4161,9 +4162,10 @@ get_key_from_child (XamlElementInstance *child)
 static void
 dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child)
 {
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	if (parent->element_type == XamlElementInstance::PROPERTY) {
 		char **prop_name = g_strsplit (parent->element_name, ".", -1);
-		Type *owner = Type::Find (prop_name [0]);
+		Type *owner = types->Find (prop_name [0]);
 
 		if (owner) {
 			DependencyProperty *dep = DependencyProperty::GetDependencyProperty (owner->GetKind (), prop_name [1]);
@@ -4180,9 +4182,9 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			if (dep->GetPropertyType() == child->info->GetKind ())
 				return;
 
-			Type *col_type = Type::Find (dep->GetPropertyType());
-			if (!col_type->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)
-			    && !col_type->IsSubclassOf (Type::RESOURCE_DICTIONARY))
+			Type::Kind prop_type = dep->GetPropertyType ();
+			if (!types->IsSubclassOf (prop_type, Type::DEPENDENCY_OBJECT_COLLECTION)
+			    && !types->IsSubclassOf (prop_type, Type::RESOURCE_DICTIONARY))
 				return;
 
 			// Most common case, we will have a parent that we can snag the collection from
@@ -4192,6 +4194,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 
 			Value *col_v = obj->GetValue (dep);
 			if (!col_v) {
+				Type *col_type = types->Find (prop_type);
 				DependencyObject *c_obj = col_type->CreateInstance ();
 				obj->SetValue (dep, Value::CreateUnrefPtr (c_obj));
 				col_v = obj->GetValue (dep);
@@ -4200,12 +4203,12 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			Collection *col = col_v->AsCollection ();
 			MoonError err;
 
-			if (col_type->IsSubclassOf (Type::DEPENDENCY_OBJECT_COLLECTION)) {
+			if (types->IsSubclassOf (prop_type, Type::DEPENDENCY_OBJECT_COLLECTION)) {
 				Value child_val (child->GetAsDependencyObject ());
 				if (-1 == col->AddWithError (&child_val, &err))
 					return parser_error (p, child->element_name, NULL, err.code, err.message);
 			}
-			else if (col_type->IsSubclassOf (Type::RESOURCE_DICTIONARY)) {
+			else if (types->IsSubclassOf (prop_type, Type::RESOURCE_DICTIONARY)) {
 				ResourceDictionary *dict = (ResourceDictionary *)col;
 
 				const char *key = get_key_from_child (child);
@@ -4256,7 +4259,7 @@ XamlLoader::
 
 	}
 
-	if (Type::IsSubclassOf (parent->info->GetKind (), Type::DEPENDENCY_OBJECT_COLLECTION)) {
+	if (types->IsSubclassOf (parent->info->GetKind (), Type::DEPENDENCY_OBJECT_COLLECTION)) {
 		Collection *col = (Collection *) parent->GetAsDependencyObject ();
 		MoonError err;
 		Value child_val ((DependencyObject*)child->GetAsDependencyObject ());
@@ -4265,7 +4268,7 @@ XamlLoader::
 			return parser_error (p, child->element_name, NULL, err.code, err.message);
 		return;
 	}
-	else if (Type::IsSubclassOf (parent->info->GetKind (), Type::RESOURCE_DICTIONARY)) {
+	else if (types->IsSubclassOf (parent->info->GetKind (), Type::RESOURCE_DICTIONARY)) {
 		ResourceDictionary *dict = (ResourceDictionary *) parent->GetAsDependencyObject ();
 		MoonError err;
 
@@ -4809,11 +4812,12 @@ lookup_named_item (XamlElementInstance *inst, const char *name)
 {
 	if (inst->element_type == XamlElementInstance::ELEMENT) {
 		ResourceDictionary *rd = NULL;
-		Type *type = Type::Find (inst->info->GetKind ());
+		Types *types = Deployment::GetCurrent ()->GetTypes ();
+		Type::Kind kind = inst->info->GetKind ();
 
-		if (type->IsSubclassOf (Type::FRAMEWORKELEMENT)) {
+		if (types->IsSubclassOf (kind, Type::FRAMEWORKELEMENT)) {
 			rd = inst->GetAsDependencyObject ()->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
-		} else if (type->IsSubclassOf (Type::RESOURCE_DICTIONARY)) {
+		} else if (types->IsSubclassOf (kind, Type::RESOURCE_DICTIONARY)) {
 			rd = (ResourceDictionary*) inst->GetAsDependencyObject ();
 		}
 

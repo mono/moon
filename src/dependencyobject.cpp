@@ -1866,7 +1866,7 @@ DependencyObject::HasProperty (Type::Kind whatami, DependencyProperty *property,
 	if (!inherits)
 		return false;
 
-	if (!Type::Find (this_type)->IsSubclassOf (property->GetOwnerType ())) {
+	if (!Type::IsSubclassOf (this_type, property->GetOwnerType ())) {
 		bool is_prop_custom = property->IsCustom ();
 		bool is_owner_custom = property->GetOwnerType () > Type::LASTTYPE;
 		bool is_this_custom = this_type > Type::LASTTYPE;
