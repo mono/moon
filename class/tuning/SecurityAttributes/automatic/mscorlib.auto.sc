@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 132 methods needs to be decorated.
+# 131 methods needs to be decorated.
 
 # [VISIBLE] overrides 'System.Boolean System.Runtime.InteropServices.CriticalHandle::get_IsInvalid()'.
 +SC-M: System.Boolean Microsoft.Win32.SafeHandles.CriticalHandleMinusOneIsInvalid::get_IsInvalid()
@@ -33,9 +33,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::isolated_storage_increase_quota_to(System.String,System.String)
-
-# using 'System.Security.RuntimeDeclSecurityActions*' as a parameter type
-+SC-M: System.Boolean System.Security.SecurityManager::GetLinkDemandSecurity(System.Reflection.MethodBase,System.Security.RuntimeDeclSecurityActions*,System.Security.RuntimeDeclSecurityActions*)
 
 # using 'System.Security.RuntimeDeclSecurityActions*' as a parameter type
 +SC-M: System.Boolean System.Security.SecurityManager::InheritanceDemand(System.AppDomain,System.Reflection.Assembly,System.Security.RuntimeDeclSecurityActions*)

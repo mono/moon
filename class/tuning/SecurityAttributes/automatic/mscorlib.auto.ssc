@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 203 methods
+# 194 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::BuildTailoringTables(System.Globalization.CultureInfo,Mono.Globalization.Unicode.TailoringInfo,Mono.Globalization.Unicode.Contraction[]&,Mono.Globalization.Unicode.Level2Map[]&)
@@ -145,17 +145,8 @@
 +SSC-M: System.Void System.Runtime.Remoting.Metadata.SoapTypeAttribute::SetReflectionObject(System.Object)
 +SSC-M: System.Void System.Runtime.Remoting.RemotingConfiguration::LoadDefaultDelayedChannels()
 +SSC-M: System.String System.Runtime.Remoting.SoapServices::GetAssemblyName(System.Reflection.MethodBase)
-+SSC-M: System.Void System.Security.Cryptography.CryptoConfig::LoadConfig(System.String,System.Collections.Hashtable,System.Collections.Hashtable)
 +SSC-M: System.Void System.Security.Cryptography.X509Certificates.X509Certificate::InitFromHandle(System.IntPtr)
 +SSC-M: System.Byte[] System.Security.Cryptography.X509Certificates.X509Certificate::Load(System.String)
-+SSC-M: System.Security.Policy.Evidence System.Security.Policy.Evidence::GetDefaultHostEvidence(System.Reflection.Assembly)
-+SSC-M: System.Byte[] System.Security.Policy.Hash::GetData()
-+SSC-M: System.Void System.Security.Policy.PolicyLevel::LoadFromFile(System.String)
-+SSC-M: System.Void System.Security.Policy.PolicyLevel::Save()
-+SSC-M: System.Security.Policy.Zone System.Security.Policy.Zone::CreateFromUrl(System.String)
-+SSC-M: System.Security.PermissionSet System.Security.SecurityManager::Decode(System.IntPtr,System.Int32)
-+SSC-M: System.Void System.Security.SecurityManager::ReflectedLinkDemandInvoke(System.Reflection.MethodBase)
-+SSC-M: System.Boolean System.Security.SecurityManager::ReflectedLinkDemandQuery(System.Reflection.MethodBase)
 +SSC-M: System.Void System.String::CopyTo(System.Int32,System.Char[],System.Int32,System.Int32)
 +SSC-M: System.Char[] System.String::ToCharArray()
 +SSC-M: System.Char[] System.String::ToCharArray(System.Int32,System.Int32)
