@@ -1,3 +1,16 @@
+2009-04-29  Geoff Norton  <gnorton@novell.com>
+
+	* style.cpp:
+	* provider.cpp: GetIterator returns a ref'd iter, we need to delete
+	it when we're done to clean it up.
+	* dependencyproperty.g.cpp: You raise me up.
+	* deployment.cpp|h: Deployment has a cyclic reference to things 
+	stored in it (AssemblyParts, NameScope), we need to break this cycle
+	in our disposer so they can be properly cleand up.
+	* xaml.cpp: If we create a new collection, and set the collection as
+	some objects value, it will have a refcount of 2.  We need to unref
+	the collection once we've handed it off.
+
 2009-04-28  Geoff Norton  <gnorton@novell.com>
 
 	* popup.cpp: We cannot access this local value here since its been
