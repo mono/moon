@@ -1,3 +1,12 @@
+2009-04-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (SetTextInternal): Protect everything from
+	reentrancy and never replace the autocreated InlineCollection with
+	a newly allocated one. Instead, Clear() the old one and add the
+	new Run.
+	(OnCollectionChanged): If !setvalue, then it means we are updating
+	stuff elsewhere. Avoid causing reentrancy. Also simplified a bit.
+
 2009-04-29  Andreia Gaita  <avidigal@novell.com>
 
 	* dependencyobject.cpp: Add MOONLIGHT_OBJECT_TRACK_VISI for outputting

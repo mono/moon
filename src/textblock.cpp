@@ -736,32 +736,31 @@ TextBlock::GetTextInternal (InlineCollection *inlines)
 bool
 TextBlock::SetTextInternal (const char *text)
 {
-	Value *value = ReadLocalValue (TextBlock::InlinesProperty);
-	InlineCollection *curInlines = value ? value->AsInlineCollection () : NULL;
-	InlineCollection *inlines = NULL;
+	InlineCollection *inlines;
+	Value *value;
 	Run *run;
 	
-	if (text && text[0]) {
-		inlines = new InlineCollection ();
+	// Note: calling GetValue() may cause the InlineCollection to be
+	// autocreated, so we need to prevent reentrancy here.
+	setvalue = false;
+	
+	value = GetValue (TextBlock::InlinesProperty);
+	inlines = value->AsInlineCollection ();
+	inlines->Clear ();
+	
+	inlines = value->AsInlineCollection ();
+	inlines->Clear ();
+	
+	if (text) {
 		run = new Run ();
-		
 		run->SetText (text);
 		inlines->Add (run);
-		
-		if (curInlines && inlines->Equals (curInlines)) {
-			// old/new inlines are equal, don't set the new value
-			inlines->unref ();
-			return false;
-		}
-		
-		setvalue = false;
-		SetValue (TextBlock::InlinesProperty, Value (inlines));
-		setvalue = true;
-		
-		inlines->unref ();
-	} else if (curInlines) {
-		curInlines->Clear ();
+	} else {
+		// setting text to null results in String.Empty
+		SetValue (TextBlock::TextProperty, Value (""));
 	}
+	
+	setvalue = true;
 	
 	return true;
 }
@@ -826,7 +825,6 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			}
 		} else {
 			// result of a change to the TextBlock.Inlines property
-			InvalidateArrange ();
 			UpdateLayoutAttributes ();
 			invalidate = false;
 		}
@@ -886,39 +884,24 @@ void
 TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	InlineCollection *inlines = GetInlines ();
-	bool update_bounds = false;
-	bool update_text = false;
 	
 	if (col != inlines) {
 		FrameworkElement::OnCollectionChanged (col, args);
 		return;
 	}
 	
-	switch (args->GetChangedAction()) {
-	case CollectionChangedActionAdd:
-	case CollectionChangedActionRemove:
-	case CollectionChangedActionReplace:
-		// an Inline element has been added or removed, update our TextProperty
-		update_bounds = true;
-		update_text = true;
-		dirty = true;
-		break;
-	case CollectionChangedActionCleared:
-		// the collection has changed, only update our TextProperty if it was the result of a SetValue
-		update_bounds = setvalue;
-		update_text = setvalue;
-		dirty = true;
-		break;
-	default:
-		break;
+	if (args->GetChangedAction () == CollectionChangedActionClearing)
+		return;
+	
+	if (!setvalue) {
+		// changes being handled elsewhere...
+		return;
 	}
 	
-	if (update_text) {
-		setvalue = false;
-		// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
-		SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
-		setvalue = true;
-	}
+	setvalue = false;
+	// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
+	SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
+	setvalue = true;
 	
 	InvalidateMeasure ();
 	InvalidateArrange ();
