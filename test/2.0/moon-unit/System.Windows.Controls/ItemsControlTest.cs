@@ -253,6 +253,15 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void OnItemsChanged_Reset ()
+		{
+			ItemsControlPoker c = new ItemsControlPoker ();
+			c.Items.Add (new object ());
+			c.OnItemsChanged_ (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+			Assert.AreEqual (1, c.Items.Count, "#1");
+		}
+		
+		[TestMethod]
 		public void PrepareContainerForItemOverride ()
 		{
 			ItemsControlPoker ic = new ItemsControlPoker ();

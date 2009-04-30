@@ -1,3 +1,9 @@
+2009-04-30  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs: Add a test to
+	  show that no work is done in the virtual OnItemsChanged
+	  method to verify the change i made before.
+
 2009-04-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Xml/XmlXapResolverTest.cs: New.
