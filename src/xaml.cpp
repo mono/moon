@@ -4041,8 +4041,6 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, XamlElemen
 {
 	Value *v = value->GetAsValue ();
 	const char* prop_name = info->GetContentProperty (p);
-	if (prop_name == NULL)
-		return false;
 
 	return p->loader->SetProperty (p, p->GetTopElementPtr (), ((XamlElementInfoManaged *) info)->xmlns, GetAsValue (), this, GetParentPointer (), prop_name, v, value);
 }

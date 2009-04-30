@@ -1,3 +1,9 @@
+2009-04-30  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Don't require a content property name when we are
+	trying to set a managed content property.  This could be the
+	content of a managed collection.
+
 2009-04-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mp3.cpp:
