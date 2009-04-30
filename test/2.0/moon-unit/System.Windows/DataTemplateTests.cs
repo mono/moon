@@ -65,15 +65,11 @@ namespace MoonTest.System.Windows
 			// MyControl->ContentPresenter->Rectangle
 			CreateAsyncTest (c,
 				() => {
-					Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (c), "#1");
-					ContentPresenter presenter = (ContentPresenter) VisualTreeHelper.GetChild (c, 0);
-					Assert.IsNotNull (presenter, "#2");
-
-					Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (presenter), "#3");
-					Rectangle rect = (Rectangle) VisualTreeHelper.GetChild (presenter, 0);
-					Assert.IsNotNull (rect, "#4");
-
-					Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (rect), "#5");
+					Assert.VisualChildren (c,
+						new VisualNode<ContentPresenter> ("#1",
+							new VisualNode<Rectangle> ("#2")
+						)
+					);
 				}
 			);
 		}
