@@ -1,3 +1,9 @@
+2009-04-30  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyPropertyTest.cs: Add a test to
+	  ensure that we check DPs before using reflection to test
+	  properties.
+
 2009-04-30  Jackson Harper  <jackson@ximian.com>
 
 	* System.Windows/DataTempalteTests.cs: Test is fixed.

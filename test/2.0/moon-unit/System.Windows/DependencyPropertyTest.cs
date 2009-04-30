@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows.Data;
 
 #pragma warning disable 414
 #pragma warning disable 219
@@ -1241,10 +1242,32 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual ("", ManagedTestClass.f_3.ChangesToString (format, sep), "F4-F3-Changes");
 
 		}
+		
+		[TestMethod]
+		public void ManagedPriority ()
+		{
+			new ManagedDPPriority ();
+			ManagedDPPriority c = (ManagedDPPriority) XamlReader.Load (@"
+<x:ManagedDPPriority	xmlns=""http://schemas.microsoft.com/client/2007""
+						xmlns:x=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit""
+						BindingProp=""{Binding}"" />");
+			Assert.IsNull (c.BindingProp, "#1");
+			Assert.IsNull (c.GetValue (ManagedDPPriority.BindingPropProperty), "#2");
+			Assert.IsInstanceOfType<Expression> (c.ReadLocalValue (ManagedDPPriority.BindingPropProperty), "#3");
+		}
 
 #endregion
 	}
 
+	public class ManagedDPPriority : Control
+	{
+		public static readonly DependencyProperty BindingPropProperty = DependencyProperty.Register ("BindingProp", typeof (Binding), typeof (ManagedDPPriority), null);
+
+		public Binding BindingProp {
+			get; set;
+		}
+	}
+	
 	public class DependencyPropertyInfo
 	{
 		public DependencyProperty Property;
