@@ -526,6 +526,19 @@ namespace Mono.Xaml
 			return true;
 		}
 
+		private bool TrySetCollectionContentProperty (IntPtr parser, IntPtr top_level, string xmlns, object target, IntPtr target_ptr, IntPtr target_data, IntPtr value_ptr, IntPtr value_data)
+		{
+			IList list = target as IList;
+
+			if (list == null)
+				return false;
+
+			object value = Value.ToObject (null, value_ptr);
+
+			list.Add (value);
+			return true;
+		}
+
 		private bool SetProperty (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target_ptr, IntPtr target_data, IntPtr target_parent_ptr, string name, IntPtr value_ptr, IntPtr value_data)
 		{
 			string error;
@@ -538,6 +551,8 @@ namespace Mono.Xaml
 
 			if (name == null) {
 				if (TrySetEnumContentProperty (parser, top_level, xmlns, target, target_ptr, target_data, value_ptr, value_data))
+					return true;
+				if (TrySetCollectionContentProperty (parser, top_level, xmlns, target, target_ptr, target_data, value_ptr, value_data))
 					return true;
 				Console.Error.WriteLine ("no property name supplied");
 				return false;
