@@ -1,5 +1,10 @@
 2009-04-30  Alan McGovern  <amcgovern@novell.com>
 
+	* Assert.cs: Add a way to check visual parents to match the visual
+	child method already there.
+
+2009-04-30  Alan McGovern  <amcgovern@novell.com>
+
 	* Assert.cs:
 	* VisualNode.cs: Add a nice way to check visual trees using Assert.
 

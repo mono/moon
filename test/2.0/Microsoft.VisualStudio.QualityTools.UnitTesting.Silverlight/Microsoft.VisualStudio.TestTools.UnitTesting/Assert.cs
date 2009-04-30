@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
 			for (int i = 0; i < count; i++) {
 				DependencyObject child = VisualTreeHelper.GetChild (control, i);
-				Assert.IsInstanceOfType (child, nodes [i].Type);
+				Assert.IsInstanceOfType (child, nodes [i].Type, "Node {0}", nodes[i].Name);
 				nodes [i].DoCheck (child);
 
 				int children = VisualTreeHelper.GetChildrenCount (child);
@@ -40,6 +40,17 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 			}
 		}
 
+		public static void VisualParent (DependencyObject control, VisualNode node)
+		{
+			DependencyObject p = VisualTreeHelper.GetParent (control);
+			Assert.IsInstanceOfType (p, node.Type, "Node {0}", node.Name);
+			if (node.Siblings.Length == 0)
+				return;
+			else if (node.Siblings.Length == 1)
+				VisualParent (p, node.Siblings [0]);
+			else
+				throw new Exception (string.Format ("Invalid test - Node {0} contains more than 1 parent", node.Name));
+		}
 		public static void IsNull (object obj)
 		{
 			if (obj != null)
