@@ -1,5 +1,10 @@
 2009-04-30  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: We need to pass the object to GetPropertyName because
+	non DOB objects can have content properties now.
+
+2009-04-30  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Don't require a content property name when we are
 	trying to set a managed content property.  This could be the
 	content of a managed collection.

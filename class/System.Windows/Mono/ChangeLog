@@ -1,5 +1,11 @@
 2009-04-30  Jackson Harper  <jackson@ximian.com>
 
+	* XamlLoaderCallbacks.cs:
+	* ManagedXamlLoader.cs: Get a Value* instead of a Kind for
+	GetContentPropertyName this fixes a crash on DOB objects.
+
+2009-04-30  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs: Allow setting IList collection elements as
 	content property.
 

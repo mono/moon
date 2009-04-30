@@ -41,7 +41,7 @@ namespace Mono.Xaml
 
 	internal delegate bool SetPropertyCallback (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_data, IntPtr target_parent, string name, IntPtr value_ptr, IntPtr value_data);
 	internal delegate void ImportXamlNamespaceCallback (IntPtr parser, string xmlns);
-	internal delegate string GetContentPropertyNameCallback (IntPtr parser, Kind kind);
+	internal delegate string GetContentPropertyNameCallback (IntPtr parser, IntPtr object_ptr);
 	
 	internal struct XamlLoaderCallbacks {
 		public LookupObjectCallback lookup_object;

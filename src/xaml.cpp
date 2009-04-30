@@ -1226,10 +1226,10 @@ XamlLoader::LookupObject (void *p, void *top_level, const char* xmlns, const cha
 }
 
 const char *
-XamlLoader::GetContentPropertyName (void *p, Type::Kind kind)
+XamlLoader::GetContentPropertyName (void *p, Value *object)
 {
 	if (callbacks.get_content_property_name) {
-		return callbacks.get_content_property_name (p, kind);
+		return callbacks.get_content_property_name (p, object);
 	}
 	return NULL;
 }
@@ -3931,7 +3931,7 @@ XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)
 		return NULL;
 
 	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (p, kind);
+	const char *res = p->loader->GetContentPropertyName (p, obj);
 	if (res)
 		return res;
 	return XamlElementInfo::GetContentProperty (p);
@@ -4102,7 +4102,7 @@ XamlElementInfoImportedManaged::GetContentProperty (XamlParserInfo *p)
 
 	
 	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (p, kind);
+	const char *res = p->loader->GetContentPropertyName (p, obj);
 	if (res)
 		return res;
 	

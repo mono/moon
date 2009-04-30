@@ -1053,12 +1053,14 @@ namespace Mono.Xaml
 
 		}
 
-		private string cb_get_content_property_name (IntPtr parser, Kind kind)
+		private string cb_get_content_property_name (IntPtr parser, IntPtr object_ptr)
 		{
-			Type t = Deployment.Current.Types.KindToType (kind);
-			if (t == null)
+			object obj = Value.ToObject (null, object_ptr);
+
+			if (obj == null)
 				return null;
 
+			Type t = obj.GetType ();
 			object [] o = t.GetCustomAttributes (typeof (ContentPropertyAttribute), true);
 			if (o.Length == 0)
 				return null;
