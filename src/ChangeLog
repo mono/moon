@@ -1,5 +1,14 @@
 2009-04-29  Larry Ewing  <lewing@novell.com>
 
+	* value.h (checked_get_subclass): use IsSubclassOrSuperclassOf to
+	reduce Deployment::GetCurrent calls.
+
+	* type.h:
+	* type.cpp: add IsSubclassOrSuperclassOf so that we can use it it
+	for value checking.
+
+2009-04-29  Larry Ewing  <lewing@novell.com>
+
 	* xaml.cpp:
 	* dependencyobject.cpp: reuse types to reduce calls to
 	Deployment::GetCurrent ().

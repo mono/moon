@@ -106,6 +106,14 @@ Type::LookupEvent (const char *event_name)
 }
 
 bool
+Type::IsSubclassOrSuperclassOf (Type::Kind unknown, Type::Kind known)
+{
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	
+	return types->IsSubclassOf(unknown, known) || types->IsSubclassOf (known, unknown);
+}
+
+bool
 Type::IsSubclassOf (Type::Kind type, Type::Kind super)
 {
 	return Deployment::GetCurrent ()->GetTypes ()->IsSubclassOf (type, super);

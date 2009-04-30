@@ -303,7 +303,7 @@ class YUVConverter;
 
 
 #define checked_get_exact(kind, errval, mem)  g_return_val_if_fail (k == (kind), errval); return mem;
-#define checked_get_subclass(kind, castas)  if (u.dependency_object == NULL) return NULL; g_return_val_if_fail (Type::Find((kind))->IsSubclassOf(k) || Type::Find(k)->IsSubclassOf((kind)), NULL); return (castas*)u.dependency_object;
+#define checked_get_subclass(kind, castas)  if (u.dependency_object == NULL) return NULL; g_return_val_if_fail (Type::IsSubclassOrSuperclassOf (k, kind), NULL); return (castas*)u.dependency_object;
 
 struct Value {
 public:
