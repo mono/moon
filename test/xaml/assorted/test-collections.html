@@ -8,9 +8,10 @@
 <body>
 
 <script type="text/javascript">
+var textblock;
+
 function Log (content, textblock, message)
 {
-textblock.printf (message);
 	var run = content.createFromXaml ("<Run/>");
 	run.text = message;
 	
@@ -26,6 +27,11 @@ textblock.printf (message);
 
 function OnLoaded (sender, eventArgs)
 {
+	if (!TestPluginReady) {
+		setTimeout (function () { OnLoaded (sender, eventArgs); }, 100);
+		return;
+	}
+	
 	var control = document.getElementById ("agControl");
 	var content = control.content;
 	
@@ -37,6 +43,8 @@ function OnLoaded (sender, eventArgs)
 
 	var xaml = "<Image Source='moonlight_logo.png'/>";
 	var image = content.createFromXaml (xaml);
+
+	textblock = log;
 	
 	// add the image to canvas1
 	try {
@@ -94,7 +102,8 @@ function OnLoaded (sender, eventArgs)
 
   <Canvas x:Name="canvas2" Canvas.Left="5" Canvas.Top="205" Width="400" Height="195" Background="Blue"/>
 
-  <TextBlock x:Name="log" Canvas.Left="5" Canvas.Top="400" Width="400" TextWrapping="WrapWithOverflow"/>
+
+  <TextBlock x:Name="log" Canvas.Left="5" Canvas.Top="400" Width="400" />
 </Canvas>
 </script>
 

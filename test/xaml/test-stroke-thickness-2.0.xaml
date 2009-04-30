@@ -1,0 +1,34 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Rectangle Canvas.Left="10" Canvas.Top="10" Width="100" Height="50" Stroke="Red" StrokeThickness="5" RadiusX="5" RadiusY="5"/>
+  <Rectangle Canvas.Left="10" Canvas.Top="10" Width="100" Height="50" Fill="Pink" RadiusX="5" RadiusY="5"/>
+  <TextBlock Canvas.Left="35" Canvas.Top="70" FontSize="10" Text="Shape #1"/>
+
+  <Ellipse Canvas.Left="120" Canvas.Top="10" Width="100" Height="50" Stroke="Red" StrokeThickness="1"/>
+  <Ellipse Canvas.Left="120" Canvas.Top="10" Width="100" Height="50" Fill="Pink"/>
+  <TextBlock Canvas.Left="145" Canvas.Top="70" FontSize="10" Text="Shape #2"/>
+
+  <Ellipse Canvas.Left="230" Canvas.Top="10" Width="100" Height="50" Stroke="Red" StrokeThickness="5"/>
+  <Ellipse Canvas.Left="230" Canvas.Top="10" Width="100" Height="50" Fill="Pink"/>
+  <TextBlock Canvas.Left="255" Canvas.Top="70" FontSize="10" Text="Shape #3"/>
+
+  <Ellipse Canvas.Left="340" Canvas.Top="10" Width="100" Height="50" Stroke="Red" StrokeThickness="15"/>
+  <Ellipse Canvas.Left="340" Canvas.Top="10" Width="100" Height="50" Fill="Pink"/>
+  <TextBlock Canvas.Left="365" Canvas.Top="70" FontSize="10" Text="Shape #4"/>
+
+  <Ellipse Canvas.Left="450" Canvas.Top="10" Width="100" Height="50" Stroke="Red" StrokeThickness="50"/>
+  <Ellipse Canvas.Left="450" Canvas.Top="10" Width="100" Height="50" Fill="Pink"/>
+  <TextBlock Canvas.Left="475" Canvas.Top="70" FontSize="10" Text="Shape #5"/>
+
+  <TextBlock Canvas.Left="10" Canvas.Top="100" Width="550">
+    <Run>Shape #1: No red outline should be visible</Run><LineBreak/>
+    <LineBreak/>
+    <Run>Shape #2: Feint red outline should be visible around the entire ellipse (very fuzzy, likely due to AntiAliasing?)</Run><LineBreak/>
+    <LineBreak/>
+    <Run>Shape #3: Should be identical to Shape #2</Run><LineBreak/>
+    <LineBreak/>
+    <Run>Shape #4: Outline should be slightly thicker at the midpoint of each quadrant's arc and gradually slim down to a feint outline at each axis</Run><LineBreak/>
+    <LineBreak/>
+    <Run>Shape #5: Outline should be look similar to a rectangle with semi-circle ends</Run>
+  </TextBlock>
+</Canvas>

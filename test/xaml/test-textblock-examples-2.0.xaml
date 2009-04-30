@@ -1,0 +1,68 @@
+<Canvas xmlns="http://schemas.microsoft.com/client/2007">
+
+  <Canvas>
+    <Rectangle Stroke="Black" Width="500" Height="80"/>
+    <TextBlock FontFamily="Arial" Width="400" Text="Sample text formatting runs">
+      <LineBreak/>
+      <Run Foreground="Maroon" FontFamily="Courier New" FontSize="24">Courier New 24</Run>
+      <LineBreak/>
+      <Run Foreground="Teal" FontFamily="Times New Roman" FontSize="18" FontStyle="Italic">Times New Roman Italic 18</Run>
+      <LineBreak/>
+      <Run Foreground="SteelBlue" FontFamily="Verdana" FontSize="14" FontWeight="Bold">Verdana Bold 14</Run>
+    </TextBlock>
+  </Canvas>
+
+  <Canvas Canvas.Top="80">
+    <Rectangle Stroke="Black" Width="500" Height="190"/>
+
+    <!-- TextBlock with a single brush applied to the text. -->
+    <TextBlock FontSize="32" FontWeight="Bold" Foreground="Maroon">
+      Maroon
+    </TextBlock>
+
+    <!-- TextBlock with three brushes applied to the text. -->
+    <TextBlock Canvas.Top="60" FontFamily="Arial" FontSize="32" FontWeight="Bold" Foreground="Navy">
+      Navy
+      <Run Text="DodgerBlue " Foreground="DodgerBlue"/>
+      <Run Text="LightSteelBlue " Foreground="LightSteelBlue"/>
+    </TextBlock>
+
+    <!-- TextBlock with a linear gradient brush applied to the text. -->
+    <TextBlock Canvas.Top="100" FontFamily="Verdana" FontSize="32" FontWeight="Bold">
+      LINEAR GRADIENT BRUSH
+      <TextBlock.Foreground>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+          <GradientStop Color="Red" Offset="0.0" />
+          <GradientStop Color="Orange" Offset="0.2" />
+          <GradientStop Color="Yellow" Offset="0.4" />
+          <GradientStop Color="Green" Offset="0.6" />
+          <GradientStop Color="Blue" Offset="0.8" />
+          <GradientStop Color="Violet" Offset="1.0" />
+        </LinearGradientBrush>
+      </TextBlock.Foreground>
+      <TextBlock.RenderTransform>
+        <ScaleTransform ScaleY="3.0" />
+      </TextBlock.RenderTransform>
+    </TextBlock>
+  </Canvas>
+
+  <Canvas Canvas.Top="270">
+    <Rectangle Stroke="Black" Width="500" Height="125"/>
+    <TextBlock FontFamily="Verdana" FontSize="32" FontWeight="Bold" Foreground="SteelBlue" Text="Scaled Text"/>
+
+    <!-- Scale the text width using a ScaleTransform. -->
+    <TextBlock Canvas.Top="40" FontFamily="Verdana" FontSize="32" FontWeight="Bold" Foreground="SteelBlue" Text="Scaled Text">
+      <TextBlock.RenderTransform>
+        <ScaleTransform ScaleX="1.5" ScaleY="1.0" />
+      </TextBlock.RenderTransform>
+    </TextBlock>
+
+    <!-- Scale the text height using a ScaleTransform. -->
+    <TextBlock Canvas.Top="80" FontFamily="Verdana" FontSize="32" FontWeight="Bold" Foreground="SteelBlue" Text="Scaled Text">
+      <TextBlock.RenderTransform>
+        <ScaleTransform ScaleX="1.0" ScaleY="1.5" />
+      </TextBlock.RenderTransform>
+    </TextBlock>
+  </Canvas>
+
+</Canvas>

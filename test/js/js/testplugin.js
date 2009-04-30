@@ -110,9 +110,9 @@ function loadTestPlugin ()
 
 	TestHost = 
 	{
-		TranslateCoordinates : false,
+		TranslateCoordinates : true,
 		Connect : function () {},
-		LogDebug : function (msg) { _TestPlugin.LogDebug (msg); }, 
+		LogDebug : function (msg) { _TestPlugin.LogMessage (msg); }, 
 		LogError : function (msg) { _TestPlugin.LogError (msg); }, 
 		LogWarning : function (msg) { _TestPlugin.LogWarning (msg); },
 		LogResult : function (result) { _TestPlugin.LogResult (result); },
@@ -121,7 +121,7 @@ function loadTestPlugin ()
 		SignalShutdown : function  ()
 		{
 			_TestPlugin.SignalShutdown (document.name);
-			setTimeout (function () { window.location = "about:blank"; }, 100);
+			//setTimeout (function () { window.location = "about:blank"; }, 100);
 		},
 		CaptureSingleImage : function (a, b, x, y, w, h)
 		{
@@ -161,6 +161,8 @@ function loadTestPlugin ()
 		mouseRightClick : function () { _TestPlugin.mouseRightClick (); },
 		sendKeyInput : function (a, b, c, d) { _TestPlugin.sendKeyInput (a, b, c, d); },
 
+		GetMoonlightControl : function () { return document.getElementById ("_MoonlightControl"); },
+
 		GetX : function () {
 			return this.GetPluginPosition ().x;
 		},
@@ -175,15 +177,45 @@ function loadTestPlugin ()
 				return {x: _TestPlugin.X, y: _TestPlugin.Y };
 			} if (Host.IE) {
 				return this.GetPluginPositionIE ();
+			} else if (Host.Firefox) {
+				return this.GetPluginPositionFirefox ();
 			} else {
 				alert ("testplugin.js:GetPluginPosition: don't know how to get the position of the silverlight control in this browser (userAgent: " + navigator.userAgent + ") Moonlight: " + Host.Moonlight);
 				return {x: 0, y: 0};
 			}
 		},
 		
+		GetPluginPositionFirefox : function ()
+		{
+			var obj = this.GetMoonlightControl ();
+			
+			var r = { x: obj.offsetLeft, y: obj.offsetTop };
+			
+			var  p = obj.offsetParent;
+
+			while (p) {
+				r.x += p.offsetLeft;
+				r.y += p.offsetTop;
+				p = p.offsetParent;
+			}
+			
+            r.y += window.outerHeight - window.innerHeight;
+            r.x += window.outerWidth - window.innerWidth;
+            
+            var offset = (window.outerWidth - window.innerWidth) / 2;
+            r.x -= offset;
+            r.y -= offset;
+
+            r.x += window.screenX;
+            r.y += window.screenY;
+                        
+			return r;
+			
+		},
+		
 		GetPluginPositionIE : function ()
 		{
-			var obj = document.getElementById ("_MoonlightControl"); // _TestPlugin;
+			var obj = this.GetMoonlightControl ();
 			
 			var r = { x: obj.offsetLeft, y: obj.offsetTop };
 			
@@ -269,7 +301,7 @@ TestLogger = new function()
         if (TestHost == null) {
 			pendingMessages.push (msg); pendingTypes.push ("Debug");
 		} else {
-		 	TestHost.LogDebug (msg);
+		 	TestHost.LogMessage (msg);
 		}
     }
     this.LogWarning = function (msg)
@@ -319,9 +351,9 @@ function SignalShutdown ()
 
 function createSafePlugin ()
 {
-	if (Host.Firefox && Host.Windows)
-		createMockTestPlugin ();
-	else
+	//if (Host.Firefox && Host.Windows)
+	//	createMockTestPlugin ();
+	//else
 		createTestPlugin ();
 }
 

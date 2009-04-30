@@ -39,7 +39,7 @@
 	function XamlALoaded (sender, args)
 	{
 		TestLogger.LogDebug ("XamlALoaded");
-		plugin = document.getElementById ("JoltActiveX");
+		plugin = document.getElementById ("_MoonlightControl");
 		dl = plugin.createObject ("Downloader");
 			
 		// Download a file
@@ -86,16 +86,9 @@
 
 <div>
 <embed type="application/x-silverlight" width="300" height="300"
-     id="JoltActiveX" Source="#xamlA" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     id="_MoonlightControl" Source="#xamlA" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>
-
-<!--
-<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
->
-</embed>
--->
-
 </body>
 </html>

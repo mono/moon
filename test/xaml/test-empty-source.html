@@ -1,49 +1,54 @@
 <html><head>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<script type="text/javascript" src="../js/js/utils.js"></script>
+		<script type="text/javascript" src="../js/js/testplugin.js"></script>
 
 <script type="text/javascript">
+var loaded = false;
+
 function load () {
-    doc = document;
-    holder = document.getElementById ("holder");
 
-    var xaml = doc.createElement ("script");
-    xaml.id = "dorkwad";
-    xaml.type = "text/xaml";
-    xaml.appendChild (doc.createTextNode ('\
-        <Canvas xmlns="http://schemas.microsoft.com/client/2007" Background="Yellow"> \
-        <TextBlock Canvas.Left="20" Canvas.Top="20" Width="150" Height="200">Hello!</TextBlock> \
-        </Canvas>'
-    ));
-    holder.appendChild (xaml);
-
-    var silver = doc.createElement ("embed");
-    silver.type = "application/x-silverlight";
-    silver.width = "300";
-    silver.height = "200";
-    silver.id = "banannas";
-    silver.Background = "#ffff00";
+	if (!TestPluginReady) {
+		setTimeout (load, 100);
+		return;
+	}
+	
+	var banannas = document.getElementById ("banannas");
+	banannas.Source = "#xamlContent";
+	banannas.Source = "#dorkwad";
     
-    holder.appendChild (silver);	
-    silver.Source = "#xamlContent";
-    silver.Source = "#dorkwad";
+    loaded = true;
 }
 
 function disable (sender, args) {
-    var t2 = document.getElementById ("Test2");
+
+	if (!loaded) {
+		setTimeout (function () { disable (sender, args); }, 100);
+		return;
+	}
+
+    var t2 = document.getElementById ("_MoonlightControl");
     var bananna = document.getElementById ("banannas");
 
     t2.source = "#dorkwad";
     bananna.Source = "#dorkwad";
 
-    var test_plugin = document.getElementById ("_TestPlugin");
     window.setTimeout (function () {
-	test_plugin.CaptureSingleImage ("", "test-empty-source.html.png", 0, 0, 500, 500);
-	test_plugin.SignalShutdown (document.name);
+		TestHost.CaptureSingleImage ("", "test-empty-source.html.png", 0, 0, 500, 500);
+		TestHost.SignalShutdown (document.name);
     }, 200);
 }
 
+function OnPluginError (sender, args)
+{
+	TestLogger.LogError ("Plugin error: " + args.ErrorMessage);
+	TestLogger.LogResult (-1);
+	SignalShutdown ();
+	
+}
+
 </script>
-</head><body onload="load ()">
+</head><body onload="load ()" scroll="no" style='border-width: 0px'>
     <div id="holder">
     <script type="text/xaml" id="xamlContent">
       <?xml version="1.0"?>
@@ -53,10 +58,20 @@ function disable (sender, args) {
 	</Image>
       </Canvas> 
     </script>
-    <embed id="Test2" width="300" height="200" type="application/x-silverlight" Source="#xamlContent" background="#ff00ff">
+
+	    <script type="text/xaml" id="dorkwad">
+	      	<?xml version="1.0"?>
+	        <Canvas xmlns="http://schemas.microsoft.com/client/2007" Background="Yellow"  > 
+	        <TextBlock Canvas.Left="20" Canvas.Top="20" Width="150" Height="200">Hello!</TextBlock> 
+	        </Canvas>
+	    </script>
+    
+    <embed id="_MoonlightControl" width="300" height="200" type="application/x-silverlight" Source="#xamlContent" background="#ff00ff" OnError="OnPluginError" style="position:absolute; left:0px; top:0px">
     </embed>
+	    
+    <embed id="banannas" width="300" height="200" type="application/x-silverlight" background="#ffff00" OnError="OnPluginError" style="position:absolute; left:300px; top:0px">
+    </embed>
+	    
     </div>
-<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
-</embed>
 </body>
 </html>

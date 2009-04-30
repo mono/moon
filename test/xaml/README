@@ -1,8 +1,5 @@
 
-
 * If the test is uses silverlight animation, please indicate so by using 'animation' in the file name.
-* If the xaml file includes any .dlls, make sure the .dlls are in this directory.
-
 
 
 NON-WORKING

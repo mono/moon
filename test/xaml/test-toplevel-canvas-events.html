@@ -71,7 +71,7 @@
 		'<embed type="application/x-silverlight" width="20" height="20" id="TF3" Source="#xaml5" OnError="OnPluginError" OnLoad="OnPluginLoaded" background="Green"></embed>'
 			];
 	var results = [
-		true, true, false, false, false, false
+		true, true, true, true, true, true
 		];
 
 	function DoCreateXamlTests ()
@@ -84,21 +84,22 @@
 
 		for (var i = 0; i < xamls.length; i++) {
 			try {
-				var f = false;
 				try {
 					obj = plugin.content.createFromXaml (xamls [i]);
+					
+					try {
+						top.Children.Add (obj);
+					} catch (e) {
+						failed = true;
+						TestLogger.LogError ("Was not able to add xaml fragment #" + i + " to top level canvas.");
+					}
 				} catch (e) {
-					f = true;
+					failed = true;
 					TestLogger.LogError ("Couldn't create xaml fragment #" + i + ": " + e);
 				}
-				if (!f) {
-					top.Children.Add (obj);
-					failed = true;
-					TestLogger.LogError ("Was able to add xaml fragment #" + i + " to top level canvas, this should have caused an exception.");
-				}
-				failed = f;
 			} catch (e) {
-				TestLogger.LogDebug ("Exception (as expected) while adding xaml fragment: " + e);
+				TestLogger.LogDebug ("Exception (not expected) while adding xaml fragment: " + e);
+				failed = true;
 			}
 		}
 	}

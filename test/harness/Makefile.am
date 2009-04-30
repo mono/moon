@@ -6,5 +6,4 @@ install-test-plugin:
 
 dist-hook:
 	cp -a $(srcdir)/masters $(distdir)/masters
-	cp -a $(srcdir)/baselines $(distdir)/baselines
-	find $(distdir)/masters $(distdir)/baselines -name .svn | xargs rm -rf
+	find $(distdir)/masters -name .svn | xargs rm -rf

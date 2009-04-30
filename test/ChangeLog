@@ -1,3 +1,33 @@
+2009-05-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* xaml/README:
+	* xaml/test-xaml.html:
+	* xaml/input-test.html:
+	* xaml/test-bubbling.html:
+	* xaml/test-empty-source.html:
+	* xaml/test-runtimeerrors.html:
+	* xaml/test-transform-clip.htm:
+	* xaml/test-canvas-no-size.html:
+	* xaml/test-event-argcount.html:
+	* xaml/test-directory-in-zip.html:
+	* xaml/test-downloader-events.html:
+	* xaml/test-inkpresenter-scale.htm:
+	* xaml/test-clip-invalid-update.htm:
+	* xaml/test-transform-group-2.0.xaml:
+	* xaml/test-empty-element-source.html:
+	* xaml/test-stroke-thickness-2.0.xaml:
+	* xaml/test-second-surface-error.html:
+	* xaml/assorted/test-collections.html:
+	* xaml/test-inkpresenter-position.htm:
+	* xaml/test-trigger-collection-2.0.xaml:
+	* xaml/test-toplevel-canvas-events.html:
+	* xaml/test-textblock-examples-2.0.xaml:
+	* xaml/test-setsource-with-downloader.html:
+	* xaml/test-setsource-with-downloader.xaml:
+	* xaml/assorted/test-stroke-collection.html:
+	* xaml/test-animation-null-keyframe-2.0.xaml: Updated to work
+	  on FF/IE+SL2.
+
 2009-04-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml/test-bubbling.html: Make sure the test doesn't start

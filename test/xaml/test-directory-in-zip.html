@@ -1,5 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <title>Test file</title>
@@ -7,7 +5,7 @@
   <script src="../js/js/utils.js"></script>
   <script src="../js/js/testplugin.js"></script>
 </head>
-<body>
+<body scroll="no" style='border-width: 0px'>
 
 <div id="Moonlight">
 
@@ -55,7 +53,12 @@
 	
 	function OnPluginLoaded (o, e)
 	{
-		host = document.getElementById ("JoltActiveX");
+		if (!TestPluginReady) {
+			setTimeout (function () { OnPluginLoaded (o, e); }, 100);
+			return;
+		}
+	
+		host = document.getElementById ("_MoonlightControl");
 		dl = host.createObject ("Downloader");
 
 		dl.addEventListener ("Completed", "DownloaderCompleted");
@@ -68,15 +71,10 @@
 
 <div>
 <embed type="application/x-silverlight" width="800" height="580"
-     id="JoltActiveX" Source="test-directory-in-zip.xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     id="_MoonlightControl" Source="test-directory-in-zip.xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>
-<!--
-<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
->
-</embed>
--->
 </body>
 
 </html>

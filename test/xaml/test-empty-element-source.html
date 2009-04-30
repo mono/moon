@@ -1,5 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <title>Test file</title>
@@ -7,7 +5,7 @@
 	<script type="text/javascript" src="../js/js/utils.js"></script>
 	<script type="text/javascript" src="../js/js/testplugin.js"></script>
 </head>
-<body>
+<body scroll="no" style='border-width: 0px'>
 
 <div id="Moonlight">
 	<script type="text/xaml" id="xamlContent">
@@ -18,14 +16,6 @@
 	</script>
 
 	<script language="javascript">
-
-		function OnTestPluginReady ()
-		{
-			TestHost.TranslateCoordinates = true;
-			TestHost.CaptureSingleImage ("", "test-empty-element-source.html.png", 0, 0, 100, 100);
-			SignalShutdown ();
-		}
-	
 		function OnPluginError (sender, args)
 		{
 			TestLogger.LogError (errorString);
@@ -34,11 +24,20 @@
 	
 		function onLoaded (o, e)
 		{
+			if (!TestPluginReady) {
+				setTimeout (function () { onLoaded (o, e); }, 100);
+				return;
+			}
+			
+			setTimeout (function () {
+				TestHost.CaptureSingleImage ("", "test-empty-element-source.html.png", 0, 0, 100, 100);
+				SignalShutdown ();
+			}, 250);
 		}
 	</script>
 
 	<embed type="application/x-silverlight" width="100" height="100"
-		id="JoltActiveX" Source="#xamlContent" OnError="OnPluginError" OnLoad="onLoaded"
+		id="_MoonlightControl" Source="#xamlContent" OnError="OnPluginError" OnLoad="onLoaded"
 		style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 	</embed>
 

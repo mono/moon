@@ -67,7 +67,7 @@
 			return;
 		}
 
-		host = document.getElementById ("JoltActiveX");
+		host = document.getElementById ("_MoonlightControl");
 		mediaElement = host.content.findName ("media");
 
 		if (!mediaElement) {
@@ -98,7 +98,7 @@
 			TestLogger.LogError ("DownloadProgressChangedEvent: We shouldn't be able to set the source to a partially downloaded downloader.");
 		} catch (ex) {
 			progress_checked = 3;
-			TestLogger.LogError ("DownloadProgressChangedEvent: Tried to set the source before the download completed, and failed (as we should): " + ex);
+			TestLogger.LogDebug ("DownloadProgressChangedEvent: Tried to set the source before the download completed, and failed (as we should): " + ex);
 		}
 
 		// Do the next test (calling setsource when downloader has completed).		
@@ -133,9 +133,16 @@
 		TestLogger.LogError ("DownloadFailedEvent: " + sender.Uri + ", " + ErrorEventArgsToOneLineString (args));
 		EndTest ();
 	}
+	
+	function OnMediaFailed (sender, args)
+	{
+		TestLogger.LogDebug ("OnMediaFailed: ");
+		TestLogger.LogDebug (ErrorEventArgsToOneLineString (args));
+	}
 
 	function OnPluginError (sender, args)
 	{
+		TestLogger.LogError ("OnPluginError: ");
 		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
 		TestLogger.LogResult (-1)
 		EndTest ();
@@ -150,16 +157,10 @@
 
 <div>
 <embed type="application/x-silverlight" width="800" height="600"
-     id="JoltActiveX" Source="test-setsource-with-downloader.xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     id="_MoonlightControl" Source="test-setsource-with-downloader.xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>
-
-<!--
-<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
->
-</embed>
--->
 
 </body>
 

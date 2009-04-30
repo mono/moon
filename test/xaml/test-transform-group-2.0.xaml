@@ -1,0 +1,37 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+
+    <Line Stroke="Red" X1="10" Y1="110" X2="10" Y2="300">
+	<Line.RenderTransform>
+	    <TransformGroup>
+		<TransformGroup.Children>
+		    <TransformCollection>
+		    	<ScaleTransform ScaleX="10" ScaleY="1" /> 
+			<TranslateTransform X="100" />
+		    </TransformCollection>
+		</TransformGroup.Children>
+            </TransformGroup>
+	</Line.RenderTransform>
+    </Line>
+
+    <Line Stroke="Blue" X1="20" Y1="120" X2="20" Y2="300">
+	<Line.RenderTransform>
+	    <TransformGroup>
+		<TransformCollection>
+		    <ScaleTransform ScaleX="10" ScaleY="1" />
+		    <TranslateTransform X="100" />
+		</TransformCollection>
+            </TransformGroup>
+	</Line.RenderTransform>
+    </Line>
+
+    <Line Stroke="Green" X1="30" Y1="130" X2="30" Y2="300">
+	<Line.RenderTransform>
+	    <TransformGroup>
+		<ScaleTransform ScaleX="3" ScaleY="1" />
+		<TranslateTransform X="100" />
+            </TransformGroup>
+	</Line.RenderTransform>
+    </Line>
+
+</Canvas>

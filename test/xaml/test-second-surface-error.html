@@ -43,7 +43,7 @@
 			TestLogger.LogDebug ("OnPluginLoad: " + sender.getHost ().source + " " + host);
 			loaded++;
 			if (loaded == 1) {
-				host = document.getElementById ("MLControl");//sender.getHost ();
+				host = document.getElementById ("_MoonlightControl");//sender.getHost ();
 				setTimeout ("ChangeSource ();", 250);
 			} else {
 				TestLogger.LogError ("The last source should not load.");
@@ -86,18 +86,11 @@
         <embed type="application/x-silverlight"
              width="200"
              height="200"
-             id="MLControl" Source="#xamlOK" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             id="_MoonlightControl" Source="#xamlOK" OnError="OnPluginError" OnLoad="OnPluginLoad"
              style="position:absolute; left:0px; top:0px"
              background="green" >
         </embed>
-
     </div>
-<!--
-    <div>
-        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
-        </embed>
-    </div>
--->
   </body>
 </html>
 

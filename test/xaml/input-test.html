@@ -15,7 +15,7 @@
 
       function OnTestPluginReady ()
       {
-          if (document.body == null) {
+          if (document.body == null || !TestPluginReady) {
               window.setTimeout ("OnTestPluginReady ()", 100);
               return;
           }

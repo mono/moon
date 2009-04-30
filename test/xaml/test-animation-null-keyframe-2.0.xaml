@@ -1,0 +1,44 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Width="270"
+	Height="40">
+
+<!-- Test a discrete animation where one of the key frames is NULL -->
+
+<Rectangle x:Name="rect" Canvas.Top="10" Canvas.Left="10" Width="20" Height="20" Fill="royalblue">
+    <Rectangle.Triggers>
+      <EventTrigger  RoutedEvent="Rectangle.Loaded" >
+       <BeginStoryboard>
+        <Storyboard x:Name="sb" BeginTime="0:0:1">
+          <DoubleAnimationUsingKeyFrames x:Name="anim" 
+            Storyboard.TargetName="rect"
+            Storyboard.TargetProperty="(Canvas.Left)"
+            FillBehavior="HoldEnd"
+            BeginTime="0:0:0">
+            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="40"/>
+            <DiscreteDoubleKeyFrame KeyTime="0:0:1"/><!-- cullprit -->
+            <DiscreteDoubleKeyFrame KeyTime="0:0:2" Value="120"/>
+            <LinearDoubleKeyFrame KeyTime="0:0:4" Value="200"/>
+            <DiscreteDoubleKeyFrame KeyTime="0:0:5" Value="240"/>
+         </DoubleAnimationUsingKeyFrames>
+
+        </Storyboard>
+       </BeginStoryboard>
+
+     </EventTrigger>
+    </Rectangle.Triggers>
+  </Rectangle>
+
+  <!-- measures for visual aid -->
+  <Rectangle Canvas.Left="10" Canvas.Top="7" Width="20" Height="3" Fill="LightGray" />
+  <Rectangle Canvas.Left="10" Canvas.Top="30" Width="20" Height="3" Fill="LightGray" />
+
+  <Rectangle Canvas.Left="40" Canvas.Top="7" Width="20" Height="3" Fill="LightGray" />
+  <Rectangle Canvas.Left="40" Canvas.Top="30" Width="20" Height="3" Fill="LightGray" />
+
+  <Rectangle Canvas.Left="120" Canvas.Top="7" Width="100" Height="3" Fill="LightGray" />
+  <Rectangle Canvas.Left="120" Canvas.Top="30" Width="100" Height="3" Fill="LightGray" />
+
+  <Rectangle Canvas.Left="240" Canvas.Top="7" Width="20" Height="3" Fill="LightGray" />
+  <Rectangle Canvas.Left="240" Canvas.Top="30" Width="20" Height="3" Fill="LightGray" />
+</Canvas>

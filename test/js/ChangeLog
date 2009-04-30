@@ -1,3 +1,7 @@
+2009-05-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* js/testplugin.js: Updated to work on FF/IE+SL2.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* js/utils.js: Added support for detecting IE.

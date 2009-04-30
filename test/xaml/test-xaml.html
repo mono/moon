@@ -1,12 +1,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml" >
 	<head>
 		<title>Xaml screenshot</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<script type="text/javascript" src="../js/js/utils.js"></script>
 		<script type="text/javascript" src="../js/js/testplugin.js"></script>
 		<script type="text/javascript">
 			function get_argument (variable, required) {
 				var query = window.location.search.substring (1);
-				var vars = query.split ("&");
+				var vars;
+
+				if (query.indexOf ("&") >= 0) {
+					vars = query.split ("&");
+				} else {
+					vars = query.split ("%26");
+				}
 			
 				for (var i = 0; i < vars.length; i++) {
 					var pair = vars [i].split ("=");
@@ -56,14 +63,18 @@
 				}
 			
 				if (interval != 0 || images != 0) {
-TestLogger.LogDebug ("WIDTH: " + width + " HEIGHT: " + height);
 					TestHost.CaptureMultipleImages ("", output, 0, 0, width, height, images, interval, 0);
-TestLogger.LogDebug ("WIDTH: " + width + " HEIGHT: " + height + " [Done]");
+					TestLogger.LogDebug ("Screenshot(s) enqueued, enqueing shut down.");
+					setTimeout (function ()
+						{
+							TestLogger.LogDebug ("Shutting down");
+							SignalShutdown ();
+						}, images * interval * 1.2);
 				} else {
 					TestHost.CaptureSingleImage ("", output, 0, 0, width, height);
+					TestLogger.LogDebug ("Screenshot(s) taken, shutting down.");
+					SignalShutdown ();
 				}
-				TestLogger.LogDebug ("Screenshot(s) taken, shutting down.");
-				SignalShutdown ();
 			}
 
 			function OnTestPluginReady ()
@@ -94,6 +105,6 @@ TestLogger.LogDebug ("WIDTH: " + width + " HEIGHT: " + height + " [Done]");
 			}
 		</script>
 	</head>
-	<body>
+	<body scroll="no" style='border-width: 0px'>
 	</body>
 </html>

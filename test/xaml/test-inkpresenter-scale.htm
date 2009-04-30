@@ -1,13 +1,16 @@
 <html>
   <head>
     <title>Moonlight Inpresenter Scale Test</title>
+		<script type="text/javascript" src="../js/js/utils.js"></script>
+		<script type="text/javascript" src="../js/js/testplugin.js"></script>
+
 
       <script language="javascript">
 	var control;
  
 	function OnLoaded(sender, eventArgs)
         {
-                if (document.body == null) {
+                if (document.body == null || !TestPluginReady) {
                         setTimeout (function(){ OnLoaded(sender, eventArgs)}, 100);
                         return;
                 }
@@ -31,31 +34,7 @@
 
 	function Finish ()
 	{
-	       var moonlight_control = document.getElementById ("MoonlightControl");
-		TakeSingleSnapshotAndShutdown (moonlight_control, "test-inkpresenter-scale.htm.png", 500, 500);	
-	}
-
-        function TakeSingleSnapshotAndShutdown (control, file_name, width, height, initial_delay)
-        {
-	         var test_plugin = document.getElementById ("_TestPlugin");
-                 if (initial_delay) {
-                         window.setTimeout (function () {
-			         var test_plugin = document.getElementById ("_TestPlugin");
-			         test_plugin.CaptureSingleImage ("", file_name, 0, 0, width, height);
-				 test_plugin.SignalShutdown ();
-		         }, initial_delay);
-			 return;
-	         }
-                 test_plugin.CaptureSingleImage ("", file_name, 0, 0, width, height);
-		 test_plugin.SignalShutdown ();
-        }
-
-        function TakeMultipleSnapshotsAndShutdown (control, max_images_to_capture, capture_interval, initial_delay, width, height)
-	{
-                 var test_plugin = document.getElementById ("_TestPlugin");
-
-		 test_plugin.CaptureMultipleImages ("", "", 0, 0, width, height, max_images_to_capture, capture_interval, initial_delay);
-		 test_plugin.SignalShutdown ();
+		TakeSingleSnapshotAndShutdown ("", "test-inkpresenter-scale.htm.png", 500, 500);	
 	}
 
         function ErrorHandler (sender, args)
@@ -65,17 +44,13 @@
       </script>
   </head>
 
-  <body>
+<body scroll="no" style='border-width: 0px'>
     <div>
         <embed type="application/x-silverlight"
              width="500"
              height="500"
              id="_MoonlightControl" Source="test-inkpresenter-scale.xaml" OnError="ErrorHandler" 
              style="position:absolute; left:0px; top:0px" >
-        </embed>
-    </div>
-    <div>
-        <embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest">
         </embed>
     </div>
   </body>

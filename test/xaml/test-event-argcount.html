@@ -206,7 +206,7 @@
 			// It's only possible to attach handlers for the following events on the root canvas 
 			// "GotFocus", "KeyDown", "KeyUp", "LostFocus"
 			];
-		var arg_count = [1, 2, 2, 2, 2, 2]; // the expected number of arguments for each event
+		var arg_count = [2, 2, 2, 2, 2, 2]; // the expected number of arguments for each event
 		var canvases = [null];
 		var done = [false];
 		var expected = 	[ // if an event is expected for a source
@@ -353,7 +353,7 @@
 		var timedOut = false;
 		var mouse_test_started = false;
 		var events = ["Loaded", "DownloadProgressChanged", "ImageFailed", "MouseEnter", "MouseLeave", "MouseLeftButtonUp", "MouseLeftButtonDown", "MouseMove"];
-		var arg_count = [1, 1, 2, 2, 2, 2, 2, 2]; // the expected number of arguments for each event
+		var arg_count = [2, 1, 2, 2, 2, 2, 2, 2]; // the expected number of arguments for each event
 		var images = [null, null];
 		var done = [false, false];
 		var expected = 	[ // if an event is expected for a source
@@ -519,7 +519,7 @@
 		var events = ["BufferingProgressChanged", "CurrentStateChanged", "DownloadProgressChanged", 
 				"Loaded", "MarkerReached", "MediaEnded", "MediaFailed", "MediaOpened", 
 				"MouseEnter", "MouseLeave", "MouseLeftButtonUp", "MouseLeftButtonDown", "MouseMove"];
-		var arg_count = [1, 1, 1, 1, 2, 1, 2, 1, 2, 2, 2, 2, 2];
+		var arg_count = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2];
 		var mediaElements = [null, null, null];
 		var done = [false, false, false];
 		var expected = 	[
@@ -941,7 +941,7 @@
 	{
 		TestLogger.LogDebug ("StartTests");
 
-		plugin = document.getElementById ("JoltActiveX");
+		plugin = document.getElementById ("_MoonlightControl");
 		canvas = plugin.content.findName ("MainCanvas");
 		
 		for (var t = 0; t < tests.length; t++) {
@@ -966,7 +966,7 @@
 	function OnTestPluginReady ()
 	{
 		TestLogger.LogDebug ("OnTestPluginReady");
-		if (!loaded) {
+		if (!loaded || !TestPluginReady) {
 			setTimeout (OnTestPluginReady, 500);
 			return;
 		}
@@ -1006,7 +1006,7 @@
 
 <div>
 <embed type="application/x-silverlight" width="800" height="800"
-     id="JoltActiveX" Source="#xamlA" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     id="_MoonlightControl" Source="#xamlA" OnError="OnPluginError" OnLoad="OnPluginLoaded"
      style="position:absolute; left:0px; top:0px" background="#CCCCCC">
 </embed>
 </div>
@@ -1017,12 +1017,6 @@
 	<input style="position:absolute; left:0px; top:825px; width:50px; height:25px" type="text" value="hello" >
 	<input style="position:absolute; left:0px; top:875px; width:50px; height:25px" type="text" value="hello" >
 </form>
-
-<!--
-<embed id="_TestPlugin" width="0" height="0" type="application/x-jolttest" 
->
-</embed>
--->
 
 </body>
 </html>

@@ -381,8 +381,6 @@
         Log.text += "Alternate between clicking green and red, starting with green.\n";
     }
 
-    var test_plugin;
-
     function DoClicks ()
     {
 			TestHost.TranslateCoordinates = true;
@@ -401,7 +399,7 @@
 
       function QueueTestReady ()
       {
-          if (document.body == null || root == null) {
+          if (document.body == null || root == null || !TestPluginReady) {
               window.setTimeout ("QueueTestReady ()", 100);
               return;
           }
@@ -411,14 +409,13 @@
 
       function RunTest ()
       {
-          test_plugin = document.getElementById ("_TestPlugin");
           AdvanceTest ();
       }
 
       function FinishTest ()
       {
-	  test_plugin.LogResult (failure ? 0 : 1);
-          test_plugin.SignalShutdown ();
+	  	TestHost.LogResult (failure ? 0 : 1);
+          TestHost.SignalShutdown ();
       }
 
 </script>
