@@ -1,0 +1,14 @@
+<Application xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+             x:Class="XamlListExample.App"
+             xmlns:clr="clr-namespace:XamlListExample"
+             >
+    <Application.Resources>
+        <clr:ObjectCollection x:Name="Collection">
+            <Rectangle />
+            <Ellipse />
+            <Storyboard />
+        </clr:ObjectCollection>
+    </Application.Resources>
+</Application>
+
