@@ -1,5 +1,11 @@
 2009-04-29  Larry Ewing  <lewing@novell.com>
 
+	* frameworkelement.cpp:
+	* uielement.cpp (DoMeasure): reorder some calls to improve speed
+	until the new logic lands.
+
+2009-04-29  Larry Ewing  <lewing@novell.com>
+
 	* value.h (checked_get_subclass): use IsSubclassOrSuperclassOf to
 	reduce Deployment::GetCurrent calls.
 

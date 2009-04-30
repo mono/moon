@@ -545,7 +545,7 @@ UIElement::DoMeasure ()
 	}
 
 	// a canvas doesn't care about the child size changing like this
-	if (parent && ((IsLayoutContainer () && !last) || !parent->Is (Type::CANVAS)))
+	if (parent && (!parent->Is (Type::CANVAS) || (IsLayoutContainer () && !last)))
 		parent->InvalidateMeasure ();
 
 	dirty_flags &= ~DirtyMeasure;
@@ -588,7 +588,7 @@ UIElement::DoArrange ()
 			return;
 	}
 	
-	if (parent && ((IsLayoutContainer () || !last) || !parent->Is (Type::CANVAS)))
+	if (parent && (!parent->Is (Type::CANVAS) || (IsLayoutContainer () || !last))) 
 		parent->InvalidateArrange ();
 	
 	if (!last)

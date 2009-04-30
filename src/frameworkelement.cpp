@@ -645,7 +645,7 @@ FrameworkElement::UpdateLayout ()
 
 			if (child->dirty_flags & DirtyMeasure) {
 				UIElement *parent = child->GetVisualParent ();
-				if (child->IsLayoutContainer () || (parent && !parent->Is (Type::CANVAS))) {
+				if ((parent && !parent->Is (Type::CANVAS)) || child->IsLayoutContainer ()) {
 					measure_list->Prepend (new UIElementNode (child));
 					//g_warning ("adding %p, %s", child, child->GetTypeName ());
 				}
@@ -714,14 +714,11 @@ FrameworkElement::UpdateLayout ()
 				delete (node);
 			}
 		} else if (!updated_list->IsEmpty ()) {
+			updated = false;
 			while (UIElementNode *node = (UIElementNode*)updated_list->First ()) {
 				updated_list->Unlink (node);
 				FrameworkElement *fe = (FrameworkElement*)node->uielement;
 
-				if (surface && (surface->needs_measure || surface->needs_arrange))
-					break;
-
-				updated = false;
 				fe->Emit (LayoutUpdatedEvent);
 				delete (node);
 			}
