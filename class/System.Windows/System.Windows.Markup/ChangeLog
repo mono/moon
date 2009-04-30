@@ -1,3 +1,8 @@
+2009-04-30  Jackson Harper  <jackson@ximian.com>
+
+	* XamlReader.cs: loaded objects should be created in a discrete
+	namescope.
+
 2009-04-09  Jackson Harper  <jackson@ximian.com>
 
 	* XamlReader.cs: Updated method name.

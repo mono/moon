@@ -45,7 +45,7 @@ namespace System.Windows.Markup
 
 			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Assembly.GetCallingAssembly (), Deployment.Current.Surface.Native, PluginHost.Handle);
 			
-			return loader.CreateObjectFromString (xaml, false);
+			return loader.CreateObjectFromString (xaml, true);
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Never)]
