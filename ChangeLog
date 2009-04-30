@@ -1,3 +1,8 @@
+2009-04-30  Andreia Gaita  <avidigal@novell.com>
+
+	* configure.ac: Added new tool (moonvisi) to parse
+	ref/unref debug	output and generate dot files
+
 2009-04-29  Andreia Gaita  <avidigal@novell.com>
 
 	* configure.ac: Add libunwind checks
