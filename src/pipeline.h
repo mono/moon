@@ -361,6 +361,8 @@ public:
  */
 class IMediaObject : public EventObject {
 private:
+	Media *media;
+	Mutex media_mutex;
 	// Media event handling
 	// media needs to support event handling on all threads, and EventObject isn't thread-safe
 	class EventData : public List::Node {
@@ -390,15 +392,12 @@ private:
 	static void EmitListCallback (EventObject *obj);
 	
 protected:
-	Media *media;
 	virtual ~IMediaObject () {}
 
 public:
 	IMediaObject (Type::Kind kind, Media *media);
 	virtual void Dispose ();
 	
-	// TODO: media should be protected with a mutex, and GetMedia should return a refcounted media.
-	Media *GetMedia () { return media; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	Media *GetMediaReffed ();
 	void SetMedia (Media *value);
@@ -411,6 +410,8 @@ public:
 	void AddSafeHandler (int event_id, EventHandler handler, EventObject *context, bool invoke_on_main_thread = true);
 	void RemoveSafeHandlers (EventObject *context);
 	void EmitSafe (int event_id, EventArgs *args = NULL);
+	
+	bool InMediaThread ();
 };
 
 class IMediaStream : public IMediaObject {
@@ -1121,23 +1122,6 @@ public:
 	virtual bool Eof () { return pos >= size; }
 
 	virtual const char *ToString () { return "MemorySource"; }
-};
-
-
-// MemoryNestedSource is used to allow independent reading/seeking
-// into an already created MemorySource. This is required when we 
-// read data to calculate bufferingprogress (on main thread), while
-// the same data might get read on the worker thread. Using the same 
-// MemorySource would corrupt the current position.
-class MemoryNestedSource : public MemorySource {
-private:
-	MemorySource *src;
-
-protected:
-	virtual ~MemoryNestedSource ();
-	
-public:
-	MemoryNestedSource (MemorySource *src);
 };
 
 class VideoStream : public IMediaStream {

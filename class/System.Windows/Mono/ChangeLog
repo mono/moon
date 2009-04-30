@@ -1,3 +1,7 @@
+2009-04-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Kind.cs: Regenerated.
+
 2009-04-29  Chris Toshok  <toshok@ximian.com>
 
 	* Helper.cs: take a whack to this class, removing most everything

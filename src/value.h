@@ -189,7 +189,6 @@ class MediaMarkerFoundClosure;
 class MediaPlayer;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
-class MemoryNestedSource;
 class MemoryQueueSource;
 class MemorySource;
 class MouseEventArgs;
@@ -529,7 +528,6 @@ public:
 	MediaPlayer*                             AsMediaPlayer () { checked_get_subclass (Type::MEDIAPLAYER, MediaPlayer) }
 	MediaReportSeekCompletedClosure*         AsMediaReportSeekCompletedClosure () { checked_get_subclass (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, MediaReportSeekCompletedClosure) }
 	MediaSeekClosure*                        AsMediaSeekClosure () { checked_get_subclass (Type::MEDIASEEKCLOSURE, MediaSeekClosure) }
-	MemoryNestedSource*                      AsMemoryNestedSource () { checked_get_subclass (Type::MEMORYNESTEDSOURCE, MemoryNestedSource) }
 	MemoryQueueSource*                       AsMemoryQueueSource () { checked_get_subclass (Type::MEMORYQUEUESOURCE, MemoryQueueSource) }
 	MemorySource*                            AsMemorySource () { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
 	MouseEventArgs*                          AsMouseEventArgs () { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }

@@ -269,6 +269,7 @@ bool
 MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
 	asf_file_properties *properties;
+	Media *media = NULL;
 	
 	LOG_MMS ("MmsDownloader::ProcessHeaderPacket ()\n");
 	
@@ -276,8 +277,13 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 		return true;
 
 	if (parser == NULL) {
+		media = source->GetMediaReffed ();
+		
+		g_return_val_if_fail (media != NULL, true);
+		
 		ASFDemuxerInfo *dx_info = new ASFDemuxerInfo ();
-		MemorySource *asf_src = new MemorySource (source->GetMedia (), payload, header->length - sizeof (MmsDataPacket), 0);
+		
+		MemorySource *asf_src = new MemorySource (media, payload, header->length - sizeof (MmsDataPacket), 0);
 		
 		asf_src->SetOwner (false);
 
@@ -286,12 +292,15 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 			asf_packet_size = ASF_DEFAULT_PACKET_SIZE,
 			delete dx_info;
 			asf_src->unref ();
+			media->unref ();
 			return true;
 		}
 		
-		parser = new ASFParser (asf_src, source->GetMedia ());
+		parser = new ASFParser (asf_src, media);
 		asf_src->unref ();
 		delete dx_info;
+		
+		media->unref ();
 		
 		if (!MEDIA_SUCCEEDED (parser->ReadHeader ())) {
 			// TODO: And what should we do here?
