@@ -1,5 +1,12 @@
 2009-04-30  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Use the type system for detecting if we should be in
+	buffering mode, anything that is a FrameworkTemplate
+	should be buffered.  This fixes custom types that inherit from
+	DataTemplate not getting buffered properly.
+
+2009-04-30  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: We need to pass the object to GetPropertyName because
 	non DOB objects can have content properties now.
 

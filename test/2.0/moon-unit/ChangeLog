@@ -1,3 +1,7 @@
+2009-04-30  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows/DataTempalteTests.cs: Test is fixed.
+
 2009-04-30  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/DataTemplateTests.cs: Add test to ensure

@@ -112,7 +112,7 @@ static void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInst
 static void value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 static bool handle_markup_in_managed (const char* attr_value);
 static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, DependencyProperty *prop, Value **value);
-static bool element_begins_buffering (const char* element);
+static bool element_begins_buffering (Type::Kind kind);
 static bool is_managed_kind (Type::Kind kind);
 static bool is_legal_top_level_kind (Type::Kind kind);
 static bool is_static_resource_element (const char *el);
@@ -1511,7 +1511,7 @@ start_element (void *data, const char *el, const char **attr)
 	}
 	p->current_element = inst;
 
-	if (element_begins_buffering (el)) {
+	if (elem && element_begins_buffering (elem->GetKind ())) {
 		p->QueueBeginBuffering (g_strdup (el));
 	}
 }
@@ -1545,13 +1545,9 @@ flush_char_data (XamlParserInfo *p)
 }
 
 static bool
-element_begins_buffering (const char* element)
+element_begins_buffering (Type::Kind kind)
 {
-	for (int i = 0; begin_buffering_element_names [i]; i++) {
-		if (!strcmp (begin_buffering_element_names [i], element))
-			return true;
-	}
-	return false;
+	return Type::IsSubclassOf (kind, Type::FRAMEWORKTEMPLATE);
 }
 
 static void

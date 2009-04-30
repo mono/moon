@@ -46,7 +46,6 @@ namespace MoonTest.System.Windows
 	{
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void CustomDataTemplate ()
 		{
 			MyControl c = (MyControl) XamlReader.Load (@"
