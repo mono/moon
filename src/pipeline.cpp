@@ -1261,7 +1261,6 @@ ASXDemuxer::OpenDemuxerAsyncInternal ()
 {
 	MediaResult result;
 	PlaylistRoot *root;
-	Media *media = GetMediaReffed ();
 	
 	g_return_if_fail (media != NULL);
 	
@@ -1286,8 +1285,6 @@ ASXDemuxer::OpenDemuxerAsyncInternal ()
 	} else {
 		ReportErrorOccurred (result);
 	}
-	
-	media->unref ();
 }
 
 /*
@@ -1645,7 +1642,6 @@ void
 ProgressiveSource::DataWrite (void *buf, gint32 offset, gint32 n)
 {
 	size_t nwritten;
-	Media *media = GetMediaReffed ();
 	
 	LOG_PIPELINE ("ProgressiveSource::DataWrite (%p, %i, %i) media: %p, filename: %s\n", buf, offset, n, media, filename);
 	
@@ -1672,7 +1668,6 @@ cleanup:
 	if (media) {
 		media->WakeUp ();
 		media->ReportDownloadProgress ((double) (offset + n) / (double) size);
-		media->unref ();
 	}
 }
 
@@ -1698,8 +1693,6 @@ ProgressiveSource::DownloadCompleteHandler (EventObject *sender, EventArgs *args
 {
 	char *filename;
 	MediaResult result = MEDIA_SUCCESS;
-	Media *media = GetMediaReffed ();
-	
 	LOG_PIPELINE ("ProgressiveSource::DownloadCompleteHandler (%p, %p)\n", sender, args);
 	
 	Lock ();
@@ -1728,7 +1721,6 @@ ProgressiveSource::DownloadCompleteHandler (EventObject *sender, EventArgs *args
 	if (media) {
 		media->ReportDownloadProgress (1.0);
 		media->WakeUp ();
-		media->unref ();
 	}
 }
 
@@ -1748,6 +1740,20 @@ ProgressiveSource::CloseWriteFile ()
 		
 	fclose (write_fd);
 	write_fd = NULL;
+}
+/*
+ * MemoryNestedSource
+ */
+
+MemoryNestedSource::MemoryNestedSource (MemorySource *src) : MemorySource (src->GetMedia (), src->GetMemory (), src->GetSize (), src->GetStart ())
+{
+	src->ref ();
+	this->src = src;
+}
+
+MemoryNestedSource::~MemoryNestedSource ()
+{
+	src->unref ();
 }
 
 /*
@@ -2092,21 +2098,12 @@ IMediaStream::GetStreamTypeName ()
 IMediaDemuxer *
 IMediaStream::GetDemuxer ()
 {
-	Media *media;
-	IMediaDemuxer *result;
-	
 	if (IsDisposed ())
 		return NULL;
-	
-	media = GetMediaReffed ();
 		
 	g_return_val_if_fail (media != NULL, NULL);
 	
-	result = media->GetDemuxer ();
-	
-	media->unref ();
-	
-	return result;
+	return media->GetDemuxer ();
 }
 
 IMediaDecoder *
@@ -2170,7 +2167,6 @@ void
 IMediaStream::EnqueueFrame (MediaFrame *frame)
 {
 	bool first = false;
-	Media *media = GetMediaReffed ();
 	
 	g_return_if_fail (media != NULL);
 	g_return_if_fail (media->InMediaThread ());
@@ -2201,8 +2197,6 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 		EmitSafe (FirstFrameEnqueuedEvent);
 	
 	FrameEnqueued ();
-
-	media->unref ();
 
 	LOG_BUFFERING ("IMediaStream::EnqueueFrame (): codec: %.5s, first_pts: %" G_GUINT64_FORMAT " ms, last_popped_pts: %" G_GUINT64_FORMAT " ms, last_enqueued_pts: %" G_GUINT64_FORMAT " ms, buffer: %" G_GUINT64_FORMAT " ms, frame: %p, frame->buflen: %i\n",
 		codec, MilliSeconds_FromPts (first_pts), MilliSeconds_FromPts (last_popped_pts), MilliSeconds_FromPts (last_enqueued_pts), 
@@ -2256,14 +2250,9 @@ IMediaStream::ClearQueue ()
 void
 IMediaStream::SetSelected (bool value)
 {
-	Media *media = GetMediaReffed ();
-	
 	selected = value;
-	if (media) {
-		if (media->GetDemuxer ())
-			media->GetDemuxer ()->UpdateSelected (this);
-		media->unref ();
-	}
+	if (media && media->GetDemuxer ())
+		media->GetDemuxer ()->UpdateSelected (this);
 }
 
 /*
@@ -2341,21 +2330,17 @@ void
 IMediaDemuxer::EnqueueOpen ()
 {
 	MediaClosure *closure;
-	Media *media = GetMediaReffed ();
 	
 	LOG_PIPELINE ("IMediaDemuxer::EnqueueOpen ()\n");
 	
 	closure = new MediaClosure (media, OpenCallback, this);
 	media->EnqueueWork (closure, false);
 	closure->unref ();
-	media->unref ();
 }
 
 void
 IMediaDemuxer::ReportOpenDemuxerCompleted ()
 {
-	Media *media = GetMediaReffed ();
-	
 	LOG_PIPELINE ("IMediaDemuxer::ReportDemuxerOpenCompleted () media: %p\n", media);
 	
 	opened = true;
@@ -2366,7 +2351,6 @@ IMediaDemuxer::ReportOpenDemuxerCompleted ()
 		return;
 		
 	media->ReportOpenDemuxerCompleted ();
-	media->unref ();
 }
 
 void
@@ -2431,25 +2415,19 @@ IMediaDemuxer::ReportSeekCompletedCallback (MediaClosure *c)
 void 
 IMediaDemuxer::EnqueueReportSeekCompleted (guint64 pts)
 {
-	Media *media = GetMediaReffed ();
 	MediaClosure *closure = new MediaReportSeekCompletedClosure (media, ReportSeekCompletedCallback, this, pts);
 	media->EnqueueWork (closure);
 	closure->unref ();
-	media->unref ();
 }
 
 void
 IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 {
-	Media *media = GetMediaReffed ();
-
 	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%llu)\n", pts);
 	
 	g_return_if_fail (media != NULL);
-	
 	if (!media->InMediaThread ()) {
 		EnqueueReportSeekCompleted (pts);
-		media->unref ();
 		return;
 	}
 	
@@ -2464,7 +2442,6 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 	}
 	
 	media->ReportSeekCompleted (pts);
-	media->unref ();
 	
 	FillBuffers ();
 }
@@ -2498,18 +2475,14 @@ IMediaDemuxer::GetFrameCallback (MediaClosure *c)
 void 
 IMediaDemuxer::EnqueueGetFrame (IMediaStream *stream)
 {
-	Media *media = GetMediaReffed ();
 	MediaClosure *closure = new MediaGetFrameClosure (media, GetFrameCallback, this, stream);
 	media->EnqueueWork (closure);
 	closure->unref ();
-	media->unref ();
 }
 
 void
 IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 {
-	Media *media = GetMediaReffed ();
-	
 	g_return_if_fail (stream != NULL);
 	g_return_if_fail (media != NULL);
 	
@@ -2517,12 +2490,11 @@ IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 	
 	if (!media->InMediaThread ()) {
 		EnqueueGetFrame (stream);
-	} else {
-		stream->IncPendingFrameCount ();
-		GetFrameAsyncInternal (stream);
+		return;
 	}
 	
-	media->unref ();
+	stream->IncPendingFrameCount ();
+	GetFrameAsyncInternal (stream);
 }
 
 MediaResult
@@ -2536,33 +2508,24 @@ IMediaDemuxer::SeekCallback (MediaClosure *closure)
 void
 IMediaDemuxer::EnqueueSeek (guint64 pts)
 {
-	Media *media = GetMediaReffed ();
-	MediaSeekClosure *closure;
-	
-	g_return_if_fail (media != NULL);
-	
-	closure = new MediaSeekClosure (media, SeekCallback, this, pts);
+	MediaSeekClosure *closure = new MediaSeekClosure (media, SeekCallback, this, pts);
 	media->EnqueueWork (closure, true);
 	closure->unref ();
-	media->unref ();
 }
 
 void
 IMediaDemuxer::SeekAsync (guint64 pts)
 {
-	Media *media = GetMediaReffed ();
-	
 	g_return_if_fail (media != NULL);
 
 	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (%llu)\n", pts);
 
 	if (!media->InMediaThread ()) {
 		EnqueueSeek (pts);
-	} else {
-		SeekAsyncInternal (pts);
+		return;
 	}
 	
-	media->unref ();
+	SeekAsyncInternal (pts);
 }
 
 MediaResult
@@ -2576,15 +2539,9 @@ IMediaDemuxer::FillBuffersCallback (MediaClosure *closure)
 void
 IMediaDemuxer::FillBuffers ()
 {
-	Media *media = GetMediaReffed ();
-	MediaClosure *closure;
-	
-	g_return_if_fail (media != NULL);
-	
-	closure = new MediaClosure (media, FillBuffersCallback, this);
+	MediaClosure *closure = new MediaClosure (media, FillBuffersCallback, this);
 	media->EnqueueWork (closure);
 	closure->unref ();
-	media->unref ();
 }
 
 void
@@ -2592,13 +2549,8 @@ IMediaDemuxer::FillBuffersInternal ()
 {
 	IMediaStream *stream;
 	MediaResult result = MEDIA_SUCCESS;
-	Media *media = GetMediaReffed ();
-	guint64 buffering_time = 0;
+	guint64 buffering_time = media->GetBufferingTime ();
 	guint64 buffered_size = 0;
-	
-	g_return_if_fail (media != NULL);
-	
-	buffering_time = media->GetBufferingTime ();
 	
 	LOG_BUFFERING ("IMediaDemuxer::FillBuffers (), buffering time: %llu = %llu ms\n", buffering_time, MilliSeconds_FromPts (buffering_time));
 
@@ -2632,7 +2584,6 @@ IMediaDemuxer::FillBuffersInternal ()
 	}
 	
 	media->ReportBufferingProgress (buffering_time == 0 ? 0 : buffered_size / buffering_time);
-	media->unref ();
 	
 	LOG_BUFFERING ("IMediaDemuxer::FillBuffers () [Done]. BufferedSize: %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (GetBufferedSize ()));
 }
@@ -2775,22 +2726,16 @@ void
 MediaFrame::Dispose ()
 {
 	IMediaDecoder *decoder;
-	Media *media;
 	
 #if SANITY
 	// We can be called either on the main thread just before destruction
 	// (in which case there are no races since the code which unreffed us
 	// is the only code which knows about us), or at any time from the
 	// media thread.
-	
-	if (GetRefCount () != 0 && stream != NULL) {
-		media = stream->GetMediaReffed ();
-		if (media != NULL && !media->InMediaThread ()) {
-			// if refcount != 0 we're not being called just before destruction, in which case we should
-			// only be on the media thread.
-			printf ("MediaFrame::Dispose (): this method should only be called from the media thread.\n");
-		}
-		media->unref ();
+	if (GetRefCount () != 0 && stream != NULL && stream->GetMedia () != NULL && !stream->GetMedia ()->InMediaThread ()) {
+		// if refcount != 0 we're not being called just before destruction, in which case we should
+		// only be on the media thread.
+		printf ("MediaFrame::Dispose (): this method should only be called from the media thread.\n");
 	}
 #endif
 	
@@ -2888,12 +2833,10 @@ IMediaObject::Dispose ()
 	}
 #endif
 
-	media_mutex.Lock ();
 	if (media) {
 		media->unref ();
 		media = NULL;
 	}
-	media_mutex.Unlock ();
 	
 	event_mutex.Lock ();
 	delete events;
@@ -2901,20 +2844,6 @@ IMediaObject::Dispose ()
 	event_mutex.Unlock ();
 	
 	EventObject::Dispose ();
-}
-
-bool
-IMediaObject::InMediaThread ()
-{
-	bool result = true;
-#if SANITY
-	Media *media = GetMediaReffed ();
-	if (media != NULL) {
-		result = media->InMediaThread ();
-		media->unref ();
-	}
-#endif
-	return result;
 }
 
 void
@@ -3040,12 +2969,9 @@ IMediaObject::EmitList (List *list)
 Media *
 IMediaObject::GetMediaReffed ()
 {
-	Media *result;
-	media_mutex.Lock ();
-	result = media;
+	Media *result = media;
 	if (result)
 		result->ref ();
-	media_mutex.Unlock ();
 	return result;
 }
 
@@ -3076,13 +3002,11 @@ IMediaObject::ReportErrorOccurred (ErrorEventArgs *args)
 void
 IMediaObject::SetMedia (Media *value)
 {
-	media_mutex.Lock ();
 	if (media)
 		media->unref ();
 	media = value;
 	if (media)
 		media->ref ();
-	media_mutex.Unlock ();
 }
 
 /*
@@ -3340,8 +3264,6 @@ IMediaDecoder::DecodeFrameCallback (MediaClosure *c)
 void
 IMediaDecoder::DecodeFrameAsync (MediaFrame *frame)
 {
-	Media *media = GetMediaReffed ();
-	
 	LOG_PIPELINE ("IMediaDecoder::DeocodeFrameAsync (%p)\n", frame);
 	
 	g_return_if_fail (frame != NULL);
@@ -3351,10 +3273,10 @@ IMediaDecoder::DecodeFrameAsync (MediaFrame *frame)
 		MediaClosure *closure = new MediaDecodeFrameClosure (media, DecodeFrameCallback, this, frame);
 		media->EnqueueWork (closure);
 		closure->unref ();
-	} else {
-		DecodeFrameAsyncInternal (frame);
+		return;
 	}
-	media->unref ();
+	
+	DecodeFrameAsyncInternal (frame);
 }
 
 void
@@ -3372,17 +3294,13 @@ IMediaDecoder::OpenDecoderAsync ()
 void
 IMediaDecoder::ReportOpenDecoderCompleted ()
 {
-	Media *media = GetMediaReffed ();
-	
 	LOG_PIPELINE ("IMediaDecoder::ReportOpenDecoderCompleted ()\n");
 	
 	opening = false;
 	opened = true;
 	
 	g_return_if_fail (media != NULL);
-	
 	media->ReportOpenDecoderCompleted (this);
-	media->unref ();
 }
 
 /*

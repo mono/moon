@@ -349,6 +349,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MEDIAPLAYER] = new Type (Type::MEDIAPLAYER, Type::EVENTOBJECT, false, "MediaPlayer", "MEDIAPLAYER", 1, 2, MediaPlayer_Events, NULL, NULL);
 	types [(int) Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE] = new Type (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, Type::MEDIACLOSURE, false, "MediaReportSeekCompletedClosure", "MEDIAREPORTSEEKCOMPLETEDCLOSURE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::MEDIASEEKCLOSURE] = new Type (Type::MEDIASEEKCLOSURE, Type::MEDIACLOSURE, false, "MediaSeekClosure", "MEDIASEEKCLOSURE", 0, 1, NULL, NULL, NULL);
+	types [(int) Type::MEMORYNESTEDSOURCE] = new Type (Type::MEMORYNESTEDSOURCE, Type::MEMORYSOURCE, false, "MemoryNestedSource", "MEMORYNESTEDSOURCE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::MEMORYQUEUESOURCE] = new Type (Type::MEMORYQUEUESOURCE, Type::IMEDIASOURCE, false, "MemoryQueueSource", "MEMORYQUEUESOURCE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::MEMORYSOURCE] = new Type (Type::MEMORYSOURCE, Type::IMEDIASOURCE, false, "MemorySource", "MEMORYSOURCE", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::MOUSEEVENTARGS] = new Type (Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, "MouseEventArgs", "MOUSEEVENTARGS", 0, 1, NULL, (create_inst_func *) mouse_event_args_new, NULL);

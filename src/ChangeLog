@@ -18,24 +18,6 @@
 
 2009-04-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
-	* mp3.cpp:
-	* pipeline.h:
-	* playlist.cpp:
-	* pipeline.cpp:
-	* pipeline-asf.cpp:
-	* mms-downloader.cpp: IMediaObject: make the media field
-	  private, and add thread-safe property accessors (using a
-	  mutex and always returning a reffed object). Update all code
-	  which accessed the old accessor to use the new accessor and
-	  unref the media when done. Delete MemoryNestedSource, it's
-	  not used anymore.
-
-	* type.h:
-	* value.h:
-	* type-generated.cpp: Regenerated.
-
-2009-04-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
 	* bitmapimage.cpp: Make sure we clean up any previous
 	  downloaders when we create new ones.
 
