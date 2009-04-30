@@ -473,14 +473,17 @@ namespace MoonTest.System.Windows.Controls {
 		void AssertItemHasPresenter (ComboBox box, ComboBoxItem item)
 		{
 			Assert.AreEqual (box, item.Parent, "#a");
-			Assert.IsInstanceOfType<StackPanel> (VisualTreeHelper.GetParent (item), "#b");
-			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (item), "#c");
-			Grid grid = (Grid) VisualTreeHelper.GetChild (item, 0);
-
-			Assert.AreEqual (4, grid.Children.Count, "#d");
-			ContentPresenter presenter = (ContentPresenter) grid.Children [2];
-			Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (presenter), "#e");
-			Assert.AreSame (VisualTreeHelper.GetChild (presenter, 0), item.Content, "#f");
+			Assert.VisualParent (item, new VisualNode<StackPanel>("#b"));
+			Assert.VisualChildren (item,
+				new VisualNode<Grid> ("#c",
+					new VisualNode<Rectangle> ("#c1"),
+					new VisualNode<Rectangle> ("#c2"),
+					new VisualNode<ContentPresenter> ("#c3",
+						new VisualNode<Rectangle> ("#e", (r) => Assert.AreSame (r, item.Content))
+					),
+					new VisualNode<Rectangle> ("#c4")
+				)
+			);
 		}
 
 		[TestMethod]
