@@ -12,12 +12,34 @@
 
 
 using System;
+using System.Windows;
+using System.Windows.Media;
 
 namespace Microsoft.VisualStudio.TestTools.UnitTesting
 {
+	public delegate void VisualElement (DependencyObject o);
+
 	public static class Assert
 	{
-		
+		public static void VisualChildren (DependencyObject control, params VisualNode[] nodes)
+		{
+			int count = VisualTreeHelper.GetChildrenCount (control);
+			Assert.AreEqual (count, nodes.Length, "Initial control has {0} children but should have {1}", count, nodes.Length);
+
+			for (int i = 0; i < count; i++) {
+				DependencyObject child = VisualTreeHelper.GetChild (control, i);
+				Assert.IsInstanceOfType (child, nodes [i].Type);
+				nodes [i].DoCheck (child);
+
+				int children = VisualTreeHelper.GetChildrenCount (child);
+				Assert.AreEqual (children, nodes [i].Siblings.Length, "Node {0} should have {1} children but has {2} children",
+																		nodes [i].Name,
+																		children,
+																		nodes [i].Siblings.Length);
+				VisualChildren (child, nodes [i].Siblings);
+			}
+		}
+
 		public static void IsNull (object obj)
 		{
 			if (obj != null)

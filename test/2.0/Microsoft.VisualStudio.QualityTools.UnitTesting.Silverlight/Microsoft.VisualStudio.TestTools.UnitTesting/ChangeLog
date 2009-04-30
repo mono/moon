@@ -1,3 +1,8 @@
+2009-04-30  Alan McGovern  <amcgovern@novell.com>
+
+	* Assert.cs:
+	* VisualNode.cs: Add a nice way to check visual trees using Assert.
+
 2009-03-24  Alan McGovern  <amcgovern@novell.com>
 
 	* Assert.cs: Add a better message when types aren't of the
