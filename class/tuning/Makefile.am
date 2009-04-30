@@ -38,6 +38,7 @@ MCS_ASSEMBLIES = \
 MCS_DLLFILES = $(MCS_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_2_1_raw/%.dll)
 
 if HAVE_MONO_BASIC
+MONO_BASIC_RULE = basic.stamp
 MONO_BASIC_TUNER_ASSEMBLIES = Microsoft.VisualBasic
 MONO_BASIC_DLLFILES = $(MONO_BASIC_PATH)/class/lib/2.1/Microsoft.VisualBasic.dll
 endif
@@ -93,13 +94,13 @@ TUNER_STEPS = \
 	Mono.Tuner.RemoveSerialization,Mono.Tuner:OutputStep	\
 	Mono.Tuner.CheckVisibility,Mono.Tuner
 
-basic.stamp:
 if HAVE_MONO_BASIC
+basic.stamp: $(MONO_BASIC_DLLFILES)
 	$(MAKE) -C $(MONO_BASIC_PATH)/tools/moonlight tune
-endif
 	touch basic.stamp
+endif
 
-working.stamp: basic.stamp $(INPUT_FILES)
+working.stamp: $(MONO_BASIC_RULE) $(INPUT_FILES)
 	-mkdir -p $(WORKING_DIR)
 	for i in $(INPUT_FILES); do cp -p $$i $$i.mdb $(WORKING_DIR); done
 	-rm $(WORKING_DIR)/Microsoft.VisualBasic.dll.mdb

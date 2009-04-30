@@ -1,3 +1,7 @@
+2009-04-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Makefile.am: Fixed some bugs wrt Mono Basic in my previous fix.
+
 2009-04-24  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Makefile.am: Fixed to work with make -j (altho it could use love
