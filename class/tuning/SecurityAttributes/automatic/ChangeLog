@@ -1,3 +1,7 @@
+2009-04-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.ssc: Remove entries related to Mono.Helper
+
 2009-04-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.sc: Remove unsafe declaration that was needed for

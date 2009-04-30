@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 469 methods
+# 466 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -9,9 +9,6 @@
 +SSC-M: System.Void Mono.Events::AddHandler(System.Windows.DependencyObject,System.String,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void Mono.Events::RemoveHandler(System.Windows.DependencyObject,System.String,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void Mono.Events::ReportException(System.Exception)
-+SSC-M: System.Object Mono.Helper::ValueFromString(System.Type,System.String,System.String,System.String&,System.IntPtr&)
-+SSC-M: System.Void Mono.Helper::SetPropertyFromString(System.Object,System.Reflection.PropertyInfo,System.String,System.String&,System.IntPtr&)
-+SSC-M: System.Void Mono.Helper::FreeHGlobal(System.IntPtr)
 +SSC-M: System.IntPtr Mono.Helper::StreamToIntPtr(System.IO.Stream)
 +SSC-M: System.Void Mono.Hosting::SurfaceAttach(System.IntPtr,System.Windows.Controls.Canvas)
 +SSC-M: System.Void Mono.MoonError::.ctor(System.Exception)
