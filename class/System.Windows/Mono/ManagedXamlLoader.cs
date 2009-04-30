@@ -290,8 +290,12 @@ namespace Mono.Xaml
 
 			if (kind == Kind.INVALID)
 				return false;
+			try {
+				prop = DependencyProperty.Lookup (kind, name);
+			} catch {
+				return false;
+			}
 			
-			prop = DependencyProperty.Lookup (kind, name);
 			if (prop == null)
 				return false;
 

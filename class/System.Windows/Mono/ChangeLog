@@ -1,3 +1,9 @@
+2009-04-30  Alan McGovern  <amcgovern@novell.com>
+
+	* ManagedXamlLoader.cs: If DP.Lookup throws an exception while
+	  attaching a binding, catch it and return false. We may
+	  actually be trying to set a clr property.
+
 2009-04-30  Jackson Harper  <jackson@ximian.com>
 
 	* XamlLoaderCallbacks.cs:

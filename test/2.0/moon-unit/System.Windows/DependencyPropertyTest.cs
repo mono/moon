@@ -1244,6 +1244,17 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
+		public void Managed_AttachBinding ()
+		{
+			new ManagedDPPriority ();
+			ManagedDPPriority c = (ManagedDPPriority) XamlReader.Load (@"
+<x:ManagedDPPriority	xmlns=""http://schemas.microsoft.com/client/2007""
+						xmlns:x=""clr-namespace:MoonTest.System.Windows;assembly=moon-unit""
+						NormalProp=""{Binding}"" />");
+			Assert.IsNotNull (c.NormalProp, "#1");
+		}
+		
+		[TestMethod]
 		public void ManagedPriority ()
 		{
 			new ManagedDPPriority ();
@@ -1264,6 +1275,10 @@ namespace MoonTest.System.Windows
 		public static readonly DependencyProperty BindingPropProperty = DependencyProperty.Register ("BindingProp", typeof (Binding), typeof (ManagedDPPriority), null);
 
 		public Binding BindingProp {
+			get; set;
+		}
+		
+		public Binding NormalProp {
 			get; set;
 		}
 	}
