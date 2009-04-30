@@ -1,3 +1,8 @@
+2009-04-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* bitmapimage.cpp: Make sure we clean up any previous
+	  downloaders when we create new ones.
+
 2009-04-29  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp:

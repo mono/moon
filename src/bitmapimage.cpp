@@ -183,6 +183,7 @@ BitmapImage::UriSourceChanged ()
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 	Application *current = Application::GetCurrent ();
 	Uri *uri = GetUriSource ();
+	Downloader *downloader;
 	
 	if (current && uri) {
 		int size = 0;
@@ -237,6 +238,11 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 void
 BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_name)
 {
+	if (this->downloader != NULL) {
+		CleanupDownloader ();
+		this->downloader->unref ();
+	}
+	
 	this->downloader = downloader;
 	this->part_name = g_strdup (part_name);
 
