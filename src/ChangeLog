@@ -5,6 +5,12 @@
 
 2009-05-01  Larry Ewing  <lewing@novell.com>
 
+	* collection.h:
+	* collection.cpp: cache the deployment more and add a
+	VisualTreeWalker interface to help with that.
+
+2009-05-01  Larry Ewing  <lewing@novell.com>
+
 	* type.h:
 	* type.in.h:
 	* type.cpp: Move the IsSubclassOrSuperclassOf logic into types and

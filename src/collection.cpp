@@ -22,6 +22,7 @@
 #include "textblock.h"
 #include "utils.h"
 #include "error.h"
+#include "deployment.h"
 
 //
 // Collection
@@ -482,8 +483,9 @@ UIElementCollection::ResortByZIndex ()
 	if (array->len == 0)
 		return;
 	
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	for (guint i = 0; i < array->len; i++)
-		z_sorted->pdata[i] = ((Value *) array->pdata[i])->AsUIElement ();
+		z_sorted->pdata[i] = ((Value *) array->pdata[i])->AsUIElement (types);
 	
 	if (array->len > 1)
 		g_ptr_array_sort (z_sorted, UIElementZIndexComparer);
@@ -727,18 +729,19 @@ CollectionIterator::Destroy (CollectionIterator *iterator)
 // VisualTreeWalker
 //
 
-VisualTreeWalker::VisualTreeWalker (UIElement *obj, VisualTreeWalkerDirection dir)
+VisualTreeWalker::VisualTreeWalker (UIElement *obj, VisualTreeWalkerDirection dir, Types *cached)
 {
 	index = 0;
 	collection = NULL;
 	content = obj->GetSubtreeObject ();
 	direction = dir;
+	types = (cached == NULL) ? Deployment::GetCurrent ()->GetTypes () : cached;
 
 	if (content != NULL) {
-		if (content->Is (Type::COLLECTION)) {
+		if (types->IsSubclassOf (content->GetObjectType (), Type::COLLECTION)) {
 			collection = (Collection *)content;
 
-			if (!collection->Is (Type::UIELEMENT_COLLECTION))
+			if (!types->IsSubclassOf (content->GetObjectType (), Type::UIELEMENT_COLLECTION))
 				direction = Logical;
 		}
 
@@ -759,7 +762,7 @@ VisualTreeWalker::Step ()
 
 		if (count == 1 && index == 1) {
 			index ++;
-			return collection->GetValueAt (0)->AsUIElement();
+			return collection->GetValueAt (0)->AsUIElement(types);
 		}
 
 		UIElementCollection *uiecollection = NULL;
@@ -780,7 +783,7 @@ VisualTreeWalker::Step ()
 			break;
 		default:
 			Value *v = collection->GetValueAt (index);
-			result = v->AsUIElement ();
+			result = v->AsUIElement (types);
 		}
 		
 		index++;
@@ -819,6 +822,7 @@ DeepTreeWalker::DeepTreeWalker (UIElement *top)
 {
 	walk_list = new List ();
 	walk_list->Append (new UIElementNode (top));
+	types = Deployment::GetCurrent ()->GetTypes ();
 }
 
 UIElement *
@@ -833,7 +837,7 @@ DeepTreeWalker::Step ()
 	walk_list->Unlink (next);
 	delete next;
 	
-	VisualTreeWalker walker (current);
+	VisualTreeWalker walker (current, Logical, types);
 	while (UIElement *child = walker.Step ())
 		walk_list->Prepend (new UIElementNode (child));
 

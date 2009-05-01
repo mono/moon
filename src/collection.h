@@ -181,7 +181,7 @@ enum VisualTreeWalkerDirection {
 
 class VisualTreeWalker {
 public:
-	VisualTreeWalker (UIElement *item, VisualTreeWalkerDirection direction = Logical);
+	VisualTreeWalker (UIElement *item, VisualTreeWalkerDirection direction = Logical, Types *types = NULL);
 
 	~VisualTreeWalker ();
 
@@ -191,6 +191,7 @@ public:
 protected:
 	DependencyObject *content;
 	Collection *collection;
+	Types *types;
 	int index;
 	VisualTreeWalkerDirection direction;
 };
@@ -202,6 +203,7 @@ public:
 	~DeepTreeWalker ();
 protected:
 	List *walk_list;
+	Types *types;
 };
 
 /* @Namespace=System.Windows */
