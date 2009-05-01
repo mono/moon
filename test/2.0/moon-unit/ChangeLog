@@ -1,5 +1,11 @@
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Add another test and put
+	  [MoonlightBug] on the previous test as it currently doesn't
+	  pass.
+
+2009-05-01  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Anchor the
 	  MarkupExpressionParser regexes to the start of the string so
 	  we don't accidently match content embedded in a clr:string

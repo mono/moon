@@ -1283,6 +1283,7 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 							
 		[TestMethod]
+		[MoonlightBug]
 		public void XamlBindWithContent ()
 		{
 			TextProp c = (TextProp) XamlReader.Load (@"
@@ -1295,6 +1296,22 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 	</c:TextProp.MyText>
 </c:TextProp>");
 			Assert.AreEqual ("This contains {Binding} and {StaticResource} and {TemplateBinding}", c.MyText, "#1");
+		}
+							
+		[TestMethod]
+		[MoonlightBug]
+		public void ____XamlBindWithContent2 ()
+		{
+			TextProp c = (TextProp) XamlReader.Load (@"
+<c:TextProp	xmlns=""http://schemas.microsoft.com/client/2007""
+			xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+			xmlns:clr=""clr-namespace:System;assembly=mscorlib""
+			xmlns:c=""clr-namespace:MoonTest.System.Windows.Data;assembly=moon-unit"">
+	<c:TextProp.MyText>
+		<clr:String>'        This contains {Binding} and {StaticResource} and {TemplateBinding} '</clr:String>
+	</c:TextProp.MyText>
+</c:TextProp>");
+			Assert.AreEqual ("'        This contains {Binding} and {StaticResource} and {TemplateBinding} '", c.MyText, "#1");
 		}
 			
 		[TestMethod]
