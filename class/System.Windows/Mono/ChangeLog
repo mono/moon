@@ -1,5 +1,10 @@
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
 
+	* Types.cs: Revert r133257 and mark test with [MoonlightBug]
+	  until the change can be verified.
+
+2009-05-01  Alan McGovern  <amcgovern@novell.com>
+
 	* MarkupExpressionParser.cs: Anchor the MarkupExpressionParser
 	  regexes to the start of the string so we don't accidently
 	  match content embedded in a clr:string (or some string)

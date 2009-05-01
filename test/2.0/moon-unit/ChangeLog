@@ -1,5 +1,11 @@
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/DependencyPropertyTest.cs: Revert r133257 and
+	  mark test with [MoonlightBug] until the change can be
+	  verified.
+
+2009-05-01  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/DependencyPropertyTest.cs: Add test to see
 	  how we handle DPs whose type is an Interface.
 
