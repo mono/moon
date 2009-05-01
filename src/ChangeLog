@@ -1,3 +1,8 @@
+2009-05-01  Jackson Harper  <jackson@ximian.com>
+
+	* type.h.in:
+	* value.h.in: Sync with their .h's
+
 2009-04-30  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Use the type system for detecting if we should be in
