@@ -144,9 +144,10 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 	// bounds check
 	if (index < 0)
 		return false;
-	
-	if (index > GetCount ())
-		index = GetCount ();
+
+	int count = GetCount ();
+	if (index > count)
+		index = count;
 	
 	added = new Value (*value);
 	
@@ -484,7 +485,7 @@ UIElementCollection::ResortByZIndex ()
 		return;
 	
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
-	for (guint i = 0; i < array->len; i++)
+	for (guint i = 0; i < array->len; i++) 
 		z_sorted->pdata[i] = ((Value *) array->pdata[i])->AsUIElement (types);
 	
 	if (array->len > 1)
@@ -755,19 +756,20 @@ VisualTreeWalker::Step ()
 	UIElement *result = NULL;
 
 	if (collection) {
-		int count = collection->GetCount ();
-
-		if (index < 0 || index >= count)
-			return NULL;
-
-		if (count == 1 && index == 1) {
-			index ++;
-			return collection->GetValueAt (0)->AsUIElement(types);
-		}
-
 		UIElementCollection *uiecollection = NULL;
+		int count = -1;
+		
 		if (direction != Logical) {
 			uiecollection = (UIElementCollection *)collection;
+			count = GetCount ();
+			if (count < 0 || index >= count)
+				return NULL;
+			
+			if (count == 1 && index == 0) {
+				index ++;
+				return collection->GetValueAt (0)->AsUIElement(types);
+			}
+
 			if ((int)uiecollection->z_sorted->len != count) {
 				g_warning ("VisualTreeWalker: unexpectedly got an unsorted UIElementCollection");
 				uiecollection->ResortByZIndex ();
@@ -783,7 +785,7 @@ VisualTreeWalker::Step ()
 			break;
 		default:
 			Value *v = collection->GetValueAt (index);
-			result = v->AsUIElement (types);
+			result = v == NULL ? NULL : v->AsUIElement (types);
 		}
 		
 		index++;
