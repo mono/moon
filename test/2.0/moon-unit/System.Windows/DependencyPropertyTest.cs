@@ -1244,6 +1244,24 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
+		[MoonlightBug]
+		public void Managed_Interfaces ()
+		{
+			InterfaceDPs dp = new InterfaceDPs ();
+			dp.InterfaceProp = 5;
+			Assert.AreEqual (5, (int) dp.InterfaceProp, "#1");
+
+			dp.InterfaceProp = 1.0;
+			Assert.AreEqual (1.0, (double) dp.InterfaceProp, "#2");
+
+			dp.InterfaceProp = new InterfaceDPs ();
+			Assert.IsInstanceOfType<InterfaceDPs> (dp.InterfaceProp, "#3");
+
+			dp.InterfaceProp = new ManagedIComparable ();
+			Assert.IsInstanceOfType<ManagedIComparable> (dp.InterfaceProp, "#4");
+		}
+		
+		[TestMethod]
 		public void ManagedTest_GenericDPs ()
 		{
 			GenericDPS c = new GenericDPS ();
@@ -1277,6 +1295,20 @@ namespace MoonTest.System.Windows
 		}
 
 #endregion
+	}
+	
+	public class ManagedIComparable : IComparable { public int CompareTo (object o) { return 0; } }
+	public class InterfaceDPs : Control, IComparable
+	{
+		public static DependencyProperty InterfacePropProperty = DependencyProperty.Register ("InterfaceProp", typeof (IComparable), typeof (InterfaceDPs), null);
+
+		public IComparable InterfaceProp
+		{
+			get { return (IComparable) GetValue (InterfacePropProperty); }
+			set { SetValue (InterfacePropProperty, value); }
+		}
+
+		public int CompareTo (object o) { return 0; }
 	}
 
 	public class ManagedDPPriority : Control

@@ -1,5 +1,10 @@
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/DependencyPropertyTest.cs: Add test to see
+	  how we handle DPs whose type is an Interface.
+
+2009-05-01  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest.cs: When raising the
 	  SelectionChanged event, we need to always pass the old/new
 	  selected *item*, not the SelectedIndex.
