@@ -1,5 +1,9 @@
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
 
+	* moon-unit.mdp: Add file to the build.
+
+2009-05-01  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/DependencyPropertyTest.cs: Add test for
 	  generic DPs.
 
