@@ -106,7 +106,7 @@ public:
 	
 	bool Is (Type::Kind k)
 	{
-		return GetType ()->IsSubclassOf (k);
+		return Type::IsSubclassOf (GetObjectType (), k);
 	}
 	
 	Type *GetType ()

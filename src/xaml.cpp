@@ -1408,6 +1408,7 @@ start_element (void *data, const char *el, const char **attr)
 	XamlParserInfo *p = (XamlParserInfo *) data;
 	XamlElementInfo *elem = NULL;
 	XamlElementInstance *inst;
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
 
 	if (!strcmp (el, INTERNAL_IGNORABLE_ELEMENT))
 		return;
@@ -1435,9 +1436,9 @@ start_element (void *data, const char *el, const char **attr)
 		if (p->hydrate_expecting){
 			Type::Kind expecting_type =  p->hydrate_expecting->GetObjectType ();
 
-			if (!Type::IsSubclassOf (expecting_type, elem->GetKind ())) {
+			if (!types->IsSubclassOf (expecting_type, elem->GetKind ())) {
 				parser_error (p, el, NULL, -1, "Invalid top-level element found %s, expecting %s", el,
-					      Type::Find (expecting_type)->GetName ());
+					      types->Find (expecting_type)->GetName ());
 				return;
 			}
 
@@ -1491,7 +1492,7 @@ start_element (void *data, const char *el, const char **attr)
 			}
 
 			if (!p->top_element) {
-				if (Type::IsSubclassOf (prop_info->GetKind (), Type::COLLECTION)) {
+				if (types->IsSubclassOf (prop_info->GetKind (), Type::COLLECTION)) {
 					XamlElementInstance *wrap = prop_info->CreateElementInstance (p);
 					NameScope::SetNameScope (wrap->GetAsDependencyObject (), p->namescope);
 					p->top_element = wrap;
@@ -1613,8 +1614,8 @@ create_resource_list (XamlParserInfo *p)
 	GSList *list = NULL;
 	XamlElementInstance *walk = p->current_element;
 
+	Types * types = Deployment::GetCurrent ()->GetTypes ();
 	while (walk) {
-		Types * types = Deployment::GetCurrent ()->GetTypes ();
 		if (walk->element_type == XamlElementInstance::ELEMENT && types->IsSubclassOf (walk->info->GetKind (), Type::FRAMEWORKELEMENT)) {
 			ResourceDictionary *rd = (ResourceDictionary *) walk->GetAsDependencyObject ()->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
 			if (g_slist_index (list, rd) == -1)
@@ -4306,14 +4307,15 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	DependencyObject *dep = item->GetAsDependencyObject ();
 	DependencyProperty *prop = NULL;
 	bool res;
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
 
-	if (Type::Find (property->info->GetKind ())->IsValueType ()) {
+	if (types->Find (property->info->GetKind ())->IsValueType ()) {
 		parser_error (p, item->element_name, NULL, -1, "Value types (%s) do not have properties.", property->element_name);
 		g_strfreev (prop_name);
 		return false;
 	}
 
-	if (Type::Find(property->info->GetKind())->IsCustomType()) {
+	if (types->Find(property->info->GetKind())->IsCustomType()) {
 		XamlElementInstanceManaged *mp = (XamlElementInstanceManaged *) property;
 		g_strfreev (prop_name);
 
@@ -4337,7 +4339,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 			parser_error (p, item->element_name, NULL, 2014,
 				      "The attribute %s is read only and cannot be set.", prop->GetName ());
 			res = false;
-		} else if (Type::IsSubclassOf (value->info->GetKind (), prop->GetPropertyType())) {
+		} else if (types->IsSubclassOf (value->info->GetKind (), prop->GetPropertyType())) {
 			// an empty collection can be NULL and valid
 			if (item->IsPropertySet (prop->GetName())) {
 				parser_error (p, item->element_name, NULL, 2033,
@@ -4350,7 +4352,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 				// HACK - since the Setter is added to the collection *before* its properties are set
 				// we find ourselves with a sealed Setter - which should not be possible at the parse time
 				SetterBase *sb = NULL;
-				if (dep->Is (Type::SETTERBASE)) {
+				if (types->IsSubclassOf (dep->GetObjectType (), Type::SETTERBASE)) {
 					sb = (SetterBase*) dep;
 					sb->SetIsSealed (false);
 				}
@@ -4372,7 +4374,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 				item->MarkPropertyAsSet (prop->GetName());
 				res = true;
 			}
-		} else if (Type::IsSubclassOf (prop->GetPropertyType (), Type::COLLECTION) || Type::IsSubclassOf (prop->GetPropertyType (), Type::RESOURCE_DICTIONARY)) {
+		} else if (types->IsSubclassOf (prop->GetPropertyType (), Type::COLLECTION) || types->IsSubclassOf (prop->GetPropertyType (), Type::RESOURCE_DICTIONARY)) {
 			// The items were added in add_child
 			return true;
 		} else {
