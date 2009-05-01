@@ -1262,7 +1262,6 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void ManagedTest_GenericDPs ()
 		{
 			GenericDPS c = new GenericDPS ();

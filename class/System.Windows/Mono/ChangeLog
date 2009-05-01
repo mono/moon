@@ -1,3 +1,9 @@
+2009-05-01  Chris Toshok  <toshok@ximian.com>
+
+	* Types.cs: rework r133257 so we keep the generic type definition
+	stuff so that PresentationFrameworkCollection<T> still works.
+	Reenable the unit test for generic DP types too.
+
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
 
 	* Types.cs: Revert r133257 and mark test with [MoonlightBug]

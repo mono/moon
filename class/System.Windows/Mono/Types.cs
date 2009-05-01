@@ -85,16 +85,17 @@ namespace Mono
 			ManagedType info;
 			ManagedType parent;
 			
-			if (type.IsGenericType)
-				type = type.GetGenericTypeDefinition();
-
 			if (types.TryGetValue (type, out info))
 				return info;
 			
-			if (type.BaseType == null || type.BaseType == typeof (object)) {
+			Type typedef = type;
+			if (typedef.IsGenericType)
+				typedef = typedef.GetGenericTypeDefinition();
+
+			if (typedef.BaseType == null || typedef.BaseType == typeof (object)) {
 				parent = null;
 			} else {
-				parent = Find (type.BaseType);
+				parent = Find (typedef.BaseType);
 			}
 			
 			return RegisterType (type, parent);
