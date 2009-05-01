@@ -7,8 +7,6 @@ pluginlib_LTLIBRARIES = libmoonplugin.la libmoonloader.la
 
 noinst_LTLIBRARIES = libmoonpluginxpi.la libmoonloaderxpi.la
 
-pluginlib_DATA=README
-
 INCLUDES = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/zip \
