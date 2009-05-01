@@ -184,6 +184,77 @@ namespace MoonTest.Misc.Parsing
 
 			EnqueueTestComplete ();
 		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void EscapeMarkup ()
+		{
+			Canvas c;
+			string s;
+
+			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   	 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+							    <Canvas.Resources><TextBlock x:Name=""the_block"" Text=""{}{StaticResource foobar}"" /></Canvas.Resources>
+							</Canvas>");
+
+			TextBlock the_block = (TextBlock) c.FindName ("the_block");
+			Assert.AreEqual ("{StaticResource foobar}", the_block.Text, "#1");
+
+
+			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   	 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+							    <Canvas.Resources><TextBlock x:Name=""the_block"" Text=""{}{Binding foobar}"" /></Canvas.Resources>
+							</Canvas>");
+
+			the_block = (TextBlock) c.FindName ("the_block");
+			Assert.AreEqual ("{Binding foobar}", the_block.Text, "#2");
+
+
+			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   	 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+							    <Canvas.Resources><TextBlock x:Name=""the_block"" Text=""{}{}"" /></Canvas.Resources>
+							</Canvas>");
+
+			the_block = (TextBlock) c.FindName ("the_block");
+			Assert.AreEqual ("{}", the_block.Text, "#3");
+
+
+			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   	 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+							    <Canvas.Resources><TextBlock x:Name=""the_block"" Text=""{}"" /></Canvas.Resources>
+							</Canvas>");
+
+			the_block = (TextBlock) c.FindName ("the_block");
+			Assert.AreEqual ("", the_block.Text, "#4");
+
+
+			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   	 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+							    <Canvas.Resources><TextBlock x:Name=""the_block"" Text=""  {} foo"" /></Canvas.Resources>
+							</Canvas>");
+
+			the_block = (TextBlock) c.FindName ("the_block");
+			Assert.AreEqual ("  {} foo", the_block.Text, "#5");
+
+
+			Assert.Throws <XamlParseException> (() => XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   	 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+							    <Canvas.Resources><TextBlock x:Name=""the_block"" Text=""{ }foo"" /></Canvas.Resources>
+							</Canvas>"));
+
+
+			Assert.Throws <XamlParseException> (() => XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   	 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+							    <Canvas.Resources><TextBlock x:Name=""the_block"" Text=""{       }foo"" /></Canvas.Resources>
+							</Canvas>"));
+
+			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+						   	 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+							    <Canvas.Resources><TextBlock x:Name=""the_block"" Text=""   {       }  foo"" /></Canvas.Resources>
+							</Canvas>");
+			the_block = (TextBlock) c.FindName ("the_block");
+			Assert.AreEqual ("   {       }  foo", the_block.Text, "#6");
+		}
 	}
 }
 
