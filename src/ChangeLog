@@ -1,3 +1,8 @@
+2009-05-01  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Handle the {} escape sequence. (Managed code will have to
+	handle this also).
+
 2009-05-01  Larry Ewing  <lewing@novell.com>
 
 	* dependencyobject.h:
