@@ -303,7 +303,7 @@ class YUVConverter;
 
 
 #define checked_get_exact(kind, errval, mem)  g_return_val_if_fail (k == (kind), errval); return mem;
-#define checked_get_subclass(kind, castas)  if (u.dependency_object == NULL) return NULL; g_return_val_if_fail (Type::IsSubclassOrSuperclassOf (k, kind), NULL); return (castas*)u.dependency_object;
+#define checked_get_subclass(kind, castas)  if (u.dependency_object == NULL) return NULL; g_return_val_if_fail (Types::IsSubclassOrSuperclassOf (types, k, kind), NULL); return (castas*)u.dependency_object;
 
 struct Value {
 public:
@@ -391,255 +391,255 @@ public:
 	gint64* 	AsNullableInt64 ()	{ checked_get_exact (Type::INT64, NULL, &u.i64); }
 	gint32* 	AsNullableInt32 ()	{ checked_get_exact (Type::INT32, NULL, &u.i32); }
 	
-	AlsaSource*                              AsAlsaSource () { checked_get_subclass (Type::ALSASOURCE, AlsaSource) }
-	Animation*                               AsAnimation () { checked_get_subclass (Type::ANIMATION, Animation) }
-	AnimationClock*                          AsAnimationClock () { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }
-	Application*                             AsApplication () { checked_get_subclass (Type::APPLICATION, Application) }
-	ArcSegment*                              AsArcSegment () { checked_get_subclass (Type::ARCSEGMENT, ArcSegment) }
-	ASFDemuxer*                              AsASFDemuxer () { checked_get_subclass (Type::ASFDEMUXER, ASFDemuxer) }
-	ASFMarkerDecoder*                        AsASFMarkerDecoder () { checked_get_subclass (Type::ASFMARKERDECODER, ASFMarkerDecoder) }
-	ASFPacket*                               AsASFPacket () { checked_get_subclass (Type::ASFPACKET, ASFPacket) }
-	ASFParser*                               AsASFParser () { checked_get_subclass (Type::ASFPARSER, ASFParser) }
-	AssemblyPart*                            AsAssemblyPart () { checked_get_subclass (Type::ASSEMBLYPART, AssemblyPart) }
-	AssemblyPartCollection*                  AsAssemblyPartCollection () { checked_get_subclass (Type::ASSEMBLYPART_COLLECTION, AssemblyPartCollection) }
-	ASXDemuxer*                              AsASXDemuxer () { checked_get_subclass (Type::ASXDEMUXER, ASXDemuxer) }
-	AudioSource*                             AsAudioSource () { checked_get_subclass (Type::AUDIOSOURCE, AudioSource) }
-	AudioStream*                             AsAudioStream () { checked_get_subclass (Type::AUDIOSTREAM, AudioStream) }
-	BackEase*                                AsBackEase () { checked_get_subclass (Type::BACKEASE, BackEase) }
-	BeginStoryboard*                         AsBeginStoryboard () { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
-	BezierSegment*                           AsBezierSegment () { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
-	BitmapImage*                             AsBitmapImage () { checked_get_subclass (Type::BITMAPIMAGE, BitmapImage) }
-	BitmapSource*                            AsBitmapSource () { checked_get_subclass (Type::BITMAPSOURCE, BitmapSource) }
-	Border*                                  AsBorder () { checked_get_subclass (Type::BORDER, Border) }
-	BounceEase*                              AsBounceEase () { checked_get_subclass (Type::BOUNCEEASE, BounceEase) }
-	Brush*                                   AsBrush () { checked_get_subclass (Type::BRUSH, Brush) }
-	Canvas*                                  AsCanvas () { checked_get_subclass (Type::CANVAS, Canvas) }
-	CircleEase*                              AsCircleEase () { checked_get_subclass (Type::CIRCLEEASE, CircleEase) }
-	Clock*                                   AsClock () { checked_get_subclass (Type::CLOCK, Clock) }
-	ClockGroup*                              AsClockGroup () { checked_get_subclass (Type::CLOCKGROUP, ClockGroup) }
-	CodecDownloader*                         AsCodecDownloader () { checked_get_subclass (Type::CODECDOWNLOADER, CodecDownloader) }
-	Collection*                              AsCollection () { checked_get_subclass (Type::COLLECTION, Collection) }
-	CollectionChangedEventArgs*              AsCollectionChangedEventArgs () { checked_get_subclass (Type::COLLECTIONCHANGEDEVENTARGS, CollectionChangedEventArgs) }
-	CollectionItemChangedEventArgs*          AsCollectionItemChangedEventArgs () { checked_get_subclass (Type::COLLECTIONITEMCHANGEDEVENTARGS, CollectionItemChangedEventArgs) }
-	ColorAnimation*                          AsColorAnimation () { checked_get_subclass (Type::COLORANIMATION, ColorAnimation) }
-	ColorAnimationUsingKeyFrames*            AsColorAnimationUsingKeyFrames () { checked_get_subclass (Type::COLORANIMATIONUSINGKEYFRAMES, ColorAnimationUsingKeyFrames) }
-	ColorKeyFrame*                           AsColorKeyFrame () { checked_get_subclass (Type::COLORKEYFRAME, ColorKeyFrame) }
-	ColorKeyFrameCollection*                 AsColorKeyFrameCollection () { checked_get_subclass (Type::COLORKEYFRAME_COLLECTION, ColorKeyFrameCollection) }
-	ColumnDefinition*                        AsColumnDefinition () { checked_get_subclass (Type::COLUMNDEFINITION, ColumnDefinition) }
-	ColumnDefinitionCollection*              AsColumnDefinitionCollection () { checked_get_subclass (Type::COLUMNDEFINITION_COLLECTION, ColumnDefinitionCollection) }
-	ContentChangedEventArgs*                 AsContentChangedEventArgs () { checked_get_subclass (Type::CONTENTCHANGEDEVENTARGS, ContentChangedEventArgs) }
-	ContentControl*                          AsContentControl () { checked_get_subclass (Type::CONTENTCONTROL, ContentControl) }
-	Control*                                 AsControl () { checked_get_subclass (Type::CONTROL, Control) }
-	ControlTemplate*                         AsControlTemplate () { checked_get_subclass (Type::CONTROLTEMPLATE, ControlTemplate) }
-	CubicEase*                               AsCubicEase () { checked_get_subclass (Type::CUBICEASE, CubicEase) }
-	CursorPositionChangedEventArgs*          AsCursorPositionChangedEventArgs () { checked_get_subclass (Type::CURSORPOSITIONCHANGEDEVENTARGS, CursorPositionChangedEventArgs) }
-	DataTemplate*                            AsDataTemplate () { checked_get_subclass (Type::DATATEMPLATE, DataTemplate) }
-	DeepZoomImageTileSource*                 AsDeepZoomImageTileSource () { checked_get_subclass (Type::DEEPZOOMIMAGETILESOURCE, DeepZoomImageTileSource) }
-	DependencyObject*                        AsDependencyObject () { checked_get_subclass (Type::DEPENDENCY_OBJECT, DependencyObject) }
-	DependencyObjectCollection*              AsDependencyObjectCollection () { checked_get_subclass (Type::DEPENDENCY_OBJECT_COLLECTION, DependencyObjectCollection) }
-	Deployment*                              AsDeployment () { checked_get_subclass (Type::DEPLOYMENT, Deployment) }
-	DiscreteColorKeyFrame*                   AsDiscreteColorKeyFrame () { checked_get_subclass (Type::DISCRETECOLORKEYFRAME, DiscreteColorKeyFrame) }
-	DiscreteDoubleKeyFrame*                  AsDiscreteDoubleKeyFrame () { checked_get_subclass (Type::DISCRETEDOUBLEKEYFRAME, DiscreteDoubleKeyFrame) }
-	DiscreteObjectKeyFrame*                  AsDiscreteObjectKeyFrame () { checked_get_subclass (Type::DISCRETEOBJECTKEYFRAME, DiscreteObjectKeyFrame) }
-	DiscretePointKeyFrame*                   AsDiscretePointKeyFrame () { checked_get_subclass (Type::DISCRETEPOINTKEYFRAME, DiscretePointKeyFrame) }
-	DispatcherTimer*                         AsDispatcherTimer () { checked_get_subclass (Type::DISPATCHERTIMER, DispatcherTimer) }
-	DoubleCollection*                        AsDoubleCollection () { checked_get_subclass (Type::DOUBLE_COLLECTION, DoubleCollection) }
-	DoubleAnimation*                         AsDoubleAnimation () { checked_get_subclass (Type::DOUBLEANIMATION, DoubleAnimation) }
-	DoubleAnimationUsingKeyFrames*           AsDoubleAnimationUsingKeyFrames () { checked_get_subclass (Type::DOUBLEANIMATIONUSINGKEYFRAMES, DoubleAnimationUsingKeyFrames) }
-	DoubleKeyFrame*                          AsDoubleKeyFrame () { checked_get_subclass (Type::DOUBLEKEYFRAME, DoubleKeyFrame) }
-	DoubleKeyFrameCollection*                AsDoubleKeyFrameCollection () { checked_get_subclass (Type::DOUBLEKEYFRAME_COLLECTION, DoubleKeyFrameCollection) }
-	Downloader*                              AsDownloader () { checked_get_subclass (Type::DOWNLOADER, Downloader) }
-	DownloadProgressEventArgs*               AsDownloadProgressEventArgs () { checked_get_subclass (Type::DOWNLOADPROGRESSEVENTARGS, DownloadProgressEventArgs) }
-	DrawingAttributes*                       AsDrawingAttributes () { checked_get_subclass (Type::DRAWINGATTRIBUTES, DrawingAttributes) }
-	EasingColorKeyFrame*                     AsEasingColorKeyFrame () { checked_get_subclass (Type::EASINGCOLORKEYFRAME, EasingColorKeyFrame) }
-	EasingDoubleKeyFrame*                    AsEasingDoubleKeyFrame () { checked_get_subclass (Type::EASINGDOUBLEKEYFRAME, EasingDoubleKeyFrame) }
-	EasingFunctionBase*                      AsEasingFunctionBase () { checked_get_subclass (Type::EASINGFUNCTIONBASE, EasingFunctionBase) }
-	EasingPointKeyFrame*                     AsEasingPointKeyFrame () { checked_get_subclass (Type::EASINGPOINTKEYFRAME, EasingPointKeyFrame) }
-	ElasticEase*                             AsElasticEase () { checked_get_subclass (Type::ELASTICEASE, ElasticEase) }
-	Ellipse*                                 AsEllipse () { checked_get_subclass (Type::ELLIPSE, Ellipse) }
-	EllipseGeometry*                         AsEllipseGeometry () { checked_get_subclass (Type::ELLIPSEGEOMETRY, EllipseGeometry) }
-	ErrorEventArgs*                          AsErrorEventArgs () { checked_get_subclass (Type::ERROREVENTARGS, ErrorEventArgs) }
-	EventArgs*                               AsEventArgs () { checked_get_subclass (Type::EVENTARGS, EventArgs) }
-	EventListenerProxy*                      AsEventListenerProxy () { checked_get_subclass (Type::EVENTLISTENERPROXY, EventListenerProxy) }
-	EventObject*                             AsEventObject () { checked_get_subclass (Type::EVENTOBJECT, EventObject) }
-	EventTrigger*                            AsEventTrigger () { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
-	ExceptionRoutedEventArgs*                AsExceptionRoutedEventArgs () { checked_get_subclass (Type::EXCEPTIONROUTEDEVENTARGS, ExceptionRoutedEventArgs) }
-	ExponentialEase*                         AsExponentialEase () { checked_get_subclass (Type::EXPONENTIALEASE, ExponentialEase) }
-	ExternalDemuxer*                         AsExternalDemuxer () { checked_get_subclass (Type::EXTERNALDEMUXER, ExternalDemuxer) }
-	FfmpegDecoder*                           AsFfmpegDecoder () { checked_get_subclass (Type::FFMPEGDECODER, FfmpegDecoder) }
-	FfmpegDemuxer*                           AsFfmpegDemuxer () { checked_get_subclass (Type::FFMPEGDEMUXER, FfmpegDemuxer) }
-	FileSource*                              AsFileSource () { checked_get_subclass (Type::FILESOURCE, FileSource) }
-	FrameworkElement*                        AsFrameworkElement () { checked_get_subclass (Type::FRAMEWORKELEMENT, FrameworkElement) }
-	FrameworkTemplate*                       AsFrameworkTemplate () { checked_get_subclass (Type::FRAMEWORKTEMPLATE, FrameworkTemplate) }
-	GeneralTransform*                        AsGeneralTransform () { checked_get_subclass (Type::GENERALTRANSFORM, GeneralTransform) }
-	Geometry*                                AsGeometry () { checked_get_subclass (Type::GEOMETRY, Geometry) }
-	GeometryCollection*                      AsGeometryCollection () { checked_get_subclass (Type::GEOMETRY_COLLECTION, GeometryCollection) }
-	GeometryGroup*                           AsGeometryGroup () { checked_get_subclass (Type::GEOMETRYGROUP, GeometryGroup) }
-	Glyphs*                                  AsGlyphs () { checked_get_subclass (Type::GLYPHS, Glyphs) }
-	GradientBrush*                           AsGradientBrush () { checked_get_subclass (Type::GRADIENTBRUSH, GradientBrush) }
-	GradientStop*                            AsGradientStop () { checked_get_subclass (Type::GRADIENTSTOP, GradientStop) }
-	GradientStopCollection*                  AsGradientStopCollection () { checked_get_subclass (Type::GRADIENTSTOP_COLLECTION, GradientStopCollection) }
-	Grid*                                    AsGrid () { checked_get_subclass (Type::GRID, Grid) }
-	HitTestCollection*                       AsHitTestCollection () { checked_get_subclass (Type::HITTEST_COLLECTION, HitTestCollection) }
-	IImageConverter*                         AsIImageConverter () { checked_get_subclass (Type::IIMAGECONVERTER, IImageConverter) }
-	Image*                                   AsImage () { checked_get_subclass (Type::IMAGE, Image) }
-	ImageBrush*                              AsImageBrush () { checked_get_subclass (Type::IMAGEBRUSH, ImageBrush) }
-	ImageErrorEventArgs*                     AsImageErrorEventArgs () { checked_get_subclass (Type::IMAGEERROREVENTARGS, ImageErrorEventArgs) }
-	ImageSource*                             AsImageSource () { checked_get_subclass (Type::IMAGESOURCE, ImageSource) }
-	IMediaDecoder*                           AsIMediaDecoder () { checked_get_subclass (Type::IMEDIADECODER, IMediaDecoder) }
-	IMediaDemuxer*                           AsIMediaDemuxer () { checked_get_subclass (Type::IMEDIADEMUXER, IMediaDemuxer) }
-	IMediaObject*                            AsIMediaObject () { checked_get_subclass (Type::IMEDIAOBJECT, IMediaObject) }
-	IMediaSource*                            AsIMediaSource () { checked_get_subclass (Type::IMEDIASOURCE, IMediaSource) }
-	IMediaStream*                            AsIMediaStream () { checked_get_subclass (Type::IMEDIASTREAM, IMediaStream) }
-	InkPresenter*                            AsInkPresenter () { checked_get_subclass (Type::INKPRESENTER, InkPresenter) }
-	Inline*                                  AsInline () { checked_get_subclass (Type::INLINE, Inline) }
-	InlineCollection*                        AsInlineCollection () { checked_get_subclass (Type::INLINE_COLLECTION, InlineCollection) }
-	InputMethod*                             AsInputMethod () { checked_get_subclass (Type::INPUTMETHOD, InputMethod) }
-	ItemCollection*                          AsItemCollection () { checked_get_subclass (Type::ITEM_COLLECTION, ItemCollection) }
-	KeyEventArgs*                            AsKeyEventArgs () { checked_get_subclass (Type::KEYEVENTARGS, KeyEventArgs) }
-	KeyFrame*                                AsKeyFrame () { checked_get_subclass (Type::KEYFRAME, KeyFrame) }
-	KeyFrameCollection*                      AsKeyFrameCollection () { checked_get_subclass (Type::KEYFRAME_COLLECTION, KeyFrameCollection) }
-	KeySpline*                               AsKeySpline () { checked_get_subclass (Type::KEYSPLINE, KeySpline) }
-	LayoutInformation*                       AsLayoutInformation () { checked_get_subclass (Type::LAYOUTINFORMATION, LayoutInformation) }
-	Line*                                    AsLine () { checked_get_subclass (Type::LINE, Line) }
-	LinearColorKeyFrame*                     AsLinearColorKeyFrame () { checked_get_subclass (Type::LINEARCOLORKEYFRAME, LinearColorKeyFrame) }
-	LinearDoubleKeyFrame*                    AsLinearDoubleKeyFrame () { checked_get_subclass (Type::LINEARDOUBLEKEYFRAME, LinearDoubleKeyFrame) }
-	LinearGradientBrush*                     AsLinearGradientBrush () { checked_get_subclass (Type::LINEARGRADIENTBRUSH, LinearGradientBrush) }
-	LinearPointKeyFrame*                     AsLinearPointKeyFrame () { checked_get_subclass (Type::LINEARPOINTKEYFRAME, LinearPointKeyFrame) }
-	LineBreak*                               AsLineBreak () { checked_get_subclass (Type::LINEBREAK, LineBreak) }
-	LineGeometry*                            AsLineGeometry () { checked_get_subclass (Type::LINEGEOMETRY, LineGeometry) }
-	LineSegment*                             AsLineSegment () { checked_get_subclass (Type::LINESEGMENT, LineSegment) }
-	ManagedStreamSource*                     AsManagedStreamSource () { checked_get_subclass (Type::MANAGEDSTREAMSOURCE, ManagedStreamSource) }
-	ManualTimeSource*                        AsManualTimeSource () { checked_get_subclass (Type::MANUALTIMESOURCE, ManualTimeSource) }
-	MarkerReachedEventArgs*                  AsMarkerReachedEventArgs () { checked_get_subclass (Type::MARKERREACHEDEVENTARGS, MarkerReachedEventArgs) }
-	MarkerStream*                            AsMarkerStream () { checked_get_subclass (Type::MARKERSTREAM, MarkerStream) }
-	Matrix*                                  AsMatrix () { checked_get_subclass (Type::MATRIX, Matrix) }
-	MatrixTransform*                         AsMatrixTransform () { checked_get_subclass (Type::MATRIXTRANSFORM, MatrixTransform) }
-	Media*                                   AsMedia () { checked_get_subclass (Type::MEDIA, Media) }
-	MediaAttribute*                          AsMediaAttribute () { checked_get_subclass (Type::MEDIAATTRIBUTE, MediaAttribute) }
-	MediaAttributeCollection*                AsMediaAttributeCollection () { checked_get_subclass (Type::MEDIAATTRIBUTE_COLLECTION, MediaAttributeCollection) }
-	MediaBase*                               AsMediaBase () { checked_get_subclass (Type::MEDIABASE, MediaBase) }
-	MediaClosure*                            AsMediaClosure () { checked_get_subclass (Type::MEDIACLOSURE, MediaClosure) }
-	MediaDecodeFrameClosure*                 AsMediaDecodeFrameClosure () { checked_get_subclass (Type::MEDIADECODEFRAMECLOSURE, MediaDecodeFrameClosure) }
-	MediaElement*                            AsMediaElement () { checked_get_subclass (Type::MEDIAELEMENT, MediaElement) }
-	MediaFrame*                              AsMediaFrame () { checked_get_subclass (Type::MEDIAFRAME, MediaFrame) }
-	MediaGetFrameClosure*                    AsMediaGetFrameClosure () { checked_get_subclass (Type::MEDIAGETFRAMECLOSURE, MediaGetFrameClosure) }
-	MediaMarker*                             AsMediaMarker () { checked_get_subclass (Type::MEDIAMARKER, MediaMarker) }
-	MediaMarkerFoundClosure*                 AsMediaMarkerFoundClosure () { checked_get_subclass (Type::MEDIAMARKERFOUNDCLOSURE, MediaMarkerFoundClosure) }
-	MediaPlayer*                             AsMediaPlayer () { checked_get_subclass (Type::MEDIAPLAYER, MediaPlayer) }
-	MediaReportSeekCompletedClosure*         AsMediaReportSeekCompletedClosure () { checked_get_subclass (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, MediaReportSeekCompletedClosure) }
-	MediaSeekClosure*                        AsMediaSeekClosure () { checked_get_subclass (Type::MEDIASEEKCLOSURE, MediaSeekClosure) }
-	MemoryNestedSource*                      AsMemoryNestedSource () { checked_get_subclass (Type::MEMORYNESTEDSOURCE, MemoryNestedSource) }
-	MemoryQueueSource*                       AsMemoryQueueSource () { checked_get_subclass (Type::MEMORYQUEUESOURCE, MemoryQueueSource) }
-	MemorySource*                            AsMemorySource () { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
-	MouseEventArgs*                          AsMouseEventArgs () { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
-	MouseWheelEventArgs*                     AsMouseWheelEventArgs () { checked_get_subclass (Type::MOUSEWHEELEVENTARGS, MouseWheelEventArgs) }
-	Mp3Demuxer*                              AsMp3Demuxer () { checked_get_subclass (Type::MP3DEMUXER, Mp3Demuxer) }
-	MultiScaleImage*                         AsMultiScaleImage () { checked_get_subclass (Type::MULTISCALEIMAGE, MultiScaleImage) }
-	MultiScaleSubImage*                      AsMultiScaleSubImage () { checked_get_subclass (Type::MULTISCALESUBIMAGE, MultiScaleSubImage) }
-	MultiScaleSubImageCollection*            AsMultiScaleSubImageCollection () { checked_get_subclass (Type::MULTISCALESUBIMAGE_COLLECTION, MultiScaleSubImageCollection) }
-	MultiScaleTileSource*                    AsMultiScaleTileSource () { checked_get_subclass (Type::MULTISCALETILESOURCE, MultiScaleTileSource) }
-	NameScope*                               AsNameScope () { checked_get_subclass (Type::NAMESCOPE, NameScope) }
-	NullDecoder*                             AsNullDecoder () { checked_get_subclass (Type::NULLDECODER, NullDecoder) }
-	ObjectAnimationUsingKeyFrames*           AsObjectAnimationUsingKeyFrames () { checked_get_subclass (Type::OBJECTANIMATIONUSINGKEYFRAMES, ObjectAnimationUsingKeyFrames) }
-	ObjectKeyFrame*                          AsObjectKeyFrame () { checked_get_subclass (Type::OBJECTKEYFRAME, ObjectKeyFrame) }
-	ObjectKeyFrameCollection*                AsObjectKeyFrameCollection () { checked_get_subclass (Type::OBJECTKEYFRAME_COLLECTION, ObjectKeyFrameCollection) }
-	Panel*                                   AsPanel () { checked_get_subclass (Type::PANEL, Panel) }
-	ParallelTimeline*                        AsParallelTimeline () { checked_get_subclass (Type::PARALLELTIMELINE, ParallelTimeline) }
-	ParserErrorEventArgs*                    AsParserErrorEventArgs () { checked_get_subclass (Type::PARSERERROREVENTARGS, ParserErrorEventArgs) }
-	PassThroughDecoder*                      AsPassThroughDecoder () { checked_get_subclass (Type::PASSTHROUGHDECODER, PassThroughDecoder) }
-	PasswordBox*                             AsPasswordBox () { checked_get_subclass (Type::PASSWORDBOX, PasswordBox) }
-	Path*                                    AsPath () { checked_get_subclass (Type::PATH, Path) }
-	PathFigure*                              AsPathFigure () { checked_get_subclass (Type::PATHFIGURE, PathFigure) }
-	PathFigureCollection*                    AsPathFigureCollection () { checked_get_subclass (Type::PATHFIGURE_COLLECTION, PathFigureCollection) }
-	PathGeometry*                            AsPathGeometry () { checked_get_subclass (Type::PATHGEOMETRY, PathGeometry) }
-	PathSegment*                             AsPathSegment () { checked_get_subclass (Type::PATHSEGMENT, PathSegment) }
-	PathSegmentCollection*                   AsPathSegmentCollection () { checked_get_subclass (Type::PATHSEGMENT_COLLECTION, PathSegmentCollection) }
-	Playlist*                                AsPlaylist () { checked_get_subclass (Type::PLAYLIST, Playlist) }
-	PlaylistEntry*                           AsPlaylistEntry () { checked_get_subclass (Type::PLAYLISTENTRY, PlaylistEntry) }
-	PlaylistRoot*                            AsPlaylistRoot () { checked_get_subclass (Type::PLAYLISTROOT, PlaylistRoot) }
-	PointCollection*                         AsPointCollection () { checked_get_subclass (Type::POINT_COLLECTION, PointCollection) }
-	PointAnimation*                          AsPointAnimation () { checked_get_subclass (Type::POINTANIMATION, PointAnimation) }
-	PointAnimationUsingKeyFrames*            AsPointAnimationUsingKeyFrames () { checked_get_subclass (Type::POINTANIMATIONUSINGKEYFRAMES, PointAnimationUsingKeyFrames) }
-	PointKeyFrame*                           AsPointKeyFrame () { checked_get_subclass (Type::POINTKEYFRAME, PointKeyFrame) }
-	PointKeyFrameCollection*                 AsPointKeyFrameCollection () { checked_get_subclass (Type::POINTKEYFRAME_COLLECTION, PointKeyFrameCollection) }
-	PolyBezierSegment*                       AsPolyBezierSegment () { checked_get_subclass (Type::POLYBEZIERSEGMENT, PolyBezierSegment) }
-	Polygon*                                 AsPolygon () { checked_get_subclass (Type::POLYGON, Polygon) }
-	Polyline*                                AsPolyline () { checked_get_subclass (Type::POLYLINE, Polyline) }
-	PolyLineSegment*                         AsPolyLineSegment () { checked_get_subclass (Type::POLYLINESEGMENT, PolyLineSegment) }
-	PolyQuadraticBezierSegment*              AsPolyQuadraticBezierSegment () { checked_get_subclass (Type::POLYQUADRATICBEZIERSEGMENT, PolyQuadraticBezierSegment) }
-	Popup*                                   AsPopup () { checked_get_subclass (Type::POPUP, Popup) }
-	PowerEase*                               AsPowerEase () { checked_get_subclass (Type::POWEREASE, PowerEase) }
-	ProgressiveSource*                       AsProgressiveSource () { checked_get_subclass (Type::PROGRESSIVESOURCE, ProgressiveSource) }
-	PulseSource*                             AsPulseSource () { checked_get_subclass (Type::PULSESOURCE, PulseSource) }
-	QuadraticBezierSegment*                  AsQuadraticBezierSegment () { checked_get_subclass (Type::QUADRATICBEZIERSEGMENT, QuadraticBezierSegment) }
-	QuadraticEase*                           AsQuadraticEase () { checked_get_subclass (Type::QUADRATICEASE, QuadraticEase) }
-	QuarticEase*                             AsQuarticEase () { checked_get_subclass (Type::QUARTICEASE, QuarticEase) }
-	QuinticEase*                             AsQuinticEase () { checked_get_subclass (Type::QUINTICEASE, QuinticEase) }
-	RadialGradientBrush*                     AsRadialGradientBrush () { checked_get_subclass (Type::RADIALGRADIENTBRUSH, RadialGradientBrush) }
-	Rectangle*                               AsRectangle () { checked_get_subclass (Type::RECTANGLE, Rectangle) }
-	RectangleGeometry*                       AsRectangleGeometry () { checked_get_subclass (Type::RECTANGLEGEOMETRY, RectangleGeometry) }
-	RenderingEventArgs*                      AsRenderingEventArgs () { checked_get_subclass (Type::RENDERINGEVENTARGS, RenderingEventArgs) }
-	ResourceDictionary*                      AsResourceDictionary () { checked_get_subclass (Type::RESOURCE_DICTIONARY, ResourceDictionary) }
-	RotateTransform*                         AsRotateTransform () { checked_get_subclass (Type::ROTATETRANSFORM, RotateTransform) }
-	RoutedEventArgs*                         AsRoutedEventArgs () { checked_get_subclass (Type::ROUTEDEVENTARGS, RoutedEventArgs) }
-	RowDefinition*                           AsRowDefinition () { checked_get_subclass (Type::ROWDEFINITION, RowDefinition) }
-	RowDefinitionCollection*                 AsRowDefinitionCollection () { checked_get_subclass (Type::ROWDEFINITION_COLLECTION, RowDefinitionCollection) }
-	Run*                                     AsRun () { checked_get_subclass (Type::RUN, Run) }
-	ScaleTransform*                          AsScaleTransform () { checked_get_subclass (Type::SCALETRANSFORM, ScaleTransform) }
-	Setter*                                  AsSetter () { checked_get_subclass (Type::SETTER, Setter) }
-	SetterBase*                              AsSetterBase () { checked_get_subclass (Type::SETTERBASE, SetterBase) }
-	SetterBaseCollection*                    AsSetterBaseCollection () { checked_get_subclass (Type::SETTERBASE_COLLECTION, SetterBaseCollection) }
-	Shape*                                   AsShape () { checked_get_subclass (Type::SHAPE, Shape) }
-	SineEase*                                AsSineEase () { checked_get_subclass (Type::SINEEASE, SineEase) }
-	SizeChangedEventArgs*                    AsSizeChangedEventArgs () { checked_get_subclass (Type::SIZECHANGEDEVENTARGS, SizeChangedEventArgs) }
-	SkewTransform*                           AsSkewTransform () { checked_get_subclass (Type::SKEWTRANSFORM, SkewTransform) }
-	SolidColorBrush*                         AsSolidColorBrush () { checked_get_subclass (Type::SOLIDCOLORBRUSH, SolidColorBrush) }
-	SplineColorKeyFrame*                     AsSplineColorKeyFrame () { checked_get_subclass (Type::SPLINECOLORKEYFRAME, SplineColorKeyFrame) }
-	SplineDoubleKeyFrame*                    AsSplineDoubleKeyFrame () { checked_get_subclass (Type::SPLINEDOUBLEKEYFRAME, SplineDoubleKeyFrame) }
-	SplinePointKeyFrame*                     AsSplinePointKeyFrame () { checked_get_subclass (Type::SPLINEPOINTKEYFRAME, SplinePointKeyFrame) }
-	Storyboard*                              AsStoryboard () { checked_get_subclass (Type::STORYBOARD, Storyboard) }
-	Stroke*                                  AsStroke () { checked_get_subclass (Type::STROKE, Stroke) }
-	StrokeCollection*                        AsStrokeCollection () { checked_get_subclass (Type::STROKE_COLLECTION, StrokeCollection) }
-	Style*                                   AsStyle () { checked_get_subclass (Type::STYLE, Style) }
-	StylusInfo*                              AsStylusInfo () { checked_get_subclass (Type::STYLUSINFO, StylusInfo) }
-	StylusPoint*                             AsStylusPoint () { checked_get_subclass (Type::STYLUSPOINT, StylusPoint) }
-	StylusPointCollection*                   AsStylusPointCollection () { checked_get_subclass (Type::STYLUSPOINT_COLLECTION, StylusPointCollection) }
-	Surface*                                 AsSurface () { checked_get_subclass (Type::SURFACE, Surface) }
-	SystemTimeSource*                        AsSystemTimeSource () { checked_get_subclass (Type::SYSTEMTIMESOURCE, SystemTimeSource) }
-	TemplateBinding*                         AsTemplateBinding () { checked_get_subclass (Type::TEMPLATEBINDING, TemplateBinding) }
-	TextBlock*                               AsTextBlock () { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }
-	TextBox*                                 AsTextBox () { checked_get_subclass (Type::TEXTBOX, TextBox) }
-	TextBoxBase*                             AsTextBoxBase () { checked_get_subclass (Type::TEXTBOXBASE, TextBoxBase) }
-	TextBoxModelChangedEventArgs*            AsTextBoxModelChangedEventArgs () { checked_get_subclass (Type::TEXTBOXMODELCHANGEDEVENTARGS, TextBoxModelChangedEventArgs) }
-	TextBoxView*                             AsTextBoxView () { checked_get_subclass (Type::TEXTBOXVIEW, TextBoxView) }
-	TextChangedEventArgs*                    AsTextChangedEventArgs () { checked_get_subclass (Type::TEXTCHANGEDEVENTARGS, TextChangedEventArgs) }
-	TileBrush*                               AsTileBrush () { checked_get_subclass (Type::TILEBRUSH, TileBrush) }
-	Timeline*                                AsTimeline () { checked_get_subclass (Type::TIMELINE, Timeline) }
-	TimelineCollection*                      AsTimelineCollection () { checked_get_subclass (Type::TIMELINE_COLLECTION, TimelineCollection) }
-	TimelineGroup*                           AsTimelineGroup () { checked_get_subclass (Type::TIMELINEGROUP, TimelineGroup) }
-	TimelineMarker*                          AsTimelineMarker () { checked_get_subclass (Type::TIMELINEMARKER, TimelineMarker) }
-	TimelineMarkerCollection*                AsTimelineMarkerCollection () { checked_get_subclass (Type::TIMELINEMARKER_COLLECTION, TimelineMarkerCollection) }
-	TimeManager*                             AsTimeManager () { checked_get_subclass (Type::TIMEMANAGER, TimeManager) }
-	TimeSource*                              AsTimeSource () { checked_get_subclass (Type::TIMESOURCE, TimeSource) }
-	Transform*                               AsTransform () { checked_get_subclass (Type::TRANSFORM, Transform) }
-	TransformCollection*                     AsTransformCollection () { checked_get_subclass (Type::TRANSFORM_COLLECTION, TransformCollection) }
-	TransformGroup*                          AsTransformGroup () { checked_get_subclass (Type::TRANSFORMGROUP, TransformGroup) }
-	TranslateTransform*                      AsTranslateTransform () { checked_get_subclass (Type::TRANSLATETRANSFORM, TranslateTransform) }
-	TriggerCollection*                       AsTriggerCollection () { checked_get_subclass (Type::TRIGGER_COLLECTION, TriggerCollection) }
-	TriggerAction*                           AsTriggerAction () { checked_get_subclass (Type::TRIGGERACTION, TriggerAction) }
-	TriggerActionCollection*                 AsTriggerActionCollection () { checked_get_subclass (Type::TRIGGERACTION_COLLECTION, TriggerActionCollection) }
-	TriggerBase*                             AsTriggerBase () { checked_get_subclass (Type::TRIGGERBASE, TriggerBase) }
-	UIElement*                               AsUIElement () { checked_get_subclass (Type::UIELEMENT, UIElement) }
-	UIElementCollection*                     AsUIElementCollection () { checked_get_subclass (Type::UIELEMENT_COLLECTION, UIElementCollection) }
-	UnmanagedMatrix*                         AsUnmanagedMatrix () { checked_get_subclass (Type::UNMANAGEDMATRIX, UnmanagedMatrix) }
-	UserControl*                             AsUserControl () { checked_get_subclass (Type::USERCONTROL, UserControl) }
-	VideoBrush*                              AsVideoBrush () { checked_get_subclass (Type::VIDEOBRUSH, VideoBrush) }
-	VideoStream*                             AsVideoStream () { checked_get_subclass (Type::VIDEOSTREAM, VideoStream) }
-	VisualBrush*                             AsVisualBrush () { checked_get_subclass (Type::VISUALBRUSH, VisualBrush) }
-	WriteableBitmap*                         AsWriteableBitmap () { checked_get_subclass (Type::WRITEABLEBITMAP, WriteableBitmap) }
-	XamlTemplateBinding*                     AsXamlTemplateBinding () { checked_get_subclass (Type::XAMLTEMPLATEBINDING, XamlTemplateBinding) }
-	YUVConverter*                            AsYUVConverter () { checked_get_subclass (Type::YUVCONVERTER, YUVConverter) }
+	AlsaSource*                              AsAlsaSource (Types *types = NULL) { checked_get_subclass (Type::ALSASOURCE, AlsaSource) }
+	Animation*                               AsAnimation (Types *types = NULL) { checked_get_subclass (Type::ANIMATION, Animation) }
+	AnimationClock*                          AsAnimationClock (Types *types = NULL) { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }
+	Application*                             AsApplication (Types *types = NULL) { checked_get_subclass (Type::APPLICATION, Application) }
+	ArcSegment*                              AsArcSegment (Types *types = NULL) { checked_get_subclass (Type::ARCSEGMENT, ArcSegment) }
+	ASFDemuxer*                              AsASFDemuxer (Types *types = NULL) { checked_get_subclass (Type::ASFDEMUXER, ASFDemuxer) }
+	ASFMarkerDecoder*                        AsASFMarkerDecoder (Types *types = NULL) { checked_get_subclass (Type::ASFMARKERDECODER, ASFMarkerDecoder) }
+	ASFPacket*                               AsASFPacket (Types *types = NULL) { checked_get_subclass (Type::ASFPACKET, ASFPacket) }
+	ASFParser*                               AsASFParser (Types *types = NULL) { checked_get_subclass (Type::ASFPARSER, ASFParser) }
+	AssemblyPart*                            AsAssemblyPart (Types *types = NULL) { checked_get_subclass (Type::ASSEMBLYPART, AssemblyPart) }
+	AssemblyPartCollection*                  AsAssemblyPartCollection (Types *types = NULL) { checked_get_subclass (Type::ASSEMBLYPART_COLLECTION, AssemblyPartCollection) }
+	ASXDemuxer*                              AsASXDemuxer (Types *types = NULL) { checked_get_subclass (Type::ASXDEMUXER, ASXDemuxer) }
+	AudioSource*                             AsAudioSource (Types *types = NULL) { checked_get_subclass (Type::AUDIOSOURCE, AudioSource) }
+	AudioStream*                             AsAudioStream (Types *types = NULL) { checked_get_subclass (Type::AUDIOSTREAM, AudioStream) }
+	BackEase*                                AsBackEase (Types *types = NULL) { checked_get_subclass (Type::BACKEASE, BackEase) }
+	BeginStoryboard*                         AsBeginStoryboard (Types *types = NULL) { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
+	BezierSegment*                           AsBezierSegment (Types *types = NULL) { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
+	BitmapImage*                             AsBitmapImage (Types *types = NULL) { checked_get_subclass (Type::BITMAPIMAGE, BitmapImage) }
+	BitmapSource*                            AsBitmapSource (Types *types = NULL) { checked_get_subclass (Type::BITMAPSOURCE, BitmapSource) }
+	Border*                                  AsBorder (Types *types = NULL) { checked_get_subclass (Type::BORDER, Border) }
+	BounceEase*                              AsBounceEase (Types *types = NULL) { checked_get_subclass (Type::BOUNCEEASE, BounceEase) }
+	Brush*                                   AsBrush (Types *types = NULL) { checked_get_subclass (Type::BRUSH, Brush) }
+	Canvas*                                  AsCanvas (Types *types = NULL) { checked_get_subclass (Type::CANVAS, Canvas) }
+	CircleEase*                              AsCircleEase (Types *types = NULL) { checked_get_subclass (Type::CIRCLEEASE, CircleEase) }
+	Clock*                                   AsClock (Types *types = NULL) { checked_get_subclass (Type::CLOCK, Clock) }
+	ClockGroup*                              AsClockGroup (Types *types = NULL) { checked_get_subclass (Type::CLOCKGROUP, ClockGroup) }
+	CodecDownloader*                         AsCodecDownloader (Types *types = NULL) { checked_get_subclass (Type::CODECDOWNLOADER, CodecDownloader) }
+	Collection*                              AsCollection (Types *types = NULL) { checked_get_subclass (Type::COLLECTION, Collection) }
+	CollectionChangedEventArgs*              AsCollectionChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::COLLECTIONCHANGEDEVENTARGS, CollectionChangedEventArgs) }
+	CollectionItemChangedEventArgs*          AsCollectionItemChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::COLLECTIONITEMCHANGEDEVENTARGS, CollectionItemChangedEventArgs) }
+	ColorAnimation*                          AsColorAnimation (Types *types = NULL) { checked_get_subclass (Type::COLORANIMATION, ColorAnimation) }
+	ColorAnimationUsingKeyFrames*            AsColorAnimationUsingKeyFrames (Types *types = NULL) { checked_get_subclass (Type::COLORANIMATIONUSINGKEYFRAMES, ColorAnimationUsingKeyFrames) }
+	ColorKeyFrame*                           AsColorKeyFrame (Types *types = NULL) { checked_get_subclass (Type::COLORKEYFRAME, ColorKeyFrame) }
+	ColorKeyFrameCollection*                 AsColorKeyFrameCollection (Types *types = NULL) { checked_get_subclass (Type::COLORKEYFRAME_COLLECTION, ColorKeyFrameCollection) }
+	ColumnDefinition*                        AsColumnDefinition (Types *types = NULL) { checked_get_subclass (Type::COLUMNDEFINITION, ColumnDefinition) }
+	ColumnDefinitionCollection*              AsColumnDefinitionCollection (Types *types = NULL) { checked_get_subclass (Type::COLUMNDEFINITION_COLLECTION, ColumnDefinitionCollection) }
+	ContentChangedEventArgs*                 AsContentChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::CONTENTCHANGEDEVENTARGS, ContentChangedEventArgs) }
+	ContentControl*                          AsContentControl (Types *types = NULL) { checked_get_subclass (Type::CONTENTCONTROL, ContentControl) }
+	Control*                                 AsControl (Types *types = NULL) { checked_get_subclass (Type::CONTROL, Control) }
+	ControlTemplate*                         AsControlTemplate (Types *types = NULL) { checked_get_subclass (Type::CONTROLTEMPLATE, ControlTemplate) }
+	CubicEase*                               AsCubicEase (Types *types = NULL) { checked_get_subclass (Type::CUBICEASE, CubicEase) }
+	CursorPositionChangedEventArgs*          AsCursorPositionChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::CURSORPOSITIONCHANGEDEVENTARGS, CursorPositionChangedEventArgs) }
+	DataTemplate*                            AsDataTemplate (Types *types = NULL) { checked_get_subclass (Type::DATATEMPLATE, DataTemplate) }
+	DeepZoomImageTileSource*                 AsDeepZoomImageTileSource (Types *types = NULL) { checked_get_subclass (Type::DEEPZOOMIMAGETILESOURCE, DeepZoomImageTileSource) }
+	DependencyObject*                        AsDependencyObject (Types *types = NULL) { checked_get_subclass (Type::DEPENDENCY_OBJECT, DependencyObject) }
+	DependencyObjectCollection*              AsDependencyObjectCollection (Types *types = NULL) { checked_get_subclass (Type::DEPENDENCY_OBJECT_COLLECTION, DependencyObjectCollection) }
+	Deployment*                              AsDeployment (Types *types = NULL) { checked_get_subclass (Type::DEPLOYMENT, Deployment) }
+	DiscreteColorKeyFrame*                   AsDiscreteColorKeyFrame (Types *types = NULL) { checked_get_subclass (Type::DISCRETECOLORKEYFRAME, DiscreteColorKeyFrame) }
+	DiscreteDoubleKeyFrame*                  AsDiscreteDoubleKeyFrame (Types *types = NULL) { checked_get_subclass (Type::DISCRETEDOUBLEKEYFRAME, DiscreteDoubleKeyFrame) }
+	DiscreteObjectKeyFrame*                  AsDiscreteObjectKeyFrame (Types *types = NULL) { checked_get_subclass (Type::DISCRETEOBJECTKEYFRAME, DiscreteObjectKeyFrame) }
+	DiscretePointKeyFrame*                   AsDiscretePointKeyFrame (Types *types = NULL) { checked_get_subclass (Type::DISCRETEPOINTKEYFRAME, DiscretePointKeyFrame) }
+	DispatcherTimer*                         AsDispatcherTimer (Types *types = NULL) { checked_get_subclass (Type::DISPATCHERTIMER, DispatcherTimer) }
+	DoubleCollection*                        AsDoubleCollection (Types *types = NULL) { checked_get_subclass (Type::DOUBLE_COLLECTION, DoubleCollection) }
+	DoubleAnimation*                         AsDoubleAnimation (Types *types = NULL) { checked_get_subclass (Type::DOUBLEANIMATION, DoubleAnimation) }
+	DoubleAnimationUsingKeyFrames*           AsDoubleAnimationUsingKeyFrames (Types *types = NULL) { checked_get_subclass (Type::DOUBLEANIMATIONUSINGKEYFRAMES, DoubleAnimationUsingKeyFrames) }
+	DoubleKeyFrame*                          AsDoubleKeyFrame (Types *types = NULL) { checked_get_subclass (Type::DOUBLEKEYFRAME, DoubleKeyFrame) }
+	DoubleKeyFrameCollection*                AsDoubleKeyFrameCollection (Types *types = NULL) { checked_get_subclass (Type::DOUBLEKEYFRAME_COLLECTION, DoubleKeyFrameCollection) }
+	Downloader*                              AsDownloader (Types *types = NULL) { checked_get_subclass (Type::DOWNLOADER, Downloader) }
+	DownloadProgressEventArgs*               AsDownloadProgressEventArgs (Types *types = NULL) { checked_get_subclass (Type::DOWNLOADPROGRESSEVENTARGS, DownloadProgressEventArgs) }
+	DrawingAttributes*                       AsDrawingAttributes (Types *types = NULL) { checked_get_subclass (Type::DRAWINGATTRIBUTES, DrawingAttributes) }
+	EasingColorKeyFrame*                     AsEasingColorKeyFrame (Types *types = NULL) { checked_get_subclass (Type::EASINGCOLORKEYFRAME, EasingColorKeyFrame) }
+	EasingDoubleKeyFrame*                    AsEasingDoubleKeyFrame (Types *types = NULL) { checked_get_subclass (Type::EASINGDOUBLEKEYFRAME, EasingDoubleKeyFrame) }
+	EasingFunctionBase*                      AsEasingFunctionBase (Types *types = NULL) { checked_get_subclass (Type::EASINGFUNCTIONBASE, EasingFunctionBase) }
+	EasingPointKeyFrame*                     AsEasingPointKeyFrame (Types *types = NULL) { checked_get_subclass (Type::EASINGPOINTKEYFRAME, EasingPointKeyFrame) }
+	ElasticEase*                             AsElasticEase (Types *types = NULL) { checked_get_subclass (Type::ELASTICEASE, ElasticEase) }
+	Ellipse*                                 AsEllipse (Types *types = NULL) { checked_get_subclass (Type::ELLIPSE, Ellipse) }
+	EllipseGeometry*                         AsEllipseGeometry (Types *types = NULL) { checked_get_subclass (Type::ELLIPSEGEOMETRY, EllipseGeometry) }
+	ErrorEventArgs*                          AsErrorEventArgs (Types *types = NULL) { checked_get_subclass (Type::ERROREVENTARGS, ErrorEventArgs) }
+	EventArgs*                               AsEventArgs (Types *types = NULL) { checked_get_subclass (Type::EVENTARGS, EventArgs) }
+	EventListenerProxy*                      AsEventListenerProxy (Types *types = NULL) { checked_get_subclass (Type::EVENTLISTENERPROXY, EventListenerProxy) }
+	EventObject*                             AsEventObject (Types *types = NULL) { checked_get_subclass (Type::EVENTOBJECT, EventObject) }
+	EventTrigger*                            AsEventTrigger (Types *types = NULL) { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
+	ExceptionRoutedEventArgs*                AsExceptionRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::EXCEPTIONROUTEDEVENTARGS, ExceptionRoutedEventArgs) }
+	ExponentialEase*                         AsExponentialEase (Types *types = NULL) { checked_get_subclass (Type::EXPONENTIALEASE, ExponentialEase) }
+	ExternalDemuxer*                         AsExternalDemuxer (Types *types = NULL) { checked_get_subclass (Type::EXTERNALDEMUXER, ExternalDemuxer) }
+	FfmpegDecoder*                           AsFfmpegDecoder (Types *types = NULL) { checked_get_subclass (Type::FFMPEGDECODER, FfmpegDecoder) }
+	FfmpegDemuxer*                           AsFfmpegDemuxer (Types *types = NULL) { checked_get_subclass (Type::FFMPEGDEMUXER, FfmpegDemuxer) }
+	FileSource*                              AsFileSource (Types *types = NULL) { checked_get_subclass (Type::FILESOURCE, FileSource) }
+	FrameworkElement*                        AsFrameworkElement (Types *types = NULL) { checked_get_subclass (Type::FRAMEWORKELEMENT, FrameworkElement) }
+	FrameworkTemplate*                       AsFrameworkTemplate (Types *types = NULL) { checked_get_subclass (Type::FRAMEWORKTEMPLATE, FrameworkTemplate) }
+	GeneralTransform*                        AsGeneralTransform (Types *types = NULL) { checked_get_subclass (Type::GENERALTRANSFORM, GeneralTransform) }
+	Geometry*                                AsGeometry (Types *types = NULL) { checked_get_subclass (Type::GEOMETRY, Geometry) }
+	GeometryCollection*                      AsGeometryCollection (Types *types = NULL) { checked_get_subclass (Type::GEOMETRY_COLLECTION, GeometryCollection) }
+	GeometryGroup*                           AsGeometryGroup (Types *types = NULL) { checked_get_subclass (Type::GEOMETRYGROUP, GeometryGroup) }
+	Glyphs*                                  AsGlyphs (Types *types = NULL) { checked_get_subclass (Type::GLYPHS, Glyphs) }
+	GradientBrush*                           AsGradientBrush (Types *types = NULL) { checked_get_subclass (Type::GRADIENTBRUSH, GradientBrush) }
+	GradientStop*                            AsGradientStop (Types *types = NULL) { checked_get_subclass (Type::GRADIENTSTOP, GradientStop) }
+	GradientStopCollection*                  AsGradientStopCollection (Types *types = NULL) { checked_get_subclass (Type::GRADIENTSTOP_COLLECTION, GradientStopCollection) }
+	Grid*                                    AsGrid (Types *types = NULL) { checked_get_subclass (Type::GRID, Grid) }
+	HitTestCollection*                       AsHitTestCollection (Types *types = NULL) { checked_get_subclass (Type::HITTEST_COLLECTION, HitTestCollection) }
+	IImageConverter*                         AsIImageConverter (Types *types = NULL) { checked_get_subclass (Type::IIMAGECONVERTER, IImageConverter) }
+	Image*                                   AsImage (Types *types = NULL) { checked_get_subclass (Type::IMAGE, Image) }
+	ImageBrush*                              AsImageBrush (Types *types = NULL) { checked_get_subclass (Type::IMAGEBRUSH, ImageBrush) }
+	ImageErrorEventArgs*                     AsImageErrorEventArgs (Types *types = NULL) { checked_get_subclass (Type::IMAGEERROREVENTARGS, ImageErrorEventArgs) }
+	ImageSource*                             AsImageSource (Types *types = NULL) { checked_get_subclass (Type::IMAGESOURCE, ImageSource) }
+	IMediaDecoder*                           AsIMediaDecoder (Types *types = NULL) { checked_get_subclass (Type::IMEDIADECODER, IMediaDecoder) }
+	IMediaDemuxer*                           AsIMediaDemuxer (Types *types = NULL) { checked_get_subclass (Type::IMEDIADEMUXER, IMediaDemuxer) }
+	IMediaObject*                            AsIMediaObject (Types *types = NULL) { checked_get_subclass (Type::IMEDIAOBJECT, IMediaObject) }
+	IMediaSource*                            AsIMediaSource (Types *types = NULL) { checked_get_subclass (Type::IMEDIASOURCE, IMediaSource) }
+	IMediaStream*                            AsIMediaStream (Types *types = NULL) { checked_get_subclass (Type::IMEDIASTREAM, IMediaStream) }
+	InkPresenter*                            AsInkPresenter (Types *types = NULL) { checked_get_subclass (Type::INKPRESENTER, InkPresenter) }
+	Inline*                                  AsInline (Types *types = NULL) { checked_get_subclass (Type::INLINE, Inline) }
+	InlineCollection*                        AsInlineCollection (Types *types = NULL) { checked_get_subclass (Type::INLINE_COLLECTION, InlineCollection) }
+	InputMethod*                             AsInputMethod (Types *types = NULL) { checked_get_subclass (Type::INPUTMETHOD, InputMethod) }
+	ItemCollection*                          AsItemCollection (Types *types = NULL) { checked_get_subclass (Type::ITEM_COLLECTION, ItemCollection) }
+	KeyEventArgs*                            AsKeyEventArgs (Types *types = NULL) { checked_get_subclass (Type::KEYEVENTARGS, KeyEventArgs) }
+	KeyFrame*                                AsKeyFrame (Types *types = NULL) { checked_get_subclass (Type::KEYFRAME, KeyFrame) }
+	KeyFrameCollection*                      AsKeyFrameCollection (Types *types = NULL) { checked_get_subclass (Type::KEYFRAME_COLLECTION, KeyFrameCollection) }
+	KeySpline*                               AsKeySpline (Types *types = NULL) { checked_get_subclass (Type::KEYSPLINE, KeySpline) }
+	LayoutInformation*                       AsLayoutInformation (Types *types = NULL) { checked_get_subclass (Type::LAYOUTINFORMATION, LayoutInformation) }
+	Line*                                    AsLine (Types *types = NULL) { checked_get_subclass (Type::LINE, Line) }
+	LinearColorKeyFrame*                     AsLinearColorKeyFrame (Types *types = NULL) { checked_get_subclass (Type::LINEARCOLORKEYFRAME, LinearColorKeyFrame) }
+	LinearDoubleKeyFrame*                    AsLinearDoubleKeyFrame (Types *types = NULL) { checked_get_subclass (Type::LINEARDOUBLEKEYFRAME, LinearDoubleKeyFrame) }
+	LinearGradientBrush*                     AsLinearGradientBrush (Types *types = NULL) { checked_get_subclass (Type::LINEARGRADIENTBRUSH, LinearGradientBrush) }
+	LinearPointKeyFrame*                     AsLinearPointKeyFrame (Types *types = NULL) { checked_get_subclass (Type::LINEARPOINTKEYFRAME, LinearPointKeyFrame) }
+	LineBreak*                               AsLineBreak (Types *types = NULL) { checked_get_subclass (Type::LINEBREAK, LineBreak) }
+	LineGeometry*                            AsLineGeometry (Types *types = NULL) { checked_get_subclass (Type::LINEGEOMETRY, LineGeometry) }
+	LineSegment*                             AsLineSegment (Types *types = NULL) { checked_get_subclass (Type::LINESEGMENT, LineSegment) }
+	ManagedStreamSource*                     AsManagedStreamSource (Types *types = NULL) { checked_get_subclass (Type::MANAGEDSTREAMSOURCE, ManagedStreamSource) }
+	ManualTimeSource*                        AsManualTimeSource (Types *types = NULL) { checked_get_subclass (Type::MANUALTIMESOURCE, ManualTimeSource) }
+	MarkerReachedEventArgs*                  AsMarkerReachedEventArgs (Types *types = NULL) { checked_get_subclass (Type::MARKERREACHEDEVENTARGS, MarkerReachedEventArgs) }
+	MarkerStream*                            AsMarkerStream (Types *types = NULL) { checked_get_subclass (Type::MARKERSTREAM, MarkerStream) }
+	Matrix*                                  AsMatrix (Types *types = NULL) { checked_get_subclass (Type::MATRIX, Matrix) }
+	MatrixTransform*                         AsMatrixTransform (Types *types = NULL) { checked_get_subclass (Type::MATRIXTRANSFORM, MatrixTransform) }
+	Media*                                   AsMedia (Types *types = NULL) { checked_get_subclass (Type::MEDIA, Media) }
+	MediaAttribute*                          AsMediaAttribute (Types *types = NULL) { checked_get_subclass (Type::MEDIAATTRIBUTE, MediaAttribute) }
+	MediaAttributeCollection*                AsMediaAttributeCollection (Types *types = NULL) { checked_get_subclass (Type::MEDIAATTRIBUTE_COLLECTION, MediaAttributeCollection) }
+	MediaBase*                               AsMediaBase (Types *types = NULL) { checked_get_subclass (Type::MEDIABASE, MediaBase) }
+	MediaClosure*                            AsMediaClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIACLOSURE, MediaClosure) }
+	MediaDecodeFrameClosure*                 AsMediaDecodeFrameClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIADECODEFRAMECLOSURE, MediaDecodeFrameClosure) }
+	MediaElement*                            AsMediaElement (Types *types = NULL) { checked_get_subclass (Type::MEDIAELEMENT, MediaElement) }
+	MediaFrame*                              AsMediaFrame (Types *types = NULL) { checked_get_subclass (Type::MEDIAFRAME, MediaFrame) }
+	MediaGetFrameClosure*                    AsMediaGetFrameClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAGETFRAMECLOSURE, MediaGetFrameClosure) }
+	MediaMarker*                             AsMediaMarker (Types *types = NULL) { checked_get_subclass (Type::MEDIAMARKER, MediaMarker) }
+	MediaMarkerFoundClosure*                 AsMediaMarkerFoundClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAMARKERFOUNDCLOSURE, MediaMarkerFoundClosure) }
+	MediaPlayer*                             AsMediaPlayer (Types *types = NULL) { checked_get_subclass (Type::MEDIAPLAYER, MediaPlayer) }
+	MediaReportSeekCompletedClosure*         AsMediaReportSeekCompletedClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, MediaReportSeekCompletedClosure) }
+	MediaSeekClosure*                        AsMediaSeekClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIASEEKCLOSURE, MediaSeekClosure) }
+	MemoryNestedSource*                      AsMemoryNestedSource (Types *types = NULL) { checked_get_subclass (Type::MEMORYNESTEDSOURCE, MemoryNestedSource) }
+	MemoryQueueSource*                       AsMemoryQueueSource (Types *types = NULL) { checked_get_subclass (Type::MEMORYQUEUESOURCE, MemoryQueueSource) }
+	MemorySource*                            AsMemorySource (Types *types = NULL) { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
+	MouseEventArgs*                          AsMouseEventArgs (Types *types = NULL) { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
+	MouseWheelEventArgs*                     AsMouseWheelEventArgs (Types *types = NULL) { checked_get_subclass (Type::MOUSEWHEELEVENTARGS, MouseWheelEventArgs) }
+	Mp3Demuxer*                              AsMp3Demuxer (Types *types = NULL) { checked_get_subclass (Type::MP3DEMUXER, Mp3Demuxer) }
+	MultiScaleImage*                         AsMultiScaleImage (Types *types = NULL) { checked_get_subclass (Type::MULTISCALEIMAGE, MultiScaleImage) }
+	MultiScaleSubImage*                      AsMultiScaleSubImage (Types *types = NULL) { checked_get_subclass (Type::MULTISCALESUBIMAGE, MultiScaleSubImage) }
+	MultiScaleSubImageCollection*            AsMultiScaleSubImageCollection (Types *types = NULL) { checked_get_subclass (Type::MULTISCALESUBIMAGE_COLLECTION, MultiScaleSubImageCollection) }
+	MultiScaleTileSource*                    AsMultiScaleTileSource (Types *types = NULL) { checked_get_subclass (Type::MULTISCALETILESOURCE, MultiScaleTileSource) }
+	NameScope*                               AsNameScope (Types *types = NULL) { checked_get_subclass (Type::NAMESCOPE, NameScope) }
+	NullDecoder*                             AsNullDecoder (Types *types = NULL) { checked_get_subclass (Type::NULLDECODER, NullDecoder) }
+	ObjectAnimationUsingKeyFrames*           AsObjectAnimationUsingKeyFrames (Types *types = NULL) { checked_get_subclass (Type::OBJECTANIMATIONUSINGKEYFRAMES, ObjectAnimationUsingKeyFrames) }
+	ObjectKeyFrame*                          AsObjectKeyFrame (Types *types = NULL) { checked_get_subclass (Type::OBJECTKEYFRAME, ObjectKeyFrame) }
+	ObjectKeyFrameCollection*                AsObjectKeyFrameCollection (Types *types = NULL) { checked_get_subclass (Type::OBJECTKEYFRAME_COLLECTION, ObjectKeyFrameCollection) }
+	Panel*                                   AsPanel (Types *types = NULL) { checked_get_subclass (Type::PANEL, Panel) }
+	ParallelTimeline*                        AsParallelTimeline (Types *types = NULL) { checked_get_subclass (Type::PARALLELTIMELINE, ParallelTimeline) }
+	ParserErrorEventArgs*                    AsParserErrorEventArgs (Types *types = NULL) { checked_get_subclass (Type::PARSERERROREVENTARGS, ParserErrorEventArgs) }
+	PassThroughDecoder*                      AsPassThroughDecoder (Types *types = NULL) { checked_get_subclass (Type::PASSTHROUGHDECODER, PassThroughDecoder) }
+	PasswordBox*                             AsPasswordBox (Types *types = NULL) { checked_get_subclass (Type::PASSWORDBOX, PasswordBox) }
+	Path*                                    AsPath (Types *types = NULL) { checked_get_subclass (Type::PATH, Path) }
+	PathFigure*                              AsPathFigure (Types *types = NULL) { checked_get_subclass (Type::PATHFIGURE, PathFigure) }
+	PathFigureCollection*                    AsPathFigureCollection (Types *types = NULL) { checked_get_subclass (Type::PATHFIGURE_COLLECTION, PathFigureCollection) }
+	PathGeometry*                            AsPathGeometry (Types *types = NULL) { checked_get_subclass (Type::PATHGEOMETRY, PathGeometry) }
+	PathSegment*                             AsPathSegment (Types *types = NULL) { checked_get_subclass (Type::PATHSEGMENT, PathSegment) }
+	PathSegmentCollection*                   AsPathSegmentCollection (Types *types = NULL) { checked_get_subclass (Type::PATHSEGMENT_COLLECTION, PathSegmentCollection) }
+	Playlist*                                AsPlaylist (Types *types = NULL) { checked_get_subclass (Type::PLAYLIST, Playlist) }
+	PlaylistEntry*                           AsPlaylistEntry (Types *types = NULL) { checked_get_subclass (Type::PLAYLISTENTRY, PlaylistEntry) }
+	PlaylistRoot*                            AsPlaylistRoot (Types *types = NULL) { checked_get_subclass (Type::PLAYLISTROOT, PlaylistRoot) }
+	PointCollection*                         AsPointCollection (Types *types = NULL) { checked_get_subclass (Type::POINT_COLLECTION, PointCollection) }
+	PointAnimation*                          AsPointAnimation (Types *types = NULL) { checked_get_subclass (Type::POINTANIMATION, PointAnimation) }
+	PointAnimationUsingKeyFrames*            AsPointAnimationUsingKeyFrames (Types *types = NULL) { checked_get_subclass (Type::POINTANIMATIONUSINGKEYFRAMES, PointAnimationUsingKeyFrames) }
+	PointKeyFrame*                           AsPointKeyFrame (Types *types = NULL) { checked_get_subclass (Type::POINTKEYFRAME, PointKeyFrame) }
+	PointKeyFrameCollection*                 AsPointKeyFrameCollection (Types *types = NULL) { checked_get_subclass (Type::POINTKEYFRAME_COLLECTION, PointKeyFrameCollection) }
+	PolyBezierSegment*                       AsPolyBezierSegment (Types *types = NULL) { checked_get_subclass (Type::POLYBEZIERSEGMENT, PolyBezierSegment) }
+	Polygon*                                 AsPolygon (Types *types = NULL) { checked_get_subclass (Type::POLYGON, Polygon) }
+	Polyline*                                AsPolyline (Types *types = NULL) { checked_get_subclass (Type::POLYLINE, Polyline) }
+	PolyLineSegment*                         AsPolyLineSegment (Types *types = NULL) { checked_get_subclass (Type::POLYLINESEGMENT, PolyLineSegment) }
+	PolyQuadraticBezierSegment*              AsPolyQuadraticBezierSegment (Types *types = NULL) { checked_get_subclass (Type::POLYQUADRATICBEZIERSEGMENT, PolyQuadraticBezierSegment) }
+	Popup*                                   AsPopup (Types *types = NULL) { checked_get_subclass (Type::POPUP, Popup) }
+	PowerEase*                               AsPowerEase (Types *types = NULL) { checked_get_subclass (Type::POWEREASE, PowerEase) }
+	ProgressiveSource*                       AsProgressiveSource (Types *types = NULL) { checked_get_subclass (Type::PROGRESSIVESOURCE, ProgressiveSource) }
+	PulseSource*                             AsPulseSource (Types *types = NULL) { checked_get_subclass (Type::PULSESOURCE, PulseSource) }
+	QuadraticBezierSegment*                  AsQuadraticBezierSegment (Types *types = NULL) { checked_get_subclass (Type::QUADRATICBEZIERSEGMENT, QuadraticBezierSegment) }
+	QuadraticEase*                           AsQuadraticEase (Types *types = NULL) { checked_get_subclass (Type::QUADRATICEASE, QuadraticEase) }
+	QuarticEase*                             AsQuarticEase (Types *types = NULL) { checked_get_subclass (Type::QUARTICEASE, QuarticEase) }
+	QuinticEase*                             AsQuinticEase (Types *types = NULL) { checked_get_subclass (Type::QUINTICEASE, QuinticEase) }
+	RadialGradientBrush*                     AsRadialGradientBrush (Types *types = NULL) { checked_get_subclass (Type::RADIALGRADIENTBRUSH, RadialGradientBrush) }
+	Rectangle*                               AsRectangle (Types *types = NULL) { checked_get_subclass (Type::RECTANGLE, Rectangle) }
+	RectangleGeometry*                       AsRectangleGeometry (Types *types = NULL) { checked_get_subclass (Type::RECTANGLEGEOMETRY, RectangleGeometry) }
+	RenderingEventArgs*                      AsRenderingEventArgs (Types *types = NULL) { checked_get_subclass (Type::RENDERINGEVENTARGS, RenderingEventArgs) }
+	ResourceDictionary*                      AsResourceDictionary (Types *types = NULL) { checked_get_subclass (Type::RESOURCE_DICTIONARY, ResourceDictionary) }
+	RotateTransform*                         AsRotateTransform (Types *types = NULL) { checked_get_subclass (Type::ROTATETRANSFORM, RotateTransform) }
+	RoutedEventArgs*                         AsRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::ROUTEDEVENTARGS, RoutedEventArgs) }
+	RowDefinition*                           AsRowDefinition (Types *types = NULL) { checked_get_subclass (Type::ROWDEFINITION, RowDefinition) }
+	RowDefinitionCollection*                 AsRowDefinitionCollection (Types *types = NULL) { checked_get_subclass (Type::ROWDEFINITION_COLLECTION, RowDefinitionCollection) }
+	Run*                                     AsRun (Types *types = NULL) { checked_get_subclass (Type::RUN, Run) }
+	ScaleTransform*                          AsScaleTransform (Types *types = NULL) { checked_get_subclass (Type::SCALETRANSFORM, ScaleTransform) }
+	Setter*                                  AsSetter (Types *types = NULL) { checked_get_subclass (Type::SETTER, Setter) }
+	SetterBase*                              AsSetterBase (Types *types = NULL) { checked_get_subclass (Type::SETTERBASE, SetterBase) }
+	SetterBaseCollection*                    AsSetterBaseCollection (Types *types = NULL) { checked_get_subclass (Type::SETTERBASE_COLLECTION, SetterBaseCollection) }
+	Shape*                                   AsShape (Types *types = NULL) { checked_get_subclass (Type::SHAPE, Shape) }
+	SineEase*                                AsSineEase (Types *types = NULL) { checked_get_subclass (Type::SINEEASE, SineEase) }
+	SizeChangedEventArgs*                    AsSizeChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::SIZECHANGEDEVENTARGS, SizeChangedEventArgs) }
+	SkewTransform*                           AsSkewTransform (Types *types = NULL) { checked_get_subclass (Type::SKEWTRANSFORM, SkewTransform) }
+	SolidColorBrush*                         AsSolidColorBrush (Types *types = NULL) { checked_get_subclass (Type::SOLIDCOLORBRUSH, SolidColorBrush) }
+	SplineColorKeyFrame*                     AsSplineColorKeyFrame (Types *types = NULL) { checked_get_subclass (Type::SPLINECOLORKEYFRAME, SplineColorKeyFrame) }
+	SplineDoubleKeyFrame*                    AsSplineDoubleKeyFrame (Types *types = NULL) { checked_get_subclass (Type::SPLINEDOUBLEKEYFRAME, SplineDoubleKeyFrame) }
+	SplinePointKeyFrame*                     AsSplinePointKeyFrame (Types *types = NULL) { checked_get_subclass (Type::SPLINEPOINTKEYFRAME, SplinePointKeyFrame) }
+	Storyboard*                              AsStoryboard (Types *types = NULL) { checked_get_subclass (Type::STORYBOARD, Storyboard) }
+	Stroke*                                  AsStroke (Types *types = NULL) { checked_get_subclass (Type::STROKE, Stroke) }
+	StrokeCollection*                        AsStrokeCollection (Types *types = NULL) { checked_get_subclass (Type::STROKE_COLLECTION, StrokeCollection) }
+	Style*                                   AsStyle (Types *types = NULL) { checked_get_subclass (Type::STYLE, Style) }
+	StylusInfo*                              AsStylusInfo (Types *types = NULL) { checked_get_subclass (Type::STYLUSINFO, StylusInfo) }
+	StylusPoint*                             AsStylusPoint (Types *types = NULL) { checked_get_subclass (Type::STYLUSPOINT, StylusPoint) }
+	StylusPointCollection*                   AsStylusPointCollection (Types *types = NULL) { checked_get_subclass (Type::STYLUSPOINT_COLLECTION, StylusPointCollection) }
+	Surface*                                 AsSurface (Types *types = NULL) { checked_get_subclass (Type::SURFACE, Surface) }
+	SystemTimeSource*                        AsSystemTimeSource (Types *types = NULL) { checked_get_subclass (Type::SYSTEMTIMESOURCE, SystemTimeSource) }
+	TemplateBinding*                         AsTemplateBinding (Types *types = NULL) { checked_get_subclass (Type::TEMPLATEBINDING, TemplateBinding) }
+	TextBlock*                               AsTextBlock (Types *types = NULL) { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }
+	TextBox*                                 AsTextBox (Types *types = NULL) { checked_get_subclass (Type::TEXTBOX, TextBox) }
+	TextBoxBase*                             AsTextBoxBase (Types *types = NULL) { checked_get_subclass (Type::TEXTBOXBASE, TextBoxBase) }
+	TextBoxModelChangedEventArgs*            AsTextBoxModelChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::TEXTBOXMODELCHANGEDEVENTARGS, TextBoxModelChangedEventArgs) }
+	TextBoxView*                             AsTextBoxView (Types *types = NULL) { checked_get_subclass (Type::TEXTBOXVIEW, TextBoxView) }
+	TextChangedEventArgs*                    AsTextChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::TEXTCHANGEDEVENTARGS, TextChangedEventArgs) }
+	TileBrush*                               AsTileBrush (Types *types = NULL) { checked_get_subclass (Type::TILEBRUSH, TileBrush) }
+	Timeline*                                AsTimeline (Types *types = NULL) { checked_get_subclass (Type::TIMELINE, Timeline) }
+	TimelineCollection*                      AsTimelineCollection (Types *types = NULL) { checked_get_subclass (Type::TIMELINE_COLLECTION, TimelineCollection) }
+	TimelineGroup*                           AsTimelineGroup (Types *types = NULL) { checked_get_subclass (Type::TIMELINEGROUP, TimelineGroup) }
+	TimelineMarker*                          AsTimelineMarker (Types *types = NULL) { checked_get_subclass (Type::TIMELINEMARKER, TimelineMarker) }
+	TimelineMarkerCollection*                AsTimelineMarkerCollection (Types *types = NULL) { checked_get_subclass (Type::TIMELINEMARKER_COLLECTION, TimelineMarkerCollection) }
+	TimeManager*                             AsTimeManager (Types *types = NULL) { checked_get_subclass (Type::TIMEMANAGER, TimeManager) }
+	TimeSource*                              AsTimeSource (Types *types = NULL) { checked_get_subclass (Type::TIMESOURCE, TimeSource) }
+	Transform*                               AsTransform (Types *types = NULL) { checked_get_subclass (Type::TRANSFORM, Transform) }
+	TransformCollection*                     AsTransformCollection (Types *types = NULL) { checked_get_subclass (Type::TRANSFORM_COLLECTION, TransformCollection) }
+	TransformGroup*                          AsTransformGroup (Types *types = NULL) { checked_get_subclass (Type::TRANSFORMGROUP, TransformGroup) }
+	TranslateTransform*                      AsTranslateTransform (Types *types = NULL) { checked_get_subclass (Type::TRANSLATETRANSFORM, TranslateTransform) }
+	TriggerCollection*                       AsTriggerCollection (Types *types = NULL) { checked_get_subclass (Type::TRIGGER_COLLECTION, TriggerCollection) }
+	TriggerAction*                           AsTriggerAction (Types *types = NULL) { checked_get_subclass (Type::TRIGGERACTION, TriggerAction) }
+	TriggerActionCollection*                 AsTriggerActionCollection (Types *types = NULL) { checked_get_subclass (Type::TRIGGERACTION_COLLECTION, TriggerActionCollection) }
+	TriggerBase*                             AsTriggerBase (Types *types = NULL) { checked_get_subclass (Type::TRIGGERBASE, TriggerBase) }
+	UIElement*                               AsUIElement (Types *types = NULL) { checked_get_subclass (Type::UIELEMENT, UIElement) }
+	UIElementCollection*                     AsUIElementCollection (Types *types = NULL) { checked_get_subclass (Type::UIELEMENT_COLLECTION, UIElementCollection) }
+	UnmanagedMatrix*                         AsUnmanagedMatrix (Types *types = NULL) { checked_get_subclass (Type::UNMANAGEDMATRIX, UnmanagedMatrix) }
+	UserControl*                             AsUserControl (Types *types = NULL) { checked_get_subclass (Type::USERCONTROL, UserControl) }
+	VideoBrush*                              AsVideoBrush (Types *types = NULL) { checked_get_subclass (Type::VIDEOBRUSH, VideoBrush) }
+	VideoStream*                             AsVideoStream (Types *types = NULL) { checked_get_subclass (Type::VIDEOSTREAM, VideoStream) }
+	VisualBrush*                             AsVisualBrush (Types *types = NULL) { checked_get_subclass (Type::VISUALBRUSH, VisualBrush) }
+	WriteableBitmap*                         AsWriteableBitmap (Types *types = NULL) { checked_get_subclass (Type::WRITEABLEBITMAP, WriteableBitmap) }
+	XamlTemplateBinding*                     AsXamlTemplateBinding (Types *types = NULL) { checked_get_subclass (Type::XAMLTEMPLATEBINDING, XamlTemplateBinding) }
+	YUVConverter*                            AsYUVConverter (Types *types = NULL) { checked_get_subclass (Type::YUVCONVERTER, YUVConverter) }
 
 	
 	char *ToString ();

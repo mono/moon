@@ -326,7 +326,6 @@ public:
 	
 	bool IsSubclassOf (Type::Kind super);
 	static bool IsSubclassOf (Type::Kind type, Type::Kind super);
-	static bool IsSubclassOrSuperclassOf (Type::Kind unknown, Type::Kind known);
 
 	int LookupEvent (const char *event_name);
 	const char *LookupEventName (int id);
@@ -401,9 +400,11 @@ public:
 	Type *Find (Type::Kind type);
 	Type *Find (const char *name);
 	Type *Find (const char *name, bool ignore_case);
-
+	
 	bool IsSubclassOf (Type::Kind type, Type::Kind super);
-
+	bool IsSubclassOrSuperclassOf (Type::Kind unknown, Type::Kind known);
+	static bool IsSubclassOrSuperclassOf (Types *types, Type::Kind unknown, Type::Kind known);
+	
 	void Initialize ();
 };
 

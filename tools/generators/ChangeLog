@@ -1,3 +1,8 @@
+2009-05-01  Larry Ewing  <lewing@novell.com>
+
+	* Generator.cs: Generate the As* accessors with a default
+	argument.
+	
 2009-04-28  Geoff Norton  <gnorton@novell.com>
 
 	* Generator.cs: Modify the default IntPtr ctor to denote 

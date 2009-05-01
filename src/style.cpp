@@ -15,7 +15,7 @@
 #include <config.h>
 #include "style.h"
 #include "error.h"
-
+#include "deployment.h"
 
 //
 // Style
@@ -55,8 +55,10 @@ SetterBaseCollection::Seal ()
 
 	int error = 0;
 	Value *current;
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+
 	while (iter->Next () && (current = iter->GetCurrent (&error))) {
-		SetterBase *setter = current->AsSetterBase ();
+		SetterBase *setter = current->AsSetterBase (types);
 		setter->Seal ();
 	}
 
@@ -86,16 +88,18 @@ SetterBaseCollection::RemovedFromCollection (Value *value)
 bool
 SetterBaseCollection::ValidateSetter (Value *value, MoonError *error)
 {
-	if (value->Is(Type::SETTER)) {
-		Setter *s = value->AsSetter ();
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+
+	if (types->IsSubclassOf (value->GetKind (), Type::SETTER)) {
+		Setter *s = value->AsSetter (types);
 		if (!s->GetValue (Setter::PropertyProperty)) {
 			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot have a null target property");
 			return false;	
 		}
 	}
 	
-	if (value->Is (Type::SETTERBASE)) {
-		SetterBase *s = value->AsSetterBase ();
+	if (types->IsSubclassOf (value->GetKind (), Type::SETTERBASE)) {
+		SetterBase *s = value->AsSetterBase (types);
 		if (s->GetAttached ()) {
 			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Setter is currently attached to another style");
 			return false;

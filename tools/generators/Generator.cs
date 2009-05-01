@@ -1840,7 +1840,7 @@ class Generator {
 						result.Append (' ', 40 - type.Name.Length);
 						result.Append ("As");
 						result.Append (type.Name);
-						result.Append (" () { checked_get_subclass (Type::");
+						result.Append (" (Types *types = NULL) { checked_get_subclass (Type::");
 						result.Append (type.KindName);
 						result.Append (", ");
 						result.Append (type.Name);

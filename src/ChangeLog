@@ -5,6 +5,21 @@
 
 2009-05-01  Larry Ewing  <lewing@novell.com>
 
+	* type.h:
+	* type.in.h:
+	* type.cpp: Move the IsSubclassOrSuperclassOf logic into types and
+	add a static version that handles looking up the deploy for us.
+
+	* value.h
+	* value.h.in
+	* value.cpp: Make it possible to use a cached deployment when
+	retriving values using the ::As* methods and calling 
+	Types::IsSubclassOrSuperclassOf.
+
+	* style.cpp: when sealing the style use the cached deployment logic.
+
+2009-05-01  Larry Ewing  <lewing@novell.com>
+	
 	* dependencyobject.h:
 	* xaml.cpp: use types more directly in a few more places to reduce
 	calls to Deployment::GetCurrent even more.
