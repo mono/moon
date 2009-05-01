@@ -1,5 +1,11 @@
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
 
+	* MarkupExpressionParser.cs: Anchor the MarkupExpressionParser
+	  regexes to the start of the string so we don't accidently
+	  match content embedded in a clr:string (or some string)
+
+2009-05-01  Alan McGovern  <amcgovern@novell.com>
+
 	* Types.cs: When registering managed types, we shouldn't throw
 	  away generic type information.
 

@@ -55,17 +55,17 @@ namespace Mono.Xaml {
 
 		public static bool IsTemplateBinding (string expression)
 		{
-			return Regex.IsMatch (expression, "{\\s*TemplateBinding");
+			return Regex.IsMatch (expression, "^{\\s*TemplateBinding");
 		}
 
 		public static bool IsStaticResource (string expression)
 		{
-			return Regex.IsMatch (expression, "{\\s*StaticResource");
+			return Regex.IsMatch (expression, "^{\\s*StaticResource");
 		}
 
 		public static bool IsBinding (string expression)
 		{
-			return Regex.IsMatch (expression, "{\\s*Binding");
+			return Regex.IsMatch (expression, "^{\\s*Binding");
 		}
 
 		private delegate object ExpressionHandler (ref string expression);
@@ -75,11 +75,11 @@ namespace Mono.Xaml {
 			string orig = expression;
 
 			object result = null;
-			if (TryHandler ("{\\s*Binding\\s*", ParseBinding, ref expression, out result))
+			if (TryHandler ("^{\\s*Binding\\s*", ParseBinding, ref expression, out result))
 				;
-			else if (TryHandler ("{\\s*StaticResource\\s*", ParseStaticResource, ref expression, out result))
+			else if (TryHandler ("^{\\s*StaticResource\\s*", ParseStaticResource, ref expression, out result))
 				;
-			else if (TryHandler ("{\\s*TemplateBinding\\s*", ParseTemplateBinding, ref expression, out result))
+			else if (TryHandler ("^{\\s*TemplateBinding\\s*", ParseTemplateBinding, ref expression, out result))
 				;
 
 			return result;

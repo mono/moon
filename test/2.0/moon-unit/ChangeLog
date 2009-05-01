@@ -1,5 +1,12 @@
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Anchor the
+	  MarkupExpressionParser regexes to the start of the string so
+	  we don't accidently match content embedded in a clr:string
+	  (or some string)
+
+2009-05-01  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp: Add file to the build.
 
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
