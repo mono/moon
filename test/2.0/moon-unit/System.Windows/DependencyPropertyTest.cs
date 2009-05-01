@@ -1244,6 +1244,15 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
+		public void ManagedTest_GenericDPs ()
+		{
+			GenericDPS c = new GenericDPS ();
+			c.ListFloat = new List<float> ();
+			Assert.Throws <ArgumentException> (() => c.ListFloat = new List<int> ());
+			c.ListInt = new List<int> ();
+		}
+		
+		[TestMethod]
 		public void Managed_AttachBinding ()
 		{
 			new ManagedDPPriority ();
@@ -1450,5 +1459,23 @@ namespace MoonTest.System.Windows
 		public string _F_1_ { get { return (string) GetValue (F_1.Property); } }
 		public string _F_2_ { get { return (string) GetValue (F_2.Property); } }
 		public string _f_3_ { get { return (string) GetValue (f_3.Property); } }
+	}
+	
+	public class GenericDPS : UserControl
+	{
+		public static readonly DependencyProperty ListFloatProperty = DependencyProperty.Register ("ListFloat", typeof (List<float>), typeof (GenericDPS), null);
+		public static readonly DependencyProperty ListIntProperty = DependencyProperty.Register ("ListInt", typeof (List<int>), typeof (GenericDPS), null);
+
+		public object ListFloat
+		{
+			get { return GetValue (ListFloatProperty); }
+			set { SetValue (ListFloatProperty, value); }
+		}
+
+		public object ListInt
+		{
+			get { return GetValue (ListIntProperty); }
+			set { SetValue (ListIntProperty, value); }
+		}
 	}
 }
