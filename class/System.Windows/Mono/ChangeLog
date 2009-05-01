@@ -1,3 +1,8 @@
+2009-05-01  Alan McGovern  <amcgovern@novell.com>
+
+	* Types.cs: When registering managed types, we shouldn't throw
+	  away generic type information.
+
 2009-04-30  Alan McGovern  <amcgovern@novell.com>
 
 	* ManagedXamlLoader.cs: If DP.Lookup throws an exception while

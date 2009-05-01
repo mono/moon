@@ -84,9 +84,6 @@ namespace Mono
 		{
 			ManagedType info;
 			ManagedType parent;
-			
-			if (type.IsGenericType)
-				type = type.GetGenericTypeDefinition();
 
 			if (types.TryGetValue (type, out info))
 				return info;
