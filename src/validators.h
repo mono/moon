@@ -38,6 +38,7 @@ public:
 	static ValueValidator IsTimelineValidator;
 	static ValueValidator IsSetterSealedValidator;
 	static ValueValidator ContentControlContentValidator;
+	static ValueValidator NameValidator;
 };
 
 #endif /* __VALIDATORS_H__ */

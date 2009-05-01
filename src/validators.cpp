@@ -19,6 +19,7 @@
 #include "cornerradius.h"
 #include "style.h"
 #include "frameworkelement.h"
+#include "namescope.h"
 
 bool
 Validators::StyleValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error) {
@@ -129,6 +130,27 @@ Validators::TemplateValidator (DependencyObject* instance, DependencyProperty *p
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, 1001, "Cannot set the template property on a UserControl");
 		return false;
 	}
+	return true;
+}
+
+bool
+Validators::NameValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	NameScope *scope = instance->FindNameScope ();
+	if (scope && value) {
+		DependencyObject *o = scope->FindName (value->AsString ());
+		if (o && o != instance) {
+			MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
+					g_strdup_printf ("The name already exists in the tree: %s (%p %p).",
+							value->AsString (), o, instance));
+			return false;
+		}
+	}
+	// TODO: Name validation
+	// This doesn't happen in 1.0 or 2.0b according to my tests, but according to the 2.0 docs
+	// names need to start with a '_' or letter.  They can't start with a _.  Also characters
+	// should be limited to a-z A-Z 0-9 and _.  Once a newer beta actually enforces this
+	// I'll implement the validation method.
 	return true;
 }
 

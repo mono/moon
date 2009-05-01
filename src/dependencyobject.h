@@ -369,7 +369,7 @@ public:
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 
-	/* @PropertyType=string,GenerateAccessors,ManagedDeclaringType=FrameworkElement,DefaultValue=\"\" */
+	/* @PropertyType=string,GenerateAccessors,ManagedDeclaringType=FrameworkElement,Validator=NameValidator,DefaultValue=\"\" */
 	const static int NameProperty;
 	
 protected:

@@ -411,7 +411,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::DOUBLEANIMATION, "From", Type::DOUBLE);
 	DependencyProperty::Register (this, Type::DOUBLEANIMATION, "EasingFunction", Type::EASINGFUNCTIONBASE);
 	DependencyProperty::Register (this, Type::DOUBLEANIMATION, "By", Type::DOUBLE);
-	DependencyProperty::Register (this, Type::DEPENDENCY_OBJECT, "Name", new Value (""), Type::STRING);
+	DependencyProperty::RegisterFull (this, Type::DEPENDENCY_OBJECT, "Name", new Value (""), Type::STRING, false, false, false, NULL, Validators::NameValidator, NULL, false, false);
 	DependencyProperty::Register (this, Type::DEEPZOOMIMAGETILESOURCE, "UriSource", Type::URI);
 	DependencyProperty::Register (this, Type::CONTROLTEMPLATE, "TargetType", Type::MANAGEDTYPEINFO);
 	DependencyProperty::Register (this, Type::COLORKEYFRAME, "Value", Type::COLOR);

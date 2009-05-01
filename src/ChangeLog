@@ -1,5 +1,12 @@
 2009-05-01  Jackson Harper  <jackson@ximian.com>
 
+	* validators.cpp|h:
+	* dependencyobject.cpp|h: Move the name validation check to a
+	validator (phase one of moving NameProperty to frameworkelement).
+	* dependencyproperty.g.cpp: regen
+	
+2009-05-01  Jackson Harper  <jackson@ximian.com>
+
 	* type.h.in:
 	* value.h.in: Sync with their .h's
 
