@@ -32,11 +32,13 @@ using System.Windows.Controls;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows.Markup;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public partial class ContentControlTest {
+	public partial class ContentControlTest : SilverlightTest {
 
 		class ContentControlPoker : ContentControl {
 
@@ -71,6 +73,39 @@ namespace MoonTest.System.Windows.Controls {
 			ControlTest.CheckDefaultMethods (cc);
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ChangeDefaultTemplate ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"">
+    <ContentControl.Template>
+        <ControlTemplate>
+            <ContentPresenter />
+        </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>");
+
+			c.Content = new ConcreteFrameworkElement ();
+			c.ContentTemplate = new DataTemplate ();
+			ContentPresenter p = null;
+			CreateAsyncTest (c,
+				() => Assert.VisualChildren (c,
+						new VisualNode<ContentPresenter> ("#1", (pr) => p = pr,
+							new VisualNode<FrameworkElement> ("#2")
+						)
+					),
+				() => {
+					Assert.AreSame (c.Content, p.Content);
+					Assert.IsInstanceOfType<TemplateBindingExpression> (p.ReadLocalValue (ContentPresenter.ContentProperty), "#3");
+
+					Assert.AreSame (c.ContentTemplate, p.ContentTemplate);
+					Assert.IsInstanceOfType<TemplateBindingExpression> (p.ReadLocalValue (ContentPresenter.ContentTemplateProperty), "#4");
+				}
+			);
+		}
+		
 		[TestMethod]
 		public void Content ()
 		{

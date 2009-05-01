@@ -1,3 +1,9 @@
+2009-05-01  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentControl.cs: If the default ContentPresenter is
+	  replaced in a ContentControl, we need to TemplateBind both
+	  the Content and ContentTemplate.
+
 2009-04-28  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs: Ensure that PrepareContainerForItemOverride

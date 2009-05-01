@@ -110,11 +110,16 @@ namespace System.Windows.Controls {
 		void WalkTreeForContentPresenters (Control templateRoot, DependencyObject obj)
 		{
 			if (obj is ContentPresenter) {
+				ContentPresenter cp = (ContentPresenter) obj;
 				if (DependencyProperty.UnsetValue == obj.ReadLocalValue (ContentPresenter.ContentProperty)) {
-					ContentPresenter cp = obj as ContentPresenter;
 					cp.SetTemplateBinding (templateRoot,
 							       ContentControl.ContentProperty,
 							       ContentPresenter.ContentProperty);
+				}
+				if (DependencyProperty.UnsetValue == obj.ReadLocalValue (ContentPresenter.ContentTemplateProperty)) {
+					cp.SetTemplateBinding (templateRoot,
+							       ContentControl.ContentTemplateProperty,
+							       ContentPresenter.ContentTemplateProperty);
 				}
 			}
 			else if (!(obj is Control)) {
