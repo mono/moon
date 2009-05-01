@@ -1,5 +1,11 @@
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ComboBoxTest.cs: When raising the
+	  SelectionChanged event, we need to always pass the old/new
+	  selected *item*, not the SelectedIndex.
+
+2009-05-01  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Add another test and put
 	  [MoonlightBug] on the previous test as it currently doesn't
 	  pass.

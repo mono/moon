@@ -57,7 +57,7 @@ namespace MoonTest.System.Windows.Controls {
 		
 		public FakeComboBox ()
 		{
-			this.SelectionChanged += delegate { methods.Add (new Value { MethodName = "SelectionChangedEvent" }); };
+			this.SelectionChanged += (o, e) => methods.Add (new Value { MethodName = "SelectionChangedEvent", ReturnValue = e });
 			this.DropDownClosed += delegate { methods.Add (new Value { MethodName = "DropDownClosedEvent" }); };
 			this.DropDownOpened += delegate { methods.Add (new Value { MethodName = "DropDownOpenedEvent" }); };
 		}
@@ -717,6 +717,24 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual ("SelectionChangedEvent", box.methods [0].MethodName, "#2");
 			Assert.AreEqual (null, box.SelectedItem, "#3");
 			Assert.AreEqual (-1, box.SelectedIndex, "#4");
+		}
+		
+		[TestMethod]
+		public void SelectedItemTest3 ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			object o = new object ();
+			box.Items.Add (o);
+			box.SelectedItem = o;
+			box.methods.Clear ();
+			box.SelectedIndex = -1;
+			Assert.AreEqual (1, box.methods.Count, "#1");
+			Assert.AreEqual ("SelectionChangedEvent", box.methods [0].MethodName, "#2");
+			Assert.AreEqual (null, box.SelectedItem, "#3");
+			Assert.AreEqual (-1, box.SelectedIndex, "#4");
+			SelectionChangedEventArgs e = (SelectionChangedEventArgs)box.methods[0].ReturnValue;
+			Assert.AreEqual (o, e.RemovedItems [0], "#5");
+			Assert.AreEqual (0, e.AddedItems.Count, "#6");
 		}
 	}
 }

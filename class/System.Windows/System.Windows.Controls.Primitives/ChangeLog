@@ -1,3 +1,9 @@
+2009-05-01  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: When raising the SelectionChanged event, we
+	  need to always pass the old/new selected *item*, not the
+	  SelectedIndex.
+
 2009-04-23  Alan McGovern  <amcgovern@novell.com>
 
 	* Popup.cs: Allow popups to use a transparent canvas to catch
