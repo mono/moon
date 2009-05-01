@@ -51,7 +51,7 @@ namespace ManagedAttachedProps
 		}
 	}
 
-        public class Stretcher : Panel
+        public partial class Stretcher : Panel
         {
 		public static readonly DependencyProperty StretchAmountProperty = DependencyProperty.RegisterAttached("StretchAmount", typeof(Stretch), typeof(Stretcher), null);
 
