@@ -43,6 +43,22 @@
 #include "input.h"
 #include "shutdown-manager.h"
 
+
+// hack to track down the actual error message that
+// gecko insists on dropping for some really stupid
+// reason that I cannot begin to fathom
+// enable if you're desperate to track down empty
+// Script Errors and don't want to gdb
+#define DEBUG_ERROR_GECKO 0
+
+#ifdef DEBUG_ERROR_GECKO
+  #include "config.h"
+  #if DEBUG == 1 && HAVE_UNWIND == 1
+    #define UNW_LOCAL_ONLY
+    #include <libunwind.h>
+  #endif
+#endif
+
 #define MOONLIGHT_PLUGIN_ID	"joltControl"
 
 #define NPVARIANT_IS_NUMBER(v)(NPVARIANT_IS_INT32 (v) || NPVARIANT_IS_DOUBLE (v))
@@ -128,12 +144,48 @@ LogHelp (ShockerScriptableControlObject* obj, char* name, const NPVariant* args,
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
+#ifdef DEBUG_ERROR_GECKO
+static void findRealErrorOnStack (ShockerScriptableControlObject* obj) {
+	unw_context_t uc;
+	unw_cursor_t cursor, prev;
+	unw_word_t bp;
+
+	unw_getcontext(&uc);
+	unw_init_local(&cursor, &uc);
+
+	char framename [1024];
+	int count = 0;
+
+	while (unw_step(&cursor) > 0 && count < 18) {
+		count++;
+		unw_get_proc_name (&cursor, framename, sizeof(framename), 0);
+		if (!*framename)
+			continue;
+		if (strstr (framename, "js_ReportErrorAgain")) {
+#if (__i386__)
+			unw_get_reg(&prev, UNW_X86_EBP, &bp);
+#elif (__amd64__)
+			unw_get_reg(&prev, UNW_X86_64_RBP, &bp);
+#endif
+			bp += 12;
+			char ** n = (char**)bp;
+			obj->GetLogProvider ()->LogError (*n);
+			break;
+		}
+		prev = cursor;
+	}
+}
+#endif
+
 static void
 LogError (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	g_assert (arg_count == 1);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
 
+#ifdef DEBUG_ERROR_GECKO
+	findRealErrorOnStack (obj);
+#endif
 	obj->GetLogProvider ()->LogError (STR_FROM_VARIANT (args [0]));
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }

@@ -1,5 +1,11 @@
 2009-05-02  Andreia Gaita  <avidigal@novell.com>
 
+	* shocker.cpp: added hack to track down the actual script error msgs
+	that gecko insists on swallowing for some unfathomable reason. Only
+	activated on debug mode and only if DEBUG_ERROR_GECKO is defined
+
+2009-05-02  Andreia Gaita  <avidigal@novell.com>
+
 	* input.cpp: reset numlock back to false when done
 
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
