@@ -24,6 +24,7 @@ class AudioPlayer;
 
 #include "dependencyobject.h"
 #include "pipeline.h"
+#include "mutex.h"
 
 enum AudioFlags {
 	// The AudioSource has been initialized correctly.
@@ -82,7 +83,7 @@ class AudioSource : public EventObject {
 	guint32 channels; // The number of channels
 	guint32 sample_rate; // The sample rate in the audio source
 	
-	pthread_mutex_t mutex;
+	GStaticRecMutex mutex;
 	
 	void Lock ();
 	void Unlock ();
@@ -186,10 +187,10 @@ class AudioListNode : public List::Node {
 };
 
 class AudioSources {
-	pthread_mutex_t mutex;
-	List list;
 	gint32 current_generation;
 	AudioListNode *last_node; // The last node returned by GetNext.
+	GStaticMutex mutex;
+	List list;
 	
 	void Lock ();
 	void Unlock ();
@@ -221,11 +222,10 @@ class AudioSources {
 class AudioPlayer {
 	// our AudioPlayer instance
 	static AudioPlayer *instance;
-	static pthread_mutex_t instance_mutex;
+	static GStaticMutex instance_mutex;
 	
 	static AudioPlayer *CreatePlayer ();
-		
-
+	
 	AudioSource *AddImpl (MediaPlayer *mplayer, AudioStream *stream);
 	void RemoveImpl (AudioSource *node);
 	void ShutdownImpl ();

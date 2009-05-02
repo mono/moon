@@ -10,7 +10,9 @@
  * See the LICENSE file included with the distribution for details.
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #include <pthread.h>
 
@@ -46,8 +48,6 @@ AudioSource::AudioFrame::~AudioFrame ()
 AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream)
 	: EventObject (Type::AUDIOSOURCE)
 {
-	pthread_mutexattr_t attribs;
-	
 	this->mplayer = mplayer;
 	this->mplayer->ref ();
 	this->stream = stream;
@@ -71,10 +71,7 @@ AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream
 	channels = stream->channels;
 	sample_rate = stream->sample_rate;
 	
-	pthread_mutexattr_init (&attribs);
-	pthread_mutexattr_settype (&attribs, PTHREAD_MUTEX_RECURSIVE);
-	pthread_mutex_init (&mutex, &attribs);
-	pthread_mutexattr_destroy (&attribs);
+	g_static_rec_mutex_init (&mutex);
 	
 	if (channels != 1 && channels != 2)
 		SetState (AudioError);
@@ -82,7 +79,7 @@ AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream
 
 AudioSource::~AudioSource ()
 {
-	pthread_mutex_destroy (&mutex);
+	g_static_rec_mutex_free (&mutex);
 }
 
 void
@@ -110,13 +107,13 @@ AudioSource::Dispose ()
 void
 AudioSource::Lock ()
 {
-	pthread_mutex_lock (&mutex);
+	g_static_rec_mutex_lock (&mutex);
 }
 
 void
 AudioSource::Unlock ()
 {
-	pthread_mutex_unlock (&mutex);
+	g_static_rec_mutex_unlock (&mutex);
 }
 
 AudioStream *
@@ -666,25 +663,25 @@ AudioListNode::~AudioListNode ()
 
 AudioSources::AudioSources ()
 {
-	pthread_mutex_init (&mutex, NULL);
+	g_static_mutex_init (&mutex);
 	current_generation = 0;
 }
 
 AudioSources::~AudioSources ()
 {
-	pthread_mutex_destroy (&mutex);
+	g_static_mutex_free (&mutex);
 }
 
 void
 AudioSources::Lock ()
 {
-	pthread_mutex_lock (&mutex);
+	g_static_mutex_lock (&mutex);
 }
 
 void
 AudioSources::Unlock ()
 {
-	pthread_mutex_unlock (&mutex);
+	g_static_mutex_unlock (&mutex);
 }
 
 void
@@ -812,8 +809,8 @@ AudioSources::Length ()
  * AudioPlayer
  */
 
-AudioPlayer * AudioPlayer::instance = NULL;
-pthread_mutex_t AudioPlayer::instance_mutex = PTHREAD_MUTEX_INITIALIZER;
+AudioPlayer *AudioPlayer::instance = NULL;
+GStaticMutex AudioPlayer::instance_mutex = G_STATIC_MUTEX_INIT;
 
 AudioSource *
 AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
@@ -827,12 +824,12 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 		return NULL;
 	}
 	
-	pthread_mutex_lock (&instance_mutex);
+	g_static_mutex_lock (&instance_mutex);
 	if (instance == NULL)
 		instance = CreatePlayer ();
 	if (instance != NULL)
 		result = instance->AddImpl (mplayer, stream);
-	pthread_mutex_unlock (&instance_mutex);
+	g_static_mutex_unlock (&instance_mutex);
 	
 	return result;
 }
@@ -842,11 +839,11 @@ AudioPlayer::Remove (AudioSource *source)
 {
 	LOG_AUDIO ("AudioPlayer::Remove (%p)\n", source);
 	
-	pthread_mutex_lock (&instance_mutex);
+	g_static_mutex_lock (&instance_mutex);
 	if (instance != NULL)
 		instance->RemoveImpl (source);
 
-	pthread_mutex_unlock (&instance_mutex);
+	g_static_mutex_unlock (&instance_mutex);
 }
 
 void
@@ -855,14 +852,16 @@ AudioPlayer::Shutdown ()
 	AudioPlayer *player;
 	LOG_AUDIO ("AudioPlayer::Shutdown ()\n");
 	
-	pthread_mutex_lock (&instance_mutex);
+	g_static_mutex_lock (&instance_mutex);
+	
 	if (instance != NULL) {
 		player = instance;
 		instance = NULL;
 		player->ShutdownImpl ();
 		delete player;
 	}
-	pthread_mutex_unlock (&instance_mutex);
+	
+	g_static_mutex_unlock (&instance_mutex);
 }
 
 AudioPlayer *
