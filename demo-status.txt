@@ -5,20 +5,18 @@ rating:3
 
 site:Presidential Inauguration
 url:http://www.cnn.com/SPECIALS/2009/44.president/inauguration/themoment/
-rating:0
- * loads to 86%
- * throws exception: Missing method System.Net.WebClient::CancelAsync()
+rating:3
+ * Works, but is very slow
 
 site:Photosynth
 url:http://photosynth.net/silverlight/photosynth.aspx?cid=d7d78324-ad5e-41ea-94dd-512580ed4393
 rating:0
- * loads up to 81%
- * throws exception: Missing method System.Net.WebClient::CancelAsync()
+* Crashes on startup
 
 site:Silverlight Stocks
 url:http://www.vadimv.com/
 rating:0
- * not working
+ * Could not parse element MainChart, attribute Scrollable. Unknown attribute Scrollable on element MainChart
 
 site:Calculator
 url:http://silver.calcsharp.net/
@@ -27,29 +25,24 @@ rating:0
 
 site:Zoom Mosaic
 url:http://xaml.me/zoommosaic/
-rating:0
- * Could not parse element ImageButton, attribute Source, error: Unknown attribute Source on element ImageButton
+rating:1
+ * Seems to load but there's no image
 
 site: Rad Media Player
 url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
-rating:0
- * not working
-
-site:Power Arrow
-url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
-rating:0
- * not working
+rating:1
+ * Could not parse element Setter, attribute Value, error: Could not locate StaticResource TransparentColor for property value
 
 site:Database Schema Editor
 url:http://www.dbschemaeditor.com/OnlineDB.aspx
 rating:0
- * not working
+ * NRE: exception thrown by type initializer for OnlineDB.Backend.ModelXML.SettingsDataStoreXML -> NRE
 
 site:Dr. Popper
 url:http://www.bluerosegames.com/brg/free-web-games/bubble-breaker.aspx
 rating:1
- * not longer playable :(
- * page loads but cannot start a game
+ * super slow when loading
+ * Clicking on New Game crashes FF
 
 site:3D Image Rotation
 url:http://www.shinedraw.com/3d-illusion/flash-and-silverlight-3d-image-rotation/
@@ -58,15 +51,13 @@ rating:4
 
 site:Grid Transition Rotator
 url:http://www.shinedraw.com/image-manipulation/flash-vs-silverlight-grid-transition-rotator/
-rating:1
- * first image appears. 
- * Does not transition to second image
- * "Could not parse element Button, attribute Style"
+rating:0
+ * Crashes on load
 
 site:Python WebIDE
 url:http://www.voidspace.org.uk/ironpython/webide/webide.html
 rating:0
- * not loading, error while launching app from xap
+ * not loading, error while launching app from xap: System.UriFormatException
 
 site:Tic-Tac-Toe
 url:http://oldschooldotnet.blogspot.com/2009/01/tic-tac-toe-in-silverlight.html
@@ -79,11 +70,10 @@ rating:3
  * animation works (a bit slow)
  * hyperlink button "Make a shape for real" does not work
 
-site:Custon Splash screen
+site:Custom Splash screen
 url:http://www.shinedraw.com/browser-integration/flash-vs-silverlight-custom-loading-splash-screen/
 rating:0
- * need to add the hooks for splashscreens
- * need to implement the default
+ * error in System.Windows: Error while loading the xh-Hant/System.Xml.Linq.resources.dll assembly.
 
 site:Hard Rock Memorablia
 url:http://memorabilia.hardrock.com
@@ -100,21 +90,18 @@ rating:1
 
 site:Metronome
 url:http://silverlightshow.net/showcase/SilverlightMetronome/SilverlightMetronome.html
-rating:2
- * When set to > 120 bpm, the arm starts to go all the way around (360 degs)
- * If you click on the arm while it's playing. the speed will change. Changing speed should be disable while playing
+rating:3
  * No tooltips on start/stop button or on volume slider
- * Clicking stop doesn't actually stop the animation immediately. 
 
 site:FullSix
 url:http://www.fullsix.pt/tas/sbvideo/default.htm
 rating:0
- 
+ * crashes FF 
 
 site:Futbol
 url:http://www.semgoksu.com/silverlight-futbol-oyunu-yazisi/503.aspx
-rating:2
- * The ball never renders
+rating:4
+ * Works!
 
 site:Gantt Chart
 url:http://www.adefwebserver.com/DotNetNukeHELP/Misc/Silverlight/GanttChart/Default.aspx
@@ -218,8 +205,8 @@ rating:3
 
 site:Texas Holdem
 url:http://www.geocities.com/wethercotes/poker.html
-rating:0
- * Nothing renders
+rating:2
+ * Game counter is super fast. Counts down 60 secs in about 3
 
 site:Tetrislight
 url:http://www.elquintero.net/BlogGeeks/Silverlight/Tetrislight/default.html
