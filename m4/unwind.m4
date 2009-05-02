@@ -19,7 +19,9 @@ AC_DEFUN([MOONLIGHT_CHECK_UNWIND],
 		AC_MSG_RESULT([no])
 	else
 		AC_MSG_RESULT([yes])
-		UNWIND_LIBS="-liberty -lunwind"
-		AC_DEFINE([HAVE_UNWIND], [1], [libunwind support])
+		if test "x$with_debug" = "xyes"; then
+			UNWIND_LIBS="-liberty -lunwind"
+			AC_DEFINE([HAVE_UNWIND], [1], [libunwind support])
+		fi
 	fi
 ])

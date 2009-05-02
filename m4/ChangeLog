@@ -1,3 +1,7 @@
+2009-05-02  Andreia Gaita  <avidigal@novell.com>
+
+	* unwind.m4: Only add unwind libs if building in debug mode
+
 2009-04-29  Andreia Gaita  <avidigal@novell.com>
 
 	* unwind.m4: Add libunwind checks
