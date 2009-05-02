@@ -14,8 +14,6 @@
 #include <config.h>
 #endif
 
-#include <limits.h>
-
 #include "asf.h"
 #include "debug.h"
 #include "clock.h"
@@ -990,14 +988,14 @@ ASFReader::ResetAll ()
 guint64
 ASFReader::EstimatePacketIndexOfPts (guint64 pts)
 {
-	guint64 result = ULLONG_MAX;
+	guint64 result = G_MAXUINT64;
 	for (int i = 0; i < 128; i++) {
 		if (readers [i] == NULL)
 			continue;
 
 		result = MIN (readers [i]->EstimatePacketIndexOfPts (pts), result);
 	}
-	return result == ULLONG_MAX ? 0 : result;
+	return result == G_MAXUINT64 ? 0 : result;
 }
 
 MediaResult
@@ -1050,7 +1048,7 @@ ASFReader::Seek (guint64 pts)
 		found_keyframe [i] = readers [i] == NULL;
 		found_above [i] = readers [i] == NULL;
 		highest_pts [i] = 0;
-		highest_pi [i] = ULLONG_MAX;
+		highest_pi [i] = G_MAXUINT64;
 	}
 
 	// Start with the latest available packet, otherwise we may end up waiting for some position
@@ -1126,7 +1124,7 @@ ASFReader::Seek (guint64 pts)
 			// We've found a key frame with pts below the requested pts.
 			found_keyframe [stream_id] = true;
 			highest_pts [stream_id] = MAX (highest_pts [stream_id], payload_pts);
-			highest_pi [stream_id] = highest_pi [stream_id] == ULLONG_MAX ? test_pi : MAX (highest_pi [stream_id], test_pi);
+			highest_pi [stream_id] = highest_pi [stream_id] == G_MAXUINT64 ? test_pi : MAX (highest_pi [stream_id], test_pi);
 			ASF_LOG ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Found key frame of stream #%i with pts %llu in packet index %llu\n", pts, stream_id, payload_pts, test_pi);
 		}
 		
@@ -1248,7 +1246,7 @@ ASFReader::Seek (guint64 pts)
 	// Finally we have all the data we need.
 	ResetAll ();
 	
-	test_pi = ULLONG_MAX;
+	test_pi = G_MAXUINT64;
 	for (int i = 0; i < 128; i++) {
 		if (readers [i] == NULL)
 			continue;
@@ -1260,7 +1258,7 @@ ASFReader::Seek (guint64 pts)
 	}
 	
 	// Don't return any frames before the pts we seeked to.
-	next_packet_index = (test_pi == ULLONG_MAX) ? 0 : test_pi;
+	next_packet_index = (test_pi == G_MAXUINT64) ? 0 : test_pi;
 
 	ASF_LOG ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Seeked to packet index %lld.\n", pts, test_pi);
 	
@@ -1429,7 +1427,7 @@ ASFFrameReader::FrameSearch (guint64 pts)
 			
 		if (index [i].start_pts > pts) {
 			//printf ("ASFFrameReader::FrameSearch (%" G_GUINT64_FORMAT "): index not created for the desired pts (found starting pts after the requested one)\n", pts);
-			return UINT_MAX;
+			return G_MAXUINT32;
 		}
 		
 		if (index [i].start_pts <= pts && index [i].end_pts >= pts) {
@@ -1691,7 +1689,7 @@ ASFFrameReader::EstimatePacketIndexOfPts (guint64 pts)
 	
 	packet_index = FrameSearch (pts);
 	
-	if (packet_index != UINT_MAX) {
+	if (packet_index != G_MAXUINT32) {
 		//printf ("ASFFrameReader::GetPositionOfPts (%" G_GUINT64_FORMAT "): Found pts in index, position: %lld, pi: %i\n", pts, parser->GetPacketOffset (packet_index), packet_index);
 		return packet_index;
 	}
