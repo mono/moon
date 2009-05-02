@@ -1,3 +1,10 @@
+2009-05-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* asf-debug.h: don't include stdint.h, use proper glib types.
+
+	* asf.cpp: Guard config.h and don't include stdint.h - don't need
+	it.
+
 2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* asf.cpp: ASFFrameReader::Reset: delete any payloads we may

@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * asf.cpp: 
  *
@@ -9,8 +10,9 @@
  * See the LICENSE file included with the distribution for details.
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
-#include <stdint.h>
+#endif
 
 #include "asf.h"
 #include "debug.h"

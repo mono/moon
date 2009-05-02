@@ -1,5 +1,6 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * asf-structures.h: 
+ * asf-debug.h: 
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -14,9 +15,8 @@
 
 #if DEBUG
 
-#include <stdio.h>
-#include <stdint.h>
 #include <glib.h>
+#include <stdio.h>
 
 class ObjectTracker {
 public:
@@ -44,7 +44,7 @@ public:
 		}
 		
 		if (list != NULL) {
-			int32_t count = g_hash_table_size (list);
+			guint count = g_hash_table_size (list);
 			if (count == 0) {
 				printf ("ObjectTracking::PrintStatus (%s): No unfreed objects.\n", tn);
 			} else {
