@@ -51,7 +51,7 @@
 // Script Errors and don't want to gdb
 #define DEBUG_ERROR_GECKO 0
 
-#ifdef DEBUG_ERROR_GECKO
+#if DEBUG_ERROR_GECKO == 1
   #include "config.h"
   #if DEBUG == 1 && HAVE_UNWIND == 1
     #define UNW_LOCAL_ONLY
@@ -144,7 +144,7 @@ LogHelp (ShockerScriptableControlObject* obj, char* name, const NPVariant* args,
 	BOOLEAN_TO_NPVARIANT (true, *result);
 }
 
-#ifdef DEBUG_ERROR_GECKO
+#if DEBUG_ERROR_GECKO == 1
 static void findRealErrorOnStack (ShockerScriptableControlObject* obj) {
 	unw_context_t uc;
 	unw_cursor_t cursor, prev;
@@ -183,7 +183,7 @@ LogError (ShockerScriptableControlObject* obj, char* name, const NPVariant* args
 	g_assert (arg_count == 1);
 	g_assert (NPVARIANT_IS_STRING (args [0]));
 
-#ifdef DEBUG_ERROR_GECKO
+#if DEBUG_ERROR_GECKO == 1
 	findRealErrorOnStack (obj);
 #endif
 	obj->GetLogProvider ()->LogError (STR_FROM_VARIANT (args [0]));
