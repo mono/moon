@@ -19,7 +19,6 @@
 
 #include <glib.h>
 #include <string.h>
-#include <stdint.h>
 #include <cairo.h>
 
 #include "type.h"

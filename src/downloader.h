@@ -15,8 +15,6 @@
 #define __DOWNLOADER_H__
 
 #include <glib.h>
-
-#include <stdint.h>
 #include <cairo.h>
 
 #include "dependencyobject.h"

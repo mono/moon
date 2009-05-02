@@ -16,7 +16,6 @@
 
 #include <glib.h>
 
-#include <stdint.h>
 #include <cairo.h>
 #include "enums.h"
 #include "rect.h"

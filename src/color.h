@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * color.h
  *
@@ -11,7 +12,6 @@
 #define __MOON_COLOR_H__
 
 #include <glib.h>
-#include <stdint.h>
 #include <math.h>
 
 /* @IncludeInKinds */

@@ -15,7 +15,6 @@
 #define MOON_CLOCK_H
 
 #include <glib.h>
-#include <stdint.h>
 #include "collection.h"
 
 /*

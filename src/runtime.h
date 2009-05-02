@@ -16,7 +16,6 @@
 
 #include <glib.h>
 
-#include <stdint.h>
 #include <cairo.h>
 #include <gtk/gtkwidget.h>
 
