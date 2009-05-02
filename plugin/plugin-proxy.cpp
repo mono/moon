@@ -124,7 +124,7 @@ load (void)
 		}
 	}
 
-	void *real_plugin = dlopen (plugin_path, RTLD_LAZY);
+	void *real_plugin = dlopen (plugin_path, RTLD_LAZY | RTLD_GLOBAL);
 
 	// Must dllmap moonplugin, otherwise it doesn't know where to get it
 	char* plugin_config = g_strdup_printf("<?xml version=\"1.0\" encoding=\"utf-8\"?><configuration><dllmap dll=\"moonplugin\" target=\"%s\" /></configuration>",plugin_path);
