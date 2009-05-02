@@ -1,3 +1,10 @@
+2009-05-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.sc: Remove Windows-only Console p/invokes
+	* mscorlib.auto.ssc: Remove more unneeded SSC wrt to security and
+	X509 certificates/authenticode support.
+	Synchronized with mono/mcs r133384
+
 2009-04-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.ssc: Remove entries related to Mono.Helper

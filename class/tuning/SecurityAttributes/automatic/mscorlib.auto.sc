@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 131 methods needs to be decorated.
+# 129 methods needs to be decorated.
 
 # [VISIBLE] overrides 'System.Boolean System.Runtime.InteropServices.CriticalHandle::get_IsInvalid()'.
 +SC-M: System.Boolean Microsoft.Win32.SafeHandles.CriticalHandleMinusOneIsInvalid::get_IsInvalid()
@@ -84,12 +84,6 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 System.__ComObject::CoCreateInstance(System.Guid,System.IntPtr,System.UInt32,System.Guid,System.IntPtr&)
-
-# p/invoke declaration
-+SC-M: System.Int32 System.Console/WindowsConsole::GetConsoleCP()
-
-# p/invoke declaration
-+SC-M: System.Int32 System.Console/WindowsConsole::GetConsoleOutputCP()
 
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.ASCIIEncoding::GetByteCount(System.Char*,System.Int32)
