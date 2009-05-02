@@ -1,3 +1,7 @@
+2009-05-02  Rusty Howell  <rhowell@novell.com>
+
+	* Makefile.am: Added xpi FF bridges to xpi
+
 2009-04-22  Rusty Howell  <rhowell@novell.com>
 
 	* Remove GAC from xpi. 

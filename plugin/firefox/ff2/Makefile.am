@@ -10,7 +10,8 @@ INCLUDES = \
 	-Wall
 
 pluginlibdir=$(pkglibdir)/plugin
-pluginlib_LTLIBRARIES=libmoonplugin-ff2bridge.la
+pluginlib_LTLIBRARIES = libmoonplugin-ff2bridge.la
+noinst_LTLIBRARIES = libmoonpluginxpi-ff2bridge.la
 
 libmoonplugin_ff2bridge_la_SOURCES=	ff2-bridge.cpp \
 					ff2-bridge.h \
@@ -20,3 +21,8 @@ libmoonplugin_ff2bridge_la_SOURCES=	ff2-bridge.cpp \
 
 libmoonplugin_ff2bridge_la_LDFLAGS=-module -avoid-version
 libmoonplugin_ff2bridge_la_LIBADD=$(FF2_LIBS) ../../libmoonplugin.la ../../../src/libmoon.la
+
+libmoonpluginxpi_ff2bridge_la_SOURCES = $(libmoonplugin_ff2bridge_la_SOURCES)
+libmoonpluginxpi_ff2bridge_la_LDFLAGS = $(libmoonplugin_ff2bridge_la_LDFLAGS) -rpath /nowhere
+libmoonpluginxpi_ff2bridge_la_LIBADD = $(FF2_LIBS) ../../libmoonpluginxpi.la
+

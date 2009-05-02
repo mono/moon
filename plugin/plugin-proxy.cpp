@@ -35,97 +35,107 @@ static np_getvalue_func   getvalue;
 static np_shutdown_func   shutdown;
 static np_getmime_func    getmime;
 
+
 static NPError
 load (void)
 {
 	char *plugin_path;
 
-#if PLUGIN_INSTALL
 	Dl_info dlinfo;
 	if (dladdr((void *) &load, &dlinfo) == 0) {
 		fprintf (stderr, "Unable to find the location of libmoonloaderxpi %s\n", dlerror ());
 		return FALSE;
 	}
 
-	char *plugin_dir;
-	plugin_dir = g_build_filename (g_path_get_dirname(dlinfo.dli_fname), "moonlight", NULL);
+	if (strstr(dlinfo.dli_fname, "libmoonloaderxpi.so")) {
 
-	plugin_path = g_build_filename (plugin_dir, "libmoonpluginxpi.so", NULL);
+		fprintf (stdout, "Attempting to load libmoonloaderxpi \n");
+		char *plugin_dir;
+		plugin_dir = g_build_filename (g_path_get_dirname(dlinfo.dli_fname), "moonlight", NULL);
 
-#if INCLUDE_FFMPEG
-	// load libavutil
-	char *avutil_path = g_build_filename (plugin_dir, "libavutil.so", NULL);
-	void *real_avutil = dlopen (avutil_path, RTLD_LAZY | RTLD_GLOBAL);
-	if (real_avutil == NULL){
-		fprintf (stderr, "Unable to load the libavutil %s\n", dlerror ());
-		return FALSE;
-	}
-	g_free (avutil_path);
+		plugin_path = g_build_filename (plugin_dir, "libmoonpluginxpi.so", NULL);
 
-#if INCLUDE_SWSCALE
-	// load libswscale
-	char *swscale_path = g_build_filename (plugin_dir, "libswscale.so", NULL);
-	void *real_swscale = dlopen (swscale_path, RTLD_LAZY | RTLD_GLOBAL);
-	if (real_swscale == NULL){
-		fprintf (stderr, "Unable to load the libswscale %s\n", dlerror ());
-		return FALSE;
-	}
-	g_free (swscale_path);
-#endif
+	#if INCLUDE_FFMPEG
+		// load libavutil
+		char *avutil_path = g_build_filename (plugin_dir, "libavutil.so", NULL);
+		void *real_avutil = dlopen (avutil_path, RTLD_LAZY | RTLD_GLOBAL);
+		if (real_avutil == NULL){
+			fprintf (stderr, "Unable to load the libavutil %s\n", dlerror ());
+			return FALSE;
+		}
+		g_free (avutil_path);
 
-	// load libavcodec
-	char *avcodec_path = g_build_filename (plugin_dir, "libavcodec.so", NULL);
-	void *real_avcodec = dlopen (avcodec_path, RTLD_LAZY | RTLD_GLOBAL);
-	if (real_avcodec == NULL){
-		fprintf (stderr, "Unable to load the libavcodec %s\n", dlerror ());
-		return FALSE;
-	}
-	g_free (avcodec_path);
-#endif
+	#if INCLUDE_SWSCALE
+		// load libswscale
+		char *swscale_path = g_build_filename (plugin_dir, "libswscale.so", NULL);
+		void *real_swscale = dlopen (swscale_path, RTLD_LAZY | RTLD_GLOBAL);
+		if (real_swscale == NULL){
+			fprintf (stderr, "Unable to load the libswscale %s\n", dlerror ());
+			return FALSE;
+		}
+		g_free (swscale_path);
+	#endif
 
-#if PLUGIN_SL_2_0
-	// load libmono
-	char *mono_path = g_build_filename (plugin_dir, "libmono.so", NULL);
-	void *real_mono = dlopen (mono_path, RTLD_LAZY | RTLD_GLOBAL);
-	if (real_mono == NULL){
-		fprintf (stderr, "Unable to load the libmono %s\n", dlerror ());
-		return FALSE;
-	}
-	mono_set_dirs (plugin_dir, plugin_dir);
-	g_free (mono_path);
-#endif
+		// load libavcodec
+		char *avcodec_path = g_build_filename (plugin_dir, "libavcodec.so", NULL);
+		void *real_avcodec = dlopen (avcodec_path, RTLD_LAZY | RTLD_GLOBAL);
+		if (real_avcodec == NULL){
+			fprintf (stderr, "Unable to load the libavcodec %s\n", dlerror ());
+			return FALSE;
+		}
+		g_free (avcodec_path);
+	#endif
 
-	// load libmoon
-	char *moon_path = g_build_filename (plugin_dir, "libmoonxpi.so", NULL);
-	void *real_moon = dlopen (moon_path, RTLD_LAZY | RTLD_GLOBAL);
-	if (real_moon == NULL){
-		fprintf (stderr, "Unable to load the libmoonxpi %s\n", dlerror ());
-		return FALSE;
-	}
+	#if PLUGIN_SL_2_0
+		// load libmono
+		char *mono_path = g_build_filename (plugin_dir, "libmono.so", NULL);
+		void *real_mono = dlopen (mono_path, RTLD_LAZY | RTLD_GLOBAL);
+		if (real_mono == NULL){
+			fprintf (stderr, "Unable to load the libmono %s\n", dlerror ());
+			return FALSE;
+		}
+		mono_set_dirs (plugin_dir, plugin_dir);
+		g_free (mono_path);
+	#endif
 
-	char* moon_config = g_strdup_printf("<?xml version=\"1.0\" encoding=\"utf-8\"?><configuration><dllmap dll=\"moon\" target=\"%s\" /></configuration>",moon_path);
-	mono_config_parse_memory(moon_config);
-	g_free (moon_config);
-	g_free (moon_path);
+		// load libmoon
+		char *moon_path = g_build_filename (plugin_dir, "libmoonxpi.so", NULL);
+		void *real_moon = dlopen (moon_path, RTLD_LAZY | RTLD_GLOBAL);
+		if (real_moon == NULL){
+			fprintf (stderr, "Unable to load the libmoonxpi %s\n", dlerror ());
+			return FALSE;
+		}
 
-	g_free (plugin_dir);
-#else
-	// allow the user to override the plugin directory
-	// by setting MOON_PLUGIN_DIR
-	const gchar *moon_plugin_dir = g_getenv("MOON_PLUGIN_DIR");
-	if (moon_plugin_dir == NULL) {
-		plugin_path = g_build_filename (PLUGIN_DIR, "plugin", "libmoonplugin.so", NULL);
+		char* moon_config = g_strdup_printf("<?xml version=\"1.0\" encoding=\"utf-8\"?><configuration><dllmap dll=\"moon\" target=\"%s\" /></configuration>",moon_path);
+		mono_config_parse_memory(moon_config);
+		g_free (moon_config);
+		g_free (moon_path);
+
+		g_free (plugin_dir);
+
 	} else {
-		plugin_path = g_build_filename (moon_plugin_dir, "libmoonplugin.so", NULL);
+
+		fprintf (stdout, "Attempting to load the system libmoon \n");
+		const gchar *moon_plugin_dir = g_getenv("MOON_PLUGIN_DIR");
+		if (moon_plugin_dir == NULL) {
+			plugin_path = g_build_filename (PLUGIN_DIR, "plugin", "libmoonplugin.so", NULL);
+		} else {
+			plugin_path = g_build_filename (moon_plugin_dir, "libmoonplugin.so", NULL);
+		}
 	}
-#endif
 
 	void *real_plugin = dlopen (plugin_path, RTLD_LAZY);
+
+	// Must dllmap moonplugin, otherwise it doesn't know where to get it
+	char* plugin_config = g_strdup_printf("<?xml version=\"1.0\" encoding=\"utf-8\"?><configuration><dllmap dll=\"moonplugin\" target=\"%s\" /></configuration>",plugin_path);
+	mono_config_parse_memory(plugin_config);
+	g_free (plugin_config);
 
 	g_free (plugin_path);
 
 	if (real_plugin == NULL){
 		fprintf (stderr, "Unable to load the real plugin %s\n", dlerror ());
+		fprintf (stderr, "plugin_path is %s\n", plugin_path);
 		return FALSE;
 	}
 

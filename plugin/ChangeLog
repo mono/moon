@@ -1,3 +1,12 @@
+2009-05-02  Rusty Howell  <rhowell@novell.com>
+
+	* plugin-proxy.cpp: Detect which libmoonloader we are (xpi or sys)
+	and dlopen accordingly
+	* moonlight.h: Remove PLUGIN_INSTALL
+	* plugin-proxy-xpi.cpp: removed from svn
+	* Makefile.am: Added check in user-plugin target.
+	Changed source of libmoonloader back to plugin-proxy.cpp
+
 2009-04-22  Chris Toshok  <toshok@ximian.com>
 
 	* moonlight.h: moon the #include <glib.h> here from windowless so

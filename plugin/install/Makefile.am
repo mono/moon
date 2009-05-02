@@ -14,11 +14,11 @@ novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.rdf \
 				$(top_builddir)/src/.libs/libmoonxpi.so
 
 if HAVE_GECKO_1_8
-novell_moonlight_xpi_CONTENTS += ../firefox/ff2/.libs/libmoonplugin-ff2bridge.so
+novell_moonlight_xpi_CONTENTS += ../firefox/ff2/.libs/libmoonpluginxpi-ff2bridge.so
 endif HAVE_GECKO_1_8
 
 if HAVE_GECKO_1_9
-novell_moonlight_xpi_CONTENTS += ../firefox/ff3/.libs/libmoonplugin-ff3bridge.so
+novell_moonlight_xpi_CONTENTS += ../firefox/ff3/.libs/libmoonpluginxpi-ff3bridge.so
 endif HAVE_GECKO_1_9
 
 if INCLUDE_FFMPEG
@@ -31,21 +31,20 @@ if INCLUDE_BROWSER_MANAGED_CODE
 novell_moonlight_xpi_CONTENTS += $(srcdir)/../moon.config
 endif INCLUDE_BROWSER_MANAGED_CODE
 
-SDK_DLLS =			\
-	System.Data.Services.Client.dll		\
-	System.Json.dll		\
-	System.Runtime.Serialization.Json.dll		\
-	System.ServiceModel.PollingDuplex.dll		\
-	System.ServiceModel.Syndication.dll			\
-	System.Windows.Controls.Data.Design.dll		\
-	System.Windows.Controls.Data.dll			\
-	System.Windows.Controls.Design.dll			\
-	System.Windows.Controls.dll					\
-	System.Windows.VisualStudio.Design.dll		\
-	System.Xml.Linq.dll				\
-	System.Xml.Serialization.dll	\
+SDK_DLLS = \
+	System.Data.Services.Client.dll         \
+	System.Json.dll                         \
+	System.Runtime.Serialization.Json.dll   \
+	System.ServiceModel.PollingDuplex.dll   \
+	System.ServiceModel.Syndication.dll     \
+	System.Windows.Controls.Data.Design.dll \
+	System.Windows.Controls.Data.dll        \
+	System.Windows.Controls.Design.dll      \
+	System.Windows.Controls.dll             \
+	System.Windows.VisualStudio.Design.dll  \
+	System.Xml.Linq.dll                     \
+	System.Xml.Serialization.dll            \
 	System.Xml.Utils.dll
-
 
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
 	rm -f $@
@@ -61,10 +60,12 @@ novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
 	cp -L ../.libs/libmoonpluginxpi.so .xpinstall/plugins/moonlight/
 	cp -L $(top_builddir)/src/.libs/libmoonxpi.so .xpinstall/plugins/moonlight/
 if HAVE_GECKO_1_8
-	cp -L ../firefox/ff2/.libs/libmoonplugin-ff2bridge.so .xpinstall/plugins/moonlight/
+# Rename the bridges to the original names
+	cp -L ../firefox/ff2/.libs/libmoonpluginxpi-ff2bridge.so .xpinstall/plugins/moonlight/libmoonplugin-ff2bridge.so
 endif HAVE_GECKO_1_8
 if HAVE_GECKO_1_9
-	cp -L ../firefox/ff3/.libs/libmoonplugin-ff3bridge.so .xpinstall/plugins/moonlight/
+# Rename the bridges to the original names
+	cp -L ../firefox/ff3/.libs/libmoonpluginxpi-ff3bridge.so .xpinstall/plugins/moonlight/libmoonplugin-ff3bridge.so
 endif HAVE_GECKO_1_9
 if INCLUDE_FFMPEG
 	cp -L $(avutil_libdir)/libavutil.so .xpinstall/plugins/moonlight/

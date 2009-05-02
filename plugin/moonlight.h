@@ -63,11 +63,6 @@
 #define LOADER_QUOTE(x) #x
 #define LOADER_RENAMED_NAME(x) LOADER_QUOTE(Plugin_##x)
 
-// define this to 1 if we're building the xpi, leave it 0 if we're not
-#ifndef PLUGIN_INSTALL
-#define PLUGIN_INSTALL 0
-#endif
-
 extern "C" {
   char *LOADER_RENAMED_SYM(NP_GetMIMEDescription) (void);
   NPError LOADER_RENAMED_SYM(NP_GetValue) (void *future, NPPVariable variable, void *value);
