@@ -1,3 +1,7 @@
+2009-05-02  Rusty Howell  <rhowell@novell.com>
+
+	* Makefile.am: Create a different bridge for the xpi
+
 2009-04-06  Andreia Gaita  <avidigal@novell.com>
 
 	* ff2-bridge.h, ff2-dom.cpp: Wrap nsIDOM events as npobj and

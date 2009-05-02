@@ -4,7 +4,6 @@ CLEANFILES =
 
 pluginlibdir=$(pkglibdir)/plugin
 pluginlib_LTLIBRARIES = libmoonplugin.la libmoonloader.la
-
 noinst_LTLIBRARIES = libmoonpluginxpi.la libmoonloaderxpi.la
 
 INCLUDES = \
@@ -30,8 +29,7 @@ libmoonloaderxpi_la_LDFLAGS = $(libmoonloader_la_LDFLAGS) -rpath /nowhere
 
 libmoonloaderxpi_la_LIBADD = $(libmoonloader_la_LIBADD)
 
-libmoonloaderxpi_la_SOURCES = \
-	plugin-proxy-xpi.cpp
+libmoonloaderxpi_la_SOURCES = $(libmoonloader_la_SOURCES)
 
 #--- libmoonplugin ----------------------
 
@@ -76,8 +74,13 @@ test-plugin: libmoonloader.la libmoonplugin.la
 	-rm -f ~/.mozilla/plugins/libmoon.so ~/.mozilla/plugins/libmoonplugin.so ~/.mozilla/plugins/libmoonloader.so
 	cp .libs/libmoonloader.so ~/.mozilla/plugins
 
+if PLUGIN_INSTALL
 user-plugin: libmoonloaderxpi.la libmoonpluginxpi.la
 	$(MAKE) $(AM_MAKEFLAGS) -C install
+else
+user-plugin:
+	@echo "Error: You must configure with Firefox 2 or 3 support"; exit 1
+endif
 
 untest-plugin:
 	-rm -rf ~/.mozilla/plugins/libmoonplugin.so
