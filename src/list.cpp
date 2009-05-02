@@ -1,4 +1,3 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * list.cpp: a non-sucky linked list implementation
  *
@@ -379,13 +378,13 @@ List::ForEach (NodeAction action, void *data)
 
 Queue::Queue ()
 {
-	g_static_mutex_init (&mutex);
+	pthread_mutex_init (&lock, NULL);
 	list = new List ();
 }
 
 Queue::~Queue ()
 {
-	g_static_mutex_free (&mutex);
+	pthread_mutex_destroy (&lock);
 	delete list;
 }
 
@@ -445,13 +444,13 @@ Queue::Pop ()
 void
 Queue::Lock ()
 {
-	g_static_mutex_lock (&mutex);
+	pthread_mutex_lock (&lock);
 }
 
 void
 Queue::Unlock ()
 {
-	g_static_mutex_unlock (&mutex);
+	pthread_mutex_unlock (&lock);
 }
 
 List *

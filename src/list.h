@@ -1,4 +1,3 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * list.h: a non-sucky linked list implementation
  *
@@ -14,7 +13,8 @@
 #ifndef __LIST_H__
 #define __LIST_H__
 
-#include <glib/gthread.h>
+#include <pthread.h>
+
 
 class List {
 public:
@@ -73,7 +73,7 @@ public:
 
 class Queue {
 protected:
-	GStaticMutex mutex;
+	pthread_mutex_t lock;
 	List *list;
 	
 public:

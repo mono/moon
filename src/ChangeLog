@@ -1,15 +1,5 @@
 2009-05-02  Jeffrey Stedfast  <fejj@novell.com>
 
-	* audio.cpp: Use GStaticMutex and GStaticRecMutexes.
-
-	* mms-downloader.cpp: Same.
-
-	* pipeline-ffmpeg.cpp: Same.
-
-	* list.cpp: Here too.
-
-2009-05-02  Jeffrey Stedfast  <fejj@novell.com>
-
 	* downloader.h: 
 	* runtime.h:
 	* color.h:

@@ -1,4 +1,3 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * pipeline-ffmpeg.cpp: Ffmpeg related parts of the pipeline for the media
  *
@@ -15,13 +14,12 @@
  *	FFmpegDecoder
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
-#include <glib.h>
 #include <stdlib.h>
+#include <glib.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <pthread.h>
 
 #include "pipeline-ffmpeg.h"
@@ -34,7 +32,7 @@
 bool ffmpeg_initialized = false;
 bool ffmpeg_registered = false;
 
-GStaticMutex ffmpeg_mutex = G_STATIC_MUTEX_INIT;
+pthread_mutex_t ffmpeg_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void
 initialize_ffmpeg ()
@@ -125,7 +123,7 @@ FfmpegDecoder::Open ()
 	
 	//printf ("FfmpegDecoder::Open ().\n");
 	
-	g_static_mutex_lock (&ffmpeg_mutex);
+	pthread_mutex_lock (&ffmpeg_mutex);
 	
 	codec = avcodec_find_decoder_by_name (stream->codec);
 	
@@ -190,7 +188,7 @@ FfmpegDecoder::Open ()
 		
 	//printf ("FfmpegDecoder::Open (): Opened codec successfully.\n");
 	
-	g_static_mutex_unlock (&ffmpeg_mutex);
+	pthread_mutex_unlock (&ffmpeg_mutex);
 	
 	return result;
 	
@@ -206,7 +204,7 @@ failure:
 		av_free (context);
 		context = NULL;
 	}
-	g_static_mutex_unlock (&ffmpeg_mutex);
+	pthread_mutex_unlock (&ffmpeg_mutex);
 	
 	return result;
 }
@@ -214,7 +212,7 @@ failure:
 void
 FfmpegDecoder::Dispose ()
 {
-	g_static_mutex_lock (&ffmpeg_mutex);
+	pthread_mutex_lock (&ffmpeg_mutex);
 	
 	if (context != NULL) {
 		if (context->codec != NULL) {
@@ -236,7 +234,7 @@ FfmpegDecoder::Dispose ()
 		frame_buffer = NULL;
 	}
 	
-	g_static_mutex_unlock (&ffmpeg_mutex);
+	pthread_mutex_unlock (&ffmpeg_mutex);
 }
 
 void
