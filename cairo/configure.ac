@@ -487,6 +487,8 @@ dnl ===========================================================================
 # We use GTK+ for some utility/debugging tools
 PKG_CHECK_MODULES(gtk, "gtk+-2.0",, AC_MSG_RESULT(no))
 
+AC_DEFINE([NDEBUG], 1, [I will not assert in platform code.  I will not assert in platform code.  I will not assert in platform code.])
+
 AC_CONFIG_FILES([
 Makefile
 src/Makefile
