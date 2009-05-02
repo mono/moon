@@ -584,9 +584,9 @@ namespace Moonlight {
 				{ "r:|reference:", v => mxap.ExternalAssemblies.Add (v) },
 				{ "l|list-generated", v => mxap.ListGenerated = v != null },
 				{ "v|verbose", v => mxap.Verbose =  v != null },
-				{ "res|resource:", v => resources.Add (v) },
-				{ "ares|assembly-resource:", v => aresources.Add (v) },
-				{ "cres|content-resource:", v => cresources.Add (v) },
+				{ "res:|resource:", "-res=filename[,resource name]", v => resources.Add (v) },
+				{ "ares:|assembly-resource:", "-ares=filename[,resource name]", v => aresources.Add (v) },
+				{ "cres:|content-resource:", "-cres=filename[,resource name]", v => cresources.Add (v) },
 				{ "clean", "Removes generated files. Use with caution!", v => clean = v != null },
 				{ "out:|output-dir:", v => mxap.OutputDir = v },
 				{ "inplace", "Don't use a temporary directory", v => mxap.InPlace = v != null }

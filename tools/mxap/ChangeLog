@@ -1,3 +1,7 @@
+2009-05-02  Andreia Gaita  <avidigal@novell.com>
+
+	* mxap.cs: usage tweaks
+
 2009-04-27  Andreia Gaita  <avidigal@novell.com>
 
 	* mxap.cs: Add -res-source,-ares-sources,-cres-sources to specify
