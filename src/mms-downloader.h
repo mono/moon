@@ -73,7 +73,7 @@ class MmsDownloader : public InternalDownloader {
 	guint32 packets_received;
 	
 	guint64 requested_pts;
-	pthread_mutex_t request_mutex;
+	GStaticMutex request_mutex;
 	
 	TimeSpan p_packet_times[3];
 	gint32 p_packet_sizes[3];

@@ -2,6 +2,8 @@
 
 	* audio.cpp: Use GStaticMutex and GStaticRecMutexes.
 
+	* mms-downloader.cpp: Same.
+
 	* pipeline-ffmpeg.cpp: Same.
 
 	* list.cpp: Here too.

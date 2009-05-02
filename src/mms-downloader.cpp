@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * mms-downlodaer.cpp: MMS Downloader class.
  *
@@ -64,7 +65,7 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
 	source = NULL;
 
 	requested_pts = G_MAXUINT64;
-	pthread_mutex_init (&request_mutex, NULL);
+	g_static_mutex_init (&request_mutex);
 }
 
 MmsDownloader::~MmsDownloader ()
@@ -73,7 +74,7 @@ MmsDownloader::~MmsDownloader ()
 	g_free (buffer);
 	if (parser)
 		parser->unref ();
-	pthread_mutex_destroy (&request_mutex);
+	g_static_mutex_free (&request_mutex);
 }
 
 void
@@ -86,18 +87,18 @@ void
 MmsDownloader::SetRequestedPts (guint64 value)
 {
 	LOG_MMS ("MmsDownloader::SetRequestedPts (%" G_GUINT64_FORMAT ")\n", value);
-	pthread_mutex_lock (&request_mutex);
+	g_static_mutex_lock (&request_mutex);
 	requested_pts = value;
-	pthread_mutex_unlock (&request_mutex);
+	g_static_mutex_unlock (&request_mutex);
 }
 
 guint64
 MmsDownloader::GetRequestedPts ()
 {
 	guint64 result;
-	pthread_mutex_lock (&request_mutex);
+	g_static_mutex_lock (&request_mutex);
 	result = requested_pts;
-	pthread_mutex_unlock (&request_mutex);
+	g_static_mutex_unlock (&request_mutex);
 	LOG_MMS ("MmsDownloader::GetRequestedPts (): %" G_GUINT64_FORMAT "\n", result);
 	return result;
 }
