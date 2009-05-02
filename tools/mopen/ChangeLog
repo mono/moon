@@ -1,3 +1,7 @@
+2009-05-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* mopen1.cpp: Fixed the build by using guint32 instead of uint32_t
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mopen.mdp:

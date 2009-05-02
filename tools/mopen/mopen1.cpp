@@ -14,13 +14,15 @@
 //    Implement everything mopen implements
 //
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
 #include <gtk/gtk.h>
-#include <glib.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <stdlib.h>
 
 #include "downloader.h"
 #include "runtime.h"
@@ -191,7 +193,7 @@ downloader_header (gpointer state, const char *header, const char *value)
 }
 
 static void
-downloader_body (gpointer state, void *body, uint32_t length)
+downloader_body (gpointer state, void *body, guint32 length)
 {
 	g_assert_not_reached ();
 }
