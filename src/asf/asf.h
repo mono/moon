@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * asf.h: 
  *
@@ -64,7 +65,7 @@ struct ASFContext {
 /* @IncludeInKinds */
 class ASFPacket : public EventObject {
 private:
-	int64_t position; // The position of this packet. -1 if not known.
+	gint64 position; // The position of this packet. -1 if not known.
 	int index; // The index of this packet. -1 if not known.
 	IMediaSource *source; // The source which is to be used for reading into this packet.
 	ASFParser *parser;
@@ -80,7 +81,7 @@ public:
 	int GetPayloadCount (); // Returns the number of payloads in this packet.
 	asf_single_payload *GetPayload (int index /* 0 based */);
 	
-	uint64_t GetPts (int stream_id /* 1 - 127 */); // Gets the pts of the first payload. 0 if no payloads.
+	guint64 GetPts (int stream_id /* 1 - 127 */); // Gets the pts of the first payload. 0 if no payloads.
 	asf_single_payload *GetFirstPayload (int stream_id /* 1 - 127 */); // Gets the index first payload of the specified stream.
 	
 	IMediaSource *GetSource () { return source; }
@@ -95,10 +96,10 @@ private:
 	IMediaSource *source;
 	ASFDemuxer *demuxer;
 	// The index of the next packet to be read.
-	uint64_t next_packet_index;
+	guint64 next_packet_index;
 
 	// Seeks to the specified pts directly on the source.
-	MediaResult SeekToPts (uint64_t pts);
+	MediaResult SeekToPts (guint64 pts);
 
 public:
 	ASFReader (ASFParser *parser, ASFDemuxer *demuxer);
@@ -124,7 +125,7 @@ public:
 
 	// Estimate the packet index of the specified pts.
 	// Calls EstimatePacketIndexOfPts on all readers and returns the lowest value.
-	uint64_t EstimatePacketIndexOfPts (uint64_t pts);
+	guint64 EstimatePacketIndexOfPts (guint64 pts);
 
  	// Reads another packet and stuffs the payloads into our queue.
 	// Called by the readers when they are out of data.
@@ -133,7 +134,7 @@ public:
 	// Can we seek?
 	bool CanSeek () { return true; }
 	
-	uint64_t GetLastAvailablePacketIndex ();
+	guint64 GetLastAvailablePacketIndex ();
 
 };
 
@@ -142,7 +143,7 @@ struct ASFFrameReaderData {
 	asf_single_payload *payload;
 	ASFFrameReaderData *prev;
 	ASFFrameReaderData *next;
-	uint64_t packet_index;
+	guint64 packet_index;
 
 	ASFFrameReaderData (asf_single_payload *load) 
 	{
@@ -157,11 +158,11 @@ struct ASFFrameReaderData {
 	}
 };
 
-#define INVALID_START_PTS ((uint64_t) -1)
+#define INVALID_START_PTS ((guint64) -1)
 
 struct ASFFrameReaderIndex {
-	uint64_t start_pts;
-	uint64_t end_pts;
+	guint64 start_pts;
+	guint64 end_pts;
 };
 /*
  *	The data in an ASF file has the following structure:
@@ -197,7 +198,7 @@ private:
 	ASFReader *reader;
 	
 	// The first pts that should be returned, any frames with pts below this one will be dropped.
-	uint64_t first_pts;
+	guint64 first_pts;
 
 	// Only return key frames. Reset after we've returned a key frame.
 	bool key_frames_only;
@@ -214,11 +215,11 @@ private:
 	int payloads_size;
 	
 	// Information about the current frame.
-	uint64_t size;
-	uint64_t pts;
+	guint64 size;
+	guint64 pts;
 	
 	// Index data
-	uint32_t index_size; // The number of items in the index.
+	guint32 index_size; // The number of items in the index.
 	ASFFrameReaderIndex *index; // A table of ASFFrameReaderIndexes.
 	
 	bool ResizeList (int size); // Resizes the list of payloads to the requested size. 
@@ -237,26 +238,26 @@ public:
 	bool Write (void *dest);
 	
 	// Information about the current frame
-	uint64_t Size () { return size; }
+	guint64 Size () { return size; }
 	bool IsKeyFrame () { return (payloads_size > 0 && payloads [0] != NULL) ? payloads [0]->is_key_frame : false; }
-	uint64_t Pts () { return pts; }
+	guint64 Pts () { return pts; }
 	int StreamId () { return stream_number; }
 	
-	void AppendPayload (asf_single_payload *payload, uint64_t packet_index);
+	void AppendPayload (asf_single_payload *payload, guint64 packet_index);
 
 	// Index, returns the packet index of where the frame is.
 	// returns UINT32_MAX if not found in the index.
-	uint32_t FrameSearch (uint64_t pts);
+	guint32 FrameSearch (guint64 pts);
 
-	int64_t EstimatePtsPosition (uint64_t pts);
-	uint64_t EstimatePacketIndexOfPts (uint64_t pts);
+	gint64 EstimatePtsPosition (guint64 pts);
+	guint64 EstimatePacketIndexOfPts (guint64 pts);
 
 	// Adds the current frame to the index.
-	void AddFrameIndex (uint64_t packet_index);
+	void AddFrameIndex (guint64 packet_index);
 	bool IsAudio ();
 	bool IsAudio (int stream);
 	void SetOnlyKeyFrames (); // Sets the key_frames_only flag to true
-	void SetFirstPts (uint64_t); // Sets the first pts which is to be returned.
+	void SetFirstPts (guint64); // Sets the first pts which is to be returned.
 	void Reset ();
 
 	IMediaStream *GetStream () { return stream; }
@@ -296,20 +297,20 @@ public:
 	// Reads the number of the specified encoded length (0-3)
 	// encoded length 3 = read 4 bytes, rest equals encoded length and #bytes
 	// into the destionation.
-	static bool ReadEncoded (IMediaSource *source, uint32_t encoded_length, uint32_t *dest);	
+	static bool ReadEncoded (IMediaSource *source, guint32 encoded_length, guint32 *dest);	
 
 	// Verifies that the requested size is a size that can be inside the header.
-	bool VerifyHeaderDataSize (uint32_t size);
+	bool VerifyHeaderDataSize (guint32 size);
 	
 	// Allocates the requested memory (no size checking), reports
 	// an Out of Memory error if the memory can't be allocated, and returns
 	// NULL
-	void *MallocVerified (uint32_t size);
+	void *MallocVerified (guint32 size);
 	
 	// Allocates the requested memory and verifies that the size
 	// can actually be contained within the header. Reports an Out of Memory
 	// error if the memory can't be allocated, and returns NULL
-	void *Malloc (uint32_t size);
+	void *Malloc (guint32 size);
 	
 	// Error handling
 	ErrorEventArgs *GetLastError ();
@@ -332,19 +333,19 @@ public:
 	int GetSequentialStreamNumber (int stream_index);
 	
 	// Returns 0 on failure, otherwise the offset of the packet index.
-	int64_t GetPacketOffset (uint64_t packet_index);
+	gint64 GetPacketOffset (guint64 packet_index);
 	
 	// Returns the index of the packet at the specified offset (from the beginning of the file)
-	uint64_t GetPacketIndex (int64_t offset);
+	guint64 GetPacketIndex (gint64 offset);
 	
 	// Searches the header objects for the specified guid
 	// returns -1 if nothing is found.
 	int GetHeaderObjectIndex (const asf_guid *guid, int start = 0);
 	
 	// The number of packets in the stream (0 if unknown).
-	uint64_t GetPacketCount ();
+	guint64 GetPacketCount ();
 	
-	uint32_t GetPacketSize ();
+	guint32 GetPacketSize ();
 
 	// The number of streams
 	int GetStreamCount ();
@@ -361,7 +362,7 @@ public:
 	asf_object *GetHeaderObject (const asf_guid *guid);
 	
 	// This callback is called whenever a script command payload is encountered while decoding.
-	typedef void embedded_script_command_callback (void *state, char *type, char *text, uint64_t pts);
+	typedef void embedded_script_command_callback (void *state, char *type, char *text, guint64 pts);
 	embedded_script_command_callback *embedded_script_command;
 	void *embedded_script_command_state;
 	
@@ -377,9 +378,9 @@ public:
 	asf_script_command *script_command;
 	
 	asf_data *data;
-	int64_t data_offset; // location of data object
-	int64_t packet_offset; // location of the beginning of the first packet
-	int64_t packet_offset_end; // location of the end of the last packet
+	gint64 data_offset; // location of data object
+	gint64 packet_offset; // location of the beginning of the first packet
+	gint64 packet_offset_end; // location of the end of the last packet
 };
 
 

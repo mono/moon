@@ -1,9 +1,13 @@
 2009-05-02  Jeffrey Stedfast  <fejj@novell.com>
 
+	* asf.h: Use glib int types instead of stdint.h types.
+
+	* asf-structures.cpp: Use guint16 instead of uint16_t
+
 	* asf-debug.h: don't include stdint.h, use proper glib types.
 
 	* asf.cpp: Guard config.h and don't include stdint.h - don't need
-	it.
+	it. Also use limits.h values.
 
 2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
