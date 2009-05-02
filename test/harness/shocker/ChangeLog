@@ -1,3 +1,7 @@
+2009-05-02  Andreia Gaita  <avidigal@novell.com>
+
+	* input.cpp: reset numlock back to false when done
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker.mdp: Add a project for each tool, and clean up some

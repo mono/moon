@@ -83,6 +83,7 @@ InputProvider::~InputProvider ()
 	while (down_keys)
 		SendKeyInput (GPOINTER_TO_UINT (down_keys->data), false);
 
+	SendKeyInput (VK_NUMLOCK, false);
 	g_slist_free (down_keys);
 }
 
