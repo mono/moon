@@ -1,3 +1,8 @@
+2009-05-02  Andreia Gaita  <avidigal@novell.com>
+
+	* configure.ac: add unwind libs to shocker to support
+	DEBUG_ERROR_GECKO (only on debug mode, see shocker.cpp)
+
 2009-04-30  Andreia Gaita  <avidigal@novell.com>
 
 	* configure.ac: Added new tool (moonvisi) to parse
