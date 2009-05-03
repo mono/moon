@@ -38,15 +38,13 @@ namespace System.Windows.Data {
 
 	public abstract class BindingExpressionBase : Expression
 	{
-		static Dictionary<IntPtr, Binding> bindings = new Dictionary<IntPtr, Binding> ();
-		
 		internal bool cached;
 		object cachedValue;
 		INotifyPropertyChanged cachedSource;
 		
 		bool parsedPath;
 		PropertyInfo info;
-		bool updating;
+		bool updatingSource;
 		
 		internal Binding Binding {
 			get; private set;
@@ -56,16 +54,16 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		internal FrameworkElement Target {
-			get; private set;
+		FrameworkElement Target {
+			get; set;
 		}
 		
-		internal bool Updating {
-			get { return updating; }
+		internal bool UpdatingSource {
+			get { return updatingSource; }
 		}
 		
-		internal DependencyProperty Property {
-			get; private set;
+		DependencyProperty Property {
+			get; set;
 		}
 
 		// This is the object we're databound to
@@ -119,12 +117,16 @@ namespace System.Windows.Data {
 			}
 		}
 
-		internal void Dispose ()
+		internal override void Dispose ()
 		{
 			if (LostFocusHandler != null) {
 				Events.RemoveHandler (Target, "LostFocus", LostFocusHandler);
 				LostFocusHandler = null;
 			}
+
+			if (cachedSource != null)
+				cachedSource.PropertyChanged -= PropertyChanged;
+			cachedSource = null;
 		}
 		
 		PropertyInfo GetPropertyInfo ()
@@ -201,7 +203,7 @@ namespace System.Windows.Data {
 
 		internal void SetValue (object value)
 		{
-			if (updating || PropertyInfo == null)
+			if (updatingSource || PropertyInfo == null)
 				return;
 
 			if (Binding.Converter != null)
@@ -237,19 +239,19 @@ namespace System.Windows.Data {
 
 
 			try {
-				updating = true;
+				updatingSource = true;
 				PropertyInfo.SetValue (PropertySource, value, null);
 				cachedValue = value;
 			}
 			finally {
-				updating = false;
+				updatingSource = false;
 			}
 		}
 
 		void PropertyChanged (object sender, PropertyChangedEventArgs e)
 		{
 			try {
-				updating = true;
+				updatingSource = true;
 				if (string.IsNullOrEmpty (Binding.Path.Path)) {
 					Target.SetValueImpl (Property, ConvertToDestType (DataSource));
 				} else if (PropertyInfo == null) {
@@ -259,7 +261,7 @@ namespace System.Windows.Data {
 					Target.SetValueImpl (Property, value);
 				}
 			} finally {
-				updating = false;
+				updatingSource = false;
 			}
 		}
 		

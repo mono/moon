@@ -147,12 +147,18 @@ namespace Mono.Xaml {
 
 		public object ParseTemplateBinding (ref string expression)
 		{
+			TemplateBindingExpression tb = new TemplateBindingExpression ();
+
 			char next;
 			string prop = GetNextPiece (ref expression, out next);
 			FrameworkTemplate template = GetParentTemplate ();
 
-			template.AddXamlBinding (target, attribute_name, prop);
-			return null;
+			tb.Target = (FrameworkElement)target;
+			tb.TargetPropertyName = attribute_name;
+			tb.SourcePropertyName = prop;
+			// tb.Source will be filled in elsewhere between attaching the change handler.
+
+			return tb;
 		}
 
 		private object LookupNamedResource (DependencyObject dob, string name)

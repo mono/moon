@@ -674,7 +674,7 @@ DoubleAnimation::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	doubleFromCached = NULL;
 	doubleByCached = NULL;
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 ColorAnimation::ColorAnimation ()
@@ -753,7 +753,7 @@ ColorAnimation::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 	colorByCached = NULL;
 	hasCached = FALSE;
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 PointAnimation::PointAnimation ()
@@ -836,7 +836,7 @@ PointAnimation::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 	pointByCached = NULL;
 	hasCached = FALSE;
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 KeySpline::KeySpline ()
@@ -907,7 +907,7 @@ KeySpline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	g_free (quadraticsArray);
 	quadraticsArray = NULL;
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 double

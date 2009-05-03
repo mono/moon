@@ -22,13 +22,14 @@
 
 class XamlLoader;
 
-typedef bool (*xaml_lookup_object_callback) (void *parser, void *top_level, const char *xmlns, const char *name, bool create, Value *value);
+typedef bool (*xaml_lookup_object_callback) (void *loader, void *parser, void *top_level, const char *xmlns, const char *name, bool create, Value *value);
 typedef void (*xaml_create_gchandle_callback) ();
-typedef bool (*xaml_set_property_callback) (void *parser, void *top_level, const char* xmlns, Value *target, void *target_data, void *target_parent, const char *name, Value *value, void *value_data);
-typedef void (*xaml_import_xaml_xmlns_callback) (void *parser, const char* xmlns);
-typedef const char* (*xaml_get_content_property_name_callback) (void *parser, Value *object);
+typedef bool (*xaml_set_property_callback) (void *loader, void *parser, void *top_level, const char* xmlns, Value *target, void *target_data, void *target_parent, const char *name, Value *value, void *value_data);
+typedef void (*xaml_import_xaml_xmlns_callback) (void *loader, void *parser, const char* xmlns);
+typedef const char* (*xaml_get_content_property_name_callback) (void *loader, void *parser, Value *object);
 
 struct XamlLoaderCallbacks {
+
 	xaml_lookup_object_callback lookup_object;
 	xaml_create_gchandle_callback create_gchandle;
 	xaml_set_property_callback set_property;
@@ -58,6 +59,11 @@ class XamlContext {
 
 	XamlContext (XamlContextInternal *internal);
 	~XamlContext ();
+
+	void SetTemplateBindingSource (DependencyObject *source);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyObject* GetTemplateBindingSource ();
 };
 
 
@@ -155,6 +161,8 @@ class XamlLoader {
 	char *GetFilename () { return filename; }
 	char *GetString () { return str; }
 	Surface *GetSurface () { return surface; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
 	XamlContext *GetContext () { return context; }
 
 	bool vm_loaded;

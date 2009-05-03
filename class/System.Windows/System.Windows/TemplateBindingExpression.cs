@@ -32,13 +32,60 @@ using System.Windows.Controls;
 
 namespace System.Windows {
 	public class TemplateBindingExpression : Expression {
-		internal TemplateBindingExpression () { }
 
 		internal Control Source;
+		internal string SourcePropertyName;
 		internal DependencyProperty SourceProperty;
 
 		internal FrameworkElement Target;
+		internal string TargetPropertyName;
 		internal DependencyProperty TargetProperty;
+
+		internal bool UpdatingTarget;
+
+		internal TemplateBindingExpression ()
+		{
+		}
+
+		private void PropertyChanged (IntPtr dependency_object, IntPtr propertyChangeArgs, ref MoonError error, IntPtr unused)
+		{
+			try {
+				unsafe {
+					UnmanagedPropertyChangedEventArgs *args = (UnmanagedPropertyChangedEventArgs*)propertyChangeArgs;
+
+					// FIXME: type converters?  how do we deal with that here?
+					UpdatingTarget = true;
+					Target.SetValueImpl (TargetProperty, Value.ToObject (SourceProperty.PropertyType, args->new_value));
+					UpdatingTarget = false;
+				}
+			}
+			catch (Exception ex) {
+				error = new MoonError (ex);
+			}
+		}
+		
+		private UnmanagedPropertyChangeHandler change_handler;
+
+		internal void AttachChangeHandler ()
+		{
+			if (change_handler == null)
+				change_handler = new UnmanagedPropertyChangeHandler (PropertyChanged);
+
+			NativeMethods.dependency_object_add_property_change_handler (Source.native,
+										     SourceProperty.Native,
+										     change_handler,
+										     IntPtr.Zero);
+		}
+
+		internal void DetachChangeHandler ()
+		{
+			if (change_handler == null)
+				return;
+
+			NativeMethods.dependency_object_remove_property_change_handler (Source.native,
+											SourceProperty.Native,
+											change_handler);
+		}
 
 		internal override object GetValue (DependencyProperty dp)
 		{
@@ -47,6 +94,11 @@ namespace System.Windows {
 			// property
 
 			return Source.GetValue (SourceProperty);
+		}
+
+		internal override void Dispose ()
+		{
+			DetachChangeHandler ();
 		}
 	}
 }

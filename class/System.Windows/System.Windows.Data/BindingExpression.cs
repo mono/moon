@@ -33,41 +33,9 @@ namespace System.Windows.Data
 {
 	internal class BindingExpression : BindingExpressionBase
 	{
-//		GetValueCallback gv_callback;
-//		SetValueCallback sv_callback;
-		
 		public BindingExpression(Binding binding, FrameworkElement target, DependencyProperty property)
 			: base (binding, target, property)
-//			: this (NativeMethods.binding_expression_new ())
 		{
-//			gv_callback = new GetValueCallback (GetValueOverride);
-//			sv_callback = new SetValueCallback (UpdateSourceOverride);
-//			NativeMethods.binding_expression_base_register_managed_overrides (Native, gv_callback, sv_callback);
 		}
-
-		
-//		internal BindingExpression (IntPtr native)
-//			: base (native)
-//		{
-//			
-//		}
-//
-//		Value GetValueOverride ()
-//		{
-//			Value v;
-//			object o;
-//			if (base.TryGetValue (out o) && o != null) {
-//				v = DependencyObject.GetAsValue (o);
-//			} else {
-//				v = new Value { k = Kind.INVALID };
-//			}
-//
-//			return v;
-//		}
-//
-//		void UpdateSourceOverride (IntPtr value)
-//		{
-//			base.SetValue (DependencyObject.ValueToObject (base.Property.PropertyType, value));
-//		}
 	}
 }

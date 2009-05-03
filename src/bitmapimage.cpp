@@ -232,7 +232,7 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		Emit (DownloadProgressEvent, new DownloadProgressEventArgs (GetProgress ()));
 	}
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void

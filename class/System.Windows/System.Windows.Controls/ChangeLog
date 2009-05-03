@@ -1,3 +1,10 @@
+2009-05-03  Chris Toshok  <toshok@ximian.com>
+
+	* ContentControl.cs (WalkTreeForContentPresenters): not sure why
+	we passed "this" to this method.  Just use this instead of
+	templateRoot.  Also, use a more verbose TemplateBindingExpression
+	initialization.
+
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
 
 	* ContentControl.cs: If the default ContentPresenter is

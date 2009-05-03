@@ -38,12 +38,7 @@ namespace Mono
 	/*
 	 *  The managed equivalent of the unmanaged Surface
 	 */
-#if !NET_2_1
-	public
-#else
-	internal
-#endif
-	partial class Surface
+	internal partial class Surface
 	{
 		private IntPtr native;
 		

@@ -36,12 +36,12 @@ using Mono;
 
 namespace Mono.Xaml
 {
-	internal delegate bool LookupObjectCallback (IntPtr parser, IntPtr top_level, string xmlns, string name, [MarshalAs (UnmanagedType.U1)] bool create, out Value value);
+	internal delegate bool LookupObjectCallback (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, string name, [MarshalAs (UnmanagedType.U1)] bool create, out Value value);
 	internal delegate void CreateGCHandleCallback ();
 
-	internal delegate bool SetPropertyCallback (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_data, IntPtr target_parent, string name, IntPtr value_ptr, IntPtr value_data);
-	internal delegate void ImportXamlNamespaceCallback (IntPtr parser, string xmlns);
-	internal delegate string GetContentPropertyNameCallback (IntPtr parser, IntPtr object_ptr);
+	internal delegate bool SetPropertyCallback (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_data, IntPtr target_parent, string name, IntPtr value_ptr, IntPtr value_data);
+	internal delegate void ImportXamlNamespaceCallback (IntPtr loader, IntPtr parser, string xmlns);
+	internal delegate string GetContentPropertyNameCallback (IntPtr loader, IntPtr parser, IntPtr object_ptr);
 	
 	internal struct XamlLoaderCallbacks {
 		public LookupObjectCallback lookup_object;
@@ -58,12 +58,7 @@ namespace Mono.Xaml
 		LoadFailure = 2
 	}
 
-#if !NET_2_1
-	public
-#else
-	internal
-#endif
-	abstract class XamlLoader : MarshalByRefObject
+	internal abstract class XamlLoader : MarshalByRefObject
 	{
 		// Contains any surface/plugins already loaded in the current domain.
 		// This is required form System.Windows.XamlReader.Load to work.
@@ -89,12 +84,16 @@ namespace Mono.Xaml
 			return new ManagedXamlLoader (assembly, surface, plugin);
 		}
 		
+		public static int gen = 0;
+
 		public XamlLoader ()
 		{
+			gen++;
 		}
 		
 		public XamlLoader (IntPtr surface, IntPtr plugin)
 		{
+			gen++;
 			this.surface = surface;
 			this.plugin = plugin;
 		}

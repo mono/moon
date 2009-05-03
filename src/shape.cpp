@@ -839,7 +839,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	
 	Invalidate ();
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
@@ -1237,7 +1237,7 @@ Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	Invalidate ();
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 //
@@ -1523,7 +1523,7 @@ Line::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		InvalidateNaturalBounds ();
 	}
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 //
@@ -1671,7 +1671,7 @@ Polygon::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	Invalidate ();
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
@@ -1798,7 +1798,7 @@ Polyline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	Invalidate ();
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
@@ -1944,7 +1944,7 @@ Path::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 
 	InvalidateNaturalBounds ();
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void

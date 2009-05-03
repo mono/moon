@@ -1747,7 +1747,7 @@ TextBoxBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		return;
 	}
 	
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
@@ -2217,7 +2217,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		return;
 	}
 	
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
@@ -2543,7 +2543,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		return;
 	}
 	
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void

@@ -48,7 +48,7 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->GetOldValue(), args->GetNewValue()));
 	}
 	
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 ContentChangedEventArgs::ContentChangedEventArgs (Value *old_content, Value *new_content)

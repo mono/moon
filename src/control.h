@@ -153,8 +153,6 @@ protected:
 	
 private:
 	ControlTemplate *applied_template;
-	
-	List *bindings;
 };
 
 

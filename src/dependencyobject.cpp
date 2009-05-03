@@ -864,7 +864,7 @@ EventObject::unref_delayed ()
 class Listener {
 public:
 	virtual bool Matches (PropertyChangedEventArgs *args) = 0;
-	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args) = 0;
+	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error) = 0;
 
 	virtual gpointer GetListener () = 0;
 	virtual gpointer GetProperty () = 0;
@@ -879,8 +879,9 @@ public:
 	}
 
 	virtual bool Matches (PropertyChangedEventArgs *args) { return true; }
-	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args)
+	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error)
 	{
+		// FIXME we ignore error here.
 		obj->OnSubPropertyChanged (prop, sender, args);
 	}
 
@@ -914,9 +915,9 @@ public:
 		return prop == args->GetProperty ();
 	}
 
-	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args)
+	virtual void Invoke (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error)
 	{
-		cb (sender, args, closure);
+		cb (sender, args, error, closure);
 	}
 
 	virtual gpointer GetListener ()
@@ -1012,7 +1013,7 @@ DependencyObject::RemoveAllListeners ()
 static bool listeners_notified;
 
 void
-DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args)
+DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args, MoonError *error)
 {
 	g_return_if_fail (args);
 
@@ -1022,20 +1023,22 @@ DependencyObject::NotifyListenersOfPropertyChange (PropertyChangedEventArgs *arg
 		Listener *listener = (Listener*)l->data;
 
 		if (listener->Matches (args))
-			listener->Invoke (this, args);
+			listener->Invoke (this, args, error);
+		if (error && error->number)
+			break;
 	}
 }
 
 void
-DependencyObject::NotifyListenersOfPropertyChange (int id)
+DependencyObject::NotifyListenersOfPropertyChange (int id, MoonError *error)
 {
 	if (IsDisposed ())
 		return;
-	NotifyListenersOfPropertyChange (GetDeployment ()->GetTypes ()->GetProperty (id));
+	NotifyListenersOfPropertyChange (GetDeployment ()->GetTypes ()->GetProperty (id), error);
 }
 
 void
-DependencyObject::NotifyListenersOfPropertyChange (DependencyProperty *subproperty)
+DependencyObject::NotifyListenersOfPropertyChange (DependencyProperty *subproperty, MoonError *error)
 {
 	// XXX I really think this method should go away.  we only use it in
 	// a couple of places, and it abuses things.
@@ -1044,7 +1047,7 @@ DependencyObject::NotifyListenersOfPropertyChange (DependencyProperty *subproper
 
 	PropertyChangedEventArgs args (subproperty, subproperty->GetId (), NULL, new_value);
 
-	NotifyListenersOfPropertyChange (&args);
+	NotifyListenersOfPropertyChange (&args, error);
 }
 
 bool
@@ -1522,14 +1525,14 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		}
 
 
+		PropertyChangedEventArgs args (property, property->GetId (), old_value, new_value);
+
 		// we need to make this optional, as doing it for NameScope
 		// merging is killing performance (and noone should ever care
 		// about that property changing)
 		if (notify_listeners) {
 			listeners_notified = false;
 		
-			PropertyChangedEventArgs args (property, property->GetId (), old_value, new_value);
-
 			OnPropertyChanged (&args, error);
 
 			if (!listeners_notified) {
@@ -1541,8 +1544,8 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		}
 
 		if (property && property->GetChangedCallback () != NULL) {
-			NativePropertyChangedHandler *callback = property->GetChangedCallback ();
-			callback (property, this, old_value, new_value, error);
+			PropertyChangeHandler callback = property->GetChangedCallback ();
+			callback (this, &args, error, NULL);
 		}
  	}
 }
@@ -2094,7 +2097,7 @@ DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		}
 	}
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 DependencyObject*

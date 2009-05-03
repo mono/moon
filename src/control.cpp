@@ -26,16 +26,12 @@ Control::Control ()
 
 	applied_template = NULL;
 	template_root = NULL;
-	bindings = NULL;
 }
 
 Control::~Control ()
 {
 	if (applied_template)
 		applied_template->unref();
-
-	if (bindings)
-		delete bindings;
 }
 
 bool
@@ -65,7 +61,7 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		 || args->GetId () == Control::BorderThicknessProperty) {
 		InvalidateMeasure ();
 	}
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 bool
@@ -77,9 +73,6 @@ Control::ApplyTemplate ()
 	if (applied_template) {
 		applied_template->unref();
 		applied_template = NULL;
-		
-		delete bindings;
-		bindings = NULL;
 	}
 	
 	ElementRemoved (template_root);
@@ -92,9 +85,7 @@ Control::ApplyTemplate ()
 	applied_template = GetTemplate ();
 	applied_template->ref();
 
-	bindings = new List ();
-
-	FrameworkElement *el = applied_template->Apply(this, bindings);
+	FrameworkElement *el = applied_template->Apply(this);
 	if (!el)
 		return false;
 

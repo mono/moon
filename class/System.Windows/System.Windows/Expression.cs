@@ -39,5 +39,7 @@ namespace System.Windows
 		}
 
 		internal abstract object GetValue (DependencyProperty dp);
+
+		internal abstract void Dispose ();
 	}
 }

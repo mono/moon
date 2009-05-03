@@ -266,7 +266,6 @@ class StylusPoint;
 class StylusPointCollection;
 class Surface;
 class SystemTimeSource;
-class TemplateBinding;
 class TextBlock;
 class TextBox;
 class TextBoxBase;
@@ -297,7 +296,6 @@ class VideoBrush;
 class VideoStream;
 class VisualBrush;
 class WriteableBitmap;
-class XamlTemplateBinding;
 class YUVConverter;
 
 
@@ -606,7 +604,6 @@ public:
 	StylusPointCollection*                   AsStylusPointCollection (Types *types = NULL) { checked_get_subclass (Type::STYLUSPOINT_COLLECTION, StylusPointCollection) }
 	Surface*                                 AsSurface (Types *types = NULL) { checked_get_subclass (Type::SURFACE, Surface) }
 	SystemTimeSource*                        AsSystemTimeSource (Types *types = NULL) { checked_get_subclass (Type::SYSTEMTIMESOURCE, SystemTimeSource) }
-	TemplateBinding*                         AsTemplateBinding (Types *types = NULL) { checked_get_subclass (Type::TEMPLATEBINDING, TemplateBinding) }
 	TextBlock*                               AsTextBlock (Types *types = NULL) { checked_get_subclass (Type::TEXTBLOCK, TextBlock) }
 	TextBox*                                 AsTextBox (Types *types = NULL) { checked_get_subclass (Type::TEXTBOX, TextBox) }
 	TextBoxBase*                             AsTextBoxBase (Types *types = NULL) { checked_get_subclass (Type::TEXTBOXBASE, TextBoxBase) }
@@ -637,7 +634,6 @@ public:
 	VideoStream*                             AsVideoStream (Types *types = NULL) { checked_get_subclass (Type::VIDEOSTREAM, VideoStream) }
 	VisualBrush*                             AsVisualBrush (Types *types = NULL) { checked_get_subclass (Type::VISUALBRUSH, VisualBrush) }
 	WriteableBitmap*                         AsWriteableBitmap (Types *types = NULL) { checked_get_subclass (Type::WRITEABLEBITMAP, WriteableBitmap) }
-	XamlTemplateBinding*                     AsXamlTemplateBinding (Types *types = NULL) { checked_get_subclass (Type::XAMLTEMPLATEBINDING, XamlTemplateBinding) }
 	YUVConverter*                            AsYUVConverter (Types *types = NULL) { checked_get_subclass (Type::YUVCONVERTER, YUVConverter) }
 
 	

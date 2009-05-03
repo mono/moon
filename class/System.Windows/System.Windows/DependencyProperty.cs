@@ -82,7 +82,7 @@ namespace System.Windows {
 		{
 			ManagedType property_type;
 			ManagedType owner_type;
-			NativePropertyChangedHandler handler = null;
+			UnmanagedPropertyChangeHandler handler = null;
 			CustomDependencyProperty result;
 
 			object defaultVal = null;
@@ -111,7 +111,7 @@ namespace System.Windows {
 
 			if (metadata != null) {
 				if (metadata.property_changed_callback != null)
-					handler = NativePropertyChangedCallbackSafe;
+					handler = UnmanagedPropertyChangedCallbackSafe;
 				defaultVal = metadata.default_value;
 			}
 
@@ -140,23 +140,31 @@ namespace System.Windows {
 			return result;
 		}
 
-		private static void NativePropertyChangedCallbackSafe (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value, ref MoonError error)
+		private static void UnmanagedPropertyChangedCallbackSafe (IntPtr dependency_object, IntPtr propertyChangeArgs, ref MoonError error, IntPtr unused)
 		{
 			try {
 				try {
-					NativePropertyChangedCallback (dependency_property, dependency_object, old_value, new_value);
+					unsafe {
+						UnmanagedPropertyChangedEventArgs *args = (UnmanagedPropertyChangedEventArgs*)propertyChangeArgs;
+
+						UnmanagedPropertyChangedCallback (dependency_object,
+										  args->property,
+										  args->old_value,
+										  args->new_value);
+					}
 				} catch (Exception ex) {
 					error = new MoonError (ex);
 				}
 			} catch (Exception ex) {
 				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in DependencyProperty.NativePropertyChangedCallback: {0}", ex.Message);
+					Console.WriteLine ("Moonlight: Unhandled exception in DependencyProperty.UnmanagedPropertyChangedCallback: {0}",
+							   ex.Message);
 				} catch {
 				}
 			}
 		}
 		
-		private static void NativePropertyChangedCallback (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value)
+		private static void UnmanagedPropertyChangedCallback (IntPtr dependency_object, IntPtr dependency_property, IntPtr old_value, IntPtr new_value)
 		{		
 			DependencyProperty property;
 			CustomDependencyProperty custom_property;
@@ -164,18 +172,18 @@ namespace System.Windows {
 			object old_obj, new_obj;
 			
 			if (!properties.TryGetValue (dependency_property, out property)) {
-				Console.Error.WriteLine ("DependencyProperty.NativePropertyChangedCallback: Couldn't find the managed DependencyProperty corresponding with native {0}", dependency_property);
+				Console.Error.WriteLine ("DependencyProperty.UnmanagedPropertyChangedCallback: Couldn't find the managed DependencyProperty corresponding with native {0}", dependency_property);
 				return;
 			}
 			
 			custom_property = property as CustomDependencyProperty;
 			
 			if (custom_property == null) {
-				Console.Error.WriteLine ("DependencyProperty.NativePropertyChangedCallback: Got the event for a builtin dependency property.");
+				Console.Error.WriteLine ("DependencyProperty.UnmanagedPropertyChangedCallback: Got the event for a builtin dependency property.");
 				return;
 			}
 
-			// Console.WriteLine ("NativePropertyChangedCallback {3} {2} {0} {1}", old_value, new_value, custom_property.name, custom_property.property_type.FullName);
+			// Console.WriteLine ("UnmanagedPropertyChangedCallback {3} {2} {0} {1}", old_value, new_value, custom_property.name, custom_property.property_type.FullName);
 			
 			if (custom_property.Metadata == null || custom_property.Metadata.property_changed_callback == null)
 				return;				
@@ -280,36 +288,39 @@ namespace System.Windows {
 			change_cb = callback;
 
 			NativeMethods.dependency_property_set_property_changed_callback (native,
-											 CustomNativePropertyChangedCallbackSafe);
+											 CustomUnmanagedPropertyChangedCallbackSafe);
 		}
 
-		private static void CustomNativePropertyChangedCallbackSafe (IntPtr dependency_property, IntPtr dependency_object,
-									     IntPtr old_value, IntPtr new_value, ref MoonError error)
+		private static void CustomUnmanagedPropertyChangedCallbackSafe (IntPtr dependency_object, IntPtr propertyChangeArgs, ref MoonError error, IntPtr unused)
 		{
 			DependencyProperty property;
 			DependencyObject obj;
 
 			try {
 				try {
-					if (!properties.TryGetValue (dependency_property, out property)) {
-						Console.Error.WriteLine ("DependencyProperty.CustomNativePropertyChangedCallback: Couldn't find the managed DependencyProperty corresponding with native {0}", dependency_property);
-						return;
-					}
+					unsafe {
+						UnmanagedPropertyChangedEventArgs *args = (UnmanagedPropertyChangedEventArgs*)propertyChangeArgs;
 
-					obj = NativeDependencyObjectHelper.Lookup (dependency_object) as DependencyObject;
+						if (!properties.TryGetValue (args->property, out property)) {
+							Console.Error.WriteLine ("DependencyProperty.CustomUnmanagedPropertyChangedCallback: Couldn't find the managed DependencyProperty corresponding with native {0}/{1}", args->property, args->id);
+							return;
+						}
+
+						obj = NativeDependencyObjectHelper.Lookup (dependency_object) as DependencyObject;
 			
-					if (obj == null)
-						return;
+						if (obj == null)
+							return;
 
-					InvokeChangedCallback (obj, property, property.change_cb,
-							       Value.ToObject (property.property_type, old_value),
-							       Value.ToObject (property.property_type, new_value));
+						InvokeChangedCallback (obj, property, property.change_cb,
+								       Value.ToObject (property.property_type, args->old_value),
+								       Value.ToObject (property.property_type, args->new_value));
+					}
 				} catch (Exception ex) {
 					error = new MoonError (ex);
 				}
 			} catch (Exception ex) {
 				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in DependencyProperty.NativePropertyChangedCallback: {0}", ex.Message);
+					Console.WriteLine ("Moonlight: Unhandled exception in DependencyProperty.UnmanagedPropertyChangedCallback: {0}", ex.Message);
 				} catch {
 				}
 			}

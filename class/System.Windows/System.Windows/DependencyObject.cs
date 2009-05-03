@@ -206,12 +206,7 @@ namespace System.Windows {
 			return Thread.CurrentThread == moonlight_thread;
 		}
 		
-#if NET_2_1
-		internal
-#else
-		public
-#endif
-		static void Initialize ()
+		internal static void Initialize ()
 		{
 			// Here just to ensure that the static ctor is executed and
 			// runtime init is initialized from some entry points

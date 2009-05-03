@@ -1,3 +1,8 @@
+2009-05-03  Chris Toshok  <toshok@ximian.com>
+
+	* TypeReference.cs:
+	s/NativePropertyChangeHandler/UnmanagedPropertyChangeHandler.
+
 2009-05-01  Larry Ewing  <lewing@novell.com>
 
 	* Generator.cs: Generate the As* accessors with a default

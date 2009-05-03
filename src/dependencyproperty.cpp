@@ -22,7 +22,7 @@
 /*
  *	DependencyProperty
  */
-DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, AutoCreator* autocreator, bool is_custom)
+DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator* autocreator, bool is_custom)
 {
 	this->owner_type = owner_type;
 	this->hash_key = NULL;
@@ -193,7 +193,7 @@ DependencyProperty::Register (Types *types, Type::Kind type, const char *name, V
 }
 
 DependencyProperty *
-DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, NativePropertyChangedHandler *callback)
+DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, PropertyChangeHandler callback)
 {
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	int id;
@@ -214,7 +214,7 @@ DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind proper
 // stored in the dependency property is of type @vtype
 //
 int
-DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, AutoCreator* autocreator, bool is_custom, bool is_nullable)
+DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator* autocreator, bool is_custom, bool is_nullable)
 {
 	DependencyProperty *property;
 	
@@ -240,7 +240,7 @@ DependencyProperty::Validate (DependencyObject *instance, Value *value, MoonErro
 }
 
 void
-DependencyProperty::SetPropertyChangedCallback (NativePropertyChangedHandler *changed_callback)
+DependencyProperty::SetPropertyChangedCallback (PropertyChangeHandler changed_callback)
 {
 	this->changed_callback = changed_callback;
 }

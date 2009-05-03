@@ -1,3 +1,15 @@
+2009-05-03  Chris Toshok  <toshok@ximian.com>
+
+	* BindingExpressionBase.cs rename Updating/updating to
+	UpdatingSource/updatingSource to better communicate what it means,
+	and make a couple of properties internal instead of private (they
+	weren't used anywhere else anyway.)
+	(Dispose): make sure to unhook from the PropertyChanged event too
+	so that we don't continue updating our target after we've been
+	disposed.
+
+	* BindingExpression.cs: remove all the commented out code.
+
 2009-04-03  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: Fix a few type converting issues

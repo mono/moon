@@ -842,5 +842,5 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (dirty)
 		UpdateBounds (true);
 	
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }

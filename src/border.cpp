@@ -196,7 +196,7 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		 || args->GetId () == Border::BorderThicknessProperty) {
 		InvalidateMeasure ();
 	}
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 bool 

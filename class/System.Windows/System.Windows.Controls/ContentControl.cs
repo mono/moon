@@ -104,28 +104,38 @@ namespace System.Windows.Controls {
 			   for ContentProperty */
 
 			DependencyObject obj = VisualTreeHelper.GetChild (this, 0);
-			WalkTreeForContentPresenters (this, obj);
+			WalkTreeForContentPresenters (obj);
 		}
 
-		void WalkTreeForContentPresenters (Control templateRoot, DependencyObject obj)
+		void WalkTreeForContentPresenters (DependencyObject obj)
 		{
 			if (obj is ContentPresenter) {
 				ContentPresenter cp = (ContentPresenter) obj;
+
 				if (DependencyProperty.UnsetValue == obj.ReadLocalValue (ContentPresenter.ContentProperty)) {
-					cp.SetTemplateBinding (templateRoot,
-							       ContentControl.ContentProperty,
-							       ContentPresenter.ContentProperty);
+					cp.SetTemplateBinding (ContentPresenter.ContentProperty,
+							       new TemplateBindingExpression {
+								       Source = this,
+								       SourceProperty = ContentControl.ContentProperty,
+								       Target = cp,
+								       TargetProperty = ContentPresenter.ContentProperty
+							       });
 				}
+
 				if (DependencyProperty.UnsetValue == obj.ReadLocalValue (ContentPresenter.ContentTemplateProperty)) {
-					cp.SetTemplateBinding (templateRoot,
-							       ContentControl.ContentTemplateProperty,
-							       ContentPresenter.ContentTemplateProperty);
+					cp.SetTemplateBinding (ContentPresenter.ContentTemplateProperty,
+							       new TemplateBindingExpression {
+								       Source = this,
+								       SourceProperty = ContentControl.ContentTemplateProperty,
+								       Target = cp,
+								       TargetProperty = ContentPresenter.ContentTemplateProperty
+							       });
 				}
 			}
 			else if (!(obj is Control)) {
 				int count = VisualTreeHelper.GetChildrenCount (obj);
 				for (int i = 0; i < count; i ++) {
-					WalkTreeForContentPresenters (templateRoot, VisualTreeHelper.GetChild (obj, i));
+					WalkTreeForContentPresenters (VisualTreeHelper.GetChild (obj, i));
 				}
 			}
 

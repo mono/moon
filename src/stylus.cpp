@@ -629,7 +629,7 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 		break;
 	}
 	
-	NotifyListenersOfPropertyChange (Stroke::StylusPointsProperty);
+	NotifyListenersOfPropertyChange (Stroke::StylusPointsProperty, NULL);
 }
 
 void
@@ -646,7 +646,7 @@ Stroke::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Propert
 	
 	dirty = old_bounds.Union (bounds);
 	
-	NotifyListenersOfPropertyChange (Stroke::StylusPointsProperty);
+	NotifyListenersOfPropertyChange (Stroke::StylusPointsProperty, NULL);
 }
 
 void
@@ -660,7 +660,7 @@ Stroke::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		ComputeBounds ();
 	}
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
@@ -888,7 +888,7 @@ InkPresenter::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		UpdateBounds ();
 	}
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void

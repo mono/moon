@@ -60,7 +60,7 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				Show (el);
 		}	
 	}
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void

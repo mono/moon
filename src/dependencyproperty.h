@@ -20,9 +20,31 @@
 
 class MoonError;
 
-typedef	void NativePropertyChangedHandler (DependencyProperty *dependency_property, DependencyObject *dependency_object, Value *old_value, Value *new_value, MoonError *error);
 typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
 typedef Value* AutoCreator  (DependencyObject *instance, DependencyProperty *property);
+
+struct PropertyChangedEventArgs {
+public:
+	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv) : obj (p), id (pid), old_value(ov), new_value (nv) { }
+
+	DependencyProperty *GetProperty () { return obj; }
+	int GetId () { return id; }
+	Value* GetOldValue () { return old_value; }
+	Value* GetNewValue () { return new_value; }
+
+private:
+	// These need to match the ordering of fields in the managed
+	// structure UnmanagedPropertyChangedEventArgs (see
+	// Mono/NativeMethods.cs)
+	DependencyProperty *obj;
+	int id;
+
+	Value *old_value;
+	Value *new_value;
+};
+
+typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure);
+
 //
 // DependencyProperty
 //
@@ -30,7 +52,7 @@ typedef Value* AutoCreator  (DependencyObject *instance, DependencyProperty *pro
 /* @SkipValue */
 class DependencyProperty {
  public:
-	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator, AutoCreator *autocreator, bool is_custom);
+	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator *autocreator, bool is_custom);
 
 	~DependencyProperty ();
 
@@ -56,7 +78,7 @@ class DependencyProperty {
 	AutoCreator* GetAutoCreator () { return autocreator; }
 	bool AlwaysChange () { return always_change; }
 	bool IsCustom () { return is_custom; }
-	NativePropertyChangedHandler *GetChangedCallback () { return changed_callback; }
+	PropertyChangeHandler GetChangedCallback () { return changed_callback; }
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetDefaultValue () { return default_value; }
@@ -68,15 +90,15 @@ class DependencyProperty {
 	bool Validate (DependencyObject *instance, Value *value, MoonError *error);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	void SetPropertyChangedCallback (NativePropertyChangedHandler *changed_callback);
+	void SetPropertyChangedCallback (PropertyChangeHandler changed_callback);
 	
 	static int Register (Types *types, Type::Kind type, const char *name, Value *default_value);
 	static int Register (Types *types, Type::Kind type, const char *name, Type::Kind vtype);
 	static int Register (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
-	static int RegisterFull (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, NativePropertyChangedHandler *changed_callback, ValueValidator *validator,  AutoCreator* autocreator, bool is_custom, bool is_nullable);
+	static int RegisterFull (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator,  AutoCreator* autocreator, bool is_custom, bool is_nullable);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	static DependencyProperty *RegisterManagedProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback);
+	static DependencyProperty *RegisterManagedProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
@@ -105,7 +127,7 @@ private:
 
 	Type::Kind owner_type;
 	Type::Kind property_type;
-	NativePropertyChangedHandler *changed_callback;
+	PropertyChangeHandler changed_callback;
 };
 
 G_BEGIN_DECLS

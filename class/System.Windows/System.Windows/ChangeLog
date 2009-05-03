@@ -1,3 +1,48 @@
+2009-05-03  Chris Toshok  <toshok@ximian.com>
+
+	* FrameworkTemplate.cs: remove AddXamlBinding, it's no longer
+	needed.
+
+	* Expression.cs: make Dispose an abstract method here so we can
+	override it in TemplateBindingExpression.
+
+	* DependencyProperty.cs:
+	s/NativePropertyChangeHandler/UnmanagedPropertyChangeHandler.
+	(CustomUnmanagedPropertyChangedCallbackSafe): make use of the new
+	marshalled struct, and split it up in the call to
+	InvokeChangedCallback.
+
+	* CustomDependencyProperty:
+	s/NativePropertyChangeHandler/UnmanagedPropertyChangeHandler.
+	
+	* DependencyObject.cs (Initialize): Remove the internal/public
+	switch on NET_2_1 since the important assemblies are already
+	InternalsVisibleTo.  Just make it internal.
+
+	* FrameworkElement.cs (InvalidateLocalBindings): just add
+	TemplateBindings back to the list unmolested, since they don't
+	bother with DataContext.
+	(SetTemplateBinding): simplify this.  it attaches the change
+	handler and sets the local value.
+	(RemoveExpression): Dispose is a method on Expression now, so
+	don't only call it for BindingExpressionBases.
+	(SetValueImpl): add a block for TemplateBindingExpressions here.
+	They're one-way only, so if we're setting the value of a bound
+	property from outside the TemplateBinding, remove the expression.
+
+	* TemplateBindingExpression.cs: new implementation, entirely in
+	managed code.
+
+2009-04-30  Chris Toshok  <toshok@ximian.com>
+
+	* TemplateBindingExpression.cs: add a couple of methods to
+	attach/detach the property changed handler.
+
+2009-04-29  Chris Toshok  <toshok@ximian.com>
+
+	* FrameworkElement.cs: track BingingExpressionBase.Updating
+	renaming.
+
 2009-04-29  Geoff Norton  <gnorton@novell.com>
 
 	* Application.cs: Ensure we set the local before we register the native

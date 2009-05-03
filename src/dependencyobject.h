@@ -216,25 +216,6 @@ private:
 };
 
 
-struct PropertyChangedEventArgs {
-public:
-	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv) : obj (p), id (pid), old_value(ov), new_value (nv) { }
-
-	DependencyProperty *GetProperty () { return obj; }
-	int GetId () { return id; }
-	Value* GetOldValue () { return old_value; }
-	Value* GetNewValue () { return new_value; }
-
-private:
-	DependencyProperty *obj;
-	int id;
-
-	Value *old_value;
-	Value *new_value;
-};
-
-typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, gpointer closure);
-
 /* @Namespace=System.Windows */
 class DependencyObject : public EventObject {
 public:
@@ -363,7 +344,10 @@ public:
 	// *These* two methods do what you'd expect.  You provide this
 	// dependencyobject with a callback and a closure to be
 	// invoked when the given property changes.
+
+	/* @GenerateCBinding,GeneratePInvoke */
 	void AddPropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb, gpointer closure);
+	/* @GenerateCBinding,GeneratePInvoke */
 	void RemovePropertyChangeHandler (DependencyProperty *property, PropertyChangeHandler cb);
 
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
@@ -385,9 +369,9 @@ protected:
 	
 	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 	
-	void NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args);
-	void NotifyListenersOfPropertyChange (DependencyProperty *property);
-	void NotifyListenersOfPropertyChange (int id);
+	void NotifyListenersOfPropertyChange (PropertyChangedEventArgs *args, MoonError *error);
+	void NotifyListenersOfPropertyChange (DependencyProperty *property, MoonError *error);
+	void NotifyListenersOfPropertyChange (int id, MoonError *error);
 	
 	void RemoveAllListeners ();
 

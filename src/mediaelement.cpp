@@ -1478,7 +1478,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		return;
 	}
 	
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 bool 

@@ -161,7 +161,7 @@ Inline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
 	}
 	
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
@@ -170,7 +170,7 @@ Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 	if (prop && prop->GetId () == Inline::ForegroundProperty) {
 		// this isn't exactly what we want, I don't
 		// think... but it'll have to do.
-		NotifyListenersOfPropertyChange (prop);
+		NotifyListenersOfPropertyChange (prop, NULL);
 	} else {
 		DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 	}
@@ -867,7 +867,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		Invalidate ();
 	}
 	
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void

@@ -31,10 +31,5 @@ using Mono;
 namespace System.Windows {
 
 	public abstract partial class FrameworkTemplate : DependencyObject {
-
-		internal void AddXamlBinding (DependencyObject target, string target_prop_name, string source_prop_name)
-		{
-			NativeMethods.framework_template_add_xaml_binding (native, target.native, target_prop_name, source_prop_name);
-		}
 	}
 }

@@ -61,7 +61,7 @@ Canvas::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			InvalidateArrange ();
 		}
 	}
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 bool

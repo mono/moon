@@ -1,3 +1,42 @@
+2009-05-03  Chris Toshok  <toshok@ximian.com>
+
+	* MarkupExpressionParser.cs (ParseTemplateBinding): actually
+	create a TemplateBindingExpression object.
+
+	* XamlLoaderCallbacks.cs: all the delegate types take a loader
+	argument now, so we can look up the XamlContext.  Remove the
+	internal/public switch on NET_2_1 since the important assemblies
+	are already InternalsVisibleTo.  Just make it internal.
+
+	* ManagedXamlLoader.cs (LookupObject): no need to cast the result
+	of NativeDependencyObjectHelper.Lookup here.
+	(LookupDependencyPropertyForBinding): factor out a tiny bit of
+	TrySetExpression here.
+	(TrySetExpression): rework parameter list to be match everything
+	else(top_level is first, then loader/parser).  Also, deal with
+	TemplateBindingExpressions here.
+	(TrySetAttachedProperty): rework parameter list to match
+	everything else.
+	(TrySetEventReflection): same.
+	(TrySetEnumContentProperty): same.
+	(TrySetCollectionContentProperty): same.
+	(cb_lookup_object): match delegate type.
+	(cb_set_property): same.
+	(cb_import_xaml_xmlns): same.
+	(cb_get_content_property_name): same.
+	
+	* Kind.cs: GeneratedPInvokes.cs: regen.
+
+	* Surface.cs: Remove the internal/public switch on NET_2_1 since
+	the important assemblies are already InternalsVisibleTo.  Just
+	make it internal.
+
+	* NativeMethods.cs: add UnmanagedPropertyChangedEventArgs
+	structure, which matches the PropertyChangedEventArgs type in
+	unmanaged code.  Remove NativePropertyChangedHandler and add
+	UnmanagedPropertyChangedHandler, which takes a IntPtr to that
+	struct type.
+
 2009-05-01  Chris Toshok  <toshok@ximian.com>
 
 	* Types.cs: rework r133257 so we keep the generic type definition

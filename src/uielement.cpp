@@ -192,7 +192,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
 	}
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void

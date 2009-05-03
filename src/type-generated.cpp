@@ -435,7 +435,6 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::STYLUSPOINT_COLLECTION] = new Type (Type::STYLUSPOINT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, "StylusPointCollection", "STYLUSPOINT_COLLECTION", 0, 3, NULL, (create_inst_func *) stylus_point_collection_new, NULL);
 	types [(int) Type::SURFACE] = new Type (Type::SURFACE, Type::EVENTOBJECT, false, "Surface", "SURFACE", 4, 5, Surface_Events, NULL, NULL);
 	types [(int) Type::SYSTEMTIMESOURCE] = new Type (Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, "SystemTimeSource", "SYSTEMTIMESOURCE", 0, 2, NULL, NULL, NULL);
-	types [(int) Type::TEMPLATEBINDING] = new Type (Type::TEMPLATEBINDING, Type::EVENTOBJECT, false, "TemplateBinding", "TEMPLATEBINDING", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::TEXTBLOCK] = new Type (Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, "TextBlock", "TEXTBLOCK", 0, 20, NULL, (create_inst_func *) text_block_new, "Inlines");
 	types [(int) Type::TEXTBOX] = new Type (Type::TEXTBOX, Type::TEXTBOXBASE, false, "TextBox", "TEXTBOX", 2, 25, TextBox_Events, (create_inst_func *) text_box_new, NULL);
 	types [(int) Type::TEXTBOXBASE] = new Type (Type::TEXTBOXBASE, Type::CONTROL, false, "TextBoxBase", "TEXTBOXBASE", 2, 23, TextBoxBase_Events, NULL, NULL);
@@ -471,7 +470,6 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::VIDEOSTREAM] = new Type (Type::VIDEOSTREAM, Type::IMEDIASTREAM, false, "VideoStream", "VIDEOSTREAM", 0, 2, NULL, NULL, NULL);
 	types [(int) Type::VISUALBRUSH] = new Type (Type::VISUALBRUSH, Type::TILEBRUSH, false, "VisualBrush", "VISUALBRUSH", 0, 1, NULL, (create_inst_func *) visual_brush_new, NULL);
 	types [(int) Type::WRITEABLEBITMAP] = new Type (Type::WRITEABLEBITMAP, Type::BITMAPSOURCE, false, "WriteableBitmap", "WRITEABLEBITMAP", 0, 1, NULL, (create_inst_func *) writeable_bitmap_new, NULL);
-	types [(int) Type::XAMLTEMPLATEBINDING] = new Type (Type::XAMLTEMPLATEBINDING, Type::EVENTOBJECT, false, "XamlTemplateBinding", "XAMLTEMPLATEBINDING", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::XMLLANGUAGE] = new Type (Type::XMLLANGUAGE, Type::OBJECT, false, "System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", 0, 0, NULL, NULL, NULL);
 	types [(int) Type::YUVCONVERTER] = new Type (Type::YUVCONVERTER, Type::IIMAGECONVERTER, false, "YUVConverter", "YUVCONVERTER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::LASTTYPE] = new Type (Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL);

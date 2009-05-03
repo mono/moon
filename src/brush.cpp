@@ -81,7 +81,7 @@ Brush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pr
 {
 	// if our transforms change in some fashion, we need to redraw
 	// the element.
-	NotifyListenersOfPropertyChange (Brush::ChangedProperty);
+	NotifyListenersOfPropertyChange (Brush::ChangedProperty, NULL);
 	
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
@@ -165,7 +165,7 @@ GradientBrush::OnCollectionChanged (Collection *col, CollectionChangedEventArgs 
 		return;
 	}
 	
-	NotifyListenersOfPropertyChange (GradientBrush::GradientStopsProperty);
+	NotifyListenersOfPropertyChange (GradientBrush::GradientStopsProperty, NULL);
 }
 
 void
@@ -176,7 +176,7 @@ GradientBrush::OnCollectionItemChanged (Collection *col, DependencyObject *obj, 
 		return;
 	}
 	
-	NotifyListenersOfPropertyChange (GradientBrush::GradientStopsProperty);
+	NotifyListenersOfPropertyChange (GradientBrush::GradientStopsProperty, NULL);
 }
 
 void
@@ -619,7 +619,7 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
         }
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 bool
@@ -968,7 +968,7 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
 	}
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
@@ -1081,7 +1081,7 @@ void
 VisualBrush::update_brush (EventObject *, EventArgs *, gpointer closure)
 {
 	VisualBrush *b = (VisualBrush*)closure;
-	b->NotifyListenersOfPropertyChange (Brush::ChangedProperty);
+	b->NotifyListenersOfPropertyChange (Brush::ChangedProperty, NULL);
 }
 
 void
@@ -1098,7 +1098,7 @@ VisualBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		v->AddHandler (((UIElement*)v)->InvalidatedEvent, update_brush, this);
 	}
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 bool

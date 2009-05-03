@@ -527,6 +527,10 @@ namespace Mono {
 		// DeepZoomImageTileSource *deep_zoom_image_tile_source_new ();
 		public extern static IntPtr deep_zoom_image_tile_source_new ();
 
+		[DllImport ("moon")]
+		// void dependency_object_add_property_change_handler (DependencyObject *instance, DependencyProperty *property, PropertyChangeHandler cb, gpointer closure);
+		public extern static void dependency_object_add_property_change_handler (IntPtr instance, IntPtr property, Mono.UnmanagedPropertyChangeHandler cb, IntPtr closure);
+
 		[DllImport ("moon", EntryPoint="dependency_object_clear_value")]
 		// void dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners, MoonError *error);
 		private extern static void dependency_object_clear_value_ (IntPtr instance, IntPtr property, [MarshalAs (UnmanagedType.U1)] bool notify_listeners, out MoonError error);
@@ -597,6 +601,10 @@ namespace Mono {
 				throw CreateManagedException (error);
 			return result;
 		}
+
+		[DllImport ("moon")]
+		// void dependency_object_remove_property_change_handler (DependencyObject *instance, DependencyProperty *property, PropertyChangeHandler cb);
+		public extern static void dependency_object_remove_property_change_handler (IntPtr instance, IntPtr property, Mono.UnmanagedPropertyChangeHandler cb);
 
 		[DllImport ("moon")]
 		// void dependency_object_set_name (DependencyObject *instance, const char *name);
@@ -676,16 +684,16 @@ namespace Mono {
 		public extern static bool dependency_property_is_read_only (IntPtr instance);
 
 		[DllImport ("moon")]
-		// DependencyProperty *dependency_property_register_managed_property (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback);
-		public extern static IntPtr dependency_property_register_managed_property (string name, Kind property_type, Kind owner_type, ref Value defaultValue, [MarshalAs (UnmanagedType.U1)] bool attached, [MarshalAs (UnmanagedType.U1)] bool read_only, Mono.NativePropertyChangedHandler callback);
+		// DependencyProperty *dependency_property_register_managed_property (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
+		public extern static IntPtr dependency_property_register_managed_property (string name, Kind property_type, Kind owner_type, ref Value defaultValue, [MarshalAs (UnmanagedType.U1)] bool attached, [MarshalAs (UnmanagedType.U1)] bool read_only, Mono.UnmanagedPropertyChangeHandler callback);
 
 		[DllImport ("moon")]
 		// void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);
 		public extern static void dependency_property_set_is_nullable (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
 
 		[DllImport ("moon")]
-		// void dependency_property_set_property_changed_callback (DependencyProperty *instance, NativePropertyChangedHandler *changed_callback);
-		public extern static void dependency_property_set_property_changed_callback (IntPtr instance, Mono.NativePropertyChangedHandler changed_callback);
+		// void dependency_property_set_property_changed_callback (DependencyProperty *instance, PropertyChangeHandler changed_callback);
+		public extern static void dependency_property_set_property_changed_callback (IntPtr instance, Mono.UnmanagedPropertyChangeHandler changed_callback);
 
 		[DllImport ("moon")]
 		// Deployment *deployment_new ();
@@ -997,10 +1005,6 @@ namespace Mono {
 			if (error.Number != 0)
 				throw CreateManagedException (error);
 		}
-
-		[DllImport ("moon")]
-		// void framework_template_add_xaml_binding (FrameworkTemplate *instance, FrameworkElement *target, const char *target_prop_name, const char *source_prop_name);
-		public extern static void framework_template_add_xaml_binding (IntPtr instance, IntPtr target, string target_prop_name, string source_prop_name);
 
 		[DllImport ("moon")]
 		// FrameworkTemplate *framework_template_new ();
@@ -2125,6 +2129,10 @@ namespace Mono {
 		// WriteableBitmap *writeable_bitmap_new ();
 		public extern static IntPtr writeable_bitmap_new ();
 
+		[DllImport ("moon")]
+		// DependencyObject *xaml_context_get_template_binding_source (XamlContext *instance);
+		public extern static IntPtr xaml_context_get_template_binding_source (IntPtr instance);
+
 		[DllImport ("moon", EntryPoint="xaml_loader_create_from_file_with_error")]
 		// Value *xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
 		private extern static IntPtr xaml_loader_create_from_file_with_error_ (IntPtr instance, string xaml, [MarshalAs (UnmanagedType.U1)] bool create_namescope, out Kind element_type, out MoonError error);
@@ -2150,6 +2158,10 @@ namespace Mono {
 				throw CreateManagedException (error);
 			return result;
 		}
+
+		[DllImport ("moon")]
+		// XamlContext *xaml_loader_get_context (XamlLoader *instance);
+		public extern static IntPtr xaml_loader_get_context (IntPtr instance);
 
 		[DllImport ("moon", EntryPoint="xaml_loader_hydrate_from_string_with_error")]
 		// Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);

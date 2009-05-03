@@ -1,3 +1,41 @@
+2009-05-03  Chris Toshok  <toshok@ximian.com>
+
+	* everywhere (NotifyListenersOfPropertyChange): add a MoonError
+	arg here.
+	
+	* xaml.h|.cpp (class XamlContext): add GetTemplateBindingSource so we
+	can hook up TemplateBindings in managed code.  Also, change all
+	the loader callback types to take a loader pointer so we can get
+	the context.
+
+	* template.h|.cpp: remove all the lists of bindings, the
+	two different template binding types (XamlTemplateBinding and
+	TemplateBinding) and their respective List::Node containers.  all
+	this is handled in managed land now, where it belongs.
+
+	* dependencyproperty.h|.cpp: move
+	PropertyChangedEventArgs to dependencyproperty.h, and unify the
+	two types for property change handlers into simply
+	PropertyChangeHandler.
+
+	* dependencyobject.h: remove the PropertyChangedEventArgs struct
+	from here, it now lives in dependencyproperty.h
+
+	* dependencyobject.cpp (class CallbackListener): pass a MoonError
+	to the callback.
+	(DependencyObject::ProviderValueChanged): reuse the
+	PropertyChangedEventArgs since property change callbacks take them
+	now instead of splitting up the old_value/new_value/property.
+
+	* control.cpp (Control::Control, Control::~Control,
+	Control::ApplyTemplate): remove all reference to the list of
+	bindings.
+
+	* control.h (class Control): remove the list of bindings.
+
+	* cbinding.h|.cpp, type-generated.cpp, type.h, value.h:
+	regen.
+
 2009-05-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.h (InMainThread): check main_thread_inited.

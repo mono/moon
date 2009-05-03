@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
@@ -245,8 +246,7 @@ namespace Mono.Xaml
 				return handle.Target;
 			}
 			else {
-				Kind k = NativeMethods.event_object_get_object_type (target_ptr); 
-				return NativeDependencyObjectHelper.Lookup (k, target_ptr) as INativeDependencyObjectWrapper;
+				return NativeDependencyObjectHelper.Lookup (target_ptr);
 			}
 		}
 
@@ -255,7 +255,31 @@ namespace Mono.Xaml
 			return name.IndexOf ('.') > 0;
 		}
 
-		private bool TrySetExpression (IntPtr top_level, IntPtr parser, object target, IntPtr target_data, string type_name, string name, IntPtr value_ptr)
+		private DependencyProperty LookupDependencyPropertyForBinding (IntPtr top_level, IntPtr parser, FrameworkElement fwe, string type_name, string propertyName)
+		{
+			// map the property name + type_name to an actual DependencyProperty
+			Kind kind;
+			Type type = string.IsNullOrEmpty (type_name) ? null : TypeFromString (parser, top_level, type_name);
+			if (type != null) {
+				EnsureRegistered (type);
+				kind = Deployment.Current.Types.TypeToNativeKind (type);
+			} else {
+				kind = fwe.GetKind ();
+			}
+
+			if (kind == Kind.INVALID)
+				return null;
+			
+			try {
+				return DependencyProperty.Lookup (kind, propertyName);
+			}
+			catch {
+				return null;
+			}
+		}
+
+
+		private bool TrySetExpression (IntPtr top_level, IntPtr loader, IntPtr parser, object target, IntPtr target_data, string type_name, string name, IntPtr value_ptr)
 		{
 			FrameworkElement dob = target as FrameworkElement;
 			object obj_value = Value.ToObject (null, value_ptr);
@@ -270,40 +294,52 @@ namespace Mono.Xaml
 			MarkupExpressionParser p = new MarkupExpressionParser (dob, name, parser, target_data);
 			string expression = str_value;
 			object o = p.ParseExpression (ref expression);
-			Binding binding = o as Binding;
 
-			if (MarkupExpressionParser.IsTemplateBinding (str_value))
-				return true;
-
-			if (binding == null)
+			if (o == null)
 				return false;
 
-			Kind kind;
-			DependencyProperty prop;
-			Type type = string.IsNullOrEmpty (type_name) ? null : TypeFromString (parser, top_level, type_name);
-			if (type != null) {
-				EnsureRegistered (type);
-				kind = Deployment.Current.Types.TypeToNativeKind (type);
-			} else {
-				kind = dob.GetKind ();
+			if (o is Binding ||
+			    o is TemplateBindingExpression) {
+				DependencyProperty prop = LookupDependencyPropertyForBinding (top_level, parser, dob, type_name, name);
+				if (prop == null)
+					return false;
+
+				if (o is Binding) {
+					Binding binding = o as Binding;
+
+					dob.SetBinding (prop, binding);
+					return true;
+				}
+				else if (o is TemplateBindingExpression) {
+					TemplateBindingExpression tb = o as TemplateBindingExpression;
+
+					IntPtr context = NativeMethods.xaml_loader_get_context (loader);
+					IntPtr source_ptr = NativeMethods.xaml_context_get_template_binding_source (context);
+
+					DependencyObject templateSourceObject = NativeDependencyObjectHelper.Lookup (source_ptr) as DependencyObject;
+
+					if (templateSourceObject == null)
+						return false;
+
+					DependencyProperty sourceProperty = DependencyProperty.Lookup (templateSourceObject.GetKind(),
+												       tb.SourcePropertyName);
+					if (sourceProperty == null)
+						return false;
+
+					tb.TargetProperty = prop;
+					tb.Source = templateSourceObject as Control;
+					tb.SourceProperty = sourceProperty;
+
+					dob.SetTemplateBinding (prop, tb);
+
+					return true;
+				}
 			}
 
-			if (kind == Kind.INVALID)
-				return false;
-			try {
-				prop = DependencyProperty.Lookup (kind, name);
-			} catch {
-				return false;
-			}
-			
-			if (prop == null)
-				return false;
-
-			dob.SetBinding (prop, binding);
 			return true;
 		}
 
-		private bool TrySetAttachedProperty (IntPtr parser, IntPtr top_level, string xmlns, object target, IntPtr target_data, string type_name, string name, IntPtr value_ptr)
+		private bool TrySetAttachedProperty (IntPtr top_level, IntPtr loader, IntPtr parser, string xmlns, object target, IntPtr target_data, string type_name, string name, IntPtr value_ptr)
 		{
 			if (type_name == null)
 				return false;
@@ -388,7 +424,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool TrySetPropertyReflection (IntPtr parser, IntPtr top_level, string xmlns, object target, IntPtr target_data, IntPtr target_parent_ptr, string type_name, string name, IntPtr value_ptr, IntPtr value_data, out string error)
+		private bool TrySetPropertyReflection (IntPtr top_level, IntPtr loader, IntPtr parser, string xmlns, object target, IntPtr target_data, IntPtr target_parent_ptr, string type_name, string name, IntPtr value_ptr, IntPtr value_data, out string error)
 		{
 			PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
@@ -404,7 +440,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool TrySetEventReflection (IntPtr top_level, string xmlns, object publisher, string type_name, string name, IntPtr value_ptr, out string error)
+		private bool TrySetEventReflection (IntPtr top_level, IntPtr loader, string xmlns, object publisher, string type_name, string name, IntPtr value_ptr, out string error)
 		{
 			object subscriber = LookupObject (top_level);
 			EventInfo ie = publisher.GetType ().GetEvent (name);
@@ -497,7 +533,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool TrySetEnumContentProperty (IntPtr parser, IntPtr top_level, string xmlns, object target, IntPtr target_ptr, IntPtr target_data, IntPtr value_ptr, IntPtr value_data)
+		private bool TrySetEnumContentProperty (IntPtr top_level, IntPtr loader, IntPtr parser, string xmlns, object target, IntPtr target_ptr, IntPtr target_data, IntPtr value_ptr, IntPtr value_data)
 		{
 			object obj_value = Value.ToObject (null, value_ptr);
 			string str_value = obj_value as string;
@@ -530,7 +566,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool TrySetCollectionContentProperty (IntPtr parser, IntPtr top_level, string xmlns, object target, IntPtr target_ptr, IntPtr target_data, IntPtr value_ptr, IntPtr value_data)
+		private bool TrySetCollectionContentProperty (IntPtr top_level, IntPtr loader, IntPtr parser, string xmlns, object target, IntPtr target_ptr, IntPtr target_data, IntPtr value_ptr, IntPtr value_data)
 		{
 			IList list = target as IList;
 
@@ -543,7 +579,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private bool SetProperty (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target_ptr, IntPtr target_data, IntPtr target_parent_ptr, string name, IntPtr value_ptr, IntPtr value_data)
+		private bool SetProperty (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, IntPtr target_ptr, IntPtr target_data, IntPtr target_parent_ptr, string name, IntPtr value_ptr, IntPtr value_data)
 		{
 			string error;
 			object target = Value.ToObject (null, target_ptr);
@@ -554,9 +590,9 @@ namespace Mono.Xaml
 			}
 
 			if (name == null) {
-				if (TrySetEnumContentProperty (parser, top_level, xmlns, target, target_ptr, target_data, value_ptr, value_data))
+				if (TrySetEnumContentProperty (top_level, loader, parser, xmlns, target, target_ptr, target_data, value_ptr, value_data))
 					return true;
-				if (TrySetCollectionContentProperty (parser, top_level, xmlns, target, target_ptr, target_data, value_ptr, value_data))
+				if (TrySetCollectionContentProperty (top_level, loader, parser, xmlns, target, target_ptr, target_data, value_ptr, value_data))
 					return true;
 				Console.Error.WriteLine ("no property name supplied");
 				return false;
@@ -574,16 +610,16 @@ namespace Mono.Xaml
 				name = name.Substring (++dot, name.Length - dot);
 			}
 
-			if (TrySetExpression (top_level, parser, target, target_data, type_name, name, value_ptr))
+			if (TrySetExpression (top_level, loader, parser, target, target_data, type_name, name, value_ptr))
 				return true;
 
-			if (TrySetPropertyReflection (parser, top_level, xmlns, target, target_data, target_parent_ptr, type_name, name, value_ptr, value_data, out error))
+			if (TrySetPropertyReflection (top_level, loader, parser, xmlns, target, target_data, target_parent_ptr, type_name, name, value_ptr, value_data, out error))
 				return true;
 
-			if (TrySetEventReflection (top_level, xmlns, target, type_name, name, value_ptr, out error))
+			if (TrySetEventReflection (top_level, loader, xmlns, target, type_name, name, value_ptr, out error))
 				return true;
 
-			if (TrySetAttachedProperty (parser, top_level, xmlns, target, target_data, type_name, name, value_ptr))
+			if (TrySetAttachedProperty (top_level, loader, parser, xmlns, target, target_data, type_name, name, value_ptr))
 				return true;
 
 			return false;
@@ -1015,7 +1051,7 @@ namespace Mono.Xaml
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// genereting an exception and unwinding the stack.
 		//
-		private bool cb_lookup_object (IntPtr parser, IntPtr top_level, string xmlns, string name, bool create, out Value value)
+		private bool cb_lookup_object (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, string name, bool create, out Value value)
 		{
 			try {
 				return LookupObject (top_level, xmlns, name, create, out value);
@@ -1036,10 +1072,10 @@ namespace Mono.Xaml
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// generating an exception and unwinding the stack.
 		//
-		private bool cb_set_property (IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_data, IntPtr target_parent, string name, IntPtr value_ptr, IntPtr value_data)
+		private bool cb_set_property (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_data, IntPtr target_parent, string name, IntPtr value_ptr, IntPtr value_data)
 		{
 			try {
-				return SetProperty (parser, top_level, xmlns, target, target_data, target_parent, name, value_ptr, value_data);
+				return SetProperty (loader, parser, top_level, xmlns, target, target_data, target_parent, name, value_ptr, value_data);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", top_level, xmlns, target, name, value_ptr, ex.Message);
 				Console.Error.WriteLine (ex);
@@ -1047,7 +1083,7 @@ namespace Mono.Xaml
 			}
 		}
 
-		private void cb_import_xaml_xmlns (IntPtr parser, string xmlns)
+		private void cb_import_xaml_xmlns (IntPtr loader, IntPtr parser, string xmlns)
 		{
 			try {
 				Application.ImportXamlNamespace (xmlns);
@@ -1057,7 +1093,7 @@ namespace Mono.Xaml
 
 		}
 
-		private string cb_get_content_property_name (IntPtr parser, IntPtr object_ptr)
+		private string cb_get_content_property_name (IntPtr loader, IntPtr parser, IntPtr object_ptr)
 		{
 			object obj = Value.ToObject (null, object_ptr);
 

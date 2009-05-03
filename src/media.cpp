@@ -232,7 +232,7 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		return;
 	}
 	
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 //
@@ -564,7 +564,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 	
 	// we need to notify attachees if our DownloadProgress changed.
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 bool

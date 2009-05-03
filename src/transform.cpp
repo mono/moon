@@ -40,7 +40,7 @@ GeneralTransform::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 	// of transform from C#, and in that case, we would only
 	// be slower.
 	//
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
@@ -231,7 +231,7 @@ Matrix::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	else if (args->GetId () == Matrix::OffsetYProperty)
 		matrix.y0 = args->GetNewValue()->AsDouble ();
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 cairo_matrix_t
@@ -251,7 +251,7 @@ MatrixTransform::OnSubPropertyChanged (DependencyProperty *prop, DependencyObjec
 
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 
-	NotifyListenersOfPropertyChange (MatrixTransform::MatrixProperty);
+	NotifyListenersOfPropertyChange (MatrixTransform::MatrixProperty, NULL);
 }
 
 void
@@ -285,7 +285,7 @@ TransformGroup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 		need_update = true;
 	}
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
@@ -297,7 +297,7 @@ TransformGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs
 	}
 	
 	need_update = true;
-	NotifyListenersOfPropertyChange (TransformGroup::ChildrenProperty);
+	NotifyListenersOfPropertyChange (TransformGroup::ChildrenProperty, NULL);
 }
 
 void
@@ -312,7 +312,7 @@ TransformGroup::OnCollectionItemChanged (Collection *col, DependencyObject *obj,
 	// However SL2 does re-compute this value (if dirty) before drawing anything that depends on it.
 	// Currently Moonlight behave differently by always returning the "up to date" matrix
 	need_update = true;
-	NotifyListenersOfPropertyChange (TransformGroup::ChildrenProperty);
+	NotifyListenersOfPropertyChange (TransformGroup::ChildrenProperty, NULL);
 }
 
 void

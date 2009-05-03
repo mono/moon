@@ -391,6 +391,9 @@ DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
  * DependencyObject
  **/
 /* @GeneratePInvoke */
+void dependency_object_add_property_change_handler (DependencyObject *instance, DependencyProperty *property, PropertyChangeHandler cb, gpointer closure);
+
+/* @GeneratePInvoke */
 void dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners, MoonError *error);
 
 /* @GeneratePInvoke */
@@ -410,6 +413,9 @@ Value *dependency_object_get_value_with_error (DependencyObject *instance, Type:
 
 /* @GeneratePInvoke */
 Value *dependency_object_read_local_value_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
+
+/* @GeneratePInvoke */
+void dependency_object_remove_property_change_handler (DependencyObject *instance, DependencyProperty *property, PropertyChangeHandler cb);
 
 /* @GeneratePInvoke */
 void dependency_object_set_name (DependencyObject *instance, const char *name);
@@ -454,13 +460,13 @@ bool dependency_property_is_nullable (DependencyProperty *instance);
 bool dependency_property_is_read_only (DependencyProperty *instance);
 
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_register_managed_property (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback);
+DependencyProperty *dependency_property_register_managed_property (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
 
 /* @GeneratePInvoke */
 void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);
 
 /* @GeneratePInvoke */
-void dependency_property_set_property_changed_callback (DependencyProperty *instance, NativePropertyChangedHandler *changed_callback);
+void dependency_property_set_property_changed_callback (DependencyProperty *instance, PropertyChangeHandler changed_callback);
 
 /**
  * Deployment
@@ -762,9 +768,6 @@ void framework_element_set_logical_parent (FrameworkElement *instance, Dependenc
 /**
  * FrameworkTemplate
  **/
-/* @GeneratePInvoke */
-void framework_template_add_xaml_binding (FrameworkTemplate *instance, FrameworkElement *target, const char *target_prop_name, const char *source_prop_name);
-
 /* @GeneratePInvoke */
 FrameworkTemplate *framework_template_new (void);
 
@@ -1964,6 +1967,12 @@ void writeable_bitmap_unlock (WriteableBitmap *instance);
 WriteableBitmap *writeable_bitmap_new (void);
 
 /**
+ * XamlContext
+ **/
+/* @GeneratePInvoke */
+DependencyObject *xaml_context_get_template_binding_source (XamlContext *instance);
+
+/**
  * XamlLoader
  **/
 /* @GeneratePInvoke */
@@ -1971,6 +1980,9 @@ Value *xaml_loader_create_from_file_with_error (XamlLoader *instance, const char
 
 /* @GeneratePInvoke */
 Value *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
+
+/* @GeneratePInvoke */
+XamlContext *xaml_loader_get_context (XamlLoader *instance);
 
 /* @GeneratePInvoke */
 Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error);

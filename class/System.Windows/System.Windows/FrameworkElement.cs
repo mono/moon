@@ -103,6 +103,14 @@ namespace System.Windows {
 					beb.Invalidate ();
 					SetValue (keypair.Key, beb);
 				}
+				else if (keypair.Value is TemplateBindingExpression) {
+					// we don't invalidate
+					// templatebinding
+					// expressions, so just add it
+					// back to the expressions
+					// list.
+					expressions.Add (keypair.Key, keypair.Value);
+				}
 			}
 
 			invalidatingLocalBindings = false;
@@ -168,19 +176,11 @@ namespace System.Windows {
 			return DepObjectFindName (name);
 		}
 
-		internal TemplateBindingExpression SetTemplateBinding (Control source, DependencyProperty sourceProperty,
-								       DependencyProperty targetProperty)
+		internal void SetTemplateBinding (DependencyProperty dp, TemplateBindingExpression tb)
 		{
-			TemplateBindingExpression e = new TemplateBindingExpression {
-				Source = source,
-				SourceProperty = sourceProperty,
-				Target = this,
-				TargetProperty = targetProperty
-			};
+			tb.AttachChangeHandler();
 
-			SetValue (targetProperty, e);
-
-			return e;
+			SetValue (dp, tb);
 		}
 
 		public BindingExpressionBase SetBinding (DependencyProperty dp, Binding binding)
@@ -344,11 +344,7 @@ namespace System.Windows {
 			Expression e;
 			if (expressions.TryGetValue (dp, out e)) {
 				expressions.Remove (dp);
-				
-				BindingExpressionBase be = e as BindingExpressionBase;
-				if (be != null)
-					be.Dispose ();
-				// XXX detach template bindings here
+				e.Dispose ();
 			}
 		}
 		
@@ -371,9 +367,15 @@ namespace System.Windows {
 
 					if (beb.Binding.Mode == BindingMode.TwoWay)
 						beb.SetValue (value);
-					else if (!(beb.Updating && beb.Binding.Mode == BindingMode.OneWay)) {
+					else if (!(beb.UpdatingSource && beb.Binding.Mode == BindingMode.OneWay)) {
 						RemoveExpression (dp);
 					}
+				}
+				else if (existing is TemplateBindingExpression) {
+					TemplateBindingExpression tb = (TemplateBindingExpression)existing;
+
+					if (!tb.UpdatingTarget)
+						RemoveExpression (dp);
 				}
 				else {
 					RemoveExpression (dp);

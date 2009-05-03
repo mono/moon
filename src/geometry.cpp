@@ -138,13 +138,13 @@ Geometry::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		return;
 	}
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
 Geometry::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
 {
-	NotifyListenersOfPropertyChange (prop);
+	NotifyListenersOfPropertyChange (prop, NULL);
 	
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
@@ -185,7 +185,7 @@ GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs 
 		return;
 	}
 	
-	NotifyListenersOfPropertyChange (GeometryGroup::ChildrenProperty);
+	NotifyListenersOfPropertyChange (GeometryGroup::ChildrenProperty, NULL);
 }
 
 void
@@ -198,7 +198,7 @@ GeometryGroup::OnCollectionItemChanged (Collection *col, DependencyObject *obj, 
 		return;
 	}
 	
-	NotifyListenersOfPropertyChange (GeometryGroup::ChildrenProperty);
+	NotifyListenersOfPropertyChange (GeometryGroup::ChildrenProperty, NULL);
 }
 
 void
@@ -396,7 +396,7 @@ PathGeometry::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *
 	
 	InvalidateCache ();
 	
-	NotifyListenersOfPropertyChange (PathGeometry::FiguresProperty);
+	NotifyListenersOfPropertyChange (PathGeometry::FiguresProperty, NULL);
 }
 
 void
@@ -409,7 +409,7 @@ PathGeometry::OnCollectionItemChanged (Collection *col, DependencyObject *obj, P
 	
 	InvalidateCache ();
 	
-	NotifyListenersOfPropertyChange (PathGeometry::FiguresProperty);
+	NotifyListenersOfPropertyChange (PathGeometry::FiguresProperty, NULL);
 }
 
 void
@@ -538,7 +538,7 @@ PathFigure::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (path)
 		moon_path_clear (path);
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
@@ -552,7 +552,7 @@ PathFigure::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *ar
 	if (path)
 		moon_path_clear (path);
 	
-	NotifyListenersOfPropertyChange (PathFigure::SegmentsProperty);
+	NotifyListenersOfPropertyChange (PathFigure::SegmentsProperty, NULL);
 }
 
 void
@@ -566,7 +566,7 @@ PathFigure::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Pro
 	if (path)
 		moon_path_clear (path);
 	
-	NotifyListenersOfPropertyChange (PathFigure::SegmentsProperty);
+	NotifyListenersOfPropertyChange (PathFigure::SegmentsProperty, NULL);
 }
 
 void

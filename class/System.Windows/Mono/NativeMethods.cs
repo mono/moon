@@ -35,6 +35,17 @@ using System.Windows.Markup;
 
 namespace Mono {
 
+	internal struct UnmanagedPropertyChangedEventArgs {
+		// These need to match the ordering of fields in the
+		// unmanaged structure PropertyChangedEventArgs (see
+		// dependencyobject.cpp)
+		public IntPtr property;
+		public int id;
+
+		public IntPtr old_value;
+		public IntPtr new_value;
+	}
+
 	internal delegate IntPtr DownloaderCreateStateFunc (IntPtr dl);
 	internal delegate void   DownloaderDestroyStateFunc (IntPtr state);
 	internal delegate void   DownloaderOpenFunc (string verb, string uri, bool streaming, IntPtr state);
@@ -64,7 +75,7 @@ namespace Mono {
 
 	internal delegate void HttpHeaderHandler (string name, string value);
 	internal delegate void AsyncResponseAvailableHandler (IntPtr response, IntPtr context);
-	internal delegate void NativePropertyChangedHandler (IntPtr dependency_property, IntPtr dependency_object, IntPtr old_value, IntPtr new_value, ref MoonError error);
+	internal delegate void UnmanagedPropertyChangeHandler (IntPtr dependency_object, IntPtr propertyChangedArgs, ref MoonError error, IntPtr closure);
 
 	internal delegate void TickCallHandler (IntPtr handle);
 

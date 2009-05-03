@@ -801,6 +801,16 @@ deep_zoom_image_tile_source_new (void)
  * DependencyObject
  **/
 void
+dependency_object_add_property_change_handler (DependencyObject *instance, DependencyProperty *property, PropertyChangeHandler cb, gpointer closure)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->AddPropertyChangeHandler (property, cb, closure);
+}
+
+
+void
 dependency_object_clear_value (DependencyObject *instance, DependencyProperty *property, bool notify_listeners, MoonError *error)
 {
 	if (instance == NULL)
@@ -872,6 +882,16 @@ dependency_object_read_local_value_with_error (DependencyObject *instance, Depen
 	if (error == NULL)
 		g_warning ("Moonlight: Called dependency_object_read_local_value_with_error () with error == NULL.");
 	return instance->ReadLocalValueWithError (property, error);
+}
+
+
+void
+dependency_object_remove_property_change_handler (DependencyObject *instance, DependencyProperty *property, PropertyChangeHandler cb)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->RemovePropertyChangeHandler (property, cb);
 }
 
 
@@ -997,7 +1017,7 @@ dependency_property_is_read_only (DependencyProperty *instance)
 
 
 DependencyProperty *
-dependency_property_register_managed_property (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, NativePropertyChangedHandler *callback)
+dependency_property_register_managed_property (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback)
 {
 	return DependencyProperty::RegisterManagedProperty (name, property_type, owner_type, defaultValue, attached, read_only, callback);
 }
@@ -1014,7 +1034,7 @@ dependency_property_set_is_nullable (DependencyProperty *instance, bool value)
 
 
 void
-dependency_property_set_property_changed_callback (DependencyProperty *instance, NativePropertyChangedHandler *changed_callback)
+dependency_property_set_property_changed_callback (DependencyProperty *instance, PropertyChangeHandler changed_callback)
 {
 	if (instance == NULL)
 		return;
@@ -1747,16 +1767,6 @@ framework_element_set_logical_parent (FrameworkElement *instance, DependencyObje
 /**
  * FrameworkTemplate
  **/
-void
-framework_template_add_xaml_binding (FrameworkTemplate *instance, FrameworkElement *target, const char *target_prop_name, const char *source_prop_name)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->AddXamlBinding (target, target_prop_name, source_prop_name);
-}
-
-
 FrameworkTemplate *
 framework_template_new (void)
 {
@@ -4484,6 +4494,19 @@ writeable_bitmap_new (void)
 
 
 /**
+ * XamlContext
+ **/
+DependencyObject *
+xaml_context_get_template_binding_source (XamlContext *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetTemplateBindingSource ();
+}
+
+
+/**
  * XamlLoader
  **/
 Value *
@@ -4507,6 +4530,16 @@ xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xam
 	if (error == NULL)
 		g_warning ("Moonlight: Called xaml_loader_create_from_string_with_error () with error == NULL.");
 	return instance->CreateFromStringWithError (xaml, create_namescope, element_type, error);
+}
+
+
+XamlContext *
+xaml_loader_get_context (XamlLoader *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetContext ();
 }
 
 

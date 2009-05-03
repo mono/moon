@@ -59,7 +59,7 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 
 		UpdateBounds ();
 	}
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 Size

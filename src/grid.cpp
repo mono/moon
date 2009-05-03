@@ -45,7 +45,7 @@ Grid::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 
 	InvalidateMeasure ();
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void

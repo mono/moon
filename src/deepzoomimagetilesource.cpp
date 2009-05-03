@@ -351,7 +351,7 @@ DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args, Moon
 		return;
 	}
 	
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 //DeepZoomParsing

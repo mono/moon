@@ -166,6 +166,8 @@ class XamlContextInternal {
 	XamlLoaderCallbacks callbacks;
 	GSList *resources;
 
+	DependencyObject *source;
+
 	XamlContextInternal (XamlLoaderCallbacks callbacks, void *top_element, FrameworkTemplate *template_parent, GHashTable *namespaces, GSList *resources)
 	{
 		this->callbacks = callbacks;
@@ -224,6 +226,16 @@ class XamlContextInternal {
 
 		return exists;
 	}
+
+	void SetTemplateBindingSource (DependencyObject *source)
+	{
+		this->source = source;
+	}
+
+	DependencyObject* GetTemplateBindingSource ()
+	{
+		return source;
+	}
 };
 
 
@@ -237,6 +249,17 @@ XamlContext::~XamlContext ()
 	delete internal;
 }
 
+void
+XamlContext::SetTemplateBindingSource (DependencyObject *source)
+{
+	internal->SetTemplateBindingSource (source);
+}
+
+DependencyObject*
+XamlContext::GetTemplateBindingSource ()
+{
+	return internal->GetTemplateBindingSource ();
+}
 
 class XamlElementInfo {
  protected:
@@ -790,23 +813,12 @@ public:
 	XamlElementInstanceTemplate (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type, bool create_item = true)
 		: XamlElementInstanceNative (element_info, parser_info, name, type, create_item)
 	{
-		bindings = new List ();
 	}
 
 	virtual bool IsTemplate ()
 	{
 		return true;
 	}
-
-	void AddTemplateBinding (XamlElementInstance *element, const char *source_property, const char *target_property)
-	{
-		XamlTemplateBinding *b = new XamlTemplateBinding ((FrameworkElement*)element->GetManagedPointer (), source_property, target_property);
-		((FrameworkTemplate*)GetManagedPointer ())->AddXamlBinding (b);
-		b->unref ();
-	}
-
-private:
-	List* bindings;
 };
 
 
@@ -1218,7 +1230,7 @@ XamlLoader::LookupObject (void *p, void *top_level, const char* xmlns, const cha
 	if (callbacks.lookup_object) {
 		if (!vm_loaded && !LoadVM ())
 			return false;
-		bool res = callbacks.lookup_object (p, top_level, xmlns, type_name, create, value);
+		bool res = callbacks.lookup_object (this, p, top_level, xmlns, type_name, create, value);
 		return res;
 	}
 		
@@ -1229,7 +1241,7 @@ const char *
 XamlLoader::GetContentPropertyName (void *p, Value *object)
 {
 	if (callbacks.get_content_property_name) {
-		return callbacks.get_content_property_name (p, object);
+		return callbacks.get_content_property_name (this, p, object);
 	}
 	return NULL;
 }
@@ -1238,7 +1250,7 @@ bool
 XamlLoader::SetProperty (void *p, void *top_level, const char* xmlns, Value *target, void *target_data, void *target_parent, const char *name, Value *value, void* value_data)
 {
 	if (callbacks.set_property)
-		return callbacks.set_property (p, top_level, xmlns, target, target_data, target_parent, name, value, value_data);
+		return callbacks.set_property (this, p, top_level, xmlns, target, target_data, target_parent, name, value, value_data);
 
 	return false;
 }
@@ -1787,7 +1799,7 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 		return;
 
 	if (p->loader != NULL && p->loader->callbacks.import_xaml_xmlns != NULL)
-		p->loader->callbacks.import_xaml_xmlns (p, uri);
+		p->loader->callbacks.import_xaml_xmlns (p->loader, p, uri);
 
 	for (int i = 0; default_namespace_names [i]; i++) {
 		if (!strcmp (default_namespace_names [i], uri)) {

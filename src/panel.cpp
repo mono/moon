@@ -205,7 +205,7 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		UpdateBounds();
 	}
 
-	NotifyListenersOfPropertyChange (args);
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 void
