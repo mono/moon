@@ -30,7 +30,7 @@ struct asf_object;
 class ASFParser;
 class ASFFrameReader;
 class ASFReader;
-class ASFContext;
+struct ASFContext;
 
 #define ASF_ERROR_VAL(fail, ...) { fprintf (stderr, __VA_ARGS__); return fail; }
 #define ASF_ERROR(...) ASF_ERROR_VAL(false, __VA_ARGS__)

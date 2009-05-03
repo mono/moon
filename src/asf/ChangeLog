@@ -1,3 +1,11 @@
+2009-05-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* asf.h: ASFContext is a struct, not a class. Fixed forward
+	declaration.
+
+	* asf-structures.h (asf_object): Added () to make it clearer what
+	this was intended to return.
+
 2009-05-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* asf.h: Use glib int types instead of stdint.h types.

@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * asf-structures.h: 
  *
@@ -122,9 +123,9 @@ struct asf_error_correction_data {
 	
 	MediaResult FillInAll (ASFContext *context);
 	
-	bool is_error_correction_present () { return data & 0x80; }
-	bool is_opaque_data_present () { return data & 0x10; }
-	int get_data_length () { return data & 0x0F; }
+	bool is_error_correction_present () { return (data & 0x80); }
+	bool is_opaque_data_present () { return (data & 0x10); }
+	int get_data_length () { return (data & 0x0F); }
 	int get_error_correction_length_type () { return (data & 0x60) >> 5; }
 	char* tostring ()
 	{
@@ -434,12 +435,12 @@ struct asf_stream_properties : public asf_object {
 
 	asf_dword get_stream_id ()  const
 	{
-		return flags & 0x7F;
+		return (flags & 0x7F);
 	}
 	
 	bool is_encrypted () const
 	{
-		return flags & 1 << 15;
+		return (flags & (1 << 15));
 	}
 	
 	const WAVEFORMATEX* get_audio_data () const
