@@ -570,7 +570,7 @@ TextLayout::Select (int start, int length, bool byte_offsets)
 		return;
 	}
 	
-#if true
+#if 1
 	// compute the region between the 2 starts
 	pre.length = abs (new_selection_start - selection_start);
 	pre.start = MIN (selection_start, new_selection_start);
