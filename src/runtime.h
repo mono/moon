@@ -14,10 +14,8 @@
 #ifndef __RUNTIME_H__
 #define __RUNTIME_H__
 
-#include <glib.h>
-
-#include <cairo.h>
 #include <gtk/gtkwidget.h>
+#include <cairo.h>
 
 #include "point.h"
 #include "uielement.h"
@@ -82,49 +80,53 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_DESKTOP_EXTENSIONS    = 1 << 26,
 };
 
-extern guint64 moonlight_flags;
+extern guint32 moonlight_flags;
 
 
 #if DEBUG
 enum RuntimeDebugFlags {
 	RUNTIME_DEBUG_ALSA              = 1 << 0,
-	RUNTIME_DEBUG_ALSA_EX           = 1 << 1,
-	RUNTIME_DEBUG_AUDIO             = 1 << 2,
-	RUNTIME_DEBUG_AUDIO_EX          = 1 << 3,
-	RUNTIME_DEBUG_PULSE             = 1 << 4,
-	RUNTIME_DEBUG_PULSE_EX          = 1 << 5,
-	RUNTIME_DEBUG_HTTPSTREAMING     = 1 << 6,
-	RUNTIME_DEBUG_MARKERS           = 1 << 7,
-	RUNTIME_DEBUG_MARKERS_EX        = 1 << 8,
-	RUNTIME_DEBUG_MMS               = 1 << 9,
-	RUNTIME_DEBUG_MEDIAPLAYER       = 1 << 10,
-	RUNTIME_DEBUG_MEDIAPLAYER_EX    = 1 << 11,
-	RUNTIME_DEBUG_PIPELINE          = 1 << 12,
-	RUNTIME_DEBUG_PIPELINE_ERROR    = 1 << 13,
-	RUNTIME_DEBUG_FRAMEREADERLOOP   = 1 << 14,
-	RUNTIME_DEBUG_FFMPEG            = 1 << 15,
-	RUNTIME_DEBUG_UI                = 1 << 16,
-	RUNTIME_DEBUG_CODECS            = 1 << 17,
-	RUNTIME_DEBUG_DP                = 1 << 18,
-	RUNTIME_DEBUG_DOWNLOADER        = 1 << 19,
-	RUNTIME_DEBUG_FONT              = 1 << 20,
-	RUNTIME_DEBUG_LAYOUT            = 1 << 21,
-	RUNTIME_DEBUG_MEDIA             = 1 << 22,
-	RUNTIME_DEBUG_MEDIAELEMENT      = 1 << 23,
-	RUNTIME_DEBUG_MEDIAELEMENT_EX   = 1 << 24,
-	RUNTIME_DEBUG_BUFFERING         = 1 << 25,
-	RUNTIME_DEBUG_ASF               = 1 << 26,
-	RUNTIME_DEBUG_PLAYLIST          = 1 << 27,
-	RUNTIME_DEBUG_PLAYLIST_WARN     = 1 << 28,
-	RUNTIME_DEBUG_TEXT              = 1 << 29,
-	RUNTIME_DEBUG_XAML              = 1 << 30,
-	RUNTIME_DEBUG_DEPLOYMENT        = 1ULL << 31,
-	/* Add more as RUNTIME_DEBUG_XXX = 1ULL << 32, */
-	RUNTIME_DEBUG_MSI		= 1ULL << 32,
-	RUNTIME_DEBUG_MP3               = 1ULL << 33,
+	RUNTIME_DEBUG_AUDIO             = 1 << 1,
+	RUNTIME_DEBUG_PULSE             = 1 << 2,
+	RUNTIME_DEBUG_HTTPSTREAMING     = 1 << 3,
+	RUNTIME_DEBUG_MARKERS           = 1 << 4,
+	RUNTIME_DEBUG_MMS               = 1 << 5,
+	RUNTIME_DEBUG_MEDIAPLAYER       = 1 << 6,
+	RUNTIME_DEBUG_PIPELINE          = 1 << 7,
+	RUNTIME_DEBUG_PIPELINE_ERROR    = 1 << 8,
+	RUNTIME_DEBUG_FRAMEREADERLOOP   = 1 << 9,
+	RUNTIME_DEBUG_FFMPEG            = 1 << 10,
+	RUNTIME_DEBUG_UI                = 1 << 11,
+	RUNTIME_DEBUG_CODECS            = 1 << 12,
+	RUNTIME_DEBUG_DP                = 1 << 13,
+	RUNTIME_DEBUG_DOWNLOADER        = 1 << 14,
+	RUNTIME_DEBUG_FONT              = 1 << 15,
+	RUNTIME_DEBUG_LAYOUT            = 1 << 16,
+	RUNTIME_DEBUG_MEDIA             = 1 << 17,
+	RUNTIME_DEBUG_MEDIAELEMENT      = 1 << 18,
+	RUNTIME_DEBUG_BUFFERING         = 1 << 19,
+	RUNTIME_DEBUG_ASF               = 1 << 20,
+	RUNTIME_DEBUG_PLAYLIST          = 1 << 21,
+	RUNTIME_DEBUG_TEXT              = 1 << 22,
+	RUNTIME_DEBUG_XAML              = 1 << 23,
+	RUNTIME_DEBUG_DEPLOYMENT        = 1ULL << 24,
+	/* Add more as RUNTIME_DEBUG_XXX = 1ULL << 25, */
+	RUNTIME_DEBUG_MSI		= 1ULL << 25,
+	RUNTIME_DEBUG_MP3               = 1ULL << 26,
 };
 
-extern guint64 debug_flags;
+enum RuntimeDebugFlagsExtra {
+	RUNTIME_DEBUG_ALSA_EX           = 1 << 0,
+	RUNTIME_DEBUG_AUDIO_EX          = 1 << 1,
+	RUNTIME_DEBUG_PULSE_EX          = 1 << 2,
+	RUNTIME_DEBUG_MARKERS_EX        = 1 << 3,
+	RUNTIME_DEBUG_MEDIAPLAYER_EX    = 1 << 4,
+	RUNTIME_DEBUG_MEDIAELEMENT_EX   = 1 << 5,
+	RUNTIME_DEBUG_PLAYLIST_EX       = 1 << 6,
+};
+
+extern guint32 debug_flags_ex;
+extern guint32 debug_flags;
 #endif
 
 
@@ -270,9 +272,10 @@ public:
 	bool ProcessDirtyElements ();
 	void PropagateDirtyFlagToChildren (UIElement *element, DirtyType dirt);
 
+	static bool main_thread_inited;
 	static pthread_t main_thread;
 	/* @GenerateCBinding,GeneratePInvoke */
-	static bool InMainThread () { return (pthread_equal (main_thread, pthread_self ()) || pthread_equal (main_thread, NULL)); }
+	static bool InMainThread () { return (!main_thread_inited || pthread_equal (main_thread, pthread_self ())); }
 
 	bool needs_measure;
 	bool needs_arrange;
@@ -424,7 +427,7 @@ private:
 
 G_BEGIN_DECLS
 
-void     runtime_init (const char *platform_dir, guint64 flags);
+void     runtime_init (const char *platform_dir, guint32 flags);
 
 void     runtime_init_browser (const char *plugin_dir);
 /* @GeneratePInvoke */

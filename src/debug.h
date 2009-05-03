@@ -59,17 +59,17 @@ G_END_DECLS
 #if LOGGING
 
 #define LOG_ALSA(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_ALSA)) printf (__VA_ARGS__);
-#define LOG_ALSA_EX(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_ALSA_EX)) printf (__VA_ARGS__);
+#define LOG_ALSA_EX(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_ALSA_EX)) printf (__VA_ARGS__);
 #define LOG_AUDIO(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_AUDIO)) printf (__VA_ARGS__);
-#define LOG_AUDIO_EX(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_AUDIO_EX)) printf (__VA_ARGS__);
+#define LOG_AUDIO_EX(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_AUDIO_EX)) printf (__VA_ARGS__);
 #define LOG_PULSE(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PULSE)) printf (__VA_ARGS__);
-#define LOG_PULSE_EX(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PULSE_EX)) printf (__VA_ARGS__);
+#define LOG_PULSE_EX(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_PULSE_EX)) printf (__VA_ARGS__);
 #define LOG_HTTPSTREAMING(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_HTTPSTREAMING)) printf (__VA_ARGS__);
 #define LOG_MARKERS(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MARKERS)) printf (__VA_ARGS__);
-#define LOG_MARKERS_EX(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MARKERS_EX)) printf (__VA_ARGS__);
+#define LOG_MARKERS_EX(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MARKERS_EX)) printf (__VA_ARGS__);
 #define LOG_MMS(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MMS)) printf (__VA_ARGS__);
 #define LOG_MEDIAPLAYER(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIAPLAYER)) printf (__VA_ARGS__);
-#define LOG_MEDIAPLAYER_EX(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIAPLAYER_EX)) printf (__VA_ARGS__);
+#define LOG_MEDIAPLAYER_EX(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MEDIAPLAYER_EX)) printf (__VA_ARGS__);
 #define LOG_PIPELINE(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PIPELINE)) printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PIPELINE_ERROR)) printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...) if (G_UNLIKELY (x && debug_flags & PIPELINE_ERROR)) printf (__VA_ARGS__);
@@ -83,12 +83,12 @@ G_END_DECLS
 #define LOG_LAYOUT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_LAYOUT)) fprintf (__VA_ARGS__);
 #define LOG_MEDIA(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIA)) printf (__VA_ARGS__);
 #define LOG_MEDIAELEMENT(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIAELEMENT)) printf (__VA_ARGS__);
-#define LOG_MEDIAELEMENT_EX(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIAELEMENT_EX)) printf (__VA_ARGS__);
+#define LOG_MEDIAELEMENT_EX(...)		if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MEDIAELEMENT_EX)) printf (__VA_ARGS__);
 #define LOG_MSI(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) printf (__VA_ARGS__);
 #define LOG_BUFFERING(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_BUFFERING)) printf (__VA_ARGS__);
 #define LOG_PIPELINE_ASF(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_ASF)) printf (__VA_ARGS__);
 #define LOG_PLAYLIST(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PLAYLIST)) printf (__VA_ARGS__);
-#define LOG_PLAYLIST_WARN(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PLAYLIST_WARN)) printf (__VA_ARGS__);
+#define LOG_PLAYLIST_WARN(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_PLAYLIST_EX)) printf (__VA_ARGS__);
 #define LOG_TEXT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_TEXT)) fprintf (__VA_ARGS__);
 #define LOG_XAML(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_XAML)) printf (__VA_ARGS__);
 #define LOG_DEPLOYMENT(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DEPLOYMENT)) printf (__VA_ARGS__);

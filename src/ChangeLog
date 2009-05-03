@@ -1,5 +1,16 @@
 2009-05-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* runtime.h (InMainThread): check main_thread_inited.
+
+	* runtime.cpp: All flags variables are now 32bit. Split _EX flags
+	into a second debug_flags_ex. Also added a new bool var to keep
+	track of whether or not main_thread has been initialized since we
+	can't necessary compare against NULL.
+
+	* debug.h: Updated.
+
+2009-05-03  Jeffrey Stedfast  <fejj@novell.com>
+
 	* debug.cpp: #include <unistd.h>
 
 	* *.h: Don't #include stdint.h or unistd.h (only cpp files should

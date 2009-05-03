@@ -11,14 +11,16 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
+#include <gtk/gtk.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
 #include <math.h>
-
-#include <gtk/gtk.h>
-#include <glib.h>
 
 #define Visual _XxVisual
 #define Region _XxRegion
@@ -66,14 +68,16 @@
 
 #define NO_EVENT_ID -1
 
+bool Surface::main_thread_inited = false;
 pthread_t Surface::main_thread = 0;
 
 static bool inited = false;
 static bool g_type_inited = false;
 static GList* surface_list = NULL;
-guint64 moonlight_flags = 0;
+guint32 moonlight_flags = 0;
 #if DEBUG
-guint64 debug_flags = 0;
+guint32 debug_flags_ex = 0;
+guint32 debug_flags = 0;
 #endif
 
 
@@ -85,7 +89,7 @@ struct env_options {
 
 static struct env_options overrides[] = {
 	// There's no "ms-codecs=yes" option to not allow enabling them from the command line.
-	{ "ms-codecs=no",      RUNTIME_INIT_ENABLE_MS_CODECS,      false  },
+	{ "ms-codecs=no",      RUNTIME_INIT_ENABLE_MS_CODECS,      false },
 	{ "ffmpeg-codecs=no",  RUNTIME_INIT_DISABLE_FFMPEG_CODECS, true  },
 	{ "ffmpeg-codecs=yes", RUNTIME_INIT_DISABLE_FFMPEG_CODECS, false },
 	{ "timesource=manual", RUNTIME_INIT_MANUAL_TIMESOURCE,     true  },
@@ -132,17 +136,12 @@ static struct env_options overrides[] = {
 #if DEBUG
 static struct env_options debugs[] = {
 	{ "alsa",              RUNTIME_DEBUG_ALSA,             true },
-	{ "alsa-ex",           RUNTIME_DEBUG_ALSA_EX,          true },
 	{ "audio",             RUNTIME_DEBUG_AUDIO,            true },
-	{ "audio-ex",          RUNTIME_DEBUG_AUDIO_EX,         true },
 	{ "pulse",             RUNTIME_DEBUG_PULSE,            true },
-	{ "pulse-ex",          RUNTIME_DEBUG_PULSE_EX,         true },
 	{ "httpstreaming",     RUNTIME_DEBUG_HTTPSTREAMING,    true },
 	{ "markers",           RUNTIME_DEBUG_MARKERS,          true },
-	{ "markers-ex",        RUNTIME_DEBUG_MARKERS_EX,       true },
 	{ "mms",               RUNTIME_DEBUG_MMS,              true },
 	{ "mediaplayer",       RUNTIME_DEBUG_MEDIAPLAYER,      true },
-	{ "mediaplayer-ex",    RUNTIME_DEBUG_MEDIAPLAYER_EX,   true },
 	{ "pipeline",          RUNTIME_DEBUG_PIPELINE,         true },
 	{ "pipeline-error",    RUNTIME_DEBUG_PIPELINE_ERROR,   true },
 	{ "framereaderloop",   RUNTIME_DEBUG_FRAMEREADERLOOP,  true },
@@ -155,16 +154,25 @@ static struct env_options debugs[] = {
 	{ "layout",            RUNTIME_DEBUG_LAYOUT,           true },
 	{ "media",             RUNTIME_DEBUG_MEDIA,            true },
 	{ "mediaelement",      RUNTIME_DEBUG_MEDIAELEMENT,     true },
-	{ "mediaelement-ex",   RUNTIME_DEBUG_MEDIAELEMENT_EX,  true },
 	{ "msi",	       RUNTIME_DEBUG_MSI,	       true },
 	{ "buffering",         RUNTIME_DEBUG_BUFFERING,        true },
 	{ "asf",               RUNTIME_DEBUG_ASF,              true },
 	{ "playlist",          RUNTIME_DEBUG_PLAYLIST,         true },
-	{ "playlist-warn",     RUNTIME_DEBUG_PLAYLIST_WARN,    true },
 	{ "text",              RUNTIME_DEBUG_TEXT,             true },
 	{ "xaml",              RUNTIME_DEBUG_XAML,             true },
 	{ "deployment",        RUNTIME_DEBUG_DEPLOYMENT,       true },
 	{ "mp3",               RUNTIME_DEBUG_MP3,              true },
+	{ NULL, 0, false }
+};
+
+static struct env_options debug_extras[] = {
+	{ "alsa-ex",           RUNTIME_DEBUG_ALSA_EX,          true },
+	{ "audio-ex",          RUNTIME_DEBUG_AUDIO_EX,         true },
+	{ "pulse-ex",          RUNTIME_DEBUG_PULSE_EX,         true },
+	{ "markers-ex",        RUNTIME_DEBUG_MARKERS_EX,       true },
+	{ "mediaplayer-ex",    RUNTIME_DEBUG_MEDIAPLAYER_EX,   true },
+	{ "mediaelement-ex",   RUNTIME_DEBUG_MEDIAELEMENT_EX,  true },
+	{ "playlist-ex",       RUNTIME_DEBUG_PLAYLIST_EX,      true },
 	{ NULL, 0, false }
 };
 #endif
@@ -274,6 +282,7 @@ Surface::Surface (MoonWindow *window)
 	GetDeployment ()->SetSurface (this);
 
 	main_thread = pthread_self ();
+	main_thread_inited = true;
 	
 	zombie = false;
 	needs_measure = false;
@@ -1973,14 +1982,13 @@ runtime_init_desktop ()
 	runtime_init (NULL, RUNTIME_INIT_DESKTOP);
 }
 
-static gint64
-get_flags (gint64 def, const char *envname, struct env_options options[])
+static gint32
+get_flags (gint32 def, const char *envname, struct env_options options[])
 {
-	gint64 flags = def;
+	gint32 flags = def;
 	const char *env;
 	
 	if (envname && (env = g_getenv (envname))) {
-
 		g_warning ("%s = %s", envname, env);
 
 		const char *flag = env;
@@ -2026,9 +2034,8 @@ get_flags (gint64 def, const char *envname, struct env_options options[])
 }
 
 void
-runtime_init (const char *platform_dir, guint64 flags)
+runtime_init (const char *platform_dir, guint32 flags)
 {
-
 	if (inited)
 		return;
 
@@ -2047,6 +2054,7 @@ runtime_init (const char *platform_dir, guint64 flags)
 	// Allow the user to override the flags via his/her environment
 	flags = get_flags (flags, "MOONLIGHT_OVERRIDES", overrides);
 #if DEBUG
+	debug_flags_ex = get_flags (0, "MOONLIGHT_DEBUG", debug_extras);
 	debug_flags = get_flags (0, "MOONLIGHT_DEBUG", debugs);
 #endif
 
