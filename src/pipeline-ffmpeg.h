@@ -16,10 +16,8 @@
 #define __MOON_PIPELINE_FFMPEG__
 
 #include <glib.h>
-#include <unistd.h>
 
 G_BEGIN_DECLS
-#include <stdint.h>
 #include <limits.h>
 #if HAVE_LIBAVCODEC_AVCODEC_H
 #include <libavcodec/avcodec.h>

@@ -13,7 +13,6 @@
 #if DEBUG || LOGGING
 
 #include <glib.h>
-#include <unistd.h>
 #include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>

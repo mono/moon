@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * debug.cpp: 
  *
@@ -7,7 +8,10 @@
  * 
  */
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "runtime.h"
 #include "debug.h"
 
@@ -25,6 +29,7 @@ G_END_DECLS
 #include <signal.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
+#include <unistd.h>
 #include <ctype.h>
  
 #define MAX_STACK_FRAMES 30

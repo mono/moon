@@ -12,12 +12,11 @@
 #ifndef MOON_TIMEMANAGER_H
 #define MOON_TIMEMANAGER_H
 
+#include <glib.h>
+
 #include "applier.h"
 #include "timesource.h"
 #include "dependencyobject.h"
-
-#include <glib.h>
-#include <stdint.h>
 
 // our root level time manager (basically the object that registers
 // the gtk_timeout and drives all Clock objects

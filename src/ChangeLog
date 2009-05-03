@@ -1,3 +1,10 @@
+2009-05-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* debug.cpp: #include <unistd.h>
+
+	* *.h: Don't #include stdint.h or unistd.h (only cpp files should
+	include unistd.h).
+
 2009-05-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* downloader.h: 

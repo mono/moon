@@ -15,12 +15,6 @@
 #define __MOON_YUV_CONVERTER__
 
 #include <glib.h>
-#include <unistd.h>
-
-G_BEGIN_DECLS
-#include <stdint.h>
-#include <limits.h>
-G_END_DECLS
 
 #include "pipeline.h"
 

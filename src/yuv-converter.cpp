@@ -11,11 +11,12 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
-#include <stdlib.h>
 #include <glib.h>
-#include <unistd.h>
+
 #include <stdlib.h>
 
 #include "yuv-converter.h"

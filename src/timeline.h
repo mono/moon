@@ -12,9 +12,10 @@
 #ifndef MOON_TIMELINE_H
 #define MOON_TIMELINE_H
 
-#include "clock.h"
 #include <glib.h>
-#include <stdint.h>
+
+#include "clock.h"
+
 
 /* @Namespace=System.Windows.Media.Animation */
 class Timeline : public DependencyObject {
