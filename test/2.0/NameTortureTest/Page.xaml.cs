@@ -38,6 +38,7 @@ namespace NameTortureTest
 			RunTests ("VisualTypes");
 			RunTests ("StaticResources");
 			RunTests ("UserControlEmbeddedInXaml");
+			RunTests ("StaticResourcesConflictingOnSibling");
 		}
 
 		private void RunTests (string testName)
@@ -333,6 +334,27 @@ namespace NameTortureTest
 
 			// the brush's name is not available through the control's namescope.
 			Assert.IsNull (uc3.FindName ("backgroundBrush"), "4");
+		}
+
+		public void StaticResourcesConflictingOnSibling ()
+		{
+			XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <Grid>
+        <Grid.Resources>
+            <SolidColorBrush x:Name=""foo"" Color=""Green""/>
+        </Grid.Resources>
+        <Rectangle Grid.Column=""0"" Grid.Row=""1"" x:Name=""rect3"" Fill=""{StaticResource foo}""/>
+    </Grid>
+    <Grid>
+        <Grid.Resources>
+            <SolidColorBrush x:Name=""foo"" Color=""Green""/>
+        </Grid.Resources>
+        <Rectangle Grid.Column=""0"" Grid.Row=""1"" x:Name=""rect5"" Fill=""{StaticResource foo}""/>
+    </Grid>
+</Canvas>
+");
 		}
 
 		public void UserControlEmbeddedInXaml ()
