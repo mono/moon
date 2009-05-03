@@ -1,3 +1,9 @@
+2009-05-03  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h|.cpp (MoonlightDependencyObjectObject::Invoke):
+	add UpdateLayout() as a JS callable function.  fixable a JS error
+	in the MS DRT.
+
 2009-05-02  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-proxy.cpp (load): add RTLD_GLOBAL to real_plugin,

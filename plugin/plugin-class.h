@@ -158,6 +158,7 @@ enum PluginPropertyId {
 	MoonId_AddStylusPoints,
 	MoonId_GetBounds,
 	MoonId_HitTest,
+	MoonId_UpdateLayout,
 
 	MoonId_StopPropagation,
 	MoonId_PreventDefault,

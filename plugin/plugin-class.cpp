@@ -2446,6 +2446,7 @@ moonlight_dependency_object_mapping [] = {
 	{ "releasemousecapture", MoonId_ReleaseMouseCapture },
 	{ "removeeventlistener", MoonId_RemoveEventListener },
 	{ "setvalue", MoonId_SetValue },
+	{ "updatelayout", MoonId_UpdateLayout },
 };
 
 static NPObject *
@@ -2814,6 +2815,15 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 			OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, parent), *result);
 		else
 			NULL_TO_NPVARIANT (*result);
+
+		return true;
+	}
+
+	case MoonId_UpdateLayout: {
+		if (argCount != 0 || !dob->GetType ()->IsSubclassOf (Type::FRAMEWORKELEMENT))
+			THROW_JS_EXCEPTION ("AG_E_RUNTIME_UPDATELAYOUT");
+		
+		BOOLEAN_TO_NPVARIANT (((FrameworkElement*)dob)->UpdateLayout(), *result);
 
 		return true;
 	}
