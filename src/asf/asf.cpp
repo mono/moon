@@ -225,7 +225,7 @@ ASFParser::ReadPacket (ASFPacket **packet, int packet_index)
 	ASF_LOG ("ASFParser::ReadPacket (%s, %d) at %" G_GUINT64_FORMAT ".\n", packet ? "non-null" : "null", packet_index, GetPacketOffset (packet_index));
 
 	if (packet_index >= 0) {
-		int64_t packet_count = GetPacketCount ();
+		gint64 packet_count = GetPacketCount ();
 		if (packet_count > 0 && packet_count < packet_index + 1)
 			return MEDIA_NO_MORE_DATA;
 		
