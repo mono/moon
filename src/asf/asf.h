@@ -106,10 +106,10 @@ public:
 	~ASFReader ();
 	// Select the specified stream.
 	// No streams are selected by default.
-	void SelectStream (int32_t stream_index, bool value);
+	void SelectStream (gint32 stream_index, bool value);
 	// Returns the frame reader for the specified stream.
 	// The stream must first have been selected using SelectStream.
-	ASFFrameReader *GetFrameReader (int32_t stream_index);
+	ASFFrameReader *GetFrameReader (gint32 stream_index);
 
 	// Have we reached end of file?
 	bool Eof ();
