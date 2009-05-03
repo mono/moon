@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * debug.h: 
  *
@@ -13,7 +14,6 @@
 #if DEBUG || LOGGING
 
 #include <glib.h>
-#include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

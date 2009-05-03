@@ -29,6 +29,7 @@ G_END_DECLS
 #include <signal.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
+#include <execinfo.h>
 #include <unistd.h>
 #include <ctype.h>
  
