@@ -2,3 +2,4 @@
 *.g.resources
 *.html
 *.xap
+AppManifest.xaml
