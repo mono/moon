@@ -1,5 +1,15 @@
 2009-05-03  Chris Toshok  <toshok@ximian.com>
 
+	* Types.cs: more on that generic type fix.  look up the generic
+	type definition in our list of registered types.  This is as
+	general as can be, given that the only generic type definition
+	*in* the list of registered types will be PFC<>.  This fixes the
+	improper base types of PFC<T> instantiations (they were being
+	registered with parent type == DependencyObject, instead of
+	Collection.)
+
+2009-05-03  Chris Toshok  <toshok@ximian.com>
+
 	* MarkupExpressionParser.cs (ParseTemplateBinding): actually
 	create a TemplateBindingExpression object.
 

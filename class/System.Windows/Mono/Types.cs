@@ -92,6 +92,9 @@ namespace Mono
 			if (typedef.IsGenericType)
 				typedef = typedef.GetGenericTypeDefinition();
 
+			if (types.TryGetValue (typedef, out info))
+				return info;
+			
 			if (typedef.BaseType == null || typedef.BaseType == typeof (object)) {
 				parent = null;
 			} else {
