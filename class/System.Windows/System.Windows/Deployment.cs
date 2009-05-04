@@ -176,21 +176,15 @@ namespace System.Windows {
 				if (part.Source[0] == '/') {
 					WebClient client = new WebClient ();
 					client.OpenReadCompleted += new OpenReadCompletedEventHandler (OnOpenReadCompleted);
-					client.OpenReadAsync (new Uri (PluginHost.RootUri, new Uri (part.Source))); 
+					client.OpenReadAsync (new Uri (PluginHost.RootUri, part.Source));
 					delay_load = true;
 				} else {
-					try {
-						var asm = Assembly.LoadFrom (Path.Combine (XapDir, part.Source));
-
-						assemblies.Add (asm);
-
-						if (EntryAssembly == null && asm.GetName ().Name == EntryPointAssembly)
-							EntryAssembly = asm;
-
-					} catch (Exception e) {
-						Report.Error ("Error while loading the {0} assembly  {1}", part.Source, e);
+					Assembly asm = LoadXapAssembly (part.Source);
+					if (asm == null)
 						return false;
-					}
+
+					assemblies.Add (asm);
+					SetEntryAssembly (asm);
 				}
 			}
 
@@ -200,14 +194,37 @@ namespace System.Windows {
 			return CreateApplication ();
 		}
 
+		Assembly LoadXapAssembly (string name)
+		{
+			string filename = Path.GetFullPath (Path.Combine (XapDir, name));
+			// note: the content of the AssemblyManifest.xaml file is untrusted
+			if (!filename.StartsWith (XapDir)) {
+				Report.Error ("Trying to load the assembly '{0}' outside the XAP directory.", name);
+				return null;
+			}
+
+			try {
+				return Assembly.LoadFrom (filename);
+			} catch (Exception e) {
+				Report.Error ("Error while loading the '{0}' assembly: {1}", name, e);
+				return null;
+			}
+		}
+
+		// extracted since Assembly.GetName is security critical
+		void SetEntryAssembly (Assembly asm)
+		{
+			if (EntryAssembly == null && asm.GetName ().Name == EntryPointAssembly)
+				EntryAssembly = asm;
+		}
+
 		// stop using an anonymous method since its name keeps changing and this code is [SecuritySafeCritical]
 		internal void OnOpenReadCompleted (object sender, OpenReadCompletedEventArgs e) 
 		{
 			AssemblyPart a = new AssemblyPart ();
 			Assembly asm = a.Load (e.Result);
 						
-			if (EntryAssembly == null && asm.GetName ().Name == EntryPointAssembly)
-				EntryAssembly = asm;
+			SetEntryAssembly (asm);
 
 			Deployment d = Deployment.Current;
 			if (d.Assemblies.Count == Parts.Count + 1)

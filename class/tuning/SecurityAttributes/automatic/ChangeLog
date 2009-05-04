@@ -1,3 +1,8 @@
+2009-05-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.ssc: Adjust with refactoring (extracting
+	SSC stuff into smaller separate methods).
+
 2009-05-04  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.auto.ssc: Add missing new entries

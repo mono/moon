@@ -1,3 +1,12 @@
+2009-05-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Deployment.cs: use Uri(Uri,string) over Uri(Uri,Uri) since
+	the later requires a relative (not what a default Uri provides).
+	Extract LoadXapAssembly and ensure we're loading assemblies
+	from within the XAP directory. Extract SetEntryAssembly since
+	it's duplicate code that calls critical Assembly.GetName.
+	Fix "Python WebIDE" application.
+
 2009-05-03  Chris Toshok  <toshok@ximian.com>
 
 	* FrameworkTemplate.cs: remove AddXamlBinding, it's no longer
