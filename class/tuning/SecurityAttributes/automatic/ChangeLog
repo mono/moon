@@ -1,3 +1,10 @@
+2009-05-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.sc: Add/modify/remove some p/invokes used
+	for bindings (related to r133443)
+	* System.Windows.auto.ssc: Remove DependencyProperty.
+	AddPropertyChangeCallback and FrameworkTemplate.AddXamlBindin
+
 2009-05-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.sc: Remove Windows-only Console p/invokes

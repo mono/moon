@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 482 methods needs to be decorated.
+# 485 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -425,7 +425,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_property_get_name_(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_property_register_managed_property(System.String,Mono.Kind,Mono.Kind,Mono.Value&,System.Boolean,System.Boolean,Mono.NativePropertyChangedHandler)
++SC-M: System.IntPtr Mono.NativeMethods::dependency_property_register_managed_property(System.String,Mono.Kind,Mono.Kind,Mono.Value&,System.Boolean,System.Boolean,Mono.UnmanagedPropertyChangeHandler)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_current()
@@ -1010,6 +1010,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::writeable_bitmap_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::xaml_context_get_template_binding_source(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_get_element_key_(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
@@ -1023,6 +1026,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_get_context(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,System.IntPtr,System.Boolean,Mono.Kind&,Mono.MoonError&)
@@ -1073,7 +1079,13 @@
 +SC-M: System.Void Mono.NativeMethods::content_control_set_content_sets_parent(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::dependency_object_add_property_change_handler(System.IntPtr,System.IntPtr,Mono.UnmanagedPropertyChangeHandler,System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_clear_value_(System.IntPtr,System.IntPtr,System.Boolean,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::dependency_object_remove_property_change_handler(System.IntPtr,System.IntPtr,Mono.UnmanagedPropertyChangeHandler)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_set_name(System.IntPtr,System.String)
@@ -1085,7 +1097,7 @@
 +SC-M: System.Void Mono.NativeMethods::dependency_property_set_is_nullable(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::dependency_property_set_property_changed_callback(System.IntPtr,Mono.NativePropertyChangedHandler)
++SC-M: System.Void Mono.NativeMethods::dependency_property_set_property_changed_callback(System.IntPtr,Mono.UnmanagedPropertyChangeHandler)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::deployment_set_current(System.IntPtr)
@@ -1170,9 +1182,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::framework_element_set_logical_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::framework_template_add_xaml_binding(System.IntPtr,System.IntPtr,System.String,System.String)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::general_transform_transform_point(System.IntPtr,System.Windows.Point&,System.Windows.Point&)
