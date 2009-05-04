@@ -1,3 +1,13 @@
+2009-05-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* AssemblyPart.cs: Return null when asked to load invalid 
+	assemblies (match SL2 behavior).
+	* Deployment.cs: Re-introduce the anonymous delegate since the
+	[SecuritySafeCritical] piece was moved elsewhere. Add a check for
+	cancelled or errors while downloading an assembly. Only supply 
+	the relative Uri to OpenReadAsync since WebClient will make it 
+	absolute using the XAP Uri.
+
 2009-05-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Deployment.cs: use Uri(Uri,string) over Uri(Uri,Uri) since

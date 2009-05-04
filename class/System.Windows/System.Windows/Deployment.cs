@@ -175,8 +175,20 @@ namespace System.Windows {
 
 				if (part.Source[0] == '/') {
 					WebClient client = new WebClient ();
-					client.OpenReadCompleted += new OpenReadCompletedEventHandler (OnOpenReadCompleted);
-					client.OpenReadAsync (new Uri (PluginHost.RootUri, part.Source));
+					client.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
+						if (e.Cancelled || (e.Error != null))
+							return;
+
+						AssemblyPart a = new AssemblyPart ();
+						Assembly asm = a.Load (e.Result);
+						
+						SetEntryAssembly (asm);
+
+						Deployment d = Deployment.Current;
+						if (d.Assemblies.Count == Parts.Count + 1)
+							d.CreateApplication ();
+					};
+					client.OpenReadAsync (new Uri (part.Source, UriKind.Relative));
 					delay_load = true;
 				} else {
 					Assembly asm = LoadXapAssembly (part.Source);
@@ -216,19 +228,6 @@ namespace System.Windows {
 		{
 			if (EntryAssembly == null && asm.GetName ().Name == EntryPointAssembly)
 				EntryAssembly = asm;
-		}
-
-		// stop using an anonymous method since its name keeps changing and this code is [SecuritySafeCritical]
-		internal void OnOpenReadCompleted (object sender, OpenReadCompletedEventArgs e) 
-		{
-			AssemblyPart a = new AssemblyPart ();
-			Assembly asm = a.Load (e.Result);
-						
-			SetEntryAssembly (asm);
-
-			Deployment d = Deployment.Current;
-			if (d.Assemblies.Count == Parts.Count + 1)
-				d.CreateApplication ();
 		}
 
 		internal bool CreateApplication () {

@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008-2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -40,6 +40,21 @@ namespace MoonTest.System.Windows {
 	public partial class AssemblyPartTest {
 
 		[TestMethod]
+		public void Defaults ()
+		{
+			AssemblyPart ap = new AssemblyPart ();
+			Assert.AreEqual (String.Empty, ap.Source, "Source");
+
+			ap.Source = "../../../bad.dll";
+			Assert.AreEqual ("../../../bad.dll", ap.Source, "Source/relative");
+
+			Assert.Throws<NullReferenceException> (delegate {
+				ap.Load (null);
+			}, "Load(null)");
+			Assert.IsNull (ap.Load (Stream.Null));
+		}
+
+		[TestMethod]
 		public void LoadNewAssemblyPartFromMemoryStream ()
 		{
 			var assembly = new AssemblyPart ().Load (GetLibraryStream ());
@@ -49,11 +64,71 @@ namespace MoonTest.System.Windows {
 			var type = assembly.GetType ("Foo.Bar");
 
 			Assert.IsNotNull (type);
+
+			// a second time ?
+			var a2 = new AssemblyPart ().Load (GetLibraryStream ());
+			Assert.IsTrue (Object.ReferenceEquals (assembly, a2), "twice");
 		}
 
 		static Stream GetLibraryStream ()
 		{
 			return new MemoryStream (GetLibrary ());
+		}
+
+		// not every Stream implementation provides a working Length property
+		class CustomStream : MemoryStream {
+			public CustomStream (byte [] array)
+				: base (array)
+			{
+			}
+
+			public override long Length {
+				get { throw new NotSupportedException (); }
+			}
+		}
+
+		static Stream GetLibraryCustomStream ()
+		{
+			return new CustomStream (GetLibrary ());
+		}
+
+		[TestMethod]
+		public void LoadNewAssemblyPartFromCustomStream ()
+		{
+			// SL2 requires a Stream that provides a working Length property
+			Assert.Throws<NotSupportedException> (delegate {
+				new AssemblyPart ().Load (GetLibraryCustomStream ());
+			}, "CustomStream");
+		}
+
+		[TestMethod]
+		public void LoadNewAssemblyPartFromFixedLengthStream ()
+		{
+			AssemblyPart ap = new AssemblyPart ();
+			Assert.IsNull (ap.Load (GetLibraryFixedStream (0)), "0");
+			Assert.IsNull (ap.Load (GetLibraryFixedStream (1)), "1");
+			Assert.IsNull (ap.Load (GetLibraryFixedStream (10)), "10");
+			Assert.IsNull (ap.Load (GetLibraryFixedStream (100)), "100");
+			Assert.IsNull (ap.Load (GetLibraryFixedStream (1000)), "1000");
+		}
+
+		class FixedLengthStream : MemoryStream {
+			private int len;
+
+			public FixedLengthStream (int length, byte [] array)
+				: base (array)
+			{
+				len = length;
+			}
+
+			public override long Length {
+				get { return len; }
+			}
+		}
+
+		static Stream GetLibraryFixedStream (int length)
+		{
+			return new FixedLengthStream (length, GetLibrary ());
 		}
 
 		static byte [] GetLibrary ()

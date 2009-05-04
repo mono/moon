@@ -27,7 +27,6 @@
 //
 using System;
 using System.IO;
-using System.Windows;
 using System.Reflection;
 using Mono;
 
@@ -42,6 +41,13 @@ namespace System.Windows {
 
 		public Assembly Load (Stream assemblyStream)
 		{
+			// SL2 throws a NullReferenceException if assemblyStream is null
+			// but returns null if the stream is empty (e.g. Stream.Null)
+			if (assemblyStream.Length == 0)
+				return null;
+
+			// it's normally bad to depend on Stream.Length since some stream (e.g. NetworkStream) 
+			// don't implement them. However it is safe in this case (i.e. SL2 depends on Length too)
 			var buffer = new byte [assemblyStream.Length];
 
 			using (assemblyStream) {
@@ -57,12 +63,17 @@ namespace System.Windows {
 				}
 			}
 
-			Assembly assembly = Assembly.Load (buffer);
+			try {
+				Assembly assembly = Assembly.Load (buffer);
 
-			if (assembly != null)
-				Deployment.Current.Assemblies.Add (assembly);
+				if (assembly != null)
+					Deployment.Current.Assemblies.Add (assembly);
 
-			return assembly;
+				return assembly;
+			}
+			catch {
+				return null;
+			}
 		}
 	}
 }
