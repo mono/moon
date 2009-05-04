@@ -1,3 +1,10 @@
+2009-05-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* RuntimeControls/SilverlightControls/RadioButton.cs:
+	* RuntimeControls/SilverlightControls/Primitives/ToggleButton.cs:
+	  Added ToString implementation. Makes DRT #491 and #494 not
+	  time out.
+
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/Common/SelectionChangedEventArgs.cs: When

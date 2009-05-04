@@ -97,5 +97,55 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			button.SetValue (ToggleButton.IsCheckedProperty, (bool?) null);
 			Assert.IsFalse (button.IsChecked.HasValue, "#10");
 		}
+		
+		[TestMethod]
+		public void ToStringTest ()
+		{
+			ToggleButton button = new ToggleButton ();
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:False", button.ToString (), "#A1");
+			button.IsChecked = true;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:True", button.ToString (), "#A2");
+			button.IsChecked = null;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:null", button.ToString (), "#A3");
+			button.IsChecked = false;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:False", button.ToString (), "#A4");
+
+			button.IsThreeState = false;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:False", button.ToString (), "#B1");
+			button.IsChecked = true;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:True", button.ToString (), "#B2");
+			button.IsChecked = null;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:null", button.ToString (), "#B3");
+			button.IsChecked = false;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:False", button.ToString (), "#B4");
+
+			button.IsThreeState = true;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:False", button.ToString (), "#C1");
+			button.IsChecked = true;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:True", button.ToString (), "#C2");
+			button.IsChecked = null;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:null", button.ToString (), "#C3");
+			button.IsChecked = false;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:False", button.ToString (), "#C4");
+
+			button.Content = "Hello";
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content:Hello IsChecked:False", button.ToString (), "#D1");
+			button.IsChecked = true;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content:Hello IsChecked:True", button.ToString (), "#D2");
+			button.IsChecked = null;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content:Hello IsChecked:null", button.ToString (), "#D3");
+			button.IsChecked = false;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content:Hello IsChecked:False", button.ToString (), "#D4");
+
+
+			button.Content = null;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:False", button.ToString (), "#E1");
+			button.IsChecked = true;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:True", button.ToString (), "#E2");
+			button.IsChecked = null;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:null", button.ToString (), "#E3");
+			button.IsChecked = false;
+			Assert.AreEqual ("System.Windows.Controls.Primitives.ToggleButton Content: IsChecked:False", button.ToString (), "#E4");
+		}
 	}
 }

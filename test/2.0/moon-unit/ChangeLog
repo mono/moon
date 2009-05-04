@@ -1,5 +1,16 @@
 2009-05-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* System.Windows/DependencyPropertyTest.cs: Added another
+	  nullable bool test.
+
+	* System.Windows.Controls/RadioButtonTest.cs:
+	* System.Windows.Controls.Primitives/ToggleButtonTest.cs:
+	  Added ToString tests.
+
+	* moon-unit.mdp: Updated.
+
+2009-05-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Windows.Browser/ScriptableTest.cs: Try all ignored
 	  scriptable objects test on the bots.
 

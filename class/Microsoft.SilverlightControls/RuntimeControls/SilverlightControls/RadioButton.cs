@@ -263,5 +263,13 @@ namespace System.Windows.Controls
                 }
             }
         } 
+		
+		// Moonlight: This method wasn't included in the control drop. 
+		public override string ToString ()
+		{
+			string content = Content == null ? string.Empty : Content.ToString ();
+			string ischecked = IsChecked.HasValue ? IsChecked.Value.ToString () : "null";
+			return string.Format("System.Windows.Controls.RadioButton Content:{0} IsChecked:{1}", content, ischecked);
+		}
     }
 }
