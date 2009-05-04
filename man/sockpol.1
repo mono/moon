@@ -1,0 +1,77 @@
+.\" 
+.\" sockpol manual page.
+.\" Copyright (C) 2009 Novell, Inc (http://www.novell.com)
+.\"
+.de Sp \" Vertical space (when we can't use .PP)
+.if t .sp .5v
+.if n .sp
+..
+.TH sockpol "Moonlight 2.0"
+.SH NAME
+sockpol \- Socket Policy Server for Moonlight 2+
+.SH SYNOPSIS
+.PP
+.B sockpol --all | --local | --file policy
+.SH DESCRIPTION
+The \fIsockpol\fP command is a small socket server that listen, on port
+943, to Moonlight and Silverlight plugin request for a socket policy 
+file.
+.PP
+This policy file instruct the plugin if it can, or not, use sockets
+against the current host and what restrictions must be followed. The
+three major restrictions are the
+.I host
+, the 
+.I ports
+, already restricted from 4502 to 4534, and the
+.I protocol
+which is currently limited to TCP.
+.SH OPTIONS
+The following options are available:
+.TP
+.I "--all"
+Allow access to all URI on every port allowed by Moonlight (4502-4534).
+.TP
+.I "--local"
+Allow local access on every port allowed by Moonlight (4502-4534).
+.TP
+.I "--file policy"
+Load the specified policy file and send it to every requester.
+.SH FILES
+When a file policy file is specified it must be in the correct XML format
+required by the plugins.
+.PP
+This example will allow any 
+.I host
+(domain) to connect using
+.I protocol
+TCP
+to
+.I ports
+4502 to 4534. This policy is the most lax policy that is possible to use
+with Moonlight.
+
+.nf
+<?xml version="1.0" encoding="utf-8"?>
+<access-policy>
+	<cross-domain-access>
+		<policy>
+			<allow-from>
+				<domain uri="*" />
+			</allow-from>
+			<grant-to>
+				<socket-resource port="4502-4534" protocol="tcp" />
+			</grant-to>
+		</policy>
+	</cross-domain-access>
+</access-policy>
+.fi
+.SH MAILING LISTS
+Mailing lists are listed at the
+http://www.mono-project.com/Mailing_Lists
+.SH WEB SITE
+http://www.mono-project.com/Moonlight
+.SH SEE ALSO
+.PP
+mono(1)
+
