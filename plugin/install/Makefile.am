@@ -42,9 +42,11 @@ SDK_DLLS = \
 	System.Windows.Controls.Design.dll      \
 	System.Windows.Controls.dll             \
 	System.Windows.VisualStudio.Design.dll  \
-	System.Xml.Linq.dll                     \
 	System.Xml.Serialization.dll            \
 	System.Xml.Utils.dll
+
+# this belongs up there but we require it in the xpi to get the deep zoom (memorabilia, playboy, etc) sites working
+#	System.Xml.Linq.dll
 
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
 	rm -f $@
