@@ -1,3 +1,7 @@
+2009-05-04  Andreia Gaita  <avidigal@novell.com>
+
+	* mxap.cs: fix bool flags to accept yes/no/true/false optionally
+
 2009-05-02  Andreia Gaita  <avidigal@novell.com>
 
 	* mxap.cs: usage tweaks

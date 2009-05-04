@@ -554,6 +554,16 @@ namespace Moonlight {
 			}
 		}
 
+		static bool ParseBool (string v, bool defaul) {
+			if (v == null) return true;
+			bool ret;
+			if (bool.TryParse (v, out ret))
+				return ret;
+			if (v.ToLower() == "no") return false;
+			if (v.ToLower() == "yes") return true;
+			return defaul;
+		}	
+		
 		public static int Main (string [] args)
 		{
 			MXap mxap = new MXap ();
@@ -570,26 +580,26 @@ namespace Moonlight {
 
 			var p = new OptionSet () {
 				{ "h|?|help", v => help = v != null },
-				{ "generate-html", v => mxap.GenerateHtml = v != null },
-				{ "include-mdb", v => mxap.IncludeMdb = v != null},
+				{ "generate-html:", v => mxap.GenerateHtml = ParseBool (v, mxap.GenerateHtml) },
+				{ "include-mdb:", v => mxap.IncludeMdb = ParseBool (v, mxap.IncludeMdb) },
 				{ "application-name=", v => mxap.ApplicationName = v },
-				{ "generate-manifest", v => mxap.GenerateManifest = v != null },
+				{ "generate-manifest:", v => mxap.GenerateManifest = ParseBool (v, mxap.GenerateManifest) },
 				{ "entry-point-type=", v => mxap.EntryPointType = v },
 				{ "cs-sources=", v => mxap.CSSources = v },
 				{ "res-sources=", v => resourceFile = v },
 				{ "ares-sources=", v => aresourceFile = v },
 				{ "cres-sources=", v => cresourceFile = v },
-				{ "desktop", v => mxap.Desktop = v != null },
+				{ "desktop:", v => mxap.Desktop = ParseBool (v, mxap.Desktop) },
 				{ "builddirhack=", v => mxap.TopBuildDir = v },
-				{ "r:|reference:", v => mxap.ExternalAssemblies.Add (v) },
-				{ "l|list-generated", v => mxap.ListGenerated = v != null },
-				{ "v|verbose", v => mxap.Verbose =  v != null },
-				{ "res:|resource:", "-res=filename[,resource name]", v => resources.Add (v) },
-				{ "ares:|assembly-resource:", "-ares=filename[,resource name]", v => aresources.Add (v) },
-				{ "cres:|content-resource:", "-cres=filename[,resource name]", v => cresources.Add (v) },
+				{ "r=|reference=", v => mxap.ExternalAssemblies.Add (v) },
+				{ "l:|list-generated:", v => mxap.ListGenerated = ParseBool (v, mxap.ListGenerated) },
+				{ "v:|verbose:", v => mxap.Verbose =  ParseBool (v, mxap.Verbose) },
+				{ "res=|resource=", "-res=filename[,resource name]", v => resources.Add (v) },
+				{ "ares=|assembly-resource=", "-ares=filename[,resource name]", v => aresources.Add (v) },
+				{ "cres=|content-resource=", "-cres=filename[,resource name]", v => cresources.Add (v) },
 				{ "clean", "Removes generated files. Use with caution!", v => clean = v != null },
-				{ "out:|output-dir:", v => mxap.OutputDir = v },
-				{ "inplace", "Don't use a temporary directory", v => mxap.InPlace = v != null }
+				{ "out=|output-dir=", v => mxap.OutputDir = v },
+				{ "inplace:", "Don't use a temporary directory", v => mxap.InPlace = ParseBool (v, mxap.InPlace) }
 			};
 
 			List<string> extra = null;
