@@ -1,5 +1,8 @@
 2009-05-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	* uielement.cpp (UpdateLayout): Need to return a bool here, we
+	can't return void.
+
 	* textbox.cpp (Blink): Set the deployment.
 
 2009-05-03  Chris Toshok  <toshok@ximian.com>

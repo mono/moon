@@ -602,6 +602,7 @@ UIElement::DoArrange ()
 bool
 UIElement::UpdateLayout ()
 {
+	return false;
 }
 
 bool 
