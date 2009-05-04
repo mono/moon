@@ -1,0 +1,5 @@
+2009-05-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Build-fu
+	* sockpol.cs: New. First version of the socket policy server
+

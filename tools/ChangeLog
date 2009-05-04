@@ -1,3 +1,7 @@
+2009-05-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add sockpol
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* tools.mdp: Add a project for each tool, and clean up some of

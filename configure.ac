@@ -161,6 +161,7 @@ tools/xamlg/Makefile
 tools/xaml2html/Makefile
 tools/respack/Makefile
 tools/moonvisi/Makefile
+tools/sockpol/Makefile
 examples/Makefile
 examples/desklet/Makefile
 examples/desklet/calculator/Makefile
