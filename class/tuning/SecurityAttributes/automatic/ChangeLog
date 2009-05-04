@@ -1,3 +1,7 @@
+2009-05-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.auto.ssc: Add missing new entries
+
 2009-05-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.sc: Add/modify/remove some p/invokes used

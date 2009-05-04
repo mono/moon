@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 464 methods
+# 467 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -162,6 +162,7 @@
 +SSC-M: System.Windows.DependencyObject System.Windows.DependencyObject::DepObjectFindName(System.String)
 +SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::RegisterAny(System.String,System.Type,System.Type,System.Windows.PropertyMetadata,System.Boolean,System.Boolean)
 +SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::LookupInternal(Mono.Kind,System.String,System.Type,System.Boolean)
++SSC-M: System.Void System.Windows.DependencyProperty::AddPropertyChangeCallback(System.Windows.PropertyChangedCallback)
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_IsAttached()
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_IsNullable()
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_IsValueType()
@@ -446,6 +447,8 @@
 +SSC-M: System.Windows.Size System.Windows.SizeChangedEventArgs::get_PreviousSize()
 +SSC-M: System.Void System.Windows.Style::.ctor()
 +SSC-M: System.Void System.Windows.Style::Seal()
++SSC-M: System.Void System.Windows.TemplateBindingExpression::AttachChangeHandler()
++SSC-M: System.Void System.Windows.TemplateBindingExpression::DetachChangeHandler()
 +SSC-M: System.Void System.Windows.Threading.Dispatcher::Dispose()
 +SSC-M: System.Boolean System.Windows.Threading.Dispatcher::CheckAccess()
 +SSC-M: System.Windows.Threading.DispatcherOperation System.Windows.Threading.Dispatcher::BeginInvoke(System.Delegate,System.Object[])
