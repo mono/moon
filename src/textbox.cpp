@@ -2691,6 +2691,8 @@ TextBoxView::Blink ()
 {
 	guint multiplier;
 	
+	Deployment::SetCurrent (GetDeployment ());
+	
 	if (cursor_visible) {
 		multiplier = CURSOR_BLINK_OFF_MULTIPLIER;
 		HideCursor ();

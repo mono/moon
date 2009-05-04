@@ -1,3 +1,7 @@
+2009-05-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (Blink): Set the deployment.
+
 2009-05-03  Chris Toshok  <toshok@ximian.com>
 
 	* everywhere (NotifyListenersOfPropertyChange): add a MoonError
