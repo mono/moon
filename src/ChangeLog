@@ -1,5 +1,7 @@
 2009-05-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	* debug.cpp (Frame::ToString): fixed compile warning.
+
 	* uielement.cpp (UpdateLayout): Need to return a bool here, we
 	can't return void.
 

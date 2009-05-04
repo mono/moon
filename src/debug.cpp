@@ -479,8 +479,9 @@ struct Frame : List::Node {
 		g_free (name);
 	}
 
-	virtual char * ToString () {
-		return g_strdup_printf ("%d|%1x|%s", type, ptr, name);
+	virtual char *ToString ()
+	{
+		return g_strdup_printf ("%d|%lx|%s", type, ptr, name);
 	}
 };
 
@@ -499,10 +500,10 @@ struct Frames : List::Node {
 List *allframes = NULL;
 #endif
 
-void print_reftrace (const char * act, const char * typname, int refcount, bool keep) {
-
+void
+print_reftrace (const char * act, const char * typname, int refcount, bool keep)
+{
 #ifdef HAVE_UNWIND
-
 	unw_cursor_t cursor; unw_context_t uc;
 	unw_word_t ip, sp, bp;
 
