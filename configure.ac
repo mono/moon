@@ -1,4 +1,4 @@
-AC_INIT([moonlight], [1.9.0])
+AC_INIT([moonlight], [1.9.0.1])
 AC_CONFIG_SRCDIR(README)
 AC_CANONICAL_SYSTEM
 
