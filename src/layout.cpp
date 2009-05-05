@@ -574,14 +574,14 @@ TextLayout::Select (int start, int length, bool byte_offsets)
 	// compute the region between the 2 starts
 	pre.length = abs (new_selection_start - selection_start);
 	pre.start = MIN (selection_start, new_selection_start);
-	pre.select = new_selection_start < selection_start;
+	pre.select = (new_selection_start < selection_start) && (new_selection_length > 0);
 	
 	// compute the region between the 2 ends
 	new_selection_end = new_selection_start + new_selection_length;
 	selection_end = selection_start + selection_length;
 	post.length = abs (new_selection_end - selection_end);
 	post.start = MIN (selection_end, new_selection_end);
-	post.select = new_selection_end > selection_end;
+	post.select = (new_selection_end > selection_end) && (new_selection_length > 0);
 	
 	UpdateSelection (lines, &pre, &post);
 	
