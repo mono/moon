@@ -155,8 +155,12 @@ Collection::InsertWithError (int index, Value *value, MoonError *error)
 		g_ptr_array_insert (array, index, added);
 	
 		SetCount ((int) array->len);
-		
-		EmitChanged (CollectionChangedActionAdd, added, NULL, index);
+
+		Value *added_copy = new Value (*added);
+
+		EmitChanged (CollectionChangedActionAdd, added_copy, NULL, index);
+
+		delete added_copy;
 	
 		return true;
 	}

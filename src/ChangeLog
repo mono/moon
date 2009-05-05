@@ -1,3 +1,10 @@
+2009-05-05  Chris Toshok  <toshok@ximian.com>
+
+	* collection.cpp (Collection::InsertWithError): we need to make a
+	further copy because the caller could remove the element in a
+	handler, which causes us to delete the value (values aren't ref
+	counted.)
+
 2009-05-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxBase::Initialize): Set use_preedit() to
