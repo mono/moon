@@ -586,7 +586,6 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	
 	im_ctx = gtk_im_multicontext_new ();
 	gtk_im_context_set_use_preedit (im_ctx, false);
-	//gtk_im_context_set_client_window (im_ctx, GetGdkWindow (this));
 	
 	g_signal_connect (im_ctx, "retrieve-surrounding", G_CALLBACK (TextBoxBase::retrieve_surrounding), this);
 	g_signal_connect (im_ctx, "delete-surrounding", G_CALLBACK (TextBoxBase::delete_surrounding), this);
