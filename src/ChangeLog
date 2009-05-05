@@ -1,3 +1,7 @@
+2009-05-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-ffmpeg.cpp: FfmpegDecoder: Chain Dispose.
+
 2009-05-04  Geoff Norton  <gnorton@novell.com>
 
 	* codec-version.h.in: Bump

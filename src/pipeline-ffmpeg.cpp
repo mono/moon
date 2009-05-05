@@ -235,6 +235,8 @@ FfmpegDecoder::Dispose ()
 	}
 	
 	pthread_mutex_unlock (&ffmpeg_mutex);
+	
+	IMediaDecoder::Dispose ();
 }
 
 void
