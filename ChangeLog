@@ -1,5 +1,10 @@
 2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
 
+	* data/Makefile.am: Guard the managed browser pc files 
+	  with INCLUDE_BROWSER_MANAGED_CODE.
+
+2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
+
 	* data/Makefile.am:
 	* data/moon-browser-redist-assemblies.pc:
 	  Add a pkgconfig file for redistributable assemblies.
