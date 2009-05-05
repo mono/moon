@@ -1,3 +1,9 @@
+2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* data/Makefile.am:
+	* data/moon-browser-redist-assemblies.pc:
+	  Add a pkgconfig file for redistributable assemblies.
+
 2009-05-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* configure.ac: Add sockpol
