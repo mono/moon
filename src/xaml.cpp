@@ -4909,7 +4909,10 @@ char *
 xaml_get_element_key (void *parser, void *element_instance)
 {
 	XamlElementInstance *item = (XamlElementInstance *) element_instance;
-	return g_strdup (item->GetKey ());
+	const char *key = item->GetKey ();
+	if (!key)
+		key = item->GetName ();	
+	return g_strdup (key);
 }
 
 char *

@@ -360,7 +360,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void TestLoadResources ()
 		{
 			ListBox box = (ListBox) XamlReader.Load (@"

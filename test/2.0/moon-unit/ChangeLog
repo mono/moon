@@ -1,5 +1,11 @@
 2009-05-05  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/ResourceDictionaryTest.cs: If 'Key' hasn't
+	  been set, use 'Name'. Allows elements to be added to
+	  ResourceDictionarys in managed land.
+
+2009-05-05  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/ResourceDictionaryTest.cs: Add a test which
 	  tries to add data to ListBox.Resources through xaml
 
