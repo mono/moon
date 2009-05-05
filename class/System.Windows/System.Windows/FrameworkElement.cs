@@ -179,8 +179,11 @@ namespace System.Windows {
 		internal void SetTemplateBinding (DependencyProperty dp, TemplateBindingExpression tb)
 		{
 			tb.AttachChangeHandler();
-
-			SetValue (dp, tb);
+			try {
+				SetValue (dp, tb);
+			} catch {
+				// Do nothing here - The DP should still have its default value
+			}
 		}
 
 		public BindingExpressionBase SetBinding (DependencyProperty dp, Binding binding)

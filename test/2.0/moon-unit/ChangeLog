@@ -1,5 +1,11 @@
 2009-05-05  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Put in some error
+	  handling for TemplateBinding failures when using
+	  incompatible types.
+
+2009-05-05  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: When a templatebinding
 	  is attached to ContentControl.Content, we need to ensure
 	  that the ContentControl is set to non-parenting mode.

@@ -54,9 +54,13 @@ namespace System.Windows {
 				unsafe {
 					UnmanagedPropertyChangedEventArgs *args = (UnmanagedPropertyChangedEventArgs*)propertyChangeArgs;
 
-					// FIXME: type converters?  how do we deal with that here?
+					// Type converting doesn't happen for TemplateBindings
 					UpdatingTarget = true;
-					Target.SetValueImpl (TargetProperty, Value.ToObject (SourceProperty.PropertyType, args->new_value));
+					try {
+						Target.SetValueImpl (TargetProperty, Value.ToObject (SourceProperty.PropertyType, args->new_value));
+					} catch {
+						Target.SetValue (TargetProperty, TargetProperty.DefaultValue);
+					}
 					UpdatingTarget = false;
 				}
 			}

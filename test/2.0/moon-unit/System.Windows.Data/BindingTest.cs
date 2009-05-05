@@ -1445,6 +1445,80 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 				);
 			});
 		}
+							
+							
+		[TestMethod]
+		[Asynchronous]
+		public void XamlTemplateBinding2 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    xmlns:clr=""clr-namespace:Mono.Moonlight"">
+    <ContentControl.Template>
+        <ControlTemplate>
+            <Canvas>
+                <TextBlock x:Name=""Parent"" Text=""{TemplateBinding Content}"" />
+            </Canvas>
+        </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>");
+			c.Content = "STRING";
+			CreateAsyncTest (c, () => {
+				Assert.VisualChildren (c,
+					new VisualNode<Canvas> ("#1",
+						new VisualNode<TextBlock> ("#2", (b) => {
+							Assert.AreEqual (c.Content.ToString (), b.Text, "#a");
+						})
+					)
+				);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void XamlTemplateBinding3 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    xmlns:clr=""clr-namespace:Mono.Moonlight"">
+    <ContentControl.Template>
+        <ControlTemplate>
+            <Canvas>
+                <TextBlock x:Name=""Parent"" Text=""{TemplateBinding Content}"" />
+            </Canvas>
+        </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>");
+			c.Content = new Rectangle ();
+			TextBlock block = null;
+			CreateAsyncTest (c,
+				() => {
+					Assert.VisualChildren (c,
+						new VisualNode<Canvas> ("#1",
+							new VisualNode<TextBlock> ("#2", (b) => block = b)
+						)
+					);
+				},
+				() => {
+					Assert.AreEqual ("", block.Text, "#a");
+					Assert.IsInstanceOfType<TemplateBindingExpression> (block.ReadLocalValue (TextBlock.TextProperty), "#b");
+				},
+				() => c.Content = "STRING",
+				() => {
+					Assert.AreEqual ("STRING", block.Text, "#c");
+					Assert.IsInstanceOfType<TemplateBindingExpression> (block.ReadLocalValue (TextBlock.TextProperty), "#d");
+				},
+				() => c.Content = new Ellipse (),
+				() => {
+					Assert.AreEqual ("", block.Text, "#e");
+					Assert.IsInstanceOfType<TemplateBindingExpression> (block.ReadLocalValue (TextBlock.TextProperty), "#f");
+				}
+			);
+		}
 
 		[TestMethod]
 		public void CustomObjectTest1 ()
