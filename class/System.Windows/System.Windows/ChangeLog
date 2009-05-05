@@ -1,3 +1,9 @@
+2009-05-05  Alan McGovern  <amcgovern@novell.com>
+
+	* TemplateBindingExpression.cs: When a templatebinding is
+	  attached to ContentControl.Content, we need to ensure that
+	  the ContentControl is set to non-parenting mode.
+
 2009-05-04  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* AssemblyPart.cs: Return null when asked to load invalid 

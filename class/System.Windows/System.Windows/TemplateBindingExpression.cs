@@ -33,6 +33,7 @@ using System.Windows.Controls;
 namespace System.Windows {
 	public class TemplateBindingExpression : Expression {
 
+		bool setsParent;
 		internal Control Source;
 		internal string SourcePropertyName;
 		internal DependencyProperty SourceProperty;
@@ -71,6 +72,11 @@ namespace System.Windows {
 			if (change_handler == null)
 				change_handler = new UnmanagedPropertyChangeHandler (PropertyChanged);
 
+			ContentControl c = Target as ContentControl;
+			if (TargetProperty == ContentControl.ContentProperty && c != null) {
+				setsParent = c.ContentSetsParent;
+				c.ContentSetsParent = false;
+			}
 			NativeMethods.dependency_object_add_property_change_handler (Source.native,
 										     SourceProperty.Native,
 										     change_handler,
@@ -82,6 +88,10 @@ namespace System.Windows {
 			if (change_handler == null)
 				return;
 
+			ContentControl c = Target as ContentControl;
+			if (c != null)
+				c.ContentSetsParent = setsParent;
+			
 			NativeMethods.dependency_object_remove_property_change_handler (Source.native,
 											SourceProperty.Native,
 											change_handler);

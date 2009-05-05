@@ -1414,6 +1414,37 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 ");
 			});
 		}
+							
+		[TestMethod]
+		[Asynchronous]
+		public void XamlTemplateBinding ()
+		{
+			ContentControl c = (ContentControl)XamlReader.Load (@"
+<ContentControl
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    xmlns:clr=""clr-namespace:Mono.Moonlight"">
+    <ContentControl.Template>
+        <ControlTemplate>
+            <Canvas>
+                <ContentControl x:Name=""Parent"" Content=""{TemplateBinding Content}"" />
+            </Canvas>
+        </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>");
+			c.Content = new Rectangle ();
+			CreateAsyncTest (c, () => {
+				Assert.VisualChildren (c,
+					new VisualNode<Canvas> ("#1",
+						new VisualNode<ContentControl>("#2",
+							new VisualNode<ContentPresenter> ("#3",
+								new VisualNode<Rectangle>("#4")
+							)
+						)
+					)
+				);
+			});
+		}
 
 		[TestMethod]
 		public void CustomObjectTest1 ()
