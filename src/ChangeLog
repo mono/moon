@@ -1,3 +1,26 @@
+2009-05-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::Initialize): Create a new GtkIMContext
+	and hook up some callbacks. Also init need_im_reset to false.
+	(TextBoxBase::~TextBoxBase): Kill the IMContext.
+	(TextBoxBase::OnKeyDown): Filter the event key through the
+	IMContext. If it handles the key, don't do anything more.
+	(TextBoxBase::DeleteSurrounding): New callback method for
+	IMContext stuff.
+	(TextBoxBase::RetrieveSurrounding): Same.
+	(TextBoxBase::Commit): New IMContext callback method to commit the
+	input-method chars into the TextBox.
+	(TextBoxBase::ResetIMContext): New helper method to reset the
+	IMContext.
+	(TextBoxBase::OnFocusOut): Update GtkIMContext focus state.
+	(TextBoxBase::OnFocusIn): Same.
+	(TextBoxBase::OnPropertyChanged): If the IsReadOnly property state
+	changes, update the GtkIMContext state accordingly. Same with the
+	various Selection states and Text property.
+
+	* eventargs.cpp (GetEvent): New method to get access to the
+	original GdkEventKey event for use with GtkIMContext.
+
 2009-05-05  Alan McGovern  <amcgovern@novell.com>
 
 	* geometry.h:

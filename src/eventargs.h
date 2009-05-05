@@ -200,6 +200,7 @@ public:
 	int GetPlatformKeyCode ();
 	
 	// accessors for the native GdkEventKey
+	GdkEventKey *GetEvent ();
 	GdkModifierType GetModifiers ();
 	gunichar GetUnicode ();
 	guint GetKeyVal ();

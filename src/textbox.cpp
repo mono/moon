@@ -315,6 +315,7 @@ class TextBoxUndoActionInsert : public TextBoxUndoAction {
 	TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar *inserted, int length);
 	virtual ~TextBoxUndoActionInsert ();
 	
+	bool Insert (int start, const gunichar *text, int len);
 	bool Insert (int start, gunichar c);
 };
 
@@ -381,6 +382,18 @@ TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int sele
 TextBoxUndoActionInsert::~TextBoxUndoActionInsert ()
 {
 	delete buffer;
+}
+
+bool
+TextBoxUndoActionInsert::Insert (int start, const gunichar *text, int len)
+{
+	if (!growable || start != (this->start + length))
+		return false;
+	
+	buffer->Append (text, len);
+	length += len;
+	
+	return true;
 }
 
 bool
@@ -541,6 +554,13 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	
 	contentElement = NULL;
 	
+	im_ctx = gtk_im_multicontext_new ();
+	//gtk_im_context_set_use_preedit (im_ctx, false);
+	
+	g_signal_connect (im_ctx, "retrieve-surrounding", G_CALLBACK (TextBoxBase::retrieve_surrounding), this);
+	g_signal_connect (im_ctx, "delete-surrounding", G_CALLBACK (TextBoxBase::delete_surrounding), this);
+	g_signal_connect (im_ctx, "commit", G_CALLBACK (TextBoxBase::commit), this);
+	
 	undo = new TextBoxUndoStack (10);
 	redo = new TextBoxUndoStack (10);
 	buffer = new TextBuffer ();
@@ -552,6 +572,7 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	cursor_offset = 0.0;
 	
 	accepts_return = false;
+	need_im_reset = false;
 	is_read_only = false;
 	have_offset = false;
 	inkeypress = false;
@@ -571,6 +592,9 @@ TextBoxBase::~TextBoxBase ()
 	RemoveHandler (UIElement::GotFocusEvent, TextBoxBase::focus_in, this);
 	RemoveHandler (UIElement::KeyDownEvent, TextBoxBase::key_down, this);
 	RemoveHandler (UIElement::KeyUpEvent, TextBoxBase::key_up, this);
+	
+	ResetIMContext ();
+	g_object_unref (im_ctx);
 	
 	CleanupDownloader ();
 	
@@ -1249,31 +1273,33 @@ TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
 	TextBoxUndoAction *action;
 	int start, length;
 	gunichar *text;
-	glong textlen;
+	glong len;
 	
 	length = abs (selection_cursor - selection_anchor);
 	start = MIN (selection_anchor, selection_cursor);
 	
-	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &textlen)))
+	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &len)))
 		return;
+	
+	ResetIMContext ();
 	
 	if (length > 0) {
 		// replace the currently selected text
-		action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, textlen);
+		action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, len);
 		
-		buffer->Replace (start, length, text, textlen);
+		buffer->Replace (start, length, text, len);
 	} else {
-		// insert the text at the cursor
-		action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, textlen);
+		// insert the text at the cursor position
+		action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, len);
 		
-		buffer->Insert (start, text, textlen);
+		buffer->Insert (start, text, len);
 	}
 	
 	undo->Push (action);
 	redo->Clear ();
 	
 	emit |= TEXT_CHANGED;
-	start += textlen;
+	start += len;
 	
 	inkeypress = true;
 	SetSelectionStart (start);
@@ -1296,6 +1322,13 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 	guint key = args->GetKeyVal ();
 	GtkClipboard *clipboard;
 	gunichar c;
+	
+	if (!is_read_only && gtk_im_context_filter_keypress (im_ctx, args->GetEvent ())) {
+		need_im_reset = true;
+		return;
+	}
+	
+	ResetIMContext ();
 	
 	if (args->IsModifier ())
 		return;
@@ -1438,13 +1471,170 @@ TextBoxBase::key_down (EventObject *sender, EventArgs *args, void *closure)
 void
 TextBoxBase::OnKeyUp (KeyEventArgs *args)
 {
-	// no-op
+	if (!is_read_only && gtk_im_context_filter_keypress (im_ctx, args->GetEvent ())) {
+		need_im_reset = true;
+		return;
+	}
 }
 
 void
 TextBoxBase::key_up (EventObject *sender, EventArgs *args, void *closure)
 {
 	((TextBoxBase *) closure)->OnKeyUp ((KeyEventArgs *) args);
+}
+
+bool
+TextBoxBase::DeleteSurrounding (int offset, int n_chars)
+{
+	const char *delete_start, *delete_end;
+	const char *text = GetActualText ();
+	int anchor = selection_anchor;
+	int cursor = selection_cursor;
+	TextBoxUndoAction *action;
+	int start, length;
+	
+	if (is_read_only)
+		return true;
+	
+	// get the utf-8 pointers so that we can use them to get gunichar offsets
+	delete_start = g_utf8_offset_to_pointer (text, selection_cursor) + offset;
+	delete_end = delete_start + n_chars;
+	
+	// get the character length/start index
+	length = g_utf8_pointer_to_offset (delete_start, delete_end);
+	start = g_utf8_pointer_to_offset (text, delete_start);
+	
+	if (length > 0) {
+		action = new TextBoxUndoActionDelete (selection_anchor, selection_cursor, buffer, start, length);
+		undo->Push (action);
+		redo->Clear ();
+		
+		buffer->Cut (start, length);
+		emit |= TEXT_CHANGED;
+		anchor = start;
+		cursor = start;
+	}
+	
+	inkeypress = true;
+	
+	// check to see if selection has changed
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
+		emit |= SELECTION_CHANGED;
+	}
+	
+	inkeypress = false;
+	
+	SyncAndEmit ();
+	
+	return true;
+}
+
+gboolean
+TextBoxBase::delete_surrounding (GtkIMContext *context, int offset, int n_chars, gpointer user_data)
+{
+	return ((TextBoxBase *) user_data)->DeleteSurrounding (offset, n_chars);
+}
+
+bool
+TextBoxBase::RetrieveSurrounding ()
+{
+	const char *text = GetActualText ();
+	const char *cursor = g_utf8_offset_to_pointer (text, selection_cursor);
+	
+	gtk_im_context_set_surrounding (im_ctx, text, -1, cursor - text);
+	
+	return true;
+}
+
+gboolean
+TextBoxBase::retrieve_surrounding (GtkIMContext *context, gpointer user_data)
+{
+	return ((TextBoxBase *) user_data)->RetrieveSurrounding ();
+}
+
+void
+TextBoxBase::Commit (const char *str)
+{
+	TextBoxUndoAction *action;
+	int anchor, cursor;
+	int start, length;
+	gunichar *text;
+	glong len;
+	
+	if (is_read_only)
+		return;
+	
+	length = abs (selection_cursor - selection_anchor);
+	start = MIN (selection_anchor, selection_cursor);
+	
+	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &len)))
+		return;
+	
+	if (length > 0) {
+		// replace the currently selected text
+		action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, len);
+		undo->Push (action);
+		redo->Clear ();
+		
+		buffer->Replace (start, length, text, len);
+	} else {
+		// insert the text at the cursor position
+		TextBoxUndoActionInsert *insert = NULL;
+		
+		if ((action = undo->Peek ()) && action->type == TextBoxUndoActionTypeInsert) {
+			insert = (TextBoxUndoActionInsert *) action;
+			
+			if (!insert->Insert (start, text, len))
+				insert = NULL;
+		}
+		
+		if (!insert) {
+			insert = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, len);
+			undo->Push (insert);
+		}
+		
+		redo->Clear ();
+		
+		buffer->Insert (start, text, len);
+	}
+	
+	emit = TEXT_CHANGED;
+	cursor = start + len;
+	anchor = cursor;
+	
+	inkeypress = true;
+	
+	// check to see if selection has changed
+	if (selection_anchor != anchor || selection_cursor != cursor) {
+		SetSelectionLength (abs (cursor - anchor));
+		SetSelectionStart (MIN (anchor, cursor));
+		selection_anchor = anchor;
+		selection_cursor = cursor;
+		emit |= SELECTION_CHANGED;
+	}
+	
+	inkeypress = false;
+	
+	SyncAndEmit ();
+}
+
+void
+TextBoxBase::commit (GtkIMContext *context, const char *str, gpointer user_data)
+{
+	((TextBoxBase *) user_data)->Commit (str);
+}
+
+void
+TextBoxBase::ResetIMContext ()
+{
+	if (need_im_reset) {
+		gtk_im_context_reset (im_ctx);
+		need_im_reset = false;
+	}
 }
 
 void
@@ -1461,6 +1651,8 @@ TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 		args->GetPosition (view, &x, &y);
 		
 		cursor = view->GetCursorFromXY (x, y);
+		
+		ResetIMContext ();
 		
 		switch (event->type) {
 		case GDK_3BUTTON_PRESS:
@@ -1559,6 +1751,11 @@ TextBoxBase::OnFocusOut (EventArgs *args)
 	
 	if (view)
 		view->OnFocusOut ();
+	
+	if (!is_read_only) {
+		gtk_im_context_focus_out (im_ctx);
+		need_im_reset = true;
+	}
 }
 
 void
@@ -1574,6 +1771,11 @@ TextBoxBase::OnFocusIn (EventArgs *args)
 	
 	if (view)
 		view->OnFocusIn ();
+	
+	if (!is_read_only) {
+		gtk_im_context_focus_in (im_ctx);
+		need_im_reset = true;
+	}
 }
 
 void
@@ -2059,6 +2261,15 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == TextBox::IsReadOnlyProperty) {
 		// update is_read_only state
 		is_read_only = args->GetNewValue()->AsBool ();
+		
+		if (focused) {
+			if (is_read_only) {
+				ResetIMContext ();
+				gtk_im_context_focus_out (im_ctx);
+			} else {
+				gtk_im_context_focus_in (im_ctx);
+			}
+		}
 	} else if (args->GetId () == TextBox::MaxLengthProperty) {
 		// update max_length state
 		max_length = args->GetNewValue()->AsInt32 ();
@@ -2073,6 +2284,8 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			start = MIN (selection_anchor, selection_cursor);
 			
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
+				ResetIMContext ();
+				
 				if (length > 0) {
 					// replace the currently selected text
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, textlen);
@@ -2102,6 +2315,8 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		length = abs (selection_cursor - selection_anchor);
 		start = args->GetNewValue()->AsInt32 ();
 		
+		ResetIMContext ();
+		
 		if (start > buffer->len) {
 			// clamp the selection start offset to a valid value
 			SetSelectionStart (buffer->len);
@@ -2130,6 +2345,8 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == TextBox::SelectionLengthProperty) {
 		start = MIN (selection_anchor, selection_cursor);
 		length = args->GetNewValue()->AsInt32 ();
+		
+		ResetIMContext ();
 		
 		if (start + length > buffer->len) {
 			// clamp the selection length to a valid value
@@ -2163,6 +2380,8 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			glong textlen;
 			
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
+				ResetIMContext ();
+				
 				if (buffer->len > 0) {
 					// replace the current text
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, 0, buffer->len, text, textlen);

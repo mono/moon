@@ -132,11 +132,13 @@ class TextBoxBase : public Control, public ITextAttributes {
 	int selection_anchor;
 	int selection_cursor;
 	double cursor_offset;
+	GtkIMContext *im_ctx;
 	TextBuffer *buffer;
 	TextBoxView *view;
 	int max_length;
 	
 	int accepts_return:1;
+	int need_im_reset:1;
 	int is_read_only:1;
 	int have_offset:1;
 	int inkeypress:1;
@@ -159,6 +161,14 @@ class TextBoxBase : public Control, public ITextAttributes {
 	void OnMouseLeftButtonDown (MouseEventArgs *args);
 	void OnMouseLeftButtonUp (MouseEventArgs *args);
 	void OnMouseMove (MouseEventArgs *args);
+	
+	// GtkIMContext events
+	static gboolean delete_surrounding (GtkIMContext *context, int offset, int n_chars, gpointer user_data);
+	static gboolean retrieve_surrounding (GtkIMContext *context, gpointer user_data);
+	static void commit (GtkIMContext *context, const char *str, gpointer user_data);
+	bool DeleteSurrounding (int offset, int n_chars);
+	void Commit (const char *str);
+	bool RetrieveSurrounding ();
 	
 	// keypress events
 	static void key_down (EventObject *sender, EventArgs *args, void *closure);
@@ -196,6 +206,8 @@ class TextBoxBase : public Control, public ITextAttributes {
 	void KeyPressDown (GdkModifierType modifiers);
 	void KeyPressUp (GdkModifierType modifiers);
 	
+	void ResetIMContext ();
+	
 	void EmitCursorPositionChanged (double height, double x, double y);
 	virtual void EmitSelectionChanged () { }
 	virtual void EmitTextChanged () = 0;
@@ -222,6 +234,8 @@ class TextBoxBase : public Control, public ITextAttributes {
 	bool IsFocused () { return focused; }
 	
 	virtual void ClearFontSource () = 0;
+	
+	virtual const char *GetActualText () = 0;
 	
 	virtual void SetSelectedText (const char *text) = 0;
 	virtual const char *GetSelectedText () = 0;
@@ -318,6 +332,8 @@ class TextBox : public TextBoxBase {
 	
  protected:
 	virtual void ClearFontSource ();
+	
+	virtual const char *GetActualText () { return GetText (); }
 	
 	virtual void EmitSelectionChanged ();
 	virtual void EmitTextChanged ();
@@ -448,6 +464,8 @@ class PasswordBox : public TextBoxBase {
 	// Protected Property Accessors
 	//
 	virtual void ClearFontSource ();
+	
+	virtual const char *GetActualText () { return GetPassword (); }
 	
 	virtual void SetSelectedText (const char *text);
 	virtual const char *GetSelectedText ();

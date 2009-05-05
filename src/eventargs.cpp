@@ -379,6 +379,12 @@ KeyEventArgs::~KeyEventArgs ()
 	gdk_event_free ((GdkEvent *) event);
 }
 
+GdkEventKey *
+KeyEventArgs::GetEvent ()
+{
+	return event;
+}
+
 int
 KeyEventArgs::GetKey ()
 {
