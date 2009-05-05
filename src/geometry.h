@@ -233,7 +233,7 @@ class PathGeometry : public Geometry {
  public:
  	/* @PropertyType=FillRule,DefaultValue=FillRuleEvenOdd,GenerateAccessors */
 	const static int FillRuleProperty;
- 	/* @PropertyType=PathFigureCollection,GenerateAccessors,AutoCreateValue */
+ 	/* @PropertyType=PathFigureCollection,GenerateAccessors */
 	const static int FiguresProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

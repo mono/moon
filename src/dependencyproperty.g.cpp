@@ -211,7 +211,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "RadiusY", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "RadiusX", new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::PATHGEOMETRY, "FillRule", new Value (FillRuleEvenOdd), Type::INT32);
-	DependencyProperty::RegisterFull (this, Type::PATHGEOMETRY, "Figures", NULL, Type::PATHFIGURE_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::PATHGEOMETRY, "Figures", Type::PATHFIGURE_COLLECTION);
 	DependencyProperty::Register (this, Type::LINEGEOMETRY, "StartPoint", Type::POINT);
 	DependencyProperty::Register (this, Type::LINEGEOMETRY, "EndPoint", Type::POINT);
 	DependencyProperty::Register (this, Type::GEOMETRYGROUP, "FillRule", new Value (FillRuleEvenOdd), Type::INT32);
@@ -395,7 +395,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "FontSource", Type::FONTSOURCE);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "Value", Type::OBJECT);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "KeyTime", Type::KEYTIME);
-	DependencyProperty::RegisterFull (this, Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", NULL, Type::OBJECTKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
+	DependencyProperty::Register (this, Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::OBJECTKEYFRAME_COLLECTION);
 	DependencyProperty::Register (this, Type::MATRIXTRANSFORM, "Matrix", Type::MATRIX);
 	DependencyProperty::Register (this, Type::LINESEGMENT, "Point", Type::POINT);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LayoutSlot", NULL, Type::RECT, true, false, false, NULL, NULL, NULL, false, false);
