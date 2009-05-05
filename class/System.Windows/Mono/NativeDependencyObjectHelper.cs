@@ -357,6 +357,7 @@ namespace Mono {
 			case Kind.USERCONTROL: return new UserControl (raw, false);
 			case Kind.VIDEOBRUSH: return new VideoBrush (raw, false);
 			case Kind.WRITEABLEBITMAP: return new WriteableBitmap (raw, false);
+			case Kind.OBJECTKEYFRAME_COLLECTION: return new ObjectKeyFrameCollection (raw, false);
 				
 			case Kind.CLOCKGROUP:
 			case Kind.ANIMATIONCLOCK:
