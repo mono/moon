@@ -360,6 +360,21 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug]
+		public void TestLoadResources ()
+		{
+			ListBox box = (ListBox) XamlReader.Load (@"
+<ListBox xmlns=""http://schemas.microsoft.com/client/2007""
+		 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ListBox.Resources>
+		<Storyboard x:Name=""Show"" />
+	</ListBox.Resources>
+</ListBox>");
+			Assert.AreEqual (1, box.Resources.Count, "#1");
+			Assert.IsInstanceOfType<Storyboard> (box.Resources ["Show"], "#2");
+		}
+		
+		[TestMethod]
 		public void TestxKeyOutsideDictionary ()
 		{
 			Canvas b = (Canvas)
