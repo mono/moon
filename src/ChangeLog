@@ -1,3 +1,8 @@
+2009-05-05  Alan McGovern  <amcgovern@novell.com>
+
+	* template.h: Remove the forward decls for TemplateBinding and
+	  XamlTemplateBinding as they don't exist in unmanaged anymore
+
 2009-05-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline-ffmpeg.cpp: FfmpegDecoder: Chain Dispose.
