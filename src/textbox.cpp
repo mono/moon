@@ -527,6 +527,36 @@ TextBoxUndoStack::Peek ()
 
 #define IsEOL(c) ((c) == '\r' || (c) == '\n')
 
+static GdkWindow *
+GetGdkWindow (TextBoxBase *textbox)
+{
+	MoonWindow *window;
+	Surface *surface;
+	
+	if (!(surface = textbox->GetSurface ()))
+		return NULL;
+	
+	if (!(window = surface->GetWindow ()))
+		return NULL;
+	
+	return window->GetGdkWindow ();
+}
+
+static GtkClipboard *
+GetClipboard (TextBoxBase *textbox, GdkAtom atom)
+{
+	GdkDisplay *display;
+	GdkWindow *window;
+	
+	if (!(window = GetGdkWindow (textbox)))
+		return NULL;
+	
+	if (!(display = gdk_drawable_get_display ((GdkDrawable *) window)))
+		return NULL;
+	
+	return gtk_clipboard_get_for_display (display, atom);
+}
+
 void
 TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 {
@@ -555,7 +585,8 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	contentElement = NULL;
 	
 	im_ctx = gtk_im_multicontext_new ();
-	//gtk_im_context_set_use_preedit (im_ctx, false);
+	gtk_im_context_set_use_preedit (im_ctx, false);
+	//gtk_im_context_set_client_window (im_ctx, GetGdkWindow (this));
 	
 	g_signal_connect (im_ctx, "retrieve-surrounding", G_CALLBACK (TextBoxBase::retrieve_surrounding), this);
 	g_signal_connect (im_ctx, "delete-surrounding", G_CALLBACK (TextBoxBase::delete_surrounding), this);
@@ -602,6 +633,14 @@ TextBoxBase::~TextBoxBase ()
 	delete undo;
 	delete redo;
 	delete font;
+}
+
+void
+TextBoxBase::SetSurface (Surface *surface)
+{
+	Control::SetSurface (surface);
+	
+	gtk_im_context_set_client_window (im_ctx, GetGdkWindow (this));
 }
 
 void
@@ -1242,29 +1281,6 @@ TextBoxBase::SyncAndEmit ()
 		EmitSelectionChanged ();
 	
 	emit = NOTHING_CHANGED;
-}
-
-static GtkClipboard *
-GetClipboard (TextBoxBase *textbox, GdkAtom atom)
-{
-	GdkDisplay *display;
-	MoonWindow *window;
-	GdkWindow *widget;
-	Surface *surface;
-	
-	if (!(surface = textbox->GetSurface ()))
-		return NULL;
-	
-	if (!(window = surface->GetWindow ()))
-		return NULL;
-	
-	if (!(widget = window->GetGdkWindow ()))
-		return NULL;
-	
-	if (!(display = gdk_drawable_get_display ((GdkDrawable *) widget)))
-		return NULL;
-	
-	return gtk_clipboard_get_for_display (display, atom);
 }
 
 void
@@ -2986,6 +3002,8 @@ void
 TextBoxView::UpdateCursor (bool invalidate)
 {
 	int cur = textbox->GetCursor ();
+	GdkRectangle area;
+	Rect rect;
 	
 	// invalidate current cursor rect
 	if (invalidate && cursor_visible)
@@ -2993,6 +3011,12 @@ TextBoxView::UpdateCursor (bool invalidate)
 	
 	// calculate the new cursor rect
 	cursor = layout->GetCursor (Point (), cur);
+	
+	// transform the cursor rect into absolute coordinates for the IM context
+	rect = cursor.Transform (&absolute_xform);
+	area = rect.ToGdkRectangle ();
+	
+	gtk_im_context_set_cursor_location (textbox->im_ctx, &area);
 	
 	textbox->EmitCursorPositionChanged (cursor.height, cursor.x, cursor.y);
 	

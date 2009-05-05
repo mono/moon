@@ -267,6 +267,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	//
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+	virtual void SetSurface (Surface *surface);
 	virtual void OnApplyTemplate ();
 	
 	//
