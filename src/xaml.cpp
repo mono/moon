@@ -4606,7 +4606,7 @@ start_parse:
 			bool need_managed = false;
 			if (attr[i+1][0] == '{' && attr[i+1][strlen(attr[i+1]) - 1] == '}') {
 				need_setvalue = handle_xaml_markup_extension (p, item, attr [i], attr_value, prop, &v);
-				v_set = true;
+				v_set = v != NULL;
 
 				if (p->error_args) {
 					g_free (attr_value);
