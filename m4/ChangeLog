@@ -1,3 +1,9 @@
+2009-05-06  Raja R Harinath  <harinath@hurrynot.org>
+
+	* mono.m4 (mcspath): Use $(srcdir) to refer to mcs/.
+	(mono_basic_path): Likewise for mono-basic/.
+	Use AC_MSG_WARN instead of AC_WARNING.
+
 2009-05-02  Andreia Gaita  <avidigal@novell.com>
 
 	* unwind.m4: Only add unwind libs if building in debug mode

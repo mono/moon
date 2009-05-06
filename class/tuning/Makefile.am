@@ -4,11 +4,11 @@ LINKER = ../lib/tuner/monolinker.exe
 #GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib /package 2.1
 
 TUNER_DESCS =	\
-	Descriptors/mscorlib.xml	\
-	Descriptors/smcs.xml	\
-	Descriptors/System.xml	\
-	Descriptors/System.Xml.xml	\
-	Descriptors/System.ServiceModel.xml
+	$(srcdir)/Descriptors/mscorlib.xml	\
+	$(srcdir)/Descriptors/smcs.xml	\
+	$(srcdir)/Descriptors/System.xml	\
+	$(srcdir)/Descriptors/System.Xml.xml	\
+	$(srcdir)/Descriptors/System.ServiceModel.xml
 
 SECURITY_ATTRIBUTES_INFO = \
 	SecurityAttributes/mscorlib.secattr \
@@ -44,7 +44,7 @@ endif
 
 TUNER_ASSEMBLIES = $(MCS_ASSEMBLIES) $(MONO_BASIC_TUNER_ASSEMBLIES)
 
-TUNER_MASTERS = $(TUNER_ASSEMBLIES:%=masterinfos/%.info)
+TUNER_MASTERS = $(TUNER_ASSEMBLIES:%=$(srcdir)/masterinfos/%.info)
 
 EXTRA_DIST = $(TUNER_DESCS) $(TUNER_MASTERS)
 
@@ -106,7 +106,7 @@ working.stamp: $(INPUT_FILES)
 
 output.stamp: working.stamp $(SECURITY_ATTRIBUTES_INFO)
 	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(TUNER_FLAGS) $(TUNER_DESCS:%=-x %) $(TUNER_STEPS:%=-s %) $(TUNER_MASTERS:%=-i %)
-	for i in $(DLLFILES); do sn -q -R $(OUTPUT_DIR)/$$i ../mono.snk; done
+	for i in $(DLLFILES); do sn -q -R $(OUTPUT_DIR)/$$i $(srcdir)/../mono.snk; done
 	-mkdir -p $(MCS_OUTPUT_DIR)
 	for i in $(OUTPUT_FILES); do cp -p $$i $(MCS_OUTPUT_DIR); done
 	for i in $(OUTPUT_FILES); do cp -p $$i.mdb $(MCS_OUTPUT_DIR) || true; done
@@ -127,7 +127,7 @@ END_INSTALL_TARGETS = \
 	inst-System.ServiceModel.dll	\
 	inst-System.ServiceModel.Web.dll	\
 	inst-Mono.CompilerServices.SymbolWriter.dll
-	
+
 if HAVE_MONO_BASIC
 END_INSTALL_TARGETS += inst-Microsoft.VisualBasic.dll
 endif

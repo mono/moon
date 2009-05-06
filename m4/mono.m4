@@ -12,7 +12,7 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 		dnl path to mcs checkout
 		dnl 
 		AC_ARG_WITH(mcspath, AC_HELP_STRING([--with-mcspath=<path>], []),
-			[], [with_mcspath=../mcs])
+			[], [with_mcspath=$srcdir/../mcs])
 
 		if test "x$with_mcspath" = "xno"; then
 			AC_ERROR(You need to set the path to mcs)
@@ -29,14 +29,14 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 		dnl path to mono-basic checkout
 		dnl
 		AC_ARG_WITH(mono_basic_path, AC_HELP_STRING([--with-mono-basic-path=<path>], []),
-			[], [with_mono_basic_path=../mono-basic])
+			[], [with_mono_basic_path=$srcdir/../mono-basic])
 			
 		if test "x$with_mono_basic_path" = "xno"; then
-			AC_WARNING(You need to set the path to mono-basic to include Microsoft.VisualBasic.dll in your Moonlight install)
+			AC_MSG_WARN([You need to set the path to mono-basic to include Microsoft.VisualBasic.dll in your Moonlight install])
 			with_mono_basic_path="no"
 		else
 			if test ! -d "$with_mono_basic_path"; then
-				AC_WARNING(The path to mono-basic does not exist, you need to set it to an existing directory to include Microsoft.VisualBasic.dll in your Moonlight install)
+				AC_MSG_WARN([The path to mono-basic does not exist, you need to set it to an existing directory to include Microsoft.VisualBasic.dll in your Moonlight install])
 				with_mono_basic_path="no"
 			fi
 		fi

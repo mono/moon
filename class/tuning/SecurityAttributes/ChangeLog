@@ -1,3 +1,10 @@
+2009-05-06  Raja R Harinath  <harinath@hurrynot.org>
+
+	* Makefile.am (securitymodel_sources): Prefix $(srcdir).
+	(merge.exe): Look for merge.cs in $(srcdir).
+	($(MERGED_SECURITY_ATTRIBUTES_INFO)): Look for input files in
+	$(srcdir).
+
 2009-04-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: compile tools with --debug

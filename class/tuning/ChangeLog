@@ -1,3 +1,9 @@
+2009-05-06  Raja R Harinath  <harinath@hurrynot.org>
+
+	* Makefile.am (TUNER_DESCS): Prefix $(srcdir)/.
+	(TUNER_MASTERS): Likewise.
+	(output.stamp): Look for mono.snk in $(srcdir).
+
 2009-04-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Makefile.am: Fixed some bugs wrt Mono Basic in my previous fix.
