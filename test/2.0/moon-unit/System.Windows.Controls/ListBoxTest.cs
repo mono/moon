@@ -41,7 +41,7 @@ using System.Windows.Controls.Primitives;
 
 namespace MoonTest.System.Windows.Controls {
 	[TestClass]
-	public partial class ___ListBoxTest : SilverlightTest {
+	public partial class ListBoxTest : SilverlightTest {
 		public class ListBoxPoker : ListBox {
 			
 			public bool TemplateApplied {
