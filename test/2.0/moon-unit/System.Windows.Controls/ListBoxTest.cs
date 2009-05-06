@@ -275,6 +275,16 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
+		[TestMethod]
+		[MoonlightBug]
+		public void ApplyTemplate ()
+		{
+			ListBoxPoker poker = new ListBoxPoker ();
+			Assert.IsNull (poker.Template, "#1");
+			Assert.IsTrue (poker.ApplyTemplate (), "#2");
+			Assert.IsNull (poker.Template, "#3");
+		}
+		
 		public void ClearContainerForItemOverride ()
 		{
 			ListBoxPoker ic = new ListBoxPoker ();
@@ -538,6 +548,7 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[MoonlightBug]
+		[Asynchronous]
 		public void VisualTree ()
 		{
 			ListBoxPoker box = new ListBoxPoker ();
@@ -550,6 +561,7 @@ namespace MoonTest.System.Windows.Controls {
 			box.Measure (new Size (100, 100));
 			Assert.IsTrue (box.TemplateApplied, "#2");
 
+			// A standard ItemsPresenter attaches itself during Measure
 			Assert.VisualChildren (box, "#3",
 				new VisualNode<ItemsPresenter> ("#a",
 					new VisualNode<StackPanel> ("#b",
@@ -559,6 +571,19 @@ namespace MoonTest.System.Windows.Controls {
 					)
 				)
 			);
+
+			// The template from the attached Style has attached itself here.
+			CreateAsyncTest (box, () => {
+				Assert.VisualChildren (box, "#4",
+					new VisualNode<Border> ("#d",
+						new VisualNode<ScrollViewer> ("#e",
+							new VisualNode<Border> ("#f",
+								new VisualNode<Grid> ("#g", (VisualNode [ ]) null)
+							)
+						)
+					)
+				);
+			});
 		}
 
 		[TestMethod]

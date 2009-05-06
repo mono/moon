@@ -162,6 +162,17 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void ApplyTemplate ()
+		{
+			ConcreteControl poker = new ConcreteControl ();
+			Assert.IsNull (poker.Template, "#1");
+			Assert.IsNull (poker.Style);
+			Assert.IsFalse (poker.ApplyTemplate (), "#2");
+			Assert.IsNull (poker.Template, "#3");
+			Assert.IsNull (poker.Style, "#4");
+		}
+		
+		[TestMethod]
 		public void DefaultStyleKeyTest_Null ()
 		{
 			ConcreteControl c = new ConcreteControl ();

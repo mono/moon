@@ -1,5 +1,11 @@
 2009-05-06  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ControlTest.cs:
+	* System.Windows.Controls/ListBoxTest.cs: Add some more tests
+	  to figure out what's going on with templates/styles.
+
+2009-05-06  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ControlTest.cs: Enhance test to give
 	  a better idea where the template is being applied. Doesn't
 	  appear to be in MeasureOverride/ArrangeOverride.
