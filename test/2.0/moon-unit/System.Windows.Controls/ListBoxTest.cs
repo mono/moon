@@ -35,12 +35,19 @@ using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System.Windows.Shapes;
+using System.Windows.Media;
 using Microsoft.Silverlight.Testing;
+using System.Windows.Controls.Primitives;
 
 namespace MoonTest.System.Windows.Controls {
 	[TestClass]
-	public partial class ListBoxTest : SilverlightTest {
+	public partial class ___ListBoxTest : SilverlightTest {
 		public class ListBoxPoker : ListBox {
+			
+			public bool TemplateApplied {
+				get; private set;
+			}
+
 			public bool Call_IsItemItsOwnContainerOverride (object item)
 			{
 				return base.IsItemItsOwnContainerOverride (item);
@@ -61,9 +68,15 @@ namespace MoonTest.System.Windows.Controls {
 				base.PrepareContainerForItemOverride (element, item);
 			}
 			
-			public new DependencyObject GetTemplateChild (string name)
+			public DependencyObject GetTemplateChild (string name)
 			{
 				return base.GetTemplateChild (name);
+			}
+			
+			public override void OnApplyTemplate ()
+			{
+				TemplateApplied = true;
+				base.OnApplyTemplate ();
 			}
 		}
 		
@@ -485,6 +498,12 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (element.Style, "style is null");
 		}
 
+
+		// XXX we need to add tests to check if the
+		// style/template is transmitted to the item
+		// in PrepareContainerForItemOverride.
+
+
 		[TestMethod]
 		public void PrepareContainerForItemOverride_IsSelected ()
 		{
@@ -516,7 +535,46 @@ namespace MoonTest.System.Windows.Controls {
 
 			Assert.AreEqual (element.ReadLocalValue (ContentControl.ContentProperty), item, "binding is unset");
 		}
-	}
+		
+		[TestMethod]
+		[MoonlightBug]
+		public void VisualTree ()
+		{
+			ListBoxPoker box = new ListBoxPoker ();
+			box.ItemsSource = new int [ ] { 1, 2, 3 };
 
+			Assert.VisualChildren (box, "#2"); // No VisualChildren
+			
+			// The presenter is attached after we measure
+			Assert.IsFalse (box.TemplateApplied, "#1");
+			box.Measure (new Size (100, 100));
+			Assert.IsTrue (box.TemplateApplied, "#2");
+
+			Assert.VisualChildren (box, "#3",
+				new VisualNode<ItemsPresenter> ("#a",
+					new VisualNode<StackPanel> ("#b",
+						new VisualNode<ListBoxItem> ("#c1", (VisualNode []) null),
+						new VisualNode<ListBoxItem> ("#c2", (VisualNode []) null),
+						new VisualNode<ListBoxItem> ("#c3", (VisualNode []) null)
+					)
+				)
+			);
+		}
+
+		[TestMethod]
+		public void VisualTree2 ()
+		{
+			ListBoxPoker box = new ListBoxPoker ();
+			box.ItemsSource = new int [ ] { 1, 2, 3 };
+
+			Assert.IsFalse (box.TemplateApplied, "#1");
+			Assert.VisualChildren (box, "#2"); // No VisualChildren
+
+			// The presenter is attached after we measure
+			box.Arrange (new Rect (0, 0, 100, 100));
+			Assert.VisualChildren (box, "#3");
+			Assert.IsFalse (box.TemplateApplied, "#4");
+		}
+	}
 }
 

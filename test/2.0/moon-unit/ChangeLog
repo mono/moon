@@ -1,5 +1,11 @@
 2009-05-06  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ControlTest.cs: Add some more tests
+	  to check when the template is applied for Controls.
+
+2009-05-06  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ControlTest.cs: Move the
 	  ConcreteControl class outside of ControlTest so that it can
 	  be loaded through xaml.

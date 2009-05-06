@@ -282,6 +282,54 @@ namespace MoonTest.System.Windows.Controls {
 				c.OnMouseLeftButtonUp_ (null);
 			}, "OnMouseLeftButtonUp");
 		}
+		
+		[TestMethod]
+		public void MeasureAppliesTemplate ()
+		{
+			ConcreteControl c = new ConcreteControl ();
+			Assert.IsFalse (c.TemplateAppled, "#1");
+			c.Measure (new Size (100, 100));
+			Assert.IsFalse (c.TemplateAppled, "#2");
+			c.ApplyTemplate ();
+			Assert.IsFalse (c.TemplateAppled, "#3");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MeasureAppliesTemplate2 ()
+		{
+			ConcreteControl c = (ConcreteControl)XamlReader.Load (@"
+<x:ConcreteControl	xmlns=""http://schemas.microsoft.com/client/2007""
+					xmlns:x=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit"">
+	<x:ConcreteControl.Template>
+		<ControlTemplate>
+			<Grid />
+		</ControlTemplate>
+	</x:ConcreteControl.Template>
+</x:ConcreteControl>");
+
+			Assert.IsFalse (c.TemplateAppled, "#1");
+			c.Arrange (new Rect (0, 0, 1000, 1000));
+			Assert.IsTrue (c.TemplateAppled, "#2");
+		}
+
+		[TestMethod]
+		public void MeasureAppliesTemplate3 ()
+		{
+			ConcreteControl c = (ConcreteControl) XamlReader.Load (@"
+<x:ConcreteControl	xmlns=""http://schemas.microsoft.com/client/2007""
+					xmlns:x=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit"">
+	<x:ConcreteControl.Template>
+		<ControlTemplate>
+			<Grid />
+		</ControlTemplate>
+	</x:ConcreteControl.Template>
+</x:ConcreteControl>");
+
+			Assert.IsFalse (c.TemplateAppled, "#1");
+			c.Measure (new Size (100, 100));
+			Assert.IsTrue (c.TemplateAppled, "#3");
+		}
 
 		[TestMethod]
 		public void SetName ()
