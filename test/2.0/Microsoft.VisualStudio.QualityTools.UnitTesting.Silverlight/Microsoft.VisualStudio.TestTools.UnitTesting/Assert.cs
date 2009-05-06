@@ -21,15 +21,24 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
 	public static class Assert
 	{
-		public static void VisualChildren (DependencyObject control, params VisualNode[] nodes)
+		public static void VisualChildren (DependencyObject control, params VisualNode [ ] nodes)
+		{
+			VisualChildren (control, "", nodes);
+		}
+		public static void VisualChildren (DependencyObject control, string error, params VisualNode[] nodes)
 		{
 			int count = VisualTreeHelper.GetChildrenCount (control);
-			Assert.AreEqual (count, nodes.Length, "Initial control has {0} children but should have {1}", count, nodes.Length);
+			Assert.AreEqual (count, nodes.Length, "Initial control has {0} children but should have {1}. {2}", count, nodes.Length, error);
 
 			for (int i = 0; i < count; i++) {
 				DependencyObject child = VisualTreeHelper.GetChild (control, i);
 				Assert.IsInstanceOfType (child, nodes [i].Type, "Node {0}", nodes[i].Name);
 				nodes [i].DoCheck (child);
+
+
+				// This means we explicitly don't want to check the children of this node
+				if (nodes[i].Siblings == null)
+					return;
 
 				int children = VisualTreeHelper.GetChildrenCount (child);
 				Assert.AreEqual (children, nodes [i].Siblings.Length, "Node {0} should have {1} children but has {2} children",
