@@ -1,3 +1,9 @@
+2009-05-06  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (dependency_object_set_attributes): we can't assume
+	that a NULL value for @v means it hasn't been set, since {x:Null}
+	could have been specified.  we need another flag to make it work.
+
 2009-05-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (OnPropertyChanged): Guard against calling
