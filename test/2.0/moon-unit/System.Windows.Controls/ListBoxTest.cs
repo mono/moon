@@ -35,9 +35,7 @@ using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System.Windows.Shapes;
-using System.Windows.Media;
 using Microsoft.Silverlight.Testing;
-using System.Windows.Controls.Primitives;
 
 namespace MoonTest.System.Windows.Controls {
 	[TestClass]
@@ -63,7 +61,7 @@ namespace MoonTest.System.Windows.Controls {
 				base.PrepareContainerForItemOverride (element, item);
 			}
 			
-			public DependencyObject GetTemplateChild (string name)
+			public new DependencyObject GetTemplateChild (string name)
 			{
 				return base.GetTemplateChild (name);
 			}
@@ -486,12 +484,6 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNotNull (element.ContentTemplate, "content template is null");
 			Assert.IsNull (element.Style, "style is null");
 		}
-
-
-		// XXX we need to add tests to check if the
-		// style/template is transmitted to the item
-		// in PrepareContainerForItemOverride.
-
 
 		[TestMethod]
 		public void PrepareContainerForItemOverride_IsSelected ()
