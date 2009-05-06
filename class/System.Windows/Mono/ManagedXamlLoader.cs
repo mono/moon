@@ -969,9 +969,6 @@ namespace Mono.Xaml
 
 		private static object ConvertType (PropertyInfo pi, Type t, object value)
 		{
-			if (value == null)
-				return null;
-
 			Type valueType = value.GetType ();
 			if (valueType == t)
 				return value;

@@ -1,8 +1,3 @@
-2009-05-06  Chris Toshok  <toshok@ximian.com>
-
-	* ManagedXamlLoader.cs (ConvertType): if value is null, just
-	return it.
-
 2009-05-05  Alan McGovern  <amcgovern@novell.com>
 
 	* NativeDependencyObjectHelper.cs: Back out the default value

@@ -4599,14 +4599,12 @@ start_parse:
 			}
 
 			Value *v = NULL;
-			bool v_set = false;
 			char *attr_value = g_strdup (attr [i+1]);
 
 			bool need_setvalue = true;
 			bool need_managed = false;
 			if (attr[i+1][0] == '{' && attr[i+1][strlen(attr[i+1]) - 1] == '}') {
 				need_setvalue = handle_xaml_markup_extension (p, item, attr [i], attr_value, prop, &v);
-				v_set = true;
 
 				if (p->error_args) {
 					g_free (attr_value);
@@ -4629,16 +4627,14 @@ start_parse:
 			}
 
 			if (!v && !need_managed)
-				v_set = value_from_str_with_parser (p, prop->GetPropertyType(), prop->GetName(), attr_value, &v);
+				value_from_str_with_parser (p, prop->GetPropertyType(), prop->GetName(), attr_value, &v);
 
 			Type::Kind propKind = prop->GetPropertyType ();
 			Type::Kind itemKind = item->info->GetKind();
 
 			if (need_managed || is_managed_kind (propKind) || Type::Find (itemKind)->IsCustomType () || (v && is_managed_kind (v->GetKind ()))) {
-				if (!v_set) {
+				if (!v)
 					v = new Value (g_strdup (attr [i + 1])); // Note that we passed the non escaped value, not attr_value
-					v_set = true;
-				}
 
 				if (p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), g_strdup (prop->GetName ()), v, NULL)) {
 					delete v;
@@ -4647,7 +4643,7 @@ start_parse:
 				}
 			}
 
-			if (!v_set && !value_is_explicit_null (attr [i + 1])) { // Check the non escaped value
+			if (!v && !value_is_explicit_null (attr [i + 1])) { // Check the non escaped value
 				g_free (attr_value);
 				parser_error (p, item->element_name, attr [i], 2024, "Invalid attribute value %s for property %s.", attr [i+1], attr [i]);
 				return;
