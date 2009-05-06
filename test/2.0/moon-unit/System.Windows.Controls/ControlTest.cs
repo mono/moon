@@ -32,92 +32,105 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
+using System.Windows.Markup;
 
 namespace MoonTest.System.Windows.Controls {
 
-	[TestClass]
-	public class ControlTest {
+	public class ConcreteControl : Control
+	{
 
-		class ConcreteControl : Control {
-
-			public object DefaultStyleKey_ {
-				get { return base.DefaultStyleKey; }
-				set { base.DefaultStyleKey = value; }
-			}
-
-
-			public DependencyObject GetTemplateChild_ (string s)
-			{
-				return base.GetTemplateChild (s);
-			}
-
-			public bool GotFocusCalled = false;
-			public bool LostFocusCalled = false;
-
-			protected override void OnGotFocus (RoutedEventArgs e)
-			{
-				GotFocusCalled = true;
-				base.OnGotFocus (e);
-			}
-
-			protected override void OnLostFocus (RoutedEventArgs e)
-			{
-				LostFocusCalled = true;
-				base.OnLostFocus (e);
-			}
-
-			static public DependencyProperty DefaultStyleKeyProperty_
-			{
-				get { return Control.DefaultStyleKeyProperty; }
-			}
-
-			public void OnGotFocus_ (RoutedEventArgs e)
-			{
-				base.OnGotFocus (e);
-			}
-
-			public void OnLostFocus_ (RoutedEventArgs e)
-			{
-				base.OnLostFocus (e);
-			}
-
-			public void OnKeyDown_ (KeyEventArgs e)
-			{
-				base.OnKeyDown (e);
-			}
-
-			public void OnKeyUp_ (KeyEventArgs e)
-			{
-				base.OnKeyUp (e);
-			}
-
-			public void OnMouseEnter_ (MouseEventArgs e)
-			{
-				base.OnMouseEnter (e);
-			}
-
-			public void OnMouseLeave_ (MouseEventArgs e)
-			{
-				base.OnMouseLeave (e);
-			}
-
-			public void OnMouseMove_ (MouseEventArgs e)
-			{
-				base.OnMouseMove (e);
-			}
-
-			public void OnMouseLeftButtonDown_ (MouseButtonEventArgs e)
-			{
-				base.OnMouseLeftButtonDown (e);
-			}
-
-			public void OnMouseLeftButtonUp_ (MouseButtonEventArgs e)
-			{
-				base.OnMouseLeftButtonUp (e);
-			}
-
+		public bool TemplateAppled
+		{
+			get;
+			private set;
 		}
 
+		public object DefaultStyleKey_ {
+			get { return base.DefaultStyleKey; }
+			set { base.DefaultStyleKey = value; }
+		}
+
+
+		public DependencyObject GetTemplateChild_ (string s)
+		{
+			return base.GetTemplateChild (s);
+		}
+
+		public bool GotFocusCalled = false;
+		public bool LostFocusCalled = false;
+
+		protected override void OnGotFocus (RoutedEventArgs e)
+		{
+			GotFocusCalled = true;
+			base.OnGotFocus (e);
+		}
+
+		protected override void OnLostFocus (RoutedEventArgs e)
+		{
+			LostFocusCalled = true;
+			base.OnLostFocus (e);
+		}
+
+		static public DependencyProperty DefaultStyleKeyProperty_
+		{
+			get { return Control.DefaultStyleKeyProperty; }
+		}
+
+		public void OnGotFocus_ (RoutedEventArgs e)
+		{
+			base.OnGotFocus (e);
+		}
+
+		public void OnLostFocus_ (RoutedEventArgs e)
+		{
+			base.OnLostFocus (e);
+		}
+
+		public void OnKeyDown_ (KeyEventArgs e)
+		{
+			base.OnKeyDown (e);
+		}
+
+		public void OnKeyUp_ (KeyEventArgs e)
+		{
+			base.OnKeyUp (e);
+		}
+
+		public void OnMouseEnter_ (MouseEventArgs e)
+		{
+			base.OnMouseEnter (e);
+		}
+
+		public void OnMouseLeave_ (MouseEventArgs e)
+		{
+			base.OnMouseLeave (e);
+		}
+
+		public void OnMouseMove_ (MouseEventArgs e)
+		{
+			base.OnMouseMove (e);
+		}
+
+		public void OnMouseLeftButtonDown_ (MouseButtonEventArgs e)
+		{
+			base.OnMouseLeftButtonDown (e);
+		}
+
+		public void OnMouseLeftButtonUp_ (MouseButtonEventArgs e)
+		{
+			base.OnMouseLeftButtonUp (e);
+		}
+
+		public override void OnApplyTemplate ()
+		{
+			TemplateAppled = true;
+			base.OnApplyTemplate ();
+		}
+
+	}
+
+	[TestClass]
+	public class ControlTest {
 		class MoreConcreteControl : ConcreteControl {
 		}
 

@@ -1,3 +1,9 @@
+2009-05-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ControlTest.cs: Move the
+	  ConcreteControl class outside of ControlTest so that it can
+	  be loaded through xaml.
+
 2009-05-05  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/ResourceDictionaryTest.cs: If 'Key' hasn't
