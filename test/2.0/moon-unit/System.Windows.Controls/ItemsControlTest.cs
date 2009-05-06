@@ -130,6 +130,28 @@ namespace MoonTest.System.Windows.Controls {
 			});
 			EnqueueTestComplete ();
 		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ApplyTemplate ()
+		{
+			ItemsControl c = new ItemsControl ();
+			Assert.VisualChildren (c, "#1");
+			Assert.IsTrue (c.ApplyTemplate (), "#2");
+
+			// A default ItemsPresenter is applied here
+			Assert.VisualChildren (c, "#3",
+				new VisualNode<ItemsPresenter> ("#a", (VisualNode []) null)
+			);
+
+			// There's no style, so we keep the presenter
+			CreateAsyncTest (c, () => {
+				Assert.VisualChildren (c, "#4",
+					new VisualNode<ItemsPresenter> ("#b", (VisualNode []) null)
+				);
+			});
+		}
 
 		[TestMethod]
 		public void DefaultValues ()
