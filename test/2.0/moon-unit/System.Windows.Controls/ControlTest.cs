@@ -38,11 +38,22 @@ namespace MoonTest.System.Windows.Controls {
 
 	public class ConcreteControl : Control
 	{
+		public bool CallBaseArrangeOverride {
+			get; set;
+		}
 
-		public bool TemplateAppled
+		public bool CallBaseMeasureOverride {
+			get; set;
+		}
+		
+		public bool TemplateAppled {
+			get; private set;
+		}
+		
+		public ConcreteControl ()
 		{
-			get;
-			private set;
+			CallBaseArrangeOverride = true;
+			CallBaseMeasureOverride = true;
 		}
 
 		public object DefaultStyleKey_ {
@@ -127,6 +138,19 @@ namespace MoonTest.System.Windows.Controls {
 			base.OnApplyTemplate ();
 		}
 
+		protected override Size ArrangeOverride (Size finalSize)
+		{
+			if (CallBaseArrangeOverride)
+				return base.ArrangeOverride (finalSize);
+			return finalSize;
+		}
+		
+		protected override Size MeasureOverride (Size availableSize)
+		{
+			if (CallBaseMeasureOverride)
+				return base.MeasureOverride (availableSize);
+			return availableSize;
+		}
 	}
 
 	[TestClass]
@@ -286,7 +310,7 @@ namespace MoonTest.System.Windows.Controls {
 		[TestMethod]
 		public void MeasureAppliesTemplate ()
 		{
-			ConcreteControl c = new ConcreteControl ();
+			ConcreteControl c = new ConcreteControl { CallBaseArrangeOverride = false, CallBaseMeasureOverride = false };
 			Assert.IsFalse (c.TemplateAppled, "#1");
 			c.Measure (new Size (100, 100));
 			Assert.IsFalse (c.TemplateAppled, "#2");
@@ -307,7 +331,9 @@ namespace MoonTest.System.Windows.Controls {
 		</ControlTemplate>
 	</x:ConcreteControl.Template>
 </x:ConcreteControl>");
-
+			c.CallBaseArrangeOverride = false;
+			c.CallBaseMeasureOverride = false;
+			
 			Assert.IsFalse (c.TemplateAppled, "#1");
 			c.Arrange (new Rect (0, 0, 1000, 1000));
 			Assert.IsTrue (c.TemplateAppled, "#2");
@@ -325,7 +351,9 @@ namespace MoonTest.System.Windows.Controls {
 		</ControlTemplate>
 	</x:ConcreteControl.Template>
 </x:ConcreteControl>");
-
+			c.CallBaseArrangeOverride = false;
+			c.CallBaseMeasureOverride = false;
+			
 			Assert.IsFalse (c.TemplateAppled, "#1");
 			c.Measure (new Size (100, 100));
 			Assert.IsTrue (c.TemplateAppled, "#3");
