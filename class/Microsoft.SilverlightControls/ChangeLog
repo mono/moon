@@ -1,3 +1,9 @@
+2009-05-06  Chris Toshok  <toshok@ximian.com>
+
+	* Controls/Src/ListBox/ListBox.cs (OnSelectedItemChanged): if
+	oldValue/newValue don't have a ListBoxItem associated with them,
+	don't set IsSelected.
+
 2009-05-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* RuntimeControls/SilverlightControls/RadioButton.cs:

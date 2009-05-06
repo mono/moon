@@ -584,10 +584,14 @@ namespace System.Windows.Controls
         private void OnSelectedItemChanged(object oldValue, object newValue)
         { 
             if (oldValue != null) {
-                GetListBoxItemForObject (oldValue).IsSelected = false;
+		    ListBoxItem oldItem = GetListBoxItemForObject (oldValue);
+ 		    if (oldItem != null)
+			    oldItem.IsSelected = false;
             }
             if (newValue != null) {
-                GetListBoxItemForObject (newValue).IsSelected = true;
+		    ListBoxItem newItem = GetListBoxItemForObject (newValue);
+ 		    if (newItem != null)
+			    newItem.IsSelected = true;
             }
         }
 
