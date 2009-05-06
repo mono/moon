@@ -2330,8 +2330,6 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		length = abs (selection_cursor - selection_anchor);
 		start = args->GetNewValue()->AsInt32 ();
 		
-		ResetIMContext ();
-		
 		if (start > buffer->len) {
 			// clamp the selection start offset to a valid value
 			SetSelectionStart (buffer->len);
@@ -2356,12 +2354,11 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (!inkeypress) {
 			// update SelectedText
 			SyncSelectedText ();
+			ResetIMContext ();
 		}
 	} else if (args->GetId () == TextBox::SelectionLengthProperty) {
 		start = MIN (selection_anchor, selection_cursor);
 		length = args->GetNewValue()->AsInt32 ();
-		
-		ResetIMContext ();
 		
 		if (start + length > buffer->len) {
 			// clamp the selection length to a valid value
@@ -2382,6 +2379,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (!inkeypress) {
 			// update SelectedText
 			SyncSelectedText ();
+			ResetIMContext ();
 		}
 	} else if (args->GetId () == TextBox::SelectionBackgroundProperty) {
 		changed = TextBoxModelChangedBrush;
