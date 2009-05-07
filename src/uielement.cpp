@@ -1306,7 +1306,7 @@ UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *e
 		return NULL;
 	}
 
-	if (to_element) {
+	if (to_element && !to_element->GetSurface()->IsTopLevel (to_element)) {
 		/* if @to_element is specified we also need to make sure there's a path to the root from it */
 		ok = false;
 		visual = to_element->GetVisualParent ();

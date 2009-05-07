@@ -1,3 +1,8 @@
+2009-05-07  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows/UIElementTest.cs:  Add test to check for the
+	above (TransformToVisual)
+
 2009-05-06  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemsControlTest.cs: Testing default

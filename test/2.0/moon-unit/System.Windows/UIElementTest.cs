@@ -182,6 +182,13 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		public void TransformToVisual_Top () {
+			ConcreteUIElement ui = new ConcreteUIElement ();
+			this.TestPage.TestPanel.Children.Add (ui);
+			ui.TransformToVisual (this.TestPage);
+		}
+
+		[TestMethod]
 		public void RenderTransform_SemiNonNullable ()
 		{
 			ConcreteUIElement ui = new ConcreteUIElement ();

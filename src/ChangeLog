@@ -1,3 +1,8 @@
+2009-05-07  Andreia Gaita  <avidigal@novell.com>
+
+	* src/uielement.cpp (GetTransformToUIElementWithError): Don't fail if
+	the to_element is the top level element.
+
 2009-05-06  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (dependency_object_set_attributes): we can't assume
