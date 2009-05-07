@@ -37,6 +37,7 @@ using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Shapes;
+using System.Collections.Generic;
 
 namespace MoonTest.System.Windows {
 
@@ -46,6 +47,7 @@ namespace MoonTest.System.Windows {
 
 		class ConcreteFrameworkElement : FrameworkElement {
 
+			public List<string> Methods = new List<string> ();
 			public bool Templated, Arranged, Measured;
 			public Size arrangeInput;
 
@@ -57,12 +59,14 @@ namespace MoonTest.System.Windows {
 
 			protected override Size ArrangeOverride (Size finalSize)
 			{
+				Methods.Add ("Arrange");
 				Arranged = true;
 				return base.ArrangeOverride (finalSize);
 			}
 
 			protected override Size MeasureOverride (Size availableSize)
 			{
+				Methods.Add ("Measure");
 				Measured = true;
 				return base.MeasureOverride (availableSize);
 			}
@@ -438,6 +442,41 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
+		public void ArrangeOverride2 ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			c.Arrange (new Rect (0, 0, 100, 100));
+			Assert.IsFalse (c.Arranged, "#1");
+			
+			c.InvalidateArrange ();
+			c.Arrange (new Rect (0, 0, 100, 100));
+			Assert.IsFalse (c.Arranged, "#2");
+		}
+		
+		[TestMethod]
+		[MoonlightBug]
+		[Asynchronous]
+		public void ArrangeOverride3 ()
+		{
+			bool loaded = false;
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			c.Loaded += delegate { loaded = true; };
+			TestPanel.Children.Add (c);
+
+			c.Arrange (new Rect (0, 0, 100, 100));
+			Assert.IsFalse (c.Arranged, "#1");
+
+			c.InvalidateArrange ();
+			c.Arrange (new Rect (0, 0, 100, 100));
+			Assert.IsFalse (c.Arranged, "#2");
+
+			EnqueueConditional (() => loaded, "#3");
+			Enqueue (() => { Assert.IsTrue (c.Arranged, "#4"); });
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
 		public void MeasureOverride ()
 		{
 			Border b = new Border ();
@@ -463,6 +502,27 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (new Size (10,10), fe.DesiredSize, "fe desired");
 			result = fe.MeasureOverride_ (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			Assert.AreEqual (new Size (0, 0), result, "Infinity");
+		}
+
+		[TestMethod]
+		public void MeasureOverride2 ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			c.Measure (new Size (0, 100));
+			Assert.IsFalse (c.Measured, "#1");
+			c.InvalidateMeasure ();
+			c.Measure (new Size (0, 100));
+			Assert.IsFalse (c.Measured, "#2");
+		}
+
+		[TestMethod]
+		public void MeasureOverride3 ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			TestPanel.Children.Add (c);
+
+			c.Measure (new Size (0, 100));
+			Assert.IsTrue (c.Measured, "#1");
 		}
 
 		[TestMethod]

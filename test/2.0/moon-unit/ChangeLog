@@ -1,5 +1,11 @@
 2009-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/FrameworkElementTest.cs: Add tests to find
+	  out when Measure/Arrange complete synchronously and when
+	  they complete asynchronously.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentControlTest.cs: Add extra
 	  tests to verify behaviour of ContentControl.ContentTemplate.
 
