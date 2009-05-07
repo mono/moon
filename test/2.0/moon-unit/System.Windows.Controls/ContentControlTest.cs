@@ -77,7 +77,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ChangeDefaultTemplate ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
@@ -93,24 +92,28 @@ namespace MoonTest.System.Windows.Controls {
 			c.ContentTemplate = new DataTemplate ();
 			ContentPresenter p = null;
 			CreateAsyncTest (c,
-				() => Assert.VisualChildren (c,
-						new VisualNode<ContentPresenter> ("#1", (pr) => p = pr,
-							new VisualNode<FrameworkElement> ("#2")
-						)
+				() => Assert.VisualChildren (c, "#1",
+						new VisualNode<ContentPresenter> ("#2", (pr) => p = pr, (VisualNode[]) null)
 					),
 				() => {
+					Assert.IsNull (p.DataContext, "#3");
+					Assert.AreEqual (c.Content, p.Content, "#4");
+				},
+				() => {
 					Assert.AreSame (c.Content, p.Content);
-					Assert.IsInstanceOfType<TemplateBindingExpression> (p.ReadLocalValue (ContentPresenter.ContentProperty), "#3");
+					Assert.IsInstanceOfType<TemplateBindingExpression> (p.ReadLocalValue (ContentPresenter.ContentProperty), "#5");
 
 					Assert.AreSame (c.ContentTemplate, p.ContentTemplate);
-					Assert.IsInstanceOfType<TemplateBindingExpression> (p.ReadLocalValue (ContentPresenter.ContentTemplateProperty), "#4");
-				}
+					Assert.IsInstanceOfType<TemplateBindingExpression> (p.ReadLocalValue (ContentPresenter.ContentTemplateProperty), "#6");
+				},
+				() => Assert.VisualChildren (p, new VisualNode <ConcreteFrameworkElement> ("#7"))
 			);
 		}
 		
 		[TestMethod]
 		public void Content ()
 		{
+			Console.ReadLine ();
 			ContentControlPoker cc = new ContentControlPoker ();
 			cc.Content = cc;
 			Assert.IsNull (cc.OldContent, "OldContent");
@@ -216,6 +219,87 @@ namespace MoonTest.System.Windows.Controls {
 			}
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void DataTemplateTest ()
+		{
+			ContentControl c = new ContentControl ();
+			c.Content = new ConcreteFrameworkElement ();
+			CreateAsyncTest (c, () =>
+				Assert.VisualChildren (c, "#1",
+					new VisualNode<ContentPresenter> ("#a",
+						new VisualNode<ConcreteFrameworkElement> ("#b")
+					)
+				)
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataTemplateTest2 ()
+		{
+			ContentControl c = new ContentControl ();
+			c.Content = new ConcreteFrameworkElement ();
+			c.ContentTemplate = new DataTemplate ();
+			CreateAsyncTest (c, () =>
+				Assert.VisualChildren (c, "#1",
+					new VisualNode<ContentPresenter> ("#a",
+						new VisualNode<ConcreteFrameworkElement> ("#b")
+					)
+				)
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataTemplateTest3 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"">
+    <ContentControl.ContentTemplate>
+        <DataTemplate>
+            <Grid />
+        </DataTemplate>
+    </ContentControl.ContentTemplate>
+</ContentControl>");
+
+			c.Content = new ConcreteFrameworkElement ();
+			CreateAsyncTest (c, () =>
+				Assert.VisualChildren (c, "#1",
+					new VisualNode<ContentPresenter> ("#a",
+						new VisualNode<Grid> ("#b")
+					)
+				)
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataTemplateTest4 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"">
+    <ContentControl.ContentTemplate>
+        <DataTemplate>
+            <Grid>
+				<ContentPresenter />
+			</Grid>
+        </DataTemplate>
+    </ContentControl.ContentTemplate>
+</ContentControl>");
+
+			c.Content = new ConcreteFrameworkElement ();
+			CreateAsyncTest (c, () =>
+				Assert.VisualChildren (c, "#1",
+					new VisualNode<ContentPresenter> ("#a",
+						new VisualNode<Grid> ("#b",
+							new VisualNode<ContentPresenter> ("#c")
+						)
+					)
+				)
+			);
+		}
+		
 		[TestMethod]
 		public void OverrideContentShareControl ()
 		{

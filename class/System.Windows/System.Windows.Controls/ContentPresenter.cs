@@ -133,11 +133,6 @@ namespace System.Windows.Controls
 			Debug.Assert(source != null, 
 				     "The source is not an instance of ContentPresenter!"); 
 
-			// Use the Content as the DataContext to enable bindings in 
-			// ContentTemplate or clear it if we removed our template (NOTE:
-			// this should use ClearValue instead when it's available).
-			source.DataContext = e.NewValue != null ? source.Content : null; 
-
 			// Display the Content
 			source.PrepareContentPresenter(); 
 		} 
@@ -165,9 +160,9 @@ namespace System.Windows.Controls
 		{
 			// Expand the ContentTemplate if it exists
 			DataTemplate template = ContentTemplate; 
-			object content = (template != null) ? 
-				template.LoadContent() :
-				Content; 
+			object content = content
+			if (template != null)
+				content = template.LoadContent () ?? content;
 
 			UIElement newContentRoot = null;
 

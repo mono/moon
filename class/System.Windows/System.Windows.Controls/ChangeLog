@@ -1,3 +1,10 @@
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: 1) The 'Content' property of the
+	  ContentPresenter is not copied to DataContext.
+	2) If the expanded DataTemplate is null, fall back to
+	  displaying the Content.
+
 2009-05-03  Chris Toshok  <toshok@ximian.com>
 
 	* ContentControl.cs (WalkTreeForContentPresenters): not sure why

@@ -1,5 +1,10 @@
 2009-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentControlTest.cs: Add extra
+	  tests to verify behaviour of ContentControl.ContentTemplate.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentPresenterTest.cs: Check how
 	  contentpresenter handles a string as its content.
 
