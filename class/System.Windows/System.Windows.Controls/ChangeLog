@@ -1,5 +1,10 @@
 2009-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* ContentPresenter.cs: I seem to have mangled that last patch
+	  before committing - fix the build.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* ContentPresenter.cs: 1) The 'Content' property of the
 	  ContentPresenter is not copied to DataContext.
 	2) If the expanded DataTemplate is null, fall back to

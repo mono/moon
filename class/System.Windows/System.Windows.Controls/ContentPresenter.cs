@@ -160,7 +160,7 @@ namespace System.Windows.Controls
 		{
 			// Expand the ContentTemplate if it exists
 			DataTemplate template = ContentTemplate; 
-			object content = content
+			object content = Content;
 			if (template != null)
 				content = template.LoadContent () ?? content;
 
