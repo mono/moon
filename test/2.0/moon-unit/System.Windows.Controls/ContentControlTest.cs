@@ -349,16 +349,22 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsFalse (c.ApplyTemplate (), "#2");
 
 			c.Content = new Rectangle ();
-
 			Assert.VisualChildren (c, "#3"); // No visual children
-			Assert.IsTrue (c.ApplyTemplate (), "#4");
 
-			Assert.VisualChildren (c, "#5",
+			Assert.IsNull (c.Template, "#4");
+			Assert.IsNull (c.ContentTemplate, "#5");
+
+			Assert.IsTrue (c.ApplyTemplate (), "#6");
+
+			Assert.IsNull (c.Template, "#7");
+			Assert.IsNull (c.ContentTemplate, "#8");
+
+			Assert.VisualChildren (c, "#9",
 				new VisualNode<Rectangle> ("#a", (VisualNode [ ]) null)
 			);
 
 			CreateAsyncTest (c, () => {
-				Assert.VisualChildren (c, "#6",
+				Assert.VisualChildren (c, "#10",
 					new VisualNode<ContentPresenter> ("#b",
 						new VisualNode<Rectangle> ("#c")
 					)
