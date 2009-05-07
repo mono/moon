@@ -1,5 +1,12 @@
 2009-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media/VisualTreeHelperTest.cs:
+	* System.Windows.Controls/ContentControlTest.cs: If the
+	  content property changes, the Template is cleared if it has
+	  already been applied.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentControlTest.cs: Check more
 	  things in the test.
 

@@ -1,5 +1,10 @@
 2009-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* ContentPresenter.cs: If the content property changes, the
+	  Template is cleared if it has already been applied.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsPresenter.cs: ItemsPresenter should be hooking itself
 	  in during the first MeasureOverride as opposed to when it's
 	  loaded. This matches the MS behaviour.

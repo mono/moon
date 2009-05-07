@@ -403,5 +403,60 @@ namespace MoonTest.System.Windows.Controls {
 				() => Assert.IsInstanceOfType<BindingExpressionBase> (block.ReadLocalValue (TextBlock.TextProperty), "#6")
 			);
 		}
+		
+		[TestMethod]
+		public void VisualTreeTest4 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"">
+    <ContentControl.Template>
+		<ControlTemplate>
+			<ContentPresenter />
+		</ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>");
+
+			c.Content = new ConcreteFrameworkElement ();
+
+			// No children
+			Assert.VisualChildren (c, "#1");
+			Console.WriteLine ("Before template");
+			Assert.IsTrue (c.ApplyTemplate (), "#2");
+			Console.WriteLine ("After template");
+			Console.ReadLine ();
+			
+			// Templated contents have been attached
+			Assert.VisualChildren (c, "#3",
+				new VisualNode<ContentPresenter> ("#4")
+			);
+
+			// The Presenter attaches itself on the call to Measure
+			c.Measure (Size.Empty);
+			Assert.VisualChildren (c, "#5",
+				new VisualNode<ContentPresenter> ("#6",
+					new VisualNode<ConcreteFrameworkElement>("#7")
+				)
+			);
+
+			// This clears the template completely
+			c.Content = new Rectangle ();
+
+			// No children
+			Assert.VisualChildren (c, "#8");
+			Assert.IsTrue (c.ApplyTemplate (), "#9");
+
+			// Templated contents have been attached
+			Assert.VisualChildren (c, "#10",
+				new VisualNode<ContentPresenter> ("#11")
+			);
+
+			// The Presenter attaches itself on the call to Measure
+			c.Measure (Size.Empty);
+			Assert.VisualChildren (c, "#12",
+				new VisualNode<ContentPresenter> ("#13",
+					new VisualNode<Rectangle> ("#14")
+				)
+			);
+		}
 	}
 }

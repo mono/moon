@@ -128,7 +128,6 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("ContentControl.Content's visual parent should be null")]
 		public void GetParent3 ()
 		{
 			Console.WriteLine(-1);
@@ -139,19 +138,14 @@ namespace MoonTest.System.Windows.Media
 			Console.WriteLine(0);
 
 			CreateAsyncTest(Root, delegate {
-					Console.WriteLine (1);
 					ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
 			
-					Console.WriteLine (2);
 					Button b = (Button)Root.Children[Root.Children.Count - 1];
 
-					Console.WriteLine (3);
 					b.ApplyTemplate ();
 
-					Console.WriteLine (4);
 					b.Content = c;
 
-					Console.WriteLine (5);
 					Assert.IsNull (VisualTreeHelper.GetParent (c), "1");
 			});
 		}

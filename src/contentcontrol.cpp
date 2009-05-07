@@ -35,6 +35,7 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 	}
 	
 	if (args->GetId () == ContentControl::ContentProperty) {
+		ClearTemplate ();
 		if (GetContentSetsParent () && args->GetOldValue() && args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
 			args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
 			if (error->number)

@@ -56,6 +56,7 @@ namespace System.Windows.Controls
 	[ContentProperty ("Content")]
 	public class ContentPresenter : FrameworkElement
 	{ 
+		bool hasContent;
 		internal UIElement _contentRoot;
 
 #region Content
@@ -95,9 +96,9 @@ namespace System.Windows.Controls
 			if (source.ContentTemplate != null) {
 				source.DataContext = e.NewValue;
 			} 
- 
-			// Display the Content
-			source.PrepareContentPresenter(); 
+			
+			source.hasContent = false;
+			source.SetContentRoot (null);
 		}
 #endregion Content
  
@@ -133,8 +134,8 @@ namespace System.Windows.Controls
 			Debug.Assert(source != null, 
 				     "The source is not an instance of ContentPresenter!"); 
 
-			// Display the Content
-			source.PrepareContentPresenter(); 
+			source.hasContent = false;
+			source.SetContentRoot (null);
 		} 
 #endregion ContentTemplate
 
@@ -144,13 +145,25 @@ namespace System.Windows.Controls
 		public ContentPresenter() 
 		{
 		}
-
+		
 		internal override void InvokeLoaded ()
 		{
-			PrepareContentPresenter ();
-
+			if(!hasContent) {
+				Console.WriteLine ("Invoke before measure");
+				Console.ReadLine ();
+			}
 			base.InvokeLoaded ();
 		}
+
+
+		protected override Size MeasureOverride (Size availableSize)
+		{
+			if (!hasContent)
+				PrepareContentPresenter ();
+			hasContent = true;
+			return base.MeasureOverride (availableSize);
+		}
+
 
 		/// <summary> 
 		/// Update the ContentPresenter's logical tree with the appropriate
@@ -180,7 +193,12 @@ namespace System.Windows.Controls
 
 				newContentRoot = grid;
 			}
-
+			
+			SetContentRoot (newContentRoot);
+		}
+		
+		void SetContentRoot (UIElement newContentRoot)
+		{
 			if (newContentRoot == _contentRoot)
 				return;
 
@@ -196,7 +214,7 @@ namespace System.Windows.Controls
 				// set the new content
 				NativeMethods.uielement_element_added (native, _contentRoot.native);
 				NativeMethods.uielement_set_subtree_object (native, _contentRoot.native);
-			}
+			}	
 		}
 	}
 } 
