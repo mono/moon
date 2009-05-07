@@ -28,7 +28,8 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 		public static void VisualChildren (DependencyObject control, string error, params VisualNode[] nodes)
 		{
 			int count = VisualTreeHelper.GetChildrenCount (control);
-			Assert.AreEqual (count, nodes.Length, "Initial control has {0} children but should have {1}. {2}", count, nodes.Length, error);
+			if (nodes.Length != count)
+				Assert.Fail ("Initial control has {0} children but should have {1}. {2}", count, nodes.Length, error);
 
 			for (int i = 0; i < count; i++) {
 				DependencyObject child = VisualTreeHelper.GetChild (control, i);
@@ -41,10 +42,11 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 					return;
 
 				int children = VisualTreeHelper.GetChildrenCount (child);
-				Assert.AreEqual (children, nodes [i].Siblings.Length, "Node {0} should have {1} children but has {2} children",
+				if (children != nodes [i].Siblings.Length)
+				Assert.Fail ("Node {0} should have {1} children but has {2} children",
 																		nodes [i].Name,
-																		children,
-																		nodes [i].Siblings.Length);
+																		nodes [i].Siblings.Length,
+																		children);
 				VisualChildren (child, nodes [i].Siblings);
 			}
 		}
