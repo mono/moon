@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -38,6 +39,7 @@ namespace MoonTest.System.Windows.Controls {
 
 	public class ConcreteControl : Control
 	{
+		public List<string> Methods = new List<string> ();
 		public bool CallBaseArrangeOverride {
 			get; set;
 		}
@@ -134,12 +136,14 @@ namespace MoonTest.System.Windows.Controls {
 
 		public override void OnApplyTemplate ()
 		{
+			Methods.Add ("Template");
 			TemplateAppled = true;
 			base.OnApplyTemplate ();
 		}
 
 		protected override Size ArrangeOverride (Size finalSize)
 		{
+			Methods.Add ("Arrange");
 			if (CallBaseArrangeOverride)
 				return base.ArrangeOverride (finalSize);
 			return finalSize;
@@ -147,6 +151,7 @@ namespace MoonTest.System.Windows.Controls {
 		
 		protected override Size MeasureOverride (Size availableSize)
 		{
+			Methods.Add ("Measure");
 			if (CallBaseMeasureOverride)
 				return base.MeasureOverride (availableSize);
 			return availableSize;
@@ -331,7 +336,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[MoonlightBug]
-		public void MeasureAppliesTemplate2 ()
+		public void ArrangeAppliesTemplate ()
 		{
 			ConcreteControl c = (ConcreteControl)XamlReader.Load (@"
 <x:ConcreteControl	xmlns=""http://schemas.microsoft.com/client/2007""
@@ -346,8 +351,14 @@ namespace MoonTest.System.Windows.Controls {
 			c.CallBaseMeasureOverride = false;
 			
 			Assert.IsFalse (c.TemplateAppled, "#1");
+			c.Methods.Clear ();
 			c.Arrange (new Rect (0, 0, 1000, 1000));
 			Assert.IsTrue (c.TemplateAppled, "#2");
+
+			Assert.AreEqual (3, c.Methods.Count, "#3");
+			Assert.AreEqual (0, c.Methods.IndexOf ("Template"), "No template");
+			Assert.AreEqual (1, c.Methods.IndexOf ("Measure"), "No measure");
+			Assert.AreEqual (2, c.Methods.IndexOf ("Arrange"), "No arrange");
 		}
 
 		[TestMethod]

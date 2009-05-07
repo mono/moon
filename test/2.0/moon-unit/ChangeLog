@@ -1,5 +1,10 @@
 2009-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ControlTest.cs: Add extra spew to
+	  the test to check what happens when a template is applied.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/FrameworkElementTest.cs: Add tests to find
 	  out when Measure/Arrange complete synchronously and when
 	  they complete asynchronously.
