@@ -113,7 +113,6 @@ namespace MoonTest.System.Windows.Controls {
 		[TestMethod]
 		public void Content ()
 		{
-			Console.ReadLine ();
 			ContentControlPoker cc = new ContentControlPoker ();
 			cc.Content = cc;
 			Assert.IsNull (cc.OldContent, "OldContent");
@@ -289,14 +288,19 @@ namespace MoonTest.System.Windows.Controls {
 </ContentControl>");
 
 			c.Content = new ConcreteFrameworkElement ();
+			ContentPresenter p = null;
 			CreateAsyncTest (c, () =>
 				Assert.VisualChildren (c, "#1",
 					new VisualNode<ContentPresenter> ("#a",
 						new VisualNode<Grid> ("#b",
-							new VisualNode<ContentPresenter> ("#c")
+							new VisualNode<ContentPresenter> ("#c", pr => p = pr)
 						)
 					)
-				)
+				),
+				() => {
+					Assert.AreEqual (DependencyProperty.UnsetValue, p.ReadLocalValue (ContentPresenter.ContentProperty), "#2");
+					Assert.AreEqual (DependencyProperty.UnsetValue, p.ReadLocalValue (ContentPresenter.ContentTemplateProperty), "#3");
+				}
 			);
 		}
 		
@@ -349,22 +353,16 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsFalse (c.ApplyTemplate (), "#2");
 
 			c.Content = new Rectangle ();
+
 			Assert.VisualChildren (c, "#3"); // No visual children
+			Assert.IsTrue (c.ApplyTemplate (), "#4");
 
-			Assert.IsNull (c.Template, "#4");
-			Assert.IsNull (c.ContentTemplate, "#5");
-
-			Assert.IsTrue (c.ApplyTemplate (), "#6");
-
-			Assert.IsNull (c.Template, "#7");
-			Assert.IsNull (c.ContentTemplate, "#8");
-
-			Assert.VisualChildren (c, "#9",
+			Assert.VisualChildren (c, "#5",
 				new VisualNode<Rectangle> ("#a", (VisualNode [ ]) null)
 			);
 
 			CreateAsyncTest (c, () => {
-				Assert.VisualChildren (c, "#10",
+				Assert.VisualChildren (c, "#6",
 					new VisualNode<ContentPresenter> ("#b",
 						new VisualNode<Rectangle> ("#c")
 					)

@@ -1,5 +1,10 @@
 2009-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentControlTest.cs: Check more
+	  things in the test.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ControlTest.cs: Add extra spew to
 	  the test to check what happens when a template is applied.
 
