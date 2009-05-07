@@ -1,5 +1,10 @@
 2009-05-07  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentPresenterTest.cs: Check how
+	  contentpresenter handles a string as its content.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentControlTest.cs:
 	* System.Windows.Controls/ContentPresenterTest.cs: Add some
 	  tests to see what default templates are applied
