@@ -34,6 +34,8 @@ using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Markup;
 using Microsoft.Silverlight.Testing;
+using System.Windows.Shapes;
+using System.Windows.Data;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -228,6 +230,90 @@ namespace MoonTest.System.Windows.Controls {
 			cc1.Content = null;
 			cc2.Content = cc1;
 			Assert.IsTrue (Object.ReferenceEquals (cc2.Content, cc1), "non-shared");
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void VisualTreeTest ()
+		{
+			ContentControl c = new ContentControl ();
+			c.Content = new Rectangle ();
+
+			Assert.VisualChildren (c, "#1"); // No visual children
+			c.Measure (Size.Empty);
+			Assert.VisualChildren (c, "#2",
+				new VisualNode<Rectangle> ("#a", (VisualNode [ ]) null)
+			);
+
+			CreateAsyncTest (c, () => {
+				Assert.VisualChildren (c, "#3",
+					new VisualNode<ContentPresenter> ("#b",
+						new VisualNode<Rectangle> ("#c")
+					)
+				);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void VisualTreeTest2 ()
+		{
+			ContentControl c = new ContentControl ();
+			Assert.VisualChildren (c, "#1");
+			Assert.IsFalse (c.ApplyTemplate (), "#2");
+
+			c.Content = new Rectangle ();
+
+			Assert.VisualChildren (c, "#3"); // No visual children
+			Assert.IsTrue (c.ApplyTemplate (), "#4");
+
+			Assert.VisualChildren (c, "#5",
+				new VisualNode<Rectangle> ("#a", (VisualNode [ ]) null)
+			);
+
+			CreateAsyncTest (c, () => {
+				Assert.VisualChildren (c, "#6",
+					new VisualNode<ContentPresenter> ("#b",
+						new VisualNode<Rectangle> ("#c")
+					)
+				);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void VisualTreeTest3 ()
+		{
+			ContentControl c = new ContentControl ();
+
+			c.Content = "I'm a string";
+
+			Assert.VisualChildren (c, "#3"); // No visual children
+			Assert.IsTrue (c.ApplyTemplate (), "#4");
+
+			Assert.VisualChildren (c, "#5",
+				new VisualNode<Grid> ("#a",
+					new VisualNode<TextBlock> ("#b")
+				)
+			);
+
+			TextBlock block = null;
+			CreateAsyncTest (c,
+				() => {
+					Assert.VisualChildren (c, "#6",
+						new VisualNode<ContentPresenter> ("#c",
+							new VisualNode<Grid> ("#d",
+								new VisualNode<TextBlock> ("#e", (b) => block = b)
+							)
+						)
+					);
+				},
+				// This is probably a once off binding
+				() => Assert.IsInstanceOfType<BindingExpressionBase> (block.ReadLocalValue (TextBlock.TextProperty), "#6")
+			);
 		}
 	}
 }

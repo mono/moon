@@ -178,5 +178,26 @@ namespace MoonTest.System.Windows.Controls {
 			});
 			EnqueueTestComplete ();
 		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void VisualTreeTest ()
+		{
+			ContentPresenter presenter = new ContentPresenter ();
+			presenter.Content = new Rectangle ();
+
+			Assert.VisualChildren (presenter, "#1"); // No visual children
+			presenter.Measure (Size.Empty);
+			Assert.VisualChildren (presenter, "#2",
+				new VisualNode<Rectangle> ("#a", (VisualNode [])null)
+			);
+
+			CreateAsyncTest (presenter, () => {
+				Assert.VisualChildren (presenter, "#3",
+					new VisualNode<Rectangle> ("#b", (VisualNode [ ]) null)
+				);
+			});
+		}
 	}
 }
