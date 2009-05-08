@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007,2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -335,7 +335,19 @@ namespace System.Windows.Browser.Net
 
 		public override string Method {
 			get { return method; }
-			set { method = value; }
+			set {
+				if (String.IsNullOrEmpty (value))
+					throw new NotSupportedException ("Method");
+
+				switch (value.ToUpperInvariant ()) {
+				case "GET":
+				case "POST":
+					method = value;
+					break;
+				default:
+					throw new NotSupportedException ("Method " + value);
+				}
+			}
 		}
 
 		public override Uri RequestUri {

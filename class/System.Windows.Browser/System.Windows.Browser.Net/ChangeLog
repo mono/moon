@@ -1,3 +1,8 @@
+2009-05-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Method property only accept GET and 
+	POST. Fix DRT#530
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* BrowserHttpWebRequest.cs: Generate all P/Invoke methods.
