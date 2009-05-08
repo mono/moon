@@ -1,3 +1,7 @@
+2009-05-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebRequestTest.cs: Add test cases for Method property
+
 2009-05-08  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs:

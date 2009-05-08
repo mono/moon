@@ -340,6 +340,42 @@ namespace MoonTest.System.Net {
 			result.AsyncWaitHandle.WaitOne ();
 			Assert.IsNull (wr.EndGetResponse (result), "Response-Read");
 		}
+
+		[TestMethod]
+		public void Methods ()
+		{
+			WebRequest wr = WebRequest.Create (new Uri ("http://localhost"));
+			Assert.AreEqual ("GET", wr.Method, "GET");
+
+			wr.Method = "get";
+			Assert.AreEqual ("get", wr.Method, "get");
+
+			wr.Method = "poSt";
+			Assert.AreEqual ("poSt", wr.Method, "poSt");
+
+			Assert.Throws<NotSupportedException> (delegate {
+				wr.Method = "HEAD";
+			}, "HEAD");
+			Assert.Throws<NotSupportedException> (delegate {
+				wr.Method = "PUT";
+			}, "PUT");
+			Assert.Throws<NotSupportedException> (delegate {
+				wr.Method = "DELETE";
+			}, "DELETE");
+			Assert.Throws<NotSupportedException> (delegate {
+				wr.Method = "TRACE";
+			}, "PUT");
+			Assert.Throws<NotSupportedException> (delegate {
+				wr.Method = "OPTIONS";
+			}, "OPTIONS");
+
+			Assert.Throws<NotSupportedException> (delegate {
+				wr.Method = null;
+			}, "null");
+			Assert.Throws<NotSupportedException> (delegate {
+				wr.Method = String.Empty;
+			}, "Empty");
+		}
 	}
 }
 
