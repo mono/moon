@@ -145,16 +145,6 @@ namespace System.Windows.Controls
 		public ContentPresenter() 
 		{
 		}
-		
-		internal override void InvokeLoaded ()
-		{
-			if(!hasContent) {
-				Console.WriteLine ("Invoke before measure");
-				Console.ReadLine ();
-			}
-			base.InvokeLoaded ();
-		}
-
 
 		protected override Size MeasureOverride (Size availableSize)
 		{

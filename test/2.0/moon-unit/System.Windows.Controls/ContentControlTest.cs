@@ -420,10 +420,7 @@ namespace MoonTest.System.Windows.Controls {
 
 			// No children
 			Assert.VisualChildren (c, "#1");
-			Console.WriteLine ("Before template");
 			Assert.IsTrue (c.ApplyTemplate (), "#2");
-			Console.WriteLine ("After template");
-			Console.ReadLine ();
 			
 			// Templated contents have been attached
 			Assert.VisualChildren (c, "#3",
