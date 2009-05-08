@@ -615,11 +615,10 @@ TextLayout::GetActualExtents (double *width, double *height)
 static int
 unichar_combining_class (gunichar c)
 {
-#if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 14)
-	static gboolean glib_has_api = GLIB_CHECK_VERSION (2, 14, 0);
-	
-	if (glib_has_api)
+#if GLIB_CHECK_VERSION (2,14,0)
+	if (glib_check_version (2,14,0))
 		return g_unichar_combining_class (c);
+	else
 #endif
 	
 	return 0;
@@ -952,7 +951,7 @@ word_type (GUnicodeType ctype, GUnicodeBreakType btype)
 		return WORD_TYPE_NUMERIC;
 	case G_UNICODE_BREAK_INSEPARABLE:
 		return WORD_TYPE_INSEPARABLE;
-#if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 10)
+#if GLIB_CHECK_VERSION (2,10,0)
 	case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
 	case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
 	case G_UNICODE_BREAK_HANGUL_L_JAMO:
@@ -1403,7 +1402,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			d(printf ("Unhandled Unicode break-type: %s\n", unicode_break_types[op.btype]));
 			// fall thru to the "default" behavior
 			
-#if GLIB_MAJOR_VERSION > 2 || (GLIB_MAJOR_VERSION == 2 && GLIB_MINOR_VERSION >= 10)
+#if GLIB_CHECK_VERSION (2,10,0)
 		case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
 		case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
 		case G_UNICODE_BREAK_HANGUL_L_JAMO:

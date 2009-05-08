@@ -75,10 +75,11 @@ bool
 ResourceDictionary::Clear ()
 {
 #if GLIB_CHECK_VERSION(2,12,0)
-	g_hash_table_remove_all (hash);
-#else
-	g_hash_table_foreach_remove (hash, (GHRFunc) gtk_true, NULL);
+	if (glib_check_version (2,12,0))
+		g_hash_table_remove_all (hash);
+	else
 #endif
+	g_hash_table_foreach_remove (hash, (GHRFunc) gtk_true, NULL);
 
 	return Collection::Clear ();
 }
