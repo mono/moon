@@ -40,11 +40,20 @@ using System.Threading;
 using System.Collections.Generic;
 using Microsoft.Silverlight.Testing.UnitTesting;
 using System.Windows.Media;
+using System.Collections;
 
 namespace MoonTest.System.Windows.Media.Animation {
 
 	public class Test : UserControl {
+		public static readonly DependencyProperty InterfaceProperty =
+			DependencyProperty.Register ("Interface", typeof (IComparable), typeof (Test), null);
 
+		public double Value
+		{
+			get { return (double) GetValue (InterfaceProperty); }
+			set { SetValue (InterfaceProperty, value); }
+		}
+		
 		public Storyboard Blah;
 	}
 	
@@ -893,6 +902,50 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Enqueue (() => Assert.AreEqual (ClockState.Filling, sb.GetCurrentState (), "Still filling"));
 
 			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void TargetInterfaceProperty ()
+		{
+			Test t = new Test { Value = 5 };
+			Storyboard sb = new Storyboard ();
+			DoubleAnimation anim = new DoubleAnimation { By = 10, Duration = TimeSpan.FromMilliseconds (10) };
+			sb.Children.Add (anim);
+
+			Storyboard.SetTarget (anim, t);
+			Storyboard.SetTargetProperty (anim, new PropertyPath (Test.InterfaceProperty));
+			bool finished = false;
+			sb.Completed += delegate { finished = true; };
+
+			sb.Begin ();
+			EnqueueConditional (() => finished, "#1");
+			Enqueue (() => Assert.AreEqual (15, t.Value, "#2"));
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void TargetInterfaceProperty2 ()
+		{
+			Test t = new Test ();
+			t.SetValue (Test.InterfaceProperty, 'a');
+			Storyboard sb = new Storyboard ();
+			DoubleAnimation anim = new DoubleAnimation { By = 10, Duration = TimeSpan.FromMilliseconds (10) };
+			sb.Children.Add (anim);
+
+			Storyboard.SetTarget (anim, t);
+			Storyboard.SetTargetProperty (anim, new PropertyPath (Test.InterfaceProperty));
+			bool finished = false;
+			sb.Completed += delegate { finished = true; };
+
+			// If the type is *not* a double, we treat it as zero.
+			sb.Begin ();
+			EnqueueConditional (() => finished, "#1");
+			Enqueue (() => Assert.IsBetween (9.99, 10.01, (double)t.Value, "#2"));
 			EnqueueTestComplete ();
 		}
 

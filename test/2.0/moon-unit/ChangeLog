@@ -1,5 +1,11 @@
 2009-05-08  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add tests
+	  to see what happens if we apply a DoubleAnimation to DP with
+	  type IComparable.
+
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentPresenterTest.cs: Add tests
 	  which explicitly check that changing
 	  ContentPresenter.Content/ContentTemplate unsets the visual
