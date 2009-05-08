@@ -1,5 +1,9 @@
 2009-05-08  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (layout_word_wrap): If we can't find a suitable place
+	to wrap in the first time through the loop, make sure to respect
+	the 'force' state the second time through.
+
 	* application.cpp (GetResourceAsPath): Updated.
 
 	* utils.cpp (CanonicalizeFilename): Now takes a 'lower' argument

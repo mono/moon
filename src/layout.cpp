@@ -1151,7 +1151,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		g_array_append_val (word->break_ops, op);
 		
 		if (!isinf (max_width) && word->line_advance >= max_width) {
-			d(printf ("\tjust exceeded max width: %s\n", debug->str));
+			d(printf ("\tjust exceeded max width (%fpx): %s\n", max_width, debug->str));
 			wrap = true;
 			break;
 		}
@@ -1288,7 +1288,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			}
 			break;
 		case G_UNICODE_BREAK_INSEPARABLE:
-			// only restriction is no breaking between inseparables unelss we have to
+			// only restriction is no breaking between inseparables unless we have to
 			if (line_start && i < word->break_ops->len) {
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
@@ -1311,7 +1311,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			}
 			break;
 		case G_UNICODE_BREAK_CLOSE_PUNCTUATION:
-			if (i < word->break_ops->len && btype != G_UNICODE_BREAK_INFIX_SEPARATOR) {
+			if (i < word->break_ops->len && (force || btype != G_UNICODE_BREAK_INFIX_SEPARATOR)) {
 				// we can safely break after this character
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
@@ -1321,14 +1321,14 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				return true;
 			}
 			
-			if (i > 1) {
+			if (i > 1 && !force) {
 				// we can never break before a closing punctuation, so skip past prev char
 				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
 				i--;
 			}
 			break;
 		case G_UNICODE_BREAK_INFIX_SEPARATOR:
-			if (i < word->break_ops->len && btype != G_UNICODE_BREAK_NUMERIC) {
+			if (i < word->break_ops->len && (force || btype != G_UNICODE_BREAK_NUMERIC)) {
 				// we can safely break after this character
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
@@ -1338,7 +1338,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 				return true;
 			}
 			
-			if (i > 1) {
+			if (i > 1 && !force) {
 				// we can never break before an infix, skip past prev char
 				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
 				if (op.btype == G_UNICODE_BREAK_INFIX_SEPARATOR ||
@@ -1352,7 +1352,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			break;
 		case G_UNICODE_BREAK_ALPHABETIC:
 			// only break if we have no choice...
-			if ((line_start || fixed) && i < word->break_ops->len) {
+			if ((line_start || fixed || force) && i < word->break_ops->len) {
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
@@ -1374,7 +1374,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			break;
 		case G_UNICODE_BREAK_NUMERIC:
 			// only break if we have no choice...
-			if (line_start && i < word->break_ops->len && btype != G_UNICODE_BREAK_INFIX_SEPARATOR) {
+			if (line_start && i < word->break_ops->len && (force || btype != G_UNICODE_BREAK_INFIX_SEPARATOR)) {
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
