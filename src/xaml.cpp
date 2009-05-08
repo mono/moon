@@ -441,13 +441,16 @@ class XamlElementInstance : public List::Node {
 			return;
 
 #if GLIB_CHECK_VERSION(2,12,0)
-		g_hash_table_remove_all (set_properties);
-#else
-		// this will cause the hash table to be recreated the
-		// next time a property is set.
-		g_hash_table_destroy (set_properties);
-		set_properties = NULL;
+		if (glib_check_version (2,12,0))
+			g_hash_table_remove_all (set_properties);
+		else
 #endif
+		{
+			// this will cause the hash table to be recreated the
+			// next time a property is set.
+			g_hash_table_destroy (set_properties);
+			set_properties = NULL;
+		}
 	}
 };
 
