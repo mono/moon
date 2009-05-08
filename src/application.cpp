@@ -126,7 +126,7 @@ Application::GetResourceAsPath (const Uri *uri)
 	
 	// construct the path name for this resource
 	filename = uri->ToString ();
-	CanonicalizeFilename (filename, -1);
+	CanonicalizeFilename (filename, -1, true);
 	if (uri->GetQuery () != NULL) {
 		char *sc = strchr (filename, ';');
 		if (sc)

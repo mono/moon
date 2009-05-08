@@ -251,7 +251,7 @@ write_all (int fd, char *buf, size_t len)
 }
 
 const char *
-CanonicalizeFilename (char *filename, int n)
+CanonicalizeFilename (char *filename, int n, bool lower)
 {
 	char *inptr = filename;
 	char *inend;
@@ -262,9 +262,10 @@ CanonicalizeFilename (char *filename, int n)
 		inend = inptr + n;
 	
 	while (inptr < inend) {
-		if (*inptr != '\\')
-			*inptr = g_ascii_tolower (*inptr);
-		else
+		if (*inptr != '\\') {
+			if (lower)
+				*inptr = g_ascii_tolower (*inptr);
+		} else
 			*inptr = G_DIR_SEPARATOR;
 		
 		inptr++;
@@ -300,7 +301,7 @@ ExtractFile (unzFile zip, int fd)
 }
 
 bool
-ExtractAll (unzFile zip, const char *dir, bool canon)
+ExtractAll (unzFile zip, const char *dir, bool lower)
 {
 	char *filename, *dirname, *path;
 	unz_file_info info;
@@ -319,8 +320,7 @@ ExtractAll (unzFile zip, const char *dir, bool canon)
 		
 		unzGetCurrentFileInfo (zip, NULL, filename, info.size_filename + 1, NULL, 0, NULL, 0);
 		
-		if (canon)
-			CanonicalizeFilename (filename, info.size_filename);
+		CanonicalizeFilename (filename, info.size_filename, lower);
 		
 		path = g_build_filename (dir, filename, NULL);
 		g_free (filename);
