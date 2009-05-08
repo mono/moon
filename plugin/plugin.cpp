@@ -1636,7 +1636,7 @@ PluginInstance::TimeoutAdd (gint32 interval, GSourceFunc callback, gpointer data
 	guint32 id;
 
 #if GLIB_CHECK_VERSION(2,14,0)
-	if (interval > 1000 && ((interval % 1000) == 0))
+	if (glib_check_version (2,14,0) && interval > 1000 && ((interval % 1000) == 0))
 		id = g_timeout_add_seconds (interval / 1000, callback, data);
 	else
 #endif
