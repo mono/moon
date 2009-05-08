@@ -1,5 +1,12 @@
 2009-05-08  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentPresenterTest.cs: Add tests
+	  which explicitly check that changing
+	  ContentPresenter.Content/ContentTemplate unsets the visual
+	  child.
+
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentControlTest.cs: That debug
 	  spew wasn't supposed to hit SVN
 

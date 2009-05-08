@@ -224,5 +224,55 @@ namespace MoonTest.System.Windows.Controls {
 				);
 			});
 		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void VisualTreeTest3 ()
+		{
+			ContentPresenter presenter = new ContentPresenter ();
+			CreateAsyncTest (presenter, () => {
+				presenter.Content = new Rectangle ();
+
+				Assert.VisualChildren (presenter, "#1"); // No visual children
+				presenter.Measure (Size.Empty);
+				Assert.VisualChildren (presenter, "#2",
+					new VisualNode<Rectangle> ("#a")
+				);
+
+				// Changing content unsets the visual child until the next Measure pass
+				presenter.Content = new Ellipse ();
+				Assert.VisualChildren (presenter, "#3"); // No visual children
+
+				presenter.Measure (Size.Empty);
+				Assert.VisualChildren (presenter, "#4",
+					new VisualNode<Ellipse> ("#b")
+				);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void VisualTreeTest4 ()
+		{
+			ContentPresenter presenter = new ContentPresenter ();
+			CreateAsyncTest (presenter, () => {
+				presenter.Content = new Rectangle ();
+
+				Assert.VisualChildren (presenter, "#1"); // No visual children
+				presenter.Measure (Size.Empty);
+				Assert.VisualChildren (presenter, "#2",
+					new VisualNode<Rectangle> ("#a")
+				);
+
+				// Changing the template unsets the visual child until the next Measure pass
+				presenter.ContentTemplate = new DataTemplate ();
+				Assert.VisualChildren (presenter, "#3"); // No visual children
+
+				presenter.Measure (Size.Empty);
+				Assert.VisualChildren (presenter, "#4",
+					new VisualNode<Rectangle> ("#b")
+				);
+			});
+		}
 	}
 }
