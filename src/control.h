@@ -52,7 +52,6 @@ public:
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool ApplyTemplate ();
-	void ClearTemplate ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetTemplateChild (const char *name);

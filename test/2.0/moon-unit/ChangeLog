@@ -1,5 +1,14 @@
 2009-05-08  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media/VisualTreeHelperTest.cs:
+	* System.Windows.Controls/ContentControlTest.cs:
+	* System.Windows.Controls/ContentPresenterTest.cs: Revert the
+	  changes in r133738 until I can figure out why the x86 bot
+	  doesn't like them. It's causing the extended controls tests
+	  to time out.
+
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Add tests
 	  to see what happens if we apply a DoubleAnimation to DP with
 	  type IComparable.

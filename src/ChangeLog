@@ -1,3 +1,11 @@
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* control.cpp:
+	* contentcontrol.cpp: Revert the changes in r133738 until I
+	  can figure out why the x86 bot doesn't like them. It's
+	  causing the extended controls tests to time out.
+
 2009-05-07  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h:

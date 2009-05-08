@@ -1,5 +1,11 @@
 2009-05-08  Alan McGovern  <amcgovern@novell.com>
 
+	* ContentPresenter.cs: Revert the changes in r133738 until I
+	  can figure out why the x86 bot doesn't like them. It's
+	  causing the extended controls tests to time out.
+
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
 	* ContentPresenter.cs: That debug spew wasn't supposed to hit
 	  SVN
 
