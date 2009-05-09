@@ -1,3 +1,8 @@
+2009-05-09  Chris Toshok  <toshok@ximian.com>
+
+	* eventargs.cpp (KeyEventArgs::IsModifier): reverse the sense of
+	this check so we're buildable on SLED10.
+
 2009-05-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (layout_word_wrap): If we can't find a suitable place

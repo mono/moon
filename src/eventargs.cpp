@@ -406,8 +406,11 @@ KeyEventArgs::GetModifiers ()
 bool
 KeyEventArgs::IsModifier ()
 {
-#if !GTK_CHECK_VERSION(2,10,0)
-	if (!gtk_check_version(2,10,0)) {
+#if GTK_CHECK_VERSION(2,10,0)
+	if (gtk_check_version(2,10,0))
+		return event->is_modifier;
+	else
+#endif
 		switch (event->keyval) {
 		case GDK_Shift_L:
 		case GDK_Shift_R:
@@ -425,10 +428,6 @@ KeyEventArgs::IsModifier ()
 		default:
 			return false;
 		}
-	}
-	else
-#endif
-	return event->is_modifier;
 }
 
 guint
