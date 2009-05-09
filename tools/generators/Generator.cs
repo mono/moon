@@ -36,6 +36,234 @@ class Generator {
 		GenerateDPs (info);
 		GenerateManagedDPs (info);
 		GenerateManagedDOs (info);
+
+		GenerateJSBindings (info);
+	}
+
+	static void GenerateJSBindings (GlobalInfo all)
+	{
+		List<MethodInfo> methods;
+		methods = all.JSMethodsToBind;
+		StringBuilder mappings = new StringBuilder ();
+		StringBuilder header = new StringBuilder ();
+		StringBuilder body = new StringBuilder ();
+
+		MemberInfo current = null;
+		Dictionary<string, List<MethodInfo>> types = new Dictionary<string, List<MethodInfo>> ();
+
+		foreach (MemberInfo m in methods) {
+			MethodInfo method = (MethodInfo) m;
+			string name = method.Annotations.GetValue ("GenerateJSBinding");
+			if (name == null)
+				name = method.Name;
+			mappings.AppendLine ("\tMoonId_" + method.Parent.Name + "_" + name + ",");
+
+			if (current != method.Parent) {
+				current = method.Parent;
+			}
+			if (!types.ContainsKey (current.Name))
+				types.Add (current.Name, new List<MethodInfo>());
+			types[current.Name].Add (method);
+		}
+
+
+		foreach (KeyValuePair<string, List<MethodInfo>> t in types) {
+			string parent = t.Key;
+
+			header.AppendLine ("/*** Moonlight" + parent + "Class *********/");
+
+			header.AppendLine ("struct Moonlight" + parent + "Type : MoonlightDependencyObjectType {");
+			header.AppendLine ("\tMoonlight" + parent + "Type ();");
+			header.AppendLine ("};");
+			header.AppendLine ();
+			header.AppendLine ("extern Moonlight" + parent + "Type *Moonlight" + parent + "Class;");
+			header.AppendLine ();
+			header.AppendLine ("struct Moonlight" + parent + "Object : MoonlightDependencyObjectObject {");
+			header.AppendLine ("\tMoonlight" + parent + "Object (NPP instance) : MoonlightDependencyObjectObject (instance)");
+			header.AppendLine ("\t{");
+			header.AppendLine ("\t\tmoonlight_type = Type::" + parent.ToUpper() + ";");
+			header.AppendLine ("\t}");
+			header.AppendLine ();
+			header.AppendLine ("\tvirtual bool Invoke (int id, NPIdentifier name,");
+			header.AppendLine ("\t\tconst NPVariant *args, guint32 argCount, NPVariant *result);");
+			header.AppendLine ();
+			header.AppendLine ("};");
+
+			body.AppendLine ("/*** Moonlight" + parent + "Class *********/");
+			body.AppendLine ("static NPObject *");
+			body.AppendLine ("moonlight_" + parent.ToLower() + "_allocate (NPP instance, NPClass *klass)");
+			body.AppendLine ("{");
+			body.AppendLine ("	return new Moonlight" + parent + "Object (instance);");
+			body.AppendLine ("}");
+			body.AppendLine ();
+			body.AppendLine ("static const MoonNameIdMapping");
+			body.AppendLine ("moonlight_" + parent.ToLower() + "_mapping [] = {");
+
+			for (int i = 0; i < t.Value.Count; i++) {
+				MethodInfo method = t.Value[i];
+				string name = method.Annotations.GetValue ("GenerateJSBinding");
+				if (name == null)
+					name = method.Name;
+				string id = "MoonId_" + parent + "_" + name;
+				body.Append ("	{\"" + name.ToLower () + "\", " + id + "}");
+
+				if (i < t.Value.Count - 1)
+					body.Append (",");
+				body.AppendLine ("");
+
+			}
+
+			body.AppendLine ("};");
+			body.AppendLine ("");
+			body.AppendLine ("bool");
+			body.AppendLine ("Moonlight" + parent + "Object::Invoke (int id, NPIdentifier name,");
+			body.AppendLine ("				   const NPVariant *args, guint32 argCount,");
+			body.AppendLine ("				   NPVariant *result)");
+			body.AppendLine ("{");
+			body.AppendLine ("	" + parent + " *dob = (" + parent + "*)GetDependencyObject ();");
+			body.AppendLine ("");
+			body.AppendLine ("	switch (id) {");
+
+			foreach (MethodInfo method in t.Value) {
+				string name = method.Annotations.GetValue ("GenerateJSBinding");
+				if (name == null)
+					name = method.Name;
+				string id = "MoonId_" + parent + "_" + name;
+				body.AppendLine ();
+				body.AppendLine ("\t\tcase " + id + ": {");
+
+				bool errorcheck = false;
+				string argcodes = "";
+				List<string> args = new List<string>();
+				List<string> parms = new List<string>();
+				for (int i = 0; i < method.Parameters.Count; i++) {
+					ParameterInfo parameter = method.Parameters[i];
+
+					if (parameter.ParameterType.Value == "MoonError*") {
+						errorcheck = true;
+					} else {
+						argcodes += parameter.ParameterType.GetNPType ();
+
+						switch (parameter.ParameterType.GetNPType ()) {
+							case "i":
+								args.Add ("\t\t\tint arg" + i + " = NPVARIANT_TO_INT32 (args[" + i + "])");
+								parms.Add ("arg" + i);
+								break;
+							case "s":
+								args.Add ("\t\t\tchar *arg" + i + " = STRDUP_FROM_VARIANT (args[" + i + "]);");
+								parms.Add ("arg" + i);
+								break;
+							case "o":
+								args.Add ("\t\t\tNPObject *obj" + i + " = NPVARIANT_TO_OBJECT (args[" + i + "]);");
+								args.Add ("\t\t\tif (!npobject_is_dependency_object (obj" + i + "))");
+								args.Add ("\t\t\t\tTHROW_JS_EXCEPTION (\"" + name + "\");");
+								args.Add ("\t\t\tDependencyObject *arg" + i + " = ((MoonlightDependencyObjectObject *) obj" + i + ")->GetDependencyObject();");
+								parms.Add ("(" + parameter.ParameterType.WriteFormatted () + ") arg" + i);
+								break;
+							case "d":
+								args.Add ("\t\t\tint arg" + i + " = NPVARIANT_TO_DOUBLE (args[" + i + "])");
+								parms.Add ("arg" + i);
+								break;
+							case "b":
+								args.Add ("\t\t\tint arg" + i + " = NPVARIANT_TO_BOOLEAN (args[" + i + "])");
+								parms.Add ("arg" + i);
+								break;
+						}
+					}
+				}
+
+				if (argcodes != "") {
+					body.AppendLine ("\t\t\tif (!check_arg_list (\"" + argcodes + "\", argCount, args))");
+					body.AppendLine ("\t\t\t\tTHROW_JS_EXCEPTION (\"" + name + "\");");
+				}
+
+				if (errorcheck) {
+					body.AppendLine ("\t\t\tMoonError err;");
+					parms.Add ("&err");
+				}
+
+				body.AppendLine (String.Join ("\n", args.ToArray()));
+				body.Append ("\t\t\t");
+
+				if (method.ReturnType.GetNPType () != "v") {
+					method.ReturnType.WriteFormatted (body);
+					body.AppendLine (" ret = dob->" + method.Name + "(" + String.Join (",", parms.ToArray ()) + ");");
+				} else
+					body.AppendLine ("dob->" + method.Name + "(" + String.Join (",", parms.ToArray ()) + ");");
+
+				for (int i = 0; i < method.Parameters.Count; i++) {
+					ParameterInfo parameter = method.Parameters[i];
+					if (parameter.ParameterType.GetNPType () == "s")
+						body.AppendLine ("g_free (arg" + i + ");");
+				}
+
+				if (errorcheck)
+					body.AppendLine ("\t\t\tif (err.number != 0) THROW_JS_EXCEPTION (err.message);");
+
+				switch (method.ReturnType.GetNPType ()) {
+					case "i":
+						body.AppendLine ("\t\t\tINT32_TO_NPVARIANT (ret, *result);");
+						break;
+					case "s":
+						body.AppendLine ("\t\t\tstring_to_npvariant (ret, *result);");
+						break;
+					case "o":
+						body.AppendLine ("\t\t\tif (ret)");
+						body.AppendLine ("\t\t\t\tOBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, ret), *result);");
+						body.AppendLine ("\t\t\telse");
+						body.AppendLine ("\t\t\t\tNULL_TO_NPVARIANT (*result);");
+						break;
+					case "d":
+						body.AppendLine ("\t\t\tDOUBLE_TO_NPVARIANT (ret, *result);");
+						break;
+					case "b":
+						body.AppendLine ("\t\t\tBOOLEAN_TO_NPVARIANT (ret, *result);");
+						break;
+					case "v":
+						body.AppendLine ("\t\t\tVOID_TO_NPVARIANT (*result);");
+						break;
+				}
+
+				body.AppendLine ("\t\t\treturn true;");
+				body.AppendLine ("\t\t\tbreak;");
+				body.AppendLine ("\t\t}");
+			}
+
+			body.AppendLine ("\t\tdefault:");
+			body.AppendLine ("\t\t\treturn MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);");
+			body.AppendLine ("	}");
+			body.AppendLine ("}");
+			body.AppendLine ("");
+			body.AppendLine ("Moonlight" + parent + "Type::Moonlight" + parent + "Type ()");
+			body.AppendLine ("{");
+			body.AppendLine ("	AddMapping (moonlight_" + parent.ToLower() + "_mapping, G_N_ELEMENTS (moonlight_" + parent.ToLower() + "_mapping));");
+			body.AppendLine ("");
+			body.AppendLine ("	allocate = moonlight_" + parent.ToLower() + "_allocate;");
+			body.AppendLine ("}");
+		}
+
+
+
+
+		string file = "plugin/plugin-class.h";
+
+		string contents = File.ReadAllText (file + ".in");
+		contents = contents.Replace ("/*MAP_IDS*/", mappings.ToString());
+		contents = contents.Replace ("/*MAP_HEADERS*/", header.ToString());
+
+		StringBuilder text = new StringBuilder ();
+		Helper.WriteWarningGenerated (text);
+		contents = text.ToString () + contents;
+		Helper.WriteAllText (file, contents);
+
+		file = "plugin/plugin-class.g.cpp";
+		contents = File.ReadAllText (file + ".in");
+		contents = contents.Replace ("/*MAP_BODY*/", body.ToString());
+
+		text = new StringBuilder ();
+		Helper.WriteWarningGenerated (text);
+		contents = text.ToString () + contents;
+		Helper.WriteAllText (file, contents);
 	}
 
 	static void GenerateManagedDOs (GlobalInfo all)

@@ -115,4 +115,11 @@ class MethodInfo : MemberInfo {
 		}
 		text.Append (");");
 	}
+
+	public override string ToString ()
+	{
+		StringBuilder st = new StringBuilder ();
+		WriteFormatted (st);
+		return st.ToString();
+	}
 }

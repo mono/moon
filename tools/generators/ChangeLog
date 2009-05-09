@@ -1,3 +1,16 @@
+2009-05-09  Andreia Gaita  <avidigal@novell.com>
+
+	* Generator.cs: Add GenerateJSBindings.
+	Generates plugin-class.h and plugin-class.g.cpp
+
+	* GlobalInfo.cs: Add JSMethodsToBind.
+	Returns all entries marked with GenerateJSBinding annotation
+
+	* MethodInfo.cs: Add ToString helper method.
+
+	* TypeReference.cs: Add GetNPType helper method.
+	Returns the NP type, to help generate argument checking code.
+
 2009-05-03  Chris Toshok  <toshok@ximian.com>
 
 	* TypeReference.cs:

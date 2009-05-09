@@ -18,6 +18,7 @@ using System.Text;
 class GlobalInfo : MemberInfo {
 	private List<FieldInfo> dependency_properties;
 	private List<MethodInfo> cppmethods_to_bind;
+	private List<MethodInfo> jsmethods_to_bind;
 	private List<TypeInfo> dependency_objects;
 	
 	/// <value>
@@ -169,4 +170,34 @@ class GlobalInfo : MemberInfo {
 			return cppmethods_to_bind;
 		}
 	}
+
+	public List<MethodInfo> JSMethodsToBind {
+		get {
+			if (jsmethods_to_bind == null) {
+				jsmethods_to_bind = new List<MethodInfo> ();
+				foreach (MemberInfo member1 in Children.Values) {
+					TypeInfo type = member1 as TypeInfo;
+					if (type == null)
+						continue;
+
+					foreach (MemberInfo member2 in type.Children.Values) {
+						MethodInfo method = member2 as MethodInfo;
+						if (method == null)
+							continue;
+						if (method.Parent == null) {
+							Console.WriteLine ("The method {0} in type {1} does not have its parent set.", method.Name, type.Name);
+							continue;
+						}
+						if (!method.Annotations.ContainsKey ("GenerateJSBinding"))
+							continue;
+
+						jsmethods_to_bind.Add (method);
+					}
+				}
+				jsmethods_to_bind.Sort (new Members.MembersSortedByFullName <MethodInfo> ());
+			}
+			return jsmethods_to_bind;
+		}
+	}
+
 }

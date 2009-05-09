@@ -55,144 +55,6 @@ npidentifier_to_downstr (NPIdentifier id)
 	return strname;
 }
 
-enum MethodArgType {
-	MethodArgTypeNone   = (0),
-	MethodArgTypeVoid   = (1 << NPVariantType_Void),
-	MethodArgTypeNull   = (1 << NPVariantType_Null),
-	MethodArgTypeBool   = (1 << NPVariantType_Bool),
-	MethodArgTypeInt32  = (1 << NPVariantType_Int32),
-	MethodArgTypeDouble = (1 << NPVariantType_Double),
-	MethodArgTypeString = (1 << NPVariantType_String),
-	MethodArgTypeObject = (1 << NPVariantType_Object),
-	MethodArgTypeAny    = (0xff)
-};
-
-static MethodArgType
-decode_arg_ctype (char c)
-{
-	switch (c) {
-	case 'v': return MethodArgTypeVoid;
-	case 'n': return MethodArgTypeNull;
-	case 'b': return MethodArgTypeBool;
-	case 'i': return MethodArgTypeInt32;
-	case 'd': return MethodArgTypeDouble;
-	case 's': return MethodArgTypeString;
-	case 'o': return MethodArgTypeObject;
-	case '*': return MethodArgTypeAny;
-	default:
-		return MethodArgTypeNone;
-	}
-}
-
-static MethodArgType
-decode_arg_type (const char **in)
-{
-	MethodArgType t, type = MethodArgTypeNone;
-	register const char *inptr = *in;
-	
-	if (*inptr == '(') {
-		inptr++;
-		while (*inptr && *inptr != ')') {
-			t = decode_arg_ctype (*inptr);
-			type = (MethodArgType) ((int) type | (int) t);
-			inptr++;
-		}
-	} else {
-		type = decode_arg_ctype (*inptr);
-	}
-	
-	inptr++;
-	*in = inptr;
-	
-	return type;
-}
-
-/**
- * check_arg_list:
- * @arglist: a string representing an arg-list token (see grammar below)
- * @args: NPVariant argument count
- * @argv: NPVariant argument vector
- *
- * Checks that the NPVariant arguments satisfy the argument count and
- * types expected (provided via @typestr).
- *
- * The @typestr argument should follow the following syntax:
- *
- * simple-arg-type ::= "v" / "n" / "b" / "i" / "d" / "s" / "o" / "*"
- *                     ; each char represents one of the following
- *                     ; NPVariant types: Void, Null, Bool, Int32,
- *                     ; Double, String, Object and wildcard
- *
- * arg-type        ::= simple-arg-type / "(" 1*(simple-arg-type) ")"
- *
- * optional-args   ::= "[" *(arg-type) "]"
- *
- * arg-list        ::= *(arg-type) (optional-args)
- *
- *
- * Returns: %true if @argv matches the arg-list criteria specified in
- * @arglist or %false otherwise.
- **/
-static bool
-check_arg_list (const char *arglist, guint32 argc, const NPVariant *argv)
-{
-	const char *inptr = arglist;
-	MethodArgType mask;
-	guint32 i = 0;
-	
-	// check all of the required arguments
-	while (*inptr && *inptr != '[' && i < argc) {
-		mask = decode_arg_type (&inptr);
-		if (!(mask & (1 << argv[i].type))) {
-			// argv[i] does not match any of the expected types
-			return false;
-		}
-		
-		i++;
-	}
-	
-	if (*inptr && *inptr != '[' && i < argc) {
-		// we were not provided enough arguments
-		return false;
-	}
-	
-	// now check all of the optional arguments
-	inptr++;
-	while (*inptr && *inptr != ']' && i < argc) {
-		mask = decode_arg_type (&inptr);
-		if (!(mask & (1 << argv[i].type))) {
-			// argv[i] does not match any of the expected types
-			return false;
-		}
-		
-		i++;
-	}
-	
-	if (i < argc) {
-		// we were provided too many arguments
-		return false;
-	}
-	
-	return true;
-}
-
-#define DEPENDENCY_OBJECT_FROM_VARIANT(obj) (((MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (obj))->GetDependencyObject ())
-
-#define THROW_JS_EXCEPTION(meth)	\
-	do {	\
-		char *message = g_strdup_printf ("Error calling method: %s", meth);	\
-		NPN_SetException (this, message);	\
-		g_free (message);	\
-		return true; \
-	} while (0);	\
-
-#define THROW_JS_EXCEPTION2(obj, meth)	\
-	do {	\
-		char *message = g_strdup_printf ("Error calling method: %s", meth);	\
-		NPN_SetException (obj, message);	\
-		g_free (message);	\
-	} while (0);	\
-
 /* for use with bsearch & qsort */
 static int
 compare_mapping (const void *m1, const void *m2)
@@ -396,6 +258,7 @@ enum DependencyObjectClassNames {
 	COLLECTION_CLASS,
 	CONTROL_CLASS,
 	DEPENDENCY_OBJECT_CLASS,
+	UI_ELEMENT_CLASS,
 	DOWNLOADER_CLASS,
 	IMAGE_BRUSH_CLASS,
 	IMAGE_CLASS,
@@ -418,7 +281,7 @@ enum DependencyObjectClassNames {
 
 NPClass *dependency_object_classes[DEPENDENCY_OBJECT_CLASS_NAMES_LAST];
 
-static bool
+bool
 npobject_is_dependency_object (NPObject *obj)
 {
 	for (int i = 0; i < DEPENDENCY_OBJECT_CLASS_NAMES_LAST; i++) {
@@ -2421,7 +2284,6 @@ MoonlightContentType *MoonlightContentClass;
 static const MoonNameIdMapping
 moonlight_dependency_object_mapping [] = {
 	{ "addeventlistener", MoonId_AddEventListener },
-	{ "capturemouse", MoonId_CaptureMouse },
 #if DEBUG_JAVASCRIPT
 	{ "dumpnamescope", MoonId_DumpNameScope },
 #endif
@@ -2443,7 +2305,6 @@ moonlight_dependency_object_mapping [] = {
 #if DEBUG_JAVASCRIPT
 	{ "printf", MoonId_Printf },
 #endif
-	{ "releasemousecapture", MoonId_ReleaseMouseCapture },
 	{ "removeeventlistener", MoonId_RemoveEventListener },
 	{ "setvalue", MoonId_SetValue },
 	{ "updatelayout", MoonId_UpdateLayout },
@@ -2871,6 +2732,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 
 	// FIXME: these next two methods should live in a UIElement
 	// wrapper class, not in the DependencyObject wrapper.
+/*
 	case MoonId_CaptureMouse:
 		BOOLEAN_TO_NPVARIANT (((UIElement*)dob)->CaptureMouse (), *result);
 		return true;
@@ -2879,6 +2741,7 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 
 		VOID_TO_NPVARIANT (*result);
 		return true;
+*/
 	default:
 		return MoonlightObject::Invoke (id, name, args, argCount, result);
 	}
@@ -2993,11 +2856,16 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	case Type::IMAGEERROREVENTARGS:
 		np_class = dependency_object_classes [ERROR_EVENT_ARGS_CLASS];
 		break;
+	case Type::UIELEMENT:
+		np_class = dependency_object_classes [UI_ELEMENT_CLASS];
+		break;
 	default:
 		if (Type::Find (kind)->IsSubclassOf (Type::COLLECTION))
 			np_class = dependency_object_classes [COLLECTION_CLASS];
 		else if (Type::Find (kind)->IsSubclassOf (Type::EVENTARGS)) 
 			np_class = dependency_object_classes [EVENT_ARGS_CLASS];
+		else if (Type::Find (kind)->IsSubclassOf (Type::UIELEMENT))
+			np_class = dependency_object_classes [UI_ELEMENT_CLASS];
 		else
 			np_class = dependency_object_classes [DEPENDENCY_OBJECT_CLASS];
 	}
@@ -3894,7 +3762,6 @@ MoonlightDownloaderType::MoonlightDownloaderType ()
 	allocate = moonlight_downloader_allocate;
 }
 
-
 /*** MoonlightScriptableObjectClass ***************************************************/
 
 struct ScriptableProperty {
@@ -4478,6 +4345,7 @@ plugin_init_classes (void)
 	dependency_object_classes [STROKE_COLLECTION_CLASS] = new MoonlightStrokeCollectionType ();
 	dependency_object_classes [STROKE_CLASS] = new MoonlightStrokeType ();
 	dependency_object_classes [TEXT_BLOCK_CLASS] = new MoonlightTextBlockType ();
+	dependency_object_classes [UI_ELEMENT_CLASS] = new MoonlightUIElementType ();
 	/* Event Arg Types */
 	dependency_object_classes [EVENT_ARGS_CLASS] = new MoonlightEventArgsType ();
 	dependency_object_classes [ROUTED_EVENT_ARGS_CLASS] = new MoonlightRoutedEventArgsType ();

@@ -339,7 +339,7 @@ public:
 	//    events will be transmitted directly to this element.
 	//    Leave/Enter events will no longer be sent.
 	//
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
 	bool CaptureMouse ();
 
 	//
@@ -349,7 +349,7 @@ public:
 	//    applicable Leave/Enter events for the current mouse
 	//    position will be sent.
 	//
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
 	void ReleaseMouseCapture ();
 
 	List* WalkTreeForLoaded (bool *delay);
@@ -398,7 +398,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Size GetRenderSize () { return render_size; }
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding=TransformToVisual,Version=2.0 */
 	GeneralTransform *GetTransformToUIElementWithError (UIElement *to_element, MoonError *error);
 
 	//

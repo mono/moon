@@ -22,6 +22,8 @@ class TypeReference {
 	public bool IsReturnType;
 
 	private string managed_type;
+	private string np_type;
+
 	private Nullable <bool> is_known;
 	
 	public TypeReference () {}
@@ -36,7 +38,14 @@ class TypeReference {
 			text.Append ("const ");
 		text.Append (GetPrettyType ());
 	}
-	
+
+	public string WriteFormatted ()
+	{
+		StringBuilder text = new StringBuilder ();
+		WriteFormatted (text);
+		return text.ToString ();
+	}
+
 	public void Write (StringBuilder text, SignatureType type)
 	{
 		if (IsConst && type == SignatureType.Native)
@@ -80,6 +89,42 @@ class TypeReference {
 			return Value.Substring (0, Value.Length - 1) + " *";
 		
 		return Value;
+	}
+
+	public string GetNPType ()
+	{
+		if (np_type == null) {
+			switch (Value) {
+				case "int":
+				case "guint32":
+				case "uint32_t":
+				case "gint32":
+				case "int32_t":
+					np_type = "i";
+					break;
+				case "bool":
+				case "gboolean":
+					np_type = "b";
+					break;
+				case "double":
+				case "int64_t":
+				case "gint64":
+				case "uint64_t":
+				case "guint64":
+					np_type = "d";
+					break;
+				case "char*":
+					np_type = "s";
+					break;
+				case "void":
+					np_type = "v";
+					break;
+				default:
+					np_type = "o";
+					break;
+			}
+		}
+		return np_type;
 	}
 	
 	public string GetManagedType ()

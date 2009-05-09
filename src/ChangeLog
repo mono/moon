@@ -1,3 +1,9 @@
+2009-05-09  Andreia Gaita  <avidigal@novell.com>
+
+	* uielement.h: Add GenerateJSBinding annotation to 
+	CaptureMouse, ReleaseMouseCapture and
+	GetTransformToUIElementWithError (TransformToVisual)
+
 2009-05-09  Chris Toshok  <toshok@ximian.com>
 
 	* eventargs.cpp (KeyEventArgs::IsModifier): reverse the sense of
