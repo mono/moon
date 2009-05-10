@@ -1,3 +1,9 @@
+2009-05-10  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrowserHttpWebRequest.cs: Override AllowReadStreamBuffering (with
+	a MonoTODO) since it's used inside some tests. Don't directly set
+	"Content-Length" inside the header collection.
+
 2009-05-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs: Fix headers validation and DRT #532.

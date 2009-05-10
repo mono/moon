@@ -51,6 +51,7 @@ namespace System.Windows.Browser.Net
 		Uri uri;
 		long bytes_read;
 		bool aborted;
+		bool allow_read_buffering;
 		string method = "GET";
 		WebHeaderCollection headers = new WebHeaderCollection (true);
 		BrowserHttpWebRequestStream request;
@@ -73,6 +74,7 @@ namespace System.Windows.Browser.Net
  			this.uri = uri;
 			managed = GCHandle.Alloc (this, GCHandleType.Normal);
 			aborted = false;
+			allow_read_buffering = true;
 		}
 
 		~BrowserHttpWebRequest ()
@@ -297,7 +299,7 @@ namespace System.Windows.Browser.Net
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 
 			if (request != null && request.Length > 1) {
-				headers ["Content-Length"] = (request.Length - 1).ToString ();
+				NativeMethods.downloader_request_set_http_header (native, "Content-Length", (request.Length - 1).ToString ());
 			}
 			
 			foreach (string header in headers.AllKeys)
@@ -311,6 +313,12 @@ namespace System.Windows.Browser.Net
 			NativeMethods.downloader_request_get_response (native, started, available, finished, GCHandle.ToIntPtr (managed));
 
 			wait_handle.Set ();
+		}
+
+		[MonoTODO ("value is unused")]
+		public override bool AllowReadStreamBuffering {
+			get { return allow_read_buffering; }
+			set { allow_read_buffering = value; }
 		}
 
 		public override string ContentType {
