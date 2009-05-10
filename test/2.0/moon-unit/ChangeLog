@@ -1,3 +1,14 @@
+2009-05-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebHeaderCollectionTest.cs: Add test cases to show
+	headers are not case-sensitive. Add test cases to show that every
+	headers are valid when the collection is not associated with a 
+	WebRequest.
+	* System.Net/WebRequestTest.cs: Add test cases to show validations
+	required when headers are used with a WebRequest. Add test case to
+	show that the WebHeaderCollection is not set (like a field) but
+	instead copied when assigned.
+
 2009-05-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/WebRequestTest.cs: Add test cases for Method property

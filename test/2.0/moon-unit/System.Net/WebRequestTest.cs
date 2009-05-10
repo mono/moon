@@ -31,9 +31,11 @@ using System.IO;
 using System.IO.IsolatedStorage;
 using System.Net;
 using System.Net.Sockets;
+using System.Security;
 using System.Threading;
 
 using Mono.Moonlight.UnitTesting;
+using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Net {
@@ -202,7 +204,7 @@ namespace MoonTest.System.Net {
 	}
 
 	[TestClass]
-	public class WebRequestTest {
+	public class WebRequestTest : SilverlightTest {
 
 		[TestMethod]
 		public void RegisterPrefix ()
@@ -375,6 +377,137 @@ namespace MoonTest.System.Net {
 			Assert.Throws<NotSupportedException> (delegate {
 				wr.Method = String.Empty;
 			}, "Empty");
+		}
+
+		[TestMethod]
+		public void Headers_Validation ()
+		{
+			// a WebHeaderCollection can contain any header
+			WebHeaderCollection whc = new WebHeaderCollection ();
+			whc [HttpRequestHeader.Allow] = "yup";
+
+			WebRequest wr = WebRequest.Create (new Uri ("http://localhost"));
+			wr.Method = "POST";
+			WebHeaderCollection c2 = wr.Headers;
+			c2 [HttpRequestHeader.CacheControl] = "often";
+			Assert.Throws<ArgumentException> (delegate {
+				wr.Headers = whc;
+			}, "collection with bad POST header");
+			Assert.AreEqual (1, c2.Count, "Count");
+			Assert.AreEqual ("often", wr.Headers [HttpRequestHeader.CacheControl], "CacheControl");
+
+			// this is NOT a field assignation but a copy of the data
+			Assert.IsFalse (Object.ReferenceEquals (whc, wr.Headers), "Assigned?");
+			whc [HttpRequestHeader.KeepAlive] = "sure";
+
+			Assert.IsTrue (Object.ReferenceEquals (c2, wr.Headers), "NotAssigned?");
+			Assert.Throws<ArgumentException> (delegate {
+				c2 [HttpRequestHeader.KeepAlive] = "sure";
+			}, "KeepAlive");
+		}
+
+		bool IsValidHeader (HttpRequestHeader header)
+		{
+			switch (header) {
+			case HttpRequestHeader.Connection:
+			case HttpRequestHeader.Date:
+			case HttpRequestHeader.KeepAlive:
+			case HttpRequestHeader.Trailer:
+			case HttpRequestHeader.TransferEncoding:
+			case HttpRequestHeader.Upgrade:
+			case HttpRequestHeader.Via:
+			case HttpRequestHeader.Warning:
+			case HttpRequestHeader.Allow:
+			case HttpRequestHeader.ContentLength:
+			case HttpRequestHeader.ContentType:
+			case HttpRequestHeader.ContentLocation:
+			case HttpRequestHeader.ContentRange:
+			case HttpRequestHeader.LastModified:
+			case HttpRequestHeader.Accept:
+			case HttpRequestHeader.AcceptCharset:
+			case HttpRequestHeader.AcceptEncoding:
+			case HttpRequestHeader.AcceptLanguage:
+			case HttpRequestHeader.Authorization:
+			case HttpRequestHeader.Cookie:
+			case HttpRequestHeader.Expect:
+			case HttpRequestHeader.Host:
+			case HttpRequestHeader.IfModifiedSince:
+			case HttpRequestHeader.MaxForwards:
+			case HttpRequestHeader.ProxyAuthorization:
+			case HttpRequestHeader.Referer:
+			case HttpRequestHeader.Range:
+			case HttpRequestHeader.Te:
+			case HttpRequestHeader.UserAgent:
+				return false;
+			default:
+				return true;
+			}
+		}
+
+		void Headers_HttpRequestHeader (string method)
+		{
+			// Enum.GetValues is not available on SL :(
+			for (int i = (int) HttpRequestHeader.CacheControl; i <= (int) HttpRequestHeader.UserAgent; i++) {
+				WebRequest wr = WebRequest.Create (new Uri ("http://localhost"));
+				wr.Method = method;
+				HttpRequestHeader header = (HttpRequestHeader) i;
+				string s = i.ToString ();
+
+				if (IsValidHeader (header)) {
+					wr.Headers [header] = s;
+					Assert.AreEqual (s, wr.Headers [header], header.ToString ());
+				} else {
+					Assert.Throws<ArgumentException> (delegate {
+						wr.Headers [header] = s;
+					}, header.ToString ());
+				}
+			}
+		}
+
+		[TestMethod]
+		public void Headers_HttpRequestHeader_GET ()
+		{
+			Headers_HttpRequestHeader ("GET");
+		}
+
+		[TestMethod]
+		public void Headers_HttpRequestHeader_POST ()
+		{
+			Headers_HttpRequestHeader ("POST");
+		}
+
+		void Headers_String (string method)
+		{
+			// Enum.GetValues is not available on SL :(
+			for (int i = (int) HttpRequestHeader.CacheControl; i <= (int) HttpRequestHeader.UserAgent; i++) {
+				WebRequest wr = WebRequest.Create (new Uri ("http://localhost"));
+				wr.Method = method;
+				HttpRequestHeader hrh = (HttpRequestHeader) i;
+				string header = WebHeaderCollectionTest.HttpRequestHeaderToString (hrh);
+				string s = i.ToString ();
+
+				if (IsValidHeader (hrh)) {
+					// not case sensitive
+					wr.Headers [header.ToUpper ()] = s;
+					Assert.AreEqual (s, wr.Headers [header], header);
+				} else {
+					Assert.Throws<ArgumentException> (delegate {
+						wr.Headers [header] = s;
+					}, header);
+				}
+			}
+		}
+
+		[TestMethod]
+		public void Headers_String_GET ()
+		{
+			Headers_String ("GET");
+		}
+
+		[TestMethod]
+		public void Headers_String_POST ()
+		{
+			Headers_String ("POST");
 		}
 	}
 }
