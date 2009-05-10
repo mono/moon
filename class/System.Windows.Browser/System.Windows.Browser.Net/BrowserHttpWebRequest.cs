@@ -52,7 +52,7 @@ namespace System.Windows.Browser.Net
 		long bytes_read;
 		bool aborted;
 		string method = "GET";
-		WebHeaderCollection headers = new WebHeaderCollection ();
+		WebHeaderCollection headers = new WebHeaderCollection (true);
 		BrowserHttpWebRequestStream request;
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
@@ -330,7 +330,20 @@ namespace System.Windows.Browser.Net
 
 		public override WebHeaderCollection Headers {
 			get { return headers; }
-			set { headers = value; }
+			set {
+				// note: this is not a field assignment but a copy (see unit tests)
+				// make sure everything we're supplied is valid...
+				string[] keys = value.AllKeys;
+				foreach (string header in keys) {
+					// anything bad will throw
+					WebHeaderCollection.ValidateHeader (header);
+				}
+				// ... before making those values our own
+				headers.headers.Clear ();
+				foreach (string header in keys) {
+					headers [header] = value [header];
+				}
+			}
 		}
 
 		public override string Method {
