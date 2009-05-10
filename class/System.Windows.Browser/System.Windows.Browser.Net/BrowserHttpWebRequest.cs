@@ -53,8 +53,7 @@ namespace System.Windows.Browser.Net
 		bool aborted;
 		bool allow_read_buffering;
 		string method = "GET";
-		WebHeaderCollection headers = new WebHeaderCollection (true);
-		BrowserHttpWebRequestStream request;
+		BrowserHttpWebStreamWrapper request;
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
 		ManualResetEvent wait_handle = new ManualResetEvent (false);
@@ -232,7 +231,7 @@ namespace System.Windows.Browser.Net
 		public override Stream EndGetRequestStream (IAsyncResult asyncResult)
 		{
 			if (request == null) {
-				request = new BrowserHttpWebRequestStream ();
+				request = new BrowserHttpWebStreamWrapper (new MemoryStream ());
 				request.WriteByte ((byte) '\n');
 			}
 			return request;
@@ -299,14 +298,15 @@ namespace System.Windows.Browser.Net
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 
 			if (request != null && request.Length > 1) {
-				NativeMethods.downloader_request_set_http_header (native, "Content-Length", (request.Length - 1).ToString ());
+				// this header cannot be set directly inside the collection (hence the helper)
+				Headers.SetHeader ("Content-Length", (request.Length - 1).ToString ());
 			}
 			
-			foreach (string header in headers.AllKeys)
-				NativeMethods.downloader_request_set_http_header (native, header, headers [header]);
+			foreach (string header in Headers.AllKeys)
+				NativeMethods.downloader_request_set_http_header (native, header, Headers [header]);
 
 			if (request != null && request.Length > 1) {
-				byte [] body = request.stream.ToArray ();
+				byte [] body = (request.InnerStream as MemoryStream).ToArray ();
 				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
 			
@@ -322,8 +322,9 @@ namespace System.Windows.Browser.Net
 		}
 
 		public override string ContentType {
-			get { return headers [HttpRequestHeader.ContentType]; }
-			set { headers [HttpRequestHeader.ContentType] = value; }
+			get { return Headers [HttpRequestHeader.ContentType]; }
+			// this header cannot be set directly inside the collection (hence the helper)
+			set { Headers.SetHeader ("Content-Type", value); }
 		}
 
 		public override bool HaveResponse {
@@ -333,24 +334,6 @@ namespace System.Windows.Browser.Net
 				if (async_result != null && async_result.Response != null)
 					return true;
 				return false;
-			}
-		}
-
-		public override WebHeaderCollection Headers {
-			get { return headers; }
-			set {
-				// note: this is not a field assignment but a copy (see unit tests)
-				// make sure everything we're supplied is valid...
-				string[] keys = value.AllKeys;
-				foreach (string header in keys) {
-					// anything bad will throw
-					WebHeaderCollection.ValidateHeader (header);
-				}
-				// ... before making those values our own
-				headers.headers.Clear ();
-				foreach (string header in keys) {
-					headers [header] = value [header];
-				}
 			}
 		}
 

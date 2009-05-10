@@ -120,7 +120,10 @@ namespace System.Windows.Browser.Net
 		public override Stream GetResponseStream ()
 		{
 			response.Seek (0, SeekOrigin.Begin);
-			return response;
+			// the stream we return must be read-only, so we wrap arround our MemoryStream
+			BrowserHttpWebStreamWrapper stream = new BrowserHttpWebStreamWrapper (response);
+			stream.SetReadOnly ();
+			return stream;
 		}
 
 		public override long ContentLength {

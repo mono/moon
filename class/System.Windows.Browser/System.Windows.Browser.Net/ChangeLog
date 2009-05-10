@@ -1,3 +1,13 @@
+2009-05-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Remove Header property since this needs
+	to be handled by the ancestor. Use SetHeader when we need to set
+	an header without validation.
+	* BrowserHttpWebRequestStream.cs: Modify class to become a wrapper
+	which can be reused to set a stream to read-only for responses.
+	* BrowserHttpWebResponse.cs (GetResponseStream): Wrap the 
+	MemoryStream and make it read-only. Fix DRT #287
+
 2009-05-10  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* BrowserHttpWebRequest.cs: Override AllowReadStreamBuffering (with
