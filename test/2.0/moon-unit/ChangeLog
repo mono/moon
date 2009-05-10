@@ -1,3 +1,10 @@
+2009-05-10  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net/HttpWebRequestTest.cs: Add test case to show that 
+	Headers are validated here.
+	* System.Net/WebClientTest.cs: Add test case to show that Headers
+	are not validated in this class.
+
 2009-05-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/WebHeaderCollectionTest.cs: Add test cases to show

@@ -115,6 +115,32 @@ namespace MoonTest.System.Net {
 				Assert.IsNull (hwr.RequestUri);
 			}, "RequestUri-get");
 		}
+
+		[TestMethod]
+		public void Headers_Validation ()
+		{
+			// a WebHeaderCollection can contain any header
+			WebHeaderCollection whc = new WebHeaderCollection ();
+			whc [HttpRequestHeader.Allow] = "yup";
+
+			ConcreteHttpWebRequest wr = new ConcreteHttpWebRequest ();
+			WebHeaderCollection c2 = wr.Headers;
+			c2 [HttpRequestHeader.CacheControl] = "often";
+			Assert.Throws<ArgumentException> (delegate {
+				wr.Headers = whc;
+			}, "collection with bad header");
+			Assert.AreEqual (1, c2.Count, "Count");
+			Assert.AreEqual ("often", wr.Headers [HttpRequestHeader.CacheControl], "CacheControl");
+
+			// this is NOT a field assignation but a copy of the data
+			Assert.IsFalse (Object.ReferenceEquals (whc, wr.Headers), "Assigned?");
+			whc [HttpRequestHeader.KeepAlive] = "sure";
+
+			Assert.IsTrue (Object.ReferenceEquals (c2, wr.Headers), "NotAssigned?");
+			Assert.Throws<ArgumentException> (delegate {
+				c2 [HttpRequestHeader.KeepAlive] = "sure";
+			}, "KeepAlive");
+		}
 	}
 }
 

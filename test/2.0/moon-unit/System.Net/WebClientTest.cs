@@ -393,6 +393,24 @@ namespace MoonTest.System.Net {
 			EnqueueConditional (() => complete);
 			EnqueueTestComplete ();
 		}
+
+		[TestMethod]
+		public void Headers_NoValidation ()
+		{
+			// every value can be added to a collection that is not associated with a WebRequest
+			WebHeaderCollection whc = new WebClient ().Headers;
+			// Enum.GetValues is not available on SL :(
+			for (int i = (int) HttpRequestHeader.CacheControl; i <= (int) HttpRequestHeader.UserAgent; i++) {
+				HttpRequestHeader hrh = (HttpRequestHeader) i;
+				string header = WebHeaderCollectionTest.HttpRequestHeaderToString (hrh);
+				string s = i.ToString ();
+
+				whc [hrh] = s;
+				Assert.AreEqual (s, whc [hrh], "HttpRequestHeader." + header);
+				whc [header] = s;
+				Assert.AreEqual (s, whc [header], header);
+			}
+		}
 	}
 }
 
