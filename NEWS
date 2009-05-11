@@ -16,3 +16,5 @@ Changes from 2.0 preview 1 (1.9.0.1) to 2.0 preview 2 (1.9.1)
   unmanaged, and are exposed with ReadLocalValue.
 
 * Lots of speedups due to caching TLS lookups we do often.
+
+* Python web ide works @ http://www.voidspace.org.uk/ironpython/webide/webide.html
