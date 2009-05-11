@@ -128,9 +128,6 @@
 +SC-M: System.Boolean Mono.NativeMethods::uielement_capture_mouse(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::uielement_update_layout(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::uri_parse(System.IntPtr,System.String,System.Boolean)
 
 # p/invoke declaration
@@ -1404,6 +1401,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uielement_set_subtree_object(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::uielement_update_layout(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uri_free(System.IntPtr)
