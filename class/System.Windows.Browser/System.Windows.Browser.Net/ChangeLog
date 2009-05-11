@@ -1,3 +1,9 @@
+2009-05-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Directly set Content-Length on the 
+	native downloader (not in the headers). Should fix downloading
+	the unit tests logs on moonbuilder.
+
 2009-05-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs: Remove Header property since this needs

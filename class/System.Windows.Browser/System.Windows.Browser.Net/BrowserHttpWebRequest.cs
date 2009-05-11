@@ -298,8 +298,7 @@ namespace System.Windows.Browser.Net
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 
 			if (request != null && request.Length > 1) {
-				// this header cannot be set directly inside the collection (hence the helper)
-				Headers.SetHeader ("Content-Length", (request.Length - 1).ToString ());
+				NativeMethods.downloader_request_set_http_header (native, "Content-Length", (request.Length - 1).ToString ());
 			}
 			
 			foreach (string header in Headers.AllKeys)
