@@ -1,5 +1,12 @@
 2009-05-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media/VisualTreeHelperTest.cs:
+	* System.Windows.Controls/ContentControlTest.cs:
+	* System.Windows.Controls/ContentPresenterTest.cs: Recommit
+	  r133738 as it's not causing the timeouts.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentControlTest.cs: Recommit
 	  r133724/5 as it isn't causing the timeouts.
 

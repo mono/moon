@@ -405,7 +405,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void VisualTreeTest4 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"

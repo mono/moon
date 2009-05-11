@@ -128,7 +128,6 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void GetParent3 ()
 		{
 			Console.WriteLine(-1);

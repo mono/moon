@@ -1,3 +1,8 @@
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: Recommit r133738 as it's not
+	  causing the timeouts.
+
 2009-05-08  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.ssc: Revert the changes in r133738 until

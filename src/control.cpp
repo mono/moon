@@ -70,12 +70,7 @@ Control::ApplyTemplate ()
 	if (applied_template == GetTemplate ())
 		return false;
 
-	if (applied_template) {
-		applied_template->unref();
-		applied_template = NULL;
-	}
-	
-	ElementRemoved (template_root);
+	ClearTemplate ();
 
 	if (!GetTemplate())
 		return false;
@@ -94,6 +89,17 @@ Control::ApplyTemplate ()
 	OnApplyTemplate ();
 
 	return true;
+}
+
+void
+Control::ClearTemplate ()
+{
+	if (applied_template) {
+		applied_template->unref();
+		applied_template = NULL;
+	}
+	
+	ElementRemoved (template_root);
 }
 
 void

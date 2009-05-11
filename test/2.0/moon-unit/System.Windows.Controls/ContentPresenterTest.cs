@@ -251,7 +251,6 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void VisualTreeTest3 ()
 		{
 			ContentPresenter presenter = new ContentPresenter ();
@@ -279,7 +278,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void VisualTreeTest4 ()
 		{
 			ContentPresenter presenter = new ContentPresenter ();

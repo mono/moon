@@ -107,7 +107,7 @@
 +SSC-M: System.Void System.Windows.Controls.ContentControl/ContentChangedEventArgs::Finalize()
 +SSC-M: System.Object System.Windows.Controls.ContentControl/ContentChangedEventArgs::get_OldContent()
 +SSC-M: System.Object System.Windows.Controls.ContentControl/ContentChangedEventArgs::get_NewContent()
-+SSC-M: System.Void System.Windows.Controls.ContentPresenter::PrepareContentPresenter()
++SSC-M: System.Void System.Windows.Controls.ContentPresenter::SetContentRoot(System.Windows.UIElement)
 +SSC-M: System.Void System.Windows.Controls.Control::.ctor()
 +SSC-M: System.Boolean System.Windows.Controls.Control::ApplyTemplate()
 +SSC-M: System.Boolean System.Windows.Controls.Control::Focus()
