@@ -475,7 +475,7 @@ namespace System.Windows.Controls
                 if (Orientation.Horizontal == orientation)
                 {
 //                    ElementScrollContentPresenter.HorizontalOffset = Math.Max(newValue, 0); 
-                    ElementScrollContentPresenter.SetVerticalOffset (max_new_value);
+                    ElementScrollContentPresenter.SetHorizontalOffset (max_new_value);
                 }
                 else
                 { 
