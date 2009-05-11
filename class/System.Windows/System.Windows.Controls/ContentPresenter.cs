@@ -154,9 +154,9 @@ namespace System.Windows.Controls
 		{
 			// Expand the ContentTemplate if it exists
 			DataTemplate template = ContentTemplate; 
-			object content = (template != null) ? 
-				template.LoadContent() :
-				Content; 
+			object content = Content;
+			if (template != null)
+				content = template.LoadContent () ?? content;
 
 			UIElement newContentRoot = null;
 

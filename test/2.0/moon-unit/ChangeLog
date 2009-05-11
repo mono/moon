@@ -1,5 +1,10 @@
 2009-05-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentControlTest.cs: Recommit
+	  r133724/5 as it isn't causing the timeouts.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemsControlTest.cs:
 	* System.Windows.Controls/ContentPresenterTest.cs: Add extra
 	  tests to show where the DataContext property is actually

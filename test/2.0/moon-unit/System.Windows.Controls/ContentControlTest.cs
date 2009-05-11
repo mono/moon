@@ -77,7 +77,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ChangeDefaultTemplate ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
@@ -236,7 +235,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void DataTemplateTest2 ()
 		{
 			ContentControl c = new ContentControl ();
