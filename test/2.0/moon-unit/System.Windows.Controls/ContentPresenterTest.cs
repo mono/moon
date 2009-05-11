@@ -35,6 +35,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Shapes;
 using System.Windows.Media;
 using Microsoft.Silverlight.Testing;
+using System.Windows.Markup;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -102,7 +103,31 @@ namespace MoonTest.System.Windows.Controls {
 			TestPanel.Children.Add (c);
 			TestPanel.Children.Remove (r);
 		}
-		
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void DataContextTest ()
+		{
+			ContentPresenter c = (ContentPresenter) XamlReader.Load (@"
+<ContentPresenter xmlns=""http://schemas.microsoft.com/client/2007"">
+	<ContentPresenter.ContentTemplate>
+		<DataTemplate>
+			<Rectangle DataContext=""{Binding DataContext}"" />
+		</DataTemplate>
+	</ContentPresenter.ContentTemplate>
+	<Rectangle />
+</ContentPresenter>");
+ 			Assert.IsNull (c.DataContext);
+			c.Content = new Rectangle ();
+			Assert.IsNull (c.DataContext);
+
+			CreateAsyncTest (c,
+				() => Assert.IsNull (c.DataContext),
+				() => c.Content = new Rectangle (),
+				() => Assert.IsNull (c.DataContext)
+			);
+		}
 		
 		[TestMethod]
 		[Asynchronous]
@@ -248,6 +273,8 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.VisualChildren (presenter, "#4",
 					new VisualNode<Ellipse> ("#b")
 				);
+
+				Assert.IsNull (presenter.DataContext, "#5");
 			});
 		}
 
@@ -274,6 +301,7 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.VisualChildren (presenter, "#4",
 					new VisualNode<Rectangle> ("#b")
 				);
+				Assert.IsNull (presenter.DataContext, "#5");
 			});
 		}
 	}

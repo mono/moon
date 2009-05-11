@@ -1,3 +1,9 @@
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ContentPresenterTest.cs: Add two
+	  more tests to figure what happens with DataContext.
+
 2009-05-10  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Net/HttpWebRequestTest.cs: Add test case to show that 

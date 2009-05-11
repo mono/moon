@@ -166,6 +166,9 @@ namespace MoonTest.System.Windows.Controls {
 
 		public class ItemsControlPoker : ItemsControl {
 
+			public DependencyObject ContainerItem {
+				get; set;
+			}
 			public void ClearContainerForItemOverride_ (DependencyObject element, object item)
 			{
 				base.ClearContainerForItemOverride (element, item);
@@ -173,6 +176,9 @@ namespace MoonTest.System.Windows.Controls {
 
 			public DependencyObject GetContainerForItemOverride_ ()
 			{
+				if (ContainerItem != null)
+					return ContainerItem;
+
 				return base.GetContainerForItemOverride ();
 			}
 
@@ -248,6 +254,24 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNotNull (item.Style);
 			Assert.IsNotNull (item.ContentTemplate);
 			ic.ClearContainerForItemOverride_ (item, null);
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ContainerItemTest ()
+		{
+			ItemsControlPoker box = new ItemsControlPoker ();
+			box.ApplyTemplate ();
+			box.ContainerItem = new ConcreteControl ();
+			CreateAsyncTest (box,
+				() => {
+					box.Items.Add (new object ());
+				},
+				() => {
+					Assert.IsNotNull (((Control) box.ContainerItem).DataContext);
+				}
+			);
 		}
 		
 		[TestMethod]
