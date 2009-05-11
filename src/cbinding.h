@@ -1894,7 +1894,7 @@ void uielement_release_mouse_capture (UIElement *instance);
 void uielement_set_subtree_object (UIElement *instance, DependencyObject *value);
 
 /* @GeneratePInvoke */
-bool uielement_update_layout (UIElement *instance);
+void uielement_update_layout (UIElement *instance);
 
 /**
  * UIElementCollection

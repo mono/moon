@@ -104,7 +104,7 @@ public:
 	virtual Size ArrangeOverride (Size finalSize);
 	virtual Size ComputeActualSize ();
 
-	virtual bool UpdateLayout ();
+	virtual void UpdateLayout ();
 	
 	const static int BindingValidationErrorEvent;
 	const static int LayoutUpdatedEvent;

@@ -597,14 +597,6 @@ UIElement::DoArrange ()
 	LayoutInformation::SetLastRenderSize (this, &previous_render);
 }
 
-
-
-bool
-UIElement::UpdateLayout ()
-{
-	return false;
-}
-
 bool 
 UIElement::InsideClip (cairo_t *cr, double x, double y)
 {

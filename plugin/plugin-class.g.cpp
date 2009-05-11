@@ -39,7 +39,8 @@ static const MoonNameIdMapping
 moonlight_uielement_mapping [] = {
 	{"capturemouse", MoonId_UIElement_CaptureMouse},
 	{"transformtovisual", MoonId_UIElement_TransformToVisual},
-	{"releasemousecapture", MoonId_UIElement_ReleaseMouseCapture}
+	{"releasemousecapture", MoonId_UIElement_ReleaseMouseCapture},
+	{"updatelayout", MoonId_UIElement_UpdateLayout}
 };
 
 bool
@@ -80,6 +81,14 @@ MoonlightUIElementObject::Invoke (int id, NPIdentifier name,
 		case MoonId_UIElement_ReleaseMouseCapture: {
 
 			dob->ReleaseMouseCapture();
+			VOID_TO_NPVARIANT (*result);
+			return true;
+			break;
+		}
+
+		case MoonId_UIElement_UpdateLayout: {
+
+			dob->UpdateLayout();
 			VOID_TO_NPVARIANT (*result);
 			return true;
 			break;

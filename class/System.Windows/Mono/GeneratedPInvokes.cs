@@ -2068,9 +2068,8 @@ namespace Mono {
 		public extern static void uielement_set_subtree_object (IntPtr instance, IntPtr value);
 
 		[DllImport ("moon")]
-		[return: MarshalAs (UnmanagedType.U1)]
-		// bool uielement_update_layout (UIElement *instance);
-		public extern static bool uielement_update_layout (IntPtr instance);
+		// void uielement_update_layout (UIElement *instance);
+		public extern static void uielement_update_layout (IntPtr instance);
 
 		[DllImport ("moon")]
 		// UIElementCollection *uielement_collection_new ();

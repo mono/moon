@@ -257,7 +257,7 @@ enum PluginPropertyId {
 	MoonId_RemoveEventListener,
 	MoonId_SetValue,
 	MoonId_GetValue,
-	MoonId_ToString,     
+	MoonId_ToString,
 #if DEBUG_JAVASCRIPT
 	MoonId_Printf,
 	MoonId_DumpNameScope,
@@ -293,6 +293,7 @@ enum PluginPropertyId {
 	MoonId_UIElement_CaptureMouse,
 	MoonId_UIElement_TransformToVisual,
 	MoonId_UIElement_ReleaseMouseCapture,
+	MoonId_UIElement_UpdateLayout,
 
 };
 
@@ -327,29 +328,29 @@ typedef void (*EventArgsWrapper)(NPP instance, EventArgs *calldata, NPVariant *v
 
 class EventListenerProxy : public EventObject {
 	static void on_handler_removed (gpointer closure);
-	
+
 	EventObject *target_object;
 	MoonlightObject *owner;
 
 	NPP instance;
 	bool is_func;
-	
+
 	/* if @is_func == true, callback is an NPObject (the function object)
 	   if @is_func == false, callback is a char* (the function name)
 	*/
 	gpointer callback;
-	
+
 	char *event_name;
 	int event_id;
 	int token;
-	
+
 	bool one_shot;
 
  public:
 	EventListenerProxy (NPP instance, const char *event_name, const char *cb_name);
 	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
 	virtual ~EventListenerProxy ();
-	
+
 	void SetOwner (MoonlightObject *owner);
 
 	int AddXamlHandler (EventObject *obj);
@@ -370,9 +371,9 @@ class EventListenerProxy : public EventObject {
 
 struct MoonlightObjectType : NPClass {
 	MoonlightObjectType ();
-	
+
 	~MoonlightObjectType() { g_free (mapping); }
-	
+
 	void AddMapping (const MoonNameIdMapping *mapping, int count);
 
 	bool Enumerate (NPIdentifier **value, guint32 *count);
@@ -395,26 +396,26 @@ struct MoonlightObject : NPObject {
 		this->moonlight_type = Type::INVALID;
 		this->event_listener_proxies = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
-	
+
 	virtual void Invalidate () { }
 	virtual ~MoonlightObject ();
-	
+
 	virtual bool HasProperty (NPIdentifier name);
 	virtual bool GetProperty (int id, NPIdentifier name, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier name, const NPVariant *value);
-	
+
 	virtual bool HasMethod (NPIdentifier unmapped);
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
 	int LookupName (NPIdentifier name) { return ((MoonlightObjectType *)_class)->LookupName (name); }
-	
+
 	EventListenerProxy *LookupEventProxy (int event_id);
 	void SetEventProxy (EventListenerProxy* proxy);
 	void ClearEventProxy (EventListenerProxy *proxy);
-	
+
 	static void destroy_proxy (gpointer data);
 	static void invalidate_proxy (gpointer key, gpointer value, gpointer data);
-	
+
 	NPP instance;
 	Type::Kind moonlight_type;
 	GHashTable *event_listener_proxies;
@@ -556,12 +557,12 @@ struct MoonlightDuration : MoonlightObject {
 	virtual ~MoonlightDuration ();
 
 	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
-	
+
 	double GetValue ();
-	
+
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
-	
+
 	DependencyProperty *parent_property;
 	DependencyObject *parent_obj;
 };
@@ -580,16 +581,16 @@ struct MoonlightTimeSpan : MoonlightObject {
 		parent_property = NULL;
 		parent_obj = NULL;
 	}
-	
+
 	virtual ~MoonlightTimeSpan ();
-	
+
 	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
-	
+
 	TimeSpan GetValue ();
-	
+
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
-	
+
 	DependencyProperty *parent_property;
 	DependencyObject *parent_obj;
 };
@@ -608,16 +609,16 @@ struct MoonlightKeyTime : MoonlightObject {
 		parent_property = NULL;
 		parent_obj = NULL;
 	}
-	
+
 	virtual ~MoonlightKeyTime ();
-	
+
 	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
-	
+
 	KeyTime* GetValue ();
-	
+
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
-	
+
 	DependencyProperty *parent_property;
 	DependencyObject *parent_obj;
 };
@@ -634,7 +635,7 @@ struct MoonlightSettingsObject : MoonlightObject {
 	MoonlightSettingsObject (NPP instance) : MoonlightObject (instance)
 	{
 	}
-	
+
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
 
@@ -658,14 +659,14 @@ struct MoonlightContentObject : MoonlightObject {
 	}
 
 	virtual ~MoonlightContentObject ();
-	
+
 	virtual bool HasProperty (NPIdentifier unmapped);
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
-	
+
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
-	
+
 	GHashTable *registered_scriptable_objects;
 };
 
@@ -687,13 +688,13 @@ struct MoonlightScriptControlObject : MoonlightObject {
 	virtual ~MoonlightScriptControlObject ();
 
 	virtual void Invalidate ();
-	
+
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
-	
+
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
-	
+
 	NPObject *settings;
 	NPObject *content;
 };
@@ -1012,7 +1013,7 @@ struct MoonlightScriptableObjectObject : MoonlightObject {
 		methods = g_hash_table_new (g_direct_hash, g_direct_equal);
 		events = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
-	
+
 	virtual ~MoonlightScriptableObjectObject ();
 
 	virtual bool HasProperty (NPIdentifier name);
@@ -1099,7 +1100,7 @@ void moonlight_scriptable_object_emit_event (PluginInstance *plugin,
 // int clientX, int clientY,
 
 typedef void callback_dom_event (gpointer context, char *name, int client_x, int client_y, int offset_x, int offset_y, gboolean alt_key,
-				 gboolean ctrl_key, gboolean shift_key, int mouse_button, 
+				 gboolean ctrl_key, gboolean shift_key, int mouse_button,
 				 int key_code, int char_code,
 				 gpointer domEvent);
 

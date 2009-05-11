@@ -389,8 +389,8 @@ public:
 	void InvalidateMeasure ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	void InvalidateArrange ();
-	/* @GenerateCBinding,GeneratePInvoke */
-	virtual bool UpdateLayout ();
+	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
+	virtual void UpdateLayout () = 0;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Size GetDesiredSize () { return desired_size; }

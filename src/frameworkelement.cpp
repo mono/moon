@@ -611,7 +611,7 @@ FrameworkElement::ArrangeOverride (Size finalSize)
 	return arranged;
 }
 
-bool
+void
 FrameworkElement::UpdateLayout ()
 {
 	UIElement *element = this;
@@ -742,7 +742,6 @@ FrameworkElement::UpdateLayout ()
 
 	//	printf ("\n");
 
-	return true;
 }
 
 void

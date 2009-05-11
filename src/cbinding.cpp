@@ -4321,13 +4321,13 @@ uielement_set_subtree_object (UIElement *instance, DependencyObject *value)
 }
 
 
-bool
+void
 uielement_update_layout (UIElement *instance)
 {
 	if (instance == NULL)
-		return false;
+		return;
 	
-	return instance->UpdateLayout ();
+	instance->UpdateLayout ();
 }
 
 
