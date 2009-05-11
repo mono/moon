@@ -186,6 +186,7 @@ namespace System.Windows.Controls
 			if (newContentRoot == _contentRoot)
 				return;
 
+			InvalidateMeasure ();
 			if (_contentRoot != null) {
 				// clear the old content
 				NativeMethods.uielement_element_removed (native, _contentRoot.native);

@@ -1,5 +1,11 @@
 2009-05-11  Alan McGovern  <amcgovern@novell.com>
 
+	* ContentPresenter.cs: Whenever the content root is changed,
+	  we need to invalidate the measure so that the presenter
+	  refreshes properly.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
 	* ContentPresenter.cs: Recommit r133738 as it's not causing
 	  the timeouts.
 
