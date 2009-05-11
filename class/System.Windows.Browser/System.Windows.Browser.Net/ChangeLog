@@ -1,3 +1,9 @@
+2009-05-11  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrowserHttpWebRequest.cs: Remove ContentType property (handled
+	by ancestor) and set Content-Length correctly (and inside the 
+	Headers too).
+
 2009-05-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs: Directly set Content-Length on the 

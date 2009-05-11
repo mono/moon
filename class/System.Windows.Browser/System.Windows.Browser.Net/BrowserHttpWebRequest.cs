@@ -298,7 +298,8 @@ namespace System.Windows.Browser.Net
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 
 			if (request != null && request.Length > 1) {
-				NativeMethods.downloader_request_set_http_header (native, "Content-Length", (request.Length - 1).ToString ());
+				// this header cannot be set directly inside the collection (hence the helper)
+				Headers.SetHeader ("content-length", (request.Length - 1).ToString ());
 			}
 			
 			foreach (string header in Headers.AllKeys)
@@ -318,12 +319,6 @@ namespace System.Windows.Browser.Net
 		public override bool AllowReadStreamBuffering {
 			get { return allow_read_buffering; }
 			set { allow_read_buffering = value; }
-		}
-
-		public override string ContentType {
-			get { return Headers [HttpRequestHeader.ContentType]; }
-			// this header cannot be set directly inside the collection (hence the helper)
-			set { Headers.SetHeader ("Content-Type", value); }
 		}
 
 		public override bool HaveResponse {
