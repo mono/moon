@@ -106,7 +106,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void DataContextTest ()
 		{
 			ContentPresenter c = (ContentPresenter) XamlReader.Load (@"

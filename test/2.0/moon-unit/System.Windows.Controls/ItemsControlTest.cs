@@ -39,11 +39,105 @@ using System.Windows.Shapes;
 using System.Windows.Media;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Controls.Primitives;
+using System.Windows.Markup;
 
 namespace MoonTest.System.Windows.Controls {
 
+	public class ItemsControlPoker : ItemsControl
+	{
+		public DependencyObject ContainerItem {
+			get; set;
+		}
+
+		public DependencyObject LastContainer {
+			get; set;
+		}
+
+		protected override void ClearContainerForItemOverride (DependencyObject element, object item)
+		{
+			base.ClearContainerForItemOverride (element, item);
+		}
+
+		public void ClearContainerForItemOverride_ (DependencyObject element, object item)
+		{
+			ClearContainerForItemOverride (element, item);
+		}
+
+		protected override DependencyObject GetContainerForItemOverride ()
+		{
+			if (ContainerItem != null)
+				return (LastContainer = ContainerItem);
+
+			return (LastContainer = base.GetContainerForItemOverride ());
+		}
+
+		public DependencyObject GetContainerForItemOverride_ ()
+		{
+			return GetContainerForItemOverride ();
+		}
+
+		public new DependencyObject GetTemplateChild (string name)
+		{
+			return base.GetTemplateChild (name);
+		}
+
+		public bool IsItemItsOwnContainerOverride_ (object item)
+		{
+			return IsItemItsOwnContainerOverride (item);
+		}
+
+		public void OnItemsChanged_ (NotifyCollectionChangedEventArgs e)
+		{
+			base.OnItemsChanged (e);
+		}
+
+		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
+		{
+			base.PrepareContainerForItemOverride (element, item);
+		}
+
+		public void PrepareContainerForItemOverride_ (DependencyObject element, object item)
+		{
+			PrepareContainerForItemOverride (element, item);
+		}
+
+		public int ItemAdded { get; private set; }
+		public int ItemRemove { get; private set; }
+		public int ItemReplace { get; private set; }
+		public int ItemReset { get; private set; }
+		public NotifyCollectionChangedEventArgs EventArgs { get; private set; }
+
+		public void ResetCounter ()
+		{
+			ItemAdded = 0;
+			ItemRemove = 0;
+			ItemReplace = 0;
+			ItemReset = 0;
+		}
+
+		protected override void OnItemsChanged (NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action) {
+				case NotifyCollectionChangedAction.Add:
+					ItemAdded++;
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					ItemRemove++;
+					break;
+				case NotifyCollectionChangedAction.Replace:
+					ItemReplace++;
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					ItemReset++;
+					break;
+			}
+			EventArgs = e;
+			base.OnItemsChanged (e);
+		}
+	}
+
 	[TestClass]
-	public partial class ItemsControlTest : SilverlightTest {
+	public partial class ____ItemsControlTest : SilverlightTest {
 
 		[TestMethod]
 		[Asynchronous]
@@ -164,74 +258,6 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (0, ic.Items.Count, "Items.Count");
 		}
 
-		public class ItemsControlPoker : ItemsControl {
-
-			public DependencyObject ContainerItem {
-				get; set;
-			}
-			public void ClearContainerForItemOverride_ (DependencyObject element, object item)
-			{
-				base.ClearContainerForItemOverride (element, item);
-			}
-
-			public DependencyObject GetContainerForItemOverride_ ()
-			{
-				if (ContainerItem != null)
-					return ContainerItem;
-
-				return base.GetContainerForItemOverride ();
-			}
-
-			public bool IsItemItsOwnContainerOverride_ (object item)
-			{
-				return base.IsItemItsOwnContainerOverride (item);
-			}
-
-			public void OnItemsChanged_ (NotifyCollectionChangedEventArgs e)
-			{
-				base.OnItemsChanged (e);
-			}
-
-			public void PrepareContainerForItemOverride_ (DependencyObject element, object item)
-			{
-				base.PrepareContainerForItemOverride (element, item);
-			}
-
-			public int ItemAdded { get; private set; }
-			public int ItemRemove { get; private set; }
-			public int ItemReplace { get; private set; }
-			public int ItemReset { get; private set; }
-			public NotifyCollectionChangedEventArgs EventArgs { get; private set; }
-
-			public void ResetCounter ()
-			{
-				ItemAdded = 0;
-				ItemRemove = 0;
-				ItemReplace = 0;
-				ItemReset = 0;
-			}
-
-			protected override void OnItemsChanged (NotifyCollectionChangedEventArgs e)
-			{
-				switch (e.Action) {
-				case NotifyCollectionChangedAction.Add:
-					ItemAdded++;
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					ItemRemove++;
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					ItemReplace++;
-					break;
-				case NotifyCollectionChangedAction.Reset:
-					ItemReset++;
-					break;
-				}
-				EventArgs = e;
-				base.OnItemsChanged (e);
-			}
-		}
-
 		[TestMethod]
 		public void ClearContainerForItemOverride ()
 		{
@@ -258,22 +284,66 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ContainerItemTest ()
 		{
 			ItemsControlPoker box = new ItemsControlPoker ();
+			ListBoxItem item = new ListBoxItem ();
 			box.ApplyTemplate ();
-			box.ContainerItem = new ConcreteControl ();
 			CreateAsyncTest (box,
-				() => {
-					box.Items.Add (new object ());
-				},
-				() => {
-					Assert.IsNotNull (((Control) box.ContainerItem).DataContext);
-				}
+				() => box.Items.Add (item),
+				() => Assert.IsNull (item.DataContext)
 			);
 		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ContainerItemTest2 ()
+		{
+			object item = new object ();
+			ItemsControlPoker c = new ItemsControlPoker ();
+			c.ApplyTemplate ();
+			CreateAsyncTest (c, () => {
+				c.Items.Add (item);
+				Assert.IsInstanceOfType<ContentPresenter> (c.LastContainer, "#1");
+				ContentPresenter lbi = (ContentPresenter) c.LastContainer;
+				Assert.AreEqual (lbi.Content, item, "#2");
+				Assert.AreEqual (lbi.DataContext, item, "#3");
+			});
+		}
+
+		class ConceteElement : FrameworkElement { }
 		
+		[TestMethod]
+		[Asynchronous]
+		public void ContainerItemTest3 ()
+		{
+			ConceteElement item = new ConceteElement ();
+			ItemsControlPoker c = new ItemsControlPoker ();
+			c.ApplyTemplate ();
+			CreateAsyncTest (c, () => {
+				c.Items.Add (item);
+				Assert.IsNull (c.LastContainer, "#1"); // No autogenerated container
+				Assert.IsNull(item.DataContext, "#3");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ContainerItemTest4 ()
+		{
+			object item = new object ();
+			ConceteElement container = new ConceteElement ();
+			ItemsControlPoker c = new ItemsControlPoker ();
+			c.ContainerItem = container;
+			c.ApplyTemplate ();
+			CreateAsyncTest (c, () => {
+				c.Items.Add (item);
+				Assert.AreEqual (container, c.LastContainer, "#1");
+				Assert.AreEqual (container.DataContext, item, "#2");
+				Assert.AreEqual (container.ReadLocalValue (FrameworkElement.DataContextProperty), item, "#3");
+			});
+		}
+
 		[TestMethod]
 		public void IsItemItsOwnContainerOverride ()
 		{

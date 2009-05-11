@@ -1,5 +1,12 @@
 2009-05-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ContentPresenterTest.cs: Add extra
+	  tests to show where the DataContext property is actually
+	  set.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentControlTest.cs: Add
 	  [MoonlightBug] to two tests which no longer pass.
 

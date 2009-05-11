@@ -240,6 +240,10 @@ namespace System.Windows.Controls {
 					ContentControl c = container as ContentControl;
 					if (c != null)
 						c.ContentSetsParent = false;
+					
+					FrameworkElement f = container as FrameworkElement;
+					if (f != null)
+						f.DataContext  = item;
 				}
 
 				panel.Children.Insert (newIndex + i, (UIElement) container);
