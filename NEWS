@@ -10,6 +10,8 @@ Changes from 2.0 preview 1 (1.9.0.1) to 2.0 preview 2 (1.9.1)
 
 * TextBox now has input method support.
 
+* Fixed some infinite loop conditions in text layout.
+
 * TemplateBindings are now created in managed code instead of
   unmanaged, and are exposed with ReadLocalValue.
 
