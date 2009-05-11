@@ -102,9 +102,6 @@ namespace System.Windows {
 					throw new XamlParseException ("foo6");
 				}
 			}
-			else {
-				throw new XamlParseException ("null value in setter.  how did we make it here?");
-			}
 		}
 
 		internal void ConvertSetterValues ()

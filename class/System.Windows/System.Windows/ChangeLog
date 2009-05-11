@@ -1,3 +1,9 @@
+2009-05-11  Chris Toshok  <toshok@ximian.com>
+
+	* Style.cs (ConvertSetterValue): don't whine about null values.
+	they're possible now that {x:Null} is handled by the parser before
+	things get to us.
+
 2009-05-05  Alan McGovern  <amcgovern@novell.com>
 
 	* FrameworkElement.cs:
