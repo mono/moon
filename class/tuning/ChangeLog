@@ -1,3 +1,7 @@
+2009-05-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add Descriptors/System.Net.xml
+
 2009-05-06  Raja R Harinath  <harinath@hurrynot.org>
 
 	* Makefile.am (TUNER_DESCS): Prefix $(srcdir)/.
