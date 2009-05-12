@@ -477,6 +477,18 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		public void DataContextTest ()
+		{
+			object context = new object ();
+			Grid grid = new Grid { DataContext = context };
+			Rectangle r = new Rectangle ();
+			grid.Children.Add (r);
+
+			Assert.AreEqual (context, r.DataContext, "#1");
+			Assert.AreEqual (DependencyProperty.UnsetValue, r.ReadLocalValue (FrameworkElement.DataContextProperty), "#2");
+		}
+		
+		[TestMethod]
 		public void MeasureOverride ()
 		{
 			Border b = new Border ();
