@@ -45,6 +45,10 @@ namespace MoonTest.System.Windows.Controls {
 
 	public class ItemsControlPoker : ItemsControl
 	{
+		public bool? IsOwnContainer {
+			get; set;
+		}
+		
 		public DependencyObject ContainerItem {
 			get; set;
 		}
@@ -81,6 +85,11 @@ namespace MoonTest.System.Windows.Controls {
 			return base.GetTemplateChild (name);
 		}
 
+		protected override bool IsItemItsOwnContainerOverride (object item)
+		{
+			return IsOwnContainer.HasValue ? IsOwnContainer.Value : base.IsItemItsOwnContainerOverride (item);
+		}
+		
 		public bool IsItemItsOwnContainerOverride_ (object item)
 		{
 			return IsItemItsOwnContainerOverride (item);
@@ -352,6 +361,35 @@ namespace MoonTest.System.Windows.Controls {
 			});
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void ContainerItemTest5 ()
+		{
+			// Force all elements to *not* be their own container
+			ItemsControlPoker c = new ItemsControlPoker { IsOwnContainer = false };
+			c.ApplyTemplate ();
+
+			CreateAsyncTest (c, () => {
+				ContentPresenter item;
+				object content;
+
+				content = new Rectangle ();
+				c.Items.Add (content);
+				Assert.IsInstanceOfType<ContentPresenter> (c.LastContainer, "#1");
+				item = (ContentPresenter) c.LastContainer;
+				Assert.AreEqual (content, item.Content, "#2");
+				Assert.IsNull (item.DataContext, "#3");
+				c.LastContainer = null;
+
+				content = "I'm a string";
+				c.Items.Add (content);
+				Assert.IsInstanceOfType<ContentPresenter> (c.LastContainer, "#4");
+				item = (ContentPresenter) c.LastContainer;
+				Assert.AreEqual (content, item.Content, "#5");
+				Assert.AreEqual (content, item.DataContext, "#6");
+			});
+		}
+		
 		[TestMethod]
 		public void IsItemItsOwnContainerOverride ()
 		{

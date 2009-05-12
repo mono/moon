@@ -241,7 +241,7 @@ namespace System.Windows.Controls {
 						c.ContentSetsParent = false;
 					
 					FrameworkElement f = container as FrameworkElement;
-					if (f != null)
+					if (f != null && !(item is FrameworkElement))
 						f.DataContext  = item;
 				}
 
