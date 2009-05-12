@@ -1,6 +1,14 @@
 2009-05-12  Larry Ewing  <lewing@novell.com>
 
-	* frameworkelement.cpp (UpdateLayout): rever the visibility change
+	* collection.cpp, collection.h: Add a SkipBranch method to avoid
+	computing walking into the tree when we can.
+
+	* frameworkelement.cpp (UpdateLayout): Use the new skip branch
+	logic in deeptreewalker to avoid invisible elements.
+
+2009-05-12  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (UpdateLayout): revert the visibility change
 	for now.
 
 2009-05-12  Larry Ewing  <lewing@novell.com>

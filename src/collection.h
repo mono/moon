@@ -200,10 +200,12 @@ class DeepTreeWalker {
 public:
 	DeepTreeWalker (UIElement *top);
 	UIElement *Step ();
+	void SkipBranch ();
 	~DeepTreeWalker ();
 protected:
 	List *walk_list;
 	Types *types;
+	UIElement *last;
 };
 
 /* @Namespace=System.Windows */

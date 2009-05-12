@@ -828,26 +828,38 @@ DeepTreeWalker::DeepTreeWalker (UIElement *top)
 {
 	walk_list = new List ();
 	walk_list->Append (new UIElementNode (top));
+	last = NULL;
 	types = Deployment::GetCurrent ()->GetTypes ();
 }
 
 UIElement *
 DeepTreeWalker::Step ()
 {
+	if (last) {
+		VisualTreeWalker walker (last, Logical, types);
+		while (UIElement *child = walker.Step ())
+			walk_list->Prepend (new UIElementNode (child));
+	}
+
 	UIElementNode *next = (UIElementNode*)walk_list->First ();
 	
-	if (!next)
+	if (!next) {
+		last = NULL;
 		return NULL;
+	}
 
 	UIElement *current = next->uielement;
 	walk_list->Unlink (next);
 	delete next;
-	
-	VisualTreeWalker walker (current, Logical, types);
-	while (UIElement *child = walker.Step ())
-		walk_list->Prepend (new UIElementNode (child));
+	last = current;
 
 	return current;
+}
+
+void
+DeepTreeWalker::SkipBranch ()
+{
+	last = NULL;
 }
 
 DeepTreeWalker::~DeepTreeWalker ()

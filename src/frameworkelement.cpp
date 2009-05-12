@@ -644,14 +644,18 @@ FrameworkElement::UpdateLayout ()
 		i++;
 		DeepTreeWalker measure_walker (element);
 		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
-			if (!child->GetRenderVisible ())
+			if (child->GetVisibility () != VisibilityVisible) {
+				measure_walker.SkipBranch ();
 				continue;
+			}
 
 			if (child->dirty_flags & DirtyMeasure) {
 				UIElement *parent = child->GetVisualParent ();
 				if ((parent && !parent->Is (Type::CANVAS)) || child->IsLayoutContainer ()) {
 					measure_list->Prepend (new UIElementNode (child));
 					//g_warning ("adding %p, %s", child, child->GetTypeName ());
+				} else if (!measure_list->IsEmpty ()) {
+					measure_walker.SkipBranch ();
 				}
 			}
 
