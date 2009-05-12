@@ -1,3 +1,10 @@
+2009-05-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (OnKeyDown): Need to set the handled flag on the
+	routed event args in the case where the key event is handled by
+	GtkIMContext too.
+	(OnKeyUp): Set the handled flag in both cases here.
+
 2009-05-11  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h:

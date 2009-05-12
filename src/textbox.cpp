@@ -1339,6 +1339,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 	gunichar c;
 	
 	if (!is_read_only && gtk_im_context_filter_keypress (im_ctx, args->GetEvent ())) {
+		args->SetHandled (true);
 		need_im_reset = true;
 		return;
 	}
@@ -1486,9 +1487,11 @@ TextBoxBase::key_down (EventObject *sender, EventArgs *args, void *closure)
 void
 TextBoxBase::OnKeyUp (KeyEventArgs *args)
 {
-	if (!is_read_only && gtk_im_context_filter_keypress (im_ctx, args->GetEvent ())) {
-		need_im_reset = true;
-		return;
+	if (!is_read_only) {
+		if (gtk_im_context_filter_keypress (im_ctx, args->GetEvent ()))
+			need_im_reset = true;
+		
+		args->SetHandled (true);
 	}
 }
 
