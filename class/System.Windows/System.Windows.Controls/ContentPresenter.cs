@@ -186,6 +186,8 @@ namespace System.Windows.Controls
 			if (newContentRoot == _contentRoot)
 				return;
 
+			if (!(Content is FrameworkElement))
+				DataContext = Content;
 			InvalidateMeasure ();
 			if (_contentRoot != null) {
 				// clear the old content

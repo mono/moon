@@ -455,5 +455,34 @@ namespace MoonTest.System.Windows.Controls {
 				)
 			);
 		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void VisualTreeTest5 ()
+		{
+			ContentPresenter presenter = null;
+			ContentControl c = new ContentControl ();
+			c.Content = "I'm a string";
+			c.Measure (Size.Empty);
+
+			CreateAsyncTest (c,
+				() => {
+					Assert.VisualChildren (c, "#1",
+						new VisualNode<ContentPresenter> ("#a", p => presenter = p, null)
+					);
+					Assert.AreEqual (c.Content, presenter.DataContext, "#2");
+
+					c.Content = new ConcreteFrameworkElement ();
+				},
+				() => {
+					ContentPresenter old = presenter;
+					Assert.VisualChildren (c, "#3",
+						new VisualNode<ContentPresenter> ("#b", p => presenter = p, null)
+					);
+					Assert.AreNotSame (old, presenter, "#4");
+					Assert.IsNull (presenter.DataContext, "#5");
+				}
+			);
+		}
 	}
 }

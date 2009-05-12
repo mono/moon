@@ -1,5 +1,11 @@
 2009-05-12  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentControlTest.cs:
+	  ContentPresenter copies Content to DataContext iff the
+	  Content is not a FrameworkElement.
+
+2009-05-12  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/FrameworkElementTest.cs: Add test to make
 	  sure datacontext is propagating correctly.
 
