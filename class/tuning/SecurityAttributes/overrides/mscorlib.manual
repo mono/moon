@@ -13,3 +13,7 @@
 
 # corlib calls System.Windows.Application.OnUnhandledException using reflection
 +SSC-M: System.Void System.Threading.Thread::StartSafe()
+
+# delegate checks are at creation, not invoke, time. this makes [Multicast]Delegate.DynamicInvoke [SecuritySafeCritical] methods
++SC-M: System.Object System.Delegate::DynamicInvokeImpl(System.Object[])
+

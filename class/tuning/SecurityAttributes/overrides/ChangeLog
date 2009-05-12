@@ -1,3 +1,7 @@
+2008-05-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.manual: Add an SC to Delegate.DynamicInvokeImpl
+
 2008-04-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.manual: Remove temporary hack (SVN requirement are 

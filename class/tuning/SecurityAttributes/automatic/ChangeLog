@@ -1,3 +1,8 @@
+2008-05-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.audo.sc: Add SC to MulticastDelegate::DynamicInvokeImpl
+	* mscorlib.audo.ssc: Add SSC to Delegate::DynamicInvoke
+	
 2009-05-11  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.sc: Update security attrs

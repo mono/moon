@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 178 methods
+# 179 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::BuildTailoringTables(System.Globalization.CultureInfo,Mono.Globalization.Unicode.TailoringInfo,Mono.Globalization.Unicode.Contraction[]&,Mono.Globalization.Unicode.Level2Map[]&)
@@ -54,6 +54,7 @@
 +SSC-M: System.Single System.BitConverter::ToSingle(System.Byte[],System.Int32)
 +SSC-M: System.Double System.BitConverter::ToDouble(System.Byte[],System.Int32)
 +SSC-M: System.String System.DateTimeUtils::ToString(System.DateTime,System.Nullable`1<System.TimeSpan>,System.String,System.Globalization.DateTimeFormatInfo)
++SSC-M: System.Object System.Delegate::DynamicInvoke(System.Object[])
 +SSC-M: System.String System.Diagnostics.StackFrame::ToString()
 +SSC-M: System.Void System.Diagnostics.StackTrace::.ctor(System.Exception)
 +SSC-M: System.Void System.Diagnostics.StackTrace::init_frames(System.Int32,System.Boolean)

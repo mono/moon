@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 129 methods needs to be decorated.
+# 130 methods needs to be decorated.
 
 # [VISIBLE] overrides 'System.Boolean System.Runtime.InteropServices.CriticalHandle::get_IsInvalid()'.
 +SC-M: System.Boolean Microsoft.Win32.SafeHandles.CriticalHandleMinusOneIsInvalid::get_IsInvalid()
@@ -213,6 +213,9 @@
 
 # [VISIBLE] implements 'System.Object System._AppDomain::GetData(System.String)'.
 +SC-M: System.Object System.AppDomain::GetData(System.String)
+
+# [VISIBLE] overrides 'System.Object System.Delegate::DynamicInvokeImpl(System.Object[])'.
++SC-M: System.Object System.MulticastDelegate::DynamicInvokeImpl(System.Object[])
 
 # [VISIBLE] implements 'System.Reflection.AssemblyName System.Runtime.InteropServices._Assembly::GetName(System.Boolean)'.
 +SC-M: System.Reflection.AssemblyName System.Reflection.Assembly::GetName()
