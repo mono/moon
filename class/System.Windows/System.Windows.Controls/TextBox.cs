@@ -84,10 +84,28 @@ namespace System.Windows.Controls {
 			
 			if (contentElement != null && contentElement is ScrollViewer) {
 				ScrollViewer scrollview = contentElement as ScrollViewer;
+				double offset = scrollview.HorizontalOffset;
 				
-				// FIXME: I'm sure this needs work...
-				scrollview.ScrollToHorizontalOffset (args.CursorX);
-				scrollview.ScrollToVerticalOffset (args.CursorY);
+				// Note: for horizontal scrollage, we offset by 1.0 pixel for the width of the cursor ibeam
+				
+				if (args.CursorX < offset) {
+					// need to scroll to the left a bit
+					scrollview.ScrollToHorizontalOffset (Math.Max (args.CursorX - 1.0, 0.0));
+				} else if (args.CursorX > offset + scrollview.ViewportWidth) {
+					// need to scroll to the right
+					offset = (args.CursorX + 1.0) - scrollview.ViewportWidth;
+					scrollview.ScrollToHorizontalOffset (offset);
+				}
+				
+				offset = scrollview.VerticalOffset;
+				if (args.CursorY < offset) {
+					// need to scroll up a bit
+					scrollview.ScrollToVerticalOffset (args.CursorY);
+				} else if (args.CursorY + args.CursorHeight > offset + scrollview.ViewportHeight) {
+					// need to scroll down a bit
+					offset = (args.CursorY + args.CursorHeight) - scrollview.ViewportHeight;
+					scrollview.ScrollToVerticalOffset (offset);
+				}
 			}
 		}
 		

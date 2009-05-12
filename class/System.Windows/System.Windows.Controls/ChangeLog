@@ -1,3 +1,9 @@
+2009-05-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBox.cs (OnCursorPositionChanged): Fixed scrolling to behave
+	more normally. Might still need some work, but at least it's no
+	longer painful. I'm sure toshok will be appreciative ;-)
+
 2009-05-12  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs:
