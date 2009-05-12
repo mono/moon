@@ -1,5 +1,14 @@
 2009-05-12  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (InvalidateCursor): New helper method which applies
+	the absolute transform to the cursor before invalidating the
+	cursor's region.
+	(ShowCursor): Use InvalidateCursor().
+	(HideCursor): Same.
+	(UpdateCursor): Here too.
+
+2009-05-12  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp (OnKeyDown): Need to set the handled flag on the
 	routed event args in the case where the key event is handled by
 	GtkIMContext too.

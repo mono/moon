@@ -573,6 +573,7 @@ class TextBoxView : public FrameworkElement {
 	bool Blink ();
 	
 	void UpdateCursor (bool invalidate);
+	void InvalidateCursor ();
 	void UpdateText ();
 	
 	void Layout (Size constraint);

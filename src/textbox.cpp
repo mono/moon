@@ -2985,17 +2985,23 @@ TextBoxView::ResetCursorBlink (bool delay)
 }
 
 void
+TextBoxView::InvalidateCursor ()
+{
+	Invalidate (cursor.Transform (&absolute_xform));
+}
+
+void
 TextBoxView::ShowCursor ()
 {
 	cursor_visible = true;
-	Invalidate (cursor);
+	InvalidateCursor ();
 }
 
 void
 TextBoxView::HideCursor ()
 {
 	cursor_visible = false;
-	Invalidate (cursor);
+	InvalidateCursor ();
 }
 
 void
@@ -3007,7 +3013,7 @@ TextBoxView::UpdateCursor (bool invalidate)
 	
 	// invalidate current cursor rect
 	if (invalidate && cursor_visible)
-		Invalidate (cursor);
+		InvalidateCursor ();
 	
 	// calculate the new cursor rect
 	cursor = layout->GetCursor (Point (), cur);
@@ -3022,7 +3028,7 @@ TextBoxView::UpdateCursor (bool invalidate)
 	
 	// invalidate the new cursor rect
 	if (invalidate && cursor_visible)
-		Invalidate (cursor);
+		InvalidateCursor ();
 }
 
 void
