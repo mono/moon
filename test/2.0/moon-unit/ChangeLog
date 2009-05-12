@@ -1,3 +1,10 @@
+2009-05-12  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net/HttpWebRequestTest.cs: Split and augment Accept and
+	ContentType into their own tests.
+	* System.Net/WebRequestTest.cs: Remove header validation test 
+	case (it's being tested in HttpWebRequest now).
+
 2009-05-12  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemsControlTest.cs: The

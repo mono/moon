@@ -379,33 +379,6 @@ namespace MoonTest.System.Net {
 			}, "Empty");
 		}
 
-		[TestMethod]
-		public void Headers_Validation ()
-		{
-			// a WebHeaderCollection can contain any header
-			WebHeaderCollection whc = new WebHeaderCollection ();
-			whc [HttpRequestHeader.Allow] = "yup";
-
-			WebRequest wr = WebRequest.Create (new Uri ("http://localhost"));
-			wr.Method = "POST";
-			WebHeaderCollection c2 = wr.Headers;
-			c2 [HttpRequestHeader.CacheControl] = "often";
-			Assert.Throws<ArgumentException> (delegate {
-				wr.Headers = whc;
-			}, "collection with bad POST header");
-			Assert.AreEqual (1, c2.Count, "Count");
-			Assert.AreEqual ("often", wr.Headers [HttpRequestHeader.CacheControl], "CacheControl");
-
-			// this is NOT a field assignation but a copy of the data
-			Assert.IsFalse (Object.ReferenceEquals (whc, wr.Headers), "Assigned?");
-			whc [HttpRequestHeader.KeepAlive] = "sure";
-
-			Assert.IsTrue (Object.ReferenceEquals (c2, wr.Headers), "NotAssigned?");
-			Assert.Throws<ArgumentException> (delegate {
-				c2 [HttpRequestHeader.KeepAlive] = "sure";
-			}, "KeepAlive");
-		}
-
 		bool IsValidHeader (HttpRequestHeader header)
 		{
 			switch (header) {
@@ -491,6 +464,14 @@ namespace MoonTest.System.Net {
 					wr.Headers [header.ToUpper ()] = s;
 					Assert.AreEqual (s, wr.Headers [header], header);
 				} else {
+					if (hrh == HttpRequestHeader.ContentType) {
+						// we can set ContentType using its property, but not the collection
+						Assert.IsNull (wr.ContentType, "ContentType/default");
+						wr.ContentType = s;
+						Assert.AreEqual (s, wr.ContentType, "ContentType");
+						Assert.AreEqual (s, wr.Headers [header], "ContentType/Collection");
+					}
+
 					Assert.Throws<ArgumentException> (delegate {
 						wr.Headers [header] = s;
 					}, header);
