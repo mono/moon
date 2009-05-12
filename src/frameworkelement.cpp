@@ -644,7 +644,7 @@ FrameworkElement::UpdateLayout ()
 		i++;
 		DeepTreeWalker measure_walker (element);
 		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
-			if (child->GetVisibility () != VisibilityVisible)
+			if (!child->GetRenderVisible ())
 				continue;
 
 			if (child->dirty_flags & DirtyMeasure) {

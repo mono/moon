@@ -1,5 +1,10 @@
 2009-05-12  Larry Ewing  <lewing@novell.com>
 
+	* frameworkelement.cpp (UpdateLayout): rever the visibility change
+	for now.
+
+2009-05-12  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp (ComputeBounds): make sure the bounds are
 	the size of the full element, and skip elements based on the
 	actual visibility setting not the computed one.
