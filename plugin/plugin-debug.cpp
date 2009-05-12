@@ -174,6 +174,11 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 						     thickness->bottom);
 			break;
 		}
+		case Type::POINT: {
+			Point *point = value->AsPoint ();
+			str = buf = g_strdup_printf ("<b>(%g, %g)</b>", point->x, point->y);
+			break;
+		}
 		case Type::CORNERRADIUS:
 		case Type::KEYTIME:
 		default:

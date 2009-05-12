@@ -1,3 +1,7 @@
+2009-05-12  Larry Ewing  <lewing@novell.com>
+
+	* plugin-debug.cpp (reflect_value): add output for point.
+
 2009-05-11  Larry Ewing  <lewing@novell.com>
 
 	* plugin-class.cpp: remove UpdateLayout now that it is
