@@ -209,7 +209,11 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 void
 FrameworkElement::ComputeBounds ()
 {
-	extents = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	Size size (GetActualWidth (), GetActualHeight ());
+	size = size.Max (GetWidth (), GetHeight ());
+	size = size.Min (GetWidth (), GetHeight ());
+	extents = Rect (0, 0, size.width, size.height);
+
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 	bounds_with_children = bounds;
 
@@ -640,7 +644,7 @@ FrameworkElement::UpdateLayout ()
 		i++;
 		DeepTreeWalker measure_walker (element);
 		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
-			if (!child->GetRenderVisible ())
+			if (child->GetVisibility () != VisibilityVisible)
 				continue;
 
 			if (child->dirty_flags & DirtyMeasure) {
