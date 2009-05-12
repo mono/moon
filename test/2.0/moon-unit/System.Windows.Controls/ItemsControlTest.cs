@@ -134,10 +134,18 @@ namespace MoonTest.System.Windows.Controls {
 			EventArgs = e;
 			base.OnItemsChanged (e);
 		}
+		
+		public void AssertCollectionChanges (int added, int removed, int replaced, int reset, string message)
+		{
+			Assert.AreEqual (added, ItemAdded, string.Format ("{0} - ItemAdded", message));
+			Assert.AreEqual (removed, ItemRemove, string.Format ("{0} - ItemRemoved", message));
+			Assert.AreEqual (replaced, ItemReplace, string.Format ("{0} - ItemReplace", message));
+			Assert.AreEqual (reset, ItemReset, string.Format ("{0} - ItemReset", message));
+		}
 	}
 
 	[TestClass]
-	public partial class ____ItemsControlTest : SilverlightTest {
+	public partial class ItemsControlTest : SilverlightTest {
 
 		[TestMethod]
 		[Asynchronous]
@@ -605,6 +613,30 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (0, ic.Items.Count, "count after setting ItemsSource to null");
 			Assert.IsFalse (ic.Items.IsReadOnly, "items IsReadOnly #3");
 			ic.Items.Add ("hi");
+		}
+		
+		[TestMethod]
+		public void ItemsTest ()
+		{
+			ItemsControlPoker c = new ItemsControlPoker ();
+			ItemCollection original = c.Items;
+			string [] array = new string [] { "Test", "Test2", "Test3" }; ;
+			c.ItemsSource = array;
+			Assert.AreSame (original, c.Items, "#1");
+			Assert.Throws<InvalidOperationException>(() => c.Items.Add ("1"));
+			c.AssertCollectionChanges (0, 0, 0, 1, "#2");
+			
+			c.ResetCounter ();
+			c.ItemsSource = array;
+			c.AssertCollectionChanges (0, 0, 0, 0, "#3");
+
+			c.ResetCounter ();
+			c.ItemsSource = null;
+			Assert.AreSame (original, c.Items, "#4");
+			c.AssertCollectionChanges (0, 0, 0, 1, "#5");
+
+			c.Items.Add ("2");
+			c.AssertCollectionChanges (1, 0, 0, 1, "#6");
 		}
 
 		[TestMethod]

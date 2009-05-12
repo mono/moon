@@ -90,24 +90,22 @@ namespace System.Windows.Controls {
 				((INotifyCollectionChanged)oldSource).CollectionChanged -= OnSourceCollectionChanged;
 			}
 
-
 			if (newSource != null) {
-
 				if (newSource is INotifyCollectionChanged) {
 					((INotifyCollectionChanged)newSource).CollectionChanged += OnSourceCollectionChanged;
 				}
-
+				
+				items.ClearImpl ();
 				itemsIsDataBound = true;
-
-				items = new ItemCollection ();
-				items.SetReadOnly();
-				items.ItemsChanged += delegate (object o, NotifyCollectionChangedEventArgs e) {
-					InvokeItemsChanged (e);
-				};
-
+				Items.SetIsReadOnly (true);
+				
 				foreach (var v in newSource) {
-					items.AddImpl (v);
+					Items.AddImpl (v);
 				}
+			} else {
+				itemsIsDataBound = newSource != null;
+				Items.SetIsReadOnly (itemsIsDataBound);		
+				items.ClearImpl ();
 			}
 		}
 
@@ -116,18 +114,18 @@ namespace System.Windows.Controls {
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
 				for (int i = 0; i < e.NewItems.Count; i ++)
-					items.InsertImpl (e.NewStartingIndex + i, e.NewItems[i]);
+					Items.InsertImpl (e.NewStartingIndex + i, e.NewItems[i]);
 				break;
 			case NotifyCollectionChangedAction.Remove:
 				for (int i = 0; i < e.OldItems.Count; i ++)
-					items.RemoveAtImpl (e.OldStartingIndex);
+					Items.RemoveAtImpl (e.OldStartingIndex);
 				break;
 			case NotifyCollectionChangedAction.Replace:
 				for (int i = 0; i < e.NewItems.Count; i++)
-					items.SetItemImpl (e.NewStartingIndex+i, e.NewItems[i]);
+					Items.SetItemImpl (e.NewStartingIndex+i, e.NewItems[i]);
 				break;
 			case NotifyCollectionChangedAction.Reset:
-				items.ClearImpl ();
+				Items.ClearImpl ();
 				break;
 			}
 		}
@@ -171,7 +169,7 @@ namespace System.Windows.Controls {
 			
 		}
 		
-		void InvokeItemsChanged (NotifyCollectionChangedEventArgs e)
+		void InvokeItemsChanged (object o, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
@@ -207,7 +205,8 @@ namespace System.Windows.Controls {
 				}
 			}
 			
-			OnItemsChanged (e);
+			if (!itemsIsDataBound)
+				OnItemsChanged (e);
 		}
 		
 		void SetLogicalParent (IntPtr parent, IList items)
@@ -302,9 +301,7 @@ namespace System.Windows.Controls {
 				if (items == null) {
 					items = new ItemCollection ();
 					itemsIsDataBound = false;
-					items.ItemsChanged += delegate (object o, NotifyCollectionChangedEventArgs e) {
-						InvokeItemsChanged (e);
-					};
+					items.ItemsChanged += InvokeItemsChanged;
 				}
 				return items;
 			}
@@ -323,10 +320,9 @@ namespace System.Windows.Controls {
 		public IEnumerable ItemsSource { 
 			get { return (IEnumerable) GetValue (ItemsSourceProperty); }
 			set {
-				if (!itemsIsDataBound && items != null && items.Count > 0) {
+				if (!itemsIsDataBound && Items.Count > 0) {
 					throw new InvalidOperationException ("Items collection must be empty before using ItemsSource");
 				}
-				items = null;
 				SetValue (ItemsSourceProperty, value);
 			}
 		}

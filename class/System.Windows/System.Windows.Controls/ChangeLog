@@ -1,3 +1,11 @@
+2009-05-12  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs:
+	* ItemCollection.cs: The ItemsCollection should be
+	  instantiated once and reused even when the ItemsSource
+	  changes. When ItemsSource is non-null, we don't propagate
+	  collection changed events.
+
 2009-05-11  Alan McGovern  <amcgovern@novell.com>
 
 	* ContentPresenter.cs: Whenever the content root is changed,

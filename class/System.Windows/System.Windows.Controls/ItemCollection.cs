@@ -32,9 +32,9 @@ namespace System.Windows.Controls {
 
 		bool readOnly;
 
-		internal void SetReadOnly ()
+		internal void SetIsReadOnly (bool readOnly)
 		{
-			readOnly = true;
+			this.readOnly = readOnly;
 		}
 
 		// Note: Parameter handling is different from other PresentationFrameworkCollection<T> types
