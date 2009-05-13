@@ -91,6 +91,7 @@ namespace System.Windows.Controls
 			Debug.Assert(source != null, 
 				     "The source is not an instance of ContentPresenter!");
 
+			source.InvalidateMeasure ();
 			source.hasContent = false;
 			source.SetContentRoot (null);
 		}
@@ -128,6 +129,7 @@ namespace System.Windows.Controls
 			Debug.Assert(source != null, 
 				     "The source is not an instance of ContentPresenter!"); 
 
+			source.InvalidateMeasure ();
 			source.hasContent = false;
 			source.SetContentRoot (null);
 		} 
@@ -188,7 +190,7 @@ namespace System.Windows.Controls
 
 			if (!(Content is FrameworkElement))
 				DataContext = Content;
-			InvalidateMeasure ();
+			
 			if (_contentRoot != null) {
 				// clear the old content
 				NativeMethods.uielement_element_removed (native, _contentRoot.native);

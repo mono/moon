@@ -1,3 +1,9 @@
+2009-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: Measure needs to be invalidated every
+	  time the Content or ContentTemplate changes, not just when
+	  we alter the root visual.
+
 2009-05-12  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs: ItemsControl has the same behaviour as
