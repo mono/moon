@@ -1,3 +1,16 @@
+2009-05-13  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (class XamlContextInternal): allow for a parent context
+	so that we can track context's (and resources) across multiple
+	template instantiations.
+	(create_resource_list): just stuff the FrameworkElement on the
+	list and leave the GetValue(UIElement::Resources) for when we look
+	up the actual resource.
+	(end_element_handler): when creating a new XamlContext pass in our
+	current XamlContext.
+	(XamlContextInternal::LookupNamedItem): handle both changes (FWE
+	in our resources list, and parent context chaining.)
+
 2009-05-13  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: We need to dup the top_element since this can be

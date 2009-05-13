@@ -165,16 +165,18 @@ class XamlContextInternal {
 	Surface *surface;
 	XamlLoaderCallbacks callbacks;
 	GSList *resources;
+	XamlContextInternal *parent_context;
 
 	DependencyObject *source;
 
-	XamlContextInternal (XamlLoaderCallbacks callbacks, Value *top_element, FrameworkTemplate *template_parent, GHashTable *namespaces, GSList *resources)
+	XamlContextInternal (XamlLoaderCallbacks callbacks, Value *top_element, FrameworkTemplate *template_parent, GHashTable *namespaces, GSList *resources, XamlContextInternal *parent_context)
 	{
 		this->callbacks = callbacks;
 		this->top_element = new Value (*top_element);
 		this->template_parent = template_parent;
 		this->surface = template_parent->GetSurface ();
 		this->resources = resources;
+		this->parent_context = parent_context;
 
 		if (this->callbacks.create_gchandle) 
 			this->callbacks.create_gchandle ();
@@ -218,14 +220,25 @@ class XamlContextInternal {
 		bool exists = false;
 		GSList *walk = resources;
 		while (walk) {
-			*v = lookup_resource_dictionary ((ResourceDictionary *) walk->data, name, &exists);
+			DependencyObject *dob = (DependencyObject*)walk->data;
+			if (dob->Is (Type::RESOURCE_DICTIONARY))
+				*v = lookup_resource_dictionary ((ResourceDictionary *) walk->data, name, &exists);
+			else /* dob->Is (Type::FRAMEWORKELEMENT) */ {
+				ResourceDictionary *rd = dob->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary();
+				*v = lookup_resource_dictionary (rd, name, &exists);
+			}
 
 			if (exists)
 				break;
 			walk = walk->next;
 		}
 
-		return exists;
+		if (exists)
+			return exists;
+		else if (!parent_context)
+			return false;
+
+		return parent_context->LookupNamedItem (name, v);
 	}
 
 	void SetTemplateBindingSource (DependencyObject *source)
@@ -1633,9 +1646,9 @@ create_resource_list (XamlParserInfo *p)
 	Types * types = Deployment::GetCurrent ()->GetTypes ();
 	while (walk) {
 		if (walk->element_type == XamlElementInstance::ELEMENT && types->IsSubclassOf (walk->info->GetKind (), Type::FRAMEWORKELEMENT)) {
-			ResourceDictionary *rd = (ResourceDictionary *) walk->GetAsDependencyObject ()->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
-			if (g_slist_index (list, rd) == -1)
-				list = g_slist_prepend (list, rd);
+			FrameworkElement *fwe = (FrameworkElement *)walk->GetAsDependencyObject ();
+			if (g_slist_index (list, fwe) == -1)
+				list = g_slist_prepend (list, fwe);
 		}
 		if (walk->element_type == XamlElementInstance::ELEMENT && types->IsSubclassOf (walk->info->GetKind (), Type::RESOURCE_DICTIONARY)) {
 			ResourceDictionary *rd = (ResourceDictionary *) walk->GetAsDependencyObject ();
@@ -1650,10 +1663,10 @@ create_resource_list (XamlParserInfo *p)
 }
 
 static XamlContext *
-create_xaml_context (XamlParserInfo *p, FrameworkTemplate *template_)
+create_xaml_context (XamlParserInfo *p, FrameworkTemplate *template_, XamlContext *parent_context)
 {
 	GSList *resources = create_resource_list (p);
-	XamlContextInternal *ic =  new XamlContextInternal (p->loader->callbacks, p->GetTopElementPtr (), template_, p->namespace_map, resources);
+	XamlContextInternal *ic =  new XamlContextInternal (p->loader->callbacks, p->GetTopElementPtr (), template_, p->namespace_map, resources, parent_context ? parent_context->internal : NULL);
 	return new XamlContext (ic);
 }
 
@@ -1684,8 +1697,8 @@ end_element_handler (void *data, const char *el)
 				FrameworkTemplate* template_ = (FrameworkTemplate *) p->current_element->GetAsDependencyObject ();
 
                                 char* buffer = p->ClearBuffer ();
-				
-				XamlContext *context = create_xaml_context (p, template_);
+
+				XamlContext *context = create_xaml_context (p, template_, p->loader->GetContext());
 
                                 template_->SetXamlBuffer (context, buffer);
 				p->current_element = p->current_element->parent;
