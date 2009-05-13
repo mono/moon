@@ -44,6 +44,7 @@
         </Grid.Resources>
         
         <clr:MyControl Style="{StaticResource ControlStyle}" />
+        <TextBlock Foreground="White" Text="You should see a blue triangle in the center"></TextBlock>
     </Grid>
 </UserControl>
 
