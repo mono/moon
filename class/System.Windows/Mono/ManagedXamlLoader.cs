@@ -156,7 +156,7 @@ namespace Mono.Xaml
 				return true;
 			}
 
-			object obj = LookupObject (top_level);
+			object obj = Value.ToObject (null, top_level);
 
 			if (obj == null) {
 				assembly_name = null;
@@ -234,20 +234,6 @@ namespace Mono.Xaml
 
 			value = Value.FromObject (obj, false);
 			return true;
-		}
-
-		private static object LookupObject (IntPtr target_ptr)
-		{
-			if (target_ptr == IntPtr.Zero)
-				return  null;
-
-			if (Helper.GCHandleInDomain (target_ptr)) {
-				GCHandle handle = GCHandle.FromIntPtr (target_ptr);
-				return handle.Target;
-			}
-			else {
-				return NativeDependencyObjectHelper.Lookup (target_ptr);
-			}
 		}
 
 		private static bool IsAttachedProperty (string name)
@@ -442,7 +428,7 @@ namespace Mono.Xaml
 
 		private bool TrySetEventReflection (IntPtr top_level, IntPtr loader, string xmlns, object publisher, string type_name, string name, IntPtr value_ptr, out string error)
 		{
-			object subscriber = LookupObject (top_level);
+			object subscriber = Value.ToObject (null, top_level);
 			EventInfo ie = publisher.GetType ().GetEvent (name);
 			string handler_name = Value.ToObject (null, value_ptr) as string;
 			
@@ -785,7 +771,7 @@ namespace Mono.Xaml
 
 		private DependencyProperty DependencyPropertyFromString (IntPtr parser, IntPtr top_level, object otarget, IntPtr target_parent_ptr, string str_value)
 		{
-			object o = LookupObject (target_parent_ptr);
+			object o = Value.ToObject (null, target_parent_ptr);
 			Style parent = o as Style;
 
 			if (parent == null) {

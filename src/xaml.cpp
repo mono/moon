@@ -159,7 +159,7 @@ add_namespace_to_ignorable (gpointer key, gpointer value, gpointer user_data)
 class XamlContextInternal {
 
  public:
-	void *top_element;
+	Value *top_element;
 	FrameworkTemplate *template_parent;
 	GHashTable *imported_namespaces;
 	Surface *surface;
@@ -168,7 +168,7 @@ class XamlContextInternal {
 
 	DependencyObject *source;
 
-	XamlContextInternal (XamlLoaderCallbacks callbacks, void *top_element, FrameworkTemplate *template_parent, GHashTable *namespaces, GSList *resources)
+	XamlContextInternal (XamlLoaderCallbacks callbacks, Value *top_element, FrameworkTemplate *template_parent, GHashTable *namespaces, GSList *resources)
 	{
 		this->callbacks = callbacks;
 		this->top_element = top_element;
@@ -402,7 +402,7 @@ class XamlElementInstance : public List::Node {
 		return item;
 	}
 
-	virtual void* GetParentPointer ()
+	virtual Value* GetParentPointer ()
 	{
 		XamlElementInstance *walk = parent;
 		while (walk && walk->element_type != XamlElementInstance::ELEMENT)
@@ -411,7 +411,7 @@ class XamlElementInstance : public List::Node {
 		if (!walk)
 			return NULL;
 
-		return walk->GetManagedPointer ();
+		return walk->GetAsValue ();
 	}
 
 	virtual bool IsTemplate ()
@@ -631,14 +631,14 @@ class XamlParserInfo {
 		return context->internal->template_parent;
 	}
 
-	void *GetTopElementPtr ()
+	Value *GetTopElementPtr ()
 	{
 		XamlContext *context = loader->GetContext ();
 		if (context)
 			return context->internal->top_element;
 
 		if (top_element)
-			return top_element->GetManagedPointer ();
+			return top_element->GetAsValue ();
  
 		return NULL;
 	}
@@ -1133,7 +1133,7 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 
 	virtual void* GetManagedPointer ();
-	virtual void* GetParentPointer ();
+	virtual Value* GetParentPointer ();
  private:
 	bool is_dependency_object;
 };
@@ -1228,7 +1228,7 @@ class ManagedNamespace : public XamlNamespace {
 };
 
 bool
-XamlLoader::LookupObject (void *p, void *top_level, const char* xmlns, const char* type_name, bool create, Value *value)
+XamlLoader::LookupObject (void *p, Value *top_level, const char* xmlns, const char* type_name, bool create, Value *value)
 {
 	if (callbacks.lookup_object) {
 		if (!vm_loaded && !LoadVM ())
@@ -1250,7 +1250,7 @@ XamlLoader::GetContentPropertyName (void *p, Value *object)
 }
 
 bool
-XamlLoader::SetProperty (void *p, void *top_level, const char* xmlns, Value *target, void *target_data, void *target_parent, const char *name, Value *value, void* value_data)
+XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *name, Value *value, void* value_data)
 {
 	if (callbacks.set_property)
 		return callbacks.set_property (this, p, top_level, xmlns, target, target_data, target_parent, name, value, value_data);
@@ -4007,7 +4007,7 @@ XamlElementInstanceManaged::GetManagedPointer ()
 	return value->AsManagedObject ();
 }
 
-void *
+Value *
 XamlElementInstanceManaged::GetParentPointer ()
 {
 	XamlElementInstance *walk = parent;
@@ -4018,7 +4018,7 @@ XamlElementInstanceManaged::GetParentPointer ()
 		return NULL;
 	}
 
-	return walk->GetManagedPointer ();
+	return walk->GetAsValue ();
 }
 
 bool

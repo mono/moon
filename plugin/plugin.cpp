@@ -1784,7 +1784,7 @@ PluginXamlLoader::TryLoad (int *error)
 }
 
 bool
-PluginXamlLoader::SetProperty (void *parser, void *top_level, const char *xmlns, Value* target, void* target_data, void *target_parent, const char *name, Value* value, void* value_data)
+PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns, Value* target, void* target_data, Value *target_parent, const char *name, Value* value, void* value_data)
 {
 	if (XamlLoader::SetProperty (parser, top_level, xmlns, target, target_data, target_parent, name, value, value_data))
 		return true;

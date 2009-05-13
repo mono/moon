@@ -1,3 +1,9 @@
+2009-05-13  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.h|cpp: use a Value* for top level objects, this lets us get
+	rid of the gchandle hack in the managed xaml loader for non DOB
+	top level objects.
+
 2009-05-13  Larry Ewing  <lewing@novell.com>
 
 	* canvas.cpp: make IsLayoutContainer nonrecursive using

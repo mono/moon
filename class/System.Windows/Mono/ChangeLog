@@ -1,5 +1,10 @@
 2009-05-13  Jackson Harper  <jackson@ximian.com>
 
+	* ManagedXamlLoader.cs: Top level objects are now passed in as
+	Value*s instead of magical IntPtrs.
+
+2009-05-13  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs: Don't look in base classes for event
 	handlers.
 

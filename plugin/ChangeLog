@@ -1,3 +1,7 @@
+2009-05-13  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: Update params for SetProperty.
+
 2009-05-12  Larry Ewing  <lewing@novell.com>
 
 	* plugin-debug.cpp (reflect_value): add output for point.
