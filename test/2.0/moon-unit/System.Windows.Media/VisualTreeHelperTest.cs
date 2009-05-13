@@ -862,7 +862,6 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("missing the layout clip")]
 		public void HitTest33()
 		{
 			Border b = new Border { Width = 5, Height = 5, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
