@@ -464,7 +464,7 @@ namespace Mono.Xaml
 
 			Delegate d = null;
 			Type stype = subscriber.GetType ();
-			MethodInfo [] methods = stype.GetMethods (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+			MethodInfo [] methods = stype.GetMethods (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance);
 			MethodInfo candidate = null;
 			bool name_match = false;
 			

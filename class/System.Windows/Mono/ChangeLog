@@ -1,3 +1,8 @@
+2009-05-13  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Don't look in base classes for event
+	handlers.
+
 2009-05-06  Chris Toshok  <toshok@ximian.com>
 
 	* ManagedXamlLoader.cs (ConvertType): if value is null, just
