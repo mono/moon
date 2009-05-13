@@ -10,8 +10,8 @@ rating:3
 
 site:Photosynth
 url:http://photosynth.net/silverlight/photosynth.aspx?cid=d7d78324-ad5e-41ea-94dd-512580ed4393
-rating:0
-* Crashes on startup
+rating:1
+* No images appear Bug 503683
 
 site:Silverlight Stocks
 url:http://www.vadimv.com/
@@ -20,7 +20,8 @@ rating:0
 
 site:Calculator
 url:http://silver.calcsharp.net/
-rating:0
+rating:-1
+ * Service not available
  * "Could not parse element Setter, attribute Value"
 
 site:Zoom Mosaic
@@ -40,9 +41,10 @@ rating:0
 
 site:Dr. Popper
 url:http://www.bluerosegames.com/brg/free-web-games/bubble-breaker.aspx
-rating:1
+rating:3
  * super slow when loading
- * Clicking on New Game crashes FF
+ * Bubbles don't shake when you click to select them (single click)
+ * Text on buttons are out of place Bug 503647
 
 site:3D Image Rotation
 url:http://www.shinedraw.com/3d-illusion/flash-and-silverlight-3d-image-rotation/
@@ -56,8 +58,8 @@ rating:0
 
 site:Python WebIDE
 url:http://www.voidspace.org.uk/ironpython/webide/webide.html
-rating:0
- * not loading, error while launching app from xap: System.UriFormatException
+rating:4
+ * Works!
 
 site:Tic-Tac-Toe
 url:http://oldschooldotnet.blogspot.com/2009/01/tic-tac-toe-in-silverlight.html
@@ -77,9 +79,8 @@ rating:0
 
 site:Hard Rock Memorablia
 url:http://memorabilia.hardrock.com
-rating:1
- * List items on the left are placed on top of each other.
- * On main page, it says 751 items loaded, but nothing is visible in the main window 
+rating:2
+ * List items on the left are placed on top of each other. Bug 503689
 
 site: SilverTunes
 url:http://demo.componentone.com//Silverlight/SilverTunes/
@@ -291,4 +292,13 @@ url:http://www.reypatrice.fr/dossierCommunaute/01casseBriques.html
 rating:0
  * error in System.Windows: Error while loading the fr/System.Runtime.Serialization.Json.resources.dll assembly  System.IO.FileNotFoundException: Could not load file or assembly '/tmp/38F0E471d01.SRdU6y/fr/System.Runtime.Serialization.Json.resources.dll' or one of its dependencies. The system cannot find the file specified.
 
+site:Microsoft Showcase
+url:https://www.microsoft.com/video/en/us/details/6809f528-0dd3-4676-993c-1bcba048c2f2
+rating:3
+ * loading wheel never disappears Bug 503638
 
+site:Office 2010 The Movie
+url:http://www.office2010themovie.com/
+rating:1
+ * Video keeps jumping back
+ * Artifacts on the sides
