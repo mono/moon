@@ -171,7 +171,7 @@ class XamlContextInternal {
 	XamlContextInternal (XamlLoaderCallbacks callbacks, Value *top_element, FrameworkTemplate *template_parent, GHashTable *namespaces, GSList *resources)
 	{
 		this->callbacks = callbacks;
-		this->top_element = top_element;
+		this->top_element = new Value (*top_element);
 		this->template_parent = template_parent;
 		this->surface = template_parent->GetSurface ();
 		this->resources = resources;
@@ -189,6 +189,7 @@ class XamlContextInternal {
 			g_hash_table_destroy (imported_namespaces);
 		if (resources)
 			g_slist_free (resources);
+		delete top_element;
 	}
 
 	char *CreateIngorableTagOpen ()

@@ -1,3 +1,8 @@
+2009-05-13  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: We need to dup the top_element since this can be
+	deleted elsewhere.
+
 2009-05-13  Chris Toshok  <toshok@ximian.com>
 
 	* clock.cpp (Clock::UpdateFromParentTime): for instantaneous
