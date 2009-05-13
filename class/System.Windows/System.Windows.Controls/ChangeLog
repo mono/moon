@@ -1,3 +1,9 @@
+2009-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: When the items collection is databound, we
+	  need to copy all the items from the ItemsSource into the
+	  Items collection before firing the Reset event.
+
 2009-05-13  Larry Ewing  <lewing@novell.com>
 
 	* ItemsControl.cs: access the Property not the member to avoid a

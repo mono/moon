@@ -43,12 +43,20 @@ using System.Windows.Markup;
 
 namespace MoonTest.System.Windows.Controls {
 
-	public class ItemsControlPoker : ItemsControl
+		public class ItemsControlPoker : ItemsControl
 	{
+		public int CountAfterChange {
+			get; set;
+		}
+
+		public bool ReadonlyAfterChange {
+			get; set;
+		}
+
 		public bool? IsOwnContainer {
 			get; set;
 		}
-		
+
 		public DependencyObject ContainerItem {
 			get; set;
 		}
@@ -89,7 +97,7 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			return IsOwnContainer.HasValue ? IsOwnContainer.Value : base.IsItemItsOwnContainerOverride (item);
 		}
-		
+
 		public bool IsItemItsOwnContainerOverride_ (object item)
 		{
 			return IsItemItsOwnContainerOverride (item);
@@ -126,6 +134,8 @@ namespace MoonTest.System.Windows.Controls {
 
 		protected override void OnItemsChanged (NotifyCollectionChangedEventArgs e)
 		{
+			CountAfterChange = Items.Count;
+			ReadonlyAfterChange = Items.IsReadOnly;
 			switch (e.Action) {
 				case NotifyCollectionChangedAction.Add:
 					ItemAdded++;
@@ -152,7 +162,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (reset, ItemReset, string.Format ("{0} - ItemReset", message));
 		}
 	}
-
+	
 	[TestClass]
 	public partial class ItemsControlTest : SilverlightTest {
 
@@ -663,7 +673,9 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreSame (original, c.Items, "#1");
 			Assert.Throws<InvalidOperationException>(() => c.Items.Add ("1"));
 			c.AssertCollectionChanges (0, 0, 0, 1, "#2");
-			
+			Assert.IsTrue (c.ReadonlyAfterChange, "#2b");
+			Assert.AreEqual (3, c.CountAfterChange, "#2c");
+
 			c.ResetCounter ();
 			c.ItemsSource = array;
 			c.AssertCollectionChanges (0, 0, 0, 0, "#3");
@@ -672,6 +684,8 @@ namespace MoonTest.System.Windows.Controls {
 			c.ItemsSource = null;
 			Assert.AreSame (original, c.Items, "#4");
 			c.AssertCollectionChanges (0, 0, 0, 1, "#5");
+			Assert.IsFalse (c.ReadonlyAfterChange, "#5b");
+			Assert.AreEqual (0, c.CountAfterChange, "#5c");
 
 			c.Items.Add ("2");
 			c.AssertCollectionChanges (1, 0, 0, 1, "#6");

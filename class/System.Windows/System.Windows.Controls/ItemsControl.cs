@@ -95,17 +95,19 @@ namespace System.Windows.Controls {
 					((INotifyCollectionChanged)newSource).CollectionChanged += OnSourceCollectionChanged;
 				}
 				
-				Items.ClearImpl ();
 				itemsIsDataBound = true;
+				Items.ClearImpl ();
 				Items.SetIsReadOnly (true);
 				
-				foreach (var v in newSource) {
+				foreach (var v in newSource)
 					Items.AddImpl (v);
-				}
+				
+				// Setting itemsIsDataBound to true prevents normal notifications from propagating, so do it manually here
+				OnItemsChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 			} else {
-				itemsIsDataBound = newSource != null;
-				Items.SetIsReadOnly (itemsIsDataBound);		
-				items.ClearImpl ();
+				itemsIsDataBound = false;
+				Items.SetIsReadOnly (false);		
+				Items.ClearImpl ();
 			}
 		}
 
