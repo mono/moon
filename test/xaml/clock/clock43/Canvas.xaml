@@ -5,7 +5,7 @@
 
 	<Canvas.Resources>
 		<Storyboard x:Name="storyboard">
-			<DoubleAnimation x:Name="rectAnimation" Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" From="100" To="500" Duration="00:00:05" FillBehavior="Stop"/>
+			<DoubleAnimation x:Name="rectAnimation" Storyboard.TargetName="rect" Storyboard.TargetProperty="(Canvas.Left)" From="10" To="500" />
 		</Storyboard>
 	</Canvas.Resources>
 

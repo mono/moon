@@ -19,6 +19,7 @@ namespace clock43 {
 
 			timer.Tick += (o, i) => {
 				storyboard.Begin();
+				timer.Stop ();
 			};
 
 			MouseMove += (o, e) => {
