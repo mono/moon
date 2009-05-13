@@ -38,6 +38,41 @@ namespace MoonTest.Misc.Parsing
 		}
 	}
 
+	public class MiscParsingEventBase : Canvas {
+
+		public MiscParsingEventBase ()
+		{
+			Console.WriteLine ("attempting to load event base xaml");
+			Application.LoadComponent (this, new Uri ("/moon-unit;component/misc/Parsing/MiscParsingEvent.xaml", UriKind.Relative));
+		}
+
+		void OnFoo (object sender, EventArgs e)
+		{
+		}
+
+		public void FireFoo ()
+		{
+			Foo (this, EventArgs.Empty);
+		}
+
+		public event EventHandler Foo;
+	}
+
+	public class MiscParsingEventImpl1 : MiscParsingEventBase {
+
+		public bool foo_called = false;
+
+		// A private function with the same name is in the base class
+		// make sure this one gets used
+		void OnFoo (object sender, EventArgs e)
+		{
+			foo_called = true;
+		}
+	}
+
+	public class MiscParsingEventImpl2 : MiscParsingEventBase {
+	}
+
 	public class HalfDimensionsControl : UserControl {
 
 		public static readonly DependencyProperty HalfHeightProperty = DependencyProperty.RegisterAttached ("HalfHeight", typeof (double), typeof (HalfDimensionsControl), new PropertyMetadata (OnHalfHeightChanged));
@@ -254,6 +289,24 @@ namespace MoonTest.Misc.Parsing
 							</Canvas>");
 			the_block = (TextBlock) c.FindName ("the_block");
 			Assert.AreEqual ("   {       }  foo", the_block.Text, "#6");
+		}
+
+		[TestMethod]
+		public void EventHandlerInBaseAndImplClasses ()
+		{
+
+			MiscParsingEventImpl1 impl1 = new MiscParsingEventImpl1 ();
+
+			impl1.FireFoo ();
+
+			Assert.IsTrue (impl1.foo_called, "#a1");
+			
+		}
+
+		[TestMethod]
+		public void EventHandlerInBaseClass ()
+		{
+			Assert.Throws <XamlParseException> (() => new MiscParsingEventImpl2 ());
 		}
 	}
 }

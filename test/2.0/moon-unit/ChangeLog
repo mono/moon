@@ -1,3 +1,9 @@
+2009-05-13  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/MiscParsingEvebt.xaml:
+	* misc/Parsing/MiscParsing.cs: New test for resolving event
+	handlers.
+
 2009-05-13  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs: This test is
