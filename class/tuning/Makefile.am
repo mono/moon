@@ -145,3 +145,5 @@ inst-%: $(OUTPUT_DIR)/%
 	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(pkglibdir)/plugin/$*
 	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(pkglibdir)/plugin/$*.mdb
 
+retune:
+	rm -f output.stamp && $(MAKE) output.stamp
