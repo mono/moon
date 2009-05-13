@@ -1,0 +1,6 @@
+*.g.*
+AppManifest.xaml
+*.dll
+*.mdb
+*.html
+*.xap
