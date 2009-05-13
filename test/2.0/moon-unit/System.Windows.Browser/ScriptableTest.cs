@@ -249,6 +249,7 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void TypeTest ()
 		{
 			object a;
