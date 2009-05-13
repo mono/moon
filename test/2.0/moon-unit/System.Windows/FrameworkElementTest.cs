@@ -628,6 +628,21 @@ namespace MoonTest.System.Windows {
 		}
 		
 		[TestMethod]
+		[MoonlightBug ("We don't validate when clearing the value")]
+		public void SetStyleTest ()
+		{
+			Style s = new Style (typeof (ConcreteFrameworkElement));
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			c.Style = null;
+			c.Style = null;
+			c.Style = s;
+			Assert.Throws<Exception> (() => c.Style = null);
+			Assert.AreEqual (s, c.Style);
+			Assert.Throws<Exception> (() => c.ClearValue (FrameworkElement.StyleProperty));
+			Assert.AreEqual (s, c.Style);
+		}
+		
+		[TestMethod]
 		public void TagTest ()
 		{
 			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();

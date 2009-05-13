@@ -1,3 +1,8 @@
+2009-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: If StyleProperty has
+	  a value and it is 'null', that is allowed to be replaced.
+
 2009-05-12  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemsControlTest.cs: ItemsControl

@@ -23,7 +23,8 @@
 
 bool
 Validators::StyleValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error) {
-	if (instance->GetValue (property)) {
+	Value *current = instance->GetValue (property);
+	if (current && !current->GetIsNull ()) {
 		MoonError::FillIn (error, MoonError::EXCEPTION, 1001,
 			g_strdup_printf ("Property 'Style' cannot be assigned to more than once\n"));
 		return false;
