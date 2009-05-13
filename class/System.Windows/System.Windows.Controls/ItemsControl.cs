@@ -95,7 +95,7 @@ namespace System.Windows.Controls {
 					((INotifyCollectionChanged)newSource).CollectionChanged += OnSourceCollectionChanged;
 				}
 				
-				items.ClearImpl ();
+				Items.ClearImpl ();
 				itemsIsDataBound = true;
 				Items.SetIsReadOnly (true);
 				
