@@ -587,6 +587,10 @@ Value::operator== (const Value &v) const
 	case Type::MANAGEDTYPEINFO:
 		return !memcmp (u.type_info, v.u.type_info, sizeof (ManagedTypeInfo));
 	case Type::URI:
+		if (!u.uri)
+			return !v.u.uri;
+		if (!v.u.uri)
+			return false;
 		return *u.uri == *v.u.uri;
 	case Type::MANAGED: {
 		// If we avoid the cast to 64bit uint, i don't know how to implement this sanity check.
