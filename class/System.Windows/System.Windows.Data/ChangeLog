@@ -1,3 +1,9 @@
+2009-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: If we have a property path like
+	  "A.B.C" and the object 'B' is null, we should bail out with
+	  failure.
+
 2009-05-03  Chris Toshok  <toshok@ximian.com>
 
 	* BindingExpressionBase.cs rename Updating/updating to

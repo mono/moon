@@ -493,6 +493,23 @@ namespace MoonTest.System.Windows.Data
 		}
 		
 		[TestMethod]
+		public void IncompletePath ()
+		{
+			Data data = new Data { Brush = null };
+			Rectangle r = new Rectangle {
+				DataContext = data
+			};
+			r.SetBinding (Rectangle.WidthProperty, new Binding ("Brush.Color.A"));
+			Assert.IsTrue (double.IsNaN (r.Width), "#1");
+
+			data.Brush = new SolidColorBrush (Colors.Black);
+			Assert.IsTrue (double.IsNaN (r.Width), "#2");
+
+			r.SetBinding (Rectangle.WidthProperty, new Binding ("Brush.Color.A"));
+			Assert.AreEqual (255, r.Width, "#2");
+		}
+		
+		[TestMethod]
 		public void SetBinding ()
 		{
 			Binding binding = new Binding ("");

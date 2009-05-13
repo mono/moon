@@ -154,7 +154,10 @@ namespace System.Windows.Data {
 				
 				if (i != (parts.Length - 1)) {
 					source = p.GetValue (source, null);
-					continue;
+					if (source == null)
+						return null;
+					else
+						continue;
 				}
 
 				PropertySource = source;
