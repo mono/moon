@@ -2,6 +2,8 @@
 
 	* ManagedXamlLoader.cs: Top level objects are now passed in as
 	Value*s instead of magical IntPtrs.
+	- Add some try/catching to reduce spew, now sure exactly why this is
+	happening, but i know everyone will be pissed about all the spew.
 
 2009-05-13  Jackson Harper  <jackson@ximian.com>
 

@@ -428,10 +428,16 @@ namespace Mono.Xaml
 
 		private bool TrySetEventReflection (IntPtr top_level, IntPtr loader, string xmlns, object publisher, string type_name, string name, IntPtr value_ptr, out string error)
 		{
-			object subscriber = Value.ToObject (null, top_level);
+			object subscriber = null;
 			EventInfo ie = publisher.GetType ().GetEvent (name);
 			string handler_name = Value.ToObject (null, value_ptr) as string;
-			
+
+			try {
+				subscriber = Value.ToObject (null, top_level);
+			} catch {
+
+			}
+				
 			//Console.WriteLine ("TrySetEventReflection ({0}, {1}, {2}, {3}, {4}, {5}) handler_name: {6}", top_level, xmlns, publisher, type_name, name, value_ptr, handler_name);
 			
 			if (ie == null) {
