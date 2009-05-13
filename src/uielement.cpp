@@ -530,7 +530,7 @@ UIElement::DoMeasure ()
 	UIElement *parent = GetVisualParent ();
 	Size infinite (INFINITY, INFINITY);
 
-	if (IsLayoutContainer () && !GetSurface () && !last && !parent) {
+	if (!GetSurface () && !last && !parent && IsLayoutContainer ()) {
 		last = &infinite;
 	}
 	

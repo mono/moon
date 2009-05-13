@@ -49,6 +49,7 @@ class Panel : public FrameworkElement {
 	virtual bool CanFindElement () { return GetBackground () != NULL; }
 
 	virtual bool IsLayoutContainer () { return true; }
+	virtual bool IsContainer () { return true; }
 
 	virtual void ShiftPosition (Point p);
 	

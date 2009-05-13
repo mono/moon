@@ -824,10 +824,17 @@ VisualTreeWalker::~VisualTreeWalker()
 }
 
 
+class UnsafeUIElementNode : public List::Node {
+public:
+	UIElement *uielement;
+	
+	UnsafeUIElementNode (UIElement *el) { uielement = el; }
+};
+
 DeepTreeWalker::DeepTreeWalker (UIElement *top)
 {
 	walk_list = new List ();
-	walk_list->Append (new UIElementNode (top));
+	walk_list->Append (new UnsafeUIElementNode (top));
 	last = NULL;
 	types = Deployment::GetCurrent ()->GetTypes ();
 }
@@ -838,10 +845,10 @@ DeepTreeWalker::Step ()
 	if (last) {
 		VisualTreeWalker walker (last, Logical, types);
 		while (UIElement *child = walker.Step ())
-			walk_list->Prepend (new UIElementNode (child));
+			walk_list->Prepend (new UnsafeUIElementNode (child));
 	}
 
-	UIElementNode *next = (UIElementNode*)walk_list->First ();
+	UnsafeUIElementNode *next = (UnsafeUIElementNode*)walk_list->First ();
 	
 	if (!next) {
 		last = NULL;

@@ -241,7 +241,7 @@ FrameworkElement::ComputeActualSize ()
 {
 	UIElement *parent = GetVisualParent ();
 
-	if (IsLayoutContainer () || (parent && !parent->Is (Type::CANVAS)))
+	if ((parent && !parent->Is (Type::CANVAS)) || IsLayoutContainer ())
 		return Size (0,0);
 
 	Size actual (GetMinWidth (), GetMinHeight ());
@@ -510,13 +510,15 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	/* XXX FIXME horrible hack */
 	UIElement *parent = GetVisualParent ();
-	if (!IsLayoutContainer ()) {
+	bool in_layout = IsLayoutContainer ();
+
+	if (!in_layout) {
 		if (!parent || parent->Is (Type::CANVAS))
 			return;
 	}
 	Size old (GetActualWidth (), GetActualHeight ());
 
-	if (IsLayoutContainer () && GetUseLayoutRounding ()) {
+	if (in_layout && GetUseLayoutRounding ()) {
 		response.width = round (response.width);
 		response.height = round (response.height);
 	}
@@ -651,7 +653,7 @@ FrameworkElement::UpdateLayout ()
 
 			if (child->dirty_flags & DirtyMeasure) {
 				UIElement *parent = child->GetVisualParent ();
-				if ((parent && !parent->Is (Type::CANVAS)) || child->IsLayoutContainer ()) {
+				if ((parent && !parent->Is (Type::CANVAS)) || child->IsContainer ()) {
 					measure_list->Prepend (new UIElementNode (child));
 					//g_warning ("adding %p, %s", child, child->GetTypeName ());
 				} else if (!measure_list->IsEmpty ()) {

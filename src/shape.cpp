@@ -581,7 +581,7 @@ Shape::MeasureOverride (Size availableSize)
 	double sx = 0.0;
 	double sy = 0.0;
 
-	if (!GetVisualParent () || !GetVisualParent ()->IsLayoutContainer ())
+	if (!GetVisualParent () || GetVisualParent()->Is (Type::CANVAS))
 		return FrameworkElement::MeasureOverride (availableSize);
 
 	if (GetStretch () == StretchNone)

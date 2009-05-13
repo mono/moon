@@ -1,3 +1,19 @@
+2009-05-13  Larry Ewing  <lewing@novell.com>
+
+	* canvas.cpp: make IsLayoutContainer nonrecursive using
+	DeepTreeWalker.
+	
+	* frameworkelement.cpp:
+	* uielement.cpp, uielement.h:
+	* panel.h: 
+	* shape.cpp: start reworking the container layout logic to avoid
+	expensive calls.
+
+	* collection.cpp: don't ref elements inside DeepTreeWalker use
+	UnsafeUIElementNode instead.
+	
+	* dirty.cpp (UpdateLayout): remove some dead code.
+
 2009-05-13  Alan McGovern  <amcgovern@novell.com>
 
 	* value.cpp: Ensure we don't explode when checking null uris

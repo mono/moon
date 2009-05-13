@@ -67,9 +67,11 @@ Canvas::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 bool
 Canvas::IsLayoutContainer ()
 {
-	VisualTreeWalker walker = VisualTreeWalker (this);
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+
+	DeepTreeWalker walker = DeepTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		if (child->IsLayoutContainer ())
+		if (!types->IsSubclassOf (child->GetObjectType (), Type::CANVAS) && child->IsLayoutContainer ())
 			return true;
 	}
 
@@ -86,7 +88,7 @@ Canvas::MeasureOverride (Size availableSize)
 		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 		
-		if (child->Is (Type::CANVAS) || child->IsLayoutContainer ())
+		if (child->IsContainer ())
 			child->Measure (childSize);
 		else {
 			if (child->dirty_flags & DirtyMeasure) {
@@ -123,7 +125,7 @@ Canvas::ArrangeOverride (Size finalSize)
 		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 
-		if (child->Is (Type::CANVAS) || child->IsLayoutContainer ()) {
+		if (child->IsContainer ()) {
 			Size desired = child->GetDesiredSize ();
 			Rect child_final = Rect (GetLeft (child), GetTop (child), desired.width, desired.height);
 			child->Arrange (child_final);

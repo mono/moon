@@ -241,7 +241,7 @@ public:
 	//   returns true if the container has children that require a measure
 	//   pass.
 	virtual bool IsLayoutContainer () { return GetSubtreeObject () != NULL; }
-
+	virtual bool IsContainer () { return IsLayoutContainer (); }
 
 	// HitTest
 

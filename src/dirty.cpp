@@ -437,6 +437,8 @@ Surface::UpdateLayout ()
 	for (int i = 0; i < layers->GetCount (); i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
 
+		// This is a hack to make sure the elements understand the currnet 
+		// size of the surface until it is moved to a proper location.
 		Size *last = LayoutInformation::GetLastMeasure (layer);
 		Size available = Size (active_window->GetWidth (), active_window->GetHeight ());
 		if (!last || (*last != available)) {
@@ -446,25 +448,6 @@ Surface::UpdateLayout ()
 		}
 
 		layer->UpdateLayout ();
-		/*
-		Size available = Size (active_window->GetWidth (),
-				       active_window->GetHeight ());
-		
-		Size desired = Size ();
-		
-		if (layer->IsLayoutContainer ()) {
-			layer->Measure (available);
-			desired = layer->GetDesiredSize ();
-			if (i == 0)
-				desired = desired.Max (available);
-		} else {
-			desired = Size (layer->GetActualWidth (), layer->GetActualHeight ());
-		}
-		
-		layer->Arrange (Rect (Canvas::GetLeft (layer),
-				      Canvas::GetTop (layer), 
-				      desired.width, desired.height));
-		*/
 	}
 }
 
