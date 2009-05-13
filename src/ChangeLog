@@ -1,3 +1,10 @@
+2009-05-12  Chris Toshok  <toshok@ximian.com>
+
+	* timeline.cpp (DispatcherTimer::Start): when resetting the clock
+	we need to make sure to reset the root parent time, or else the
+	timer will tick immediately when started (if it's previously hit
+	its tick).
+
 2009-05-12  Larry Ewing  <lewing@novell.com>
 
 	* collection.cpp, collection.h: Add a SkipBranch method to avoid

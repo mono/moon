@@ -326,12 +326,13 @@ DispatcherTimer::Start ()
 	started = true;
 	stopped = false;
 
+	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+
 	if (root_clock) {
 		root_clock->Reset ();
 		root_clock->BeginOnTick ();
+		root_clock->SetRootParentTime (surface->GetTimeManager()->GetCurrentTime());
 	} else {
-		Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-
 		root_clock = AllocateClock ();
 		char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
 		root_clock->SetValue (DependencyObject::NameProperty, name);
