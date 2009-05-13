@@ -1,3 +1,9 @@
+2009-05-13  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (Clock::UpdateFromParentTime): for instantaneous
+	clocks (those with Duration=00:00:00) we weren't emitting
+	completed (or switching to Fill/Stop).
+
 2009-05-13  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.h|cpp: use a Value* for top level objects, this lets us get

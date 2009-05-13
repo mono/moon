@@ -211,6 +211,10 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 			// 1.  The latter makes sure that value is applied in full.
  			localTime = 0;
  			normalizedTime = 1.0;
+			if (GetClockState () == Clock::Active) {
+				FillOnNextTick ();
+				Completed ();
+			}
 		}
 		else if (natural_duration_timespan > 0) {
 			RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
