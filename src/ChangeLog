@@ -1,3 +1,8 @@
+2009-05-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* timesource.h: G_PRIORITY_IDLE doesn't exist, use
+	G_PRIORITY_HIGH_IDLE.
+
 2009-05-13  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (class XamlContextInternal): allow for a parent context
