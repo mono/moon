@@ -1,5 +1,5 @@
 /*
- * mms-downlodaer.cpp: MMS Downloader class.
+ * mms-downloader.cpp: MMS Downloader class.
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
