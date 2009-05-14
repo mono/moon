@@ -1,3 +1,8 @@
+2009-05-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: Allow arrays with constant size in
+	parameters.
+
 2009-05-09  Andreia Gaita  <avidigal@novell.com>
 
 	* Generator.cs: Add GenerateJSBindings.

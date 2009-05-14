@@ -1355,8 +1355,11 @@ class Generator {
 						}
 						if (tokenizer.CurrentToken.value != "," && tokenizer.CurrentToken.value != ")") {
 							parameter.Name = tokenizer.GetIdentifier ();
-							if (tokenizer.Accept (Token2Type.Punctuation, "["))
+							if (tokenizer.Accept (Token2Type.Punctuation, "[")) {
+								if (tokenizer.CurrentToken.type == Token2Type.Identifier)
+									tokenizer.Advance (true);
 								tokenizer.AcceptOrThrow (Token2Type.Punctuation, "]");
+							}
 							if (tokenizer.Accept (Token2Type.Punctuation, "=")) {
 								param_value = string.Empty;
 								if (tokenizer.Accept (Token2Type.Punctuation, "-"))
