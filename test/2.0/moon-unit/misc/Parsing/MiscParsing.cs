@@ -42,7 +42,6 @@ namespace MoonTest.Misc.Parsing
 
 		public MiscParsingEventBase ()
 		{
-			Console.WriteLine ("attempting to load event base xaml");
 			Application.LoadComponent (this, new Uri ("/moon-unit;component/misc/Parsing/MiscParsingEvent.xaml", UriKind.Relative));
 		}
 
@@ -67,6 +66,31 @@ namespace MoonTest.Misc.Parsing
 		void OnFoo (object sender, EventArgs e)
 		{
 			foo_called = true;
+		}
+	}
+
+	public class MiscParsingManagedAttachedProp : Canvas {
+
+		public MiscParsingManagedAttachedProp ()
+		{
+			Application.LoadComponent (this, new Uri ("/moon-unit;component/misc/Parsing/MiscParsingManagedAttachedProp.xaml", UriKind.Relative));
+		}
+	}
+
+	public class MiscParsingAttachedPropCanvas : Canvas {
+
+		public static readonly DependencyProperty PropValueProperty = DependencyProperty.RegisterAttached ("PropValue", typeof (double), typeof (MiscParsingAttachedPropCanvas), null);
+
+		private static double value;
+
+		public static void SetPropValue (DependencyObject dob, double d)
+		{
+			value = d;
+		}
+
+		public static double GetPropValue (DependencyObject dob)
+		{
+			return value;
 		}
 	}
 
@@ -308,6 +332,12 @@ namespace MoonTest.Misc.Parsing
 		{
 			Assert.Throws <XamlParseException> (() => new MiscParsingEventImpl2 ());
 		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MissingXmlnsOnAttachedProp ()
+		{
+			MiscParsingManagedAttachedProp m = new MiscParsingManagedAttachedProp ();
+		}
 	}
 }
-
