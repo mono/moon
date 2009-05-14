@@ -48,7 +48,8 @@ public:
 	const static int MinHeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
 	const static int MinWidthProperty;
-	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */	const static int VerticalAlignmentProperty;
+	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */
+	const static int VerticalAlignmentProperty;
 	/* @PropertyType=Style,Version=2.0,GenerateAccessors,Validator=StyleValidator */
 	const static int StyleProperty;
 	
