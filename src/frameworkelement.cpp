@@ -8,8 +8,9 @@
  * 
  */
 
-
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #include <math.h>
 
@@ -201,6 +202,10 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 				((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->SealStyle (s);
 			}
 		}
+	}
+	else if (args->GetId () == FrameworkElement::HorizontalAlignmentProperty ||
+		 args->GetId () == FrameworkElement::VerticalAlignmentProperty) {
+		FullInvalidate (true);
 	}
 
 	NotifyListenersOfPropertyChange (args, error);
@@ -465,7 +470,6 @@ FrameworkElement::Arrange (Rect finalRect)
 	
 	doarrange |= slot ? *slot != finalRect : true;
 
-
 	if (finalRect.width < 0 || finalRect.height < 0 
 	    || isinf (finalRect.width) || isinf (finalRect.height)
 	    || isnan (finalRect.width) || isnan (finalRect.height)) {
@@ -540,7 +544,7 @@ FrameworkElement::Arrange (Rect finalRect)
 			cairo_matrix_translate (&layout_xform, MAX ((child_rect.width  - response.width) * .5, 0), 0);
 			break;
 		}
-	
+		
 		switch (vert) {
 		case VerticalAlignmentTop:
 			break;

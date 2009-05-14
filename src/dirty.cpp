@@ -288,7 +288,10 @@ Surface::ProcessDownDirtyElements ()
 
 			if (el->GetVisualParent ())
 				el->GetVisualParent ()->UpdateBounds ();
-					
+			
+			if (el->GetObjectType () == Type::TEXTBLOCK)
+				printf ("updated transform for TextBlock\n");
+			
 			AddDirtyElement (el, DirtyNewBounds);
 			PropagateDirtyFlagToChildren (el, DirtyTransform);
 		}
