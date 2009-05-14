@@ -1,3 +1,8 @@
+2009-05-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Remove common files from build (they are available
+	from other assemblies)
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Browser.mdp: Add a project for each tool, and

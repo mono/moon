@@ -23,8 +23,6 @@ monoloc = `pkg-config --variable=libdir mono`/mono/moonlight
 nunit = -r:$(monoloc)/nunit.framework.dll -r:$(monoloc)/nunit.core.dll -r:$(monoloc)/nunit.util.dll 
 
 system_windows_browser_sources =					\
-	$(srcdir)/../System.Windows/Assembly/MonoTODOAttribute.cs			\
-	$(srcdir)/../Consts.cs							\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebRequest.cs		\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebResponse.cs		\
