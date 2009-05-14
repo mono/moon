@@ -713,7 +713,7 @@ layout_lwsp (LayoutWord *word, const char *in, const char *inend)
 	double advance;
 	gunichar c;
 	
-	d(printf ("\nlayout_lwsp():\n"));
+	d(printf ("layout_lwsp():\n"));
 	
 	word->advance = 0.0;
 	word->count = 0;
@@ -1028,7 +1028,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 	word->advance = 0.0;
 	word->count = 0;
 	
-	d(printf ("\nlayout_word_wrap():\n"));
+	d(printf ("layout_word_wrap():\n"));
 	d(debug = g_string_new (""));
 	
 	while (inptr < inend) {
@@ -1692,7 +1692,7 @@ TextLayout::Layout ()
 #if DEBUG
 	if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
 		print_lines (lines);
-		printf ("actualWidth = %f, actualHeight = %f\n", actual_width, actual_height);
+		printf ("actualWidth = %f, actualHeight = %f\n\n", actual_width, actual_height);
 	}
 #endif
 }
