@@ -291,7 +291,7 @@ namespace System.Windows.Browser.Net
 			Uri request_uri = uri.IsAbsoluteUri ? uri : GetAbsoluteUri (uri);
 
 			downloader = NativeMethods.surface_create_downloader (XamlLoader.SurfaceInDomain);
-			if (downloader == null)
+			if (downloader == IntPtr.Zero)
 				throw new NotSupportedException ("Failed to create unmanaged downloader");
 			native = NativeMethods.downloader_create_web_request (downloader, method, request_uri.AbsoluteUri);
 			if (native == IntPtr.Zero)
