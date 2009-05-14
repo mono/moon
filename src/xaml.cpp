@@ -65,6 +65,7 @@ class XamlParserInfo;
 class XamlNamespace;
 class DefaultNamespace;
 class XNamespace;
+class XmlNamespace;
 class PrimitiveNamespace;
 class XamlElementInfoNative;
 class XamlElementInstanceNative;
@@ -84,6 +85,7 @@ class XamlElementInstanceStaticResource;
 
 static DefaultNamespace *default_namespace = NULL;
 static XNamespace *x_namespace = NULL;
+static XmlNamespace *xml_namespace = NULL;
 
 static const char* default_namespace_names [] = {
 	"http://schemas.microsoft.com/winfx/2006/xaml/presentation",
@@ -94,6 +96,7 @@ static const char* default_namespace_names [] = {
 };
 
 #define X_NAMESPACE_URI "http://schemas.microsoft.com/winfx/2006/xaml"
+#define XML_NAMESPACE_URI "http://www.w3.org/XML/1998/namespace"
 #define PRIMITIVE_NAMESPACE_URI "clr-namespace:System;assembly=mscorlib"
 
 
@@ -872,6 +875,36 @@ class DefaultNamespace : public XamlNamespace {
 
 	virtual const char* GetUri () { return "http://schemas.microsoft.com/winfx/2006/xaml/presentation"; }
 	virtual const char* GetPrefix () { return ""; }
+};
+
+class XmlNamespace : public XamlNamespace {
+ public:
+	XmlNamespace () { }
+
+	virtual ~XmlNamespace () { }
+
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
+	{
+		return NULL;
+	}
+
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
+	{
+		if (!strcmp ("lang", attr)) {
+			if (item->IsDependencyObject ()) {
+				DependencyObject *dob = item->GetAsDependencyObject ();
+				if (dob->Is(Type::FRAMEWORKELEMENT)) {
+					((FrameworkElement*)dob)->SetLanguage (value);
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	virtual const char* GetUri () { return "http://www.w3.org/XML/1998/namespace"; }
+	virtual const char* GetPrefix () { return "xml"; }
 };
 
 class XNamespace : public XamlNamespace {
@@ -1870,7 +1903,8 @@ add_default_namespaces (XamlParserInfo *p)
 {
 	p->implicit_default_namespace = true;
 	g_hash_table_insert (p->namespace_map, g_strdup ("http://schemas.microsoft.com/winfx/2006/xaml/presentation"), default_namespace);
-	g_hash_table_insert (p->namespace_map, g_strdup ("http://schemas.microsoft.com/winfx/2006/xaml"), x_namespace);
+	g_hash_table_insert (p->namespace_map, g_strdup (X_NAMESPACE_URI), x_namespace);
+	g_hash_table_insert (p->namespace_map, g_strdup (XML_NAMESPACE_URI), xml_namespace);
 }
 
 static void
@@ -4948,4 +4982,5 @@ xaml_init (void)
 {
 	default_namespace = new DefaultNamespace ();
 	x_namespace = new XNamespace ();
+	xml_namespace = new XmlNamespace ();
 }

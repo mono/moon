@@ -3009,6 +3009,19 @@ FrameworkElement::SetMargin (Thickness *value)
 	SetValue (FrameworkElement::MarginProperty, Value (*value));
 }
 
+const char *
+FrameworkElement::GetLanguage ()
+{
+	Value *value = GetValue (FrameworkElement::LanguageProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+FrameworkElement::SetLanguage (const char *value)
+{
+	SetValue (FrameworkElement::LanguageProperty, Value (value));
+}
+
 HorizontalAlignment
 FrameworkElement::GetHorizontalAlignment ()
 {
