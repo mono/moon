@@ -1,5 +1,12 @@
 2009-05-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: unref: only try to delete
+	us if we had a 0 refcount after decrementing refcount.
+	Also use an atomic fetch when checking if the object
+	was resurrected.
+
+2009-05-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: when printing stack traces
 	first get all the lines to print, then print them.
 	This way it's a lot less probable to get other lines

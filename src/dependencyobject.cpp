@@ -380,7 +380,7 @@ EventObject::unref ()
 		return;
 	}
 
-	int v = g_atomic_int_exchange_and_add (&refcount, -1) -1;
+	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
 
 	OBJECT_TRACK ("Unref", (deployment == NULL && Deployment::GetCurrent () == NULL) ? "<unknown>" : GetTypeName ());
 
@@ -391,16 +391,17 @@ EventObject::unref ()
 		if ((flags & Disposed) == 0)
 			printf ("EventObject::unref (): the type '%s' (or any of its parent types) forgot to call its base class' Dispose method.\n", GetTypeName ());
 #endif
+
+		// We need to check again the the refcount really is zero,
+		// the object might have resurrected in the Dispose.
+		v = g_atomic_int_get (&refcount);
+		if (v == 0)
+			delete this;
+			
 	} else if (v == 1 && toggleNotifyListener) {
 		if (getenv ("MOONLIGHT_ENABLE_TOGGLEREF"))
 			toggleNotifyListener->Invoke (true);
 	}
-	
-	// We need to check again the the refcount really is zero,
-	// the object might have resurrected in the Dispose.
-	if (refcount == 0)
-		delete this;
-	
 }
 
 void
