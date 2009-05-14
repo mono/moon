@@ -76,6 +76,8 @@ InputProvider::InputProvider () : display (NULL), root_window (NULL), xtest_avai
 	xtest_available = true;
 
 	SendKeyInput (VK_NUMLOCK, true);
+
+	MoveMouse (0,0);
 }
 
 InputProvider::~InputProvider ()
