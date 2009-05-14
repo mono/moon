@@ -4888,30 +4888,32 @@ handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, cons
 
 	
 static Value *
-lookup_named_item (XamlElementInstance *inst, const char *name)
+lookup_named_item (XamlElementInstance *top, const char *name)
 {
-	if (inst->element_type == XamlElementInstance::ELEMENT) {
-		ResourceDictionary *rd = NULL;
-		Types *types = Deployment::GetCurrent ()->GetTypes ();
-		Type::Kind kind = inst->info->GetKind ();
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	XamlElementInstance *inst = top;
 
-		if (types->IsSubclassOf (kind, Type::FRAMEWORKELEMENT)) {
-			rd = inst->GetAsDependencyObject ()->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
-		} else if (types->IsSubclassOf (kind, Type::RESOURCE_DICTIONARY)) {
-			rd = (ResourceDictionary*) inst->GetAsDependencyObject ();
+	while (inst) {
+		if (inst->element_type == XamlElementInstance::ELEMENT) {
+			ResourceDictionary *rd = NULL;
+			Type::Kind kind = inst->info->GetKind ();
+			
+			if (types->IsSubclassOf (kind, Type::FRAMEWORKELEMENT)) {
+				rd = inst->GetAsDependencyObject ()->GetValue (UIElement::ResourcesProperty)->AsResourceDictionary ();
+			} else if (types->IsSubclassOf (kind, Type::RESOURCE_DICTIONARY)) {
+				rd = (ResourceDictionary*) inst->GetAsDependencyObject ();
+			}
+			
+			if (rd) {
+				bool exists;
+				Value *res = lookup_resource_dictionary (rd, name, &exists);
+				if (exists)
+					return res;
+			}
 		}
-
-		if (rd) {
-			bool exists;
-			Value *res = lookup_resource_dictionary (rd, name, &exists);
-			if (exists)
-				return res;
-		}
+		
+		inst = inst->parent;
 	}
-
-	XamlElementInstance *parent = inst->parent;
-	if (parent)
-		return lookup_named_item (parent, name);
 
 	return NULL;
 }
