@@ -115,7 +115,18 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	toggleNotifyListener = NULL;
 
 #if OBJECT_TRACKING
-	Track ("Created", "");
+	switch (object_type) {
+	case Type::INVALID:
+		Track ("Created", "<unknown>");
+		break;
+	case Type::DEPLOYMENT:
+		Track ("Created", "Deployment");
+		break;
+	default:
+		Track ("Created", depl->GetTypes ()->Find (object_type)->GetName ());
+		break;
+	}
+	
 	if (object_type != Type::DEPLOYMENT)
 		Deployment::GetCurrent ()->TrackObjectCreated (this);
 #endif
