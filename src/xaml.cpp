@@ -4223,7 +4223,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	if (parent->element_type == XamlElementInstance::PROPERTY) {
 		char **prop_name = g_strsplit (parent->element_name, ".", -1);
-		Type *owner = types->Find (prop_name [0]);
+		Type *owner = Type::Find (parent->info->GetKind ());
 
 		if (owner) {
 			DependencyProperty *dep = DependencyProperty::GetDependencyProperty (owner->GetKind (), prop_name [1]);

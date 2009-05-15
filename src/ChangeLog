@@ -1,3 +1,8 @@
+2009-05-15  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Use the property element's type instead of parsing out
+	the name, this fixes setting propertys of imported managed types.
+
 2009-05-15  Alan McGovern  <amcgovern@novell.com>
 
 	* animation.h:
