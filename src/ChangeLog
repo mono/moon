@@ -6,6 +6,11 @@
 
 2009-05-15  Larry Ewing  <lewing@novell.com>
 
+	* grid.cpp (OnCollectionItemChanged): invalidate on column
+	definition changes.
+
+2009-05-15  Larry Ewing  <lewing@novell.com>
+
 	* debug.h (LOG_LAYOUT): use printf.
 
 	* mediaelement.cpp (ArrangeOverride): remove layout debug spew.

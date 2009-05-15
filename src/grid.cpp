@@ -53,7 +53,7 @@ Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	if (col == GetColumnDefinitions () ||
 	    col == GetRowDefinitions ()) {
-
+		//InvalidateMeasure ();
 	} else {
 		Panel::OnCollectionChanged (col, args);
 	}
@@ -72,6 +72,9 @@ Grid::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyC
 			InvalidateMeasure ();
 			return;
 		}
+	} else if (col == GetColumnDefinitions () || col == GetRowDefinitions ()) {
+		InvalidateMeasure ();
+		return;
 	}
 	
 	Panel::OnCollectionItemChanged (col, obj, args);
