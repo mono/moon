@@ -1,3 +1,7 @@
+2008-05-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.auto.ssc: Add entries for Socket
+
 2008-05-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.audo.sc: Add SC to MulticastDelegate::DynamicInvokeImpl

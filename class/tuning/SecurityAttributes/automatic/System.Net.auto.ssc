@@ -1,6 +1,8 @@
 # [SecuritySafeCritical] needed inside System.Net to call all [SecurityCritical] methods
-# 4 methods
+# 6 methods
 
++SSC-M: System.Void System.Net.Sockets.Socket::Dispose(System.Boolean)
++SSC-M: System.Void System.Net.Sockets.Socket::CancelConnectAsync(System.Net.Sockets.SocketAsyncEventArgs)
 +SSC-M: System.Void System.Net.WebClient::.ctor()
 +SSC-M: System.Void System.Net.WebClient::OnOpenReadCompleted(System.Net.OpenReadCompletedEventArgs)
 +SSC-M: System.Void System.Net.WebClient::OnDownloadStringCompleted(System.Net.DownloadStringCompletedEventArgs)
