@@ -4679,7 +4679,7 @@ start_parse:
 				g_free (nv);
 			}
 
-			if (!v && !need_managed)
+			if (!v_set && !need_managed)
 				v_set = value_from_str_with_parser (p, prop->GetPropertyType(), prop->GetName(), attr_value, &v);
 
 			Type::Kind propKind = prop->GetPropertyType ();
