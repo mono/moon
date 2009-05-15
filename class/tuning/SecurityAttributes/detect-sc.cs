@@ -183,7 +183,7 @@ class Program {
 			// to be reviewed).
 			if (method.IsVisible ())
 				comment = "[VISIBLE] " + comment;
-			methods.Add (method.ToString (), comment);
+			methods.Add (method.GetFullName (), comment);
 		}
 
 		// if this method is [SecurityCritical] (already or because we determined it should be)
@@ -199,7 +199,7 @@ class Program {
 					foreach (MethodDefinition im in td.Methods) {
 						// note: in this case we don't care if the method is indirectly critical (e.g.via its type)
 						if (Compare (method, im) && !type.IsSecurityCritical ()) {
-							string ims = im.ToString ();
+							string ims = im.GetFullName ();
 							// only add this if it's not something we already found before
 							if (!methods.ContainsKey (ims)) {
 								comment = String.Format ("Promoting {0}interface member to [SecurityCritical] because of '{1}'.", 

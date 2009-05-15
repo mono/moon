@@ -1,3 +1,10 @@
+2009-05-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* detect-sc.cs, detect-ssc.cs: Use the new CecilRock to turn a
+	MethodReference to a string (since ToString could return 
+	duplicates wrt generics, which would be misapplied).
+	* CecilRock.cs: Add new GetFullName rock
+
 2009-05-06  Raja R Harinath  <harinath@hurrynot.org>
 
 	* Makefile.am (securitymodel_sources): Prefix $(srcdir).

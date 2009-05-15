@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Text;
 using Mono.Cecil;
 
 namespace Moonlight.SecurityModel {
@@ -129,5 +130,42 @@ namespace Moonlight.SecurityModel {
 				return false;
 			return (self.DeclaringType as TypeDefinition).IsVisible ();
 		}
+
+		public static string GetFullName (this MethodReference self)
+		{
+			int sentinel = self.GetSentinel ();
+
+			StringBuilder sb = new StringBuilder ();
+			sb.Append (self.ReturnType.ReturnType.FullName);
+			sb.Append (" ");
+			sb.Append (self.DeclaringType.FullName);
+			sb.Append ("::");
+			sb.Append (self.Name);
+			if (self.HasGenericParameters) {
+				sb.Append ("<");
+				for (int i = 0; i < self.GenericParameters.Count; i++ ) {
+					if (i > 0)
+						sb.Append (",");
+					sb.Append (self.GenericParameters [i].Name);
+				}
+				sb.Append (">");
+			}
+			sb.Append ("(");
+			if (self.HasParameters) {
+				for (int i = 0; i < self.Parameters.Count; i++) {
+					if (i > 0)
+						sb.Append (",");
+
+					if (i == sentinel)
+						sb.Append ("...,");
+
+					sb.Append (self.Parameters [i].ParameterType.FullName);
+				}
+			}
+			sb.Append (")");
+			return sb.ToString ();
+		}
+
 	}
 }
+

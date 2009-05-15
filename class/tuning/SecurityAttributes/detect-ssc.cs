@@ -66,7 +66,7 @@ class Program {
 			if (md.IsSecurityCritical ()) {
 				AssemblyDefinition ad = method.DeclaringType.Module.Assembly;
 				List<string> list = methods [ad];
-				string m = method.ToString ();
+				string m = method.GetFullName ();
 				if (!list.Contains (m))
 					list.Add (m);
 				// TODO: is it worth adding comments (e.g. callers) ? if there's not too many
