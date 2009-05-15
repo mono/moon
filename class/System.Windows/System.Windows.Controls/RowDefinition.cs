@@ -28,7 +28,7 @@ using Mono;
 
 namespace System.Windows.Controls {
 
-	public partial class RowDefinition : DependencyObject {
+	public sealed partial class RowDefinition : DependencyObject {
 	
 		public double ActualHeight {
 			get {

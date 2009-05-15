@@ -28,7 +28,7 @@ using Mono;
 
 namespace System.Windows.Controls {
 
-	public partial class ColumnDefinition : DependencyObject {
+	public sealed partial class ColumnDefinition : DependencyObject {
 
 		public double ActualWidth {
 			get {

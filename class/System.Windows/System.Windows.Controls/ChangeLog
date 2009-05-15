@@ -1,3 +1,8 @@
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* RowDefinition.cs:
+	* ColumnDefinition.cs: These should both be sealed.
+
 2009-05-13  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs: When the items collection is databound, we
