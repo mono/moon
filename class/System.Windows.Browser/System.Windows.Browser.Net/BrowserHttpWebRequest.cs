@@ -110,12 +110,6 @@ namespace System.Windows.Browser.Net
 			managed.Free ();
 		}
 
-		static bool IsSameRangeKind (string range, string rangeSpecifier)
-		{
-			return range.ToLower (CultureInfo.InvariantCulture).StartsWith (
-				rangeSpecifier.ToLower (CultureInfo.InvariantCulture));
-		}
-
 		public override IAsyncResult BeginGetRequestStream (AsyncCallback callback, object state)
 		{
 			Console.WriteLine ("BrowserHttpWebRequest.BeginGetRequestStream: Should be async, doing it sync for now.");
@@ -239,6 +233,8 @@ namespace System.Windows.Browser.Net
 
 		public override WebResponse EndGetResponse (IAsyncResult asyncResult)
 		{
+			CheckProtocolViolation ();
+
 			if (async_result != asyncResult)
 				throw new ArgumentException ();
 
@@ -258,19 +254,6 @@ namespace System.Windows.Browser.Net
 			return response;
 		}
 
-		static Uri GetBaseUri ()
-		{
-			//FIXME: there's most probably a better way to do this.
-
-			string uri = NativeMethods.plugin_instance_get_source_location (PluginHost.Handle);
-			return new Uri (uri.Substring (0, uri.LastIndexOf ("/") + 1));
-		}
-
-		static Uri GetAbsoluteUri (Uri uri)
-		{
-			return new Uri (GetBaseUri (), uri);
-		}
-
 		void InitializeNativeRequestSafe (IntPtr context)
 		{
 			try {
@@ -288,12 +271,10 @@ namespace System.Windows.Browser.Net
 			if (native != IntPtr.Zero)
 				return;
 
-			Uri request_uri = uri.IsAbsoluteUri ? uri : GetAbsoluteUri (uri);
-
 			downloader = NativeMethods.surface_create_downloader (XamlLoader.SurfaceInDomain);
 			if (downloader == IntPtr.Zero)
 				throw new NotSupportedException ("Failed to create unmanaged downloader");
-			native = NativeMethods.downloader_create_web_request (downloader, method, request_uri.AbsoluteUri);
+			native = NativeMethods.downloader_create_web_request (downloader, method, uri.AbsoluteUri);
 			if (native == IntPtr.Zero)
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 
@@ -350,6 +331,24 @@ namespace System.Windows.Browser.Net
 
 		public override Uri RequestUri {
 			get { return uri; }
+		}
+
+
+		void CheckProtocolViolation ()
+		{
+			if (String.Compare (method, "GET", StringComparison.OrdinalIgnoreCase) != 0)
+				return;
+
+			// most headers are checked when set, but some are checked much later
+			foreach (string header in Headers.AllKeys) {
+				switch (header) {
+				case "Content-Encoding":
+				case "Content-Language":
+				case "Content-MD5":
+				case "Expires":
+					throw new ProtocolViolationException ();
+				}
+			}
 		}
 	}
 }

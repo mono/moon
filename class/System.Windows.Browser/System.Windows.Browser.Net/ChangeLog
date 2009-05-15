@@ -1,3 +1,9 @@
+2009-05-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrowserHttpWebRequest.cs: Remove unused code (IsSameRangeKind).
+	Remove duplicated code (already checked elsewhere). Add extra, 
+	late header validations for GET (GetEndResponse). Fix DRT #533
+
 2009-05-14  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* BrowserHttpWebRequest.cs: Fix condition (and compiler warning).
