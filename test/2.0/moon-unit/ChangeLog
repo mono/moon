@@ -1,5 +1,11 @@
 2009-05-15  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add a test
+	  for animating a GridLength property. Currently failing
+	  because zero length storyboards don't ever complete.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp: Add some missing files to the MDP
 
 2009-05-15  Alan McGovern  <amcgovern@novell.com>

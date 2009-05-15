@@ -1356,6 +1356,31 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
 			EnqueueTestComplete ();
 		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("This storyboard never completes")]
+		public void TargetGridLength ()
+		{
+			bool completed = false;
+			Storyboard sb = new Storyboard ();
+			ObjectAnimationUsingKeyFrames anim = new ObjectAnimationUsingKeyFrames { Duration=TimeSpan.FromSeconds (0) };
+			sb.Children.Add (anim);
+
+			ColumnDefinition target = new ColumnDefinition { Width = new GridLength (5) };
+			anim.KeyFrames.Add (new DiscreteObjectKeyFrame { KeyTime=TimeSpan.FromSeconds(0), Value = "*" });
+			Storyboard.SetTarget (anim, target);
+			Storyboard.SetTargetProperty (anim, new PropertyPath (ColumnDefinition.WidthProperty));
+
+			Assert.IsFalse (target.Width.IsStar, "#1");
+			sb.Completed += delegate { completed = true; };
+			sb.Begin ();
+			EnqueueConditional (() => completed, "#2");
+			Enqueue (() => {
+				Assert.IsTrue (target.Width.IsStar, "#3");
+			});
+			EnqueueTestComplete ();
+		}
 
 
 		private Canvas CreateStoryboard ()
