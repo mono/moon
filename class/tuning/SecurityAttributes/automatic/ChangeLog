@@ -1,3 +1,8 @@
+2009-05-15  Jb Evain  <jbevain@novell.com>
+
+	* System.Windows.Browser.auto.ssc: regenerated after the generic
+	method name fix.
+
 2008-05-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.auto.ssc: Add entries for Socket
