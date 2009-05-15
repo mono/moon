@@ -293,7 +293,7 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 
 		span += timeline->GetBeginTime ();
 
-		if (duration_span < span) {
+		if (duration_span <= span) {
 			duration_span = span;
 			d = Duration (duration_span);
 		}
