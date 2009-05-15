@@ -1,3 +1,8 @@
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* misc/Parsing/MiscParsing.cs: This should have
+	  [MoonlightBug].
+
 2009-05-14  Jackson Harper  <jackson@ximian.com>
 
 	* Makefile.am:
