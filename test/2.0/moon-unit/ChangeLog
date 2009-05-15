@@ -1,5 +1,11 @@
 2009-05-15  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: This test
+	  was broken accidently when it was split out from a larger
+	  test.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Add a test
 	  for really short storyboards too.
 

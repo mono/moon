@@ -1319,7 +1319,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void CurrentTime_AutoReverse ()
 		{
 			Canvas c = CreateStoryboard ();
@@ -1332,7 +1331,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 			EnqueueConditional (delegate { return storyboard.GetCurrentTime ().TotalMilliseconds > 1000; }, TimeSpan.FromSeconds (30));
 			Enqueue (() => {
 				double ms = storyboard.GetCurrentTime ().TotalMilliseconds;
-				Assert.AreEqual (ms, ((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, "#2");
+				Assert.AreEqual (1000, ((Storyboard) storyboard.Children [0]).GetCurrentTime ().TotalMilliseconds, "#2");
 				Assert.AreEqual (ms, ((Storyboard) storyboard.Children [1]).GetCurrentTime ().TotalMilliseconds, "#3");
 				storyboard.Stop ();
 			});
