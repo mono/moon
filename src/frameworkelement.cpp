@@ -14,6 +14,7 @@
 
 #include <math.h>
 
+#include "debug.h"
 #include "geometry.h"
 #include "application.h"
 #include "runtime.h"
@@ -24,6 +25,8 @@
 #include "collection.h"
 #include "style.h"
 #include "validators.h"
+
+#define MAX_LAYOUT_PASSES 250
 
 FrameworkElementProvider::FrameworkElementProvider (DependencyObject *obj, PropertyPrecedence precedence) : PropertyValueProvider (obj, precedence)
 {
@@ -361,7 +364,7 @@ FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 void
 FrameworkElement::Measure (Size availableSize)
 {
-	//g_warning ("measuring %p %s %g,%g", this, GetTypeName (), availableSize.width, availableSize.height);
+	//LOG_LAYOUT ("measuring %p %s %g,%g\n", this, GetTypeName (), availableSize.width, availableSize.height);
 	if (Is(Type::CONTROL)) {
 		Control *control = (Control*)this;
 
@@ -464,7 +467,7 @@ FrameworkElement::MeasureOverride (Size availableSize)
 void
 FrameworkElement::Arrange (Rect finalRect)
 {
-	//g_warning ("arranging %p %s %g,%g,%g,%g", this, GetTypeName (), finalRect.x, finalRect.y, finalRect.width, finalRect.height);
+	//LOG_LAYOUT ("arranging %p %s %g,%g,%g,%g\n", this, GetTypeName (), finalRect.x, finalRect.y, finalRect.width, finalRect.height);
 	Rect *slot = LayoutInformation::GetLayoutSlot (this);
 	bool doarrange = this->dirty_flags & DirtyArrange;
 	
@@ -637,19 +640,25 @@ FrameworkElement::UpdateLayout ()
 
 	Surface *surface = element->GetSurface ();
 
-	//printf ("\n UpdateLayout: ");
+        LOG_LAYOUT ("\nFrameworkElement::UpdateLayout: ");
 	bool updated = false;
 	int i = 0;
-	while (i < 250) {
+	while (i < MAX_LAYOUT_PASSES) {
 		List *measure_list = new List ();
 		List *arrange_list = new List ();
 		List *updated_list = new List ();
 		List *size_list = new List ();
 		
-		//printf ("\u267c");
+		LOG_LAYOUT ("\u267c");
 		i++;
 		DeepTreeWalker measure_walker (element);
 		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
+			if (!child->IsLoaded ()) {
+				LOG_LAYOUT ("FrameworkElement::UpdateLayout: element (%p) not yet loaded\n", child);
+				measure_walker.SkipBranch ();
+				continue;
+			}
+		
 			if (child->GetVisibility () != VisibilityVisible) {
 				measure_walker.SkipBranch ();
 				continue;
@@ -681,7 +690,7 @@ FrameworkElement::UpdateLayout ()
 				continue;
 		
 			if (updated)
-				updated_list->Prepend (new UIElementNode (child));
+				updated_list->Append (new UIElementNode (child));
 		}
 		if (!measure_list->IsEmpty ()) {
 			if (surface)
@@ -750,12 +759,12 @@ FrameworkElement::UpdateLayout ()
 		delete size_list;
 		delete updated_list;
 	}
-
-	if (i > 250)
-		g_warning ("***********************************************************************leaving");
-
-	//	printf ("\n");
-
+	
+	if (i >= MAX_LAYOUT_PASSES)  {
+		LOG_LAYOUT ("\n************** UpdateLayout Bailing Out after %d Passes *******************\n", i);
+	} else {
+		LOG_LAYOUT (" (%d)\n", i);
+	}
 }
 
 void

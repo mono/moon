@@ -80,7 +80,7 @@ G_END_DECLS
 #define LOG_DP(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DP)) printf (__VA_ARGS__);
 #define LOG_DOWNLOADER(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DOWNLOADER)) printf (__VA_ARGS__);
 #define LOG_FONT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_FONT)) fprintf (__VA_ARGS__);
-#define LOG_LAYOUT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_LAYOUT)) fprintf (__VA_ARGS__);
+#define LOG_LAYOUT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_LAYOUT)) printf (__VA_ARGS__);
 #define LOG_MEDIA(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIA)) printf (__VA_ARGS__);
 #define LOG_MEDIAELEMENT(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIAELEMENT)) printf (__VA_ARGS__);
 #define LOG_MEDIAELEMENT_EX(...)		if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MEDIAELEMENT_EX)) printf (__VA_ARGS__);

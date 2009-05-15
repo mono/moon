@@ -667,9 +667,6 @@ UIElement::EmitSubtreeLoad (List *l)
 void
 UIElement::PostSubtreeLoad (List *load_list)
 {
-	if (emitting_loaded)
-		return;
-
 	LoadedState *state = new LoadedState (load_list);
 
 	GetDeployment()->GetSurface()->GetTimeManager()->AddTickCall (emit_delayed_loaded, state);
@@ -733,7 +730,7 @@ UIElement::OnLoaded ()
 		return;
 
 	emitting_loaded = true;
-		   
+
 	flags |= UIElement::IS_LOADED;
 
 	flags &= ~UIElement::PENDING_LOADED;

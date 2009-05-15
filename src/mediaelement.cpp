@@ -529,8 +529,6 @@ MediaElement::ArrangeOverride (Size finalSize)
 	double sx = 1.0;
 	double sy = 1.0;
 
-	g_warning ("In arrange finalSize = %g,%g", finalSize.width, finalSize.height);
-	
 	if (mplayer)
 		shape_bounds = Rect (0, 0, 
 				     mplayer->GetVideoWidth (), 
