@@ -1,5 +1,10 @@
 2009-05-15  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add a test
+	  for zero length storyboards.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
 	* misc/Parsing/MiscParsing.cs: This should have
 	  [MoonlightBug].
 

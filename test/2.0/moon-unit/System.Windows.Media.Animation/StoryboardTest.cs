@@ -1409,10 +1409,37 @@ namespace MoonTest.System.Windows.Media.Animation {
 				Assert.AreEqual (GridUnitType.Pixel, target.Width.GridUnitType, "#10");
 				Assert.AreEqual (5, target.Width.Value, "#11");
 			});
-
+			
 			EnqueueTestComplete ();
 		}
+		
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ZeroLengthStoryboard ()
+		{
+			int completeCount = 0;
+			Storyboard sb = new Storyboard ();
+			
+			sb.Completed += delegate { completeCount ++; };
 
+			ObjectAnimationUsingKeyFrames anim = new ObjectAnimationUsingKeyFrames { Duration = TimeSpan.FromMilliseconds (0) };
+			anim.KeyFrames.Add (new DiscreteObjectKeyFrame { KeyTime = TimeSpan.FromSeconds (0), Value = "1" });
+			sb.Children.Add (anim);
+
+			Rectangle target = new Rectangle ();
+			Storyboard.SetTarget (anim, target);
+			Storyboard.SetTargetProperty (anim, new PropertyPath (Rectangle.WidthProperty));
+
+			sb.Begin ();
+
+			// Wait 200ms
+			long start = Environment.TickCount;
+			EnqueueConditional (() => Environment.TickCount - start > 200, "#1");
+			Enqueue (() => Assert.AreEqual (1, completeCount, "#2"));
+			EnqueueTestComplete ();
+		}
 
 		private Canvas CreateStoryboard ()
 		{
