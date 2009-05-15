@@ -110,7 +110,6 @@ public:
 
 	virtual void UpdateLayout ();
 	
-	const static int BindingValidationErrorEvent;
 	const static int LayoutUpdatedEvent;
 	const static int SizeChangedEvent;
 	// XXX 2.0 also has the Loaded event moved here from

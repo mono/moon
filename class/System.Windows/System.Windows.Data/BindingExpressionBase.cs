@@ -206,45 +206,48 @@ namespace System.Windows.Data {
 
 		internal void SetValue (object value)
 		{
-			if (updatingSource || PropertyInfo == null)
-				return;
-
-			if (Binding.Converter != null)
-				value = Binding.Converter.ConvertBack (value,
-				                                       PropertyInfo.PropertyType,
-				                                       Binding.ConverterParameter,
-				                                       Binding.ConverterCulture ?? Helper.DefaultCulture);
-
-			if (value != null) {
-				Type destType = PropertyInfo.PropertyType;
-				if (PropertyInfo.PropertyType.IsValueType && PropertyInfo.PropertyType != value.GetType ()) {
-					try {
-						if (destType.IsGenericType && destType.GetGenericTypeDefinition () == typeof (Nullable<>))
-							destType = destType.GetGenericArguments () [0];
-						if (destType.IsEnum)
-							value = Enum.Parse (destType, value.ToString (), true);
-						else
-							value = Convert.ChangeType (value, destType, null);
-					} catch {
-						Console.WriteLine ("Failed to convert '{0}' to '{1}", value.GetType (), PropertyInfo.PropertyType);
-						return;
+			try {
+				if (updatingSource || PropertyInfo == null)
+					return;
+	
+				if (Binding.Converter != null)
+					value = Binding.Converter.ConvertBack (value,
+					                                       PropertyInfo.PropertyType,
+					                                       Binding.ConverterParameter,
+					                                       Binding.ConverterCulture ?? Helper.DefaultCulture);
+	
+				if (value != null) {
+					Type destType = PropertyInfo.PropertyType;
+					if (PropertyInfo.PropertyType.IsValueType && PropertyInfo.PropertyType != value.GetType ()) {
+						try {
+							if (destType.IsGenericType && destType.GetGenericTypeDefinition () == typeof (Nullable<>))
+								destType = destType.GetGenericArguments () [0];
+							if (destType.IsEnum)
+								value = Enum.Parse (destType, value.ToString (), true);
+							else
+								value = Convert.ChangeType (value, destType, null);
+						} catch {
+							Console.WriteLine ("Failed to convert '{0}' to '{1}", value.GetType (), PropertyInfo.PropertyType);
+							return;
+						}
 					}
 				}
-			}
-			
-			if (cachedValue == null) {
-				if (value == null)
+				
+				if (cachedValue == null) {
+					if (value == null)
+						return;
+				}
+				else if (cachedValue.Equals (value)) {
 					return;
-			}
-			else if (cachedValue.Equals (value)) {
-				return;
-			}
+				}
 
-
-			try {
 				updatingSource = true;
 				PropertyInfo.SetValue (PropertySource, value, null);
 				cachedValue = value;
+			} catch (Exception ex) {
+				if (Binding.NotifyOnValidationError && Binding.ValidatesOnExceptions) {
+					Target.RaiseBindingValidationError (new ValidationErrorEventArgs (ValidationErrorEventAction.Added, new ValidationError (ex)));
+				}
 			}
 			finally {
 				updatingSource = false;

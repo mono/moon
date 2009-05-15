@@ -57,6 +57,10 @@ namespace MoonTest.System.Windows.Data
 			get;
 			set;
 		}
+        public bool ThrowExceptionsOnUpdate {
+            get { return false; }
+            set { throw new Exception("Testing"); }
+        }
 
 		public Data()
 		{
@@ -677,6 +681,98 @@ namespace MoonTest.System.Windows.Data
 			});
 			EnqueueTestComplete ();
 		}
+							
+		[TestMethod]
+        public void TestTwoWayBinding7 ()
+        {
+            ValidationErrorEventArgs bindingEx = null;
+            Data data = new Data();
+
+            Rectangle r = new Rectangle();
+            r.BindingValidationError += delegate(object o, ValidationErrorEventArgs e) {
+                bindingEx = e;
+            };
+            r.SetBinding(Rectangle.IsHitTestVisibleProperty, new Binding {
+                Path = new PropertyPath("ThrowExceptionsOnUpdate"),
+                Source = data,
+                Mode = BindingMode.TwoWay
+            });
+            Assert.IsFalse(r.IsHitTestVisible, "#1");
+            r.IsHitTestVisible = true;
+            Assert.IsTrue(r.IsHitTestVisible, "#2");
+            Assert.IsNull(bindingEx, "#3");
+        }
+
+        [TestMethod]
+        public void TestTwoWayBinding8 ()
+        {
+            ValidationErrorEventArgs bindingEx = null;
+            Data data = new Data();
+
+            Rectangle r = new Rectangle();
+            r.BindingValidationError += delegate(object o, ValidationErrorEventArgs e) {
+                bindingEx = e;
+            };
+            r.SetBinding(Rectangle.IsHitTestVisibleProperty, new Binding {
+                Path = new PropertyPath("ThrowExceptionsOnUpdate"),
+                Source = data,
+                Mode = BindingMode.TwoWay,
+                ValidatesOnExceptions = true
+            });
+            Assert.IsFalse(r.IsHitTestVisible, "#1");
+            r.IsHitTestVisible = true;
+            Assert.IsTrue(r.IsHitTestVisible, "#2");
+            Assert.IsNull(bindingEx, "#3");
+        }
+
+        [TestMethod]
+        public void TestTwoWayBinding9 ()
+        {
+            ValidationErrorEventArgs bindingEx = null;
+            Data data = new Data();
+
+            Rectangle r = new Rectangle();
+            r.BindingValidationError += delegate(object o, ValidationErrorEventArgs e)
+            {
+                bindingEx = e;
+            };
+            r.SetBinding(Rectangle.IsHitTestVisibleProperty, new Binding
+            {
+                Path = new PropertyPath("ThrowExceptionsOnUpdate"),
+                Source = data,
+                Mode = BindingMode.TwoWay,
+                NotifyOnValidationError = true
+            });
+            Assert.IsFalse(r.IsHitTestVisible, "#1");
+            r.IsHitTestVisible = true;
+            Assert.IsTrue(r.IsHitTestVisible, "#2");
+            Assert.IsNull(bindingEx, "#3");
+        }
+
+        [TestMethod]
+        public void TestTwoWayBinding10 ()
+        {
+            ValidationErrorEventArgs bindingEx = null;
+            Data data = new Data();
+
+            Rectangle r = new Rectangle();
+            r.BindingValidationError += delegate(object o, ValidationErrorEventArgs e)
+            {
+                bindingEx = e;
+            };
+            r.SetBinding(Rectangle.IsHitTestVisibleProperty, new Binding
+            {
+                Path = new PropertyPath("ThrowExceptionsOnUpdate"),
+                Source = data,
+                Mode = BindingMode.TwoWay,
+                NotifyOnValidationError = true,
+                ValidatesOnExceptions = true
+            });
+            Assert.IsFalse(r.IsHitTestVisible, "#1");
+            r.IsHitTestVisible = true;
+            Assert.IsTrue(r.IsHitTestVisible, "#2");
+            Assert.IsNotNull(bindingEx, "#3");
+        }
 
 		[TestMethod]
 		public void TestOnceOffBinding ()

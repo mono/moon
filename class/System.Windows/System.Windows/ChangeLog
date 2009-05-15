@@ -1,3 +1,9 @@
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: Properly handle exceptions when
+	  updating the source in a 2 way binding. Raise the
+	  BindingValidationError event in the right place.
+
 2009-05-11  Chris Toshok  <toshok@ximian.com>
 
 	* Style.cs (ConvertSetterValue): don't whine about null values.

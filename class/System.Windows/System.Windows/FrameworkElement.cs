@@ -224,19 +224,11 @@ namespace System.Windows {
 		[MonoTODO ("figure out how to construct routed events")]
 		public static readonly RoutedEvent LoadedEvent = new RoutedEvent();
 
-		static object BindingValidationErrorEvent = new object ();
 		static object LoadedEvent_ = new object ();
 		static object LayoutUpdatedEvent = new object ();
 		static object SizeChangedEvent = new object ();
 		
-		public event EventHandler<ValidationErrorEventArgs> BindingValidationError {
-			add {
-				RegisterEvent (BindingValidationErrorEvent, "BindingValidationError", Events.binding_validation_error, value);
-			}
-			remove {
-				UnregisterEvent (BindingValidationErrorEvent, "BindingValidationError", Events.binding_validation_error, value);
-			}
-		}
+		public event EventHandler<ValidationErrorEventArgs> BindingValidationError;
 
 		public event EventHandler LayoutUpdated {
 			add {
@@ -340,6 +332,13 @@ namespace System.Windows {
 				InvalidateLocalBindings ();
 				InvalidateSubtreeBindings ();
 			}
+		}
+		
+		internal void RaiseBindingValidationError (ValidationErrorEventArgs e)
+		{
+			EventHandler <ValidationErrorEventArgs> h = BindingValidationError;
+			if (h != null)
+				h (this, e);
 		}
 
 		void RemoveExpression (DependencyProperty dp)
