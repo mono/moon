@@ -11,11 +11,14 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
-#include <string.h>
-#include <malloc.h>
+#endif
+
 #include <glib.h>
+
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #include "application.h"
