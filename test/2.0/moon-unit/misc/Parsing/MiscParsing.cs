@@ -339,5 +339,25 @@ namespace MoonTest.Misc.Parsing
 		{
 			MiscParsingManagedAttachedProp m = new MiscParsingManagedAttachedProp ();
 		}
+		
+		[TestMethod]
+		public void StaticResourceFromStyleTest ()
+		{
+			StackPanel c = (StackPanel) XamlReader.Load (@"
+    <StackPanel xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+        <StackPanel.Resources>
+            <SolidColorBrush x:Key=""FirstColor"" Color=""#486974"" />
+            <Style x:Key=""DemoContent"" TargetType=""ContentControl"">
+                <Setter Property=""Background"" Value=""{StaticResource FirstColor}"" />
+            </Style>
+       </StackPanel.Resources>
+    </StackPanel>");
+
+			Assert.AreEqual (2, c.Resources.Count);
+			Style s = (Style) c.Resources ["DemoContent"];
+			Setter setter = (Setter)s.Setters [0];
+			Assert.AreEqual (c.Resources ["FirstColor"], setter.Value, "#1");
+		}
 	}
 }

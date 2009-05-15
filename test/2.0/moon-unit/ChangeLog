@@ -1,5 +1,10 @@
 2009-05-15  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/Parsing/MiscParsing.cs: Add test which demonstrates an
+	  issue with staticresources and styles.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Check more
 	  cases in the test
 
