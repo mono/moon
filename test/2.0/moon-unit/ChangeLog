@@ -1,3 +1,10 @@
+2009-05-14  Jackson Harper  <jackson@ximian.com>
+
+	* Makefile.am:
+	* misc/Parsing/MiscParsing.cs:
+	* misc/Parsing/MiscParsingManagedAttachedProp.xaml: New test for
+	managed attached props that don't have a namespace.
+	
 2009-05-15  Alan McGovern  <amcgovern@novell.com>
 
 	* misc/Parsing/MiscParsing.cs: Add test which demonstrates an

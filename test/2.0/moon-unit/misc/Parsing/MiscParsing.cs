@@ -334,7 +334,6 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MissingXmlnsOnAttachedProp ()
 		{
 			MiscParsingManagedAttachedProp m = new MiscParsingManagedAttachedProp ();
