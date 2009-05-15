@@ -1,6 +1,11 @@
 2009-05-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: Add a test
+	  for really short storyboards too.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add a test
 	  for zero length storyboards.
 
 2009-05-15  Alan McGovern  <amcgovern@novell.com>
