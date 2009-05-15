@@ -1359,26 +1359,57 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("This storyboard never completes")]
+		[MoonlightBug]
 		public void TargetGridLength ()
 		{
 			bool completed = false;
 			Storyboard sb = new Storyboard ();
-			ObjectAnimationUsingKeyFrames anim = new ObjectAnimationUsingKeyFrames { Duration=TimeSpan.FromSeconds (0) };
+			sb.Completed += delegate {
+				completed = true;
+			};
+
+			ObjectAnimationUsingKeyFrames anim = new ObjectAnimationUsingKeyFrames { Duration=TimeSpan.FromMilliseconds (1) };
+			anim.KeyFrames.Add (new DiscreteObjectKeyFrame { KeyTime = TimeSpan.FromSeconds (0), Value = "*" });
 			sb.Children.Add (anim);
 
 			ColumnDefinition target = new ColumnDefinition { Width = new GridLength (5) };
-			anim.KeyFrames.Add (new DiscreteObjectKeyFrame { KeyTime=TimeSpan.FromSeconds(0), Value = "*" });
 			Storyboard.SetTarget (anim, target);
 			Storyboard.SetTargetProperty (anim, new PropertyPath (ColumnDefinition.WidthProperty));
 
-			Assert.IsFalse (target.Width.IsStar, "#1");
-			sb.Completed += delegate { completed = true; };
 			sb.Begin ();
+
+			// First animate a '*' value
 			EnqueueConditional (() => completed, "#2");
 			Enqueue (() => {
 				Assert.IsTrue (target.Width.IsStar, "#3");
+				Assert.AreEqual (1, target.Width.Value, "#4");
 			});
+
+			// Then check 'Auto'
+			Enqueue (() => {
+				anim.KeyFrames [0].Value = "Auto";
+				completed = false;
+				sb.Begin ();
+			});
+			EnqueueConditional (() => completed, "#5");
+			Enqueue (() => {
+				Assert.IsTrue (target.Width.IsAuto, "#6");
+				Assert.AreEqual (GridUnitType.Auto, target.Width.GridUnitType, "#7");
+				Assert.AreEqual (1, target.Width.Value, "#8");
+			});
+
+			// Then check a number
+			Enqueue (() => {
+				anim.KeyFrames [0].Value = "5";
+				completed = false;
+				sb.Begin ();
+			});
+			EnqueueConditional (() => completed, "#9");
+			Enqueue (() => {
+				Assert.AreEqual (GridUnitType.Pixel, target.Width.GridUnitType, "#10");
+				Assert.AreEqual (5, target.Width.Value, "#11");
+			});
+
 			EnqueueTestComplete ();
 		}
 
