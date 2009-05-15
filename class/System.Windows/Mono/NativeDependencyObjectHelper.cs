@@ -300,6 +300,7 @@ namespace Mono {
 			case Kind.MULTISCALESUBIMAGE: return new MultiScaleSubImage (raw, false);
 			case Kind.MULTISCALESUBIMAGE_COLLECTION: return new MultiScaleSubImageCollection (raw, false);
 			case Kind.OBJECTANIMATIONUSINGKEYFRAMES: return new ObjectAnimationUsingKeyFrames (raw, false);
+			case Kind.OBJECTKEYFRAME_COLLECTION : return new ObjectKeyFrameCollection (raw, false);
 			case Kind.PASSWORDBOX: return new PasswordBox (raw, false);
 			case Kind.PATHFIGURE_COLLECTION: return new PathFigureCollection (raw, false);
 			case Kind.PATHFIGURE: return new PathFigure (raw, false);

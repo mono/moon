@@ -395,7 +395,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "FontSource", Type::FONTSOURCE);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "Value", Type::OBJECT);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "KeyTime", Type::KEYTIME);
-	DependencyProperty::Register (this, Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", Type::OBJECTKEYFRAME_COLLECTION);
+	DependencyProperty::RegisterFull (this, Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", NULL, Type::OBJECTKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::Register (this, Type::MATRIXTRANSFORM, "Matrix", Type::MATRIX);
 	DependencyProperty::Register (this, Type::LINESEGMENT, "Point", Type::POINT);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LayoutSlot", NULL, Type::RECT, true, false, false, NULL, NULL, NULL, false, false);

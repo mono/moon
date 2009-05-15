@@ -806,7 +806,7 @@ protected:
 /* @ContentProperty="KeyFrames" */
 class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {
 public:
- 	/* @PropertyType=ObjectKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=ObjectKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors,AutoCreateValue */
 	const static int KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
