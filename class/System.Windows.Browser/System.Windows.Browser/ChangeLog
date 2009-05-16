@@ -1,3 +1,7 @@
+2009-05-15  Andreia Gaita  <avidigal@novell.com>
+
+	* HtmlWindow.cs: Clean up some calls
+
 2009-04-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ScriptObject.cs: handle field should not be visible.
