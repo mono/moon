@@ -1,3 +1,14 @@
+2009-05-16  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlElementInfo::SetIsCDataVerbatim,
+	XamlElementInfo::IsCDataVerbatim): new methods to set and get a
+	flag telling the cdata_handler to not collapse/remove
+	whitespace. <clr:String> requires this.
+	(PrimitiveNamespace::FindElement): for the "String" case, call
+	XamlElementInfo::SetIsCDataVerbatim(true).
+	(char_data_handler): if the current element IsCDataVerbatim, just
+	append the input string and return.
+
 2009-05-16  Alan McGovern  <amcgovern@novell.com>
 
 	* security.c: Bump the security env var to _04
