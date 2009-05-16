@@ -1,3 +1,7 @@
+2009-05-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/UriTest.cs: Add test case for bad host name
+
 2009-05-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: This test
