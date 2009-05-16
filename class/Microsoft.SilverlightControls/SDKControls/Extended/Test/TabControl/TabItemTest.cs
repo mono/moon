@@ -79,7 +79,6 @@ namespace System.Windows.Controls.Test
         /// </summary>
         [TestMethod]
         [Description("Verify TabItem's TabStripPlacement property.")]
-        [MoonlightBug ()]
         public void TabStripPlacementTest()
         {
             TabControl tabControl = new TabControl();
