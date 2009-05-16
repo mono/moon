@@ -78,7 +78,7 @@ determine_platform_image (const char *image_name)
 void
 security_enable_coreclr (const char *platform_dir)
 {
-	if (g_getenv ("MOON_DISABLE_SECURITY_PREVIEW_01") != NULL) {
+	if (g_getenv ("MOON_DISABLE_SECURITY_PREVIEW_04") != NULL) {
 		g_warning ("CORECLR was DISABLED using MOON_DISABLE_SECURITY_PREVIEW_01 override");
 		g_warning ("this disables both code verification and metadata verification on code\n"
 			   "downloaded from untrusted sources, and therefore opens up your machine\n"

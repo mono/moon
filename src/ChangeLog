@@ -1,5 +1,9 @@
 2009-05-16  Alan McGovern  <amcgovern@novell.com>
 
+	* security.c: Bump the security env var to _04
+
+2009-05-16  Alan McGovern  <amcgovern@novell.com>
+
 	* cbinding.h:
 	* animation.h:
 	* cbinding.cpp:
