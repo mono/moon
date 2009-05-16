@@ -1396,7 +1396,6 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 							
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlBindWithContent ()
 		{
 			TextProp c = (TextProp) XamlReader.Load (@"
