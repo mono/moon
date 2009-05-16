@@ -53,6 +53,7 @@ namespace System.Windows {
 
 		ApplyDefaultStyleCallback apply_default_style;
 		ApplyStyleCallback apply_style;
+		ConvertKeyframeValueCallback convert_keyframe_value;
 		GetResourceCallback get_resource;
 
 		static Application ()
@@ -67,9 +68,10 @@ namespace System.Windows {
 
 			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb_safe);
 			apply_style = new ApplyStyleCallback (apply_style_cb_safe);
+			convert_keyframe_value = new ConvertKeyframeValueCallback (convert_keyframe_value_cb_safe);
 			get_resource = new GetResourceCallback (get_resource_cb_safe);
 
-			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource);
+			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource, convert_keyframe_value);
 
 			if (Current == null) {
 				Current = this;
@@ -108,6 +110,50 @@ namespace System.Windows {
 
 		Dictionary<Assembly, ResourceDictionary> assemblyToGenericXaml = new Dictionary<Assembly, ResourceDictionary>();
 
+		void convert_keyframe_value_cb_safe (Kind kind, IntPtr property_ptr, IntPtr original, out Value converted)
+		{
+			try {
+				convert_keyframe_value_cb (kind, property_ptr, original, out converted);
+			} catch (Exception ex) {
+				converted = default (Value);
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in apply_object_key_frame_cb_safe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+		
+		void convert_keyframe_value_cb (Kind kind, IntPtr property_ptr, IntPtr original, out Value converted)
+		{
+			Type type = Deployment.Current.Types.KindToType (kind);
+			if (type != null)
+				Types.Ensure (type);
+			
+			DependencyProperty property = DependencyProperty.Lookup (property_ptr);
+			if (property == null) {
+				Console.WriteLine ("Moonlight Error: Property couldn't be looked up");
+				converted = Value.Empty;
+				return;
+			}
+			
+			object o = Value.ToObject (null, original);
+			if (o == null) {
+				Console.WriteLine ("Moonlight Error: Object was null");
+				converted = Value.Empty;
+				return;
+			}
+			
+			o = MoonlightTypeConverter.ConvertObject (property, o, null);
+			
+			if (o == null) {
+				Console.WriteLine ("Moonlight Error: Converted to null");
+				converted = Value.Empty;
+				return;
+			}
+			
+			converted = Value.FromObject (o);
+		}
+		
 		void apply_default_style_cb_safe (IntPtr fwe_ptr, IntPtr type_info_ptr)
 		{
 			try {

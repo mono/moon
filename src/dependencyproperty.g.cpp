@@ -395,6 +395,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "FontSource", Type::FONTSOURCE);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "Value", Type::OBJECT);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "KeyTime", Type::KEYTIME);
+	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "ConvertedValue", Type::OBJECT);
 	DependencyProperty::RegisterFull (this, Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", NULL, Type::OBJECTKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::Register (this, Type::MATRIXTRANSFORM, "Matrix", Type::MATRIX);
 	DependencyProperty::Register (this, Type::LINESEGMENT, "Point", Type::POINT);
@@ -777,43 +778,44 @@ const int PasswordBox::MaxLengthProperty = 339;
 const int PasswordBox::FontSourceProperty = 340;
 const int ObjectKeyFrame::ValueProperty = 341;
 const int ObjectKeyFrame::KeyTimeProperty = 342;
-const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 343;
-const int MatrixTransform::MatrixProperty = 344;
-const int LineSegment::PointProperty = 345;
-const int LayoutInformation::LayoutSlotProperty = 346;
-const int LayoutInformation::LayoutClipProperty = 347;
-const int LayoutInformation::LastRenderSizeProperty = 348;
-const int LayoutInformation::LastMeasureProperty = 349;
-const int LayoutInformation::LastArrangeProperty = 350;
-const int EventTrigger::RoutedEventProperty = 351;
-const int EventTrigger::ActionsProperty = 352;
-const int DoubleKeyFrame::ValueProperty = 353;
-const int DoubleKeyFrame::KeyTimeProperty = 354;
-const int DoubleAnimation::ToProperty = 355;
-const int DoubleAnimation::FromProperty = 356;
-const int DoubleAnimation::EasingFunctionProperty = 357;
-const int DoubleAnimation::ByProperty = 358;
-const int DependencyObject::NameProperty = 359;
-const int DeepZoomImageTileSource::UriSourceProperty = 360;
-const int ControlTemplate::TargetTypeProperty = 361;
-const int ColorKeyFrame::ValueProperty = 362;
-const int ColorKeyFrame::KeyTimeProperty = 363;
-const int ColorAnimation::ToProperty = 364;
-const int ColorAnimation::FromProperty = 365;
-const int ColorAnimation::EasingFunctionProperty = 366;
-const int ColorAnimation::ByProperty = 367;
-const int BitmapSource::PixelWidthProperty = 368;
-const int BitmapSource::PixelHeightProperty = 369;
-const int BitmapSource::PixelFormatProperty = 370;
-const int BezierSegment::Point3Property = 371;
-const int BezierSegment::Point2Property = 372;
-const int BezierSegment::Point1Property = 373;
-const int BeginStoryboard::StoryboardProperty = 374;
-const int ArcSegment::SweepDirectionProperty = 375;
-const int ArcSegment::SizeProperty = 376;
-const int ArcSegment::RotationAngleProperty = 377;
-const int ArcSegment::PointProperty = 378;
-const int ArcSegment::IsLargeArcProperty = 379;
+const int ObjectKeyFrame::ConvertedValueProperty = 343;
+const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 344;
+const int MatrixTransform::MatrixProperty = 345;
+const int LineSegment::PointProperty = 346;
+const int LayoutInformation::LayoutSlotProperty = 347;
+const int LayoutInformation::LayoutClipProperty = 348;
+const int LayoutInformation::LastRenderSizeProperty = 349;
+const int LayoutInformation::LastMeasureProperty = 350;
+const int LayoutInformation::LastArrangeProperty = 351;
+const int EventTrigger::RoutedEventProperty = 352;
+const int EventTrigger::ActionsProperty = 353;
+const int DoubleKeyFrame::ValueProperty = 354;
+const int DoubleKeyFrame::KeyTimeProperty = 355;
+const int DoubleAnimation::ToProperty = 356;
+const int DoubleAnimation::FromProperty = 357;
+const int DoubleAnimation::EasingFunctionProperty = 358;
+const int DoubleAnimation::ByProperty = 359;
+const int DependencyObject::NameProperty = 360;
+const int DeepZoomImageTileSource::UriSourceProperty = 361;
+const int ControlTemplate::TargetTypeProperty = 362;
+const int ColorKeyFrame::ValueProperty = 363;
+const int ColorKeyFrame::KeyTimeProperty = 364;
+const int ColorAnimation::ToProperty = 365;
+const int ColorAnimation::FromProperty = 366;
+const int ColorAnimation::EasingFunctionProperty = 367;
+const int ColorAnimation::ByProperty = 368;
+const int BitmapSource::PixelWidthProperty = 369;
+const int BitmapSource::PixelHeightProperty = 370;
+const int BitmapSource::PixelFormatProperty = 371;
+const int BezierSegment::Point3Property = 372;
+const int BezierSegment::Point2Property = 373;
+const int BezierSegment::Point1Property = 374;
+const int BeginStoryboard::StoryboardProperty = 375;
+const int ArcSegment::SweepDirectionProperty = 376;
+const int ArcSegment::SizeProperty = 377;
+const int ArcSegment::RotationAngleProperty = 378;
+const int ArcSegment::PointProperty = 379;
+const int ArcSegment::IsLargeArcProperty = 380;
 
 UIElement *
 VisualBrush::GetVisual ()
@@ -5069,6 +5071,18 @@ ObjectKeyFrame::SetKeyTime (KeyTime *value)
 		DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, NULL);
 	else
 		DependencyObject::SetValue (ObjectKeyFrame::KeyTimeProperty, Value (*value));
+}
+
+Value *
+ObjectKeyFrame::GetConvertedValue ()
+{
+	return DependencyObject::GetValue (ObjectKeyFrame::ConvertedValueProperty);
+}
+
+void
+ObjectKeyFrame::SetConvertedValue (Value * value)
+{
+	DependencyObject::SetValue (ObjectKeyFrame::ConvertedValueProperty, Value (*value));
 }
 
 ObjectKeyFrameCollection *

@@ -1383,7 +1383,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void TargetGridLength ()
 		{
 			bool completed = false;

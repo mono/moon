@@ -1925,6 +1925,7 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class ObjectKeyFrame {
+		internal static readonly DependencyProperty ConvertedValueProperty = DependencyProperty.Lookup (Kind.OBJECTKEYFRAME, "ConvertedValue", typeof (object));
 		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.OBJECTKEYFRAME, "KeyTime", typeof (KeyTime));
 		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.OBJECTKEYFRAME, "Value", typeof (object));
 

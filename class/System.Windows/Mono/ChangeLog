@@ -1,3 +1,14 @@
+2009-05-16  Alan McGovern  <amcgovern@novell.com>
+
+	* Types.cs:
+	* NativeMethods.cs:
+	* ManagedXamlLoader.cs:
+	* GeneratedPInvokes.cs:
+	* MoonlightTypeConverter.cs: Add type converting to
+	  ObjectKeyFrame. The conversion is done during the Resolve
+	  phase. If the type conversion can't be completed an
+	  exception is thrown.
+
 2009-05-15  Alan McGovern  <amcgovern@novell.com>
 
 	* NativeDependencyObjectHelper.cs: The Keyframes property of
