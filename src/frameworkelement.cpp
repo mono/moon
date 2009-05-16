@@ -655,10 +655,8 @@ FrameworkElement::UpdateLayout ()
 		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
 			if (!child->IsLoaded ()) {
 				LOG_LAYOUT ("FrameworkElement::UpdateLayout: element (%p) not yet loaded\n", child);
-				measure_walker.SkipBranch ();
-				continue;
 			}
-		
+
 			if (child->GetVisibility () != VisibilityVisible) {
 				measure_walker.SkipBranch ();
 				continue;

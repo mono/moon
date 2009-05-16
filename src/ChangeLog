@@ -1,3 +1,9 @@
+2009-05-15  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (UpdateLayout): just warn if the element is
+	loaded don't skip it for now since it causes regressions in the
+	control tests.
+
 2009-05-15  Chris Toshok  <toshok@ximian.com>
 
 	* timeline.cpp (ParallelTimeline::GetNaturalDurationCore): tiny
