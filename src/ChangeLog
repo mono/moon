@@ -1,3 +1,35 @@
+2009-05-15  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (DependencyObject::RegisterAllNamesRootedAt):
+	in the hydrated case we still need to register our name.
+	(DependencyObject::ProviderValueChanged): don't swallow the error
+	when we SetParent on the new_as_dep.
+	(DependencyObject::SetParent): if we're adding a Hydrated
+	element (i.e. one that was loaded using LoadComponent), we need to
+	register its name into the parent namescope.  Also, move the
+	quickest check to the top so we don't do the family check on every
+	SetParent call if the before/after parent are the same.  Lastly,
+	we only register names if the current parent is NULL.  That is, if
+	a named brush is a property on an element already, and its name is
+	registered, we don't register it in the new namescope when it's
+	set as a property on a second element.  Odd but it matches SL
+	behavior.
+	(DependencyObject::FindName): no longer walk up the namescope
+	hierarchy, and don't look up things in the toplevel's namescope
+	either.
+
+	* dependencyobject.h (class DependencyObject): add
+	SetIsHydratedFromXaml/IsHydratedFromXaml, used by the parser.
+
+	* xaml.cpp (XamlLoader::HydrateFromString): flag the resulting
+	object as being hydrated.
+	(everywhere): we don't need GetParentNamescope for anything.  we
+	always use the toplevel namescope of the subtree the parser is
+	currently parsing.
+
+	* provider.cpp (AutoCreatePropertyValueProvider::GetPropertyValue):
+	don't pass a null error to ProviderValueChanged.
+	
 2009-05-15  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp (UpdateLayout): just warn if the element is

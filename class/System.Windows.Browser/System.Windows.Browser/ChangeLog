@@ -1,3 +1,9 @@
+2009-05-15  Chris Toshok  <toshok@ximian.com>
+
+	* ScriptableObjectWrapper.cs (ValidateArguments): don't deref
+	nulls.
+	(InvokeFromUnmanaged): same.
+
 2009-05-15  Andreia Gaita  <avidigal@novell.com>
 
 	* HtmlWindow.cs: Clean up some calls

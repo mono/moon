@@ -1,5 +1,4 @@
 *.g.cs
 *.g.resources
-*.html
 *.xap
 AppManifest.xaml

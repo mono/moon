@@ -402,7 +402,8 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 	g_hash_table_insert (auto_values, property, value);
 	
-	obj->ProviderValueChanged (precedence, property, NULL, value, true, NULL);
+	MoonError error;
+	obj->ProviderValueChanged (precedence, property, NULL, value, true, &error);
 	
 	return value;
 }

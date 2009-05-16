@@ -1,3 +1,9 @@
+2009-05-15  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightCollectionObject::Invoke): for
+	getItem on a resource dictionary, a string parameter (the key)
+	works as well.
+
 2009-05-13  Jackson Harper  <jackson@ximian.com>
 
 	* plugin.cpp|h: Update params for SetProperty.

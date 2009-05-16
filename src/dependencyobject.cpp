@@ -1242,37 +1242,58 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 	if (error->number)
 		return;
 
+	bool merge_namescope = false;
+	bool register_name = false;
+	bool recurse = false;
+
 	NameScope *this_ns = NameScope::GetNameScope(this);
-	if (this_ns) {
-		if (this_ns->GetTemporary()) {
-			to_ns->MergeTemporaryScope (this_ns, error);
-			ClearValue (NameScope::NameScopeProperty, false);
-		}
-		return;
+
+	if (this_ns && this_ns->GetTemporary()) {
+		merge_namescope = true;
+	}
+	else if (!this_ns) {
+		recurse = true;
+		register_name = true;
+	}
+	else if (IsHydratedFromXaml ()) {
+		register_name = true;
 	}
 
-	const char *n = GetName();
+
+	if (merge_namescope) {
+		to_ns->MergeTemporaryScope (this_ns, error);
+		ClearValue (NameScope::NameScopeProperty, false);
+	}
+
+	if (register_name) {
+		const char *n = GetName();
 		
-	if (n && *n) {
-		DependencyObject *o = to_ns->FindName (n);
-		if (o && o != this) {
-			MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
-					   g_strdup_printf ("The name already exists in the tree: %s.",
-							    n));
-			return;
-		} else if (o == this)
-			return;
-		to_ns->RegisterName (n, this);
+		if (n && *n) {
+			DependencyObject *o = to_ns->FindName (n);
+			if (o) {
+				if (o != this) {
+					MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
+							   g_strdup_printf ("The name already exists in the tree: %s.",
+								    n));
+					return;
+				}
+			}
+			else {
+				to_ns->RegisterName (n, this);
+			}
+		}
 	}
 
-	RegisterNamesClosure closure;
-	closure.to_ns = to_ns;
-	closure.error = error;
+	if (recurse) {
+		RegisterNamesClosure closure;
+		closure.to_ns = to_ns;
+		closure.error = error;
 	
-	if (autocreate)
-		g_hash_table_foreach (autocreate->auto_values, register_depobj_names, &closure);
+		if (autocreate)
+			g_hash_table_foreach (autocreate->auto_values, register_depobj_names, &closure);
 	
-	g_hash_table_foreach (local_values, register_depobj_names, &closure);
+		g_hash_table_foreach (local_values, register_depobj_names, &closure);
+	}
 }
 
 static void
@@ -1526,9 +1547,8 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			new_as_dep->SetSurface (GetSurface ());
 
 			if (setsParent) {
-				MoonError error;
-				new_as_dep->SetParent (this, &error);
-				if (error.number)
+				new_as_dep->SetParent (this, error);
+				if (error->number)
 					return;
 
 				if (new_as_dep->Is(Type::COLLECTION)) {
@@ -1899,20 +1919,12 @@ DependencyObject *
 DependencyObject::FindName (const char *name)
 {
 	NameScope *scope = NameScope::GetNameScope (this);
-	DependencyObject *rv = NULL;
 	
-	if (scope && (rv = scope->FindName (name)))
-		return rv;
+	if (scope)
+		return scope->FindName (name);
 	
 	if (parent)
 		return parent->FindName (name);
-	
-	Surface *surface = GetSurface ();
-	if (surface) {
-		UIElement *toplevel = surface->GetToplevel ();
-		if (toplevel && toplevel != this)
-			return toplevel->FindName (name);
-	}
 	
 	return NULL;
 }
@@ -2006,6 +2018,9 @@ DependencyObject::SetSurface (Surface *s)
 void
 DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 {
+	if (parent == this->parent)
+		return;
+
 #if DEBUG
 	// Check for circular families
 	DependencyObject *current = parent;
@@ -2017,8 +2032,8 @@ DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 		current = current->GetParent ();
 	}
 #endif
-	
-	if (parent != this->parent) {
+
+	if (!this->parent) {
 		if (parent) {
 			NameScope *this_scope = NameScope::GetNameScope(this);
 			NameScope *parent_scope = parent->FindNameScope();
@@ -2035,6 +2050,25 @@ DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 						// there's no parent
 						// namescope, we don't
 						// do anything
+					}
+				}
+				else {
+					// we have a non-temporary scope.  we still have to register the name
+					// of this element (not the ones in the subtree rooted at this element)
+					// in the new parent scope.  we only register the name in the parent scope
+					// if the element was hydrated, not when it was created from a string.
+					if (IsHydratedFromXaml()) {
+						const char *name = GetName();
+						if (parent_scope && name && *name) {
+							DependencyObject *existing_obj = parent_scope->FindName (name);
+							if (existing_obj != this) {
+								if (existing_obj) {
+									MoonError::FillIn (error, MoonError::ARGUMENT, g_strdup_printf ("name `%s' is already registered in new parent namescope.", name));
+									return;
+								}
+								parent_scope->RegisterName (name, this);
+							}
+						}
 					}
 				}
 			}
@@ -2062,20 +2096,17 @@ DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 				}
 			}
 		}
-
-		// the unregistration has to happen after the
-		// registration, in order to make sure
-		// namescope-corner-cases.html (test1) passes.  don't
-		// ask me, it's crazy.
-		if (this->parent) {
+	}
+	else {
+		if (!parent) {
 			NameScope *parent_scope = this->parent->FindNameScope ();
 			if (parent_scope)
 				UnregisterAllNamesRootedAt (parent_scope);
 		}
-
-		if (!error || error->number == 0)
-			this->parent = parent;
 	}
+
+	if (!error || error->number == 0)
+		this->parent = parent;
 }
 
 Value *

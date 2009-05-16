@@ -311,6 +311,8 @@ namespace System.Windows.Browser
 			// TODO: refactor this, the js binder is doing this work already
 			ParameterInfo[] parms = mi.GetParameters ();
 			for (int i = 0; i < parms.Length; i++) {
+				if (args[i] == null)
+					continue;
 				Type jstype = args[i].GetType();
 				Type cstype = parms[i].ParameterType;
 				if (jstype != cstype && Type.GetTypeCode (jstype) != Type.GetTypeCode (cstype)) {
@@ -377,8 +379,13 @@ namespace System.Windows.Browser
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
 			object[] args = new object[arg_count];
 			for (int i = 0; i < arg_count; i++) {
-				Value v = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
-				args[i] = ObjectFromValue<object> (v);
+				if (uargs[i] == IntPtr.Zero) {
+					args[i] = null;
+				}
+				else {
+					Value v = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
+					args[i] = ObjectFromValue<object> (v);
+				}
 			}
 
 			if (method_handle == IntPtr.Zero) {

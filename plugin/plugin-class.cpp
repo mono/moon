@@ -2990,6 +2990,19 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 	case MoonId_GetItem: {
+		if (col->GetObjectType () == Type::RESOURCE_DICTIONARY) {
+			if (check_arg_list ("s", argCount, args)) {
+				// handle the string case here, we
+				// handle the int case in the common
+				// code below.
+				bool unused;
+
+				Value *v = ((ResourceDictionary*)col)->Get (NPVARIANT_TO_STRING (args[0]).utf8characters, &unused);
+				value_to_variant (this, v, result);
+				return true;
+			}
+		}
+
 		if (!check_arg_list ("i", argCount, args))
 			THROW_JS_EXCEPTION ("getItem");
 		

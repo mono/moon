@@ -381,7 +381,6 @@ class XamlElementInstance : public List::Node {
 
 	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value);
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
-	virtual NameScope *GetParentNameScope (XamlParserInfo *p);
 	
 	void SetKey (const char *key) { this->x_key = g_strdup (key); }
 	char *GetKey () { return x_key; }
@@ -998,7 +997,7 @@ class XNamespace : public XamlNamespace {
 			item->SetName (value);
 
 			if (item->IsDependencyObject ()) {
-				NameScope *scope = item->GetParentNameScope (p);
+				NameScope *scope = p->namescope;
 				if (!item->GetAsDependencyObject ()->SetName (value, scope)) {
 					parser_error (p, item->element_name, NULL, 2007,
 						      "You can't specify x:Name along with x:Key, or x:Key twice.");
@@ -2197,8 +2196,10 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 		if (is_legal_top_level_kind (parser_info->top_element->info->GetKind ())) {
 			res = parser_info->top_element->GetAsValue ();
 			res = new Value (*res);
-			if (res->Is (Type::DEPENDENCY_OBJECT) && object)
+			if (res->Is (Type::DEPENDENCY_OBJECT) && object) {
 				res->AsDependencyObject ()->unref ();
+				object->SetIsHydratedFromXaml (true);
+			}
 		}
 
 		if (element_type)
@@ -3712,22 +3713,6 @@ XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, c
 	return true;
 }
 
-NameScope *
-XamlElementInstance::GetParentNameScope (XamlParserInfo *p)
-{
-	XamlElementInstance *walk = parent;
-	while (walk) {
-		if (walk->element_type == XamlElementInstance::ELEMENT && walk->IsDependencyObject ()) {
-			NameScope *ns = walk->GetAsDependencyObject ()->FindNameScope ();
-			if (ns)
-				return ns;
-		}
-		walk = walk->parent;
-	}
-	
-	return p->namescope;
-}
-
 static XamlElementInfo *
 create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name, bool create)
 {
@@ -4619,12 +4604,7 @@ start_parse:
 				// XXX toshok - I don't like doing this here... but it fixes airlines.
 				item->SetKey (attr[i+1]);
 
-				// XXX jackson - This shouldn't be here, it should be somewhere in the Name property
-				// handler, but moving it there doesn't work properly because items are not always parented
-				// so for now I'll set it here, and the case where someone modifies the NameProperty in code
-				// won't work properly (but isn't very common).
-
-				NameScope *scope = item->GetParentNameScope (p);
+				NameScope *scope = p->namescope;
 				if (!item->GetAsDependencyObject ()->SetName (attr [i+1], scope)) {
 					parser_error (p, item->element_name, NULL, 2007,
 						      "You can't specify x:Name along with x:Key, or x:Key twice.");

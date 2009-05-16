@@ -356,6 +356,12 @@ public:
 	/* @PropertyType=string,GenerateAccessors,ManagedDeclaringType=FrameworkElement,Validator=NameValidator,DefaultValue=\"\" */
 	const static int NameProperty;
 	
+	// parser hook.  objects that are parsed using XamlReader.Load
+	// behave differently than those parsed using LoadComponent in
+	// terms of their name registration behavior.
+	void SetIsHydratedFromXaml (bool flag) { is_hydrated = flag; }
+	bool IsHydratedFromXaml () { return is_hydrated; }
+
 protected:
 	virtual ~DependencyObject ();
 	DependencyObject (Deployment *deployment, Type::Kind object_type = Type::DEPENDENCY_OBJECT);
@@ -391,6 +397,7 @@ private:
 	DependencyObject  *parent;
 
 	bool is_frozen;
+	bool is_hydrated;
 };
 
 #endif /* __MONO_DEPOBJECT_H__ */
