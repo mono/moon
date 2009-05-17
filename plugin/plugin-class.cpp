@@ -3927,6 +3927,8 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 	/* Note: this 1 is "void" */
 	if (method->method_return_type != 0)
 		value_to_variant (this, &rv, result);
+	else
+		VOID_TO_NPVARIANT (*result);
 	
 	NPN_MemFree (strname);
 	return true;

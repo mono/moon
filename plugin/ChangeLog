@@ -1,3 +1,8 @@
+2009-05-17  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.cpp: If a managed method called from js returns
+	void, create a valid NPVariant_Void return object
+
 2009-05-15  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (MoonlightCollectionObject::Invoke): for
