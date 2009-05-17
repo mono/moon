@@ -1,3 +1,8 @@
+2009-05-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add policy code and reference to System.Core and
+	System.Xml
+
 2009-05-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Remove common files from build (they are available

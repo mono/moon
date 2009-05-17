@@ -28,6 +28,8 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebResponse.cs		\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebAsyncResult.cs		\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebRequestStream.cs		\
+	$(srcdir)/System.Windows.Browser.Net/ClientAccessPolicy.cs		\
+	$(srcdir)/System.Windows.Browser.Net/CrossDomainPolicyManager.cs	\
 	$(srcdir)/System.Windows.Browser/BrowserInformation.cs			\
 	$(srcdir)/System.Windows.Browser/HtmlDocument.cs				\
 	$(srcdir)/System.Windows.Browser/HtmlElement.cs				\
@@ -65,7 +67,7 @@ CLEANFILES =			\
 
 $(assemblysl_raw): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll
 	-mkdir -p ../lib/2.1_raw
-	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Net -keyfile:$(srcdir)/../silverlight.pub -delaysign+
+	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Core -r:System.Net -r:System.Xml -keyfile:$(srcdir)/../silverlight.pub -delaysign+
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 LINKER = ../lib/tuner/monolinker.exe
