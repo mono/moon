@@ -302,3 +302,9 @@ url:http://www.office2010themovie.com/
 rating:1
  * Video keeps jumping back
  * Artifacts on the sides
+
+site:Socket based Silverlight Chat Application
+url:http://www.michielpost.nl/PostDetail_7.aspx
+rating:3
+ * Text boxes and "Send" button at bottom are to big (height)
+

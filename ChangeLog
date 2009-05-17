@@ -1,3 +1,7 @@
+2009-05-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* demo-status.txt: Add sample application that uses sockets
+
 2009-05-06  Raja R Harinath  <harinath@hurrynot.org>
 
 	* Makefile.am (ACLOCAL_AMFLAGS): Add.
