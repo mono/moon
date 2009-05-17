@@ -1,3 +1,8 @@
+2008-05-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.manual: Socket.CheckConnect must use reflection to
+	call the CrossDomainPolicyManager
+
 2008-05-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: Add an SC to Delegate.DynamicInvokeImpl
