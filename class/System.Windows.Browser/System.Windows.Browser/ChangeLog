@@ -1,3 +1,16 @@
+2009-05-18  Andreia Gaita  <avidigal@novell.com>
+
+	* BrowserInformation.cs, HtmlDocument.cs, HtmlElement.cs,
+	  HtmlObject.cs, ScriptObject.cs, ScriptObjectCollection.cs:
+	Simplify calls, avoid passing handles explicitely, exercise
+	the public API as much as possible. Move internal helpers
+	from HtmlObject to ScriptObject
+
+	* HtmlWindow.cs, ScriptableObjectWrapper.cs:
+	Rewrite the type conversion to target the requested type whenever
+	possible. Concentrate all the conversions in one place, kill
+	duplicated code.
+
 2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* HtmlPage.cs: Updated according to API changes.

@@ -29,6 +29,7 @@
 using System.ComponentModel;
 using System.Windows.Threading;
 using System.Collections.Generic;
+using Mono;
 
 namespace System.Windows.Browser {
 	public class ScriptObject {
@@ -62,7 +63,7 @@ namespace System.Windows.Browser {
 
 		public virtual void SetProperty (string name, object value)
 		{
-			HtmlObject.SetPropertyInternal (handle, name, value);
+			SetPropertyInternal (name, value);
 		}
 
 		public void SetProperty (int index, object value)
@@ -72,23 +73,7 @@ namespace System.Windows.Browser {
 
 		public virtual object GetProperty (string name)
 		{
-			object result;
-
-			result = HtmlObject.GetPropertyInternal <object> (handle, name);
-
-			if (result != null) {
-				if (result is int) {
-					// When the target type is object, SL converts ints to doubles to wash out
-					// browser differences. (Safari apparently always returns doubles, FF
-					// ints and doubles, depending on the value).
-					// See: http://msdn.microsoft.com/en-us/library/cc645079(VS.95).aspx
-					result = (double) (int) result;
-				} else if (result is IntPtr) {
-					result = new ScriptObject ((IntPtr)result);
-				}
-			}
-
-			return result;
+			return GetPropertyInternal <object> (name);
 		}
 
 		public object GetProperty (int index)
@@ -111,12 +96,12 @@ namespace System.Windows.Browser {
 
 		public virtual object Invoke (string name, params object [] args)
 		{
-			return HtmlObject.InvokeInternal <object> (handle, name, args);
+			return InvokeInternal <object> (name, args);
 		}
 
 		public virtual object InvokeSelf (params object [] args)
 		{
-			return HtmlObject.InvokeInternal <object> (handle, args);
+			return InvokeInternal <object> (args);
 		}
 
 		protected void Initialize (IntPtr handle, IntPtr identity, bool addReference, bool releaseReferenceOnDispose)
@@ -139,5 +124,70 @@ namespace System.Windows.Browser {
 		public Dispatcher Dispatcher {
 			get { return Dispatcher.Main; }
 		}
+
+		internal static T GetPropertyInternal<T> (IntPtr h, string name)
+		{
+			Mono.Value res;
+			NativeMethods.html_object_get_property (WebApplication.Current.PluginHandle, h, name, out res);
+			if (res.k != Mono.Kind.INVALID)
+				return (T)ScriptableObjectWrapper.ObjectFromValue<T> (res);
+			return default (T);
+		}
+
+		internal T GetPropertyInternal<T> (string name)
+		{
+			Mono.Value res;
+			NativeMethods.html_object_get_property (WebApplication.Current.PluginHandle, handle, name, out res);
+			if (res.k != Mono.Kind.INVALID)
+				return (T)ScriptableObjectWrapper.ObjectFromValue<T> (res);
+			return default (T);
+		}
+
+		internal static void SetPropertyInternal (IntPtr h, string name, object value)
+		{
+			Mono.Value dp = new Mono.Value ();
+			ScriptableObjectWrapper.ValueFromObject (ref dp, value);
+			NativeMethods.html_object_set_property (WebApplication.Current.PluginHandle, h, name, ref dp);
+		}
+
+		protected void SetPropertyInternal (string name, object value)
+		{
+			Mono.Value dp = new Mono.Value ();
+			ScriptableObjectWrapper.ValueFromObject (ref dp, value);
+			NativeMethods.html_object_set_property (WebApplication.Current.PluginHandle, handle, name, ref dp);
+		}
+
+		protected T InvokeInternal<T> (string name, params object [] args)
+		{
+			Mono.Value res;
+			Mono.Value [] vargs = new Mono.Value [args.Length];
+
+			for (int i = 0; i < args.Length; i++)
+				ScriptableObjectWrapper.ValueFromObject (ref vargs [i], args [i]);
+
+			NativeMethods.html_object_invoke (WebApplication.Current.PluginHandle, handle, name, vargs, (uint)args.Length, out res);
+
+			if (res.k != Mono.Kind.INVALID)
+				return (T)ScriptableObjectWrapper.ObjectFromValue<T> (res);
+
+			return default (T);
+		}
+
+		protected T InvokeInternal<T> (params object [] args)
+		{
+			Mono.Value res;
+			Mono.Value [] vargs = new Mono.Value [args.Length];
+
+			for (int i = 0; i < args.Length; i++)
+				ScriptableObjectWrapper.ValueFromObject (ref vargs [i], args [i]);
+
+			NativeMethods.html_object_invoke_self (WebApplication.Current.PluginHandle, handle, vargs, (uint)args.Length, out res);
+
+			if (res.k != Mono.Kind.INVALID)
+				return (T)ScriptableObjectWrapper.ObjectFromValue<T> (res);
+
+			return default (T);
+		}
+
 	}
 }

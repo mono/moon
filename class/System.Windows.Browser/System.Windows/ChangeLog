@@ -1,3 +1,8 @@
+2009-05-18  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectGenerator.cs: Add TryChangeType to the js binder,
+	to make argument validation easier
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* WebApplication.cs: Generate all P/Invoke methods.

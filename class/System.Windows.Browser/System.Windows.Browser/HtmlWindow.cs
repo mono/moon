@@ -51,15 +51,7 @@ namespace System.Windows.Browser
 			
 			if (result != IntPtr.Zero) {
 				Value v = (Value)Marshal.PtrToStructure (result, typeof (Value));
-				object o = ScriptableObjectWrapper.ObjectFromValue<object> (v);
-				if (o is int) {
-					// When the target type is object, SL converts ints to doubles to wash out
-					// browser differences. (Safari apparently always returns doubles, FF
-					// ints and doubles, depending on the value).
-					// See: http://msdn.microsoft.com/en-us/library/cc645079(VS.95).aspx
-					o = (double) (int) o;
-				}
-				return o;
+				return ScriptableObjectWrapper.ObjectFromValue<object> (v);
 			}
 			return null;
 		}

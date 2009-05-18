@@ -1,3 +1,8 @@
+2009-05-18  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: CreateableTypeTest
+	is now failing, TypeTest is now passing. :P
+
 2009-05-18  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/FrameworkElementTest.cs: Add a test which

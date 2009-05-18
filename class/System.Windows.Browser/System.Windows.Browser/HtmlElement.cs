@@ -43,22 +43,22 @@ namespace System.Windows.Browser
 
 		public void AppendChild (HtmlElement element)
 		{
-			InvokeInternal<object> (Handle, "appendChild", element);
+			Invoke ("appendChild", element);
 		}
 
 		public void AppendChild (HtmlElement element, HtmlElement referenceElement)
 		{
-			InvokeInternal<object> (Handle, "insertBefore", element, referenceElement);
+			Invoke ("insertBefore", element, referenceElement);
 		}
 
 		public void Focus ()
 		{
-			InvokeInternal<object> (Handle, "focus");
+			Invoke ("focus");
 		}
 
 		public string GetAttribute (string name)
 		{
-			return InvokeInternal<string> (Handle, "getAttribute", name);
+			return (string) Invoke ("getAttribute", name);
 		}
 
 		[MonoTODO]
@@ -71,7 +71,7 @@ namespace System.Windows.Browser
 				return null;
 			}
 
-			object result = HtmlObject.GetPropertyInternal<object> (style, name);
+			object result = GetPropertyInternal<object> (style, name);
 
 			//Console.WriteLine ("HtmlElement.GetStyleAttribute ('{0}'): {1} {2}", name, result, result == null ? null : result.GetType ());
 			
@@ -97,36 +97,36 @@ namespace System.Windows.Browser
 
 		public void SetAttribute (string name, string value)
 		{
-			InvokeInternal<object> (Handle, "setAttribute", name, value);
+			InvokeInternal<object> ("setAttribute", name, value);
 		}
 
 		[MonoTODO ("This doesn't seem to work.")]
 		public void SetStyleAttribute (string name, string value)
 		{
-			IntPtr style = GetPropertyInternal<IntPtr> (Handle, "style");
+			IntPtr style = GetPropertyInternal<IntPtr> ("style");
 			SetPropertyInternal (style, name, value);
 		}
 
 		public ScriptObjectCollection Children {
-			get { return new ScriptObjectCollection (GetPropertyInternal<IntPtr> (Handle, "childNodes")); }
+			get { return new ScriptObjectCollection (GetPropertyInternal<IntPtr> ("childNodes")); }
 		}
 
 		public string CssClass {
-			get { return GetPropertyInternal<string> (Handle, "class"); }
-			set { SetPropertyInternal (Handle, "class", value); }
+			get { return GetPropertyInternal<string> ("class"); }
+			set { SetPropertyInternal ("class", value); }
 		}
 
 		public string Id {
-			get { return GetPropertyInternal<string> (Handle, "id"); }
-			set { SetPropertyInternal (Handle, "id", value); }
+			get { return GetPropertyInternal<string> ("id"); }
+			set { SetPropertyInternal ("id", value); }
 		}
 
 		public HtmlElement Parent {
-			get { return new HtmlElement (GetPropertyInternal<IntPtr> (Handle, "parentNode")); }
+			get { return new HtmlElement (GetPropertyInternal<IntPtr> ("parentNode")); }
 		}
 
 		public string TagName {
-			get { return GetPropertyInternal<string> (Handle, "tagName"); }
+			get { return GetPropertyInternal<string> ("tagName"); }
 		}
 	}
 }

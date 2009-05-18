@@ -18,23 +18,20 @@ namespace System.Windows.Browser
 {
 	public sealed class ScriptObjectCollection : ScriptObject, IEnumerable, IEnumerable<ScriptObject>
 	{
-		private IntPtr node_list;
-
-		internal ScriptObjectCollection (IntPtr nodeList)
+		internal ScriptObjectCollection (IntPtr handle) : base (handle)
 		{
-			this.node_list = nodeList;
 		}
 
 		public int Count {
 			get {
-				return HtmlObject.GetPropertyInternal<int> (node_list, "length");
+				return GetPropertyInternal<int> ("length");
 			}
 		}
 
 		public ScriptObject this [int i] {
 			// is this approach (creating HtmlElement every time) bogus?
 			get {
-				return new HtmlElement (HtmlObject.InvokeInternal<IntPtr> (node_list, "item", i));
+				return new HtmlElement (InvokeInternal<IntPtr> ("item", i));
 			}
 		}
 

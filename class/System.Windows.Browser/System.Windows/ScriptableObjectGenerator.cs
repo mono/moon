@@ -55,17 +55,28 @@ namespace System.Windows
 
 		public override object ChangeType (object value, Type type, CultureInfo culture)
 		{
+			object ret;
+			if (!TryChangeType (value, type, culture, out ret))
+				throw new NotSupportedException ();
+			return ret;
+		}
+
+		public bool TryChangeType (object value, Type type, CultureInfo culture, out object ret)
+		{
+			ret = value;
+
 			if (value == null)
-				return null;
+				return true;
 
 			if (value.GetType() == type)
-				return value;
+				return true;
 
 			if (type.IsEnum) {
 				try {
-					return Enum.Parse (type, value.ToString(), true);
+					ret = Enum.Parse (type, value.ToString(), true);
+					return true;
 				} catch {
-					throw new NotSupportedException ();
+					return false;
 				}
 			}
 
@@ -73,7 +84,8 @@ namespace System.Windows
 			 * very, very small, so we switch over the
 			 * parameter type first */
 			try {
-				return Convert.ChangeType (value, type, culture);
+				ret = Convert.ChangeType (value, type, culture);
+				return true;
 			}
 			catch {
 				// no clue if this is right.. if we
@@ -92,17 +104,19 @@ namespace System.Windows
 				case TypeCode.UInt64:
 				case TypeCode.Single:
 				case TypeCode.Double:
-					return Convert.ChangeType (0, type, culture);
-
+					ret = Convert.ChangeType (0, type, culture);
+					return true;
 				case TypeCode.String:
-					return "";
+					ret = "";
+					return true;
 
 				case TypeCode.Boolean:
-					return false;
+					ret = false;
+					return true;
 				}
 			}
 
-			throw new NotSupportedException ();
+			return false;
 		}
 
 		public override void ReorderArgumentArray (ref object [] args, object state)
@@ -197,7 +211,7 @@ namespace System.Windows
 // 				Console.WriteLine ("event handler type = {0}", ei.EventHandlerType);
 // 				Console.WriteLine ("typeof (EventHandler<>) == {0}", typeof (EventHandler<>));
 
-				if (ei.EventHandlerType != typeof (EventHandler) && 
+				if (ei.EventHandlerType != typeof (EventHandler) &&
 					typeof (EventHandler<>).IsAssignableFrom (ei.EventHandlerType)) {
 					if (!ValidateType (ei.EventHandlerType)) {
 						throw new NotSupportedException (

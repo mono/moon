@@ -63,7 +63,7 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		public void AA_PropertiesTest () {	
+		public void AA_PropertiesTest () {
 			HtmlDocument document = HtmlPage.Document;
 
 			var c = content.GetProperty("calc") as ScriptObject;
@@ -84,7 +84,7 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[Ignore]
+		[MoonlightBug]
 		public void CreateableTypeTest () {
 			window.Eval ("createabletype = plugin.content.services.createObject ('createable');");
 			window.Eval ("createabletype.MethodAdd ()");
@@ -98,7 +98,6 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-
 		public void Invoke () {
 			var calc = content.GetProperty ("calc") as ScriptObject;
 			var a = calc.Invoke ("Add", 5, 1);
@@ -249,7 +248,6 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void TypeTest ()
 		{
 			object a;

@@ -24,6 +24,8 @@
 //
 
 using System;
+using System.ComponentModel;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Browser;
@@ -195,7 +197,7 @@ namespace System.Windows.Browser
 		internal static T CreateInstance<T> (IntPtr ptr)
 		{
 			ConstructorInfo i = typeof(T).GetConstructor (BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
-			                          null, new Type[]{typeof(IntPtr)}, null);
+						null, new Type[]{typeof(IntPtr)}, null);
 
 			object o = i.Invoke (new object[]{ptr});
 			WebApplication.CachedObjects[ptr] = o;
@@ -204,22 +206,46 @@ namespace System.Windows.Browser
 
 		internal static object ObjectFromValue<T> (Value v)
 		{
+			// When the target type is object, SL converts ints to doubles to wash out
+			// browser differences. (Safari apparently always returns doubles, FF
+			// ints and doubles, depending on the value).
+			// See: http://msdn.microsoft.com/en-us/library/cc645079(VS.95).aspx
+
+			Type type = typeof (T);
+			bool isobject = type.Equals (typeof(object));
+
 			switch (v.k) {
 			case Kind.BOOL:
 				return v.u.i32 != 0;
 			case Kind.UINT64:
+				if (isobject)
+					return (double) v.u.ui64;
+				else if (type.IsAssignableFrom (typeof (UInt64)))
+					return Convert.ChangeType (v.u.i64, type, null);
 				return v.u.ui64;
 			case Kind.INT32:
+				if (isobject)
+					return (double) v.u.i32;
+				else if (type.IsAssignableFrom (typeof (Int32)))
+					return Convert.ChangeType (v.u.i32, type, null);
 				return v.u.i32;
 			case Kind.INT64:
+				if (isobject)
+					return (double) v.u.i64;
+				else if (type.IsAssignableFrom (typeof (Int64)))
+					return Convert.ChangeType (v.u.i64, type, null);
 				return v.u.i64;
 			case Kind.DOUBLE:
 				return v.u.d;
 			case Kind.STRING:
-				return Marshal.PtrToStringAnsi (v.u.p);
+				string s = Marshal.PtrToStringAnsi (v.u.p);
+				if (isobject || type.Equals (typeof (string)))
+					return s;
+				else if (type.Equals (typeof(DateTime)))
+					return DateTime.Parse (s);
+				return Convert.ChangeType (s, type, null);
 			case Kind.NPOBJ:
 				// FIXME: Move all of this one caller up
-				Type type = typeof (T);
 				if (type.Equals (typeof(IntPtr)))
 				    return v.u.p;
 
@@ -313,8 +339,14 @@ namespace System.Windows.Browser
 			for (int i = 0; i < parms.Length; i++) {
 				if (args[i] == null)
 					continue;
-				Type jstype = args[i].GetType();
+
 				Type cstype = parms[i].ParameterType;
+				JSFriendlyMethodBinder binder = new JSFriendlyMethodBinder ();
+				object ret;
+				if (binder.TryChangeType (args[i], cstype, CultureInfo.CurrentUICulture, out ret))
+					continue;
+
+				Type jstype = args[i].GetType();
 				if (jstype != cstype && Type.GetTypeCode (jstype) != Type.GetTypeCode (cstype)) {
 					switch (Type.GetTypeCode (jstype)) {
 						case TypeCode.Int32:
@@ -371,7 +403,7 @@ namespace System.Windows.Browser
 				}
 			}
 		}
-		
+
 		static void InvokeFromUnmanaged (IntPtr obj_handle, IntPtr method_handle, string name, IntPtr[] uargs, int arg_count, ref Value return_value)
 		{
 			//Console.WriteLine ("Invoke " + name);
