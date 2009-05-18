@@ -419,9 +419,14 @@ namespace MoonTest.System.Windows.Controls {
 
 			DependencyObject container = poker.Call_GetContainerForItemOverride ();
 			Assert.IsTrue (container is ListBoxItem, "container is listboxitem");
+			Assert.IsNull (((ListBoxItem) container).Style, "null style");
 			Assert.IsNull (((ListBoxItem)container).Content, "content is null");
 			Assert.IsFalse (((ListBoxItem)container).IsSelected, "!isselected");
 			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (container), "no children"); // its template hasn't been applied
+
+			poker.ItemContainerStyle = new Style (typeof (ListBoxItem));
+			container = poker.Call_GetContainerForItemOverride ();
+			Assert.AreEqual (poker.ItemContainerStyle, ((ListBoxItem) container).Style, "style applied");
 		}
 
 		[TestMethod]

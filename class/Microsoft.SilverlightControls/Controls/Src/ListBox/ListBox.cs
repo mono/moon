@@ -70,11 +70,6 @@ namespace System.Windows.Controls
         private Dictionary<object, ListBoxItem> _objectToListBoxItem; 
 
         /// <summary>
-        /// Set to true iff the ProcessingSelectionPropertyChange method is executing (to prevent recursion)
-        /// </summary> 
-        private bool _processingSelectionPropertyChange;
-
-        /// <summary>
         /// Tracks the ListBoxItem that just lost focus. 
         /// </summary>
         private ListBoxItem _listBoxItemOldFocus;
@@ -110,7 +105,7 @@ namespace System.Windows.Controls
         /// <param name="value">The value to set.</param>
         private static void SetIsSelectionActive(ListBox box, bool value) 
         {
-            box .SetValueImpl (IsSelectionActiveProperty, value);
+            box.SetValueImpl (IsSelectionActiveProperty, value);
         }
  
         /// <summary> 

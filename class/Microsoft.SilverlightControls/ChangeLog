@@ -1,5 +1,9 @@
 2009-05-18  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ListBox/ListBox.cs: Nuke an old variable.
+
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ListBox/ListBox.cs: Nuke a bunch of depreciated
 	  code from ListBox and fix the implementation of
 	  IsSelectionActive to use DependencyProperty.RegisterReadOnly
