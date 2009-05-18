@@ -1,3 +1,8 @@
+2009-05-16  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Data/BindingTest.cs (XamlBindWithContent2):
+	removing the MoonlightBug.
+
 2009-05-16  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: Add type

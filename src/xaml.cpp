@@ -281,7 +281,8 @@ XamlContext::GetTemplateBindingSource ()
 class XamlElementInfo {
  protected:
 	Type::Kind kind;
-	
+	bool cdata_verbatim;
+
  public:
 	XamlElementInfo *parent;
 	const char *name;
@@ -291,6 +292,7 @@ class XamlElementInfo {
 		this->parent = NULL;
 		this->kind = kind;
 		this->name = name;
+		this->cdata_verbatim = false;
 	}
 
 	~XamlElementInfo ()
@@ -304,6 +306,16 @@ class XamlElementInfo {
 		if (t)
 			return t->GetContentPropertyName ();
 		return NULL;
+	}
+
+	void SetIsCDataVerbatim (bool flag)
+	{
+		cdata_verbatim = flag;
+	}
+
+	bool IsCDataVerbatim ()
+	{
+		return cdata_verbatim;
 	}
 
 	virtual XamlElementInstance *CreateElementInstance (XamlParserInfo *p) = 0;
@@ -1106,7 +1118,11 @@ class PrimitiveNamespace : public XamlNamespace {
 	{
 		if (!strcmp ("String", el)) {
 			Type* t = Type::Find (Type::STRING);
-			return new XamlElementInfoNative (t);
+			// it's not as easy in this case, because primitive clr strings require that the
+			// character data be read in verbatim, including all whitespace.
+			XamlElementInfo *info = new XamlElementInfoNative (t);
+			info->SetIsCDataVerbatim (true);
+			return info;
 		} else if (!strcmp ("Int32", el)) {
 			Type* t = Type::Find (Type::INT32);
 			return new XamlElementInfoNative (t);
@@ -1798,6 +1814,15 @@ char_data_handler (void *data, const char *in, int inlen)
 	if (p->error_args)
 		return;
 	
+	if (p->current_element && p->current_element->info->IsCDataVerbatim()) {
+		if (!p->cdata)
+			p->cdata = g_string_new ("");
+			
+		g_string_append_len (p->cdata, inptr, inlen);
+		p->cdata_content = true;
+		return;
+	}
+
 	if (!p->cdata) {
 		p->cdata = g_string_new ("");
 		
