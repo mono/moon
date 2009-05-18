@@ -30,7 +30,7 @@ typedef gint32   (*Stream_Read)     (void *handle,  void *buffer, gint32 offset,
 typedef void     (*Stream_Write)    (void *handle,  void *buffer, gint32 offset, gint32 count);
 typedef void     (*Stream_Seek)     (void *handle, gint64 offset, gint32 origin);
 
-typedef struct {
+struct ManagedStreamCallbacks {
         void *handle;
         Stream_CanSeek CanSeek;
         Stream_CanRead CanRead;
@@ -39,7 +39,7 @@ typedef struct {
         Stream_Read Read;
         Stream_Write Write;
         Stream_Seek Seek;
-} ManagedStreamCallbacks;
+};
 
 gpointer managed_stream_open_func (gpointer context, const char *filename, int mode);
 

@@ -1,5 +1,9 @@
 2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* utils.h: Use c++-style structs to please the generator.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* window-gtk.h: Add a GetNativeWidget which returns a void
 	pointer instead of GtkWidget* so that we don't need to include
 	gtk for the c bindings.
