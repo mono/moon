@@ -1,3 +1,16 @@
+2009-05-16  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h:
+	* animation.h:
+	* cbinding.cpp:
+	* animation.cpp:
+	* application.h:
+	* application.cpp:
+	* dependencyproperty.g.cpp: Add type converting to
+	  ObjectKeyFrame. The conversion is done during the Resolve
+	  phase. If the type conversion can't be completed an
+	  exception is thrown.
+
 2009-05-15  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Use the property element's type instead of parsing out

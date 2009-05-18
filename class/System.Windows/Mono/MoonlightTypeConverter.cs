@@ -33,6 +33,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Reflection;
 
 namespace Mono {
 
@@ -74,9 +75,19 @@ namespace Mono {
 			if (destinationType == typeof (object))
 				return value;
 
-			if (value is string) {
+			string str_val = value as String;
+			if (str_val != null) {
 				if (destinationType.IsEnum)
-					return Enum.Parse (destinationType, (string)value, true);
+					return Enum.Parse (destinationType, str_val, true);
+				
+				if (destinationType == typeof (GridLength)) {
+					if (str_val == "Auto")
+						return new GridLength (1, GridUnitType.Auto);
+					else if (str_val == "*")
+						return new GridLength (1, GridUnitType.Star);
+					else
+						return new GridLength (double.Parse (str_val), GridUnitType.Pixel);
+				}
 				
 				Kind k = destinationKind;
 
@@ -94,12 +105,12 @@ namespace Mono {
 
 				if (!NativeMethods.value_from_str (k,
 								   propertyName,
-								   (string)value,
+								   str_val,
 								   out unmanaged_value)) {
 					Console.WriteLine ("could not convert value {0} to type {1} (property {1})", value, destinationType, propertyName);
 					return base.ConvertFrom (context, culture, value);
 				}
-			
+
 				return Value.ToObject (destinationType, unmanaged_value);
 				// XXX this leaks unmanaged_value?
 			}
@@ -154,6 +165,44 @@ namespace Mono {
 				return Convert.ToUInt64 (value);
 			return null;
 		}
-	}
 
+		public static object ConvertObject (DependencyProperty dp, object val, Type objectType)
+		{
+			// Should i return default(T) if property.PropertyType is a valuetype?
+			if (val == null)
+				return val;
+			
+			if (dp.PropertyType.IsAssignableFrom (val.GetType ()))
+				return val;
+
+			if (dp.PropertyType == typeof (string))
+				return val.ToString ();
+			
+			TypeConverter tc = null;
+			
+			if (dp.IsAttached) {
+				tc = Helper.GetConverterFor (null, dp.PropertyType);
+			}
+			else if (objectType != null) {
+				PropertyInfo pi = objectType.GetProperty (dp.Name);
+				if (pi == null) {
+					Console.WriteLine ("+ failed to look up CLR property wrapper");
+					Console.WriteLine ("+ TargetType = {0}, property = {1}.{2}", objectType, dp.DeclaringType, dp.Name);
+					throw new Exception ("foo3");
+				}
+				
+				tc = Helper.GetConverterFor (pi, pi.PropertyType);
+				if (tc == null)
+					tc = new MoonlightTypeConverter (pi.Name, pi.PropertyType);
+			}
+			
+			if (tc == null)
+				tc = new MoonlightTypeConverter (dp.Name, dp.PropertyType);
+			
+			if (!tc.CanConvertFrom (val.GetType()))
+				throw new Exception (string.Format ("type converter {0} can't convert from type {1}", tc.GetType(), val.GetType()));
+
+			return tc.ConvertFrom (val);
+		}
+	}
 }

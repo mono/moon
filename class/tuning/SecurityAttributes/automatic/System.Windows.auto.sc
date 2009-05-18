@@ -1043,7 +1043,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::xap_unpack_(System.String)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.ApplyDefaultStyleCallback,Mono.ApplyStyleCallback,Mono.GetResourceCallback)
++SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.ApplyDefaultStyleCallback,Mono.ApplyStyleCallback,Mono.GetResourceCallback,Mono.ConvertKeyframeValueCallback)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_set_current(System.IntPtr)

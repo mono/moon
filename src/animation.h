@@ -148,7 +148,7 @@ public:
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 
 
-	virtual void Resolve () { };
+	virtual bool Resolve (DependencyObject *target, DependencyProperty *property) { return true; };
 
 	/* The kind of values this animation generates */
 	virtual Type::Kind GetValueKind () { return Type::INVALID; };
@@ -471,11 +471,15 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	ObjectKeyFrame ();
 	
+	/* @PropertyType=object,GenerateAccessors,GenerateManagedAccessors=false,ManagedFieldAccess=Internal */
+	const static int ConvertedValueProperty;
 	/* @PropertyType=object,ManagedPropertyType=object */
 	const static int ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
 	const static int KeyTimeProperty;
 
+	Value *GetConvertedValue ();
+	void SetConvertedValue (Value *value);
 	Value *GetValue ();
 
 	virtual KeyTime *GetKeyTime ();
@@ -754,7 +758,7 @@ public:
 	
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock *animationClock);
-	virtual void Resolve ();
+	virtual bool Resolve (DependencyObject *target, DependencyProperty *property);
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 
@@ -785,7 +789,7 @@ public:
 	
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock *animationClock);
-	virtual void Resolve ();
+	virtual bool Resolve (DependencyObject *target, DependencyProperty *property);
 	
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 	
@@ -822,7 +826,7 @@ public:
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 
-	virtual void Resolve ();
+	virtual bool Resolve (DependencyObject *target, DependencyProperty *property);
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 	virtual bool Validate ();
@@ -848,7 +852,7 @@ public:
 	
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock *animationClock);
-	virtual void Resolve ();
+	virtual bool Resolve (DependencyObject *target, DependencyProperty *property);
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 

@@ -73,7 +73,7 @@ Application *application_new (void);
 Application *application_get_current (void);
 
 /* @GeneratePInvoke */
-void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb);
+void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
 
 /* @GeneratePInvoke */
 void application_set_current (Application *current);

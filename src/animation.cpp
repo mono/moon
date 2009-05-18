@@ -449,8 +449,11 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 		if (clock->Is(Type::ANIMATIONCLOCK)) {
 			Animation *animation = (Animation*)timeline;
 
-			animation->Resolve ();
-
+			if (!animation->Resolve (realTargetObject, prop)) {
+				MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Storyboard value could not be converted to the correct type");
+				return false;
+			}
+			
 			if (!((AnimationClock*)clock)->HookupStorage (realTargetObject, prop))
 				return false;
 		}
@@ -1672,10 +1675,11 @@ DoubleAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 		return Duration (0);
 }
 
-void
-DoubleAnimationUsingKeyFrames::Resolve ()
+bool
+DoubleAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProperty *property)
 {
 	KeyFrameAnimation_ResolveKeyFrames (this, GetKeyFrames ());
+	return true;
 }
 
 bool
@@ -1776,10 +1780,11 @@ ColorAnimationUsingKeyFrames::GetNaturalDurationCore (Clock *clock)
 		return Duration (0);
 }
 
-void
-ColorAnimationUsingKeyFrames::Resolve ()
+bool
+ColorAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProperty *property)
 {
 	KeyFrameAnimation_ResolveKeyFrames (this, GetKeyFrames ());
+	return true;
 }
 
 bool
@@ -1880,10 +1885,11 @@ PointAnimationUsingKeyFrames::GetNaturalDurationCore (Clock* clock)
 		return Duration (0);
 }
 
-void
-PointAnimationUsingKeyFrames::Resolve ()
+bool
+PointAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProperty *property)
 {
 	KeyFrameAnimation_ResolveKeyFrames (this, GetKeyFrames ());
+	return true;
 }
 
 bool
@@ -1928,7 +1934,7 @@ DiscreteObjectKeyFrame::~DiscreteObjectKeyFrame ()
 Value*
 DiscreteObjectKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress)
 {
-	Value *to = GetValue();
+	Value *to = GetConvertedValue ();
 
 	if (to && keyFrameProgress == 1.0)
 		return new Value (*to);
@@ -1961,10 +1967,28 @@ ObjectAnimationUsingKeyFrames::RemoveKeyFrame (ObjectKeyFrame *frame)
 	key_frames->Remove (frame);
 }
 
-void
-ObjectAnimationUsingKeyFrames::Resolve ()
+bool
+ObjectAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProperty *property)
 {
-	KeyFrameAnimation_ResolveKeyFrames (this, GetKeyFrames ());
+	ObjectKeyFrameCollection *frames = (ObjectKeyFrameCollection *) GetKeyFrames ();
+	for (int i = 0; i < frames->GetCount (); i++) {
+		ObjectKeyFrame *frame = frames->GetValueAt (i)->AsObjectKeyFrame ();
+		
+		Value converted;
+		if (frame->GetValue ()) {
+			Application::GetCurrent ()->ConvertKeyframeValue (target->GetType ()->GetKind (), property, frame->GetValue (), &converted);
+		
+			if (converted.GetKind () == Type::INVALID) {
+				printf ("Couldn't convert value.\n");
+				return false;
+			}
+			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, converted);
+		} else {
+			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, NULL);
+		}
+	}
+	KeyFrameAnimation_ResolveKeyFrames (this, frames);
+	return true;
 }
 
 Value*
@@ -1995,7 +2019,7 @@ ObjectAnimationUsingKeyFrames::GetCurrentValue (Value *defaultOriginValue, Value
 		key_start_time = 0;
 	} else {
 		/* start at the previous keyframe's target value */
-		baseValue = new Value (*previous_keyframe->GetValue ());
+		baseValue = new Value (*previous_keyframe->GetConvertedValue ());
 		deleteBaseValue = true;
 		key_start_time = previous_keyframe->resolved_keytime;
 	}

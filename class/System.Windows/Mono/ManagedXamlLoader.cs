@@ -247,7 +247,7 @@ namespace Mono.Xaml
 			Kind kind;
 			Type type = string.IsNullOrEmpty (type_name) ? null : TypeFromString (parser, top_level, type_name);
 			if (type != null) {
-				EnsureRegistered (type);
+				Types.Ensure (type);
 				kind = Deployment.Current.Types.TypeToNativeKind (type);
 			} else {
 				kind = fwe.GetKind ();
@@ -802,23 +802,12 @@ namespace Mono.Xaml
 				target_type = TypeFromString (parser, top_level, type_name);
 			}
 			
-			EnsureRegistered (target_type);
+			Types.Ensure (target_type);
 
 			ManagedType mt = Deployment.Current.Types.Find (target_type);
 			DependencyProperty dp = DependencyProperty.Lookup ((Kind) mt.native_handle, str_value);
 
 			return dp;
-		}
-		
-		void EnsureRegistered (Type type)
-		{
-			//
-			// Yup, we have to call Initialize to make sure that the DPs get registered
-			//
-			while (type != typeof (object)) {
-				System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor (type.TypeHandle);
-				type = type.BaseType;
-			}	
 		}
 		
 		private bool SetPropertyFromValue (IntPtr parser, IntPtr top_level, object target, IntPtr target_data, IntPtr target_parent_ptr, PropertyInfo pi, IntPtr value_ptr, IntPtr value_data, out string error)

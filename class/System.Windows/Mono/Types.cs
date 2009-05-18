@@ -50,6 +50,7 @@ namespace Mono
 		{
 			native = raw;
 			CreateNativeTypes ();
+			DateTime start = DateTime.Now;
 #if SANITY
 			foreach (Kind k in Enum.GetValues (typeof (Kind))) {
 				Type t = KindToType (k);
@@ -103,8 +104,18 @@ namespace Mono
 			
 			return RegisterType (type, parent);
 		}
-		
 
+	 	internal static void Ensure (Type type)
+		{
+			//
+			// Yup, we have to call Initialize to make sure that the DPs get registered
+			//
+			while (type != typeof (object)) {
+				System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor (type.TypeHandle);
+				type = type.BaseType;
+			}
+		}
+		
 		private ManagedType RegisterType (Type type, ManagedType parent)
 		{
 			ManagedType info;

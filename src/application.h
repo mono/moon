@@ -18,6 +18,7 @@
 
 typedef void (*ApplyDefaultStyleCallback)(FrameworkElement *fwe, ManagedTypeInfo *key);
 typedef void (*ApplyStyleCallback)(FrameworkElement *fwe, Style *style);
+typedef void *(*ConvertKeyframeValueCallback)(Type::Kind kind, DependencyProperty *property, Value *original, Value *converted);
 typedef void *(*GetResourceCallback)(const char *name, int *size);
 
 /* @ManagedDependencyProperties=Manual */
@@ -31,10 +32,12 @@ public:
 	Application ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb);
+	void RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
 	
 	void ApplyDefaultStyle (FrameworkElement *fwe, ManagedTypeInfo *key);
 	void ApplyStyle (FrameworkElement *fwe, Style *style);
+	
+	void ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property, Value *original, Value *converted);
 	
 	gpointer GetResource (const Uri *uri, int *size);
 	char *GetResourceAsPath (const Uri *uri);
@@ -56,6 +59,7 @@ protected:
 private:
 	ApplyDefaultStyleCallback apply_default_style_cb;
 	ApplyStyleCallback apply_style_cb;
+	ConvertKeyframeValueCallback convert_keyframe_callback;
 	GetResourceCallback get_resource_cb;
 	char *resource_root;
 };

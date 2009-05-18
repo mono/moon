@@ -39,6 +39,7 @@ Application::Application ()
 	
 	apply_default_style_cb = NULL;
 	apply_style_cb = NULL;
+	convert_keyframe_callback = NULL;
 	get_resource_cb = NULL;
 }
 
@@ -65,10 +66,12 @@ Application::SetCurrent (Application *application)
 void
 Application::RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb,
 				ApplyStyleCallback apply_style_cb,
-				GetResourceCallback get_resource_cb)
+				GetResourceCallback get_resource_cb,
+				ConvertKeyframeValueCallback convert_keyframe_callback)
 {
 	this->apply_default_style_cb = apply_default_style_cb;
 	this->apply_style_cb = apply_style_cb;
+	this->convert_keyframe_callback = convert_keyframe_callback;
 	this->get_resource_cb = get_resource_cb;
 }
 
@@ -84,6 +87,16 @@ Application::ApplyStyle (FrameworkElement *fwe, Style *style)
 {
 	if (apply_style_cb)
 		apply_style_cb (fwe, style);
+}
+
+void
+Application::ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property, Value *original, Value *converted)
+{
+	if (convert_keyframe_callback) {
+		convert_keyframe_callback (kind, property, original, converted);
+	} else {
+		converted = new Value (*original);
+	}
 }
 
 gpointer

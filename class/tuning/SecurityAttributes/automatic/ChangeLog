@@ -1,3 +1,10 @@
+2009-05-16  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc: Add type converting to
+	  ObjectKeyFrame. The conversion is done during the Resolve
+	  phase. If the type conversion can't be completed an
+	  exception is thrown.
+
 2009-05-15  Jb Evain  <jbevain@novell.com>
 
 	* System.Windows.Browser.auto.ssc: regenerated after the generic
