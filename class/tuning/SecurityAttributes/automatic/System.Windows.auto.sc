@@ -647,7 +647,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::media_frame_new(System.IntPtr,System.IntPtr,System.UInt32,System.UInt64)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moon_window_gtk_get_widget(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::moon_window_gtk_get_native_widget(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_window_gtk_new(System.Boolean,System.Int32,System.Int32,System.IntPtr)
@@ -728,7 +728,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_evaluate(System.IntPtr,System.String)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_host(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_browser_host(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_init_params_(System.IntPtr)
