@@ -1,5 +1,11 @@
 2009-05-18  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/FrameworkElementTest.cs: Add a test which
+	  shows that templates are regenerated every time a new
+	  UIElement is applied to ContentControl.Content.
+
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/FrameworkElementTest.cs: For contentcontrols,
 	  the applied template is only cleared if the old or new
 	  content is a UIElement (frameworkelement?). The fallback

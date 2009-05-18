@@ -242,6 +242,54 @@ namespace MoonTest.System.Windows {
 				() => Assert.AreEqual ("8", textA.Text, "#6")
 			);
 		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void ChangeContentChangesTemplate5 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <ContentControl.Template>
+      <ControlTemplate>
+        <Grid>
+          <ContentPresenter />
+        </Grid>
+      </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>
+");
+			// Check what happens going from UIElement -> UIElement
+			// Here the entire template is rebuilt
+			c.Content = new Rectangle ();
+			c.ApplyTemplate ();
+
+			Grid gridA = null, gridB = null;
+			ContentPresenter presenterA = null, presenterB = null;
+			CreateAsyncTest (c,
+				() => Assert.VisualChildren (c, "#1",
+					new VisualNode<Grid> ("#a", g => gridA = g,
+						new VisualNode<ContentPresenter> ("#b", p => presenterA = p,
+							new VisualNode<Rectangle> ("#c")
+						)
+					)
+				),
+				() => {
+					c.Content = new Rectangle ();
+					Assert.VisualChildren (c, "#3");
+				},
+				() => Assert.VisualChildren (c, "#1",
+					new VisualNode<Grid> ("#a", g => gridB = g,
+						new VisualNode<ContentPresenter> ("#b", p => presenterB = p,
+							new VisualNode<Rectangle> ("#c")
+						)
+					)
+				),
+				() => {
+					Assert.AreNotSame (gridA, gridB, "#4");
+					Assert.AreNotSame (presenterA, presenterB, "#5");
+				}
+			);
+		}
 
 		[TestMethod]
 		public void CursorTest ()
