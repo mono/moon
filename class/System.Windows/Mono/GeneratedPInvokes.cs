@@ -29,13 +29,13 @@ namespace Mono {
 		public extern static bool plugin_instance_get_allow_html_popup_window (IntPtr instance);
 
 		[DllImport ("moonplugin")]
+		// void *plugin_instance_get_browser_host (PluginInstance *instance);
+		public extern static IntPtr plugin_instance_get_browser_host (IntPtr instance);
+
+		[DllImport ("moonplugin")]
 		[return: MarshalAs (UnmanagedType.U1)]
 		// bool plugin_instance_get_enable_html_access (PluginInstance *instance);
 		public extern static bool plugin_instance_get_enable_html_access (IntPtr instance);
-
-		[DllImport ("moonplugin")]
-		// NPObject *plugin_instance_get_host (PluginInstance *instance);
-		public extern static IntPtr plugin_instance_get_host (IntPtr instance);
 
 		[DllImport ("moonplugin", EntryPoint="plugin_instance_get_init_params")]
 		// const char *plugin_instance_get_init_params (PluginInstance *instance);
@@ -2188,10 +2188,6 @@ namespace Mono {
 			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
 			return s;
 		}
-
-		[DllImport ("moon")]
-		// GtkWidget *moon_window_gtk_get_widget (MoonWindowGtk *instance);
-		public extern static IntPtr moon_window_gtk_get_widget (IntPtr instance);
 
 		[DllImport ("moon")]
 		// char* *open_file_dialog_show (const char *title, bool multsel, const char *filter, int idx);

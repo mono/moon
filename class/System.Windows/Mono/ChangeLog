@@ -1,5 +1,9 @@
 2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* GeneratedPInvokes.cs: Regenerated.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* GeneratedPInvokes.cs: Updated.
 
 2009-05-16  Alan McGovern  <amcgovern@novell.com>

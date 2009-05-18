@@ -1,3 +1,7 @@
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* HtmlPage.cs: Updated according to API changes.
+
 2009-05-15  Chris Toshok  <toshok@ximian.com>
 
 	* ScriptableObjectWrapper.cs (ValidateArguments): don't deref

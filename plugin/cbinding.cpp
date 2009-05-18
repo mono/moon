@@ -56,6 +56,16 @@ plugin_instance_get_allow_html_popup_window (PluginInstance *instance)
 }
 
 
+void *
+plugin_instance_get_browser_host (PluginInstance *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetBrowserHost ();
+}
+
+
 bool
 plugin_instance_get_enable_html_access (PluginInstance *instance)
 {
@@ -63,16 +73,6 @@ plugin_instance_get_enable_html_access (PluginInstance *instance)
 		return false;
 	
 	return instance->GetEnableHtmlAccess ();
-}
-
-
-NPObject *
-plugin_instance_get_host (PluginInstance *instance)
-{
-	if (instance == NULL)
-		return NULL;
-	
-	return instance->GetHost ();
 }
 
 

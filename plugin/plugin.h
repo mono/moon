@@ -64,9 +64,11 @@ class PluginInstance
 	/* @GenerateCBinding,GeneratePInvoke */
 	void *Evaluate (const char *code);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
 	NPObject *GetHost ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void *GetBrowserHost () { return GetHost (); } // same as GetHost, just without bleeding NPObjects into the cbindings
+
 	void      AddWrappedObject    (EventObject *obj, NPObject *wrapper);
 	void      RemoveWrappedObject (EventObject *obj);
 	NPObject *LookupWrappedObject (EventObject *obj);

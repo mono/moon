@@ -27,10 +27,10 @@ gint32 plugin_instance_get_actual_width (PluginInstance *instance);
 bool plugin_instance_get_allow_html_popup_window (PluginInstance *instance);
 
 /* @GeneratePInvoke */
-bool plugin_instance_get_enable_html_access (PluginInstance *instance);
+void *plugin_instance_get_browser_host (PluginInstance *instance);
 
 /* @GeneratePInvoke */
-NPObject *plugin_instance_get_host (PluginInstance *instance);
+bool plugin_instance_get_enable_html_access (PluginInstance *instance);
 
 /* @GeneratePInvoke */
 const char *plugin_instance_get_init_params (PluginInstance *instance);

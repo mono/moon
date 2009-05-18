@@ -107,7 +107,7 @@ namespace System.Windows.Browser{
 				CheckHtmlAccess();
 
 				if (plugin == null)
-					plugin = new HtmlElement (NativeMethods.plugin_instance_get_host (Mono.Xaml.XamlLoader.PluginInDomain));
+					plugin = new HtmlElement (NativeMethods.plugin_instance_get_browser_host (Mono.Xaml.XamlLoader.PluginInDomain));
 
 				return plugin;
 			}
