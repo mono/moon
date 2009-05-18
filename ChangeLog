@@ -1,3 +1,7 @@
+2009-05-18  Rusty Howell  <rhowell@novell.com>
+
+	* configure.ac: Bump version to 1.9.3
+
 2009-05-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* demo-status.txt: Add sample application that uses sockets
