@@ -1,3 +1,7 @@
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Pass --generate-html=no instead of --generate-html-.
+
 2009-05-16  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows.Data/BindingTest.cs (XamlBindWithContent2):

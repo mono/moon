@@ -87,7 +87,7 @@ REFERENCES = \
 	-r:$(top_builddir)/test/2.0/moon-unit/Mono.Moonlight.UnitTesting.dll
 
 moon-unit.xap: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll Mono.Moonlight.UnitTesting.dll System.Windows.Controls.dll
-	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --generate-html- --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(top_builddir)/test/2.0/moon-unit/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) $(REFERENCES)  $(srcdir)/ $(XAML_RESOURCES)
+	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --generate-html=false --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(top_builddir)/test/2.0/moon-unit/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) $(REFERENCES)  $(srcdir)/ $(XAML_RESOURCES)
 
 System.Windows.Controls.dll : ../Microsoft.SilverlightControls/System.Windows.Controls.dll
 	cp ../Microsoft.SilverlightControls/System.Windows.Controls.dll* .
