@@ -67,6 +67,12 @@ namespace System.Windows.Controls {
 			if (!Double.IsNaN (this.Height))
 				result.Height = this.Height;
 
+			result.Width = Math.Min (result.Width, this.MaxWidth);
+			result.Width = Math.Max (result.Width, this.MinWidth);
+			
+			result.Height = Math.Min (result.Height, this.MaxHeight);
+			result.Height = Math.Max (result.Height, this.MinHeight);
+
 			result.Width = Math.Min (result.Width, availableSize.Width);
 			result.Height = Math.Min (result.Height, availableSize.Height);
 			
@@ -88,6 +94,12 @@ namespace System.Windows.Controls {
 			
 			if (VerticalAlignment == VerticalAlignment.Stretch)
 				requested.Height = finalSize.Height;
+
+			requested.Width = Math.Min (requested.Width, this.MaxWidth);
+			requested.Width = Math.Max (requested.Width, this.MinWidth);
+			
+			requested.Height = Math.Min (requested.Height, this.MaxHeight);
+			requested.Height = Math.Max (requested.Height, this.MinHeight);
 
 			foreach (UIElement child in this.Children) {
 				if (child.Visibility == Visibility.Collapsed)
