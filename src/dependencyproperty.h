@@ -43,6 +43,7 @@ private:
 	Value *new_value;
 };
 
+/* @CBindingRequisite */
 typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure);
 
 //

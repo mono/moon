@@ -24,16 +24,26 @@
 class FileDownloader;
 class Downloader;
 
+/* @CBindingRequisite */
 typedef void     (* DownloaderWriteFunc) (void *buf, gint32 offset, gint32 n, gpointer cb_data);
+/* @CBindingRequisite */
 typedef void     (* DownloaderNotifySizeFunc) (gint64 size, gpointer cb_data);
 
+/* @CBindingRequisite */
 typedef gpointer (* DownloaderCreateStateFunc) (Downloader *dl);
+/* @CBindingRequisite */
 typedef void     (* DownloaderDestroyStateFunc) (gpointer state);
+/* @CBindingRequisite */
 typedef void     (* DownloaderOpenFunc) (const char *verb, const char *uri, bool streaming, gpointer state);
+/* @CBindingRequisite */
 typedef void     (* DownloaderSendFunc) (gpointer state);
+/* @CBindingRequisite */
 typedef void     (* DownloaderAbortFunc) (gpointer state);
+/* @CBindingRequisite */
 typedef void     (* DownloaderHeaderFunc) (gpointer state, const char *header, const char *value);
+/* @CBindingRequisite */
 typedef void     (* DownloaderBodyFunc) (gpointer state, void *body, guint32 length);
+/* @CBindingRequisite */
 typedef gpointer (* DownloaderCreateWebRequestFunc) (const char *method, const char *uri, gpointer context);
 
 enum DownloaderAccessPolicy {
@@ -196,9 +206,13 @@ class Downloader : public DependencyObject {
 class DownloaderResponse;
 class DownloaderRequest;
 
+/* @CBindingRequisite */
 typedef guint32 (* DownloaderResponseStartedHandler) (DownloaderResponse *response, gpointer context);
+/* @CBindingRequisite */
 typedef guint32 (* DownloaderResponseDataAvailableHandler) (DownloaderResponse *response, gpointer context, char *buffer, guint32 length);
+/* @CBindingRequisite */
 typedef guint32 (* DownloaderResponseFinishedHandler) (DownloaderResponse *response, gpointer context, bool success, gpointer data, const char *uri);
+/* @CBindingRequisite */
 typedef void (* DownloaderResponseHeaderVisitorCallback) (const char *header, const char *value);
 
 class IDownloader {

@@ -33,7 +33,9 @@ class EventArgs;
 struct EmitContext;
 class MoonError;
 
+/* @CBindingRequisite */
 typedef void (* TickCallHandler) (EventObject *object);
+/* @CBindingRequisite */
 typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
 typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_data, gpointer data);
 
@@ -54,6 +56,7 @@ class EventLists;
 
 #define GET_OBJ_ID(x) (x ? x->GetId () : 0)
 
+/* @CBindingRequisite */
 typedef void (* ToggleNotifyHandler) (EventObject *sender, bool isLastRef);
 class ToggleNotifyListener {
 public:

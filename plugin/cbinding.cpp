@@ -11,6 +11,7 @@
 
 #include "cbinding.h"
 
+#include "plugin.h"
 /**
  * PluginInstance
  **/

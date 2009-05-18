@@ -16,9 +16,13 @@
 #include "control.h"
 #include "dependencyobject.h"
 
+/* @CBindingRequisite */
 typedef void (*ApplyDefaultStyleCallback)(FrameworkElement *fwe, ManagedTypeInfo *key);
+/* @CBindingRequisite */
 typedef void (*ApplyStyleCallback)(FrameworkElement *fwe, Style *style);
-typedef void *(*ConvertKeyframeValueCallback)(Type::Kind kind, DependencyProperty *property, Value *original, Value *converted);
+/* @CBindingRequisite */
+typedef void *(*ConvertKeyframeValueCallback)(int kind, DependencyProperty *property, Value *original, Value *converted);
+/* @CBindingRequisite */
 typedef void *(*GetResourceCallback)(const char *name, int *size);
 
 /* @ManagedDependencyProperties=Manual */

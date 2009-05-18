@@ -60,7 +60,7 @@ class MethodInfo : MemberInfo {
 				c_method.Parent = Parent;
 								
 				if (!string.IsNullOrEmpty (Parent.Name) && !IsStatic && !IsConstructor) {
-					ParameterInfo parameter = new ParameterInfo ();
+					ParameterInfo parameter = new ParameterInfo (c_method);
 					parameter.Name = "instance";
 					parameter.ParameterType = new TypeReference (Parent.Name + "*");
 					c_method.Parameters.Add (parameter);

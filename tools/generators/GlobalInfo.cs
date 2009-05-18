@@ -200,4 +200,34 @@ class GlobalInfo : MemberInfo {
 		}
 	}
 
+	public bool IsEnum (string type)
+	{
+		MemberInfo member;
+		TypeInfo tp;
+		
+		type = type.Replace ("*", "");
+		
+		if (!Children.TryGetValue (type, out member)) {
+			if (type.Contains ("::")) {
+				string parent = type.Substring (0, type.IndexOf ("::"));
+				string child = type.Substring (type.IndexOf ("::") + 2);
+				
+				if (!Children.TryGetValue (parent, out member))
+					return false;
+				         
+				if (!member.Children.TryGetValue (child, out member))
+					return false;
+				
+			} else {
+				return false;
+			}
+		}
+		
+		tp = member as TypeInfo;
+		
+		if (tp == null)
+			return false;
+		
+		return tp.IsEnum;
+	}
 }

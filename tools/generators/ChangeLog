@@ -1,3 +1,13 @@
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: 
+	* GlobalInfo.cs:
+	* MemberInfo.cs:
+	* MethodInfo.cs:
+	* ParameterInfo.cs:
+	* SignatureType.cs:
+	* TypeReference.cs: Don't include C++ headers in cbinding.h.
+
 2009-05-16  Alan McGovern  <amcgovern@novell.com>
 
 	* TypeReference.cs: Add type converting to ObjectKeyFrame. The

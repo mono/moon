@@ -25,6 +25,7 @@
 #include "utils.h"
 #include "error.h"
 #include "deployment.h"
+#include "multiscalesubimage.h"
 
 //
 // Collection

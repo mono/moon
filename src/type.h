@@ -25,6 +25,7 @@ class DependencyProperty;
 class Surface;
 class Types;
 
+/* @CBindingRequisite */
 typedef gint64 TimeSpan;
 typedef DependencyObject *create_inst_func (void);
 

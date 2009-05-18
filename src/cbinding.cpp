@@ -11,6 +11,59 @@
 
 #include "cbinding.h"
 
+#include "animation.h"
+#include "application.h"
+#include "bitmapimage.h"
+#include "bitmapsource.h"
+#include "border.h"
+#include "brush.h"
+#include "canvas.h"
+#include "collection.h"
+#include "contentcontrol.h"
+#include "control.h"
+#include "deepzoomimagetilesource.h"
+#include "dependencyobject.h"
+#include "dependencyproperty.h"
+#include "deployment.h"
+#include "downloader.h"
+#include "easing.h"
+#include "eventargs.h"
+#include "frameworkelement.h"
+#include "geometry.h"
+#include "glyphs.h"
+#include "grid.h"
+#include "imagesource.h"
+#include "keyboard.h"
+#include "media.h"
+#include "mediaelement.h"
+#include "multiscaleimage.h"
+#include "multiscalesubimage.h"
+#include "panel.h"
+#include "pipeline.h"
+#include "popup.h"
+#include "resources.h"
+#include "runtime.h"
+#include "shape.h"
+#include "size.h"
+#include "style.h"
+#include "stylus.h"
+#include "template.h"
+#include "textblock.h"
+#include "textbox.h"
+#include "tilesource.h"
+#include "timeline.h"
+#include "timemanager.h"
+#include "transform.h"
+#include "trigger.h"
+#include "type.h"
+#include "uielement.h"
+#include "uri.h"
+#include "usercontrol.h"
+#include "window.h"
+#include "window-gtk.h"
+#include "writeablebitmap.h"
+#include "xaml.h"
+#include "xap.h"
 /**
  * Application
  **/
@@ -305,7 +358,7 @@ collection_get_count (Collection *instance)
 }
 
 
-Type::Kind
+int
 collection_get_element_type (Collection *instance)
 {
 	if (instance == NULL)
@@ -404,7 +457,7 @@ collection_changed_event_args_new (void)
 }
 
 
-CollectionChangedAction
+int
 collection_changed_event_args_get_changed_action (CollectionChangedEventArgs *instance)
 {
 	if (instance == NULL)
@@ -447,12 +500,12 @@ collection_changed_event_args_get_old_item (CollectionChangedEventArgs *instance
 
 
 void
-collection_changed_event_args_set_changed_action (CollectionChangedEventArgs *instance, CollectionChangedAction action)
+collection_changed_event_args_set_changed_action (CollectionChangedEventArgs *instance, int action)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SetChangedAction (action);
+	instance->SetChangedAction ((CollectionChangedAction) action);
 }
 
 
@@ -830,12 +883,12 @@ dependency_object_new (void)
 
 
 DependencyObject *
-dependency_object_find_name (DependencyObject *instance, const char *name, Type::Kind *element_kind)
+dependency_object_find_name (DependencyObject *instance, const char *name, int *element_kind)
 {
 	if (instance == NULL)
 		return NULL;
 	
-	return instance->FindName (name, element_kind);
+	return instance->FindName (name, (Type::Kind*) element_kind);
 }
 
 
@@ -862,14 +915,14 @@ dependency_object_get_value_no_default_with_error (DependencyObject *instance, D
 
 
 Value *
-dependency_object_get_value_with_error (DependencyObject *instance, Type::Kind whatami, DependencyProperty *property, MoonError *error)
+dependency_object_get_value_with_error (DependencyObject *instance, int whatami, DependencyProperty *property, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called dependency_object_get_value_with_error () with error == NULL.");
-	return instance->GetValueWithError (whatami, property, error);
+	return instance->GetValueWithError ((Type::Kind) whatami, property, error);
 }
 
 
@@ -953,16 +1006,16 @@ dependency_property_get_default_value (DependencyProperty *instance)
 
 
 DependencyProperty *
-dependency_property_get_dependency_property (Type::Kind type, const char *name)
+dependency_property_get_dependency_property (int type, const char *name)
 {
-	return DependencyProperty::GetDependencyProperty (type, name);
+	return DependencyProperty::GetDependencyProperty ((Type::Kind) type, name);
 }
 
 
 DependencyProperty *
-dependency_property_get_dependency_property_full (Type::Kind type, const char *name, bool inherits)
+dependency_property_get_dependency_property_full (int type, const char *name, bool inherits)
 {
-	return DependencyProperty::GetDependencyPropertyFull (type, name, inherits);
+	return DependencyProperty::GetDependencyPropertyFull ((Type::Kind) type, name, inherits);
 }
 
 
@@ -976,7 +1029,7 @@ dependency_property_get_name (DependencyProperty *instance)
 }
 
 
-Type::Kind
+int
 dependency_property_get_property_type (DependencyProperty *instance)
 {
 	if (instance == NULL)
@@ -1017,9 +1070,9 @@ dependency_property_is_read_only (DependencyProperty *instance)
 
 
 DependencyProperty *
-dependency_property_register_managed_property (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback)
+dependency_property_register_managed_property (const char *name, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback)
 {
-	return DependencyProperty::RegisterManagedProperty (name, property_type, owner_type, defaultValue, attached, read_only, callback);
+	return DependencyProperty::RegisterManagedProperty (name, (Type::Kind) property_type, (Type::Kind) owner_type, defaultValue, attached, read_only, callback);
 }
 
 
@@ -1555,7 +1608,7 @@ event_object_add_xaml_handler (EventObject *instance, const char *event_name, Ev
 }
 
 
-Type::Kind
+int
 event_object_get_object_type (EventObject *instance)
 {
 	if (instance == NULL)
@@ -1616,12 +1669,12 @@ event_object_remove_toggle_ref_notifier (EventObject *instance)
 
 
 void
-event_object_set_object_type (EventObject *instance, Type::Kind value)
+event_object_set_object_type (EventObject *instance, int value)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SetObjectType (value);
+	instance->SetObjectType ((Type::Kind) value);
 }
 
 
@@ -1939,12 +1992,12 @@ image_source_new (void)
  * IMediaDemuxer
  **/
 void
-imedia_demuxer_report_get_diagnostic_completed (IMediaDemuxer *instance, MediaStreamSourceDiagnosticKind diagnosticKind, gint64 diagnosticValue)
+imedia_demuxer_report_get_diagnostic_completed (IMediaDemuxer *instance, int diagnosticKind, gint64 diagnosticValue)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->ReportGetDiagnosticCompleted (diagnosticKind, diagnosticValue);
+	instance->ReportGetDiagnosticCompleted ((MediaStreamSourceDiagnosticKind) diagnosticKind, diagnosticValue);
 }
 
 
@@ -2064,7 +2117,7 @@ item_collection_new (void)
 /**
  * Keyboard
  **/
-ModifierKeys
+int
 keyboard_get_modifiers (void)
 {
 	return Keyboard::GetModifiers ();
@@ -4128,22 +4181,22 @@ types_free (Types *instance)
 
 
 Type *
-types_find (Types *instance, Type::Kind type)
+types_find (Types *instance, int type)
 {
 	if (instance == NULL)
 		return NULL;
 	
-	return instance->Find (type);
+	return instance->Find ((Type::Kind) type);
 }
 
 
-Type::Kind
-types_register_type (Types *instance, const char *name, void *gc_handle, Type::Kind parent)
+int
+types_register_type (Types *instance, const char *name, void *gc_handle, int parent)
 {
 	if (instance == NULL)
 		return Type::INVALID;
 	
-	return instance->RegisterType (name, gc_handle, parent);
+	return instance->RegisterType (name, gc_handle, (Type::Kind) parent);
 }
 
 
@@ -4510,26 +4563,26 @@ xaml_context_get_template_binding_source (XamlContext *instance)
  * XamlLoader
  **/
 Value *
-xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error)
+xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, int *element_type, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called xaml_loader_create_from_file_with_error () with error == NULL.");
-	return instance->CreateFromFileWithError (xaml, create_namescope, element_type, error);
+	return instance->CreateFromFileWithError (xaml, create_namescope, (Type::Kind*) element_type, error);
 }
 
 
 Value *
-xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error)
+xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, int *element_type, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called xaml_loader_create_from_string_with_error () with error == NULL.");
-	return instance->CreateFromStringWithError (xaml, create_namescope, element_type, error);
+	return instance->CreateFromStringWithError (xaml, create_namescope, (Type::Kind*) element_type, error);
 }
 
 
@@ -4544,14 +4597,14 @@ xaml_loader_get_context (XamlLoader *instance)
 
 
 Value *
-xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, Type::Kind *element_type, MoonError *error)
+xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, int *element_type, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called xaml_loader_hydrate_from_string_with_error () with error == NULL.");
-	return instance->HydrateFromStringWithError (xaml, obj, create_namescope, element_type, error);
+	return instance->HydrateFromStringWithError (xaml, obj, create_namescope, (Type::Kind*) element_type, error);
 }
 
 

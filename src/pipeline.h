@@ -1188,11 +1188,17 @@ public:
  * ExternalDemuxer
  */
 
+/* @CBindingRequisite */
 typedef void (* CloseDemuxerCallback) (void *instance);
-typedef void (* GetDiagnosticAsyncCallback) (void *instance, MediaStreamSourceDiagnosticKind diagnosticKind);
-typedef void (* GetFrameAsyncCallback) (void *instance, MediaStreamType mediaStreamType);
+/* @CBindingRequisite */
+typedef void (* GetDiagnosticAsyncCallback) (void *instance, int /*MediaStreamSourceDiagnosticKind*/ diagnosticKind);
+/* @CBindingRequisite */
+typedef void (* GetFrameAsyncCallback) (void *instance, int /*MediaStreamType*/ mediaStreamType);
+/* @CBindingRequisite */
 typedef void (* OpenDemuxerAsyncCallback) (void *instance, IMediaDemuxer *demuxer);
+/* @CBindingRequisite */
 typedef void (* SeekAsyncCallback) (void *instance, guint64 seekToTime);
+/* @CBindingRequisite */
 typedef void (* SwitchMediaStreamAsyncCallback) (void *instance, IMediaStream *mediaStreamDescription);
 		
 class ExternalDemuxer : public IMediaDemuxer {

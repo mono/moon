@@ -16,7 +16,9 @@
 
 #include "uielement.h"
 
+/* @CBindingRequisite */
 typedef Size (*MeasureOverrideCallback)(Size availableSize);
+/* @CBindingRequisite */
 typedef Size (*ArrangeOverrideCallback)(Size finalSize);
 
 /* @Namespace=System.Windows */

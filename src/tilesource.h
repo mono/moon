@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include "dependencyobject.h"
 
+/* @CBindingRequisite */
 typedef bool (*get_image_uri_func) (int level, int posX, int posY, Uri *uri, void* user_data);
 
 /* @Version=2,Namespace=System.Windows.Media */

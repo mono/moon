@@ -18,6 +18,8 @@ using System.Text;
 
 class Generator {
 	delegate void output_native_type_delegate (string t, string k);
+	static StringBuilder forward_decls = new StringBuilder ();
+	static StringBuilder cbinding_requisites = new StringBuilder ();
 
 	public void Generate ()
 	{
@@ -1227,12 +1229,29 @@ class Generator {
 						return false;
 					continue;
 				case "typedef":
+					StringBuilder requisite = new StringBuilder ();
+					requisite.Append (tokenizer.CurrentToken.value);
+					requisite.Append (' ');
 					tokenizer.Advance (true);
 					while (!tokenizer.Accept (Token2Type.Punctuation, ";")) {
-						if (tokenizer.CurrentToken.value == "{")
-							tokenizer.SyncWithEndBrace ();
+						requisite.Append (tokenizer.CurrentToken.value);
+						requisite.Append (' ');
+						if (tokenizer.CurrentToken.value == "{") {
+							tokenizer.Advance (true);
+							while (!tokenizer.Accept (Token2Type.Punctuation, "}")) {
+								requisite.Append (tokenizer.CurrentToken.value);
+								requisite.Append (' ');
+								tokenizer.Advance (true);
+							}
+							requisite.Append (tokenizer.CurrentToken.value);
+							requisite.Append (' ');
+						}
 						tokenizer.Advance (true);
 					}
+					requisite.Append (";");
+					if (properties.ContainsKey ("CBindingRequisite"))
+						cbinding_requisites.AppendLine (requisite.ToString ());
+					
 					continue;
 				case "EVENTHANDLER":
 					while (!tokenizer.Accept (Token2Type.Punctuation, ";"))
@@ -1340,7 +1359,7 @@ class Generator {
 				if (!tokenizer.Accept (Token2Type.Punctuation, ")")) {
 					string param_value = null;
 					do {
-						ParameterInfo parameter = new ParameterInfo ();
+						ParameterInfo parameter = new ParameterInfo (method);
 						
 						while (tokenizer.CurrentToken.type == Token2Type.CommentProperty) {
 							parameter.Annotations.Add (tokenizer.CurrentToken.value);
@@ -1670,6 +1689,9 @@ class Generator {
 		StringBuilder header = new StringBuilder ();
 		StringBuilder impl = new StringBuilder ();
 		List <string> headers = new List<string> ();
+		List <string> classes = new List<string> ();
+		List <string> structs = new List<string> ();
+		
 		string last_type = string.Empty;
 		
 		methods = info.CPPMethodsToBind;
@@ -1681,9 +1703,36 @@ class Generator {
 		header.AppendLine ("#define __MOONLIGHT_C_BINDING_H__");
 		header.AppendLine ();
 		header.AppendLine ("#include <glib.h>");
-		header.AppendLine ("// This should probably be changed to somehow not include c++ headers.");
+		header.AppendLine ("#include <cairo.h>");
+		header.AppendLine ();
+		foreach (MemberInfo member in info.Children.Values) {
+			TypeInfo type = member as TypeInfo;
+			if (type == null)
+				continue;
+			
+			if (type.IsClass) {
+				if (!classes.Contains (type.Name))
+					classes.Add (type.Name);
+			} else if (type.IsStruct) {
+				if (!structs.Contains (type.Name))
+					structs.Add (type.Name);
+			}
+		}
+		
 		foreach (MemberInfo method in methods) {
 			string h;
+			
+			if (method.ParentType != null) {
+				TypeInfo type = method.ParentType;
+				if (type.IsClass) {
+					if (!classes.Contains (type.Name))
+						classes.Add (type.Name);
+				} else if (type.IsStruct) {
+					if (!structs.Contains (type.Name))
+						structs.Add (type.Name);
+				}
+			}
+			
 			if (string.IsNullOrEmpty (method.Header))
 				continue;
 			if (!method.Header.StartsWith (dir))
@@ -1694,12 +1743,21 @@ class Generator {
 			if (!headers.Contains (h))
 				headers.Add (h);
 		}
-		headers.Sort ();
-		foreach (string h in headers) {
-			header.Append ("#include \"");
-			header.Append (h);
-			header.AppendLine ("\"");
+		header.AppendLine (forward_decls.ToString ());
+		classes.Sort ();
+		structs.Sort ();
+		foreach (string c in classes) {
+			header.Append ("class ");
+			header.Append (c);
+			header.AppendLine (";");
 		}
+		foreach (string s in structs) {
+			header.Append ("struct ");
+			header.Append (s);
+			header.AppendLine (";");
+		}
+		header.AppendLine ();
+		header.AppendLine (cbinding_requisites.ToString ());
 		
 		header.AppendLine ();
 		header.AppendLine ("G_BEGIN_DECLS");
@@ -1714,6 +1772,12 @@ class Generator {
 		impl.AppendLine ();
 		impl.AppendLine ("#include \"cbinding.h\"");
 		impl.AppendLine ();
+		headers.Sort ();
+		foreach (string h in headers) {
+			impl.Append ("#include \"");
+			impl.Append (h);
+			impl.AppendLine ("\"");
+		}
 		
 		foreach (MemberInfo member in methods) {
 			MethodInfo method = (MethodInfo) member;			
@@ -1731,10 +1795,10 @@ class Generator {
 				}
 			}
 			
-			WriteHeaderMethod (method.CMethod, method, header);
+			WriteHeaderMethod (method.CMethod, method, header, info);
 			header.AppendLine ();
 			
-			WriteImplMethod (method.CMethod, method, impl);
+			WriteImplMethod (method.CMethod, method, impl, info);
 			impl.AppendLine ();
 			impl.AppendLine ();
 		}
@@ -1758,7 +1822,7 @@ class Generator {
 		GenerateCBindings (info, plugin_dir);
 	}
 	
-	static void WriteHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text)	
+	static void WriteHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, GlobalInfo info)	
 	{
 		Log.WriteLine ("Writing header: {0}::{1} (Version: '{2}', GenerateManaged: {3})", 
 		               cmethod.Parent.Name, cmethod.Name, 
@@ -1767,15 +1831,15 @@ class Generator {
 		
 		if (cmethod.Annotations.ContainsKey ("GeneratePInvoke"))
 			text.AppendLine ("/* @GeneratePInvoke */");
-		cmethod.ReturnType.Write (text, SignatureType.Native);
+		cmethod.ReturnType.Write (text, SignatureType.NativeC, info);
 		if (!cmethod.ReturnType.IsPointer)
 			text.Append (" ");
 		text.Append (cmethod.Name);
-		cmethod.Parameters.Write (text, SignatureType.Native, false);
+		cmethod.Parameters.Write (text, SignatureType.NativeC, false);
 		text.AppendLine (";");
 	}
 	
-	static void WriteImplMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text)
+	static void WriteImplMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, GlobalInfo info)
 	{
 		bool is_void = cmethod.ReturnType.Value == "void";
 		bool is_ctor = cmethod.IsConstructor;
@@ -1791,17 +1855,17 @@ class Generator {
 			}
 		}
 		
-		cmethod.ReturnType.Write (text, SignatureType.Native);
+		cmethod.ReturnType.Write (text, SignatureType.NativeC, info);
 		text.AppendLine ();
 		text.Append (cmethod.Name);
-		cmethod.Parameters.Write (text, SignatureType.Native, false);
+		cmethod.Parameters.Write (text, SignatureType.NativeC, false);
 		text.AppendLine ("");
 		text.AppendLine ("{");
 		
 		if (is_ctor) {
 			text.Append ("\treturn new ");
 			text.Append (cmethod.Parent.Name);
-			cmethod.Parameters.Write (text, SignatureType.Native, true);
+			cmethod.Parameters.Write (text, SignatureType.NativeC, true);
 			text.AppendLine (";");
 		} else if (is_dtor) {
 			text.AppendLine ("\tdelete instance;");
@@ -1850,7 +1914,7 @@ class Generator {
 				cmethod.Parameters [0].DisableWriteOnce = true;
 			}
 			text.Append (cppmethod.Name);
-			cmethod.Parameters.Write (text, SignatureType.Native, true);
+			cmethod.Parameters.Write (text, SignatureType.NativeC, true);
 			text.AppendLine (";");
 		}
 		
@@ -2047,14 +2111,15 @@ class Generator {
 							continue;
 
 						if (type.IsStruct) {
-							result.Append ("struct ");
+							forward_decls.Append ("struct ");
 						} else {
-							result.Append ("class ");
+							forward_decls.Append ("class ");
 						}
-						result.Append (type.Name);
-						result.AppendLine (";");
+						forward_decls.Append (type.Name);
+						forward_decls.AppendLine (";");
 					}
-					result.AppendLine ();
+					forward_decls.AppendLine ();
+					result.Append (forward_decls.ToString ());
 				} else if (line.Contains ("/*DO_AS*/")) {
 					foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 						if (!type.Annotations.ContainsKey("IncludeInKinds") ||
@@ -2244,7 +2309,7 @@ class Generator {
 		if (marshal_string_returntype)
 			text.Append ("IntPtr");
 		else
-			returntype.Write (text, SignatureType.PInvoke);
+			returntype.Write (text, SignatureType.PInvoke, null);
 		text.Append (" ");
 		text.Append (name);
 		if (generate_wrapper)
@@ -2255,7 +2320,7 @@ class Generator {
 		if (generate_wrapper) {
 			text.Append (tabs);
 			text.Append ("public static ");
-			returntype.Write (text, SignatureType.Managed);
+			returntype.Write (text, SignatureType.Managed, null);
 			text.Append (" ");
 			text.Append (managed_name);
 			
@@ -2278,7 +2343,7 @@ class Generator {
 				text.AppendLine ("\tIntPtr result;");
 			} else if (!is_void) {
 				text.Append ("\t");
-				returntype.Write (text, SignatureType.Managed);
+				returntype.Write (text, SignatureType.Managed, null);
 				text.AppendLine (" result;");
 			}
 			

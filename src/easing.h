@@ -15,6 +15,7 @@
 #include "dependencyobject.h"
 #include "enums.h"
 
+/* @CBindingRequisite */
 typedef double (*EasingFunction) (double normalizedTime);
 
 /* @Namespace=System.Windows.Media.Animation */

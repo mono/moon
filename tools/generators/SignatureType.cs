@@ -13,5 +13,6 @@
 enum SignatureType {
 	Native,
 	Managed,
-	PInvoke
+	PInvoke,
+	NativeC,
 }

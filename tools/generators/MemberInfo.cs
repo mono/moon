@@ -31,6 +31,20 @@ class MemberInfo {
 	private Nullable<int> silverlight_version;
 	private string managed_name;
 	
+	public GlobalInfo GlobalInfo {
+		get {
+			GlobalInfo result = Parent as GlobalInfo;
+			
+			if (result != null)
+				return result;
+			
+			if (Parent == null)
+				return this as GlobalInfo;
+			
+			return Parent.GlobalInfo;
+		}
+	}
+	
 	public string ManagedName {
 		get {
 			if (managed_name == null) {

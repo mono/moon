@@ -31,6 +31,7 @@
 #include "deepzoomimagetilesource.h"
 #include "file-downloader.h"
 #include "multiscalesubimage.h"
+#include "bitmapimage.h"
 
 #if LOGGING
 #include "clock.h"

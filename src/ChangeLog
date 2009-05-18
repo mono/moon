@@ -1,3 +1,25 @@
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h|cpp: 
+	* type.h: Regenerated.
+	
+	* application.h:
+	* dependencyobject.h:
+	* dependencyproperty.h:
+	* downloader.h:
+	* easing.h:
+	* frameworkelement.h:
+	* pipeline.h:
+	* tilesource.h:
+	* type.h: Sprinkle CBindingPrequisite around. Also use ints
+	instead of Type::Kind values in function pointers.
+	
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* window-gtk.h: Add a GetNativeWidget which returns a void 
+	pointer instead of GtkWidget* so that we don't need to include
+	gtk for the c bindings.
+
 2009-05-18  Alan McGovern  <amcgovern@novell.com>
 
 	* contentcontrol.cpp: For contentcontrols, the applied

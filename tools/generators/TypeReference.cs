@@ -46,19 +46,21 @@ class TypeReference {
 		return text.ToString ();
 	}
 
-	public void Write (StringBuilder text, SignatureType type)
+	public void Write (StringBuilder text, SignatureType type, GlobalInfo info)
 	{
-		if (IsConst && type == SignatureType.Native)
+		if (IsConst && (type == SignatureType.Native || type == SignatureType.NativeC))
 			text.Append ("const ");
 		
-		if (type != SignatureType.Native) {
+		if (type != SignatureType.Native && type != SignatureType.NativeC) {
 			if (IsRef && !IsReturnType)
 				text.Append ("ref ");
 			if (IsOut && !IsReturnType)
 				text.Append ("out ");
 		}
 		
-		if (type == SignatureType.Native) {
+		if (type == SignatureType.NativeC && info.IsEnum (Value)) {
+			text.Append (GetPrettyType ().Replace (Value.Replace ("*", ""), "int"));
+		} else if (type == SignatureType.Native || type == SignatureType.NativeC) {
 			text.Append (GetPrettyType ());
 		} else {
 			text.Append (GetManagedType ());
