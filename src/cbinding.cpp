@@ -2389,13 +2389,13 @@ moon_window_set_transparent (MoonWindow *instance, bool flag)
 /**
  * MoonWindowGtk
  **/
-GtkWidget *
-moon_window_gtk_get_widget (MoonWindowGtk *instance)
+void *
+moon_window_gtk_get_native_widget (MoonWindowGtk *instance)
 {
 	if (instance == NULL)
 		return NULL;
 	
-	return instance->GetWidget ();
+	return instance->GetNativeWidget ();
 }
 
 

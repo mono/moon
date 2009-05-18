@@ -1075,7 +1075,7 @@ void moon_window_set_transparent (MoonWindow *instance, bool flag);
  * MoonWindowGtk
  **/
 /* @GeneratePInvoke */
-GtkWidget *moon_window_gtk_get_widget (MoonWindowGtk *instance);
+void *moon_window_gtk_get_native_widget (MoonWindowGtk *instance);
 
 /* @GeneratePInvoke */
 MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent);

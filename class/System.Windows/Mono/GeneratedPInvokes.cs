@@ -1253,8 +1253,8 @@ namespace Mono {
 		public extern static void moon_window_set_transparent (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool flag);
 
 		[DllImport ("moon")]
-		// GtkWidget *moon_window_gtk_get_widget (MoonWindowGtk *instance);
-		public extern static IntPtr moon_window_gtk_get_widget (IntPtr instance);
+		// void *moon_window_gtk_get_native_widget (MoonWindowGtk *instance);
+		public extern static IntPtr moon_window_gtk_get_native_widget (IntPtr instance);
 
 		[DllImport ("moon")]
 		// MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent);
@@ -2188,6 +2188,10 @@ namespace Mono {
 			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
 			return s;
 		}
+
+		[DllImport ("moon")]
+		// GtkWidget *moon_window_gtk_get_widget (MoonWindowGtk *instance);
+		public extern static IntPtr moon_window_gtk_get_widget (IntPtr instance);
 
 		[DllImport ("moon")]
 		// char* *open_file_dialog_show (const char *title, bool multsel, const char *filter, int idx);

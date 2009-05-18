@@ -42,8 +42,11 @@ public:
 	virtual void GrabFocus ();
 	virtual bool HasFocus ();
 
-	/* @GenerateCBinding,GeneratePInvoke */
 	GtkWidget* GetWidget() { return widget; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void *GetNativeWidget () { return GetWidget (); }  // same as GetWidget, just without bleeding GtkWidget into the cbindings
+	
 
 	virtual bool IsFullScreen () { return fullscreen; }
 

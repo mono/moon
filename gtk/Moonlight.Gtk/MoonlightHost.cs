@@ -69,7 +69,7 @@ namespace Moonlight.Gtk
 			Mono.Xaml.XamlLoader.AllowMultipleSurfacesPerDomain = true;
 			window = NativeMethods.moon_window_gtk_new (false, 0, 0, IntPtr.Zero);
 			surface = NativeMethods.surface_new (window);
-			Raw = NativeMethods.moon_window_gtk_get_widget (window);
+			Raw = NativeMethods.moon_window_gtk_get_native_widget (window);
 
 			SizeAllocated += OnSizeAllocated;
 		}

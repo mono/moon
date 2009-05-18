@@ -1,3 +1,7 @@
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Moonlight.Gtk/MoonlightHost.cs: Update due to API changes.
+
 2009-04-14  Jackson Harper  <jackson@ximian.com>
 
 	* moonlight-gtk.pc.in: Fix assembly name.
