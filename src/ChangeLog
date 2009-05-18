@@ -1,5 +1,10 @@
 2009-05-18  Larry Ewing  <lewing@novell.com>
 
+	* bitmapsource.cpp (GetSurface): use the content type of the image
+	when creating the native surface.
+
+2009-05-18  Larry Ewing  <lewing@novell.com>
+
 	* provider.cpp (GetPropertyValue): reorder the framework element
 	property lookup to avoid an extra type inquiry in a potentially
 	common case.
