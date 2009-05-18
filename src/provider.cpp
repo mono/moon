@@ -257,9 +257,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 #define INHERIT_F_F(p) \
 	G_STMT_START {							\
 	if (property->GetId () == FrameworkElement::p) {		\
-									\
-		if (types->IsSubclassOf (parent->GetObjectType(), Type::FRAMEWORKELEMENT)) \
-			parentPropertyId = FrameworkElement::p;		\
+		parentPropertyId = FrameworkElement::p;			\
 	}								\
 	} G_STMT_END
 	
@@ -277,17 +275,18 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 				INHERIT_CTI_CTI (FontWeightProperty);
 				INHERIT_CTI_CTI (FontSizeProperty);
 
-				INHERIT_F_F (LanguageProperty);
-
-				INHERIT_F_F (DataContextProperty);
-
-				if (parentPropertyId != -1)
-					return parent->GetValue (parentPropertyId);
-
-				if (types->IsSubclassOf (parent->GetObjectType(), Type::FRAMEWORKELEMENT))
+				if (types->IsSubclassOf (parent->GetObjectType(), Type::FRAMEWORKELEMENT)) {
+					INHERIT_F_F (LanguageProperty);
+					
+					INHERIT_F_F (DataContextProperty);
+					
+					if (parentPropertyId != -1)
+						return parent->GetValue (parentPropertyId);
+					
 					parent = ((FrameworkElement*)parent)->GetVisualParent();
-				else
+				} else {
 					parent = NULL;
+				}
 			}
 		}
 	}

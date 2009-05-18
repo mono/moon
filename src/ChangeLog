@@ -1,5 +1,11 @@
 2009-05-18  Larry Ewing  <lewing@novell.com>
 
+	* provider.cpp (GetPropertyValue): reorder the framework element
+	property lookup to avoid an extra type inquiry in a potentially
+	common case.
+
+2009-05-18  Larry Ewing  <lewing@novell.com>
+
 	* xaml.cpp (dependency_object_set_attributes): move the types
 	lookup outside the loop.
 
