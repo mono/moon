@@ -1,5 +1,11 @@
 2009-05-16  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (flush_char_data): verbatim mode cdata still needs to
+	be g_strstrip'ed, but we can't do it until right before we use it,
+	so we do it here.
+
+2009-05-16  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp (XamlElementInfo::SetIsCDataVerbatim,
 	XamlElementInfo::IsCDataVerbatim): new methods to set and get a
 	flag telling the cdata_handler to not collapse/remove

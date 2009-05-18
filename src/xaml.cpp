@@ -1604,6 +1604,10 @@ flush_char_data (XamlParserInfo *p)
 	if (!p->cdata || !p->current_element)
 		return;
 
+	if (p->current_element->info->IsCDataVerbatim()) {
+		p->cdata->str = g_strstrip (p->cdata->str);
+	}
+
 	if (p->current_element->element_type == XamlElementInstance::ELEMENT) {
 		if (!p->current_element->TrySetContentProperty (p, p->cdata->str) && p->cdata_content) {
 			parser_error (p, p->current_element->element_name, NULL, 2011,
