@@ -1,5 +1,15 @@
 2009-05-18  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/FrameworkElementTest.cs: For contentcontrols,
+	  the applied template is only cleared if the old or new
+	  content is a UIElement (frameworkelement?). The fallback
+	  'template' of a Grid + TextBlock is also reused every time.
+
+	* System.Windows.Controls/ListBoxTest.cs: Remove debug spew
+	  which shouldn't be there.
+
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ListBoxTest.cs: Add test to ensure
 	  we're applying the style in the right place.
 

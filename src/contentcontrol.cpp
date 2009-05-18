@@ -29,23 +29,37 @@ ContentControl::~ContentControl ()
 void
 ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
+	bool clearTemplate = false;
 	if (args->GetProperty ()->GetOwnerType () != Type::CONTENTCONTROL) {
 		Control::OnPropertyChanged (args, error);
 		return;
 	}
 	
 	if (args->GetId () == ContentControl::ContentProperty) {
-		ClearTemplate ();
-		if (GetContentSetsParent () && args->GetOldValue() && args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
-			args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
-			if (error->number)
-				return;
+		if (args->GetOldValue() && args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
+			clearTemplate = true;
+			if (GetContentSetsParent ()) {
+				args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
+				if (error->number)
+					return;
+			}
 		}
-		if (GetContentSetsParent () && args->GetNewValue() && args->GetNewValue()->Is(Type::FRAMEWORKELEMENT)) {
-			args->GetNewValue()->AsFrameworkElement()->SetLogicalParent (this, error);
-			if (error->number)
-				return;
+		if (args->GetNewValue() && args->GetNewValue()->Is(Type::FRAMEWORKELEMENT)) {
+			clearTemplate = true;
+			if (GetContentSetsParent ()) {
+				args->GetNewValue()->AsFrameworkElement()->SetLogicalParent (this, error);
+				if (error->number)
+					return;
+			}
 		}
+		if (!GetContentSetsParent () && args->GetNewValue () && args->GetNewValue()->Is (Type::DEPENDENCY_OBJECT) && !args->GetNewValue ()->Is (Type::FRAMEWORKELEMENT)) {
+			MoonError::FillIn (error, MoonError::ARGUMENT, "");
+			return;
+		}
+		
+		if (clearTemplate)
+			ClearTemplate ();
+
 		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->GetOldValue(), args->GetNewValue()));
 	}
 	

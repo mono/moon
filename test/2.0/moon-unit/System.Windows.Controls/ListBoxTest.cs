@@ -357,12 +357,7 @@ namespace MoonTest.System.Windows.Controls {
 			ListBox box = new ListBox ();
 			ListBoxItem item = new ListBoxItem ();
 			Assert.IsFalse ((bool)item.GetValue (ListBox.IsSelectionActiveProperty), "#1");
-			try {
-				Assert.Throws<InvalidOperationException> (() => item.SetValue (ListBox.IsSelectionActiveProperty, true));
-			} catch (Exception ex) {
-				Console.WriteLine (ex);
-				Console.ReadLine ();
-			}
+			Assert.Throws<InvalidOperationException> (() => item.SetValue (ListBox.IsSelectionActiveProperty, true));
 			Assert.IsFalse ((bool) item.GetValue (ListBox.IsSelectionActiveProperty), "#2");
 			box.Items.Add (item);
 			box.SelectedItem = item;

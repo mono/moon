@@ -58,7 +58,20 @@ namespace System.Windows.Controls
 	{ 
 		bool hasContent;
 		internal UIElement _contentRoot;
+		Grid _fallbackRoot;
+		TextBlock _fallbackText;
 
+		UIElement FallbackRoot {
+			get {
+				if (_fallbackRoot == null) {
+					_fallbackText = new TextBlock ();
+					_fallbackRoot = new Grid ();
+					_fallbackRoot.Children.Add (_fallbackText);
+				}
+				return _fallbackRoot;
+			}
+		}
+		
 #region Content
 		/// <summary> 
 		/// Gets or sets the data used to generate the contentPresenter elements of a 
@@ -91,9 +104,15 @@ namespace System.Windows.Controls
 			Debug.Assert(source != null, 
 				     "The source is not an instance of ContentPresenter!");
 
-			source.InvalidateMeasure ();
-			source.hasContent = false;
-			source.SetContentRoot (null);
+			// If the content is a UIElement, we have to clear the Template and wait for a re-render
+			// Otherwise we directly update the text in our textbox.
+			if (e.OldValue is UIElement || e.NewValue is UIElement) {
+				source.InvalidateMeasure ();
+				source.hasContent = false;
+				source.SetContentRoot (null);
+			} else {
+				source.PrepareContentPresenter ();
+			}
 		}
 #endregion Content
  
@@ -171,13 +190,8 @@ namespace System.Windows.Controls
 				newContentRoot = element;
 			}
 			else if (content != null) {
-				TextBlock elementText = new TextBlock();
-				elementText.Text = content.ToString();
-
-				Grid grid = new Grid();
-				grid.Children.Add (elementText);
-
-				newContentRoot = grid;
+				newContentRoot = FallbackRoot;
+				_fallbackText.Text = Content.ToString ();
 			}
 			
 			SetContentRoot (newContentRoot);

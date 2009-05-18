@@ -92,6 +92,156 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (String.Empty, fe.Name, "Name");
 			Assert.IsTrue (Double.IsNaN (fe.Width), "Width");
 		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void ChangeContentChangesTemplate ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <ContentControl.Template>
+      <ControlTemplate>
+        <Grid>
+          <ContentPresenter />
+        </Grid>
+      </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>
+");
+			// Check what happens going from UIElement -> UIElement
+			c.Content = new Rectangle ();
+			c.ApplyTemplate ();
+			CreateAsyncTest (c,
+				() => Assert.VisualChildren (c, "#1",
+					new VisualNode<Grid> ("#a",
+						new VisualNode<ContentPresenter> ("#b",
+							new VisualNode<Rectangle> ("#c")
+						)
+					)
+				),
+				() => {
+					c.Content = new Rectangle ();
+					Assert.VisualChildren (c, "#3");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ChangeContentChangesTemplate2 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <ContentControl.Template>
+      <ControlTemplate>
+        <Grid>
+          <ContentPresenter />
+        </Grid>
+      </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>
+");
+			// Check what happens going from UIElement -> non-UIElement
+			c.Content = new Rectangle ();
+			c.ApplyTemplate ();
+			CreateAsyncTest (c,
+				() => Assert.VisualChildren (c, "#1",
+					new VisualNode<Grid> ("#a",
+						new VisualNode<ContentPresenter> ("#b",
+							new VisualNode<Rectangle> ("#c")
+						)
+					)
+				),
+				() => {
+					c.Content = "I'm a string";
+					Assert.VisualChildren (c, "#3");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ChangeContentChangesTemplate3 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <ContentControl.Template>
+      <ControlTemplate>
+        <Grid>
+          <ContentPresenter />
+        </Grid>
+      </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>
+");
+			// Check what happens going from non-UIElement -> UIElement 
+			c.Content = "I'm a string";
+			c.ApplyTemplate ();
+			CreateAsyncTest (c,
+				() => Assert.VisualChildren (c, "#1",
+					new VisualNode<Grid> ("#a",
+						new VisualNode<ContentPresenter> ("#b",
+							new VisualNode<Grid> ("#c", (VisualNode []) null)
+						)
+					)
+				),
+				() => {
+					c.Content = new Rectangle ();
+					Assert.VisualChildren (c, "#3");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ChangeContentChangesTemplate4 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <ContentControl.Template>
+      <ControlTemplate>
+        <Grid>
+          <ContentPresenter />
+        </Grid>
+      </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>
+");
+			// Check what happens going from non-UIElement -> non-UIElement
+			c.Content = 5;
+			c.ApplyTemplate ();
+			DependencyObject childA = null;
+			DependencyObject childB = null;
+			TextBlock textA = null;
+			TextBlock textB = null;
+			CreateAsyncTest (c,
+				() => Assert.VisualChildren (c, "#1",
+					new VisualNode<Grid> ("#a",
+						new VisualNode<ContentPresenter> ("#b",
+							new VisualNode<Grid> ("#c", g => childA = g,
+								new VisualNode<TextBlock> ("#d", t => textA = t)
+							)
+						)
+					)
+				),
+				() => Assert.AreEqual ("5", textA.Text, "#2"),
+				() => {
+					c.Content = 8;
+					Assert.VisualChildren (c, "#3",
+						new VisualNode<Grid> ("#e",
+							new VisualNode<ContentPresenter> ("#f",
+								new VisualNode<Grid> ("#g", (grid) => childB = grid,
+									new VisualNode<TextBlock> ("#h", t => textB = t)
+								)
+							)
+						)
+					);
+				},
+				() => Assert.AreSame (childA, childB, "#4"),
+				() => Assert.AreSame (textA, textB, "#5"),
+				() => Assert.AreEqual ("8", textA.Text, "#6")
+			);
+		}
 
 		[TestMethod]
 		public void CursorTest ()
