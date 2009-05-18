@@ -1,3 +1,14 @@
+Changes from 2.0 preview 2 (1.9.1) to 2.0 preview 3 (1.9.2)
+
+* a number of name and static resource related exceptions have
+  been quashed, so a number of sites work a lot better.
+
+* smoothstreaming (http://www.iis.net/media/experiencesmoothstreaming)
+  should be working now.
+
+* the silverlight toolkit site (http://silverlight.net/samples/sl2/toolkitcontrolsamples/run/default.html)
+  is working.
+
 Changes from 2.0 preview 1 (1.9.0.1) to 2.0 preview 2 (1.9.1)
 =============================================================
 
