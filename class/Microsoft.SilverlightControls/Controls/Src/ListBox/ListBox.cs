@@ -42,7 +42,7 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the IsSelectionActive dependency property. 
         /// </summary>
-        public static readonly DependencyProperty IsSelectionActiveProperty = DependencyProperty.RegisterAttached(
+        public static readonly DependencyProperty IsSelectionActiveProperty = DependencyProperty.RegisterReadOnly (
             "IsSelectionActive", typeof(bool), typeof(ListBox), 
             new PropertyMetadata(new PropertyChangedCallback(OnIsSelectionActiveChanged))); 
 
@@ -73,11 +73,6 @@ namespace System.Windows.Controls
         /// Set to true iff the ProcessingSelectionPropertyChange method is executing (to prevent recursion)
         /// </summary> 
         private bool _processingSelectionPropertyChange;
-
-        /// <summary> 
-        /// Tracks whether changes to read-only DependencyProperties are allowed. 
-        /// </summary>
-        private bool _readOnlyDependencyPropertyChangesAllowed; 
 
         /// <summary>
         /// Tracks the ListBoxItem that just lost focus. 
@@ -113,20 +108,9 @@ namespace System.Windows.Controls
         /// </summary> 
         /// <param name="element">The element on which to set the attached property.</param> 
         /// <param name="value">The value to set.</param>
-        private static void SetIsSelectionActive(DependencyObject element, bool value) 
+        private static void SetIsSelectionActive(ListBox box, bool value) 
         {
-            ListBox listBox = element as ListBox;
-            Debug.Assert(null != listBox); 
-            Debug.Assert(!listBox._readOnlyDependencyPropertyChangesAllowed);
-            try
-            { 
-                listBox._readOnlyDependencyPropertyChangesAllowed = true; 
-                listBox.SetValue(IsSelectionActiveProperty, value);
-            } 
-            finally
-            {
-                listBox._readOnlyDependencyPropertyChangesAllowed = false; 
-            }
+            box .SetValueImpl (IsSelectionActiveProperty, value);
         }
  
         /// <summary> 
@@ -134,7 +118,7 @@ namespace System.Windows.Controls
         /// </summary> 
         public ListBox()
         {
-	    DefaultStyleKey = typeof (ListBox);
+        DefaultStyleKey = typeof (ListBox);
 #if WPF 
             KeyboardNavigation.SetDirectionalNavigation(this, KeyboardNavigationMode.Contained);
             KeyboardNavigation.SetTabNavigation(this, KeyboardNavigationMode.Once);
@@ -250,23 +234,6 @@ namespace System.Windows.Controls
             {
                 SelectedItem = listBoxItem.Item ?? listBoxItem; 
             }
-            // If necessary, update an invalidated SelectedIndex (but do not fire SelectionChanged)
-            else if (-1 != SelectedIndex) 
-            {
-                int trueSelectedIndex = Items.IndexOf(SelectedItem);
-                if (trueSelectedIndex != SelectedIndex) 
-                { 
-                    try
-                    { 
-                        _processingSelectionPropertyChange = true;
-                        SelectedIndex = Items.IndexOf(SelectedItem);
-                    } 
-                    finally
-                    {
-                        _processingSelectionPropertyChange = false; 
-                    } 
-                }
-            } 
         }
 
         /// <summary> 
@@ -385,13 +352,16 @@ namespace System.Windows.Controls
         {
             if (listBoxItem.IsSelected)
             {
+                Console.WriteLine ("I'm already selected");
                 if (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) 
                 {
+                    Console.WriteLine ("Unselected");
                     SelectedItem = null;
                 } 
             } 
             else
             { 
+                Console.WriteLine ("Selecting: {0}/{1}", listBoxItem.Name, listBoxItem.Content);
                 object item = listBoxItem.Item ?? listBoxItem;
                 SelectedItem = item;
                 ScrollIntoView(item); 
@@ -564,19 +534,6 @@ namespace System.Windows.Controls
         } 
 
         /// <summary>
-        /// Responds to the CollectionChanged event for SelectedItems 
-        /// </summary> 
-        /// <param name="sender">Source of the event.</param>
-        /// <param name="e">Provides data for NotifyCollectionChangedEventArgs.</param> 
-        private void OnSelectedItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (!_processingSelectionPropertyChange) 
-            {
-                throw new InvalidOperationException(Resource.ListBox_OnSelectedItemsCollectionChanged_WrongMode);
-            } 
-        } 
-
-        /// <summary>
         /// Perform the actions necessary to handle a selection property change. 
         /// </summary>
         /// <param name="oldValue">Old value of the property.</param> 
@@ -584,14 +541,14 @@ namespace System.Windows.Controls
         private void OnSelectedItemChanged(object oldValue, object newValue)
         { 
             if (oldValue != null) {
-		    ListBoxItem oldItem = GetListBoxItemForObject (oldValue);
- 		    if (oldItem != null)
-			    oldItem.IsSelected = false;
+                ListBoxItem oldItem = GetListBoxItemForObject (oldValue);
+                 if (oldItem != null)
+                    oldItem.IsSelected = false;
             }
             if (newValue != null) {
-		    ListBoxItem newItem = GetListBoxItemForObject (newValue);
- 		    if (newItem != null)
-			    newItem.IsSelected = true;
+                ListBoxItem newItem = GetListBoxItemForObject (newValue);
+                if (newItem != null)
+                    newItem.IsSelected = true;
             }
         }
 
@@ -645,7 +602,9 @@ namespace System.Windows.Controls
         private static void OnIsSelectionActiveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) 
         {
             ListBox listBox = d as ListBox; 
-            Debug.Assert(null != listBox);
+            if (listBox == null)
+                return;
+            
             Debug.Assert(typeof(bool).IsInstanceOfType(e.OldValue));
             Debug.Assert(typeof(bool).IsInstanceOfType(e.NewValue)); 
             listBox.OnIsSelectionActiveChanged((bool)e.OldValue, (bool)e.NewValue);
@@ -658,20 +617,13 @@ namespace System.Windows.Controls
         /// <param name="newValue">The value of the property after the change.</param>
         void OnIsSelectionActiveChanged(bool oldValue, bool newValue) 
         {
-            if (_readOnlyDependencyPropertyChangesAllowed)
-            { 
-                if (null != SelectedItem) 
-                {
-                    ListBoxItem selectedListBoxItem = GetListBoxItemForObject(SelectedItem); 
-                    if (null != selectedListBoxItem)
-                    {
-                        selectedListBoxItem.ChangeVisualState(); 
-                    }
-                }
-            } 
-            else 
+            if (null != SelectedItem) 
             {
-                throw new InvalidOperationException(Resource.ListBox_OnIsSelectionActiveChanged_ReadOnly); 
+                ListBoxItem selectedListBoxItem = GetListBoxItemForObject(SelectedItem); 
+                if (null != selectedListBoxItem)
+                {
+                    selectedListBoxItem.ChangeVisualState(); 
+                 }
             }
         }
  

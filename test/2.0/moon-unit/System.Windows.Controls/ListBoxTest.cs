@@ -350,6 +350,44 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsFalse (poker.Call_IsItemItsOwnContainerOverride (new ItemsControl ()), "itemscontrol");
 			Assert.IsFalse (poker.Call_IsItemItsOwnContainerOverride ("hi"), "string");
 		}
+		
+		[TestMethod]
+		public void IsSelectionActiveTest ()
+		{
+			ListBox box = new ListBox ();
+			ListBoxItem item = new ListBoxItem ();
+			Assert.IsFalse ((bool)item.GetValue (ListBox.IsSelectionActiveProperty), "#1");
+			try {
+				Assert.Throws<InvalidOperationException> (() => item.SetValue (ListBox.IsSelectionActiveProperty, true));
+			} catch (Exception ex) {
+				Console.WriteLine (ex);
+				Console.ReadLine ();
+			}
+			Assert.IsFalse ((bool) item.GetValue (ListBox.IsSelectionActiveProperty), "#2");
+			box.Items.Add (item);
+			box.SelectedItem = item;
+			Assert.IsFalse ((bool) item.GetValue (ListBox.IsSelectionActiveProperty), "#3");
+			box.SelectedIndex = -1;
+			Assert.IsFalse ((bool) item.GetValue (ListBox.IsSelectionActiveProperty), "#4");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IsSelectionActiveTest2 ()
+		{
+			ListBox box = new ListBox ();
+			box.Items.Add (new object ());
+			box.Items.Add (new object ());
+			box.ApplyTemplate ();
+
+			CreateAsyncTest (box, () => {
+			     Assert.IsFalse ((bool) box.GetValue (ListBox.IsSelectionActiveProperty), "#1");
+			     bool b = box.Focus ();
+			     Assert.IsFalse ((bool) box.GetValue (ListBox.IsSelectionActiveProperty), "#2");
+			     box.SelectedIndex = 0;
+				 Assert.IsFalse ((bool) box.GetValue (ListBox.IsSelectionActiveProperty), "#2");
+			 });
+		}
 
 		[TestMethod]
 		[Asynchronous]

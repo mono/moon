@@ -1,3 +1,9 @@
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: Nuke a bunch of depreciated
+	  code from ListBox and fix the implementation of
+	  IsSelectionActive to use DependencyProperty.RegisterReadOnly
+
 2009-05-06  Chris Toshok  <toshok@ximian.com>
 
 	* Controls/Src/ListBox/ListBox.cs (OnSelectedItemChanged): if
