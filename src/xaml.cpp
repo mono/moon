@@ -4568,6 +4568,7 @@ static void
 dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
 	int skip_attribute = -1;
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
 
 start_parse:
 	for (int i = 0; attr [i]; i += 2) {
@@ -4621,7 +4622,7 @@ start_parse:
 
 		DependencyProperty *prop = NULL;
 		if (atchname) {
-			Type *attached_type = Type::Find (atchname);
+			Type *attached_type = types->Find (atchname);
 			if (attached_type)
 				prop = DependencyProperty::GetDependencyProperty (attached_type->GetKind (), pname);
 		} else {
@@ -4694,7 +4695,7 @@ start_parse:
 			Type::Kind propKind = prop->GetPropertyType ();
 			Type::Kind itemKind = item->info->GetKind();
 
-			if (need_managed || is_managed_kind (propKind) || Type::Find (itemKind)->IsCustomType () || (v && is_managed_kind (v->GetKind ()))) {
+			if (need_managed || is_managed_kind (propKind) || types->Find (itemKind)->IsCustomType () || (v && is_managed_kind (v->GetKind ()))) {
 				if (!v_set) {
 					v = new Value (g_strdup (attr [i + 1])); // Note that we passed the non escaped value, not attr_value
 					v_set = true;
