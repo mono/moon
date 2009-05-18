@@ -231,11 +231,9 @@ namespace System.Windows.Controls {
 				DependencyObject container = null;
 				
 				if (IsItemItsOwnContainerOverride (item)) {
-					Console.WriteLine("item is its own container");
 					container = (DependencyObject) item;
 				}
 				else {
-					Console.WriteLine ("creating a container for it.");
 					container = GetContainerForItemOverride ();
 					
 					ContentControl c = container as ContentControl;

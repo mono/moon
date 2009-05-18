@@ -1,3 +1,7 @@
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: Cosmetic - Remove some C.W.Ls
+
 2009-05-15  Alan McGovern  <amcgovern@novell.com>
 
 	* RowDefinition.cs:
