@@ -1,3 +1,7 @@
+2009-05-19  Jb Evain  <jbevain@novell.com>
+
+	* Visibility.cs: change the underlying type to byte.
+
 2009-05-16  Alan McGovern  <amcgovern@novell.com>
 
 	* Style.cs:
