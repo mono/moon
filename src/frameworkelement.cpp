@@ -657,7 +657,8 @@ FrameworkElement::UpdateLayout ()
 				LOG_LAYOUT ("FrameworkElement::UpdateLayout: element (%p) not yet loaded\n", child);
 			}
 
-			if (child->GetVisibility () != VisibilityVisible) {
+			if ((child->flags & UIElement::RENDER_VISIBLE) == 0) {
+				
 				measure_walker.SkipBranch ();
 				continue;
 			}
@@ -681,7 +682,7 @@ FrameworkElement::UpdateLayout ()
 			if (!arrange_list->IsEmpty ())
 				continue;
 			
-			if (LayoutInformation::GetLastRenderSize (child))
+			if (child->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
 				size_list->Prepend (new UIElementNode (child));
 			
 			if (!size_list->IsEmpty ())

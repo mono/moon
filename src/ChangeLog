@@ -1,3 +1,14 @@
+2009-05-18  Larry Ewing  <lewing@novell.com>
+
+	* dirty.cpp:
+	* uielement.cpp:
+	* frameworkelement.cpp: for the time being use the needs* flags on
+	surface to skip the UpdateLayout logic when the tree is clean.
+	Optimize a couple of the property reads inside the deep walk.
+	
+	* provider.cpp (GetPropertyValue): rework some more of the checks
+	to remove some other remaining unneeded checks.
+
 2009-05-18  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyproperty.g.cpp (Types::RegisterNativeProperties):

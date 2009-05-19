@@ -434,6 +434,11 @@ Surface::ProcessUpDirtyElements ()
 void
 Surface::UpdateLayout ()
 {
+	if (!needs_measure && !needs_arrange)
+		return;
+
+	needs_measure = needs_arrange = false;
+
 	for (int i = 0; i < layers->GetCount (); i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
 

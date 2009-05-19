@@ -238,9 +238,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 		if (types->IsSubclassOf (parent->GetObjectType(), Type::CONTROL)) \
 			parentPropertyId = Control::p;			\
 		else if (types->IsSubclassOf (parent->GetObjectType(), Type::TEXTBLOCK)) \
-			parentPropertyId = TextBlock::p;			\
-		else if (types->IsSubclassOf (parent->GetObjectType(), Type::INLINE)) \
-			parentPropertyId = Inline::p;			\
+			parentPropertyId = TextBlock::p;		\
 	}								\
 	} G_STMT_END
 
@@ -248,9 +246,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 #define INHERIT_I_T(p) \
 	G_STMT_START {							\
 	if (property->GetId () == Inline::p) {				\
-									\
-		if (types->IsSubclassOf (parent->GetObjectType(), Type::TEXTBLOCK)) \
-			parentPropertyId = TextBlock::p;			\
+		parentPropertyId = TextBlock::p;			\
 	}								\
 	} G_STMT_END
 
@@ -275,25 +271,20 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 				INHERIT_CTI_CTI (FontWeightProperty);
 				INHERIT_CTI_CTI (FontSizeProperty);
 
-				if (types->IsSubclassOf (parent->GetObjectType(), Type::FRAMEWORKELEMENT)) {
-					INHERIT_F_F (LanguageProperty);
+				INHERIT_F_F (LanguageProperty);
+				INHERIT_F_F (DataContextProperty);
 					
-					INHERIT_F_F (DataContextProperty);
-					
-					if (parentPropertyId != -1)
-						return parent->GetValue (parentPropertyId);
-					
-					parent = ((FrameworkElement*)parent)->GetVisualParent();
-				} else {
-					parent = NULL;
-				}
+				if (parentPropertyId != -1)
+					return parent->GetValue (types->GetProperty (parentPropertyId));
+
+				parent = ((FrameworkElement*)parent)->GetVisualParent();
 			}
 		}
 	}
 	else if (types->IsSubclassOf (obj->GetObjectType(), Type::INLINE)) {
 		// skip collections
 		DependencyObject *new_parent = obj->GetParent();
-		while (new_parent && types->IsSubclassOf (new_parent->GetObjectType(), Type::COLLECTION))
+		while (new_parent && !types->IsSubclassOf (new_parent->GetObjectType(), Type::TEXTBLOCK))
 			new_parent = new_parent->GetParent ();
 		parent = new_parent;
 

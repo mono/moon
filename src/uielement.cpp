@@ -515,12 +515,20 @@ void
 UIElement::InvalidateMeasure ()
 {
 	dirty_flags |= DirtyMeasure;
+
+	Surface *surface;
+	if ((surface = GetSurface ()))
+		surface->needs_measure = true;
 }
 
 void
 UIElement::InvalidateArrange ()
 {
 	dirty_flags |= DirtyArrange;
+
+	Surface *surface;
+	if ((surface = GetSurface ()))
+		surface->needs_arrange = true;
 }
 
 void
