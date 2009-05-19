@@ -315,6 +315,46 @@ enum EasingMode {
 	EasingModeInOut
 };
 
+
+// enums used in the pipeline
+// there is no string <-> enum conversions for these
+
+enum MediaSourceType {
+	MediaSourceTypeFile = 1,
+	MediaSourceTypeLive = 2,
+	MediaSourceTypeProgressive = 3,
+	MediaSourceTypeMemory = 4,
+	MediaSourceTypeQueueMemory = 5,
+	MediaSourceTypeManagedStream = 6,
+};
+
+enum MediaStreamSourceDiagnosticKind {
+    BufferLevelInMilliseconds = 1,
+    BufferLevelInBytes = 2
+};
+
+enum MoonPixelFormat {
+	MoonPixelFormatNone = 0,
+	MoonPixelFormatRGB32,
+	MoonPixelFormatRGBA32,
+	MoonPixelFormatYUV420P
+};
+
+enum MediaStreamType {
+	MediaTypeAudio = 0,
+	MediaTypeVideo = 1,
+	MediaTypeMarker = 2
+};
+
+enum MediaFrameState {
+	MediaFramePlanar    = 1 << 0,
+	MediaFrameDecoded   = 1 << 1,
+	MediaFrameDemuxed   = 1 << 2,
+	MediaFrameConverted = 1 << 3,
+	MediaFrameKeyFrame  = 1 << 4,
+	MediaFrameMarker    = 1 << 5,
+};
+
 G_BEGIN_DECLS
 
 int enums_str_to_int (const char *prop_name, const char *str);

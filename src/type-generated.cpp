@@ -273,6 +273,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::EVENTTRIGGER] = new Type (Type::EVENTTRIGGER, Type::TRIGGERBASE, false, "EventTrigger", "EVENTTRIGGER", 0, 1, NULL, (create_inst_func *) event_trigger_new, "Actions");
 	types [(int) Type::EXCEPTIONROUTEDEVENTARGS] = new Type (Type::EXCEPTIONROUTEDEVENTARGS, Type::ROUTEDEVENTARGS, false, "ExceptionRoutedEventArgs", "EXCEPTIONROUTEDEVENTARGS", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::EXPONENTIALEASE] = new Type (Type::EXPONENTIALEASE, Type::EASINGFUNCTIONBASE, false, "ExponentialEase", "EXPONENTIALEASE", 0, 1, NULL, (create_inst_func *) exponential_ease_new, NULL);
+	types [(int) Type::EXTERNALDECODER] = new Type (Type::EXTERNALDECODER, Type::IMEDIADECODER, false, "ExternalDecoder", "EXTERNALDECODER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::EXTERNALDEMUXER] = new Type (Type::EXTERNALDEMUXER, Type::IMEDIADEMUXER, false, "ExternalDemuxer", "EXTERNALDEMUXER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::FFMPEGDECODER] = new Type (Type::FFMPEGDECODER, Type::IMEDIADECODER, false, "FfmpegDecoder", "FFMPEGDECODER", 0, 1, NULL, NULL, NULL);
 	types [(int) Type::FFMPEGDEMUXER] = new Type (Type::FFMPEGDEMUXER, Type::IMEDIADEMUXER, false, "FfmpegDemuxer", "FFMPEGDEMUXER", 0, 1, NULL, NULL, NULL);

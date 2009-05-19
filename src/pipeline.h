@@ -149,40 +149,6 @@ typedef gint32 MediaResult;
 
 #define MEDIA_SUCCEEDED(x) (((x) <= 0))
 
-#define FRAME_PLANAR (1 << 0)
-#define FRAME_DECODED (1 << 1)
-#define FRAME_DEMUXED (1 << 2)
-#define FRAME_CONVERTED (1 << 3)
-#define FRAME_KEYFRAME (1 << 4)
-#define FRAME_MARKER (1 << 6)
-
-enum MediaSourceType {
-	MediaSourceTypeFile = 1,
-	MediaSourceTypeLive = 2,
-	MediaSourceTypeProgressive = 3,
-	MediaSourceTypeMemory = 4,
-	MediaSourceTypeQueueMemory = 5,
-	MediaSourceTypeManagedStream = 6,
-};
-
-enum MediaStreamSourceDiagnosticKind {
-    BufferLevelInMilliseconds = 1,
-    BufferLevelInBytes = 2
-};
-
-enum MoonPixelFormat {
-	MoonPixelFormatNone = 0,
-	MoonPixelFormatRGB32,
-	MoonPixelFormatRGBA32,
-	MoonPixelFormatYUV420P
-};
-
-enum MediaStreamType {
-	MediaTypeAudio = 0,
-	MediaTypeVideo = 1,
-	MediaTypeMarker = 2
-};
-
 typedef MediaResult MediaCallback (MediaClosure *closure);
 
 #include "list.h"
@@ -325,6 +291,8 @@ class DecoderInfo : public MediaInfo {
 public:
 	virtual bool Supports (const char *codec) = 0;
 	virtual IMediaDecoder *Create (Media *media, IMediaStream *stream) = 0;
+	
+	virtual ~DecoderInfo ()  {}
 };
 
 class DemuxerInfo : public MediaInfo  {
@@ -404,6 +372,7 @@ public:
 	void SetMedia (Media *value);
 
 	void ReportErrorOccurred (ErrorEventArgs *args);
+	/* @GenerateCBinding */
 	void ReportErrorOccurred (const char *message);
 	void ReportErrorOccurred (MediaResult result);
 	
@@ -447,6 +416,7 @@ public:
 	
 	//	Video, Audio, Markers, etc.
 	virtual MediaStreamType GetType () = 0; // TODO: This should be removed, it clashes with GetType in EventObject.
+	/* @GenerateCBinding */
 	virtual MediaStreamType GetStreamType () { return GetType (); }
 	const char *GetStreamTypeName ();
 	
@@ -457,6 +427,7 @@ public:
 	//	A file might have several audio streams, 
 	//	and live streams might have several video streams with different bitrates.
 	bool IsEnabled () { return enabled; }
+	/* @GenerateCBinding */
 	const char *GetCodec () { return codec; }
 	
 	//	User defined context value.
@@ -677,6 +648,7 @@ public:
 	// Registration functions
 	// This class takes ownership of the infos and will delete them (not free) when the Media is shutdown.
 	static void RegisterDemuxer (DemuxerInfo *info);
+	/* @GenerateCBinding */
 	static void RegisterDecoder (DecoderInfo *info);
 	static void RegisterConverter (ConverterInfo *info);
 	
@@ -702,13 +674,14 @@ public:
 	MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts);
 	void Dispose ();
 	
-	void AddState (guint16 state) { this->state |= state; } // There's no way of "going back" to an earlier state 
-	bool IsDecoded () { return (state & FRAME_DECODED) == FRAME_DECODED; }
-	bool IsDemuxed () { return (state & FRAME_DEMUXED) == FRAME_DEMUXED; }
-	bool IsConverted () { return (state & FRAME_CONVERTED) == FRAME_CONVERTED; }
-	bool IsPlanar () { return (state & FRAME_PLANAR) == FRAME_PLANAR; }
-	bool IsKeyFrame () { return (state & FRAME_KEYFRAME) == FRAME_KEYFRAME; }
-	bool IsMarker () { return (state & FRAME_MARKER) == FRAME_MARKER; }
+	/* @GenerateCBinding */
+	void AddState (MediaFrameState state) { this->state |= (guint16) state; } // There's no way of "going back" to an earlier state 
+	bool IsDecoded () { return (((MediaFrameState) state) & MediaFrameDecoded) == MediaFrameDecoded; }
+	bool IsDemuxed () { return (((MediaFrameState) state) & MediaFrameDemuxed) == MediaFrameDemuxed; }
+	bool IsConverted () { return (((MediaFrameState) state) & MediaFrameConverted) == MediaFrameConverted; }
+	bool IsPlanar () { return (((MediaFrameState) state) & MediaFramePlanar) == MediaFramePlanar; }
+	bool IsKeyFrame () { return (((MediaFrameState) state) & MediaFrameKeyFrame) == MediaFrameKeyFrame; }
+	bool IsMarker () { return (((MediaFrameState) state) & MediaFrameMarker) == MediaFrameMarker; }
 	
 	IMediaStream *stream;
 	MediaMarker *marker;
@@ -734,6 +707,40 @@ public:
 	// 0 = the size specified in the stream
 	gint32 width;
 	gint32 height;
+	
+	/* @GenerateCBinding */
+	guint32 GetBufLen () { return buflen; }
+	/* @GenerateCBinding */
+	void SetBufLen (guint32 value) { buflen = value; }
+	/* @GenerateCBinding */
+	guint8* GetBuffer () { return buffer; }
+	/* @GenerateCBinding */
+	void SetBuffer (guint8 *value) { buffer = value; }
+	/* @GenerateCBinding */
+	guint64 GetPts () { return pts; }
+	/* @GenerateCBinding */
+	void SetPts (guint64 value) { pts = value; }
+	
+	/* @GenerateCBinding */
+	gint32 GetWidth () { return width; }
+	/* @GenerateCBinding */
+	void SetWidth (gint32 value) { width = value; }
+	/* @GenerateCBinding */
+	gint32 GetHeight () { return height; }
+	/* @GenerateCBinding */
+	void SetHeight (gint32 value) { height = value; }
+	/* @GenerateCBinding */
+	void SetDataStride (guint8 *a, guint8 *b, guint8 *c, guint8 *d);
+	/* @GenerateCBinding */
+	void SetSrcStride (int a, int b, int c, int d);
+	/* @GenerateCBinding */
+	void SetSrcSlideY (int value);
+	/* @GenerateCBinding */
+	void SetSrcSlideH (int value);
+	/* @GenerateCBinding */
+	void SetDecoderSpecificData (void *value) { decoder_specific_data = value; }
+	
+	
 };
 
 class MediaMarker : public EventObject {
@@ -866,10 +873,6 @@ protected:
 
 	virtual void DecodeFrameAsyncInternal (MediaFrame *frame) = 0;
 	virtual void OpenDecoderAsyncInternal () = 0;
-	void ReportDecodeFrameCompleted (MediaFrame *frame);
-	void ReportOpenDecoderCompleted ();
-	
-	void SetPixelFormat (MoonPixelFormat value) { pixel_format = value; }
 	
 public:
 	IMediaDecoder (Type::Kind kind, Media *media, IMediaStream *stream);
@@ -881,6 +884,13 @@ public:
 	virtual bool HasDelayedFrame () { return false; }
 	
 	virtual const char *GetName () { return GetTypeName (); }
+	
+	/* @GenerateCBinding */
+	void ReportDecodeFrameCompleted (MediaFrame *frame);
+	/* @GenerateCBinding */
+	void ReportOpenDecoderCompleted ();
+	/* @GenerateCBinding */
+	void SetPixelFormat (MoonPixelFormat value) { pixel_format = value; }
 	
 	void DecodeFrameAsync (MediaFrame *frame);
 	void OpenDecoderAsync ();
@@ -1190,16 +1200,18 @@ public:
 };
  
 class AudioStream : public IMediaStream {
-protected:
-	virtual ~AudioStream () {}
-
-public:
+private:
 	int bits_per_sample;
 	int block_align;
 	int sample_rate;
 	int channels;
 	int bit_rate;
 	
+protected:
+	virtual ~AudioStream () {}
+
+public:
+
 	AudioStream (Media *media);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -1275,6 +1287,96 @@ public:
 	gint32 AddStream (IMediaStream *stream);
 	
 	virtual const char *GetName () { return "ExternalDemuxer"; }
+};
+
+/*
+ * ExternalDecoder
+ */
+
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_DecodeFrameAsyncCallback) (void *instance, MediaFrame *frame);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_OpenDecoderAsyncCallback) (void *instance);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_CleanupCallback) (void *instance, MediaFrame *frame);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_CleanStateCallback) (void *instance);
+/* @CBindingRequisite */
+typedef bool (* ExternalDecoder_HasDelayedFrameCallback) (void *instance);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_DisposeCallback) (void *instance);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_DtorCallback) (void *instance);
+
+class ExternalDecoder : public IMediaDecoder {
+private:
+	void *instance;
+	char *name;
+	ExternalDecoder_DecodeFrameAsyncCallback decode_frame_async;
+	ExternalDecoder_OpenDecoderAsyncCallback open_decoder_async;
+	ExternalDecoder_CleanupCallback cleanup;
+	ExternalDecoder_CleanStateCallback clean_state;
+	ExternalDecoder_HasDelayedFrameCallback has_delayed_frame;
+	ExternalDecoder_DisposeCallback dispose;
+	ExternalDecoder_DtorCallback dtor;
+	
+protected:
+	virtual ~ExternalDecoder ();
+	
+	virtual void DecodeFrameAsyncInternal (MediaFrame *frame);
+	virtual void OpenDecoderAsyncInternal ();
+	
+public:
+	/* @GenerateCBinding */
+	ExternalDecoder (Media *media, IMediaStream *stream, void *instance, const char *name,
+		ExternalDecoder_DecodeFrameAsyncCallback decode_frame_async,
+		ExternalDecoder_OpenDecoderAsyncCallback open_decoder_async,
+		ExternalDecoder_CleanupCallback cleanup,
+		ExternalDecoder_CleanStateCallback clean_state,
+		ExternalDecoder_HasDelayedFrameCallback has_delayed_frame,
+		ExternalDecoder_DisposeCallback dispose,
+		ExternalDecoder_DtorCallback dtor);
+	
+	virtual void Dispose ();
+	
+public:
+	// If MediaFrame->decoder_specific_data is non-NULL, this method is called in ~MediaFrame.
+	virtual void Cleanup (MediaFrame *frame);
+	virtual void CleanState ();
+	virtual bool HasDelayedFrame ();
+	
+	virtual const char *GetName () { return name; }
+};
+
+/*
+ * ExternalDecoderInfo
+ */
+
+/* @CBindingRequisite */
+typedef bool (* ExternalDecoderInfo_SupportsCallback) (void *instance, const char *codec);
+/* @CBindingRequisite */
+typedef IMediaDecoder * (* ExternalDecoderInfo_Create) (void *instance, Media *media, IMediaStream *stream);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoderInfo_dtor) (void *instance);
+
+class ExternalDecoderInfo : public DecoderInfo {
+private:
+	void *instance;
+	char *name;
+	ExternalDecoderInfo_SupportsCallback supports;
+	ExternalDecoderInfo_Create create;
+	ExternalDecoderInfo_dtor dtor;
+	
+public:
+	/* @GenerateCBinding */
+	ExternalDecoderInfo (void *instance, const char *name, ExternalDecoderInfo_SupportsCallback supports, ExternalDecoderInfo_Create create, ExternalDecoderInfo_dtor dtor);
+
+	virtual bool Supports (const char *codec);
+	virtual IMediaDecoder *Create (Media *media, IMediaStream *stream);
+	
+	virtual ~ExternalDecoderInfo ();
+
+	virtual const char *GetName () { return name; }
 };
 
 /*

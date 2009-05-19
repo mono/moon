@@ -331,7 +331,7 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p): got picture, actual pts: %" G_GUINT64_FORMAT ", has delayed frame: %i, prev_pts: %" G_GUINT64_FORMAT " ms\n", 
 			mf, MilliSeconds_FromPts (mf->pts), has_delayed_frame, MilliSeconds_FromPts (prev_pts));
 
-		mf->AddState (FRAME_PLANAR);
+		mf->AddState (MediaFramePlanar);
 		
 		g_free (mf->buffer);
 		mf->buffer = NULL;
@@ -458,7 +458,7 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 		return;
 	}
 	
-	mf->AddState (FRAME_DECODED);
+	mf->AddState (MediaFrameDecoded);
 	
 	ReportDecodeFrameCompleted (mf);
 }

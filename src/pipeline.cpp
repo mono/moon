@@ -153,7 +153,7 @@ Media::RegisterMSCodecs (void)
 	register_codec reg;
 	void *dl;
 	char *libmscodecs_path = NULL;
-	const char *functions [] = {"register_mswma", "register_mswmv", "register_msmp3"};
+	const char *functions [] = {"register_codec_pack", NULL};
 	const gchar *home = g_get_home_dir ();
 	registering_ms_codecs = true;
 
@@ -175,7 +175,7 @@ Media::RegisterMSCodecs (void)
 	if (dl != NULL) {
 		LOG_CODECS ("Moonlight: Loaded mscodecs from: %s.\n", libmscodecs_path);
 			
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; functions [i] != NULL; i++) {
 			reg = (register_codec) dlsym (dl, functions [i]);
 			if (reg != NULL) {
 				(*reg) (MOONLIGHT_CODEC_ABI_VERSION);
@@ -2758,6 +2758,36 @@ MediaFrame::Dispose ()
 	EventObject::Dispose ();
 }
 
+void
+MediaFrame::SetSrcSlideY (int value)
+{
+	srcSlideY = value;
+}
+
+void
+MediaFrame::SetSrcSlideH (int value)
+{
+	srcSlideH = value;
+}
+
+void
+MediaFrame::SetSrcStride (int a, int b, int c, int d)
+{
+	srcStride [0] = a;
+	srcStride [1] = b;
+	srcStride [2] = c;
+	srcStride [3] = d;
+}
+
+void
+MediaFrame::SetDataStride (guint8* a, guint8* b, guint8* c, guint8* d)
+{
+	data_stride [0] = a;
+	data_stride [1] = b;
+	data_stride [2] = c;
+	data_stride [3] = d;
+}
+
 /*
  * IMediaObject.EventData
  */
@@ -3550,7 +3580,7 @@ PassThroughDecoder::OpenDecoderAsyncInternal ()
 void
 PassThroughDecoder::DecodeFrameAsyncInternal (MediaFrame *frame)
 {
-	frame->AddState (FRAME_DECODED);
+	frame->AddState (MediaFrameDecoded);
 	if (GetPixelFormat () == MoonPixelFormatYUV420P) {
 		VideoStream *vs = (VideoStream *) GetStream ();
 
@@ -3565,7 +3595,7 @@ PassThroughDecoder::DecodeFrameAsyncInternal (MediaFrame *frame)
 		frame->srcSlideY = frame->width;
 		frame->srcSlideH = frame->height;
 
-		frame->AddState (FRAME_PLANAR);
+		frame->AddState (MediaFramePlanar);
 	}
 	ReportDecodeFrameCompleted (frame);
 }
@@ -3620,7 +3650,7 @@ NullDecoder::DecodeVideoFrame (MediaFrame *frame)
 	frame->buflen = logo_size;
 	frame->buffer = (guint8*) g_malloc (frame->buflen);
 	memcpy (frame->buffer, logo, frame->buflen);
-	frame->AddState (FRAME_DECODED);
+	frame->AddState (MediaFrameDecoded);
 	
 	//printf ("NullVideoDecoder::DecodeFrame () pts: %" G_GUINT64_FORMAT ", w: %i, h: %i\n", frame->pts, w, h);
 	
@@ -3655,7 +3685,7 @@ NullDecoder::DecodeAudioFrame (MediaFrame *frame)
 	frame->buflen = data_size;
 	frame->buffer = (guint8 *) g_malloc0 (frame->buflen);
 	
-	frame->AddState (FRAME_DECODED);
+	frame->AddState (MediaFrameDecoded);
 	
 	return MEDIA_SUCCESS;
 }
@@ -3893,4 +3923,103 @@ AudioStream::AudioStream (Media *media, int codec_id, int bits_per_sample, int b
 	this->extra_data_size = extra_data_size;
 }
 
+/*
+ * ExternalDecoder
+ */
 
+ExternalDecoder::ExternalDecoder (Media *media, IMediaStream *stream, void *instance, const char *name,
+		ExternalDecoder_DecodeFrameAsyncCallback decode_frame_async,
+		ExternalDecoder_OpenDecoderAsyncCallback open_decoder_async,
+		ExternalDecoder_CleanupCallback cleanup,
+		ExternalDecoder_CleanStateCallback clean_state,
+		ExternalDecoder_HasDelayedFrameCallback has_delayed_frame,
+		ExternalDecoder_DisposeCallback dispose,
+		ExternalDecoder_DtorCallback dtor)
+	: IMediaDecoder (Type::EXTERNALDECODER, media, stream)
+{
+	this->instance = instance;
+	this->name = g_strdup (name);
+	this->decode_frame_async = decode_frame_async;
+	this->open_decoder_async = open_decoder_async;
+	this->cleanup = cleanup;
+	this->clean_state = clean_state;
+	this->has_delayed_frame = has_delayed_frame;
+	this->dispose = dispose;
+	this->dtor = dtor;
+}
+	
+ExternalDecoder::~ExternalDecoder ()
+{
+	dtor (instance);
+	g_free (name);
+}
+	
+void
+ExternalDecoder::DecodeFrameAsyncInternal (MediaFrame *frame)
+{
+	decode_frame_async (instance, frame);
+}
+
+void
+ExternalDecoder::OpenDecoderAsyncInternal ()
+{
+	open_decoder_async (instance);
+}
+	
+void
+ExternalDecoder::Dispose ()
+{
+	dispose (instance);
+	
+	IMediaDecoder::Dispose ();
+}
+
+void
+ExternalDecoder::Cleanup (MediaFrame *frame)
+{
+	cleanup (instance, frame);
+}
+
+void
+ExternalDecoder::CleanState ()
+{
+	clean_state (instance);
+}
+
+bool
+ExternalDecoder::HasDelayedFrame ()
+{
+	return has_delayed_frame (instance);
+}
+
+/*
+ * ExternalDecoderInfo
+ */
+
+ExternalDecoderInfo::ExternalDecoderInfo (void *instance, const char *name, ExternalDecoderInfo_SupportsCallback supports, ExternalDecoderInfo_Create create, ExternalDecoderInfo_dtor dtor)
+{
+	this->instance = instance;
+	this->supports = supports;
+	this->create = create;
+	this->dtor = dtor;
+	this->name = g_strdup (name);
+}
+
+bool 
+ExternalDecoderInfo::Supports (const char *codec)
+{
+	return supports (instance, codec);
+}
+
+IMediaDecoder *
+ExternalDecoderInfo::Create (Media *media, IMediaStream *stream)
+{
+	return create (instance, media, stream);
+}
+
+ExternalDecoderInfo::~ExternalDecoderInfo ()
+{
+	if (dtor != NULL)
+		dtor (instance);
+	g_free (name);
+}

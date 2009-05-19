@@ -1,12 +1,21 @@
 2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
-	* audio.cpp:
-	* mediaplayer.cpp:
+	* pipeline.cpp|h: Add an ExternalDecoder which takes a list of
+	function pointers to call whenever the corresponding virtual method
+	is called.
+
+	* enums.h: Move enums from the pipeline here (makes it easier to 
+	create c bindings for methods taking enums)
+
 	* mp3.cpp:
 	* pipeline-asf.cpp:
-	* pipeline-ffmpeg.cpp:
-	* pipeline.cpp|h: Add accessors for fields in VideoStream,
-	AudioStream and MediaFrame.
+	* pipeline-ffmpeg.cpp: Update accccording to enum changes.
+
+	* codec-version.h.in: Bump ABI version.
+
+	* value.h:
+	* cbinding.cpp|h:
+	* type-generated.cpp: Regenerated.
 
 2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
@@ -15,8 +24,8 @@
 	* mp3.cpp:
 	* pipeline-asf.cpp:
 	* pipeline-ffmpeg.cpp:
-	* pipeline.cpp|h: Add accessors for fields in VideoStream
-	and AudioStream.
+	* pipeline.cpp|h: Add accessors for fields in VideoStream,
+	AudioStream and MediaFrame.
 	* cbinding.cpp|h: Regenerated.
 
 2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>

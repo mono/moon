@@ -473,7 +473,7 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	frame->pts = reader->Pts ();
 	//frame->duration = reader->Duration ();
 	if (reader->IsKeyFrame ())
-		frame->AddState (FRAME_KEYFRAME);
+		frame->AddState (MediaFrameKeyFrame);
 	frame->buflen = reader->Size ();
 	frame->buffer = (guint8 *) g_try_malloc (frame->buflen + frame->stream->min_padding);
 	
@@ -491,7 +491,7 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 		return;
 	}
 	
-	frame->AddState (FRAME_DEMUXED);
+	frame->AddState (MediaFrameDemuxed);
 	
 	ReportGetFrameCompleted (frame);
 	

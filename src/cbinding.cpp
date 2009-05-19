@@ -1775,6 +1775,26 @@ exponential_ease_new (void)
 
 
 /**
+ * ExternalDecoder
+ **/
+ExternalDecoder *
+external_decoder_new (Media *media, IMediaStream *stream, void *instance, const char *name, ExternalDecoder_DecodeFrameAsyncCallback decode_frame_async, ExternalDecoder_OpenDecoderAsyncCallback open_decoder_async, ExternalDecoder_CleanupCallback cleanup, ExternalDecoder_CleanStateCallback clean_state, ExternalDecoder_HasDelayedFrameCallback has_delayed_frame, ExternalDecoder_DisposeCallback dispose, ExternalDecoder_DtorCallback dtor)
+{
+	return new ExternalDecoder (media, stream, instance, name, decode_frame_async, open_decoder_async, cleanup, clean_state, has_delayed_frame, dispose, dtor);
+}
+
+
+/**
+ * ExternalDecoderInfo
+ **/
+ExternalDecoderInfo *
+external_decoder_info_new (void *instance, const char *name, ExternalDecoderInfo_SupportsCallback supports, ExternalDecoderInfo_Create create, ExternalDecoderInfo_dtor dtor)
+{
+	return new ExternalDecoderInfo (instance, name, supports, create, dtor);
+}
+
+
+/**
  * ExternalDemuxer
  **/
 gint32
@@ -2044,6 +2064,39 @@ image_source_new (void)
 
 
 /**
+ * IMediaDecoder
+ **/
+void
+imedia_decoder_report_decode_frame_completed (IMediaDecoder *instance, MediaFrame *frame)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ReportDecodeFrameCompleted (frame);
+}
+
+
+void
+imedia_decoder_report_open_decoder_completed (IMediaDecoder *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ReportOpenDecoderCompleted ();
+}
+
+
+void
+imedia_decoder_set_pixel_format (IMediaDecoder *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetPixelFormat ((MoonPixelFormat) value);
+}
+
+
+/**
  * IMediaDemuxer
  **/
 void
@@ -2116,6 +2169,123 @@ imedia_object_get_media_reffed (IMediaObject *instance)
 		return NULL;
 	
 	return instance->GetMediaReffed ();
+}
+
+
+void
+imedia_object_report_error_occurred (IMediaObject *instance, const char *message)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ReportErrorOccurred (message);
+}
+
+
+/**
+ * IMediaStream
+ **/
+const char *
+imedia_stream_get_codec (IMediaStream *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetCodec ();
+}
+
+
+int
+imedia_stream_get_codec_id (IMediaStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetCodecId ();
+}
+
+
+guint64
+imedia_stream_get_duration (IMediaStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (guint64) 0;
+	
+	return instance->GetDuration ();
+}
+
+
+void *
+imedia_stream_get_extra_data (IMediaStream *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetExtraData ();
+}
+
+
+int
+imedia_stream_get_extra_data_size (IMediaStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetExtraDataSize ();
+}
+
+
+int
+imedia_stream_get_stream_type (IMediaStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (MediaStreamType) 0;
+	
+	return instance->GetStreamType ();
+}
+
+
+void
+imedia_stream_set_codec_id (IMediaStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetCodecId (value);
+}
+
+
+void
+imedia_stream_set_duration (IMediaStream *instance, guint64 value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetDuration (value);
+}
+
+
+void
+imedia_stream_set_extra_data (IMediaStream *instance, void *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetExtraData (value);
+}
+
+
+void
+imedia_stream_set_extra_data_size (IMediaStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetExtraDataSize (value);
 }
 
 
@@ -2342,6 +2512,16 @@ matrix_transform_new (void)
 
 
 /**
+ * Media
+ **/
+void
+media_register_decoder (DecoderInfo *info)
+{
+	Media::RegisterDecoder (info);
+}
+
+
+/**
  * MediaAttribute
  **/
 MediaAttribute *
@@ -2464,10 +2644,174 @@ media_element_stop (MediaElement *instance)
 /**
  * MediaFrame
  **/
+void
+media_frame_add_state (MediaFrame *instance, int state)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->AddState ((MediaFrameState) state);
+}
+
+
+guint8 *
+media_frame_get_buffer (MediaFrame *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetBuffer ();
+}
+
+
+guint32
+media_frame_get_buf_len (MediaFrame *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (guint32) 0;
+	
+	return instance->GetBufLen ();
+}
+
+
+gint32
+media_frame_get_height (MediaFrame *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (gint32) 0;
+	
+	return instance->GetHeight ();
+}
+
+
+guint64
+media_frame_get_pts (MediaFrame *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (guint64) 0;
+	
+	return instance->GetPts ();
+}
+
+
+gint32
+media_frame_get_width (MediaFrame *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (gint32) 0;
+	
+	return instance->GetWidth ();
+}
+
+
 MediaFrame *
 media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts)
 {
 	return new MediaFrame (stream, buffer, buflen, pts);
+}
+
+
+void
+media_frame_set_buffer (MediaFrame *instance, guint8 *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetBuffer (value);
+}
+
+
+void
+media_frame_set_buf_len (MediaFrame *instance, guint32 value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetBufLen (value);
+}
+
+
+void
+media_frame_set_data_stride (MediaFrame *instance, guint8 *a, guint8 *b, guint8 *c, guint8 *d)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetDataStride (a, b, c, d);
+}
+
+
+void
+media_frame_set_decoder_specific_data (MediaFrame *instance, void *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetDecoderSpecificData (value);
+}
+
+
+void
+media_frame_set_height (MediaFrame *instance, gint32 value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetHeight (value);
+}
+
+
+void
+media_frame_set_pts (MediaFrame *instance, guint64 value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetPts (value);
+}
+
+
+void
+media_frame_set_src_slide_h (MediaFrame *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetSrcSlideH (value);
+}
+
+
+void
+media_frame_set_src_slide_y (MediaFrame *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetSrcSlideY (value);
+}
+
+
+void
+media_frame_set_src_stride (MediaFrame *instance, int a, int b, int c, int d)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetSrcStride (a, b, c, d);
+}
+
+
+void
+media_frame_set_width (MediaFrame *instance, gint32 value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetWidth (value);
 }
 
 

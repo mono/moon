@@ -84,6 +84,7 @@ class EventObject;
 class EventTrigger;
 class ExceptionRoutedEventArgs;
 class ExponentialEase;
+class ExternalDecoder;
 class ExternalDemuxer;
 class FfmpegDecoder;
 class FfmpegDemuxer;
@@ -358,6 +359,8 @@ class EventObject;
 class EventTrigger;
 class ExceptionRoutedEventArgs;
 class ExponentialEase;
+class ExternalDecoder;
+class ExternalDecoderInfo;
 class ExternalDemuxer;
 class FfmpegDecoder;
 class FfmpegDecoderInfo;
@@ -744,6 +747,16 @@ typedef void ( * GetFrameAsyncCallback ) ( void * instance , int mediaStreamType
 typedef void ( * OpenDemuxerAsyncCallback ) ( void * instance , IMediaDemuxer * demuxer ) ;
 typedef void ( * SeekAsyncCallback ) ( void * instance , guint64 seekToTime ) ;
 typedef void ( * SwitchMediaStreamAsyncCallback ) ( void * instance , IMediaStream * mediaStreamDescription ) ;
+typedef void ( * ExternalDecoder_DecodeFrameAsyncCallback ) ( void * instance , MediaFrame * frame ) ;
+typedef void ( * ExternalDecoder_OpenDecoderAsyncCallback ) ( void * instance ) ;
+typedef void ( * ExternalDecoder_CleanupCallback ) ( void * instance , MediaFrame * frame ) ;
+typedef void ( * ExternalDecoder_CleanStateCallback ) ( void * instance ) ;
+typedef bool ( * ExternalDecoder_HasDelayedFrameCallback ) ( void * instance ) ;
+typedef void ( * ExternalDecoder_DisposeCallback ) ( void * instance ) ;
+typedef void ( * ExternalDecoder_DtorCallback ) ( void * instance ) ;
+typedef bool ( * ExternalDecoderInfo_SupportsCallback ) ( void * instance , const char * codec ) ;
+typedef IMediaDecoder * ( * ExternalDecoderInfo_Create ) ( void * instance , Media * media , IMediaStream * stream ) ;
+typedef void ( * ExternalDecoderInfo_dtor ) ( void * instance ) ;
 typedef bool ( * get_image_uri_func ) ( int level , int posX , int posY , Uri * uri , void * user_data ) ;
 typedef gint64 TimeSpan ;
 
@@ -1430,6 +1443,16 @@ double exponential_ease_ease_in_core (ExponentialEase *instance, double normaliz
 ExponentialEase *exponential_ease_new (void);
 
 /**
+ * ExternalDecoder
+ **/
+ExternalDecoder *external_decoder_new (Media *media, IMediaStream *stream, void *instance, const char *name, ExternalDecoder_DecodeFrameAsyncCallback decode_frame_async, ExternalDecoder_OpenDecoderAsyncCallback open_decoder_async, ExternalDecoder_CleanupCallback cleanup, ExternalDecoder_CleanStateCallback clean_state, ExternalDecoder_HasDelayedFrameCallback has_delayed_frame, ExternalDecoder_DisposeCallback dispose, ExternalDecoder_DtorCallback dtor);
+
+/**
+ * ExternalDecoderInfo
+ **/
+ExternalDecoderInfo *external_decoder_info_new (void *instance, const char *name, ExternalDecoderInfo_SupportsCallback supports, ExternalDecoderInfo_Create create, ExternalDecoderInfo_dtor dtor);
+
+/**
  * ExternalDemuxer
  **/
 /* @GeneratePInvoke */
@@ -1556,6 +1579,15 @@ ImageBrush *image_brush_new (void);
 ImageSource *image_source_new (void);
 
 /**
+ * IMediaDecoder
+ **/
+void imedia_decoder_report_decode_frame_completed (IMediaDecoder *instance, MediaFrame *frame);
+
+void imedia_decoder_report_open_decoder_completed (IMediaDecoder *instance);
+
+void imedia_decoder_set_pixel_format (IMediaDecoder *instance, int value);
+
+/**
  * IMediaDemuxer
  **/
 /* @GeneratePInvoke */
@@ -1581,6 +1613,31 @@ void imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instanc
  **/
 /* @GeneratePInvoke */
 Media *imedia_object_get_media_reffed (IMediaObject *instance);
+
+void imedia_object_report_error_occurred (IMediaObject *instance, const char *message);
+
+/**
+ * IMediaStream
+ **/
+const char *imedia_stream_get_codec (IMediaStream *instance);
+
+int imedia_stream_get_codec_id (IMediaStream *instance);
+
+guint64 imedia_stream_get_duration (IMediaStream *instance);
+
+void *imedia_stream_get_extra_data (IMediaStream *instance);
+
+int imedia_stream_get_extra_data_size (IMediaStream *instance);
+
+int imedia_stream_get_stream_type (IMediaStream *instance);
+
+void imedia_stream_set_codec_id (IMediaStream *instance, int value);
+
+void imedia_stream_set_duration (IMediaStream *instance, guint64 value);
+
+void imedia_stream_set_extra_data (IMediaStream *instance, void *value);
+
+void imedia_stream_set_extra_data_size (IMediaStream *instance, int value);
 
 /**
  * InkPresenter
@@ -1706,6 +1763,11 @@ Matrix *matrix_new (void);
 MatrixTransform *matrix_transform_new (void);
 
 /**
+ * Media
+ **/
+void media_register_decoder (DecoderInfo *info);
+
+/**
  * MediaAttribute
  **/
 /* @GeneratePInvoke */
@@ -1756,8 +1818,40 @@ void media_element_stop (MediaElement *instance);
 /**
  * MediaFrame
  **/
+void media_frame_add_state (MediaFrame *instance, int state);
+
+guint8 *media_frame_get_buffer (MediaFrame *instance);
+
+guint32 media_frame_get_buf_len (MediaFrame *instance);
+
+gint32 media_frame_get_height (MediaFrame *instance);
+
+guint64 media_frame_get_pts (MediaFrame *instance);
+
+gint32 media_frame_get_width (MediaFrame *instance);
+
 /* @GeneratePInvoke */
 MediaFrame *media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts);
+
+void media_frame_set_buffer (MediaFrame *instance, guint8 *value);
+
+void media_frame_set_buf_len (MediaFrame *instance, guint32 value);
+
+void media_frame_set_data_stride (MediaFrame *instance, guint8 *a, guint8 *b, guint8 *c, guint8 *d);
+
+void media_frame_set_decoder_specific_data (MediaFrame *instance, void *value);
+
+void media_frame_set_height (MediaFrame *instance, gint32 value);
+
+void media_frame_set_pts (MediaFrame *instance, guint64 value);
+
+void media_frame_set_src_slide_h (MediaFrame *instance, int value);
+
+void media_frame_set_src_slide_y (MediaFrame *instance, int value);
+
+void media_frame_set_src_stride (MediaFrame *instance, int a, int b, int c, int d);
+
+void media_frame_set_width (MediaFrame *instance, gint32 value);
 
 /**
  * MoonWindow

@@ -124,6 +124,7 @@ class EventObject;
 class EventTrigger;
 class ExceptionRoutedEventArgs;
 class ExponentialEase;
+class ExternalDecoder;
 class ExternalDemuxer;
 class FfmpegDecoder;
 class FfmpegDemuxer;
@@ -462,6 +463,7 @@ public:
 	EventTrigger*                            AsEventTrigger (Types *types = NULL) { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
 	ExceptionRoutedEventArgs*                AsExceptionRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::EXCEPTIONROUTEDEVENTARGS, ExceptionRoutedEventArgs) }
 	ExponentialEase*                         AsExponentialEase (Types *types = NULL) { checked_get_subclass (Type::EXPONENTIALEASE, ExponentialEase) }
+	ExternalDecoder*                         AsExternalDecoder (Types *types = NULL) { checked_get_subclass (Type::EXTERNALDECODER, ExternalDecoder) }
 	ExternalDemuxer*                         AsExternalDemuxer (Types *types = NULL) { checked_get_subclass (Type::EXTERNALDEMUXER, ExternalDemuxer) }
 	FfmpegDecoder*                           AsFfmpegDecoder (Types *types = NULL) { checked_get_subclass (Type::FFMPEGDECODER, FfmpegDecoder) }
 	FfmpegDemuxer*                           AsFfmpegDemuxer (Types *types = NULL) { checked_get_subclass (Type::FFMPEGDEMUXER, FfmpegDemuxer) }
