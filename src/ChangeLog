@@ -1,5 +1,9 @@
 2009-05-19  Larry Ewing  <lewing@novell.com>
 
+	* collection.cpp: avoid some GetDeployment calls in looping cases.
+
+2009-05-19  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp (UpdateLayout): clear the needs flags when
 	we restart in case they we're properly cleared before.
 

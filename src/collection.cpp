@@ -399,9 +399,10 @@ DependencyObjectCollection::UnregisterAllNamesRootedAt (NameScope *from_ns)
 	DependencyObject *obj;
 	Value *value;
 	
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
-		obj = value->AsDependencyObject ();
+		obj = value->AsDependencyObject (types);
 		obj->UnregisterAllNamesRootedAt (from_ns);
 	}
 	
@@ -414,12 +415,13 @@ DependencyObjectCollection::RegisterAllNamesRootedAt (NameScope *to_ns, MoonErro
 	DependencyObject *obj;
 	Value *value;
 	
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	for (guint i = 0; i < array->len; i++) {
 		if (error->number)
 			break;
 
 		value = (Value *) array->pdata[i];
-		obj = value->AsDependencyObject ();
+		obj = value->AsDependencyObject (types);
 		obj->RegisterAllNamesRootedAt (to_ns, error);
 	}
 	
@@ -446,10 +448,11 @@ InlineCollection::Equals (InlineCollection *inlines)
 	
 	if (inlines->array->len != array->len)
 		return false;
-	
+
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	for (guint i = 0; i < array->len; i++) {
-		run1 = ((Value *) inlines->array->pdata[i])->AsInline ();
-		run0 = ((Value *) array->pdata[i])->AsInline ();
+		run1 = ((Value *) inlines->array->pdata[i])->AsInline (types);
+		run0 = ((Value *) array->pdata[i])->AsInline (types);
 		
 		if (!run0->Equals (run1))
 			return false;
@@ -652,8 +655,9 @@ MultiScaleSubImageCollection::ResortByZIndex ()
 	if (array->len == 0)
 		return;
 	
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	for (guint i = 0; i < array->len; i++)
-		z_sorted->pdata[i] = ((Value *) array->pdata[i])->AsMultiScaleSubImage ();
+		z_sorted->pdata[i] = ((Value *) array->pdata[i])->AsMultiScaleSubImage (types);
 	
 	if (array->len > 1)
 		g_ptr_array_sort (z_sorted, MultiScaleSubImageZIndexComparer);
@@ -847,6 +851,7 @@ DeepTreeWalker::Step ()
 {
 	if (last) {
 		VisualTreeWalker walker (last, Logical, types);
+		//VisualTreeWalker walker (last, ZForward, types);
 		while (UIElement *child = walker.Step ())
 			walk_list->Prepend (new UnsafeUIElementNode (child));
 	}
