@@ -32,7 +32,7 @@ using System.Windows.Input;
 
 namespace System.Windows {
 
-	public enum Visibility : byte {
+	public enum Visibility {
 		Visible,
 		Collapsed
 	}
