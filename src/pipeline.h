@@ -492,6 +492,23 @@ public:
 	guint64 GetLastAvailablePts () { return last_available_pts; }
 	guint64 GetBufferedSize (); // Returns the time between the last frame returned and the last frame available (buffer time)
 	
+	/* @GenerateCBinding */
+	int GetExtraDataSize () { return extra_data_size; }
+	/* @GenerateCBinding */
+	void SetExtraDataSize (int value) { extra_data_size = value; }
+	/* @GenerateCBinding */
+	void *GetExtraData () { return extra_data; }
+	/* @GenerateCBinding */
+	void SetExtraData (void *value) { extra_data = value; }
+	/* @GenerateCBinding */
+	int GetCodecId () { return codec_id; }
+	/* @GenerateCBinding */
+	void SetCodecId (int value) { codec_id = value; }
+	/* @GenerateCBinding */
+	guint64 GetDuration () { return duration; }
+	/* @GenerateCBinding */
+	void SetDuration (guint64 value) { duration = value; }
+
 	bool GetPendingFrameCount () { return get_frame_pending_count; }
 	void IncPendingFrameCount () { g_atomic_int_inc (&get_frame_pending_count); }
 	void DecPendingFrameCount () { g_atomic_int_dec_and_test (&get_frame_pending_count); }
@@ -1161,7 +1178,15 @@ public:
 	VideoStream (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size);
 	
 	virtual MediaStreamType GetType () { return MediaTypeVideo; } 
-	guint32 GetBitRate () { return (guint32) bit_rate; }
+
+	guint32 GetBitsPerSample () { return bits_per_sample; }
+	guint32 GetPtsPerFrame () { return pts_per_frame; }
+	guint32 GetInitialPts () { return initial_pts; }
+	/* @GenerateCBinding */
+	guint32 GetWidth () { return width; }
+	/* @GenerateCBinding */
+	guint32 GetHeight () { return height; }
+	guint32 GetBitRate () { return bit_rate; }
 };
  
 class AudioStream : public IMediaStream {
@@ -1181,7 +1206,22 @@ public:
 	AudioStream (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, gpointer extra_data, guint32 extra_data_size);
 	
 	virtual MediaStreamType GetType () { return MediaTypeAudio; }
-	guint32 GetBitRate () { return (guint32) bit_rate; }
+
+	/* @GenerateCBinding */
+	int GetBitsPerSample () { return bits_per_sample; }
+	void SetBitsPerSample (int value) { bits_per_sample = value; }
+	/* @GenerateCBinding */
+	int GetBlockAlign () { return block_align; }
+	void SetBlockAlign (int value) { block_align = value; }
+	/* @GenerateCBinding */
+	int GetSampleRate () { return sample_rate; }
+	void SetSampleRate (int value) { sample_rate = value; }
+	/* @GenerateCBinding */
+	int GetChannels () { return channels; }
+	void SetChannels (int value) { channels = value; }
+	/* @GenerateCBinding */
+	int GetBitRate () { return bit_rate; }
+	void SetBitRate (int value) { bit_rate = value; }
 };
 
 /*

@@ -68,8 +68,8 @@ AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream
 	last_write_pts = G_MAXUINT64;
 	last_current_pts = G_MAXUINT64;
 	
-	channels = stream->channels;
-	sample_rate = stream->sample_rate;
+	channels = stream->GetChannels ();
+	sample_rate = stream->GetSampleRate ();
 	
 	pthread_mutexattr_init (&attribs);
 	pthread_mutexattr_settype (&attribs, PTHREAD_MUTEX_RECURSIVE);

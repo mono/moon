@@ -1,3 +1,24 @@
+2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp:
+	* mediaplayer.cpp:
+	* mp3.cpp:
+	* pipeline-asf.cpp:
+	* pipeline-ffmpeg.cpp:
+	* pipeline.cpp|h: Add accessors for fields in VideoStream,
+	AudioStream and MediaFrame.
+
+2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp:
+	* mediaplayer.cpp:
+	* mp3.cpp:
+	* pipeline-asf.cpp:
+	* pipeline-ffmpeg.cpp:
+	* pipeline.cpp|h: Add accessors for fields in VideoStream
+	and AudioStream.
+	* cbinding.cpp|h: Regenerated.
+
 2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* cbinding.cpp|h: Regenerated.

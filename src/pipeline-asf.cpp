@@ -284,26 +284,26 @@ ASFDemuxer::Open ()
 			const WAVEFORMATEXTENSIBLE* wave_ex = wave->get_wave_format_extensible ();
 			int data_size = stream_properties->size - sizeof (asf_stream_properties) - sizeof (WAVEFORMATEX);
 			
-			audio->channels = wave->channels;
-			audio->sample_rate = wave->samples_per_second;
-			audio->bit_rate = wave->bytes_per_second * 8;
-			audio->block_align = wave->block_alignment;
-			audio->bits_per_sample = wave->bits_per_sample;
-			audio->extra_data = NULL;
-			audio->extra_data_size = data_size > wave->codec_specific_data_size ? wave->codec_specific_data_size : data_size;
-			audio->codec_id = wave->codec_id;
+			audio->SetChannels (wave->channels);
+			audio->SetSampleRate (wave->samples_per_second);
+			audio->SetBitRate (wave->bytes_per_second * 8);
+			audio->SetBlockAlign (wave->block_alignment);
+			audio->SetBitsPerSample (wave->bits_per_sample);
+			audio->SetExtraData (NULL);
+			audio->SetExtraDataSize (data_size > wave->codec_specific_data_size ? wave->codec_specific_data_size : data_size);
+			audio->SetCodecId (wave->codec_id);
 			
 			if (wave_ex != NULL) {
-				audio->bits_per_sample = wave_ex->Samples.valid_bits_per_sample;
-				audio->extra_data_size -= (sizeof (WAVEFORMATEXTENSIBLE) - sizeof (WAVEFORMATEX));
-				audio->codec_id = *((guint32*) &wave_ex->sub_format);
+				audio->SetBitsPerSample (wave_ex->Samples.valid_bits_per_sample);
+				audio->SetExtraDataSize (audio->GetExtraDataSize () - (sizeof (WAVEFORMATEXTENSIBLE) - sizeof (WAVEFORMATEX)));
+				audio->SetCodecId (*((guint32*) &wave_ex->sub_format));
 			}
 
 			// Fill in any extra codec data
-			if (audio->extra_data_size > 0) {
-				audio->extra_data = g_malloc0 (audio->extra_data_size);
+			if (audio->GetExtraDataSize () > 0) {
+				audio->SetExtraData (g_malloc0 (audio->GetExtraDataSize ()));
 				char* src = ((char*) wave) + (wave_ex ? sizeof (WAVEFORMATEX) : sizeof (WAVEFORMATEX));
-				memcpy (audio->extra_data, src, audio->extra_data_size);
+				memcpy (audio->GetExtraData (), src, audio->GetExtraDataSize ());
 			}
 		} else if (stream_properties->is_video ()) {
 			VideoStream* video = new VideoStream (GetMedia ());

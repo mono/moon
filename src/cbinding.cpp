@@ -138,6 +138,61 @@ audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_ali
 }
 
 
+int
+audio_stream_get_bit_rate (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetBitRate ();
+}
+
+
+int
+audio_stream_get_bits_per_sample (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetBitsPerSample ();
+}
+
+
+int
+audio_stream_get_block_align (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetBlockAlign ();
+}
+
+
+int
+audio_stream_get_channels (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetChannels ();
+}
+
+
+int
+audio_stream_get_sample_rate (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetSampleRate ();
+}
+
+
 /**
  * BackEase
  **/
@@ -4478,6 +4533,28 @@ video_brush_new (void)
 /**
  * VideoStream
  **/
+guint32
+video_stream_get_height (VideoStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (guint32) 0;
+	
+	return instance->GetHeight ();
+}
+
+
+guint32
+video_stream_get_width (VideoStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (guint32) 0;
+	
+	return instance->GetWidth ();
+}
+
+
 VideoStream *
 video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size)
 {

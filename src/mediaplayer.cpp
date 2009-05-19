@@ -274,9 +274,9 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 					 "\tcodec_id: 0x%x\n"
 					 "\tduration: %" G_GUINT64_FORMAT "\n"
 					 "\textra data size: %d\n",
-					 astream->index, astream->channels, astream->sample_rate, astream->bit_rate,
-					 astream->block_align, astream->bits_per_sample, astream->codec_id,
-					 astream->duration, astream->extra_data_size);
+					 astream->index, astream->GetChannels (), astream->GetSampleRate (), astream->GetBitRate (),
+					 astream->GetBlockAlign (), astream->GetBitsPerSample (), astream->GetCodecId (),
+					 astream->GetDuration (), astream->GetExtraDataSize ());
 			if (astream->extra_data_size > 0) {
 				int n;
 				LOG_MEDIAPLAYER ("\textra data: ");

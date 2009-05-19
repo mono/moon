@@ -789,6 +789,16 @@ AssemblyPartCollection *assembly_part_collection_new (void);
 /* @GeneratePInvoke */
 AudioStream *audio_stream_new (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, gpointer extra_data, guint32 extra_data_size);
 
+int audio_stream_get_bit_rate (AudioStream *instance);
+
+int audio_stream_get_bits_per_sample (AudioStream *instance);
+
+int audio_stream_get_block_align (AudioStream *instance);
+
+int audio_stream_get_channels (AudioStream *instance);
+
+int audio_stream_get_sample_rate (AudioStream *instance);
+
 /**
  * BackEase
  **/
@@ -2626,6 +2636,10 @@ VideoBrush *video_brush_new (void);
 /**
  * VideoStream
  **/
+guint32 video_stream_get_height (VideoStream *instance);
+
+guint32 video_stream_get_width (VideoStream *instance);
+
 /* @GeneratePInvoke */
 VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size);
 

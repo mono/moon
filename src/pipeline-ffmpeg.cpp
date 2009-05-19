@@ -165,10 +165,10 @@ FfmpegDecoder::Open ()
 		context->codec_type = CODEC_TYPE_VIDEO;
 	} else if (stream->GetType () == MediaTypeAudio) {
 		AudioStream *as = (AudioStream*) stream;
-		context->sample_rate = as->sample_rate;
-		context->channels = as->channels;
-		context->bit_rate = as->bit_rate;
-		context->block_align = as->block_align;
+		context->sample_rate = as->GetSampleRate ();
+		context->channels = as->GetChannels ();
+		context->bit_rate = as->GetBitRate ();
+		context->block_align = as->GetBlockAlign ();
 		context->codec_type = CODEC_TYPE_AUDIO;
 		audio_buffer = (guint8*) av_mallocz (AUDIO_BUFFER_SIZE);
 	} else {

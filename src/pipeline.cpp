@@ -3643,14 +3643,14 @@ NullDecoder::DecodeAudioFrame (MediaFrame *frame)
 	// we calculate the time since the last frame
 
 	if (prev_pts == G_MAXUINT64 || frame->pts <= prev_pts) {
-		samples = as->sample_rate / 10; // start off sending 0.1 seconds of audio
+		samples = as->GetSampleRate () / 10; // start off sending 0.1 seconds of audio
 	} else {
 		diff_pts = frame->pts - prev_pts;
-		samples = (float) as->sample_rate / (TIMESPANTICKS_IN_SECOND_FLOAT / (float) diff_pts);
+		samples = (float) as->GetSampleRate () / (TIMESPANTICKS_IN_SECOND_FLOAT / (float) diff_pts);
 	}
 	prev_pts = frame->pts;
 
-	data_size  = samples * as->channels * 2 /* 16 bit audio */;
+	data_size  = samples * as->GetChannels () * 2 /* 16 bit audio */;
 
 	frame->buflen = data_size;
 	frame->buffer = (guint8 *) g_malloc0 (frame->buflen);

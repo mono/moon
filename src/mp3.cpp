@@ -886,13 +886,13 @@ Mp3Demuxer::ReadHeader ()
 	audio->codec = g_strdup ("mp3");
 	
 	audio->duration = duration * nframes;
-	audio->bit_rate = mpeg.bit_rate;
-	audio->channels = mpeg.channels;
-	audio->sample_rate = mpeg.sample_rate;
-	audio->block_align = mpeg_block_size (&mpeg);
-	audio->bits_per_sample = mpeg.layer == 1 ? 32 : 8;
-	audio->extra_data = NULL;
-	audio->extra_data_size = 0;
+	audio->SetBitRate (mpeg.bit_rate);
+	audio->SetChannels (mpeg.channels);
+	audio->SetSampleRate (mpeg.sample_rate);
+	audio->SetBlockAlign (mpeg_block_size (&mpeg));
+	audio->SetBitsPerSample (mpeg.layer == 1 ? 32 : 8);
+	audio->SetExtraData (NULL);
+	audio->SetExtraDataSize (0);
 	
 	streams = g_new (IMediaStream *, 2);
 	streams[0] = stream;
