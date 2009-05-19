@@ -1707,6 +1707,8 @@ class Generator {
 		header.AppendLine ("#include <glib.h>");
 		header.AppendLine ("#include <cairo.h>");
 		header.AppendLine ();
+		header.AppendLine ("#include \"enums.h\"");
+		header.AppendLine ();
 		foreach (MemberInfo member in info.Children.Values) {
 			TypeInfo type = member as TypeInfo;
 			if (type == null)
@@ -1753,6 +1755,7 @@ class Generator {
 			header.Append (c);
 			header.AppendLine (";");
 		}
+		header.AppendLine ();
 		foreach (string s in structs) {
 			header.Append ("struct ");
 			header.Append (s);

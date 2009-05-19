@@ -8,6 +8,8 @@
 #include <glib.h>
 #include <cairo.h>
 
+#include "enums.h"
+
 class AlsaSource;
 class Animation;
 class AnimationClock;
@@ -585,6 +587,7 @@ class XamlLoader;
 class Xap;
 class YUVConverter;
 class YUVConverterInfo;
+
 struct asf_bitrate_mutual_exclusion;
 struct asf_codec_list;
 struct asf_content_description;

@@ -1,3 +1,7 @@
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.cpp|h: Regenerated.
+
 2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* security.h: Include <mono/metadata/assembly.h>.

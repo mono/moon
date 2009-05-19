@@ -8,6 +8,10 @@
 
 2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* cbinding.cpp|h: Regenerated.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.h: Add a GetBrowserHost which returns a void* to avoid
 	putting NPObject/mozilla headers in the c bindings.
 

@@ -1,3 +1,9 @@
+2009-05-19  Rolf Bjarne Kvinge  <rkvinge@novell.com>
+
+	* Generator.cs: Include enums.h in the cbindings.
+	It's a c safe header (no C++), and it makes it easier
+	to properly generate c methods which uses enums.
+
 2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs:
