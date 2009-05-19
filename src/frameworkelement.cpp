@@ -136,13 +136,6 @@ FrameworkElement::ElementAdded (UIElement *item)
 bool
 FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
-	if (value && value->Is (Type::STYLE) && !GetStyle()) {
-		//printf ("STYLE WAS SET, this = %s\n", GetTypeName());
-		Style *s = value->AsStyle ();
-		if (s)
-			Application::GetCurrent()->ApplyStyle (this, s);
-	}
-
 	return UIElement::SetValueWithErrorImpl (property, value, error);
 }
 
