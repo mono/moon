@@ -722,11 +722,13 @@ FrameworkElement::UpdateLayout ()
 			}
 		} else if (!size_list->IsEmpty ()) {
 			while (UIElementNode *node = (UIElementNode*)size_list->First ()) {
+				if (surface && (surface->needs_measure || surface->needs_arrange)) {
+					surface->needs_measure = surface->needs_arrange = false;
+					break;
+				}
+
 				size_list->Unlink (node);
 				FrameworkElement *fe = (FrameworkElement*) node->uielement;
-
-				if (surface && (surface->needs_measure || surface->needs_arrange))
-					break;
 
 				updated = true;
 				SizeChangedEventArgs *args = new SizeChangedEventArgs (*LayoutInformation::GetLastRenderSize (fe), fe->GetRenderSize ());
