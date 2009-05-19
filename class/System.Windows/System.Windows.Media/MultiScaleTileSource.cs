@@ -50,7 +50,8 @@ namespace System.Windows.Media
 		{
 			ImageUriFunc func = new Mono.ImageUriFunc (GetImageUriSafe);
 			handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
-			NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
+			if (!(this is DeepZoomImageTileSource))
+				NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
 		}
 
 		public MultiScaleTileSource (int imageWidth, int imageHeight, int tileWidth, int tileHeight, int tileOverlap) : this ()
