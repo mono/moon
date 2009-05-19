@@ -1,3 +1,7 @@
+2009-05-19  Jb Evain  <jbevain@novell.com>
+
+	* KeyTimeType.cs: change the underlying type to byte.
+
 2009-04-18  Chris Toshok  <toshok@ximian.com>
 
 	* Storyboard.cs: reorder things a bit to group
