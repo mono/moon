@@ -19,6 +19,7 @@ class FieldInfo : MemberInfo {
 	public bool IsConst;
 	public bool IsStatic;
 	public bool IsExtern;
+	public string Value;
 	
 	public string EventName {
 		get {

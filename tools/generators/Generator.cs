@@ -1215,7 +1215,7 @@ class Generator {
 					tokenizer.Accept (Token2Type.Punctuation, ":");
 					continue;
 				case "enum":
-					ParseEnum (parent, tokenizer);
+					ParseEnum (properties, parent, tokenizer);
 					continue;
 				case "friend":
 					while (!tokenizer.Accept (Token2Type.Punctuation, ";")) {
@@ -1478,12 +1478,13 @@ class Generator {
 		} while (true);
 	}
 	
-	static void ParseEnum (MemberInfo parent, Tokenizer tokenizer)
+	static void ParseEnum (Annotations properties, MemberInfo parent, Tokenizer tokenizer)
 	{
 		FieldInfo field;
 		StringBuilder value = new StringBuilder ();
 		TypeInfo type = new TypeInfo ();
 		
+		type.Annotations = properties;
 		type.IsEnum = true;
 		
 		tokenizer.AcceptOrThrow (Token2Type.Identifier, "enum");
@@ -1509,6 +1510,7 @@ class Generator {
 					tokenizer.Advance (true);
 				}
 			}
+			field.Value = value.ToString ();
 			type.Children.Add (field);
 			//Console.WriteLine ("ParseEnum: {0}: {1} {2} {3}", name, field, value.Length != 0 != null ? "=" : "", value);
 						
