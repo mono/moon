@@ -394,7 +394,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::PASSWORDBOX, "MaxLength", new Value (0), Type::INT32, false, false, false, NULL, Validators::PositiveIntValidator, NULL, false, false);
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "FontSource", Type::FONTSOURCE);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "Value", Type::OBJECT);
-	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "KeyTime", Type::KEYTIME);
+	DependencyProperty::RegisterFull (this, Type::OBJECTKEYFRAME, "KeyTime", NULL, Type::KEYTIME, false, false, false, NULL, NULL, NULL, false, true);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "ConvertedValue", Type::OBJECT);
 	DependencyProperty::RegisterFull (this, Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", NULL, Type::OBJECTKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false, false);
 	DependencyProperty::Register (this, Type::MATRIXTRANSFORM, "Matrix", Type::MATRIX);
