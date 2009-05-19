@@ -1,3 +1,11 @@
+2009-05-19  Alan McGovern  <amcgovern@novell.com>
+
+	* animation.cpp: Add some optimisations to ObjectKeyFrames.
+	  Don't call back into managed when the value is null or when
+	  the the value is already of the exact right kind. This will
+	  need to be reviewed once unmanaged code understands
+	  interfaces so we can fastpath interfaces too.
+
 2009-05-18  Larry Ewing  <lewing@novell.com>
 
 	* dirty.cpp:

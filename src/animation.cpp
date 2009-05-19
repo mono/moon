@@ -1974,17 +1974,23 @@ ObjectAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProp
 	for (int i = 0; i < frames->GetCount (); i++) {
 		ObjectKeyFrame *frame = frames->GetValueAt (i)->AsObjectKeyFrame ();
 		
+		Value *value = frame->GetValue ();
 		Value converted;
-		if (frame->GetValue ()) {
-			Application::GetCurrent ()->ConvertKeyframeValue (target->GetType ()->GetKind (), property, frame->GetValue (), &converted);
+		if (!value || value->GetIsNull ()) {
+			// If the value is null, don't convert
+			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, NULL);
+		} else if (value->GetKind () == property->GetPropertyType ()) {
+			// If the value is of the correct type already, don't convert
+			converted = Value (*value);
+			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, converted);
+		} else {
+			Application::GetCurrent ()->ConvertKeyframeValue (target->GetType ()->GetKind (), property, value, &converted);
 		
 			if (converted.GetKind () == Type::INVALID) {
 				printf ("Couldn't convert value.\n");
 				return false;
 			}
 			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, converted);
-		} else {
-			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, NULL);
 		}
 	}
 	KeyFrameAnimation_ResolveKeyFrames (this, frames);
