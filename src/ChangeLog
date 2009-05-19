@@ -1,3 +1,8 @@
+2009-05-18  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyproperty.g.cpp (Types::RegisterNativeProperties):
+	regen.
+
 2009-05-18  Larry Ewing  <lewing@novell.com>
 
 	* bitmapsource.cpp (GetSurface): use the content type of the image

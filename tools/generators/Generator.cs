@@ -735,7 +735,7 @@ class Generator {
 			bool is_readonly = field.IsDPReadOnly;
 			bool is_always_change = field.IsDPAlwaysChange;
 			string validator = field.DPValidator;
-			bool is_full = is_attached || is_readonly || is_always_change || validator != null || autocreator != null;
+			bool is_full = is_attached || is_readonly || is_always_change || validator != null || autocreator != null || is_nullable;
 
 			propertyType = field.GetDPPropertyType (all);
 			

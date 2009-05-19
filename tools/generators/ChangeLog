@@ -14,6 +14,12 @@
 	  conversion is done during the Resolve phase. If the type
 	  conversion can't be completed an exception is thrown.
 
+2009-05-18  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs (GenerateDPs): is_nullable => is_full.  this was
+	causing all animation properties (and a few others) to show up as
+	non-nullable.  Fixes drt #113 and #114.
+
 2009-05-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: Allow arrays with constant size in
