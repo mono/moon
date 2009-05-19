@@ -1,3 +1,8 @@
+2009-05-19  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/IValueConverterTest.cs: Handle invalid
+	  values returned from IValueConverters properly.
+
 2009-05-18  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Browser/ScriptableTest.cs: CreateableTypeTest

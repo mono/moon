@@ -199,7 +199,11 @@ namespace System.Windows.Data {
 			else {
 				cachedValue = PropertyInfo.GetValue (PropertySource, null);
 			}
-			cachedValue = ConvertToDestType (cachedValue);
+			try {
+				cachedValue = ConvertToDestType (cachedValue);
+			} catch {
+				cachedValue  = dp.DefaultValue;
+			}
 			
 			return cachedValue;
 		}
@@ -266,6 +270,8 @@ namespace System.Windows.Data {
 					object value = ConvertToDestType (PropertyInfo.GetValue (PropertySource, null));
 					Target.SetValueImpl (Property, value);
 				}
+			} catch {
+				//Type conversion exceptions are silently swallowed
 			} finally {
 				updatingSource = false;
 			}
