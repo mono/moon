@@ -120,7 +120,7 @@ namespace MoonTest.System.Windows.Controls {
 			base.OnDropDownOpened (e);
 		}
 
-		protected override void OnItemsChanged (global::System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		protected override void OnItemsChanged (NotifyCollectionChangedEventArgs e)
 		{
 			methods.Add (new Value { MethodName = "OnItemsChanged", MethodParams = new object [] { e } });
 			base.OnItemsChanged (e);
@@ -141,6 +141,40 @@ namespace MoonTest.System.Windows.Controls {
 	public partial class ComboBoxTest : SilverlightTest {
 
 		[TestMethod]
+		public void AddTest ()
+		{
+			FakeComboBox c = new FakeComboBox ();
+			Assert.AreEqual (-1, c.SelectedIndex);
+
+			c.Items.Add (new object ());
+			Assert.AreEqual (-1, c.SelectedIndex);
+
+			c.SelectedIndex = 0;
+			c.Items.Add (new object ());
+			Assert.AreEqual (0, c.SelectedIndex);
+		}
+		
+		[TestMethod]
+		public void ClearTest ()
+		{
+			FakeComboBox c = new FakeComboBox ();
+			c.Items.Add (new object ());
+			c.Items.Add (new object ());
+			c.Items.Add (new object ());
+
+			c.SelectedIndex = 0;
+			c.methods.Clear ();
+
+			// What happens when we clear the items
+			c.Items.Clear ();
+			Assert.IsNull (c.SelectedItem, "#1");
+			Assert.AreEqual (-1, c.SelectedIndex, "#2");
+			Assert.AreEqual (2, c.methods.Count);
+			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#3");
+			Assert.AreEqual ("SelectionChangedEvent", c.methods [1].MethodName, "#4");
+		}
+
+		[TestMethod]
 		public void DefaultValues ()
 		{
 			ComboBox b = new ComboBox ();
@@ -154,6 +188,26 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (-1, b.SelectedIndex, "#8");
 		}
 
+		[TestMethod]
+		public void InsertTest ()
+		{
+			object orig = new object ();
+			FakeComboBox c = new FakeComboBox ();
+			c.Items.Add (orig);
+			c.SelectedIndex = 0;
+			c.methods.Clear ();
+
+			c.Items.Insert (0, new object ());
+
+			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
+			Assert.AreEqual (1, c.methods.Count, "#1");
+			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
+			Assert.AreEqual (NotifyCollectionChangedAction.Add, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
+
+			Assert.AreEqual (1, c.SelectedIndex, "#8");
+			Assert.AreEqual (orig, c.SelectedItem, "#9");
+		}
+		
 		[TestMethod]
 		public void InvalidValues ()
 		{
@@ -658,6 +712,82 @@ namespace MoonTest.System.Windows.Controls {
 			box.Items.Add (rect);
 			ComboBoxItem item = new ComboBoxItem ();
 			Assert.Throws<InvalidOperationException> (() => box.PrepareContainerForItemOverride_ (item, rect), "#2");
+		}
+		
+		[TestMethod]
+		public void RemoveTest ()
+		{
+			object orig = new object ();
+			FakeComboBox c = new FakeComboBox ();
+			c.Items.Add (orig);
+			c.Items.Add (new object ());
+			c.SelectedIndex = 0;
+			c.methods.Clear ();
+
+			c.Items.RemoveAt (0);
+
+			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
+			Assert.AreEqual (1, c.methods.Count, "#1");
+			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
+			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
+
+			// '1' was never a valid index. How the **** is this happening?
+			Assert.AreEqual (0, c.SelectedIndex, "#8");
+			Assert.AreEqual (orig, c.SelectedItem, "#9");
+
+			c.Items.RemoveAt (0);
+			Assert.AreEqual (0, c.SelectedIndex, "#10");
+			Assert.AreEqual (orig, c.SelectedItem, "#11");
+		}
+
+		[TestMethod]
+		public void RemoveTest2 ()
+		{
+			object orig = new object ();
+			FakeComboBox c = new FakeComboBox ();
+			c.Items.Add (orig);
+			c.Items.Add (new object ());
+			c.Items.Add (new object ());
+			c.SelectedIndex = 0;
+			c.methods.Clear ();
+
+			c.Items.RemoveAt (0);
+
+			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
+			Assert.AreEqual (1, c.methods.Count, "#1");
+			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
+			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
+
+			// '1' was never a valid index. How the **** is this happening?
+			Assert.AreEqual (0, c.SelectedIndex, "#8");
+			Assert.AreEqual (orig, c.SelectedItem, "#9");
+		}
+
+		[TestMethod]
+		public void ReplaceTest ()
+		{
+			object orig = new object ();
+			FakeComboBox c = new FakeComboBox ();
+			c.Items.Add (orig);
+			c.SelectedIndex = 0;
+			c.methods.Clear ();
+
+			c.Items[0] = new object ();
+
+			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
+			Assert.AreEqual (3, c.methods.Count, "#1");
+			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
+			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams[0]).Action, "#3");
+
+			Assert.AreEqual ("OnItemsChanged", c.methods [1].MethodName, "#4");
+			Assert.AreEqual (NotifyCollectionChangedAction.Add, ((NotifyCollectionChangedEventArgs) c.methods [1].MethodParams [0]).Action, "#5");
+
+			Assert.AreEqual ("OnItemsChanged", c.methods [2].MethodName, "#6");
+			Assert.AreEqual (NotifyCollectionChangedAction.Replace, ((NotifyCollectionChangedEventArgs) c.methods [2].MethodParams [0]).Action, "#7");
+
+			// '1' was never a valid index. How the **** is this happening?
+			Assert.AreEqual (1, c.SelectedIndex, "#8");
+			Assert.AreEqual (orig, c.SelectedItem, "#9");
 		}
 		
 		[TestMethod]

@@ -1,5 +1,12 @@
 2009-05-20  Alan McGovern  <amcgovern@novell.com>
 
+	* Selector.cs: Ensure that SelectedIndex and SelectedItem
+	are kept in sync. It is possible for Selected* to become
+	out of sync with the actual value they should have, but
+	this matches MS behaviour.
+
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
 	* Selector.cs: OnItemsChanged is raised in ItemsControl,
 	not Selector.
 	  

@@ -148,6 +148,30 @@ namespace System.Windows.Controls.Primitives {
 			lbItem.IsSelected = false;
 		}
 
+		internal override void InvokeItemsChanged (object o, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			base.InvokeItemsChanged (o, e);
+			switch (e.Action) {
+			case NotifyCollectionChangedAction.Add:
+				// Ensure we don't fire a SelectionChanged event when we're just updating the index
+				changing = true;
+				if (e.NewStartingIndex <= SelectedIndex)
+					SelectedIndex ++;
+				changing = false;
+				break;
+			case NotifyCollectionChangedAction.Reset:
+				SelectedIndex = -1;
+				break;
+				
+			case NotifyCollectionChangedAction.Remove:
+			case NotifyCollectionChangedAction.Replace:
+			default:
+				// Yes this is broken, SelectedItem and SelectedIndex do get out of sync with reality.
+				break;
+			}
+		}
+
+		
 		internal virtual void NotifyListItemClicked(ListBoxItem listBoxItem) 
 		{
 			
