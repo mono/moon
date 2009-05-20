@@ -1,5 +1,12 @@
 2009-05-20  Alan McGovern  <amcgovern@novell.com>
 
+	* PresentationFrameworkCollection.cs: When replacing an item
+	in the collection we fire a Remove, then Add then Replace event.
+	The only managed consumer of the ItemsChanged event (ItemsControl)
+	exhibits this behaviour.
+
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
 	* FrameworkElement.cs: DataBinding and ManagedXamlLoader use
 	  exactly the same type conversion as Styles and
 	  ObjectKeyFrames - so merge both of them to use
