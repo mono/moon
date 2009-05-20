@@ -188,20 +188,22 @@ multi_scale_image_handle_parsed (void *userdata)
 	MultiScaleImage *msi = (MultiScaleImage*)userdata;
 	//if the source is a collection, fill the subimages list
 	MultiScaleTileSource *source = msi->GetSource ();
+	MultiScaleSubImageCollection *subs = msi->GetSubImages ();
 
 	if (source->GetImageWidth () >= 0 && source->GetImageHeight () >= 0)
 		msi->SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)source->GetImageWidth () / (double)source->GetImageHeight ()));
 
 	DeepZoomImageTileSource *dsource;
+       
 	if (source->Is (Type::DEEPZOOMIMAGETILESOURCE) &&
 	    (dsource = (DeepZoomImageTileSource *)source)) {
 		int i;
 		MultiScaleSubImage *si;
 		for (i = 0; (si = (MultiScaleSubImage*)g_list_nth_data (dsource->subimages, i)); i++) {
-			if (!msi->GetSubImages ())
+			if (!subs)
 				msi->SetValue (MultiScaleImage::SubImagesProperty, new MultiScaleSubImageCollection ());
 
-			msi->GetSubImages ()->Add (si);
+			subs->Add (si);
 		}
 	}
 	msi->Invalidate ();
@@ -240,13 +242,14 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 	Rect viewport = Rect (msivp_ox, msivp_oy, msivp_w, msivp_w/msi_ar);
 
+	MultiScaleSubImageCollection *subs = GetSubImages ();
 	if (!subimages_sorted) {
-		GetSubImages ()->ResortByZIndex ();
+		subs->ResortByZIndex ();
 		subimages_sorted = true;
 	}
 	int i;
-	for (i = 0; i < GetSubImages ()->GetCount (); i++) {
-		MultiScaleSubImage *sub_image = (MultiScaleSubImage*)g_ptr_array_index (GetSubImages ()->z_sorted, i);
+	for (i = 0; i < subs->GetCount (); i++) {
+		MultiScaleSubImage *sub_image = (MultiScaleSubImage*)g_ptr_array_index (subs->z_sorted, i);
 
 		double subvp_ox = sub_image->GetViewportOrigin()->x;
 		double subvp_oy = sub_image->GetViewportOrigin()->y;
