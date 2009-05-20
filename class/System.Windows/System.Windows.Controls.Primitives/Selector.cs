@@ -52,7 +52,7 @@ namespace System.Windows.Controls.Primitives {
 
 		internal Selector ()
 		{
-			Items.ItemsChanged += (o, e) => OnItemsChanged (e);
+			
 		}
 
 		internal bool IsSelectionActive {
@@ -147,12 +147,6 @@ namespace System.Windows.Controls.Primitives {
 			lbItem.Content = null;
 			lbItem.IsSelected = false;
 		}
-		
-		protected virtual void OnItemsChanged (NotifyCollectionChangedEventArgs e)
-		{
-			
-		}
-		
 
 		internal virtual void NotifyListItemClicked(ListBoxItem listBoxItem) 
 		{
