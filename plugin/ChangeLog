@@ -1,3 +1,7 @@
+2009-05-20  Rusty Howell  <rhowell@novell.com>
+
+	 * Makefile.am: Added install dir to SUBDIRS for 'make dist'
+
 2009-05-20  Larry Ewing  <lewing@novell.com>
 
 	* plugin.cpp (TryLoad): update the error string for 2021 to match

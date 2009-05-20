@@ -21,7 +21,7 @@ Build Mono
 ==========
 
 	You currently need a working Mono from svn. The latest known working 
-	revision is r132992. Check #moonlight on irc.gimp.org for more info
+	revision is r134208. Check #moonlight on irc.gimp.org for more info
 
 	Check out mono,mcs,mono-basic from svn
 		svn co -rREV svn://anonsvn.mono-project.com/source/trunk/mono

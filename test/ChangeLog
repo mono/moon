@@ -1,3 +1,7 @@
+2009-05-20  Rusty Howell  <rhowell@novell.com>
+
+	 * Makefile.am: Added templates to SUBDIRS for 'make dist'
+
 2009-05-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml/README:

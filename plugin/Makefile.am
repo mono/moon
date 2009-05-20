@@ -1,4 +1,4 @@
-SUBDIRS = . test samples firefox
+SUBDIRS = . test samples firefox install
 
 CLEANFILES =
 
