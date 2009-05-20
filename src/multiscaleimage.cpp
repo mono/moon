@@ -231,9 +231,6 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	double msivp_oy = GetViewportOrigin()->y;
 	double msivp_w = GetViewportWidth();
 
-	int tile_width = source->GetTileWidth ();
-	int tile_height = source->GetTileHeight ();
-
 	if (!source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
 		g_warning ("RenderCollection called for a non deepzoom tile source. this should not happen");
 		return;
@@ -282,6 +279,11 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			int count = 0;
 			int found = 0;
 			bool blending = FALSE; //means at least a tile is not yet fully blended
+
+			int tile_width = from_layer <= dzits->GetMaxLevel () ? source->GetTileWidth () : sub_image->source->GetTileWidth ();
+			if (tile_width == 0) tile_width = source->GetTileWidth ();
+			int tile_height = from_layer <= dzits->GetMaxLevel () ? source->GetTileHeight (): sub_image->source->GetTileHeight ();
+			if (tile_height == 0) tile_height = source->GetTileHeight ();
 
 			//in msi relative coord
 			double v_tile_w = tile_width * (double)(1 << (layers - from_layer)) * sub_vp.width / sub_w;
@@ -348,6 +350,11 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			int layer_to_render = from_layer;
 			while (layer_to_render <= to_layer) {
+				int tile_width = from_layer <= dzits->GetMaxLevel () ? source->GetTileWidth () : sub_image->source->GetTileWidth ();
+				if (tile_width == 0) tile_width = source->GetTileWidth ();
+				int tile_height = from_layer <= dzits->GetMaxLevel () ? source->GetTileHeight (): sub_image->source->GetTileHeight ();
+				if (tile_height == 0) tile_height = source->GetTileHeight ();
+
 				double v_tile_w = tile_width * (double)(1 << (layers - layer_to_render)) * sub_vp.width / sub_w;
 				double v_tile_h = tile_height * (double)(1 << (layers - layer_to_render)) * sub_vp.width / sub_w;
 
@@ -439,6 +446,11 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				((DeepZoomImageTileSource*)sub_image->source)->Download ();
 				break;
 			}
+			
+			int tile_width = from_layer <= dzits->GetMaxLevel () ? source->GetTileWidth () : sub_image->source->GetTileWidth ();
+			if (tile_width == 0) tile_width = source->GetTileWidth ();
+			int tile_height = from_layer <= dzits->GetMaxLevel () ? source->GetTileHeight (): sub_image->source->GetTileHeight ();
+			if (tile_height == 0) tile_height = source->GetTileHeight ();
 
 			double v_tile_w = tile_width * (double)(1 << (layers - from_layer)) * sub_vp.width / sub_w;
 			double v_tile_h = tile_height * (double)(1 << (layers - from_layer)) * sub_vp.width / sub_w;

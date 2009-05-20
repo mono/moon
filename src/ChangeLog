@@ -1,3 +1,8 @@
+2009-05-20  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: support different tile sizes for the collection
+	and the individual images. Fixes "the moment" 2D.
+
 2009-05-20  Larry Ewing  <lewing@novell.com>
 
 	* xaml.cpp: update the parser error numbers and strings to match 2.0.
