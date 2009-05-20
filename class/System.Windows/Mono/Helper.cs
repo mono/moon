@@ -81,7 +81,7 @@ namespace Mono {
 				t = Type.GetType (at.ConverterTypeName);
 			}
 
-			if (t == null)
+			if (t == null || !typeof (TypeConverter).IsAssignableFrom (t))
 				return null;
 
 			ConstructorInfo ci = t.GetConstructor (new Type[] { typeof(Type) });
