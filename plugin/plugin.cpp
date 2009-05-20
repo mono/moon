@@ -1760,7 +1760,7 @@ PluginXamlLoader::TryLoad (int *error)
 	if (!t) {
 		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass Canvas, it is an unregistered type\n"));
 		element->unref ();
-		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "AG_E_INIT_ROOTVISUAL"));
+		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "Failed to initialize the application's root visual"));
 		return NULL;
 	}
 
@@ -1768,7 +1768,7 @@ PluginXamlLoader::TryLoad (int *error)
 		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass of Canvas, it is a %s\n",
 			  element->GetTypeName ()));
 		element->unref ();
-		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "AG_E_INIT_ROOTVISUAL"));
+		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "Failed to initialize the application's root visual"));
 		return NULL;
 	}
 	

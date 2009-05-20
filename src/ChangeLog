@@ -1,5 +1,9 @@
 2009-05-20  Larry Ewing  <lewing@novell.com>
 
+	* xaml.cpp: update the parser error numbers and strings to match 2.0.
+
+2009-05-20  Larry Ewing  <lewing@novell.com>
+
 	* multiscaleimage.cpp: small change to avoid getting the property
 	so often.
 

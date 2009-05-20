@@ -1465,13 +1465,13 @@ expat_parser_error (XamlParserInfo *p, XML_Error expat_error)
 	
 	switch (expat_error) {
 	case XML_ERROR_DUPLICATE_ATTRIBUTE:
-		parser_error (p, NULL, NULL, 5031, "wfc: unique attribute spec");
+		parser_error (p, NULL, NULL, 7031, "wfc: unique attribute spec");
 		break;
 	case XML_ERROR_UNBOUND_PREFIX:
-		parser_error (p, NULL, NULL, 5055, "undeclared prefix");
+		parser_error (p, NULL, NULL, 7055, "undeclared prefix");
 		break;
 	case XML_ERROR_NO_ELEMENTS:
-		parser_error (p, NULL, NULL, 5000, "unexpected end of input");
+		parser_error (p, NULL, NULL, 7000, "unexpected end of input");
 		break;
 	default:
 		parser_error (p, NULL, NULL, expat_error, "Unhandled XML error %s", XML_ErrorString (expat_error));
@@ -1923,7 +1923,7 @@ start_doctype_handler (void *data,
 		return;
 
 	if (sysid)
-		parser_error (p, NULL, NULL, 5050, "DTD was found but is prohibited");
+		parser_error (p, NULL, NULL, 7050, "DTD was found but is prohibited");
 }
 
 static void
@@ -4546,7 +4546,7 @@ value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const c
 			XamlNamespace *ns = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, attr_name [0]);
 
 			if (!ns)
-				return parser_error (p, item->element_name, attr[i], 5055, "undeclared prefix");
+				return parser_error (p, item->element_name, attr[i], 7055, "undeclared prefix");
 
 			bool reparse = false;
 			ns->SetAttribute (p, item, attr_name [1], attr [i + 1], &reparse);
@@ -4636,8 +4636,8 @@ start_parse:
 
 				NameScope *scope = p->namescope;
 				if (!item->GetAsDependencyObject ()->SetName (attr [i+1], scope)) {
-					parser_error (p, item->element_name, NULL, 2007,
-						      "You can't specify x:Name along with x:Key, or x:Key twice.");
+					parser_error (p, item->element_name, NULL, 2028,
+						      "The name already exists in the tree: %s.", attr [i+1]);
 					return;
 				}
 				continue;

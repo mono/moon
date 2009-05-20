@@ -1,3 +1,8 @@
+2009-05-20  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (TryLoad): update the error string for 2021 to match
+	2.0.
+
 2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* cbinding.cpp|h: Regenerated.
