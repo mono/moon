@@ -35,7 +35,8 @@ namespace MoonTest.System.Windows.Data
 		public event PropertyChangedEventHandler PropertyChanged;
 		float converting;
 		Color color;
-		
+		GridLength gridLength;
+		Visibility visibility;
 		public Color Color
 		{
 			get { return color; }
@@ -52,7 +53,30 @@ namespace MoonTest.System.Windows.Data
 					PropertyChanged (this, new PropertyChangedEventArgs ("Converting"));
 			}
 		}
-		
+
+		public GridLength GridLength
+		{
+			get { return gridLength; }
+			set
+			{
+				gridLength = value;
+				if (PropertyChanged != null)
+					PropertyChanged (this, new PropertyChangedEventArgs ("GridLength"));
+			}
+		}
+
+		[TypeConverter (typeof (InvalidConverter))]
+		public Visibility Visibility
+		{
+			get { return visibility; }
+			set
+			{
+				visibility = value;
+				if (PropertyChanged != null)
+					PropertyChanged (this, new PropertyChangedEventArgs ("Visibility"));
+			}
+		}
+
 		public BoundData()
 		{
 			Color = Colors.Brown;
@@ -149,14 +173,16 @@ namespace MoonTest.System.Windows.Data
 			BoundData data = new BoundData { };
 			InvalidConverter converter = new InvalidConverter { Value = 50 };
 			TextBlock block = new TextBlock { Visibility = Visibility.Collapsed };
+
 			block.SetBinding (TextBlock.VisibilityProperty, new Binding {
 				Mode = BindingMode.TwoWay,
 				Path = new PropertyPath ("Converting"),
 				Source = data,
 				Converter = converter
 			});
-			
+
 			Assert.AreEqual (Visibility.Visible, block.Visibility, "#0");
+
 			// Make TextBlock.Visibility update
 			data.Converting = 5;
 			Assert.AreEqual (Visibility.Visible, block.Visibility, "#1");
@@ -168,6 +194,76 @@ namespace MoonTest.System.Windows.Data
 			converter.Value = Visibility.Collapsed;
 			data.Converting = 7;
 			Assert.AreEqual (Visibility.Collapsed, block.Visibility, "#3");
+		}
+				
+		[TestMethod]
+		[MoonlightBug ("Fails because the Visibility enum basetype is not byte")]
+		public void InvalidValueConverter3 ()
+		{
+			BoundData data = new BoundData { Visibility = Visibility.Collapsed };
+			InvalidConverter converter = new InvalidConverter { Value = 0 };
+			TextBlock block = new TextBlock { };
+			block.SetBinding (TextBlock.TextProperty, new Binding {
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath ("Visibility"),
+				Source = data,
+				Converter = converter
+			});
+
+						
+			Assert.AreEqual (Visibility.Collapsed, data.Visibility, "#1");
+
+			block.Text = "a";
+			Assert.AreEqual (Visibility.Collapsed, data.Visibility, "#2");
+
+			converter.Value = Visibility.Visible;
+			block.Text = "b";
+			Assert.AreEqual (Visibility.Visible, data.Visibility, "#3");
+
+			converter.Value = "Collapsed";
+			block.Text = "c";
+
+			Assert.AreEqual (Visibility.Collapsed, data.Visibility, "#4");
+		}
+					
+		[TestMethod]
+		public void InvalidValueConverter4 ()
+		{
+			BoundData data = new BoundData { GridLength = new GridLength (0, GridUnitType.Auto) };
+			InvalidConverter converter = new InvalidConverter { Value = "*" };
+			TextBlock block = new TextBlock { };
+			block.SetBinding (TextBlock.TextProperty, new Binding {
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath ("GridLength"),
+				Source = data,
+				Converter = converter
+			});
+
+			// Check if we use the same type conversions as for Style and Storyboards
+			Assert.IsTrue(data.GridLength.IsAuto, "#1");
+
+			block.Text = "a";
+			Assert.IsTrue (data.GridLength.IsStar, "#2");
+		}
+						
+		[TestMethod]
+		public void InvalidValueConverter5 ()
+		{
+			BoundData data = new BoundData { GridLength = new GridLength (0, GridUnitType.Auto) };
+			TextBlock block = new TextBlock { };
+
+			block.SetBinding (TextBlock.TextProperty, new Binding {
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath ("GridLength"),
+				Source = data
+			});
+
+			// Check if we use the same type conversions as for Style and Storyboards
+			Assert.IsTrue (data.GridLength.IsAuto, "#1");
+
+			block.Text = "a";
+			Assert.IsTrue (data.GridLength.IsAuto, "#2");
+								
 		}
 	}
 }

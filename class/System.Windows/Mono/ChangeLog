@@ -1,5 +1,14 @@
 2009-05-20  Alan McGovern  <amcgovern@novell.com>
 
+	* ManagedXamlLoader.cs:
+	* MoonlightTypeConverter.cs: DataBinding and ManagedXamlLoader
+	  use exactly the same type conversion as Styles and
+	  ObjectKeyFrames - so merge both of them to use
+	  MoonlightTypeConverter. This also fixes several
+	  typeconversion related databinding issues.
+
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
 	* Kind.cs:
 	* Value.cs:
 	* Types.g.cs: Register 'float' as a known type

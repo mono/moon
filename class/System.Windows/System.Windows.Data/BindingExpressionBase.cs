@@ -200,7 +200,7 @@ namespace System.Windows.Data {
 				cachedValue = PropertyInfo.GetValue (PropertySource, null);
 			}
 			try {
-				cachedValue = ConvertToDestType (cachedValue);
+				cachedValue = ConvertToType (dp, cachedValue);
 			} catch {
 				cachedValue  = dp.DefaultValue;
 			}
@@ -211,32 +211,17 @@ namespace System.Windows.Data {
 		internal void SetValue (object value)
 		{
 			try {
+				
 				if (updatingSource || PropertyInfo == null)
 					return;
-	
+				
 				if (Binding.Converter != null)
 					value = Binding.Converter.ConvertBack (value,
 					                                       PropertyInfo.PropertyType,
 					                                       Binding.ConverterParameter,
 					                                       Binding.ConverterCulture ?? Helper.DefaultCulture);
-	
-				if (value != null) {
-					Type destType = PropertyInfo.PropertyType;
-					if (PropertyInfo.PropertyType.IsValueType && PropertyInfo.PropertyType != value.GetType ()) {
-						try {
-							if (destType.IsGenericType && destType.GetGenericTypeDefinition () == typeof (Nullable<>))
-								destType = destType.GetGenericArguments () [0];
-							if (destType.IsEnum)
-								value = Enum.Parse (destType, value.ToString (), true);
-							else
-								value = Convert.ChangeType (value, destType, null);
-						} catch {
-							Console.WriteLine ("Failed to convert '{0}' to '{1}", value.GetType (), PropertyInfo.PropertyType);
-							return;
-						}
-					}
-				}
 				
+				value = MoonlightTypeConverter.ConvertObject (PropertyInfo, value, Target.GetType ());
 				if (cachedValue == null) {
 					if (value == null)
 						return;
@@ -263,11 +248,11 @@ namespace System.Windows.Data {
 			try {
 				updatingSource = true;
 				if (string.IsNullOrEmpty (Binding.Path.Path)) {
-					Target.SetValueImpl (Property, ConvertToDestType (DataSource));
+					Target.SetValueImpl (Property, ConvertToType (Property, DataSource));
 				} else if (PropertyInfo == null) {
 					return;
 				} else if (PropertyInfo.Name.Equals (e.PropertyName)) {
-					object value = ConvertToDestType (PropertyInfo.GetValue (PropertySource, null));
+					object value = ConvertToType (Property, PropertyInfo.GetValue (PropertySource, null));
 					Target.SetValueImpl (Property, value);
 				}
 			} catch {
@@ -277,30 +262,15 @@ namespace System.Windows.Data {
 			}
 		}
 		
-		object ConvertToDestType (object value)
+		object ConvertToType (DependencyProperty dp, object value)
 		{
-			IValueConverter converter = Binding.Converter;
-			bool defined_converter = true;
-			if (converter == null) {
-				defined_converter = false;
-				converter = new MoonlightValueConverter();
-			}
-			
-			value = converter.Convert (value,
+			if (Binding.Converter != null) {
+				value = Binding.Converter.Convert (value,
 			                           Property.PropertyType,
 			                           Binding.ConverterParameter,
 			                           Binding.ConverterCulture ?? Helper.DefaultCulture);
-			
-			if (defined_converter && value != null && !value.GetType ().IsSubclassOf (Property.PropertyType)) {
-				converter = new MoonlightValueConverter ();
-				
-				value = converter.Convert (value,
-				                           Property.PropertyType,
-				                           Binding.ConverterParameter,
-				                           Binding.ConverterCulture ?? Helper.DefaultCulture);
 			}
-			
-			return value;
+			return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType ());
 		}
 
 		void TextBoxLostFocus (IntPtr sender, IntPtr calldata, IntPtr closure)

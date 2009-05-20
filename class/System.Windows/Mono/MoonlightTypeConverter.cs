@@ -88,7 +88,14 @@ namespace Mono {
 					else
 						return new GridLength (double.Parse (str_val), GridUnitType.Pixel);
 				}
-				
+			}
+			if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
+				return new SolidColorBrush ((Color)value);
+			}
+			if (IsAssignableToIConvertible (value.GetType ()) && IsAssignableToIConvertible (destinationType))
+				return ValueFromConvertible (destinationType, (IConvertible) value);
+
+			if (str_val != null) {
 				Kind k = destinationKind;
 
 				/* ugh.  our desire to use enums in
@@ -101,28 +108,22 @@ namespace Mono {
 				    k == Kind.CURSOR)
 					k = Kind.INT32;
 
+				// XXX this leaks unmanaged_value?
 				IntPtr unmanaged_value;
 
-				if (!NativeMethods.value_from_str (k,
+				if (NativeMethods.value_from_str (k,
 								   propertyName,
 								   str_val,
 								   out unmanaged_value)) {
-					Console.WriteLine ("could not convert value {0} to type {1} (property {1})", value, destinationType, propertyName);
-					return base.ConvertFrom (context, culture, value);
-				}
+					value = Value.ToObject (destinationType, unmanaged_value);
+					return value;
+				}	
+			}
 
-				return Value.ToObject (destinationType, unmanaged_value);
-				// XXX this leaks unmanaged_value?
-			}
-			else if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
-				return new SolidColorBrush ((Color)value);
-			}
-			else if (IsAssignableToIConvertible (value.GetType ()) && IsAssignableToIConvertible (destinationType))
-				return ValueFromConvertible (destinationType, (IConvertible) value);
-			else if (!base.CanConvertFrom (context, value.GetType ())) {
+			if (!base.CanConvertFrom (context, value.GetType ())) {
 				Console.Error.WriteLine ("MoonlightTypeConverter: Cannot convert from type {0} to type {1}", value.GetType(), destinationType);
 			}
-
+			
 			return base.ConvertFrom (context, culture, value);
 		}
 			
@@ -163,9 +164,32 @@ namespace Mono {
 				return Convert.ToUInt32 (value);
 			if (type == typeof (UInt64))
 				return Convert.ToUInt64 (value);
-			return null;
+
+			return value;
 		}
 
+		public static object ConvertObject (PropertyInfo prop, object val, Type objectType)
+		{
+			// Should i return default(T) if property.PropertyType is a valuetype?
+			if (val == null)
+				return val;
+			
+			if (prop.PropertyType.IsAssignableFrom (val.GetType ()))
+				return val;
+
+			if (prop.PropertyType == typeof (string))
+				return val.ToString ();
+			
+			TypeConverter tc = Helper.GetConverterFor (prop, prop.PropertyType);
+			if (tc == null)
+				tc = new MoonlightTypeConverter (prop.Name, prop.PropertyType);
+			
+			if (!tc.CanConvertFrom (val.GetType()))
+				throw new Exception (string.Format ("type converter {0} can't convert from type {1}", tc.GetType(), val.GetType()));
+
+			return tc.ConvertFrom (null, Helper.DefaultCulture, val);
+		}
+		
 		public static object ConvertObject (DependencyProperty dp, object val, Type objectType)
 		{
 			// Should i return default(T) if property.PropertyType is a valuetype?

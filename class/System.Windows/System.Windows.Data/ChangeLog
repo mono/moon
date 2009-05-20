@@ -1,3 +1,11 @@
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: DataBinding and ManagedXamlLoader
+	  use exactly the same type conversion as Styles and
+	  ObjectKeyFrames - so merge both of them to use
+	  MoonlightTypeConverter. This also fixes several
+	  typeconversion related databinding issues.
+
 2009-05-19  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: Handle invalid values returned
