@@ -19,6 +19,32 @@
 	* value.h.in:
 	* type-generated.cpp: Register 'float' as a known type
 
+2009-05-20  Chris Toshok  <toshok@ximian.com>
+
+	* type.h.in: a few changes.  We no longer pass the kind name to
+	the ctor, since nothing ever uses it, and the type name is enough.
+	add both an interface array and array count to the Type ctor, as
+	well as a is_interface bool.  Lastly, add IsAssignableFrom
+	overloads.
+
+	* dependencyobject.cpp (DependencyObject::IsValueValid): switch
+	from using a direct comparison on Kinds to using
+	Type::IsAssignableFrom.  this makes interfaces work.
+
+	* cbinding.h, cbinding.cpp, type-generated.cpp, type.h: regen.
+
+	* animation.cpp (AnimationClock::HookupStorage): instead of
+	comparing kinds, use Type::IsAssignableFrom to see if we can
+	animate the property using a particular timeline type.
+	(DoubleAnimation::GetCurrentValue,
+	 DoubleAnimation::GetTargetValue, ColorAnimation::GetCurrentValue,
+	 ColorAnimation::GetTargetValue, PointAnimation::GetCurrentValue,
+	 PointAnimation::GetTargetValue): add code to deal with the start
+	 value not being the same type as the animation uses (this can
+	 happen if we're animating an interface property like
+	 IComparable.)  The start values in that case are 0.0, Point(0.0),
+	 and Color(0,0,0,0), respectively.
+
 2009-05-19  Larry Ewing  <lewing@novell.com>
 
 	* collection.cpp: avoid some GetDeployment calls in looping cases.

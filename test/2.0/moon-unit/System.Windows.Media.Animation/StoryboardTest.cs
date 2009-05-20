@@ -932,7 +932,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void TargetInterfaceProperty ()
 		{
 			Test t = new Test { Value = 5 };
@@ -953,7 +952,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void TargetInterfaceProperty2 ()
 		{
 			Test t = new Test ();

@@ -2627,8 +2627,7 @@ void types_free (Types *instance);
 /* @GeneratePInvoke */
 Type *types_find (Types *instance, int type);
 
-/* @GeneratePInvoke */
-int types_register_type (Types *instance, const char *name, void *gc_handle, int parent);
+int types_register_type (Types *instance, const char *name, void *gc_handle, int parent, bool is_interface, int *interfaces, int interface_count);
 
 /* @GeneratePInvoke */
 Types *types_new (void);

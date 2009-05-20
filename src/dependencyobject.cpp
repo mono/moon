@@ -1092,7 +1092,7 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 			return true;
 		}
 		
-		if (!value->Is (property->GetPropertyType())) {
+		if (!Type::IsAssignableFrom (property->GetPropertyType(), value->GetKind())) {
 			MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
 					   g_strdup_printf ("DependencyObject::SetValue, value cannot be assigned to the "
 							    "property %s::%s (property has type '%s', value has type '%s')",

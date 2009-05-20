@@ -102,7 +102,13 @@ namespace Mono
 				parent = Find (typedef.BaseType);
 			}
 			
-			return RegisterType (type, parent);
+			Type[] interfaces = type.GetInterfaces ();
+
+			ManagedType[] interface_types = new ManagedType[interfaces.Length];
+			for (int i = 0; i < interfaces.Length; i ++)
+				interface_types[i] = Find (interfaces[i]);
+
+			return RegisterType (type, parent, interface_types);
 		}
 
 	 	internal static void Ensure (Type type)
@@ -116,7 +122,7 @@ namespace Mono
 			}
 		}
 		
-		private ManagedType RegisterType (Type type, ManagedType parent)
+		private ManagedType RegisterType (Type type, ManagedType parent, ManagedType[] interfaces)
 		{
 			ManagedType info;
 		
@@ -128,10 +134,14 @@ namespace Mono
 				info.gc_handle = GCHandle.Alloc (type);
 				info.parent = parent;
 
+				Kind[] interface_kinds = new Kind[interfaces.Length];
+				for (int i = 0; i < interfaces.Length; i ++)
+					interface_kinds[i] = interfaces[i].native_handle;
+
 				if (type.IsEnum && Enum.GetUnderlyingType (type) == typeof(int))
 					info.native_handle = Kind.INT32;
 				else
-					info.native_handle = NativeMethods.types_register_type (native, type.FullName, GCHandle.ToIntPtr (info.gc_handle), (parent != null ? parent.native_handle : Kind.INVALID));
+					info.native_handle = NativeMethods.types_register_type (native, type.FullName, GCHandle.ToIntPtr (info.gc_handle), (parent != null ? parent.native_handle : Kind.INVALID), type.IsInterface, interface_kinds, interface_kinds.Length);
 				
 				types.Add (type, info);
 			}

@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 485 methods needs to be decorated.
+# 486 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -11,7 +11,10 @@
 +SC-M: Mono.Kind Mono.NativeMethods::event_object_get_object_type(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.IntPtr,Mono.Kind)
++SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.IntPtr,Mono.Kind,Mono.Kind&,System.Int32)
+
+# p/invoke declaration
++SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.IntPtr,Mono.Kind,Mono.Kind[],System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_clear(System.IntPtr)

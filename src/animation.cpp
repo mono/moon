@@ -242,9 +242,9 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 	/* Before hooking up make sure that the values our animation generates
 	   (doubles, colors, points...) match the values that the property is
 	   ready to receive. If not, print an informative message. */
-	if (timeline->GetValueKind () != Type::INVALID && timeline->GetValueKind () != targetprop->GetPropertyType()) {
+	Type *property_type = Type::Find (targetprop->GetPropertyType());
+	if (timeline->GetValueKind () != Type::INVALID && !property_type->IsAssignableFrom (timeline->GetValueKind ())) {
 		Type *timeline_type = Type::Find (timeline->GetValueKind ());
-		Type *property_type = Type::Find (targetprop->GetPropertyType());
 
 		const char *timeline_type_name = (timeline_type != NULL) ? timeline_type->GetName () : "Invalid";
 		const char *property_type_name = (property_type != NULL) ? property_type->GetName () : "Invalid";
@@ -628,14 +628,21 @@ DoubleAnimation::GetTargetValue (Value *defaultOriginValue)
 	if (! hasCached)
 		this->EnsureCache ();
 
-	double start = doubleFromCached ? *doubleFromCached : defaultOriginValue->AsDouble();
+	double start;
+
+	if (doubleFromCached)
+		start = *doubleFromCached;
+	else if (defaultOriginValue->Is(Type::DOUBLE))
+		start = defaultOriginValue->AsDouble();
+	else
+		start = 0.0;
 
 	if (doubleToCached)
 		return new Value (*doubleToCached);
 	else if (doubleByCached) 
 		return new Value (start + *doubleByCached);
 	else
-		return new Value (defaultOriginValue->AsDouble ());
+		return new Value (start);
 }
 
 Value*
@@ -645,7 +652,15 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 	if (! hasCached)
 		this->EnsureCache ();
 
-	double start = doubleFromCached ? *doubleFromCached : defaultOriginValue->AsDouble();
+	double start;
+
+	if (doubleFromCached)
+		start = *doubleFromCached;
+	else if (defaultOriginValue->Is(Type::DOUBLE))
+		start = defaultOriginValue->AsDouble();
+	else
+		start = 0.0;
+
 	double end;
 
 	if (doubleToCached) {
@@ -655,7 +670,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 		end = start + *doubleByCached;
 	}
 	else {
-		end = defaultOriginValue->AsDouble();
+		end = start;
 	}
 
 	double progress = animationClock->GetCurrentProgress ();
@@ -707,14 +722,19 @@ ColorAnimation::GetTargetValue (Value *defaultOriginValue)
 	if (! hasCached)
 		this->EnsureCache ();
 
-	Color start = colorFromCached ? *colorFromCached : *defaultOriginValue->AsColor();
+	Color start;
+
+	if (colorFromCached)
+		start = *colorFromCached;
+	else if (defaultOriginValue->Is(Type::COLOR))
+		start = *defaultOriginValue->AsColor();
 
 	if (colorToCached)
 		return new Value (*colorToCached);
 	else if (colorByCached) 
 		return new Value (start + *colorByCached);
 	else
-		return new Value (*defaultOriginValue->AsColor ());
+		return new Value (start);
 }
 
 Value*
@@ -724,7 +744,13 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	if (! hasCached)
 		this->EnsureCache ();
 
-	Color start = colorFromCached ? *colorFromCached : *defaultOriginValue->AsColor();
+	Color start;
+
+	if (colorFromCached)
+		start = *colorFromCached;
+	else if (defaultOriginValue->Is(Type::COLOR))
+		start = *defaultOriginValue->AsColor();
+
 	Color end;
 
 	if (colorToCached) {
@@ -734,7 +760,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 		end = start + *colorByCached;
 	}
 	else {
-		end = *defaultOriginValue->AsColor ();
+		end = start;
 	}
 
 	double progress = animationClock->GetCurrentProgress ();
@@ -790,14 +816,19 @@ PointAnimation::GetTargetValue (Value *defaultOriginValue)
 	if (! hasCached)
 		this->EnsureCache ();
 	
-	Point start = pointFromCached ? *pointFromCached : *defaultOriginValue->AsPoint();
+	Point start;
+
+	if (pointFromCached)
+		start = *pointFromCached;
+	else if (defaultOriginValue->Is(Type::POINT))
+		start = *defaultOriginValue->AsPoint();
 
 	if (pointToCached)
 		return new Value (*pointToCached);
 	else if (pointByCached) 
 		return new Value (start + *pointByCached);
 	else
-		return new Value (*defaultOriginValue->AsPoint ());
+		return new Value (start);
 }
 
 Value*
@@ -807,7 +838,13 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	if (! hasCached)
 		this->EnsureCache ();
 
-	Point start = pointFromCached ? *pointFromCached : *defaultOriginValue->AsPoint();
+	Point start;
+
+	if (pointFromCached)
+		start = *pointFromCached;
+	else if (defaultOriginValue->Is(Type::POINT))
+		start = *defaultOriginValue->AsPoint();
+
 	Point end;
 
 	if (pointToCached) {
@@ -817,7 +854,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 		end = start + *pointByCached;
 	}
 	else {
-		end = *defaultOriginValue->AsPoint ();
+		end = start;
 	}
 
 	double progress = animationClock->GetCurrentProgress ();

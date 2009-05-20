@@ -17,6 +17,7 @@ using System.Text;
 class TypeInfo : MemberInfo {
 	private string _KindName; // The name as it appears in the Kind enum (STRING, POINT_ARRAY, etc)
 	private string c_constructor; // The C constructor
+	private List<TypeInfo> interfaces;
 	private List<FieldInfo> events;
 	private List<FieldInfo> properties;
 	private bool? is_abstract;
@@ -28,6 +29,7 @@ class TypeInfo : MemberInfo {
 
 	public bool Include; // Force inclusion of this type into the type system (for manual types, char, point[], etc)
 	public bool IsValueType;
+	public bool IsInterface;
 	public bool SkipValue;
 	
 	public bool IsAbstract {
@@ -49,6 +51,15 @@ class TypeInfo : MemberInfo {
 					is_abstract = new bool? (false);
 			}
 			return is_abstract.Value;
+		}
+	}
+
+	public List<TypeInfo> Interfaces {
+		get {
+			if (interfaces == null) {
+				interfaces = new List<TypeInfo> ();
+			}
+			return interfaces;
 		}
 	}
 
@@ -253,9 +264,10 @@ class TypeInfo : MemberInfo {
 			Annotations.Add (new Annotation ("SkipValue"));
 	}
 
-	public TypeInfo (string Name, string KindName, string Base, bool Include, bool SkipValue, bool is_value_type) : this (Name, KindName, Base, Include, SkipValue)
+	public TypeInfo (string Name, string KindName, string Base, bool Include, bool SkipValue, bool is_value_type, bool is_interface) : this (Name, KindName, Base, Include, SkipValue)
 	{
 		this.IsValueType = is_value_type;
+		this.IsInterface = is_interface;
 	}
 
 	public TypeInfo (string Name, string KindName, string Base, bool Include, int SLVersion)

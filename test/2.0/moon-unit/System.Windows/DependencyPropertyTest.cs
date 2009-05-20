@@ -1294,21 +1294,31 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void Managed_Interfaces ()
 		{
 			InterfaceDPs dp = new InterfaceDPs ();
-			dp.InterfaceProp = 5;
-			Assert.AreEqual (5, (int) dp.InterfaceProp, "#1");
+			dp.IComparableProp = 5;
+			Assert.AreEqual (5, (int) dp.IComparableProp, "#1");
 
-			dp.InterfaceProp = 1.0;
-			Assert.AreEqual (1.0, (double) dp.InterfaceProp, "#2");
+			dp.IComparableProp = 1.0;
+			Assert.AreEqual (1.0, (double) dp.IComparableProp, "#2");
 
-			dp.InterfaceProp = new InterfaceDPs ();
-			Assert.IsInstanceOfType<InterfaceDPs> (dp.InterfaceProp, "#3");
+			dp.IComparableProp = new InterfaceDPs ();
+			Assert.IsInstanceOfType<InterfaceDPs> (dp.IComparableProp, "#3");
 
-			dp.InterfaceProp = new ManagedIComparable ();
-			Assert.IsInstanceOfType<ManagedIComparable> (dp.InterfaceProp, "#4");
+			dp.IComparableProp = new ManagedIComparable ();
+			Assert.IsInstanceOfType<ManagedIComparable> (dp.IComparableProp, "#4");
+
+#if notyet
+			// this should likely throw..
+			dp.IEquatableProp = 5;
+#endif
+
+			dp.IEquatableProp = 5.0;
+			Assert.AreEqual (5.0, (double) dp.IEquatableProp, "#5");
+
+			dp.IEquatableProp = new ManagedIEquatable ();
+			Assert.IsInstanceOfType<ManagedIEquatable> (dp.IEquatableProp, "#6");
 		}
 		
 		[TestMethod]
@@ -1348,14 +1358,22 @@ namespace MoonTest.System.Windows
 	}
 	
 	public class ManagedIComparable : IComparable { public int CompareTo (object o) { return 0; } }
+	public class ManagedIEquatable : IEquatable<double> { public bool Equals (double other) { return false; } }
 	public class InterfaceDPs : Control, IComparable
 	{
-		public static DependencyProperty InterfacePropProperty = DependencyProperty.Register ("InterfaceProp", typeof (IComparable), typeof (InterfaceDPs), null);
+		public static DependencyProperty IComparablePropProperty = DependencyProperty.Register ("IComparableProp", typeof (IComparable), typeof (InterfaceDPs), null);
+		public static DependencyProperty IEquatablePropProperty = DependencyProperty.Register ("IEquatableProp", typeof (IEquatable<double>), typeof (InterfaceDPs), null);
 
-		public IComparable InterfaceProp
+		public IComparable IComparableProp
 		{
-			get { return (IComparable) GetValue (InterfacePropProperty); }
-			set { SetValue (InterfacePropProperty, value); }
+			get { return (IComparable) GetValue (IComparablePropProperty); }
+			set { SetValue (IComparablePropProperty, value); }
+		}
+
+		public IEquatable<double> IEquatableProp
+		{
+			get { return (IEquatable<double>) GetValue (IEquatablePropProperty); }
+			set { SetValue (IEquatablePropProperty, value); }
 		}
 
 		public int CompareTo (object o) { return 0; }

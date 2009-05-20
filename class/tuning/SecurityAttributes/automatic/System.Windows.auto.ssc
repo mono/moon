@@ -69,7 +69,7 @@
 +SSC-M: System.Void Mono.ToggleRef::.ctor(Mono.INativeDependencyObjectWrapper)
 +SSC-M: System.Void Mono.ToggleRef::Initialize()
 +SSC-M: System.Void Mono.ToggleRef::Free()
-+SSC-M: Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType)
++SSC-M: Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
 +SSC-M: System.Object Mono.Value::ToObject(System.Type,System.IntPtr)
 +SSC-M: Mono.Value Mono.Value::FromObject(System.Object,System.Boolean)
 +SSC-M: System.IntPtr Mono.Value::StringToIntPtr(System.String)

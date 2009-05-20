@@ -4590,12 +4590,12 @@ types_find (Types *instance, int type)
 
 
 int
-types_register_type (Types *instance, const char *name, void *gc_handle, int parent)
+types_register_type (Types *instance, const char *name, void *gc_handle, int parent, bool is_interface, int *interfaces, int interface_count)
 {
 	if (instance == NULL)
 		return Type::INVALID;
 	
-	return instance->RegisterType (name, gc_handle, (Type::Kind) parent);
+	return instance->RegisterType (name, gc_handle, (Type::Kind) parent, is_interface, (Type::Kind*) interfaces, interface_count);
 }
 
 

@@ -19,6 +19,22 @@
 	  attribute is not of the correct type, bail out instead of
 	  throwing an InvalidCastException
 
+2009-05-20  Chris Toshok  <toshok@ximian.com>
+
+	* Types.cs (Types.Find): find all interfaces for the type as well,
+	and pass them to RegisterType.
+	(Types.RegisterType): add interfaces, which we pass as an array of
+	kinds to unmanaged.
+
+	* NativeMethods.cs: sucks, but i had to move types_register_type
+	back here since the generator was confusing the array parameter
+	with an out-param.  not sure how to do this with the current
+	generator, or if it's possible..
+
+	* Kind.cs: regen.
+
+	* GeneratedPInvokes.cs: regen.
+
 2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Kind.cs: Regenerated.

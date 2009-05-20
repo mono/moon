@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * type.cpp: Our type system
  *
@@ -22,21 +23,31 @@
 /*
  * Type implementation
  */
-Type::Type (Type::Kind type, Type::Kind parent, bool value_type, const char *name, 
-		const char *kindname, int event_count, int total_event_count, const char **events, 
-		create_inst_func *create_inst, const char *content_property)
+Type::Type (Type::Kind type, Type::Kind parent, bool is_value_type, bool is_interface,
+	    const char *name, 
+	    int event_count, int total_event_count, const char **events, 
+	    int interface_count, const Type::Kind *interfaces,
+	    create_inst_func *create_inst, const char *content_property)
 {
 	this->type = type;
 	this->parent = parent;
-	this->value_type = value_type;
+	this->is_value_type = is_value_type;
+	this->is_interface = is_interface;
 	this->name = name;
-	this->kindname = kindname;
 	this->event_count = event_count;
 	this->total_event_count = total_event_count;
 	this->events = events;
 	this->create_inst = create_inst;
 	this->content_property = content_property;
 	this->properties = NULL;
+	this->interface_count = interface_count;
+	if (this->interface_count) {
+		this->interfaces = new Type::Kind[interface_count];
+		memcpy (this->interfaces, interfaces, interface_count * sizeof (Type::Kind));
+	}
+	else {
+		this->interfaces = NULL;
+	}
 }
 		
 Type::~Type ()
@@ -45,6 +56,8 @@ Type::~Type ()
 		g_hash_table_destroy (properties);
 		properties = NULL;
 	}
+
+	delete interfaces;
 }
 
 const char *
@@ -162,6 +175,45 @@ Types::IsSubclassOf (Type::Kind type, Type::Kind super)
 			return false;		
 	} while (true);
 	
+	return false;
+}
+
+bool
+Type::IsAssignableFrom (Type::Kind type)
+{
+	return Deployment::GetCurrent ()->GetTypes ()->IsAssignableFrom (GetKind (), type);
+}
+
+bool
+Type::IsAssignableFrom (Type::Kind destination, Type::Kind type)
+{
+	return Deployment::GetCurrent ()->GetTypes ()->IsAssignableFrom (destination, type);
+}
+
+bool
+Types::IsAssignableFrom (Type::Kind destination, Type::Kind type)
+{
+	if (destination == type)
+		return true;
+
+	if (IsSubclassOf (type, destination))
+		return true;
+
+	// more expensive..  interface checks
+	Type *destination_type = Find (destination);
+	if (!destination_type->IsInterface())
+		return false;
+
+	Type *type_type = Find (type);
+	while (type_type && type_type->GetKind() != Type::INVALID) {
+		for (int i = 0; i < type_type->GetInterfaceCount(); i ++) {
+			// should this be IsAssignableFrom instead of ==?  ugh
+			if (type_type->GetInterface(i) == destination)
+				return true;
+		}
+		type_type = Find (type_type->GetParent());
+	}
+
 	return false;
 }
 
@@ -405,9 +457,9 @@ Types::Find (const char *name, bool ignore_case)
 }
 
 Type::Kind
-Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent)
+Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent, bool is_interface, Type::Kind* interfaces, int interface_count)
 {
-	Type *type = new Type (Type::INVALID, parent, false, g_strdup (name), NULL, 0, Find (parent)->GetEventCount (), NULL, NULL, NULL);
+	Type *type = new Type (Type::INVALID, parent, false, is_interface, g_strdup (name), 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, NULL, NULL);
 	
 	// printf ("Types::RegisterType (%s, %p, %i (%s)). this: %p, size: %i, count: %i\n", name, gc_handle, parent, Type::Find (this, parent) ? Type::Find (this, parent)->name : NULL, this, size, count);
 	
@@ -415,3 +467,4 @@ Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent)
 	
 	return type->GetKind ();
 }
+

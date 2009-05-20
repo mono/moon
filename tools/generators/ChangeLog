@@ -2,6 +2,18 @@
 
 	* Generator.cs: Register 'float' as a known type
 
+2009-05-20  Chris Toshok  <toshok@ximian.com>
+
+	* TypeInfo.cs: add support for interfaces, and also the ability to
+	flag a TypeInfo as being an interface.
+
+	* Generator.cs (global): change all the type-generated.cpp
+	registration code to deal with the new Type ctor, as well as the
+	fact that we need to track interfaces implemented by the types.
+	(GetTypes2): gross change, but register all -- most of -- the
+	built in types' interfaces, and associate them with the given
+	TypeInfo.
+
 2009-05-19  Rolf Bjarne Kvinge  <rkvinge@novell.com>
 
 	* Generator.cs: Include enums.h in the cbindings.

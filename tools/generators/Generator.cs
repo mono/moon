@@ -1045,19 +1045,137 @@ class Generator {
 		}
 		
 		// Add all the manual types
+		TypeInfo t;
+		TypeInfo IComparableInfo;
+		TypeInfo IFormattableInfo;
+		TypeInfo IConvertibleInfo;
+		TypeInfo IEquatableBoolInfo;
+		TypeInfo IComparableBoolInfo;
+		TypeInfo IEquatableDoubleInfo;
+		TypeInfo IComparableDoubleInfo;
+		TypeInfo IEquatableFloatInfo;
+		TypeInfo IComparableFloatInfo;
+		TypeInfo IEquatableCharInfo;
+		TypeInfo IComparableCharInfo;
+		TypeInfo IEquatableIntInfo;
+		TypeInfo IComparableIntInfo;
+		TypeInfo IEquatableLongInfo;
+		TypeInfo IComparableLongInfo;
+		TypeInfo IEquatableStringInfo;
+		TypeInfo IComparableStringInfo;
+		TypeInfo IEquatableTimeSpanInfo;
+		TypeInfo IComparableTimeSpanInfo;
+		TypeInfo IEquatableUintInfo;
+		TypeInfo IComparableUintInfo;
+		TypeInfo IEquatableUlongInfo;
+		TypeInfo IComparableUlongInfo;
+
 		all.Children.Add (new TypeInfo ("object", "OBJECT", "INVALID", true, true));
-		all.Children.Add (new TypeInfo ("bool", "BOOL", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("double", "DOUBLE", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("float", "FLOAT", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("guint64", "UINT64", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("gint64", "INT64", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("guint32", "UINT32", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("gint32", "INT32", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("char*", "STRING", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true, true, true));
+
+		all.Children.Add (IComparableInfo = new TypeInfo ("IComparable", "ICOMPARABLE", "OBJECT", true, true, false, true));
+		all.Children.Add (IFormattableInfo = new TypeInfo ("IFormattable", "IFORMATTABLE", "OBJECT", true, true, false, true));
+		all.Children.Add (IConvertibleInfo = new TypeInfo ("IConvertible", "ICONVERTIBLE", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableBoolInfo = new TypeInfo ("IEquatable<bool>", "IEQUATABLE_BOOL", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableBoolInfo = new TypeInfo ("IComparable<bool>", "ICOMPARABLE_BOOL", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableDoubleInfo = new TypeInfo ("IEquatable<double>", "IEQUATABLE_DOUBLE", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableDoubleInfo = new TypeInfo ("IComparable<double>", "ICOMPARABLE_DOUBLE", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableFloatInfo = new TypeInfo ("IEquatable<float>", "IEQUATABLE_FLOAT", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableFloatInfo = new TypeInfo ("IComparable<float>", "ICOMPARABLE_FLOAT", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableCharInfo = new TypeInfo ("IEquatable<char>", "IEQUATABLE_CHAR", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableCharInfo = new TypeInfo ("IComparable<char>", "ICOMPARABLE_CHAR", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableIntInfo = new TypeInfo ("IEquatable<int>", "IEQUATABLE_INT", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableIntInfo = new TypeInfo ("IComparable<int>", "ICOMPARABLE_INT", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableLongInfo = new TypeInfo ("IEquatable<long>", "IEQUATABLE_LONG", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableLongInfo = new TypeInfo ("IComparable<long>", "ICOMPARABLE_LONG", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableStringInfo = new TypeInfo ("IEquatable<string>", "IEQUATABLE_STRING", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableStringInfo = new TypeInfo ("IComparable<string>", "ICOMPARABLE_STRING", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableTimeSpanInfo = new TypeInfo ("IEquatable<TimeSpan>", "IEQUATABLE_TIMESPAN", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableTimeSpanInfo = new TypeInfo ("IComparable<TimeSpan>", "ICOMPARABLE_TIMESPAN", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableUintInfo = new TypeInfo ("IEquatable<uint>", "IEQUATABLE_UINT", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableUintInfo = new TypeInfo ("IComparable<uint>", "ICOMPARABLE_UINT", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableUlongInfo = new TypeInfo ("IEquatable<ulong>", "IEQUATABLE_ULONG", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableUlongInfo = new TypeInfo ("IComparable<ulong>", "ICOMPARABLE_ULONG", "OBJECT", true, true, false, true));
+
+		all.Children.Add (t = new TypeInfo ("bool", "BOOL", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableBoolInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableBoolInfo);
+
+		all.Children.Add (t = new TypeInfo ("float", "FLOAT", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableFloatInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableFloatInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("double", "DOUBLE", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableDoubleInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableDoubleInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("guint64", "UINT64", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableUlongInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableUlongInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("gint64", "INT64", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableLongInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableLongInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("guint32", "UINT32", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableUintInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableUintInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("gint32", "INT32", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableIntInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableIntInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("char*", "STRING", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableStringInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableStringInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableTimeSpanInfo);
+		t.Interfaces.Add (IEquatableTimeSpanInfo);
+
+		all.Children.Add (t = new TypeInfo ("char", "CHAR", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableCharInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableCharInfo);
+
+		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true, true, true, false));
 		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2, true));
-		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("char", "CHAR", "OBJECT", true, true, true));
+
+
 		all.Children.Add (new TypeInfo ("System.Windows.FontStretch", "FONTSTRETCH", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.FontWeight", "FONTWEIGHT", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.FontStyle", "FONTSTYLE", "OBJECT", true, true));
@@ -1661,6 +1779,32 @@ class Generator {
 		f ("int", "INT32");
 		f ("string", "STRING");
 		f ("TimeSpan", "TIMESPAN");
+
+		// all the interfaces
+		f ("IComparable", "ICOMPARABLE");
+		f ("IFormattable", "IFORMATTABLE");
+		f ("IConvertible", "ICONVERTIBLE");
+		f ("IEquatable<bool>", "IEQUATABLE_BOOL");
+		f ("IComparable<bool>", "ICOMPARABLE_BOOL");
+		f ("IEquatable<double>", "IEQUATABLE_DOUBLE");
+		f ("IComparable<double>", "ICOMPARABLE_DOUBLE");
+		f ("IEquatable<float>", "IEQUATABLE_FLOAT");
+		f ("IComparable<float>", "ICOMPARABLE_FLOAT");
+		f ("IEquatable<char>", "IEQUATABLE_CHAR");
+		f ("IComparable<char>", "ICOMPARABLE_CHAR");
+		f ("IEquatable<int>", "IEQUATABLE_INT");
+		f ("IComparable<int>", "ICOMPARABLE_INT");
+		f ("IEquatable<long>", "IEQUATABLE_LONG");
+		f ("IComparable<long>", "ICOMPARABLE_LONG");
+		f ("IEquatable<string>", "IEQUATABLE_STRING");
+		f ("IComparable<string>", "ICOMPARABLE_STRING");
+		f ("IEquatable<TimeSpan>", "IEQUATABLE_TIMESPAN");
+		f ("IComparable<TimeSpan>", "ICOMPARABLE_TIMESPAN");
+		f ("IEquatable<uint>", "IEQUATABLE_UINT");
+		f ("IComparable<uint>", "ICOMPARABLE_UINT");
+		f ("IEquatable<ulong>", "IEQUATABLE_ULONG");
+		f ("IComparable<ulong>", "ICOMPARABLE_ULONG");
+
 		f ("System.Windows.Application", "APPLICATION");
 		f ("System.Windows.Thickness", "THICKNESS");
 		f ("System.Windows.CornerRadius", "CORNERRADIUS");
@@ -1996,20 +2140,35 @@ class Generator {
 		// Create the arrays of event names for the classes which have events
 		text.AppendLine ("");
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
-			if (t.Events == null || t.Events.Count == 0)
-				continue;
+
+			if (t.Events.Count > 0) {
+				text.Append ("const char *");
+				text.Append (t.KindName);
+				text.Append ("_Events [] = { ");
 				
-			text.Append ("const char *");
-			text.Append (t.Name);
-			text.Append ("_Events [] = { ");
-				
-			foreach (FieldInfo field in t.Events) {
-				text.Append ("\"");
-				text.Append (field.EventName);
-				text.Append ("\", ");
+				foreach (FieldInfo field in t.Events) {
+					text.Append ("\"");
+					text.Append (field.EventName);
+					text.Append ("\", ");
+				}
+
+				text.AppendLine ("NULL };");
 			}
-				
-			text.AppendLine ("NULL };");
+
+			if (t.Interfaces.Count > 0) {
+				text.Append ("const Type::Kind ");
+				text.Append (t.KindName);
+				text.Append ("_Interfaces[] = { ");
+
+				for (int i = 0; i < t.Interfaces.Count; i ++) {
+					text.Append ("Type::");
+					text.Append (t.Interfaces[i].KindName);
+					if (i < t.Interfaces.Count - 1)
+						text.Append (", ");
+				}
+
+				text.AppendLine (" };");
+			}
 		}
 	
 		// Create the array of type data
@@ -2017,11 +2176,12 @@ class Generator {
 		text.AppendLine ("void");
 		text.AppendLine ("Types::RegisterNativeTypes ()");
 		text.AppendLine ("{");
-		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL );");
+		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (Type::INVALID, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, NULL, NULL );");
 		foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 			MemberInfo member;
 			TypeInfo parent = null;
 			string events = "NULL";
+			string interfaces = "NULL";
 				
 			if (!type.Annotations.ContainsKey ("IncludeInKinds"))
 				continue;
@@ -2030,24 +2190,29 @@ class Generator {
 				parent = (TypeInfo) member;
 				
 			if (type.Events != null && type.Events.Count != 0)
-				events = type.Name + "_Events";
+				events = type.KindName + "_Events";
+
+			if (type.Interfaces.Count != 0)
+				interfaces = type.KindName + "_Interfaces";
 	
-			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9});",
+			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11});",
 							"Type::" + type.KindName, 
 							type.KindName == "OBJECT" ? "Type::INVALID" : ("Type::" + (parent != null ? parent.KindName : "OBJECT")),
 							type.IsValueType ? "true" : "false",
+							type.IsInterface ? "true" : "false",
 							"\"" + type.Name + "\"", 
-							"\"" + type.KindName + "\"", 
 							type.GetEventCount (),
 							type.GetTotalEventCount (),
 							events,
+							type.Interfaces.Count,
+							interfaces,
 							(type.C_Constructor != null && type.GenerateCBindingCtor) ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL", 
 							type.ContentProperty != null ? string.Concat ("\"", type.ContentProperty, "\"") : "NULL"
 							)
 					 );
 		}
 
-		text.AppendLine ("\ttypes [(int) Type::LASTTYPE] = new Type (Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL);");
+		text.AppendLine ("\ttypes [(int) Type::LASTTYPE] = new Type (Type::LASTTYPE, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, NULL, NULL);");
 		
 		text.AppendLine ("}");
 
