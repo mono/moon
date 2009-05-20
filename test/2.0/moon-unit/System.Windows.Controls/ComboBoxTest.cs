@@ -141,7 +141,7 @@ namespace MoonTest.System.Windows.Controls {
 	public partial class ComboBoxTest : SilverlightTest {
 
 		[TestMethod]
-		public void AddTest ()
+		public void AddTest2 ()
 		{
 			FakeComboBox c = new FakeComboBox ();
 			Assert.AreEqual (-1, c.SelectedIndex);
