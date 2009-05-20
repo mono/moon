@@ -1,3 +1,8 @@
+2009-05-20  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (ComputeActualSize): avoid making a
+	IsLayoutContainer call here.
+
 2009-05-20  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: support different tile sizes for the collection

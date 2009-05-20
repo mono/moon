@@ -242,7 +242,7 @@ FrameworkElement::ComputeActualSize ()
 {
 	UIElement *parent = GetVisualParent ();
 
-	if ((parent && !parent->Is (Type::CANVAS)) || IsLayoutContainer ())
+	if ((parent && !parent->Is (Type::CANVAS)) || (!Is (Type::CANVAS) && IsLayoutContainer ()))
 		return Size (0,0);
 
 	Size actual (GetMinWidth (), GetMinHeight ());
