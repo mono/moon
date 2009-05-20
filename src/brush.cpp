@@ -635,7 +635,7 @@ image_brush_create_similar (cairo_t *cairo, int width, int height)
 #if USE_OPT_IMAGE_ONLY
 	return cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
 #else
-	return cairo_surface_create_similar (cairo_get_target (cairo),
+	return cairo_surface_create_similar (cairo_get_group_target (cairo),
 					     CAIRO_CONTENT_COLOR_ALPHA,
 					     width,
 					     height);

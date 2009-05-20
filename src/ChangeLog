@@ -1,5 +1,11 @@
 2009-05-20  Larry Ewing  <lewing@novell.com>
 
+	* brush.cpp:
+	* bitmapsource.cpp: when creating a cached surface use the group
+	target type not the overall target.
+
+2009-05-20  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp (ComputeActualSize): avoid making a
 	IsLayoutContainer call here.
 
