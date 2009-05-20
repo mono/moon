@@ -88,6 +88,7 @@ namespace Mono {
 	
 	[StructLayout(LayoutKind.Explicit)]
 	internal struct ValUnion {
+		[FieldOffset(0)] public float f;
 		[FieldOffset(0)] public double d;
 		[FieldOffset(0)] public long i64;
 		[FieldOffset(0)] public ulong ui64;
@@ -143,6 +144,9 @@ namespace Mono {
 
 				case Kind.DOUBLE:
 					return val->u.d;
+					
+				case Kind.FLOAT:
+					return val->u.f;
 					
 				case Kind.UINT64:
 					return val->u.ui64;
@@ -383,6 +387,10 @@ namespace Mono {
 				else if (v is double) {
 					value.k = Kind.DOUBLE;
 					value.u.d = (double) v;
+				}
+				else if (v is float) {
+					value.k = Kind.FLOAT;
+					value.u.f = (float) v;
 				}
 				else if (v is long) {
 					value.k = Kind.INT64;

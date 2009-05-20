@@ -1,3 +1,7 @@
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs: Register 'float' as a known type
+
 2009-05-19  Rolf Bjarne Kvinge  <rkvinge@novell.com>
 
 	* Generator.cs: Include enums.h in the cbindings.

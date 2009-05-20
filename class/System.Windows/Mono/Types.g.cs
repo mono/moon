@@ -353,6 +353,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.BOOL));
 				t = typeof (double);
 				types.Add (t, new ManagedType (t, Kind.DOUBLE));
+				t = typeof (float);
+				types.Add (t, new ManagedType (t, Kind.FLOAT));
 				t = typeof (ulong);
 				types.Add (t, new ManagedType (t, Kind.UINT64));
 				t = typeof (long);

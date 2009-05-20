@@ -1048,6 +1048,7 @@ class Generator {
 		all.Children.Add (new TypeInfo ("object", "OBJECT", "INVALID", true, true));
 		all.Children.Add (new TypeInfo ("bool", "BOOL", "OBJECT", true, true, true));
 		all.Children.Add (new TypeInfo ("double", "DOUBLE", "OBJECT", true, true, true));
+		all.Children.Add (new TypeInfo ("float", "FLOAT", "OBJECT", true, true, true));
 		all.Children.Add (new TypeInfo ("guint64", "UINT64", "OBJECT", true, true, true));
 		all.Children.Add (new TypeInfo ("gint64", "INT64", "OBJECT", true, true, true));
 		all.Children.Add (new TypeInfo ("guint32", "UINT32", "OBJECT", true, true, true));
@@ -1653,6 +1654,7 @@ class Generator {
 		f ("object", "OBJECT");
 		f ("bool", "BOOL");
 		f ("double", "DOUBLE");
+		f ("float", "FLOAT");
 		f ("ulong", "UINT64");
 		f ("long", "INT64");
 		f ("uint", "UINT32");

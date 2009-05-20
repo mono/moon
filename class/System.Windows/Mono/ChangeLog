@@ -1,5 +1,11 @@
 2009-05-20  Alan McGovern  <amcgovern@novell.com>
 
+	* Kind.cs:
+	* Value.cs:
+	* Types.g.cs: Register 'float' as a known type
+
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
 	* Helper.cs: If the type specified in the TypeConverter
 	  attribute is not of the correct type, bail out instead of
 	  throwing an InvalidCastException
