@@ -1,3 +1,7 @@
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: InvokeItemsChanged shouldn't be virtual.
+	
 2009-05-18  Larry Ewing  <lewing@novell.com>
 
 	* StackPanel.cs: take max/min into account in layout.

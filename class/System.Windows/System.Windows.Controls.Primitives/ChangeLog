@@ -1,5 +1,10 @@
 2009-05-21  Alan McGovern  <amcgovern@novell.com>
 
+	* Selector.cs: SelectedIndex is actually updated on the
+	virtual OnItemsChanged method, not in InvokeItemsChanged.
+
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
 	* Selector.cs: SelectedItemProperty is non-parenting.
 	
 2009-05-20  Alan McGovern  <amcgovern@novell.com>

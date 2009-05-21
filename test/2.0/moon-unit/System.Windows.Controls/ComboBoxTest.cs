@@ -51,12 +51,14 @@ namespace MoonTest.System.Windows.Controls {
 	public class FakeComboBox : ComboBox {
 		public List<Value> methods = new List<Value> ();
 
+		public bool CallBaseOnItemsChanged { get; set; }
 		public DependencyObject ContainerItem {
 			get; set;
 		}
 		
 		public FakeComboBox ()
 		{
+			CallBaseOnItemsChanged = true;
 			this.SelectionChanged += (o, e) => methods.Add (new Value { MethodName = "SelectionChangedEvent", ReturnValue = e });
 			this.DropDownClosed += delegate { methods.Add (new Value { MethodName = "DropDownClosedEvent" }); };
 			this.DropDownOpened += delegate { methods.Add (new Value { MethodName = "DropDownOpenedEvent" }); };
@@ -123,7 +125,9 @@ namespace MoonTest.System.Windows.Controls {
 		protected override void OnItemsChanged (NotifyCollectionChangedEventArgs e)
 		{
 			methods.Add (new Value { MethodName = "OnItemsChanged", MethodParams = new object [] { e } });
-			base.OnItemsChanged (e);
+
+			if (CallBaseOnItemsChanged)
+				base.OnItemsChanged (e);
 		}
 
 		public void PrepareContainerForItemOverride_ (DependencyObject element, object item)
@@ -609,6 +613,23 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
+		[TestMethod]
+		public void ItemsChangedTest ()
+		{
+			// Are SelectedItem and SelectedIndex updated in the base method or before it's invoked?
+			FakeComboBox c = new FakeComboBox { CallBaseOnItemsChanged = false };
+			c.Items.Add (new object ());
+			c.methods.Clear ();
+
+			c.SelectedItem = c.Items [0];
+			Assert.AreEqual (0, c.SelectedIndex, "#1");
+			Assert.AreEqual (c.Items[0], c.SelectedItem, "#2");
+
+			c.Items.Insert (0, new object ());
+			Assert.AreEqual (0, c.SelectedIndex, "#3");
+			Assert.AreEqual (c.Items[1], c.SelectedItem, "#4");
+		}
+		
 		[TestMethod]
 		[Asynchronous]
 		public void FocusTest ()

@@ -171,7 +171,7 @@ namespace System.Windows.Controls {
 			
 		}
 		
-		internal virtual void InvokeItemsChanged (object o, NotifyCollectionChangedEventArgs e)
+		void InvokeItemsChanged (object o, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:

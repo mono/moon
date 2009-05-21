@@ -1,3 +1,8 @@
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: Add a test to verify
+	where SelectedIndex/SelectedItem are updated.
+	  
 2009-05-20  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/IValueConverterTest.cs: DataBinding and
