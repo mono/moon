@@ -74,5 +74,58 @@ namespace System.Windows.Controls
 				UnregisterEvent (PasswordChangedEvent, "PasswordChanged", password_changed, value);
 			}
 		}
+		
+		bool IsFocused {
+			get; set;
+		}
+		
+		bool IsMouseOver {
+			get; set;
+		}
+		
+		protected override void OnGotFocus (RoutedEventArgs e)
+		{
+			IsFocused = true;
+			ChangeVisualState ();
+			base.OnGotFocus (e);
+		}
+		
+		protected override void OnLostFocus (RoutedEventArgs e)
+		{
+			IsFocused = false;
+			ChangeVisualState ();
+			base.OnLostFocus (e);
+		}
+		
+		protected override void OnMouseEnter (System.Windows.Input.MouseEventArgs e)
+		{
+			IsMouseOver = true;
+			ChangeVisualState ();
+			base.OnMouseEnter (e);
+		}
+		
+		protected override void OnMouseLeave (System.Windows.Input.MouseEventArgs e)
+		{
+			IsMouseOver = false;
+			ChangeVisualState ();
+			base.OnMouseLeave (e);
+		}
+
+		void ChangeVisualState ()
+		{
+			if (!IsEnabled) {
+				VisualStateManager.GoToState (this, "Disabled", true);
+			} else if (IsMouseOver) {
+				VisualStateManager.GoToState (this, "MouseOver", true);
+			} else {
+				VisualStateManager.GoToState (this, "Normal", true);
+			}
+			
+			if (IsFocused) {
+				VisualStateManager.GoToState (this, "Focused", true);
+			} else {
+				VisualStateManager.GoToState (this, "Unfocused", true);
+			}
+		}
 	}
 }
