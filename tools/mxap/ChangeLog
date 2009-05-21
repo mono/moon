@@ -1,3 +1,8 @@
+2009-05-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mxap.cs: Add support for compiler defines using -d: Also add a
+	way not to use an existing manifest with use-existing-manifest
+
 2009-05-04  Andreia Gaita  <avidigal@novell.com>
 
 	* mxap.cs: fix bool flags to accept yes/no/true/false optionally
