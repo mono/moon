@@ -1,3 +1,7 @@
+2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.cpp: Move to use LOG_ASF instead of ASF_LOG.
+
 2009-05-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* asf.h: ASFContext is a struct, not a class. Fixed forward

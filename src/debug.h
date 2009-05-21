@@ -93,6 +93,7 @@ G_END_DECLS
 #define LOG_XAML(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_XAML)) printf (__VA_ARGS__);
 #define LOG_DEPLOYMENT(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DEPLOYMENT)) printf (__VA_ARGS__);
 #define LOG_MP3(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MP3)) printf (__VA_ARGS__);
+#define LOG_ASF(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_ASF)) printf (__VA_ARGS__);
 
 #else
 
@@ -131,6 +132,7 @@ G_END_DECLS
 #define LOG_XAML(...)
 #define LOG_DEPLOYMENT(...)
 #define LOG_MP3(...)
+#define LOG_ASF(...)
 
 #endif /* LOGGING */
 

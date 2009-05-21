@@ -1,5 +1,9 @@
 2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* debug.h: Added LOG_ASF.
+
+2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.h: Don't use 64 bit constants for the runtime debug enum.
 
 2009-05-21  Alan McGovern  <amcgovern@novell.com>
