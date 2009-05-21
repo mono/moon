@@ -297,16 +297,17 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					Uri *tile = new Uri ();
 					cairo_surface_t* image = NULL;
 
-					if (source->get_tile_func (from_layer, i, j, tile, sub_image->source) &&
-					    (image = (cairo_surface_t*)g_hash_table_lookup (cache, tile)) ) {
-						found ++;
-					} else if (from_layer <= dzits->GetMaxLevel () &&
-						 source->get_tile_func (from_layer,
-									morton_x (sub_image->n) * (1 << from_layer) / tile_width,
-									morton_y (sub_image->n) * (1 << from_layer) / tile_height,
-									tile,
-									source) &&
-						(image = (cairo_surface_t*)g_hash_table_lookup (cache, tile)) ) {
+					if (from_layer > dzits->GetMaxLevel ()) {
+						if (source->get_tile_func (from_layer, i, j, tile, sub_image->source) &&
+						    (image = (cairo_surface_t*)g_hash_table_lookup (cache, tile)) ) {
+							found ++;
+						} 
+					} else if (source->get_tile_func (from_layer,
+									  morton_x (sub_image->n) * (1 << from_layer) / tile_width,
+									  morton_y (sub_image->n) * (1 << from_layer) / tile_height,
+									  tile,
+									  source) &&
+						   (image = (cairo_surface_t*)g_hash_table_lookup (cache, tile))) {
 						found ++;
 					}
 
@@ -364,9 +365,10 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						Uri *tile = new Uri ();
 						cairo_surface_t *image = NULL;
 						bool shared_tile = false;
-						if ((!source->get_tile_func (layer_to_render, i, j, tile, sub_image->source) ||
-						     !(image = (cairo_surface_t*)g_hash_table_lookup (cache, tile))		)
-						    && layer_to_render <= dzits->GetMaxLevel()) {
+						if (layer_to_render > dzits->GetMaxLevel()) {
+							source->get_tile_func (layer_to_render, i, j, tile, sub_image->source); 
+							image = (cairo_surface_t*)g_hash_table_lookup (cache, tile);
+						} else {
 							//Check in the shared levels
 							shared_tile = true;
 
