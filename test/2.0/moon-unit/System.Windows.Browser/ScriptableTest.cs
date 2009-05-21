@@ -84,7 +84,6 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void CreateableTypeTest () {
 			window.Eval ("createabletype = plugin.content.services.createObject ('createable');");
 			window.Eval ("createabletype.MethodAdd ()");
