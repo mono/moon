@@ -1,3 +1,7 @@
+2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* configure.ac: Add test/cpp/Makefile to the output.
+
 2009-05-18  Rusty Howell  <rhowell@novell.com>
 
 	* configure.ac: Bump version to 1.9.3

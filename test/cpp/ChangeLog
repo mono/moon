@@ -1,0 +1,6 @@
+2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am:
+	* README:
+	* main.cpp:
+	* main.h: Added initial cpp unit testing.

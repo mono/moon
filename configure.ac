@@ -151,6 +151,7 @@ test/parsertest/Makefile
 test/sizes/Makefile
 test/templates/Makefile
 test/templates/managed/Makefile
+test/cpp/Makefile
 tools/Makefile
 tools/generators/Makefile
 tools/mopen/Makefile
