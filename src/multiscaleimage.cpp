@@ -350,9 +350,9 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			int layer_to_render = from_layer;
 			while (layer_to_render <= to_layer) {
-				int tile_width = from_layer <= dzits->GetMaxLevel () ? source->GetTileWidth () : sub_image->source->GetTileWidth ();
+				int tile_width = layer_to_render <= dzits->GetMaxLevel () ? source->GetTileWidth () : sub_image->source->GetTileWidth ();
 				if (tile_width == 0) tile_width = source->GetTileWidth ();
-				int tile_height = from_layer <= dzits->GetMaxLevel () ? source->GetTileHeight (): sub_image->source->GetTileHeight ();
+				int tile_height = layer_to_render <= dzits->GetMaxLevel () ? source->GetTileHeight (): sub_image->source->GetTileHeight ();
 				if (tile_height == 0) tile_height = source->GetTileHeight ();
 
 				double v_tile_w = tile_width * (double)(1 << (layers - layer_to_render)) * sub_vp.width / sub_w;
