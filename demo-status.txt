@@ -271,8 +271,8 @@ rating:3
 
 site:Sudoku
 url:http://oldschooldotnet.blogspot.com/2009/03/sudoku-in-silverlight.html
-rating:0
- * Requires Microsoft.VisualBasic assembly
+rating:3
+ * Crashes when you click 'Done' button, otherwise works well
 
 site:Meta Ball Example
 url:http://www.magesi.ru/sl/ml/
