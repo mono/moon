@@ -20,9 +20,8 @@ rating:0
 
 site:Calculator
 url:http://silver.calcsharp.net/
-rating:-1
- * Service not available
- * "Could not parse element Setter, attribute Value"
+rating:1
+ * Buttons (or menus not sure what they are) popup at 0,0 when moused over
 
 site:Zoom Mosaic
 url:http://xaml.me/zoommosaic/
