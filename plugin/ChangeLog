@@ -1,3 +1,9 @@
+2009-05-21  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.cpp: disable throwing js exceptions on html_object_invoke
+	and html_object_get_property, the exceptions get stuck on firefox and
+	any subsequent eval call will fail
+
 2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* npstream-request.cpp: Fix typo.
