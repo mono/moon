@@ -1,3 +1,7 @@
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: SelectedItemProperty is non-parenting.
+	
 2009-05-20  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: Ensure that SelectedIndex and SelectedItem

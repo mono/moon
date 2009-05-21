@@ -670,6 +670,11 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
+		// bool dependency_property_get_sets_parent (DependencyProperty *instance);
+		public extern static bool dependency_property_get_sets_parent (IntPtr instance);
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
 		// bool dependency_property_is_attached (DependencyProperty *instance);
 		public extern static bool dependency_property_is_attached (IntPtr instance);
 
@@ -684,8 +689,8 @@ namespace Mono {
 		public extern static bool dependency_property_is_read_only (IntPtr instance);
 
 		[DllImport ("moon")]
-		// DependencyProperty *dependency_property_register_managed_property (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
-		public extern static IntPtr dependency_property_register_managed_property (string name, Kind property_type, Kind owner_type, ref Value defaultValue, [MarshalAs (UnmanagedType.U1)] bool attached, [MarshalAs (UnmanagedType.U1)] bool read_only, Mono.UnmanagedPropertyChangeHandler callback);
+		// DependencyProperty *dependency_property_register_managed_property (const char *name, bool sets_parent, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
+		public extern static IntPtr dependency_property_register_managed_property (string name, [MarshalAs (UnmanagedType.U1)] bool sets_parent, Kind property_type, Kind owner_type, ref Value defaultValue, [MarshalAs (UnmanagedType.U1)] bool attached, [MarshalAs (UnmanagedType.U1)] bool read_only, Mono.UnmanagedPropertyChangeHandler callback);
 
 		[DllImport ("moon")]
 		// void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);

@@ -42,7 +42,7 @@ namespace System.Windows.Controls.Primitives {
 
 		public static readonly DependencyProperty SelectedItemProperty =
 			DependencyProperty.Register ("SelectedItem", typeof(object), typeof(Selector),
-						     new PropertyMetadata(new PropertyChangedCallback(OnSelectedItemChanged)));
+						     new PropertyMetadata(new PropertyChangedCallback(OnSelectedItemChanged)), false);
 
 		
 		static void OnSelectedItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)

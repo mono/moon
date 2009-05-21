@@ -386,7 +386,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void Focusable ()
 		{
 			bool loaded = false;

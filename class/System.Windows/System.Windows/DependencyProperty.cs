@@ -64,21 +64,26 @@ namespace System.Windows {
 		
 		public static DependencyProperty Register (string name, Type propertyType, Type ownerType, PropertyMetadata typeMetadata)
 		{
-			return RegisterAny (name, propertyType, ownerType, typeMetadata, false, false);
+			return Register (name, propertyType, ownerType, typeMetadata, true);
+		}
+		
+		internal static DependencyProperty Register (string name, Type propertyType, Type ownerType, PropertyMetadata typeMetadata, bool setsParent)
+		{
+			return RegisterAny (name, propertyType, ownerType, typeMetadata, false, false, setsParent);
 		}
 		
 		public static DependencyProperty RegisterAttached (string name, Type propertyType, Type ownerType, PropertyMetadata defaultMetadata)
 		{
-			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, false);
+			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, false, true);
 		}
 		
 		// internally Silverlight use some read-only properties
 		internal static DependencyProperty RegisterReadOnly (string name, Type propertyType, Type ownerType, PropertyMetadata defaultMetadata)
 		{
-			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, true);
+			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, true, true);
 		}
 
-		private static DependencyProperty RegisterAny (string name, Type propertyType, Type ownerType, PropertyMetadata metadata, bool attached, bool readOnly)
+		private static DependencyProperty RegisterAny (string name, Type propertyType, Type ownerType, PropertyMetadata metadata, bool attached, bool readOnly, bool setsParent)
 		{
 			ManagedType property_type;
 			ManagedType owner_type;
@@ -124,7 +129,7 @@ namespace System.Windows {
 			else
 				v = Value.FromObject (defaultVal, false);
 
-			IntPtr handle = NativeMethods.dependency_property_register_managed_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
+			IntPtr handle = NativeMethods.dependency_property_register_managed_property (name, setsParent, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
 			NativeMethods.value_free_value (ref v);
 			
 			if (handle == IntPtr.Zero)

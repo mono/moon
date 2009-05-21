@@ -762,6 +762,22 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (0, c.SelectedIndex, "#8");
 			Assert.AreEqual (orig, c.SelectedItem, "#9");
 		}
+		
+		[TestMethod]
+		public void RemoveTest3 ()
+		{
+			Rectangle orig = new Rectangle ();
+			FakeComboBox c = new FakeComboBox ();
+			c.Items.Add (orig);
+			c.SelectedIndex = 0;
+
+			c.Items.RemoveAt (0);
+			Assert.AreEqual (0, c.SelectedIndex, "#10");
+			Assert.AreEqual (orig, c.SelectedItem, "#11");
+
+			Assert.IsNull (orig.Parent);
+			Assert.IsNull (VisualTreeHelper.GetParent (orig));
+		}
 
 		[TestMethod]
 		public void ReplaceTest ()

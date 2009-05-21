@@ -1,3 +1,15 @@
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* src/cbinding.cpp
+	* src/cbinding.h
+	* src/dependencyproperty.g.cpp: regen
+	
+	* dependencyobject.cpp:
+	* dependencyproperty.cpp:
+	* dependencyproperty.h:
+	* uielement.h: Add the ability to set a DP as non-parenting and
+	apply it to FrameworkElement::TagProperty
+
 2009-05-20  Larry Ewing  <lewing@novell.com>
 
 	* multiscaleimage.cpp (RenderCollection): fix bug introduced in

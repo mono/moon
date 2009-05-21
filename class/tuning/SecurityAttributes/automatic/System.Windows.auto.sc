@@ -11,10 +11,7 @@
 +SC-M: Mono.Kind Mono.NativeMethods::event_object_get_object_type(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.IntPtr,Mono.Kind,Mono.Kind&,System.Int32)
-
-# p/invoke declaration
-+SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.IntPtr,Mono.Kind,Mono.Kind[],System.Int32)
++SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.IntPtr,Mono.Kind,System.Boolean,Mono.Kind[],System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_clear(System.IntPtr)
@@ -48,6 +45,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_value_with_error_(System.IntPtr,System.IntPtr,Mono.Value&,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::dependency_property_get_sets_parent(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::dependency_property_is_attached(System.IntPtr)
@@ -425,7 +425,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_property_get_name_(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_property_register_managed_property(System.String,Mono.Kind,Mono.Kind,Mono.Value&,System.Boolean,System.Boolean,Mono.UnmanagedPropertyChangeHandler)
++SC-M: System.IntPtr Mono.NativeMethods::dependency_property_register_managed_property(System.String,System.Boolean,Mono.Kind,Mono.Kind,Mono.Value&,System.Boolean,System.Boolean,Mono.UnmanagedPropertyChangeHandler)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_current()

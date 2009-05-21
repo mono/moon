@@ -847,5 +847,21 @@ namespace MoonTest.System.Windows {
 			c.Tag = global::System.UriKind.Absolute;
 			Assert.IsTrue (c.Tag is global::System.UriKind, "Type was {0}, should be System.UriKind", c.Tag.GetType ().Name);
 		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void TagTest2 ()
+		{
+			Button b = new Button ();
+			TestPanel.Children.Add (b);
+			b.ApplyTemplate ();
+			
+			Enqueue (() => {
+				TestPanel.Tag = b;
+				TestPanel.Tag = null;
+				Assert.IsTrue (b.Focus (), "#1");
+			});
+			EnqueueTestComplete ();
+		}
 	}
 }

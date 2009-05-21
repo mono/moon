@@ -1516,17 +1516,17 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		// we also need to audit other "typeof (object)" DP's
 		// to make sure they set parent when they should (and
 		// don't when they shouldn't.)
-		bool setsParent = property->GetId() != UIElement::TagProperty;
+		bool setsParent = property->GetSetsParent ();
 
 		if (old_value && old_value->Is (Type::DEPENDENCY_OBJECT))
 			old_as_dep = old_value->AsDependencyObject ();
 		if (new_value && new_value->Is (Type::DEPENDENCY_OBJECT))
 			new_as_dep = new_value->AsDependencyObject ();
 
-		if (old_as_dep) {
+		if (old_as_dep && setsParent) {
 			old_as_dep->SetSurface (NULL);
 
-			if (setsParent) {
+
 				// unset its parent
 				old_as_dep->SetParent (NULL, NULL);
 
@@ -1540,13 +1540,13 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 					old_as_dep->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
 					old_as_dep->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
 				}
-			}
+
 		}
 
-		if (new_as_dep) {
+		if (new_as_dep && setsParent) {
 			new_as_dep->SetSurface (GetSurface ());
 
-			if (setsParent) {
+
 				new_as_dep->SetParent (this, error);
 				if (error->number)
 					return;
@@ -1561,7 +1561,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 				// add ourselves as a target
 				new_as_dep->AddTarget (this);
-			}
+
 		}
 
 

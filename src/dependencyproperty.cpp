@@ -32,6 +32,7 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->is_nullable = false;
 	this->is_attached = attached;
 	this->is_readonly = readonly;
+	this->sets_parent = true;
 	this->storage_hash = NULL; // Create it on first usage request
 	this->always_change = always_change;
 	this->changed_callback = changed_callback;
@@ -164,20 +165,20 @@ DependencyProperty::GetDependencyProperty (Type *type, const char *name, bool in
 // Use this for values that can be null
 //
 int
-DependencyProperty::Register (Types *types, Type::Kind type, const char *name, Type::Kind vtype)
+DependencyProperty::Register (Types *types, Type::Kind type, const char *name, bool sets_parent, Type::Kind vtype)
 {
-	return RegisterFull (types, type, name, NULL, vtype, false, false, false, NULL, NULL, NULL, false, false);
+	return RegisterFull (types, type, name, sets_parent, NULL, vtype, false, false, false, NULL, NULL, NULL, false, false);
 }
 
 //
 // DependencyObject takes ownership of the Value * for default_value
 //
 int
-DependencyProperty::Register (Types *types, Type::Kind type, const char *name, Value *default_value)
+DependencyProperty::Register (Types *types, Type::Kind type, const char *name, bool sets_parent, Value *default_value)
 {
 	g_return_val_if_fail (default_value != NULL, NULL);
 
-	return RegisterFull (types, type, name, default_value, default_value->GetKind (), false, false, false, NULL, NULL, NULL, false, false);
+	return RegisterFull (types, type, name, sets_parent, default_value, default_value->GetKind (), false, false, false, NULL, NULL, NULL, false, false);
 }
 
 //
@@ -187,13 +188,13 @@ DependencyProperty::Register (Types *types, Type::Kind type, const char *name, V
 // while the property type can be a Brush).
 //
 int
-DependencyProperty::Register (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype)
+DependencyProperty::Register (Types *types, Type::Kind type, const char *name, bool sets_parent, Value *default_value, Type::Kind vtype)
 {
-	return RegisterFull (types, type, name, default_value, vtype, false, false, false, NULL, NULL, NULL, false, false);
+	return RegisterFull (types, type, name, sets_parent, default_value, vtype, false, false, false, NULL, NULL, NULL, false, false);
 }
 
 DependencyProperty *
-DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, PropertyChangeHandler callback)
+DependencyProperty::RegisterManagedProperty (const char *name, bool sets_parent, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, PropertyChangeHandler callback)
 {
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	int id;
@@ -203,7 +204,7 @@ DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind proper
 	else
 		default_value = new Value (*default_value);
 	
-	id = DependencyProperty::RegisterFull (types, owner_type, name, default_value, property_type, attached, readonly, false, callback, NULL, NULL, true, false);
+	id = DependencyProperty::RegisterFull (types, owner_type, name, sets_parent, default_value, property_type, attached, readonly, false, callback, NULL, NULL, true, false);
 	
 	return types->GetProperty (id);
 }
@@ -214,7 +215,7 @@ DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind proper
 // stored in the dependency property is of type @vtype
 //
 int
-DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator* autocreator, bool is_custom, bool is_nullable)
+DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *name, bool sets_parent, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator* autocreator, bool is_custom, bool is_nullable)
 {
 	DependencyProperty *property;
 	
@@ -227,6 +228,7 @@ DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *nam
 		
 	property = new DependencyProperty (type, name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, autocreator, is_custom);
 	property->is_nullable = is_nullable;
+	property->sets_parent = sets_parent;
 	
 	types->AddProperty (property);
 	
