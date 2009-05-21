@@ -56,6 +56,18 @@ class FieldInfo : MemberInfo {
 		get { return Annotations.ContainsKey ("Nullable"); }
 	}
 	
+	public bool SetsParent {
+		get {
+			string val = Annotations.GetValue ("SetsParent");
+			if (val == null || val == "true")
+				return true;
+			if (val == "false")
+				return false;
+
+			throw new Exception ("Invalid value for 'SetsParent'. Must be 'true' or 'false'");
+		}
+	}
+	
 	public string DPPropertyType {
 		get { 
 			string result = Annotations.GetValue ("PropertyType");

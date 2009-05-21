@@ -1,3 +1,10 @@
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* FieldInfo.cs:
+	* Generator.cs:
+	* GlobalInfo.cs: Add the ability to specify that a DP does
+	not set parent on DO objects.
+	
 2009-05-20  Alan McGovern  <amcgovern@novell.com>
 
 	* Generator.cs: Register 'float' as a known type

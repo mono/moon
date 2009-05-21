@@ -105,6 +105,7 @@ class GlobalInfo : MemberInfo {
 				known_annotations.Add ("GenerateManagedAccessors", null);
 				known_annotations.Add ("Validator", null);
 				known_annotations.Add ("AutoCreator", null);
+				known_annotations.Add ("SetsParent", null);
 				
 				dependency_properties = new List<FieldInfo>  ();
 				foreach (MemberInfo member in Children.Values) {
@@ -117,7 +118,7 @@ class GlobalInfo : MemberInfo {
 						FieldInfo field = member2 as FieldInfo;
 						
 						if (field == null)
-							continue;
+							continue; 
 						
 						if (field.FieldType == null || field.FieldType.Value != "int")
 							continue;

@@ -761,6 +761,9 @@ class Generator {
 			text.Append ("\"");
 			text.Append (", ");
 
+			text.Append (field.SetsParent ? "true" : "false");
+			text.Append (", ");
+
 			if (is_full) {
 				if (has_default_value) {
 					text.Append ("new Value (");
