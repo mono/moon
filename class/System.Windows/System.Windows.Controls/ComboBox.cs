@@ -327,7 +327,7 @@ namespace System.Windows.Controls
 			
 			// Clear out any existing displayed item
 			if (DisplayedItem != null) {
-				Console.WriteLine ("Putting: {0} back into {1}", ((FrameworkElement) _contentPresenter.Content).Name, DisplayedItem.Name);
+				Console.WriteLine ("Putting: {0} back into {1}", ItemDebugString (_contentPresenter.Content), DisplayedItem.Name);
 				content = _contentPresenter.Content;
 				_contentPresenter.Content = null;
 				DisplayedItem.Content = content;
