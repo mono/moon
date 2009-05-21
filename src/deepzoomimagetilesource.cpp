@@ -121,6 +121,7 @@ DeepZoomImageTileSource::Init ()
 
 	downloader = NULL;
 	downloaded = false;
+	parsed = false;
 	format = NULL;
 	get_tile_func = get_tile_layer;
 	display_rects = NULL;
@@ -264,6 +265,8 @@ LOG_MSI ("Parsing DeepZoom %s\n", filename);
 
 	tileWidth = tileHeight = info->tile_size;
 	format = g_strdup (info->format);
+
+	parsed = true;
 
 LOG_MSI ("Done parsing...\n");
 	if (parsed_callback)
