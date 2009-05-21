@@ -109,10 +109,9 @@ enum RuntimeDebugFlags {
 	RUNTIME_DEBUG_PLAYLIST          = 1 << 21,
 	RUNTIME_DEBUG_TEXT              = 1 << 22,
 	RUNTIME_DEBUG_XAML              = 1 << 23,
-	RUNTIME_DEBUG_DEPLOYMENT        = 1ULL << 24,
-	/* Add more as RUNTIME_DEBUG_XXX = 1ULL << 25, */
-	RUNTIME_DEBUG_MSI		= 1ULL << 25,
-	RUNTIME_DEBUG_MP3               = 1ULL << 26,
+	RUNTIME_DEBUG_DEPLOYMENT        = 1 << 24,
+	RUNTIME_DEBUG_MSI               = 1 << 25,
+	RUNTIME_DEBUG_MP3               = 1 << 26,
 };
 
 enum RuntimeDebugFlagsExtra {
