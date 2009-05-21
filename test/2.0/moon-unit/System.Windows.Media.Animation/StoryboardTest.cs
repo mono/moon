@@ -61,6 +61,75 @@ namespace MoonTest.System.Windows.Media.Animation {
 	public partial class StoryboardTest : SilverlightTest {
 		
 		[TestMethod]
+		[Asynchronous]
+		public void StopTest ()
+		{
+			bool complete = false;
+			Rectangle target = new Rectangle { Width = 0 };
+			Storyboard sb = new Storyboard ();
+			DoubleAnimation anim = new DoubleAnimation { From = 10, To = 100, Duration = TimeSpan.FromMilliseconds (10) };
+			sb.Children.Add (anim);
+
+			Storyboard.SetTarget (anim, target);
+			Storyboard.SetTargetProperty (anim, new PropertyPath (Rectangle.WidthProperty));
+			sb.Completed += delegate { complete = true; };
+
+			Enqueue (() => sb.Begin ());
+			EnqueueConditional (() => complete, "#1");
+			Enqueue (() => Assert.AreEqual (100, target.Width, "#2"));
+			Enqueue (() => sb.Stop ());
+			Enqueue (() => Assert.AreEqual (0, target.Width, "#3"));
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void StopTest2 ()
+		{
+			// What happens if we use storyboard A, then storyboard B, then stop storyboard A.
+			bool complete = false;
+			Rectangle target = new Rectangle { Width = 0 };
+
+			// Create StoryboardA
+			Storyboard sbA = new Storyboard ();
+			DoubleAnimation animA = new DoubleAnimation { From = 10, To = 100, Duration = TimeSpan.FromMilliseconds (10) };
+			sbA.Children.Add (animA);
+
+			Storyboard.SetTarget (animA, target);
+			Storyboard.SetTargetProperty (animA, new PropertyPath (Rectangle.WidthProperty));
+			sbA.Completed += delegate { complete = true; };
+
+			// Create StoryboardB
+			Storyboard sbB = new Storyboard ();
+			DoubleAnimation animB = new DoubleAnimation { From = 500, To = 600, Duration = TimeSpan.FromMilliseconds (10) };
+			sbB.Children.Add (animB);
+
+			Storyboard.SetTarget (animB, target);
+			Storyboard.SetTargetProperty (animB, new PropertyPath (Rectangle.WidthProperty));
+			sbB.Completed += delegate { complete = true; };
+
+			// When sbA finishes, ensure the values are correct both before and after sbB is started
+			// When sbB finishes, ensure that the value only resets when sbB is stopped
+			Enqueue (() => sbA.Begin ());
+			EnqueueConditional (() => complete, "#1");
+			Enqueue (() => {
+				complete = false;
+				Assert.AreEqual (100, target.Width, "#2");
+				sbB.Begin ();
+				Assert.AreEqual (100, target.Width, "#3");
+			});
+			EnqueueConditional (() => complete, "#4");
+			Enqueue (() => {
+				Assert.AreEqual (600, target.Width, "#5");
+				sbA.Stop ();
+				Assert.AreEqual (600, target.Width, "#6");
+				sbB.Stop ();
+				Assert.AreEqual (0, target.Width, "#7");
+			});
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
 		public void InvalidValues_NonTimeline ()
 		{
 			Rectangle r = new Rectangle ();

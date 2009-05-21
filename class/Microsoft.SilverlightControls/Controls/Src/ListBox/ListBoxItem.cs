@@ -90,8 +90,7 @@ namespace System.Windows.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
-        // anything else here?
+            ChangeVisualState ();
         } 
 
         /// <summary>
@@ -181,17 +180,26 @@ namespace System.Windows.Controls
         /// </summary>
         internal void ChangeVisualState()
         {
+            if (IsFocused) {
+                VisualStateManager.GoToState (this, "Focused", true);
+            } else {
+                VisualStateManager.GoToState (this, "Unfocused", true);
+            }
+            
             if (!IsEnabled) {
                 VisualStateManager.GoToState (this, "Disabled", true);
-            }
-            else if (IsSelected) {
-                VisualStateManager.GoToState (this, "Selected", true);
-            }
-            else if (IsMouseOver) {
+            } else if (IsMouseOver) {
                 VisualStateManager.GoToState (this, "MouseOver", true);
-            }
-            else {
+            } else {
                 VisualStateManager.GoToState (this, "Normal", true);
+            }
+            
+            if (!IsSelected) {
+                VisualStateManager.GoToState (this, "Unselected", true);
+            } else if (true || IsFocused) {
+                 VisualStateManager.GoToState (this, "Selected", true);
+            } else {
+                 VisualStateManager.GoToState (this, "SelectedUnfocused", true);
             }
         }
     }

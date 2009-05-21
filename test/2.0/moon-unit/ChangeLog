@@ -1,5 +1,14 @@
 2009-05-21  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/VisualStateManagerTest.cs: Add some tests
+	to ensure things are working correctly. Also remove an [Ignore]
+	which shouldn't be there.
+	
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add two
+	tests which verify we handle start/stop correctly.
+
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest.cs: Add a test to verify
 	where SelectedIndex/SelectedItem are updated.
 	  

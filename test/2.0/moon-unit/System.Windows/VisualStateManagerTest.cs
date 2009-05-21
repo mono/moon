@@ -36,7 +36,6 @@ namespace MoonTest.System.Windows {
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug ("Namescope issues - when VSM calls 'start' on the storyboard, the rectangle can't be found")]
-		[Ignore]
 		public void ManagedVisualStates ()
 		{
 			Rectangle r = new Rectangle { Name = "rect", Width = 0 };
@@ -57,12 +56,12 @@ namespace MoonTest.System.Windows {
 			group.States.Add (vstate);
 
 			Enqueue (() => TestPanel.Children.Add (r));
-			Enqueue (() => VisualStateManager.GetVisualStateGroups (TestPanel).Add (group));
+			Enqueue (() => VisualStateManager.GetVisualStateGroups ((FrameworkElement)TestPanel.Parent).Add (group));
 			Enqueue (() => Assert.AreEqual(0, r.Width, "#1"));
-			Enqueue (() => Assert.IsTrue (VisualStateManager.GoToState ((Control) TestPanel.Parent, "state", false), "#2"));
+			Enqueue (() => Assert.IsTrue (VisualStateManager.GoToState ((Control) TestPage, "state", false), "#2"));
 			Enqueue (() => Assert.IsGreater (99, r.Width, "#3"));
 			Enqueue (() => TestPanel.Children.Clear ());
-			Enqueue (() => VisualStateManager.GetVisualStateGroups (TestPanel).Clear ());
+			Enqueue (() => VisualStateManager.GetVisualStateGroups (TestPage).Clear ());
 			EnqueueTestComplete();
 		}
 		
@@ -72,10 +71,11 @@ namespace MoonTest.System.Windows {
 		{
 			Rectangle r = new Rectangle { Width = 0 };
 			VisualStateGroup group = new VisualStateGroup ();
-			group.SetValue (FrameworkElement.NameProperty, "group");
+			group.SetValue (FrameworkElement.NameProperty, "group2");
 
+			// Create the first visual state
 			VisualState vstate = new VisualState ();
-			vstate.SetValue (FrameworkElement.NameProperty, "state");
+			vstate.SetValue (FrameworkElement.NameProperty, "state2");
 
 			DoubleAnimation anim = new DoubleAnimation { From = 100, To = 200, Duration = TimeSpan.FromSeconds (1) };
 			Storyboard.SetTarget (anim, r);
@@ -86,11 +86,26 @@ namespace MoonTest.System.Windows {
 			vstate.Storyboard = sb;
 			group.States.Add (vstate);
 
+			// Create the second visual state
+			VisualState vstate2 = new VisualState ();
+			vstate2.SetValue (FrameworkElement.NameProperty, "state3");
+
+			Storyboard sb2 = new Storyboard ();
+			Storyboard.SetTarget (sb2, r);
+			Storyboard.SetTargetProperty (sb2, new PropertyPath ("Width"));
+
+			vstate2.Storyboard = sb2;
+			group.States.Add (vstate2);
+
+			// Ensure that the values reset correct
 			Enqueue (() => TestPanel.Children.Add (r));
 			Enqueue (() => VisualStateManager.GetVisualStateGroups ((FrameworkElement)TestPanel.Parent).Add (group));
 			Enqueue (() => Assert.AreEqual(0, r.Width, "#1"));
-			Enqueue (() => Assert.IsTrue (VisualStateManager.GoToState (TestPage, "state", false), "#2"));
+			Enqueue (() => Assert.IsTrue (VisualStateManager.GoToState (TestPage, "state2", false), "#2"));
 			Enqueue (() => Assert.IsGreater (99, r.Width, "#3"));
+			Enqueue (() => Assert.IsTrue (VisualStateManager.GoToState (TestPage, "state3", false), "#3"));
+			Enqueue (() => Assert.AreEqual (0, r.Width, "#4"));
+			Enqueue (() => Assert.AreEqual (ClockState.Filling, sb2.GetCurrentState (), "#5"));
 			Enqueue (() => TestPanel.Children.Clear ());
 			Enqueue (() => VisualStateManager.GetVisualStateGroups (TestPage).Clear ());
 			EnqueueTestComplete();
