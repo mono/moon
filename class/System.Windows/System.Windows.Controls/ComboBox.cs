@@ -336,7 +336,7 @@ namespace System.Windows.Controls
 
 			// If nothing is selected or popup is open bail out
 			if (SelectedItem == null || IsDropDownOpen) {
-				Console.WriteLine ("Bailing out: {0}/{1}", SelectedItem==null ? "<NULL>" : ((FrameworkElement)SelectedItem).Name, IsDropDownOpen);
+				Console.WriteLine ("Bailing out: {0}/{1}", ItemDebugString (SelectedItem), IsDropDownOpen);
 				return;
 			}
 			_contentPresenter.Content = null;
@@ -345,12 +345,22 @@ namespace System.Windows.Controls
 				Console.WriteLine ("** ERROR **: There should be one container for each item");
 				return;
 			}
-			Console.WriteLine ("Displaying: {0} from {1}", ((FrameworkElement) DisplayedItem.Content).Name, DisplayedItem.Name);
+			Console.WriteLine ("Displaying: {0} from {1}", ItemDebugString (DisplayedItem.Content), DisplayedItem.Name);
 			content = DisplayedItem.Content;
 			DisplayedItem.Content = null;
 			_contentPresenter.Content = content;
 		}
 
+		private string ItemDebugString (object item)
+		{
+			if (item == null)
+				return "<NULL>";
+			FrameworkElement element = item as FrameworkElement;
+			if (element != null)
+				return element.Name;
+			return item.ToString ();
+		}
+		
 		ContentPresenter _contentPresenter;
 		Popup _popup;
 		FrameworkElement _contentPresenterBorder;
