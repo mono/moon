@@ -43,9 +43,10 @@ namespace MoonTest.System.Windows.Browser
 
 		Scriptable scriptable;
 		ScriptableType scriptabletype;
+		string strplugin;
 
-		public ScriptableTest () 
-		{	
+		public ScriptableTest ()
+		{
 			plugin = HtmlPage.Plugin;
 			window = HtmlPage.Window;
 			content = plugin.GetProperty ("Content") as ScriptObject;
@@ -70,9 +71,9 @@ namespace MoonTest.System.Windows.Browser
 			Assert.AreEqual (calc, c.ManagedObject, "ManagedObject");
 
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
-				window.Eval ("var plugin = document.getElementById('silverlight');");
+				strplugin = "document.getElementById('silverlight')";
 			else
-				window.Eval ("var plugin = document.getElementById('silverlightControlHost').getElementsByTagName('object')[0];");
+				strplugin = "document.getElementById('silverlightControlHost').getElementsByTagName('object')[0]";
 		}
 
 		[TestMethod]
@@ -85,13 +86,13 @@ namespace MoonTest.System.Windows.Browser
 
 		[TestMethod]
 		public void CreateableTypeTest () {
-			window.Eval ("createabletype = plugin.content.services.createObject ('createable');");
+			window.Eval ("createabletype = " + strplugin + ".content.services.createObject ('createable');");
 			window.Eval ("createabletype.MethodAdd ()");
 			window.Eval ("c = createabletype.GetCount();");
-			window.Eval ("plugin.content.scriptable.SetCount(c)");
+			window.Eval (strplugin + ".content.scriptable.SetCount(c)");
 			Assert.AreEqual (1, scriptable.MethodCount, "D1");
 			window.Eval ("createabletype.Property = 'test test'");
-			window.Eval ("plugin.content.scriptable.Property = createabletype.Property");
+			window.Eval (strplugin + ".content.scriptable.Property = createabletype.Property");
 			Assert.AreEqual ("test test", scriptable.Property, "D2");
 			scriptable.MethodCount = 0;
 		}
@@ -106,7 +107,7 @@ namespace MoonTest.System.Windows.Browser
 		[TestMethod]
 		[Ignore]
 		public void InvokeJS () {
-			var o = window.Eval ("plugin.content.calc.Add (5, 1);");
+			var o = window.Eval (strplugin + ".content.calc.Add (5, 1);");
 			Assert.IsNotNull (o, "InvokeJS 1");
 			Assert.AreEqual (6.0, o, "InvokeJS");
 		}
@@ -123,9 +124,9 @@ namespace MoonTest.System.Windows.Browser
 		[TestMethod]
 		[Ignore]
 		public void InvokeOverloadJS () {
-			var o = window.Eval ("plugin.content.calc.AddOverload (5, 1);");
+			var o = window.Eval (strplugin + ".content.calc.AddOverload (5, 1);");
 			Assert.AreEqual (6.0, o, "InvokeOverloadJS 1");
-			o = window.Eval ("plugin.content.calc.AddOverload (10);");
+			o = window.Eval (strplugin + ".content.calc.AddOverload (10);");
 			Assert.AreEqual (11.0, o, "InvokeOverloadJS 1");
 		}
 
@@ -145,17 +146,17 @@ namespace MoonTest.System.Windows.Browser
 		[TestMethod]
 		[Ignore]
 		public void PropertiesJS () {
-			window.Eval ("plugin.content.scriptable.Property = 'test';");
+			window.Eval (strplugin + ".content.scriptable.Property = 'test';");
 			Assert.AreEqual ("test", scriptable.Property, "PropertiesJS 1");
 
-			object o = window.Eval ("function f(){return plugin.content.scriptable.Property;} f();");
+			object o = window.Eval ("function f(){return " + strplugin + ".content.scriptable.Property;} f();");
 			Assert.AreEqual (scriptable.Property, (string) o, "PropertiesJS 2");
 		}
 
 		[TestMethod]
 		[Ignore]
 		public void ScriptableMemberTest () {
-			window.Eval ("scriptable = plugin.content.scriptable;");
+			window.Eval ("scriptable = " + strplugin + ".content.scriptable;");
 			window.Eval ("scriptable.MethodAdd();");
 			Assert.AreEqual (1, scriptable.MethodCount, "B1");
 
@@ -171,7 +172,7 @@ namespace MoonTest.System.Windows.Browser
 		[Ignore]
 		public void ScriptableTypeTest () {
 
-			window.Eval ("scriptabletype = plugin.content.scriptabletype;");
+			window.Eval ("scriptabletype = " + strplugin + ".content.scriptabletype;");
 			window.Eval ("scriptabletype.MethodAdd();");
 			Assert.AreEqual (1, scriptabletype.MethodCount, "C1");
 
@@ -210,7 +211,7 @@ namespace MoonTest.System.Windows.Browser
 		[TestMethod]
 		[Ignore]
 		public void EvalTest () {
-			object o = window.Eval ("scriptabletype = plugin.content.scriptabletype;");
+			object o = window.Eval ("scriptabletype = " + strplugin + ".content.scriptabletype;");
 			Assert.IsNotNull (o, "EvalTest 1");
 			Assert.IsInstanceOfType (o, typeof (ScriptObject), "EvalTest 2");
 			ScriptObject so = (ScriptObject) o;

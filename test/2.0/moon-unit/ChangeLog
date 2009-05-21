@@ -1,5 +1,9 @@
 2009-05-21  Andreia Gaita  <avidigal@novell.com>
 
+	* System.Windows.Browser/ScriptableTest.cs: rewrite to make it work...
+
+2009-05-21  Andreia Gaita  <avidigal@novell.com>
+
 	* System.Windows.Browser/ScriptableTest.cs: CreateableType should be
 	working now
 
