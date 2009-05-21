@@ -36,8 +36,11 @@ rating:1
 
 site:Database Schema Editor
 url:http://www.dbschemaeditor.com/OnlineDB.aspx
-rating:0
- * NRE: exception thrown by type initializer for OnlineDB.Backend.ModelXML.SettingsDataStoreXML -> NRE
+rating:2
+ * Controls in dialogs not layed out properly
+ * TextBoxes in dialogs do not get focus properly, can't see text or carat when typing sometimes
+ * ComboBoxes pop up at 0,0
+ 
 
 site:Dr. Popper
 url:http://www.bluerosegames.com/brg/free-web-games/bubble-breaker.aspx
