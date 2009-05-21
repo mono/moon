@@ -1,5 +1,6 @@
 
 SUBDIRS=harness parsertest sizes
+DIST_SUBDIRS = templates
 
 if INCLUDE_BROWSER_MANAGED_CODE
 SUBDIRS += 2.0

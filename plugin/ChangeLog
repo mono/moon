@@ -1,3 +1,7 @@
+2009-05-21  Rusty Howell  <rhowell@novell.com>
+
+	 * Makefile.am: Changed install dir to DIST_SUBDIRS for make dist
+
 2009-05-21  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-class.cpp: disable throwing js exceptions on html_object_invoke
