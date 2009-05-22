@@ -85,6 +85,7 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
+		[Ignore]
 		public void CreateableTypeTest () {
 			window.Eval ("createabletype = " + strplugin + ".content.services.createObject ('createable');");
 			window.Eval ("createabletype.MethodAdd ()");
