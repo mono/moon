@@ -1,5 +1,5 @@
 SUBDIRS = . test samples firefox
-DIST_SUBDIRS = install
+DIST_SUBDIRS = $(SUBDIRS) install
 
 CLEANFILES =
 
