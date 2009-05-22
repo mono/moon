@@ -46,6 +46,9 @@ namespace System.Windows.Browser.Net {
 
 	class CrossDomainPolicyManager {
 
+		public const string ClientAccessPolicyFile = "/clientaccesspolicy.xml";
+		public const string CrossDomainFile = "/crossdomain.xml";
+
 		const int Timeout = 10000;
 
 		// Socket Policy

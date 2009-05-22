@@ -76,26 +76,21 @@ socket-resource = element socket-resource {
 }
 */
 
-namespace System.Windows.Browser.Net
-{
-	class ClientAccessPolicy
-	{
-/*
-public static void Main (string [] args)
-{
-	foreach (string s in args)
-		using (var r = XmlReader.Create (s))
-			ClientAccessPolicyReader.Read (r);
-}
-*/
-		static public Uri ApplicationUri {
-#if TEST
-			get; set;
-#else
-			get { return PluginHost.RootUri; }
-#endif
-		}
+namespace System.Windows.Browser.Net {
 
+#if TEST
+	class ClientAccessPolicy {
+
+		static public Uri ApplicationUri {
+			get; set;
+		}
+#else
+	class ClientAccessPolicy : ICrossDomainPolicy {
+
+		static public Uri ApplicationUri {
+			get { return PluginHost.RootUri; }
+		}
+#endif
 		class AccessPolicy {
 
 			public const short MinPort = 4502;
@@ -150,6 +145,25 @@ public static void Main (string [] args)
 			return false;
 		}
 
+		public bool IsAllowed (WebRequest request)
+		{
+			return IsAllowed (request.RequestUri, request.Headers.AllKeys);
+		}
+
+		public bool IsAllowed (Uri uri, params string [] headerKeys)
+		{
+			foreach (AccessPolicy policy in AccessPolicyList) {
+				// does something allow our URI in this policy ?
+				foreach (AllowFrom af in policy.AllowedServices) {
+					if (af.IsAllowed (uri, headerKeys)) {
+						return true;
+					}
+				}
+			}
+			// no policy allows this web connection
+			return false;
+		}
+
 		public class AllowFrom
 		{
 			public AllowFrom ()
@@ -185,8 +199,21 @@ public static void Main (string [] args)
 				// check headers
 				if (!AllowAllHeaders && headerKeys.All (s => Array.IndexOf (headers, s) < 0))
 					return false;
+				// check scheme
+				if ((Scheme.Length > 0) && (Scheme == uri.Scheme)) {
+					switch (Scheme) {
+					case "http":
+						return (uri.Port == 80);
+					case "https":
+						return (uri.Port == 443);
+					case "file":
+						return true;
+					default:
+						return false;
+					}
+				}
 				// check domains
-				if (AllowAnyDomain || (Scheme.Length > 0 && Scheme == uri.Scheme))
+				if (AllowAnyDomain)
 					return true;
 				if (Domains.All (domain => domain.Host != uri.Host))
 					return false;

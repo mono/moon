@@ -1,3 +1,14 @@
+2009-05-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientAccessPolicy.cs: Implement ICrossDomainPolicy and
+	fix scheme checks to verify the ports.
+	* CrossDomainPolicyManager.cs: Add consts for the policy names
+	* ICrossDomainPolicy.cs: New. Interface for policies.
+	* PolicyDownloadPolicy.cs: New. Special policy used exclusively
+	to download policies from web hosts.
+	* SiteOfOriginPolicy.cs: New. Basic policy (always true) applied
+	for the same "site of origin" requests.
+
 2009-05-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* CrossDomainPolicyManager.cs: Download and process a socket 
