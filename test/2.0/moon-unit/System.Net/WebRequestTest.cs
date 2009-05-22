@@ -490,6 +490,85 @@ namespace MoonTest.System.Net {
 		{
 			Headers_String ("POST");
 		}
+
+		class TestState {
+			public bool Complete;
+			public WebRequest Request;
+			public string Header;
+			public Type Exception;
+
+			public TestState (WebRequest wr, string header, Type exception)
+			{
+				Complete = false;
+				Request = wr;
+				Header = header;
+				Exception = exception;
+			}
+
+			public override string ToString ()
+			{
+				return String.Format ("{0} {1} {2}", Request.Method, Header, Exception);
+			}
+		}
+
+		void TryWebRequest (string method, string header, Type exception)
+		{
+			WebRequest wr = WebRequest.Create (new Uri ("http://localhost"));
+			wr.Method = method;
+			wr.Headers [header] = "value";
+
+			TestState state = new TestState (wr, header, exception);
+			Enqueue (() => { wr.BeginGetResponse (new AsyncCallback (TryWebRequestGetResponse), state); });
+			EnqueueConditional (() => state.Complete);
+		}
+
+		void TryWebRequestGetResponse (IAsyncResult ar)
+		{
+			TestState state = (ar.AsyncState as TestState);
+			try {
+				WebResponse wr = state.Request.EndGetResponse (ar);
+				Assert.IsNotNull (wr, "WebResponse");
+				if (state.Exception != null)
+					Assert.Fail (state.ToString () + " missing exception");
+			}
+			catch (Exception e) {
+				Type type = e.GetType ();
+				if (state.Exception != e.GetType ())
+					Assert.Fail (state.ToString () + " got: " + type.ToString ());
+			}
+			finally {
+				state.Complete = true;
+			}
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void HeadersGetThrowingInGetResponse ()
+		{
+			TryWebRequest ("GET", "Cache-Control", typeof (NotSupportedException));
+
+			Type pve = typeof (ProtocolViolationException);
+			TryWebRequest ("GET", "Content-Encoding", pve);
+			TryWebRequest ("GET", "Content-Language", pve);
+			TryWebRequest ("GET", "Content-MD5", pve);
+			TryWebRequest ("GET", "Expires", pve);
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void HeadersPostThrowingInGetResponse ()
+		{
+			Type se = typeof (SecurityException);
+			TryWebRequest ("POST", "Cache-Control", se);
+			TryWebRequest ("POST", "Content-Encoding", se);
+			TryWebRequest ("POST", "Content-Language", se);
+			TryWebRequest ("POST", "Content-MD5", se);
+			TryWebRequest ("POST", "Expires", se);
+
+			EnqueueTestComplete ();
+		}
 	}
 }
 

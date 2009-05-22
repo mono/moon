@@ -1,3 +1,13 @@
+2009-05-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebHeaderCollectionTest.cs: Add header test cases
+	* System.Net/WebRequestTest.cs: Add header test cases
+	* System.Net.Sockets/SocketAyncEventArgsTest.cs: New.
+	* System.Net.Sockets/SocketTest.cs: New. Socket unit tests.
+	* security/SocketPolicyTest.cs: New. Socket policy tests.
+	* Makefile.am: Include ClientAccessPolicy from moon/class so we 
+	can make useful socket policy tests.
+
 2009-05-21  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Browser/ScriptableTest.cs: disable CreateableType,
@@ -191,6 +201,11 @@
 
 	* System.Windows/FrameworkElementTest.cs: Add test to make
 	  sure datacontext is propagating correctly.
+
+2009-05-12  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net/WebHeaderCollectionTest.cs: Add case sensitiveness
+	test cases for headers.
 
 2009-05-12  Sebastien Pouliot  <sebastien@ximian.com> 
 

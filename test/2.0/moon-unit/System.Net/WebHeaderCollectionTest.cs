@@ -268,6 +268,116 @@ namespace MoonTest.System.Net {
 				Assert.AreEqual (s, whc [header], header);
 			}
 		}
+
+		[TestMethod]
+		public void Names_FromHttpRequestHeader ()
+		{
+			WebHeaderCollection whc = new WebHeaderCollection ();
+			// Enum.GetValues is not available on SL :(
+			for (int i = (int) HttpRequestHeader.CacheControl; i <= (int) HttpRequestHeader.UserAgent; i++) {
+				HttpRequestHeader hrh = (HttpRequestHeader) i;
+				whc [hrh] = hrh.ToString ();
+			}
+			Assert.AreEqual (41, whc.Count, "Count");
+			string [] keys = whc.AllKeys;
+			foreach (string key in keys) {
+				// some names are equals to Enum.ToString
+				if (whc [key] == key)
+					continue;
+				// while others are not (> 1 word)
+				switch (key) {
+				case "Cache-Control":
+				case "Keep-Alive":
+				case "Transfer-Encoding":
+				case "Content-Length":
+				case "Content-Type":
+				case "Content-Encoding":
+				case "Content-Language":
+				case "Content-Location":
+				case "Content-Range":
+				case "Last-Modified":
+				case "Accept-Charset":
+				case "Accept-Encoding":
+				case "Accept-Language":
+				case "If-Match":
+				case "If-Modified-Since":
+				case "If-None-Match":
+				case "If-Range":
+				case "If-Unmodified-Since":
+				case "Max-Forwards":
+				case "Proxy-Authorization":
+				case "User-Agent":
+					Assert.AreEqual (key.Replace ("-", String.Empty), whc [key], key);
+					break;
+				case "Content-MD5":
+					Assert.AreEqual ("ContentMd5", whc [key], key);
+					break;
+				case "TE":
+					Assert.AreEqual ("Te", whc [key], key);
+					break;
+				default:
+					Assert.Fail (key);
+					break;
+				}
+			}
+		}
+
+		[TestMethod]
+		public void Names_String ()
+		{
+			WebHeaderCollection whc = new WebHeaderCollection ();
+			// Enum.GetValues is not available on SL :(
+			for (int i = (int) HttpRequestHeader.CacheControl; i <= (int) HttpRequestHeader.UserAgent; i++) {
+				HttpRequestHeader hrh = (HttpRequestHeader) i;
+				// string is kept as supplied
+				if ((i % 2) == 1)
+					whc [HttpRequestHeaderToString (hrh).ToLower ()] = hrh.ToString ().ToLower ();
+				else
+					whc [HttpRequestHeaderToString (hrh).ToUpper ()] = hrh.ToString ().ToUpper ();
+			}
+			Assert.AreEqual (41, whc.Count, "Count");
+			string [] keys = whc.AllKeys;
+			foreach (string key in keys) {
+				// some names are equals to Enum.ToString
+				if (whc [key] == key)
+					continue;
+				// while others are not (> 1 word)
+				switch (key) {
+				case "CACHE-CONTROL":
+				case "keep-alive":
+				case "TRANSFER-ENCODING":
+				case "content-length":
+				case "CONTENT-TYPE":
+				case "content-encoding":
+				case "CONTENT-LANGUAGE":
+				case "content-location":
+				case "content-range":
+				case "last-modified":
+				case "accept-charset":
+				case "ACCEPT-ENCODING":
+				case "accept-language":
+				case "if-match":
+				case "IF-MODIFIED-SINCE":
+				case "if-none-match":
+				case "IF-RANGE":
+				case "if-unmodified-since":
+				case "MAX-FORWARDS":
+				case "proxy-authorization":
+				case "USER-AGENT":
+					Assert.AreEqual (key.Replace ("-", String.Empty), whc [key], key);
+					break;
+				case "CONTENT-MD5":
+					Assert.AreEqual ("CONTENTMD5", whc [key], key);
+					break;
+				case "TE":
+					Assert.AreEqual ("Te", whc [key], key);
+					break;
+				default:
+					Assert.Fail (key);
+					break;
+				}
+			}
+		}
 	}
 }
 
