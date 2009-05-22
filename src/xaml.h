@@ -25,6 +25,7 @@ class XamlLoader;
 typedef bool (*xaml_lookup_object_callback) (void *loader, void *parser, Value *top_level, const char *xmlns, const char *name, bool create, Value *value);
 typedef void (*xaml_create_gchandle_callback) ();
 typedef bool (*xaml_set_property_callback) (void *loader, void *parser, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *name, Value *value, void *value_data);
+typedef bool (*xaml_add_to_container_callback) (void *loader, void *parser, Value *top_level, const char* xmlns, const char* prop_name, const char* key_name, Value *container, void *container_data, Value *child, void *child_data);
 typedef void (*xaml_import_xaml_xmlns_callback) (void *loader, void *parser, const char* xmlns);
 typedef const char* (*xaml_get_content_property_name_callback) (void *loader, void *parser, Value *object);
 
@@ -33,12 +34,14 @@ struct XamlLoaderCallbacks {
 	xaml_lookup_object_callback lookup_object;
 	xaml_create_gchandle_callback create_gchandle;
 	xaml_set_property_callback set_property;
+	xaml_add_to_container_callback add_to_container;
 	xaml_import_xaml_xmlns_callback import_xaml_xmlns;
 	xaml_get_content_property_name_callback get_content_property_name;
 
 	XamlLoaderCallbacks () :
 		lookup_object (NULL),
 		set_property (NULL),
+		add_to_container (NULL),
 		import_xaml_xmlns (NULL),
 		get_content_property_name (NULL)
 	{
@@ -155,6 +158,7 @@ class XamlLoader {
 
 	virtual bool LookupObject (void *p, Value* top_element, const char* xmlns, const char* name, bool create, Value *value);
 	virtual bool SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *name, Value *value, void *value_data);
+	virtual bool AddToContainer (void *p, Value *top_level, const char* xmlns, const char* prop_name, const char* key_name, Value *container, void *container_data, Value *child, void *child_data);
 
 	virtual const char *GetContentPropertyName (void *p, Value *object);
 

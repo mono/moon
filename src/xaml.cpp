@@ -394,11 +394,33 @@ class XamlElementInstance : public List::Node {
 	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value);
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value);
 	
-	void SetKey (const char *key) { this->x_key = g_strdup (key); }
+	
 	char *GetKey () { return x_key; }
-
-	void SetName (const char *name) { this->x_name = g_strdup (name); }
 	char *GetName () { return x_name; }
+
+	void SetName (XamlParserInfo *p, const char *name)
+	{
+		this->x_name = g_strdup (name);
+		AddToParentContainer (p, this->x_name);
+	}
+
+	void SetKey (XamlParserInfo *p, const char *key)
+	{
+		this->x_key = g_strdup (key);
+		AddToParentContainer (p, this->x_key);
+	}
+
+	void AddToParentContainer (XamlParserInfo *p, const char *name)
+	{
+		if (!parent || parent->element_type != XamlElementInstance::PROPERTY || !parent->parent) {
+			return;
+		}
+		parent->parent->AddToContainer (p, name, parent->element_name, this);
+	}
+
+	virtual void AddToContainer (XamlParserInfo *p, const char *name, const char *prop_namem, XamlElementInstance *item)
+	{
+	}
 
 	virtual bool IsDependencyObject ()
 	{
@@ -1006,7 +1028,7 @@ class XNamespace : public XamlNamespace {
 				}
 			}
 
-			item->SetName (value);
+			item->SetName (p, value);
 
 			if (item->IsDependencyObject ()) {
 				NameScope *scope = p->namescope;
@@ -1028,7 +1050,7 @@ class XNamespace : public XamlNamespace {
 					      "You can't specify x:Name along with x:Key, or x:Key twice.");
 				return false;
 			}
-			item->SetKey (value);
+			item->SetKey (p, value);
 			return true;
 		}
 
@@ -1183,6 +1205,8 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 		return is_dependency_object;
 	}
 
+	virtual void AddToContainer (XamlParserInfo *p, const char *name, const char *prop_name, XamlElementInstance *item);
+
 	virtual bool SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value);
 	virtual bool SetAttachedProperty (XamlParserInfo *p, XamlElementInstance *target, XamlElementInstance *value);
 
@@ -1319,7 +1343,15 @@ XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *ta
 
 	return false;
 }
-		
+
+bool
+XamlLoader::AddToContainer (void *p, Value *top_level, const char*xmlns, const char* prop_name, const char* key_name, Value *container, void *container_data, Value *child, void *child_data)
+{
+	if (callbacks.add_to_container)
+		return callbacks.add_to_container (this, p, top_level, xmlns, prop_name, key_name, container, container_data, child, child_data);
+	return false;
+}
+
 gboolean
 xaml_loader_find_any (gpointer key, gpointer value, gpointer user_data)
 {
@@ -4061,6 +4093,13 @@ XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, c
 		this->is_dependency_object = false;
 }
 
+void
+XamlElementInstanceManaged::AddToContainer (XamlParserInfo *p, const char *key, const char *prop_name, XamlElementInstance *item)
+{
+	if (p->loader)
+		p->loader->AddToContainer (p, p->GetTopElementPtr (), ((XamlElementInfoManaged *) info)->xmlns, prop_name, key, GetAsValue (), this, item->GetAsValue (), item);
+}
+
 void *
 XamlElementInstanceManaged::GetManagedPointer ()
 {
@@ -4632,12 +4671,12 @@ start_parse:
 		if (prop) {
 			if (prop->GetId () == DependencyObject::NameProperty) {
 				// XXX toshok - I don't like doing this here... but it fixes airlines.
-				item->SetKey (attr[i+1]);
+				item->SetKey (p, attr[i+1]);
 
 				NameScope *scope = p->namescope;
 				if (!item->GetAsDependencyObject ()->SetName (attr [i+1], scope)) {
-					parser_error (p, item->element_name, NULL, 2028,
-						      "The name already exists in the tree: %s.", attr [i+1]);
+					parser_error (p, item->element_name, NULL, 2007,
+						      "You can't specify x:Name along with x:Key, or x:Key twice.");
 					return;
 				}
 				continue;

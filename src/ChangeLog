@@ -1,3 +1,10 @@
+2009-05-22  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.h|cpp: New callback for registering elements in
+	containers, we need to do this earlier on in the parse than
+	setproperty because other elements could reference these elements
+	before they've been set.
+	
 2009-05-21  Alan McGovern  <amcgovern@novell.com>
 
 	* src/cbinding.cpp

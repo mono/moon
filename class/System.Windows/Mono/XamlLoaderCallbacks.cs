@@ -40,6 +40,7 @@ namespace Mono.Xaml
 	internal delegate void CreateGCHandleCallback ();
 
 	internal delegate bool SetPropertyCallback (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_data, IntPtr target_parent, string name, IntPtr value_ptr, IntPtr value_data);
+	internal delegate bool AddToContainerCallback (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, string prop_name, string key_name, IntPtr parent, IntPtr parent_data, IntPtr child, IntPtr child_data);
 	internal delegate void ImportXamlNamespaceCallback (IntPtr loader, IntPtr parser, string xmlns);
 	internal delegate string GetContentPropertyNameCallback (IntPtr loader, IntPtr parser, IntPtr object_ptr);
 	
@@ -47,6 +48,7 @@ namespace Mono.Xaml
 		public LookupObjectCallback lookup_object;
 		public CreateGCHandleCallback create_gchandle;
 		public SetPropertyCallback set_property;
+		public AddToContainerCallback add_to_container;
 		public ImportXamlNamespaceCallback import_xaml_xmlns;
 		public GetContentPropertyNameCallback get_content_property_name;
 	}

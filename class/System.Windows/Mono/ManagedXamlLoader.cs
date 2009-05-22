@@ -68,6 +68,7 @@ namespace Mono.Xaml
 			callbacks.lookup_object = new LookupObjectCallback (cb_lookup_object);
 			callbacks.create_gchandle = new CreateGCHandleCallback (cb_create_gchandle);
 			callbacks.set_property = new SetPropertyCallback (cb_set_property);
+			callbacks.add_to_container = new AddToContainerCallback (cb_add_to_container);
 			callbacks.import_xaml_xmlns = new ImportXamlNamespaceCallback (cb_import_xaml_xmlns);
 			callbacks.get_content_property_name = new GetContentPropertyNameCallback (cb_get_content_property_name);
 
@@ -617,6 +618,71 @@ namespace Mono.Xaml
 			return false;
 		}
 
+		private bool AddToContainer (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, string full_prop_name, string key_name, IntPtr parent_ptr, IntPtr parent_data, IntPtr child_ptr, IntPtr child_data)
+		{
+			string error;
+			object parent = Value.ToObject (null, parent_ptr);
+			object child = Value.ToObject (null, child_ptr);
+
+			if (parent == null || child == null) {
+				Console.Error.WriteLine ("AddToContainer supplied with null {0}.", parent == null ? "parent" : "child");
+				return false;
+			}
+
+			Console.WriteLine ("AddToContainer ({0}, {1}, {2}, {3})", parent, child, full_prop_name, key_name);
+			if (full_prop_name != null) {
+				
+
+				int dot = full_prop_name.IndexOf ('.');
+				if (dot < 1)
+					return false;
+				string type_name = full_prop_name.Substring (0, dot);
+				string prop_name = full_prop_name.Substring (++dot, full_prop_name.Length - dot);
+
+				Type target_type = TypeFromString (parser, top_level, type_name);
+				if (!target_type.IsAssignableFrom (parent.GetType ())) {
+					// This should probably happen when we have attached properties
+					Console.Error.WriteLine ("Attempting to set property on non parent type: {0} {1} {2}", target_type, parent, full_prop_name);
+					return false;
+				}
+
+				PropertyInfo pi = parent.GetType ().GetProperty (prop_name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+
+				if (pi == null) {
+					Console.Error.WriteLine ("Property does not exist. {0}", prop_name);
+					return false;
+				}
+
+				if (typeof (ResourceDictionary).IsAssignableFrom (pi.PropertyType) && !(child is ResourceDictionary)) {
+					ResourceDictionary the_dict = (ResourceDictionary) pi.GetValue (parent, null);
+
+					if (the_dict == null) {
+						the_dict = (ResourceDictionary) Activator.CreateInstance (pi.PropertyType);
+						if (the_dict == null) {
+							Console.Error.WriteLine ("Unable to create instance of dictionary: " + pi.PropertyType);
+							return false;
+						}
+						pi.SetValue (parent, the_dict, null);
+					}
+
+					try {
+						the_dict.Add (key_name, child);
+						if (child is DependencyObject && parent is DependencyObject && !(the_dict is DependencyObject)) {
+							NativeMethods.dependency_object_set_parent (((DependencyObject) child).native, ((DependencyObject) parent).native);
+						}
+
+						return true;
+					} catch (Exception e) {
+						// Fall through to string
+						Console.Error.WriteLine (e);
+						return false;
+					}
+				}
+			}
+
+			return false;
+		}
+
 		private Type LookupType (IntPtr top_level, string assembly_name, string full_name)
 		{
 			Type res = null;
@@ -792,40 +858,8 @@ namespace Mono.Xaml
 			}
 
 			if (typeof (ResourceDictionary).IsAssignableFrom (pi.PropertyType) && !(obj_value is ResourceDictionary)) {
-				ResourceDictionary the_dict = (ResourceDictionary) pi.GetValue (target, null);
-
-				if (the_dict == null) {
-					the_dict = (ResourceDictionary) Activator.CreateInstance (pi.PropertyType);
-					if (the_dict == null) {
-						error = "Unable to create instance of dictionary: " + pi.PropertyType;
-						return false;
-					}
-					pi.SetValue (target, the_dict, null);
-				}
-
-				if (value_data == IntPtr.Zero) {
-					error = "Can not add attributes to a resource dictionary.";
-					return false;
-				}
-
-				try {
-					string key = NativeMethods.xaml_get_element_key (parser, value_data);
-
-					if (key == null) {
-						error = "No key for element: " + obj_value;
-						return false;
-					}
-
-					the_dict.Add (key, obj_value);
-					if (obj_value is DependencyObject && target is DependencyObject && !(the_dict is DependencyObject)) {
-						NativeMethods.dependency_object_set_parent (((DependencyObject)obj_value).native, ((DependencyObject) target).native);
-					}
-
-					return true;
-				} catch (Exception e) {
-					// Fall through to string
-					Console.Error.WriteLine (e);
-				}
+				// This case is handled in the add to container code
+				return true;
 			}
 
 			string str_value = obj_value as string;
@@ -864,7 +898,7 @@ namespace Mono.Xaml
 					pi.SetValue (target, obj_value, null);
 					return true;
 				}
-				
+
 				if (MarkupExpressionParser.IsStaticResource (str_value)) {
 					// FIXME: The NUnit tests show we need to use the parent of the target to resolve
 					// the StaticResource, but are there any cases where we should use the actual target?
@@ -1004,6 +1038,17 @@ namespace Mono.Xaml
 				return SetProperty (loader, parser, top_level, xmlns, target, target_data, target_parent, name, value_ptr, value_data);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", top_level, xmlns, target, name, value_ptr, ex.Message);
+				Console.Error.WriteLine (ex);
+				return false;
+			}
+		}
+
+		private bool cb_add_to_container (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, string prop_name, string key_name, IntPtr parent, IntPtr parent_data, IntPtr child, IntPtr child_data)
+		{
+			try {
+				return AddToContainer (loader, parser, top_level, xmlns, prop_name, key_name, parent, parent_data, child, child_data);
+			} catch (Exception ex) {
+				Console.Error.WriteLine ("ManagedXamlLoader::AddToContainer ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}) threw an exception: {5}.", top_level, xmlns, prop_name, key_name, parent, parent_data, child, child_data, ex.Message);
 				Console.Error.WriteLine (ex);
 				return false;
 			}
