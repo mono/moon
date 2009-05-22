@@ -2145,6 +2145,18 @@ DependencyObject::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 			if (args->GetOldValue ())
 				scope->UnregisterName (args->GetOldValue ()->AsString ());
 			scope->RegisterName (args->GetNewValue()->AsString (), this);
+
+			if (IsHydratedFromXaml () && parent) {
+				// we also need to update any parent
+				// namescope about our name change
+
+				scope = parent->FindNameScope ();
+				if (scope) {
+					if (args->GetOldValue ())
+						scope->UnregisterName (args->GetOldValue ()->AsString ());
+					scope->RegisterName (args->GetNewValue()->AsString (), this);
+				}
+			}
 		}
 	}
 
