@@ -68,7 +68,7 @@ class DependencyProperty {
 	Type::Kind GetPropertyType() { return property_type; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool GetSetsParent () { return sets_parent; }
+	bool GetSetsParent () { return sets_parent && !IsCustom (); }
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool IsNullable () { return is_nullable; }
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -101,7 +101,9 @@ class DependencyProperty {
 	static int RegisterFull (Types *types, Type::Kind type, const char *name, bool sets_parent, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator,  AutoCreator* autocreator, bool is_custom, bool is_nullable);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	static DependencyProperty *RegisterManagedProperty (const char *name, bool sets_parent, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
+	static DependencyProperty *RegisterCustomProperty (const char *name, bool sets_parent, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	static DependencyProperty *RegisterCoreProperty (const char *name, bool sets_parent, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);

@@ -1,3 +1,9 @@
+2009-05-16  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc
+	* System.Windows.auto.ssc:
+	regen
+	
 2009-05-18  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Browser.auto.ssc: Regenerate for methods 

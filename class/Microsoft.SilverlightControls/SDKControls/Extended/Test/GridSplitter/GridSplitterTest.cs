@@ -242,7 +242,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Complete a column resize operation and ensure the new column widths were committed.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void MouseCompleteResizeColumns()
         {
             Grid g = CreateGrid(2, 2, 100.0, 100.0);

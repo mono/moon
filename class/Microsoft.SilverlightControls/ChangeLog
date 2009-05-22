@@ -1,3 +1,26 @@
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/Common/KeyboardNavigation.cs
+	* Controls/Src/ListBox/ListBox.cs
+	* Controls/Src/ListBox/ListBoxItem.cs
+	* Controls/Src/ScrollViewer/ScrollViewer.cs
+	* Controls/Src/ToolTip/ToolTip.cs
+	* Controls/Src/ToolTip/ToolTipService.cs
+	* RuntimeControls/SilverlightControls/HyperlinkButton.cs
+	* RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs
+	* RuntimeControls/SilverlightControls/Primitives/RangeBase.cs
+	* RuntimeControls/SilverlightControls/Primitives/RepeatButton.cs
+	* RuntimeControls/SilverlightControls/Primitives/ScrollBar.cs
+	* RuntimeControls/SilverlightControls/Primitives/Thumb.cs
+	* RuntimeControls/SilverlightControls/Primitives/ToggleButton.cs
+	* RuntimeControls/SilverlightControls/ProgressBar.cs
+	* RuntimeControls/SilverlightControls/RadioButton.cs
+	* RuntimeControls/SilverlightControls/Slider.cs
+	* SDKControls/Extended/Test/GridSplitter/GridSplitterTest.cs
+	* SDKControls/Extended/Test/TabControl/TabPanelTest.cs:
+	Use DependencyProperty.RegisterCore for these DPs.
+
+
 2009-05-21  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ListBox/ListBoxItem.cs: Update the VisualState

@@ -1,3 +1,10 @@
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.cs
+	* FrameworkElement.cs
+	* VisualState.cs:
+	Use DependencyProperty.RegisterCore for these DPs.
+
 2009-05-20  Alan McGovern  <amcgovern@novell.com>
 
 	* PresentationFrameworkCollection.cs: When replacing an item

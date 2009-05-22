@@ -35,14 +35,14 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the ItemContainerStyle dependency property.
         /// </summary> 
-        public static readonly DependencyProperty ItemContainerStyleProperty = DependencyProperty.Register( 
+        public static readonly DependencyProperty ItemContainerStyleProperty = DependencyProperty.RegisterCore( 
                 "ItemContainerStyle", typeof(Style), typeof(ListBox),
                 new PropertyMetadata(new PropertyChangedCallback(OnItemContainerStyleChanged))); 
 
         /// <summary>
         /// Identifies the IsSelectionActive dependency property. 
         /// </summary>
-        public static readonly DependencyProperty IsSelectionActiveProperty = DependencyProperty.RegisterReadOnly (
+        public static readonly DependencyProperty IsSelectionActiveProperty = DependencyProperty.RegisterReadOnlyCore (
             "IsSelectionActive", typeof(bool), typeof(ListBox), 
             new PropertyMetadata(new PropertyChangedCallback(OnIsSelectionActiveChanged))); 
 

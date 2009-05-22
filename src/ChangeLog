@@ -1,3 +1,14 @@
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* src/cbinding.cpp
+	* src/cbinding.h: regen
+	
+	* dependencyproperty.c:
+	* dependencyproperty.h: We can either register a 'core' property or a
+	'custom' property from managed code. Core properties are part of the
+	framework itself, custom properties are user-created. Custom properties
+	don't set the parent or register names in namescopes.
+	
 2009-05-21  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* deepzoomimagetilesource.h:

@@ -87,7 +87,7 @@ namespace System.Windows.Controls
 		/// Identifies the Content dependency property.
 		/// </summary> 
 		public static readonly DependencyProperty ContentProperty =
-			DependencyProperty.Register(
+			DependencyProperty.RegisterCore(
 						    "Content", 
 						    typeof(object),
 						    typeof(ContentPresenter),
@@ -131,7 +131,7 @@ namespace System.Windows.Controls
 		/// Identifies the ContentTemplate dependency property. 
 		/// </summary>
 		public static readonly DependencyProperty ContentTemplateProperty = 
-			DependencyProperty.Register(
+			DependencyProperty.RegisterCore(
 						    "ContentTemplate",
 						    typeof(DataTemplate), 
 						    typeof(ContentPresenter),

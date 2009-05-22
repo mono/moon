@@ -1,3 +1,8 @@
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Automation/AutomationProperties.cs: Use
+	DependencyProperty.RegisterCore for these DPs.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.mdp: Delete files we got from MS' controls

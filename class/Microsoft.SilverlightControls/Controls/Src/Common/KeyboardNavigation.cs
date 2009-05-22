@@ -53,7 +53,7 @@ namespace System.Windows.Input
         /// Identifies the AcceptsReturn attached property. 
         /// </summary>
         public static readonly DependencyProperty AcceptsReturnProperty = 
-            DependencyProperty.RegisterAttached(
+            DependencyProperty.RegisterAttachedCore(
                 "AcceptsReturn",
                 typeof(bool), 
                 typeof(KeyboardNavigation),

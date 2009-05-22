@@ -1173,7 +1173,10 @@ bool dependency_property_is_nullable (DependencyProperty *instance);
 bool dependency_property_is_read_only (DependencyProperty *instance);
 
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_register_managed_property (const char *name, bool sets_parent, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
+DependencyProperty *dependency_property_register_core_property (const char *name, bool sets_parent, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
+
+/* @GeneratePInvoke */
+DependencyProperty *dependency_property_register_custom_property (const char *name, bool sets_parent, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
 
 /* @GeneratePInvoke */
 void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);

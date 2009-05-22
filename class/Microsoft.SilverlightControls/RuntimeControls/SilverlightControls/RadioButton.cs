@@ -56,7 +56,7 @@ namespace System.Windows.Controls
         /// Identifies the GroupName dependency property.
         /// </summary>
         public static readonly DependencyProperty GroupNameProperty = 
-            DependencyProperty.Register(
+            DependencyProperty.RegisterCore(
                 "GroupName",
                 typeof(string), 
                 typeof(RadioButton), 

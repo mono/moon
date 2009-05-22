@@ -47,7 +47,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the Minimum dependency property.
         /// </summary>
         public static readonly DependencyProperty MinimumProperty = 
-            DependencyProperty.Register(
+            DependencyProperty.RegisterCore(
                 "Minimum",
                 typeof(double), 
                 typeof(RangeBase), 
@@ -122,7 +122,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the Maximum dependency property.
         /// </summary>
         public static readonly DependencyProperty MaximumProperty = 
-            DependencyProperty.Register( 
+            DependencyProperty.RegisterCore( 
                 "Maximum",
                 typeof(double), 
                 typeof(RangeBase),
@@ -196,7 +196,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the LargeChange dependency property. 
         /// </summary> 
         public static readonly DependencyProperty LargeChangeProperty =
-            DependencyProperty.Register( 
+            DependencyProperty.RegisterCore( 
                 "LargeChange",
                 typeof(double),
                 typeof(RangeBase), 
@@ -235,7 +235,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the SmallChange dependency property. 
         /// </summary>
         public static readonly DependencyProperty SmallChangeProperty =
-            DependencyProperty.Register( 
+            DependencyProperty.RegisterCore( 
                 "SmallChange",
                 typeof(double),
                 typeof(RangeBase), 
@@ -275,7 +275,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the Value dependency property.
         /// </summary>
         public static readonly DependencyProperty ValueProperty = 
-            DependencyProperty.Register( 
+            DependencyProperty.RegisterCore( 
                 "Value",
                 typeof(double), 
                 typeof(RangeBase),

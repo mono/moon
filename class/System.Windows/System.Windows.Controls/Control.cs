@@ -86,7 +86,7 @@ namespace System.Windows.Controls {
 			set { SetValue (IsEnabledProperty, value); }
 		}
 
-		public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register (
+		public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.RegisterCore (
 			"IsEnabled",
 			typeof (bool),
 			typeof (Control),

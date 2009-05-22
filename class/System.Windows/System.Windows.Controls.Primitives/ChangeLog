@@ -1,3 +1,8 @@
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Use DependencyProperty.RegisterCore for
+	these DPs.
+
 2009-05-21  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: SelectedIndex is actually updated on the

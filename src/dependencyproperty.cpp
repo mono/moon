@@ -194,7 +194,23 @@ DependencyProperty::Register (Types *types, Type::Kind type, const char *name, b
 }
 
 DependencyProperty *
-DependencyProperty::RegisterManagedProperty (const char *name, bool sets_parent, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, PropertyChangeHandler callback)
+DependencyProperty::RegisterCoreProperty (const char *name, bool sets_parent, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, PropertyChangeHandler callback)
+{
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	int id;
+	
+	if (default_value && default_value->GetKind () == Type::INVALID)
+		default_value = NULL;
+	else
+		default_value = new Value (*default_value);
+	
+	id = DependencyProperty::RegisterFull (types, owner_type, name, sets_parent, default_value, property_type, attached, readonly, false, callback, NULL, NULL, false, false);
+	
+	return types->GetProperty (id);
+}
+
+DependencyProperty *
+DependencyProperty::RegisterCustomProperty (const char *name, bool sets_parent, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, PropertyChangeHandler callback)
 {
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	int id;

@@ -46,19 +46,19 @@ namespace System.Windows.Controls
 	public class ComboBox : Selector
 	{
 		public static readonly DependencyProperty IsDropDownOpenProperty = 
-			DependencyProperty.Register ("IsDropDownOpen", typeof (bool), typeof (ComboBox),
+			DependencyProperty.RegisterCore ("IsDropDownOpen", typeof (bool), typeof (ComboBox),
 						     new PropertyMetadata (null, delegate (DependencyObject sender, DependencyPropertyChangedEventArgs e) {
 								     ((ComboBox) sender).IsDropDownOpenChanged (sender, e);
 							     }));
 
 		public static readonly DependencyProperty IsSelectionActiveProperty =
-			DependencyProperty.Register ("IsSelectionActive", typeof (bool), typeof (ComboBox), null);
+			DependencyProperty.RegisterCore ("IsSelectionActive", typeof (bool), typeof (ComboBox), null);
 
 		public static readonly DependencyProperty ItemContainerStyleProperty =
-			DependencyProperty.Register ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);
+			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);
 
 		public static readonly DependencyProperty MaxDropDownHeightProperty =
-			DependencyProperty.Register ("MaxDropDownHeight", typeof (double), typeof (ComboBox),
+			DependencyProperty.RegisterCore ("MaxDropDownHeight", typeof (double), typeof (ComboBox),
 						     new PropertyMetadata (double.PositiveInfinity, null));
 		
 

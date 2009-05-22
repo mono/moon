@@ -44,7 +44,7 @@ namespace System.Windows.Controls
         /// Identifies the NavigateUri dependency property.
         /// </summary> 
         public static readonly DependencyProperty NavigateUriProperty = 
-            DependencyProperty.Register(
+            DependencyProperty.RegisterCore(
                 "NavigateUri", 
                 typeof(Uri),
                 typeof(HyperlinkButton),
@@ -65,7 +65,7 @@ namespace System.Windows.Controls
         /// Identifies the TargetName dependency property.
         /// </summary> 
         public static readonly DependencyProperty TargetNameProperty =
-            DependencyProperty.Register(
+            DependencyProperty.RegisterCore(
                 "TargetName", 
                 typeof(string),
                 typeof(HyperlinkButton),

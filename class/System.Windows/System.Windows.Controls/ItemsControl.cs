@@ -37,15 +37,15 @@ namespace System.Windows.Controls {
 	public class ItemsControl : Control {
 
 		public static readonly DependencyProperty DisplayMemberPathProperty =
-			DependencyProperty.Register ("DisplayMemberPath", typeof (string), typeof (ItemsControl),
+			DependencyProperty.RegisterCore ("DisplayMemberPath", typeof (string), typeof (ItemsControl),
 						     new PropertyMetadata (null, new PropertyChangedCallback (DisplayMemberPathChanged)));
 		public static readonly DependencyProperty ItemsPanelProperty =
-			DependencyProperty.Register ("ItemsPanel", typeof (ItemsPanelTemplate), typeof (ItemsControl), null);
+			DependencyProperty.RegisterCore ("ItemsPanel", typeof (ItemsPanelTemplate), typeof (ItemsControl), null);
 		public static readonly DependencyProperty ItemsSourceProperty =
-			DependencyProperty.Register ("ItemsSource", typeof (IEnumerable), typeof (ItemsControl),
+			DependencyProperty.RegisterCore ("ItemsSource", typeof (IEnumerable), typeof (ItemsControl),
 						     new PropertyMetadata (null, new PropertyChangedCallback (ItemsSourceChanged)));
 		public static readonly DependencyProperty ItemTemplateProperty =
-			DependencyProperty.Register ("ItemTemplate", typeof (DataTemplate), typeof (ItemsControl), null);
+			DependencyProperty.RegisterCore ("ItemTemplate", typeof (DataTemplate), typeof (ItemsControl), null);
 
 		private bool itemsIsDataBound;
 		private ItemCollection items;

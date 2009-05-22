@@ -32,7 +32,7 @@ namespace System.Windows.Controls.Primitives {
 	public abstract class Selector : ItemsControl {
 		
 		public static readonly DependencyProperty SelectedIndexProperty =
-			DependencyProperty.Register ("SelectedIndex", typeof(int), typeof(Selector),
+			DependencyProperty.RegisterCore ("SelectedIndex", typeof(int), typeof(Selector),
 						     new PropertyMetadata(-1, new PropertyChangedCallback(OnSelectedIndexChanged)));
 
 		static void OnSelectedIndexChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -41,7 +41,7 @@ namespace System.Windows.Controls.Primitives {
 		}
 
 		public static readonly DependencyProperty SelectedItemProperty =
-			DependencyProperty.Register ("SelectedItem", typeof(object), typeof(Selector),
+			DependencyProperty.RegisterCore ("SelectedItem", typeof(object), typeof(Selector),
 						     new PropertyMetadata(new PropertyChangedCallback(OnSelectedItemChanged)), false);
 
 		

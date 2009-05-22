@@ -42,7 +42,7 @@ namespace System.Windows.Controls
         /// The DependencyProperty for the IsIndeterminate property.
         /// </summary> 
         public static readonly DependencyProperty IsIndeterminateProperty = 
-                DependencyProperty.Register(
+                DependencyProperty.RegisterCore(
                         "IsIndeterminate", 
                         typeof(bool),
                         typeof(ProgressBar),

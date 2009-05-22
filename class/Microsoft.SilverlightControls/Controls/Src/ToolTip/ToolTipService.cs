@@ -41,7 +41,7 @@ namespace System.Windows.Controls
         ///     The DependencyProperty for the ToolTip property. 
         /// </summary>
         public static readonly DependencyProperty ToolTipProperty =
-                        DependencyProperty.RegisterAttached( 
+                        DependencyProperty.RegisterAttachedCore( 
                         "ToolTip",              // Name 
                         typeof(object),         // Type
                         typeof(ToolTipService), // Owner 

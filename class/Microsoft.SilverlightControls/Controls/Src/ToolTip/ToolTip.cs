@@ -42,7 +42,7 @@ namespace System.Windows.Controls
         /// Identifies the HorizontalOffset dependency property.
         /// </summary>
         public static readonly DependencyProperty HorizontalOffsetProperty = 
-            DependencyProperty.Register( 
+            DependencyProperty.RegisterCore( 
                 "HorizontalOffset",
                 typeof(double), 
                 typeof(ToolTip),
@@ -81,7 +81,7 @@ namespace System.Windows.Controls
         /// Identifies the IsOpen dependency property. 
         /// </summary>
         public static readonly DependencyProperty IsOpenProperty = 
-            DependencyProperty.Register(
+            DependencyProperty.RegisterCore(
                 "IsOpen",
                 typeof(bool), 
                 typeof(ToolTip),
@@ -116,7 +116,7 @@ namespace System.Windows.Controls
         /// Identifies the VerticalOffset dependency property. 
         /// </summary> 
         public static readonly DependencyProperty VerticalOffsetProperty =
-            DependencyProperty.Register( 
+            DependencyProperty.RegisterCore( 
                 "VerticalOffset",
                 typeof(double),
                 typeof(ToolTip), 

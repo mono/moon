@@ -33,7 +33,7 @@ namespace System.Windows.Controls {
 		Size _desired = new Size ();
 
 		public static readonly DependencyProperty OrientationProperty = 
-		DependencyProperty.Register ("Orientation", typeof (Orientation), typeof (StackPanel), null);
+		DependencyProperty.RegisterCore ("Orientation", typeof (Orientation), typeof (StackPanel), null);
 		public Orientation Orientation {
 			get { return (Orientation) GetValue (OrientationProperty); }
 			set { SetValue(OrientationProperty, value); }

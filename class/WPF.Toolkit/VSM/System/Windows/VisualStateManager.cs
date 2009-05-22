@@ -88,7 +88,7 @@ namespace System.Windows
         #region CustomVisualStateManager
 
         public static readonly DependencyProperty CustomVisualStateManagerProperty =
-            DependencyProperty.RegisterAttached(
+            DependencyProperty.RegisterAttachedCore(
             "CustomVisualStateManager",
             typeof(VisualStateManager),
             typeof(VisualStateManager),
@@ -117,7 +117,7 @@ namespace System.Windows
         #endregion
 
         #region VisualStateGroups
-		private static DependencyProperty VisualStateGroupsProperty = DependencyProperty.RegisterAttached ("VisualStateGroups",
+		private static DependencyProperty VisualStateGroupsProperty = DependencyProperty.RegisterAttachedCore ("VisualStateGroups",
 														   typeof (VisualStateGroupCollection),
 														   typeof (VisualStateManager),
 														   null);

@@ -1135,9 +1135,16 @@ dependency_property_is_read_only (DependencyProperty *instance)
 
 
 DependencyProperty *
-dependency_property_register_managed_property (const char *name, bool sets_parent, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback)
+dependency_property_register_core_property (const char *name, bool sets_parent, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback)
 {
-	return DependencyProperty::RegisterManagedProperty (name, sets_parent, (Type::Kind) property_type, (Type::Kind) owner_type, defaultValue, attached, read_only, callback);
+	return DependencyProperty::RegisterCoreProperty (name, sets_parent, (Type::Kind) property_type, (Type::Kind) owner_type, defaultValue, attached, read_only, callback);
+}
+
+
+DependencyProperty *
+dependency_property_register_custom_property (const char *name, bool sets_parent, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback)
+{
+	return DependencyProperty::RegisterCustomProperty (name, sets_parent, (Type::Kind) property_type, (Type::Kind) owner_type, defaultValue, attached, read_only, callback);
 }
 
 

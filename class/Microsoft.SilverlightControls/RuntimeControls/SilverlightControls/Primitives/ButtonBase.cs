@@ -32,7 +32,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the ClickMode dependency property.
         /// </summary> 
         public static readonly DependencyProperty ClickModeProperty = 
-            DependencyProperty.Register(
+            DependencyProperty.RegisterCore(
                 "ClickMode", 
                 typeof(ClickMode),
                 typeof(ButtonBase),
@@ -79,7 +79,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the IsFocused dependency property. 
         /// </summary>
         public static readonly DependencyProperty IsFocusedProperty = 
-            DependencyProperty.RegisterReadOnly(
+            DependencyProperty.RegisterReadOnlyCore(
                 "IsFocused",
                 typeof(bool), 
                 typeof(ButtonBase),
@@ -106,7 +106,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the IsMouseOver dependency property. 
         /// </summary>
         public static readonly DependencyProperty IsMouseOverProperty = 
-            DependencyProperty.RegisterReadOnly(
+            DependencyProperty.RegisterReadOnlyCore(
                 "IsMouseOver",
                 typeof(bool), 
                 typeof(ButtonBase),
@@ -128,7 +128,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the IsPressed dependency property.
         /// </summary> 
         public static readonly DependencyProperty IsPressedProperty =
-            DependencyProperty.RegisterReadOnly(
+            DependencyProperty.RegisterReadOnlyCore(
                 "IsPressed", 
                 typeof(bool), 
                 typeof(ButtonBase),

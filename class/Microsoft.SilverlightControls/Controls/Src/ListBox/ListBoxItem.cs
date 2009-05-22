@@ -46,7 +46,7 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the IsSelected dependency property. 
         /// </summary>
-        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register(
+        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.RegisterCore(
             "IsSelected", typeof(bool), typeof(ListBoxItem), 
             new PropertyMetadata(new PropertyChangedCallback(OnIsSelectedChanged)));
 

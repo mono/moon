@@ -51,7 +51,7 @@ namespace System.Windows {
 
 #if false
 		public static readonly DependencyProperty DataContextProperty =
-			DependencyProperty.Register ("DataContext", typeof (object), typeof (FrameworkElement),
+			DependencyProperty.RegisterCore ("DataContext", typeof (object), typeof (FrameworkElement),
 						     new PropertyMetadata (null, new PropertyChangedCallback (DataContextChanged)));
 
 		public object DataContext {
