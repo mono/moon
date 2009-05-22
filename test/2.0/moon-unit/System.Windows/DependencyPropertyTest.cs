@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Data;
+using Microsoft.Silverlight.Testing;
 
 #pragma warning disable 414
 #pragma warning disable 219
@@ -22,7 +23,7 @@ using System.Windows.Data;
 namespace MoonTest.System.Windows
 {
 	[TestClass ()]
-	public class DependencyPropertyTest
+	public class DependencyPropertyTest : SilverlightTest
 	{
 		/*
 		 * Declaring Type _ Property Name _ [index, not included in property name _] _ Property Type
@@ -109,6 +110,18 @@ namespace MoonTest.System.Windows
 		}
 
 #region Canvas Custom
+		[TestMethod ()]
+		[MoonlightBug ()]
+		public void Custom_Property_Parents ()
+		{
+			bool buttonLoaded = false;
+			CustomCanvas canvas = new CustomCanvas ();
+			TestPanel.Children.Add (canvas);
+			canvas.Child = new Button { Name = "Ted" };
+			canvas.Child2 = new Button { Name = "Ted" };
+			canvas.Children.Add (new Button { Name= "Ted" });
+		}
+		
 		[TestMethod ()]
 		public void Register_Canvas_Custom_double ()
 		{
@@ -1576,6 +1589,21 @@ namespace MoonTest.System.Windows
 		{
 			get { return GetValue (ListIntProperty); }
 			set { SetValue (ListIntProperty, value); }
+		}
+	}
+	
+	public class CustomCanvas : Canvas
+	{
+		public static readonly DependencyProperty ChildProperty = DependencyProperty.Register ("Child", typeof (FrameworkElement), typeof (CustomCanvas), null);
+		public static readonly DependencyProperty Child2Property = DependencyProperty.Register ("Child2", typeof (FrameworkElement), typeof (CustomCanvas), null);
+		public FrameworkElement Child {
+			get { return (FrameworkElement) GetValue (ChildProperty); }
+			set { SetValue (ChildProperty, value); }
+		}
+
+		public FrameworkElement Child2 {
+			get { return (FrameworkElement) GetValue (Child2Property); }
+			set { SetValue (Child2Property, value); }
 		}
 	}
 }

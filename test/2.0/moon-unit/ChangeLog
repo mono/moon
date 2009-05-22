@@ -1,3 +1,8 @@
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyPropertyTest.cs: Add test to see how
+	custom DPs affect parenting/namescopes.
+	
 2009-05-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/WebHeaderCollectionTest.cs: Add header test cases
