@@ -1,3 +1,8 @@
+2009-05-22  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationPeerTest.cs: Tests:
+	InvalidatePeer, EventsSource, ProviderFromPeer and PeerFromProvider.
+
 2009-05-22  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/DependencyPropertyTest.cs: Add test to see how

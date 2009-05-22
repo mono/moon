@@ -103,6 +103,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationEvents.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationOrientation.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationPeer.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/AutomationSingleton.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/AutomationCacheProperty.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationControlType.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ButtonBaseAutomationPeer.cs	\

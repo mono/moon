@@ -191,9 +191,37 @@ namespace System.Windows.Automation.Peers {
 		{
 			if (element == null)
 				throw new ArgumentNullException ("element");
-			if (element.AutomationPeer == null)
+			if (element.AutomationPeer == null) {
 				element.AutomationPeer = element.CreateAutomationPeer ();
+				// We need to cache old values to raise PropertyChanged events
+				// when calling AutomationPeer.InvalidatePeer()
+				if (element.AutomationPeer != null)
+					element.AutomationPeer.CacheMainProperties ();
+			}
 			return element.AutomationPeer;
+		}
+
+		internal override AutomationPeer GetParentCore ()
+		{
+			return GetParentPeer (Owner as FrameworkElement);
+		}
+
+		private AutomationPeer GetParentPeer (FrameworkElement element)
+		{
+			// We are returning parents of children already instantiated.
+			if (element == null)
+				return null;
+
+			FrameworkElement parent = element.Parent as FrameworkElement;
+			if (parent == null)
+				return null;
+
+			// Some parents don't return an Automation Peer (for example: Border or Panel subclasses)
+			AutomationPeer peer = FrameworkElementAutomationPeer.FromElement (parent);
+			if (peer == null)
+				peer = GetParentPeer (parent);
+			
+			return peer;
 		}
 	}
 }

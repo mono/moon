@@ -1,3 +1,16 @@
+2009-05-22  Mario Carrion  <mcarrion@novell.com>
+
+	* AutomationPeer.cs: Implementation: EventsSource, 
+	RaiseAutomationEvent, ListenerExists, GetParent, InvalidatePeer, 
+	RaisePropertyChangedEvent, and a new method to cache main
+	properties.
+	* AutomationSingleton.cs: New file, tracks and raises Automation 
+	Events.
+	* AutomationCacheProperty.cs: New file, class used to Cache main 
+	properties when creating peer.
+	* FrameworkElementAutomationPeer.cs: Updated to cache main 
+	properties, GetParentCore implementation.
+
 2009-04-15  Mario Carrion  <mcarrion@novell.com>
 
 	* AutomationPeer.cs: Fixed recursive GetName. Requesting LabeledBy 
