@@ -340,7 +340,6 @@ namespace MoonTest.Misc.Parsing
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void StaticResourceFromStyleTest ()
 		{
 			StackPanel c = (StackPanel) XamlReader.Load (@"

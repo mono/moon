@@ -1,3 +1,7 @@
+2009-05-22  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/MiscParsing.cs: This test is passing now.
+
 2009-05-22  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/AutomationPeerTest.cs: Tests:
