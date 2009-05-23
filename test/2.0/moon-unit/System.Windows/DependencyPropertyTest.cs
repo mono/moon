@@ -111,7 +111,6 @@ namespace MoonTest.System.Windows
 
 #region Canvas Custom
 		[TestMethod ()]
-		[MoonlightBug ()]
 		public void Custom_Property_Parents ()
 		{
 			bool buttonLoaded = false;

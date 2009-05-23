@@ -1,5 +1,19 @@
 2009-05-22  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (XamlElementInstance::SetName): don't call
+	AddToContainer here.  in case the element is a value type, and
+	we're adding it to a RD on a managed type (like StackPanel), the
+	managed xaml loader will marshal the value type to C# and we'll
+	lose any further updates to the value typed object by the parser.
+	That is, if we parse <Color x:Key="foo">#ffffff00</Color>, the
+	ManagedXamlLoader will see a color with #00000000 as its value, as
+	the content hasn't been parsed by the time we create the managed
+	object.
+	(XamlElementInstance::SetKey): same.
+	(end_element_handler): call AddToParentContainer here instead.
+
+2009-05-22  Chris Toshok  <toshok@ximian.com>
+
 	* dependencyobject.cpp (DependencyObject::OnPropertyChanged): we
 	were missing the case where HydratedFromXaml elements weren't
 	updating their parent namescope on name changes, only their

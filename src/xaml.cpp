@@ -401,13 +401,11 @@ class XamlElementInstance : public List::Node {
 	void SetName (XamlParserInfo *p, const char *name)
 	{
 		this->x_name = g_strdup (name);
-		AddToParentContainer (p, this->x_name);
 	}
 
 	void SetKey (XamlParserInfo *p, const char *key)
 	{
 		this->x_key = g_strdup (key);
-		AddToParentContainer (p, this->x_key);
 	}
 
 	void AddToParentContainer (XamlParserInfo *p, const char *name)
@@ -1817,6 +1815,9 @@ end_element_handler (void *data, const char *el)
 		else if (!p->current_element->IsDependencyObject () && p->current_element->parent) {
 			p->current_element->parent->AddChild (p, p->current_element);
 		}
+
+		if (p->current_element->GetKey() || p->current_element->GetName())
+			p->current_element->AddToParentContainer (p, p->current_element->GetKey() ? p->current_element->GetKey() : p->current_element->GetName());
 		break;
 	case XamlElementInstance::PROPERTY: {
 		List::Node *walk = p->current_element->children->First ();

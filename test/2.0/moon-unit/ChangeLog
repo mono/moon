@@ -1,3 +1,9 @@
+2009-05-22  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows/DependencyPropertyTest.cs (Custom_Property_Parents):
+	apparently this test now passes.  remove the MoonlightBug
+	attribute.
+
 2009-05-22  Jackson Harper  <jackson@ximian.com>
 
 	* misc/Parsing/MiscParsing.cs: This test is passing now.

@@ -285,11 +285,12 @@ namespace Mono.Xaml
 			if (o == null)
 				return false;
 
+			DependencyProperty prop = LookupDependencyPropertyForBinding (top_level, parser, dob, type_name, name);
+			if (prop == null)
+				return false;
+
 			if (o is Binding ||
 			    o is TemplateBindingExpression) {
-				DependencyProperty prop = LookupDependencyPropertyForBinding (top_level, parser, dob, type_name, name);
-				if (prop == null)
-					return false;
 
 				if (o is Binding) {
 					Binding binding = o as Binding;
@@ -321,6 +322,10 @@ namespace Mono.Xaml
 
 					return true;
 				}
+			}
+			else {
+				// static resources fall into this
+				dob.SetValue (prop, o);
 			}
 
 			return true;
