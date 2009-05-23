@@ -290,11 +290,12 @@ enum PluginPropertyId {
 	MoonId_PreventDefault,
 	MoonId_Detail,
 
+	MoonId_Focus,
+
 	MoonId_UIElement_CaptureMouse,
 	MoonId_UIElement_TransformToVisual,
 	MoonId_UIElement_ReleaseMouseCapture,
 	MoonId_UIElement_UpdateLayout,
-
 };
 
 
@@ -915,6 +916,24 @@ struct MoonlightTextBlockObject : MoonlightDependencyObjectObject {
 
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
+};
+
+/*** MoonlightControl ***************************************************/
+
+struct MoonlightControlType : MoonlightUIElementType {
+	MoonlightControlType ();
+};
+
+extern MoonlightControlType *MoonlightControlClass;
+
+struct MoonlightControlObject : MoonlightUIElementObject {
+	MoonlightControlObject (NPP instance) : MoonlightUIElementObject (instance)
+	{
+		moonlight_type = Type::CONTROL;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+		const NPVariant *args, guint32 argCount, NPVariant *result);
 };
 
 /*** MoonlightStylusInfoType ***************************************************/

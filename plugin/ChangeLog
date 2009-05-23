@@ -1,3 +1,9 @@
+2009-05-23  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp, plugin-class.h: add a Control plugin class,
+	which exposes "focus".  Should get DRT #250 a little further (and
+	keep it from timing out.)
+
 2009-05-21  Rusty Howell  <rhowell@novell.com>
 
 	 * Makefile.am: Changed install dir to DIST_SUBDIRS for make dist

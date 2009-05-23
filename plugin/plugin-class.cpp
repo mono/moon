@@ -2802,9 +2802,6 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	case Type::DOWNLOADER:
 		np_class = dependency_object_classes [DOWNLOADER_CLASS];
 		break;
-	case Type::CONTROL:
-		np_class = dependency_object_classes [CONTROL_CLASS];
-		break;
 	case Type::IMAGE:
 		np_class = dependency_object_classes [IMAGE_CLASS];
 		break;
@@ -2850,12 +2847,14 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 		np_class = dependency_object_classes [UI_ELEMENT_CLASS];
 		break;
 	default:
-		if (Type::Find (kind)->IsSubclassOf (Type::COLLECTION))
+		if (Type::Find (kind)->IsSubclassOf (Type::CONTROL))
+			np_class = dependency_object_classes [CONTROL_CLASS];
+		else if (Type::Find (kind)->IsSubclassOf (Type::UIELEMENT))
+			np_class = dependency_object_classes [UI_ELEMENT_CLASS];
+		else if (Type::Find (kind)->IsSubclassOf (Type::COLLECTION))
 			np_class = dependency_object_classes [COLLECTION_CLASS];
 		else if (Type::Find (kind)->IsSubclassOf (Type::EVENTARGS)) 
 			np_class = dependency_object_classes [EVENT_ARGS_CLASS];
-		else if (Type::Find (kind)->IsSubclassOf (Type::UIELEMENT))
-			np_class = dependency_object_classes [UI_ELEMENT_CLASS];
 		else
 			np_class = dependency_object_classes [DEPENDENCY_OBJECT_CLASS];
 	}
@@ -2958,22 +2957,28 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 	case MoonId_Insert: {
-		if (!check_arg_list ("i[o]", argCount, args))
+		if (!check_arg_list ("i[o]", argCount, args)) {
+			g_warning ("1");
 			THROW_JS_EXCEPTION ("insert");
+		}
 		
 		if (argCount < 2) {
 			VOID_TO_NPVARIANT (*result);
 			return true;
 		}
 		
-		if (!npvariant_is_dependency_object (args[1]))
+		if (!npvariant_is_dependency_object (args[1])) {
+			g_warning ("2");
 			THROW_JS_EXCEPTION ("insert");
+		}
 		
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args[1]);
 		int index = NPVARIANT_TO_INT32 (args[0]);
 		
-		if (!col->Insert (index, Value (el->GetDependencyObject ())))
+		if (!col->Insert (index, Value (el->GetDependencyObject ()))) {
+			g_warning ("3");
 			THROW_JS_EXCEPTION ("insert");
+		}
 		
 		VOID_TO_NPVARIANT (*result);
 		
@@ -3388,6 +3393,48 @@ MoonlightImageBrushType::MoonlightImageBrushType ()
 	AddMapping (moonlight_image_brush_mapping, G_N_ELEMENTS (moonlight_image_brush_mapping));
 
 	allocate = moonlight_image_brush_allocate;
+}
+
+
+/*** MoonlightControlClass ***************************************************/
+
+static NPObject *
+moonlight_control_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightControlObject (instance);
+}
+
+
+static const MoonNameIdMapping moonlight_control_mapping[] = {
+	{ "focus", MoonId_Focus }
+};
+
+
+bool
+MoonlightControlObject::Invoke (int id, NPIdentifier name,
+				  const NPVariant *args, guint32 argCount,
+				  NPVariant *result)
+{
+	Control *control = (Control *) GetDependencyObject ();
+	
+	switch (id) {
+	case MoonId_Focus:
+		if (argCount != 0)
+			THROW_JS_EXCEPTION ("focus");
+
+		BOOLEAN_TO_NPVARIANT (control->Focus (), *result);
+		
+		return true;
+	default:
+		return MoonlightUIElementObject::Invoke (id, name, args, argCount, result);
+	}
+}
+
+MoonlightControlType::MoonlightControlType ()
+{
+	AddMapping (moonlight_control_mapping, G_N_ELEMENTS (moonlight_control_mapping));
+
+	allocate = moonlight_control_allocate;
 }
 
 
@@ -4357,6 +4404,7 @@ plugin_init_classes (void)
 	dependency_object_classes [STROKE_CLASS] = new MoonlightStrokeType ();
 	dependency_object_classes [TEXT_BLOCK_CLASS] = new MoonlightTextBlockType ();
 	dependency_object_classes [UI_ELEMENT_CLASS] = new MoonlightUIElementType ();
+	dependency_object_classes [CONTROL_CLASS] = new MoonlightControlType ();
 	/* Event Arg Types */
 	dependency_object_classes [EVENT_ARGS_CLASS] = new MoonlightEventArgsType ();
 	dependency_object_classes [ROUTED_EVENT_ARGS_CLASS] = new MoonlightRoutedEventArgsType ();
