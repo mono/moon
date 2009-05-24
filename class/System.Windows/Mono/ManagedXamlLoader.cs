@@ -907,7 +907,7 @@ namespace Mono.Xaml
 				if (MarkupExpressionParser.IsStaticResource (str_value)) {
 					// FIXME: The NUnit tests show we need to use the parent of the target to resolve
 					// the StaticResource, but are there any cases where we should use the actual target?
-					MarkupExpressionParser p = new MarkupExpressionParser ((DependencyObject) NativeDependencyObjectHelper.FromIntPtr (target_parent_ptr), "", parser, target_data);
+					MarkupExpressionParser p = new MarkupExpressionParser ((DependencyObject) NativeDependencyObjectHelper.Lookup (target_parent_ptr), "", parser, target_data);
 					obj_value = p.ParseExpression (ref str_value);
 					obj_value = ConvertType (pi, pi.PropertyType, obj_value);
 					pi.SetValue (target, obj_value, null);
