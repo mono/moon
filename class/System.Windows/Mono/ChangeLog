@@ -1,3 +1,10 @@
+2009-05-24  Chris Toshok  <toshok@ximian.com>
+
+	* ManagedXamlLoader.cs (TrySetExpression): don't use
+	NativeDependencyObjectHelper.Lookup(IntPtr), use
+	NativeDependencyObjectHelper.FromIntPtr(IntPtr).
+	(SetPropertyFromValue): same.
+
 2009-05-22  Chris Toshok  <toshok@ximian.com>
 
 	* ManagedXamlLoader.cs (TrySetExpression): {StaticResource} is an
