@@ -638,7 +638,6 @@ namespace Mono.Xaml
 
 			Console.WriteLine ("AddToContainer ({0}, {1}, {2}, {3})", parent, child, full_prop_name, key_name);
 			if (full_prop_name != null) {
-				
 
 				int dot = full_prop_name.IndexOf ('.');
 				if (dot < 1)
@@ -646,7 +645,7 @@ namespace Mono.Xaml
 				string type_name = full_prop_name.Substring (0, dot);
 				string prop_name = full_prop_name.Substring (++dot, full_prop_name.Length - dot);
 
-				Type target_type = TypeFromString (parser, top_level, type_name);
+				Type target_type = TypeFromString (parser, top_level, xmlns, type_name);
 				if (!target_type.IsAssignableFrom (parent.GetType ())) {
 					// This should probably happen when we have attached properties
 					Console.Error.WriteLine ("Attempting to set property on non parent type: {0} {1} {2}", target_type, parent, full_prop_name);
@@ -781,11 +780,19 @@ namespace Mono.Xaml
 			if (ps > 0) {
 				string xmlns = NativeMethods.xaml_uri_for_prefix (parser, str.Substring (0, ps));
 				string name = str.Substring (ps + 1, str.Length - ps -1);
-				string clr_namespace = ClrNamespaceFromXmlns (xmlns);
-				assembly_name = AssemblyNameFromXmlns (xmlns);
 
-				full_name = string.IsNullOrEmpty (clr_namespace) ? name : clr_namespace + "." + name;
+				return TypeFromString (parser, top_level, xmlns, name);
 			}
+
+			return LookupType (top_level, assembly_name, full_name);
+		}
+
+		private unsafe Type TypeFromString (IntPtr parser, Value* top_level, string xmlns, string name)
+		{
+			string clr_namespace = ClrNamespaceFromXmlns (xmlns);
+			string assembly_name = AssemblyNameFromXmlns (xmlns);
+
+			string full_name = string.IsNullOrEmpty (clr_namespace) ? name : clr_namespace + "." + name;
 
 			return LookupType (top_level, assembly_name, full_name);
 		}

@@ -1,3 +1,17 @@
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
+	* ManagedXamlLoader.cs (AddToContainer): TypeFromString fails when
+	only passed the type_name of a managed type, since it doesn't
+	include the xmlns required to look it up.  This method has the
+	xmlns already, so pass it to the new overload of TypeFromString
+	which allows for the xmlns to be passed in.
+	(TypeFromString (parser, top_level, str)): call the new overload
+	that takes the xmlns.
+	(TypeFromString (parser, top_level, xmlns, str)): new overload, if
+	we have the xmlns available when calling TypeFromString, let's go
+	ahead and call this method.  Fixes DRT #335 timing out due to
+	parser failure.
+
 2009-05-25  Alan McGovern  <amcgovern@novell.com>
 
 	* Value.cs: Handle a null pointer in Value.ToObject(Type type, Value*).
