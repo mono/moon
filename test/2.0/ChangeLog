@@ -1,3 +1,8 @@
+2009-05-25  Andreia Gaita  <avidigal@novell.com>
+
+	* Threads/*: Added. Bunch of tests for thread dispatching and
+	DispatcherTimer firing
+
 2009-04-07  Chris Toshok  <toshok@ximian.com>
 
 	* DefaultValues/Page.xaml.cs: output the tests as partial classes

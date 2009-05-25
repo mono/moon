@@ -1,0 +1,2 @@
+tests when dispathed delegates are actually invoked
+looks like it's after the rendering event

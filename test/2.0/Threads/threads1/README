@@ -1,0 +1,1 @@
+test for checking whether we can create objects from non-ui threads (should blow up)
