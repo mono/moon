@@ -1,3 +1,10 @@
+2009-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.cs: There are two types of
+	 DependencyProperty. Core properties and custom properties. 
+	 Custom properties do not set the parent on a DO. This makes 
+	 the old 'SetsParent' property redundant, so remove it.
+	
 2009-05-22  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyProperty.cs

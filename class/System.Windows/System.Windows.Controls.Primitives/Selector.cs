@@ -40,9 +40,10 @@ namespace System.Windows.Controls.Primitives {
 			((Selector) o).SelectedIndexChanged (o, e);
 		}
 
+		// This is not a core property because it is a non-parenting property
 		public static readonly DependencyProperty SelectedItemProperty =
-			DependencyProperty.RegisterCore ("SelectedItem", typeof(object), typeof(Selector),
-						     new PropertyMetadata(new PropertyChangedCallback(OnSelectedItemChanged)), false);
+			DependencyProperty.Register ("SelectedItem", typeof(object), typeof(Selector),
+						     new PropertyMetadata(new PropertyChangedCallback(OnSelectedItemChanged)));
 
 		
 		static void OnSelectedItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)

@@ -1,3 +1,18 @@
+2009-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.cpp
+	* cbinding.h: Regen
+
+	* dependencyobject.cpp
+	* dependencyproperty.cpp
+	* dependencyproperty.g.cpp
+	* dependencyproperty.h
+	* uielement.h: There are two types of DependencyProperty. 
+	Core properties and custom properties. Custom properties
+	do not set the parent on a DO. This makes the old 
+	'SetsParent' property redundant, so remove it.
+
+
 2009-05-22  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XamlElementInstance::SetName): don't call

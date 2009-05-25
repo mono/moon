@@ -56,13 +56,13 @@ class FieldInfo : MemberInfo {
 		get { return Annotations.ContainsKey ("Nullable"); }
 	}
 	
-	public bool SetsParent {
+	public bool IsCustom {
 		get {
-			string val = Annotations.GetValue ("SetsParent");
-			if (val == null || val == "true")
-				return true;
-			if (val == "false")
+			string val = Annotations.GetValue ("IsCustom");
+			if (val == null || val == "false")
 				return false;
+			if (val == "true")
+				return true;
 
 			throw new Exception ("Invalid value for 'SetsParent'. Must be 'true' or 'false'");
 		}

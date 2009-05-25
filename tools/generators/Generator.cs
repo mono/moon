@@ -761,7 +761,7 @@ class Generator {
 			text.Append ("\"");
 			text.Append (", ");
 
-			text.Append (field.SetsParent ? "true" : "false");
+			text.Append (field.IsCustom ? "true" : "false");
 			text.Append (", ");
 
 			if (is_full) {
@@ -810,7 +810,6 @@ class Generator {
 				text.Append (autocreator != null
 					     ? (autocreator.Contains("::") ? autocreator : "AutoCreators::" + autocreator)
 					     : "NULL");
-				text.Append (", false"); // is_custom
 				text.Append (", ");
 				text.Append (is_nullable ? "true" : "false");
 			}

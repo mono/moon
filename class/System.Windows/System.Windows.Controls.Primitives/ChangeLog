@@ -1,3 +1,8 @@
+2009-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: SelectedItem is non-parenting, so it's
+	not a core property.
+
 2009-05-22  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: Use DependencyProperty.RegisterCore for

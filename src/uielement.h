@@ -430,7 +430,7 @@ public:
 	const static int CursorProperty;
  	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int ResourcesProperty;
- 	/* @PropertyType=object,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object,SetsParent=false */
+ 	/* @PropertyType=object,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object,IsCustom=true */
 	const static int TagProperty;
  	/* @PropertyType=TriggerCollection,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int TriggersProperty;

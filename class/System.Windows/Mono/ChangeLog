@@ -1,3 +1,7 @@
+2009-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: regen
+
 2009-05-24  Chris Toshok  <toshok@ximian.com>
 
 	* Value.cs: add a Value.ToObject(Type type, Value*) method to

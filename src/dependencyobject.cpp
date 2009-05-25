@@ -1516,7 +1516,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		// we also need to audit other "typeof (object)" DP's
 		// to make sure they set parent when they should (and
 		// don't when they shouldn't.)
-		bool setsParent = property->GetSetsParent ();
+		bool setsParent = !property->IsCustom ();
 
 		if (old_value && old_value->Is (Type::DEPENDENCY_OBJECT))
 			old_as_dep = old_value->AsDependencyObject ();

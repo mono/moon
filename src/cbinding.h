@@ -640,6 +640,8 @@ struct MoonlightCollectionObject;
 struct MoonlightCollectionType;
 struct MoonlightContentObject;
 struct MoonlightContentType;
+struct MoonlightControlObject;
+struct MoonlightControlType;
 struct MoonlightDependencyObjectObject;
 struct MoonlightDependencyObjectType;
 struct MoonlightDownloaderObject;
@@ -1161,9 +1163,6 @@ const char *dependency_property_get_name (DependencyProperty *instance);
 int dependency_property_get_property_type (DependencyProperty *instance);
 
 /* @GeneratePInvoke */
-bool dependency_property_get_sets_parent (DependencyProperty *instance);
-
-/* @GeneratePInvoke */
 bool dependency_property_is_attached (DependencyProperty *instance);
 
 /* @GeneratePInvoke */
@@ -1173,10 +1172,10 @@ bool dependency_property_is_nullable (DependencyProperty *instance);
 bool dependency_property_is_read_only (DependencyProperty *instance);
 
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_register_core_property (const char *name, bool sets_parent, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
+DependencyProperty *dependency_property_register_core_property (const char *name, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
 
 /* @GeneratePInvoke */
-DependencyProperty *dependency_property_register_custom_property (const char *name, bool sets_parent, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
+DependencyProperty *dependency_property_register_custom_property (const char *name, int property_type, int owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
 
 /* @GeneratePInvoke */
 void dependency_property_set_is_nullable (DependencyProperty *instance, bool value);

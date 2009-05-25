@@ -87,11 +87,6 @@ namespace System.Windows {
 		{
 			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, true, true, false);
 		}
-
-		internal static DependencyProperty RegisterCore (string name, Type propertyType, Type ownerType, PropertyMetadata typeMetadata, bool setsParent)
-		{
-			return RegisterAny (name, propertyType, ownerType, typeMetadata, false, false, setsParent, false);
-		}
 		
 		private static DependencyProperty RegisterAny (string name, Type propertyType, Type ownerType, PropertyMetadata metadata, bool attached, bool readOnly, bool setsParent, bool custom)
 		{
@@ -141,9 +136,9 @@ namespace System.Windows {
 
 			IntPtr handle;
 			if (custom)
-				handle = NativeMethods.dependency_property_register_custom_property (name, setsParent, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
+				handle = NativeMethods.dependency_property_register_custom_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
 			else
-				handle = NativeMethods.dependency_property_register_core_property (name, setsParent, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
+				handle = NativeMethods.dependency_property_register_core_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
 			NativeMethods.value_free_value (ref v);
 			
 			if (handle == IntPtr.Zero)

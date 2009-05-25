@@ -1,3 +1,10 @@
+2009-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* FieldInfo.cs:
+	* Generator.cs:
+	* GlobalInfo.cs: Rename 'SetsParent' to 'IsCustom' as all custom
+	properties are non-parenting.
+
 2009-05-21  Alan McGovern  <amcgovern@novell.com>
 
 	* FieldInfo.cs:
