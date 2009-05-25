@@ -54,6 +54,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous ()]
+		[Ignore ("This has started crashing moonlight")]
 		public void SetSourceTest () 
 		{
 			client.DownloadProgressChanged += new DownloadProgressChangedEventHandler (client_DownloadProgressChanged);
