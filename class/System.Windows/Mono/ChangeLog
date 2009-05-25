@@ -1,5 +1,21 @@
 2009-05-24  Chris Toshok  <toshok@ximian.com>
 
+	* Value.cs: add a Value.ToObject(Type type, Value*) method to
+	compliment the IntPtr variant, which now calls the new method.
+
+	* XamlLoaderCallbacks.cs: change all the callbacks to use Value*
+	instead of IntPtrs for Value* things.  we've historically had a
+	lot of problems keeping things straight without the type info.
+	This has the added cost of sprinkling "unsafe" in a lot of places,
+	but it's probably worth it.
+
+	* ManagedXamlLoader.cs: deal with all the IntPtr -> Value* changes
+	from the XamlLoaderCallbacks, which uncovered a place where we
+	were using NativeDependencyObjectHelper.Lookup on an IntPtr
+	corresponding to a Value*, not a DO*.
+
+2009-05-24  Chris Toshok  <toshok@ximian.com>
+
 	* ManagedXamlLoader.cs (TrySetExpression): don't use
 	NativeDependencyObjectHelper.Lookup(IntPtr), use
 	NativeDependencyObjectHelper.FromIntPtr(IntPtr).

@@ -120,7 +120,213 @@ namespace Mono {
 		}
 
 		static bool slow_codepath_error_shown = false;
-		
+
+		public static unsafe object ToObject (Type type, Value* value)
+		{
+			if (value->IsNull) {
+				return null;
+			}
+			switch (value->k) {
+			case Kind.INVALID:
+				return null;
+					
+			case Kind.DEPENDENCYPROPERTY:
+				return DependencyProperty.Lookup (value->u.p);
+				
+			case Kind.BOOL:
+				return value->u.i32 != 0;
+
+			case Kind.DOUBLE:
+				return value->u.d;
+					
+			case Kind.FLOAT:
+				return value->u.f;
+					
+			case Kind.UINT64:
+				return value->u.ui64;
+					
+			case Kind.INT64:
+				return value->u.i64;
+					
+			case Kind.TIMESPAN:
+				return new TimeSpan (value->u.i64);
+						
+			case Kind.INT32:
+				// marshall back to the .NET type that we simply serialised as int for unmanaged usage
+				int i32 = value->u.i32;
+				if (type == typeof (System.Windows.Input.Cursor))
+					return Cursors.FromEnum ((CursorType)i32);
+				else if (type == typeof (FontStretch))
+					return new FontStretch ((FontStretchKind) i32);
+				else if (type == typeof (FontStyle))
+					return new FontStyle ((FontStyleKind) i32);
+				else if (type == typeof (FontWeight))
+					return new FontWeight ((FontWeightKind) i32);
+				else if (type == typeof (TextDecorationCollection))
+					return (i32 == (int) TextDecorationKind.Underline) ? TextDecorations.Underline : null;
+				else if (type != null && type.IsEnum)
+					return Enum.ToObject (type, i32);
+				else if (type == typeof (char))
+					return (char) i32;
+				else
+					return i32;
+
+			case Kind.SURFACE:
+				return new Surface (value->u.p);
+
+			case Kind.MANAGED:
+				IntPtr managed_object = value->u.p;
+				GCHandle handle = GCHandle.FromIntPtr (managed_object);
+				return handle.Target;
+
+			case Kind.STRING: {
+				string str = Marshal.PtrToStringAuto (value->u.p);
+				if (type == null)
+					return str;
+					
+				// marshall back to the .NET type that we simply serialised as 'string' for unmanaged usage
+				if (type == typeof (System.Windows.Markup.XmlLanguage))
+					return XmlLanguage.GetLanguage (str);
+				else
+					return str;
+			}
+
+			case Kind.URI: {
+				UnmanagedUri *uri = (UnmanagedUri*)value->u.p;
+				return uri->originalString == IntPtr.Zero
+					? new Uri("", UriKind.Relative)
+					: new Uri (Marshal.PtrToStringAuto (uri->originalString),
+						   uri->isAbsolute ? UriKind.Absolute : UriKind.Relative);
+			}
+
+			case Kind.XMLLANGUAGE: {
+				string str = Marshal.PtrToStringAuto (value->u.p);
+				return XmlLanguage.GetLanguage (str);
+			}
+
+			case Kind.FONTFAMILY: {
+				UnmanagedFontFamily *family = (UnmanagedFontFamily*)value->u.p;
+				return new FontFamily (family == null ? null : Marshal.PtrToStringAuto (family->source));
+			}
+
+			case Kind.FONTSOURCE: {
+				UnmanagedFontSource *source = (UnmanagedFontSource *) value->u.p;
+				ManagedStreamCallbacks callbacks;
+				StreamWrapper wrapper;
+					
+				callbacks = new ManagedStreamCallbacks ();
+				Marshal.PtrToStructure (source->stream, callbacks);
+					
+				wrapper = (StreamWrapper) GCHandle.FromIntPtr (callbacks.handle).Target;
+					
+				return new FontSource (wrapper.stream);
+			}
+
+			case Kind.PROPERTYPATH: {
+				UnmanagedPropertyPath *propertypath = (UnmanagedPropertyPath *) value->u.p;
+				if (propertypath == null)
+					return new PropertyPath (null);
+				if (propertypath->property != IntPtr.Zero)
+					return null;
+				return new PropertyPath (Marshal.PtrToStringAuto (propertypath->pathString));
+			}
+
+			case Kind.POINT: {
+				Point *point = (Point*)value->u.p;
+				return (point == null) ? new Point (0,0) : *point;
+			}
+				
+			case Kind.RECT: {
+				Rect *rect = (Rect*)value->u.p;
+				return (rect == null) ? new Rect (0,0,0,0) : *rect;
+			}
+
+			case Kind.SIZE: {
+				Size *size = (Size*)value->u.p;
+				return (size == null) ? new Size (0,0) : *size;
+			}
+
+			case Kind.CORNERRADIUS: {
+				CornerRadius *corner = (CornerRadius*)value->u.p;
+				return (corner == null) ? new CornerRadius (0) : *corner;
+			}
+
+			case Kind.THICKNESS: {
+				Thickness *thickness = (Thickness*)value->u.p;
+				return (thickness == null) ? new Thickness (0) : *thickness;
+			}
+					
+			case Kind.COLOR: {
+				UnmanagedColor *color = (UnmanagedColor*)value->u.p;
+				if (color == null)
+					return new Color ();
+				return color->ToColor ();
+			}
+					
+			case Kind.MATRIX:
+			case Kind.UNMANAGEDMATRIX: {
+				return new Matrix (value->u.p);
+			}
+					
+			case Kind.DURATION: {
+				Duration* duration = (Duration*)value->u.p;
+				return (duration == null) ? Duration.Automatic : *duration;
+			}
+					
+			case Kind.KEYTIME: {
+				KeyTime* keytime = (KeyTime*)value->u.p;
+				return (keytime == null) ? KeyTime.FromTimeSpan (TimeSpan.Zero) : *keytime;
+			}
+
+			case Kind.GRIDLENGTH: {
+				GridLength* gridlength = (GridLength*)value->u.p;
+				return (gridlength == null) ? new GridLength () : *gridlength;
+			}
+					
+			case Kind.REPEATBEHAVIOR: {
+				RepeatBehavior *repeat = (RepeatBehavior*)value->u.p;
+				return (repeat == null) ? new RepeatBehavior () : *repeat;
+			}
+
+			case Kind.MEDIAATTRIBUTE_COLLECTION: {
+				MediaAttributeCollection attrs = new MediaAttributeCollection (value->u.p, false);
+				return attrs.AsDictionary ();
+			}
+
+			case Kind.MANAGEDTYPEINFO: {
+				ManagedTypeInfo *type_info = (ManagedTypeInfo *) value->u.p;
+
+				if (type_info == null)
+					return null;
+
+				string assembly_name = Marshal.PtrToStringAuto (type_info->assembly_name);
+				string full_name = Marshal.PtrToStringAuto (type_info->full_name);
+
+				Assembly asm = Application.GetAssembly (assembly_name);
+				if (asm != null)
+					return asm.GetType (full_name);
+
+				return null;
+			}
+			}
+
+			if (!slow_codepath_error_shown){
+				Report.Warning ("DependencyObject type testing now using a very slow code path");
+				slow_codepath_error_shown = true;
+			}
+
+			if (NativeMethods.type_is_dependency_object (value->k)){
+				// Old fast test: if (value->k > Kind.DEPENDENCY_OBJECT){
+
+				if (value->u.p == IntPtr.Zero)
+					return null;
+					
+				return NativeDependencyObjectHelper.Lookup (value->k, value->u.p);
+			}
+
+			throw new Exception (String.Format ("Do not know how to convert {0}  {1}", value->k, (int) value->k));
+		}
+
 		public static object ToObject (Type type, IntPtr value)
 		{
 			if (value == IntPtr.Zero)
@@ -129,208 +335,7 @@ namespace Mono {
 			unsafe {
 				Value *val = (Value *) value;
 
-				if (val->IsNull) {
-					return null;
-				}
-				switch (val->k) {
-				case Kind.INVALID:
-					return null;
-					
-				case Kind.DEPENDENCYPROPERTY:
-					return DependencyProperty.Lookup (val->u.p);
-				
-				case Kind.BOOL:
-					return val->u.i32 != 0;
-
-				case Kind.DOUBLE:
-					return val->u.d;
-					
-				case Kind.FLOAT:
-					return val->u.f;
-					
-				case Kind.UINT64:
-					return val->u.ui64;
-					
-				case Kind.INT64:
-					return val->u.i64;
-					
-				case Kind.TIMESPAN:
-					return new TimeSpan (val->u.i64);
-						
-				case Kind.INT32:
-					// marshall back to the .NET type that we simply serialised as int for unmanaged usage
-					int i32 = val->u.i32;
-					if (type == typeof (System.Windows.Input.Cursor))
-						return Cursors.FromEnum ((CursorType)i32);
-					else if (type == typeof (FontStretch))
-						return new FontStretch ((FontStretchKind) i32);
-					else if (type == typeof (FontStyle))
-						return new FontStyle ((FontStyleKind) i32);
-					else if (type == typeof (FontWeight))
-						return new FontWeight ((FontWeightKind) i32);
-					else if (type == typeof (TextDecorationCollection))
-						return (i32 == (int) TextDecorationKind.Underline) ? TextDecorations.Underline : null;
-					else if (type != null && type.IsEnum)
-						return Enum.ToObject (type, i32);
-					else if (type == typeof (char))
-						return (char) i32;
-					else
-						return i32;
-
-				case Kind.SURFACE:
-					return new Surface (val->u.p);
-
-				case Kind.MANAGED:
-					IntPtr managed_object = val->u.p;
-					GCHandle handle = GCHandle.FromIntPtr (managed_object);
-					return handle.Target;
-
-				case Kind.STRING: {
-					string str = Marshal.PtrToStringAuto (val->u.p);
-					if (type == null)
-						return str;
-					
-					// marshall back to the .NET type that we simply serialised as 'string' for unmanaged usage
-					if (type == typeof (System.Windows.Markup.XmlLanguage))
-						return XmlLanguage.GetLanguage (str);
-					else
-						return str;
-				}
-
-				case Kind.URI: {
-					UnmanagedUri *uri = (UnmanagedUri*)val->u.p;
-					return uri->originalString == IntPtr.Zero
-						? new Uri("", UriKind.Relative)
-						: new Uri (Marshal.PtrToStringAuto (uri->originalString),
-							   uri->isAbsolute ? UriKind.Absolute : UriKind.Relative);
-				}
-
-				case Kind.XMLLANGUAGE: {
-					string str = Marshal.PtrToStringAuto (val->u.p);
-					return XmlLanguage.GetLanguage (str);
-				}
-
-				case Kind.FONTFAMILY: {
-					UnmanagedFontFamily *family = (UnmanagedFontFamily*)val->u.p;
-					return new FontFamily (family == null ? null : Marshal.PtrToStringAuto (family->source));
-				}
-
-				case Kind.FONTSOURCE: {
-					UnmanagedFontSource *source = (UnmanagedFontSource *) val->u.p;
-					ManagedStreamCallbacks callbacks;
-					StreamWrapper wrapper;
-					
-					callbacks = new ManagedStreamCallbacks ();
-					Marshal.PtrToStructure (source->stream, callbacks);
-					
-					wrapper = (StreamWrapper) GCHandle.FromIntPtr (callbacks.handle).Target;
-					
-					return new FontSource (wrapper.stream);
-				}
-
-				case Kind.PROPERTYPATH: {
-					UnmanagedPropertyPath *propertypath = (UnmanagedPropertyPath *) val->u.p;
-					if (propertypath == null)
-						return new PropertyPath (null);
-					if (propertypath->property != IntPtr.Zero)
-						return null;
-					return new PropertyPath (Marshal.PtrToStringAuto (propertypath->pathString));
-				}
-
-				case Kind.POINT: {
-					Point *point = (Point*)val->u.p;
-					return (point == null) ? new Point (0,0) : *point;
-				}
-				
-				case Kind.RECT: {
-					Rect *rect = (Rect*)val->u.p;
-					return (rect == null) ? new Rect (0,0,0,0) : *rect;
-				}
-
-				case Kind.SIZE: {
-					Size *size = (Size*)val->u.p;
-					return (size == null) ? new Size (0,0) : *size;
-				}
-
-				case Kind.CORNERRADIUS: {
-					CornerRadius *corner = (CornerRadius*)val->u.p;
-					return (corner == null) ? new CornerRadius (0) : *corner;
-				}
-
-				case Kind.THICKNESS: {
-					Thickness *thickness = (Thickness*)val->u.p;
-					return (thickness == null) ? new Thickness (0) : *thickness;
-				}
-					
-				case Kind.COLOR: {
-					UnmanagedColor *color = (UnmanagedColor*)val->u.p;
-					if (color == null)
-						return new Color ();
-					return color->ToColor ();
-				}
-					
-				case Kind.MATRIX:
-				case Kind.UNMANAGEDMATRIX: {
-					return new Matrix (val->u.p);
-				}
-					
-				case Kind.DURATION: {
-					Duration* duration = (Duration*)val->u.p;
-					return (duration == null) ? Duration.Automatic : *duration;
-				}
-					
-				case Kind.KEYTIME: {
-					KeyTime* keytime = (KeyTime*)val->u.p;
-					return (keytime == null) ? KeyTime.FromTimeSpan (TimeSpan.Zero) : *keytime;
-				}
-
-				case Kind.GRIDLENGTH: {
-					GridLength* gridlength = (GridLength*)val->u.p;
-					return (gridlength == null) ? new GridLength () : *gridlength;
-				}
-					
-				case Kind.REPEATBEHAVIOR: {
-					RepeatBehavior *repeat = (RepeatBehavior*)val->u.p;
-					return (repeat == null) ? new RepeatBehavior () : *repeat;
-				}
-
-				case Kind.MEDIAATTRIBUTE_COLLECTION: {
-					MediaAttributeCollection attrs = new MediaAttributeCollection (val->u.p, false);
-					return attrs.AsDictionary ();
-				}
-
-				case Kind.MANAGEDTYPEINFO: {
-					ManagedTypeInfo *type_info = (ManagedTypeInfo *) val->u.p;
-
-					if (type_info == null)
-						return null;
-
-					string assembly_name = Marshal.PtrToStringAuto (type_info->assembly_name);
-					string full_name = Marshal.PtrToStringAuto (type_info->full_name);
-
-					Assembly asm = Application.GetAssembly (assembly_name);
-					if (asm != null)
-						return asm.GetType (full_name);
-
-					return null;
-				}
-				}
-
-				if (!slow_codepath_error_shown){
-					Report.Warning ("DependencyObject type testing now using a very slow code path");
-					slow_codepath_error_shown = true;
-				}
-
-				if (NativeMethods.type_is_dependency_object (val->k)){
-					// Old fast test: if (val->k > Kind.DEPENDENCY_OBJECT){
-
- 					if (val->u.p == IntPtr.Zero)
- 						return null;
-					
- 					return NativeDependencyObjectHelper.Lookup (val->k, val->u.p);
-				}
-
-				throw new Exception (String.Format ("Do not know how to convert {0}  {1}", val->k, (int) val->k));
+				return ToObject (type, val);
 			}
 		}
 

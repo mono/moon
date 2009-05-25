@@ -36,13 +36,13 @@ using Mono;
 
 namespace Mono.Xaml
 {
-	internal delegate bool LookupObjectCallback (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, string name, [MarshalAs (UnmanagedType.U1)] bool create, out Value value);
-	internal delegate void CreateGCHandleCallback ();
+	unsafe internal delegate bool LookupObjectCallback (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, string name, [MarshalAs (UnmanagedType.U1)] bool create, out Value value);
+	unsafe internal delegate void CreateGCHandleCallback ();
 
-	internal delegate bool SetPropertyCallback (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_data, IntPtr target_parent, string name, IntPtr value_ptr, IntPtr value_data);
-	internal delegate bool AddToContainerCallback (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, string prop_name, string key_name, IntPtr parent, IntPtr parent_data, IntPtr child, IntPtr child_data);
-	internal delegate void ImportXamlNamespaceCallback (IntPtr loader, IntPtr parser, string xmlns);
-	internal delegate string GetContentPropertyNameCallback (IntPtr loader, IntPtr parser, IntPtr object_ptr);
+	unsafe internal delegate bool SetPropertyCallback (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, Value* target, IntPtr target_data, Value* target_parent, string name, Value* value, IntPtr value_data);
+	unsafe internal delegate bool AddToContainerCallback (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, string prop_name, string key_name, Value* parent, IntPtr parent_data, Value* child, IntPtr child_data);
+	unsafe internal delegate void ImportXamlNamespaceCallback (IntPtr loader, IntPtr parser, string xmlns);
+	unsafe internal delegate string GetContentPropertyNameCallback (IntPtr loader, IntPtr parser, Value* object_ptr);
 	
 	internal struct XamlLoaderCallbacks {
 		public LookupObjectCallback lookup_object;
