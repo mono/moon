@@ -1,3 +1,10 @@
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
+	* validators.cpp (Validators::TemplateValidator): this is causing
+	DRT 438 to throw an exception and subsequently timeout.  its
+	removal doesn't seem to break anything else, so ifdef it out with
+	a comment.
+
 2009-05-25  Alan McGovern  <amcgovern@novell.com>
 
 	* cbinding.cpp

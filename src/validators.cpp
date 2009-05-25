@@ -123,10 +123,14 @@ Validators::MediaAttributeCollectionValidator (DependencyObject* instance, Depen
 bool
 Validators::TemplateValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
+#if false
+	// this causes DRT #438 to throw an exception and subsequently
+	// timeout.
 	if (!value || value->GetIsNull ()) {
 		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
 		return false;
 	}
+#endif
 	if (instance->Is(Type::USERCONTROL)) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, 1001, "Cannot set the template property on a UserControl");
 		return false;
