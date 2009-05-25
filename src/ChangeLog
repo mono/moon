@@ -1,3 +1,8 @@
+2009-05-25  Andreia Gaita  <avidigal@novel.com>
+
+	* border.cpp (OnPropertyChanged): Invalidate when background is
+	updated
+
 2009-05-25  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (class XNamespace): name conflicts are pseudo-allowed

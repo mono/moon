@@ -195,6 +195,8 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	else if (args->GetId () == Border::PaddingProperty
 		 || args->GetId () == Border::BorderThicknessProperty) {
 		InvalidateMeasure ();
+	} else if (args->GetId () == Border::BackgroundProperty) {
+		Invalidate ();
 	}
 	NotifyListenersOfPropertyChange (args, error);
 }
