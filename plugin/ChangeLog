@@ -1,3 +1,8 @@
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (value_to_variant): robustify this and support
+	NULL Value*'s.  Fixes crash in DRT #485.
+
 2009-05-23  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp, plugin-class.h: add a Control plugin class,

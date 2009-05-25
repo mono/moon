@@ -134,6 +134,10 @@ string_to_npvariant (const char *value, NPVariant *result)
 static void
 value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject *parent_obj = NULL, DependencyProperty *parent_property = NULL)
 {
+	if (!v) {
+		NULL_TO_NPVARIANT (*result);
+		return;
+	}
 	switch (v->GetKind ()) {
 	case Type::BOOL:
 		BOOLEAN_TO_NPVARIANT (v->AsBool(), *result);
