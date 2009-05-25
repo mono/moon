@@ -1,3 +1,12 @@
+2009-05-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Fix Abort to happen at the "right" 
+	moments (fix DRT#289). Reduce the likelyness that FF deleted the 
+	BrowserHttpWebResponse by caching the Status code earlier. Make
+	header checks in CheckProtocolViolation case insensitive (and 
+	remove the existing allocation from AllKeys).
+	* BrowserHttpWebResponse.cs: Expose GetStatus as internal
+
 2009-05-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ClientAccessPolicy.cs: Implement ICrossDomainPolicy and

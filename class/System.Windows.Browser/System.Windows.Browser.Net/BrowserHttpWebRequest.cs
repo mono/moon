@@ -102,12 +102,7 @@ namespace System.Windows.Browser.Net
 
 		internal void InternalAbort ()
 		{
-			if (aborted)
-				return;
-
-			NativeMethods.downloader_request_abort (native);
 			aborted = true;
-			managed.Free ();
 		}
 
 		public override IAsyncResult BeginGetRequestStream (AsyncCallback callback, object state)
@@ -120,6 +115,10 @@ namespace System.Windows.Browser.Net
 
 		public override IAsyncResult BeginGetResponse (AsyncCallback callback, object state)
 		{
+			// we're not allowed to reuse an aborted request
+			if (aborted)
+				throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);
+
 			async_result = new BrowserHttpWebAsyncResult (callback, state);
 			
 			if (NativeMethods.surface_in_main_thread ()) {
@@ -215,6 +214,9 @@ namespace System.Windows.Browser.Net
 			} catch {}
 
 			try {
+				// FIXME HACK, Reponse is deleted from FF (see comments in the class) 
+				// and can cause a crash if the values are not cached early enough
+				obj.async_result.Response.GetStatus ();
 				obj.async_result.Response.Write (data, (int) length);
 			} catch (Exception e) {
 				obj.async_result.Exception = e;
@@ -233,24 +235,30 @@ namespace System.Windows.Browser.Net
 
 		public override WebResponse EndGetResponse (IAsyncResult asyncResult)
 		{
-			CheckProtocolViolation ();
+			try {
+				CheckProtocolViolation ();
 
-			if (async_result != asyncResult)
-				throw new ArgumentException ();
+				if (async_result != asyncResult)
+					throw new ArgumentException ();
 
-			if (!async_result.IsCompleted)
-				async_result.AsyncWaitHandle.WaitOne ();
+				if (aborted) {
+					NativeMethods.downloader_request_abort (native);
+					throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);
+				}
 
-			if (async_result.HasException) {
-				async_result.Dispose ();
-				throw async_result.Exception;
+				if (!async_result.IsCompleted)
+					async_result.AsyncWaitHandle.WaitOne ();
+
+				if (async_result.HasException) {
+					throw async_result.Exception;
+				}
+
+				response = async_result.Response;
 			}
-
-			response = async_result.Response;
-			async_result.Dispose ();
-
-			managed.Free ();
-			
+			finally {
+				async_result.Dispose ();
+				managed.Free ();
+			}			
 			return response;
 		}
 
@@ -333,6 +341,7 @@ namespace System.Windows.Browser.Net
 			get { return uri; }
 		}
 
+		static string[] bad_get_headers = { "Content-Encoding", "Content-Language", "Content-MD5", "Expires" };
 
 		void CheckProtocolViolation ()
 		{
@@ -340,14 +349,10 @@ namespace System.Windows.Browser.Net
 				return;
 
 			// most headers are checked when set, but some are checked much later
-			foreach (string header in Headers.AllKeys) {
-				switch (header) {
-				case "Content-Encoding":
-				case "Content-Language":
-				case "Content-MD5":
-				case "Expires":
+			foreach (string header in bad_get_headers) {
+				// case insensitive check to internal Headers dictionary
+				if (Headers.headers.ContainsKey (header))
 					throw new ProtocolViolationException ();
-				}
 			}
 		}
 	}

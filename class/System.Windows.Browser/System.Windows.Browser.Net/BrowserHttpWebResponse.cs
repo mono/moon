@@ -145,7 +145,7 @@ namespace System.Windows.Browser.Net
 			get { return request.RequestUri; }
 		}
 
-		void GetStatus ()
+		internal void GetStatus ()
 		{
 			if(0 != (int) status_code)
 				return;
