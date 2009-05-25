@@ -193,7 +193,10 @@ namespace Mono {
 			if (objects.TryGetValue (ptr, out reference))
 				return reference.Target;
 
-			INativeDependencyObjectWrapper wrapper = (INativeDependencyObjectWrapper) CreateObject (k, ptr);
+			// don't change this to a cast (as opposed to
+			// using 'as') since we can lose important
+			// info if you do.
+			INativeDependencyObjectWrapper wrapper = CreateObject (k, ptr) as INativeDependencyObjectWrapper;
 			if (wrapper == null){
 				Report.Warning ("System.Windows: Returning a null object, did not know how to construct {0}", k);
 				Report.Warning (Environment.StackTrace);

@@ -1,3 +1,10 @@
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
+	* StylusPoint.cs: make this implement
+	INativeDependencyObjectWrapper and use real DP's for everything
+	instead of the adhoc implementation we had.  This gets DRT #282 a
+	lot further.
+
 2009-04-01  Chris Toshok  <toshok@ximian.com>
 
 	* MouseWheelEventArgs.cs: implement Delta property, and add a

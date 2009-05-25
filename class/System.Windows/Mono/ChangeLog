@@ -1,5 +1,11 @@
 2009-05-25  Chris Toshok  <toshok@ximian.com>
 
+	* NativeDependencyObjectHelper.cs (Lookup): from the comment,
+	don't change to a cast (as opposed to using 'a') since we can lose
+	important info if you do.
+
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
 	* ManagedXamlLoader.cs (AddToContainer): TypeFromString fails when
 	only passed the type_name of a managed type, since it doesn't
 	include the xmlns required to look it up.  This method has the
