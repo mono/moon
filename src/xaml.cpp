@@ -1021,7 +1021,7 @@ class XNamespace : public XamlNamespace {
 				if (item->GetKey ()) {
 					// XXX don't know the proper values here...
 					parser_error (p, item->element_name, NULL, 2007,
-						      "You can't specify x:Name along with x:Key, or x:Key twice.");
+						      "You can't specify x:Name along with x:Key, or x:Key twice (key = %s, name = %s).", item->GetKey(), value);
 					return false;
 				}
 			}
@@ -1031,9 +1031,17 @@ class XNamespace : public XamlNamespace {
 			if (item->IsDependencyObject ()) {
 				NameScope *scope = p->namescope;
 				if (!item->GetAsDependencyObject ()->SetName (value, scope)) {
-					parser_error (p, item->element_name, NULL, 2007,
-						      "You can't specify x:Name along with x:Key, or x:Key twice.");
-					return false;
+					if (IsParentResourceDictionary (p->current_element)) {
+						// FIXME: inside of a resource dictionary this has an extremly
+						// strange behavior.  this isn't exactly right, since not only
+						// does the exception get swallowed, but the name seems to also
+						// be unregistered.
+					}
+					else {
+						parser_error (p, item->element_name, NULL, 2007,
+							      "You can't specify x:Name along with x:Key, or x:Key twice (name = %s).", value);
+						return false;
+					}
 				}
 				return true;
 			}
@@ -1045,7 +1053,7 @@ class XNamespace : public XamlNamespace {
 			if (item->GetKey () && IsParentResourceDictionary (p->current_element) && !Type::IsSubclassOf (item->info->GetKind (), Type::STORYBOARD)) {
 				// XXX don't know the proper values here...
 				parser_error (p, item->element_name, NULL, 2007,
-					      "You can't specify x:Name along with x:Key, or x:Key twice.");
+					      "You can't specify x:Name along with x:Key, or x:Key twice (key = %s).", value);
 				return false;
 			}
 			item->SetKey (p, value);
