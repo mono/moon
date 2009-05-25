@@ -123,7 +123,7 @@ namespace Mono {
 
 		public static unsafe object ToObject (Type type, Value* value)
 		{
-			if (value->IsNull) {
+			if (value == null || value->IsNull) {
 				return null;
 			}
 			switch (value->k) {
@@ -327,16 +327,9 @@ namespace Mono {
 			throw new Exception (String.Format ("Do not know how to convert {0}  {1}", value->k, (int) value->k));
 		}
 
-		public static object ToObject (Type type, IntPtr value)
+		public static unsafe object ToObject (Type type, IntPtr value)
 		{
-			if (value == IntPtr.Zero)
-				return null;
-			
-			unsafe {
-				Value *val = (Value *) value;
-
-				return ToObject (type, val);
-			}
+			return ToObject (type, (Value *) value);
 		}
 
 		public static Value FromObject (object v)

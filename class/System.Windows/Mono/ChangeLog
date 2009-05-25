@@ -1,5 +1,9 @@
 2009-05-25  Alan McGovern  <amcgovern@novell.com>
 
+	* Value.cs: Handle a null pointer in Value.ToObject(Type type, Value*).
+
+2009-05-25  Alan McGovern  <amcgovern@novell.com>
+
 	* GeneratedPInvokes.cs: regen
 
 2009-05-24  Chris Toshok  <toshok@ximian.com>
