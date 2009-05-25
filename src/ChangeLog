@@ -5,6 +5,12 @@
 
 2009-05-25  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (UIElement::GetTransformToUIElementWithError):
+	this method fails incorrectly when you call it on the toplevel
+	element of a surface.
+
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp (class XNamespace): name conflicts are pseudo-allowed
 	for separate resource dictionary name registration.  this isn't
 	exactly right, since the name *should* be unregistered.

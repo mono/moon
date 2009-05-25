@@ -1286,14 +1286,14 @@ GeneralTransform *
 UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *error)
 {
 	/* walk from this up to the root.  if we hit null before we hit the toplevel, it's an error */
-	UIElement *visual = GetVisualParent();
+	UIElement *visual = this;
 	bool ok = false;
 
 	if (visual && GetSurface()) {
 		while (visual) {
 			if (GetSurface()->IsTopLevel (visual))
 				ok = true;
-				visual = visual->GetVisualParent ();
+			visual = visual->GetVisualParent ();
 		}
 	}
 
