@@ -401,11 +401,17 @@ class XamlElementInstance : public List::Node {
 	void SetName (XamlParserInfo *p, const char *name)
 	{
 		this->x_name = g_strdup (name);
+		if (IsDependencyObject ()) {
+			AddToParentContainer (p, this->x_name);
+		}
 	}
 
 	void SetKey (XamlParserInfo *p, const char *key)
 	{
 		this->x_key = g_strdup (key);
+		if (IsDependencyObject ()) {
+			AddToParentContainer (p, this->x_key);
+		}
 	}
 
 	void AddToParentContainer (XamlParserInfo *p, const char *name)
@@ -1820,12 +1826,15 @@ end_element_handler (void *data, const char *el)
 					Application::GetCurrent()->ApplyDefaultStyle (control, key);
 			}
 		}
-		else if (!p->current_element->IsDependencyObject () && p->current_element->parent) {
-			p->current_element->parent->AddChild (p, p->current_element);
-		}
+		else if (!p->current_element->IsDependencyObject ()) {
 
-		if (p->current_element->GetKey() || p->current_element->GetName())
-			p->current_element->AddToParentContainer (p, p->current_element->GetKey() ? p->current_element->GetKey() : p->current_element->GetName());
+			if (p->current_element->parent)
+				p->current_element->parent->AddChild (p, p->current_element);
+
+			// for value types we have to wait until they're fully parsed to add them to their parent container.
+			if (p->current_element->GetKey() || p->current_element->GetName())
+				p->current_element->AddToParentContainer (p, p->current_element->GetKey() ? p->current_element->GetKey() : p->current_element->GetName());
+		}
 		break;
 	case XamlElementInstance::PROPERTY: {
 		List::Node *walk = p->current_element->children->First ();

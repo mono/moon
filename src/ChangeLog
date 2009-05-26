@@ -1,3 +1,11 @@
+2009-05-26  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlElementInstance::SetName): if it's a
+	dependencyobject, add it to the container here.
+	(XamlElementInstance::SetKey): same.
+	(end_element_handler): only do the AddToParentContainer call here
+	if the element is not a dependencyobject.
+
 2009-05-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* glyphs.cpp: Changed 'style' to be unsigned.
