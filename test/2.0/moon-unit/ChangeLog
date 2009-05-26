@@ -1,5 +1,11 @@
 2009-05-26  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media/VisualTreeHelperTest.cs: Add a bunch of
+	  extra tests to figure out how controls react with IsEnabled
+	  set to false for hittesting.
+
+2009-05-26  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media/VisualTreeHelperTest.cs: Add tests for
 	  TextBlock and TextBox hittesting.
 
