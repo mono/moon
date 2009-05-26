@@ -35,6 +35,7 @@ using System.Collections;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Security;
 using System.Windows.Interop;
 using System.Runtime.InteropServices;
 
@@ -53,6 +54,10 @@ namespace System.Windows.Browser.Net
 		bool aborted;
 		bool allow_read_buffering;
 		string method = "GET";
+
+		ICrossDomainPolicy policy;
+		PolicyAsyncResult policy_async;
+
 		BrowserHttpWebStreamWrapper request;
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
@@ -113,6 +118,19 @@ namespace System.Windows.Browser.Net
 			return result;
 		}
 
+		internal override IAsyncResult BeginGetResponse (AsyncCallback callback, object state, bool checkPolicy)
+		{
+			if (checkPolicy) {
+				// we're being called to download a policy - still we need a policy to do this
+				policy = CrossDomainPolicyManager.PolicyDownloadPolicy;
+				async_result = new BrowserHttpWebAsyncResult (callback, state);
+				BeginGetResponseInternal ();
+				return async_result;
+			} else {
+				return BeginGetResponse (callback, state);
+			}
+		}
+
 		public override IAsyncResult BeginGetResponse (AsyncCallback callback, object state)
 		{
 			// we're not allowed to reuse an aborted request
@@ -120,7 +138,25 @@ namespace System.Windows.Browser.Net
 				throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);
 
 			async_result = new BrowserHttpWebAsyncResult (callback, state);
-			
+
+			// this is a same site (site of origin, SOO) request; or
+			// we either already know the policy (previously downloaded); or
+			// we try to download the policy
+
+			policy = CrossDomainPolicyManager.GetCachedWebPolicy (uri);
+			if (policy == null) {
+				// we'll download the policy *then* call BeginGetResponseInternal
+				policy_async = (PolicyAsyncResult) CrossDomainPolicyManager.BeginGetPolicy (this, new AsyncCallback (PolicyCallback));
+			} else {
+				policy_async = null;
+				BeginGetResponseInternal ();
+			}
+
+			return async_result;
+		}
+
+		internal void BeginGetResponseInternal ()
+		{
 			if (NativeMethods.surface_in_main_thread ()) {
 				InitializeNativeRequest (IntPtr.Zero);
 			} else {
@@ -132,8 +168,16 @@ namespace System.Windows.Browser.Net
 
 				GC.KeepAlive (tch);
 			}
+		}
 
-			return async_result;
+		internal void PolicyCallback (IAsyncResult result)
+		{
+			policy = CrossDomainPolicyManager.EndGetPolicy (result);
+			if (policy == null) {
+				// uho, something went wrong (e.g. site down, 404)
+				async_result.Exception = new WebException ();
+			}
+			BeginGetResponseInternal ();
 		}
 
 		static uint OnAsyncResponseStartedSafe (IntPtr native, IntPtr context)
@@ -246,6 +290,20 @@ namespace System.Windows.Browser.Net
 					throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);
 				}
 
+				if (policy_async != null) {
+					if (!policy_async.IsCompleted) {
+						policy_async.AsyncWaitHandle.WaitOne ();
+					}
+				}
+
+				if (policy == null) {
+					// no policy ? then access is not allowed!
+					throw new SecurityException ();
+				} else if (!policy.IsAllowed (this)) {
+					// not allowed by the policy
+					throw new SecurityException ();
+				}
+
 				if (!async_result.IsCompleted)
 					async_result.AsyncWaitHandle.WaitOne ();
 
@@ -254,12 +312,48 @@ namespace System.Windows.Browser.Net
 				}
 
 				response = async_result.Response;
+
+				// FIXME redirection
+				//			Redirection	Error
+				// Normal Request	allowed		throw
+				// Policy Request	throw		ignore (no policy)
+				if (IsRedirection (response)) {
+					if (IsDownloadingPolicy ()) {
+						// redirection is NOT allowed for policy files
+						throw new SecurityException ("Cannot redirect policy files");
+					} else {
+						string location = response.Headers ["Location"];
+						throw new NotSupportedException ("HTTP redirection to " + location);
+					}
+				} else if (response.StatusCode != HttpStatusCode.OK) {
+					// policy file could be missing, but then it means no policy
+					if (!IsDownloadingPolicy ()) {
+						throw new WebException ("NotFound", null, WebExceptionStatus.Success, response);
+					}
+				}
 			}
 			finally {
 				async_result.Dispose ();
 				managed.Free ();
 			}			
 			return response;
+		}
+
+		bool IsRedirection (BrowserHttpWebResponse response)
+		{
+			// FIXME - there's likely a maximum number of redirection allowed because throwing an exception
+			switch (response.RealStatusCode) {
+			case 302:
+				// need to test other cases
+				return true;
+			default:
+				return false;
+			}
+		}
+
+		bool IsDownloadingPolicy ()
+		{
+			return (policy == CrossDomainPolicyManager.PolicyDownloadPolicy);
 		}
 
 		void InitializeNativeRequestSafe (IntPtr context)
@@ -304,7 +398,7 @@ namespace System.Windows.Browser.Net
 			wait_handle.Set ();
 		}
 
-		[MonoTODO ("value is unused")]
+		[MonoTODO ("value is unused, current implementation always works like it's true (default)")]
 		public override bool AllowReadStreamBuffering {
 			get { return allow_read_buffering; }
 			set { allow_read_buffering = value; }
