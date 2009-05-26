@@ -881,6 +881,44 @@ namespace MoonTest.System.Windows.Media
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
+		public void HitTest34()
+		{
+			Root.Children.Add(new TextBox {
+				Width = 100,
+				Height = 100,
+				Text = "This is a bunch of text",
+				Name = "A"
+			});
+
+			CreateAsyncTest(Root, delegate {
+				List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(.5, .5), Root).Cast<FrameworkElement>().ToList();
+				Assert.AreEqual(2, hits.Count, "#1");
+				Assert.AreEqual("A", hits[0].Name);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void HitTest35()
+		{
+			Root.Children.Add(new TextBlock {
+				Width = 100,
+				Height = 100,
+				Text = "This is a bunch of text",
+				Name = "A"
+			});
+
+			CreateAsyncTest(Root, delegate {
+				List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(.5, .5), Root).Cast<FrameworkElement>().ToList();
+				Assert.AreEqual(2, hits.Count, "#1");
+				Assert.AreEqual("A", hits[0].Name);
+			});
+		}
+					
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
 		public void AsyncLoaded ()
 		{
 			try {

@@ -1,3 +1,8 @@
+2009-05-26  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Add tests for
+	  TextBlock and TextBox hittesting.
+
 2009-05-22  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows/DependencyPropertyTest.cs (Custom_Property_Parents):
