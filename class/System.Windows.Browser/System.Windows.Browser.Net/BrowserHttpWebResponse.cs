@@ -45,10 +45,8 @@ namespace System.Windows.Browser.Net
 		Stream response;
 		bool aborted;
 
-		HttpStatusCode status_code;
+		int real_status_code;
 		string status_desc;
-
-		WebHeaderCollection headers = new WebHeaderCollection ();
 
 		public BrowserHttpWebResponse (BrowserHttpWebRequest request, IntPtr native)
 		{
@@ -56,6 +54,7 @@ namespace System.Windows.Browser.Net
 			this.native = native;
 			this.response = new MemoryStream ();
 			this.aborted = false;
+			Headers = new WebHeaderCollection ();
 
 			if (native == IntPtr.Zero)
 				return;
@@ -101,7 +100,7 @@ namespace System.Windows.Browser.Net
 		void OnHttpHeader (IntPtr name, IntPtr value)
 		{
 			try {
-				headers [Marshal.PtrToStringAnsi (name)] = Marshal.PtrToStringAnsi (value);
+				Headers [Marshal.PtrToStringAnsi (name)] = Marshal.PtrToStringAnsi (value);
 			} catch {}
 		}
 
@@ -128,39 +127,56 @@ namespace System.Windows.Browser.Net
 
 		public override long ContentLength {
 			get {
-				return long.Parse (headers ["Content-Length"]);
+				return long.Parse (Headers ["Content-Length"]);
 			}
 		}
 
 		public override string ContentType {
-			get { return headers [HttpRequestHeader.ContentType]; }
+			get { return Headers [HttpRequestHeader.ContentType]; }
 		}
 
 		public override string Method {
 			get { return request.Method; }
 		}
 
-
+		// FIXME this is different from the original request if we followed any redirection
 		public override Uri ResponseUri {
 			get { return request.RequestUri; }
 		}
 
 		internal void GetStatus ()
 		{
-			if(0 != (int) status_code)
+			if (real_status_code != 0)
 				return;
 
 			if (native == IntPtr.Zero)
 				return;
 
-			status_desc = NativeMethods.downloader_response_get_response_status_text (native);
-			status_code = (HttpStatusCode) NativeMethods.downloader_response_get_response_status (native);
+			real_status_code = NativeMethods.downloader_response_get_response_status (native);
+
+			// Silverlight only returns OK or NotFound - but we keep the real value for ourselves
+			switch (real_status_code) {
+			case 200:
+			case 404:
+				status_desc = NativeMethods.downloader_response_get_response_status_text (native);
+				break;
+			default:
+				status_desc = "Requested resource was not found";
+				break;
+			}
+		}
+
+		// since Silverlight hides most of this data, we keep it available for the BCL
+		internal int RealStatusCode {
+			get {
+				GetStatus ();
+				return real_status_code;
+			}
 		}
 
 		public override HttpStatusCode StatusCode {
 			get {
-				GetStatus ();
-				return status_code;
+				return (RealStatusCode == 200) ? HttpStatusCode.OK : HttpStatusCode.NotFound;
 			}
 		}
 

@@ -1,3 +1,9 @@
+2009-05-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebResponse.cs: Simplify StatusCode property. Use 
+	(internal) Headers property from WebResponse since we need them
+	available while checking policies.
+
 2009-05-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs: Fix Abort to happen at the "right" 
