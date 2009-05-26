@@ -1,3 +1,7 @@
+2009-05-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* glyphs.cpp: Changed 'style' to be unsigned.
+
 2009-05-25  Andreia Gaita  <avidigal@novel.com>
 
 	* timeline.h|cpp (DispatcherTimer): reset the clock properly when
@@ -50,7 +54,6 @@
 	Core properties and custom properties. Custom properties
 	do not set the parent on a DO. This makes the old 
 	'SetsParent' property redundant, so remove it.
-
 
 2009-05-22  Chris Toshok  <toshok@ximian.com>
 

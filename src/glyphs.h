@@ -44,7 +44,7 @@ class Glyphs : public FrameworkElement {
 	double top;
 	
 	int origin_y_specified:1;
-	int style_simulations:2;
+	unsigned int style:2;
 	int uri_changed:1;
 	int invalid:1;
 	int dirty:1;
