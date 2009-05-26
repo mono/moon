@@ -1,3 +1,7 @@
+2009-05-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add FlashCrossDomainPolicy.cs to the build
+
 2009-05-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Add new policy-related files to the build
