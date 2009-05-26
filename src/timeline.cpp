@@ -352,24 +352,29 @@ DispatcherTimer::Stop ()
 }
 
 void
-DispatcherTimer::Run ()
+DispatcherTimer::Restart ()
 {
 	started = false;
 	stopped = false;
 	root_clock->Reset ();
-	root_clock->Begin (root_clock->GetParentClock()->GetCurrentTime());
+	TimeSpan time = root_clock->GetParentClock()->GetCurrentTime();
+	root_clock->SetRootParentTime (time);
+	root_clock->Begin (time);
 }
 
 void
 DispatcherTimer::OnClockCompleted ()
 {
-	if (IsStopped())
-		return;
-
+	started = false;
 	Emit (DispatcherTimer::TickEvent);
 
-	if (IsStarted ())
-		Run ();
+	/* if the timer wasn't stopped on started on
+	   the tick event, restart it. Unlike Start,
+	   which makes it go on the next tick, Restart
+	   includes the time spent on the tick.
+	*/
+	if (!IsStopped () && !IsStarted ())
+		Restart ();
 }
 
 Duration

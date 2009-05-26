@@ -201,8 +201,7 @@ public:
 
 	bool IsStopped () { return stopped; }
 	bool IsStarted () { return started; }
-	void SetStarted (bool s) { started = s; }
-	void Run ();
+	void Restart ();
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 

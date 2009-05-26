@@ -1,3 +1,11 @@
+2009-05-25  Andreia Gaita  <avidigal@novel.com>
+
+	* timeline.h|cpp (DispatcherTimer): reset the clock properly when
+	restarting a dispatcher timer. also, rename Run to Restart.
+	note: if a timer is not stopped or started during it's tick event,
+	the time spent on the tick is counted for the next tick on the
+	Restart method.
+
 2009-05-25  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h|cpp (Surface::EmitError): add an overload so
