@@ -82,7 +82,6 @@ Glyphs::Glyphs ()
 	text = NULL;
 	index = 0;
 	
-	style = StyleSimulationsNone;
 	origin_y_specified = false;
 	origin_x = 0.0;
 	origin_y = 0.0;
@@ -217,7 +216,7 @@ Glyphs::Layout ()
 			i = 0;
 			do {
 				if (attr && (attr->set & Index)) {
-					if (!(glyph = font->GetGlyphInfoByIndex (attr->index, (StyleSimulations) style)))
+					if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 						goto next1;
 				} else if (cluster) {
 					// indexes MUST be specified for each glyph in a cluster
@@ -226,7 +225,7 @@ Glyphs::Layout ()
 					path = NULL;
 					goto done;
 				} else {
-					if (!(glyph = font->GetGlyphInfo (*c, (StyleSimulations) style)))
+					if (!(glyph = font->GetGlyphInfo (*c)))
 						goto next1;
 				}
 				
@@ -312,7 +311,7 @@ Glyphs::Layout ()
 			goto done;
 		}
 		
-		if (!(glyph = font->GetGlyphInfoByIndex (attr->index, (StyleSimulations) style)))
+		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 			goto next;
 		
 		y1 = y0;
@@ -821,7 +820,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		SetIndicesInternal (str);
 		dirty = true;
 	} else if (args->GetId () == Glyphs::FontRenderingEmSizeProperty) {
-		double size = args->GetNewValue()->AsDouble();
+		double size = args->GetNewValue()->AsDouble ();
 		desc->SetSize (size);
 		dirty = true;
 	} else if (args->GetId () == Glyphs::OriginXProperty) {
@@ -832,7 +831,16 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		origin_y_specified = true;
 		dirty = true;
 	} else if (args->GetId () == Glyphs::StyleSimulationsProperty) {
-		style = (args->GetNewValue ()->AsInt32 () & StyleSimulationsBoldItalic);
+		int style = args->GetNewValue ()->AsInt32 ();
+		
+		desc->UnsetFields (FontMaskStyle | FontMaskWeight);
+		
+		if ((style & StyleSimulationsItalic))
+			desc->SetStyle (FontStylesItalic);
+		
+		if ((style & StyleSimulationsBold))
+			desc->SetWeight (FontWeightsBold);
+		
 		dirty = true;
 	}
 	

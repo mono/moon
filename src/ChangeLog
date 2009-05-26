@@ -1,3 +1,27 @@
+2009-05-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* glyphs.cpp (OnPropertyChanged): Set the font weight/slant based
+	on the StyleSimulations value.
+	(Layout): No longer need to pass along StyleSimulations to
+	GetGlyphInfo().
+
+	* font.cpp (style_weights): Added more style weight name mappings.
+	(style_slants): Same.
+	(FontFace::IsItalic): New method to query the font face to see if
+	it is italic or not.
+	(FontFace::IsBold): Same idea.
+	(TextFont::TextFont): Now takes a TextFontDescription so that we
+	can initialize the new 'simulate' member variable which tells us
+	if we have to simulate bold or italics due to not finding a
+	suitable font.
+	(TextFont::GetGlyphInfo): No longer takes a StyleSimulations
+	argument. Instead, it now uses the 'simulate' member variable to
+	pass to FontFace::LoadGlyph().
+	(TextFontDescription::CreatePattern): Always add Weight and Slant
+	to the pattern now, even if it is the default font
+	family. Silverlight 2.0 no longer restricts bold/italics to
+	non-PUI.
+
 2009-05-26  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XamlElementInstance::SetName): if it's a

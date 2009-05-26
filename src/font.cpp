@@ -432,17 +432,22 @@ static struct {
 	size_t len;
 	int value;
 } style_weights[] = {
+	{ "Thin",        4, FC_WEIGHT_THIN       },
 	{ "UltraLight", 10, FC_WEIGHT_ULTRALIGHT },
 	{ "ExtraLight", 10, FC_WEIGHT_EXTRALIGHT },
 	{ "Light",       5, FC_WEIGHT_LIGHT      },
+	{ "Book",        4, FC_WEIGHT_BOOK       },
 	{ "Regular",     7, FC_WEIGHT_REGULAR    },
+	{ "Medium",      6, FC_WEIGHT_MEDIUM     },
 	{ "DemiBold",    8, FC_WEIGHT_DEMIBOLD   },
 	{ "SemiBold",    8, FC_WEIGHT_SEMIBOLD   },
+	{ "Bold",        4, FC_WEIGHT_BOLD       },
 	{ "ExtraBold",   9, FC_WEIGHT_EXTRABOLD  },
 	{ "UltraBold",   9, FC_WEIGHT_ULTRABOLD  },
-	{ "Medium",      6, FC_WEIGHT_MEDIUM     },
-	{ "Bold",        4, FC_WEIGHT_BOLD       },
-	{ "Black",       5, FC_WEIGHT_BLACK      }
+	{ "Black",       5, FC_WEIGHT_BLACK      },
+	{ "Heavy",       5, FC_WEIGHT_HEAVY      },
+	{ "ExtraBlack", 10, FC_WEIGHT_EXTRABLACK },
+	{ "UltraBlack", 10, FC_WEIGHT_EXTRABLACK },
 };
 
 static int
@@ -473,6 +478,16 @@ style_weight_parse (const StyleToken *tokens)
 			}
 			
 			return FC_WEIGHT_BOLD;
+		} else if (token->len == 4 && !g_ascii_strncasecmp (token->str, "Black", 5)) {
+			if (prev && prev->len == 5) {
+				if (!g_ascii_strncasecmp (prev->str, "Extra", 5))
+					return FC_WEIGHT_EXTRABLACK;
+				
+				if (!g_ascii_strncasecmp (prev->str, "Ultra", 5))
+					return FC_WEIGHT_ULTRABLACK;
+			}
+			
+			return FC_WEIGHT_BLACK;
 		}
 		
 		for (i = 0; i < G_N_ELEMENTS (style_weights); i++) {
@@ -568,7 +583,8 @@ static struct {
 	int value;
 } style_slants[] = {
 	{ "Oblique", 7, FC_SLANT_OBLIQUE },
-	{ "Italic",  6, FC_SLANT_ITALIC  }
+	{ "Italic",  6, FC_SLANT_ITALIC  },
+	{ "Kursiv",  6, FC_SLANT_ITALIC  },
 };
 
 static int
@@ -1482,6 +1498,24 @@ FontFace::IsScalable ()
 	return FT_IS_SCALABLE (face);
 }
 
+bool
+FontFace::IsItalic ()
+{
+	if (!face)
+		return false;
+	
+	return (face->style_flags & FT_STYLE_FLAG_ITALIC);
+}
+
+bool
+FontFace::IsBold ()
+{
+	if (!face)
+		return false;
+	
+	return (face->style_flags & FT_STYLE_FLAG_BOLD);
+}
+
 void
 FontFace::GetExtents (double size, FontFaceExtents *extents)
 {
@@ -1602,7 +1636,7 @@ static const FT_Outline_Funcs outline_funcs = {
 };
 
 bool
-FontFace::LoadGlyph (double size, GlyphInfo *glyph, StyleSimulations sims)
+FontFace::LoadGlyph (double size, GlyphInfo *glyph, StyleSimulations simulate)
 {
 	FT_Glyph_Metrics *metrics;
 	FT_Fixed hori_adj = 0;
@@ -1641,13 +1675,13 @@ FontFace::LoadGlyph (double size, GlyphInfo *glyph, StyleSimulations sims)
 	matrix.yx = 0;
 	matrix.yy = -DOUBLE_TO_16_16 (scale);
 	
-	if ((sims & StyleSimulationsBold) != 0) {
+	if ((simulate & StyleSimulationsBold) != 0) {
 		FT_Outline_Embolden (&face->glyph->outline, EMBOLDEN_STRENGTH_26_6);
 		hori_adj = EMBOLDEN_STRENGTH_16_16;
 		bbox_adj = EMBOLDEN_STRENGTH_26_6;
 	}
 	
-	if ((sims & StyleSimulationsItalic) != 0)
+	if ((simulate & StyleSimulationsItalic) != 0)
 		FT_Matrix_Multiply (&italicize, &matrix);
 	
 	glyph->path = moon_path_new (8);
@@ -1734,10 +1768,17 @@ FontFace::HasChar (gunichar unichar)
 // TextFont
 //
 
-TextFont::TextFont (FontFace *face, FcPattern *pattern)
+TextFont::TextFont (FontFace *face, const TextFontDescription *desc, FcPattern *pattern)
 {
 	FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size);
 	g_hash_table_insert (TextFont::cache, pattern, this);
+	
+	simulate = StyleSimulationsNone;
+	if (desc->GetWeight () > FontWeightsNormal && !face->IsBold ())
+		simulate = (StyleSimulations) (simulate | StyleSimulationsBold);
+	if (desc->GetStyle () == FontStylesItalic && !face->IsItalic ())
+		simulate = (StyleSimulations) (simulate | StyleSimulationsItalic);
+	
 	face->GetExtents (size, &extents);
 	this->pattern = pattern;
 	this->face = face;
@@ -1786,7 +1827,7 @@ TextFont::Load (const TextFontDescription *desc)
 	
 	face = FontFace::Load (desc);
 	
-	return new TextFont (face, pattern);
+	return new TextFont (face, desc, pattern);
 }
 
 void
@@ -1844,7 +1885,7 @@ glyphsort (const void *v1, const void *v2)
 }
 
 GlyphInfo *
-TextFont::GetGlyphInfo (gunichar unichar, guint32 index, StyleSimulations sims)
+TextFont::GetGlyphInfo (gunichar unichar, guint32 index)
 {
 	GlyphInfo glyph, *slot;
 	int i;
@@ -1853,20 +1894,19 @@ TextFont::GetGlyphInfo (gunichar unichar, guint32 index, StyleSimulations sims)
 		return NULL;
 	
 	for (i = 0; i < nglyphs; i++) {
-		if (glyphs[i].index == index && (StyleSimulations) glyphs[i].simulations == sims) {
+		if (glyphs[i].index == index) {
 			slot = &glyphs[i];
 			slot->requested++;
 			return slot;
 		}
 	}
 	
-	glyph.simulations = sims;
 	glyph.unichar = unichar;
 	glyph.index = index;
 	glyph.requested = 1;
 	glyph.path = NULL;
 	
-	if (!face->LoadGlyph (size, &glyph, sims))
+	if (!face->LoadGlyph (size, &glyph, simulate))
 		return NULL;
 	
 	if (nglyphs == GLYPH_CACHE_SIZE) {
@@ -1890,7 +1930,7 @@ TextFont::GetGlyphInfo (gunichar unichar, guint32 index, StyleSimulations sims)
 //};
 
 GlyphInfo *
-TextFont::GetGlyphInfo (gunichar unichar, StyleSimulations sims)
+TextFont::GetGlyphInfo (gunichar unichar)
 {
 	guint32 index;
 	
@@ -1899,17 +1939,17 @@ TextFont::GetGlyphInfo (gunichar unichar, StyleSimulations sims)
 	
 	index = face->GetCharIndex (unichar);
 	
-	return GetGlyphInfo (unichar, index, sims);
+	return GetGlyphInfo (unichar, index);
 }
 
 GlyphInfo *
-TextFont::GetGlyphInfoByIndex (guint32 index, StyleSimulations sims)
+TextFont::GetGlyphInfoByIndex (guint32 index)
 {
 	gunichar unichar;
 	
 	unichar = face->GetCharFromIndex (index);
 	
-	return GetGlyphInfo (unichar, index, sims);
+	return GetGlyphInfo (unichar, index);
 }
 
 bool
@@ -2054,11 +2094,11 @@ TextFontDescription::CreatePattern (bool sized) const
 		g_strfreev (families);
 	}
 	
-	if (!IsDefault ()) {
-		FcPatternAddInteger (pattern, FC_SLANT, fc_style (style));
-		FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (weight));
+	if (!IsDefault ())
 		FcPatternAddInteger (pattern, FC_WIDTH, fc_stretch (stretch));
-	}
+	
+	FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (weight));
+	FcPatternAddInteger (pattern, FC_SLANT, fc_style (style));
 	
 	if (sized)
 		FcPatternAddDouble (pattern, FC_PIXEL_SIZE, size);

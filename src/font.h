@@ -64,8 +64,7 @@ struct GlyphInfo {
 	guint32 index;
 	GlyphMetrics metrics;
 	moon_path *path;
-	int simulations:2;
-	int requested:30;
+	int requested;
 };
 
 struct FontFaceExtents {
@@ -93,7 +92,6 @@ class FontFace {
 	static FontFace *GetDefault (FcPattern *pattern);
 	static void LoadDefaultFace ();
 	
-	
 	FontFace (FT_Face face, FcPattern *pattern, bool own);
 	~FontFace ();
 	
@@ -111,10 +109,12 @@ class FontFace {
 	bool HasChar (gunichar unichar);
 	
 	bool IsScalable ();
+	bool IsItalic ();
+	bool IsBold ();
 	
 	double Kerning (double size, gunichar left, gunichar right);
 	void GetExtents (double size, FontFaceExtents *extents);
-	bool LoadGlyph (double size, GlyphInfo *glyph, StyleSimulations sims = StyleSimulationsNone);
+	bool LoadGlyph (double size, GlyphInfo *glyph, StyleSimulations simulate = StyleSimulationsNone);
 };
 
 
@@ -125,6 +125,7 @@ class TextFont {
 	
 	FcPattern *pattern;
 	
+	StyleSimulations simulate;
 	FontFaceExtents extents;
 	FontFace *face;
 	double size;
@@ -132,7 +133,7 @@ class TextFont {
 	GlyphInfo glyphs[GLYPH_CACHE_SIZE];
 	int nglyphs;
 	
-	TextFont (FontFace *face, FcPattern *pattern);
+	TextFont (FontFace *face, const TextFontDescription *desc, FcPattern *pattern);
 	~TextFont ();
 	
  public:
@@ -144,9 +145,9 @@ class TextFont {
 	
 	static TextFont *Load (const TextFontDescription *desc);
 	
-	GlyphInfo *GetGlyphInfo (gunichar unichar, StyleSimulations sims = StyleSimulationsNone);
-	GlyphInfo *GetGlyphInfoByIndex (guint32 index, StyleSimulations sims = StyleSimulationsNone);
-	GlyphInfo *GetGlyphInfo (gunichar unichar, guint32 index, StyleSimulations sims = StyleSimulationsNone);
+	GlyphInfo *GetGlyphInfo (gunichar unichar);
+	GlyphInfo *GetGlyphInfoByIndex (guint32 index);
+	GlyphInfo *GetGlyphInfo (gunichar unichar, guint32 index);
 	
 	bool HasGlyph (gunichar unichar);
 	
