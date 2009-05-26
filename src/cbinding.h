@@ -2439,6 +2439,9 @@ void surface_attach (Surface *instance, UIElement *toplevel);
 Downloader *surface_create_downloader (Surface *instance);
 
 /* @GeneratePInvoke */
+void surface_emit_error (Surface *instance, int number, int code, const char *message);
+
+/* @GeneratePInvoke */
 Color *surface_get_background_color (Surface *instance);
 
 /* @GeneratePInvoke */

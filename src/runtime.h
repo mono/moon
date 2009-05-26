@@ -168,6 +168,9 @@ public:
 	void Resize (int width, int height);
 
 	void EmitError (ErrorEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void EmitError (int number, int code, const char *message);
+	
 	void EmitLoad ();
 	
 	void SetBackgroundColor (Color *color);

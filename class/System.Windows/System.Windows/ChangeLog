@@ -1,3 +1,9 @@
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
+	* Application.cs (OnUnhandledException): if an exception is raised
+	in the UnhandledException handler, we emit it on the
+	surface (which causes the plugin/JS layer to get it).
+
 2009-05-25  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyProperty.cs: There are two types of

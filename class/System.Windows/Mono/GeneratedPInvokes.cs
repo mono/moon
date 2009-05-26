@@ -1821,6 +1821,10 @@ namespace Mono {
 		public extern static IntPtr surface_create_downloader (IntPtr instance);
 
 		[DllImport ("moon")]
+		// void surface_emit_error (Surface *instance, int number, int code, const char *message);
+		public extern static void surface_emit_error (IntPtr instance, int number, int code, string message);
+
+		[DllImport ("moon")]
 		// Color *surface_get_background_color (Surface *instance);
 		public extern static IntPtr surface_get_background_color (IntPtr instance);
 

@@ -644,6 +644,14 @@ Surface::EmitError (ErrorEventArgs *args)
 }
 
 void
+Surface::EmitError (int number, int code, const char *message)
+{
+	ErrorEventArgs *args = new ErrorEventArgs ((ErrorType)number, code, message);
+	Emit (ErrorEvent, args);
+	args->unref();
+}
+
+void
 Surface::Realloc ()
 {
 	if (toplevel)

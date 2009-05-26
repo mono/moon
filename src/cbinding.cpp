@@ -4147,6 +4147,16 @@ surface_create_downloader (Surface *instance)
 }
 
 
+void
+surface_emit_error (Surface *instance, int number, int code, const char *message)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->EmitError (number, code, message);
+}
+
+
 Color *
 surface_get_background_color (Surface *instance)
 {

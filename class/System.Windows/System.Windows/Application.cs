@@ -539,6 +539,10 @@ namespace System.Windows {
 						Application.Current.UnhandledException (Application.Current, args);
 					} catch (Exception ex2) {
 						Console.WriteLine ("Exception caught in Application UnhandledException handler: " + ex2);
+						NativeMethods.surface_emit_error (Deployment.Current.Surface.Native,
+										  8, // FIXME: EXECUTION_ENGINE_EXCEPTION code.  should it be something else?
+										  4004,
+										  ex2.Message);
 					}
 				} else {
 					Console.WriteLine ("Unhandled Exception: " + ex);

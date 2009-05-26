@@ -1,3 +1,10 @@
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h|cpp (Surface::EmitError): add an overload so
+	Application.cs can cause an error to be emitted on the surface.
+
+	* cbinding.h|cpp: regen.
+
 2009-05-25  Andreia Gaita  <avidigal@novel.com>
 
 	* border.cpp (OnPropertyChanged): Invalidate when background is
