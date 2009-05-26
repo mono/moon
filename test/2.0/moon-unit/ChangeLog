@@ -1,5 +1,18 @@
 2009-05-26  Mario Carrion  <mcarrion@novell.com>
 
+	* moon-unit.csproj: TextBoxAutomationPeerTest.cs added.
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs: 
+	New file. Tests TextBoxAutomationPeer class.
+	* System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: 
+	Subclassing FrameworkElementAutomationPeerTest, concrete automation peer
+	realizing FrameworkElementAutomationPeerContract.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	New interface FrameworkElementAutomationPeerContract meant to be realized
+	by concrete peers to test default implementation values.
+	TestMethods marked as virtual.
+
+2009-05-26  Mario Carrion  <mcarrion@novell.com>
+
 	* System.Windows.Automation.Peers/AutomationPeerTest.cs: 
 	InvalidatePeer tests commented, crashes browser on Silverlight.
 

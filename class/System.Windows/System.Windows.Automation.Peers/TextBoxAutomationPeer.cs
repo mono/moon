@@ -22,30 +22,47 @@ namespace System.Windows.Automation.Peers
 		public TextBoxAutomationPeer (TextBox owner)
 			: base (owner)
 		{
-			throw new NotImplementedException ();
+			this.owner = owner;
 		}
 		
 		protected override string GetNameCore ()
 		{
-			throw new NotImplementedException ();
+			return owner.GetValue (AutomationProperties.NameProperty) as string ?? owner.Text;
 		}
 		
 		public override object GetPattern (PatternInterface patternInterface)
 		{
-			throw new NotImplementedException ();
+			if (patternInterface == PatternInterface.Value)
+				return this;
+			return null;
 		}
 		
 		void IValueProvider.SetValue (string value)
 		{
-			throw new NotImplementedException ();
+			if (owner.IsReadOnly)
+				throw new InvalidOperationException ();
+			else if (!owner.IsEnabled)
+				throw new ElementNotEnabledException ();
+
+			owner.Text = value;
 		}
 	
 		bool IValueProvider.IsReadOnly { 
-			get { throw new NotImplementedException (); } 
+			get { return owner.IsReadOnly; } 
 		}
 		
 		string IValueProvider.Value { 
-			get { throw new NotImplementedException (); } 
+			get { return owner.Text; } 
 		}
+
+		internal override AutomationControlType? AutomationControlTypeCore {
+			get { return AutomationControlType.Edit; }
+		}
+
+		internal override string ClassNameCore {
+			get { return "TextBox"; }
+		}
+
+		private TextBox owner;
 	}
 }

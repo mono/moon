@@ -51,7 +51,7 @@ namespace System.Windows.Automation.Peers {
 
 		protected override string GetNameCore ()
 		{
-			return owner.Text ?? base.GetNameCore ();
+			return owner.GetValue (AutomationProperties.NameProperty) as string ?? owner.Text;
 		}
 
 		protected override bool IsControlElementCore ()

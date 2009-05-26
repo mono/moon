@@ -1,3 +1,16 @@
+2009-05-26  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Controls/TextBox.cs: OnCreateAutomationPeer 
+	overridden.
+	* System.Windows.Automation.Peers/TextBoxAutomationPeer.cs: Not
+	implemented methods implemented. 
+	* System.Windows.Automation.Peers/TextBlockAutomationPeer.cs: 
+	GetNameCore implementation.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs: 
+	New internal properties: AutomationControlTypeCore (used by 
+	GetAutomationControlTypeCore) and ClassNameCore (used by 
+	GetClassNameCore).
+
 2009-05-22  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Automation/AutomationProperties.cs: Use

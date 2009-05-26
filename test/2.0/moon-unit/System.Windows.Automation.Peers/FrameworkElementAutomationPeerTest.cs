@@ -59,7 +59,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void Null ()
+		public virtual void Null ()
 		{
 			Assert.Throws<NullReferenceException> (delegate {
 				new FrameworkElementAutomationPeer (null);
@@ -67,10 +67,9 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void GetPattern ()
+		public virtual void GetPattern ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeer feap = new FrameworkElementAutomationPeer (fe);
+			AutomationPeer feap = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 
 			Assert.IsNull (feap.GetPattern (PatternInterface.Dock), "Dock");
 			Assert.IsNull (feap.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
@@ -91,7 +90,56 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsNull (feap.GetPattern (PatternInterface.Window), "Window");
 		}
 
-		public class FrameworkElementAutomationPeerPoker : FrameworkElementAutomationPeer {
+		public interface FrameworkElementAutomationPeerContract {
+			AutomationPeer GetLabeledBy ();
+			AutomationPeer GetLabeledByCore_ ();
+			string GetName ();
+			string GetNameCore_ ();
+			bool IsContentElement ();
+			bool IsContentElementCore_ ();
+			bool IsControlElement ();
+			bool IsControlElementCore_ ();
+			string GetAcceleratorKey ();
+			string GetAcceleratorKeyCore_ ();
+			string GetAccessKey ();
+			string GetAccessKeyCore_ ();
+			AutomationControlType GetAutomationControlType ();
+			AutomationControlType GetAutomationControlTypeCore_ ();
+			string GetAutomationId ();
+			string GetAutomationIdCore_ ();
+			Rect GetBoundingRectangle ();
+			Rect GetBoundingRectangleCore_ ();
+			List<AutomationPeer> GetChildren ();
+			List<AutomationPeer> GetChildrenCore_ ();
+			Point GetClickablePoint ();
+			Point GetClickablePointCore_ ();
+			string GetHelpText ();
+			string GetHelpTextCore_ ();
+			string GetItemStatus ();
+			string GetItemStatusCore_ ();
+			string GetItemType ();
+			string GetItemTypeCore_ ();
+			string GetLocalizedControlType ();
+			string GetLocalizedControlTypeCore_ ();
+			AutomationOrientation GetOrientation ();
+			AutomationOrientation GetOrientationCore_ ();
+			bool HasKeyboardFocus ();
+			bool HasKeyboardFocusCore_ ();
+			bool IsEnabled ();
+			bool IsEnabledCore_ ();
+			bool IsKeyboardFocusable ();
+			bool IsKeyboardFocusableCore_ ();
+			bool IsOffscreen ();
+			bool IsOffscreenCore_ ();
+			bool IsPassword ();
+			bool IsPasswordCore_ ();
+			bool IsRequiredForForm ();
+			bool IsRequiredForFormCore_ ();
+			string GetClassName ();
+			string GetClassNameCore_ ();
+		}
+
+		public class FrameworkElementAutomationPeerPoker : FrameworkElementAutomationPeer, FrameworkElementAutomationPeerContract {
 
 			public FrameworkElementAutomationPeerPoker (FrameworkElement fe)
 				: base (fe)
@@ -128,7 +176,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				return base.GetAccessKeyCore ();
 			}
 
-			public AutomationControlType GetAutomationControlTypeCore_()
+			public AutomationControlType GetAutomationControlTypeCore_ ()
 			{
 				return base.GetAutomationControlTypeCore ();
 			}
@@ -215,19 +263,20 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void GetAcceleratorKey ()
+		public virtual void GetAcceleratorKey ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (string.Empty, feap.GetAcceleratorKey (), "GetAcceleratorKey");
 			Assert.AreEqual (string.Empty, feap.GetAcceleratorKeyCore_ (), "GetAcceleratorKeyCore");
 		}
 
 		[TestMethod]
-		public void GetAcceleratorKey_AttachedProperty ()
+		public virtual void GetAcceleratorKey_AttachedProperty()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+
 			Assert.AreEqual (string.Empty, feap.GetAcceleratorKey (), "GetAcceleratorKey #0");
 			Assert.AreEqual (string.Empty, feap.GetAcceleratorKeyCore_ (), "GetAcceleratorKeyCore #0");
 
@@ -243,32 +292,30 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void GetClassNameCore ()
+		public virtual void GetClassName ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap 
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
+
 			Assert.AreEqual (string.Empty, feap.GetClassName (), "GetClassNameCore");
 			Assert.AreEqual (string.Empty, feap.GetClassNameCore_ (), "GetClassNameCoreCore");
-
-			feap = FrameworkElementAutomationPeer.CreatePeerForElement (fe) as FrameworkElementAutomationPeerPoker;
-			Assert.AreEqual (string.Empty, feap.GetClassName(), "GetClassNameCore");
-			Assert.AreEqual (string.Empty, feap.GetClassNameCore_(), "GetClassNameCoreCore");
 		}
 
 		[TestMethod]
-		public void GetAccessKey ()
+		public virtual void GetAccessKey ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (string.Empty, feap.GetAccessKey (), "GetAccessKey");
 			Assert.AreEqual (string.Empty, feap.GetAccessKeyCore_ (), "GetAccessKeyCore");
 		}
 
 		[TestMethod]
-		public void GetAccessKey_AttachedProperty ()
+		public virtual void GetAccessKey_AttachedProperty ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+
 			Assert.AreEqual (string.Empty, feap.GetAccessKey (), "GetAccessKey");
 			Assert.AreEqual (string.Empty, feap.GetAccessKeyCore_ (), "GetAccessKeyCore");
 
@@ -284,28 +331,28 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void GetAutomationControlType ()
+		public virtual void GetAutomationControlType ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker(fe);
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (AutomationControlType.Custom, feap.GetAutomationControlType (), "GetAutomationControlType");
 			Assert.AreEqual (AutomationControlType.Custom, feap.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
 		}
 
 		[TestMethod]
-		public void GetAutomationId ()
+		public virtual void GetAutomationId ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (string.Empty, feap.GetAutomationId (), "GetAutomationId");
 			Assert.AreEqual (string.Empty, feap.GetAutomationIdCore_ (), "GetAutomationIdCore");
 		}
 
 		[TestMethod]
-		public void GetAutomationId_AttachedProperty()
+		public virtual void GetAutomationId_AttachedProperty ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker(fe);
+			FrameworkElement fe = CreateConcreteFrameworkElement();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
 			Assert.AreEqual (string.Empty, feap.GetAutomationId (), "GetAutomationId");
 			Assert.AreEqual (string.Empty, feap.GetAutomationIdCore_(), "GetAutomationIdCore");
 
@@ -321,10 +368,10 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void GetBoundingRectangle ()
+		public virtual void GetBoundingRectangle ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Rect boundingRectangle = feap.GetBoundingRectangle ();
 			Assert.AreEqual (0, boundingRectangle.X, "GetBoundingRectangle X");
 			Assert.AreEqual (0, boundingRectangle.Y, "GetBoundingRectangle Y");
@@ -341,19 +388,19 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void GetChildren ()
+		public virtual void GetChildren ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (null, feap.GetChildren (), "GetChildren");
 			Assert.AreEqual (null, feap.GetChildrenCore_ (), "GetChildrenCore");
 		}
 
 		[TestMethod]
-		public void GetClickablePoint ()
+		public virtual void GetClickablePoint ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (0, feap.GetClickablePoint ().X, "GetClickablePoint X");
 			Assert.AreEqual (0, feap.GetClickablePoint ().Y, "GetClickablePoint Y");
 			Assert.AreEqual (0, feap.GetClickablePointCore_ ().X, "GetClickablePointCore X");
@@ -361,19 +408,19 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void GetHelpText ()
+		public virtual void GetHelpText ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap 
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (string.Empty, feap.GetHelpText (), "GetHelpText");
 			Assert.AreEqual (string.Empty, feap.GetHelpTextCore_ (), "GetHelpTextCore");
 		}
 
 		[TestMethod]
-		public void GetHelpText_AttachedProperty ()
+		public virtual void GetHelpText_AttachedProperty ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
 			Assert.AreEqual (string.Empty, feap.GetHelpText (), "GetHelpText");
 			Assert.AreEqual (string.Empty, feap.GetHelpTextCore_ (), "GetHelpTextCore");
 
@@ -389,19 +436,19 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 		
 		[TestMethod]
-		public void GetItemStatus ()
+		public virtual void GetItemStatus ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap 
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (string.Empty, feap.GetItemStatus (), "GetItemStatus");
 			Assert.AreEqual (string.Empty, feap.GetItemStatusCore_ (), "GetItemStatusCore");
 		}
 
 		[TestMethod]
-		public void GetItemStatus_AttachedProperty()
+		public virtual void GetItemStatus_AttachedProperty ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
 			Assert.AreEqual (string.Empty, feap.GetItemStatus (), "GetItemStatus");
 			Assert.AreEqual (string.Empty, feap.GetItemStatusCore_ (), "GetItemStatusCore");
 
@@ -417,19 +464,19 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void GetItemType ()
+		public virtual void GetItemType ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType");
 			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore");
 		}
 
 		[TestMethod]
-		public void GetItemType_AttachedProperty()
+		public virtual void GetItemType_AttachedProperty ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+
 			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType");
 			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore");
 
@@ -445,82 +492,89 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void GetLocalizedControlType ()
+		public virtual void GetLocalizedControlType ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
-			Assert.AreEqual ("custom", feap.GetLocalizedControlType (), "GetLocalizedControlType");
-			Assert.AreEqual ("custom", feap.GetLocalizedControlTypeCore_ (), "GetLocalizedControlTypeCore");
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
+			string localizedString = feap.GetAutomationControlType ().ToString ().ToLower();
+			Assert.AreEqual (localizedString, feap.GetLocalizedControlType(), 
+					string.Format ("GetLocalizedControlType: {0}", localizedString));
+			Assert.AreEqual (localizedString, feap.GetLocalizedControlTypeCore_(), 
+					string.Format ("GetLocalizedControlTypeCore: {0}", localizedString));
 		}
 
 		[TestMethod]
-		public void GetOrientation ()
+		public virtual void GetOrientation ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.AreEqual (AutomationOrientation.None, feap.GetOrientation (), "GetOrientation");
 			Assert.AreEqual (AutomationOrientation.None, feap.GetOrientationCore_ (), "GetOrientationCore");
 		}
 
 		[TestMethod]
-		public void HasKeyboardFocus ()
+		public virtual void HasKeyboardFocus ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap 
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.IsFalse (feap.HasKeyboardFocus (), "HasKeyboardFocus");
 			Assert.IsFalse (feap.HasKeyboardFocusCore_ (), "HasKeyboardFocusCore");
 		}
 
 		[TestMethod]
-		public void IsKeyboardFocusable ()
+		public virtual void IsKeyboardFocusable ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable");
 			Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore");
 		}
 
 		[TestMethod]
-		public void IsEnabled ()
+		public virtual void IsEnabled ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
+
 			Assert.IsTrue (feap.IsEnabled (), "IsEnabled");
 			Assert.IsTrue (feap.IsEnabledCore_ (), "IsEnabledCore");
 		}
 
 		[TestMethod]
-		public void IsOffScreen ()
+		public virtual void IsOffScreen ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
 			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
 			Assert.IsFalse (feap.IsOffscreen (), "IsOffScreen");
 			Assert.IsFalse (feap.IsOffscreenCore_ (), "IsOffScreenCore");
 		}
 
 		[TestMethod]
-		public void IsPassword ()
+		public virtual void IsPassword ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+
 			Assert.IsFalse (feap.IsPassword (), "IsPassword");
 			Assert.IsFalse (feap.IsPasswordCore_ (), "IsPasswordCore");
 		}
 
 		[TestMethod]
-		public void IsRequiredForForm ()
+		public virtual void IsRequiredForForm ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+
 			Assert.IsFalse (feap.IsRequiredForForm (), "IsRequiredForForm");
 			Assert.IsFalse (feap.IsRequiredForFormCore_ (), "IsRequiredForFormCore");
 		}
 
 		[TestMethod]
-		public void IsRequiredForForm_AttachedProperty ()
+		public virtual void IsRequiredForForm_AttachedProperty ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+
 			Assert.IsFalse (feap.IsRequiredForForm (), "IsRequiredForForm");
 			Assert.IsFalse (feap.IsRequiredForFormCore_ (), "IsRequiredForFormCore");
 
@@ -534,19 +588,21 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void GetName ()
+		public virtual void GetName ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+
 			Assert.AreEqual (String.Empty, feap.GetName (), "GetName");
 			Assert.AreEqual (String.Empty, feap.GetNameCore_ (), "GetNameCore");
 		}
 
 		[TestMethod]
-		public void GetName_AttachedProperty0 ()
+		public virtual void GetName_AttachedProperty0 ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+
 			Assert.AreEqual (string.Empty, feap.GetName (), "GetName");
 			Assert.AreEqual (string.Empty, feap.GetNameCore_ (), "GetNameCore");
 
@@ -562,10 +618,10 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void GetName_AttachedProperty1 ()
+		public virtual void GetName_AttachedProperty1 ()
 		{
-			ConcreteFrameworkElement element = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker tbap = new FrameworkElementAutomationPeerPoker (element);
+			FrameworkElement element = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract tbap = CreateConcreteFrameworkElementAutomationPeer (element);
 
 			string textblockName = "Hello world:";
 			string nameProperty = "TextBox name";
@@ -574,8 +630,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			textblock.Text = textblockName;
 
 			element.SetValue (AutomationProperties.NameProperty, nameProperty);
-			Assert.AreEqual (nameProperty, tbap.GetName(), "GetName #0");
-			Assert.AreEqual (nameProperty, tbap.GetNameCore_(), "GetNameCore #0");
+			Assert.AreEqual (nameProperty, tbap.GetName (), "GetName #0");
+			Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #0");
 
 			element.SetValue (AutomationProperties.LabeledByProperty, textblock);
 			Assert.AreEqual (textblockName, tbap.GetName (), "GetName #1");
@@ -586,7 +642,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #2");
 
 			textblock.Text = string.Empty;
-			Assert.AreEqual (string.Empty, tbap.GetName(), "GetName #3");
+			Assert.AreEqual (string.Empty, tbap.GetName (), "GetName #3");
 			Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #3");
 
 			element.SetValue (AutomationProperties.NameProperty, null);
@@ -601,30 +657,28 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void GetLabeledBy ()
+		public virtual void GetLabeledBy ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.IsNull (feap.GetLabeledBy (), "GetLabeledBy");
 			Assert.IsNull (feap.GetLabeledByCore_ (), "GetLabeledByCore");
 		}
 
 		[TestMethod]
-		public void GetLabeledBy_AttachedProperty ()
+		public virtual void GetLabeledBy_AttachedProperty ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap
-				= FrameworkElementAutomationPeer.CreatePeerForElement (fe) as FrameworkElementAutomationPeerPoker;
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
 			Assert.IsNull (feap.GetLabeledBy (), "GetLabeledBy");
 			Assert.IsNull (feap.GetLabeledByCore_ (), "GetLabeledByCore");
 
-			ConcreteFrameworkElement labeledBy = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker labeledByPeer
-				= FrameworkElementAutomationPeer.CreatePeerForElement (labeledBy) as FrameworkElementAutomationPeerPoker;
+			FrameworkElement labeledBy = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract labeledByPeer 
+				= FrameworkElementAutomationPeer.CreatePeerForElement (labeledBy) as FrameworkElementAutomationPeerContract;
 
 			fe.SetValue (AutomationProperties.LabeledByProperty, labeledBy);
-			Assert.AreSame (labeledByPeer, feap.GetLabeledBy (), "GetLabeledBy #1 -");
-			Assert.AreSame (labeledByPeer, feap.GetLabeledByCore_ (), "GetLabeledByCore #1 -");
+			Assert.AreSame (labeledByPeer, feap.GetLabeledBy (), "GetLabeledBy #1");
+			Assert.AreSame (labeledByPeer, feap.GetLabeledByCore_(), "GetLabeledByCore #1");
 
 			fe.SetValue (AutomationProperties.LabeledByProperty, null);
 			Assert.IsNull (feap.GetLabeledBy (), "GetLabeledBy #2");
@@ -632,19 +686,17 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void IsContentElement ()
+		public virtual void IsContentElement ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.IsTrue (feap.IsContentElement (), "IsContentElement");
 			Assert.IsTrue (feap.IsContentElementCore_ (), "IsContentElementCore");
 		}
 
 		[TestMethod]
-		public void IsControlElement ()
+		public virtual void IsControlElement ()
 		{
-			ConcreteFrameworkElement fe = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
 			Assert.IsTrue (feap.IsControlElement (), "IsControlElement");
 			Assert.IsTrue (feap.IsControlElementCore_ (), "IsControlElementCore");
 		}
@@ -652,7 +704,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void CreatePeer ()
 		{
-			Button b = new Button ();
+			FrameworkElement b = CreateConcreteFrameworkElement ();
 			AutomationPeer peer1 = FrameworkElementAutomationPeer.CreatePeerForElement (b);
 			AutomationPeer peer2 = FrameworkElementAutomationPeer.CreatePeerForElement (b);
 			Assert.IsNotNull (peer1, "#1");
@@ -662,7 +714,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void CreatePeer2 ()
 		{
-			Button b = new Button ();
+			FrameworkElement b = CreateConcreteFrameworkElement();
 			FrameworkElementAutomationPeer peer1 = new FrameworkElementAutomationPeer (b);
 			AutomationPeer peer2 = FrameworkElementAutomationPeer.CreatePeerForElement (b);
 			Assert.AreNotSame (peer1, peer2, "#2");
@@ -671,8 +723,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void CreatePeer3()
 		{
-			ConcreteFrameworkElement element = new ConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker peer = new FrameworkElementAutomationPeerPoker (element);
+			FrameworkElement element = CreateConcreteFrameworkElement();
+			FrameworkElementAutomationPeer peer = CreateConcreteFrameworkElementAutomationPeer (element) as FrameworkElementAutomationPeer;
 			AutomationPeer realPeer = FrameworkElementAutomationPeer.CreatePeerForElement (element);
 			Assert.AreNotSame (peer, realPeer, "#0");
 
@@ -700,10 +752,20 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void Owner ()
 		{
-			ConcreteFrameworkElement element = new ConcreteFrameworkElement ();
+			FrameworkElement element = CreateConcreteFrameworkElement ();
 			FrameworkElementAutomationPeer realPeer 
 				= FrameworkElementAutomationPeer.CreatePeerForElement (element) as FrameworkElementAutomationPeer;
 			Assert.AreSame (element, realPeer.Owner, "#0");
+		}
+
+		protected virtual FrameworkElement CreateConcreteFrameworkElement ()
+		{
+			return new ConcreteFrameworkElement ();
+		}
+
+		protected virtual FrameworkElementAutomationPeerContract CreateConcreteFrameworkElementAutomationPeer (FrameworkElement element)
+		{
+			return new FrameworkElementAutomationPeerPoker (element);
 		}
 	}
 }

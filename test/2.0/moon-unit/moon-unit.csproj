@@ -110,6 +110,7 @@
     <Compile Include="System.Windows.Automation.Peers\RepeatButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\SliderAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\TextBlockAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\TextBoxAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ThumbAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation\AutomationElementIdentifiersTest.cs" />
     <Compile Include="System.Windows.Automation\AutomationPropertiesTest.cs" />

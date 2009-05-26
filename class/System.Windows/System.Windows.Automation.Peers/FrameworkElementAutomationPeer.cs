@@ -94,7 +94,9 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override AutomationControlType GetAutomationControlTypeCore ()
 		{
-			return AutomationControlType.Custom;
+			// Some Peers don't override GetAutomationControlTypeCore and return something different to Custom
+			// for example: TextBoxAutomationPeer
+			return AutomationControlTypeCore.HasValue ? AutomationControlTypeCore.Value : AutomationControlType.Custom;
 		}
 		
 		protected override string GetAutomationIdCore ()
@@ -109,7 +111,7 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override string GetClassNameCore ()
 		{
-			return owner.GetValue (AutomationProperties.NameProperty) as string ?? string.Empty;
+			return ClassNameCore ?? string.Empty;
 		}
 		
 		protected override Point GetClickablePointCore ()
@@ -223,5 +225,20 @@ namespace System.Windows.Automation.Peers {
 			
 			return peer;
 		}
+
+		#region Internal properties
+
+		// Internal properties used by Peers that don't override XXXXCore and return something else 
+		// than FrameworkElementAutomationPeer's default value.
+
+		internal virtual AutomationControlType? AutomationControlTypeCore {
+			get { return null; }
+		}
+
+		internal virtual string ClassNameCore {
+			get { return null; }
+		}
+
+		#endregion
 	}
 }

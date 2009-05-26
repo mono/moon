@@ -26,6 +26,7 @@
 
 using Mono;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Media;
 using System.Windows.Documents;
 using System.Collections.Generic;
@@ -255,6 +256,11 @@ namespace System.Windows.Controls {
 			} else {
 				VisualStateManager.GoToState (this, "Unfocused", useTransitions);
 			}
+		}
+
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			return new TextBoxAutomationPeer (this);
 		}
 	}
 }
