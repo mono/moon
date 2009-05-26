@@ -68,6 +68,13 @@ static const FT_Matrix italicize = {
 
 #define LOAD_FLAGS (FT_LOAD_NO_BITMAP | /*FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT |*/ FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_TARGET_NORMAL)
 
+#ifndef FC_WEIGHT_EXTRABLACK
+	#define FC_WEIGHT_EXTRABLACK 215
+#endif
+#ifndef FC_WEIGHT_ULTRABLACK
+	#define FC_WEIGHT_ULTRABLACK FC_WEIGHT_EXTRABLACK
+#endif
+
 
 struct GlyphBitmap {
 	cairo_surface_t *surface;
