@@ -16,7 +16,7 @@ rating:1
 site:Silverlight Stocks
 url:http://www.vadimv.com/
 rating:0
- * Could not parse element MainChart, attribute Scrollable. Unknown attribute Scrollable on element MainChart
+ * Crash in Isolated Storage
 
 site:Calculator
 url:http://silver.calcsharp.net/
