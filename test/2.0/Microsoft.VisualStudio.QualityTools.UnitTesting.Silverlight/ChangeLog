@@ -1,3 +1,8 @@
+2009-05-26  Mario Carrion  <mcarrion@novell.com>
+
+	* Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.csproj: 
+	VisualNode.cs added.
+
 2009-04-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.csproj:

@@ -1,3 +1,8 @@
+2009-05-26  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationPeerTest.cs: 
+	InvalidatePeer tests commented, crashes browser on Silverlight.
+
 2009-05-26  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs: Add a bunch of
