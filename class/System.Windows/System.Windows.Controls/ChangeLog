@@ -1,3 +1,7 @@
+2009-05-26  Alan McGovern  <amcgovern@novell.com>
+
+	* TextBox.cs: Add missing VisualState transitions to TextBox.
+
 2009-05-22  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs

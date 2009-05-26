@@ -31,14 +31,63 @@ using System.Windows.Documents;
 using System.Collections.Generic;
 
 namespace System.Windows.Controls {
+	
+	[TemplateVisualStateAttribute (Name = "Disabled",	GroupName = "CommonStates")]
+	[TemplateVisualStateAttribute (Name = "Normal",		GroupName = "CommonStates")]
+	[TemplateVisualStateAttribute (Name = "MouseOver",	GroupName = "CommonStates")]
+	[TemplateVisualStateAttribute (Name = "ReadOnly",	GroupName = "CommonStates")]
+	[TemplateVisualStateAttribute (Name = "Focused",	GroupName = "FocusStates")]
+	[TemplateVisualStateAttribute (Name = "Unfocused",	GroupName = "FocusStates")]
+	[TemplatePartAttribute (Name = "ContentElement",		Type = typeof (FrameworkElement))]
+	[TemplatePartAttribute (Name = "DisabledVisualElement",	Type = typeof (FrameworkElement))]
+	[TemplatePartAttribute (Name = "FocusVisualElement",	Type = typeof (FrameworkElement))]
+	[TemplatePartAttribute (Name = "ReadOnlyVisualElement",	Type = typeof (FrameworkElement))]
+	[TemplatePartAttribute (Name = "RootElement",			Type = typeof (FrameworkElement))]
 	public partial class TextBox : Control {
 		object contentElement;
+		
+		bool IsFocused {
+			get; set;
+		}
+		bool IsMouseOver {
+			get; set;
+		}
 		
 		void Initialize ()
 		{
 			CursorPositionChanged += OnCursorPositionChanged;
+			IsEnabledChanged += delegate { ChangeVisualState (); };
+			Loaded += delegate { ChangeVisualState (); };
 		}
 		
+		protected override void OnMouseEnter (System.Windows.Input.MouseEventArgs e)
+		{
+			IsMouseOver = true;
+			base.OnMouseEnter (e);
+			ChangeVisualState ();
+		}
+		
+		protected override void OnMouseLeave (System.Windows.Input.MouseEventArgs e)
+		{
+			IsMouseOver = false;
+			base.OnMouseLeave (e);
+			ChangeVisualState ();
+		}
+		
+		protected override void OnGotFocus (RoutedEventArgs e)
+		{
+			IsFocused = true;
+			base.OnGotFocus (e);
+			ChangeVisualState ();
+		}
+		
+		protected override void OnLostFocus (RoutedEventArgs e)
+		{
+			IsFocused = false;
+			base.OnLostFocus (e);
+			ChangeVisualState ();
+		}
+
 		public string Text {
 			get {
 				return (string)GetValue (TextProperty) ?? "";
@@ -181,6 +230,30 @@ namespace System.Windows.Controls {
 			}
 			remove {
 				UnregisterEvent (TextChangedEvent, "TextChanged", text_changed, value);
+			}
+		}
+		
+		void ChangeVisualState ()
+		{
+			ChangeVisualState (true);
+		}
+
+		void ChangeVisualState (bool useTransitions)
+		{
+			if (!IsEnabled) {
+				VisualStateManager.GoToState (this, "Disabled", useTransitions);
+			} else if (IsReadOnly) {
+				VisualStateManager.GoToState (this, "ReadOnly", useTransitions);
+			} else if (IsMouseOver) {
+				VisualStateManager.GoToState (this, "MouseOver", useTransitions);
+			} else {
+				VisualStateManager.GoToState (this, "Normal", useTransitions);
+			}
+			
+			if (IsFocused) {
+				VisualStateManager.GoToState (this, "Focused", useTransitions);
+			} else {
+				VisualStateManager.GoToState (this, "Unfocused", useTransitions);
 			}
 		}
 	}
