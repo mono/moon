@@ -152,11 +152,20 @@ namespace System.Windows.Browser.Net {
 
 		public bool IsAllowed (Uri uri, params string [] headerKeys)
 		{
+			// is a policy applies then we're not allowed to use './' or '../' inside the URI
+			if (uri.OriginalString.Contains ("./"))
+				return false;
+
 			foreach (AccessPolicy policy in AccessPolicyList) {
 				// does something allow our URI in this policy ?
 				foreach (AllowFrom af in policy.AllowedServices) {
-					if (af.IsAllowed (uri, headerKeys)) {
-						return true;
+					// is the application (XAP) URI allowed by the policy ?
+					if (af.IsAllowed (ApplicationUri, headerKeys)) {
+						foreach (GrantTo gt in policy.GrantedResources) {
+							// is the requested access to the Uri granted under this policy ?
+							if (gt.IsGranted (uri))
+								return true;
+						}
 					}
 				}
 			}
@@ -164,16 +173,32 @@ namespace System.Windows.Browser.Net {
 			return false;
 		}
 
-		public class AllowFrom
-		{
+		public class AllowFrom {
+
+			class PrefixComparer : IEqualityComparer<string> {
+
+				public bool Equals (string x, string y)
+				{
+					int check_length = x.Length - 1;
+					if ((x.Length > 0) && (x [check_length] == '*'))
+						check_length--;
+
+					return (String.Compare (x, 0, y, 0, check_length, StringComparison.OrdinalIgnoreCase) == 0);
+				}
+
+				public int GetHashCode (string obj)
+				{
+					return (obj == null) ? 0 : obj.GetHashCode ();
+				}
+			}
+
+			static PrefixComparer pc = new PrefixComparer ();
+
 			public AllowFrom ()
 			{
 				Domains = new List<Uri> ();
-				AllowAllHeaders = true;
 				Scheme = String.Empty;
 			}
-
-			string [] headers;
 
 			public bool AllowAllHeaders { get; private set; }
 
@@ -181,24 +206,35 @@ namespace System.Windows.Browser.Net {
 
 			public List<Uri> Domains { get; private set; }
 
+			public List<string> Headers { get; private set; }
+
 			public string Scheme { get; internal set; }
 
 			public void SetHttpRequestHeaders (string raw)
 			{
-				if (raw == "*")
+				if (raw == "*") {
 					AllowAllHeaders = true;
-				else if (raw != null) {
-					headers = raw.Split (',');
+				}  else if (raw != null) {
+					string [] headers = raw.Split (',');
+					Headers = new List<string> (headers.Length + 1);
+					Headers.Add ("Content-Type");
 					for (int i = 0; i < headers.Length; i++)
-						headers [i] = headers [i].Trim ();
+						Headers.Add (headers [i].Trim ());
+				} else {
+					// without a specified 'http-request-headers' no header, expect Content-Type, is allowed
+					AllowAllHeaders = false;
+					Headers = new List<string> (1);
+					Headers.Add ("Content-Type");
 				}
 			}
 
 			public bool IsAllowed (Uri uri, string [] headerKeys)
 			{
 				// check headers
-				if (!AllowAllHeaders && headerKeys.All (s => Array.IndexOf (headers, s) < 0))
-					return false;
+				if (!AllowAllHeaders && headerKeys != null && headerKeys.Length > 0) {
+					if (!headerKeys.All (s => Headers.Contains (s, pc)))
+						return false;
+				}
 				// check scheme
 				if ((Scheme.Length > 0) && (Scheme == uri.Scheme)) {
 					switch (Scheme) {
@@ -215,7 +251,7 @@ namespace System.Windows.Browser.Net {
 				// check domains
 				if (AllowAnyDomain)
 					return true;
-				if (Domains.All (domain => domain.Host != uri.Host))
+				if (Domains.All (domain => domain.DnsSafeHost != uri.DnsSafeHost))
 					return false;
 				return true;
 			}

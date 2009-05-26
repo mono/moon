@@ -44,12 +44,136 @@ using System.Xml;
 
 namespace System.Windows.Browser.Net {
 
-	class CrossDomainPolicyManager {
+	class PolicyAsyncResult : BrowserHttpWebAsyncResult {
+
+		public PolicyAsyncResult (AsyncCallback cb, Uri root) :
+			base (cb, root)
+		{
+		}
+
+		public ICrossDomainPolicy Policy { get; set; }
+
+		public Uri PolicyUri { get; set; }
+
+		public Uri RootUri { 
+			get { return (AsyncState as Uri); }
+		}
+	}
+
+	static class CrossDomainPolicyManager {
 
 		public const string ClientAccessPolicyFile = "/clientaccesspolicy.xml";
 		public const string CrossDomainFile = "/crossdomain.xml";
 
 		const int Timeout = 10000;
+
+		// Web Access Policy
+
+		public static IAsyncResult BeginGetPolicy (WebRequest request, AsyncCallback cb)
+		{
+			WebClient wc = new WebClient ();
+			wc.OpenReadCompleted += new OpenReadCompletedEventHandler (PolicyReadCompleted);
+
+			// get the root of the URI from where we'll try to read the policy files
+			Uri root = new Uri (GetRoot (request.RequestUri));
+			Uri silverlight_policy_uri = new Uri (root, ClientAccessPolicyFile);
+
+			PolicyAsyncResult async = new PolicyAsyncResult (cb, root);
+			async.PolicyUri = silverlight_policy_uri;
+
+			wc.OpenPolicyReadAsync (silverlight_policy_uri, async);
+			return async;
+		}
+
+		static void PolicyReadCompleted (object sender, OpenReadCompletedEventArgs e)
+		{
+			PolicyAsyncResult async = (e.UserState as PolicyAsyncResult);
+			Uri uri = async.PolicyUri;
+
+			if (!e.Cancelled && e.Error == null && e.Result != null) {
+				try {
+					XmlReaderSettings policy_settings = new XmlReaderSettings ();
+					policy_settings.DtdProcessing = DtdProcessing.Ignore;
+					ICrossDomainPolicy policy = null;
+					using (var xr = XmlReader.Create (e.Result, policy_settings)) {
+						if (uri.LocalPath == ClientAccessPolicyFile) {
+							policy = ClientAccessPolicy.Read (xr);
+						} else if (uri.LocalPath == CrossDomainFile) {
+							policy = BuildFlashPolicy (xr, (sender as WebClient).ResponseHeaders);
+						}
+					}
+					async.Policy = policy;
+					policies.Add (async.RootUri.OriginalString, policy);
+				} catch (Exception ex) {
+					Console.WriteLine (String.Format ("CrossDomainAccessManager caught an exception while reading {0}: {1}", 
+						uri.LocalPath, ex));
+					// and ignore.
+				}
+				async.SetComplete ();
+			} else if (uri.LocalPath == ClientAccessPolicyFile) {
+				// we tried (and failed) retrieving the Silverlight policy file, trying the Flash file
+				WebClient flash = new WebClient ();
+				flash.OpenReadCompleted += new OpenReadCompletedEventHandler (PolicyReadCompleted);
+
+				Uri flash_policy_uri = new Uri (async.RootUri, CrossDomainFile);
+				async.PolicyUri = flash_policy_uri;
+
+				flash.OpenPolicyReadAsync (flash_policy_uri, async);
+			} else {
+				// don't fire the callback
+				async.Exception = e.Error;
+				async.SetComplete ();
+			}
+		}
+
+		static ICrossDomainPolicy BuildFlashPolicy (XmlReader xr, WebHeaderCollection headers)
+		{
+			FlashCrossDomainPolicy policy = (FlashCrossDomainPolicy) FlashCrossDomainPolicy.Read (xr);
+			if (policy == null)
+				return null;
+
+			string site_control = headers ["X-Permitted-Cross-Domain-Policies"]; // see DRT# 864 and 865
+			if (!String.IsNullOrEmpty (site_control))
+				policy.SiteControl = site_control;
+
+			return policy;
+		}
+
+		public static ICrossDomainPolicy EndGetPolicy (IAsyncResult result)
+		{
+			PolicyAsyncResult async = (result as PolicyAsyncResult);
+			if (async == null || !async.AsyncWaitHandle.WaitOne (Timeout))
+				return null;
+
+			return async.Policy;
+		}
+
+		static public Dictionary<string,ICrossDomainPolicy> policies = new Dictionary<string,ICrossDomainPolicy> ();
+
+		static public ICrossDomainPolicy PolicyDownloadPolicy = new PolicyDownloadPolicy ();
+		static ICrossDomainPolicy site_of_origin_policy = new SiteOfOriginPolicy ();
+
+		static string GetRoot (Uri uri)
+		{
+			if ((uri.Scheme == "http" && uri.Port == 80) || (uri.Scheme == "https" && uri.Port == 443) || (uri.Port == -1))
+				return String.Format ("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+			else
+				return String.Format ("{0}://{1}:{2}", uri.Scheme, uri.DnsSafeHost, uri.Port);
+		}
+
+		public static ICrossDomainPolicy GetCachedWebPolicy (Uri uri)
+		{
+			// if we request an Uri from the same site then we return an "always positive" policy
+			if (SiteOfOriginPolicy.HasSameOrigin (uri, PluginHost.SourceUri))
+				return site_of_origin_policy;
+
+			// otherwise we search for an already downloaded policy for the web site
+			string root = GetRoot (uri);
+			ICrossDomainPolicy policy = null;
+			policies.TryGetValue (root, out policy);
+			// and we return it (if we have it) or null (if we dont)
+			return policy;
+		}
 
 		// Socket Policy
 		//
