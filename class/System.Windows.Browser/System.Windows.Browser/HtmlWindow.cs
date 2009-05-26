@@ -88,7 +88,7 @@ namespace System.Windows.Browser
 
 		public string CurrentBookmark {
 			get {
-				IntPtr loc = (IntPtr) HtmlPage.Document.GetProperty ("location");
+				IntPtr loc = HtmlPage.Document.GetPropertyInternal<IntPtr> ("location");
 				string hash = GetPropertyInternal<string> (loc, "hash");
 
 				if (string.IsNullOrEmpty (hash) || hash [0] != '#')
@@ -96,7 +96,7 @@ namespace System.Windows.Browser
 				return hash.Substring (1, hash.Length - 1);
 			}
 			set {
-				IntPtr loc = (IntPtr) HtmlPage.Document.GetProperty ("location");
+				IntPtr loc = HtmlPage.Document.GetPropertyInternal<IntPtr> ("location");
 				SetPropertyInternal (loc, "hash", String.Concat ("#", value));
 			}
 		}
