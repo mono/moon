@@ -1,3 +1,7 @@
+2009-05-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.xml: Add more *_2_1.cs classes
+
 2009-05-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.xml: Add DnsEndPoint
