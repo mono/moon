@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 467 methods
+# 461 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -213,12 +213,6 @@
 +SSC-M: System.Windows.Input.StylusPointCollection System.Windows.Input.StylusDevice::GetStylusPoints(System.Windows.UIElement)
 +SSC-M: System.Void System.Windows.Input.StylusInfo::.ctor()
 +SSC-M: System.Void System.Windows.Input.StylusPoint::.ctor(System.Double,System.Double)
-+SSC-M: System.Single System.Windows.Input.StylusPoint::get_PressureFactor()
-+SSC-M: System.Void System.Windows.Input.StylusPoint::set_PressureFactor(System.Single)
-+SSC-M: System.Double System.Windows.Input.StylusPoint::get_X()
-+SSC-M: System.Void System.Windows.Input.StylusPoint::set_X(System.Double)
-+SSC-M: System.Double System.Windows.Input.StylusPoint::get_Y()
-+SSC-M: System.Void System.Windows.Input.StylusPoint::set_Y(System.Double)
 +SSC-M: System.Void System.Windows.Input.StylusPointCollection::.ctor()
 +SSC-M: System.Void System.Windows.Input.StylusPointCollection::Add(System.Windows.Input.StylusPointCollection)
 +SSC-M: System.Void System.Windows.Interop.Content::add_Resized(System.EventHandler)

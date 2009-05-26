@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 517 methods needs to be decorated.
+# 518 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -45,9 +45,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_value_with_error_(System.IntPtr,System.IntPtr,Mono.Value&,Mono.MoonError&)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::dependency_property_get_sets_parent(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::dependency_property_is_attached(System.IntPtr)
@@ -491,10 +488,10 @@
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_property_get_name_(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_property_register_core_property(System.String,System.Boolean,Mono.Kind,Mono.Kind,Mono.Value&,System.Boolean,System.Boolean,Mono.UnmanagedPropertyChangeHandler)
++SC-M: System.IntPtr Mono.NativeMethods::dependency_property_register_core_property(System.String,Mono.Kind,Mono.Kind,Mono.Value&,System.Boolean,System.Boolean,Mono.UnmanagedPropertyChangeHandler)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_property_register_custom_property(System.String,System.Boolean,Mono.Kind,Mono.Kind,Mono.Value&,System.Boolean,System.Boolean,Mono.UnmanagedPropertyChangeHandler)
++SC-M: System.IntPtr Mono.NativeMethods::dependency_property_register_custom_property(System.String,Mono.Kind,Mono.Kind,Mono.Value&,System.Boolean,System.Boolean,Mono.UnmanagedPropertyChangeHandler)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_current()
@@ -1132,6 +1129,9 @@
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Type Mono.Xaml.ManagedXamlLoader::TypeFromString(System.IntPtr,Mono.Value*,System.String)
 
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Type Mono.Xaml.ManagedXamlLoader::TypeFromString(System.IntPtr,Mono.Value*,System.String,System.String)
+
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.ApplyDefaultStyleCallback,Mono.ApplyStyleCallback,Mono.GetResourceCallback,Mono.ConvertKeyframeValueCallback)
 
@@ -1431,6 +1431,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::surface_attach(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::surface_emit_error(System.IntPtr,System.Int32,System.Int32,System.String)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::surface_paint(System.IntPtr,System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32)

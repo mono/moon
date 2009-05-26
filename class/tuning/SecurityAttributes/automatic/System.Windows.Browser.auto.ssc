@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows.Browser to call all [SecurityCritical] methods
-# 39 methods
+# 38 methods
 
 +SSC-M: System.Void System.Windows.Browser.HtmlObject/EventInfo::DomEventHandler(System.IntPtr,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Int32,System.Int32,System.Int32,System.IntPtr)
 +SSC-M: System.Void System.Windows.Browser.HtmlObject/EventInfo::DetachEvent()
@@ -9,8 +9,7 @@
 +SSC-M: System.Object System.Windows.Browser.HtmlWindow::Eval(System.String)
 +SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebRequest::.ctor(System.Uri)
 +SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebRequest::Finalize()
-+SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebRequest::InternalAbort()
-+SSC-M: System.IAsyncResult System.Windows.Browser.Net.BrowserHttpWebRequest::BeginGetResponse(System.AsyncCallback,System.Object)
++SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebRequest::BeginGetResponseInternal()
 +SSC-M: System.UInt32 System.Windows.Browser.Net.BrowserHttpWebRequest::OnAsyncResponseStarted(System.IntPtr,System.IntPtr)
 +SSC-M: System.UInt32 System.Windows.Browser.Net.BrowserHttpWebRequest::OnAsyncResponseFinished(System.IntPtr,System.IntPtr,System.Boolean,System.IntPtr)
 +SSC-M: System.UInt32 System.Windows.Browser.Net.BrowserHttpWebRequest::OnAsyncDataAvailable(System.IntPtr,System.IntPtr,System.IntPtr,System.UInt32)
