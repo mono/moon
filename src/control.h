@@ -36,6 +36,10 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Control ();
 
+	virtual bool CanFindElement () { return GetIsEnabled (); }
+	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uielement_list);
+	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
+	
 	virtual bool IsLayoutContainer () { return true; }
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
@@ -92,6 +96,9 @@ public:
 	void SetHorizontalContentAlignment (HorizontalAlignment alignment);
 	HorizontalAlignment GetHorizontalContentAlignment ();
 	
+	void SetIsEnabled (bool value);
+	bool GetIsEnabled ();
+	
 	void SetIsTabStop (bool value);
 	bool GetIsTabStop ();
 	
@@ -133,6 +140,8 @@ public:
 	const static int ForegroundProperty;
 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentCenter,GenerateAccessors */
 	const static int HorizontalContentAlignmentProperty;
+	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+	const static int IsEnabledProperty;
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int IsTabStopProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */

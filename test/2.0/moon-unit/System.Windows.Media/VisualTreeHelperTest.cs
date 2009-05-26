@@ -1097,7 +1097,7 @@ namespace MoonTest.System.Windows.Media
 
 		[Asynchronous]
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("We can't hittest TextBox/TextBlock properly")]
 		public void ContentControlHitTest5()
 		{
 			Root.Children.Add(new ContentControl { Content = "Hello", Width = 100, Height = 100 });
@@ -1140,7 +1140,6 @@ namespace MoonTest.System.Windows.Media
 
 		[Asynchronous]
 		[TestMethod]
-		[MoonlightBug]
 		public void ContentControlHitTest8()
 		{
 			Root.Children.Add(new ContentControl
@@ -1165,7 +1164,6 @@ namespace MoonTest.System.Windows.Media
 
 		[Asynchronous]
 		[TestMethod]
-		[MoonlightBug]
 		public void ContentControlHitTest9()
 		{
 			// If we have several nested Controls, can we hit the children of a

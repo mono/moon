@@ -34,6 +34,20 @@ Control::~Control ()
 		applied_template->unref();
 }
 
+void
+Control::FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uielement_list)
+{
+	if (GetIsEnabled ())
+		FrameworkElement::FindElementsInHostCoordinates (cr, p, uielement_list);
+}
+
+void
+Control::HitTest (cairo_t *cr, Point p, List *uielement_list)
+{
+	if (GetIsEnabled ())
+		FrameworkElement::HitTest (cr, p, uielement_list);
+}
+
 bool
 Control::InsideObject (cairo_t *cr, double x, double y)
 {

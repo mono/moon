@@ -81,17 +81,6 @@ namespace System.Windows.Controls {
 						   "DefaultStyleKey",
 						   typeof (object));
 
-		public bool IsEnabled {
-			get { return (bool) GetValue (IsEnabledProperty); }
-			set { SetValue (IsEnabledProperty, value); }
-		}
-
-		public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.RegisterCore (
-			"IsEnabled",
-			typeof (bool),
-			typeof (Control),
-			new PropertyMetadata (true, OnIsEnabledPropertyChanged));
-
 		private static void OnIsEnabledPropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e) 
 		{
 			Control c = (d as Control);

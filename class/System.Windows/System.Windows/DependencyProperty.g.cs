@@ -375,6 +375,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Lookup (Kind.CONTROL, "FontWeight", typeof (FontWeight));
 		public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Lookup (Kind.CONTROL, "Foreground", typeof (Brush));
 		public static readonly DependencyProperty HorizontalContentAlignmentProperty = DependencyProperty.Lookup (Kind.CONTROL, "HorizontalContentAlignment", typeof (HorizontalAlignment));
+		public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsEnabled", typeof (bool));
 		public static readonly DependencyProperty IsTabStopProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsTabStop", typeof (bool));
 		public static readonly DependencyProperty PaddingProperty = DependencyProperty.Lookup (Kind.CONTROL, "Padding", typeof (Thickness));
 		public static readonly DependencyProperty TabIndexProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabIndex", typeof (int));
@@ -430,6 +431,11 @@ namespace System.Windows.Controls {
 		public HorizontalAlignment HorizontalContentAlignment {
 			get { return (HorizontalAlignment) GetValue (HorizontalContentAlignmentProperty); }
 			set { SetValue (HorizontalContentAlignmentProperty, value); }
+		}
+
+		public bool IsEnabled {
+			get { return (bool) GetValue (IsEnabledProperty); }
+			set { SetValue (IsEnabledProperty, value); }
 		}
 
 		public bool IsTabStop {

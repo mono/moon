@@ -1,3 +1,10 @@
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* Control.cs: Control.Enabled needs to be created in native
+	  code as it's required for hittesting. A disabled control and
+	  its visual children do not receive mouse events and are not
+	  visible to VisualTreeHelper.FindElementInHostCoordinates.
+
 2009-05-26  Alan McGovern  <amcgovern@novell.com>
 
 	* TextBox.cs: Add missing VisualState transitions to TextBox.

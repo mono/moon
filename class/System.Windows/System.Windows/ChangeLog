@@ -1,3 +1,11 @@
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.g.cs: Control.Enabled needs to be created
+	  in native code as it's required for hittesting. A disabled
+	  control and its visual children do not receive mouse events
+	  and are not visible to
+	  VisualTreeHelper.FindElementInHostCoordinates.
+
 2009-05-25  Chris Toshok  <toshok@ximian.com>
 
 	* Application.cs (OnUnhandledException): if an exception is raised
