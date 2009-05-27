@@ -1,3 +1,26 @@
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* textbox.cpp:
+	* textblock.cpp:
+	* pipeline.cpp:
+	* mms-downloader.h:
+	* mms-downloader.cpp:
+	* internal-downloader.h:
+	* file-downloader.h:
+	* file-downloader.cpp:
+	* pipeline-asf.cpp: Updated according to downloader API changes.
+
+	* downloader.h:
+	* downloader.cpp: Add support for retrieving response headers
+	  and disable caching. Initialize the downloader interface methods
+	  to their default/dummy methods statically.
+
+	* value.h:
+	* type.h:
+	* type-generated.cpp:
+	* cbinding.h:
+	* cbinding.cpp: Regenerated.
+
 2009-05-27  Alan McGovern  <amcgovern@novell.com>
 
 	* resources.cpp: Wait til AddedToCollection returns success

@@ -117,7 +117,6 @@ class MmsDownloader : public InternalDownloader {
 	virtual void Write (void *buf, gint32 offset, gint32 n);
 	virtual char *GetDownloadedFilename (const char *partname);
 	virtual char *GetResponseText (const char *partname, gint64 *size);
-	virtual InternalDownloader::DownloaderType GetType () { return InternalDownloader::MmsDownloader; }
 
 	ASFParser *GetASFParser () { return parser; }
 	void SetSource (MemoryQueueSource *src);

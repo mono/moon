@@ -31,14 +31,17 @@
 #include "easing.h"
 #include "error.h"
 #include "eventargs.h"
+#include "file-downloader.h"
 #include "frameworkelement.h"
 #include "geometry.h"
 #include "glyphs.h"
 #include "grid.h"
 #include "imagesource.h"
+#include "internal-downloader.h"
 #include "media.h"
 #include "mediaelement.h"
 #include "mediaplayer.h"
+#include "mms-downloader.h"
 #include "mp3.h"
 #include "multiscaleimage.h"
 #include "multiscalesubimage.h"
@@ -287,6 +290,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::EXTERNALDEMUXER] = new Type (Type::EXTERNALDEMUXER, Type::IMEDIADEMUXER, false, false, "ExternalDemuxer", 0, 1, NULL, 0, NULL, NULL, NULL);
 	types [(int) Type::FFMPEGDECODER] = new Type (Type::FFMPEGDECODER, Type::IMEDIADECODER, false, false, "FfmpegDecoder", 0, 1, NULL, 0, NULL, NULL, NULL);
 	types [(int) Type::FFMPEGDEMUXER] = new Type (Type::FFMPEGDEMUXER, Type::IMEDIADEMUXER, false, false, "FfmpegDemuxer", 0, 1, NULL, 0, NULL, NULL, NULL);
+	types [(int) Type::FILEDOWNLOADER] = new Type (Type::FILEDOWNLOADER, Type::INTERNALDOWNLOADER, false, false, "FileDownloader", 0, 1, NULL, 0, NULL, NULL, NULL);
 	types [(int) Type::FILESOURCE] = new Type (Type::FILESOURCE, Type::IMEDIASOURCE, false, false, "FileSource", 0, 1, NULL, 0, NULL, NULL, NULL);
 	types [(int) Type::FLOAT] = new Type (Type::FLOAT, Type::OBJECT, true, false, "float", 0, 0, NULL, 5, FLOAT_Interfaces, NULL, NULL);
 	types [(int) Type::FONTFAMILY] = new Type (Type::FONTFAMILY, Type::OBJECT, true, false, "FontFamily", 0, 0, NULL, 0, NULL, NULL, NULL);
@@ -346,6 +350,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::INPUTMETHOD] = new Type (Type::INPUTMETHOD, Type::DEPENDENCY_OBJECT, false, false, "InputMethod", 0, 1, NULL, 0, NULL, (create_inst_func *) input_method_new, NULL);
 	types [(int) Type::INT32] = new Type (Type::INT32, Type::OBJECT, true, false, "gint32", 0, 0, NULL, 5, INT32_Interfaces, NULL, NULL);
 	types [(int) Type::INT64] = new Type (Type::INT64, Type::OBJECT, true, false, "gint64", 0, 0, NULL, 5, INT64_Interfaces, NULL, NULL);
+	types [(int) Type::INTERNALDOWNLOADER] = new Type (Type::INTERNALDOWNLOADER, Type::EVENTOBJECT, false, false, "InternalDownloader", 0, 1, NULL, 0, NULL, NULL, NULL);
 	types [(int) Type::ITEM_COLLECTION] = new Type (Type::ITEM_COLLECTION, Type::COLLECTION, false, false, "ItemCollection", 0, 3, NULL, 0, NULL, (create_inst_func *) item_collection_new, NULL);
 	types [(int) Type::KEYEVENTARGS] = new Type (Type::KEYEVENTARGS, Type::ROUTEDEVENTARGS, false, false, "KeyEventArgs", 0, 1, NULL, 0, NULL, (create_inst_func *) key_event_args_new, NULL);
 	types [(int) Type::KEYFRAME] = new Type (Type::KEYFRAME, Type::DEPENDENCY_OBJECT, false, false, "KeyFrame", 0, 1, NULL, 0, NULL, NULL, NULL);
@@ -386,6 +391,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MEMORYNESTEDSOURCE] = new Type (Type::MEMORYNESTEDSOURCE, Type::MEMORYSOURCE, false, false, "MemoryNestedSource", 0, 1, NULL, 0, NULL, NULL, NULL);
 	types [(int) Type::MEMORYQUEUESOURCE] = new Type (Type::MEMORYQUEUESOURCE, Type::IMEDIASOURCE, false, false, "MemoryQueueSource", 0, 1, NULL, 0, NULL, NULL, NULL);
 	types [(int) Type::MEMORYSOURCE] = new Type (Type::MEMORYSOURCE, Type::IMEDIASOURCE, false, false, "MemorySource", 0, 1, NULL, 0, NULL, NULL, NULL);
+	types [(int) Type::MMSDOWNLOADER] = new Type (Type::MMSDOWNLOADER, Type::INTERNALDOWNLOADER, false, false, "MmsDownloader", 0, 1, NULL, 0, NULL, NULL, NULL);
 	types [(int) Type::MOUSEEVENTARGS] = new Type (Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, false, "MouseEventArgs", 0, 1, NULL, 0, NULL, (create_inst_func *) mouse_event_args_new, NULL);
 	types [(int) Type::MOUSEWHEELEVENTARGS] = new Type (Type::MOUSEWHEELEVENTARGS, Type::ROUTEDEVENTARGS, false, false, "MouseWheelEventArgs", 0, 1, NULL, 0, NULL, (create_inst_func *) mouse_wheel_event_args_new, NULL);
 	types [(int) Type::MP3DEMUXER] = new Type (Type::MP3DEMUXER, Type::IMEDIADEMUXER, false, false, "Mp3Demuxer", 0, 1, NULL, 0, NULL, NULL, NULL);

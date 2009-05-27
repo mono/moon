@@ -88,6 +88,7 @@ class ExternalDecoder;
 class ExternalDemuxer;
 class FfmpegDecoder;
 class FfmpegDemuxer;
+class FileDownloader;
 class FileSource;
 class FrameworkElement;
 class FrameworkTemplate;
@@ -115,6 +116,7 @@ class InkPresenter;
 class Inline;
 class InlineCollection;
 class InputMethod;
+class InternalDownloader;
 class ItemCollection;
 class KeyEventArgs;
 class KeyFrame;
@@ -152,6 +154,7 @@ class MediaSeekClosure;
 class MemoryNestedSource;
 class MemoryQueueSource;
 class MemorySource;
+class MmsDownloader;
 class MouseEventArgs;
 class MouseWheelEventArgs;
 class Mp3Demuxer;
@@ -726,20 +729,21 @@ typedef void ( * TickCallHandler ) ( EventObject * object ) ;
 typedef void ( * EventHandler ) ( EventObject * sender , EventArgs * args , gpointer closure ) ;
 typedef void ( * ToggleNotifyHandler ) ( EventObject * sender , bool isLastRef ) ;
 typedef void ( * PropertyChangeHandler ) ( DependencyObject * sender , PropertyChangedEventArgs * args , MoonError * error , gpointer closure ) ;
+typedef void ( * DownloaderResponseHeaderCallback ) ( gpointer context , const char * header , const char * value ) ;
 typedef void ( * DownloaderWriteFunc ) ( void * buf , gint32 offset , gint32 n , gpointer cb_data ) ;
 typedef void ( * DownloaderNotifySizeFunc ) ( gint64 size , gpointer cb_data ) ;
 typedef gpointer ( * DownloaderCreateStateFunc ) ( Downloader * dl ) ;
 typedef void ( * DownloaderDestroyStateFunc ) ( gpointer state ) ;
-typedef void ( * DownloaderOpenFunc ) ( const char * verb , const char * uri , bool streaming , gpointer state ) ;
+typedef void ( * DownloaderOpenFunc ) ( gpointer state , const char * verb , const char * uri , bool custom_header_support , bool disable_cache ) ;
 typedef void ( * DownloaderSendFunc ) ( gpointer state ) ;
 typedef void ( * DownloaderAbortFunc ) ( gpointer state ) ;
 typedef void ( * DownloaderHeaderFunc ) ( gpointer state , const char * header , const char * value ) ;
 typedef void ( * DownloaderBodyFunc ) ( gpointer state , void * body , guint32 length ) ;
 typedef gpointer ( * DownloaderCreateWebRequestFunc ) ( const char * method , const char * uri , gpointer context ) ;
+typedef void ( * DownloaderSetResponseHeaderCallbackFunc ) ( gpointer state , DownloaderResponseHeaderCallback callback , gpointer context ) ;
 typedef guint32 ( * DownloaderResponseStartedHandler ) ( DownloaderResponse * response , gpointer context ) ;
 typedef guint32 ( * DownloaderResponseDataAvailableHandler ) ( DownloaderResponse * response , gpointer context , char * buffer , guint32 length ) ;
 typedef guint32 ( * DownloaderResponseFinishedHandler ) ( DownloaderResponse * response , gpointer context , bool success , gpointer data , const char * uri ) ;
-typedef void ( * DownloaderResponseHeaderVisitorCallback ) ( const char * header , const char * value ) ;
 typedef double ( * EasingFunction ) ( double normalizedTime ) ;
 typedef Size ( * MeasureOverrideCallback ) ( Size availableSize ) ;
 typedef Size ( * ArrangeOverrideCallback ) ( Size finalSize ) ;
@@ -1289,7 +1293,7 @@ void downloader_notify_finished (Downloader *instance, const char *final_uri);
 void downloader_notify_size (Downloader *instance, gint64 size);
 
 /* @GeneratePInvoke */
-void downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, bool only_if_not_set);
+void downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, DownloaderSetResponseHeaderCallbackFunc response_header_callback);
 
 /* @GeneratePInvoke */
 void downloader_write (Downloader *instance, void *buf, gint32 offset, gint32 n);
@@ -1334,7 +1338,7 @@ int downloader_response_get_response_status (DownloaderResponse *instance);
 const char *downloader_response_get_response_status_text (DownloaderResponse *instance);
 
 /* @GeneratePInvoke */
-void downloader_response_set_header_visitor (DownloaderResponse *instance, DownloaderResponseHeaderVisitorCallback visitor);
+void downloader_response_set_header_visitor (DownloaderResponse *instance, DownloaderResponseHeaderCallback visitor, gpointer context);
 
 /**
  * DownloadProgressEventArgs

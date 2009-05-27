@@ -1,3 +1,8 @@
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ff2-http.cpp:
+	* ff2-bridge.h: Updated according to downloader API changes.
+
 2009-05-02  Rusty Howell  <rhowell@novell.com>
 
 	* Makefile.am: Create a different bridge for the xpi

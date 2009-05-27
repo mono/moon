@@ -57,15 +57,6 @@
 // Downloader
 //
 
-DownloaderCreateStateFunc Downloader::create_state = NULL;
-DownloaderDestroyStateFunc Downloader::destroy_state = NULL;
-DownloaderOpenFunc Downloader::open_func = NULL;
-DownloaderSendFunc Downloader::send_func = NULL;
-DownloaderAbortFunc Downloader::abort_func = NULL;
-DownloaderHeaderFunc Downloader::header_func = NULL;
-DownloaderBodyFunc Downloader::body_func = NULL;
-DownloaderCreateWebRequestFunc Downloader::request_func = NULL;
-
 Downloader::Downloader ()
 {
 	LOG_DOWNLOADER ("Downloader::Downloader ()\n");
@@ -75,7 +66,6 @@ Downloader::Downloader ()
 	downloader_state = Downloader::create_state (this);
 	user_data = NULL;
 	context = NULL;
-	streaming_features = HttpStreamingFeaturesNone;
 	notify_size = NULL;
 	writer = NULL;
 	internal_dl = NULL;
@@ -84,6 +74,8 @@ Downloader::Downloader ()
 	started = false;
 	aborted = false;
 	completed = false;
+	custom_header_support = false;
+	disable_cache = false;
 	file_size = -2;
 	total = 0;
 	
@@ -103,8 +95,11 @@ Downloader::~Downloader ()
 	g_free (buffer);
 	g_free (failed_msg);
 
+	// NOTE:
+	// mms code relies on the internal downloader to be alive while it has a ref on the downloader
+	// update mms code if this assumption changes.
 	if (internal_dl != NULL)
-		delete internal_dl;
+		internal_dl->unref ();
 }
 
 void
@@ -212,11 +207,11 @@ Downloader::GetResponseText (const char *PartName, gint64 *size)
 }
 
 void
-Downloader::InternalOpen (const char *verb, const char *uri, bool streaming)
+Downloader::InternalOpen (const char *verb, const char *uri)
 {
-	LOG_DOWNLOADER ("Downloader::InternalOpen (%s, %s, %i)\n", verb, uri, streaming);
+	LOG_DOWNLOADER ("Downloader::InternalOpen (%s, %s) requires custom header support: %i\n", verb, uri, custom_header_support);
 
-	open_func (verb, uri, streaming, downloader_state);
+	open_func (downloader_state, verb, uri, custom_header_support, disable_cache);
 }
 
 static bool
@@ -412,6 +407,13 @@ Downloader::InternalSetHeader (const char *header, const char *value)
 }
 
 void
+Downloader::InternalSetHeaderFormatted (const char *header, char *value)
+{
+	InternalSetHeader (header, (const char *) value);
+	g_free (value);
+}
+
+void
 Downloader::InternalSetBody (void *body, guint32 length)
 {
 	LOG_DOWNLOADER ("Downloader::InternalSetBody (%p, %u)\n", body, length);
@@ -541,7 +543,7 @@ Downloader::InternalWrite (void *buf, gint32 offset, gint32 n)
 	
 	// This is a horrible hack to work around mozilla bug #444160
 	// See Downloader::GetResponseText for an explanation
-	if (internal_dl->GetType () == InternalDownloader::FileDownloader && n == total && total < 65536) {
+	if (internal_dl->GetObjectType () == Type::FILEDOWNLOADER && n == total && total < 65536) {
 		buffer = (char *) g_malloc ((size_t) total);
 		memcpy (buffer, buf, (size_t) total);
 	} 
@@ -672,21 +674,9 @@ Downloader::SetFunctions (DownloaderCreateStateFunc create_state,
 			  DownloaderHeaderFunc header,
 			  DownloaderBodyFunc body,
 			  DownloaderCreateWebRequestFunc request,
-			  bool only_if_not_set)
+			  DownloaderSetResponseHeaderCallbackFunc response_header_callback)
 {
 	LOG_DOWNLOADER ("Downloader::SetFunctions\n");
-	
-	if (only_if_not_set &&
-	    (Downloader::create_state != NULL ||
-	     Downloader::destroy_state != NULL ||
-	     Downloader::open_func != NULL ||
-	     Downloader::send_func != NULL ||
-	     Downloader::abort_func != NULL ||
-	     Downloader::header_func != NULL ||
-	     Downloader::body_func != NULL ||
-	     Downloader::request_func != NULL))
-	  return;
-
 	Downloader::create_state = create_state;
 	Downloader::destroy_state = destroy_state;
 	Downloader::open_func = open;
@@ -695,6 +685,7 @@ Downloader::SetFunctions (DownloaderCreateStateFunc create_state,
 	Downloader::header_func = header;
 	Downloader::body_func = body;
 	Downloader::request_func = request;
+	Downloader::set_response_header_callback_func = response_header_callback;
 }
 
 
@@ -758,6 +749,13 @@ Downloader::CreateWebRequest (const char *method, const char *uri)
 }
 
 void
+Downloader::SetResponseHeaderCallback (DownloaderResponseHeaderCallback callback, gpointer context)
+{
+	if (set_response_header_callback_func != NULL)
+		set_response_header_callback_func (downloader_state, callback, context);
+}
+
+void
 downloader_write (Downloader *dl, void *buf, gint32 offset, gint32 n)
 {
 	dl->Write (buf, offset, n);
@@ -797,7 +795,7 @@ dummy_downloader_destroy_state (gpointer state)
 }
 
 static void
-dummy_downloader_open (const char *verb, const char *uri, bool open, gpointer state)
+dummy_downloader_open (gpointer state, const char *verb, const char *uri, bool custom_header_support, bool disble_cache)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }
@@ -833,16 +831,23 @@ dummy_downloader_create_web_request (const char *method, const char *uri, gpoint
 	return NULL;
 }
 
+static void
+dummy_downloader_set_response_header_callback (gpointer state, DownloaderResponseHeaderCallback callback, gpointer context)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+}
+
+DownloaderCreateStateFunc Downloader::create_state = dummy_downloader_create_state;
+DownloaderDestroyStateFunc Downloader::destroy_state = dummy_downloader_destroy_state;
+DownloaderOpenFunc Downloader::open_func = dummy_downloader_open;
+DownloaderSendFunc Downloader::send_func = dummy_downloader_send;
+DownloaderAbortFunc Downloader::abort_func = dummy_downloader_abort;
+DownloaderHeaderFunc Downloader::header_func = dummy_downloader_header;
+DownloaderBodyFunc Downloader::body_func = dummy_downloader_body;
+DownloaderCreateWebRequestFunc Downloader::request_func = dummy_downloader_create_web_request;
+DownloaderSetResponseHeaderCallbackFunc Downloader::set_response_header_callback_func = dummy_downloader_set_response_header_callback;
 
 void
 downloader_init (void)
-{	
-	Downloader::SetFunctions (dummy_downloader_create_state,
-				  dummy_downloader_destroy_state,
-				  dummy_downloader_open,
-				  dummy_downloader_send,
-				  dummy_downloader_abort,
-				  dummy_downloader_header,
-				  dummy_downloader_body,
-				  dummy_downloader_create_web_request, true);
+{
 }

@@ -686,7 +686,7 @@ MemoryQueueSource::MemoryQueueSource (Media *media, Downloader *downloader)
 	
 	g_return_if_fail (downloader != NULL);
 	g_return_if_fail (downloader->GetInternalDownloader () != NULL);
-	g_return_if_fail (downloader->GetInternalDownloader ()->GetType () == InternalDownloader::MmsDownloader);
+	g_return_if_fail (downloader->GetInternalDownloader ()->GetObjectType () == Type::MMSDOWNLOADER);
 	
 	this->downloader = downloader;
 	this->downloader->ref ();

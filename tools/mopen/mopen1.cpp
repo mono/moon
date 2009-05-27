@@ -169,7 +169,7 @@ downloader_destroy_state (gpointer data)
 }
 
 static void
-downloader_open (const char *verb, const char *uri, bool streaming, gpointer state)
+downloader_open (gpointer state, const char *verb, const char *uri, bool streaming, bool disable_cache)
 {
 	((FileDownloadState*)state)->Open (verb, uri);
 }

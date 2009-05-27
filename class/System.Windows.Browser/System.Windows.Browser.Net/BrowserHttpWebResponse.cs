@@ -59,7 +59,7 @@ namespace System.Windows.Browser.Net
 			if (native == IntPtr.Zero)
 				return;
 
-			NativeMethods.downloader_response_set_header_visitor (native, OnHttpHeader);
+			NativeMethods.downloader_response_set_header_visitor (native, OnHttpHeader, IntPtr.Zero);
 		}
 
 		~BrowserHttpWebResponse ()
@@ -97,7 +97,7 @@ namespace System.Windows.Browser.Net
 			aborted = true;
 		}
 
-		void OnHttpHeader (IntPtr name, IntPtr value)
+		void OnHttpHeader (IntPtr context, IntPtr name, IntPtr value)
 		{
 			try {
 				Headers [Marshal.PtrToStringAnsi (name)] = Marshal.PtrToStringAnsi (value);

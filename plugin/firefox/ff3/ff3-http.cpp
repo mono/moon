@@ -11,7 +11,7 @@
 #include "../browser-http.inc"
 
 DownloaderRequest*
-FF3BrowserBridge::CreateDownloaderRequest (const char *method, const char *uri)
+FF3BrowserBridge::CreateDownloaderRequest (const char *method, const char *uri, bool disable_cache)
 {
-	return new FF3DownloaderRequest (method, uri);
+	return new FF3DownloaderRequest (method, uri, disable_cache);
 }

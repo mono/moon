@@ -1826,7 +1826,7 @@ TextBoxBase::DownloaderComplete ()
 	if (!(idl = downloader->GetInternalDownloader ()))
 		return;
 	
-	if (!(idl->GetType () == InternalDownloader::FileDownloader))
+	if (!(idl->GetObjectType () == Type::FILEDOWNLOADER))
 		return;
 	
 	uri = downloader->GetUri ();

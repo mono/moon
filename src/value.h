@@ -128,6 +128,7 @@ class ExternalDecoder;
 class ExternalDemuxer;
 class FfmpegDecoder;
 class FfmpegDemuxer;
+class FileDownloader;
 class FileSource;
 class FrameworkElement;
 class FrameworkTemplate;
@@ -155,6 +156,7 @@ class InkPresenter;
 class Inline;
 class InlineCollection;
 class InputMethod;
+class InternalDownloader;
 class ItemCollection;
 class KeyEventArgs;
 class KeyFrame;
@@ -192,6 +194,7 @@ class MediaSeekClosure;
 class MemoryNestedSource;
 class MemoryQueueSource;
 class MemorySource;
+class MmsDownloader;
 class MouseEventArgs;
 class MouseWheelEventArgs;
 class Mp3Demuxer;
@@ -468,6 +471,7 @@ public:
 	ExternalDemuxer*                         AsExternalDemuxer (Types *types = NULL) { checked_get_subclass (Type::EXTERNALDEMUXER, ExternalDemuxer) }
 	FfmpegDecoder*                           AsFfmpegDecoder (Types *types = NULL) { checked_get_subclass (Type::FFMPEGDECODER, FfmpegDecoder) }
 	FfmpegDemuxer*                           AsFfmpegDemuxer (Types *types = NULL) { checked_get_subclass (Type::FFMPEGDEMUXER, FfmpegDemuxer) }
+	FileDownloader*                          AsFileDownloader (Types *types = NULL) { checked_get_subclass (Type::FILEDOWNLOADER, FileDownloader) }
 	FileSource*                              AsFileSource (Types *types = NULL) { checked_get_subclass (Type::FILESOURCE, FileSource) }
 	FrameworkElement*                        AsFrameworkElement (Types *types = NULL) { checked_get_subclass (Type::FRAMEWORKELEMENT, FrameworkElement) }
 	FrameworkTemplate*                       AsFrameworkTemplate (Types *types = NULL) { checked_get_subclass (Type::FRAMEWORKTEMPLATE, FrameworkTemplate) }
@@ -495,6 +499,7 @@ public:
 	Inline*                                  AsInline (Types *types = NULL) { checked_get_subclass (Type::INLINE, Inline) }
 	InlineCollection*                        AsInlineCollection (Types *types = NULL) { checked_get_subclass (Type::INLINE_COLLECTION, InlineCollection) }
 	InputMethod*                             AsInputMethod (Types *types = NULL) { checked_get_subclass (Type::INPUTMETHOD, InputMethod) }
+	InternalDownloader*                      AsInternalDownloader (Types *types = NULL) { checked_get_subclass (Type::INTERNALDOWNLOADER, InternalDownloader) }
 	ItemCollection*                          AsItemCollection (Types *types = NULL) { checked_get_subclass (Type::ITEM_COLLECTION, ItemCollection) }
 	KeyEventArgs*                            AsKeyEventArgs (Types *types = NULL) { checked_get_subclass (Type::KEYEVENTARGS, KeyEventArgs) }
 	KeyFrame*                                AsKeyFrame (Types *types = NULL) { checked_get_subclass (Type::KEYFRAME, KeyFrame) }
@@ -532,6 +537,7 @@ public:
 	MemoryNestedSource*                      AsMemoryNestedSource (Types *types = NULL) { checked_get_subclass (Type::MEMORYNESTEDSOURCE, MemoryNestedSource) }
 	MemoryQueueSource*                       AsMemoryQueueSource (Types *types = NULL) { checked_get_subclass (Type::MEMORYQUEUESOURCE, MemoryQueueSource) }
 	MemorySource*                            AsMemorySource (Types *types = NULL) { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
+	MmsDownloader*                           AsMmsDownloader (Types *types = NULL) { checked_get_subclass (Type::MMSDOWNLOADER, MmsDownloader) }
 	MouseEventArgs*                          AsMouseEventArgs (Types *types = NULL) { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
 	MouseWheelEventArgs*                     AsMouseWheelEventArgs (Types *types = NULL) { checked_get_subclass (Type::MOUSEWHEELEVENTARGS, MouseWheelEventArgs) }
 	Mp3Demuxer*                              AsMp3Demuxer (Types *types = NULL) { checked_get_subclass (Type::MP3DEMUXER, Mp3Demuxer) }

@@ -1383,9 +1383,9 @@ downloader_notify_size (Downloader *instance, gint64 size)
 
 
 void
-downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, bool only_if_not_set)
+downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, DownloaderSetResponseHeaderCallbackFunc response_header_callback)
 {
-	Downloader::SetFunctions (create_state, destroy_state, open, send, abort, header, body, request, only_if_not_set);
+	Downloader::SetFunctions (create_state, destroy_state, open, send, abort, header, body, request, response_header_callback);
 }
 
 
@@ -1511,12 +1511,12 @@ downloader_response_get_response_status_text (DownloaderResponse *instance)
 
 
 void
-downloader_response_set_header_visitor (DownloaderResponse *instance, DownloaderResponseHeaderVisitorCallback visitor)
+downloader_response_set_header_visitor (DownloaderResponse *instance, DownloaderResponseHeaderCallback visitor, gpointer context)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SetHeaderVisitor (visitor);
+	instance->SetHeaderVisitor (visitor, context);
 }
 
 

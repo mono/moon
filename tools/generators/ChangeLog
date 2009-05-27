@@ -1,3 +1,7 @@
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* TypeReference.cs: Updated according to downloader API changes.
+
 2009-05-25  Alan McGovern  <amcgovern@novell.com>
 
 	* FieldInfo.cs:

@@ -48,12 +48,15 @@ namespace Mono {
 
 	internal delegate IntPtr DownloaderCreateStateFunc (IntPtr dl);
 	internal delegate void   DownloaderDestroyStateFunc (IntPtr state);
-	internal delegate void   DownloaderOpenFunc (string verb, string uri, bool streaming, IntPtr state);
+	internal delegate void   DownloaderOpenFunc (IntPtr state, string verb, string uri, bool custom_header_support, bool disable_cache);
 	internal delegate void   DownloaderSendFunc (IntPtr state);
 	internal delegate void   DownloaderAbortFunc (IntPtr state);
 	internal delegate void   DownloaderHeaderFunc (IntPtr state, string header, string value);
 	internal delegate void   DownloaderBodyFunc (IntPtr state, IntPtr body, int length);
 	internal delegate IntPtr DownloaderCreateWebRequestFunc (string method, string uri, IntPtr context);
+	internal delegate void   DownloaderSetResponseHeaderCallbackFunc (IntPtr native, DownloaderResponseHeaderCallback callback, IntPtr context);
+
+	internal delegate void DownloaderResponseHeaderCallback (IntPtr context, string header, string value);
 
 	internal delegate Size MeasureOverrideCallback (Size availableSize);
 	internal delegate Size ArrangeOverrideCallback (Size finalSize);
@@ -95,7 +98,7 @@ namespace Mono {
 	internal delegate uint DownloaderResponseStartedDelegate (IntPtr native, IntPtr context);
 	internal delegate uint DownloaderResponseAvailableDelegate (IntPtr native, IntPtr context, IntPtr data, uint length);
 	internal delegate uint DownloaderResponseFinishedDelegate (IntPtr native, IntPtr context, [MarshalAs (UnmanagedType.U1)] bool success, IntPtr data);
-	internal delegate void HeaderVisitor (IntPtr name, IntPtr val);
+	internal delegate void HeaderVisitor (IntPtr context, IntPtr name, IntPtr val);
 
 	internal delegate void DomEventCallback (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, 
 		[MarshalAs (UnmanagedType.Bool)] bool alt_key,	// glib gboolean is a gint (i.e. 4 bytes just like the FX bool)

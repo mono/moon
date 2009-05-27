@@ -526,7 +526,7 @@ Media::Initialize (Downloader *downloader, const char *PartName)
 	
 	if (file == NULL) {
 		InternalDownloader *idl = downloader->GetInternalDownloader ();
-		MmsDownloader *mms_dl = (idl && idl->GetType () == InternalDownloader::MmsDownloader) ? (MmsDownloader *) idl : NULL;
+		MmsDownloader *mms_dl = (idl && idl->GetObjectType () == Type::MMSDOWNLOADER) ? (MmsDownloader *) idl : NULL;
 		
 		if (mms_dl != NULL) {
 			source = new MemoryQueueSource (this, downloader);

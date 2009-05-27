@@ -74,6 +74,7 @@
     <File name="plugin.mdp" subtype="Code" buildaction="Nothing" />
     <File name="cbinding.h" subtype="Code" buildaction="Nothing" />
     <File name="cbinding.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff2/ChangeLog" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>

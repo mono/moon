@@ -792,8 +792,8 @@ namespace Mono {
 		public extern static void downloader_notify_size (IntPtr instance, long size);
 
 		[DllImport ("moon")]
-		// void downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, bool only_if_not_set);
-		public extern static void downloader_set_functions (Mono.DownloaderCreateStateFunc create_state, Mono.DownloaderDestroyStateFunc destroy_state, Mono.DownloaderOpenFunc open, Mono.DownloaderSendFunc send, Mono.DownloaderAbortFunc abort, Mono.DownloaderHeaderFunc header, Mono.DownloaderBodyFunc body, Mono.DownloaderCreateWebRequestFunc request, [MarshalAs (UnmanagedType.U1)] bool only_if_not_set);
+		// void downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, DownloaderSetResponseHeaderCallbackFunc response_header_callback);
+		public extern static void downloader_set_functions (Mono.DownloaderCreateStateFunc create_state, Mono.DownloaderDestroyStateFunc destroy_state, Mono.DownloaderOpenFunc open, Mono.DownloaderSendFunc send, Mono.DownloaderAbortFunc abort, Mono.DownloaderHeaderFunc header, Mono.DownloaderBodyFunc body, Mono.DownloaderCreateWebRequestFunc request, Mono.DownloaderSetResponseHeaderCallbackFunc response_header_callback);
 
 		[DllImport ("moon")]
 		// void downloader_write (Downloader *instance, void *buf, gint32 offset, gint32 n);
@@ -855,8 +855,8 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
-		// void downloader_response_set_header_visitor (DownloaderResponse *instance, DownloaderResponseHeaderVisitorCallback visitor);
-		public extern static void downloader_response_set_header_visitor (IntPtr instance, HeaderVisitor visitor);
+		// void downloader_response_set_header_visitor (DownloaderResponse *instance, DownloaderResponseHeaderCallback visitor, gpointer context);
+		public extern static void downloader_response_set_header_visitor (IntPtr instance, HeaderVisitor visitor, IntPtr context);
 
 		[DllImport ("moon")]
 		// double download_progress_event_args_get_progress (DownloadProgressEventArgs *instance);

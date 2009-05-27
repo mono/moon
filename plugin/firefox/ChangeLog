@@ -1,3 +1,8 @@
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* browser-http.inc: Implement support for disabling cache and getting response
+	  headers.
+
 2009-04-06  Andreia Gaita  <avidigal@novell.com>
 
 	* ff-common.h: add new header for common structs and dom includes

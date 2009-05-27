@@ -1,5 +1,17 @@
 2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin-downloader.h:
+	* plugin-downloader.cpp: Add support for retrieving response headers
+	  and disable cache.
+
+	* cbinding.h: Regenerated.
+
+	* browser-bridge.h: Updated according to downloader API changes.
+
+	* plugin.mdp: Updated.
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin-downloader.cpp: Don't hard code the verb.
 
 2009-05-25  Chris Toshok  <toshok@ximian.com>

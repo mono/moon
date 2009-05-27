@@ -31,16 +31,16 @@ class FileDownloader : public InternalDownloader {
 	bool DownloadedFileIsZipped ();
 	void CleanupUnzipDir ();
 
+	virtual ~FileDownloader ();
+
  public:
 	FileDownloader (Downloader *dl);
-	virtual ~FileDownloader ();
 	
 	virtual void Open (const char *verb, const char *uri);
 	virtual void Write (void *buf, gint32 offset, gint32 n);
 	virtual char *GetDownloadedFilename (const char *partname);
 	virtual char *GetResponseText (const char *partname, gint64 *size);
-	virtual InternalDownloader::DownloaderType GetType () { return InternalDownloader::FileDownloader; }
-	
+
 	const char *GetDownloadedFile ();
 	
 	const char *GetUnzippedPath ();

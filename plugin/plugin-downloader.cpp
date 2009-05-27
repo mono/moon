@@ -82,13 +82,13 @@ plugin_downloader_destroy_state (gpointer data)
 }
 
 static void
-plugin_downloader_open (const char *verb, const char *uri, bool streaming, gpointer state)
+plugin_downloader_open (gpointer state, const char *verb, const char *uri, bool custom_header_support, bool disable_cache)
 {
 	d (printf ("plugin_downloader_open (%s, %s, %p)\n", verb, uri, state));
 	
 	PluginDownloader *pd = (PluginDownloader *) state;
 
-	pd->Open (verb, uri, streaming);
+	pd->Open (verb, uri, custom_header_support, disable_cache);
 }
 
 static void
@@ -143,7 +143,17 @@ plugin_downloader_create_webrequest (const char *method, const char *uri, gpoint
 	PluginInstance *instance = (PluginInstance *) context;
 	BrowserBridge *bridge = instance->GetBridge ();
 	
-	return bridge ? bridge->CreateDownloaderRequest (method, uri) : NULL;
+	return bridge ? bridge->CreateDownloaderRequest (method, uri, false) : NULL;
+}
+
+static void
+plugin_downloader_set_response_header_callback (gpointer state, DownloaderResponseHeaderCallback callback, gpointer context)
+{
+	if (!state)
+		return;
+
+	PluginDownloader *pd = (PluginDownloader *) state;
+	pd->SetResponseHeaderCallback (callback, context);
 }
 
 PluginDownloader::PluginDownloader (Downloader *dl)
@@ -155,6 +165,8 @@ PluginDownloader::PluginDownloader (Downloader *dl)
 	this->response = NULL;
 	this->request = NULL;
 	this->finished = false;
+	this->response_header_callback = NULL;
+	this->response_header_context = NULL;
 }
 
 PluginDownloader::~PluginDownloader ()
@@ -176,6 +188,9 @@ PluginDownloader::Abort ()
 	if (finished)
 		return;
 
+	response_header_callback = NULL;
+	response_header_context = NULL;
+
 	if (this->request) {
 		this->request->Abort ();
 		delete request;
@@ -189,7 +204,7 @@ PluginDownloader::Abort ()
 }
 
 void
-PluginDownloader::Open (const char *verb, const char *uri, bool streaming)
+PluginDownloader::Open (const char *verb, const char *uri, bool custom_header_support, bool disable_cache)
 {
 	d (printf ("PluginDownloader::Open (), this: %p, dl: %p\n", this, dl));
 	
@@ -200,10 +215,10 @@ PluginDownloader::Open (const char *verb, const char *uri, bool streaming)
 	this->verb = g_strdup (verb);
 	this->uri = g_strdup (uri);
 	
-	if (streaming) {
+	if (custom_header_support) {
 		BrowserBridge *bridge = GetPlugin ()->GetBridge ();
 		if (bridge)
-			this->request = bridge->CreateDownloaderRequest (this->verb, this->uri);
+			this->request = bridge->CreateDownloaderRequest (this->verb, this->uri, disable_cache);
 	} else {
 		this->request = new NPStreamRequest (this->verb, this->uri, GetPlugin ());
 	}
@@ -235,8 +250,24 @@ PluginDownloader::setResponse (DownloaderResponse *response)
 	if (this->response != NULL)
 		this->response->unref ();
 	this->response = response;
-	if (this->response != NULL)
+	if (this->response != NULL) {
 		this->response->ref ();
+
+		if (response_header_callback != NULL)
+			response->SetHeaderVisitor (response_header_callback, response_header_context);
+	}
+}
+
+void
+PluginDownloader::SetResponseHeaderCallback (DownloaderResponseHeaderCallback callback, gpointer context)
+{
+	response_header_callback = NULL;
+	if (response) {
+		response->SetHeaderVisitor (callback, context);
+	} else {
+		response_header_callback = callback;
+		response_header_context = context;
+	}
 }
 
 DownloaderRequest *
@@ -328,7 +359,7 @@ downloader_initialize (void)
 		&plugin_downloader_set_header,
 		&plugin_downloader_set_body,
 		&plugin_downloader_create_webrequest,
-		false);
+		&plugin_downloader_set_response_header_callback);
 }
 
 void

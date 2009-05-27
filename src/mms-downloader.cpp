@@ -30,7 +30,7 @@ is_valid_mms_header (MmsHeader *header)
 	return true;
 }
 
-MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl)
+MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl, Type::MMSDOWNLOADER)
 {
 	LOG_MMS ("MmsDownloader::MmsDownloader ()\n");
 	uri = NULL;
@@ -108,7 +108,8 @@ MmsDownloader::Open (const char *verb, const char *uri)
 	LOG_MMS ("MmsDownloader::Open ('%s', '%s')\n", verb, uri);
 	this->uri = g_strdup_printf ("http://%s", uri+6);
 
-	dl->InternalOpen (verb, this->uri, true);
+	dl->InternalOpen (verb, this->uri);
+	dl->SetRequireCustomHeaderSupport (true);
 
 	dl->InternalSetHeader ("User-Agent", "NSPlayer/11.1.0.3856");
 	dl->InternalSetHeader ("Pragma", "no-cache,xClientGUID={c77e7400-738a-11d2-9add-0020af0a3278}");
@@ -212,7 +213,8 @@ MmsDownloader::RestartAtPts (guint64 pts)
 	LOG_MMS ("MmsDownloader::RestartAtPts (%" G_GUINT64_FORMAT ")\n", pts);
 	dl->InternalAbort ();
 
-	dl->InternalOpen ("GET", uri, true);
+	dl->InternalOpen ("GET", uri);
+	dl->SetRequireCustomHeaderSupport (true);
 	dl->InternalSetHeader ("User-Agent", "NSPlayer/11.1.0.3856");
 	dl->InternalSetHeader ("Pragma", "no-cache,xClientGUID={c77e7400-738a-11d2-9add-0020af0a3278}");
 	dl->InternalSetHeader ("Pragma", "rate=1.000000,stream-offset=0:0,max-duration=0");

@@ -235,7 +235,7 @@ namespace Moonlight.Gtk {
 			m.downloading = false;
 		}
 
-		public static void Open (string verb, string uri, bool streaming, IntPtr state)
+		public static void Open (IntPtr state, string verb, string uri, bool custom_header_support, bool disable_cache)
 		{
 			ManagedDownloader m = (ManagedDownloader) downloaders [state];
 			if (m == null)
