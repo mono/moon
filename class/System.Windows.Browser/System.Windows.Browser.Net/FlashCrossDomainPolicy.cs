@@ -96,6 +96,7 @@ namespace System.Windows.Browser.Net {
 			get { return PluginHost.RootUri; }
 		}
 #endif
+		private string site_control;
 
 		public static FlashCrossDomainPolicy Read (XmlReader reader)
 		{
@@ -111,10 +112,14 @@ namespace System.Windows.Browser.Net {
 			AllowedIdentities = new List<AllowAccessFromIdentity> ();
 		}
 
-		public string SiteControl { get; set; }
 		public List<AllowAccessFrom> AllowedAccesses { get; private set; }
 		public List<AllowHttpRequestHeadersFrom> AllowedHttpRequestHeaders { get; private set; }
 		public List<AllowAccessFromIdentity> AllowedIdentities { get; private set; }
+
+		public string SiteControl {
+			get { return String.IsNullOrEmpty (site_control) ? "all" : site_control; }
+			set { site_control = value; }
+		}
 
 		public bool IsAllowed (WebRequest request)
 		{
@@ -123,9 +128,14 @@ namespace System.Windows.Browser.Net {
 
 		public bool IsAllowed (Uri uri, string [] headerKeys)
 		{
-			// ML only support "all" (the default) otherwise we reject
-			if (!String.IsNullOrEmpty (SiteControl) && (SiteControl != "all"))
+			switch (SiteControl) {
+			case "all":
+			case "master-only":
+				break;
+			default:
+				// others, e.g. 'none', are not supported/accepted
 				return false;
+			}
 
 			if (AllowedAccesses.Count > 0 &&
 			    !AllowedAccesses.Any (a => a.IsAllowed (uri, headerKeys)))
