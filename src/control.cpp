@@ -25,6 +25,8 @@ Control::Control ()
 	SetObjectType (Type::CONTROL);
 
 	applied_template = NULL;
+	enabled_local = true;
+	enabled_parent = true;
 	template_root = NULL;
 }
 
@@ -76,6 +78,19 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		InvalidateMeasure ();
 	}
 	NotifyListenersOfPropertyChange (args, error);
+}
+
+bool
+Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (property->GetId () == Control::IsEnabledProperty) {
+		this->enabled_local = value->AsBool ();
+
+		UpdateEnabled ();
+		Value v = Value (enabled_local && enabled_parent);
+		return FrameworkElement::SetValueWithErrorImpl (property, &v, error);
+	}
+	return FrameworkElement::SetValueWithErrorImpl (property, value, error);
 }
 
 bool
@@ -181,4 +196,20 @@ Control::Focus ()
 		return false;
 	
 	return surface->FocusElement (this);
+}
+
+void
+Control::UpdateEnabled ()
+{
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	DeepTreeWalker walker = DeepTreeWalker (this);
+	while (UIElement *child = walker.Step ()) {
+		if (child == this || !types->IsSubclassOf (child->GetObjectType (), Type::CONTROL))
+			continue;
+
+		Control *control = (Control *)child;
+		control->enabled_parent = enabled_local && enabled_parent;
+		control->SetValue (Control::IsEnabledProperty, Value (control->enabled_local));
+		walker.SkipBranch ();
+	}
 }

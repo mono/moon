@@ -304,6 +304,39 @@ namespace MoonTest.System.Windows.Controls {
 			);
 		}
 		
+		[Asynchronous]
+		[TestMethod]
+		public void IsEnabledTest ()
+		{
+			ContentControl a = new ContentControl { Name = "a" };
+			ContentControl b = new ContentControl { Name = "b" };
+			ContentControl c = new ContentControl { Name = "c" };
+			
+			a.Content = b;
+			b.Content = c;
+			
+			
+			CreateAsyncTest (a,
+				() => {
+					a.IsEnabled = false;
+					Assert.IsFalse (a.IsEnabled, "#1");
+					Assert.IsFalse (b.IsEnabled, "#2");
+					Assert.IsFalse (c.IsEnabled, "#3");
+
+					b.IsEnabled = false;
+					a.IsEnabled = true;
+					Assert.IsTrue (a.IsEnabled, "#4");
+					Assert.IsFalse (b.IsEnabled, "#5");
+					Assert.IsFalse (c.IsEnabled, "#6");
+
+					b.IsEnabled = true;
+					Assert.IsTrue (a.IsEnabled, "#7");
+					Assert.IsTrue (b.IsEnabled, "#8");
+					Assert.IsTrue (c.IsEnabled, "#9");
+				}
+			);
+		}
+		
 		[TestMethod]
 		public void OverrideContentShareControl ()
 		{

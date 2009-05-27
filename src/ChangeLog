@@ -1,3 +1,11 @@
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* control.cpp: Implement correct propagation of
+	  Control.IsEnabled. Children of disabled controls are
+	  disabled. When their parent is re-enabled, they go back to
+	  their previous state.
+
 2009-05-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes to make sure that an TextChanged and SelectionChanged events

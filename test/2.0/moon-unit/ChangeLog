@@ -1,3 +1,10 @@
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Implement
+	  correct propagation of Control.IsEnabled. Children of
+	  disabled controls are disabled. When their parent is
+	  re-enabled, they go back to their previous state.
+
 2009-05-27  Jackson Harper  <jackson@ximian.com>
 
 	* System.IO.IsolatedStorage/IsolatedStorageFileTest.cs: Test for

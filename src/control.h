@@ -45,6 +45,7 @@ public:
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 	
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);
@@ -163,6 +164,9 @@ protected:
 	
 private:
 	ControlTemplate *applied_template;
+	bool enabled_local;
+	bool enabled_parent;
+	void UpdateEnabled ();
 };
 
 
