@@ -71,6 +71,25 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void AddTwice ()
+		{
+			ItemCollection c = GetCollection ();
+			object o = new object ();
+			c.Add (o);
+			c.Add (o);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AddTwice2 ()
+		{
+			ItemCollection c = GetCollection ();
+			Rectangle o = new Rectangle ();
+			c.Add (o);
+			Assert.Throws<InvalidOperationException> (() => c.Add (o));
+		}
+		
+		[TestMethod]
 		public void DefaultValues ()
 		{
 			ItemCollection ic = GetCollection ();

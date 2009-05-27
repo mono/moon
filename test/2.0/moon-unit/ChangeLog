@@ -1,5 +1,10 @@
 2009-05-27  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemCollectionTest.cs: Add another parenting
+	test.
+	
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/DependencyObjectTest.cs:
 	* System.Windows/ResourceDictionaryTest.cs: Move a test from
 	DependencyObjectTest to ResourceDictionaryTest.
