@@ -226,7 +226,7 @@ namespace System.Windows {
 		// extracted since Assembly.GetName is security critical
 		void SetEntryAssembly (Assembly asm)
 		{
-			if (EntryAssembly == null && asm.GetName ().Name == EntryPointAssembly)
+			if (asm.GetName ().Name == EntryPointAssembly)
 				EntryAssembly = asm;
 		}
 
@@ -265,6 +265,9 @@ namespace System.Windows {
 			foreach (Assembly a in Assemblies)
 				Application.LoadXmlnsDefinitionMappings (a);
 			
+			if (Application.Current != null)
+				Application.Current.Terminate ();
+
 			Application instance = null;
 
 			try {
