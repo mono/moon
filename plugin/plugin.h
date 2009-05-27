@@ -211,13 +211,14 @@ class PluginInstance
 
 	// Methods
 	MonoMethod   *moon_load_xaml;
-	MonoMethod   *moon_load_xap;
+	MonoMethod   *moon_initialize_deployment_xap;
+	MonoMethod   *moon_initialize_deployment_xaml;
 	MonoMethod   *moon_destroy_application;
 
 	void LoadXAP  (const char*url, const char *fname);
 	void DestroyApplication ();
 
-	MonoMethod *MonoGetMethodFromName (MonoClass *klass, const char *name);
+	MonoMethod *MonoGetMethodFromName (MonoClass *klass, const char *name, int narg);
 
 	bool ManagedInitializeDeployment (const char *file);
 	void ManagedDestroyApplication ();

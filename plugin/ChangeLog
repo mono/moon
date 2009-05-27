@@ -1,3 +1,8 @@
+2009-05-27  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp|h: Ensure we spin up a default application for the xaml
+	case as well since <Canvas><StackPanel /></Canvas> works.
+
 2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-downloader.h:

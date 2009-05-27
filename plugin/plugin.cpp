@@ -410,7 +410,8 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	system_windows_assembly = NULL;
 
 	moon_load_xaml =
-		moon_load_xap =
+		moon_initialize_deployment_xap =
+		moon_initialize_deployment_xaml =
 		moon_destroy_application = NULL;
 
 #endif
@@ -1111,11 +1112,19 @@ PluginInstance::LoadXAML ()
 {
 	int error = 0;
 
+	if (!InitializePluginAppDomain ()) {
+		g_warning ("Couldn't initialize the plugin AppDomain");
+		return;
+	}
+
 	//
 	// Only try to load if there's no missing files.
 	//
 	Surface *our_surface = surface;
 	AddCleanupPointer (&our_surface);
+
+	ManagedInitializeDeployment (NULL);
+	xaml_loader->LoadVM ();
 
 	const char *missing = xaml_loader->TryLoad (&error);
 
@@ -1159,8 +1168,7 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 void
 PluginInstance::DestroyApplication ()
 {
-	if (GetDeployment()->IsLoadedFromXap())
-		ManagedDestroyApplication ();
+	ManagedDestroyApplication ();
 }
 #endif
 
@@ -1676,8 +1684,7 @@ bool
 PluginXamlLoader::LoadVM ()
 {
 #if PLUGIN_SL_2_0
-	if (plugin->DeploymentInit () && plugin->CreatePluginDeployment ())
-		return InitializeLoader ();
+	return InitializeLoader ();
 #endif
 	return false;
 }
@@ -1689,9 +1696,6 @@ PluginXamlLoader::InitializeLoader ()
 		return true;
 
 #if PLUGIN_SL_2_0
-	if (!plugin->MonoIsLoaded ())
-		return false;
-
 	if (managed_loader)
 		return true;
 
@@ -1842,10 +1846,10 @@ plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *s
 // the code in moonlight.cs for managing app domains.
 #if PLUGIN_SL_2_0
 MonoMethod *
-PluginInstance::MonoGetMethodFromName (MonoClass *klass, const char *name)
+PluginInstance::MonoGetMethodFromName (MonoClass *klass, const char *name, int narg)
 {
 	MonoMethod *method;
-	method = mono_class_get_method_from_name (klass, name, -1);
+	method = mono_class_get_method_from_name (klass, name, narg);
 
 	if (!method)
 		printf ("Warning could not find method %s\n", name);
@@ -1902,11 +1906,12 @@ PluginInstance::InitializePluginAppDomain ()
 			return false;
 		}
 		
-		moon_load_xaml  = MonoGetMethodFromName (app_launcher, "CreateXamlLoader");
-		moon_load_xap   = MonoGetMethodFromName (app_launcher, "InitializeDeployment");
-		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication");
+		moon_load_xaml  = MonoGetMethodFromName (app_launcher, "CreateXamlLoader", -1);
+		moon_initialize_deployment_xap   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 2);
+		moon_initialize_deployment_xaml   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 0);
+		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication", -1);
 
-		if (moon_load_xaml != NULL && moon_load_xap != NULL && moon_destroy_application != NULL)
+		if (moon_load_xaml != NULL && moon_initialize_deployment_xap != NULL && moon_initialize_deployment_xaml != NULL && moon_destroy_application != NULL)
 			result = true;
 	} else {
 		printf ("Plugin AppDomain Creation: could not find System.Windows.dll.\n");
@@ -1961,17 +1966,22 @@ PluginInstance::ManagedLoaderDestroy (gpointer loader_object)
 bool
 PluginInstance::ManagedInitializeDeployment (const char *file)
 {
-	if (moon_load_xap == NULL)
+	if (moon_initialize_deployment_xap == NULL && moon_initialize_deployment_xaml)
 		return NULL;
 
 	PluginInstance *this_obj = this;
 	void *params [2];
+	MonoObject *ret;
 
 	Deployment::SetCurrent (deployment);
 
 	params [0] = &this_obj;
-	params [1] = mono_string_new (mono_domain_get (), file);
-	MonoObject *ret = mono_runtime_invoke (moon_load_xap, NULL, params, NULL);
+	if (file != NULL) {
+		params [1] = mono_string_new (mono_domain_get (), file);
+		ret = mono_runtime_invoke (moon_initialize_deployment_xap, NULL, params, NULL);
+	} else {
+		ret = mono_runtime_invoke (moon_initialize_deployment_xaml, NULL, params, NULL);
+	}
 	
 	return (bool) (*(MonoBoolean *) mono_object_unbox(ret));
 }
