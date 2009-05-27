@@ -54,6 +54,7 @@ namespace MoonTest.System.Windows
 			Assert.IsFalse (rd.IsReadOnly);
 		}
 
+		class ConcreteDependencyObject : DependencyObject { }
 		[TestMethod]
 		public void ParentTest ()
 		{
