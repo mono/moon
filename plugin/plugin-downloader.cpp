@@ -203,9 +203,9 @@ PluginDownloader::Open (const char *verb, const char *uri, bool streaming)
 	if (streaming) {
 		BrowserBridge *bridge = GetPlugin ()->GetBridge ();
 		if (bridge)
-			this->request = bridge->CreateDownloaderRequest ("GET", this->uri);
+			this->request = bridge->CreateDownloaderRequest (this->verb, this->uri);
 	} else {
-		this->request = new NPStreamRequest ("GET", this->uri, GetPlugin ());
+		this->request = new NPStreamRequest (this->verb, this->uri, GetPlugin ());
 	}
 }
 

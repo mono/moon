@@ -1,3 +1,7 @@
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-downloader.cpp: Don't hard code the verb.
+
 2009-05-25  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (value_to_variant): robustify this and support
