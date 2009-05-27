@@ -264,6 +264,9 @@ extern GSList *plugin_instances;
 #define IS_NOTIFY_SOURCE(x) \
 	(!x ? true : (((StreamNotify*) x)->type == StreamNotify::SOURCE))
 
+#define IS_NOTIFY_SPLASHSOURCE(x) \
+	(!x ? true : (((StreamNotify*) x)->type == StreamNotify::SPLASHSOURCE))
+
 #define IS_NOTIFY_DOWNLOADER(x) \
 	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::DOWNLOADER))
 
@@ -276,8 +279,9 @@ class StreamNotify
 	enum StreamNotifyFlags {
 		NONE = 0,
 		SOURCE = 1,
-		DOWNLOADER = 2,
-		REQUEST = 3
+		SPLASHSOURCE = 2,
+		DOWNLOADER = 3,
+		REQUEST = 4
 	};
 	
 	StreamNotifyFlags type;

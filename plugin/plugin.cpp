@@ -387,6 +387,8 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	onLoad = NULL;
 	onError = NULL;
 	onResize = NULL;
+	onSourceDownloadProgressChanged = NULL;
+	onSourceDownloadCompleted = NULL;
 	splashscreensource = NULL;
 	background = NULL;
 	id = NULL;
@@ -824,7 +826,7 @@ PluginInstance::CreateWindow ()
 	deployment->SetSurface (surface);
 
 	if (splashscreensource != NULL) {
-		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, splashscreensource);
+		StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
 		
 		// FIXME: check for errors
 		NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
@@ -1092,6 +1094,12 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 {
 	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p)\n", type, stream, seekable, stype));
 
+	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
+		SetPageURL ();
+
+		*stype = NP_ASFILEONLY;
+		return NPERR_NO_ERROR;
+	}
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		// See http://developer.mozilla.org/En/Getting_the_page_URL_in_NPAPI_plugin
 		//
@@ -1348,6 +1356,10 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 #if DEBUG
 	AddSource (stream->url, fname);
 #endif
+	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
+		xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
+		LoadXAML ();
+	}
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		delete xaml_loader;
 		xaml_loader = NULL;
@@ -1450,7 +1462,8 @@ PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer
 		if (IS_NOTIFY_SOURCE (notify)) {
 			if (source_size > 0) {
 				float progress = (offset+len)/(float)source_size;
-				GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (progress));
+				if (GetSurface ()->GetToplevel () != NULL)
+					GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (progress));
 			}
 		}
 	}
@@ -2044,6 +2057,9 @@ PluginInstance::ManagedInitializeDeployment (const char *file)
 void
 PluginInstance::ManagedDestroyApplication ()
 {
+	if (moon_destroy_application == NULL)
+		return;
+
 	PluginInstance *this_obj = this;
 	void *params [1];
 	params [0] = &this_obj;

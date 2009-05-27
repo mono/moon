@@ -1,5 +1,12 @@
 2009-05-27  Geoff Norton  <gnorton@novell.com>
 
+	* plugin.cpp|h: Ensure we only emit the source progress/completed events
+	on the source, and not on the source splash ourself.  Also, we need to make
+	sure we have a toplevel before emitting otherwise sender is null going to the
+	js event.
+
+2009-05-27  Geoff Norton  <gnorton@novell.com>
+
 	* plugin.cpp|h:
 	* plugin-class.cpp|h|h.in: Support the splash screen progress/completed events
 	* cbinding.h: regen
