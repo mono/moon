@@ -107,10 +107,6 @@ namespace System.Windows.Controls {
 			if (length < 0)
 				throw new ArgumentOutOfRangeException ("length");
 			
-			// FIXME: do exceptions get thrown if the
-			// start/length values are out of range? If
-			// not, what is supposed to happen?
-			
 			NativeMethods.text_box_base_select (this.native, start, length);
 		}
 		
