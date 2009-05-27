@@ -253,6 +253,9 @@ Deployment::InnerConstructor ()
 	objects_created = 0;
 	objects_destroyed = 0;
 	
+	types = NULL;
+	downloaders = NULL;
+
 #if OBJECT_TRACKING
 	objects_alive = NULL;
 	pthread_mutex_init (&objects_alive_mutex, NULL);
@@ -263,7 +266,7 @@ Deployment::InnerConstructor ()
 	pthread_mutex_lock (&hash_mutex);
 	g_hash_table_insert (current_hash, domain, this);
 	pthread_mutex_unlock (&hash_mutex);
-
+	
 	types = new Types ();
 	types->Initialize ();
 	downloaders = new List ();
@@ -368,6 +371,13 @@ Deployment::ReportLeaks ()
 	}
 }
 #endif
+
+void
+Deployment::Reinitialize ()
+{
+	downloaders = new List ();
+	SetParts (new AssemblyPartCollection ());
+}
 
 void
 Deployment::Dispose ()

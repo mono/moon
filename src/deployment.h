@@ -76,6 +76,7 @@ public:
 	AssemblyPartCollection *GetParts ();
 	void SetParts (AssemblyPartCollection *col);
 
+	void Reinitialize ();
 
 	Application* GetCurrentApplication ();
 	/* @GenerateCBinding,GeneratePInvoke */
