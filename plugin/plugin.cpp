@@ -1324,6 +1324,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 #endif
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		delete xaml_loader;
+		xaml_loader = NULL;
 		
 		Uri *uri = new Uri ();
 		

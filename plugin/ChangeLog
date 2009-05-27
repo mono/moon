@@ -1,5 +1,9 @@
 2009-05-27  Geoff Norton  <gnorton@novell.com>
 
+	* plugin.cpp: Avoid a double-delete of the splash xaml_loader
+
+2009-05-27  Geoff Norton  <gnorton@novell.com>
+
 	* plugin.cpp|h: Support splash screen.
 
 2009-05-27  Geoff Norton  <gnorton@novell.com>
