@@ -265,8 +265,10 @@ namespace System.Windows {
 			foreach (Assembly a in Assemblies)
 				Application.LoadXmlnsDefinitionMappings (a);
 			
-			if (Application.Current != null)
+			if (Application.Current != null) {
 				Application.Current.Terminate ();
+	                        NativeMethods.surface_attach (Deployment.Current.Surface.Native, IntPtr.Zero);
+			}
 
 			Application instance = null;
 

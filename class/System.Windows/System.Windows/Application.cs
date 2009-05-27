@@ -103,7 +103,6 @@ namespace System.Windows {
 
 			root_visual = null;
 			Application.Current = null;
-			NativeMethods.surface_attach (Deployment.Current.Surface.Native, IntPtr.Zero);
 			// XXX free the application?
 		}				
 
