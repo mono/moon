@@ -252,8 +252,12 @@ namespace MoonTest.Security {
 			DoubleGetter dget = (DoubleGetter) Delegate.CreateDelegate (typeof (DoubleGetter), pt, mi);
 			Assert.IsNotNull (dget, "Delegate.CreateDelegate(Type,object,string)");
 
+			Assert.AreEqual (3.0, dget (), "dget-1");
+
 			dget = (DoubleGetter) Delegate.CreateDelegate (typeof (DoubleGetter), pt, "Add");
 			Assert.IsNotNull (dget, "Delegate.CreateDelegate(Type,object,string)");
+
+			Assert.AreEqual (3.0, dget (), "dget-2");
 		}
 	}
 }

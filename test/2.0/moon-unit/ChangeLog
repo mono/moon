@@ -1,3 +1,9 @@
+2009-05-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/DelegateTest.cs: Add asserts on return values.
+	* security/MiscTest.cs: New. Other security related test that do 
+	not fit well anywhere else.
+
 2009-05-27  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs:
@@ -258,11 +264,6 @@
 
 	* System.Windows/FrameworkElementTest.cs: Add test to make
 	  sure datacontext is propagating correctly.
-
-2009-05-12  Sebastien Pouliot  <sebastien@ximian.com> 
-
-	* System.Net/WebHeaderCollectionTest.cs: Add case sensitiveness
-	test cases for headers.
 
 2009-05-12  Sebastien Pouliot  <sebastien@ximian.com> 
 
