@@ -137,16 +137,17 @@ class TextBoxBase : public Control, public ITextAttributes {
 	TextBoxView *view;
 	int max_length;
 	
-	int accepts_return:1;
-	int need_im_reset:1;
-	int is_read_only:1;
-	int have_offset:1;
-	int inkeypress:1;
-	int selecting:1;
-	int setvalue:1;
-	int captured:1;
-	int focused:1;
-	int emit:2;
+	short accepts_return:1;
+	short need_im_reset:1;
+	short is_read_only:1;
+	short have_offset:1;
+	short selecting:1;
+	short setvalue:1;
+	short captured:1;
+	short focused:1;
+	short emit:2;
+	
+	short batch;
 	
 	// focus in/out events
 	static void focus_out (EventObject *sender, EventArgs *args, gpointer closure);
@@ -214,6 +215,9 @@ class TextBoxBase : public Control, public ITextAttributes {
 	
 	virtual void SyncSelectedText () = 0;
 	virtual void SyncText () = 0;
+	
+	void BatchPush ();
+	void BatchPop ();
 	
 	void SyncAndEmit ();
 	

@@ -600,12 +600,12 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	selection_anchor = 0;
 	selection_cursor = 0;
 	cursor_offset = 0.0;
+	batch = 0;
 	
 	accepts_return = false;
 	need_im_reset = false;
 	is_read_only = false;
 	have_offset = false;
-	inkeypress = false;
 	selecting = false;
 	setvalue = true;
 	captured = false;
@@ -1265,8 +1265,28 @@ TextBoxBase::KeyPressUnichar (gunichar c)
 }
 
 void
+TextBoxBase::BatchPush ()
+{
+	batch++;
+}
+
+void
+TextBoxBase::BatchPop ()
+{
+	if (batch == 0) {
+		g_warning ("TextBoxBase batch underflow");
+		return;
+	}
+	
+	batch--;
+}
+
+void
 TextBoxBase::SyncAndEmit ()
 {
+	if (batch != 0 || emit == NOTHING_CHANGED)
+		return;
+	
 	if (emit & TEXT_CHANGED)
 		SyncText ();
 	
@@ -1316,10 +1336,10 @@ TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
 	emit |= TEXT_CHANGED;
 	start += len;
 	
-	inkeypress = true;
+	BatchPush ();
 	SetSelectionStart (start);
 	SetSelectionLength (0);
-	inkeypress = false;
+	BatchPop ();
 	
 	SyncAndEmit ();
 }
@@ -1353,7 +1373,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 	// what has chanegd after applying the changes that this
 	// keypress will cause.
 	emit = NOTHING_CHANGED;
-	inkeypress = true;
+	BatchPush ();
 	
 	switch (key) {
 	case GDK_Return:
@@ -1474,7 +1494,8 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 		break;
 	}
 	
-	inkeypress = false;
+	BatchPop ();
+	
 	SyncAndEmit ();
 }
 
@@ -1533,7 +1554,7 @@ TextBoxBase::DeleteSurrounding (int offset, int n_chars)
 		cursor = start;
 	}
 	
-	inkeypress = true;
+	BatchPush ();
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
@@ -1544,7 +1565,7 @@ TextBoxBase::DeleteSurrounding (int offset, int n_chars)
 		emit |= SELECTION_CHANGED;
 	}
 	
-	inkeypress = false;
+	BatchPop ();
 	
 	SyncAndEmit ();
 	
@@ -1624,7 +1645,7 @@ TextBoxBase::Commit (const char *str)
 	cursor = start + len;
 	anchor = cursor;
 	
-	inkeypress = true;
+	BatchPush ();
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
@@ -1635,7 +1656,7 @@ TextBoxBase::Commit (const char *str)
 		emit |= SELECTION_CHANGED;
 	}
 	
-	inkeypress = false;
+	BatchPop ();
 	
 	SyncAndEmit ();
 }
@@ -1704,9 +1725,12 @@ TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 			break;
 		}
 		
+		BatchPush ();
 		emit = NOTHING_CHANGED;
 		SetSelectionLength (end - start);
 		SetSelectionStart (start);
+		BatchPop ();
+		
 		SyncAndEmit ();
 	}
 }
@@ -1747,11 +1771,14 @@ TextBoxBase::OnMouseMove (MouseEventArgs *args)
 		
 		cursor = view->GetCursorFromXY (x, y);
 		
+		BatchPush ();
 		emit = NOTHING_CHANGED;
 		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
+		BatchPop ();
+		
 		SyncAndEmit ();
 	}
 }
@@ -2022,11 +2049,10 @@ TextBoxBase::OnApplyTemplate ()
 void
 TextBoxBase::ClearSelection (int start)
 {
+	BatchPush ();
 	SetSelectionStart (start);
 	SetSelectionLength (0);
-	
-	if (!inkeypress)
-		SyncSelectedText ();
+	BatchPop ();
 }
 
 void
@@ -2041,11 +2067,14 @@ TextBoxBase::Select (int start, int length)
 	if (length > (buffer->len - start))
 		length = (buffer->len - start);
 	
+	BatchPush ();
 	SetSelectionStart (start);
 	SetSelectionLength (length);
+	BatchPop ();
 	
-	if (!inkeypress)
-		SyncSelectedText ();
+	ResetIMContext ();
+	
+	SyncAndEmit ();
 }
 
 void
@@ -2106,14 +2135,15 @@ TextBoxBase::Undo ()
 		break;
 	}
 	
+	BatchPush ();
 	SetSelectionLength (abs (cursor - anchor));
 	SetSelectionStart (MIN (anchor, cursor));
 	emit = TEXT_CHANGED | SELECTION_CHANGED;
 	selection_anchor = anchor;
 	selection_cursor = cursor;
+	BatchPop ();
 	
-	if (!inkeypress)
-		SyncAndEmit ();
+	SyncAndEmit ();
 }
 
 void
@@ -2153,14 +2183,15 @@ TextBoxBase::Redo ()
 		break;
 	}
 	
+	BatchPush ();
 	SetSelectionLength (abs (cursor - anchor));
 	SetSelectionStart (MIN (anchor, cursor));
 	emit = TEXT_CHANGED | SELECTION_CHANGED;
 	selection_anchor = anchor;
 	selection_cursor = cursor;
+	BatchPop ();
 	
-	if (!inkeypress)
-		SyncAndEmit ();
+	SyncAndEmit ();
 }
 
 
@@ -2308,8 +2339,6 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			start = MIN (selection_anchor, selection_cursor);
 			
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
-				ResetIMContext ();
-				
 				if (length > 0) {
 					// replace the currently selected text
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, textlen);
@@ -2328,9 +2357,9 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				emit |= TEXT_CHANGED;
 				
 				ClearSelection (start + textlen);
+				ResetIMContext ();
 				
-				if (!inkeypress)
-					SyncText ();
+				SyncAndEmit ();
 			} else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
@@ -2360,11 +2389,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		emit |= SELECTION_CHANGED;
 		have_offset = false;
 		
-		if (!inkeypress) {
-			// update SelectedText
-			SyncSelectedText ();
-			ResetIMContext ();
-		}
+		SyncAndEmit ();
 	} else if (args->GetId () == TextBox::SelectionLengthProperty) {
 		start = MIN (selection_anchor, selection_cursor);
 		length = args->GetNewValue()->AsInt32 ();
@@ -2385,11 +2410,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		emit |= SELECTION_CHANGED;
 		have_offset = false;
 		
-		if (!inkeypress) {
-			// update SelectedText
-			SyncSelectedText ();
-			ResetIMContext ();
-		}
+		SyncAndEmit ();
 	} else if (args->GetId () == TextBox::SelectionBackgroundProperty) {
 		changed = TextBoxModelChangedBrush;
 	} else if (args->GetId () == TextBox::SelectionForegroundProperty) {
@@ -2402,8 +2423,6 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			glong textlen;
 			
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
-				ResetIMContext ();
-				
 				if (buffer->len > 0) {
 					// replace the current text
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, 0, buffer->len, text, textlen);
@@ -2422,6 +2441,9 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				emit |= TEXT_CHANGED;
 				
 				ClearSelection (0);
+				ResetIMContext ();
+				
+				SyncAndEmit ();
 			} else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
@@ -2686,14 +2708,15 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 					buffer->Insert (0, text, textlen);
 				}
 				
-				SyncDisplayText ();
-				
 				undo->Push (action);
 				redo->Clear ();
 				
 				emit |= TEXT_CHANGED;
-				
+				SyncDisplayText ();
 				ClearSelection (0);
+				ResetIMContext ();
+				
+				SyncAndEmit ();
 			} else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
@@ -2726,12 +2749,12 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 				undo->Push (action);
 				redo->Clear ();
 				
-				emit |= TEXT_CHANGED;
-				
 				ClearSelection (start + textlen);
+				emit |= TEXT_CHANGED;
+				SyncDisplayText ();
+				ResetIMContext ();
 				
-				if (!inkeypress)
-					SyncText ();
+				SyncAndEmit ();
 			} else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
@@ -2740,6 +2763,18 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		length = abs (selection_cursor - selection_anchor);
 		start = args->GetNewValue()->AsInt32 ();
 		
+		if (start > buffer->len) {
+			// clamp the selection start offset to a valid value
+			SetSelectionStart (buffer->len);
+			return;
+		}
+		
+		if (start + length > buffer->len) {
+			// clamp the selection length to a valid value
+			length = buffer->len - start;
+			SetSelectionLength (length);
+		}
+		
 		// When set programatically, anchor is always the
 		// start and cursor is always the end
 		selection_cursor = start + length;
@@ -2749,14 +2784,18 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		emit |= SELECTION_CHANGED;
 		have_offset = false;
 		
-		if (!inkeypress) {
-			// update SelectedText
-			SyncSelectedText ();
-		}
+		SyncAndEmit ();
 	} else if (args->GetId () == PasswordBox::SelectionLengthProperty) {
 		start = MIN (selection_anchor, selection_cursor);
 		length = args->GetNewValue()->AsInt32 ();
 		
+		if (start + length > buffer->len) {
+			// clamp the selection length to a valid value
+			length = buffer->len - start;
+			SetSelectionLength (length);
+			return;
+		}
+		
 		// When set programatically, anchor is always the
 		// start and cursor is always the end
 		selection_cursor = start + length;
@@ -2766,10 +2805,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		emit |= SELECTION_CHANGED;
 		have_offset = false;
 		
-		if (!inkeypress) {
-			// update SelectedText
-			SyncSelectedText ();
-		}
+		SyncAndEmit ();
 	} else if (args->GetId () == PasswordBox::SelectionBackgroundProperty) {
 		changed = TextBoxModelChangedBrush;
 	} else if (args->GetId () == PasswordBox::SelectionForegroundProperty) {

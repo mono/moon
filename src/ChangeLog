@@ -1,3 +1,20 @@
+2009-05-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes to make sure that an TextChanged and SelectionChanged events
+	are emitted after each and every change to the Text/Selection
+	properties occurs.
+
+	* textbox.cpp (TextBoxBase::BatchPush): Call at the start of each
+	batch operation. Prevents SyncAndEmit() from doing anything until
+	all nested batch operations are completed.
+	(TextBoxBase::BatchPop): Call at the end of each
+	batch operation.
+	(TextBoxBase::*): Instead of using inkeypress, use the more
+	generic BatchPush()/Pop().
+	(TextBox::OnPropertyChanged): Call SyncAndEmit() after
+	Text/Selection changes.
+	(PasswordBox::OnPropertyChanged): Same.
+
 2009-05-27  Geoff Norton  <gnorton@novell.com>
 
 	* runtime.cpp|h: Support the splash progress/completed events.
