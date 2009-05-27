@@ -1,3 +1,8 @@
+2009-05-27  Geoff Norton  <gnorton@novell.com>
+
+	* ApplicationLauncher.cs: Add a different code path to initialize
+	a default application for the xaml case.
+
 2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* NativeMethods.cs: Updated according to API changes.

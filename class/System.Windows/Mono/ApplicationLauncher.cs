@@ -72,6 +72,17 @@ namespace Mono {
 
 			return false;
 		}
+		
+		public static bool InitializeDeployment ()
+		{
+			try {
+				return Deployment.Current.InitializeDeployment ();
+			} catch (Exception e) {
+				Console.WriteLine ("Error while Launching an Application from a xaml file: {0}", e);
+			}
+
+			return false;
+		}
 
 		/// <summary>
 		///   Shutsdown the Application contained in the XAP file in the current AppDomain
