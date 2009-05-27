@@ -2221,13 +2221,19 @@ TextBox::TextBox ()
 void
 TextBox::EmitSelectionChanged ()
 {
-	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
+	if (IsLoaded ())
+		Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
+	
+	emit &= ~SELECTION_CHANGED;
 }
 
 void
 TextBox::EmitTextChanged ()
 {
-	Emit (TextBox::TextChangedEvent, new TextChangedEventArgs ());
+	if (IsLoaded ())
+		Emit (TextBox::TextChangedEvent, new TextChangedEventArgs ());
+	
+	emit &= ~TEXT_CHANGED;
 }
 
 void

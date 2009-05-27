@@ -1,3 +1,9 @@
+2009-05-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::EmitSelectionChanged): Only emit the event
+	if the TextBox is loaded and unset the emit state.
+	(TextBox::EmitTextChanged): Same.
+
 2009-05-27  Geoff Norton  <gnorton@novell.com>
 
 	* deployment.cpp|h: Allow reinitializing the appdomain if our
