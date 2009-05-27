@@ -1,5 +1,10 @@
 2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* debug.h:
+	* runtime.h|cpp: Add LOG_PIPELINE_EX and parse LOG_ASF correctly.
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* textbox.cpp:
 	* textblock.cpp:
 	* pipeline.cpp:

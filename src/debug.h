@@ -71,6 +71,7 @@ G_END_DECLS
 #define LOG_MEDIAPLAYER(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIAPLAYER)) printf (__VA_ARGS__);
 #define LOG_MEDIAPLAYER_EX(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MEDIAPLAYER_EX)) printf (__VA_ARGS__);
 #define LOG_PIPELINE(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PIPELINE)) printf (__VA_ARGS__);
+#define LOG_PIPELINE_EX(...)		if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_PIPELINE_EX)) printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PIPELINE_ERROR)) printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...) if (G_UNLIKELY (x && debug_flags & PIPELINE_ERROR)) printf (__VA_ARGS__);
 #define LOG_FRAMEREADERLOOP(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_FRAMEREADERLOOP)) printf (__VA_ARGS__);
@@ -110,6 +111,7 @@ G_END_DECLS
 #define LOG_MEDIAPLAYER(...)
 #define LOG_MEDIAPLAYER_EX(...)
 #define LOG_PIPELINE(...)
+#define LOG_PIPELINE_EX(...)
 #define LOG_PIPELINE_ERROR(...)
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...)
 #define LOG_FRAMEREADERLOOP(...)
