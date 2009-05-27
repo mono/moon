@@ -1,3 +1,9 @@
+2009-05-27  Geoff Norton  <gnorton@novell.com>
+
+	* runtime.cpp|h: Support the splash progress/completed events.
+	* cbinding.h:
+	* type-generated.h: Regen
+
 2009-05-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::EmitSelectionChanged): Only emit the event

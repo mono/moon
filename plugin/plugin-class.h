@@ -191,6 +191,7 @@ enum PluginPropertyId {
 	MoonId_Marker,
 	MoonId_Key,
 	MoonId_PlatformKeyCode,
+	MoonId_Progress,
 	MoonId_Settings,
 	MoonId_Content,
 	MoonId_InitParams,
@@ -238,6 +239,8 @@ enum PluginPropertyId {
 	MoonId_OnFullScreenChange,
 	MoonId_OnError,
 	MoonId_OnLoad,
+	MoonId_OnSourceDownloadProgressChanged,
+	MoonId_OnSourceDownloadCompleted,
 
 	// method names
 	MoonId_GetPosition = 0x8000,
@@ -779,6 +782,21 @@ struct MoonlightKeyEventArgsObject : MoonlightEventArgs {
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	KeyEventArgs *GetKeyEventArgs () { return (KeyEventArgs *) eo; }
+};
+
+/*** MoonlightDownloadProgressEventArgsClass ******************************************************/
+struct MoonlightDownloadProgressEventArgsType : MoonlightEventArgsType {
+	MoonlightDownloadProgressEventArgsType ();
+};
+
+struct MoonlightDownloadProgressEventArgs : MoonlightEventArgs {
+	MoonlightDownloadProgressEventArgs (NPP instance) : MoonlightEventArgs (instance)
+	{
+		moonlight_type = Type::DOWNLOADPROGRESSEVENTARGS;
+	}
+
+	DownloadProgressEventArgs *GetDownloadProgressEventArgs () { return (DownloadProgressEventArgs *) eo; }
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 };
 
 /*** MoonlightErrorEventArgsClass ******************************************************/

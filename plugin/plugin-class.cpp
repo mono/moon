@@ -112,6 +112,7 @@ map_moon_id_to_event_name (int moon_id)
 	case MoonId_OnFullScreenChange: name = "FullScreenChange"; break;
 	case MoonId_OnError: name = "Error"; break;
 	case MoonId_OnLoad: name = "Load"; break;
+	case MoonId_OnSourceDownloadProgressChanged: name = "SourceDownloadProgressChanged"; break;
 	}
 
 	return name;
@@ -279,6 +280,7 @@ enum DependencyObjectClassNames {
 	KEY_EVENT_ARGS_CLASS,
 	MARKER_REACHED_EVENT_ARGS_CLASS,
 	MOUSE_EVENT_ARGS_CLASS,
+	DOWNLOAD_PROGRESS_EVENT_ARGS_CLASS,
 
 	DEPENDENCY_OBJECT_CLASS_NAMES_LAST
 };
@@ -1109,6 +1111,45 @@ MoonlightKeyTimeType::MoonlightKeyTimeType ()
 
 MoonlightKeyTimeType *MoonlightKeyTimeClass;
 
+/*** MoonlightDownloadProgressEventArgsClass  **************************************************************/
+
+static NPObject *
+download_progress_event_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightDownloadProgressEventArgs (instance);
+}
+
+static const MoonNameIdMapping
+download_progress_event_mapping[] = {
+	{ "progress", MoonId_Progress },
+};
+
+bool
+MoonlightDownloadProgressEventArgs::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	DownloadProgressEventArgs *event_args = GetDownloadProgressEventArgs ();
+
+	switch (id) {
+	case MoonId_Progress:
+		DOUBLE_TO_NPVARIANT (event_args->GetProgress (), *result);
+		return true;
+	default:
+		return MoonlightEventArgs::GetProperty (id, name, result);
+	}
+
+	return false;
+}
+
+MoonlightDownloadProgressEventArgsType::MoonlightDownloadProgressEventArgsType ()
+{
+	allocate = download_progress_event_allocate;
+
+	AddMapping (download_progress_event_mapping, G_N_ELEMENTS (download_progress_event_mapping));
+}
+
+MoonlightDownloadProgressEventArgsType *MoonlightDownloadProgressEventArgsClass;
+
+
 /*** MoonlightMouseEventArgsClass  **************************************************************/
 
 static NPObject *
@@ -1683,6 +1724,8 @@ scriptable_control_mapping[] = {
 	{ "onload", MoonId_OnLoad },
 	{ "settings", MoonId_Settings },
 	{ "source", MoonId_Source },
+	{ "onsourcedownloadprogresschanged", MoonId_OnSourceDownloadProgressChanged },
+	{ "onsourcedownloadcompleted", MoonId_OnSourceDownloadCompleted },
 };
 
 MoonlightScriptControlObject::~MoonlightScriptControlObject ()
@@ -1732,7 +1775,9 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 		}
 		return true;
 	case MoonId_OnError:
-	case MoonId_OnLoad: {
+	case MoonId_OnLoad:
+	case MoonId_OnSourceDownloadProgressChanged:
+	case MoonId_OnSourceDownloadCompleted: {
 		const char *event_name = map_moon_id_to_event_name (id);
 		EventObject *obj = plugin->GetSurface ();
 
@@ -1777,7 +1822,9 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 		return true;
 	}
 	case MoonId_OnError:
-	case MoonId_OnLoad: {
+	case MoonId_OnLoad:
+	case MoonId_OnSourceDownloadProgressChanged:
+	case MoonId_OnSourceDownloadCompleted: {
 		const char *event_name = map_moon_id_to_event_name (id);
 		EventObject *obj = plugin->GetSurface ();
 
@@ -2835,6 +2882,9 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 		break;
 	case Type::MOUSEEVENTARGS:
 		np_class = dependency_object_classes [MOUSE_EVENT_ARGS_CLASS];
+		break;
+	case Type::DOWNLOADPROGRESSEVENTARGS:
+		np_class = dependency_object_classes [DOWNLOAD_PROGRESS_EVENT_ARGS_CLASS];
 		break;
 	case Type::KEYEVENTARGS:
 		np_class = dependency_object_classes [KEY_EVENT_ARGS_CLASS];
@@ -4410,6 +4460,7 @@ plugin_init_classes (void)
 	dependency_object_classes [KEY_EVENT_ARGS_CLASS] = new MoonlightKeyEventArgsType ();
 	dependency_object_classes [MARKER_REACHED_EVENT_ARGS_CLASS] = new MoonlightMarkerReachedEventArgsType ();
 	dependency_object_classes [MOUSE_EVENT_ARGS_CLASS] = new MoonlightMouseEventArgsType ();
+	dependency_object_classes [DOWNLOAD_PROGRESS_EVENT_ARGS_CLASS] = new MoonlightDownloadProgressEventArgsType ();
 	
 	MoonlightContentClass = new MoonlightContentType ();
 	MoonlightDurationClass = new MoonlightDurationType ();
@@ -4436,6 +4487,7 @@ plugin_destroy_classes (void)
 	delete MoonlightEventObjectClass; MoonlightEventObjectClass = NULL;
 	delete MoonlightErrorEventArgsClass; MoonlightErrorEventArgsClass = NULL;
 	delete MoonlightMouseEventArgsClass; MoonlightMouseEventArgsClass = NULL;
+	delete MoonlightDownloadProgressEventArgsClass; MoonlightDownloadProgressEventArgsClass = NULL;
 	delete MoonlightKeyEventArgsClass; MoonlightKeyEventArgsClass = NULL;
 	delete MoonlightObjectClass; MoonlightObjectClass = NULL;
 	delete MoonlightScriptableObjectClass; MoonlightScriptableObjectClass = NULL;

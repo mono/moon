@@ -640,6 +640,18 @@ Surface::Resize (int width, int height)
 }
 
 void
+Surface::EmitSourceDownloadCompleted ()
+{
+	Emit (SourceDownloadCompletedEvent, NULL);
+}
+
+void
+Surface::EmitSourceDownloadProgressChanged (DownloadProgressEventArgs *args)
+{
+	Emit (SourceDownloadProgressChangedEvent, args);
+}
+
+void
 Surface::EmitError (ErrorEventArgs *args)
 {
 	Emit (ErrorEvent, args);

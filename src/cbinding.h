@@ -649,6 +649,8 @@ struct MoonlightDependencyObjectObject;
 struct MoonlightDependencyObjectType;
 struct MoonlightDownloaderObject;
 struct MoonlightDownloaderType;
+struct MoonlightDownloadProgressEventArgs;
+struct MoonlightDownloadProgressEventArgsType;
 struct MoonlightDuration;
 struct MoonlightDurationType;
 struct MoonlightErrorEventArgs;

@@ -573,6 +573,12 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		else if (!g_ascii_strcasecmp (argn [i], "splashscreensource")) {
 			splashscreensource = g_strdup (argv [i]);
 		}
+		else if (!g_ascii_strcasecmp (argn [i], "onSourceDownloadProgressChanged")) {
+			onSourceDownloadProgressChanged = g_strdup (argv [i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "onSourceDownloadCompleted")) {
+			onSourceDownloadCompleted = g_strdup (argv [i]);
+		}
 		else {
 		  //fprintf (stderr, "unhandled attribute %s='%s' in PluginInstance::Initialize\n", argn[i], argv[i]);
 		}
@@ -822,6 +828,26 @@ PluginInstance::CreateWindow ()
 		
 		// FIXME: check for errors
 		NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
+	}
+	if (onSourceDownloadProgressChanged != NULL) {
+		char *retval = NPN_strdup (onSourceDownloadProgressChanged);
+		NPVariant npvalue;
+
+		STRINGZ_TO_NPVARIANT (retval, npvalue);
+		NPIdentifier identifier = NPN_GetStringIdentifier ("onSourceDownloadProgressChanged");
+		NPN_SetProperty (instance, GetRootObject (), 
+				 identifier, &npvalue);
+		NPN_MemFree (retval);
+	}
+	if (onSourceDownloadCompleted != NULL) {
+		char *retval = NPN_strdup (onSourceDownloadCompleted);
+		NPVariant npvalue;
+
+		STRINGZ_TO_NPVARIANT (retval, npvalue);
+		NPIdentifier identifier = NPN_GetStringIdentifier ("onSourceDownloadCompleted");
+		NPN_SetProperty (instance, GetRootObject (), 
+				 identifier, &npvalue);
+		NPN_MemFree (retval);
 	}
 	if (onError != NULL) {
 		char *retval = NPN_strdup (onError);
@@ -1075,7 +1101,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 		// this->source_location = g_strdup (stream->url);
 		SetPageURL ();
 
-		*stype = NP_ASFILEONLY;
+		*stype = NP_ASFILE;
 		return NPERR_NO_ERROR;
 	}
 
@@ -1328,6 +1354,8 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		
 		Uri *uri = new Uri ();
 		
+		GetSurface ()->EmitSourceDownloadCompleted ();
+
 		if (uri->Parse (stream->url, false) && is_xap (uri->GetPath())) {
 			LoadXAP (stream->url, fname);
 		} else {
@@ -1386,12 +1414,19 @@ PluginInstance::WriteReady (NPStream *stream)
 	
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
 	
-	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
-		Downloader *dl = (Downloader *) notify->pdata;
+	if (notify && notify->pdata) {
+		if (IS_NOTIFY_DOWNLOADER (notify)) {
+			Downloader *dl = (Downloader *) notify->pdata;
 		
-		dl->NotifySize (stream->end);
+			dl->NotifySize (stream->end);
 		
-		return MAX_STREAM_SIZE;
+			return MAX_STREAM_SIZE;
+		}
+		if (IS_NOTIFY_SOURCE (notify)) {
+			source_size = stream->end;
+
+			return MAX_STREAM_SIZE;
+		}
 	}
 	
 	NPN_DestroyStream (instance, stream, NPRES_DONE);
@@ -1406,10 +1441,18 @@ PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer
 	
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
 	
-	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
-		Downloader *dl = (Downloader *) notify->pdata;
+	if (notify && notify->pdata) {
+		if (IS_NOTIFY_DOWNLOADER (notify)) {
+			Downloader *dl = (Downloader *) notify->pdata;
 		
-		dl->Write (buffer, offset, len);
+			dl->Write (buffer, offset, len);
+		}
+		if (IS_NOTIFY_SOURCE (notify)) {
+			if (source_size > 0) {
+				float progress = (offset+len)/(float)source_size;
+				GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (progress));
+			}
+		}
 	}
 	
 	return len;

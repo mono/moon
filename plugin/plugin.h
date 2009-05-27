@@ -188,6 +188,10 @@ class PluginInstance
 	char *onResize;
 	char *id;
 	char *splashscreensource;
+	char *onSourceDownloadProgressChanged;
+	char *onSourceDownloadCompleted;
+
+	int source_size;
 
 	bool windowless;
 	bool enable_html_access;
