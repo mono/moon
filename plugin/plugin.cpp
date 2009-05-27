@@ -387,6 +387,7 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	onLoad = NULL;
 	onError = NULL;
 	onResize = NULL;
+	splashscreensource = NULL;
 	background = NULL;
 	id = NULL;
 
@@ -568,6 +569,9 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "allowhtmlpopupwindow")) {
 			allow_html_popup_window = !g_ascii_strcasecmp (argv [i], "true");
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "splashscreensource")) {
+			splashscreensource = g_strdup (argv [i]);
 		}
 		else {
 		  //fprintf (stderr, "unhandled attribute %s='%s' in PluginInstance::Initialize\n", argn[i], argv[i]);
@@ -813,6 +817,12 @@ PluginInstance::CreateWindow ()
 	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
 
+	if (splashscreensource != NULL) {
+		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, splashscreensource);
+		
+		// FIXME: check for errors
+		NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
+	}
 	if (onError != NULL) {
 		char *retval = NPN_strdup (onError);
 		NPVariant npvalue;
@@ -1161,6 +1171,7 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 		g_free (source_location);
 	source_location = g_strdup (url);
 
+	Deployment::GetCurrent ()->Reinitialize ();
 	ManagedInitializeDeployment (fname);
 	GetDeployment()->SetXapLocation (url);
 }
@@ -1768,8 +1779,8 @@ PluginXamlLoader::TryLoad (int *error)
 		return NULL;
 	}
 
-	if (!t->IsSubclassOf(Type::CANVAS) && !t->IsSubclassOf(Type::CONTROL)) {
-		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass of Canvas, it is a %s\n",
+	if (!t->IsSubclassOf(Type::PANEL)) {
+		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass of Panel, it is a %s\n",
 			  element->GetTypeName ()));
 		element->unref ();
 		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "Failed to initialize the application's root visual"));
@@ -1778,7 +1789,7 @@ PluginXamlLoader::TryLoad (int *error)
 	
 	//d(printf ("PluginXamlLoader::TryLoad () succeeded.\n"));
 	
-	GetSurface ()->Attach ((Canvas*) element);
+	GetSurface ()->Attach ((Panel*) element);
 
 	// xaml_create_from_* passed us a ref which we don't need to
 	// keep.

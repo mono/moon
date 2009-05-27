@@ -187,6 +187,7 @@ class PluginInstance
 	char *onError;
 	char *onResize;
 	char *id;
+	char *splashscreensource;
 
 	bool windowless;
 	bool enable_html_access;
