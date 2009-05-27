@@ -824,12 +824,13 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	}
 
 	if (args->GetId () == MultiScaleImage::SourceProperty) {
-		DeepZoomImageTileSource *source;
+		source = NULL;
+		DeepZoomImageTileSource *newsource;
 		if (args->GetNewValue() &&
 		    args->GetNewValue ()->Is (Type::DEEPZOOMIMAGETILESOURCE) && 
-		    (source = args->GetNewValue()->AsDeepZoomImageTileSource ())) {
-			source->set_parsed_cb (multi_scale_image_handle_parsed, this);
-			source->Download ();
+		    (newsource = args->GetNewValue()->AsDeepZoomImageTileSource ())) {
+			newsource->set_parsed_cb (multi_scale_image_handle_parsed, this);
+			newsource->Download ();
 		}
 
 		//FIXME: On source change
