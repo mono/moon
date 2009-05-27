@@ -62,13 +62,11 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 	}
 
 	Value *v = new Value (*value);
-	
 	g_hash_table_insert (hash, g_strdup (key), v);
-
-	// kinda nasty, but we ignore this return value..
-	Collection::Add (v);
-
-	return true;
+	bool result = Collection::AddWithError (v, error) != -1;
+	if (!result)
+		g_hash_table_remove (hash, key);
+	return result;
 }
 
 bool
@@ -158,11 +156,16 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 {
 	if (value->Is(Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *obj = value->AsDependencyObject ();
-	
+		DependencyObject *parent = obj ? obj->GetParent () : NULL;
 		// Call SetSurface() /before/ setting the logical parent
 		// because Storyboard::SetSurface() needs to be able to
 		// distinguish between the two cases.
 	
+		if (parent) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is already a child of another element.");
+			return false;
+		}
+		
 		obj->SetSurface (GetSurface ());
 		obj->SetParent (this, error);
 		if (error->number)

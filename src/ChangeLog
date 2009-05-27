@@ -1,5 +1,11 @@
 2009-05-27  Alan McGovern  <amcgovern@novell.com>
 
+	* resources.cpp: Propagate the error (if there is one) from
+	Collection::AddWithError. If there is an error, clear the item
+	from the hashtable before returning.
+
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
 	* control.h:
 	* control.cpp:
 	* dependencyproperty.g.cpp: Control.Enabled needs to be

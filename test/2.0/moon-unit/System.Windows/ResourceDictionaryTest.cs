@@ -55,6 +55,18 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void ParentTest ()
+		{
+			ConcreteDependencyObject o = new ConcreteDependencyObject ();
+			Canvas c = new Canvas ();
+			c.Resources.Add ("key", o);
+			Assert.Throws<InvalidOperationException> (() => c.Resources.Add ("key2", o), "Can't add to same collection twice");
+
+			Canvas c2 = new Canvas ();
+			Assert.Throws<InvalidOperationException> (() => c2.Resources.Add ("key", o), "Can't add to two different collections");
+		}
+
+		[TestMethod]
 		public void Count ()
 		{
 			Button b = new Button();
