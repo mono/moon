@@ -1,5 +1,10 @@
 2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* font.cpp:
+	* textblock.cpp: Fix warnings.
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.h:
 	* runtime.h|cpp: Add LOG_PIPELINE_EX and parse LOG_ASF correctly.
 

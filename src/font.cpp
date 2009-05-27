@@ -1007,7 +1007,7 @@ struct FontFaceSimilarity {
 bool
 FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path, const char **families)
 {
-#ifdef DEBUG
+#ifdef LOGGING
 	char stylebuf1[256], stylebuf2[256];
 #endif
 	FontFaceSimilarity similar;

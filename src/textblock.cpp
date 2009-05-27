@@ -496,7 +496,7 @@ TextBlock::ComputeActualSize ()
 Size
 TextBlock::MeasureOverride (Size availableSize)
 {
-	const char *text = layout->GetText ();
+	//const char *text = layout->GetText ();
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size desired;
@@ -525,7 +525,7 @@ TextBlock::MeasureOverride (Size availableSize)
 Size
 TextBlock::ArrangeOverride (Size finalSize)
 {
-	const char *text = layout->GetText ();
+	//const char *text = layout->GetText ();
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size arranged;
@@ -627,7 +627,7 @@ TextBlock::UpdateFontDescriptions ()
 void
 TextBlock::Layout (Size constraint)
 {
-	const char *text = layout->GetText ();
+	//const char *text = layout->GetText ();
 	
 	if (was_set && !GetValueNoDefault (TextBlock::TextProperty)) {
 		// If the Text property had been set once upon a time,
