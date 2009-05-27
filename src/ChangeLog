@@ -1,3 +1,11 @@
+2009-05-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::SyncAndEmit): Now takes a sync_text
+	argument which defaults to true. If not set, we avoid calling
+	SyncText() even if emit has the TEXT_CHANGED bit set.
+	(TextBox::OnPropertyChanged): Call SyncAndEmit() with sync_text =
+	false if the value was just set to null.
+
 2009-05-27  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h:

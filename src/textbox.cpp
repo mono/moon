@@ -1282,12 +1282,12 @@ TextBoxBase::BatchPop ()
 }
 
 void
-TextBoxBase::SyncAndEmit ()
+TextBoxBase::SyncAndEmit (bool sync_text)
 {
 	if (batch != 0 || emit == NOTHING_CHANGED)
 		return;
 	
-	if (emit & TEXT_CHANGED)
+	if (sync_text && (emit & TEXT_CHANGED))
 		SyncText ();
 	
 	if (emit & SELECTION_CHANGED)
@@ -2417,7 +2417,8 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		changed = TextBoxModelChangedBrush;
 	} else if (args->GetId () == TextBox::TextProperty) {
 		if (setvalue) {
-			const char *str = args->GetNewValue() && args->GetNewValue()->AsString () ? args->GetNewValue()->AsString () : "";
+			Value *value = args->GetNewValue ();
+			const char *str = value->AsString () ? value->AsString () : "";
 			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
@@ -2439,11 +2440,10 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				redo->Clear ();
 				
 				emit |= TEXT_CHANGED;
-				
 				ClearSelection (0);
 				ResetIMContext ();
 				
-				SyncAndEmit ();
+				SyncAndEmit (value && !value->GetIsNull ());
 			} else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}

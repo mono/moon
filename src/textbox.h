@@ -219,7 +219,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	void BatchPush ();
 	void BatchPop ();
 	
-	void SyncAndEmit ();
+	void SyncAndEmit (bool sync_text = true);
 	
 	void SetFontResource (const char *resource);
 	void SetFontSource (Downloader *downloader);
