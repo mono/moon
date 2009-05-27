@@ -62,10 +62,10 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 	}
 
 	Value *v = new Value (*value);
-	g_hash_table_insert (hash, g_strdup (key), v);
+	
 	bool result = Collection::AddWithError (v, error) != -1;
-	if (!result)
-		g_hash_table_remove (hash, key);
+	if (result)
+		g_hash_table_insert (hash, g_strdup (key), v);
 	return result;
 }
 
