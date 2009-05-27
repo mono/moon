@@ -36,6 +36,7 @@ namespace System.Windows
 		
 		internal ExceptionRoutedEventArgs (IntPtr raw) : base (raw)
 		{
+			error_exception = new Exception ("TODO"); // This prevents a lot of the MS tests from throwing NRE's and timing out.
 		}
 
 		public Exception ErrorException {

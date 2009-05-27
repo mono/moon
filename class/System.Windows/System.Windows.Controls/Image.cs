@@ -53,15 +53,14 @@ namespace System.Windows.Controls {
 		static UnmanagedEventHandler image_failed = Events.CreateSafeHandler (image_failed_cb);
 		
 		private static void image_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
-			// XXX we need to marshal calldata to an ErrorEventArgs struct
-			((Image) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeImageFailed (/* XXX and pass it here*/);
+			((Image) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeImageFailed (calldata);
 		}
 		
-		private void InvokeImageFailed (/* XXX ErrorEventArgs args */)
+		private void InvokeImageFailed (IntPtr calldata)
 		{
 			EventHandler<ExceptionRoutedEventArgs> h = (EventHandler<ExceptionRoutedEventArgs>) EventList [ImageFailedEvent];
 			if (h != null)
-				h (this, null); // XXX pass args here
+				h (this, new ExceptionRoutedEventArgs (calldata));
 		}
 	}
 }

@@ -1,3 +1,8 @@
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ExceptionRoutedEventArgs.cs: Create a default TODO exception.
+	  Prevents a lot of the MS tests from throwing NRE and timing out.
+
 2009-05-27  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyProperty.g.cs: Control.Enabled needs to be created

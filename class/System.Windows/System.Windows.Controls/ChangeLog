@@ -1,3 +1,10 @@
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaElement.cs:
+	* Image.cs: Create a ExceptionRoutedEventArgs with default/TODO
+	  values, prevents a lot of the MS tests from throwing NRE and
+	  timing out.
+
 2009-05-27  Alan McGovern  <amcgovern@novell.com>
 
 	* Control.cs: Control.Enabled needs to be created in native

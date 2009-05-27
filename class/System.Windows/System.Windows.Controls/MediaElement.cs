@@ -251,14 +251,14 @@ namespace System.Windows.Controls {
 		
 		private static void media_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeMediaFailed ();
+			((MediaElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeMediaFailed (calldata);
 		}
 		
-		private void InvokeMediaFailed ()
+		private void InvokeMediaFailed (IntPtr calldata)
 		{
 			EventHandler <ExceptionRoutedEventArgs> h = (EventHandler <ExceptionRoutedEventArgs>) EventList [MediaFailedEvent];
 			if (h != null)
-				h (this, null);
+				h (this, new ExceptionRoutedEventArgs (calldata));
 		}
 	}
 }
