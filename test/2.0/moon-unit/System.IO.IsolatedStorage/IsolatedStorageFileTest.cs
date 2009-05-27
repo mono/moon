@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Security;
 using Mono.Moonlight.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -291,6 +292,28 @@ namespace MoonTest.System.IO.IsolatedStorage {
 
 			isf.Dispose ();
 			Assert.Throws (delegate { isf.Remove (); }, typeof (ObjectDisposedException), "Dispose");
+		}
+
+		[TestMethod]
+		public void GetFilesInSubdirs ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			string pattern = Path.Combine ("..", "*");
+			Assert.Throws<IsolatedStorageException> (() => isf.GetFileNames (pattern));
+
+			isf.CreateDirectory ("test");
+			isf.CreateFile ("test/file.txt");
+
+			string [] names = isf.GetFileNames ("test/*");
+
+			Assert.AreEqual (1, names.Length, "#a1");
+			Assert.AreEqual ("file.txt", names [0], "#a2");
+
+			isf.Remove ();
+			Assert.Throws (delegate { isf.DirectoryExists ("does not exists"); }, typeof (IsolatedStorageException), "Remove");
+
+			isf.Dispose ();
+			Assert.Throws (delegate { isf.DirectoryExists ("does not exists"); }, typeof (ObjectDisposedException), "Dispose");
 		}
 	}
 }
