@@ -110,6 +110,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/ButtonBaseAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/HyperlinkButtonAutomationPeer.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/ImageAutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/ItemAutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/ItemsControlAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/PatternInterface.cs		\

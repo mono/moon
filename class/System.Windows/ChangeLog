@@ -1,3 +1,11 @@
+2009-05-27  Mario Carrion  <mcarrion@novell.com>
+
+	* Makefile.am: File ImageAutomationPeer.cs added.
+	* System.Windows.Controls/Image.cs: OnCreateAutomationPeer 
+	implemented.
+	* System.Windows.Automation.Peers/ImageAutomationPeer.cs: New file
+	implemented Image automation peer.
+
 2009-05-26  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Controls/TextBox.cs: OnCreateAutomationPeer 

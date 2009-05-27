@@ -103,6 +103,7 @@
     <Compile Include="System.Windows.Automation.Peers\AutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ButtonBaseAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\FrameworkElementAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ImageAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ItemAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ItemsControlAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\PatternInterfaceTest.cs" />

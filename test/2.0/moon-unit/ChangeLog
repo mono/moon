@@ -1,3 +1,9 @@
+2009-05-27  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: File added ImageAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/ImageAutomationPeerTest.cs: Tests
+	ImageAutomationPeer class.
+
 2009-05-27  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ContentControlTest.cs: Implement

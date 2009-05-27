@@ -24,6 +24,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.IO;
@@ -62,5 +63,11 @@ namespace System.Windows.Controls {
 			if (h != null)
 				h (this, new ExceptionRoutedEventArgs (calldata));
 		}
+
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			return new ImageAutomationPeer (this);
+		}
+
 	}
 }
