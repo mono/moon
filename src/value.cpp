@@ -94,97 +94,7 @@ Value::Value()
 
 Value::Value (const Value& v)
 {
-	padding = v.padding;
-	k = v.k;
-	u = v.u;
-
-	SetIsNull (((Value&)v).GetIsNull());
-
-	/* make a copy of the string instead of just the pointer */
-	switch (k) {
-	case Type::STRING:
-		u.s = g_strdup (v.u.s);
-		break;
-	case Type::FONTFAMILY:
-		if (v.u.fontfamily) {
-			u.fontfamily = g_new (FontFamily, 1);
-			u.fontfamily->source = g_strdup (v.u.fontfamily->source);
-		}
-		break;
-	case Type::FONTSOURCE:
-		if (v.u.fontsource) {
-			u.fontsource = g_new (FontSource, 1);
-			u.fontsource->stream = g_new (ManagedStreamCallbacks, 1);
-			memcpy (u.fontsource->stream, v.u.fontsource->stream, sizeof (ManagedStreamCallbacks));
-		}
-		break;
-	case Type::PROPERTYPATH:
-		if (v.u.propertypath) {
-			u.propertypath = g_new (PropertyPath, 1);
-			u.propertypath->path = g_strdup (v.u.propertypath->path);
-			u.propertypath->expanded_path = g_strdup (v.u.propertypath->expanded_path);
-			u.propertypath->property = v.u.propertypath->property;
-		}
-		break;
-	case Type::COLOR:
-		u.color = g_new (Color, 1);
-		*u.color = *v.u.color;
-		break;
-	case Type::POINT:
-		u.point = g_new (Point, 1);
-		*u.point = *v.u.point;
-		break;
-	case Type::RECT:
-		u.rect = g_new (Rect, 1);
-		*u.rect = *v.u.rect;
-		break;
-	case Type::SIZE:
-		u.size = g_new (Size, 1);
-		*u.size = *v.u.size;
-		break;
-	case Type::URI:
-		if (v.u.uri) {
-			u.uri = g_new (Uri, 1);
-			Uri::Copy (v.u.uri, u.uri);
-		} else {
-			u.uri = NULL;
-		}
-		break;
-	case Type::REPEATBEHAVIOR:
-		u.repeat = g_new (RepeatBehavior, 1);
-		*u.repeat = *v.u.repeat;
-		break;
-	case Type::DURATION:
-		u.duration = g_new (Duration, 1);
-		*u.duration = *v.u.duration;
-		break;
-	case Type::KEYTIME:
-		u.keytime = g_new (KeyTime, 1);
-		*u.keytime = *v.u.keytime;
-		break;
-	case Type::GRIDLENGTH:
-		u.grid_length = g_new (GridLength, 1);
-		*u.grid_length = *v.u.grid_length;
-		break;
-	case Type::THICKNESS:
-		u.thickness = g_new (Thickness, 1);
-		*u.thickness = *v.u.thickness;
-		break;
-	case Type::CORNERRADIUS:
-		u.corner = g_new (CornerRadius, 1);
-		*u.corner = *v.u.corner;
-		break;
-	case Type::MANAGEDTYPEINFO:
-		if (u.type_info) {
-			u.type_info = g_new (ManagedTypeInfo, 1);
-			*u.type_info = *v.u.type_info;
-		}
-		break;
-	default:
-		if (Is (Type::EVENTOBJECT) && u.dependency_object)
-			u.dependency_object->ref ();
-		break;
-	}
+	Copy (v);
 }
 
 Value::Value (Type::Kind k)
@@ -410,6 +320,103 @@ Value::Value (ManagedTypeInfo type_info)
 }
 
 void
+Value::Copy (const Value& v)
+{
+
+	padding = v.padding;
+	k = v.k;
+	u = v.u;
+
+	SetIsNull (((Value&)v).GetIsNull());
+
+	/* make a copy of the string instead of just the pointer */
+	switch (k) {
+	case Type::STRING:
+		u.s = g_strdup (v.u.s);
+		break;
+	case Type::FONTFAMILY:
+		if (v.u.fontfamily) {
+			u.fontfamily = g_new (FontFamily, 1);
+			u.fontfamily->source = g_strdup (v.u.fontfamily->source);
+		}
+		break;
+	case Type::FONTSOURCE:
+		if (v.u.fontsource) {
+			u.fontsource = g_new (FontSource, 1);
+			u.fontsource->stream = g_new (ManagedStreamCallbacks, 1);
+			memcpy (u.fontsource->stream, v.u.fontsource->stream, sizeof (ManagedStreamCallbacks));
+		}
+		break;
+	case Type::PROPERTYPATH:
+		if (v.u.propertypath) {
+			u.propertypath = g_new (PropertyPath, 1);
+			u.propertypath->path = g_strdup (v.u.propertypath->path);
+			u.propertypath->expanded_path = g_strdup (v.u.propertypath->expanded_path);
+			u.propertypath->property = v.u.propertypath->property;
+		}
+		break;
+	case Type::COLOR:
+		u.color = g_new (Color, 1);
+		*u.color = *v.u.color;
+		break;
+	case Type::POINT:
+		u.point = g_new (Point, 1);
+		*u.point = *v.u.point;
+		break;
+	case Type::RECT:
+		u.rect = g_new (Rect, 1);
+		*u.rect = *v.u.rect;
+		break;
+	case Type::SIZE:
+		u.size = g_new (Size, 1);
+		*u.size = *v.u.size;
+		break;
+	case Type::URI:
+		if (v.u.uri) {
+			u.uri = g_new (Uri, 1);
+			Uri::Copy (v.u.uri, u.uri);
+		} else {
+			u.uri = NULL;
+		}
+		break;
+	case Type::REPEATBEHAVIOR:
+		u.repeat = g_new (RepeatBehavior, 1);
+		*u.repeat = *v.u.repeat;
+		break;
+	case Type::DURATION:
+		u.duration = g_new (Duration, 1);
+		*u.duration = *v.u.duration;
+		break;
+	case Type::KEYTIME:
+		u.keytime = g_new (KeyTime, 1);
+		*u.keytime = *v.u.keytime;
+		break;
+	case Type::GRIDLENGTH:
+		u.grid_length = g_new (GridLength, 1);
+		*u.grid_length = *v.u.grid_length;
+		break;
+	case Type::THICKNESS:
+		u.thickness = g_new (Thickness, 1);
+		*u.thickness = *v.u.thickness;
+		break;
+	case Type::CORNERRADIUS:
+		u.corner = g_new (CornerRadius, 1);
+		*u.corner = *v.u.corner;
+		break;
+	case Type::MANAGEDTYPEINFO:
+		if (u.type_info) {
+			u.type_info = g_new (ManagedTypeInfo, 1);
+			*u.type_info = *v.u.type_info;
+		}
+		break;
+	default:
+		if (Is (Type::EVENTOBJECT) && u.dependency_object)
+			u.dependency_object->ref ();
+		break;
+	}
+}
+
+void
 Value::FreeValue ()
 {
 	switch (GetKind ()) {
@@ -605,6 +612,14 @@ Value::operator== (const Value &v) const
 	}
 
 	return true;
+}
+
+Value&
+Value::operator= (const Value& other)
+{
+	if (this != &other)
+		Copy (other);
+	return *this;
 }
 
 //

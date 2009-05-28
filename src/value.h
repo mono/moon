@@ -355,6 +355,8 @@ public:
 
 	bool operator!= (const Value &v) const;
 	bool operator== (const Value &v) const;
+
+	Value& operator= (const Value& other);
 	
 	bool		Is (Type::Kind type) { return Type::IsSubclassOf (k, type); }
 
@@ -699,6 +701,8 @@ public:
 	// and TimeSpan, and the constructor doesn't know which 
 	// of the two types it is.
 	explicit Value (gint64 i) {};
+
+	void Copy (const Value& other);
 };
 
 G_BEGIN_DECLS
