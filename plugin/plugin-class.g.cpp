@@ -35,8 +35,7 @@ moonlight_uielement_allocate (NPP instance, NPClass *klass)
 	return new MoonlightUIElementObject (instance);
 }
 
-static const MoonNameIdMapping
-moonlight_uielement_mapping [] = {
+static const MoonNameIdMapping moonlight_uielement_mapping[] = {
 	{"capturemouse", MoonId_UIElement_CaptureMouse},
 	{"transformtovisual", MoonId_UIElement_TransformToVisual},
 	{"releasemousecapture", MoonId_UIElement_ReleaseMouseCapture},
@@ -53,7 +52,6 @@ MoonlightUIElementObject::Invoke (int id, NPIdentifier name,
 	switch (id) {
 
 		case MoonId_UIElement_CaptureMouse: {
-
 			bool ret = dob->CaptureMouse();
 			BOOLEAN_TO_NPVARIANT (ret, *result);
 			return true;
@@ -79,7 +77,6 @@ MoonlightUIElementObject::Invoke (int id, NPIdentifier name,
 		}
 
 		case MoonId_UIElement_ReleaseMouseCapture: {
-
 			dob->ReleaseMouseCapture();
 			VOID_TO_NPVARIANT (*result);
 			return true;
@@ -87,15 +84,14 @@ MoonlightUIElementObject::Invoke (int id, NPIdentifier name,
 		}
 
 		case MoonId_UIElement_UpdateLayout: {
-
 			dob->UpdateLayout();
 			VOID_TO_NPVARIANT (*result);
 			return true;
 			break;
 		}
-		default:
-			return MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);
 	}
+
+	return MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);
 }
 
 MoonlightUIElementType::MoonlightUIElementType ()
