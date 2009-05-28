@@ -7,13 +7,6 @@
 	this was causing compile warnings about unused functions and also
 	bloating up the binary ;-)
 
-2009-05-28  Chris Toshok  <toshok@ximian.com>
-
-	* plugin-class.cpp (html_object_get_property): no need to
-	introduce the extra temporary here.
-	(html_object_invoke): same.
-	(html_object_invoke_self): same.
-
 2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Sprinkle SetCurrentDeployment.
