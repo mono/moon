@@ -1,3 +1,7 @@
+2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* IsolatedStorageFileTest.cs: Added MoonlightBug to GetFilesInSubdirs.
+
 2009-05-27  Mario Carrion  <mcarrion@novell.com>
 
 	* moon-unit.csproj: File added ImageAutomationPeerTest.cs.
