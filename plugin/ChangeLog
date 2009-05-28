@@ -1,3 +1,7 @@
+2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Sprinkle SetCurrentDeployment.
+
 2009-05-27  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp|h: Ensure we only emit the source progress/completed events

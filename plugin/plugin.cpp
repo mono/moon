@@ -1424,6 +1424,8 @@ PluginInstance::WriteReady (NPStream *stream)
 {
 	nps (printf ("PluginInstance::WriteReady (%p)\n", stream));
 	
+	Deployment::SetCurrent (deployment);
+
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
 	
 	if (notify && notify->pdata) {
@@ -1451,6 +1453,8 @@ PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer
 {
 	nps (printf ("PluginInstance::Write (%p, %i, %i, %p)\n", stream, offset, len, buffer));
 	
+	Deployment::SetCurrent (deployment);
+
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
 	
 	if (notify && notify->pdata) {
