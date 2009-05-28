@@ -347,6 +347,7 @@ DispatcherTimer::Start ()
 void
 DispatcherTimer::Stop ()
 {
+	root_clock->Stop ();
 	stopped = true;
 	started = false;
 }
