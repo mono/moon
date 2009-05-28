@@ -1,3 +1,9 @@
+2009-05-28  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Add some more tests
+	for Control.IsEnabled to see exactly when it propagates to its
+	children.
+
 2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* IsolatedStorageFileTest.cs: Added MoonlightBug to GetFilesInSubdirs.
