@@ -4260,10 +4260,8 @@ html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 	bool ret = NPN_GetProperty (npp, npobj, identifier, &npresult);
 
 	if (ret) {
-		Value *res = NULL;
 		if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
-			variant_to_value (&npresult, &res);
-			*result = *res;
+			variant_to_value (&npresult, &result);
 		} else {
 			*result = Value (Type::INVALID);
 		}
@@ -4326,11 +4324,9 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 
 	if (ret)
 	{
-		Value *res = NULL;
 		if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
-			variant_to_value (&npresult, &res);
-			*result = *res;
-		    } else {
+			variant_to_value (&npresult, &result);
+		} else {
 			*result = Value (Type::INVALID);
 		}
 	} else {
@@ -4371,11 +4367,9 @@ html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
 
 	if (ret)
 	{
-		Value *res = NULL;
 		if (!NPVARIANT_IS_VOID (npresult) && !NPVARIANT_IS_NULL (npresult)) {
-			variant_to_value (&npresult, &res);
-			*result = *res;
-		    } else {
+			variant_to_value (&npresult, &result);
+		} else {
 			*result = Value (Type::INVALID);
 		}
 	} else {
