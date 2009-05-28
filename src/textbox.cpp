@@ -516,7 +516,7 @@ TextBoxUndoStack::Peek ()
 // TextBoxBase
 //
 
-// emit state
+// emit state, also doubles as available event mask
 #define NOTHING_CHANGED         (0)
 #define SELECTION_CHANGED       (1 << 0)
 #define TEXT_CHANGED            (1 << 1)
@@ -597,6 +597,8 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	max_length = 0;
 	
 	emit = NOTHING_CHANGED;
+	events_mask = 0;
+	
 	selection_anchor = 0;
 	selection_cursor = 0;
 	cursor_offset = 0.0;
@@ -1282,6 +1284,36 @@ TextBoxBase::BatchPop ()
 }
 
 void
+TextBoxBase::emit_selection_changed (EventObject *sender)
+{
+	((TextBoxBase *) sender)->EmitSelectionChanged ();
+}
+
+void
+TextBoxBase::EmitSelectionChangedAsync ()
+{
+	if (events_mask & SELECTION_CHANGED)
+		AddTickCall (TextBoxBase::emit_selection_changed);
+	
+	emit &= ~SELECTION_CHANGED;
+}
+
+void
+TextBoxBase::emit_text_changed (EventObject *sender)
+{
+	((TextBoxBase *) sender)->EmitTextChanged ();
+}
+
+void
+TextBoxBase::EmitTextChangedAsync ()
+{
+	if (events_mask & TEXT_CHANGED)
+		AddTickCall (TextBoxBase::emit_text_changed);
+	
+	emit &= ~TEXT_CHANGED;
+}
+
+void
 TextBoxBase::SyncAndEmit (bool sync_text)
 {
 	if (batch != 0 || emit == NOTHING_CHANGED)
@@ -1294,10 +1326,10 @@ TextBoxBase::SyncAndEmit (bool sync_text)
 		SyncSelectedText ();
 	
 	if (emit & TEXT_CHANGED)
-		EmitTextChanged ();
+		EmitTextChangedAsync ();
 	
 	if (emit & SELECTION_CHANGED)
-		EmitSelectionChanged ();
+		EmitSelectionChangedAsync ();
 	
 	emit = NOTHING_CHANGED;
 }
@@ -2247,24 +2279,19 @@ TextBox::TextBox ()
 	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	Initialize (Type::TEXTBOX, "System.Windows.Controls.TextBox");
+	events_mask = TEXT_CHANGED | SELECTION_CHANGED;
 }
 
 void
 TextBox::EmitSelectionChanged ()
 {
-	if (IsLoaded ())
-		Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
-	
-	emit &= ~SELECTION_CHANGED;
+	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
 }
 
 void
 TextBox::EmitTextChanged ()
 {
-	if (IsLoaded ())
-		Emit (TextBox::TextChangedEvent, new TextChangedEventArgs ());
-	
-	emit &= ~TEXT_CHANGED;
+	Emit (TextBox::TextChangedEvent, new TextChangedEventArgs ());
 }
 
 void
@@ -2312,10 +2339,10 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	
 	if (args->GetId () == TextBox::AcceptsReturnProperty) {
 		// update accepts_return state
-		accepts_return = args->GetNewValue()->AsBool ();
+		accepts_return = args->GetNewValue ()->AsBool ();
 	} else if (args->GetId () == TextBox::IsReadOnlyProperty) {
 		// update is_read_only state
-		is_read_only = args->GetNewValue()->AsBool ();
+		is_read_only = args->GetNewValue ()->AsBool ();
 		
 		if (focused) {
 			if (is_read_only) {
@@ -2327,10 +2354,11 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
 	} else if (args->GetId () == TextBox::MaxLengthProperty) {
 		// update max_length state
-		max_length = args->GetNewValue()->AsInt32 ();
+		max_length = args->GetNewValue ()->AsInt32 ();
 	} else if (args->GetId () == TextBox::SelectedTextProperty) {
 		if (setvalue) {
-			const char *str = args->GetNewValue() && args->GetNewValue()->AsString () ? args->GetNewValue()->AsString () : "";
+			Value *value = args->GetNewValue ();
+			const char *str = value && value->AsString () ? value->AsString () : "";
 			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
@@ -2366,7 +2394,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
 	} else if (args->GetId () == TextBox::SelectionStartProperty) {
 		length = abs (selection_cursor - selection_anchor);
-		start = args->GetNewValue()->AsInt32 ();
+		start = args->GetNewValue ()->AsInt32 ();
 		
 		if (start > buffer->len) {
 			// clamp the selection start offset to a valid value
@@ -2376,23 +2404,31 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		
 		if (start + length > buffer->len) {
 			// clamp the selection length to a valid value
+			BatchPush ();
 			length = buffer->len - start;
 			SetSelectionLength (length);
+			BatchPop ();
+		}
+		
+		// SelectionStartProperty is marked as AlwaysChange -
+		// if the value hasn't actually changed, then we do
+		// not want to emit the TextBoxModelChanged event.
+		if (selection_anchor != start) {
+			changed = TextBoxModelChangedSelection;
+			have_offset = false;
 		}
 		
 		// When set programatically, anchor is always the
-		// start and cursor is always the end
+		// start and cursor is always the end.
 		selection_cursor = start + length;
 		selection_anchor = start;
 		
-		changed = TextBoxModelChangedSelection;
 		emit |= SELECTION_CHANGED;
-		have_offset = false;
 		
 		SyncAndEmit ();
 	} else if (args->GetId () == TextBox::SelectionLengthProperty) {
 		start = MIN (selection_anchor, selection_cursor);
-		length = args->GetNewValue()->AsInt32 ();
+		length = args->GetNewValue ()->AsInt32 ();
 		
 		if (start + length > buffer->len) {
 			// clamp the selection length to a valid value
@@ -2401,14 +2437,20 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			return;
 		}
 		
+		// SelectionLengthProperty is marked as AlwaysChange -
+		// if the value hasn't actually changed, then we do
+		// not want to emit the TextBoxModelChanged event.
+		if (selection_cursor != start + length) {
+			changed = TextBoxModelChangedSelection;
+			have_offset = false;
+		}
+		
 		// When set programatically, anchor is always the
-		// start and cursor is always the end
+		// start and cursor is always the end.
 		selection_cursor = start + length;
 		selection_anchor = start;
 		
-		changed = TextBoxModelChangedSelection;
 		emit |= SELECTION_CHANGED;
-		have_offset = false;
 		
 		SyncAndEmit ();
 	} else if (args->GetId () == TextBox::SelectionBackgroundProperty) {
@@ -2418,7 +2460,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == TextBox::TextProperty) {
 		if (setvalue) {
 			Value *value = args->GetNewValue ();
-			const char *str = value->AsString () ? value->AsString () : "";
+			const char *str = value && value->AsString () ? value->AsString () : "";
 			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
@@ -2571,6 +2613,7 @@ PasswordBox::PasswordBox ()
 	providers[PropertyPrecedence_DynamicValue] = new PasswordBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	Initialize (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox");
+	events_mask = TEXT_CHANGED;
 	
 	display = g_string_new ("");
 }
@@ -2771,18 +2814,26 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		
 		if (start + length > buffer->len) {
 			// clamp the selection length to a valid value
+			BatchPush ();
 			length = buffer->len - start;
 			SetSelectionLength (length);
+			BatchPop ();
+		}
+		
+		// SelectionStartProperty is marked as AlwaysChange -
+		// if the value hasn't actually changed, then we do
+		// not want to emit the TextBoxModelChanged event.
+		if (selection_anchor != start) {
+			changed = TextBoxModelChangedSelection;
+			have_offset = false;
 		}
 		
 		// When set programatically, anchor is always the
-		// start and cursor is always the end
+		// start and cursor is always the end.
 		selection_cursor = start + length;
 		selection_anchor = start;
 		
-		changed = TextBoxModelChangedSelection;
 		emit |= SELECTION_CHANGED;
-		have_offset = false;
 		
 		SyncAndEmit ();
 	} else if (args->GetId () == PasswordBox::SelectionLengthProperty) {
@@ -2796,14 +2847,20 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			return;
 		}
 		
+		// SelectionLengthProperty is marked as AlwaysChange -
+		// if the value hasn't actually changed, then we do
+		// not want to emit the TextBoxModelChanged event.
+		if (selection_cursor != start + length) {
+			changed = TextBoxModelChangedSelection;
+			have_offset = false;
+		}
+		
 		// When set programatically, anchor is always the
-		// start and cursor is always the end
+		// start and cursor is always the end.
 		selection_cursor = start + length;
 		selection_anchor = start;
 		
-		changed = TextBoxModelChangedSelection;
 		emit |= SELECTION_CHANGED;
-		have_offset = false;
 		
 		SyncAndEmit ();
 	} else if (args->GetId () == PasswordBox::SelectionBackgroundProperty) {

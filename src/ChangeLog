@@ -1,3 +1,21 @@
+2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.h (class TextBox): Added the AlwaysChange metadata to
+	SelectionStart/Length properties.
+
+	* textbox.cpp (TextBoxBase::EmitSelectionChangedAsync): New method
+	to asynchronously emit SelectionChanged events.
+	(TextBoxBase::EmitTextChangedAsync): Same for TextChanged events.
+	(TextBoxBase::SyncAndEmit): Asynchronously emit the events.
+	(TextBox::EmitSelectionChanged): Simply emit the event now, don't
+	bother updating state which is now handled elsewhere.
+	(TextBox::EmitTextChanged): Same.
+	(TextBox::OnPropertyChanged): When clamping the SelectionLength
+	value due to a SelectionState property change, block events - we
+	should only emit a single SelectionChanged event. Also modified to
+	avoid emitting a TextBoxModelChanged event if the values didn't
+	actually change. Same for SelectionLength changes.
+
 2009-05-28  Chris Toshok  <toshok@ximian.com>
 
 	* value.h.in, value.cpp: add a copy assignment operator.

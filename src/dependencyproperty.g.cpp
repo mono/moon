@@ -350,8 +350,8 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBOX, "TextWrapping", false, new Value (TextWrappingNoWrap), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBOX, "Text", false, Type::STRING);
 	DependencyProperty::Register (this, Type::TEXTBOX, "TextAlignment", false, new Value (TextAlignmentLeft), Type::INT32);
-	DependencyProperty::RegisterFull (this, Type::TEXTBOX, "SelectionStart", false, new Value (0), Type::INT32, false, false, false, NULL, Validators::PositiveIntValidator, NULL, false);
-	DependencyProperty::RegisterFull (this, Type::TEXTBOX, "SelectionLength", false, new Value (0), Type::INT32, false, false, false, NULL, Validators::PositiveIntValidator, NULL, false);
+	DependencyProperty::RegisterFull (this, Type::TEXTBOX, "SelectionStart", false, new Value (0), Type::INT32, false, false, true, NULL, Validators::PositiveIntValidator, NULL, false);
+	DependencyProperty::RegisterFull (this, Type::TEXTBOX, "SelectionLength", false, new Value (0), Type::INT32, false, false, true, NULL, Validators::PositiveIntValidator, NULL, false);
 	DependencyProperty::Register (this, Type::TEXTBOX, "SelectionForeground", false, Type::BRUSH);
 	DependencyProperty::Register (this, Type::TEXTBOX, "SelectionBackground", false, Type::BRUSH);
 	DependencyProperty::Register (this, Type::TEXTBOX, "SelectedText", false, new Value (""), Type::STRING);

@@ -120,6 +120,9 @@ class TextBoxUndoStack;
 
 /* @Namespace=None */
 class TextBoxBase : public Control, public ITextAttributes {
+	static void emit_selection_changed (EventObject *sender);
+	static void emit_text_changed (EventObject *sender);
+	
  protected:
 	friend class TextBoxView;
 	
@@ -145,6 +148,8 @@ class TextBoxBase : public Control, public ITextAttributes {
 	short setvalue:1;
 	short captured:1;
 	short focused:1;
+	
+	short events_mask:2;
 	short emit:2;
 	
 	short batch;
@@ -210,6 +215,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	void ResetIMContext ();
 	
 	void EmitCursorPositionChanged (double height, double x, double y);
+	
 	virtual void EmitSelectionChanged () { }
 	virtual void EmitTextChanged () = 0;
 	
@@ -218,6 +224,9 @@ class TextBoxBase : public Control, public ITextAttributes {
 	
 	void BatchPush ();
 	void BatchPop ();
+	
+	void EmitSelectionChangedAsync ();
+	void EmitTextChangedAsync ();
 	
 	void SyncAndEmit (bool sync_text = true);
 	
@@ -368,9 +377,9 @@ class TextBox : public TextBoxBase {
 	const static int SelectionBackgroundProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	const static int SelectionForegroundProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,AlwaysChange,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int SelectionLengthProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,AlwaysChange,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int SelectionStartProperty;
 	/* @PropertyType=string,Version=2.0,GenerateAccessors,GenerateManagedAccessors=false */
 	const static int TextProperty;
