@@ -42,6 +42,155 @@
 #define ENDTIMER(id,str)
 #endif
 
+//Q(uad)Tree.
+struct QTree {
+	bool has_value;
+	void *data;
+	QTree* l0; //N-E
+	QTree* l1; //N-W
+	QTree* l2; //S-E
+	QTree* l3; //S-W
+};
+
+QTree*
+qtree_new ()
+{
+	return g_new0 (QTree, 1);
+}
+
+void
+qtree_insert_at (QTree* root, void *data, int level, int x, int y)
+{
+	if ( x >= (1 << level) || y >= (1 << level)) {
+		g_warning ("QuadTree index out of range.");
+		return;
+	}
+
+	if (!root) {
+		g_warning ("passing a NULL QTree to qtree_insert_at");
+		return;
+	}
+
+
+	while (level-- > 0) {
+		if (y < 1 << level) {
+			if (x < 1 << level) {
+				if (!root->l0)
+					root->l0 = g_new0 (QTree, 1);
+				root = root->l0;
+			} else {
+				if (!root->l1)
+					root->l1 = g_new0 (QTree, 1);
+				root = root->l1;
+				x -= 1 << level;
+			}
+		} else {
+			if (x < 1 << level) {
+				if (!root->l2)
+					root->l2 = g_new0 (QTree, 1);
+				root = root->l2;
+				y -= 1 <<level;
+			} else {
+				if (!root->l3)
+					root->l3 = g_new0 (QTree, 1);
+				root = root->l3;
+				x -= 1 << level;
+				y -= 1 << level;
+			}
+		}
+	}
+
+	root->has_value = true;
+	root->data = data;
+}
+
+QTree *
+qtree_lookup (QTree* root, int level, int x, int y)
+{
+	if ( x >= 1 << level || y >= 1 << level) {
+		g_warning ("QuadTree index out of range.");
+		return NULL;
+	}
+
+	while (level-- > 0) {
+		if (!root)
+			return NULL;
+
+		if (y < 1 << level) {
+			if (x < 1 << level) {
+				root = root->l0;
+			} else {
+				root = root->l1;
+				x -= 1 << level;
+			}
+		} else {
+			if (x < 1 << level) {
+				root = root->l2;
+				y -= 1 << level;
+			} else {
+				root = root->l3;
+				x -= 1 << level;
+				y -= 1 << level;
+			}
+		}
+	}
+	return root;
+}
+
+void *
+qtree_lookup_data (QTree* root, int level, int x, int y)
+{
+	QTree *node = qtree_lookup (root, level, x, y);
+	if (node)
+		return node->data;
+	return NULL;
+}
+
+void
+qtree_remove_at (QTree* root, int level, int x, int y)
+{
+	QTree* node = qtree_lookup (root, level, x, y);
+	if (node) {
+		cairo_surface_destroy ((cairo_surface_t*)node->data);
+		node->has_value = false;
+	}
+}
+
+
+bool
+qtree_has_value (QTree* node)
+{
+	if (node)
+		return node->has_value;
+	return false;
+}
+
+bool
+qtree_has_value_at (QTree* root, int level, int x, int y)
+{
+	QTree *node = qtree_lookup (root, level, x, y);
+	if (node)
+		return node->has_value;
+	return false;
+}
+
+void
+qtree_destroy (QTree *root)
+{
+	if (!root)
+		return;
+
+	//FIXME: the destroy func should be a qtree ctor option
+	if (root->data)
+		cairo_surface_destroy ((cairo_surface_t*)(root->data));
+
+	qtree_destroy (root->l0);
+	qtree_destroy (root->l1);
+	qtree_destroy (root->l2);
+	qtree_destroy (root->l3);
+}
+
+
 void _cairo_surface_destroy (void* surface) {cairo_surface_destroy((cairo_surface_t*)surface);}
 
 enum BitmapImageStatus {

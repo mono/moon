@@ -54,6 +54,12 @@
 	* mms-downloader.cpp: Custom headers must be requested before
 	  opening the downloader.
 
+2009-05-28  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: qtree_new, qtree_lookup, qtree_destroy,
+	qtree_insert, etc. The Q(uad)Tree data structure is a tree with
+	4 child nodes, matching the tree-ish pyramid of MSI tiles.
+
 2009-05-28  Andreia Gaita  <avidigal@novel.com>
 
 	* timeline.cpp: Stop the clock when you call Stop.
