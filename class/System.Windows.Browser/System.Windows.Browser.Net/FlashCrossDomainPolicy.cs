@@ -35,9 +35,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml;
-#if !TEST
-using System.Windows.Interop;
-#endif
 
 /*
 
@@ -83,19 +80,8 @@ cross-domain-policy = element cross-domain-policy {
 
 namespace System.Windows.Browser.Net {
 
-#if TEST
-	class FlashCrossDomainPolicy {
+	class FlashCrossDomainPolicy : BaseDomainPolicy {
 
-		static public Uri ApplicationUri {
-			get; set;
-		}
-#else
-	class FlashCrossDomainPolicy : ICrossDomainPolicy {
-
-		static public Uri ApplicationUri {
-			get { return PluginHost.RootUri; }
-		}
-#endif
 		private string site_control;
 
 		public static FlashCrossDomainPolicy Read (XmlReader reader)
@@ -121,12 +107,7 @@ namespace System.Windows.Browser.Net {
 			set { site_control = value; }
 		}
 
-		public bool IsAllowed (WebRequest request)
-		{
-			return IsAllowed (request.RequestUri, request.Headers.AllKeys);
-		}
-
-		public bool IsAllowed (Uri uri, string [] headerKeys)
+		public override bool IsAllowed (Uri uri, string [] headerKeys)
 		{
 			switch (SiteControl) {
 			case "all":
@@ -176,30 +157,27 @@ namespace System.Windows.Browser.Net {
 			}
 		}
 
-		public class AllowHttpRequestHeadersFrom
-		{
+		public class AllowHttpRequestHeadersFrom {
+
+			public AllowHttpRequestHeadersFrom ()
+			{
+				Headers = new Headers ();
+			}
+
 			public string Domain { get; set; }
 			public bool AllowAllHeaders { get; set; }
-			public string [] Headers { get; private set; }
+			public Headers Headers { get; private set; }
 			public bool Secure { get; set; }
-
-			public void SetHeaders (string headers)
-			{
-				if (headers == "*")
-					AllowAllHeaders = true;
-				else
-					Headers = headers.Split (',');
-			}
 
 			public bool IsRejected (Uri uri, string [] headerKeys)
 			{
-				if (!uri.Host.EndsWith (Domain, StringComparison.Ordinal))
+				if (Domain != "*" && !uri.Host.EndsWith (Domain, StringComparison.Ordinal))
 					return false;
-				if (headerKeys.Any (s => Array.IndexOf (Headers, s) < 0))
-					return true;
-				if (Secure && uri.Scheme != Uri.UriSchemeHttps)
-					return true;
-				return false;
+
+				if (Headers.IsAllowed (headerKeys))
+					return false;
+
+				return (Secure && uri.Scheme != Uri.UriSchemeHttps); // <- FIXME looks bad, needs test
 			}
 		}
 
@@ -225,6 +203,12 @@ namespace System.Windows.Browser.Net {
 			{
 				this.reader = reader;
 				cdp = new FlashCrossDomainPolicy ();
+				// if none supplied set a default for headers
+				if (cdp.AllowedHttpRequestHeaders.Count == 0) {
+					var h = new AllowHttpRequestHeadersFrom () { Domain = "*", Secure = true };
+					h.Headers.SetHeaders (null); // defaults
+					cdp.AllowedHttpRequestHeaders.Add (h);
+				}
 			}
 
 			XmlReader reader;
@@ -254,11 +238,13 @@ namespace System.Windows.Browser.Net {
 						var a = new AllowAccessFrom () {
 							Domain = reader.GetAttribute ("domain"),
 							Secure = reader.GetAttribute ("secure") == "true" };
+/* Silverlight policies are used for sockets
 						var p = reader.GetAttribute ("to-ports");
 						if (p == "*")
 							a.AllowAnyPort = true;
 						else if (p != null)
 							a.ToPorts = Array.ConvertAll<string, int> (p.Split (','), s => XmlConvert.ToInt32 (s));
+*/
 						cdp.AllowedAccesses.Add (a);
 						reader.Skip ();
 						break;
@@ -266,7 +252,7 @@ namespace System.Windows.Browser.Net {
 						var h = new AllowHttpRequestHeadersFrom () {
 							Domain = reader.GetAttribute ("domain"),
 							Secure = reader.GetAttribute ("secure") == "true" };
-						h.SetHeaders (reader.GetAttribute ("headers"));
+						h.Headers.SetHeaders (reader.GetAttribute ("headers"));
 						cdp.AllowedHttpRequestHeaders.Add (h);
 						reader.Skip ();
 						break;

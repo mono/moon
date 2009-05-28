@@ -35,9 +35,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml;
-#if !TEST
-using System.Windows.Interop;
-#endif
 
 /*
 default namespace = ""
@@ -78,19 +75,8 @@ socket-resource = element socket-resource {
 
 namespace System.Windows.Browser.Net {
 
-#if TEST
-	class ClientAccessPolicy {
+	class ClientAccessPolicy : BaseDomainPolicy {
 
-		static public Uri ApplicationUri {
-			get; set;
-		}
-#else
-	class ClientAccessPolicy : ICrossDomainPolicy {
-
-		static public Uri ApplicationUri {
-			get { return PluginHost.RootUri; }
-		}
-#endif
 		class AccessPolicy {
 
 			public const short MinPort = 4502;
@@ -145,12 +131,7 @@ namespace System.Windows.Browser.Net {
 			return false;
 		}
 
-		public bool IsAllowed (WebRequest request)
-		{
-			return IsAllowed (request.RequestUri, request.Headers.AllKeys);
-		}
-
-		public bool IsAllowed (Uri uri, params string [] headerKeys)
+		public override bool IsAllowed (Uri uri, params string [] headerKeys)
 		{
 			// is a policy applies then we're not allowed to use './' or '../' inside the URI
 			if (uri.OriginalString.Contains ("./"))
@@ -175,28 +156,10 @@ namespace System.Windows.Browser.Net {
 
 		public class AllowFrom {
 
-			class PrefixComparer : IEqualityComparer<string> {
-
-				public bool Equals (string x, string y)
-				{
-					int check_length = x.Length - 1;
-					if ((x.Length > 0) && (x [check_length] == '*'))
-						check_length--;
-
-					return (String.Compare (x, 0, y, 0, check_length, StringComparison.OrdinalIgnoreCase) == 0);
-				}
-
-				public int GetHashCode (string obj)
-				{
-					return (obj == null) ? 0 : obj.GetHashCode ();
-				}
-			}
-
-			static PrefixComparer pc = new PrefixComparer ();
-
 			public AllowFrom ()
 			{
 				Domains = new List<Uri> ();
+				HttpRequestHeaders = new Headers ();
 				Scheme = String.Empty;
 			}
 
@@ -206,35 +169,16 @@ namespace System.Windows.Browser.Net {
 
 			public List<Uri> Domains { get; private set; }
 
-			public List<string> Headers { get; private set; }
+			public Headers HttpRequestHeaders { get; private set; }
 
 			public string Scheme { get; internal set; }
-
-			public void SetHttpRequestHeaders (string raw)
-			{
-				if (raw == "*") {
-					AllowAllHeaders = true;
-				}  else if (raw != null) {
-					string [] headers = raw.Split (',');
-					Headers = new List<string> (headers.Length + 1);
-					Headers.Add ("Content-Type");
-					for (int i = 0; i < headers.Length; i++)
-						Headers.Add (headers [i].Trim ());
-				} else {
-					// without a specified 'http-request-headers' no header, expect Content-Type, is allowed
-					AllowAllHeaders = false;
-					Headers = new List<string> (1);
-					Headers.Add ("Content-Type");
-				}
-			}
 
 			public bool IsAllowed (Uri uri, string [] headerKeys)
 			{
 				// check headers
-				if (!AllowAllHeaders && headerKeys != null && headerKeys.Length > 0) {
-					if (!headerKeys.All (s => Headers.Contains (s, pc)))
-						return false;
-				}
+				if (!HttpRequestHeaders.IsAllowed (headerKeys))
+					return false;
+
 				// check scheme
 				if ((Scheme.Length > 0) && (Scheme == uri.Scheme)) {
 					switch (Scheme) {
@@ -371,7 +315,7 @@ namespace System.Windows.Browser.Net {
 					return;
 				}
 
-				v.SetHttpRequestHeaders (reader.GetAttribute ("http-request-headers"));
+				v.HttpRequestHeaders.SetHeaders (reader.GetAttribute ("http-request-headers"));
 				reader.ReadStartElement ("allow-from", String.Empty);
 				for (reader.MoveToContent (); reader.NodeType != XmlNodeType.EndElement; reader.MoveToContent ()) {
 					if (reader.NodeType != XmlNodeType.Element)
