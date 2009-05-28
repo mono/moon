@@ -1,3 +1,10 @@
+2009-05-28  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ButtonAutomationPeer.cs: Subclassing
+	from ButtonBaseAutomationPeer and IInvokeProvider implementation.
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeer.cs: 
+	GetNameCore asks for attached property.
+
 2009-05-27  Mario Carrion  <mcarrion@novell.com>
 
 	* Makefile.am: File ImageAutomationPeer.cs added.

@@ -174,14 +174,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public override void Null ()
-		{
-			Assert.Throws<NullReferenceException> (delegate {
-				new ImageAutomationPeerPoker (null);
-			});
-		}
-
-		[TestMethod]
 		public override void GetAutomationControlType ()
 		{
 			ImageAutomationPeerPoker imagePeer = new ImageAutomationPeerPoker (new Image ());

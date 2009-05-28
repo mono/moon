@@ -174,14 +174,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public override void Null ()
-		{
-			Assert.Throws<NullReferenceException> (delegate {
-				new TextBlockAutomationPeerPoker (null);
-			});
-		}
-
-		[TestMethod]
 		public override void GetAutomationControlType ()
 		{
 			TextBlockAutomationPeerPoker tbap = new TextBlockAutomationPeerPoker (new TextBlock ());

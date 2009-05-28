@@ -179,14 +179,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public override void Null ()
-		{
-			Assert.Throws<NullReferenceException>(delegate {
-				new TextBoxAutomationPeerPoker (null);
-			});
-		}
-
-		[TestMethod]
 		public override void GetName()
 		{
 			TextBox textbox = new TextBox ();

@@ -59,10 +59,10 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public virtual void Null ()
+		public void Null ()
 		{
 			Assert.Throws<NullReferenceException> (delegate {
-				new FrameworkElementAutomationPeer (null);
+				CreateConcreteFrameworkElementAutomationPeer (null);
 			});
 		}
 
@@ -672,9 +672,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsNull (feap.GetLabeledBy (), "GetLabeledBy");
 			Assert.IsNull (feap.GetLabeledByCore_ (), "GetLabeledByCore");
 
-			FrameworkElement labeledBy = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract labeledByPeer 
-				= FrameworkElementAutomationPeer.CreatePeerForElement (labeledBy) as FrameworkElementAutomationPeerContract;
+			FrameworkElement labeledBy = new TextBlock ();
+			AutomationPeer labeledByPeer = FrameworkElementAutomationPeer.CreatePeerForElement (labeledBy);
 
 			fe.SetValue (AutomationProperties.LabeledByProperty, labeledBy);
 			Assert.AreSame (labeledByPeer, feap.GetLabeledBy (), "GetLabeledBy #1");

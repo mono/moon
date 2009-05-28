@@ -40,7 +40,7 @@ namespace System.Windows.Automation.Peers {
 
 		protected override string GetNameCore ()
 		{
-			return String.Empty;
+			return Owner.GetValue (AutomationProperties.NameProperty) as string ?? string.Empty;
 		}
 	}
 }

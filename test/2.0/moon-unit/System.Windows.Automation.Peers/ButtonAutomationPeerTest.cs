@@ -1,5 +1,5 @@
 //
-// Unit tests for ButtonBaseAutomationPeer
+// Unit tests for ButtonAutomationPeer
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -27,6 +27,9 @@
 //
 
 using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls.Primitives;
 
@@ -36,20 +39,25 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Automation.Peers {
 
 	[TestClass]
-	public class ButtonBaseAutomationPeerTest : FrameworkElementAutomationPeerTest {
+	public class ButtonAutomationPeerTest : FrameworkElementAutomationPeerTest {
 
-		public class ButtonBaseAutomationPeerPoker : ButtonBaseAutomationPeer, FrameworkElementAutomationPeerContract {
+		public class ButtonAutomationPeerPoker : ButtonAutomationPeer, FrameworkElementAutomationPeerContract {
 
-			public ButtonBaseAutomationPeerPoker (ButtonBase owner)
+			public ButtonAutomationPeerPoker (Button owner)
 				: base (owner)
 			{
 			}
 
-			#region Overridden methods
+			#region Overridden Methods
 
-			public string GetNameCore_ ()
+			public AutomationControlType GetAutomationControlTypeCore_ ()
 			{
-				return base.GetNameCore ();
+				return base.GetAutomationControlTypeCore ();
+			}
+
+			public string GetClassNameCore_ ()
+			{
+				return base.GetClassNameCore ();
 			}
 
 			#endregion
@@ -59,6 +67,11 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			public AutomationPeer GetLabeledByCore_ ()
 			{
 				return base.GetLabeledByCore ();
+			}
+
+			public string GetNameCore_ ()
+			{
+				return base.GetNameCore ();
 			}
 
 			public bool IsContentElementCore_ ()
@@ -79,11 +92,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			public string GetAccessKeyCore_ ()
 			{
 				return base.GetAccessKeyCore ();
-			}
-
-			public AutomationControlType GetAutomationControlTypeCore_ ()
-			{
-				return base.GetAutomationControlTypeCore ();
 			}
 
 			public string GetAutomationIdCore_ ()
@@ -161,12 +169,65 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				return base.IsRequiredForFormCore ();
 			}
 
-			public string GetClassNameCore_ ()
-			{
-				return base.GetClassNameCore ();
-			}
-
 			#endregion
+		}
+
+		[TestMethod]
+		public override void GetAutomationControlType ()
+		{
+			ButtonAutomationPeerPoker bapp = new ButtonAutomationPeerPoker (new Button ());
+			Assert.AreEqual (AutomationControlType.Button, bapp.GetAutomationControlType (), "GetAutomationControlType");
+			Assert.AreEqual (AutomationControlType.Button, bapp.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
+		}
+
+		[TestMethod]
+		public override void GetClassName ()
+		{
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
+			Assert.AreEqual ("Button", feap.GetClassName (), "GetClassNameCore");
+			Assert.AreEqual ("Button", feap.GetClassNameCore_ (), "GetClassNameCoreCore");
+		}
+
+		[TestMethod]
+		public override void GetPattern ()
+		{
+			ButtonAutomationPeerPoker bap = new ButtonAutomationPeerPoker (new Button ());
+
+			Assert.IsNull (bap.GetPattern (PatternInterface.Dock), "Dock");
+			Assert.IsNull (bap.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
+			Assert.IsNull (bap.GetPattern (PatternInterface.Grid), "Grid");
+			Assert.IsNull (bap.GetPattern (PatternInterface.GridItem), "GridItem");
+			Assert.IsNull (bap.GetPattern (PatternInterface.MultipleView), "MultipleView");
+			Assert.IsNull (bap.GetPattern (PatternInterface.RangeValue), "RangeValue");
+			Assert.IsNull (bap.GetPattern (PatternInterface.Scroll), "Scroll");
+			Assert.IsNull (bap.GetPattern (PatternInterface.ScrollItem), "ScrollItem");
+			Assert.IsNull (bap.GetPattern (PatternInterface.Selection), "Selection");
+			Assert.IsNull (bap.GetPattern (PatternInterface.SelectionItem), "SelectionItem");
+			Assert.IsNull (bap.GetPattern (PatternInterface.Table), "Table");
+			Assert.IsNull (bap.GetPattern (PatternInterface.TableItem), "TableItem");
+			Assert.IsNull (bap.GetPattern (PatternInterface.Toggle), "Toggle");
+			Assert.IsNull (bap.GetPattern (PatternInterface.Transform), "Transform");
+			Assert.IsNull (bap.GetPattern (PatternInterface.Value), "Value");
+			Assert.IsNull (bap.GetPattern (PatternInterface.Window), "Window");
+
+			Assert.IsNotNull (bap.GetPattern (PatternInterface.Invoke), "Invoke");
+		}
+
+		[TestMethod]
+		public void IInvokeProvider_Invoke ()
+		{
+			// FIXME: Implement when MoonAtkBridge is ready
+		}
+
+		protected override FrameworkElement CreateConcreteFrameworkElement ()
+		{
+			return new Button ();
+		}
+
+		protected override FrameworkElementAutomationPeerContract CreateConcreteFrameworkElementAutomationPeer (FrameworkElement element)
+		{
+			return new ButtonAutomationPeerPoker (element as Button);
 		}
 	}
 }

@@ -17,30 +17,37 @@ using System.Windows.Controls;
 
 namespace System.Windows.Automation.Peers
 {
-	public class ButtonAutomationPeer : FrameworkElementAutomationPeer, IValueProvider
+	public class ButtonAutomationPeer : ButtonBaseAutomationPeer, IInvokeProvider
 	{
 
-		public void SetValue (string value)
-		{
-			throw new System.NotImplementedException();
-		}
-		
-		public string Value {
-			get {
-				throw new System.NotImplementedException();
-			}
-		}
-		
-		public bool IsReadOnly {
-			get {
-				throw new System.NotImplementedException();
-			}
-		}
-		
 		public ButtonAutomationPeer (Button owner)
 			: base (owner)
 		{
-			
+			owner.Click += delegate (object sender, RoutedEventArgs args) {
+				AutomationSingleton.Instance.RaiseAutomationEvent (this, AutomationEvents.InvokePatternOnInvoked);
+			};
+		}
+
+		protected override AutomationControlType GetAutomationControlTypeCore ()
+		{
+			return AutomationControlType.Button;
+		}
+
+		protected override string GetClassNameCore ()
+		{
+			return "Button";
+		}
+
+		public override object GetPattern (PatternInterface patternInterface)
+		{
+			if (patternInterface == PatternInterface.Invoke)
+				return this;
+			return null;
+		}
+
+		void IInvokeProvider.Invoke ()
+		{
+			((Button) Owner).OnClickInternal ();
 		}
 	}
 }

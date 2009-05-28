@@ -1,3 +1,17 @@
+2009-05-28  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: ButtonAutomationPeerTest.cs file added.
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs: New file
+	tests ButtonAutomationPeer.
+	* System.Windows.Automation.Peers/ImageAutomationPeerTest.cs: 
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs:
+	* System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: Null
+	test removed.
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs: 
+	Subclassing from FrameworkElementAutomationPeerTest.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Null test is not virtual anymore.
+
 2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* System.Windows.Controls/TextBoxTest.cs
