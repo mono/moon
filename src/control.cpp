@@ -94,7 +94,7 @@ Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, Moon
 		this->enabled_local = value->AsBool ();
 
 		UpdateEnabled ();
-		Value v = Value (enabled_local && enabled_parent);
+		Value v (enabled_local && enabled_parent);
 		return FrameworkElement::SetValueWithErrorImpl (property, &v, error);
 	}
 	return FrameworkElement::SetValueWithErrorImpl (property, value, error);
