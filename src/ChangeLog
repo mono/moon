@@ -1,3 +1,8 @@
+2009-05-28  Alan McGovern  <amcgovern@novell.com>
+
+	* animation.cpp: Fix a double free caused by the line
+	converted = Value (*value);
+
 2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline-ui.cpp: Protect against a null surface.

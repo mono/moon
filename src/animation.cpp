@@ -2012,15 +2012,14 @@ ObjectAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProp
 		ObjectKeyFrame *frame = frames->GetValueAt (i)->AsObjectKeyFrame ();
 		
 		Value *value = frame->GetValue ();
-		Value converted;
 		if (!value || value->GetIsNull ()) {
 			// If the value is null, don't convert
 			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, NULL);
 		} else if (value->GetKind () == property->GetPropertyType ()) {
 			// If the value is of the correct type already, don't convert
-			converted = Value (*value);
-			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, converted);
+			frame->SetValue (ObjectKeyFrame::ConvertedValueProperty, value);
 		} else {
+			Value converted;
 			Application::GetCurrent ()->ConvertKeyframeValue (target->GetType ()->GetKind (), property, value, &converted);
 		
 			if (converted.GetKind () == Type::INVALID) {
