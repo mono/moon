@@ -371,7 +371,7 @@ class TextBox : public TextBoxBase {
 	const static int IsReadOnlyProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int MaxLengthProperty;
-	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",AlwaysChange,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int SelectedTextProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	const static int SelectionBackgroundProperty;

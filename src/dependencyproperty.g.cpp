@@ -354,7 +354,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::TEXTBOX, "SelectionLength", false, new Value (0), Type::INT32, false, false, true, NULL, Validators::PositiveIntValidator, NULL, false);
 	DependencyProperty::Register (this, Type::TEXTBOX, "SelectionForeground", false, Type::BRUSH);
 	DependencyProperty::Register (this, Type::TEXTBOX, "SelectionBackground", false, Type::BRUSH);
-	DependencyProperty::Register (this, Type::TEXTBOX, "SelectedText", false, new Value (""), Type::STRING);
+	DependencyProperty::RegisterFull (this, Type::TEXTBOX, "SelectedText", false, new Value (""), Type::STRING, false, false, true, NULL, NULL, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::TEXTBOX, "MaxLength", false, new Value (0), Type::INT32, false, false, false, NULL, Validators::PositiveIntValidator, NULL, false);
 	DependencyProperty::Register (this, Type::TEXTBOX, "IsReadOnly", false, new Value (false), Type::BOOL);
 	DependencyProperty::Register (this, Type::TEXTBOX, "HorizontalScrollBarVisibility", false, new Value (ScrollBarVisibilityHidden), Type::INT32);

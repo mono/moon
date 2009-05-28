@@ -3,6 +3,8 @@
 	* textbox.h (class PasswordBox): Marked PasswordProperty as
 	AlwaysChange so that setting this property (even to the same
 	value) will force a PasswordChanged event to be emitted.
+	(class TextBox): Marked SelectedTextProperty as AlwaysChange to
+	fix moon-unit test: SetIdenticalSelectedText()
 
 	* textbox.cpp (PasswordBox::OnPropertyChanged): Removed debugging
 	printfs for utf8->ucs4 conversion errors.
