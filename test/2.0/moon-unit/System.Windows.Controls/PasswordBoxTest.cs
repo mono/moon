@@ -90,7 +90,7 @@ namespace Mono.Moonlight.UnitTesting
         }
         
         [TestMethod]
-        [MoonlightBug]
+        [MoonlightBug ("throws ArgumentException instead of Exception")]
         public void SetPasswordTest ()
         {
             PasswordBox box = new PasswordBox ();
@@ -103,7 +103,7 @@ namespace Mono.Moonlight.UnitTesting
         }
         
         [TestMethod]
-        [MoonlightBug]
+        [MoonlightBug ("throws ArgumentException instead of Exception")]
         public void SetMaxLengthTest ()
         {
             PasswordBox box = new PasswordBox ();
