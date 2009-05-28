@@ -263,6 +263,7 @@
     <File name="morton-layout-table.inc" subtype="Code" buildaction="Nothing" />
     <File name="timemanager.cpp" subtype="Code" buildaction="Compile" />
     <File name="timemanager.h" subtype="Code" buildaction="Nothing" />
+    <File name="codec-version.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

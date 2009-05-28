@@ -1,5 +1,9 @@
 2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* src.mdp: Updated.
+
+2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mms-downloader.cpp: Custom headers must be requested before
 	  opening the downloader.
 
