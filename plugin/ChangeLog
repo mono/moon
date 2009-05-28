@@ -1,3 +1,12 @@
+2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-utils.cpp: New source file which has utility functions
+	such as check_arg_list().
+
+	* plugin-class.h.in: Removed static impl of check_arg_list() -
+	this was causing compile warnings about unused functions and also
+	bloating up the binary ;-)
+
 2009-05-28  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (html_object_get_property): no need to
