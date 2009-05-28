@@ -44,6 +44,7 @@ public:
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
+	virtual void OnLoaded ();
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 	

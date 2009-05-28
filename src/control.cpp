@@ -61,6 +61,13 @@ Control::InsideObject (cairo_t *cr, double x, double y)
 }
 
 void
+Control::OnLoaded ()
+{
+	UpdateEnabled ();
+	FrameworkElement::OnLoaded ();
+}
+
+void
 Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::CONTROL) {
