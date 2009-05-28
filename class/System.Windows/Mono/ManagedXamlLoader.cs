@@ -646,6 +646,11 @@ namespace Mono.Xaml
 				string prop_name = full_prop_name.Substring (++dot, full_prop_name.Length - dot);
 
 				Type target_type = TypeFromString (parser, top_level, xmlns, type_name);
+				if (target_type == null) {
+					Console.Error.WriteLine ("Type '{0}' with xmlns '{1}' could not be found", type_name, xmlns);
+					return false;
+				}
+
 				if (!target_type.IsAssignableFrom (parent.GetType ())) {
 					// This should probably happen when we have attached properties
 					Console.Error.WriteLine ("Attempting to set property on non parent type: {0} {1} {2}", target_type, parent, full_prop_name);
@@ -714,7 +719,8 @@ namespace Mono.Xaml
 						break;
 					}
 					res = assembly.GetType (full_name);
-					Console.WriteLine ("type:  {0}  base:  {1}", res, res.BaseType);
+					if (res != null)
+						Console.Error.WriteLine ("type:  {0}  base:  {1}", res, res.BaseType);
 					if (res != null && !res.IsPublic)
 						res = null;
 				}
