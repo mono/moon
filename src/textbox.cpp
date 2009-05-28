@@ -2733,7 +2733,8 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		changed = TextBoxModelChangedText;
 	} else if (args->GetId () == PasswordBox::PasswordProperty) {
 		if (setvalue) {
-			const char *str = args->GetNewValue() && args->GetNewValue()->AsString () ? args->GetNewValue()->AsString () : "";
+			Value *value = args->GetNewValue ();
+			const char *str = value && value->AsString () ? value->AsString () : "";
 			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
@@ -2760,15 +2761,14 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 				ResetIMContext ();
 				
 				SyncAndEmit ();
-			} else {
-				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
 		}
 		
 		changed = TextBoxModelChangedText;
 	} else if (args->GetId () == PasswordBox::SelectedTextProperty) {
 		if (setvalue) {
-			const char *str = args->GetNewValue() && args->GetNewValue()->AsString () ? args->GetNewValue()->AsString () : "";
+			Value *value = args->GetNewValue ();
+			const char *str = value && value->AsString () ? value->AsString () : "";
 			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
@@ -2798,13 +2798,11 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 				ResetIMContext ();
 				
 				SyncAndEmit ();
-			} else {
-				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
 		}
 	} else if (args->GetId () == PasswordBox::SelectionStartProperty) {
 		length = abs (selection_cursor - selection_anchor);
-		start = args->GetNewValue()->AsInt32 ();
+		start = args->GetNewValue ()->AsInt32 ();
 		
 		if (start > buffer->len) {
 			// clamp the selection start offset to a valid value
@@ -2838,7 +2836,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		SyncAndEmit ();
 	} else if (args->GetId () == PasswordBox::SelectionLengthProperty) {
 		start = MIN (selection_anchor, selection_cursor);
-		length = args->GetNewValue()->AsInt32 ();
+		length = args->GetNewValue ()->AsInt32 ();
 		
 		if (start + length > buffer->len) {
 			// clamp the selection length to a valid value

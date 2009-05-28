@@ -1,5 +1,14 @@
 2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.h (class PasswordBox): Marked PasswordProperty as
+	AlwaysChange so that setting this property (even to the same
+	value) will force a PasswordChanged event to be emitted.
+
+	* textbox.cpp (PasswordBox::OnPropertyChanged): Removed debugging
+	printfs for utf8->ucs4 conversion errors.
+
+2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.h (class TextBox): Added the AlwaysChange metadata to
 	SelectionStart/Length properties.
 

@@ -499,7 +499,7 @@ class PasswordBox : public TextBoxBase {
 	const static int MaxLengthProperty;
 	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
 	const static int PasswordCharProperty;
-	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,GenerateAccessors,Validator=NonNullValidator */
+	/* @PropertyType=string,DefaultValue=\"\",AlwaysChange,Version=2.0,GenerateAccessors,Validator=NonNullValidator */
 	const static int PasswordProperty;
 	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int SelectedTextProperty;
