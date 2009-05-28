@@ -189,17 +189,17 @@ struct MoonNameIdMapping {
 
 
 G_BEGIN_DECLS
-bool npobject_is_dependency_object (NPObject *obj);
+G_GNUC_INTERNAL bool npobject_is_dependency_object (NPObject *obj);
 
-bool check_arg_list (const char *arglist, guint32 argc, const NPVariant *argv);
+G_GNUC_INTERNAL bool check_arg_list (const char *arglist, guint32 argc, const NPVariant *argv);
 
-void plugin_init_classes (void);
-void plugin_destroy_classes (void);
+G_GNUC_INTERNAL void plugin_init_classes (void);
+G_GNUC_INTERNAL void plugin_destroy_classes (void);
 
-void event_object_add_xaml_listener (EventObject *obj, PluginInstance *instance, const char *event_name, const char *cb_name);
+G_GNUC_INTERNAL void event_object_add_xaml_listener (EventObject *obj, PluginInstance *instance, const char *event_name, const char *cb_name);
 
 void string_to_npvariant (const char *value, NPVariant *result);
-void variant_to_value (const NPVariant *v, Value **result);
+G_GNUC_INTERNAL void variant_to_value (const NPVariant *v, Value **result);
 G_END_DECLS
 
 
@@ -1040,7 +1040,6 @@ void html_object_release (PluginInstance *plugin, NPObject *npobj);
 
 /*** Browser interaction utility classes ***/
 void browser_do_alert (PluginInstance *plugin, char *msg);
-
 
 G_END_DECLS
 
