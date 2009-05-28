@@ -1,3 +1,8 @@
+2009-05-28  Chris Toshok  <toshok@ximian.com>
+
+	* Application.cs (Application.GetResourceStream): we need to
+	escape uris we use to look up resources.
+
 2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ExceptionRoutedEventArgs.cs: Create a default TODO exception.

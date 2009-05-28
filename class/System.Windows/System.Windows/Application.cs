@@ -317,7 +317,7 @@ namespace System.Windows {
 			Assembly assembly;
 			string assembly_name;
 			string resource;
-			string loc = uriResource.ToString ();
+			string loc = Uri.EscapeUriString (uriResource.ToString ());
 			int p = loc.IndexOf (';');
 
 			/* We have a resource of the format /assembly;component/resourcename */
