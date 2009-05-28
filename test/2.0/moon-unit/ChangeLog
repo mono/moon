@@ -1,3 +1,7 @@
+2009-05-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add all (internal) classes needed to test policies
+
 2009-05-28  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ContentControlTest.cs: Add some more tests

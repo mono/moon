@@ -79,7 +79,9 @@ SOURCES= \
 	$(wildcard $(srcdir)/*.xaml.cs)	\
 	$(wildcard $(srcdir)/*/*.cs)	\
 	$(wildcard $(srcdir)/*/*/*.cs)	\
-	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicy.cs
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/BaseDomainPolicy.cs	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicy.cs	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicy.cs
 
 REFERENCES = \
 	-r:$(top_builddir)/test/2.0/moon-unit/System.Windows.Controls.dll \
