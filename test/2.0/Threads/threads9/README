@@ -1,0 +1,2 @@
+DispatchTimers and CompositionTarget events are bound together in this case
+the second DispatcherTimer should be stopped by the first after 4 ticks

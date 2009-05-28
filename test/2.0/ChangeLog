@@ -1,3 +1,7 @@
+2009-05-28  Andreia Gaita  <avidigal@novell.com>
+
+	* Threads/threads9: Added, tests if timers are stopped properly
+
 2009-05-25  Andreia Gaita  <avidigal@novell.com>
 
 	* Threads/*: Added. Bunch of tests for thread dispatching and
