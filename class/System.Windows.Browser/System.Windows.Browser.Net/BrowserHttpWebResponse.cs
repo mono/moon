@@ -59,7 +59,9 @@ namespace System.Windows.Browser.Net
 			if (native == IntPtr.Zero)
 				return;
 
-			NativeMethods.downloader_response_set_header_visitor (native, OnHttpHeader, IntPtr.Zero);
+			GCHandle handle = GCHandle.Alloc (this);
+			NativeMethods.downloader_response_set_header_visitor (native, OnHttpHeader, GCHandle.ToIntPtr (handle));
+			handle.Free ();
 		}
 
 		~BrowserHttpWebResponse ()
@@ -97,11 +99,14 @@ namespace System.Windows.Browser.Net
 			aborted = true;
 		}
 
-		void OnHttpHeader (IntPtr context, IntPtr name, IntPtr value)
+		static void OnHttpHeader (IntPtr context, IntPtr name, IntPtr value)
 		{
 			try {
-				Headers [Marshal.PtrToStringAnsi (name)] = Marshal.PtrToStringAnsi (value);
-			} catch {}
+				BrowserHttpWebResponse response = (BrowserHttpWebResponse) GCHandle.FromIntPtr (context).Target;
+				response.Headers [Marshal.PtrToStringAnsi (name)] = Marshal.PtrToStringAnsi (value);
+			} catch (Exception ex) {
+				Console.WriteLine ("Error while retrieving http header: {0}", ex);
+			}
 		}
 
 		public override void Close ()

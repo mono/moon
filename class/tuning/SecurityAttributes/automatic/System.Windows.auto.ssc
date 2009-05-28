@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 461 methods
+# 462 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -92,6 +92,7 @@
 +SSC-M: System.Windows.Application System.Windows.Application::get_Current()
 +SSC-M: System.Void System.Windows.Application::set_Current(System.Windows.Application)
 +SSC-M: System.Void System.Windows.Application::set_RootVisual(System.Windows.UIElement)
++SSC-M: System.Void System.Windows.Application::OnUnhandledException(System.Object,System.Exception)
 +SSC-M: System.Void System.Windows.AssemblyPart::.ctor()
 +SSC-M: System.Reflection.Assembly System.Windows.AssemblyPart::Load(System.IO.Stream)
 +SSC-M: System.Void System.Windows.AssemblyPartCollection::.ctor()

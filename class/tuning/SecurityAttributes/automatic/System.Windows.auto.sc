@@ -1229,10 +1229,10 @@
 +SC-M: System.Void Mono.NativeMethods::downloader_response_free(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_response_set_header_visitor(System.IntPtr,Mono.HeaderVisitor)
++SC-M: System.Void Mono.NativeMethods::downloader_response_set_header_visitor(System.IntPtr,Mono.HeaderVisitor,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_set_functions(Mono.DownloaderCreateStateFunc,Mono.DownloaderDestroyStateFunc,Mono.DownloaderOpenFunc,Mono.DownloaderSendFunc,Mono.DownloaderAbortFunc,Mono.DownloaderHeaderFunc,Mono.DownloaderBodyFunc,Mono.DownloaderCreateWebRequestFunc,System.Boolean)
++SC-M: System.Void Mono.NativeMethods::downloader_set_functions(Mono.DownloaderCreateStateFunc,Mono.DownloaderDestroyStateFunc,Mono.DownloaderOpenFunc,Mono.DownloaderSendFunc,Mono.DownloaderAbortFunc,Mono.DownloaderHeaderFunc,Mono.DownloaderBodyFunc,Mono.DownloaderCreateWebRequestFunc,Mono.DownloaderSetResponseHeaderCallbackFunc)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::downloader_write(System.IntPtr,System.IntPtr,System.Int32,System.Int32)

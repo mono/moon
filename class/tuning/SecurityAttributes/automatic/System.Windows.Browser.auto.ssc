@@ -16,7 +16,7 @@
 +SSC-M: System.Net.WebResponse System.Windows.Browser.Net.BrowserHttpWebRequest::EndGetResponse(System.IAsyncResult)
 +SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebRequest::InitializeNativeRequest(System.IntPtr)
 +SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::.ctor(System.Windows.Browser.Net.BrowserHttpWebRequest,System.IntPtr)
-+SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::OnHttpHeader(System.IntPtr,System.IntPtr)
++SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::OnHttpHeader(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::Write(System.IntPtr,System.Int32)
 +SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::GetStatus()
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::.ctor(System.Object,System.IntPtr)
