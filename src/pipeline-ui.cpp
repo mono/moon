@@ -73,6 +73,8 @@ CodecDownloader::~CodecDownloader ()
 void
 CodecDownloader::ShowUI (Surface *surface)
 {
+	g_return_if_fail (surface != NULL);
+
 	if (running) {
 		return;
 	}
