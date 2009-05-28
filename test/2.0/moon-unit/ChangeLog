@@ -1,3 +1,9 @@
+2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* System.Windows.Controls/TextBoxTest.cs
+	(SetIdenticalSelectedText): Removed MoonlightBug attribute as this
+	bug has now been fixed.
+
 2009-05-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Add all (internal) classes needed to test policies

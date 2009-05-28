@@ -120,7 +120,6 @@ namespace Mono.Moonlight.UnitTesting
         }
 
         [TestMethod]
-        [MoonlightBug ("OnPropertyChanged doesn't get called if old and new values are identical")]
         public void SetIdenticalSelectedText ()
         {
             // FIXME: this doesn't work because OnPropertyChanged()
