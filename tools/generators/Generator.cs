@@ -98,9 +98,8 @@ class Generator {
 			body.AppendLine ("	return new Moonlight" + parent + "Object (instance);");
 			body.AppendLine ("}");
 			body.AppendLine ();
-			body.AppendLine ("static const MoonNameIdMapping");
-			body.AppendLine ("moonlight_" + parent.ToLower() + "_mapping [] = {");
-
+			body.AppendLine ("static const MoonNameIdMapping moonlight_" + parent.ToLower() + "_mapping[] = {");
+			
 			for (int i = 0; i < t.Value.Count; i++) {
 				MethodInfo method = t.Value[i];
 				string name = method.Annotations.GetValue ("GenerateJSBinding");
@@ -184,7 +183,9 @@ class Generator {
 					parms.Add ("&err");
 				}
 
-				body.AppendLine (String.Join ("\n", args.ToArray()));
+				if (args.Count > 0)
+					body.AppendLine (String.Join ("\n", args.ToArray()));
+				
 				body.Append ("\t\t\t");
 
 				if (method.ReturnType.GetNPType () != "v") {
@@ -230,16 +231,18 @@ class Generator {
 				body.AppendLine ("\t\t\tbreak;");
 				body.AppendLine ("\t\t}");
 			}
-
-			body.AppendLine ("\t\tdefault:");
-			body.AppendLine ("\t\t\treturn MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);");
-			body.AppendLine ("	}");
+			
+			body.AppendLine ("\t}");
+			body.AppendLine ();
+			
+			body.AppendLine ("\treturn MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);");
 			body.AppendLine ("}");
-			body.AppendLine ("");
+			body.AppendLine ();
+			
 			body.AppendLine ("Moonlight" + parent + "Type::Moonlight" + parent + "Type ()");
 			body.AppendLine ("{");
 			body.AppendLine ("	AddMapping (moonlight_" + parent.ToLower() + "_mapping, G_N_ELEMENTS (moonlight_" + parent.ToLower() + "_mapping));");
-			body.AppendLine ("");
+			body.AppendLine ();
 			body.AppendLine ("	allocate = moonlight_" + parent.ToLower() + "_allocate;");
 			body.AppendLine ("}");
 		}
