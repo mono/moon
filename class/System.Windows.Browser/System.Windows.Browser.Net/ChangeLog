@@ -1,3 +1,8 @@
+2009-05-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BaseDomainPolicy.cs: New. Shared code between the Silverlight 
+	and Flash policies.
+
 2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* BrowserHttpWebResponse.cs: Use a static method to avoid creating
