@@ -558,6 +558,9 @@ private:
 	static MediaResult OpenInternal (MediaClosure *closure);
 	static MediaResult DisposeObjectInternal (MediaClosure *closure);
 
+	EVENTHANDLER (Media, ShuttingDown, Deployment, EventArgs); // Not thread-safe
+
+	static void RemoveShuttingDownHandler (EventObject *obj); // must run on main thread
 protected:
 	virtual ~Media ();
 

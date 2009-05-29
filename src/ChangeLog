@@ -1,3 +1,8 @@
+2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: Listen to Deployment's ShuttingDown event
+	and stop the media thread whenever it is raised.
+
 2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.h (class PasswordBox): Marked PasswordProperty as

@@ -92,6 +92,8 @@ Media::Media (PlaylistRoot *root)
 	pthread_cond_init (&queue_condition, NULL);
 	pthread_create (&queue_thread, &attribs, WorkerLoop, this); 	
 	pthread_attr_destroy (&attribs);
+
+	GetDeployment ()->AddHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
 }
 
 Media::~Media ()
@@ -99,6 +101,13 @@ Media::~Media ()
 	LOG_PIPELINE ("Media::~Media (), id: %i\n", GET_OBJ_ID (this));
 	pthread_mutex_destroy (&queue_mutex);
 	pthread_cond_destroy (&queue_condition);
+}
+
+void
+Media::ShuttingDownHandler (Deployment *obj, EventArgs *args)
+{
+	VERIFY_MAIN_THREAD;
+	StopThread ();
 }
 
 void
@@ -138,7 +147,21 @@ Media::Dispose ()
 	delete markers;
 	markers = NULL;
 	
+	if (Surface::InMainThread ()) {
+		RemoveShuttingDownHandler (this);
+	} else {
+		AddTickCallSafe (RemoveShuttingDownHandler);
+	}
+
 	IMediaObject::Dispose ();
+}
+
+void
+Media::RemoveShuttingDownHandler (EventObject *obj)
+{
+	VERIFY_MAIN_THREAD;
+	// event handling must be done on the main thread
+	obj->GetDeployment ()->RemoveHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, obj);
 }
 
 bool
