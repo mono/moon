@@ -190,22 +190,38 @@ Control::GetTemplateChild (const char *name)
 bool
 Control::Focus ()
 {
-	Surface *surface;
-	
-	/* according to msdn, these three things must be true for an element to be focusable:
+	Surface *surface = GetSurface ();
+	if (!surface)
+		return false;
+		
+	 /* according to msdn, these three things must be true for an element to be focusable:
 	 *
 	 * 1. the element must be visible
 	 * 2. the element must have IsTabStop = true
 	 * 3. the element must be part of the plugin's visual tree, and must have had its Loaded event fired.
 	 */
-	
-	if (!IsLoaded () || !GetRenderVisible () || !GetIsTabStop ())
-		return false;
-	
-	if (!(surface = GetSurface ()))
-		return false;
-	
-	return surface->FocusElement (this);
+	 
+	 /*
+	 * If the current control is not focusable, we walk the visual tree and stop as soon
+	 * as we find the first focusable child. That then becomes focused
+	 */
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	DeepTreeWalker walker (this);
+	while (UIElement *e = walker.Step ()) {
+		if (!types->IsSubclassOf (e->GetObjectType (), Type::CONTROL))
+			continue;
+		
+		Control *c = (Control *)e;
+		if (!c->GetIsEnabled ()) {
+			walker.SkipBranch ();
+			continue;
+		}
+		
+		if (c->IsLoaded () && c->GetRenderVisible () && c->GetIsTabStop ()) {
+			return surface->FocusElement (c);
+		}
+	}
+	return false;	
 }
 
 void

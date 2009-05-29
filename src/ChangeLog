@@ -1,5 +1,12 @@
 2009-05-29  Alan McGovern  <amcgovern@novell.com>
 
+	* control.cpp: When Control.Focus () is called, if the control itself
+	is not focusable, we need to check it's visual children. The call will
+	complete successfully if any of the children are focusable, and that
+	child will become the focused element.
+
+2009-05-29  Alan McGovern  <amcgovern@novell.com>
+
 	* control.cpp|h: If a control becomes disabled, it loses mouse capture
 	and cannot regain it later. If CaptureMouse is called on a disabled
 	control, the mouse is successfully captured and then immediately
