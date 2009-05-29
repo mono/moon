@@ -295,7 +295,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void GetFilesInSubdirs ()
 		{
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
