@@ -355,7 +355,9 @@ Deployment::ReportLeaks ()
 
 		GPtrArray* last_n = g_ptr_array_new ();
 
+		pthread_mutex_lock (&objects_alive_mutex);
 		g_hash_table_foreach (objects_alive, accumulate_last_n, last_n);
+		pthread_mutex_unlock (&objects_alive_mutex);
 
 	 	uint counter = 10;
 		counter = MIN(counter, last_n->len);
@@ -506,7 +508,7 @@ Deployment::DrainUnrefs ()
 	}
 	
 #if OBJECT_TRACKING
-	if (IsDisposed () && list == NULL && objects_destroyed != objects_created) {
+	if (IsDisposed () && g_atomic_pointer_get (&pending_unrefs) == NULL && objects_destroyed != objects_created) {
 		printf ("Moonlight: the current deployment (%p) has detected that probably no more objects will get freed on this deployment.\n", this);
 		ReportLeaks ();
 	}

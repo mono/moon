@@ -1,4 +1,9 @@
-2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+2009-05-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.cpp: Lock around all access to the objects_alive
+	hash table.
+
+2009-05-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp|h: Listen to Deployment's ShuttingDown event
 	and stop the media thread whenever it is raised.
