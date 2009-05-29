@@ -489,10 +489,15 @@ namespace Mono {
 					FontSource source = (FontSource) v;
 					
 					value.k = Kind.FONTSOURCE;
-					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontSource));
-					UnmanagedFontSource *ufs = (UnmanagedFontSource *) value.u.p;
-					ManagedStreamCallbacks callbacks = source.wrapper.GetCallbacks ();
-					Marshal.StructureToPtr (callbacks, ufs->stream, false);
+					
+					if (source.wrapper != null) {
+						value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontSource));
+						UnmanagedFontSource *ufs = (UnmanagedFontSource *) value.u.p;
+						ManagedStreamCallbacks callbacks = source.wrapper.GetCallbacks ();
+						Marshal.StructureToPtr (callbacks, ufs->stream, false);
+					} else {
+						value.IsNull = true;
+					}
 				}
 				else if (v is PropertyPath) {
 					PropertyPath propertypath = (PropertyPath) v;
