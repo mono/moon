@@ -130,11 +130,12 @@ Application::GetResourceAsPath (const Uri *uri)
 	
 	if (!resource_root) {
 		// create a root temp directory for our resource files
-		path = g_build_filename (g_get_tmp_dir (), "moonlight-app.XXXXXX", NULL);
-		if (!(resource_root = CreateTempDir (path))) {
-			g_free (path);
+		path = g_build_filename (g_get_tmp_dir (), "moonlight-app", NULL);
+		resource_root = CreateTempDir (path);
+		g_free (path);
+		
+		if (!resource_root)
 			return NULL;
-		}
 	}
 	
 	// construct the path name for this resource
