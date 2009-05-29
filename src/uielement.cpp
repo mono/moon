@@ -939,6 +939,14 @@ UIElement::EmitLostFocus ()
 }
 
 bool
+UIElement::EmitLostMouseCapture ()
+{
+	MouseEventArgs *e = new MouseEventArgs ();
+	e->SetSource (this);
+	return Emit (LostMouseCaptureEvent, e);
+}
+
+bool
 UIElement::CaptureMouse ()
 {
 	Surface *s = GetSurface ();
@@ -955,7 +963,7 @@ UIElement::ReleaseMouseCapture ()
 	if (s == NULL)
 		return;
 
-	s->SetMouseCapture (NULL);
+	s->ReleaseMouseCapture (this);
 }
 
 void

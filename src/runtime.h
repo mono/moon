@@ -163,6 +163,7 @@ public:
 	
 	void SetCursor (MouseCursor cursor);
 
+	void ReleaseMouseCapture (UIElement *capture);
 	bool SetMouseCapture (UIElement *capture);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -331,7 +332,7 @@ private:
 	List *input_list;
 	
 	// is the mouse captured?  if it is, it'll be by the first element in input_list.
-	bool captured;
+	UIElement *captured;
 	UIElement *pendingCapture;
 	bool pendingReleaseCapture;
 	

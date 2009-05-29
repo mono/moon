@@ -309,7 +309,7 @@ Surface::Surface (MoonWindow *window)
 	layers = new HitTestCollection ();
 	toplevel = NULL;
 	input_list = new List ();
-	captured = false;
+	captured = NULL;
 	
 	focused_element = NULL;
 	prev_focused_element = NULL;
@@ -1098,8 +1098,7 @@ Surface::PerformCapture (UIElement *capture)
 	// as the input list, regardless of where the pointer actually
 	// is.
 
-	// XXX we should check if the input_list already starts at
-	// @capture.
+	captured = capture;
 	List *new_input_list = new List();
 	while (capture) {
 		new_input_list->Append (new UIElementNode (capture));
@@ -1108,7 +1107,6 @@ Surface::PerformCapture (UIElement *capture)
 
 	delete input_list;
 	input_list = new_input_list;
-	captured = true;
 	pendingCapture = NULL;
 }
 
@@ -1119,7 +1117,8 @@ Surface::PerformReleaseCapture ()
 	// "captured" determines the input_list calculation, and
 	// "pendingReleaseCapture", when set, causes an infinite
 	// recursive loop.
-	captured = false;
+	captured->EmitLostMouseCapture ();
+	captured = NULL;
 	pendingReleaseCapture = false;
 
 	// this causes any new elements we're over to be Enter'ed.  MS
@@ -1128,33 +1127,33 @@ Surface::PerformReleaseCapture ()
 	HandleMouseEvent (NO_EVENT_ID, false, true, false, mouse_event);
 }
 
+void
+Surface::ReleaseMouseCapture (UIElement *capture)
+{
+	// Mouse capture is only released when the element owning the capture
+	// requests it
+	if (capture != captured && capture != pendingCapture)
+		return;
+
+	if (emittingMouseEvent)
+		pendingReleaseCapture = true;
+	else
+		PerformReleaseCapture ();
+}
+
 bool
 Surface::SetMouseCapture (UIElement *capture)
 {
-	if (capture != NULL && (captured || pendingCapture))
-		return false;
+	if (captured || pendingCapture)
+		return capture == captured || capture == pendingCapture;
 
-	// we delay the actual capture/release until the end of the
-	// event bubbling.  need more testing on MS here to see what
-	// happens if through the course of a single event bubbling up
-	// to the root, one element captures and another releases.
-	// Our current implementation has it so that any "release"
-	// causes all captures to be ignored.
-	if (capture == NULL) {
-		if (emittingMouseEvent)
-			pendingReleaseCapture = true;
-		else
-			PerformReleaseCapture ();
+	if (emittingMouseEvent) {
+			pendingCapture = capture;
 	}
 	else {
-		if (emittingMouseEvent) {
-			pendingCapture = capture;
-		}
-		else {
-			PerformCapture (capture);
-		}
+		PerformCapture (capture);
 	}
-
+	
 	return true;
 }
 
@@ -1423,7 +1422,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 	// event is bubbled.
 	if (pendingCapture)
 		PerformCapture (pendingCapture);
-	else if (pendingReleaseCapture)
+	if (pendingReleaseCapture || (captured && !captured->CanCaptureMouse ()))
 		PerformReleaseCapture ();
 
 	return handled;

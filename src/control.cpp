@@ -83,6 +83,9 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	else if (args->GetId () == Control::PaddingProperty
 		 || args->GetId () == Control::BorderThicknessProperty) {
 		InvalidateMeasure ();
+	} else if (args->GetId () == Control::IsEnabledProperty) {
+		if (!args->GetNewValue ()->AsBool ())
+			ReleaseMouseCapture ();
 	}
 	NotifyListenersOfPropertyChange (args, error);
 }

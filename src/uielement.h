@@ -333,6 +333,12 @@ public:
 	bool EmitLostFocus ();
 	
 	//
+	// EmitLostMouseCapture:
+	//   Invoked when the given object loses mouse capture
+	//
+	bool EmitLostMouseCapture ();
+	
+	//
 	// CaptureMouse:
 	//
 	//    Attempts to capture the mouse.  If successful, all mouse
@@ -341,6 +347,7 @@ public:
 	//
 	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
 	bool CaptureMouse ();
+	virtual bool CanCaptureMouse () { return true; }
 
 	//
 	// ReleaseMouseCapture:

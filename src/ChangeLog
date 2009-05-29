@@ -1,12 +1,17 @@
-2009-05-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+2009-05-29  Alan McGovern  <amcgovern@novell.com>
 
-	* deployment.cpp: Lock around all access to the objects_alive
-	hash table.
+	* control.cpp|h: If a control becomes disabled, it loses mouse capture
+	and cannot regain it later. If CaptureMouse is called on a disabled
+	control, the mouse is successfully captured and then immediately
+	released which fires the LostMouseCapture event.
 
-2009-05-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
-	* pipeline.cpp|h: Listen to Deployment's ShuttingDown event
-	and stop the media thread whenever it is raised.
+	* runtime.cpp|h: If control A captures the mouse, control B can't steal
+	the capture or release the capture. Add an explicit ReleaseMouseCapture
+	function to accomodate this behaviour.
+	
+	* uielement.cpp|h: Add an EmitLostMouseCapture event and a CanCaptureMouse
+	function which signifies whether or not the current UIElement can keep the
+	mouse captured.
 
 2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
 

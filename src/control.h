@@ -36,6 +36,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Control ();
 
+	virtual bool CanCaptureMouse () { return GetIsEnabled (); }
 	virtual bool CanFindElement () { return GetIsEnabled (); }
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uielement_list);
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
