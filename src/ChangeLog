@@ -67,6 +67,13 @@
 
 2009-05-28  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h|cpp: replace the hash cache on uri by
+	a set of qtree, one per subimage. This should speed stuffs
+	a lot, as uri crating/parsing/hashing was taking up to 20%
+	of msi time.
+
+2009-05-28  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscalesubimage.h: GetId (). Get subimage id, used as
 	cache index in msi.
 

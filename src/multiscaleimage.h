@@ -42,7 +42,7 @@ class MultiScaleImage : public MediaBase {
 
 	GList *bitmapimages;
 	BitmapImageContext *GetFreeBitmapImageContext ();
-	void DownloadTile (BitmapImageContext *ctx, Uri *tile);
+	void DownloadTile (BitmapImageContext *ctx, Uri *tile, int subimage, int level, int x, int y);
 	BitmapImageContext *GetBitmapImageContext (BitmapImage *bitmapimage);
 
 	void RenderSingle (cairo_t *cr, Region *region);
