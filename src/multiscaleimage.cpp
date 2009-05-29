@@ -305,19 +305,6 @@ MultiScaleImage::LogicalToElementPoint (Point logicalPoint)
 		      (logicalPoint.y - vp_origin->y) * actual_width / vp_width);
 }
 
-//test if the cache contains a tile at the @filename key
-//if @empty_tiles is TRUE, it'll return TRUE even if the cached tile is NULL. if @empty_tiles is FALSE, a NULL tile will be treated as missing
-bool
-MultiScaleImage::cache_contains (Uri *uri, bool empty_tiles)
-{
-	if (!uri)
-		return empty_tiles;
-	if (empty_tiles)
-		return g_hash_table_lookup_extended (cache, uri, NULL, NULL);
-	else
-		return g_hash_table_lookup (cache, uri) != NULL;
-}
-
 void
 MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile, int subimage, int level, int x, int y)
 {
