@@ -67,6 +67,11 @@
 
 2009-05-28  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscalesubimage.h: GetId (). Get subimage id, used as
+	cache index in msi.
+
+2009-05-28  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: qtree_new, qtree_lookup, qtree_destroy,
 	qtree_insert, etc. The Q(uad)Tree data structure is a tree with
 	4 child nodes, matching the tree-ish pyramid of MSI tiles.
