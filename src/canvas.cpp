@@ -15,6 +15,8 @@
 #include <config.h>
 #endif
 
+#include <math.h>
+
 #include "rect.h"
 #include "canvas.h"
 #include "runtime.h"
