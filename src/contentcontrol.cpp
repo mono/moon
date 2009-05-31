@@ -2,13 +2,18 @@
 /*
  * contentcontrol.cpp:
  *
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
+ *
  * Copyright 2007-2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #include "contentcontrol.h"
 

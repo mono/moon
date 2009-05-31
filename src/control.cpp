@@ -11,7 +11,10 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
 #include "rect.h"
 #include "runtime.h"
 #include "control.h"
