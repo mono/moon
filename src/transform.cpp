@@ -10,10 +10,13 @@
  * See the LICENSE file included with the distribution for details.
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
+#include <math.h>
 
 #include "transform.h"
-#include "math.h"
 
 
 //
