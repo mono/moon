@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * usercontrol.cpp:
  *
@@ -7,7 +8,10 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
 #include "usercontrol.h"
 #include "collection.h"
 #include "runtime.h"
