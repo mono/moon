@@ -17,8 +17,8 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <errno.h>
 
 #include "application.h"

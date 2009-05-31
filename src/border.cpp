@@ -8,7 +8,10 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
 #include "geometry.h"
 #include "runtime.h"
 #include "brush.h"

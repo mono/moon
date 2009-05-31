@@ -11,9 +11,13 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
 #include <cairo.h>
 #include <glib.h>
+
 #include "brush.h"
 #include "media.h"
 #include "mediaelement.h"

@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * uielement.cpp
  *
@@ -7,7 +8,10 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
 #include <stdlib.h>
 #include <math.h>
 
@@ -336,6 +340,7 @@ UIElement::ComputeLocalTransform ()
 	Transform *transform = GetRenderTransform ();
 	Point transform_origin = GetTransformOrigin ();
 	cairo_matrix_t render;
+	
 	cairo_matrix_init_identity (&render);
 	cairo_matrix_init_identity (&local_xform);
 
