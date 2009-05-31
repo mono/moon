@@ -12,6 +12,8 @@
 #include <config.h>
 #endif
 
+#include <math.h>
+
 #include "geometry.h"
 #include "runtime.h"
 #include "brush.h"
