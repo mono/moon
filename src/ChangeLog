@@ -1,5 +1,7 @@
 2009-06-01  Jeffrey Stedfast  <fejj@novell.com>
 
+	* bitmapimage.cpp (Dispose): Fixed Dispose chaining.
+
 	* brush.cpp (ImageBrush::Dispose): Chain up to
 	TileBrush::Dispose() instead of EventObject::Dispose(). Fixes a
 	crash in GlyphsManagedDRT

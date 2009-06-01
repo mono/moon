@@ -167,7 +167,8 @@ BitmapImage::Dispose ()
 		CleanupDownloader ();
 		downloader->Abort ();
 	}
-	EventObject::Dispose ();
+	
+	BitmapSource::Dispose ();
 }
 
 void
