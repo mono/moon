@@ -1527,46 +1527,41 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 		if (old_as_dep && setsParent) {
 			old_as_dep->SetSurface (NULL);
-
-
-				// unset its parent
-				old_as_dep->SetParent (NULL, NULL);
-
-				// remove ourselves as a target
-				old_as_dep->RemoveTarget (this);
 			
-				// unregister from the existing value
-				old_as_dep->RemovePropertyChangeListener (this, property);
-
-				if (old_as_dep->Is(Type::COLLECTION)) {
-					old_as_dep->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
-					old_as_dep->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
-				}
-
+			// unset its parent
+			old_as_dep->SetParent (NULL, NULL);
+			
+			// remove ourselves as a target
+			old_as_dep->RemoveTarget (this);
+			
+			// unregister from the existing value
+			old_as_dep->RemovePropertyChangeListener (this, property);
+			
+			if (old_as_dep->Is(Type::COLLECTION)) {
+				old_as_dep->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
+				old_as_dep->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+			}
 		}
 
 		if (new_as_dep && setsParent) {
 			new_as_dep->SetSurface (GetSurface ());
-
-
-				new_as_dep->SetParent (this, error);
-				if (error->number)
-					return;
-
-				if (new_as_dep->Is(Type::COLLECTION)) {
-					new_as_dep->AddHandler (Collection::ChangedEvent, collection_changed, this);
-					new_as_dep->AddHandler (Collection::ItemChangedEvent, collection_item_changed, this);
-				}
 			
-				// listen for property changes on the new object
-				new_as_dep->AddPropertyChangeListener (this, property);
-
-				// add ourselves as a target
-				new_as_dep->AddTarget (this);
-
+			new_as_dep->SetParent (this, error);
+			if (error->number)
+				return;
+			
+			if (new_as_dep->Is(Type::COLLECTION)) {
+				new_as_dep->AddHandler (Collection::ChangedEvent, collection_changed, this);
+				new_as_dep->AddHandler (Collection::ItemChangedEvent, collection_item_changed, this);
+			}
+			
+			// listen for property changes on the new object
+			new_as_dep->AddPropertyChangeListener (this, property);
+			
+			// add ourselves as a target
+			new_as_dep->AddTarget (this);
 		}
-
-
+		
 		PropertyChangedEventArgs args (property, property->GetId (), old_value, new_value);
 
 		// we need to make this optional, as doing it for NameScope
