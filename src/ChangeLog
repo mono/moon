@@ -1,3 +1,14 @@
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::EmitEventOnList): if the list is empty (or
+	end_idx == 0) return early.
+
+	* xaml.cpp (XamlLoader::HydrateFromString): turns out we only mark
+	the toplevel object as hydrated if parser_info->hydrating == true.
+	this fixes some managed parsing stuff since XamlReader.Load was
+	using the same codepath (just passing NULL into
+	XamlReader::HydrateFromString.)
+
 2009-05-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* application.cpp (GetResourceAsPath): Fixed extra

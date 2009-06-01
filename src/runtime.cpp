@@ -1191,6 +1191,9 @@ Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int
 	int idx;
 	UIElementNode *node;
 
+	if (element_list->IsEmpty() || end_idx == 0)
+		return handled;
+
 	if (end_idx == -1)
 		end_idx = element_list->Length();
 

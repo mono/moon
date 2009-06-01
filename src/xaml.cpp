@@ -2277,7 +2277,7 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 			res = new Value (*res);
 			if (res->Is (Type::DEPENDENCY_OBJECT) && object) {
 				res->AsDependencyObject ()->unref ();
-				object->SetIsHydratedFromXaml (true);
+				object->SetIsHydratedFromXaml (parser_info->hydrating);
 			}
 		}
 
