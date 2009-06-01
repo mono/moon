@@ -521,12 +521,13 @@ ImageBrush::Dispose ()
 	BitmapImage *source = (BitmapImage *) GetImageSource ();
 
 	if (source) {
+		source->RemovePropertyChangeListener (this, GetDeployment ()->GetTypes ()->GetProperty (ImageBrush::ImageSourceProperty));
 		source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 		source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 		source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 	}
 
-	EventObject::Dispose ();
+	TileBrush::Dispose ();
 }
 
 void

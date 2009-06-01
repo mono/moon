@@ -1,5 +1,10 @@
 2009-06-01  Jeffrey Stedfast  <fejj@novell.com>
 
+	* brush.cpp (ImageBrush::Dispose): Remove the
+	PropertyCHangeListener for the ImageSource here. Fixes a crash in
+	GlyphsManagedDRT. Also, chain up to TileBrush::Dispose() instead
+	of EventObject::Dispose().
+
 	* dependencyobject.cpp (WildcardListener): Uh, this needs to
 	subclass Listener or we can't go around casting it to a Listener.
 	(CallbackListener): Same.
