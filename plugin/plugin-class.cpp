@@ -3011,22 +3011,30 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 	case MoonId_Insert: {
-		if (!check_arg_list ("i[o]", argCount, args))
+		if (!check_arg_list ("i[o]", argCount, args)) {
+			g_warning ("insert 1");
 			THROW_JS_EXCEPTION ("insert");
+		}
 		
 		if (argCount < 2) {
 			VOID_TO_NPVARIANT (*result);
 			return true;
 		}
 		
-		if (!npvariant_is_dependency_object (args[1]))
+		if (!npvariant_is_dependency_object (args[1])) {
+			g_warning ("insert 2");
 			THROW_JS_EXCEPTION ("insert");
+		}
 		
 		MoonlightDependencyObjectObject *el = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (args[1]);
 		int index = NPVARIANT_TO_INT32 (args[0]);
-		
-		if (!col->Insert (index, Value (el->GetDependencyObject ())))
+		MoonError err;
+		Value val (el->GetDependencyObject ());
+
+		if (!col->InsertWithError (index, &val, &err)) {
+			g_warning ("insert 2: %s", err.message);
 			THROW_JS_EXCEPTION ("insert");
+		}
 		
 		VOID_TO_NPVARIANT (*result);
 		
