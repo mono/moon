@@ -407,7 +407,7 @@ Deployment::Dispose ()
 	if (GetValue (NameScope::NameScopeProperty))
 		SetValue (NameScope::NameScopeProperty, NULL);
 
-	EventObject::Dispose ();
+	DependencyObject::Dispose ();
 }
 
 Types*

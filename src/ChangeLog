@@ -1,5 +1,8 @@
 2009-06-01  Jeffrey Stedfast  <fejj@novell.com>
 
+	* deployment.cpp (Dispose): Properly chain up to
+	DependencyObject::Dispose().
+
 	* bitmapimage.cpp (Dispose): Fixed Dispose chaining.
 
 	* brush.cpp (ImageBrush::Dispose): Chain up to
