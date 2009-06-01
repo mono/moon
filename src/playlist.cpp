@@ -1558,7 +1558,7 @@ count_from_smil_str (PlaylistParser *parser, const char *str, int *res)
 		return true;
 	}
 
-	double value = strtod (str, NULL);
+	double value = g_ascii_strtod (str, NULL);
 	*res = (int) ceil (value);
 
 	return true;
