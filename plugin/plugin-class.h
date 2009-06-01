@@ -1041,6 +1041,7 @@ void html_object_release (PluginInstance *plugin, NPObject *npobj);
 /*** Browser interaction utility classes ***/
 void browser_do_alert (PluginInstance *plugin, char *msg);
 
+
 G_END_DECLS
 
 #endif /* __PLUGIN_CLASS_H__ */

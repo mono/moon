@@ -4,6 +4,8 @@ Changes from 2.0 preview 3 (1.9.2) to 2.0 preview 4 (1.9.3)
 * Sockets are now working and follow Silverlight cross-domain policies
 rules. See sample chat application at http://www.michielpost.nl/PostDetail_7.aspx
 
+* TextBlock and TextBox now both support algorithmic italics and boldness.
+
 Changes from 2.0 preview 2 (1.9.1) to 2.0 preview 3 (1.9.2)
 ===========================================================
 
