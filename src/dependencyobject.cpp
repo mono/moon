@@ -8,7 +8,9 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -890,7 +892,7 @@ public:
 	virtual gpointer GetProperty () = 0;
 };
 
-class WildcardListener {
+class WildcardListener : public Listener {
 public:
 	WildcardListener (DependencyObject *obj, DependencyProperty *prop)
 	{
@@ -921,7 +923,7 @@ private:
 	DependencyProperty *prop;
 };
 
-class CallbackListener {
+class CallbackListener : public Listener {
 public:
 	CallbackListener (DependencyProperty *prop, PropertyChangeHandler cb, gpointer closure)
 	{
