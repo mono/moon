@@ -579,8 +579,13 @@ UIElement::DoArrange ()
 
 		if (IsLayoutContainer ()) {
 			desired = GetDesiredSize ();
-			if (surface && this == surface->GetToplevel ())
-				desired = desired.Max (*LayoutInformation::GetLastMeasure (this));
+			if (surface && this == surface->GetToplevel ()) {
+				Size *measure = LayoutInformation::GetLastMeasure (this);
+				if (measure)
+					desired = desired.Max (*LayoutInformation::GetLastMeasure (this));
+				else 
+					desired = Size (surface->GetWindow ()->GetWidth (), surface->GetWindow ()->GetHeight ());
+			}
 		} else {
 			FrameworkElement *fe = (FrameworkElement*)this;
 			desired = Size (fe->GetActualWidth (), fe->GetActualHeight ());

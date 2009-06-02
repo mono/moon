@@ -1,3 +1,8 @@
+2009-06-02  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (DoArrange): don't poke at unset values.  Fixes
+	the crash in #421.
+
 2009-06-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (HandleMouseEvent): Fixed compile warning about 'if
