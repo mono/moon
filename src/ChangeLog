@@ -1,5 +1,10 @@
 2009-06-01  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (dependency_object_add_child): only do this check for
+	non-Type::MANAGED children.
+
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
 	* grid.cpp|h: the row/columndefinitioncollections do not permit
 	definitions to be inserted more than once.
 	
