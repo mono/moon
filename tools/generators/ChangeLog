@@ -1,3 +1,8 @@
+2009-06-02  Alan McGovern  <amcgovern@novell.com>
+
+	* TypeInfo.cs: ValueTypes should have TypeInfo.DefaultCtorVisible set
+	to true. Fixes a few regressions.
+
 2009-06-01  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs (GenerateTypeStaticCpp): add the

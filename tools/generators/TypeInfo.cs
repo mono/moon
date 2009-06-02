@@ -143,7 +143,7 @@ class TypeInfo : MemberInfo {
 
 	public bool DefaultCtorVisible {
 		get {
-			bool result = false;
+			bool result = IsValueType;
 			Annotation property;
 
 			if (Annotations.TryGetValue ("DefaultCtorVisible", out property))
