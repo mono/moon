@@ -432,7 +432,7 @@ public:
 	~Types ();
 
 	/* @GenerateCBinding,Version=2.0 */	
-	Type::Kind RegisterType (const char *name, void *gc_handle, Type::Kind parent, bool is_interface, Type::Kind *interfaces, int interface_count);
+	Type::Kind RegisterType (const char *name, void *gc_handle, Type::Kind parent, bool is_interface, bool ctor_visible, Type::Kind *interfaces, int interface_count);
 	
 	void AddProperty (DependencyProperty *property);
 	DependencyProperty *GetProperty (int id);

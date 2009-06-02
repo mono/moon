@@ -1,5 +1,12 @@
 2009-06-01  Chris Toshok  <toshok@ximian.com>
 
+	* type.h.in|cpp (Types::RegisterType): permit a ctor_visible flag
+	here too so xaml.cpp knows if the type is creatable.
+
+	* type.h, cbinding.cpp|h: regen
+
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp (dependency_object_add_child): only do this check for
 	non-Type::MANAGED children.
 

@@ -157,7 +157,6 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
-		// Type::Kind types_register_type (Types *instance, const char *name, void *gc_handle, Type::Kind parent, Type::Kind *interfaces, int interface_count);
-		public extern static Kind types_register_type (IntPtr instance, string name, IntPtr gc_handle, Kind parent, bool is_interface, Kind[] interfaces, int interface_count);
+		public extern static Kind types_register_type (IntPtr instance, string name, IntPtr gc_handle, Kind parent, bool is_interface, bool ctor_visible, Kind[] interfaces, int interface_count);
 	}
 }

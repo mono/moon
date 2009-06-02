@@ -458,9 +458,9 @@ Types::Find (const char *name, bool ignore_case)
 }
 
 Type::Kind
-Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent, bool is_interface, Type::Kind* interfaces, int interface_count)
+Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent, bool is_interface, bool ctor_visible, Type::Kind* interfaces, int interface_count)
 {
-	Type *type = new Type (Type::INVALID, parent, false, is_interface, g_strdup (name), 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, false, NULL, NULL);
+	Type *type = new Type (Type::INVALID, parent, false, is_interface, g_strdup (name), 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, ctor_visible, NULL, NULL);
 	
 	// printf ("Types::RegisterType (%s, %p, %i (%s)). this: %p, size: %i, count: %i\n", name, gc_handle, parent, Type::Find (this, parent) ? Type::Find (this, parent)->name : NULL, this, size, count);
 	
