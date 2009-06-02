@@ -1,3 +1,8 @@
+2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security.c: Use the PREVIEW_VERSION for the environment variable
+	used to turn off security (coreclr and verifier)
+
 2009-06-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.cpp (SetTextInternal): Oops, I must have somehow nuked

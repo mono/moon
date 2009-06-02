@@ -1,3 +1,8 @@
+2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* configure.ac: Add a define for the PREVIEW_VERSION so updating
+	the environment variable (in src/security.c) is not required anymore
+
 2009-06-01  Rusty Howell  <rhowell@novell.com>
 
 	 * configure.ac: add no-dist-gzip to disable tar.gz
