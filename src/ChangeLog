@@ -1,3 +1,8 @@
+2009-06-02  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp|h: Focus changed events are emitted synchronously right
+	before a MouseLeftButtonDown or MouseRightButtonDown event.
+
 2009-06-01  Chris Toshok  <toshok@ximian.com>
 
 	* type.h.in|cpp (Types::RegisterType): permit a ctor_visible flag

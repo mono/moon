@@ -313,7 +313,7 @@ Surface::Surface (MoonWindow *window)
 	
 	focused_element = NULL;
 	prev_focused_element = NULL;
-	focus_tick_call_added = false;
+	raised_focus_changed = false;
 
 	full_screen = false;
 	user_initiated_event = false;
@@ -1294,6 +1294,8 @@ bool
 Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event)
 {
 	bool handled = false;
+	bool raise_focus_changed = (event_id == UIElement::MouseLeftButtonDownEvent ||
+								event_id == UIElement::MouseRightButtonDownEvent);
 
 	// we can end up here if mozilla pops up the JS timeout
 	// dialog.  The problem is that JS might have registered a
@@ -1370,6 +1372,9 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		//
 		FindFirstCommonElement (input_list, &surface_index,
 					new_input_list, &new_index);
+
+		if (raise_focus_changed)
+			GenerateFocusChangeEvents ();
 
 		if (emit_leave)
 			handled = EmitEventOnList (UIElement::MouseLeaveEvent, input_list, event, surface_index);
@@ -1767,7 +1772,9 @@ Surface::HandleUICrossing (GdkEventCrossing *event)
 void
 Surface::GenerateFocusChangeEvents()
 {
-	focus_tick_call_added = false;
+	if (raised_focus_changed)
+		return;
+	raised_focus_changed = true;
 
 	List *el_list;
 	if (prev_focused_element) {
@@ -1783,13 +1790,6 @@ Surface::GenerateFocusChangeEvents()
 	}
 }
 
-void
-Surface::generate_focus_change_events (EventObject *object)
-{
-	Surface *s = (Surface*)object;
-	s->GenerateFocusChangeEvents();
-}
-
 bool
 Surface::FocusElement (UIElement *focused)
 {
@@ -1798,16 +1798,11 @@ Surface::FocusElement (UIElement *focused)
 
 	if (focused == focused_element)
 		return true;
-	
-	if (!focus_tick_call_added)
-		prev_focused_element = focused_element;
-	
-	focused_element = focused;
-	if ((focused_element || prev_focused_element) && !focus_tick_call_added) {
-		time_manager->AddTickCall (generate_focus_change_events, this);
-		focus_tick_call_added = true;
-	}
 
+	prev_focused_element = focused_element;
+
+	focused_element = focused;
+	raised_focus_changed = false;
 	return true;
 }
 

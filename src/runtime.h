@@ -326,6 +326,7 @@ private:
 	// held it previously (so we can emit lostfocus events async)
 	UIElement *focused_element;
 	UIElement *prev_focused_element;
+	bool raised_focus_changed;
 
 	// the list of elements (from most deeply nested to the
 	// toplevel) we've most recently sent a mouse event to.
@@ -390,8 +391,6 @@ private:
 
 	List* ElementPathToRoot (UIElement *source);
 	void GenerateFocusChangeEvents();
-	static void generate_focus_change_events (EventObject *object);
-	bool focus_tick_call_added;
 
 	void FindFirstCommonElement (List *l1, int *index1, List *l2, int *index2);
 	bool EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx);
