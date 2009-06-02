@@ -55,7 +55,7 @@ public:
 	virtual void OnApplyTemplate ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool Focus ();
+	virtual bool Focus ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool ApplyTemplate ();

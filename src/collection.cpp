@@ -852,8 +852,9 @@ DeepTreeWalker::Step ()
 	if (last) {
 		VisualTreeWalker walker (last, Logical, types);
 		//VisualTreeWalker walker (last, ZForward, types);
+		UnsafeUIElementNode *prepend = (UnsafeUIElementNode *) walk_list->First ();
 		while (UIElement *child = walker.Step ())
-			walk_list->Prepend (new UnsafeUIElementNode (child));
+			walk_list->InsertBefore (new UnsafeUIElementNode (child), prepend);
 	}
 
 	UnsafeUIElementNode *next = (UnsafeUIElementNode*)walk_list->First ();

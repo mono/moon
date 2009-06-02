@@ -348,7 +348,10 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
 	bool CaptureMouse ();
 	virtual bool CanCaptureMouse () { return true; }
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual bool Focus ();
+	
 	//
 	// ReleaseMouseCapture:
 	//

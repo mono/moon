@@ -1,3 +1,25 @@
+2009-06-02  Alan McGovern  <amcgovern@novell.com>
+
+	* collection.cpp: Fix DeepTreeWalker.Step (). It used to step in
+	reverse logical order.
+
+	* control.h
+	* uielement.cpp|h: Make Focus a virtual method on UIElement.
+	
+	* src/runtime.cpp: When the surface receives a mouse down we need to
+	focus the first control added to the root element if the user has not
+	clicked on a control or focused one using Control.Focus (). Then any
+	pending Focus events are raised before the mouse event is processed.
+	
+	* src/window-gtk.cpp: Always pass a right mouse button event into the
+	Surface so that we can fire any pending Focus events to match the
+	behaviour of Silverlight.
+
+2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mms-downloader.cpp: Use strtoull instead of g_ascii_strtoull
+	since g_ascii_strtoull isn't available in sled.
+
 2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mms-downloader.cpp: Use strtoull instead of g_ascii_strtoull

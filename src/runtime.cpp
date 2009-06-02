@@ -1294,9 +1294,13 @@ bool
 Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event)
 {
 	bool handled = false;
-	bool raise_focus_changed = (event_id == UIElement::MouseLeftButtonDownEvent ||
-								event_id == UIElement::MouseRightButtonDownEvent);
+	bool mouse_down =	event_id == UIElement::MouseLeftButtonDownEvent ||
+						event_id == UIElement::MouseRightButtonDownEvent;
 
+	if ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0 && 
+		(event_id == UIElement::MouseRightButtonDownEvent) || (event_id == UIElement::MouseRightButtonDownEvent))
+		event_id = NO_EVENT_ID;
+		
 	// we can end up here if mozilla pops up the JS timeout
 	// dialog.  The problem is that JS might have registered a
 	// handler for the event we're going to emit, so when we end
@@ -1344,6 +1348,22 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		for (int i = layers->GetCount () - 1; i >= 0 && new_input_list->IsEmpty (); i--)
 			layers->GetValueAt (i)->AsUIElement ()->HitTest (ctx, p, new_input_list);
 
+		if (mouse_down) {
+			if (new_input_list->IsEmpty () && !GetFocusedElement ()) {
+				for (int i = layers->GetCount () - 1; i >= 0; i--) {
+					if (layers->GetValueAt (i)->AsUIElement ()->Focus ())
+						break;
+				}
+			} else {
+				for (UIElementNode* node = (UIElementNode*) new_input_list->First (); node != NULL; node = (UIElementNode*) node->next) {
+					UIElement *el = node->uielement;
+					if (el->Focus ())
+						break;
+				}
+			}
+		}
+		GenerateFocusChangeEvents ();
+		
 		// for 2 lists:
 		//   l1:  [a1, a2, a3, a4, ... ]
 		//   l2:  [b1, b2, b3, b4, ... ]
@@ -1372,9 +1392,6 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		//
 		FindFirstCommonElement (input_list, &surface_index,
 					new_input_list, &new_index);
-
-		if (raise_focus_changed)
-			GenerateFocusChangeEvents ();
 
 		if (emit_leave)
 			handled = EmitEventOnList (UIElement::MouseLeaveEvent, input_list, event, surface_index);
@@ -1432,7 +1449,6 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		PerformCapture (pendingCapture);
 	if (pendingReleaseCapture || (captured && !captured->CanCaptureMouse ()))
 		PerformReleaseCapture ();
-
 	return handled;
 }
 
@@ -1621,9 +1637,7 @@ Surface::HandleUIFocusOut (GdkEventFocus *event)
 gboolean
 Surface::HandleUIButtonRelease (GdkEventButton *event)
 {
-	if (event->button != 1
-	    && ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0
-		|| event->button != 3)) {
+	if (event->button != 1 && event->button != 3) {
 		return false;
 	}
 
@@ -1644,7 +1658,7 @@ Surface::HandleUIButtonRelease (GdkEventButton *event)
 	if (captured)
 		PerformReleaseCapture ();
 
-	return true;
+	return !((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0 && event->button == 3);
 }
 
 gboolean
@@ -1652,11 +1666,8 @@ Surface::HandleUIButtonPress (GdkEventButton *event)
 {
 	active_window->GrabFocus ();
 	
-	if (event->button != 1
-	    && ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0
-		|| event->button != 3)) {
+	if (event->button != 1 && event->button != 3)
 		return false;
-	}
 
 	SetUserInitiatedEvent (true);
 

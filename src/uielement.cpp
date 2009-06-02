@@ -764,6 +764,11 @@ UIElement::ClearLoaded ()
 	Emit (UnloadedEvent, NULL, true);
 }
 
+bool
+UIElement::Focus ()
+{
+	return false;
+}
 //
 // Queues the invalidate for the current region, performs any 
 // updates to the RenderTransform (optional) and queues a 

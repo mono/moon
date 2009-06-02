@@ -421,14 +421,17 @@ MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer 
 
 	Deployment::SetCurrent (window->GetDeployment ());
 
-	if (event->button != 1
-	    && ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0
-		|| event->button != 3)) {
+	if (event->button != 1 && event->button != 3)
 		return false;
-	}
 
 	if (window->surface)
 		window->surface->HandleUIButtonPress (event);
+	
+	// If we don't support right clicks (i.e. inside the browser)
+	// return false here
+	if (event->button == 3 && (moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0)
+		return false;
+
 	// ignore HandleUIButtonPress's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
