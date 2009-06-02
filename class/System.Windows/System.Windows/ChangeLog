@@ -1,3 +1,11 @@
+2009-06-02  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs (TerminateCurrentApplication): factor this out of
+	CreateApplication and call it from further up in the chain, such
+	that the new application hasn't been unpacked. we were unpacking
+	the new application, then terminating the old one (which removes
+	the new application, not the old one.)
+
 2009-06-01  Chris Toshok  <toshok@ximian.com>
 
 	* GridLength.cs: if the GridLength's are Auto it doesn't matter

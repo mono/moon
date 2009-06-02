@@ -147,6 +147,7 @@ namespace System.Windows {
 		}
 
 		internal bool InitializeDeployment () {
+			TerminateCurrentApplication ();
 			EntryPointType = "System.Windows.Application";
 			EntryPointAssembly = typeof (Application).Assembly.GetName ().Name;
 			EntryAssembly = typeof (Application).Assembly;
@@ -154,6 +155,7 @@ namespace System.Windows {
 		}
 			
 		internal bool InitializeDeployment (IntPtr plugin, string xapPath) {
+			TerminateCurrentApplication ();
 			InitializePluginHost (plugin);
 			if (!ExtractXap (xapPath))
 				return false;
@@ -230,6 +232,14 @@ namespace System.Windows {
 				EntryAssembly = asm;
 		}
 
+		void TerminateCurrentApplication ()
+		{
+			if (Application.Current != null) {
+				Application.Current.Terminate ();
+	                        NativeMethods.surface_attach (Deployment.Current.Surface.Native, IntPtr.Zero);
+			}
+		}
+
 		internal bool CreateApplication () {
 			if (EntryAssembly == null) {
 				Report.Error ("Could not find the entry point assembly");
@@ -264,11 +274,6 @@ namespace System.Windows {
 			
 			foreach (Assembly a in Assemblies)
 				Application.LoadXmlnsDefinitionMappings (a);
-			
-			if (Application.Current != null) {
-				Application.Current.Terminate ();
-	                        NativeMethods.surface_attach (Deployment.Current.Surface.Native, IntPtr.Zero);
-			}
 
 			Application instance = null;
 
