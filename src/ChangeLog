@@ -1,4 +1,8 @@
-<<<<<<< Updated upstream:src/ChangeLog
+2009-06-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (HandleMouseEvent): Fixed compile warning about 'if
+	(x && y || z)'.
+
 2009-06-02  Alan McGovern  <amcgovern@novell.com>
 
 	* collection.cpp: Fix DeepTreeWalker.Step (). It used to step in
