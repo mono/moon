@@ -328,7 +328,6 @@ bool
 TextLayout::SetTextWrapping (TextWrapping mode)
 {
 	switch (mode) {
-	case TextWrappingWrapWithOverflow:
 	case TextWrappingNoWrap:
 	case TextWrappingWrap:
 		break;
@@ -771,93 +770,6 @@ layout_lwsp (LayoutWord *word, const char *in, const char *inend)
 	
 	word->length = (inptr - in);
 	word->prev = prev;
-}
-
-/**
- * layout_word_overflow:
- * @word: #LayoutWord context
- * @in: input text
- * @inend = end of input text
- * @max_width: max allowable width for a line
- *
- * Calculates the advance of the current word.
- *
- * Returns: %true if the caller should create a new line for the
- * remainder of the word or %false otherwise.
- **/
-static bool
-layout_word_overflow (LayoutWord *word, const char *in, const char *inend, double max_width)
-{
-	GUnicodeBreakType btype = G_UNICODE_BREAK_UNKNOWN;
-	bool line_start = word->line_advance == 0.0;
-	guint32 prev = word->prev;
-	const char *inptr = in;
-	const char *start;
-	GlyphInfo *glyph;
-	double advance;
-	gunichar c;
-	
-	word->advance = 0.0;
-	word->count = 0;
-	
-	while (inptr < inend) {
-		start = inptr;
-		if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1) {
-			// ignore invalid chars
-			continue;
-		}
-		
-		if (UnicharIsLineBreak (c)) {
-			inptr = start;
-			break;
-		}
-		
-		if (btype == G_UNICODE_BREAK_COMBINING_MARK) {
-			// ignore zero-width spaces
-			if ((btype = g_unichar_break_type (c)) == G_UNICODE_BREAK_ZERO_WIDTH_SPACE)
-				btype = G_UNICODE_BREAK_COMBINING_MARK;
-		} else {
-			btype = g_unichar_break_type (c);
-		}
-		
-		if (BreakSpace (c, btype)) {
-			inptr = start;
-			break;
-		}
-		
-		word->count++;
-		
-		// ignore glyphs the font doesn't contain...
-		if (!(glyph = word->font->GetGlyphInfo (c)))
-			continue;
-		
-		// calculate total glyph advance
-		advance = glyph->metrics.horiAdvance;
-		if ((prev != 0) && APPLY_KERNING (c))
-			advance += word->font->Kerning (prev, glyph->index);
-		else if (glyph->metrics.horiBearingX < 0)
-			advance -= glyph->metrics.horiBearingX;
-		
-		// WrapWithOverflow never breaks in the middle of a word...
-		//
-		// If this word starts the line, then we must allow it to
-		// overflow. Otherwise, return %true to our caller so it
-		// can create a new line to layout this word into.
-		if (!line_start && !isinf (max_width) && (word->line_advance + advance) >= max_width) {
-			word->advance = 0.0;
-			word->length = 0;
-			return true;
-		}
-		
-		word->line_advance += advance;
-		word->advance += advance;
-		prev = glyph->index;
-	}
-	
-	word->length = (inptr - in);
-	word->prev = prev;
-	
-	return false;
 }
 
 /**
@@ -1501,7 +1413,7 @@ print_lines (GPtrArray *lines)
 #endif
 
 static LayoutWordCallback layout_word_behavior[] = {
-	layout_word_overflow,
+	layout_word_wrap,
 	layout_word_nowrap,
 	layout_word_wrap
 };

@@ -1,3 +1,8 @@
+2009-06-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (layout_word_overflow): Removed, Silverlight 2.0 no
+	longer supports this wrapping model.
+
 2009-06-02  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp (DoArrange): don't poke at unset values.  Fixes
