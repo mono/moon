@@ -1215,11 +1215,13 @@ Media::ClearQueue ()
 	LOG_PIPELINE ("Media::ClearQueue ().\n");
 	if (queued_requests != NULL) {
 		List::Node *next;
-		List::Node *current;
+		List::Node *current = NULL;
 
 		pthread_mutex_lock (&queue_mutex);
-		current = queued_requests->First ();
-		queued_requests->Clear (false);
+		if (queued_requests != NULL) {
+			current = queued_requests->First ();
+			queued_requests->Clear (false);
+		}
 		pthread_mutex_unlock (&queue_mutex);
 		
 		// We have to delete the list nodes with the
