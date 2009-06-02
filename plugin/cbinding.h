@@ -699,6 +699,8 @@ struct MoonlightStylusPointCollectionObject;
 struct MoonlightStylusPointCollectionType;
 struct MoonlightTextBlockObject;
 struct MoonlightTextBlockType;
+struct MoonlightThickness;
+struct MoonlightThicknessType;
 struct MoonlightTimeSpan;
 struct MoonlightTimeSpanType;
 struct MoonlightUIElementObject;
