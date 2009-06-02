@@ -81,7 +81,10 @@ SOURCES= \
 	$(wildcard $(srcdir)/*/*/*.cs)	\
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/BaseDomainPolicy.cs	\
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicy.cs	\
-	../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicy.cs
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicyParser.cs	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicy.cs	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicyParser.cs	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ICrossDomainPolicy.cs
 
 REFERENCES = \
 	-r:$(top_builddir)/test/2.0/moon-unit/System.Windows.Controls.dll \

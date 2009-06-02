@@ -81,7 +81,7 @@ namespace System.Windows.Browser.Net {
 			PolicyAsyncResult async = new PolicyAsyncResult (cb, root);
 			async.PolicyUri = silverlight_policy_uri;
 
-			wc.OpenPolicyReadAsync (silverlight_policy_uri, async);
+			wc.OpenReadAsync (silverlight_policy_uri, async);
 			return async;
 		}
 
@@ -92,15 +92,11 @@ namespace System.Windows.Browser.Net {
 
 			if (!e.Cancelled && e.Error == null && e.Result != null) {
 				try {
-					XmlReaderSettings policy_settings = new XmlReaderSettings ();
-					policy_settings.DtdProcessing = DtdProcessing.Ignore;
 					ICrossDomainPolicy policy = null;
-					using (var xr = XmlReader.Create (e.Result, policy_settings)) {
-						if (uri.LocalPath == ClientAccessPolicyFile) {
-							policy = ClientAccessPolicy.Read (xr);
-						} else if (uri.LocalPath == CrossDomainFile) {
-							policy = BuildFlashPolicy (xr, (sender as WebClient).ResponseHeaders);
-						}
+					if (uri.LocalPath == ClientAccessPolicyFile) {
+						policy = ClientAccessPolicy.FromStream (e.Result);
+					} else if (uri.LocalPath == CrossDomainFile) {
+						policy = BuildFlashPolicy (e.Result, (sender as WebClient).ResponseHeaders);
 					}
 					async.Policy = policy;
 					policies.Add (async.RootUri.OriginalString, policy);
@@ -118,7 +114,7 @@ namespace System.Windows.Browser.Net {
 				Uri flash_policy_uri = new Uri (async.RootUri, CrossDomainFile);
 				async.PolicyUri = flash_policy_uri;
 
-				flash.OpenPolicyReadAsync (flash_policy_uri, async);
+				flash.OpenReadAsync (flash_policy_uri, async);
 			} else {
 				// don't fire the callback
 				async.Exception = e.Error;
@@ -126,9 +122,9 @@ namespace System.Windows.Browser.Net {
 			}
 		}
 
-		static ICrossDomainPolicy BuildFlashPolicy (XmlReader xr, WebHeaderCollection headers)
+		static ICrossDomainPolicy BuildFlashPolicy (Stream stream, WebHeaderCollection headers)
 		{
-			FlashCrossDomainPolicy policy = (FlashCrossDomainPolicy) FlashCrossDomainPolicy.Read (xr);
+			FlashCrossDomainPolicy policy = (FlashCrossDomainPolicy) FlashCrossDomainPolicy.FromStream (stream);
 			if (policy == null)
 				return null;
 
@@ -259,9 +255,7 @@ namespace System.Windows.Browser.Net {
 
 			ClientAccessPolicy policy = null;
 			try {
-				using (XmlReader xr = XmlReader.Create (s)) {
-					policy = ClientAccessPolicy.Read (xr);
-				}
+				policy = (ClientAccessPolicy) ClientAccessPolicy.FromStream (s);
 			} catch (Exception ex) {
 				Console.WriteLine (String.Format ("CrossDomainAccessManager caught an exception while reading {0}: {1}", 
 					endpoint, ex.Message));

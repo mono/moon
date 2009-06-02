@@ -1,3 +1,8 @@
+2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/SocketPolicyTest.cs: Adapt to internal API changes
+	* Makefile.am: Add new parsers source files to the build
+
 2009-05-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* IsolatedStorageFileTest.cs: Remove MoonlightBug to GetFilesInSubdirs.

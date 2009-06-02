@@ -34,7 +34,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Xml;
 #if !TEST
 using System.Windows.Interop;
 #endif
@@ -44,13 +43,10 @@ using System.Windows.Interop;
 
 namespace System.Windows.Browser.Net {
 
+	abstract class BaseDomainPolicy : ICrossDomainPolicy {
 #if TEST
-	abstract class BaseDomainPolicy {
-
 		static public Uri ApplicationUri { get; set; }
 #else
-	abstract class BaseDomainPolicy : ICrossDomainPolicy {
-
 		static public Uri ApplicationUri {
 			get { return PluginHost.RootUri; }
 		}

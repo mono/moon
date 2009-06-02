@@ -30,8 +30,10 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows.Browser.Net/BrowserHttpWebRequestStream.cs		\
 	$(srcdir)/System.Windows.Browser.Net/BaseDomainPolicy.cs		\
 	$(srcdir)/System.Windows.Browser.Net/ClientAccessPolicy.cs		\
+	$(srcdir)/System.Windows.Browser.Net/ClientAccessPolicyParser.cs	\
 	$(srcdir)/System.Windows.Browser.Net/CrossDomainPolicyManager.cs	\
 	$(srcdir)/System.Windows.Browser.Net/FlashCrossDomainPolicy.cs		\
+	$(srcdir)/System.Windows.Browser.Net/FlashCrossDomainPolicyParser.cs	\
 	$(srcdir)/System.Windows.Browser.Net/ICrossDomainPolicy.cs		\
 	$(srcdir)/System.Windows.Browser.Net/PolicyDownloadPolicy.cs		\
 	$(srcdir)/System.Windows.Browser.Net/SiteOfOriginPolicy.cs		\

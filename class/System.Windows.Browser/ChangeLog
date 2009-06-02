@@ -1,3 +1,8 @@
+2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add [ClientAccessPolicy|FlashCrossDomainPolicy]
+	Parser.cs to the build
+
 2009-05-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Add BaseDomainPolicy.cs to the build

@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Windows.Browser.Net;
 using System.Xml;
 
@@ -41,10 +42,8 @@ namespace MoonTest.Security {
 
 		static ClientAccessPolicy GetPolicy (string policy)
 		{
-			using (XmlReader reader = XmlReader.Create (new StringReader (policy))) {
-				ClientAccessPolicy.ClientAccessPolicyReader capr = new ClientAccessPolicy.ClientAccessPolicyReader (reader);
-				capr.Read ();
-				return capr.Result;
+			using (MemoryStream ms = new MemoryStream (Encoding.UTF8.GetBytes (policy))) {
+				return (ClientAccessPolicy) ClientAccessPolicy.FromStream (ms);
 			}
 		}
 
