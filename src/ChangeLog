@@ -1,5 +1,10 @@
 2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mms-downloader.cpp: Use strtoull instead of g_ascii_strtoull
+	since g_ascii_strtoull isn't available in sled.
+
+2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* type.h:
 	* value.h:
 	* cbinding.h:

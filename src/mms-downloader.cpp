@@ -708,7 +708,7 @@ ContentDescriptionList::Parse (const char *input, gint32 length)
 		str_name_length = str;
 		str = comma + 1;
 
-		name_length = g_ascii_strtoll (str_name_length, NULL, 10);
+		name_length = strtoull (str_name_length, NULL, 10);
 
 		if (name_length < 0 || name_length > G_MAXINT32)
 			goto cleanup;
@@ -730,7 +730,7 @@ ContentDescriptionList::Parse (const char *input, gint32 length)
 		str_value_type = str;
 		str = comma + 1;
 
-		value_type = g_ascii_strtoll (str_value_type, NULL, 10);
+		value_type = strtoull (str_value_type, NULL, 10);
 
 		if (value_type < 0 || value_type > G_MAXINT32)
 			goto cleanup;
@@ -744,7 +744,7 @@ ContentDescriptionList::Parse (const char *input, gint32 length)
 		str_value_length = str;
 		str = comma + 1;
 
-		value_length = g_ascii_strtoll (str_value_length, NULL, 10);
+		value_length = strtoull (str_value_length, NULL, 10);
 
 		if (value_length < 0 || value_length > G_MAXINT32)
 			goto cleanup;
