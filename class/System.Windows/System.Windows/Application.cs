@@ -58,8 +58,7 @@ namespace System.Windows {
 
 		static Application ()
 		{
-			ImportXamlNamespace ("clr-namespace:System.Windows;assembly:System.Windows.dll");
-			ImportXamlNamespace ("clr-namespace:System.Windows.Controls;assembly:System.Windows.dll");
+			ReinitializeStaticData ();
 		}
 
 		internal Application (IntPtr raw)
@@ -104,6 +103,20 @@ namespace System.Windows {
 			root_visual = null;
 			Application.Current = null;
 			// XXX free the application?
+
+			ReinitializeStaticData ();
+		}
+
+
+		static void ReinitializeStaticData ()
+		{
+			// reinitialize these static lists so we don't inherit things from the previous application
+			xmlns_definitions = new Dictionary<XmlnsDefinitionAttribute, Assembly> ();
+
+			imported_namespaces = new List<string> ();
+
+			ImportXamlNamespace ("clr-namespace:System.Windows;assembly:System.Windows.dll");
+			ImportXamlNamespace ("clr-namespace:System.Windows.Controls;assembly:System.Windows.dll");
 		}				
 
 
@@ -476,8 +489,9 @@ namespace System.Windows {
 			}	
 		}
 
-		internal static Dictionary<XmlnsDefinitionAttribute,Assembly> xmlns_definitions = new Dictionary<XmlnsDefinitionAttribute, Assembly> ();
-		internal static List<string> imported_namespaces = new List<string> ();
+		// initialized in ReinitializeStaticData
+		internal static Dictionary<XmlnsDefinitionAttribute,Assembly> xmlns_definitions;
+		internal static List<string> imported_namespaces;
 		
 		internal static void LoadXmlnsDefinitionMappings (Assembly a)
 		{

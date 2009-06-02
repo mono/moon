@@ -1,5 +1,18 @@
 2009-06-02  Chris Toshok  <toshok@ximian.com>
 
+	* Application.cs (ReinitializeStaticData): Application uses some
+	static data that needs to be cleared and reinitialized when we
+	terminate.
+
+	* Deployment.cs (SetCurrentApplication): allow a null here so we
+	can clear out the unmanaged idea of what the current application
+	is.
+	(CreateApplication): reorder things some here to keep from having
+	a dangling application laying around, and make sure we set the
+	current application before we call OnStartup.
+
+2009-06-02  Chris Toshok  <toshok@ximian.com>
+
 	* Deployment.cs (TerminateCurrentApplication): factor this out of
 	CreateApplication and call it from further up in the chain, such
 	that the new application hasn't been unpacked. we were unpacking

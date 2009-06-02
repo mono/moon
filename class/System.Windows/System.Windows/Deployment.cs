@@ -63,7 +63,7 @@ namespace System.Windows {
 		
 		public static void SetCurrentApplication (Application application)
 		{
-			NativeMethods.deployment_set_current_application (Current.native, application.NativeHandle);
+			NativeMethods.deployment_set_current_application (Current.native, application == null ? IntPtr.Zero : application.NativeHandle);
 		}
 
 		internal Types Types {
@@ -241,6 +241,8 @@ namespace System.Windows {
 		}
 
 		internal bool CreateApplication () {
+			SetCurrentApplication (null);
+
 			if (EntryAssembly == null) {
 				Report.Error ("Could not find the entry point assembly");
 				return false;
@@ -284,10 +286,11 @@ namespace System.Windows {
 				return false;
 			}
 
-			instance.OnStartup ();
+			SetCurrentApplication (instance);
 
 			Events.InitSurface (Surface.Native);
-			SetCurrentApplication (instance);
+
+			instance.OnStartup ();
 
 			return true;
 		}
