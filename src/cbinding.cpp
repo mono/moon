@@ -779,16 +779,6 @@ control_new (void)
 }
 
 
-bool
-control_focus (Control *instance)
-{
-	if (instance == NULL)
-		return false;
-	
-	return instance->Focus ();
-}
-
-
 DependencyObject *
 control_get_template_child (Control *instance, const char *name)
 {
@@ -4683,6 +4673,16 @@ uielement_find_elements_in_host_coordinates_r (UIElement *instance, Rect p, HitT
 		return;
 	
 	instance->FindElementsInHostCoordinates_r (p, uielement_list);
+}
+
+
+bool
+uielement_focus (UIElement *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->Focus ();
 }
 
 

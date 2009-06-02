@@ -53,8 +53,7 @@ public:
 	virtual void ElementRemoved (UIElement *item);
 	
 	virtual void OnApplyTemplate ();
-	
-	/* @GenerateCBinding,GeneratePInvoke */
+
 	virtual bool Focus ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */

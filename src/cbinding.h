@@ -1066,9 +1066,6 @@ bool control_apply_template (Control *instance);
 Control *control_new (void);
 
 /* @GeneratePInvoke */
-bool control_focus (Control *instance);
-
-/* @GeneratePInvoke */
 DependencyObject *control_get_template_child (Control *instance, const char *name);
 
 /**
@@ -2677,6 +2674,9 @@ void uielement_find_elements_in_host_coordinates_p (UIElement *instance, Point p
 
 /* @GeneratePInvoke */
 void uielement_find_elements_in_host_coordinates_r (UIElement *instance, Rect p, HitTestCollection *uielement_list);
+
+/* @GeneratePInvoke */
+bool uielement_focus (UIElement *instance);
 
 /* @GeneratePInvoke */
 Size uielement_get_desired_size (UIElement *instance);

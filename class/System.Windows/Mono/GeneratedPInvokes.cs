@@ -470,11 +470,6 @@ namespace Mono {
 		public extern static IntPtr control_new ();
 
 		[DllImport ("moon")]
-		[return: MarshalAs (UnmanagedType.U1)]
-		// bool control_focus (Control *instance);
-		public extern static bool control_focus (IntPtr instance);
-
-		[DllImport ("moon")]
 		// DependencyObject *control_get_template_child (Control *instance, const char *name);
 		public extern static IntPtr control_get_template_child (IntPtr instance, string name);
 
@@ -2023,6 +2018,11 @@ namespace Mono {
 		public extern static void uielement_find_elements_in_host_coordinates_r (IntPtr instance, Rect p, IntPtr uielement_list);
 
 		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool uielement_focus (UIElement *instance);
+		public extern static bool uielement_focus (IntPtr instance);
+
+		[DllImport ("moon")]
 		// Size uielement_get_desired_size (UIElement *instance);
 		public extern static Size uielement_get_desired_size (IntPtr instance);
 
@@ -2192,6 +2192,11 @@ namespace Mono {
 			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
 			return s;
 		}
+
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool control_focus (Control *instance);
+		public extern static bool control_focus (IntPtr instance);
 
 		[DllImport ("moon")]
 		// char* *open_file_dialog_show (const char *title, bool multsel, const char *filter, int idx);
