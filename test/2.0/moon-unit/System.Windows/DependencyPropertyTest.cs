@@ -1306,6 +1306,7 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
+		[MoonlightBug]
 		public void Managed_Interfaces ()
 		{
 			InterfaceDPs dp = new InterfaceDPs ();
@@ -1320,6 +1321,9 @@ namespace MoonTest.System.Windows
 
 			dp.IComparableProp = new ManagedIComparable ();
 			Assert.IsInstanceOfType<ManagedIComparable> (dp.IComparableProp, "#4");
+
+			dp.IComparableChar = 'c';
+			Assert.AreEqual ('c', dp.IComparableChar, "#5");
 
 #if notyet
 			// this should likely throw..
@@ -1374,6 +1378,7 @@ namespace MoonTest.System.Windows
 	public class InterfaceDPs : Control, IComparable
 	{
 		public static DependencyProperty IComparablePropProperty = DependencyProperty.Register ("IComparableProp", typeof (IComparable), typeof (InterfaceDPs), null);
+		public static DependencyProperty IComparableCharProperty = DependencyProperty.Register ("IComparableInt", typeof (IComparable<char>), typeof (InterfaceDPs), null);
 		public static DependencyProperty IEquatablePropProperty = DependencyProperty.Register ("IEquatableProp", typeof (IEquatable<double>), typeof (InterfaceDPs), null);
 
 		public IComparable IComparableProp
@@ -1386,6 +1391,12 @@ namespace MoonTest.System.Windows
 		{
 			get { return (IEquatable<double>) GetValue (IEquatablePropProperty); }
 			set { SetValue (IEquatablePropProperty, value); }
+		}
+
+		public IComparable<char> IComparableChar
+		{
+			get { return (IComparable<char>) GetValue (IComparablePropProperty); }
+			set { SetValue (IComparablePropProperty, value); }
 		}
 
 		public int CompareTo (object o) { return 0; }
