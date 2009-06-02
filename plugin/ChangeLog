@@ -1,5 +1,11 @@
 2009-06-01  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp (MoonlightContentObject::Invoke): for
+	createFromXaml make sure we call LoadVM on the XamlLoader so we
+	can access managed types (like StackPanel).
+
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp|h: add MoonlightThickness* and add
 	Type::THICKNESS to value_to_variant.  this fixes a few instances
 	in the tests where they're accessing margins from javascript.
