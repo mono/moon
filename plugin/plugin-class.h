@@ -56,6 +56,10 @@ enum PluginPropertyId {
 	MoonId_MethodName,
 	MoonId_X,
 	MoonId_Y,
+	MoonId_Left,
+	MoonId_Right,
+	MoonId_Top,
+	MoonId_Bottom,
 	MoonId_Width,
 	MoonId_Height,
 	MoonId_Seconds,
@@ -497,6 +501,34 @@ struct MoonlightKeyTime : MoonlightObject {
 	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
 
 	KeyTime* GetValue ();
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+
+	DependencyProperty *parent_property;
+	DependencyObject *parent_obj;
+};
+
+/*** MoonlightThicknessClass  ****************************************************************/
+struct MoonlightThicknessType : MoonlightObjectType {
+	MoonlightThicknessType ();
+};
+
+extern MoonlightThicknessType *MoonlightThicknessClass;
+
+struct MoonlightThickness : MoonlightObject {
+	MoonlightThickness (NPP instance) : MoonlightObject (instance)
+	{
+		moonlight_type = Type::THICKNESS;
+		parent_property = NULL;
+		parent_obj = NULL;
+	}
+
+	virtual ~MoonlightThickness ();
+
+	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
+
+	Thickness* GetValue ();
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);

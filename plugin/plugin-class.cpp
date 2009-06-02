@@ -204,6 +204,12 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		OBJECT_TO_NPVARIANT (keytime, *result);
 		break;
 	}
+	case Type::THICKNESS: {
+		MoonlightThickness *thickness = (MoonlightThickness *) NPN_CreateObject (((MoonlightObject *) npobj)->instance, MoonlightThicknessClass);
+		thickness->SetParentInfo (parent_obj, parent_property);
+		OBJECT_TO_NPVARIANT (thickness, *result);
+		break;
+	}
 	case Type::NPOBJ: {
 		OBJECT_TO_NPVARIANT ((NPObject *) v->AsNPObj (), *result);
 		break;
@@ -1110,6 +1116,94 @@ MoonlightKeyTimeType::MoonlightKeyTimeType ()
 }
 
 MoonlightKeyTimeType *MoonlightKeyTimeClass;
+
+
+/*** Thickness ***/
+static NPObject *
+thickness_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightThickness (instance);
+}
+
+static const MoonNameIdMapping
+thickness_mapping[] = {
+	{ "bottom", MoonId_Bottom },
+	{ "left", MoonId_Left },
+	{ "right", MoonId_Right },
+	{ "top", MoonId_Right }
+};
+
+void
+MoonlightThickness::SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property)
+{
+	this->parent_obj = parent_obj;
+	this->parent_property = parent_property;
+	parent_obj->ref();
+}
+
+Thickness*
+MoonlightThickness::GetValue()
+{
+	Value *v = parent_obj->GetValue (parent_property);
+	return (v ? v->AsThickness() : NULL);
+}
+
+bool
+MoonlightThickness::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	switch (id) {
+	case MoonId_Name:
+		string_to_npvariant ("", result);
+		return true;
+	case MoonId_Left:
+		DOUBLE_TO_NPVARIANT (GetValue ()->left, *result);
+		return true;
+	case MoonId_Top:
+		DOUBLE_TO_NPVARIANT (GetValue ()->top, *result);
+		return true;
+	case MoonId_Right:
+		DOUBLE_TO_NPVARIANT (GetValue ()->right, *result);
+		return true;
+	case MoonId_Bottom:
+		DOUBLE_TO_NPVARIANT (GetValue ()->bottom, *result);
+		return true;
+	default:
+		return MoonlightObject::GetProperty (id, name, result);
+	}
+}
+
+bool
+MoonlightThickness::SetProperty (int id, NPIdentifier name, const NPVariant *value)
+{
+	switch (id) {
+	case MoonId_Name:
+		return true;
+
+	case MoonId_Left:
+	case MoonId_Top:
+	case MoonId_Right:
+	case MoonId_Bottom:
+		return true;
+
+	default:
+		return MoonlightObject::SetProperty (id, name, value);
+	}
+}
+
+MoonlightThickness::~MoonlightThickness ()
+{
+	if (parent_obj)
+		parent_obj->unref ();
+}
+
+MoonlightThicknessType::MoonlightThicknessType ()
+{
+	allocate = thickness_allocate;
+
+	AddMapping (thickness_mapping, G_N_ELEMENTS (thickness_mapping));
+}
+
+MoonlightThicknessType *MoonlightThicknessClass;
 
 /*** MoonlightDownloadProgressEventArgsClass  **************************************************************/
 
@@ -4481,6 +4575,7 @@ plugin_init_classes (void)
 	MoonlightSettingsClass = new MoonlightSettingsType ();
 	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
 	MoonlightKeyTimeClass = new MoonlightKeyTimeType ();
+	MoonlightThicknessClass = new MoonlightThicknessType ();
 }
 
 void
@@ -4506,5 +4601,6 @@ plugin_destroy_classes (void)
 	delete MoonlightDurationClass; MoonlightDurationClass = NULL;
 	delete MoonlightTimeSpanClass; MoonlightTimeSpanClass = NULL;
 	delete MoonlightKeyTimeClass; MoonlightKeyTimeClass = NULL;
+	delete MoonlightThicknessClass; MoonlightThicknessClass = NULL;
 	delete MoonlightMarkerReachedEventArgsClass; MoonlightMarkerReachedEventArgsClass = NULL;
 }
