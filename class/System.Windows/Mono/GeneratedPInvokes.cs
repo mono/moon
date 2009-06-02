@@ -2194,11 +2194,6 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
-		[return: MarshalAs (UnmanagedType.U1)]
-		// bool control_focus (Control *instance);
-		public extern static bool control_focus (IntPtr instance);
-
-		[DllImport ("moon")]
 		// char* *open_file_dialog_show (const char *title, bool multsel, const char *filter, int idx);
 		public extern static IntPtr open_file_dialog_show (string title, [MarshalAs (UnmanagedType.U1)] bool multsel, string filter, int idx);
 
