@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:src/ChangeLog
 2009-06-02  Alan McGovern  <amcgovern@novell.com>
 
 	* collection.cpp: Fix DeepTreeWalker.Step (). It used to step in
@@ -188,6 +189,12 @@
 
 	* control.cpp|h: Control.IsEnabled propagates to its children
 	when the control is Loaded.
+=======
+2009-05-28  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp|h: Control.IsEnabled propagates when the control
+	is loaded
+>>>>>>> Stashed changes:src/ChangeLog
 
 2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
