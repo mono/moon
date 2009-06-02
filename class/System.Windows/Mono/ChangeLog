@@ -1,3 +1,7 @@
+2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Kind.cs: Regenerated.
+
 2009-06-01  Chris Toshok  <toshok@ximian.com>
 
 	* NativeMethods.cs: update signature.

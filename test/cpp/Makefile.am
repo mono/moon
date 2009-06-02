@@ -4,7 +4,9 @@ GUNIT_DIR = gtest-1.3.0
 GUNIT_SO = $(GUNIT_DIR)/lib/.libs/libgtest.so
 
 unit_SOURCES = \
-	main.cpp
+	main.cpp	\
+	utils.cpp	\
+	mms.cpp
 
 unit_LDADD = $(MOON_PROG_LIBS)
 unit_LDFLAGS = -static $(shell $(GUNIT_DIR)/scripts/gtest-config --ldflags --libs)

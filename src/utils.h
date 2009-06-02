@@ -82,6 +82,28 @@ void     measuring_context_destroy (cairo_t *cr);
 
 GArray *double_garray_from_str (const char *s, gint max);
 
+/*
+ * Returns a pointer to the first token found.
+ *
+ * @input: the input string
+ * @c:     output, upon return contains the first character not in the token.
+ * @end:   output, upon return contains a pointer to the remaining input (NULL if no more data)
+ * 
+ * Note: the input string is modified.
+ */
+char *parse_rfc_1945_token (char *input, char *c, char **end);
+
+/*
+ * Returns a pointer to the unquoted string.
+ * 
+ * @input: the input string
+ * @c:     output, upon return contains the first character not in the quoted string.
+ * @end:   output, upon return contains a pointer to the remaining input (NULL if no more data)
+ * 
+ * Note: the input string is modified.
+ */
+char * parse_rfc_1945_quoted_string (char *input, char *c, char **end);
+
 G_END_DECLS
 
 class TextStream {

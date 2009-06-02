@@ -200,8 +200,24 @@ PlaylistEntry::InitializeWithStream (ManagedStreamCallbacks *callbacks)
 }
 
 void
-PlaylistEntry::InitializeWithStream (IMediaStream *stream)
+PlaylistEntry::InitializeWithSource (IMediaSource *source)
 {
+	Media *media;
+	PlaylistRoot *root = GetRoot ();
+	
+	g_return_if_fail (source != NULL);
+	g_return_if_fail (root != NULL);
+	
+	media = source->GetMediaReffed ();
+	
+	g_return_if_fail (media != NULL);
+	
+	Initialize (media);
+	
+	media->Initialize (source);
+	if (!media->HasReportedError ())
+		media->OpenAsync ();
+	media->unref ();
 }
 
 void
@@ -275,7 +291,7 @@ PlaylistEntry::OpenCompletedHandler (Media *media, EventArgs *args)
 	MediaPlayer *mplayer;
 	IMediaDemuxer *demuxer;
 	Playlist *playlist;
-	
+		
 	LOG_PLAYLIST ("PlaylistEntry::OpenCompletedHandler (%p, %p)\n", media, args);
 	
 	g_return_if_fail (media != NULL);
@@ -285,14 +301,8 @@ PlaylistEntry::OpenCompletedHandler (Media *media, EventArgs *args)
 	
 	g_return_if_fail (demuxer != NULL);
 	
-	// Check if we have a live stream
-	if (demuxer->GetSource () != NULL && demuxer->GetSource ()->GetType () == MediaSourceTypeQueueMemory) {
-		MemoryQueueSource *psrc = (MemoryQueueSource *) demuxer->GetSource ();
-		Downloader *dl = psrc->GetDownloader ();
-		if (dl->GetHttpStreamingFeatures () & HttpStreamingBroadcast)
-			is_live = true;
-	}
-	
+	LOG_PLAYLIST ("PlaylistEntry::OpenCompletedHandler (%p, %p) demuxer: %i %s\n", media, args, GET_OBJ_ID (demuxer), demuxer->GetTypeName ());
+		
 	if (demuxer->IsPlaylist ()) {
 		playlist = demuxer->GetPlaylist ();
 		
@@ -311,6 +321,7 @@ PlaylistEntry::OpenCompletedHandler (Media *media, EventArgs *args)
 			args->ref ();
 		root->Emit (PlaylistRoot::OpenCompletedEvent, args);
 	}
+	
 }
 
 void
@@ -699,7 +710,9 @@ PlaylistEntry::GetFullSourceName ()
 		
 		//printf ("PlaylistEntry::GetFullSourceName (), base: %s, current: %s\n", base ? base->ToString () : "NULL", current ? current->ToString () : "NULL");
 		
-		if (current->GetHost () != NULL) {
+		if (current == NULL) {
+			return NULL;
+		} else if (current->GetHost () != NULL) {
 			//printf (" current host (%s) is something, scheme: %s\n", current->GetHost (), current->scheme);
 			result = current;
 		} else if (base != NULL) {
@@ -855,6 +868,7 @@ Playlist::Playlist (Playlist *parent, IMediaSource *source)
 	is_sequential = false;
 	is_switch = false;
 	waiting = false;
+	opened = false;
 	Init ();
 	this->source = source;
 }
@@ -946,6 +960,8 @@ Playlist::OpenAsync ()
 	
 	if (current_entry)
 		current_entry->OpenAsync ();
+
+	opened = true;
 
 	LOG_PLAYLIST ("Playlist::Open (): current node: %p, current entry: %p\n", current_entry, GetCurrentEntry ());
 }
@@ -1113,30 +1129,35 @@ Playlist::AddEntry (PlaylistEntry *entry)
 
 	entries->Append (new PlaylistNode (entry));
 	entry->unref ();
+	
+	if (entries->Length () == 1 && opened && current_node == NULL)
+		OpenAsync ();
 }
 
 bool
 Playlist::ReplaceCurrentEntry (Playlist *pl)
 {
+	bool result;
+	
 	PlaylistEntry *current_entry = GetCurrentEntry ();
 
 	LOG_PLAYLIST ("Playlist::ReplaceCurrentEntry (%p)\n", pl);
-
+	
 	int counter = 0;
 	PlaylistEntry *e = current_entry;
 	while (e != NULL && e->IsPlaylist ()) {
 		counter++;
 		e = e->GetParent ();
-		return false;
+		
+		if (counter >= 5) {
+			printf ("TODO: element->ReportErrorOccurred (new ErrorEventArgs (MediaError, 1001, \"AG_E_UNKNOWN_ERROR\"));");
+			return false;
+		}
 	}
 
-	if (counter >= 5) {
-		printf ("TODO: element->ReportErrorOccurred (new ErrorEventArgs (MediaError, 1001, \"AG_E_UNKNOWN_ERROR\"));");
-		return false;
-	}
 
 	if (current_entry->IsPlaylist ()) {
-		return ((Playlist *) current_entry)->ReplaceCurrentEntry (pl);
+		result = ((Playlist *) current_entry)->ReplaceCurrentEntry (pl);
 	} else {
 		PlaylistNode *pln = new PlaylistNode (pl);
 		pl->MergeWith (current_entry);
@@ -1144,8 +1165,12 @@ Playlist::ReplaceCurrentEntry (Playlist *pl)
 		entries->Remove (current_node);
 		pl->SetParent (this);
 		current_node = pln;
-		return true;
+		result = true;
 	}
+	
+	LOG_PLAYLIST ("Playlist::ReplaceCurrentEntrY (%p) [DONE]\n", pl);
+	
+	return result;
 }
 
 void
@@ -1166,6 +1191,16 @@ Playlist::MergeWith (PlaylistEntry *entry)
 	entry->ClearMedia ();
 }
 
+PlaylistEntry *
+Playlist::GetCurrentPlaylistEntry () 
+{
+	PlaylistEntry *result = NULL;
+	
+	if (current_node)
+		result = current_node->GetEntry () ->GetCurrentPlaylistEntry ();
+	
+	return result;
+}
 /*
  * PlaylistRoot
  */
@@ -1191,6 +1226,43 @@ PlaylistRoot::Dispose ()
 		
 	Playlist::Dispose ();
 }
+
+#if DEBUG
+void
+PlaylistEntry::DumpInternal (int tabs)
+{
+	printf ("%*s%s %i\n", tabs, "", GetTypeName (), GET_OBJ_ID (this));
+	tabs++;
+	printf ("%*sMedia: %i %s\n", tabs, "", GET_OBJ_ID (media), media ? "" : "(null)");
+	if (media) {
+		tabs++;
+		printf ("%*sUri: %s\n", tabs, "", media->GetUri ());
+		printf ("%*sDemuxer: %i %s\n", tabs, "", GET_OBJ_ID (media->GetDemuxer ()), media->GetDemuxer () ? media->GetDemuxer ()->GetTypeName () : "N/A");
+		printf ("%*sSource:  %i %s\n", tabs, "", GET_OBJ_ID (media->GetSource ()), media->GetSource () ? media->GetSource ()->GetTypeName () : "N/A");
+	}
+	
+}
+
+void 
+Playlist::DumpInternal (int tabs)
+{
+	PlaylistNode *node;
+	
+	printf ("%*s%s %i (%i entries)\n", tabs, "", GetTypeName (), GET_OBJ_ID (this), entries->Length ());
+	node = (PlaylistNode *) entries->First ();
+	while (node != NULL) {
+		node->GetEntry ()->DumpInternal (tabs + 2);
+		node = (PlaylistNode *) node->next;
+	}
+}
+void
+PlaylistRoot::Dump ()
+{
+	printf ("\n\nDUMP OF PLAYLIST\n\n");
+	DumpInternal (0);
+	printf ("\n\nDUMP OF PLAYLIST DONE\n\n");
+}
+#endif
 
 void
 PlaylistRoot::StopAsync ()

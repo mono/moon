@@ -391,9 +391,12 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE] = new Type (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, Type::MEDIACLOSURE, false, false, "MediaReportSeekCompletedClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIASEEKCLOSURE] = new Type (Type::MEDIASEEKCLOSURE, Type::MEDIACLOSURE, false, false, "MediaSeekClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEMORYNESTEDSOURCE] = new Type (Type::MEMORYNESTEDSOURCE, Type::MEMORYSOURCE, false, false, "MemoryNestedSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
-	types [(int) Type::MEMORYQUEUESOURCE] = new Type (Type::MEMORYQUEUESOURCE, Type::IMEDIASOURCE, false, false, "MemoryQueueSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEMORYSOURCE] = new Type (Type::MEMORYSOURCE, Type::IMEDIASOURCE, false, false, "MemorySource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MMSDEMUXER] = new Type (Type::MMSDEMUXER, Type::IMEDIADEMUXER, false, false, "MmsDemuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSDOWNLOADER] = new Type (Type::MMSDOWNLOADER, Type::INTERNALDOWNLOADER, false, false, "MmsDownloader", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MMSPLAYLISTENTRY] = new Type (Type::MMSPLAYLISTENTRY, Type::IMEDIASOURCE, false, false, "MmsPlaylistEntry", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MMSSECONDDOWNLOADER] = new Type (Type::MMSSECONDDOWNLOADER, Type::EVENTOBJECT, false, false, "MmsSecondDownloader", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MMSSOURCE] = new Type (Type::MMSSOURCE, Type::IMEDIASOURCE, false, false, "MmsSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MOUSEEVENTARGS] = new Type (Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, false, "MouseEventArgs", 0, 1, NULL, 0, NULL, true, (create_inst_func *) mouse_event_args_new, NULL);
 	types [(int) Type::MOUSEWHEELEVENTARGS] = new Type (Type::MOUSEWHEELEVENTARGS, Type::ROUTEDEVENTARGS, false, false, "MouseWheelEventArgs", 0, 1, NULL, 0, NULL, true, (create_inst_func *) mouse_wheel_event_args_new, NULL);
 	types [(int) Type::MP3DEMUXER] = new Type (Type::MP3DEMUXER, Type::IMEDIADEMUXER, false, false, "Mp3Demuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);

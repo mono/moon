@@ -18,7 +18,6 @@
 
 #include "dependencyobject.h"
 #include "internal-downloader.h"
-#include "http-streaming.h"
 
 class FileDownloader;
 class Downloader;
@@ -87,7 +86,6 @@ class Downloader : public DependencyObject {
 	gpointer downloader_state;
 	
 	gpointer context;
-	HttpStreamingFeatures streaming_features;
 	
 	gint64 file_size;
 	gint64 total;
@@ -205,9 +203,6 @@ class Downloader : public DependencyObject {
 	void     SetContext (gpointer context) { this->context = context;}
 	gpointer GetContext () { return context; }
 	gpointer GetDownloaderState () { return downloader_state; }
-	void     SetHttpStreamingFeatures (HttpStreamingFeatures features) { streaming_features = features; }
-	HttpStreamingFeatures GetHttpStreamingFeatures () { return streaming_features; }
-
 
 	DownloaderCreateWebRequestFunc GetRequestFunc () {return request_func; }
 	/* @GenerateCBinding,GeneratePInvoke */

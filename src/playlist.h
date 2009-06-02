@@ -114,12 +114,15 @@ protected:
 
 public:
 	PlaylistEntry (Playlist *parent);
+
 	void Initialize (Media *media);
 	void InitializeWithUri (const char *uri);
 	void InitializeWithDownloader (Downloader *dl, const char *PartName);
 	void InitializeWithDemuxer (IMediaDemuxer *demuxer);
 	void InitializeWithStream (ManagedStreamCallbacks *callbacks);
-	void InitializeWithStream (IMediaStream *stream);
+	void InitializeWithSource (IMediaSource *source);
+	
+	Media * CreateMedia ();
 	
 	virtual void Dispose ();
 	
@@ -214,6 +217,10 @@ public:
 	EVENTHANDLER (PlaylistEntry, MediaError,          Media, ErrorEventArgs);
 	EVENTHANDLER (PlaylistEntry, DownloadProgressChanged, Media, EventArgs);
 	EVENTHANDLER (PlaylistEntry, BufferingProgressChanged, Media, EventArgs);
+	
+#if DEBUG
+	virtual void DumpInternal (int tabs);
+#endif
 };
 
 class Playlist : public PlaylistEntry {
@@ -225,6 +232,7 @@ private:
 	bool is_sequential;
 	bool is_switch;
 	bool waiting;
+	bool opened;
 
 	void Init ();
 
@@ -237,6 +245,7 @@ private:
 protected:
 	Playlist (Type::Kind kind);
 	virtual ~Playlist () {}
+
 
 public:
 	Playlist (Playlist *parent, IMediaSource *source);
@@ -253,7 +262,7 @@ public:
 	virtual void AddEntry (PlaylistEntry *entry);
 
 	PlaylistEntry *GetCurrentEntry () { return current_node ? current_node->GetEntry () : NULL; }
-	virtual PlaylistEntry *GetCurrentPlaylistEntry () { return current_node ? current_node->GetEntry ()->GetCurrentPlaylistEntry () : NULL; }
+	virtual PlaylistEntry *GetCurrentPlaylistEntry ();
 	bool ReplaceCurrentEntry (Playlist *entry);
 
 	virtual bool IsPlaylist () { return true; }
@@ -270,6 +279,10 @@ public:
 	void OnEntryFailed ();
 
 	void Print (int depth);
+	
+#if DEBUG
+	virtual void DumpInternal (int tabs);
+#endif
 };
 
 class PlaylistRoot : public Playlist {
@@ -307,6 +320,10 @@ public:
 	
 	// Event handlers
 	EVENTHANDLER (PlaylistRoot, MediaEnded, MediaPlayer, EventArgs);
+	
+#if DEBUG
+	void Dump ();
+#endif
 };
 
 class PlaylistParserInternal {

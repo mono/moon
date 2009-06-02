@@ -945,12 +945,12 @@ protected:
 	void Unlock ();
 
 	// All these methods must/will be called with the lock locked.	
-	virtual gint32 ReadInternal (void *buf, guint32 n) = 0;
-	virtual gint32 PeekInternal (void *buf, guint32 n) = 0;
-	virtual bool SeekInternal (gint64 offset, int mode) = 0;
+	virtual gint32 ReadInternal (void *buf, guint32 n);
+	virtual gint32 PeekInternal (void *buf, guint32 n);
+	virtual bool SeekInternal (gint64 offset, int mode);
 	virtual gint64 GetLastAvailablePositionInternal () { return -1; }
-	virtual gint64 GetPositionInternal () = 0;
-	virtual gint64 GetSizeInternal () = 0;
+	virtual gint64 GetPositionInternal ();
+	virtual gint64 GetSizeInternal ();
 
 public:
 	IMediaSource (Type::Kind kind, Media *media);
@@ -1012,6 +1012,10 @@ public:
 	// if the position is available, eof = false
 	bool IsPositionAvailable (gint64 position, bool *eof);
 
+	// If the derived class knows which demuxer it needs, 
+	// it should override this method and return a new demuxer.
+	virtual IMediaDemuxer *CreateDemuxer (Media *media) { return NULL; }
+
 	virtual const char *ToString () { return "IMediaSource"; }
 };
 
@@ -1036,7 +1040,7 @@ public:
 	
 	virtual bool Eof () { return GetPositionInternal () == GetSizeInternal (); }
 
-	virtual const char *ToString () { return "ManagedStreamSource"; }
+	virtual const char *ToString () { return GetTypeName (); }
 };
  
 class FileSource : public IMediaSource {
@@ -1136,7 +1140,7 @@ protected:
 	virtual gint64 GetLastAvailablePositionInternal () { return start + size; }
 
 public:
-	MemorySource (Media *media, void *memory, gint32 size, gint64 start = 0);
+	MemorySource (Media *media, void *memory, gint32 size, gint64 start = 0, bool owner = true);
 
 	void *GetMemory () { return memory; }
 	void Release (void) { delete this; }

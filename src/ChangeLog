@@ -1,5 +1,21 @@
 2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* type.h:
+	* value.h:
+	* cbinding.h:
+	* type-generated.cpp: Regenerated.
+
+	* downloader.h: Removed streaming_features, not used here anymore.
+
+	* utils.cpp
+	* enums.h:
+	* playlist.cpp|h:
+	* pipeline.cpp|h:
+	* pipeline-asf.cpp|h:
+	* mms-downloader.cpp|h: Implement support for server side playlists.
+
+2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Check queued_requests for null after locking too.
 
 2009-06-02  Alan McGovern  <amcgovern@novell.com>

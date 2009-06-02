@@ -1,0 +1,142 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+				<MediaElement x:Name="media" 
+					MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" 
+					BufferingProgressChanged="OnBufferingProgressChanged" DownloadProgressChanged="OnDownloadProgressChanged"
+					CurrentStateChanged="OnCurrentStateChanged" />
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+		
+		var mediaElement = null;
+		var plugin = null;
+		var timeout = null;
+		var failed = 0;
+		var start_time = 0;
+		var end_time = 0;
+
+		// this test isn't finished yet
+
+		function EndTest ()
+		{
+			TestLogger.LogDebug ("EndTest");
+			if (end_time == 0) {
+				TestLogger.LogError ("MediaEnded wasn't raised");
+				TestLogger.LogError ("You might want to confirm that the media server is doing live encoding of http://moonlightmedia/LiveStream.");
+				failed++;
+			} else if (end_time - start_time > 2500) {
+				TestLogger.LogError ("Difference between start time and end time is " + (end_time - start_time) / 1000 + " s, should be at most 2.5 seconds");
+				failed++;
+			} else {
+				TestHost.TranslateCoordinates = true;
+				TestHost.CaptureSingleImage ("", "test-playlist-live-with-duration.html.png", 0, 0, 200, 200);
+			}
+			TestLogger.LogResult (failed ? -1 : 1);
+			SignalShutdown ();
+		}
+		
+		function timeOut ()
+		{
+			//TestLogger.LogError ("Test timed out.");
+			//TestLogger.LogResult (-1);
+			//SignalShutdown ();
+		}
+		
+		function OnCurrentStateChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnCurrentStateChanged: " + sender.CurrentState + ", start_time: " + start_time + ", current time: " + new Date ().getTime ());
+
+			if (start_time == 0 && sender.CurrentState == "Playing") {
+				//SetTimer (4900)
+				start_time = new Date ().getTime ();
+			}
+
+			if (start_time > 0 && sender.CurrentState == "Buffering")
+				start_time = 0;
+		}
+
+		function OnDownloadProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnDownloadProgressChanged: " + sender.DownloadProgress);
+			//SetTimer (20000);
+		}
+
+		function OnBufferingProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnBufferingProgressChanged: " + sender.BufferingProgress);
+			//SetTimer (20000);
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.Source + ", NaturalDuration: " + sender.NaturalDuration.Seconds);
+/*
+			if (sender.NaturalDuration.Seconds != 1.0) {
+				TestLogger.LogError ("Expected NaturalDuration to be 1.00 s, but it is " + sender.NaturalDuration.Seconds + " s");
+				failed++;
+			}
+*/
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaEnded");
+			end_time = new Date ().getTime ();
+			EndTest ();
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			EndTest ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			assertForMediaServer ();
+			//SetTimer (30000);
+			plugin = document.getElementById ("_MoonlightControl");
+			mediaElement = plugin.content.findName ("media");
+			mediaElement.Source = "http://moonlightmedia/SSPLDrtOnDemandTest";
+		}
+
+		function SetTimer (ms)
+		{
+			if (timeout) 
+				clearTimeout (timeout);
+			 timeout = setTimeout ("timeOut ();", ms);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		</script>
+	</head>
+
+  <body scroll="no" style='border-width: 0px'>
+    <div id="ML">
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+
+    </div>
+  </body>
+</html>
+
+

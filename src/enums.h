@@ -324,8 +324,9 @@ enum MediaSourceType {
 	MediaSourceTypeLive = 2,
 	MediaSourceTypeProgressive = 3,
 	MediaSourceTypeMemory = 4,
-	MediaSourceTypeQueueMemory = 5,
-	MediaSourceTypeManagedStream = 6,
+	MediaSourceTypeMms = 5,
+	MediaSourceTypeMmsEntry = 6,
+	MediaSourceTypeManagedStream = 7,
 };
 
 enum MediaStreamSourceDiagnosticKind {

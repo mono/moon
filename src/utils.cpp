@@ -825,3 +825,143 @@ error:
 
 	return values;
 }
+
+char * parse_rfc_1945_quoted_string (char *input, char *c, char **end)
+{
+	char *start;
+	
+	if (input == NULL || input [0] != '"')
+		return NULL;
+	
+	*end = NULL;
+
+	input++;
+	start = input;
+	
+	do {
+/*
+ *	We're parsing a quoted-string according to RFC 1945:
+ *	
+ *       quoted-string  = ( <"> *(qdtext) <"> )
+ *
+ *       qdtext         = <any CHAR except <"> and CTLs,
+ *                        but including LWS>
+ *
+ *       LWS            = [CRLF] 1*( SP | HT )
+ *       CTL            = <any US-ASCII control character
+ *                        (octets 0 - 31) and DEL (127)>
+ *
+ */
+		char h = *input;
+		*c = h;
+				
+		// LWS
+		if (h == 10 || h == 13 || h == ' ' || h == 9)
+			continue;
+		
+		// CTL
+		if (h == 0)
+			return start;
+		
+		if ((h > 0 && h <= 31) || h == 127) {
+			*end = input + 1;
+			*input = 0;
+			return start;
+		}
+		
+		// quote
+		if (h == '"') {
+			*end = input + 1;
+			*input = 0;
+			return start;
+		}
+		
+	} while (*(input++));
+	
+	return start;
+}
+
+char *parse_rfc_1945_token (char *input, char *c, char **end)
+{
+	char *start = input;
+	bool first = false;
+	
+	if (input == NULL || c == NULL || end == NULL)
+		return NULL;
+		
+	*c = 0;
+	*end = NULL;
+	
+	
+	do {
+/*
+ *	We're parsing a token according to RFC 1945:
+ *	
+ *       token          = 1*<any CHAR except CTLs or tspecials>
+ *
+ *       tspecials      = "(" | ")" | "<" | ">" | "@"
+ *                      | "," | ";" | ":" | "\" | <">
+ *                      | "/" | "[" | "]" | "?" | "="
+ *                      | "{" | "}" | SP | HT
+ *
+ *       CTL            = <any US-ASCII control character
+ *                        (octets 0 - 31) and DEL (127)>
+ *       SP             = <US-ASCII SP, space (32)>
+ *       HT             = <US-ASCII HT, horizontal-tab (9)>
+ *
+ */
+		char h = *input;
+		*c = h;
+		
+		// CTL
+		if (h == 0)
+			return start;
+			
+		if ((h > 0 && h <= 31) || h == 127) {
+			if (!first) {
+				start = input + 1;
+				continue;
+			}
+			*end = input + 1;
+			*input = 0;
+			continue;
+		}
+		
+		// tspecials
+		switch (h) {
+		case '(':
+		case ')':
+		case '<':
+		case '>':
+		case '@':
+		case ',':
+		case ';':
+		case ':':
+		case '\\':
+		case '"':
+		case '/':
+		case '[':
+		case ']':
+		case '?':
+		case '=':
+		case '{':
+		case '}':
+		case 32:
+		case 9:
+			if (!first) {
+				start = input + 1;
+				continue;
+			}
+			*end = input + 1;
+			*input = 0;
+			return start;		
+		}
+		first = true;
+	} while (*(input++));
+	
+	
+	// reached the end of the input, only one token
+	return start;
+}
+
+

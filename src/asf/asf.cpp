@@ -247,15 +247,15 @@ MediaResult
 ASFParser::ReadPacket (ASFPacket **packet)
 {
 	MediaResult result;
-	MemoryQueueSource *mqs;
+	MmsPlaylistEntry *mqs;
 	gint64 initial_position;
 	gint64 next_pos;
 	gint64 pi;
 
 	*packet = NULL;
 	
-	if (source->GetType () == MediaSourceTypeQueueMemory) {
-		mqs = (MemoryQueueSource *) source;
+	if (source->GetType () == MediaSourceTypeMmsEntry) {
+		mqs = (MmsPlaylistEntry *) source;
 		*packet = mqs->Pop ();
 				
 		if (*packet == NULL) {
@@ -505,10 +505,6 @@ ASFParser::SetSource (IMediaSource *source)
 	this->source = source;
 	if (this->source)
 		this->source->ref ();
-		
-	if (source && source->GetType () == MediaSourceTypeQueueMemory) {
-		((MemoryQueueSource *) source)->SetParser (this);
-	}
 }
 
 ErrorEventArgs *
@@ -872,18 +868,18 @@ ASFReader::TryReadMore ()
 	
 #if SANITY
 	if (!parser->GetMedia ()->InMediaThread ())
-		printf ("ASFReader::TryReadMore (): This method should only be called on the media thread.\n");
+		printf ("ASFReader::TryReadMore (): This method should only be called on the media thread (media id: %i).\n", GET_OBJ_ID (parser->GetMedia ()));
 #endif
 	
 	do {
 		if (Eof ()) {
-			ASF_LOG ("ASFReader::ReadMore (): eof\n");
+			LOG_ASF ("ASFReader::ReadMore (): eof\n");
 			return MEDIA_NO_MORE_DATA;
 		}
 		
 		LOG_ASF ("ASFReader::TryReadMore (), current_packet_index: %lld, next_packet_index: %lld\n", current_packet_index, next_packet_index);
 			
-		if (source->GetType () == MediaSourceTypeQueueMemory) {
+		if (source->GetType () == MediaSourceTypeMmsEntry) {
 			read_result = parser->ReadPacket (&packet);
 		} else if (source->CanSeek ()) {
 			position = source->GetPosition ();
@@ -896,8 +892,8 @@ ASFReader::TryReadMore ()
 		
 			read_result = parser->ReadPacket (&packet, next_packet_index);
 		} else {
-			// We should either be seekable, or be MediaSourceTypeQueueMemory.
-			fprintf (stderr, "Moonlight: Media assert failure (source should be either MemoryQueueSource or seekable). Media playback errors will probably occur.\n");
+			// We should either be seekable, or be MediaSourceTypeMmsEntry.
+			fprintf (stderr, "Moonlight: Media assert failure (source should be either MmsSource or seekable). Media playback errors will probably occur.\n");
 			return MEDIA_FAIL;
 		}
 
@@ -965,7 +961,7 @@ ASFReader::Eof ()
 	if (packet_count == 0)
 		return false;
 
-	if (source->GetType () == MediaSourceTypeQueueMemory)
+	if (source->GetType () == MediaSourceTypeMms || source->GetType () == MediaSourceTypeMmsEntry)
 		return source->Eof ();
 		
 	if (source->GetSize () <= 0)

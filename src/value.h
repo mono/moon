@@ -192,9 +192,12 @@ class MediaPlayer;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
 class MemoryNestedSource;
-class MemoryQueueSource;
 class MemorySource;
+class MmsDemuxer;
 class MmsDownloader;
+class MmsPlaylistEntry;
+class MmsSecondDownloader;
+class MmsSource;
 class MouseEventArgs;
 class MouseWheelEventArgs;
 class Mp3Demuxer;
@@ -537,9 +540,12 @@ public:
 	MediaReportSeekCompletedClosure*         AsMediaReportSeekCompletedClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, MediaReportSeekCompletedClosure) }
 	MediaSeekClosure*                        AsMediaSeekClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIASEEKCLOSURE, MediaSeekClosure) }
 	MemoryNestedSource*                      AsMemoryNestedSource (Types *types = NULL) { checked_get_subclass (Type::MEMORYNESTEDSOURCE, MemoryNestedSource) }
-	MemoryQueueSource*                       AsMemoryQueueSource (Types *types = NULL) { checked_get_subclass (Type::MEMORYQUEUESOURCE, MemoryQueueSource) }
 	MemorySource*                            AsMemorySource (Types *types = NULL) { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
+	MmsDemuxer*                              AsMmsDemuxer (Types *types = NULL) { checked_get_subclass (Type::MMSDEMUXER, MmsDemuxer) }
 	MmsDownloader*                           AsMmsDownloader (Types *types = NULL) { checked_get_subclass (Type::MMSDOWNLOADER, MmsDownloader) }
+	MmsPlaylistEntry*                        AsMmsPlaylistEntry (Types *types = NULL) { checked_get_subclass (Type::MMSPLAYLISTENTRY, MmsPlaylistEntry) }
+	MmsSecondDownloader*                     AsMmsSecondDownloader (Types *types = NULL) { checked_get_subclass (Type::MMSSECONDDOWNLOADER, MmsSecondDownloader) }
+	MmsSource*                               AsMmsSource (Types *types = NULL) { checked_get_subclass (Type::MMSSOURCE, MmsSource) }
 	MouseEventArgs*                          AsMouseEventArgs (Types *types = NULL) { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
 	MouseWheelEventArgs*                     AsMouseWheelEventArgs (Types *types = NULL) { checked_get_subclass (Type::MOUSEWHEELEVENTARGS, MouseWheelEventArgs) }
 	Mp3Demuxer*                              AsMp3Demuxer (Types *types = NULL) { checked_get_subclass (Type::MP3DEMUXER, Mp3Demuxer) }

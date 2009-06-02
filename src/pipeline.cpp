@@ -552,7 +552,7 @@ Media::Initialize (Downloader *downloader, const char *PartName)
 		MmsDownloader *mms_dl = (idl && idl->GetObjectType () == Type::MMSDOWNLOADER) ? (MmsDownloader *) idl : NULL;
 		
 		if (mms_dl != NULL) {
-			source = new MemoryQueueSource (this, downloader);
+			source = new MmsSource (this, downloader);
 		} else {
 			source = new ProgressiveSource (this, downloader);
 		}
@@ -794,53 +794,25 @@ Media::SelectDemuxerAsync ()
 	
 	g_return_val_if_fail (source != NULL, false);
 	
-	// Check if we have an MmsDownloader, in which case there is already an ASFParser created there.
-	// and we just have to create the ASFDemuxer.
-	if (source->GetType () == MediaSourceTypeQueueMemory) {
-		MemoryQueueSource *queue_source;
-		MmsDownloader *mms;
-		
-		if (demuxer != NULL)
-			return false;
-		
-		queue_source = (MemoryQueueSource *) source;
-		mms = queue_source->GetMmsDownloader ();
-		
-		if (mms != NULL) {
-			ASFDemuxer *asf_demuxer;
-			ASFParser *asf_parser = mms->GetASFParser ();
-			
-			if (asf_parser == NULL) {
+	// Check if the source knows how to create the demuxer
+	demuxer = source->CreateDemuxer (this);
+
+	if (demuxer == NULL) { // No demuxer created, we need to find it ourselves.
+		// Check if we have at least 1024 bytes or eof
+		if (!source->IsPositionAvailable (16, &eof)) {
+			if (!eof) {
+				// We need to try again later.
+				LOG_PIPELINE ("Media::SelectDemuxer (): We don't have enough data yet.\n");
+				
 				MediaClosure *closure = new MediaClosure (this, OpenInternal, this);
 				EnqueueWork (closure, false);
 				closure->unref ();
+
 				return false;
 			}
-				
-			asf_demuxer = new ASFDemuxer (this, source);
-			asf_demuxer->SetParser (mms->GetASFParser ());
-			demuxer = asf_demuxer;
-			demuxer->OpenDemuxerAsync ();
-			return false;
 		}
-	}
-	
-	// Check if we have at least 1024 bytes or eof
-	if (!source->IsPositionAvailable (16, &eof)) {
-		if (!eof) {
-			// We need to try again later.
-			LOG_PIPELINE ("Media::SelectDemuxer (): We don't have enough data yet.\n");
-			
-			MediaClosure *closure = new MediaClosure (this, OpenInternal, this);
-			EnqueueWork (closure, false);
-			closure->unref ();
-			
-			return false;
-		}
-	}
-	
-	if (demuxer == NULL) {
-			// Select a demuxer
+
+		// Select a demuxer
 		demuxerInfo = registered_demuxers;
 		while (demuxer == NULL && demuxerInfo != NULL) {
 			LOG_PIPELINE ("Media::SelectDemuxer ): Checking if '%s' can handle the media.\n", demuxerInfo->GetName ());
@@ -870,7 +842,8 @@ Media::SelectDemuxerAsync ()
 				case MediaSourceTypeFile:
 					source_name = ((FileSource *) source)->GetFileName ();
 					break;
-				case MediaSourceTypeQueueMemory:
+				case MediaSourceTypeMms:
+				case MediaSourceTypeMmsEntry:
 					source_name = "live source";
 					break;
 				default:
@@ -886,6 +859,8 @@ Media::SelectDemuxerAsync ()
 		
 		// Found a demuxer
 		demuxer = demuxerInfo->Create (this, source);
+	} else {
+		LOG_PIPELINE ("Media::SelectDemuxer (): The source created the demuxer (%s).\n", demuxer->GetTypeName ());
 	}
 	
 	if (demuxer->IsOpened ())
@@ -894,7 +869,11 @@ Media::SelectDemuxerAsync ()
 	if (demuxer->IsOpening ())
 		return false;
 	
+	LOG_PIPELINE ("Media::SelectDemuxer (), id: %i opening demuxer %i (%s)\n", GET_OBJ_ID (this), GET_OBJ_ID (demuxer), demuxer->GetTypeName ());
+	
 	demuxer->OpenDemuxerAsync ();
+	
+	LOG_PIPELINE ("Media::SelectDemuxer (), id: %i opening demuxer %i (%s) [Done]\n", GET_OBJ_ID (this), GET_OBJ_ID (demuxer), demuxer->GetTypeName ());
 	
 	return false;
 }
@@ -1170,7 +1149,7 @@ Media::EnqueueWork (MediaClosure *closure, bool wakeup)
 	MediaWork *work;
 	
 	LOG_PIPELINE ("Media::EnqueueWork (%p).\n", closure);
-	
+
 	g_return_if_fail (closure != NULL);
 	
 	work = new MediaWork (closure);
@@ -1785,14 +1764,14 @@ MemoryNestedSource::~MemoryNestedSource ()
  * MemorySource
  */
  
-MemorySource::MemorySource (Media *media, void *memory, gint32 size, gint64 start)
+MemorySource::MemorySource (Media *media, void *memory, gint32 size, gint64 start, bool owner)
 	: IMediaSource (Type::MEMORYSOURCE, media)
 {
 	this->memory = memory;
 	this->size = size;
 	this->start = start;
 	this->pos = 0;
-	this->owner = true;
+	this->owner = owner;
 }
 
 MemorySource::~MemorySource ()
@@ -2577,7 +2556,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	guint64 buffering_time = media->GetBufferingTime ();
 	guint64 buffered_size = 0;
 	
-	LOG_BUFFERING ("IMediaDemuxer::FillBuffers (), buffering time: %llu = %llu ms\n", buffering_time, MilliSeconds_FromPts (buffering_time));
+	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %llu = %llu ms\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, MilliSeconds_FromPts (buffering_time));
 
 	for (int i = 0; i < GetStreamCount (); i++) {
 		stream = GetStream (i);
@@ -2597,20 +2576,20 @@ IMediaDemuxer::FillBuffersInternal ()
 			continue;
 		
 		if (buffered_size < buffering_time) {
-			LOG_BUFFERING ("IMediaDemuxer::FillBuffers (): codec: %s, result: %i, buffered size: %llu ms, buffering time: %llu ms, pending frame count: %i\n",
+			LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): codec: %s, result: %i, buffered size: %llu ms, buffering time: %llu ms, pending frame count: %i\n",
 				stream->codec, result, MilliSeconds_FromPts (buffered_size), MilliSeconds_FromPts (buffering_time), stream->GetPendingFrameCount ());
 			
 			if (stream->GetPendingFrameCount () < 10)
 				GetFrameAsync (stream);
 		}
 		
-		LOG_BUFFERING ("IMediaDemuxer::FillBuffers (): codec: %s, result: %i, buffered size: %" G_GUINT64_FORMAT " ms, buffering time: %" G_GUINT64_FORMAT " ms, last popped time: %llu ms\n", 
+		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): codec: %s, result: %i, buffered size: %" G_GUINT64_FORMAT " ms, buffering time: %" G_GUINT64_FORMAT " ms, last popped time: %llu ms\n", 
 				stream->codec, result, MilliSeconds_FromPts (buffered_size), MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (stream->GetLastPoppedPts ()));
 	}
 	
 	media->ReportBufferingProgress (buffering_time == 0 ? 0 : buffered_size / buffering_time);
 	
-	LOG_BUFFERING ("IMediaDemuxer::FillBuffers () [Done]. BufferedSize: %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (GetBufferedSize ()));
+	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal () [Done]. BufferedSize: %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (GetBufferedSize ()));
 }
 
 guint64
@@ -2862,7 +2841,7 @@ IMediaObject::EmitData::~EmitData ()
  */
  
 IMediaObject::IMediaObject (Type::Kind kind, Media *media)
-	: EventObject (kind)
+	: EventObject (kind, true)
 {
 	this->media = media;
 	if (this->media)
@@ -3109,13 +3088,13 @@ IMediaSource::ReadSome (void *buf, guint32 n)
 {
 	gint32 result;
 
-	LOG_PIPELINE ("IMediaSource<%i>::ReadSome (%p, %u)\n", GET_OBJ_ID (this), buf, n);
+	LOG_PIPELINE_EX ("IMediaSource<%i>::ReadSome (%p, %u)\n", GET_OBJ_ID (this), buf, n);
 
 	Lock ();
 
 	result = ReadInternal (buf, n);
 
-	LOG_PIPELINE ("IMediaSource<%i>::ReadSome (%p, %u) read %i, position: %lld\n", GET_OBJ_ID (this), buf, n, result, GetPosition ());
+	LOG_PIPELINE_EX ("IMediaSource<%i>::ReadSome (%p, %u) read %i, position: %lld\n", GET_OBJ_ID (this), buf, n, result, GetPosition ());
 
 	Unlock ();
 
@@ -3143,7 +3122,7 @@ IMediaSource::ReadAll (void *buf, guint32 n)
 		print_stack_trace ();
 	}
 	
-	LOG_PIPELINE ("IMediaSource<%d>::ReadAll (%p, %u), read: %d [Done].\n", GET_OBJ_ID (this), buf, n, read);
+	LOG_PIPELINE_EX ("IMediaSource<%d>::ReadAll (%p, %u), read: %d [Done].\n", GET_OBJ_ID (this), buf, n, read);
 	
 	return (gint64) read == (gint64) n;
 }
@@ -3219,6 +3198,51 @@ IMediaSource::GetLastAvailablePosition ()
 	result = GetLastAvailablePositionInternal ();
 	Unlock ();
 	return result;
+}
+
+gint64
+IMediaSource::GetPositionInternal ()
+{
+	// This method should be overridden (or never called for the classes which doesn't override it).
+	g_warning ("IMediaSource (%s)::GetPositionInternal (): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", GetTypeName ());
+	print_stack_trace ();
+
+	return -1;
+}
+bool
+IMediaSource::SeekInternal (gint64 offset, int mode)
+{
+	g_warning ("IMediaSource (%s)::SeekInternal (%lld, %i): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", GetTypeName (), offset, mode);
+	print_stack_trace ();
+
+	return false;
+}
+
+gint32 
+IMediaSource::ReadInternal (void *buffer, guint32 n)
+{
+	g_warning ("IMediaSource (%s)::ReadInternal (%p, %u): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", GetTypeName (), buffer, n);
+	print_stack_trace ();
+	
+	return 0;
+}
+
+gint32
+IMediaSource::PeekInternal (void *buffer, guint32 n)
+{
+	g_warning ("IMediaSource (%s)::PeekInternal (%p, %u): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", GetTypeName (), buffer, n);
+	print_stack_trace ();
+	
+	return 0;
+}
+
+gint64
+IMediaSource::GetSizeInternal ()
+{
+	g_warning ("IMediaSource (%s)::GetSizeInternal (): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", GetTypeName ());
+	print_stack_trace ();
+	
+	return 0;
 }
 
 gint64
