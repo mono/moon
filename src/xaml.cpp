@@ -3903,7 +3903,7 @@ XamlElementInstanceNative::CreateItem ()
 	}
 
 	if (!item) {
-		item = element_info->GetType ()->CreateInstance ();
+		item = element_info->GetType()->IsCtorVisible() ? element_info->GetType ()->CreateInstance () : NULL;
 
 		if (item) {
 			if (parser_info->loader)
@@ -4305,6 +4305,12 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 				g_warning ("Unknown element: %s.", parent->element_name);
 				return parser_error (p, parent->element_name, NULL, 2007,
 						     "Unknown element: %s.", parent->element_name);
+			}
+
+			if (!types->Find (child->info->GetKind())->IsCtorVisible()) {
+				// we can't instantiate this type
+				return parser_error (p, child->element_name, NULL, 2007,
+						     "Unknown element: %s.", child->element_name);
 			}
 
 			// Don't add the child element, if it is the entire collection

@@ -1,3 +1,10 @@
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs (GenerateTypeStaticCpp): add the
+	TypeInfo.DefaultCtorVisible flag to our output.
+
+	* TypeInfo.cs: add TypeInfo.DefaultCtorVisible property.
+
 2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Generator.cs: Modified to get rid of gcc compiler warnings for

@@ -140,7 +140,41 @@ class TypeInfo : MemberInfo {
 			return result;
 		}
 	}
-	
+
+	public bool DefaultCtorVisible {
+		get {
+			bool result = false;
+			Annotation property;
+
+			if (Annotations.TryGetValue ("DefaultCtorVisible", out property))
+				return property.Value != null;
+
+			foreach (MemberInfo member in Children.Values) {
+				MethodInfo method = member as MethodInfo;
+				
+				if (method == null)
+					continue;
+				
+				if (!method.IsConstructor)
+					continue;
+
+				if (method.Parameters.Count != 0)
+					continue;
+
+				string access = "Public";
+				if (method.Annotations.ContainsKey ("ManagedAccess"))
+					access = method.Annotations.GetValue ("ManagedAccess");
+
+				if (access == "Public") {
+					result = true;
+					break;
+				}
+			}
+			Annotations.Add (new Annotation ("DefaultCtorVisible", result ? "true" : null));
+			return result;
+		}
+	}
+
 	public string C_Constructor {
 		get {
 			if (IsEnum || IsAbstract)

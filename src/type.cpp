@@ -26,7 +26,7 @@
 Type::Type (Type::Kind type, Type::Kind parent, bool is_value_type, bool is_interface,
 	    const char *name, 
 	    int event_count, int total_event_count, const char **events, 
-	    int interface_count, const Type::Kind *interfaces,
+	    int interface_count, const Type::Kind *interfaces, bool ctor_visible,
 	    create_inst_func *create_inst, const char *content_property)
 {
 	this->type = type;
@@ -37,6 +37,7 @@ Type::Type (Type::Kind type, Type::Kind parent, bool is_value_type, bool is_inte
 	this->event_count = event_count;
 	this->total_event_count = total_event_count;
 	this->events = events;
+	this->ctor_visible = ctor_visible;
 	this->create_inst = create_inst;
 	this->content_property = content_property;
 	this->properties = NULL;
@@ -459,7 +460,7 @@ Types::Find (const char *name, bool ignore_case)
 Type::Kind
 Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent, bool is_interface, Type::Kind* interfaces, int interface_count)
 {
-	Type *type = new Type (Type::INVALID, parent, false, is_interface, g_strdup (name), 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, NULL, NULL);
+	Type *type = new Type (Type::INVALID, parent, false, is_interface, g_strdup (name), 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, false, NULL, NULL);
 	
 	// printf ("Types::RegisterType (%s, %p, %i (%s)). this: %p, size: %i, count: %i\n", name, gc_handle, parent, Type::Find (this, parent) ? Type::Find (this, parent)->name : NULL, this, size, count);
 	

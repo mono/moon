@@ -108,8 +108,9 @@ namespace System.Windows {
 		
 		public static bool operator == (GridLength gl1, GridLength gl2)
 		{
-			return gl1.val == gl2.val &&
-				gl1.type == gl2.type;
+			return ((gl1.IsAuto && gl2.IsAuto) ||
+				(gl1.val == gl2.val &&
+				 gl1.type == gl2.type));
 		}
 		
 		public static bool operator != (GridLength gl1, GridLength gl2)

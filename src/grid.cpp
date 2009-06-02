@@ -487,6 +487,15 @@ ColumnDefinitionCollection::~ColumnDefinitionCollection ()
 {
 }
 
+bool
+ColumnDefinitionCollection::AddedToCollection (Value *value, MoonError *error)
+{
+	if (Contains (value)) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, "ColumnDefinition is already a member of this collection.");
+		return false;
+	}
+	return DependencyObjectCollection::AddedToCollection (value, error);
+}
 
 //
 // ColumnDefinition
@@ -513,6 +522,16 @@ RowDefinitionCollection::RowDefinitionCollection ()
 
 RowDefinitionCollection::~RowDefinitionCollection ()
 {
+}
+
+bool
+RowDefinitionCollection::AddedToCollection (Value *value, MoonError *error)
+{
+	if (Contains (value)) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, "RowDefinition is already a member of this collection.");
+		return false;
+	}
+	return DependencyObjectCollection::AddedToCollection (value, error);
 }
 
 //

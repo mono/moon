@@ -106,10 +106,12 @@ class ColumnDefinitionCollection : public DependencyObjectCollection {
  protected:
 	virtual ~ColumnDefinitionCollection ();
 	
+	virtual bool AddedToCollection (Value *value, MoonError *error);
+	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	ColumnDefinitionCollection ();
-	
+
 	virtual Type::Kind GetElementType () { return Type::COLUMNDEFINITION; }
 };
 
@@ -118,6 +120,8 @@ class ColumnDefinitionCollection : public DependencyObjectCollection {
 class RowDefinitionCollection : public DependencyObjectCollection {
  protected:
 	virtual ~RowDefinitionCollection ();
+	
+	virtual bool AddedToCollection (Value *value, MoonError *error);
 	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */

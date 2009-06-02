@@ -1,3 +1,8 @@
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* shocker.cpp (GetTestDirectory): at the very least return a valid
+	path (and the valid type).
+
 2009-05-02  Andreia Gaita  <avidigal@novell.com>
 
 	* shocker.cpp: fix define check

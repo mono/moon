@@ -332,7 +332,10 @@ GetTestDirectory (ShockerScriptableControlObject* obj, char* name, const NPVaria
 {
 	printf ("[shocker] GetTestDirectory: Not implemented\n");
 	print_stack_trace ();
-	BOOLEAN_TO_NPVARIANT (true, *result);
+
+	char *retval;
+	retval = NPN_strdup ("/tmp");
+	STRINGZ_TO_NPVARIANT (retval, *result);
 }
 
 static void

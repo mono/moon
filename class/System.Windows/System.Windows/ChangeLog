@@ -1,3 +1,8 @@
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* GridLength.cs: if the GridLength's are Auto it doesn't matter
+	what their value is.
+
 2009-05-28  Chris Toshok  <toshok@ximian.com>
 
 	* Application.cs (Application.GetResourceStream): we need to

@@ -1,3 +1,18 @@
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* grid.cpp|h: the row/columndefinitioncollections do not permit
+	definitions to be inserted more than once.
+	
+	* type.h.in (class Type): add IsCtorVisible method and ctor arg.
+
+	* type.h, type-generated.cpp: regen.
+
+	* xaml.cpp (XamlElementInstanceNative::CreateItem): only create
+	the instance if the ctor is visible.
+	(dependency_object_add_child): if the ctor for the child isn't
+	visible, error out even if it's the same type/kind as the
+	property.
+
 2009-06-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* deployment.cpp (Dispose): Properly chain up to
