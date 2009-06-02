@@ -1,3 +1,8 @@
+2009-06-02  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: Ensure we dont start downloading the source until we have
+	the splash.  If the splash 404's we need to emit a 2108.
+
 2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* cbinding.h: Regenerated

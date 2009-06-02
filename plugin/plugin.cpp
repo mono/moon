@@ -828,7 +828,6 @@ PluginInstance::CreateWindow ()
 	if (splashscreensource != NULL) {
 		StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
 		
-		// FIXME: check for errors
 		NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
 	}
 	if (onSourceDownloadProgressChanged != NULL) {
@@ -889,7 +888,9 @@ PluginInstance::CreateWindow ()
 	surface->SetDownloaderContext (this);
 	
 	//SetPageURL ();
-	UpdateSource ();
+	/* If we have a splash screen we dont start getting the source until we've resolved it */
+	if (splashscreensource == NULL)
+		UpdateSource ();
 	
 	surface->GetTimeManager()->SetMaximumRefreshRate (maxFrameRate);
 	
@@ -1466,8 +1467,9 @@ PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer
 		if (IS_NOTIFY_SOURCE (notify)) {
 			if (source_size > 0) {
 				float progress = (offset+len)/(float)source_size;
-				if (GetSurface ()->GetToplevel () != NULL)
+				if (GetSurface ()->GetToplevel () != NULL) {
 					GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (progress));
+				}
 			}
 		}
 	}
@@ -1482,13 +1484,15 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	
 	StreamNotify *notify = STREAM_NOTIFY (notifyData);
 	
-	//if (reason == NPRES_DONE) {
-	//	d(printf ("URL %s downloaded successfully.\n", url));
-	//} else {
-	//	d(printf ("Download of URL %s failed: %i (%s)\n", url, reason,
-	//		  reason == NPRES_USER_BREAK ? "user break" :
-	//		  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
-	//}
+#if DEBUG
+	if (reason == NPRES_DONE) {
+		d(printf ("URL %s downloaded successfully.\n", url));
+	} else {
+		d(printf ("Download of URL %s failed: %i (%s)\n", url, reason,
+			  reason == NPRES_USER_BREAK ? "user break" :
+			  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
+	}
+#endif
 	
 	Deployment::SetCurrent (deployment);
 	
@@ -1511,6 +1515,13 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 		} else {
 			dl->NotifyFinished (url);
 		}
+	}
+
+	if (notify && notify->pdata && IS_NOTIFY_SPLASHSOURCE (notify)) {
+		if (reason == NPRES_NETWORK_ERR) {
+			GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2108, "Failed to download the splash screen"));
+		}
+		UpdateSource ();
 	}
 	
 	if (notify)
