@@ -1,3 +1,7 @@
+2009-06-02  Rusty Howell  <rhowell@novell.com>
+
+	 * examples.m4: Added to be able to disable building the examples
+
 2009-05-06  Raja R Harinath  <harinath@hurrynot.org>
 
 	* mono.m4 (mcspath): Use $(srcdir) to refer to mcs/.

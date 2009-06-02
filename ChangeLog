@@ -1,3 +1,9 @@
+2009-06-02  Rusty Howell  <rhowell@novell.com>
+
+	 * configure.ac:
+	 * Makefile.am:
+	    Added --without-examples to disable building examples
+
 2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* configure.ac: Add a define for the PREVIEW_VERSION so updating
