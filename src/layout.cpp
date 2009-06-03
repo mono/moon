@@ -1543,10 +1543,6 @@ TextLayout::Layout ()
 					offset += word.count;
 					inptr += word.length;
 					prev = word.prev;
-					
-					// LWSP only counts toward line width if it is underlined
-					if (attrs->IsUnderlined ())
-						line->width = line->advance;
 				}
 			}
 			
@@ -1616,14 +1612,15 @@ GenerateGlyphCluster (TextFont *font, guint32 *kern, const char *text, int start
 	const char *inend = text + start + length;
 	const char *inptr = text + start;
 	guint32 prev = *kern;
+	double x0, x1, y0;
 	GlyphInfo *glyph;
-	double x0, y0;
 	int size = 0;
 	gunichar c;
 	
 	// set y0 to the baseline
 	y0 = font->Ascender ();
 	x0 = 0.0;
+	x1 = 0.0;
 	
 	// count how many path data items we'll need to allocate
 	while (inptr < inend) {
@@ -1671,11 +1668,15 @@ GenerateGlyphCluster (TextFont *font, guint32 *kern, const char *text, int start
 			font->AppendPath (cluster->path, glyph, x0, y0);
 			x0 += glyph->metrics.horiAdvance;
 			prev = glyph->index;
+			
+			if (!g_unichar_isspace (c))
+				x1 = x0;
 		}
 		
 		moon_close_path (cluster->path);
 	}
 	
+	cluster->uadvance = x1;	
 	cluster->advance = x0;
 	
 	*kern = prev;
@@ -1728,7 +1729,7 @@ TextLayoutRun::GenerateCache ()
 }
 
 void
-TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttributes *attrs, const char *text, double x, double y)
+TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttributes *attrs, const char *text, double x, double y, bool uline_full)
 {
 	TextFont *font = attrs->Font ();
 	const char *inend, *prev;
@@ -1788,7 +1789,7 @@ TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttr
 		cairo_set_line_width (cr, thickness);
 		
 		cairo_new_path (cr);
-		Rect underline = Rect (0.0, pos - thickness * 0.5, advance, thickness);
+		Rect underline = Rect (0.0, pos - thickness * 0.5, uline_full ? advance : uadvance, thickness);
 		underline.Draw (cr);
 		
 		brush->Fill (cr);
@@ -1796,7 +1797,7 @@ TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttr
 }
 
 void
-TextLayoutRun::Render (cairo_t *cr, const Point &origin, double x, double y)
+TextLayoutRun::Render (cairo_t *cr, const Point &origin, double x, double y, bool is_last_run)
 {
 	const char *text = line->layout->GetText ();
 	TextLayoutGlyphCluster *cluster;
@@ -1809,7 +1810,7 @@ TextLayoutRun::Render (cairo_t *cr, const Point &origin, double x, double y)
 		cluster = (TextLayoutGlyphCluster *) clusters->pdata[i];
 		
 		cairo_save (cr);
-		cluster->Render (cr, origin, attrs, text, x0, y);
+		cluster->Render (cr, origin, attrs, text, x0, y, is_last_run && ((i + 1) < clusters->len));
 		cairo_restore (cr);
 		
 		x0 += cluster->advance;
@@ -1828,7 +1829,7 @@ TextLayoutLine::Render (cairo_t *cr, const Point &origin, double left, double to
 	
 	for (guint i = 0; i < runs->len; i++) {
 		run = (TextLayoutRun *) runs->pdata[i];
-		run->Render (cr, origin, x0, y0);
+		run->Render (cr, origin, x0, y0, (i + 1) < runs->len);
 		x0 += run->advance;
 	}
 }

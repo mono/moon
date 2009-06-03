@@ -1,3 +1,12 @@
+2009-06-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayout::Layout): Silverlight 2.0 /never/ counts
+	trailing lwsp towards line width, even if underlined.
+	(TextLayoutGlyphCluster::Render): Don't underline trailing lwsp if
+	we are the last glyph cluster on a line.
+	(GenerateGlyphCluster): Keep track of underline width (calculated
+	using width up to/including last non-lwsp char).
+
 2009-06-03  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: We need to look for managed properties on native
