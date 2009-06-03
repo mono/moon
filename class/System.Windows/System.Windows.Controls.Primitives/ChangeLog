@@ -1,3 +1,9 @@
+2009-06-02  Chris Toshok  <toshok@ximian.com>
+
+	* LayoutInformation.cs (GetRawLayoutData): the MS test harness
+	actually calls this undocumented private method... stub it out so
+	that the test doesn't time out.
+
 2009-05-25  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: SelectedItem is non-parenting, so it's
