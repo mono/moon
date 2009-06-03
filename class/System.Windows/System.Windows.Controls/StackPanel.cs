@@ -42,7 +42,11 @@ namespace System.Windows.Controls {
 		protected override sealed Size MeasureOverride (Size availableSize) {
 			Size result = new Size (0,0);
 
-			Size childAvailable = availableSize;
+			Size childAvailable = (Orientation == Orientation.Vertical ? 
+						childAvailable = new Size (double.PositiveInfinity, availableSize.Height) :
+						childAvailable = new Size (availableSize.Width, double.PositiveInfinity)
+			                       );
+
 			foreach (UIElement child in this.Children) {
 				if (child.Visibility == Visibility.Collapsed)
 					continue;

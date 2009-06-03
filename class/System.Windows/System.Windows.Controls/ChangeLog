@@ -1,3 +1,8 @@
+2009-06-03  Andreia Gaita  <avidigal@novell.com>
+
+	* StackPanel.cs: (MeasureOverride) Children Measure should be called
+	with Infinity on width or height depending on the orientation
+
 2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MediaElement.cs:
