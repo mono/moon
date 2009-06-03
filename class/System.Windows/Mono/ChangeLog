@@ -1,3 +1,11 @@
+2009-06-03  Jackson Harper  <jackson@ximian.com>
+
+	* XamlLoaderCallbacks.cs: LookupObject takes a parent object now.
+	* ManagedXamlLoader.cs: LookupObject can now lookup properties on
+	objects and returns the value of the property if available, and a
+	NULL value with the correct type set for the property if the
+	property is null or attached.
+
 2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Kind.cs: Regenerated.

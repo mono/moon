@@ -1,3 +1,11 @@
+2009-06-03  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: We need to look for managed properties on native
+	types.
+	- Set the element info for properties to the type of the property.
+	- Add the ability for properties to force their set to be in
+	managed even if they come from a native type.
+	
 2009-06-03  Alan McGovernm  <amcgovern@novell.com>
 
 	* uielement.cpp: Calculate the Transform between two UIElements

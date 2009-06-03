@@ -170,15 +170,19 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private unsafe bool LookupObject (Value* top_level, string xmlns, string name, bool create, out Value value)
+		private unsafe bool LookupObject (Value* top_level, Value *parent, string xmlns, string name, bool create, out Value value)
 		{
 			if (name == null)
 				throw new ArgumentNullException ("type_name");
 
-			if (top_level == null && xmlns == null)
+			int dot = name.IndexOf (".");
+			if (dot > 0)
+				return LookupPropertyObject (top_level, parent, xmlns, name, dot, create, out value);
+
+			if (top_level == null && xmlns == null) {
 				return LookupComponentFromName (top_level, name, create, out value);
-			
-			Assembly clientlib = null;
+			}
+
 			string assembly_name = AssemblyNameFromXmlns (xmlns);
 			string clr_namespace = ClrNamespaceFromXmlns (xmlns);
 			string full_name = string.IsNullOrEmpty (clr_namespace) ? name : clr_namespace + "." + name;
@@ -212,6 +216,64 @@ namespace Mono.Xaml
 				value = Value.Empty;
 				value.k = Deployment.Current.Types.Find (type).native_handle;
 			}
+
+			return true;
+		}
+
+		private unsafe bool LookupPropertyObject (Value* top_level, Value* parent_value, string xmlns, string name, int dot, bool create, out Value value)
+		{
+			string prop_name = name.Substring (dot + 1);
+			object parent = Value.ToObject (null, parent_value);
+
+			if (parent == null) {
+				value = Value.Empty;
+				return false;
+			}
+
+			PropertyInfo pi = null;
+			bool is_attached = true;
+			string type_name = name.Substring (0, dot);
+
+			Type t = parent.GetType ();
+			while (t != typeof (object)) {
+				if (t.Name == type_name) {
+					is_attached = false;
+					break;
+				}
+				t = t.BaseType;
+			}
+
+			if (is_attached) {
+				MethodInfo set_method = GetSetMethodForAttachedProperty (top_level, xmlns, type_name, prop_name);
+				
+				ParameterInfo [] set_params = set_method.GetParameters ();
+				if (set_params == null || set_params.Length < 2) {
+					value = Value.Empty;
+					Console.Error.WriteLine ("set method signature is inccorrect.");
+					return false;
+				}
+
+				ManagedType mt = Deployment.Current.Types.Find (set_params [1].ParameterType);
+				value = Value.Empty;
+				value.IsNull = true;
+				value.k = mt.native_handle;
+				return true;
+			} else
+				pi = parent.GetType ().GetProperty (name.Substring (dot + 1), BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+
+			if (pi == null) {
+				value = Value.Empty;
+				return false;
+			}
+
+			object obj = pi.GetValue (parent, null);
+			if (obj == null) {
+				ManagedType mt = Deployment.Current.Types.Find (pi.PropertyType);
+				value = Value.Empty;
+				value.k = mt.native_handle;
+				value.IsNull = true;
+			} else
+				value = Value.FromObject (obj);
 
 			return true;
 		}
@@ -338,30 +400,7 @@ namespace Mono.Xaml
 			if (type_name == null)
 				return false;
 
-			string assembly_name = AssemblyNameFromXmlns (xmlns);
-			string ns = ClrNamespaceFromXmlns (xmlns);
-
-			if (assembly_name == null && !TryGetDefaultAssemblyName (top_level, out assembly_name)) {
-				Console.Error.WriteLine ("Unable to find an assembly to load type from.");
-				return false;
-			}
-
-			Assembly clientlib;
-			if (LoadAssembly (assembly_name, out clientlib) != AssemblyLoadResult.Success) {
-				Console.Error.WriteLine ("couldn't load assembly:  {0}   namespace:  {1}", assembly_name, ns);
-				return false;
-			}
-
-			Type attach_type = clientlib.GetType (type_name, false);
-			if (attach_type == null) {
-				attach_type = Application.GetComponentTypeFromName (type_name);
-				if (attach_type == null) {
-					Console.Error.WriteLine ("attach type is null  {0}", type_name);
-					return false;
-				}
-			}
-
-			MethodInfo set_method = attach_type.GetMethod (String.Concat ("Set", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+			MethodInfo set_method = GetSetMethodForAttachedProperty (top_level, xmlns, type_name, name);
 			if (set_method == null) {
 				Console.Error.WriteLine ("set method is null: {0}", String.Concat ("Set", name));
 				return false;
@@ -382,7 +421,7 @@ namespace Mono.Xaml
 			//
 			// TODO: Check if the setter method still gets called on Silverlight
 			if (typeof (IList).IsAssignableFrom (set_params [1].ParameterType) && !(o_value is IList)) {
-				MethodInfo get_method = attach_type.GetMethod (String.Concat ("Get", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+				MethodInfo get_method = set_method.DeclaringType.GetMethod (String.Concat ("Get", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
 				if (get_method != null || get_method.GetParameters () == null || get_method.GetParameters ().Length != 1) {
 					IList the_list = (IList) get_method.Invoke (null, new object [] { target });
@@ -750,7 +789,7 @@ namespace Mono.Xaml
 				pi.SetValue (target, new_value, null);
 				return;
 			} catch (Exception ex) {
-				
+				Console.Error.WriteLine (ex);
 			}
 
 			//
@@ -1005,6 +1044,35 @@ namespace Mono.Xaml
 			return xmlns.Substring (start, end - start);
 		}
 
+		private unsafe MethodInfo GetSetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string prop_name)
+		{
+			string assembly_name = AssemblyNameFromXmlns (xmlns);
+			string ns = ClrNamespaceFromXmlns (xmlns);
+				
+			if (assembly_name == null && !TryGetDefaultAssemblyName (top_level, out assembly_name)) {
+				Console.Error.WriteLine ("Unable to find an assembly to load type from.");
+				return null;
+			}
+
+			Assembly clientlib;
+			if (LoadAssembly (assembly_name, out clientlib) != AssemblyLoadResult.Success) {
+				Console.Error.WriteLine ("couldn't load assembly:  {0}   namespace:  {1}", assembly_name, ns);
+				return null;
+			}
+
+			Type attach_type = clientlib.GetType (type_name, false);
+			if (attach_type == null) {
+				attach_type = Application.GetComponentTypeFromName (type_name);
+				if (attach_type == null) {
+					Console.Error.WriteLine ("attach type is null  {0}", type_name);
+					return null;
+				}
+			}
+				
+			MethodInfo set_method = attach_type.GetMethod (String.Concat ("Set", prop_name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+			return set_method;
+		}
+
 		private static unsafe object GetObjectValue (object target, IntPtr target_data, string prop_name, IntPtr parser, Value* value_ptr, out string error)
 		{
 			error = null;
@@ -1034,12 +1102,13 @@ namespace Mono.Xaml
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// genereting an exception and unwinding the stack.
 		//
-		private unsafe bool cb_lookup_object (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, string name, bool create, out Value value)
+		private unsafe bool cb_lookup_object (IntPtr loader, IntPtr parser, Value* top_level, Value* parent, string xmlns, string name, bool create, out Value value)
 		{
 			try {
-				return LookupObject (top_level, xmlns, name, create, out value);
+				return LookupObject (top_level, parent, xmlns, name, create, out value);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::LookupObject ({0}, {1}, {2}, {3}) failed: {3} ({4}).", (IntPtr)top_level, xmlns, create, name, ex.Message, ex.GetType ().FullName);
+				Console.WriteLine (ex);
 				value = Value.Empty;
 				return false;
 			}
