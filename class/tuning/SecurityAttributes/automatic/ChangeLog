@@ -1,3 +1,8 @@
+2008-06-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Browser.auto.ssc: Updated for BrowserWebHttpRequest
+	split
+
 2009-05-28  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.sc:

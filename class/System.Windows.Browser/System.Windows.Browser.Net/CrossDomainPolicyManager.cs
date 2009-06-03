@@ -32,7 +32,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -40,25 +39,8 @@ using System.Security;
 using System.Text;
 using System.Threading;
 using System.Windows.Interop;
-using System.Xml;
 
 namespace System.Windows.Browser.Net {
-
-	class PolicyAsyncResult : BrowserHttpWebAsyncResult {
-
-		public PolicyAsyncResult (AsyncCallback cb, Uri root) :
-			base (cb, root)
-		{
-		}
-
-		public ICrossDomainPolicy Policy { get; set; }
-
-		public Uri PolicyUri { get; set; }
-
-		public Uri RootUri { 
-			get { return (AsyncState as Uri); }
-		}
-	}
 
 	static class CrossDomainPolicyManager {
 
@@ -69,92 +51,33 @@ namespace System.Windows.Browser.Net {
 
 		// Web Access Policy
 
-		public static IAsyncResult BeginGetPolicy (WebRequest request, AsyncCallback cb)
-		{
-			WebClient wc = new WebClient ();
-			wc.OpenReadCompleted += new OpenReadCompletedEventHandler (PolicyReadCompleted);
+		static Dictionary<string,ICrossDomainPolicy> policies = new Dictionary<string,ICrossDomainPolicy> ();
 
-			// get the root of the URI from where we'll try to read the policy files
-			Uri root = new Uri (GetRoot (request.RequestUri));
-			Uri silverlight_policy_uri = new Uri (root, ClientAccessPolicyFile);
-
-			PolicyAsyncResult async = new PolicyAsyncResult (cb, root);
-			async.PolicyUri = silverlight_policy_uri;
-
-			wc.OpenPolicyReadAsync (silverlight_policy_uri, async);
-			return async;
-		}
-
-		static void PolicyReadCompleted (object sender, OpenReadCompletedEventArgs e)
-		{
-			PolicyAsyncResult async = (e.UserState as PolicyAsyncResult);
-			Uri uri = async.PolicyUri;
-
-			if (!e.Cancelled && e.Error == null && e.Result != null) {
-				try {
-					ICrossDomainPolicy policy = null;
-					if (uri.LocalPath == ClientAccessPolicyFile) {
-						policy = ClientAccessPolicy.FromStream (e.Result);
-					} else if (uri.LocalPath == CrossDomainFile) {
-						policy = BuildFlashPolicy (e.Result, (sender as WebClient).ResponseHeaders);
-					}
-					async.Policy = policy;
-					policies.Add (async.RootUri.OriginalString, policy);
-				} catch (Exception ex) {
-					Console.WriteLine (String.Format ("CrossDomainAccessManager caught an exception while reading {0}: {1}", 
-						uri.LocalPath, ex));
-					// and ignore.
-				}
-				async.SetComplete ();
-			} else if (uri.LocalPath == ClientAccessPolicyFile) {
-				// we tried (and failed) retrieving the Silverlight policy file, trying the Flash file
-				WebClient flash = new WebClient ();
-				flash.OpenReadCompleted += new OpenReadCompletedEventHandler (PolicyReadCompleted);
-
-				Uri flash_policy_uri = new Uri (async.RootUri, CrossDomainFile);
-				async.PolicyUri = flash_policy_uri;
-
-				flash.OpenPolicyReadAsync (flash_policy_uri, async);
-			} else {
-				// don't fire the callback
-				async.Exception = e.Error;
-				async.SetComplete ();
-			}
-		}
-
-		static ICrossDomainPolicy BuildFlashPolicy (Stream stream, WebHeaderCollection headers)
-		{
-			FlashCrossDomainPolicy policy = (FlashCrossDomainPolicy) FlashCrossDomainPolicy.FromStream (stream);
-			if (policy == null)
-				return null;
-
-			string site_control = headers ["X-Permitted-Cross-Domain-Policies"]; // see DRT# 864 and 865
-			if (!String.IsNullOrEmpty (site_control))
-				policy.SiteControl = site_control;
-
-			return policy;
-		}
-
-		public static ICrossDomainPolicy EndGetPolicy (IAsyncResult result)
-		{
-			PolicyAsyncResult async = (result as PolicyAsyncResult);
-			if (async == null || !async.AsyncWaitHandle.WaitOne (Timeout))
-				return null;
-
-			return async.Policy;
-		}
-
-		static public Dictionary<string,ICrossDomainPolicy> policies = new Dictionary<string,ICrossDomainPolicy> ();
-
-		static public ICrossDomainPolicy PolicyDownloadPolicy = new PolicyDownloadPolicy ();
+		static internal ICrossDomainPolicy PolicyDownloadPolicy = new PolicyDownloadPolicy ();
 		static ICrossDomainPolicy site_of_origin_policy = new SiteOfOriginPolicy ();
+		static ICrossDomainPolicy no_access_policy = new NoAccessPolicy ();
 
-		static string GetRoot (Uri uri)
+		public static string GetRoot (Uri uri)
 		{
 			if ((uri.Scheme == "http" && uri.Port == 80) || (uri.Scheme == "https" && uri.Port == 443) || (uri.Port == -1))
 				return String.Format ("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
 			else
 				return String.Format ("{0}://{1}:{2}", uri.Scheme, uri.DnsSafeHost, uri.Port);
+		}
+
+		static Uri GetRootUri (Uri uri)
+		{
+			return new Uri (GetRoot (uri));
+		}
+
+		public static Uri GetSilverlightPolicyUri (Uri uri)
+		{
+			return new Uri (GetRootUri (uri), CrossDomainPolicyManager.ClientAccessPolicyFile);
+		}
+
+		public static Uri GetFlashPolicyUri (Uri uri)
+		{
+			return new Uri (GetRootUri (uri), CrossDomainPolicyManager.CrossDomainFile);
 		}
 
 		public static ICrossDomainPolicy GetCachedWebPolicy (Uri uri)
@@ -168,6 +91,52 @@ namespace System.Windows.Browser.Net {
 			ICrossDomainPolicy policy = null;
 			policies.TryGetValue (root, out policy);
 			// and we return it (if we have it) or null (if we dont)
+			return policy;
+		}
+
+		public static ICrossDomainPolicy BuildSilverlightPolicy (HttpWebResponse response)
+		{
+			// return null if no Silverlight policy was found, since we offer a second chance with a flash policy
+			if (response.StatusCode != HttpStatusCode.OK)
+				return null;
+
+			ICrossDomainPolicy policy = null;
+			try {
+				policy = ClientAccessPolicy.FromStream (response.GetResponseStream ());
+				if (policy != null)
+					policies.Add (GetRoot (response.ResponseUri), policy);
+			} catch (Exception ex) {
+				Console.WriteLine (String.Format ("CrossDomainAccessManager caught an exception while reading {0}: {1}", 
+					response.ResponseUri, ex.Message));
+				// and ignore.
+			}
+			return policy;
+		}
+
+		public static ICrossDomainPolicy BuildFlashPolicy (HttpWebResponse response)
+		{
+			ICrossDomainPolicy policy = null;
+			if (response.StatusCode == HttpStatusCode.OK) {
+				try {
+					policy = FlashCrossDomainPolicy.FromStream (response.GetResponseStream ());
+				} catch (Exception ex) {
+					Console.WriteLine (String.Format ("CrossDomainAccessManager caught an exception while reading {0}: {1}", 
+						response.ResponseUri, ex.Message));
+					// and ignore.
+				}
+				if (policy != null) {
+					// see DRT# 864 and 865
+					string site_control = response.Headers ["X-Permitted-Cross-Domain-Policies"];
+					if (!String.IsNullOrEmpty (site_control))
+						(policy as FlashCrossDomainPolicy).SiteControl = site_control;
+				}
+			}
+
+			// the flash policy was the last chance, keep a NoAccess into the cache
+			if (policy == null)
+				policy = no_access_policy;
+
+			policies.Add (GetRoot (response.ResponseUri), policy);
 			return policy;
 		}
 

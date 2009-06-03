@@ -1,3 +1,18 @@
+2009-06-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Split in two. This part deals with SL
+	specific behavior, like downloading cross-domain policies and http
+	redirection. I.e. one request can be split into several connections.
+	* BrowserHttpWebRequestInternal.cs: New. This part deals with the
+	web browser. One request here, either real, policy or invisible - 
+	like redirection, are all one connection.
+	* BrowserHttpWebResponse.cs: Small changes to accomodate the split
+	between BrowserHttpWebRequest / BrowserHttpWebRequestInternal
+	* CrossDomainPolicyManager.cs: Simplify and remove dependency on
+	WebClient
+	* NoAccessPolicy.cs: New. Policy applied if no other valid policy
+	is found for a cross-domain request
+
 2009-06-02  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* CrossDomainPolicyManager.cs: Oops, OpenPolicyReadAsync still

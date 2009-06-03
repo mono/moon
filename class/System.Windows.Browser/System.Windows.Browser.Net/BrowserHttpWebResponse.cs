@@ -40,21 +40,23 @@ namespace System.Windows.Browser.Net
 {
 	class BrowserHttpWebResponse : HttpWebResponse
 	{
-		BrowserHttpWebRequest request;
+		HttpWebRequest request;
 		IntPtr native;
 		Stream response;
 		bool aborted;
+		internal string method;
 
 		int real_status_code;
 		string status_desc;
 
-		public BrowserHttpWebResponse (BrowserHttpWebRequest request, IntPtr native)
+		public BrowserHttpWebResponse (HttpWebRequest request, IntPtr native)
 		{
 			this.request = request;
 			this.native = native;
 			this.response = new MemoryStream ();
 			this.aborted = false;
 			Headers = new WebHeaderCollection ();
+			method = request.Method;
 
 			if (native == IntPtr.Zero)
 				return;
@@ -82,9 +84,6 @@ namespace System.Windows.Browser.Net
 			if (native == IntPtr.Zero)
 				return;
 
-			if (request != null)
-				request.InternalAbort ();
-			
 			InternalAbort ();
 		}
 
@@ -140,11 +139,12 @@ namespace System.Windows.Browser.Net
 			get { return Headers [HttpRequestHeader.ContentType]; }
 		}
 
+		// this returns the "original" Method (if there was redirection involved)
 		public override string Method {
-			get { return request.Method; }
+			get { return method; }
 		}
 
-		// FIXME this is different from the original request if we followed any redirection
+		// this returns the last Uri (if there was redirection involved)
 		public override Uri ResponseUri {
 			get { return request.RequestUri; }
 		}

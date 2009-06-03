@@ -1,3 +1,8 @@
+2009-06-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add BrowserHttpWebRequestInternal.cs and 
+	NoAccessPolicy.cs to the build
+
 2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Add [ClientAccessPolicy|FlashCrossDomainPolicy]

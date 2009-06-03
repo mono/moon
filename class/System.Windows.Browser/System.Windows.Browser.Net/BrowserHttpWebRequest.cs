@@ -28,27 +28,18 @@
 
 #if NET_2_1
 
-using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Collections;
-using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Security;
-using System.Windows.Interop;
-using System.Runtime.InteropServices;
 
-using Mono;
-using Mono.Xaml;
+namespace System.Windows.Browser.Net {
 
-namespace System.Windows.Browser.Net
-{
-	class BrowserHttpWebRequest : HttpWebRequest
-	{
-		IntPtr native;
-		GCHandle managed;
-		IntPtr downloader;
+	// This class maps with Silverlight exposed behavior.
+	// One request can represent multiple connections with a server.
+	// e.g. requesting a policy for cross-domain requests
+	// e.g. http redirection
+
+	class BrowserHttpWebRequest : HttpWebRequest {
 		Uri uri;
 		long bytes_read;
 		bool aborted;
@@ -56,27 +47,18 @@ namespace System.Windows.Browser.Net
 		string method = "GET";
 
 		ICrossDomainPolicy policy;
-		PolicyAsyncResult policy_async;
 
-		BrowserHttpWebStreamWrapper request;
+		internal BrowserHttpWebStreamWrapper request;
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
-		ManualResetEvent wait_handle = new ManualResetEvent (false);
-		
-		DownloaderResponseStartedDelegate started;
-		DownloaderResponseAvailableDelegate available;
-		DownloaderResponseFinishedDelegate finished;
  		
 		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in Systme.Net
+		// FIXME: how does this behave wrt redirection ?
  		Delegate progress_delegate;
 
  		public BrowserHttpWebRequest (Uri uri)
  		{
-			started = new DownloaderResponseStartedDelegate (OnAsyncResponseStartedSafe);
-			available = new DownloaderResponseAvailableDelegate (OnAsyncDataAvailableSafe);
-			finished = new DownloaderResponseFinishedDelegate (OnAsyncResponseFinishedSafe);
  			this.uri = uri;
-			managed = GCHandle.Alloc (this, GCHandleType.Normal);
 			aborted = false;
 			allow_read_buffering = true;
 		}
@@ -87,18 +69,10 @@ namespace System.Windows.Browser.Net
 
 			if (async_result != null)
 				async_result.Dispose ();
-
-			if (native == IntPtr.Zero)
-				return;
-
-			NativeMethods.downloader_request_free (native);
 		}
 
 		public override void Abort ()
 		{
-			if (native == IntPtr.Zero)
-				return;
-			
 			if (response != null)
 				response.InternalAbort ();
 
@@ -118,154 +92,119 @@ namespace System.Windows.Browser.Net
 			return result;
 		}
 
-		internal override IAsyncResult BeginGetResponse (AsyncCallback callback, object state, bool checkPolicy)
-		{
-			if (checkPolicy) {
-				// we're being called to download a policy - still we need a policy to do this
-				policy = CrossDomainPolicyManager.PolicyDownloadPolicy;
-				async_result = new BrowserHttpWebAsyncResult (callback, state);
-				BeginGetResponseInternal ();
-				return async_result;
-			} else {
-				return BeginGetResponse (callback, state);
-			}
-		}
-
+		// NOTE: the supplied callback must be called only once the request is complete
+		//	 i.e. it's not called after the policy is downloaded
+		//	 i.e. it's not called after each redirection we need to follow
 		public override IAsyncResult BeginGetResponse (AsyncCallback callback, object state)
 		{
 			// we're not allowed to reuse an aborted request
 			if (aborted)
 				throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);
 
+			// under SL the callback MUST call the EndGetResponse, so having no callback is BAD
+			// this also means that faking a synch op using EndGetReponse(BeginGetReponse(null,null)) does NOT work
+			if (callback == null)
+				throw new NotSupportedException ();
+
+			// we cannot issue 2 requests from the same instance
+			if (async_result != null)
+				throw new InvalidOperationException ();
+
+			// this is the "global/total" IAsyncResult, it's also the public one
 			async_result = new BrowserHttpWebAsyncResult (callback, state);
 
-			// this is a same site (site of origin, SOO) request; or
-			// we either already know the policy (previously downloaded); or
-			// we try to download the policy
-
-			policy = CrossDomainPolicyManager.GetCachedWebPolicy (uri);
-			if (policy == null) {
-				// we'll download the policy *then* call BeginGetResponseInternal
-				policy_async = (PolicyAsyncResult) CrossDomainPolicyManager.BeginGetPolicy (this, new AsyncCallback (PolicyCallback));
-			} else {
-				policy_async = null;
-				BeginGetResponseInternal ();
-			}
-
+			GetResponse (this.Method, uri);
 			return async_result;
 		}
 
-		internal void BeginGetResponseInternal ()
+		private IAsyncResult GetResponse (string method, Uri uri)
 		{
-			if (NativeMethods.surface_in_main_thread ()) {
-				InitializeNativeRequest (IntPtr.Zero);
+			// this is a same site (site of origin, SOO) request; or
+			// we either already know the policy (previously downloaded); or
+			// we try to download the policy
+			if (!IsDownloadingPolicy ()) {
+				policy = CrossDomainPolicyManager.GetCachedWebPolicy (uri);
+				if (policy == null) {
+					// we'll download the policy *then* proceed to the requested URI
+					policy = CrossDomainPolicyManager.PolicyDownloadPolicy;
+
+					Uri silverlight_policy_uri = CrossDomainPolicyManager.GetSilverlightPolicyUri (uri);
+					BrowserHttpWebRequestInternal preq = new BrowserHttpWebRequestInternal (silverlight_policy_uri);
+					return preq.BeginGetResponse (new AsyncCallback (SilverlightPolicyCallback), preq);
+				}
+			}
+
+			// Console.WriteLine ("{0} '{1}' using policy: {2}", method, uri, policy);
+			BrowserHttpWebRequestInternal wreq = new BrowserHttpWebRequestInternal (this, uri);
+			wreq.Method = method;
+			// store SecurityException, to throw later, if we have no policy or are not allowed by the policy
+			if ((policy == null) || !policy.IsAllowed (wreq)) {
+				async_result.Exception = new SecurityException ();
+				async_result.SetComplete ();
+				return async_result;
+			}
+
+			return wreq.BeginGetResponse (new AsyncCallback (EndCallback), wreq);
+		}
+
+		private void SilverlightPolicyCallback (IAsyncResult result)
+		{
+			WebRequest wreq = (result.AsyncState as WebRequest);
+			BrowserHttpWebResponse wres = (BrowserHttpWebResponse) wreq.EndGetResponse (result);
+
+			policy = CrossDomainPolicyManager.BuildSilverlightPolicy (wres);
+			if (policy != null) {
+				// we got our policy so we can proceed with the main request
+				GetResponse (this.Method, uri);
 			} else {
-				TickCallHandler tch = new TickCallHandler (InitializeNativeRequestSafe);
-
-				NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (NativeMethods.plugin_instance_get_surface (PluginHost.Handle)), tch, IntPtr.Zero);
-
-				wait_handle.WaitOne ();
-
-				GC.KeepAlive (tch);
+				// no policy but we get a second chance to try a Flash policy
+				Uri flash_policy_uri = CrossDomainPolicyManager.GetFlashPolicyUri (wres.ResponseUri);
+				BrowserHttpWebRequestInternal preq = new BrowserHttpWebRequestInternal (flash_policy_uri);
+				preq.BeginGetResponse (new AsyncCallback (FlashPolicyCallback), preq);
 			}
 		}
 
-		internal void PolicyCallback (IAsyncResult result)
+		private void FlashPolicyCallback (IAsyncResult result)
 		{
-			policy = CrossDomainPolicyManager.EndGetPolicy (result);
-			if (policy == null) {
-				// uho, something went wrong (e.g. site down, 404)
-				async_result.Exception = new WebException ();
-			}
-			BeginGetResponseInternal ();
+			WebRequest wreq = (result.AsyncState as WebRequest);
+			BrowserHttpWebResponse wres = (BrowserHttpWebResponse) wreq.EndGetResponse (result);
+
+			// we either got a Flash policy or (if none/bad) a NoAccessPolicy, either way we continue...
+			policy = CrossDomainPolicyManager.BuildFlashPolicy (wres);
+			GetResponse (this.Method, uri);
 		}
 
-		static uint OnAsyncResponseStartedSafe (IntPtr native, IntPtr context)
+		private void EndCallback (IAsyncResult result)
 		{
-			try {
-				return OnAsyncResponseStarted (native, context);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in BrowserHttpWebRequest.OnAsyncResponseStartedSafe: {0}", ex);
-				} catch {
+			WebRequest wreq = (result.AsyncState as WebRequest);
+			BrowserHttpWebResponse wres = (BrowserHttpWebResponse) wreq.EndGetResponse (result);
+
+			//			Redirection	Error
+			// Normal Request	allowed		throw
+			// Policy Request	throw		ignore (no policy)
+			if (IsRedirection (wres)) {
+				if (IsDownloadingPolicy ()) {
+					// redirection is NOT allowed for policy files
+					async_result.Exception = new SecurityException ("Cannot redirect policy files");
+					async_result.SetComplete ();
+				} else {
+					string location = wres.Headers ["Location"];
+					GetResponse ("GET", new Uri (location));
 				}
-			}
-			return 0;
-		}
-		
-		static uint OnAsyncResponseStarted (IntPtr native, IntPtr context)
-		{
-			GCHandle handle = GCHandle.FromIntPtr (context);
-			BrowserHttpWebRequest obj = (BrowserHttpWebRequest) handle.Target;
-			
-			try {
-				obj.bytes_read = 0;
-				obj.async_result.Response = new BrowserHttpWebResponse (obj, native);
-			} catch (Exception e) {
-				obj.async_result.Exception = e;
-			}
-			return 0;
-		}
-		
-		static uint OnAsyncResponseFinishedSafe (IntPtr native, IntPtr context, bool success, IntPtr data)
-		{
-			try {
-				return OnAsyncResponseFinished (native, context, success, data);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in BrowserHttpWebRequest.OnAsyncResponseFinishedSafe: {0}", ex);
-				} catch {
+			} else if (wres.StatusCode != HttpStatusCode.OK) {
+				// policy file could be missing, but then it means no policy
+				if (!IsDownloadingPolicy ()) {
+					async_result.Response = wres;
+					async_result.Exception = new WebException ("NotFound", null, WebExceptionStatus.Success, wres);
+					async_result.SetComplete ();
+				} else {
+					async_result.SetComplete ();
 				}
+			} else {
+				wres.method = method;
+				async_result.Response = wres;
+				async_result.SetComplete ();
 			}
-			return 0;
-		}
-		
-		static uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
-		{
-			GCHandle handle = GCHandle.FromIntPtr (context);
-			BrowserHttpWebRequest obj = (BrowserHttpWebRequest) handle.Target;
-			
-			try {
-				obj.async_result.SetComplete ();
-			} catch (Exception e) {
-				obj.async_result.Exception = e;
-			}
-			return 0;
-		}
-		
-		static uint OnAsyncDataAvailableSafe (IntPtr native, IntPtr context, IntPtr data, uint length)
-		{
-			try {
-				return OnAsyncDataAvailable (native, context, data, length);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in BrowserHttpWebRequest.OnAsyncDataAvailableSafe: {0}", ex);
-				} catch {
-				}
-			}
-			return 0;
-		}
-		
-		static uint OnAsyncDataAvailable (IntPtr native, IntPtr context, IntPtr data, uint length)
-		{
-			GCHandle handle = GCHandle.FromIntPtr (context);
-			BrowserHttpWebRequest obj = (BrowserHttpWebRequest) handle.Target;
-			
-			try {
-				obj.bytes_read += length;
-				if (obj.progress_delegate != null)
-					obj.progress_delegate.DynamicInvoke (new object[] { obj.bytes_read, obj.async_result.Response.ContentLength, obj.async_result.AsyncState});
-			} catch {}
-
-			try {
-				// FIXME HACK, Reponse is deleted from FF (see comments in the class) 
-				// and can cause a crash if the values are not cached early enough
-				obj.async_result.Response.GetStatus ();
-				obj.async_result.Response.Write (data, (int) length);
-			} catch (Exception e) {
-				obj.async_result.Exception = e;
-			}
-			return 0;
 		}
 
 		public override Stream EndGetRequestStream (IAsyncResult asyncResult)
@@ -286,56 +225,26 @@ namespace System.Windows.Browser.Net
 					throw new ArgumentException ();
 
 				if (aborted) {
-					NativeMethods.downloader_request_abort (native);
 					throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);
 				}
 
-				if (policy_async != null) {
-					if (!policy_async.IsCompleted) {
-						policy_async.AsyncWaitHandle.WaitOne ();
-					}
-				}
-
-				if (policy == null) {
-					// no policy ? then access is not allowed!
-					throw new SecurityException ();
-				} else if (!policy.IsAllowed (this)) {
-					// not allowed by the policy
-					throw new SecurityException ();
-				}
+				// we could already have an exception waiting for us
+				if (async_result.HasException)
+					throw async_result.Exception;
 
 				if (!async_result.IsCompleted)
 					async_result.AsyncWaitHandle.WaitOne ();
 
-				if (async_result.HasException) {
+				// (again) exception could occur during the wait
+				if (async_result.HasException)
 					throw async_result.Exception;
-				}
 
 				response = async_result.Response;
-
-				// FIXME redirection
-				//			Redirection	Error
-				// Normal Request	allowed		throw
-				// Policy Request	throw		ignore (no policy)
-				if (IsRedirection (response)) {
-					if (IsDownloadingPolicy ()) {
-						// redirection is NOT allowed for policy files
-						throw new SecurityException ("Cannot redirect policy files");
-					} else {
-						string location = response.Headers ["Location"];
-						throw new NotSupportedException ("HTTP redirection to " + location);
-					}
-				} else if (response.StatusCode != HttpStatusCode.OK) {
-					// policy file could be missing, but then it means no policy
-					if (!IsDownloadingPolicy ()) {
-						throw new WebException ("NotFound", null, WebExceptionStatus.Success, response);
-					}
-				}
 			}
 			finally {
 				async_result.Dispose ();
-				managed.Free ();
-			}			
+			}
+
 			return response;
 		}
 
@@ -343,8 +252,18 @@ namespace System.Windows.Browser.Net
 		{
 			// FIXME - there's likely a maximum number of redirection allowed because throwing an exception
 			switch (response.RealStatusCode) {
-			case 302:
-				// need to test other cases
+			case 301:	// Moved Permanently, RFC2616 10.3.2
+					// If the 301 status code is received in response to a request other than GET or HEAD, 
+					// the user agent MUST NOT automatically redirect the request unless it can be confirmed
+					// by the user, since this might change the conditions under which the request was issued.
+				return (Method == "POST");
+			case 302:	// Found, RFC2616 10.3.3
+					// main one used by ASP/ASPX Redirect
+			case 303:	// See Other, RFC2616 10.3.4
+			case 304:	// Not Modified, RFC2616 10.3.5
+			case 305:	// Use Proxy, RFC2616 10.3.7
+			case 307:	// Temporaray Redirect, RFC2616 10.3.8
+					// see DRT 867
 				return true;
 			default:
 				return false;
@@ -354,48 +273,6 @@ namespace System.Windows.Browser.Net
 		bool IsDownloadingPolicy ()
 		{
 			return (policy == CrossDomainPolicyManager.PolicyDownloadPolicy);
-		}
-
-		void InitializeNativeRequestSafe (IntPtr context)
-		{
-			try {
-				InitializeNativeRequest (context);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in BrowserHttpWebRequest.InitializeNativeRequestSafe: {0}", ex);
-				} catch {
-				}
-			}
-		}
-		
-		void InitializeNativeRequest (IntPtr context)
-		{
-			if (native != IntPtr.Zero)
-				return;
-
-			downloader = NativeMethods.surface_create_downloader (XamlLoader.SurfaceInDomain);
-			if (downloader == IntPtr.Zero)
-				throw new NotSupportedException ("Failed to create unmanaged downloader");
-			native = NativeMethods.downloader_create_web_request (downloader, method, uri.AbsoluteUri);
-			if (native == IntPtr.Zero)
-				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
-
-			if (request != null && request.Length > 1) {
-				// this header cannot be set directly inside the collection (hence the helper)
-				Headers.SetHeader ("content-length", (request.Length - 1).ToString ());
-			}
-			
-			foreach (string header in Headers.AllKeys)
-				NativeMethods.downloader_request_set_http_header (native, header, Headers [header]);
-
-			if (request != null && request.Length > 1) {
-				byte [] body = (request.InnerStream as MemoryStream).ToArray ();
-				NativeMethods.downloader_request_set_body (native, body, body.Length);
-			}
-			
-			NativeMethods.downloader_request_get_response (native, started, available, finished, GCHandle.ToIntPtr (managed));
-
-			wait_handle.Set ();
 		}
 
 		[MonoTODO ("value is unused, current implementation always works like it's true (default)")]
