@@ -1346,10 +1346,13 @@ UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *e
 	}
 
 	cairo_matrix_t result;
+	// A = From, B = To, M = what we want
+	// A = M * B
+	// => M = A * inv (B)
 	if (to_element) {
-		cairo_matrix_t inverse = absolute_xform;
+		cairo_matrix_t inverse = to_element->absolute_xform;
 		cairo_matrix_invert (&inverse);
-		cairo_matrix_multiply (&result, &inverse, &to_element->absolute_xform);
+		cairo_matrix_multiply (&result, &absolute_xform, &inverse);
 	}
 	else {
 		result = absolute_xform;
