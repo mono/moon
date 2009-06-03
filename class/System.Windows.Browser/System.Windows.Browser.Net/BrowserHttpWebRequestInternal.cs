@@ -58,6 +58,8 @@ namespace System.Windows.Browser.Net {
 		DownloaderResponseStartedDelegate started;
 		DownloaderResponseAvailableDelegate available;
 		DownloaderResponseFinishedDelegate finished;
+
+		WebHeaderCollection web_headers;
  		
 		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in Systme.Net
  		Delegate progress_delegate;
@@ -70,6 +72,7 @@ namespace System.Windows.Browser.Net {
  			this.uri = uri;
 			managed = GCHandle.Alloc (this, GCHandleType.Normal);
 			aborted = false;
+			web_headers = Headers;
 		}
 
  		public BrowserHttpWebRequestInternal (BrowserHttpWebRequest wreq, Uri uri)
@@ -78,7 +81,7 @@ namespace System.Windows.Browser.Net {
 			allow_read_buffering = wreq.AllowReadStreamBuffering;
 			method = wreq.Method;
 			request = wreq.request;
-			this.Headers = wreq.Headers;
+			web_headers = wreq.Headers;
 		}
 
 		~BrowserHttpWebRequestInternal ()
@@ -281,11 +284,11 @@ namespace System.Windows.Browser.Net {
 
 			if (request != null && request.Length > 1) {
 				// this header cannot be set directly inside the collection (hence the helper)
-				Headers.SetHeader ("content-length", (request.Length - 1).ToString ());
+				web_headers.SetHeader ("content-length", (request.Length - 1).ToString ());
 			}
 			
-			foreach (string header in Headers.AllKeys)
-				NativeMethods.downloader_request_set_http_header (native, header, Headers [header]);
+			foreach (string header in web_headers.AllKeys)
+				NativeMethods.downloader_request_set_http_header (native, header, web_headers [header]);
 
 			if (request != null && request.Length > 1) {
 				byte [] body = (request.InnerStream as MemoryStream).ToArray ();
