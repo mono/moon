@@ -1,3 +1,8 @@
+2009-06-02  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* CrossDomainPolicyManager.cs: Oops, OpenPolicyReadAsync still
+	exists (for a good reason) in mono/mcs HEAD
+
 2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BaseDomainPolicy.cs: Simplify definition
@@ -11,8 +16,6 @@
 	* FlashCrossDomainPolicyParser.cs: Partial class for above. Move in
 	parser code
 
- (which let's replace the parsers with
-	something that does not require S.XML if needed).
 2009-05-28  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* ClientAccessPolicy.cs: Refactored to use BaseDomainPolicy

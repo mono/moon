@@ -81,7 +81,7 @@ namespace System.Windows.Browser.Net {
 			PolicyAsyncResult async = new PolicyAsyncResult (cb, root);
 			async.PolicyUri = silverlight_policy_uri;
 
-			wc.OpenReadAsync (silverlight_policy_uri, async);
+			wc.OpenPolicyReadAsync (silverlight_policy_uri, async);
 			return async;
 		}
 
@@ -114,7 +114,7 @@ namespace System.Windows.Browser.Net {
 				Uri flash_policy_uri = new Uri (async.RootUri, CrossDomainFile);
 				async.PolicyUri = flash_policy_uri;
 
-				flash.OpenReadAsync (flash_policy_uri, async);
+				flash.OpenPolicyReadAsync (flash_policy_uri, async);
 			} else {
 				// don't fire the callback
 				async.Exception = e.Error;
