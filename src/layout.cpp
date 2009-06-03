@@ -877,9 +877,12 @@ word_type (GUnicodeType ctype, GUnicodeBreakType btype)
 }
 
 static bool
-word_type_changed (WordType wtype, GUnicodeType ctype, GUnicodeBreakType btype)
+word_type_changed (WordType wtype, gunichar c, GUnicodeType ctype, GUnicodeBreakType btype)
 {
 	WordType type;
+	
+	if (wtype == WORD_TYPE_ALPHABETIC && c >= '0' && c <= '9')
+		return false;
 	
 	if ((type = word_type (ctype, btype)) != WORD_TYPE_UNKNOWN)
 		return type != wtype;
@@ -997,7 +1000,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		if (word->type == WORD_TYPE_UNKNOWN) {
 			// record our word-type
 			word->type = word_type (ctype, btype);
-		} else if (word_type_changed (word->type, ctype, btype)) {
+		} else if (word_type_changed (word->type, c, ctype, btype)) {
 			// changing word-types, don't continue
 			inptr = start;
 			break;

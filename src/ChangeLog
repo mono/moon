@@ -6,6 +6,8 @@
 	we are the last glyph cluster on a line.
 	(GenerateGlyphCluster): Keep track of underline width (calculated
 	using width up to/including last non-lwsp char).
+	(word_type_changed): Consider numerics as part of the containing
+	alphabetic word.
 
 2009-06-03  Jackson Harper  <jackson@ximian.com>
 
