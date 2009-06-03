@@ -3800,7 +3800,6 @@ XamlElementInstance::FindPropertyElement (XamlParserInfo *p, const char *el, con
 	if (p->loader) {
 		Value *v = new Value ();
 		if (p->loader->LookupObject (p, p->GetTopElementPtr (), GetAsValue (), NULL, el, false, v)) {
-			printf ("found managed property:  %s  %d  %p\n", el, v->GetKind (), v);
 			XamlElementInfoManaged *res = new XamlElementInfoManaged (NULL, el, info, v->GetKind (), v);
 			return res;
 		}
