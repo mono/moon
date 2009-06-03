@@ -31,7 +31,6 @@ using System.Text;
 using System.Windows.Browser;
 using System.Runtime.InteropServices;
 using System.Reflection;
-using System.Globalization;
 using Mono;
 
 namespace System.Windows.Browser
