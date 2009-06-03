@@ -34,7 +34,6 @@ using Mono;
 namespace System.Windows.Browser {
 	public class ScriptObject {
 		internal IntPtr handle;
-		string script_key;
 		object managed;
 
 		internal ScriptObject ()
