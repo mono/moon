@@ -95,7 +95,7 @@ plugin_menu_about (PluginInstance *plugin)
 	gtk_about_dialog_set_name (about, PLUGIN_OURNAME);
 	gtk_about_dialog_set_version (about, VERSION);
 
-	gtk_about_dialog_set_copyright (about, "Copyright 2007-2008 Novell, Inc. (http://www.novell.com/)");
+	gtk_about_dialog_set_copyright (about, "Copyright 2007-2009 Novell, Inc. (http://www.novell.com/)");
 #if FINAL_RELEASE
 	gtk_about_dialog_set_website (about, "http://moonlight-project.com/");
 #else
