@@ -232,8 +232,8 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "HorizontalAlignment", false, new Value (HorizontalAlignmentStretch), Type::INT32);
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "Height", false, new Value (NAN), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "DataContext", false, Type::OBJECT);
-	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "ActualWidth", false, new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::FRAMEWORKELEMENT, "ActualHeight", false, new Value (0.0), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::FRAMEWORKELEMENT, "ActualWidth", false, new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL, NULL, false);
+	DependencyProperty::RegisterFull (this, Type::FRAMEWORKELEMENT, "ActualHeight", false, new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL, NULL, false);
 	DependencyProperty::Register (this, Type::POWEREASE, "Power", false, new Value (2.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::EXPONENTIALEASE, "Exponent", false, new Value (2.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::ELASTICEASE, "Springiness", false, new Value (3.0), Type::DOUBLE);

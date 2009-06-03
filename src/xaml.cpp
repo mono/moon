@@ -1015,8 +1015,8 @@ class XNamespace : public XamlNamespace {
 			if (IsParentResourceDictionary (p->current_element)) {
 				if (item->GetKey ()) {
 					// XXX don't know the proper values here...
-					parser_error (p, item->element_name, NULL, 2007,
-						      "You can't specify x:Name along with x:Key, or x:Key twice (key = %s, name = %s).", item->GetKey(), value);
+					parser_error (p, item->element_name, NULL, 2028,
+						      "The name already exists in the tree: %s.", value);
 					return false;
 				}
 			}
@@ -1033,8 +1033,8 @@ class XNamespace : public XamlNamespace {
 						// be unregistered.
 					}
 					else {
-						parser_error (p, item->element_name, NULL, 2007,
-							      "You can't specify x:Name along with x:Key, or x:Key twice (name = %s).", value);
+						parser_error (p, item->element_name, NULL, 2028,
+							      "The name already exists in the tree: %s.", value);
 						return false;
 					}
 				}
@@ -1047,8 +1047,8 @@ class XNamespace : public XamlNamespace {
 		if (!strcmp ("Key", attr)) {
 			if (item->GetKey () && IsParentResourceDictionary (p->current_element) && !Type::IsSubclassOf (item->info->GetKind (), Type::STORYBOARD)) {
 				// XXX don't know the proper values here...
-				parser_error (p, item->element_name, NULL, 2007,
-					      "You can't specify x:Name along with x:Key, or x:Key twice (key = %s).", value);
+				parser_error (p, item->element_name, NULL, 2028,
+					      "The name already exists in the tree: %s.", value);
 				return false;
 			}
 			item->SetKey (p, value);
@@ -1590,7 +1590,6 @@ start_element (void *data, const char *el, const char **attr)
 		if (dot) {
 			gchar *prop_elem = g_strndup (el, dot - el);
 			prop_info = p->current_element->FindPropertyElement (p, el, dot);
-//			prop_info = p->current_namespace->FindElement (p, prop_elem, attr, false);
 			g_free (prop_elem);
 		}
 
@@ -1614,7 +1613,7 @@ start_element (void *data, const char *el, const char **attr)
 				}
 			}
 		} else {
-			g_warning ("Unknown element 1: %s.", el);
+			g_warning ("Unknown element: %s.", el);
 			parser_error (p, el, NULL, 2007, "Unknown element: %s.", el);
 			return;
 		}
@@ -3799,8 +3798,8 @@ XamlElementInstance::FindPropertyElement (XamlParserInfo *p, const char *el, con
 	// We didn't find anything so try looking up in managed
 	if (p->loader) {
 		Value *v = new Value ();
-		if (p->loader->LookupObject (p, p->GetTopElementPtr (), GetAsValue (), NULL, el, false, v)) {
-			XamlElementInfoManaged *res = new XamlElementInfoManaged (NULL, el, info, v->GetKind (), v);
+		if (p->loader->LookupObject (p, p->GetTopElementPtr (), GetAsValue (), p->current_namespace->GetUri (), el, false, v)) {
+			XamlElementInfoManaged *res = new XamlElementInfoManaged (g_strdup (p->current_namespace->GetUri ()), el, info, v->GetKind (), v);
 			return res;
 		}
 		delete v;
@@ -3936,7 +3935,7 @@ XamlElementInstanceNative::CreateItem ()
 			
 			parser_info->AddCreatedElement (item);
 		} else {
-			parser_error (parser_info, element_name, NULL, 2007, "Unknown element 11: %s.", element_name);
+			parser_error (parser_info, element_name, NULL, 2007, "Unknown element: %s.", element_name);
 		}
 	}
 
@@ -4706,8 +4705,8 @@ start_parse:
 
 				NameScope *scope = p->namescope;
 				if (!item->GetAsDependencyObject ()->SetName (attr [i+1], scope)) {
-					parser_error (p, item->element_name, NULL, 2007,
-						      "You can't specify x:Name along with x:Key, or x:Key twice.");
+					parser_error (p, item->element_name, NULL, 2028,
+						      "The name already exists in the tree: %s.", attr [i+1]);
 					return;
 				}
 				continue;

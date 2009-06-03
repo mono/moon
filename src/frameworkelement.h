@@ -30,9 +30,9 @@ public:
 	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
 	const static int WidthProperty;
 
-	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors,ReadOnly */
 	const static int ActualHeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors,ReadOnly */
 	const static int ActualWidthProperty;
 	/* @PropertyType=object,Version=2.0 */
 	const static int DataContextProperty;

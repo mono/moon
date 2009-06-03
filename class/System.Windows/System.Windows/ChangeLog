@@ -1,3 +1,7 @@
+2009-06-03  Jackson Harper  <jackson@ximian.com>
+
+	* DependencyProperty.g.cs: Regen
+
 2009-06-02  Chris Toshok  <toshok@ximian.com>
 
 	* Application.cs (ReinitializeStaticData): Application uses some

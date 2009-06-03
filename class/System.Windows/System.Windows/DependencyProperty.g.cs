@@ -102,12 +102,10 @@ namespace System.Windows {
 
 		public double ActualHeight {
 			get { return (double) GetValue (ActualHeightProperty); }
-			internal set { SetValue (ActualHeightProperty, value); }
 		}
 
 		public double ActualWidth {
 			get { return (double) GetValue (ActualWidthProperty); }
-			internal set { SetValue (ActualWidthProperty, value); }
 		}
 
 		public Cursor Cursor {

@@ -1,3 +1,12 @@
+2009-06-03  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Update some error messages.
+	- Pass the current namespace in when creating property infos in
+	managed.
+	* frameworkelement.h: ActualWidth and ActualHeight are readonly
+	properties.
+	* dependencyproperty.g.cpp: regen
+
 2009-06-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayout::Layout): Silverlight 2.0 /never/ counts
