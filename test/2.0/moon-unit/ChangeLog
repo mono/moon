@@ -1,3 +1,9 @@
+2009-06-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/UIElementTest.cs: Commit two new tests for
+	UIElement.TransformToVisual which were created when fixing a related
+	issue which was timing out some tests.
+
 2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/SocketPolicyTest.cs: Adapt to internal API changes
