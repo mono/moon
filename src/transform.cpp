@@ -211,6 +211,12 @@ Matrix::Matrix(cairo_matrix_t *m)
 {
 	SetObjectType (Type::MATRIX);
 	matrix = *m;
+	SetM11 (matrix.xx);
+	SetM12 (matrix.yx);
+	SetM21 (matrix.xy);
+	SetM22 (matrix.yy);
+	SetOffsetX (matrix.x0);
+	SetOffsetY (matrix.y0);
 }
 
 void

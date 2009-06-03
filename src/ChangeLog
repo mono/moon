@@ -1,3 +1,8 @@
+2009-06-03  Alan McGovernm  <amcgovern@novell.com>
+
+	* transform.cpp: When instantiating a Matrix from a cairo_matrix_t
+	we need to populate M11/M12/M21 etc with the correct values.
+
 2009-06-02  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (dependency_object_add_child): XamlElementInfoEnum has
