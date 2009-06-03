@@ -1,3 +1,11 @@
+2009-06-02  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (dependency_object_add_child): XamlElementInfoEnum has
+	Type::INVALID as its Kind.  This is another facet to the "we need
+	to register enum types" work that will need to be done.  The
+	GetKind() method needs to eventually return a property Kind, but
+	until then we'll just check for Type::INVALID.
+
 2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security.c: Use the PREVIEW_VERSION for the environment variable

@@ -4307,7 +4307,12 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 						     "Unknown element: %s.", parent->element_name);
 			}
 
-			if (child->info->GetKind() != Type::MANAGED && !types->Find (child->info->GetKind())->IsCtorVisible()) {
+			// XamlElementInfoEnum has Type::INVALID as
+			// its kind, which is why that first check is
+			// here.
+			if (child->info->GetKind() != Type::INVALID &&
+			    child->info->GetKind() != Type::MANAGED &&
+			    !types->Find (child->info->GetKind())->IsCtorVisible()) {
 				// we can't instantiate this type
 				return parser_error (p, child->element_name, NULL, 2007,
 						     "Unknown element: %s.", child->element_name);
