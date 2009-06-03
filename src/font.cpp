@@ -1758,7 +1758,7 @@ FontFace::GetCharFromIndex (guint32 index)
 guint32
 FontFace::GetCharIndex (gunichar unichar)
 {
-	return face ? FT_Get_Char_Index (face, unichar) : 0;
+	return face ? FcFreeTypeCharIndex (face, unichar) : 0;
 }
 
 bool

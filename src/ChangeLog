@@ -9,6 +9,9 @@
 
 2009-06-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* font.cpp (GetCharIndex): Use FcFreeTypeCharIndex() which does a
+	bit more than FT_Get_Char_index().
+
 	* layout.cpp (TextLayout::Layout): Silverlight 2.0 /never/ counts
 	trailing lwsp towards line width, even if underlined.
 	(TextLayoutGlyphCluster::Render): Don't underline trailing lwsp if
