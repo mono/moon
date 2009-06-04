@@ -52,57 +52,68 @@ struct QTree {
 	QTree* l3; //S-W
 };
 
+typedef QTree QTreeNode;
+
 QTree*
 qtree_new ()
 {
 	return g_new0 (QTree, 1);
 }
 
-void
-qtree_insert_at (QTree* root, void *data, int level, int x, int y)
+QTreeNode*
+qtree_insert (QTree* root, int level, int x, int y)
 {
 	if ( x >= (1 << level) || y >= (1 << level)) {
 		g_warning ("QuadTree index out of range.");
-		return;
+		return NULL;
 	}
 
 	if (!root) {
-		g_warning ("passing a NULL QTree to qtree_insert_at");
-		return;
+		g_warning ("passing a NULL QTree to qtree_insert");
+		return NULL;
 	}
 
-
+	QTreeNode *node = root;
 	while (level-- > 0) {
 		if (y < 1 << level) {
 			if (x < 1 << level) {
-				if (!root->l0)
-					root->l0 = g_new0 (QTree, 1);
-				root = root->l0;
+				if (!node->l0)
+					node->l0 = g_new0 (QTreeNode, 1);
+				node = node->l0;
 			} else {
-				if (!root->l1)
-					root->l1 = g_new0 (QTree, 1);
-				root = root->l1;
+				if (!node->l1)
+					node->l1 = g_new0 (QTreeNode, 1);
+				node = node->l1;
 				x -= 1 << level;
 			}
 		} else {
 			if (x < 1 << level) {
-				if (!root->l2)
-					root->l2 = g_new0 (QTree, 1);
-				root = root->l2;
+				if (!node->l2)
+					node->l2 = g_new0 (QTreeNode, 1);
+				node = node->l2;
 				y -= 1 <<level;
 			} else {
-				if (!root->l3)
-					root->l3 = g_new0 (QTree, 1);
-				root = root->l3;
+				if (!node->l3)
+					node->l3 = g_new0 (QTreeNode, 1);
+				node = node->l3;
 				x -= 1 << level;
 				y -= 1 << level;
 			}
 		}
 	}
-
-	root->has_value = true;
-	root->data = data;
+	return node;
 }
+
+QTreeNode*
+qtree_insert_with_value (QTree* root, void *data, int level, int x, int y)
+{
+	QTreeNode *node = qtree_insert (root, level, x, y);
+	node->has_value = true;
+	node->data = data;
+	return node;
+}
+
+
 
 QTree *
 qtree_lookup (QTree* root, int level, int x, int y)
@@ -599,7 +610,6 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
 						break;
 					Uri *tile = new Uri ();
-					bool ret = false;
 					if (from_layer <= dzits->GetMaxLevel ()) {
 						if (!qtree_has_value_at (shared_cache, from_layer,
 								morton_x(sub_image->n) * (1 << from_layer) / tile_width,
@@ -776,7 +786,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 					if (source->get_tile_func (from_layer, i, j, tile, source))
 						DownloadTile (bitmapimagectx, tile, index, from_layer, i, j);
 					else
-						qtree_insert_at (subimage_cache, NULL, from_layer, i, j);
+						qtree_insert_with_value (subimage_cache, NULL, from_layer, i, j);
 				}
 				delete tile;
 			}
@@ -828,7 +838,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		cairo_surface_set_user_data (surface, &full_opacity_at_key, to, g_free);
 		LOG_MSI ("caching %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
 		QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &(ctx->subimage));
-		qtree_insert_at (subimage_cache, surface, ctx->level, ctx->x, ctx->y);
+		qtree_insert_with_value (subimage_cache, surface, ctx->level, ctx->x, ctx->y);
 
 		ctx->state = BitmapImageFree;
 	}

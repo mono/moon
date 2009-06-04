@@ -1,3 +1,9 @@
+2009-06-04  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: qtree_insert () takes no value. returns
+	the newly created QTreeNode. qtree_insert_at () renamed to 
+	qtree_insert_with_value ().
+
 2009-06-03  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Update some error messages.
