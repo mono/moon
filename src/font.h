@@ -41,6 +41,7 @@ enum FontMask {
 	FontMaskSize     = (1 << 4),
 	FontMaskFilename = (1 << 5),
 	FontMaskIndex    = (1 << 6),
+	FontMaskLanguage = (1 << 7),
 };
 
 
@@ -76,7 +77,6 @@ struct FontFaceExtents {
 };
 
 class FontFace {
-	//static FT_Face default_face;
 	static GHashTable *cache;
 	
 	int ref_count;
@@ -89,6 +89,7 @@ class FontFace {
 	static bool OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path, const char **families);
 	static bool LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families);
 	
+	static FT_Face LoadDefaultFaceForLang (const char *lang);
 	static FontFace *GetDefault (FcPattern *pattern);
 	static void LoadDefaultFace ();
 	
@@ -176,6 +177,7 @@ class TextFontDescription {
 	guint8 set;
 	
 	// font attributes
+	char *language;
 	char *family;
 	char *filename;
 	char *guid;
@@ -214,6 +216,9 @@ class TextFontDescription {
 	char **GetFamilies () const;
 	const char *GetFamily () const;
 	bool SetFamily (const char *family);
+	
+	const char *GetLanguage () const;
+	bool SetLanguage (const char *lang);
 	
 	FontStyles GetStyle () const;
 	bool SetStyle (FontStyles style);

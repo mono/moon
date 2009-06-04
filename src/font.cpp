@@ -1144,7 +1144,7 @@ FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path
 }
 
 static bool
-OpenFaceByIndex (const FcChar8 *filename, FT_Stream stream, int index, const char **families, FT_Face *face)
+OpenFaceByIndex (const FcChar8 *filename, FT_Stream stream, int index, const char **families, const FcChar8 *lang, FT_Face *face)
 {
 	FT_Face ftface = NULL;
 	FT_Open_Args args;
@@ -1166,10 +1166,17 @@ OpenFaceByIndex (const FcChar8 *filename, FT_Stream stream, int index, const cha
 			// make sure the font family name matches what was requested...
 			for (i = 0; families[i]; i++) {
 				if (!g_ascii_strcasecmp (ftface->family_name, families[i])) {
-					LOG_FONT (stderr, "success!\n");
+					LOG_FONT (stderr, "matched family!\n");
 					*face = ftface;
 					return true;
 				}
+			}
+			
+			if (lang) {
+				// we are loading the default sans font for a language, allow any fontconfig fallback
+				LOG_FONT (stderr, "matched lang!\n");
+				*face = ftface;
+				return true;
 			}
 			
 #if DEBUG
@@ -1198,7 +1205,7 @@ OpenFaceByIndex (const FcChar8 *filename, FT_Stream stream, int index, const cha
 }
 
 static bool
-OpenFaceByFamily (const FcChar8 *filename, FT_Stream stream, const char **families, FT_Face *face)
+OpenFaceByFamily (const FcChar8 *filename, FT_Stream stream, const char **families, const FcChar8 *lang, FT_Face *face)
 {
 	FT_Face ftface = NULL;
 	FT_Open_Args args;
@@ -1220,7 +1227,7 @@ OpenFaceByFamily (const FcChar8 *filename, FT_Stream stream, const char **famili
 	for (index = 0; index < n; index++) {
 		font_stream_reset (stream);
 		
-		if (OpenFaceByIndex (filename, stream, index, families, face))
+		if (OpenFaceByIndex (filename, stream, index, families, lang, face))
 			return true;
 	}
 	
@@ -1230,13 +1237,15 @@ OpenFaceByFamily (const FcChar8 *filename, FT_Stream stream, const char **famili
 bool
 FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families)
 {
+	FcChar8 *filename = NULL, *guid = NULL, *lang = NULL;
 	FcPattern *matched = NULL, *fallback = NULL;
-	FcChar8 *filename = NULL, *guid = NULL;
 	bool try_nofile = false;
 	FT_Face ftface = NULL;
 	FT_Stream stream;
 	FcResult result;
 	int index, i;
+	
+	FcPatternGetString (pattern, FC_LANG, 0, &lang);
 	
 	if (FcPatternGetString (pattern, FC_FILE, 0, &filename) == FcResultMatch) {
 		struct stat st;
@@ -1277,10 +1286,10 @@ FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families
 		stream = font_stream_new ((const char *) filename, (const char *) guid);
 		
 		if (index >= 0) {
-			if (OpenFaceByIndex (filename, stream, index, families, &ftface))
+			if (OpenFaceByIndex (filename, stream, index, families, lang, &ftface))
 				break;
 		} else {
-			if (OpenFaceByFamily (filename, stream, families, &ftface))
+			if (OpenFaceByFamily (filename, stream, families, lang, &ftface))
 				break;
 		}
 		
@@ -1364,12 +1373,14 @@ FontFace::~FontFace ()
 	}
 }
 
+static GHashTable *languages = NULL;
 static FT_Face default_face;
 
 void
 FontFace::Init ()
 {
 	FontFace::cache = g_hash_table_new ((GHashFunc) FcPatternHash, (GEqualFunc) FcPatternEqual);
+	languages = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) FT_Done_Face);
 	default_face = NULL;
 }
 
@@ -1377,9 +1388,15 @@ void
 FontFace::Shutdown ()
 {
 	g_hash_table_destroy (FontFace::cache);
+	FontFace::cache = NULL;
 	
-	if (default_face)
+	g_hash_table_destroy (languages);
+	languages = NULL;
+	
+	if (default_face) {
 		FT_Done_Face (default_face);
+		default_face = NULL;
+	}
 }
 
 static FcPattern *
@@ -1433,9 +1450,120 @@ FontFace::LoadDefaultFace ()
 	}
 }
 
+static struct {
+	const char *lang;
+	const char *families[3];
+} default_font_langs[] = {
+	{ "zh-tw", { "PMingLiu", NULL, NULL } },
+	{ "zh", { "SimSun", NULL, NULL } },
+	{ "ja", { "Meiryo", "MS PMincho", NULL } },
+	{ "ko", { "Batang", NULL, NULL } },
+};
+
+static const char lang_table[256] = {
+   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0,
+   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0,
+   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,  '-',  0,   0,
+  '0', '1', '2', '3', '4', '5', '6', '7',  '8', '9',  0,   0,   0,   0,   0,   0,
+  '-', 'a', 'b', 'c', 'd', 'e', 'f', 'g',  'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+  'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,  '-',
+   0,  'a', 'b', 'c', 'd', 'e', 'f', 'g',  'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+  'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,   0
+};
+
+static char *
+canon_lang (const char *lang)
+{
+	const char *s = lang;
+	char *canon, *d;
+	
+	d = canon = (char *) g_malloc (strlen (lang) + 1);
+	while (*s != '\0')
+		*d++ = lang_table[(unsigned char) *s++];
+	
+	*d = '\0';
+	
+	return canon;
+}
+
+static bool
+langs_equal (const char *lang0, const char *lang1)
+{
+	const unsigned char *p0 = (const unsigned char *) lang0;
+	const unsigned char *p1 = (const unsigned char *) lang1;
+	
+	while (lang_table[*p0] && lang_table[*p0] == lang_table[*p1])
+		p0++, p1++;
+	
+	return lang_table[*p0] == lang_table[*p1];
+}
+
+static bool
+langs_match (const char *pattern, const char *actual)
+{
+	size_t n = strlen (pattern);
+	
+	return strncmp (pattern, actual, n) == 0 &&
+		(actual[n] == '\0' || actual[n] == '-');
+}
+
+static bool
+special_lang (const char *lang)
+{
+	for (guint i = 0; i < G_N_ELEMENTS (default_font_langs); i++) {
+		if (langs_match (default_font_langs[i].lang, lang))
+			return true;
+	}
+	
+	return false;
+}
+
+FT_Face
+FontFace::LoadDefaultFaceForLang (const char *lang)
+{
+	bool loaded = false;
+	FcPattern *pattern;
+	FT_Face face;
+	
+	LOG_FONT (stderr, "Attempting to load default system font for %s\n", lang);
+	for (guint i = 0; i < G_N_ELEMENTS (default_font_langs); i++) {
+		const char **families = default_font_langs[i].families;
+		
+		if (!langs_match (default_font_langs[i].lang, lang))
+			continue;
+		
+		LOG_FONT (stderr, "    %s\n", default_font_langs[i].lang);
+		pattern = create_default_pattern (families);
+		FcPatternAddString (pattern, FC_LANG, (const FcChar8 *) lang);
+		loaded = LoadFontFace (&face, pattern, families);
+		FcPatternDestroy (pattern);
+		break;
+	}
+	
+	if (!loaded)
+		return NULL;
+	
+	g_hash_table_insert (languages, g_strdup (lang), face);
+	
+	return face;
+}
+
 FontFace *
 FontFace::GetDefault (FcPattern *pattern)
 {
+	const char *lang;
+	FT_Face face;
+	
+	FcPatternGetString (pattern, FC_LANG, 0, (FcChar8 **) &lang);
+	
+	if (lang && special_lang (lang)) {
+		if (!(face = (FT_Face) g_hash_table_lookup (languages, lang)))
+			face = LoadDefaultFaceForLang (lang);
+		
+		if (face != NULL)
+			return new FontFace (face, pattern, false);
+	}
+	
 	if (!default_face)
 		LoadDefaultFace ();
 	
@@ -2055,6 +2183,7 @@ TextFontDescription::TextFontDescription ()
 	set = 0;
 	guid = NULL;
 	family = NULL;
+	language = NULL;
 	filename = NULL;
 	style = FontStylesNormal;
 	weight = FontWeightsNormal;
@@ -2074,6 +2203,7 @@ TextFontDescription::~TextFontDescription ()
 		font->unref ();
 	
 	g_free (filename);
+	g_free (language);
 	g_free (family);
 	g_free (guid);
 }
@@ -2094,11 +2224,16 @@ TextFontDescription::CreatePattern (bool sized) const
 		FcPatternAddInteger (pattern, FC_INDEX, index);
 	}
 	
-	if (!(set & FontMaskFilename) || (set & FontMaskFamily)) {
-		families = g_strsplit (GetFamily (), ",", -1);
+	if (set & FontMaskFamily) {
+		families = GetFamilies ();
 		for (i = 0; families[i]; i++)
 			FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) g_strstrip (families[i]));
 		g_strfreev (families);
+	} else {
+		FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) "Portable User Interface");
+		
+		if (set & FontMaskLanguage)
+			FcPatternAddString (pattern, FC_LANG, (FcChar8 *) language);
 	}
 	
 	if (!IsDefault ())
@@ -2159,6 +2294,11 @@ TextFontDescription::UnsetFields (guint8 mask)
 		family = NULL;
 	}
 	
+	if (mask & FontMaskLanguage) {
+		g_free (language);
+		language = NULL;
+	}
+	
 	if (mask & FontMaskStretch)
 		stretch = FontStretchesNormal;
 	
@@ -2210,6 +2350,19 @@ TextFontDescription::Merge (TextFontDescription *desc, bool replace)
 		set |= FontMaskFamily;
 	}
 	
+	if ((desc->set & FontMaskLanguage) && (!(set & FontMaskLanguage) || replace)) {
+		if (!language || strcmp (language, desc->language) != 0) {
+			g_free (language);
+			if (desc->language)
+				language = g_strdup (desc->language);
+			else
+				language = NULL;
+			changed = true;
+		}
+		
+		set |= FontMaskLanguage;
+	}
+	
 	if ((desc->set & FontMaskStyle) && (!(set & FontMaskStyle) || replace)) {
 		if (style != desc->style) {
 			style = desc->style;
@@ -2255,13 +2408,7 @@ TextFontDescription::Merge (TextFontDescription *desc, bool replace)
 bool
 TextFontDescription::IsDefault () const
 {
-	if (set & FontMaskFilename)
-		return false;
-	
-	if (!(set & FontMaskFamily) || !family)
-		return true;
-	
-	return false;
+	return (set & (FontMaskFilename | FontMaskFamily)) == 0;
 }
 
 const char *
@@ -2367,8 +2514,8 @@ TextFontDescription::GetFamily () const
 	if ((set & FontMaskFamily) && family)
 		return family;
 	
-	// either no family is set or it is "Portable User Interface"
-	return "Lucida Sans Unicode, Lucida Sans";
+	// aka "Portable User Interface"
+	return NULL;
 }
 
 bool
@@ -2376,13 +2523,13 @@ TextFontDescription::SetFamily (const char *family)
 {
 	bool changed;
 	
+	if (family && !g_ascii_strcasecmp (family, "Portable User Interface"))
+		family = NULL;
+	
 	if (family) {
 		if (!this->family || g_ascii_strcasecmp (this->family, family) != 0) {
 			g_free (this->family);
-			if (g_ascii_strcasecmp (family, "Portable User Interface") != 0)
-				this->family = g_strdup (family);
-			else
-				this->family = NULL;
+			this->family = g_strdup (family);
 			set |= FontMaskFamily;
 			changed = true;
 		} else {
@@ -2393,6 +2540,44 @@ TextFontDescription::SetFamily (const char *family)
 		set &= ~FontMaskFamily;
 		g_free (this->family);
 		this->family = NULL;
+	}
+	
+	if (changed && font != NULL) {
+		font->unref ();
+		font = NULL;
+	}
+	
+	return changed;
+}
+
+const char *
+TextFontDescription::GetLanguage () const
+{
+	if ((set & FontMaskLanguage) != 0)
+		return language;
+	
+	return NULL;
+}
+
+bool
+TextFontDescription::SetLanguage (const char *lang)
+{
+	bool changed;
+	
+	if (lang) {
+		if (!language || !langs_equal (language, lang)) {
+			g_free (language);
+			language = canon_lang (lang);
+			set |= FontMaskLanguage;
+			changed = true;
+		} else {
+			changed = false;
+		}
+	} else {
+		changed = language != NULL;
+		set &= ~FontMaskLanguage;
+		g_free (language);
+		language = NULL;
 	}
 	
 	if (changed && font != NULL) {
@@ -2502,26 +2687,30 @@ TextFontDescription::ToString () const
 	
 	str = g_string_new ("");
 	
-	if (set & FontMaskFilename) {
-		g_string_append (str, "font:");
-		g_string_append (str, filename);
-		if (set & FontMaskIndex)
-			g_string_append_printf (str, "?index=%d", index);
-	}
-	
-	if ((set & FontMaskFamily) && family) {
-		if (set & FontMaskFilename)
-			g_string_append (str, "?family=");
-		
-		if (strchr (family, ',')) {
-			g_string_append_c (str, '"');
-			g_string_append (str, family);
-			g_string_append_c (str, '"');
-		} else {
-			g_string_append (str, family);
+	if (!IsDefault ()) {
+		if (set & FontMaskFilename) {
+			g_string_append (str, "font:");
+			g_string_append (str, filename);
+			if (set & FontMaskIndex)
+				g_string_append_printf (str, "?index=%d", index);
 		}
-	} else if (!(set & FontMaskFilename)) {
-		g_string_append (str, "\"Lucida Sans Unicode, Lucida Sans\"");
+		
+		if (set & FontMaskFamily) {
+			if (set & FontMaskFilename)
+				g_string_append (str, "?family=");
+			
+			if (strchr (family, ',')) {
+				g_string_append_c (str, '"');
+				g_string_append (str, family);
+				g_string_append_c (str, '"');
+			} else {
+				g_string_append (str, family);
+			}
+		}
+	} else {
+		g_string_append (str, "default-font://");
+		if (set & FontMaskLanguage)
+			g_string_append (str, language);
 	}
 	
 	if ((set & FontMaskStretch) && stretch != FontStretchesNormal) {

@@ -3768,6 +3768,19 @@ Inline::SetTextDecorations (TextDecorations value)
 	SetValue (Inline::TextDecorationsProperty, Value (value));
 }
 
+const char *
+Inline::GetLanguage ()
+{
+	Value *value = GetValue (Inline::LanguageProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+Inline::SetLanguage (const char *value)
+{
+	SetValue (Inline::LanguageProperty, Value (value));
+}
+
 Brush *
 Inline::GetForeground ()
 {

@@ -1,3 +1,30 @@
+2009-06-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (OpenFaceByIndex): If lang is non-null, then accept any
+	font face that fontconfig can find for the requested language.
+	(FontFace::LoadFontFace): Get the lang string and pass it along.
+	(FontFace::Init): initialize a default font hash table for
+	non-latin languages.
+	(FontFace::Shutdown): destroy aformentioned table.
+	(FontFace::LoadDefaultFaceForLang): New helper method to load the
+	default font face for a given language code.
+	(FontFace::GetDefault): If the language in the Fc pattern is
+	'special', use LoadDefaultFaceForLang().
+	(TextFontDescription::.ctor): Initialize language.
+	(TextFontDescription::.dtor): Free language.
+	(TextFontDescription::CreatePattern): Add the FC_LANG attribute if
+	appropriate.
+	(TextFontDescription::UnsetFields): Unset the language field.
+	(TextFontDescription::Merge): Merge the language field.
+	(TextFontDescription::GetLanguage): New method to get the language.
+	(TextFontDescription::SetLanguage): New method to set the language.
+	(TextFontDescription::ToString): Modified a bit.
+
+	* textblock.cpp (Inline::Equals): Compare XmlLanguage attributes
+	as well.
+	(Inline::UpdateFontDescription): Pass the XmlLanguage along to the
+	TextFontDescription.
+
 2009-06-04  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: The managed property could be either the property or

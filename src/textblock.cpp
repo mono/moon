@@ -179,6 +179,8 @@ Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 bool
 Inline::Equals (Inline *item)
 {
+	const char *lang0, *lang1;
+	
 	if (item->GetObjectType () != GetObjectType ())
 		return false;
 	
@@ -201,6 +203,15 @@ Inline::Equals (Inline *item)
 		return false;
 	
 	if (item->GetTextDecorations () != GetTextDecorations ())
+		return false;
+	
+	lang0 = item->GetLanguage ();
+	lang1 = GetLanguage ();
+	
+	if ((lang0 && !lang1) || (!lang0 && lang1))
+		return false;
+	
+	if (lang0 && lang1 && strcmp (lang0, lang1) != 0)
 		return false;
 	
 	// this isn't really correct - we should be checking
@@ -243,6 +254,9 @@ Inline::UpdateFontDescription ()
 		changed = true;
 	
 	if (font->SetStretch (GetFontStretch ()))
+		changed = true;
+	
+	if (font->SetLanguage (GetLanguage ()))
 		changed = true;
 	
 	return changed;

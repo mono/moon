@@ -63,7 +63,7 @@ class Inline : public DependencyObject, public ITextAttributes {
 	const static int ForegroundProperty;
  	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
 	const static int TextDecorationsProperty;
-	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullValidator */
+	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullValidator,GenerateAccessors */
 	const static int LanguageProperty;
 	
 	// internal properties to inherit the font filename/stream/guid between inlines and textblocks
@@ -87,6 +87,9 @@ class Inline : public DependencyObject, public ITextAttributes {
 	//
 	void SetFontFamily (FontFamily *value);
 	FontFamily *GetFontFamily ();
+	
+	void SetLanguage (const char *lang);
+	const char *GetLanguage ();
 	
 	void SetFontSize (double value);
 	double GetFontSize ();
