@@ -282,6 +282,7 @@ XamlContext::GetTemplateBindingSource ()
 class XamlElementInfo {
  protected:
 	Type::Kind kind;
+	Type::Kind property_owner_kind;
 	bool cdata_verbatim;
 
  public:
@@ -294,6 +295,8 @@ class XamlElementInfo {
 		this->kind = kind;
 		this->name = name;
 		this->cdata_verbatim = false;
+
+		this->property_owner_kind = Type::INVALID;
 	}
 
 	~XamlElementInfo ()
@@ -301,6 +304,10 @@ class XamlElementInfo {
 	}
 
 	virtual Type::Kind GetKind () { return kind; }
+
+	virtual void SetPropertyOwnerKind (Type::Kind value) { property_owner_kind = value; }
+	virtual Type::Kind GetPropertyOwnerKind () { return property_owner_kind; }
+
 	virtual const char *GetContentProperty (XamlParserInfo *p)
 	{
 		Type *t = Type::Find (kind);
@@ -3786,11 +3793,15 @@ XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, c
 XamlElementInfo *
 XamlElementInstance::FindPropertyElement (XamlParserInfo *p, const char *el, const char *dot)
 {
+	char *type_name = g_strndup (el, dot - el);
+
 	if (IsDependencyObject ()) {
 		const char *prop_name = dot + 1;
 		DependencyProperty *prop = DependencyProperty::GetDependencyProperty (info->GetKind (), prop_name);
 		if (prop) {
 			XamlElementInfoNative *info = new XamlElementInfoNative (Type::Find (prop->GetPropertyType ()));
+			info->SetPropertyOwnerKind (prop->GetOwnerType ());
+			g_free (type_name);
 			return info;
 		}
 	}
@@ -3800,11 +3811,15 @@ XamlElementInstance::FindPropertyElement (XamlParserInfo *p, const char *el, con
 		Value *v = new Value ();
 		if (p->loader->LookupObject (p, p->GetTopElementPtr (), GetAsValue (), p->current_namespace->GetUri (), el, false, v)) {
 			XamlElementInfoManaged *res = new XamlElementInfoManaged (g_strdup (p->current_namespace->GetUri ()), el, info, v->GetKind (), v);
+			XamlElementInfo *container = p->current_namespace->FindElement (p, type_name, NULL, false);
+			info->SetPropertyOwnerKind (container->GetKind ());
+			g_free (type_name);
 			return res;
 		}
 		delete v;
 	}
 
+	g_free (type_name);
 	return NULL;
 }
 
@@ -4464,7 +4479,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 		return false;
 	}
 
-	if (types->Find(item->info->GetKind())->IsCustomType()) {
+	if (types->Find (property->info->GetPropertyOwnerKind ())->IsCustomType ()) {
 		XamlElementInstanceManaged *mp = (XamlElementInstanceManaged *) item;
 		g_strfreev (prop_name);
 

@@ -1,3 +1,9 @@
+2009-06-04  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Track the owner type of properties so we know whether
+	or not to go into managed when we are dealing with an attached
+	property.
+
 2009-06-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* font.cpp (OpenFaceByIndex): If lang is non-null, then accept any
