@@ -2676,7 +2676,7 @@ void uielement_find_elements_in_host_coordinates_p (UIElement *instance, Point p
 void uielement_find_elements_in_host_coordinates_r (UIElement *instance, Rect p, HitTestCollection *uielement_list);
 
 /* @GeneratePInvoke */
-bool uielement_focus (UIElement *instance);
+bool uielement_focus (UIElement *instance, bool recurse);
 
 /* @GeneratePInvoke */
 Size uielement_get_desired_size (UIElement *instance);

@@ -350,7 +350,7 @@ public:
 	virtual bool CanCaptureMouse () { return true; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual bool Focus ();
+	virtual bool Focus (bool recurse = true);
 	
 	//
 	// ReleaseMouseCapture:

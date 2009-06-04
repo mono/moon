@@ -191,7 +191,7 @@ Control::GetTemplateChild (const char *name)
 }
 
 bool
-Control::Focus ()
+Control::Focus (bool recurse)
 {
 	Surface *surface = GetSurface ();
 	if (!surface)
@@ -216,13 +216,18 @@ Control::Focus ()
 		
 		Control *c = (Control *)e;
 		if (!c->GetIsEnabled ()) {
+			if (!recurse)
+				return false;
+
 			walker.SkipBranch ();
 			continue;
 		}
 		
-		if (c->IsLoaded () && c->GetRenderVisible () && c->GetIsTabStop ()) {
+		if (c->IsLoaded () && c->GetRenderVisible () && c->GetIsTabStop ())
 			return surface->FocusElement (c);
-		}
+		
+		if (!recurse)
+			return false;
 	}
 	return false;	
 }

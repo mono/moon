@@ -1,8 +1,23 @@
+2009-06-04  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h: Add IsEnabledChangedEvent to native
+	
+	* type-generated.cpp: regen
+
 2009-06-04  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: qtree_insert () takes no value. returns
 	the newly created QTreeNode. qtree_insert_at () renamed to 
 	qtree_insert_with_value ().
+
+2009-06-03  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.cpp|h:
+	* control.cpp|h:
+	* runtime.cpp:
+	* uielement.cpp|h: Calling Control.Focus () results in a recursive
+	check to find a focusable element. A mouse click does a non-recursive
+	check on the elements which were 'hit'. Fixes two DRTs.
 
 2009-06-03  Jackson Harper  <jackson@ximian.com>
 
@@ -35,12 +50,12 @@
 	- Add the ability for properties to force their set to be in
 	managed even if they come from a native type.
 	
-2009-06-03  Alan McGovernm  <amcgovern@novell.com>
+2009-06-03  Alan McGovern  <amcgovern@novell.com>
 
 	* uielement.cpp: Calculate the Transform between two UIElements
 	correctly.
 
-2009-06-03  Alan McGovernm  <amcgovern@novell.com>
+2009-06-03  Alan McGovern  <amcgovern@novell.com>
 
 	* transform.cpp: When instantiating a Matrix from a cairo_matrix_t
 	we need to populate M11/M12/M21 etc with the correct values.

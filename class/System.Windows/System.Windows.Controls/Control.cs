@@ -104,7 +104,7 @@ namespace System.Windows.Controls {
 		
 		public bool Focus()
 		{
-			return NativeMethods.uielement_focus (native);
+			return NativeMethods.uielement_focus (native, true);
 		}
 
 		protected DependencyObject GetTemplateChild (string childName)

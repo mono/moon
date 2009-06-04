@@ -2019,8 +2019,8 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
-		// bool uielement_focus (UIElement *instance);
-		public extern static bool uielement_focus (IntPtr instance);
+		// bool uielement_focus (UIElement *instance, bool recurse);
+		public extern static bool uielement_focus (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool recurse);
 
 		[DllImport ("moon")]
 		// Size uielement_get_desired_size (UIElement *instance);

@@ -54,7 +54,7 @@ public:
 	
 	virtual void OnApplyTemplate ();
 
-	virtual bool Focus ();
+	virtual bool Focus (bool recurse = true);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool ApplyTemplate ();

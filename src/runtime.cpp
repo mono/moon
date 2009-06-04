@@ -1357,7 +1357,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			} else {
 				for (UIElementNode* node = (UIElementNode*) new_input_list->First (); node != NULL; node = (UIElementNode*) node->next) {
 					UIElement *el = node->uielement;
-					if (el->Focus ())
+					if (el->Focus (false))
 						break;
 				}
 			}

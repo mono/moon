@@ -4677,12 +4677,12 @@ uielement_find_elements_in_host_coordinates_r (UIElement *instance, Rect p, HitT
 
 
 bool
-uielement_focus (UIElement *instance)
+uielement_focus (UIElement *instance, bool recurse)
 {
 	if (instance == NULL)
 		return false;
 	
-	return instance->Focus ();
+	return instance->Focus (recurse);
 }
 
 

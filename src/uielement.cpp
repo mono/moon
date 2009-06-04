@@ -770,7 +770,7 @@ UIElement::ClearLoaded ()
 }
 
 bool
-UIElement::Focus ()
+UIElement::Focus (bool recurse)
 {
 	return false;
 }
