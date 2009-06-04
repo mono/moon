@@ -208,7 +208,7 @@ namespace Mono.Xaml {
 			case "Mode":
 				if (str_value == null)
 					throw new XamlParseException (String.Format ("Invalid type '{0}' for Mode.", value == null ? "null" : value.GetType ().ToString ()));
-				b.Mode = (BindingMode) Enum.Parse (typeof (BindingMode), str_value);
+				b.Mode = (BindingMode) Enum.Parse (typeof (BindingMode), str_value, true);
 				break;
 			case "Path":
 				if (str_value == null)
