@@ -157,6 +157,7 @@ Canvas::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Propert
 		    args->GetId () == Canvas::LeftProperty) {
 			UIElement *ui = (UIElement *) obj;
 			
+			ui->InvalidateSubtreePaint ();
 			ui->InvalidateArrange ();
 			Rect *last = LayoutInformation::GetLayoutSlot (ui);
 			if (last) {

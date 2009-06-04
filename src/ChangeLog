@@ -1,5 +1,12 @@
 2009-06-04  Larry Ewing  <lewing@novell.com>
 
+	* canvas.cpp (OnCollectionItemChanged): call
+	InvalidateSubtreePaint on items when their position in the canvas
+	changes to make sure we clear the old region.  Fixes a couple of
+	the inkpresenter tests.
+
+2009-06-04  Larry Ewing  <lewing@novell.com>
+
 	* shape.cpp (ComputeStretchBounds): reject negative width/height
 	settings.  Fixes test-shape-negative.xaml
 
