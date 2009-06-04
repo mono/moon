@@ -1,5 +1,10 @@
 2009-06-04  Alan McGovern  <amcgovern@novell.com>
 
+	* control.h:
+	* type-generated.cpp: Actually add IsEnabledChangedEvent
+
+2009-06-04  Alan McGovern  <amcgovern@novell.com>
+
 	* control.h: Add IsEnabledChangedEvent to native
 	
 	* type-generated.cpp: regen

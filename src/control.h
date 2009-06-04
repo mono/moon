@@ -122,6 +122,9 @@ public:
 	void SetDefaultStyleKey (ManagedTypeInfo *value);
 	ManagedTypeInfo* GetDefaultStyleKey ();
 
+	// Events
+	const static int IsEnabledChangedEvent;
+	
 	/* @PropertyType=Brush,GenerateAccessors */
 	const static int BackgroundProperty;
 	/* @PropertyType=Brush,GenerateAccessors */

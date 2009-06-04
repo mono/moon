@@ -34,6 +34,11 @@ using System.Windows.Markup;
 namespace System.Windows.Controls {
 	public abstract partial class Control : FrameworkElement {
 
+		static Control ()
+		{
+			IsEnabledProperty.AddPropertyChangeCallback (OnIsEnabledPropertyChanged);
+		}
+		
 		private void Initialize ()
 		{
 			// hook up the TemplateApplied callback so we
