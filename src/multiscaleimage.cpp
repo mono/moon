@@ -50,6 +50,7 @@ struct QTree {
 	QTree* l1; //N-W
 	QTree* l2; //S-E
 	QTree* l3; //S-W
+	QTree* parent;
 };
 
 typedef QTree QTreeNode;
@@ -77,24 +78,32 @@ qtree_insert (QTree* root, int level, int x, int y)
 	while (level-- > 0) {
 		if (y < 1 << level) {
 			if (x < 1 << level) {
-				if (!node->l0)
+				if (!node->l0) {
 					node->l0 = g_new0 (QTreeNode, 1);
+					node->l0->parent = node;
+				}
 				node = node->l0;
 			} else {
-				if (!node->l1)
+				if (!node->l1) {
 					node->l1 = g_new0 (QTreeNode, 1);
+					node->l1->parent = node;
+				}
 				node = node->l1;
 				x -= 1 << level;
 			}
 		} else {
 			if (x < 1 << level) {
-				if (!node->l2)
+				if (!node->l2) {
 					node->l2 = g_new0 (QTreeNode, 1);
+					node->l2->parent = node;
+				}
 				node = node->l2;
 				y -= 1 <<level;
 			} else {
-				if (!node->l3)
+				if (!node->l3) {
 					node->l3 = g_new0 (QTreeNode, 1);
+					node->l3->parent = node;
+				}
 				node = node->l3;
 				x -= 1 << level;
 				y -= 1 << level;
@@ -169,7 +178,7 @@ qtree_remove_at (QTree* root, int level, int x, int y)
 
 
 bool
-qtree_has_value (QTree* node)
+qtree_node_has_value (QTreeNode* node)
 {
 	if (node)
 		return node->has_value;
@@ -199,6 +208,7 @@ qtree_destroy (QTree *root)
 	qtree_destroy (root->l1);
 	qtree_destroy (root->l2);
 	qtree_destroy (root->l3);
+	g_free (root);
 }
 
 
