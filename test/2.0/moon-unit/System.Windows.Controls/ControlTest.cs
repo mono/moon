@@ -277,17 +277,21 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void Events ()
 		{
+			bool changed = false;
 			ConcreteControl c = new ConcreteControl ();
 			c.IsEnabledChanged += delegate (object sender, DependencyPropertyChangedEventArgs e) {
 				Assert.AreSame (c, sender, "sender");
 				Assert.AreEqual (Control.IsEnabledProperty, e.Property, "IsEnabledProperty");
 				Assert.IsFalse ((bool) e.NewValue, "NewValue");
 				Assert.IsTrue ((bool) e.OldValue, "OldValue");
+				changed = true;
 			};
 			c.IsEnabled = false;
 			Assert.IsFalse (c.IsEnabled, "IsEnabled");
+			Assert.IsFalse (changed, "Should be async");
 		}
 
 		[TestMethod]
