@@ -1,3 +1,8 @@
+2009-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* multiscaleimage.cpp: Add a debugging abort to try to find the
+	issue with #2014.
+
 2009-06-04  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h:
