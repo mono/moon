@@ -378,6 +378,42 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void IsEnabledTest4 ()
+		{
+			int count = 0;
+			ContentControl a = new ContentControl ();
+			ContentControl b = new ContentControl ();
+
+			a.IsEnabledChanged += delegate { count++; };
+			b.IsEnabledChanged += delegate { count++; };
+
+			a.Content = b;
+
+			CreateAsyncTest (a,
+				() => {
+					a.IsEnabled = false;
+					Assert.AreEqual (0, count, "#1");
+				},
+				() => {
+					Assert.AreEqual (2, count, "#2");
+				}
+			);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void IsEnabledTest5 ()
+		{
+			int count = 0;
+			ContentControl a = new ContentControl ();
+			a.IsEnabledChanged += delegate { count++; };
+			a.IsEnabled = false;
+			Assert.AreEqual (0, count, "#1");
+		}
+
+		[TestMethod]
 		public void OverrideContentShareControl ()
 		{
 			ContentControlSharer cc1 = new ContentControlSharer ();
