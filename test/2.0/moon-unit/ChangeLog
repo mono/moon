@@ -1,3 +1,4 @@
+<<<<<<< HEAD:test/2.0/moon-unit/ChangeLog
 2009-06-03  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/UIElementTest.cs: Commit two new tests for
@@ -154,6 +155,13 @@
 	* Makefile.am: Include ClientAccessPolicy from moon/class so we 
 	can make useful socket policy tests.
 
+=======
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyPropertyTest.cs: Added a test checking
+	how custom DPs affect parenting/namescopes.
+	
+>>>>>>> In test/2.0/moon-unit::test/2.0/moon-unit/ChangeLog
 2009-05-21  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Browser/ScriptableTest.cs: disable CreateableType,

@@ -111,6 +111,10 @@ namespace MoonTest.System.Windows
 
 #region Canvas Custom
 		[TestMethod ()]
+<<<<<<< HEAD:test/2.0/moon-unit/System.Windows/DependencyPropertyTest.cs
+=======
+		[MoonlightBug ()]
+>>>>>>> In test/2.0/moon-unit::test/2.0/moon-unit/System.Windows/DependencyPropertyTest.cs
 		public void Custom_Property_Parents ()
 		{
 			bool buttonLoaded = false;
