@@ -1,5 +1,9 @@
 2009-06-04  Jackson Harper  <jackson@ximian.com>
 
+	* ManagedXamlLoader.cs: Make enum parsing case insensitive.
+
+2009-06-04  Jackson Harper  <jackson@ximian.com>
+
 	* MarkupExpressionParser.cs: Binding modes are not case sensitive.
 
 2009-06-04  Alan McGovern  <amcgovern@novell.com>

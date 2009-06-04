@@ -590,7 +590,7 @@ namespace Mono.Xaml
 			if (type == null || !type.IsEnum)
 				return false;
 
-			object e = Enum.Parse (type, str_value);
+			object e = Enum.Parse (type, str_value, true);
 
 			NativeMethods.value_free_value2 ((IntPtr)target_ptr);
 
