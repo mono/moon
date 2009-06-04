@@ -252,6 +252,11 @@ Shape::ComputeStretchBounds ()
 	Size framework (GetActualWidth (), GetActualHeight ());
 	Size specified = Size (GetWidth (), GetHeight ());
 
+	if (specified.width <= 0.0 || specified.height <= 0.0) { 
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return Rect ();
+	}
+
 	if (GetVisualParent () && GetVisualParent()->Is (Type::CANVAS)) {
 		if (!isnan (specified.width))
 			framework.width = specified.width;
