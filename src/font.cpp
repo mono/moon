@@ -1144,7 +1144,7 @@ FontFace::OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path
 }
 
 static bool
-OpenFaceByIndex (const FcChar8 *filename, FT_Stream stream, int index, const char **families, const FcChar8 *lang, FT_Face *face)
+OpenFaceByIndex (const FcChar8 *filename, FT_Stream stream, int index, const char **families, const char *lang, FT_Face *face)
 {
 	FT_Face ftface = NULL;
 	FT_Open_Args args;
@@ -1205,7 +1205,7 @@ OpenFaceByIndex (const FcChar8 *filename, FT_Stream stream, int index, const cha
 }
 
 static bool
-OpenFaceByFamily (const FcChar8 *filename, FT_Stream stream, const char **families, const FcChar8 *lang, FT_Face *face)
+OpenFaceByFamily (const FcChar8 *filename, FT_Stream stream, const char **families, const char *lang, FT_Face *face)
 {
 	FT_Face ftface = NULL;
 	FT_Open_Args args;
@@ -1235,17 +1235,15 @@ OpenFaceByFamily (const FcChar8 *filename, FT_Stream stream, const char **famili
 }
 
 bool
-FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families)
+FontFace::LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families, const char *lang)
 {
-	FcChar8 *filename = NULL, *guid = NULL, *lang = NULL;
 	FcPattern *matched = NULL, *fallback = NULL;
+	FcChar8 *filename = NULL, *guid = NULL;
 	bool try_nofile = false;
 	FT_Face ftface = NULL;
 	FT_Stream stream;
 	FcResult result;
 	int index, i;
-	
-	FcPatternGetString (pattern, FC_LANG, 0, &lang);
 	
 	if (FcPatternGetString (pattern, FC_FILE, 0, &filename) == FcResultMatch) {
 		struct stat st;
@@ -1400,7 +1398,7 @@ FontFace::Shutdown ()
 }
 
 static FcPattern *
-create_default_pattern (const char **families)
+create_default_pattern (const char **families, const char *lang)
 {
 	FcPattern *pattern;
 	int i;
@@ -1410,6 +1408,9 @@ create_default_pattern (const char **families)
 	
 	for (i = 0; families[i]; i++)
 		FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) families[i]);
+	
+	if (lang)
+		FcPatternAddString (pattern, FC_LANG, (FcChar8 *) lang);
 	
 	FcDefaultSubstitute (pattern);
 	
@@ -1444,20 +1445,19 @@ FontFace::LoadDefaultFace ()
 		const char **families = default_font_names[i].families;
 		
 		LOG_FONT (stderr, "    %s\n", default_font_names[i].source);
-		pattern = create_default_pattern (families);
-		loaded = LoadFontFace (&default_face, pattern, families);
+		pattern = create_default_pattern (families, NULL);
+		loaded = LoadFontFace (&default_face, pattern, families, NULL);
 		FcPatternDestroy (pattern);
 	}
 }
 
 static struct {
 	const char *lang;
-	const char *families[3];
+	const char *families[5];
 } default_font_langs[] = {
-	{ "zh-tw", { "PMingLiu", NULL, NULL } },
-	{ "zh", { "SimSun", NULL, NULL } },
-	{ "ja", { "Meiryo", "MS PMincho", NULL } },
-	{ "ko", { "Batang", NULL, NULL } },
+	{ "zh", { "SimSun", "SimHei", "Microsoft YaHei", "Arial Unicode MS", NULL } },
+	{ "ja", { "Meiryo", "MS PMincho", "MS PGothic", "MS UI Gothic", NULL } },
+	{ "ko", { "Malgun Gothic", "Dotum", "Arial Unicode MS", "Batang", NULL } },
 };
 
 static const char lang_table[256] = {
@@ -1521,27 +1521,34 @@ special_lang (const char *lang)
 FT_Face
 FontFace::LoadDefaultFaceForLang (const char *lang)
 {
+	const char *families[2] = { NULL, NULL };
 	bool loaded = false;
 	FcPattern *pattern;
 	FT_Face face;
 	
 	LOG_FONT (stderr, "Attempting to load default system font for %s\n", lang);
-	for (guint i = 0; i < G_N_ELEMENTS (default_font_langs); i++) {
-		const char **families = default_font_langs[i].families;
-		
+	for (guint i = 0; i < G_N_ELEMENTS (default_font_langs) && !loaded; i++) {
 		if (!langs_match (default_font_langs[i].lang, lang))
 			continue;
 		
-		LOG_FONT (stderr, "    %s\n", default_font_langs[i].lang);
-		pattern = create_default_pattern (families);
-		FcPatternAddString (pattern, FC_LANG, (const FcChar8 *) lang);
-		loaded = LoadFontFace (&face, pattern, families);
-		FcPatternDestroy (pattern);
-		break;
+		for (guint j = 0; default_font_langs[i].families[j] && !loaded; j++) {
+			families[0] = default_font_langs[i].families[j];
+			pattern = create_default_pattern (families, lang);
+			loaded = LoadFontFace (&face, pattern, families, NULL);
+			FcPatternDestroy (pattern);
+		}
 	}
 	
-	if (!loaded)
-		return NULL;
+	if (!loaded) {
+		// try querying for a default sans font that supports the lang
+		families[0] = "Sans";
+		pattern = create_default_pattern (families, lang);
+		loaded = LoadFontFace (&face, pattern, families, lang);
+		FcPatternDestroy (pattern);
+		
+		if (!loaded)
+			return NULL;
+	}
 	
 	g_hash_table_insert (languages, g_strdup (lang), face);
 	
@@ -1591,7 +1598,7 @@ FontFace::Load (const TextFontDescription *desc)
 			}
 #endif
 			
-			if ((loaded = LoadFontFace (&ftface, pattern, (const char **) families)))
+			if ((loaded = LoadFontFace (&ftface, pattern, (const char **) families, NULL)))
 				face = new FontFace (ftface, pattern, true);
 			else
 				LOG_FONT (stderr, "\t* falling back to default system font...\n");

@@ -87,7 +87,7 @@ class FontFace {
 	FT_Face face;
 	
 	static bool OpenFontDirectory (FT_Face *face, FcPattern *pattern, const char *path, const char **families);
-	static bool LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families);
+	static bool LoadFontFace (FT_Face *face, FcPattern *pattern, const char **families, const char *lang);
 	
 	static FT_Face LoadDefaultFaceForLang (const char *lang);
 	static FontFace *GetDefault (FcPattern *pattern);
