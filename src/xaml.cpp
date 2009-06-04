@@ -110,6 +110,7 @@ static const char* begin_buffering_element_names [] = {
 
 static bool value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop_name, const char *str, Value **v);
 static bool dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
+static bool set_managed_attached_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 static void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child, bool fail_if_no_prop);
 static void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 static void value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
@@ -1211,7 +1212,6 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 	virtual void AddToContainer (XamlParserInfo *p, const char *name, const char *prop_name, XamlElementInstance *item);
 
 	virtual bool SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value);
-	virtual bool SetAttachedProperty (XamlParserInfo *p, XamlElementInstance *target, XamlElementInstance *value);
 
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value);
@@ -4211,17 +4211,6 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char
 }
 
 bool
-XamlElementInstanceManaged::SetAttachedProperty (XamlParserInfo *p, XamlElementInstance *target, XamlElementInstance *value)
-{
-	if (!element_type == PROPERTY) {
-		printf ("somehow we are setting an attached property on an ELEMENT instance (%s).", element_name);
-		return false;
-	}
-
-	return p->loader->SetProperty (p, p->GetTopElementPtr (), ((XamlElementInfoManaged *) info)->xmlns, target->GetAsValue (), this, target->GetParentPointer (), element_name, value->GetAsValue (), value);
-}
-
-bool
 XamlElementInstanceManaged::SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value)
 {
 	if (!p->loader)
@@ -4447,6 +4436,20 @@ dependency_object_missed_property (XamlElementInstance *item, XamlElementInstanc
 }
 
 static bool
+set_managed_attached_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *prop, XamlElementInstance *value)
+{
+	if (!p->loader)
+		return false;
+	XamlElementInfoManaged *mm = NULL;
+	if (item->info->RequiresManagedSet ())
+		mm = (XamlElementInfoManaged *) item->info;
+	else if (prop->info->RequiresManagedSet ())
+		mm = (XamlElementInfoManaged *) prop->info;
+
+	return p->loader->SetProperty (p, p->GetTopElementPtr (), mm ? mm->xmlns : NULL, item->GetAsValue (), item, item->GetParentPointer (), prop->element_name, value->GetAsValue (), value);
+}
+
+static bool
 dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
 {
 	char **prop_name = g_strsplit (property->element_name, ".", -1);
@@ -4465,7 +4468,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 		XamlElementInstanceManaged *mp = (XamlElementInstanceManaged *) item;
 		g_strfreev (prop_name);
 
-		return mp->SetAttachedProperty (p, item, value);
+		return set_managed_attached_property (p, item, property, value);
 	}
 
 	if (!dep) {
