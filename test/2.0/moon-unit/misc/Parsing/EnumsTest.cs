@@ -18,7 +18,7 @@ namespace MoonTest.Misc
 	{
 
 		[TestMethod]
-		public void ParseManagedEnum3 ()
+		public void ParseManagedEnum ()
 		{
 			Canvas c;
 
@@ -26,6 +26,21 @@ namespace MoonTest.Misc
 					xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 					xmlns:vsm=""clr-namespace:System.Windows;assembly=System.Windows"">
 					<Canvas.Resources><vsm:Visibility x:Key=""visibility"">Collapsed</vsm:Visibility></Canvas.Resources></Canvas>");
+
+			Assert.IsNotNull (c.Resources ["visibility"], "1");
+			Assert.AreEqual (typeof (Visibility), c.Resources ["visibility"].GetType (), "2");
+			Assert.AreEqual (Visibility.Collapsed, c.Resources ["visibility"], "3");
+		}
+
+		[TestMethod]
+		public void ParseManagedEnumLowerCase ()
+		{
+			Canvas c;
+
+			c = (Canvas) XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+					xmlns:vsm=""clr-namespace:System.Windows;assembly=System.Windows"">
+					<Canvas.Resources><vsm:Visibility x:Key=""visibility"">collapsed</vsm:Visibility></Canvas.Resources></Canvas>");
 
 			Assert.IsNotNull (c.Resources ["visibility"], "1");
 			Assert.AreEqual (typeof (Visibility), c.Resources ["visibility"].GetType (), "2");
