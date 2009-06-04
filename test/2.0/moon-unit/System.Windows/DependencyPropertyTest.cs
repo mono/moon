@@ -1370,6 +1370,14 @@ namespace MoonTest.System.Windows
 			Assert.IsInstanceOfType<Expression> (c.ReadLocalValue (ManagedDPPriority.BindingPropProperty), "#3");
 		}
 
+		[TestMethod]
+		public void ManagedPriority2 ()
+		{
+			ManagedDPPriority c = new ManagedDPPriority ();
+			c.SetValue (ManagedDPPriority.BindingPropProperty, new Binding ());
+			Assert.IsTrue (c.PropertyChanged, "#1");
+		}
+
 #endregion
 	}
 	
@@ -1404,13 +1412,22 @@ namespace MoonTest.System.Windows
 
 	public class ManagedDPPriority : Control
 	{
-		public static readonly DependencyProperty BindingPropProperty = DependencyProperty.Register ("BindingProp", typeof (Binding), typeof (ManagedDPPriority), null);
+		public static readonly DependencyProperty BindingPropProperty;
+		static ManagedDPPriority ()
+		{
+			PropertyMetadata m = new PropertyMetadata ((o, e) => ((ManagedDPPriority) o).PropertyChanged = true);
+			BindingPropProperty = DependencyProperty.Register ("BindingProp", typeof (Binding), typeof (ManagedDPPriority), m);
+		}
 
 		public Binding BindingProp {
 			get; set;
 		}
 		
 		public Binding NormalProp {
+			get; set;
+		}
+
+		public bool PropertyChanged {
 			get; set;
 		}
 	}

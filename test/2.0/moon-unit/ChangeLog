@@ -1,5 +1,10 @@
 2009-06-04  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/DependencyPropertyTests.cs: Add test to check if the
+	Changed event for user registered DPs is sync or async.
+
+	2009-06-04  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/ControlTest.cs: Add test to show that IsEnabledChanged
 	is emitted asynchronously. Remove MoonlightBug from a test which is
 	passing.
