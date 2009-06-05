@@ -205,7 +205,7 @@ namespace Mono {
 			TypeConverter tc = null;
 			
 			if (dp.IsAttached) {
-				tc = Helper.GetConverterFor (null, dp.PropertyType);
+				tc = Helper.GetConverterFor (GetGetterMethodForAttachedDP (dp, val), dp.PropertyType);
 			}
 			else if (objectType != null) {
 				PropertyInfo pi = objectType.GetProperty (dp.Name);
@@ -228,5 +228,13 @@ namespace Mono {
 
 			return tc.ConvertFrom (val);
 		}
+
+		
+		private static MethodInfo GetGetterMethodForAttachedDP (DependencyProperty dp, object obj)
+		{
+			MethodInfo res = dp.DeclaringType.GetMethod (String.Concat ("Get", dp.Name), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+			return res;
+		}
+
 	}
 }

@@ -1,5 +1,10 @@
 2009-06-05  Jackson Harper  <jackson@ximian.com>
 
+	* MoonlightTypeConverter.cs: Grab typeconverters from the getter
+	method for attached properties.
+
+2009-06-05  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs (TrySetAttachedProperty): This would offend
 	spock. When setting attached properties we get the type converter
 	from the property's getter.
