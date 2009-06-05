@@ -197,14 +197,20 @@ namespace System.Windows {
 			for (int i = 0; Parts != null && i < Parts.Count; i++) {
 				var part = Parts [i];
 
-				if (part.Source[0] == '/') {
+				Assembly asm = LoadXapAssembly (part.Source);
+				if (asm != null) {
+					assemblies.Add (asm);
+					SetEntryAssembly (asm);
+				}
+				else {
 					WebClient client = new WebClient ();
 					client.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
 						if (e.Cancelled || (e.Error != null))
 							return;
 
 						AssemblyPart a = new AssemblyPart ();
-						Assembly asm = a.Load (e.Result);
+
+						asm = a.Load (e.Result);
 						
 						SetEntryAssembly (asm);
 
@@ -214,10 +220,6 @@ namespace System.Windows {
 					};
 					client.OpenReadAsync (new Uri (part.Source, UriKind.Relative));
 					delay_load = true;
-				} else {
-					Assembly asm = LoadXapAssembly (part.Source);
-					assemblies.Add (asm);
-					SetEntryAssembly (asm);
 				}
 			}
 
@@ -236,6 +238,8 @@ namespace System.Windows {
 
 			try {
 				return Assembly.LoadFrom (filename);
+			} catch (FileNotFoundException) {
+				return null;
 			} catch (Exception e) {
 				throw new MoonException (2105, string.Format ("Error while loading the '{0}' assembly : {1}", name, e.Message));
 			}
