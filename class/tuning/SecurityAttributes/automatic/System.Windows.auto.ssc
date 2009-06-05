@@ -173,7 +173,7 @@
 +SSC-M: System.Windows.Deployment System.Windows.Deployment::get_Current()
 +SSC-M: System.Void System.Windows.Deployment::set_Current(System.Windows.Deployment)
 +SSC-M: Mono.Types System.Windows.Deployment::get_Types()
-+SSC-M: System.Boolean System.Windows.Deployment::ReadManifest()
++SSC-M: System.Void System.Windows.Deployment::ReadManifest()
 +SSC-M: System.Boolean System.Windows.Deployment::InitializeDeployment()
 +SSC-M: System.Boolean System.Windows.Deployment::InitializeDeployment(System.IntPtr,System.String)
 +SSC-M: System.Reflection.Assembly System.Windows.Deployment::LoadXapAssembly(System.String)

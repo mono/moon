@@ -1,3 +1,27 @@
+2009-06-04  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::MonoGetPropertyFromName): new
+	method, look up the property on a type and print a nice warning if
+	we fail.
+	(surface_network_error_tickcall): we can't emit the network error
+	from inside UrlNotify, since the handler can remove the plugin at
+	that point, and firefox takes a shit all over itself in that case.
+	(PluginInstance::UrlNotify): if there was a network error
+	downloading the xap, add the tick call to emit the proper error.
+	(PluginInstance::InitializePluginAppDomain): look up the
+	MoonException type and some properties to use when accessing it.
+	(PluginInstance::ManagedExceptionToErrorEventArgs): convert from a
+	managed exception to an ErrorEventArgs which we'll then emit
+	through the surface's ErrorEvent.
+	(PluginInstance::ManagedCreateXamlLoader): check for an exception,
+	and if there was one, emit the error on the surface.
+	(PluginInstance::ManagedInitializeDeployment): same.
+	(PluginInstance::ManagedDestroyApplication): same.
+
+	* plugin-class.cpp (EventListenerProxy::proxy_listener_to_javascript):
+	set the current deployment earlier.  definitely needs to be set
+	before we call the callback :)
+
 2009-06-02  Geoff Norton  <gnorton@novell.com>
 
 	* plugin.cpp: Ensure we dont start downloading the source until we have

@@ -1,3 +1,8 @@
+2009-06-04  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::EmitError): stop unreffing the args after
+	the Emit call.  Emit unrefs them for us.
+
 2009-06-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (layout_word_wrap): Stop processing when we come to

@@ -103,23 +103,48 @@ namespace System.Windows {
 				PluginHost.SetPluginHandle (plugin);
 		}
 
-		internal bool ExtractXap (string xapPath) {
+		internal void ExtractXap (string xapPath) {
 			xap_dir = NativeMethods.xap_unpack (xapPath);
-			if (xap_dir == null){
-				Report.Error ("Failure to unpack {0}", xapPath);
-				return false;
-			}
-			return true;
+			if (xap_dir == null)
+				throw new MoonException (2103, "Invalid or malformed application: Check manifest");
 		}
 
-		internal bool ReadManifest () {
+		void CompareRuntimeVersions ()
+		{
+			int[] versions = new int[4];
+			string[] version_strings = RuntimeVersion.Split ('.');
+
+			for (int i = 0; i < version_strings.Length; i ++) {
+				if (!Int32.TryParse (version_strings[i], out versions[i]))
+					throw new MoonException (2105, "invalid RuntimeVersion");
+			}
+
+			if (versions[0] == 2) {
+				/* SL2 accepts anything newer than 2.0.30524.0 */
+				if (version_strings.Length > 1)
+					if (versions[1] != 0)
+						throw new MoonException (2106, "Failed to load the application. It was built with an obsolete version of Silverlight");
+
+				if (version_strings.Length > 2)
+					if (versions[2] < 30524)
+						throw new MoonException (2106, "Failed to load the application. It was built with an obsolete version of Silverlight");
+			}
+			else if (versions[0] == 3) {
+				// we don't actually validate any 3.0
+				// runtime versions yet since there's
+				// no telling what it'll be at RTM.
+			}
+			else {
+				throw new MoonException (2105, "invalid RuntimeVersion");
+			}
+		}
+
+		internal void ReadManifest () {
 			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Surface.Native, PluginHost.Handle);
 			string app_manifest = Path.Combine (XapDir, "AppManifest.xaml");
 
-			if (!File.Exists (app_manifest)){
-				Report.Error ("No AppManifest.xaml found on the XAP package");
-				return false;
-			}
+			if (!File.Exists (app_manifest))
+				throw new MoonException(2103, "Invalid or malformed application: Check manifest");
 
 			string app_manifest_contents;
 
@@ -130,20 +155,19 @@ namespace System.Windows {
 				loader.Hydrate (native, app_manifest_contents);
 			}
 			catch (Exception e) {
-				Report.Error (e.ToString());
-				return false;
+				throw new MoonException (7016, e.Message);
 			}
 
-			if (EntryPointAssembly == null) {
-				Report.Error ("AppManifest.xaml: No EntryPointAssembly found");
-				return false;
-			}
+			if (RuntimeVersion == null)
+				throw new MoonException (2105, "No RuntimeVersion specified in AppManifest");
 
-			if (EntryPointType == null) {
-				Report.Error ("No entrypoint defined in the AppManifest.xaml");
-				return false;
-			}
-			return true;
+			CompareRuntimeVersions ();
+
+			if (EntryPointAssembly == null)
+				throw new MoonException (2103, "Invalid or malformed application: Check manifest");
+
+			if (EntryPointType == null)
+				throw new Exception ("No entrypoint defined in the AppManifest.xaml");
 		}
 
 		internal bool InitializeDeployment () {
@@ -157,10 +181,8 @@ namespace System.Windows {
 		internal bool InitializeDeployment (IntPtr plugin, string xapPath) {
 			TerminateCurrentApplication ();
 			InitializePluginHost (plugin);
-			if (!ExtractXap (xapPath))
-				return false;
-			if (!ReadManifest ())
-				return false;
+			ExtractXap (xapPath);
+			ReadManifest ();
 
 			NativeMethods.deployment_set_is_loaded_from_xap (native, true);
 			return LoadAssemblies ();
@@ -194,9 +216,6 @@ namespace System.Windows {
 					delay_load = true;
 				} else {
 					Assembly asm = LoadXapAssembly (part.Source);
-					if (asm == null)
-						return false;
-
 					assemblies.Add (asm);
 					SetEntryAssembly (asm);
 				}
@@ -212,16 +231,13 @@ namespace System.Windows {
 		{
 			string filename = Path.GetFullPath (Path.Combine (XapDir, name));
 			// note: the content of the AssemblyManifest.xaml file is untrusted
-			if (!filename.StartsWith (XapDir)) {
-				Report.Error ("Trying to load the assembly '{0}' outside the XAP directory.", name);
-				return null;
-			}
+			if (!filename.StartsWith (XapDir))
+				throw new MoonException (2105, string.Format ("Trying to load the assembly '{0}' outside the XAP directory.", name));
 
 			try {
 				return Assembly.LoadFrom (filename);
 			} catch (Exception e) {
-				Report.Error ("Error while loading the '{0}' assembly: {1}", name, e);
-				return null;
+				throw new MoonException (2105, string.Format ("Error while loading the '{0}' assembly : {1}", name, e.Message));
 			}
 		}
 
@@ -243,20 +259,15 @@ namespace System.Windows {
 		internal bool CreateApplication () {
 			SetCurrentApplication (null);
 
-			if (EntryAssembly == null) {
-				Report.Error ("Could not find the entry point assembly");
-				return false;
-			}
+			if (EntryAssembly == null)
+				throw new Exception ("Could not find the entry point assembly");
 
 			Type entry_type = EntryAssembly.GetType (EntryPointType);
-			if (entry_type == null){
-				Report.Error ("Could not find the startup type {0} on the {1}",
-					      EntryPointType, EntryPointAssembly);
-				return false;
-			}
+			if (entry_type == null)
+				throw new MoonException (2103, string.Format ("Could not find the startup type {0} on the {1}",
+									      EntryPointType, EntryPointAssembly));
 
-			if (!entry_type.IsSubclassOf (typeof (Application)) && entry_type != typeof (Application)){
-				Report.Error ("Startup type does not derive from System.Windows.Application");
+			if (!entry_type.IsSubclassOf (typeof (Application)) && entry_type != typeof (Application)) {
 #if SANITY
 				Type t = entry_type;
 				int spacing = 0;
@@ -271,7 +282,8 @@ namespace System.Windows {
 					t = t.BaseType;
 				}
 #endif
-				return false;
+
+				throw new MoonException (2103, "Startup type does not derive from System.Windows.Application");
 			}
 			
 			foreach (Assembly a in Assemblies)
@@ -281,9 +293,8 @@ namespace System.Windows {
 
 			try {
 				instance = (Application) Activator.CreateInstance (entry_type);
-			} catch (Exception e){
-				Report.Error ("Error while creating the instance: {0}", e);
-				return false;
+			} catch (Exception e) {
+				throw new MoonException (2103, string.Format ("Error while creating the instance of type {0}", entry_type));
 			}
 
 			SetCurrentApplication (instance);

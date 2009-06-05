@@ -1477,6 +1477,13 @@ PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer
 	return len;
 }
 
+static void
+surface_network_error_tickcall (EventObject *data)
+{
+	Surface *s = (Surface*)data;
+	s->EmitError (new ErrorEventArgs (RuntimeError, 2104, "Failed to download silverlight application."));
+}
+
 void
 PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 {
@@ -1491,6 +1498,7 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 		d(printf ("Download of URL %s failed: %i (%s)\n", url, reason,
 			  reason == NPRES_USER_BREAK ? "user break" :
 			  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
+		GetSurface()->AddTickCall (surface_network_error_tickcall);
 	}
 #endif
 	
@@ -1940,6 +1948,18 @@ PluginInstance::MonoGetMethodFromName (MonoClass *klass, const char *name, int n
 	return method;
 }
 
+MonoProperty *
+PluginInstance::MonoGetPropertyFromName (MonoClass *klass, const char *name)
+{
+	MonoProperty *property;
+	property = mono_class_get_property_from_name (klass, name);
+
+	if (!property)
+		printf ("Warning could not find property %s\n", name);
+
+	return property;
+}
+
 bool PluginInstance::mono_is_loaded = false;
 
 bool
@@ -1978,14 +1998,22 @@ PluginInstance::InitializePluginAppDomain ()
 	if (system_windows_assembly) {
 		MonoImage *image;
 		MonoClass *app_launcher;
-		
+
+		result = true;
+
 		image = mono_assembly_get_image (system_windows_assembly);
 		
 		d (printf ("Assembly: %s\n", mono_image_get_filename (image)));
 		
 		app_launcher = mono_class_from_name (image, "Mono", "ApplicationLauncher");
 		if (!app_launcher) {
-			printf ("Warning: could not find ApplicationLauncher type\n");
+			g_warning ("could not find ApplicationLauncher type");
+			return false;
+		}
+
+		moon_exception = mono_class_from_name (image, "Mono", "MoonException");
+		if (!moon_exception) {
+			g_warning ("could not find MoonException type");
 			return false;
 		}
 		
@@ -1994,8 +2022,18 @@ PluginInstance::InitializePluginAppDomain ()
 		moon_initialize_deployment_xaml   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 0);
 		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication", -1);
 
-		if (moon_load_xaml != NULL && moon_initialize_deployment_xap != NULL && moon_initialize_deployment_xaml != NULL && moon_destroy_application != NULL)
-			result = true;
+		if (moon_load_xaml == NULL || moon_initialize_deployment_xap == NULL || moon_initialize_deployment_xaml == NULL || moon_destroy_application == NULL) {
+			g_warning ("lookup for ApplicationLauncher methods failed");
+			result = false;
+		}
+
+		moon_exception_message = MonoGetPropertyFromName (mono_get_exception_class(), "Message");
+		moon_exception_error_code = MonoGetPropertyFromName (moon_exception, "ErrorCode");
+
+		if (moon_exception_message == NULL || moon_exception_error_code == NULL) {
+			g_warning ("lookup for MoonException properties failed");
+			result = false;
+		}
 	} else {
 		printf ("Plugin AppDomain Creation: could not find System.Windows.dll.\n");
 	}
@@ -2005,10 +2043,31 @@ PluginInstance::InitializePluginAppDomain ()
 	return result;
 }
 
+ErrorEventArgs *
+PluginInstance::ManagedExceptionToErrorEventArgs (MonoObject *exc)
+{
+	int errorCode = -1;
+	char* message = NULL;
+
+	if (mono_object_isinst (exc, mono_get_exception_class())) {
+		MonoObject *ret = mono_property_get_value (moon_exception_message, exc, NULL, NULL);
+
+		message = mono_string_to_utf8 ((MonoString*)ret);
+	}
+	if (mono_object_isinst (exc, moon_exception)) {
+		MonoObject *ret = mono_property_get_value (moon_exception_error_code, exc, NULL, NULL);
+
+		errorCode = *(int*) mono_object_unbox (ret);
+	}
+	
+	return new ErrorEventArgs (RuntimeError, errorCode, message);
+}
+
 gpointer
 PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *file, const char *str)
 {
 	MonoObject *loader;
+	MonoObject *exc = NULL;
 	if (moon_load_xaml == NULL)
 		return NULL;
 
@@ -2022,7 +2081,13 @@ PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *
 	params [2] = &surface;
 	params [3] = file ? mono_string_new (mono_domain_get (), file) : NULL;
 	params [4] = str ? mono_string_new (mono_domain_get (), str) : NULL;
-	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, NULL);
+	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, &exc);
+
+	if (exc) {
+		deployment->GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
+		return NULL;
+	}
+
 	return GUINT_TO_POINTER (mono_gchandle_new (loader, false));
 }
 
@@ -2055,17 +2120,23 @@ PluginInstance::ManagedInitializeDeployment (const char *file)
 	PluginInstance *this_obj = this;
 	void *params [2];
 	MonoObject *ret;
+	MonoObject *exc = NULL;
 
 	Deployment::SetCurrent (deployment);
 
 	params [0] = &this_obj;
 	if (file != NULL) {
 		params [1] = mono_string_new (mono_domain_get (), file);
-		ret = mono_runtime_invoke (moon_initialize_deployment_xap, NULL, params, NULL);
+		ret = mono_runtime_invoke (moon_initialize_deployment_xap, NULL, params, &exc);
 	} else {
-		ret = mono_runtime_invoke (moon_initialize_deployment_xaml, NULL, params, NULL);
+		ret = mono_runtime_invoke (moon_initialize_deployment_xaml, NULL, params, &exc);
 	}
 	
+	if (exc) {
+		deployment->GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
+		return false;
+	}
+
 	return (bool) (*(MonoBoolean *) mono_object_unbox(ret));
 }
 
@@ -2076,12 +2147,16 @@ PluginInstance::ManagedDestroyApplication ()
 		return;
 
 	PluginInstance *this_obj = this;
+	MonoObject *exc = NULL;
 	void *params [1];
 	params [0] = &this_obj;
 
 	Deployment::SetCurrent (deployment);
 
-	mono_runtime_invoke (moon_destroy_application, NULL, params, NULL);
+	mono_runtime_invoke (moon_destroy_application, NULL, params, &exc);
+
+	if (exc)
+		deployment->GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
 }
 
 #endif

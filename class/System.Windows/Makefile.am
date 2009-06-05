@@ -52,6 +52,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
 	$(srcdir)/Mono/MarkupExpressionParser.cs				\
 	$(srcdir)/Mono/MoonError.cs						\
+	$(srcdir)/Mono/MoonException.cs						\
 	$(srcdir)/Mono/Moonlight.cs						\
 	$(srcdir)/Mono/MoonlightTypeConverter.cs				\
 	$(srcdir)/Mono/MoonlightValueConverter.cs				\

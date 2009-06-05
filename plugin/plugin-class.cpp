@@ -509,8 +509,9 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	NPVariant args[2];
 	NPVariant result;
 	int argcount = 1;
+	PluginInstance *plugin = (PluginInstance *)proxy->instance->pdata;
 	
-	if (proxy->instance->pdata == NULL) {
+	if (plugin == NULL) {
 		// Firefox can invalidate our NPObjects after the plugin itself
 		// has been destroyed. During this invalidation our NPObjects call 
 		// into the moonlight runtime, which then emits events.
@@ -518,7 +519,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		return;
 	}
 
-	PluginInstance *plugin = (PluginInstance*) proxy->instance->pdata;
+	Deployment::SetCurrent (plugin->GetDeployment ());
 
 	if (js_sender->GetObjectType () == Type::SURFACE) {
 		// This is somewhat hackish, but is required for
@@ -560,12 +561,6 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		}
 	}
 
-	if (proxy->instance) {
-		PluginInstance *pi = (PluginInstance *)proxy->instance->pdata;
-		if (pi)
-			Deployment::SetCurrent (pi->GetDeployment ());
-	}
-	
 	if (depobj) {
 		plugin->RemoveCleanupPointer (&depobj);
 		NPN_ReleaseObject (depobj);

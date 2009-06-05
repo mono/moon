@@ -1,3 +1,8 @@
+2009-06-04  Chris Toshok  <toshok@ximian.com>
+
+	* ApplicationLauncher.cs: stop catching exceptions here.  they're
+	handled in the plugin code now.
+
 2009-06-05  Jackson Harper  <jackson@ximian.com>
 
 	* MoonlightTypeConverter.cs: Grab typeconverters from the getter

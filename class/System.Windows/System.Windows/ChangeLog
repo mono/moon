@@ -1,3 +1,8 @@
+2009-06-04  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs: rework a bunch of the error conditions here, and
+	instead of Report.Error, we throw MoonExceptions.
+
 2009-06-05  Alan McGovern  <amcgovern@novell.com>
 
 	* SystemParameters.cs: Add a MonoTodo to HighContrast and make

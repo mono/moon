@@ -220,10 +220,17 @@ class PluginInstance
 	MonoMethod   *moon_initialize_deployment_xaml;
 	MonoMethod   *moon_destroy_application;
 
+	MonoClass    *moon_exception;
+	MonoProperty *moon_exception_message;
+	MonoProperty *moon_exception_error_code;
+
 	void LoadXAP  (const char*url, const char *fname);
 	void DestroyApplication ();
 
-	MonoMethod *MonoGetMethodFromName (MonoClass *klass, const char *name, int narg);
+	MonoMethod   *MonoGetMethodFromName (MonoClass *klass, const char *name, int narg);
+	MonoProperty *MonoGetPropertyFromName (MonoClass *klass, const char *name);
+
+	ErrorEventArgs* ManagedExceptionToErrorEventArgs (MonoObject *exc);
 
 	bool ManagedInitializeDeployment (const char *file);
 	void ManagedDestroyApplication ();
