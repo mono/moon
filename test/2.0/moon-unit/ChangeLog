@@ -1,5 +1,10 @@
 2009-06-05  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ComboBoxTest.cs:
+	  Selector.SelectionChanged is synchronous.
+
+2009-06-05  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls.Primitives/PopupTest.cs:
 	  Popup.IsOpen raises the Opened/Closed events async.
 

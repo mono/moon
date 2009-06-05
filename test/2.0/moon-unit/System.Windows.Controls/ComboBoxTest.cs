@@ -903,5 +903,17 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (o, e.RemovedItems [0], "#5");
 			Assert.AreEqual (0, e.AddedItems.Count, "#6");
 		}
+		
+        [TestMethod]
+        public void SelectedItemTest4 ()
+        {
+            bool changed = false;
+            ComboBox box = new ComboBox();
+            box.SelectionChanged += delegate { changed = true; };
+            box.Items.Add(new object());
+            Assert.IsFalse(changed, "#1");
+            box.SelectedItem = box.Items[0];
+            Assert.IsTrue(changed, "#2");
+        }
 	}
 }
