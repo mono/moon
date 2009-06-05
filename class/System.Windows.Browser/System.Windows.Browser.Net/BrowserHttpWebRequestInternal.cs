@@ -59,7 +59,7 @@ namespace System.Windows.Browser.Net {
 		DownloaderResponseAvailableDelegate available;
 		DownloaderResponseFinishedDelegate finished;
 
-		WebHeaderCollection web_headers;
+		WebHeaderCollection headers;
  		
 		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in Systme.Net
  		Delegate progress_delegate;
@@ -72,7 +72,6 @@ namespace System.Windows.Browser.Net {
  			this.uri = uri;
 			managed = GCHandle.Alloc (this, GCHandleType.Normal);
 			aborted = false;
-			web_headers = Headers;
 		}
 
  		public BrowserHttpWebRequestInternal (BrowserHttpWebRequest wreq, Uri uri)
@@ -81,7 +80,7 @@ namespace System.Windows.Browser.Net {
 			allow_read_buffering = wreq.AllowReadStreamBuffering;
 			method = wreq.Method;
 			request = wreq.request;
-			web_headers = wreq.Headers;
+			Headers = wreq.Headers;
 		}
 
 		~BrowserHttpWebRequestInternal ()
@@ -95,6 +94,15 @@ namespace System.Windows.Browser.Net {
 				return;
 
 			NativeMethods.downloader_request_free (native);
+		}
+
+		public override WebHeaderCollection Headers {
+			get {
+				if (headers == null)
+					headers = new WebHeaderCollection ();
+				return headers;
+			}
+			set { headers = value; }
 		}
 
 		public override void Abort ()
@@ -284,11 +292,11 @@ namespace System.Windows.Browser.Net {
 
 			if (request != null && request.Length > 1) {
 				// this header cannot be set directly inside the collection (hence the helper)
-				web_headers.SetHeader ("content-length", (request.Length - 1).ToString ());
+				Headers.SetHeader ("content-length", (request.Length - 1).ToString ());
 			}
 			
-			foreach (string header in web_headers.AllKeys)
-				NativeMethods.downloader_request_set_http_header (native, header, web_headers [header]);
+			foreach (string header in Headers.AllKeys)
+				NativeMethods.downloader_request_set_http_header (native, header, Headers [header]);
 
 			if (request != null && request.Length > 1) {
 				byte [] body = (request.InnerStream as MemoryStream).ToArray ();

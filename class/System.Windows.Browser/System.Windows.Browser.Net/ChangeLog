@@ -1,3 +1,11 @@
+2009-06-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrowserHttpWebRequestInternal.cs: Override Headers so this internal
+	class does not have to deal with the extra restriction (like it's
+	caller needs to). Fix regressed DRT #859, 860 and 887
+	* ClientAccessPolicy.cs: Remove unused AllowAllHeaders (it's now 
+	part of the Headers nested class)
+
 2009-06-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* BrowserHttpWebRequestInternal.cs: Don't check headers here, it's

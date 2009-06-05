@@ -118,8 +118,6 @@ namespace System.Windows.Browser.Net {
 				Scheme = String.Empty;
 			}
 
-			public bool AllowAllHeaders { get; private set; }
-
 			public bool AllowAnyDomain { get; set; }
 
 			public List<Uri> Domains { get; private set; }
