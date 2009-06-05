@@ -1,13 +1,18 @@
-2008-05-17  Sebastien Pouliot  <sebastien@ximian.com>
+2009-06-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.ServiceModel.manual: CrossDomainAccessManager does not
+	exists anymore in this assembly.
+
+2009-05-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.manual: Socket.CheckConnect must use reflection to
 	call the CrossDomainPolicyManager
 
-2008-05-11  Sebastien Pouliot  <sebastien@ximian.com>
+2009-05-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: Add an SC to Delegate.DynamicInvokeImpl
 
-2008-04-24  Sebastien Pouliot  <sebastien@ximian.com>
+2009-04-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.manual: Remove temporary hack (SVN requirement are 
 	higher than the change)
@@ -48,55 +53,55 @@
 	Add EventInfo type and HtmlEventArgs.cctor to the list to fix the
 	DomEvent callback works
 
-2008-03-28  Sebastien Pouliot  <sebastien@ximian.com>
+2009-03-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.ServiceModel.manual: Add entries to allow reflection usage in
 	System.ServiceModel, this makes hardrock "works" (as in not fail ;-)
 	with coreclr.
 
-2008-03-27  Sebastien Pouliot  <sebastien@ximian.com>
+2009-03-27  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Browser.manual: Change ScriptableObjectWrapper.GetProperty
 	to SSC otherwise we would not respect the method override rule
 
-2008-03-25  Sebastien Pouliot  <sebastien@ximian.com>
+2009-03-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: Extra SC on Mono.Xaml.ManagedXamlLoader
 	tolet the new attributes works correctly.
 
-2008-03-24  Sebastien Pouliot  <sebastien@ximian.com>
+2009-03-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.manual: Allow System.Net.WebRequest::GetBrowserHttpFromMoonlight
 	to reflects inside System.Windows.Browser.dll
 
-2008-03-23  Sebastien Pouliot  <sebastien@ximian.com>
+2009-03-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: SC SafeFileHandle since it inherits from 
 	SafeHandleZeroOrMinusOneIsInvalid, an SC type
 
-2008-03-20  Sebastien Pouliot  <sebastien@ximian.com>
+2009-03-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: SSC BindingExpressionBase.GetPropertyInfo
 	* System.Windows.Browser.manual: Uncomment entry
 
-2008-03-19  Sebastien Pouliot  <sebastien@ximian.com>
+2009-03-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: SSC EqualityComparer<T> static ctor
 	* System.Windows.manual: SSC BindingExpressionBase.GetValue and
 	.DispatcherOperation.Invoke
 	* System.Windows.Browser.manual: SC ScriptableObjectWrapper.GetProperty
 
-2008-03-12  Sebastien Pouliot  <sebastien@ximian.com>
+2009-03-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: Turn GCHandle::op_Explicitfrom SC to SSC
 	* System.Windows.Browser.manual: Turn HtmlObject::GetPropertyInternal
 	from SC to SSC. Make ScriptableObjectWrapper SSC since it creates
 	delegates to SC decorated methods.
 
-2008-03-09  Sebastien Pouliot  <sebastien@ximian.com>
+2009-03-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* *.manual: Empty files (for the makefile dependencies)
 
-2008-02-17  Sebastien Pouliot  <sebastien@ximian.com>
+2009-02-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* here goes the manual overrides files
