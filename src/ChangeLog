@@ -1,3 +1,10 @@
+2009-06-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (layout_word_wrap): Stop processing when we come to
+	open-punctuation if it isn't the first char in the word as this is
+	a good break opportunity. Fixes the last remaining issue in
+	OMTextInline DRT.
+
 2009-06-04  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Track the owner type of properties so we know whether

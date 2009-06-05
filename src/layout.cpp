@@ -1000,6 +1000,10 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		if (word->type == WORD_TYPE_UNKNOWN) {
 			// record our word-type
 			word->type = word_type (ctype, btype);
+		} else if (btype == G_UNICODE_BREAK_OPEN_PUNCTUATION) {
+			// this is a good place to break
+			inptr = start;
+			break;
 		} else if (word_type_changed (word->type, c, ctype, btype)) {
 			// changing word-types, don't continue
 			inptr = start;
