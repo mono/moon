@@ -1,3 +1,11 @@
+2009-06-05  Chris Toshok  <toshok@ximian.com>
+
+	* textbox.cpp (TextBoxView::Blink): don't set deployments using
+	the pattern Deployment::SetCurrent (GetDeployment()), as
+	GetDeployment() issues a warning if the object's deployment
+	doesn't match the current one.  use
+	DependencyObject::SetCurrentDeployment(true) instead.
+
 2009-06-04  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::EmitError): stop unreffing the args after
