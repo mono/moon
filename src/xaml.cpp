@@ -134,7 +134,7 @@ class XamlNamespace {
 
 	virtual ~XamlNamespace () { }
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create) = 0;
-	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse) = 0;
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value) = 0;
 
 	virtual const char* GetUri () = 0;
 	virtual const char* GetPrefix () = 0;
@@ -919,7 +919,7 @@ class DefaultNamespace : public XamlNamespace {
 		
 	}
 
-	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
 	{
 		return false;
 	}
@@ -939,7 +939,7 @@ class XmlNamespace : public XamlNamespace {
 		return NULL;
 	}
 
-	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
 	{
 		if (!strcmp ("lang", attr)) {
 			if (item->IsDependencyObject ()) {
@@ -1005,10 +1005,8 @@ class XNamespace : public XamlNamespace {
 		return Type::IsSubclassOf (parent->info->GetKind (), Type::RESOURCE_DICTIONARY);
 	}
 
-	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
 	{
-		*reparse = false;
-
 		if (!strcmp ("Name", attr)) {
 			//
 			// Causes breakage in airlines
@@ -1081,41 +1079,11 @@ class XNamespace : public XamlNamespace {
 			// While hydrating, we do not need to create the toplevel class, its created already
 			if (p->hydrating)
 				return true;
-
-			//
-			// FIXME: On Silverlight 2.0 only the toplevel node should contain an x:Class
-			// must validate that.
-			//
-			DependencyObject *old = item->GetAsDependencyObject ();
-
-			item->SetDependencyObject (NULL);
-			DependencyObject *dob = NULL;
-			if (p->loader) {
-				// The managed DependencyObject will unref itself
-				// once it's finalized, so don't unref anything here.
-				Value *v = new Value ();
-				if (p->loader->LookupObject (p, p->GetTopElementPtr (), NULL, NULL, value, true, v) && v->Is (Type::DEPENDENCY_OBJECT)) {
-					dob = v->AsDependencyObject ();
-					dob->SetSurface (p->loader->GetSurface ());
-				} else
-					delete v;
-			}
-
-			if (!dob) {
-				parser_error (p, item->element_name, attr, -1, "Unable to resolve x:Class type '%s'.", value);
+			else {
+				parser_error (p, item->element_name, attr, 4005,
+					      "Cannot specify x:Class in xaml files outside of a xap.");
 				return false;
 			}
-
-			// Special case the namescope for now, since attached properties aren't copied
-			NameScope *ns = NameScope::GetNameScope (old);
-			if (ns)
-				NameScope::SetNameScope (dob, ns);
-			item->SetDependencyObject (dob);
-
-			p->AddCreatedElement (item->GetAsDependencyObject ());
-
-			*reparse = true;
-			return true;
 		}
 
 		return false;
@@ -1167,7 +1135,7 @@ class PrimitiveNamespace : public XamlNamespace {
 		return NULL;
 	}
 
-	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
 	{
 		return false;
 	}
@@ -1307,7 +1275,7 @@ class ManagedNamespace : public XamlNamespace {
 		return info;
 	}
 
-	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value, bool *reparse)
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
 	{
 		XamlElementInstanceManaged *instance = (XamlElementInstanceManaged *) item;
 
@@ -4635,8 +4603,7 @@ value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const c
 			if (!ns)
 				return parser_error (p, item->element_name, attr[i], 7055, "undeclared prefix");
 
-			bool reparse = false;
-			ns->SetAttribute (p, item, attr_name [1], attr [i + 1], &reparse);
+			ns->SetAttribute (p, item, attr_name [1], attr [i + 1]);
 
 			g_strfreev (attr_name);
 
@@ -4677,8 +4644,7 @@ start_parse:
 			if (!ns)
 				return parser_error (p, item->element_name, attr[i], 5055, "undeclared prefix");
 
-			bool reparse = false;
-			ns->SetAttribute (p, item, attr_name [1], attr [i + 1], &reparse);
+			ns->SetAttribute (p, item, attr_name [1], attr [i + 1]);
 
 			g_strfreev (attr_name);
 
@@ -4686,12 +4652,6 @@ start_parse:
 			if (p->error_args)
 				return;
 
-			if (reparse) {
-				skip_attribute = i;
-				i = 0;
-				item->ClearSetProperties ();
-				goto start_parse;
-			}
 			continue;
 		}
 
