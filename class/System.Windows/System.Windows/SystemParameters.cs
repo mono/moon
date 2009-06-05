@@ -16,8 +16,9 @@ namespace System.Windows
 {
 	public static class SystemParameters
 	{
+		[MonoTODO]
 		public static bool HighContrast {
-			get { throw new NotImplementedException (); }
+			get { return false; }
 		}
 	}
 }
