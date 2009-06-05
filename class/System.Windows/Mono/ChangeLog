@@ -1,3 +1,12 @@
+2009-06-05  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs (TrySetAttachedProperty): This would offend
+	spock. When setting attached properties we get the type converter
+	from the property's getter.
+	- New method for creating non DOB types from text ie
+	<ManagedType>blah</ManagedType>. If that type has a proper
+	TypeConverter.
+
 2009-06-04  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Make enum parsing case insensitive.

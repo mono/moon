@@ -414,6 +414,7 @@ namespace Mono.Xaml
 
 			string error = null;
 			object o_value = GetObjectValue (target, target_data, name, parser, value_ptr, out error);
+			MethodInfo get_method = set_method.DeclaringType.GetMethod (String.Concat ("Get", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
 			//
 			// The Setter might actually want a collection, in this case we grab the old collection with the getter
@@ -421,8 +422,7 @@ namespace Mono.Xaml
 			//
 			// TODO: Check if the setter method still gets called on Silverlight
 			if (typeof (IList).IsAssignableFrom (set_params [1].ParameterType) && !(o_value is IList)) {
-				MethodInfo get_method = set_method.DeclaringType.GetMethod (String.Concat ("Get", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-
+				
 				if (get_method != null || get_method.GetParameters () == null || get_method.GetParameters ().Length != 1) {
 					IList the_list = (IList) get_method.Invoke (null, new object [] { target });
 
@@ -452,7 +452,7 @@ namespace Mono.Xaml
 				}
 			}
 
-			o_value = ConvertType (null, set_params [1].ParameterType, o_value);
+			o_value = ConvertType (get_method, set_params [1].ParameterType, o_value);
 			set_method.Invoke (null, new object [] {target, o_value});
 			return true;
 		}
@@ -618,6 +618,40 @@ namespace Mono.Xaml
 			return true;
 		}
 
+		private unsafe bool TrySetObjectTextProperty (Value* top_level, IntPtr loader, IntPtr parser, string xmlns, object target, Value* target_ptr, IntPtr target_data, Value* value_ptr, IntPtr value_data)
+		{
+			object obj_value = Value.ToObject (null, value_ptr);
+			string str_value = obj_value as string;
+
+			if (str_value == null)
+				return false;
+			
+			string assembly_name = AssemblyNameFromXmlns (xmlns);
+			string clr_namespace = ClrNamespaceFromXmlns (xmlns);
+			string type_name = NativeMethods.xaml_get_element_name (parser, target_data);
+			string full_name = String.IsNullOrEmpty (clr_namespace) ? type_name : clr_namespace + "." + type_name;
+
+			Type type = LookupType (top_level, assembly_name, full_name);
+
+			if (type == null || type.IsSubclassOf (typeof (DependencyObject)))
+				return false;
+
+			// For now just trim the string right here, in the future this should probably be done in the xaml parser
+			object e = ConvertType (null, type, str_value.Trim ());
+
+			NativeMethods.value_free_value2 ((IntPtr)target_ptr);
+
+			unsafe {
+				Value *val = (Value *) target_ptr;
+
+				GCHandle handle = GCHandle.Alloc (e);
+				val->k = Kind.MANAGED;
+				val->u.p = GCHandle.ToIntPtr (handle);
+			}
+
+			return true;
+		}
+
 		private unsafe bool SetProperty (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, Value* target_ptr, IntPtr target_data, Value* target_parent_ptr, string name, Value* value_ptr, IntPtr value_data)
 		{
 			string error;
@@ -632,6 +666,8 @@ namespace Mono.Xaml
 				if (TrySetEnumContentProperty (top_level, loader, parser, xmlns, target, target_ptr, target_data, value_ptr, value_data))
 					return true;
 				if (TrySetCollectionContentProperty (top_level, loader, parser, xmlns, target, target_ptr, target_data, value_ptr, value_data))
+					return true;
+				if (TrySetObjectTextProperty (top_level, loader, parser, xmlns, target, target_ptr, target_data, value_ptr, value_data))
 					return true;
 				Console.Error.WriteLine ("no property name supplied");
 				return false;
@@ -986,7 +1022,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private static object ConvertType (PropertyInfo pi, Type t, object value)
+		private static object ConvertType (MemberInfo pi, Type t, object value)
 		{
 			if (value == null)
 				return null;
@@ -996,7 +1032,6 @@ namespace Mono.Xaml
 				return value;
 
 			TypeConverter converter = Helper.GetConverterFor (pi, t);
-
 			if (converter != null && converter.CanConvertFrom (value.GetType ()))
 				return converter.ConvertFrom (value);
 
