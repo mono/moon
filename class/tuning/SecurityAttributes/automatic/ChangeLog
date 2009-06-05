@@ -1,3 +1,7 @@
+2008-06-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.auto.s[s]c: Remove the (now) unneeded attributes
+
 2008-06-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Browser.auto.ssc: Updated for BrowserWebHttpRequest
