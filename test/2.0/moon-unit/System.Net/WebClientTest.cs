@@ -243,7 +243,6 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void OpenWriteAsync ()
 		{
 			WebClient wc = new WebClient ();
@@ -286,7 +285,6 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void OpenWriteAsync_UserToken ()
 		{
 			WebClient wc = new WebClient ();

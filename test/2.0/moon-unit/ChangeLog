@@ -1,3 +1,7 @@
+2009-06-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebClientTest.cs: Remove [MoonlightBug] on two tests
+
 2009-06-05  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ComboBoxTest.cs:
