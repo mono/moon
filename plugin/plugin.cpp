@@ -1484,6 +1484,13 @@ surface_network_error_tickcall (EventObject *data)
 	s->EmitError (new ErrorEventArgs (RuntimeError, 2104, "Failed to download silverlight application."));
 }
 
+static void
+surface_splashscreen_error_tickcall (EventObject *data)
+{
+	Surface *s = (Surface*)data;
+	s->EmitError (new ErrorEventArgs (RuntimeError, 2108, "Failed to download the splash screen"));
+}
+
 void
 PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 {
@@ -1491,7 +1498,8 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	
 	StreamNotify *notify = STREAM_NOTIFY (notifyData);
 	
-#if DEBUG
+	Deployment::SetCurrent (deployment);
+	
 	if (reason == NPRES_DONE) {
 		d(printf ("URL %s downloaded successfully.\n", url));
 	} else {
@@ -1501,9 +1509,6 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 		if (IS_NOTIFY_SOURCE (notify))
 			GetSurface()->AddTickCall (surface_network_error_tickcall);
 	}
-#endif
-	
-	Deployment::SetCurrent (deployment);
 	
 	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
 		Downloader *dl = (Downloader *) notify->pdata;
@@ -1527,10 +1532,10 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	}
 
 	if (notify && notify->pdata && IS_NOTIFY_SPLASHSOURCE (notify)) {
-		if (reason == NPRES_NETWORK_ERR) {
-			GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2108, "Failed to download the splash screen"));
-		}
-		UpdateSource ();
+		if (reason == NPRES_NETWORK_ERR)
+			GetSurface()->AddTickCall (surface_splashscreen_error_tickcall);
+		else
+			UpdateSource ();
 	}
 	
 	if (notify)

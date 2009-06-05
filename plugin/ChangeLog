@@ -1,7 +1,9 @@
 2009-06-05  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::UrlNotify): only emit the 2104 error
-	if the network failure was on the XAP itself.
+	if the network failure was on the XAP itself.  move the
+	Deployment::SetCurrent call a little earlier, and make the splash
+	screen download error async as well.
 
 2009-06-04  Chris Toshok  <toshok@ximian.com>
 
