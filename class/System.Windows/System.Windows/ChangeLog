@@ -1,3 +1,10 @@
+2009-06-05  Alan McGovern  <amcgovern@novell.com>
+
+	* Rect.cs: Fix our implementation of IsEmpty to correctly
+	  handle the case where we Union against an empty rectangle.
+	  Fixes these two tests and drt 399. Does our unmanaged impl
+	  have the same semantics as this?
+
 2009-06-03  Jackson Harper  <jackson@ximian.com>
 
 	* DependencyProperty.g.cs: Regen

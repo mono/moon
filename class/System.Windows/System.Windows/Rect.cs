@@ -169,6 +169,16 @@ namespace System.Windows {
 
 		public void Union(Rect rect)
 		{
+			if (rect.IsEmpty) {
+				return;
+			} else if (IsEmpty) {
+				this.x = rect.x;
+				this.y = rect.y;
+				this.h = rect.h;
+				this.w = rect.w;
+				return;
+			}
+			
 			double new_x = Math.Min (x, rect.x);
 			double new_y = Math.Min (y, rect.y);
 			double new_w = Math.Max (Right, rect.Right) - x;

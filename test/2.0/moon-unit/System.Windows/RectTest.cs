@@ -199,5 +199,26 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual ("[-1]#[-2]#[2]#[1]", f.ToString (String.Empty, new RectFormatter ()), "Empty,RectFormatter");
 			Assert.AreEqual (14, RectFormatter.CallCount, "CallCount-d");
 		}
+		
+		[TestMethod]
+		public void UnionTest ()
+		{
+			Rect orig = new Rect { Height = 1, Width = 2, X = 3, Y = 4 };
+			Rect r = orig;
+			r.Union (Rect.Empty);
+			Assert.AreEqual (orig, r, "#1");
+		}
+
+		[TestMethod]
+		public void UnionTest2 ()
+		{
+			Rect orig = new Rect { Height = double.PositiveInfinity, Width = double.PositiveInfinity, X = 5, Y = 6 };
+			Rect r = orig;
+			r.Union (Rect.Empty);
+			Assert.AreEqual (orig, r, "#1");
+
+			r.Union (new Rect (1, 1, 1, 1));
+			Assert.AreEqual (new Rect ( 1, 1, double.PositiveInfinity, double.PositiveInfinity), r, "#1");
+		}
 	}
 }
