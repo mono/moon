@@ -9,13 +9,18 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
+#include <glib.h>
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
-#include <glib.h>
-#include <stdlib.h>
 #include <math.h>
-#include <stdio.h>
+
 #include <runtime.h>
 #include <timemanager.h>
 #include <timesource.h>
