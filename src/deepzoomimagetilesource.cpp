@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <expat.h>
+#include <math.h>
 
 #include "debug.h"
 #include "runtime.h"
@@ -282,6 +283,7 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 		int i =0;
 		bool found = false;
 		int layers;
+		
 		frexp (MAX (imageWidth, imageHeight), &layers);
 
 		while ((cur = (DisplayRect*)g_list_nth_data (display_rects, i))) {
