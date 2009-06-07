@@ -8,9 +8,12 @@
  * 
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
-#include <stdlib.h>
+#endif
+
 #include <glib.h>
+
 #include "enums.h"
 
 // XXX enums are contained in these headers and should be moved to
