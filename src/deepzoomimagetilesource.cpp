@@ -284,7 +284,7 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 		bool found = false;
 		int layers;
 		
-		frexp (MAX (imageWidth, imageHeight), &layers);
+		frexp ((double) MAX (imageWidth, imageHeight), &layers);
 
 		while ((cur = (DisplayRect*)g_list_nth_data (display_rects, i))) {
 			i++;
