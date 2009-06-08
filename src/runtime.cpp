@@ -314,6 +314,7 @@ Surface::Surface (MoonWindow *window)
 	focused_element = NULL;
 	prev_focused_element = NULL;
 	raised_focus_changed = false;
+	can_raise_focus_changed = false;
 
 	full_screen = false;
 	user_initiated_event = false;
@@ -1348,6 +1349,9 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			layers->GetValueAt (i)->AsUIElement ()->HitTest (ctx, p, new_input_list);
 
 		if (mouse_down) {
+			can_raise_focus_changed = true;
+			GenerateFocusChangeEvents ();
+			
 			if (new_input_list->IsEmpty () && !GetFocusedElement ()) {
 				for (int i = layers->GetCount () - 1; i >= 0; i--) {
 					if (layers->GetValueAt (i)->AsUIElement ()->Focus ())
@@ -1360,8 +1364,9 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 						break;
 				}
 			}
+			can_raise_focus_changed = false;
 		}
-		GenerateFocusChangeEvents ();
+		
 		
 		// for 2 lists:
 		//   l1:  [a1, a2, a3, a4, ... ]
@@ -1782,21 +1787,21 @@ Surface::HandleUICrossing (GdkEventCrossing *event)
 void
 Surface::GenerateFocusChangeEvents()
 {
-	if (raised_focus_changed)
-		return;
-	raised_focus_changed = true;
-
-	List *el_list;
-	if (prev_focused_element) {
-		el_list = ElementPathToRoot (prev_focused_element);
-		EmitEventOnList (UIElement::LostFocusEvent, el_list, NULL, -1);
-		delete (el_list);
-	}
-
-	if (focused_element) {
-		el_list = ElementPathToRoot (focused_element);
-		EmitEventOnList (UIElement::GotFocusEvent, el_list, NULL, -1);
-		delete (el_list);
+	while (!raised_focus_changed) {
+		raised_focus_changed = true;
+	
+		List *el_list;
+		if (prev_focused_element) {
+			el_list = ElementPathToRoot (prev_focused_element);
+			EmitEventOnList (UIElement::LostFocusEvent, el_list, NULL, -1);
+			delete (el_list);
+		}
+	
+		if (focused_element) {
+			el_list = ElementPathToRoot (focused_element);
+			EmitEventOnList (UIElement::GotFocusEvent, el_list, NULL, -1);
+			delete (el_list);
+		}
 	}
 }
 

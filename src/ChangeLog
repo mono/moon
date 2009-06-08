@@ -1,3 +1,11 @@
+2009-06-08  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.h:
+	* runtime.cpp: If Control.Focus is called from inside a
+	  GotFocus handler, the focus change occurs immediately and
+	  the new GotFocus event is raised as soon as the current
+	  handler is finished.
+
 2009-06-08  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Bail out after we hit the first attribute parsing

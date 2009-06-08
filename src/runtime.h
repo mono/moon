@@ -327,6 +327,11 @@ private:
 	UIElement *focused_element;
 	UIElement *prev_focused_element;
 	bool raised_focus_changed;
+	
+	// If we are in the middle of a mouse down event, we raise any pending
+	// focus changed events. If this results in focus being changed to a
+	// different control, that focus changed event is raised immediately
+	bool can_raise_focus_changed;
 
 	// the list of elements (from most deeply nested to the
 	// toplevel) we've most recently sent a mouse event to.
