@@ -1,3 +1,9 @@
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/MiscParsing.cs: New test that ensures event
+	handler hookup is not postponed until after all the other props
+	are set.
+
 2009-06-05  Jackson Harper  <jackson@ximian.com>
 
 	* misc/Parsing/EnumsTest.cs: Make sure we handle flags and managed

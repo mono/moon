@@ -97,6 +97,39 @@ namespace MoonTest.Misc.Parsing
 	public class MiscParsingEventImpl2 : MiscParsingEventBase {
 	}
 
+	public class ThingWithEvent : UserControl {
+
+		private string the_prop;
+		private string the_other_prop;
+		private string the_other_prop_during_event;
+
+		public string TheProp {
+			get { return the_prop; }
+			set {
+				the_prop = value;
+
+				if (ThePropChanged != null)
+					ThePropChanged (this, EventArgs.Empty);
+			}
+		}
+
+		public string TheOtherProp {
+			get { return the_other_prop; }
+			set { the_other_prop = value; }
+		}
+
+		public string TheOtherPropDuringEvent {
+			get { return the_other_prop_during_event; }
+		}
+
+		public void PropChangedHandler (object sender, EventArgs e)
+		{
+			the_other_prop_during_event = the_other_prop;
+		}
+
+		public event EventHandler ThePropChanged;
+	}
+
 	public class HalfDimensionsControl : UserControl {
 
 		public static readonly DependencyProperty HalfHeightProperty = DependencyProperty.RegisterAttached ("HalfHeight", typeof (double), typeof (HalfDimensionsControl), new PropertyMetadata (OnHalfHeightChanged));
@@ -357,6 +390,24 @@ namespace MoonTest.Misc.Parsing
 			Style s = (Style) c.Resources ["DemoContent"];
 			Setter setter = (Setter)s.Setters [0];
 			Assert.AreEqual (c.Resources ["FirstColor"], setter.Value, "#1");
+		}
+
+		[TestMethod]
+		public void SetHandlerBeforeProps ()
+		{
+			var c = (ThingWithEvent) XamlReader.Load (@"<c:ThingWithEvent xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+							   	    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+								    xmlns:c=""clr-namespace:MoonTest.Misc.Parsing;assembly=moon-unit"" ThePropChanged=""PropChangedHandler"" TheProp=""foo"" TheOtherProp=""bar"">
+								      
+							    </c:ThingWithEvent>");
+			Assert.IsNull (c.TheOtherPropDuringEvent, "1");
+
+			c = (ThingWithEvent) XamlReader.Load (@"<c:ThingWithEvent xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+							   	    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+								    xmlns:c=""clr-namespace:MoonTest.Misc.Parsing;assembly=moon-unit"" ThePropChanged=""PropChangedHandler"" TheOtherProp=""bar"" TheProp=""foo"">
+								      
+							    </c:ThingWithEvent>");
+			Assert.AreEqual ("bar", c.TheOtherPropDuringEvent, "2");
 		}
 	}
 }
