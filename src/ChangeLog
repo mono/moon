@@ -1,3 +1,8 @@
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Little more cleanup now that we don't have to reparse
+	attributes for x:Class.
+
 2009-06-05  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XNamespace::SetAttribute): setting x:Class on an

@@ -4621,13 +4621,10 @@ value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const c
 static void
 dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
-	int skip_attribute = -1;
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
 
 start_parse:
 	for (int i = 0; attr [i]; i += 2) {
-		if (i == skip_attribute)
-			continue;
 
 		// Skip empty attrs
 		if (attr[i + 1] == NULL || attr[i + 1][0] == '\0')
