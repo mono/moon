@@ -3489,6 +3489,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		matrix->unref ();
 		break;
 	}
+	case Type::PATHGEOMETRY:
 	case Type::GEOMETRY: {
 		Geometry *geometry = geometry_from_str (s);
 

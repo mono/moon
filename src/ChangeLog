@@ -1,5 +1,9 @@
 2009-06-08  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: We need to convert path geometry strings from managed.
+
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Little more cleanup now that we don't have to reparse
 	attributes for x:Class.
 
