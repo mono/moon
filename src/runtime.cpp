@@ -1350,6 +1350,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 
 		if (mouse_down) {
 			can_raise_focus_changed = true;
+			// Raise any pending focus changed events
 			GenerateFocusChangeEvents ();
 			
 			if (new_input_list->IsEmpty () && !GetFocusedElement ()) {
@@ -1364,6 +1365,8 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 						break;
 				}
 			}
+			// Raise any events caused by the focus changing this tick
+			GenerateFocusChangeEvents ();
 			can_raise_focus_changed = false;
 		}
 		
