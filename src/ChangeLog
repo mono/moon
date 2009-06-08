@@ -1,5 +1,10 @@
 2009-06-08  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Bail out after we hit the first attribute parsing
+	error.
+
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: We need to convert path geometry strings from managed.
 
 2009-06-08  Jackson Harper  <jackson@ximian.com>

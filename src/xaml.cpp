@@ -4627,6 +4627,9 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 start_parse:
 	for (int i = 0; attr [i]; i += 2) {
 
+		if (p->error_args)
+			return;
+
 		// Skip empty attrs
 		if (attr[i + 1] == NULL || attr[i + 1][0] == '\0')
 			continue;
@@ -4760,7 +4763,7 @@ start_parse:
 			}
 
 			MoonError err;
-//			printf ("settng:  %s  %s  value type:  %s\n", attr [i], attr [i+1], v ? Type::Find (v->GetKind ())->GetName () : "--null--");
+//			printf ("settng:  %s  %s  value type:  %s    prop type:  %s\n", attr [i], attr [i+1], v ? Type::Find (v->GetKind ())->GetName () : "--null--", Type::Find (prop->GetPropertyType ())->GetName ());
 			if (!dep->SetValueWithError (prop, v, &err))
 				parser_error (p, item->element_name, attr [i], err.code, err.message);
 			else
