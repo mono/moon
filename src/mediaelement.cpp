@@ -259,7 +259,7 @@ MediaElement::CheckMarkers ()
 		// as CheckMarkers may end up emitting events, causing seeks
 		// which will change previous_position.
 		previous_position = current_position; 
-		CheckMarkers (tmp, current_position);
+		CheckMarkers (tmp, current_position - 1);
 	}
 }
 
@@ -1104,6 +1104,7 @@ MediaElement::StopHandler (PlaylistRoot *playlist, EventArgs *args)
 	SetProperties (entry->GetMedia ());
 	
 	SetMarkerTimeout (false);
+	CheckMarkers (); // check one last time.
 	
 	SetState (MediaStateStopped);
 	Emit (CurrentStateChangedEvent);

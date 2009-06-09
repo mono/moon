@@ -747,6 +747,8 @@ Media::OpenInternal ()
 		goto cleanup;
 	}
 		
+	demuxer->FillBuffers ();
+		
 	opened = true;
 	opening = false;
 	
@@ -2006,11 +2008,11 @@ IMediaStream::IMediaStream (Type::Kind kind, Media *media) : IMediaObject (kind,
 	codec_id = 0;
 	codec = NULL;
 	
-	get_frame_pending_count = 0;
 	min_padding = 0;
 	index = -1;
 	selected = false;
-	ended = false;
+	input_ended = false;
+	output_ended = false;
 	
 	first_pts = G_MAXUINT64; // The first pts in the stream, initialized to G_MAXUINT64
 	last_popped_pts = G_MAXUINT64; // The pts of the last frame returned, initialized to G_MAXUINT64
@@ -2230,7 +2232,7 @@ IMediaStream::PopFrame ()
 		codec, MilliSeconds_FromPts (first_pts), MilliSeconds_FromPts (last_popped_pts), MilliSeconds_FromPts (last_enqueued_pts), 
 		MilliSeconds_FromPts (last_popped_pts != G_MAXUINT64 ? last_enqueued_pts - last_popped_pts : last_enqueued_pts), result, result ? result->buflen : 0);
 
-	if (!ended) {
+	if (!input_ended && !output_ended && result != NULL) {
 		IMediaDemuxer *demuxer = GetDemuxer ();
 		if (demuxer != NULL)
 			demuxer->FillBuffers ();
@@ -2286,6 +2288,7 @@ IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media, IMediaSource *sourc
 	streams = NULL;
 	opened = false;
 	opening = false;
+	pending_stream = NULL;
 }
 
 IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media)
@@ -2296,6 +2299,7 @@ IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media)
 	streams = NULL;
 	opened = false;
 	opening = false;
+	pending_stream = NULL;
 }
 
 void
@@ -2381,24 +2385,24 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 	IMediaDecoder *decoder;
 	
 	g_return_if_fail (frame == NULL || (frame != NULL && frame->stream != NULL));
+	g_return_if_fail (pending_stream != NULL); // we must be waiting for a frame ...
 	
 	LOG_PIPELINE ("IMediaDemuxer::ReportGetFrameCompleted (%p) %s\n", frame, frame ? frame->stream->GetStreamTypeName () : "");
 	
-	
 	if (frame == NULL) {
-		LOG_PIPELINE ("IMediaDemuxer::ReportGetFrameCompleted (%p): end signaled.\n", frame);
-		// No more data for this demuxer
-		for (int i = 0; i < GetStreamCount (); i++) {
-			IMediaStream *stream = GetStream (i);
-			
-			if (stream == NULL)
-				continue;
-			stream->SetEnded (true);
-		}
+		LOG_PIPELINE ("IMediaDemuxer::ReportGetFrameCompleted (%p): input end signaled for %s stream.\n", frame, pending_stream->GetStreamTypeName ());
+		// No more data for this stream
+		pending_stream->SetInputEnded (true);
 	} else if (!frame->stream->IsDisposed ()) {
 		decoder = frame->stream->GetDecoder ();
 		decoder->DecodeFrameAsync (frame);
 	}
+	
+	pending_stream->unref ();
+	pending_stream = NULL; // not waiting for anything more
+	
+	// enqueue some more 
+	FillBuffers ();
 }
 
 MediaResult
@@ -2479,6 +2483,8 @@ IMediaDemuxer::GetFrameCallback (MediaClosure *c)
 void 
 IMediaDemuxer::EnqueueGetFrame (IMediaStream *stream)
 {
+	g_return_if_fail (pending_stream == NULL); // we can't be waiting for another frame.
+	
 	MediaClosure *closure = new MediaGetFrameClosure (media, GetFrameCallback, this, stream);
 	media->EnqueueWork (closure);
 	closure->unref ();
@@ -2489,6 +2495,7 @@ IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 {
 	g_return_if_fail (stream != NULL);
 	g_return_if_fail (media != NULL);
+	g_return_if_fail (pending_stream == NULL); // we can't be waiting for another frame.
 	
 	LOG_PIPELINE ("IMediaDemuxer::GetFrameAsync (%p) %s InMediaThread: %i\n", stream, stream->GetStreamTypeName (), media->InMediaThread ());
 	
@@ -2497,7 +2504,8 @@ IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 		return;
 	}
 	
-	stream->IncPendingFrameCount ();
+	pending_stream = stream;
+	pending_stream->ref ();
 	GetFrameAsyncInternal (stream);
 }
 
@@ -2556,7 +2564,11 @@ IMediaDemuxer::FillBuffersInternal ()
 	guint64 buffering_time = media->GetBufferingTime ();
 	guint64 buffered_size = 0;
 	
-	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %llu = %llu ms\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, MilliSeconds_FromPts (buffering_time));
+	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %llu = %llu ms, pending_stream: %i %s\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, MilliSeconds_FromPts (buffering_time), GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetStreamTypeName () : "NULL");
+
+	// If we're waiting for something, there's nothing to do here.
+	if (pending_stream != NULL)
+		return;
 
 	for (int i = 0; i < GetStreamCount (); i++) {
 		stream = GetStream (i);
@@ -2567,7 +2579,7 @@ IMediaDemuxer::FillBuffersInternal ()
 			stream->GetType () != MediaTypeAudio)
 			continue;
 
-		if (stream->GetEnded ())
+		if (stream->GetOutputEnded ())
 			continue;
 	
 		buffered_size = stream->GetBufferedSize ();
@@ -2576,11 +2588,15 @@ IMediaDemuxer::FillBuffersInternal ()
 			continue;
 		
 		if (buffered_size < buffering_time) {
-			LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): codec: %s, result: %i, buffered size: %llu ms, buffering time: %llu ms, pending frame count: %i\n",
-				stream->codec, result, MilliSeconds_FromPts (buffered_size), MilliSeconds_FromPts (buffering_time), stream->GetPendingFrameCount ());
+			LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): codec: %s, result: %i, buffered size: %llu ms, buffering time: %llu ms\n",
+				stream->codec, result, MilliSeconds_FromPts (buffered_size), MilliSeconds_FromPts (buffering_time));
 			
-			if (stream->GetPendingFrameCount () < 10)
+			if (stream->GetInputEnded ()) {
+				stream->GetDecoder ()->InputEnded ();
+			} else {
 				GetFrameAsync (stream);
+				break;
+			}
 		}
 		
 		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): codec: %s, result: %i, buffered size: %" G_GUINT64_FORMAT " ms, buffering time: %" G_GUINT64_FORMAT " ms, last popped time: %llu ms\n", 
@@ -3323,13 +3339,13 @@ IMediaDecoder::Dispose ()
 void
 IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 {
-	LOG_PIPELINE ("IMediaDecoder::ReportDecodeFrameCompleted (%p) %s\n", frame, frame ? frame->stream->GetStreamTypeName () : "");
+	LOG_PIPELINE ("IMediaDecoder::ReportDecodeFrameCompleted (%p) %s %llu ms\n", frame, frame ? frame->stream->GetStreamTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : 0);
 	
 	g_return_if_fail (frame != NULL);
 	g_return_if_fail (frame->stream != NULL);
 	
 	frame->stream->EnqueueFrame (frame);
-	frame->stream->DecPendingFrameCount ();
+	frame->stream->GetDemuxer ()->FillBuffers ();
 }
 
 MediaResult
@@ -3343,7 +3359,7 @@ IMediaDecoder::DecodeFrameCallback (MediaClosure *c)
 void
 IMediaDecoder::DecodeFrameAsync (MediaFrame *frame)
 {
-	LOG_PIPELINE ("IMediaDecoder::DeocodeFrameAsync (%p)\n", frame);
+	LOG_PIPELINE ("IMediaDecoder::DecodeFrameAsync (%p)\n", frame);
 	
 	g_return_if_fail (frame != NULL);
 	g_return_if_fail (media != NULL);
@@ -4039,6 +4055,12 @@ bool
 ExternalDecoder::HasDelayedFrame ()
 {
 	return has_delayed_frame (instance);
+}
+
+void
+ExternalDecoder::InputEnded ()
+{
+	GetStream ()->SetOutputEnded (true);
 }
 
 /*

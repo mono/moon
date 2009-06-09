@@ -231,6 +231,8 @@ private:
 	void ReadMarkers ();
 	MediaResult Open ();
 	
+	static MediaResult GetFrameCallback (MediaClosure *closure);
+	
 protected:
 	virtual ~ASFDemuxer () {}
 

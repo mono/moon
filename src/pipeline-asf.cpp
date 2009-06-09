@@ -441,6 +441,16 @@ ASFDemuxer::GetStreamOfASFIndex (gint32 asf_index)
 	return NULL;
 }
 
+MediaResult
+ASFDemuxer::GetFrameCallback (MediaClosure *c)
+{
+	MediaGetFrameClosure *closure = (MediaGetFrameClosure *) c;
+	ASFDemuxer *demuxer = (ASFDemuxer *) closure->GetDemuxer ();
+	demuxer->GetFrameAsyncInternal (closure->GetStream ());
+	
+	return MEDIA_SUCCESS;
+}
+
 void
 ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 {
@@ -458,13 +468,10 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 		return;
 	}
 
-	if (result == MEDIA_BUFFER_UNDERFLOW) {
-		EnqueueGetFrame (stream);
-		return;
-	}
-	
-	if (result == MEDIA_NOT_ENOUGH_DATA) {
-		EnqueueGetFrame (stream);
+	if (result == MEDIA_BUFFER_UNDERFLOW || result == MEDIA_NOT_ENOUGH_DATA) {
+		MediaClosure *closure = new MediaGetFrameClosure (media, GetFrameCallback, this, stream);
+		media->EnqueueWork (closure, false); // TODO: use a timeout here, no need to try again immediately.
+		closure->unref ();
 		return;
 	}
 	

@@ -1,3 +1,25 @@
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.h|cpp: Rework some of the buffer filling algorithm:
+	we now never have more than one frame pending (to know which
+	stream a response comes from - if frame parameter to 
+	ReportGetFrameCompleted is null, we need to mark the corresponding
+	stream as ended. Also split the 'stream ended' concept in two:
+	input ended (the demuxer won't give us more data) and output
+	ended (the decoder won't give us more data). This fixed
+	MS DRT #19.
+
+	* mp3.h|cpp:
+	* pipeline-asf.h|cpp: GetFrameAsync: For some error codes we
+	need to try again later.
+
+	* mediaelement.cpp: CheckMarkers: subtract one to not include
+	both ends of the range, if the marker matches exactly the end
+	of a range it will get emitted twice otherwise.
+
+	* mediaplayer.cpp:
+	* audio.cpp: Updated according to IMediaStream changes.
+
 2009-06-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* value.cpp (operator==): Fix a crash if comparing a null

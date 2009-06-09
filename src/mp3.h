@@ -108,6 +108,8 @@ private:
 	
 	MediaResult ReadHeader ();
 	
+	static MediaResult GetFrameCallback (MediaClosure *closure);
+	
 protected:
 	virtual ~Mp3Demuxer ();
 

@@ -387,8 +387,8 @@ private:
 	void *context;
 	bool enabled;
 	bool selected;
-	bool ended; // end of stream reached.
-	gint32 get_frame_pending_count;
+	bool input_ended; // end of stream reached in demuxer
+	bool output_ended; // end of stream reached in decoder
 	guint64 first_pts; // The first pts in the stream, initialized to G_MAXUINT64
 	guint64 last_popped_pts; // The pts of the last frame returned, initialized to G_MAXUINT64
 	guint64 last_enqueued_pts; // The pts of the last frae enqueued, initialized to G_MAXUINT64
@@ -480,12 +480,10 @@ public:
 	/* @GenerateCBinding */
 	void SetDuration (guint64 value) { duration = value; }
 
-	bool GetPendingFrameCount () { return get_frame_pending_count; }
-	void IncPendingFrameCount () { g_atomic_int_inc (&get_frame_pending_count); }
-	void DecPendingFrameCount () { g_atomic_int_dec_and_test (&get_frame_pending_count); }
-	
-	bool GetEnded () { return ended; }
-	void SetEnded (bool value) { ended = value; }
+	bool GetInputEnded () { return input_ended; }
+	void SetInputEnded (bool value) { input_ended = value; }
+	bool GetOutputEnded () { return output_ended; }
+	void SetOutputEnded (bool value) { output_ended = value; }
 	
 	IMediaDemuxer *GetDemuxer ();
 	
@@ -786,6 +784,7 @@ private:
 	int stream_count;
 	bool opened;
 	bool opening;
+	IMediaStream *pending_stream; // the stream we're waiting for a frame for.
 	
 	static MediaResult ReportSeekCompletedCallback (MediaClosure *closure);
 	static MediaResult GetFrameCallback (MediaClosure *closure);
@@ -885,6 +884,9 @@ public:
 	virtual void Cleanup (MediaFrame *frame) {}
 	virtual void CleanState () {}
 	virtual bool HasDelayedFrame () { return false; }
+	// InputEnded is called when there is no more input. If the codec has delayed frames,
+	// it must call ReportDecodeFrameCompleted with those frames (all of them).
+	virtual void InputEnded () { };
 	
 	virtual const char *GetName () { return GetTypeName (); }
 	
@@ -1353,6 +1355,7 @@ public:
 	virtual bool HasDelayedFrame ();
 	
 	virtual const char *GetName () { return name; }
+	virtual void InputEnded ();
 };
 
 /*

@@ -904,6 +904,14 @@ Mp3Demuxer::ReadHeader ()
 	return MEDIA_SUCCESS;
 }
 
+MediaResult
+Mp3Demuxer::GetFrameCallback (MediaClosure *c)
+{
+	MediaGetFrameClosure *closure = (MediaGetFrameClosure *) c;
+	((Mp3Demuxer *) closure->GetDemuxer ())->GetFrameAsyncInternal (closure->GetStream ());
+	return MEDIA_SUCCESS;
+}
+
 void
 Mp3Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
 {
@@ -911,6 +919,13 @@ Mp3Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	MediaResult result;
 	
 	result = reader->TryReadFrame (&frame);
+
+	if (result == MEDIA_DEMUXER_ERROR || result == MEDIA_BUFFER_UNDERFLOW || result == MEDIA_DEMUXER_ERROR) {
+		MediaGetFrameClosure *closure = new MediaGetFrameClosure (media, GetFrameCallback, this, stream);
+		media->EnqueueWork (closure, false);
+		closure->unref ();
+		return;
+	}
 	
 	if (result == MEDIA_NO_MORE_DATA) {
 		ReportGetFrameCompleted (NULL);

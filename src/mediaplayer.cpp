@@ -628,7 +628,7 @@ MediaPlayer::AdvanceFrame ()
 	while (true) {
 		frame = video_stream->PopFrame ();
 		if (frame == NULL) {
-			if (video_stream->GetEnded ()) {
+			if (video_stream->GetOutputEnded ()) {
 				if (!HasAudio ()) {
 					// Set the target pts to the last pts we showed, since target_pts is what's reported as our current position.
 					this->target_pts = current_pts;

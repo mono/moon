@@ -573,7 +573,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 		}
 		
 		if (current_frame == NULL) {
-			if (stream->GetEnded ()) {
+			if (stream->GetOutputEnded ()) {
 				LOG_AUDIO ("AudioSource::WriteFull (): No more data and reached the end.\n");
 				SetFlag (AudioWaiting, false);
 				SetFlag ((AudioFlags) (AudioEOF | AudioEnded), true);
