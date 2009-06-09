@@ -1353,17 +1353,18 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			// Raise any pending focus changed events
 			GenerateFocusChangeEvents ();
 			
-			if (new_input_list->IsEmpty () && !GetFocusedElement ()) {
+			if (!GetFocusedElement ()) {
 				for (int i = layers->GetCount () - 1; i >= 0; i--) {
 					if (layers->GetValueAt (i)->AsUIElement ()->Focus ())
 						break;
 				}
-			} else {
-				for (UIElementNode* node = (UIElementNode*) new_input_list->First (); node != NULL; node = (UIElementNode*) node->next) {
-					UIElement *el = node->uielement;
-					if (el->Focus (false))
-						break;
-				}
+				GenerateFocusChangeEvents ();
+			}
+			
+			for (UIElementNode* node = (UIElementNode*) new_input_list->First (); node != NULL; node = (UIElementNode*) node->next) {
+				UIElement *el = node->uielement;
+				if (el->Focus (false))
+					break;
 			}
 			// Raise any events caused by the focus changing this tick
 			GenerateFocusChangeEvents ();
