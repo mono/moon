@@ -213,6 +213,8 @@ namespace System.Windows.Controls {
 		
 		void SetLogicalParent (IntPtr parent, IList items)
 		{
+			if (ItemsSource != null)
+				return;
 			foreach (object o in items) {
 				FrameworkElement el = o as FrameworkElement;
 				if (el != null)

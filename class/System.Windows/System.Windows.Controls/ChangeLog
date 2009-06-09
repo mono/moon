@@ -1,3 +1,8 @@
+2009-06-10  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: If the ItemsControl is populating from its
+	  ItemsSource, we don't set the logical parent. Fixes drt 880.
+
 2009-06-09  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs: Implement IsSelectionBoxHighlighted and prevent
