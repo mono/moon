@@ -1308,13 +1308,7 @@ MmsPlaylistEntry::AddEntry ()
 	entry->SetIsLive (features & HttpStreamingBroadcast);
 	entry->InitializeWithSource (this);
 
-	PlaylistRoot *root = playlist->GetRoot ();
-		
-	//if (root)
-	//	root->Dump ();
 	playlist->AddEntry (entry);
-	//if (root)
-	//	root->Dump ();
 	
 	media->unref ();
 	mms_demuxer->unref ();
