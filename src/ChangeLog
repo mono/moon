@@ -1,3 +1,9 @@
+2009-06-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (EmitSelectionChangedAsync): Only emit the event if
+	the control is loaded.
+	(EmitTextChangedAsync): Same.
+
 2009-06-09  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.cpp: The first mouse click will always Focus on the

@@ -1286,13 +1286,14 @@ TextBoxBase::BatchPop ()
 void
 TextBoxBase::emit_selection_changed (EventObject *sender)
 {
-	((TextBoxBase *) sender)->EmitSelectionChanged ();
+	if (((TextBoxBase *) sender)->IsLoaded ())
+		((TextBoxBase *) sender)->EmitSelectionChanged ();
 }
 
 void
 TextBoxBase::EmitSelectionChangedAsync ()
 {
-	if (events_mask & SELECTION_CHANGED)
+	if (IsLoaded () && (events_mask & SELECTION_CHANGED))
 		AddTickCall (TextBoxBase::emit_selection_changed);
 	
 	emit &= ~SELECTION_CHANGED;
@@ -1301,13 +1302,14 @@ TextBoxBase::EmitSelectionChangedAsync ()
 void
 TextBoxBase::emit_text_changed (EventObject *sender)
 {
-	((TextBoxBase *) sender)->EmitTextChanged ();
+	if (((TextBoxBase *) sender)->IsLoaded ())
+		((TextBoxBase *) sender)->EmitTextChanged ();
 }
 
 void
 TextBoxBase::EmitTextChangedAsync ()
 {
-	if (events_mask & TEXT_CHANGED)
+	if (IsLoaded () && (events_mask & TEXT_CHANGED))
 		AddTickCall (TextBoxBase::emit_text_changed);
 	
 	emit &= ~TEXT_CHANGED;
