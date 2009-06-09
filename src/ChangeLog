@@ -1,5 +1,8 @@
 2009-06-09  Jeffrey Stedfast  <fejj@novell.com>
 
+	* value.cpp (operator==): Fix a crash if comparing a null
+	FontSource.
+
 	* textbox.cpp (EmitSelectionChangedAsync): Only emit the event if
 	the control is loaded.
 	(EmitTextChangedAsync): Same.

@@ -322,7 +322,6 @@ Value::Value (ManagedTypeInfo type_info)
 void
 Value::Copy (const Value& v)
 {
-
 	padding = v.padding;
 	k = v.k;
 	u = v.u;
@@ -565,7 +564,9 @@ Value::operator== (const Value &v) const
 	case Type::FONTFAMILY:
 		return *u.fontfamily == *v.u.fontfamily;
 	case Type::FONTSOURCE:
-		return u.fontsource->stream->handle == v.u.fontsource->stream->handle;
+		if (u.fontsource && v.u.fontsource)
+			return u.fontsource->stream->handle == v.u.fontsource->stream->handle;
+		return u.fontsource == v.u.fontsource;
 	case Type::PROPERTYPATH:
 		return *u.propertypath == *v.u.propertypath;
 	case Type::COLOR:
