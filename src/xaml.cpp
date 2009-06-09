@@ -288,12 +288,14 @@ class XamlElementInfo {
  public:
 	XamlElementInfo *parent;
 	const char *name;
+	const char *xmlns;
 
-	XamlElementInfo (const char *name, Type::Kind kind)
+	XamlElementInfo (const char *xmlns, const char *name, Type::Kind kind)
 	{
 		this->parent = NULL;
 		this->kind = kind;
 		this->name = name;
+		this->xmlns = xmlns;
 		this->cdata_verbatim = false;
 
 		this->property_owner_kind = Type::INVALID;
@@ -737,7 +739,7 @@ class XamlElementInfoNative : public XamlElementInfo {
 	Type *type;
 	
  public:
-	XamlElementInfoNative (Type *t) : XamlElementInfo (t->GetName (), t->GetKind ())
+	XamlElementInfoNative (Type *t) : XamlElementInfo (NULL, t->GetName (), t->GetKind ())
 	{
 		type = t;
 	}
@@ -813,7 +815,7 @@ class XamlElementInstanceValueType : public XamlElementInstance {
 
 class XamlElementInfoEnum : public XamlElementInfo {
  public:
-	XamlElementInfoEnum (const char *name) : XamlElementInfo (name, Type::INVALID)
+	XamlElementInfoEnum (const char *name) : XamlElementInfo (NULL, name, Type::INVALID)
 	{
 	}
 
@@ -852,7 +854,7 @@ class XamlElementInstanceEnum : public XamlElementInstance {
 
 class XamlElementInfoStaticResource : public XamlElementInfo {
  public:
-	XamlElementInfoStaticResource (const char *name) : XamlElementInfo (name, Type::INVALID)
+	XamlElementInfoStaticResource (const char *name) : XamlElementInfo (NULL, name, Type::INVALID)
 	{
 	}
 
@@ -1154,13 +1156,11 @@ destroy_created_namespace (gpointer data, gpointer user_data)
 
 class XamlElementInfoManaged : public XamlElementInfo {
  public:
-	XamlElementInfoManaged (const char *xmlns, const char *name, XamlElementInfo *parent, Type::Kind dependency_type, Value *obj) : XamlElementInfo (name, dependency_type)
+	XamlElementInfoManaged (const char *xmlns, const char *name, XamlElementInfo *parent, Type::Kind dependency_type, Value *obj) : XamlElementInfo (xmlns, name, dependency_type)
 	{
-		this->xmlns = xmlns;
 		this->obj = obj;
 	}
 
-	const char *xmlns;
 	Value *obj;
 
 	const char* GetName () { return name; }
@@ -1277,11 +1277,9 @@ class ManagedNamespace : public XamlNamespace {
 
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
 	{
-		XamlElementInstanceManaged *instance = (XamlElementInstanceManaged *) item;
-
 		if (p->loader) {
 			Value v = Value (value);
-			return p->loader->SetProperty (p, p->GetTopElementPtr (), xmlns, instance->GetAsValue (), instance, instance->GetParentPointer (), attr, &v, NULL);
+			return p->loader->SetProperty (p, p->GetTopElementPtr (), item->info->xmlns, item->GetAsValue (), item, item->GetParentPointer (), xmlns, attr, &v, NULL);
 		}
 		return false;
 	}
@@ -1314,10 +1312,10 @@ XamlLoader::GetContentPropertyName (void *p, Value *object)
 }
 
 bool
-XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *name, Value *value, void* value_data)
+XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char* prop_xmlns, const char *name, Value *value, void* value_data)
 {
 	if (callbacks.set_property)
-		return callbacks.set_property (this, p, top_level, xmlns, target, target_data, target_parent, name, value, value_data);
+		return callbacks.set_property (this, p, top_level, xmlns, target, target_data, target_parent, prop_xmlns, name, value, value_data);
 
 	return false;
 }
@@ -1453,7 +1451,7 @@ parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_cod
 	va_start (args, format);
 	message = g_strdup_vprintf (format, args);
 	va_end (args);
-	
+
 	p->error_args = new ParserErrorEventArgs (message, p->file_name, line_number, char_position, error_code, el, attr);
 	
 	g_free (message);
@@ -3753,7 +3751,7 @@ XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, c
 		return false;
 
 	Value v = Value (value);
-	if (!p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, GetAsValue (), this, GetParentPointer (), name, &v, NULL)) {
+	if (!p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, GetAsValue (), this, GetParentPointer (), NULL, name, &v, NULL)) {
 		return false;
 	}
 	return true;
@@ -3930,7 +3928,7 @@ bool
 XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
 {
 	if (property->info->RequiresManagedSet ()) {
-		if (!p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, GetAsValue (), this, GetParentPointer (), property->element_name, value->GetAsValue (), NULL)) {
+		if (!p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, GetAsValue (), this, GetParentPointer (), property->info->xmlns, property->element_name, value->GetAsValue (), NULL)) {
 			return false;
 		}
 	}
@@ -4120,7 +4118,7 @@ void
 XamlElementInstanceManaged::AddToContainer (XamlParserInfo *p, const char *key, const char *prop_name, XamlElementInstance *item)
 {
 	if (p->loader)
-		p->loader->AddToContainer (p, p->GetTopElementPtr (), ((XamlElementInfoManaged *) info)->xmlns, prop_name, key, GetAsValue (), this, item->GetAsValue (), item);
+		p->loader->AddToContainer (p, p->GetTopElementPtr (), info->xmlns, prop_name, key, GetAsValue (), this, item->GetAsValue (), item);
 }
 
 void *
@@ -4150,14 +4148,14 @@ XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance 
 {
 	if (GetAsDependencyObject () != NULL && dependency_object_set_property (p, this, property, value))
 		return true;
-	return p->loader->SetProperty (p, p->GetTopElementPtr (), ((XamlElementInfoManaged *) info)->xmlns, GetAsValue (), this, GetParentPointer (), property->element_name, value->GetAsValue (), value);
+	return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), property->info->xmlns, property->element_name, value->GetAsValue (), value);
 }
 
 bool
 XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value)
 {
 	Value v = Value (value);
-	return p->loader->SetProperty (p, p->GetTopElementPtr (), ((XamlElementInfoManaged *) info)->xmlns, GetAsValue (), this, GetParentPointer (), property->element_name, &v, NULL);
+	return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), property->info->xmlns, property->element_name, &v, NULL);
 }
 
 void
@@ -4178,7 +4176,7 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, XamlElemen
 	Value *v = value->GetAsValue ();
 	const char* prop_name = info->GetContentProperty (p);
 
-	return p->loader->SetProperty (p, p->GetTopElementPtr (), ((XamlElementInfoManaged *) info)->xmlns, GetAsValue (), this, GetParentPointer (), prop_name, v, value);
+	return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, prop_name, v, value);
 }
 
 bool
@@ -4189,7 +4187,7 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char
 		if (!p->cdata_content)
 			return false;
 		Value v = Value (value);
-		return p->loader->SetProperty (p, p->GetTopElementPtr (), ((XamlElementInfoManaged *) info)->xmlns, GetAsValue (), this, GetParentPointer (), prop_name, &v, NULL);
+		return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, prop_name, &v, NULL);
 	}
 	return false;
 }
@@ -4201,7 +4199,7 @@ XamlElementInstanceManaged::SetUnknownAttribute (XamlParserInfo *p, const char* 
 		return false;
 
 	Value v = Value (value);
-	if (!p->loader->SetProperty (p, p->GetTopElementPtr (), ((XamlElementInfoManaged *) info)->xmlns, GetAsValue (), this, GetParentPointer (), name, &v, NULL)) {
+	if (!p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, name, &v, NULL)) {
 		return false;
 	}
 	return true;
@@ -4424,13 +4422,8 @@ set_managed_attached_property (XamlParserInfo *p, XamlElementInstance *item, Xam
 {
 	if (!p->loader)
 		return false;
-	XamlElementInfoManaged *mm = NULL;
-	if (item->info->RequiresManagedSet ())
-		mm = (XamlElementInfoManaged *) item->info;
-	else if (prop->info->RequiresManagedSet ())
-		mm = (XamlElementInfoManaged *) prop->info;
 
-	return p->loader->SetProperty (p, p->GetTopElementPtr (), mm ? mm->xmlns : NULL, item->GetAsValue (), item, item->GetParentPointer (), prop->element_name, value->GetAsValue (), value);
+	return p->loader->SetProperty (p, p->GetTopElementPtr (), item->info->xmlns, item->GetAsValue (), item, item->GetParentPointer (), prop->info->xmlns, prop->element_name, value->GetAsValue (), value);
 }
 
 static bool
@@ -4449,9 +4442,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	}
 
 	if (types->Find (property->info->GetPropertyOwnerKind ())->IsCustomType ()) {
-		XamlElementInstanceManaged *mp = (XamlElementInstanceManaged *) item;
 		g_strfreev (prop_name);
-
 		return set_managed_attached_property (p, item, property, value);
 	}
 
@@ -4494,7 +4485,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 					if (!dep->SetValueWithError (prop, value->GetAsValue (), &err))
 						parser_error (p, item->element_name, NULL, err.code, err.message);
 				} else {
-					if (!p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), prop_name [1], value->GetAsValue (), NULL)) {
+					if (!p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), NULL, prop_name [1], value->GetAsValue (), NULL)) {
 						parser_error (p, item->element_name, NULL, err.code, err.message);
 					}
 				}
@@ -4749,7 +4740,7 @@ start_parse:
 					v_set = true;
 				}
 
-				if (p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), g_strdup (prop->GetName ()), v, NULL)) {
+				if (p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), NULL, g_strdup (prop->GetName ()), v, NULL)) {
 					delete v;
 					g_free (attr_value);
 					continue;

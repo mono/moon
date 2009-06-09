@@ -1,3 +1,11 @@
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* XamlLoaderCallbacks.cs: SetProperty gets a xmlns for the
+	property and the element now.
+	* ManagedXamlLoader.cs: Use the property's xmlns for attached
+	properties unless one isn't supplied, then we can use the elements
+	xmlns.
+
 2009-06-04  Chris Toshok  <toshok@ximian.com>
 
 	* ApplicationLauncher.cs: stop catching exceptions here.  they're

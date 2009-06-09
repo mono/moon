@@ -1,3 +1,7 @@
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: Update signature for SetProperty
+
 2009-06-05  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::UrlNotify): only emit the 2104 error

@@ -39,7 +39,7 @@ namespace Mono.Xaml
 	unsafe internal delegate bool LookupObjectCallback (IntPtr loader, IntPtr parser, Value* top_level, Value* parent, string xmlns, string name, [MarshalAs (UnmanagedType.U1)] bool create, out Value value);
 	unsafe internal delegate void CreateGCHandleCallback ();
 
-	unsafe internal delegate bool SetPropertyCallback (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, Value* target, IntPtr target_data, Value* target_parent, string name, Value* value, IntPtr value_data);
+	unsafe internal delegate bool SetPropertyCallback (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, Value* target, IntPtr target_data, Value* target_parent, string prop_xmlns, string name, Value* value, IntPtr value_data);
 	unsafe internal delegate bool AddToContainerCallback (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, string prop_name, string key_name, Value* parent, IntPtr parent_data, Value* child, IntPtr child_data);
 	unsafe internal delegate void ImportXamlNamespaceCallback (IntPtr loader, IntPtr parser, string xmlns);
 	unsafe internal delegate string GetContentPropertyNameCallback (IntPtr loader, IntPtr parser, Value* object_ptr);
