@@ -1,3 +1,7 @@
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add TimeSpan to the primitive types.
+
 2009-06-08  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h (class Surface): add IsZombie.
