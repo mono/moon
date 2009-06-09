@@ -1,3 +1,7 @@
+2009-06-09  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Handle {x:Null} attributes.
+
 2009-06-08  Jackson Harper  <jackson@ximian.com>
 
 	* MoonError.cs: Add line./char position info for xaml parse

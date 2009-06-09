@@ -38,6 +38,7 @@ using System.Windows.Markup;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Windows.Data;
+using System.Text.RegularExpressions;
 using Mono;
 
 namespace Mono.Xaml
@@ -835,7 +836,10 @@ namespace Mono.Xaml
 
 			object new_value = null;
 			try {
-				new_value = MoonlightTypeConverter.ConvertObject (pi, value, target.GetType ());
+				if (IsExplicitNull (value))
+					new_value = null;
+				else
+					new_value = MoonlightTypeConverter.ConvertObject (pi, value, target.GetType ());
 				pi.SetValue (target, new_value, null);
 				return;
 			} catch (Exception ex) {
@@ -1144,6 +1148,11 @@ namespace Mono.Xaml
 			}
 
 			return o_value;
+		}
+
+		private static bool IsExplicitNull (string value)
+		{
+			 return Regex.IsMatch (value, "^{\\s*x:Null\\s*}");
 		}
 
 		///
