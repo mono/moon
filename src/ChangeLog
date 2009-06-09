@@ -1,5 +1,11 @@
 2009-06-08  Jackson Harper  <jackson@ximian.com>
 
+	* error.cpp|h: Add method and fields for line/char positions.
+	* xaml.cpp: Fill in line/char positions on MoonErrors, this allows
+	them to get propogated to managed and fixes some of the unit tests.
+
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp|h: Pass the property xmlns and the element xmlns into
 	managed when setting properties.
 

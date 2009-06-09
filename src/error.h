@@ -80,10 +80,14 @@ public:
 	// the silverlight error code
 	int code;
 
+	// Used for xaml parsing exceptions
+	int char_position;
+	int line_number;
+
 	// the caller of the method which returned the error must call Dispose to free this value
 	// (only necessary if there were any errors)
 	char *message;
-	
+
 	// managed code has thrown an exception, we store a gchandle
 	// to the exception here.
 	void* gchandle_ptr;
@@ -98,6 +102,8 @@ public:
 
 	static void FillIn (MoonError *error, ErrorType type, char *message /* this message must be allocated using glib methods */);
   	static void FillIn (MoonError *error, ErrorType type, const char *message);
+
+	static void SetXamlPositionInfo (MoonError *error, int char_position, int line_number);
 };
 
 #endif /* __MOON_ERROR_H__ */

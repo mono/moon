@@ -48,8 +48,7 @@ namespace System.Windows.Markup {
 			this.col = col;
 		}
 
-		internal XamlParseException (int line, int col, string msg)
-			: base (String.Format ("({0},{1}): {2}", line, col, msg))
+		internal XamlParseException (int line, int col, string msg) : base (msg)
 		{
 			this.line = line;
 			this.col = col;

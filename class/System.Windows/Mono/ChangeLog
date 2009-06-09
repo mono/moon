@@ -1,5 +1,12 @@
 2009-06-08  Jackson Harper  <jackson@ximian.com>
 
+	* MoonError.cs: Add line./char position info for xaml parse
+	exceptions.
+	* NativeMethods.cs: Construct XamlParseException with position
+	info.
+
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
 	* XamlLoaderCallbacks.cs: SetProperty gets a xmlns for the
 	property and the element now.
 	* ManagedXamlLoader.cs: Use the property's xmlns for attached

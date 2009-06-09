@@ -1,3 +1,8 @@
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* XamlParseException.cs: Remove line/position info from the
+	exception method.
+
 2009-04-30  Jackson Harper  <jackson@ximian.com>
 
 	* XamlReader.cs: loaded objects should be created in a discrete

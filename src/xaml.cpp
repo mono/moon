@@ -2288,6 +2288,7 @@ XamlLoader::CreateFromFileWithError (const char *xaml_file, bool create_namescop
 	Value *res = CreateFromFile (xaml_file, create_namescope, element_type);
 	if (error_args && error_args->error_code != -1) {
 		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
+		MoonError::SetXamlPositionInfo (error, error_args->char_position, error_args->line_number);
 	}
 	return res;
 }
@@ -2298,6 +2299,7 @@ XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope,
 	Value *res = CreateFromString (xaml, create_namescope, element_type);
 	if (error_args && error_args->error_code != -1) {
 		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
+		MoonError::SetXamlPositionInfo (error, error_args->char_position, error_args->line_number);
 	}
 	return res;
 }
@@ -2308,6 +2310,7 @@ XamlLoader::HydrateFromStringWithError (const char *xaml, DependencyObject *obje
 	Value *res = HydrateFromString (xaml, object, create_namescope, element_type);
 	if (error_args && error_args->error_code != -1) {
 		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
+		MoonError::SetXamlPositionInfo (error, error_args->char_position, error_args->line_number);
 	}
 	return res;
 }

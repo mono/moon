@@ -74,7 +74,7 @@ ParserErrorEventArgs::~ParserErrorEventArgs ()
 //
 
 MoonError::MoonError ()
-  : number ((ErrorType)0), code (0), message (0), gchandle_ptr (NULL)
+  : number ((ErrorType)0), code (0), message (0), char_position (-1), line_number (-1), gchandle_ptr (NULL)
 {
 }
 
@@ -129,4 +129,14 @@ MoonError::FillIn (MoonError *error, ErrorType type, const char *message)
 		return;
 
 	FillIn (error, type, 0, message);
+}
+
+
+void
+MoonError::SetXamlPositionInfo (MoonError *error, int char_position, int line_number)
+{
+	if (!error)
+		return;
+	error->char_position = char_position;
+	error->line_number = line_number;
 }

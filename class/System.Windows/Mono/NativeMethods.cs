@@ -144,7 +144,7 @@ namespace Mono {
 			case 5:
 				throw new InvalidOperationException (msg);
 			case 6:
-				throw new XamlParseException (msg);
+				throw new XamlParseException (err.LineNumber, err.CharPosition, msg);
 			case 7:
 				throw new UnauthorizedAccessException (msg);
 			case 8:
