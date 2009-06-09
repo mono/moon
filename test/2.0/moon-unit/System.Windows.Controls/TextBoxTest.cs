@@ -253,34 +253,33 @@ namespace Mono.Moonlight.UnitTesting
             Assert.AreEqual ("", box.GetValue (TextBox.TextProperty), "#2");
             box.ClearValue (TextBox.TextProperty);
             Assert.AreEqual (null, box.GetValue (TextBox.TextProperty), "#3");
-	}
-		
-		[TestMethod]
-		[MoonlightBug]
-		[Asynchronous]
-		public void TextChangedTest ()
-		{
-			bool changed = false;
-			TextBox box = new TextBox ();
-			box.TextChanged += delegate { changed = true; };
-			box.Text = "Hi";
-			box.Text = "No events";
-			box.Text = "Are emitted";
+        }
+        
+        [TestMethod]
+        [Asynchronous]
+        public void TextChangedTest ()
+        {
+            bool changed = false;
+            TextBox box = new TextBox ();
+            box.TextChanged += delegate { changed = true; };
+            box.Text = "Hi";
+            box.Text = "No events";
+            box.Text = "Are emitted";
 
-			// Check that the event wasn't synchronous
-			Assert.IsFalse (changed, "#1");
+            // Check that the event wasn't synchronous
+            Assert.IsFalse (changed, "#1");
 
-			// Ensure that the event never fires even after the control is loaded
-			CreateAsyncTest (box,
-				() => Assert.IsFalse (changed, "#2"),
-				() => Assert.IsFalse (changed, "#3"),
-				() => Assert.IsFalse (changed, "#4"),
-				() => Assert.IsFalse (changed, "#5"),
-				// Lets make the event fire now
-				() => box.Text = "Emit!",
-				() => Assert.IsTrue (changed, "#6")
-			);
-		}
+            // Ensure that the event never fires even after the control is loaded
+            CreateAsyncTest (box,
+                () => Assert.IsFalse (changed, "#2"),
+                () => Assert.IsFalse (changed, "#3"),
+                () => Assert.IsFalse (changed, "#4"),
+                () => Assert.IsFalse (changed, "#5"),
+                // Lets make the event fire now
+                () => box.Text = "Emit!",
+                () => Assert.IsTrue (changed, "#6")
+            );
+        }
         
         void OnSelectionChanged(object sender, RoutedEventArgs args)
         {
