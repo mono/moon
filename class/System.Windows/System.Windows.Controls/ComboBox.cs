@@ -80,7 +80,7 @@ namespace System.Windows.Controls
 		}
 		
 		public bool IsSelectionBoxHighlighted {
-			get; private set;
+			get { return !IsDropDownOpen && FocusManager.GetFocusedElement () == this; }
 		}
 		
 		public Style ItemContainerStyle {

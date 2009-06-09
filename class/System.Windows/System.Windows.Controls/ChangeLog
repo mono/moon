@@ -1,3 +1,8 @@
+2009-06-09  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Implement IsSelectionBoxHighlighted and prevent
+	  drt 555 from timing out.
+
 2009-06-04  Alan McGovern  <amcgovern@novell.com>
 
 	* Control.cs: Calling Focus () should result in a recursive Focus.
