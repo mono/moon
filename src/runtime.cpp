@@ -2027,7 +2027,7 @@ get_flags (gint32 def, const char *envname, struct env_options options[])
 	const char *env;
 	
 	if (envname && (env = g_getenv (envname))) {
-		g_warning ("%s = %s", envname, env);
+		printf ("%s = %s", envname, env);
 
 		const char *flag = env;
 		const char *inptr;

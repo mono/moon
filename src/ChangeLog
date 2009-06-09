@@ -1,5 +1,10 @@
 2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.cpp: g_warning -> printf to ease breaking on
+	g_log.
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.h: Fix IdMask.
 
 2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
