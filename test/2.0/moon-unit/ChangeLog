@@ -1,3 +1,8 @@
+2009-06-09  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/TextBoxTest.cs: TextBox.TextChanged
+	  shouldn't emit before the control is loaded.
+
 2009-06-08  Jackson Harper  <jackson@ximian.com>
 
 	* misc/Parsing/MiscParsing.cs: New test that ensures event
