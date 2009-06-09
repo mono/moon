@@ -244,7 +244,9 @@ public:
 	// stops event emission (since the plugin counterparts to xaml
 	// objects will be destroyed)
 	void Zombify ();
-	
+
+	bool IsZombie () { return zombie; }
+
 	void DetachDownloaders ();
 	
 #if FRONT_TO_BACK_STATS

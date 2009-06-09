@@ -1,3 +1,18 @@
+2009-06-08  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (class PluginClosure): new class to wrap
+	PluginInstance.
+	(PluginInstance::network_error_tickcall): use PluginClosure.
+	(PluginInstance::splashscreen_error_tickcall): use PluginClosure,
+	also don't UpdateSource if the surface is zombified (since the
+	plugin is likely already gone.)
+	(PluginInstance::UrlNotify): use PluginClosure's and add the tick
+	calls directly via the timemanager so we can specify both method
+	and closure.
+
+	* plugin.h (class PluginInstance): make network_error_tickcall and
+	splashscreen_error_tickcall static methods on PluginInstance.
+
 2009-06-08  Jackson Harper  <jackson@ximian.com>
 
 	* plugin.cpp|h: Update signature for SetProperty

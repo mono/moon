@@ -1,3 +1,7 @@
+2009-06-08  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h (class Surface): add IsZombie.
+
 2009-06-08  Jackson Harper  <jackson@ximian.com>
 
 	* error.cpp|h: Add method and fields for line/char positions.

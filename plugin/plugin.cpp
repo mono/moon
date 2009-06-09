@@ -1477,18 +1477,43 @@ PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer
 	return len;
 }
 
-static void
-surface_network_error_tickcall (EventObject *data)
+class PluginClosure : public EventObject {
+public:
+	PluginClosure (PluginInstance *plugin)
+		: plugin (plugin)
+	{
+	}
+
+	virtual ~PluginClosure ()
+	{
+	}
+
+	PluginInstance *plugin;
+};
+
+void
+PluginInstance::network_error_tickcall (EventObject *data)
 {
-	Surface *s = (Surface*)data;
+	PluginClosure *closure = (PluginClosure*)data;
+	Surface *s = closure->plugin->GetSurface();
+
 	s->EmitError (new ErrorEventArgs (RuntimeError, 2104, "Failed to download silverlight application."));
 }
 
-static void
-surface_splashscreen_error_tickcall (EventObject *data)
+void
+PluginInstance::splashscreen_error_tickcall (EventObject *data)
 {
-	Surface *s = (Surface*)data;
+	PluginClosure *closure = (PluginClosure*)data;
+	Surface *s = closure->plugin->GetSurface();
+
 	s->EmitError (new ErrorEventArgs (RuntimeError, 2108, "Failed to download the splash screen"));
+
+	// we need this check beccause the plugin might have been
+	// dtor'ed (and the surface zombified) in the amove EmitError.
+	if (!s->IsZombie())
+		closure->plugin->UpdateSource ();
+
+	closure->unref();
 }
 
 void
@@ -1507,7 +1532,8 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 			  reason == NPRES_USER_BREAK ? "user break" :
 			  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
 		if (IS_NOTIFY_SOURCE (notify))
-			GetSurface()->AddTickCall (surface_network_error_tickcall);
+			GetSurface()->GetTimeManager()->AddTickCall (network_error_tickcall,
+								     new PluginClosure (this));
 	}
 	
 	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
@@ -1533,7 +1559,8 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 
 	if (notify && notify->pdata && IS_NOTIFY_SPLASHSOURCE (notify)) {
 		if (reason == NPRES_NETWORK_ERR)
-			GetSurface()->AddTickCall (surface_splashscreen_error_tickcall);
+			GetSurface()->GetTimeManager()->AddTickCall (splashscreen_error_tickcall,
+								     new PluginClosure (this));
 		else
 			UpdateSource ();
 	}
