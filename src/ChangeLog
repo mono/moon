@@ -1,5 +1,9 @@
 2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.h: Fix IdMask.
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.h|cpp: Rework some of the buffer filling algorithm:
 	we now never have more than one frame pending (to know which
 	stream a response comes from - if frame parameter to 

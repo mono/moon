@@ -82,7 +82,7 @@ private:
 		MultiThreadedSafe = 1 << 29, // if the dtor can be called on any thread
 		Attached = 1 << 30,
 		Disposed = 1 << 31,
-		IdMask = ~(Attached | Disposed),
+		IdMask = ~(Attached | Disposed | MultiThreadedSafe),
 	};
 public:
 #if OBJECT_TRACKING
