@@ -1,5 +1,10 @@
 2009-06-10  Alan McGovern  <amcgovern@novell.com>
 
+	* multiscaleimage.cpp: The FadeIn storyboard should emit a MotionFinished
+	event too. Allows drt 293 to complete.
+	
+2009-06-10  Alan McGovern  <amcgovern@novell.com>
+
 	* uri.cpp: Uris starting with "\\" need to be recognised as
 	  absolute Uris
 

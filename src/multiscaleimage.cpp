@@ -815,6 +815,13 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	}
 }
 
+static void
+motion_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	MultiScaleImage *msi = (MultiScaleImage *) closure;
+	msi->EmitMotionFinished ();
+}
+
 void
 MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 {
@@ -842,6 +849,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			TimelineCollection *tlc = new TimelineCollection ();
 			tlc->Add (fadein_animation);
 			fadein_sb->SetChildren(tlc);
+			fadein_sb->AddHandler (Storyboard::CompletedEvent, motion_finished, this);
 #if DEBUG
 			fadein_sb->SetName ("Multiscale Fade-In");
 #endif
@@ -1057,13 +1065,6 @@ MultiScaleImage::EmitMotionFinished ()
 {
 	LOG_MSI ("Emitting MotionFinished\n");
 	Emit (MultiScaleImage::MotionFinishedEvent);
-}
-
-static void
-motion_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	MultiScaleImage *msi = (MultiScaleImage *) closure;
-	msi->EmitMotionFinished ();
 }
 
 void
