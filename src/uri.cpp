@@ -194,7 +194,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 	}
 
 	inptr = start;
-	while (*inptr && *inptr != ':' && *inptr != '/' && *inptr != '?' && *inptr != '#')
+	while (*inptr && *inptr != ':' && *inptr != '/' && *inptr != '?' && *inptr != '#' && *inptr != '\\')
 		inptr++;
 	
 	if (inptr > start && *inptr == ':') {
@@ -213,7 +213,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 		while (*inptr && *inptr != ';' && *inptr != ':' && *inptr != '@' && *inptr != '/')
 			inptr++;
 	} else {
-		isAbsolute = false;
+		isAbsolute = !strncmp (inptr, "\\\\", 2);
 		parse_path = true;
 		scheme = NULL;
 		inptr = uri;

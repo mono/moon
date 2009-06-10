@@ -1,3 +1,8 @@
+2009-06-10  Alan McGovern  <amcgovern@novell.com>
+
+	* uri.cpp: Uris starting with "\\" need to be recognised as
+	  absolute Uris
+
 2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline-asf.cpp: Remove dead code.
