@@ -1,0 +1,5 @@
+2009-06-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* all: New. Server app (Global.asax) and SL2 client application
+	to quickly and easily test different cross-domain policies.
+

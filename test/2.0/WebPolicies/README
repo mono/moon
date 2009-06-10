@@ -1,0 +1,64 @@
+SETUP
+
+* Make sure your /etc/hosts files contains entries for policy-client,
+flash-[1..99] and silverlight-[1-99] that maps to your server IP address
+
+	192.168.0.1	policy-client
+	192.168.0.1	flash-1
+	...
+	192.168.0.1	flash-99
+	192.168.0.1	silverlight-1
+	...
+	192.168.0.1	silverlight-99
+
+
+HOWTO
+
+* Start your web server on port 80, e.g.
+
+	sudo xsp2 --port 80
+
+* Start the web browser on http://policy-client/WebPolicies.html
+
+* Click on "WebClient" and check results (should all PASS)
+
+* Refresh or re-start web browser (since policies are cached!)
+
+* Click on "WebRequest" and check results (should all PASS)
+
+
+WRITING NEW TESTS
+
+* Each new policy must use a new host name. Bump the above (setup) limit
+if required.
+
+* By convention Flash policies use host named flash-# while Silverlight 
+policies use silverlight-#. Try to stick with them unless your testing
+host naming.
+
+* Page.xaml.cs must be given one (or many) new entry(ies) to test the new
+policy.
+	* Specify the URL to be tested.
+	* Speficy the excepted response (OK or SecurityException). If
+	required add your own response logic.
+
+* Global.asax must return the required policy based on the server name.
+Since this is ASP.NET there's no need to restart the web server after 
+each change.
+
+* Make sure your new test case works on Silverlight then try it on
+Moonlight.
+
+
+NOTES
+
+* The SL application MUST be executed from another host (i.e. not 
+flash-* or silverlight-*) since this is testing cross-domain policies.
+This is why "policy-client" exists. Using this name also allows you to 
+share the web server running Global.asax
+
+* The server (Global.asax) side can be edited without re-starting XSP.
+
+* The client side must be refreshed or restarted since policies are 
+cached by the runtime.
+

@@ -1,0 +1,17 @@
+<UserControl x:Class="WebPolicies.Page"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="1000" Height="700">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <StackPanel>
+            <StackPanel >
+                <Button x:Name="WebClientButton"><TextBlock>WebClient</TextBlock></Button>
+                <Button x:Name="WebRequestButton"><TextBlock>WebRequest</TextBlock></Button>
+            </StackPanel>
+            <TextBox x:Name="log" VerticalScrollBarVisibility="Auto" Height="600"></TextBox>
+            <TextBlock x:Name="status">-</TextBlock>
+            <TextBlock x:Name="reminder">Reminder: Application MUST be restarted/refreshed between executions since policies are cached.</TextBlock>
+        </StackPanel>
+    </Grid>
+</UserControl>
+
