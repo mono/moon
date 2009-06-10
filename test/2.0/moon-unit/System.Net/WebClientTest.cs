@@ -30,6 +30,7 @@ using System;
 using System.Net;
 using System.Reflection;
 using System.Security;
+using System.Threading;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.Silverlight.Testing;
@@ -96,10 +97,14 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void DownloadStringAsync_Relative ()
 		{
 			WebClient wc = new WebClient ();
+			// relative works only if the BaseAddress can be used to make an absolute http[s] Uri
+			// e.g. it won't work if the original Uri is a file:// so it won't work if this XAP is loaded from a server
+			if (!wc.BaseAddress.StartsWith ("file:///"))
+				return;
+
 			bool complete = false;
 			wc.DownloadStringCompleted += delegate (object sender, DownloadStringCompletedEventArgs e) {
 				CheckDefaults (wc);
@@ -107,13 +112,11 @@ namespace MoonTest.System.Net {
 				Assert.IsTrue (e.Error is WebException, "Error");
 				Assert.IsTrue (e.Error.InnerException is NotSupportedException, "Error.InnerException");
 				Assert.IsNull (e.UserState, "UserState");
-				Assert.Throws<TargetInvocationException, SecurityException> (delegate {
+				Assert.Throws<TargetInvocationException, WebException> (delegate {
 					Assert.IsNotNull (e.Result, "Result");
 				}, "Result");
 				complete = true;
 			};
-			// FIXME: relative works only if the BaseAddress can be used to make an absolute Uri
-			// e.g. it won't work if the original Uri is a file://
 			Enqueue (() => { wc.DownloadStringAsync (new Uri ("/myfile", UriKind.Relative)); });
 			EnqueueConditional (() => complete);
 			EnqueueTestComplete ();
@@ -121,12 +124,13 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void DownloadStringAsync ()
 		{
 			WebClient wc = new WebClient ();
 			bool complete = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
 			wc.DownloadStringCompleted += delegate (object sender, DownloadStringCompletedEventArgs e) {
+				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
 				CheckDefaults (wc);
 				Assert.IsFalse (e.Cancelled, "Cancelled");
 				Assert.IsTrue (e.Error is SecurityException, "Error");
@@ -143,12 +147,13 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void DownloadStringAsync_UserToken ()
 		{
 			WebClient wc = new WebClient ();
 			bool complete = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
 			wc.DownloadStringCompleted += delegate (object sender, DownloadStringCompletedEventArgs e) {
+				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
 				CheckDefaults (wc);
 				Assert.IsFalse (e.Cancelled, "Cancelled");
 				Assert.IsTrue (e.Error is SecurityException, "Error");
@@ -181,12 +186,13 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void OpenReadAsync ()
 		{
 			WebClient wc = new WebClient ();
 			bool complete = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
 			wc.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
+				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
 				CheckDefaults (wc);
 				Assert.IsFalse (e.Cancelled, "Cancelled");
 				Assert.IsTrue (e.Error is SecurityException, "Error");
@@ -203,12 +209,13 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void OpenReadAsync_UserToken ()
 		{
 			WebClient wc = new WebClient ();
 			bool complete = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
 			wc.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
+				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
 				CheckDefaults (wc);
 				Assert.IsFalse (e.Cancelled, "Cancelled");
 				Assert.IsTrue (e.Error is SecurityException, "Error");
@@ -247,7 +254,9 @@ namespace MoonTest.System.Net {
 		{
 			WebClient wc = new WebClient ();
 			bool complete = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
 			wc.OpenWriteCompleted += delegate (object sender, OpenWriteCompletedEventArgs e) {
+				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
 				CheckDefaults (wc);
 				Assert.IsFalse (e.Cancelled, "Cancelled");
 				Assert.IsNull (e.Error, "Error"); // weird
@@ -262,7 +271,6 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void OpenWriteAsync_BadMethod ()
 		{
 			WebClient wc = new WebClient ();
@@ -289,7 +297,9 @@ namespace MoonTest.System.Net {
 		{
 			WebClient wc = new WebClient ();
 			bool complete = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
 			wc.OpenWriteCompleted += delegate (object sender, OpenWriteCompletedEventArgs e) {
+				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
 				CheckDefaults (wc);
 				Assert.IsFalse (e.Cancelled, "Cancelled");
 				Assert.IsNull (e.Error, "Error"); // weird
@@ -327,12 +337,13 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void UploadStringAsync ()
 		{
 			WebClient wc = new WebClient ();
 			bool complete = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
 			wc.UploadStringCompleted += delegate (object sender, UploadStringCompletedEventArgs e) {
+				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
 				CheckDefaults (wc);
 				Assert.IsFalse (e.Cancelled, "Cancelled");
 				Assert.IsTrue (e.Error is SecurityException, "Error");
@@ -349,7 +360,6 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void UploadStringAsync_BadMethod ()
 		{
 			WebClient wc = new WebClient ();
@@ -372,12 +382,13 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void UploadStringAsync_UserToken ()
 		{
 			WebClient wc = new WebClient ();
 			bool complete = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
 			wc.UploadStringCompleted += delegate (object sender, UploadStringCompletedEventArgs e) {
+				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
 				CheckDefaults (wc);
 				Assert.IsFalse (e.Cancelled, "Cancelled");
 				Assert.IsTrue (e.Error is SecurityException, "Error");

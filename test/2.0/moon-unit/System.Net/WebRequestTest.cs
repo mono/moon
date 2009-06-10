@@ -569,6 +569,15 @@ namespace MoonTest.System.Net {
 
 			EnqueueTestComplete ();
 		}
+
+		[TestMethod]
+		public void BeginGetResponse_NullCallback ()
+		{
+			WebRequest wreq = WebRequest.Create (new Uri ("http://localhost/"));
+			Assert.Throws<NotSupportedException> (delegate {
+				wreq.BeginGetResponse (null, String.Empty);
+			}, "null callback");
+		}
 	}
 }
 

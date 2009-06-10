@@ -1,3 +1,10 @@
+2009-06-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebClientTest.cs: Remove remaining [MoonlightBug] on
+	test cases. Add a few asserts to validate the running thread.
+	* System.Net/WebRequestTest.cs: Add test case about using a null 
+	callback in BeginGetResponse
+
 2009-06-09  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/TextBoxTest.cs: TextBox.TextChanged
