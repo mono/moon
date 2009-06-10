@@ -3081,9 +3081,9 @@ is_managed_kind (Type::Kind kind)
 static bool
 kind_requires_managed_load (Type::Kind kind)
 {
-	if (kind == Type::USERCONTROL) {
-		return true;
-	}
+//	if (kind == Type::USERCONTROL) {
+//		return true;
+//	}
 
 	return false;
 }
