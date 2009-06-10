@@ -568,10 +568,10 @@ FrameworkElement::Arrange (Rect finalRect)
 	LayoutInformation::SetLayoutClip (this, rectangle);
 	rectangle->unref ();
 
+	
 	if (old != response) {
-		SizeChangedEventArgs *args = new SizeChangedEventArgs (old, response);
-
-		Emit(SizeChangedEvent, args);
+		if (!LayoutInformation::GetLastRenderSize (this))
+			LayoutInformation::SetLastRenderSize (this, &old);
 	}
 	// XXX what do we do with finalRect.x and y?
 	//printf ("\u231a");
