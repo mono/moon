@@ -1,3 +1,8 @@
+2009-06-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.manual: Change Thread::StartSafe to MoonlightUnhandledException
+	so we can reuse the same SSC code without adding new SSC
+
 2009-06-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.ServiceModel.manual: CrossDomainAccessManager does not
