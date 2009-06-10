@@ -102,22 +102,21 @@ namespace MoonTest.System.Net {
 			WebClient wc = new WebClient ();
 			// relative works only if the BaseAddress can be used to make an absolute http[s] Uri
 			// e.g. it won't work if the original Uri is a file:// so it won't work if this XAP is loaded from a server
-			if (!wc.BaseAddress.StartsWith ("file:///"))
-				return;
-
-			bool complete = false;
-			wc.DownloadStringCompleted += delegate (object sender, DownloadStringCompletedEventArgs e) {
-				CheckDefaults (wc);
-				Assert.IsFalse (e.Cancelled, "Cancelled");
-				Assert.IsTrue (e.Error is WebException, "Error");
-				Assert.IsTrue (e.Error.InnerException is NotSupportedException, "Error.InnerException");
-				Assert.IsNull (e.UserState, "UserState");
-				Assert.Throws<TargetInvocationException, WebException> (delegate {
-					Assert.IsNotNull (e.Result, "Result");
-				}, "Result");
-				complete = true;
-			};
-			Enqueue (() => { wc.DownloadStringAsync (new Uri ("/myfile", UriKind.Relative)); });
+			bool complete = !wc.BaseAddress.StartsWith ("file:///");
+			if (!complete) {
+				wc.DownloadStringCompleted += delegate (object sender, DownloadStringCompletedEventArgs e) {
+					CheckDefaults (wc);
+					Assert.IsFalse (e.Cancelled, "Cancelled");
+					Assert.IsTrue (e.Error is WebException, "Error");
+					Assert.IsTrue (e.Error.InnerException is NotSupportedException, "Error.InnerException");
+					Assert.IsNull (e.UserState, "UserState");
+					Assert.Throws<TargetInvocationException, WebException> (delegate {
+						Assert.IsNotNull (e.Result, "Result");
+					}, "Result");
+					complete = true;
+				};
+				Enqueue (() => { wc.DownloadStringAsync (new Uri ("/myfile", UriKind.Relative)); });
+			}
 			EnqueueConditional (() => complete);
 			EnqueueTestComplete ();
 		}
