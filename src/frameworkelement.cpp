@@ -648,6 +648,10 @@ FrameworkElement::UpdateLayout ()
 		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
 			if (!child->IsLoaded ()) {
 				LOG_LAYOUT ("FrameworkElement::UpdateLayout: element (%p) not yet loaded\n", child);
+
+				List *load_list = WalkTreeForLoaded (false);
+				EmitSubtreeLoad  (load_list);
+				delete load_list;
 			}
 
 			if ((child->flags & UIElement::RENDER_VISIBLE) == 0) {

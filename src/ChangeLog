@@ -1,5 +1,10 @@
 2009-06-10  Larry Ewing  <lewing@novell.com>
 
+	* frameworkelement.cpp (UpdateLayout): if we find a unloaded
+	element while walking the tree emit loaded on it now.
+
+2009-06-10  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp (UpdateLayout): emit SizeChanged in the
 	place it was supposed to be emitted.
 
