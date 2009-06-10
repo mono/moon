@@ -1,5 +1,10 @@
 2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp|h: Make flags a thread-safe variable, since
+	we might write to it from an audio thread.
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp: When checking if an entry has duration, check
 	the right entry. Fixes a possible crash.
 

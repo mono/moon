@@ -412,7 +412,7 @@ MediaPlayer::Initialize ()
 	VERIFY_MAIN_THREAD;
 
 	// Clear out any state, bits, etc
-	state = (PlayerState) 0;
+	state_unlocked = (PlayerState) 0;
 	// Set initial states and bits
 	SetState (Stopped);
 	SetBit (SeekSynched);
@@ -562,7 +562,7 @@ MediaPlayer::AdvanceFrame ()
 	guint64 now = 0;
 	
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame () state: %i, current_pts = %" G_GUINT64_FORMAT ", IsPaused: %i, IsSeeking: %i, VideoEnded: %i, AudioEnded: %i, HasVideo: %i, HasAudio: %i\n", 
-		state, current_pts, IsPaused (), IsSeeking (), GetBit (VideoEnded), GetBit (AudioEnded), HasVideo (), HasAudio ());
+		state_unlocked, current_pts, IsPaused (), IsSeeking (), GetBit (VideoEnded), GetBit (AudioEnded), HasVideo (), HasAudio ());
 	VERIFY_MAIN_THREAD;
 
 	RemoveBit (LoadFramePending);
@@ -753,7 +753,7 @@ MediaPlayer::LoadVideoFrame ()
 	guint64 target_pts;
 	MediaFrame *frame;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), HasVideo: %i, LoadFramePending: %i\n", HasVideo (), state & LoadFramePending);
+	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), HasVideo: %i, LoadFramePending: %i\n", HasVideo (), state_unlocked & LoadFramePending);
 	VERIFY_MAIN_THREAD;
 
 	if (!HasVideo ())
@@ -833,7 +833,7 @@ MediaPlayer::Play ()
 {
 	AudioSource *audio;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i, IsPlaying: %i, IsSeeking: %i\n", state, IsPlaying (), IsSeeking ());
+	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i, IsPlaying: %i, IsSeeking: %i\n", state_unlocked, IsPlaying (), IsSeeking ());
 	VERIFY_MAIN_THREAD;
 
 	if (IsPlaying () && !IsSeeking ())
@@ -852,7 +852,7 @@ MediaPlayer::Play ()
 	
 	SetTimeout (GetTimeoutInterval ());
 
-	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i [Done]\n", state);
+	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i [Done]\n", state_unlocked);
 }
 
 gint32
@@ -963,7 +963,7 @@ MediaPlayer::Pause ()
 {
 	AudioSource *audio;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i\n", state);
+	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i\n", state_unlocked);
 	VERIFY_MAIN_THREAD;
 
 	if (IsPaused ())
@@ -979,7 +979,7 @@ MediaPlayer::Pause ()
 
 	SetTimeout (0);
 
-	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i [Done]\n", state);	
+	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i [Done]\n", state_unlocked);	
 }
 
 guint64
@@ -1021,7 +1021,7 @@ MediaPlayer::SeekCompletedHandler (Media *media, EventArgs *args)
 void
 MediaPlayer::NotifySeek (guint64 pts)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu, IsPlaying (): %i\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts, IsPlaying ());
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu, IsPlaying (): %i\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts, IsPlaying ());
 	VERIFY_MAIN_THREAD;
 
 	AudioSource *audio;
@@ -1055,7 +1055,7 @@ MediaPlayer::NotifySeek (guint64 pts)
 	current_pts = pts;
 	target_pts = pts;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu [END]\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts);
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu [END]\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts);
 }
 
 bool
@@ -1077,7 +1077,7 @@ MediaPlayer::Stop ()
 {
 	AudioSource *audio;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::Stop (), state: %i\n", state);
+	LOG_MEDIAPLAYER ("MediaPlayer::Stop (), state: %i\n", state_unlocked);
 	VERIFY_MAIN_THREAD;
 
 	audio = GetAudio (); // This returns a reffed AudioSource
@@ -1214,4 +1214,106 @@ MediaPlayer::SetMuted (bool muted)
 	} else {
 		//fprintf (stderr, "MediaPlayer::SetMuted (%i): There's no audio to mute.\n", muted);
 	}
+}
+
+void
+MediaPlayer::SetBit (PlayerState s)
+{
+	mutex.Lock ();
+	state_unlocked = (PlayerState) (s | state_unlocked);
+	mutex.Unlock ();
+}
+
+void
+MediaPlayer::RemoveBit (PlayerState s)
+{
+	mutex.Lock ();
+	state_unlocked = (PlayerState) (~s & state_unlocked);
+	mutex.Unlock ();
+}
+
+void
+MediaPlayer::SetBitTo (PlayerState s, bool value)
+{
+	if (value) {
+		SetBit (s);
+	} else {
+		RemoveBit (s);
+	}
+}
+
+bool
+MediaPlayer::GetBit (PlayerState s)
+{
+	bool result;
+	mutex.Lock ();
+	result =  (state_unlocked & s) == s;
+	mutex.Unlock ();
+	return result;
+}
+
+void
+MediaPlayer::SetState (PlayerState s)
+{
+	mutex.Lock ();
+	state_unlocked = (PlayerState) ((state_unlocked & ~StateMask) | s);
+	mutex.Unlock ();
+}
+
+MediaPlayer::PlayerState
+MediaPlayer::GetState ()
+{
+	PlayerState result;
+	mutex.Lock ();
+	result = state_unlocked;
+	mutex.Unlock ();
+	return result;
+}
+
+bool
+MediaPlayer::IsBufferUnderflow ()
+{
+	return GetBit (BufferUnderflow);
+}
+
+bool
+MediaPlayer::IsLoadFramePending ()
+{
+	return GetBit (LoadFramePending);
+}
+
+bool
+MediaPlayer::IsSeeking ()
+{
+	return GetBit (Seeking);
+}
+
+bool
+MediaPlayer::HasRenderedFrame ()
+{
+	return GetBit (RenderedFrame);
+}
+
+bool
+MediaPlayer::IsPlaying ()
+{
+	return (GetState () & StateMask) == Playing;
+}
+
+bool
+MediaPlayer::IsPaused ()
+{
+	return (GetState () & StateMask) == Paused;
+}
+
+bool
+MediaPlayer::IsStopped ()
+{
+	return (GetState () & StateMask) == Stopped;
+}
+
+void
+MediaPlayer::SetBufferUnderflow ()
+{
+	SetBitTo (BufferUnderflow, true);
 }
