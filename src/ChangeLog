@@ -1,3 +1,11 @@
+2009-06-10  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Add another param to LookupObject to specify whether
+	we are looking up a property.  We can't rely on the '.' being in
+	the name because x:Class names can have namespaces.
+	- Force USERCONTROL to be looked up in managed so we can
+	honour x:Class
+	
 2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* playlist.cpp|h: PlaylistEntry: Add support for getting duration for

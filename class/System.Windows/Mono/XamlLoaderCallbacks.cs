@@ -36,7 +36,7 @@ using Mono;
 
 namespace Mono.Xaml
 {
-	unsafe internal delegate bool LookupObjectCallback (IntPtr loader, IntPtr parser, Value* top_level, Value* parent, string xmlns, string name, [MarshalAs (UnmanagedType.U1)] bool create, out Value value);
+	unsafe internal delegate bool LookupObjectCallback (IntPtr loader, IntPtr parser, Value* top_level, Value* parent, string xmlns, string name, [MarshalAs (UnmanagedType.U1)] bool create, [MarshalAs (UnmanagedType.U1)] bool is_property, out Value value);
 	unsafe internal delegate void CreateGCHandleCallback ();
 
 	unsafe internal delegate bool SetPropertyCallback (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, Value* target, IntPtr target_data, Value* target_parent, string prop_xmlns, string name, Value* value, IntPtr value_data);

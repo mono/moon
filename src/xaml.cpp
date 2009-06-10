@@ -118,12 +118,13 @@ static bool handle_markup_in_managed (const char* attr_value);
 static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, DependencyProperty *prop, Value **value);
 static bool element_begins_buffering (Type::Kind kind);
 static bool is_managed_kind (Type::Kind kind);
+static bool kind_requires_managed_load (Type::Kind kind);
 static bool is_legal_top_level_kind (Type::Kind kind);
 static bool is_static_resource_element (const char *el);
 static Value *lookup_resource_dictionary (ResourceDictionary *rd, const char *name, bool *exists);
 static void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *format, ...);
 
-static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name, bool create);
+static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name, const char **attr, bool create);
 static void destroy_created_namespace (gpointer data, gpointer user_data);
 
 class XamlNamespace {
@@ -904,8 +905,10 @@ class DefaultNamespace : public XamlNamespace {
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
 	{
 		Type* t = Type::Find (el, false);
-		if (t)
+		if (t && !kind_requires_managed_load (t->GetKind ())) {
+			printf ("creating native element info:  %s\n", t->GetName ());
 			return new XamlElementInfoNative (t);
+		}
 
 		if (enums_is_enum_name (el))
 			return new XamlElementInfoEnum (g_strdup (el));
@@ -913,7 +916,7 @@ class DefaultNamespace : public XamlNamespace {
 		if (is_static_resource_element (el))
 			return new XamlElementInfoStaticResource (g_strdup (el));
 
-		XamlElementInfo* managed_element = create_element_info_from_imported_managed_type (p, el, create);
+		XamlElementInfo* managed_element = create_element_info_from_imported_managed_type (p, el, attr, create);
 		if (managed_element)
 			return managed_element;
 
@@ -1260,7 +1263,7 @@ class ManagedNamespace : public XamlNamespace {
 		}
 
 		Value *value = new Value ();
-		if (!p->loader->LookupObject (p, p->GetTopElementPtr (), p->current_element ? p->current_element->GetAsValue () : NULL, use_xmlns, el, create, value)) {
+		if (!p->loader->LookupObject (p, p->GetTopElementPtr (), p->current_element ? p->current_element->GetAsValue () : NULL, use_xmlns, el, create, false, value)) {
 			parser_error (p, el, NULL, -1, "Unable to resolve managed type %s.", el);
 			delete value;
 			if (type_name)
@@ -1293,12 +1296,12 @@ class ManagedNamespace : public XamlNamespace {
 };
 
 bool
-XamlLoader::LookupObject (void *p, Value *top_level, Value *parent, const char* xmlns, const char* type_name, bool create, Value *value)
+XamlLoader::LookupObject (void *p, Value *top_level, Value *parent, const char* xmlns, const char* type_name, bool create, bool is_property, Value *value)
 {
 	if (callbacks.lookup_object) {
 		if (!vm_loaded && !LoadVM ())
 			return false;
-		bool res = callbacks.lookup_object (this, p, top_level, parent, xmlns, type_name, create, value);
+		bool res = callbacks.lookup_object (this, p, top_level, parent, xmlns, type_name, create, is_property, value);
 		return res;
 	}
 		
@@ -1524,11 +1527,13 @@ start_element (void *data, const char *el, const char **attr)
 		if (p->hydrate_expecting){
 			Type::Kind expecting_type =  p->hydrate_expecting->GetObjectType ();
 
+			/*
 			if (!types->IsSubclassOf (expecting_type, elem->GetKind ())) {
 				parser_error (p, el, NULL, -1, "Invalid top-level element found %s, expecting %s", el,
 					      types->Find (expecting_type)->GetName ());
 				return;
 			}
+			*/
 
 			inst = elem->CreateWrappedElementInstance (p, p->hydrate_expecting);
 			p->hydrate_expecting = NULL;
@@ -3075,6 +3080,16 @@ is_managed_kind (Type::Kind kind)
 	return false;
 }
 
+static bool
+kind_requires_managed_load (Type::Kind kind)
+{
+	if (kind == Type::USERCONTROL) {
+		return true;
+	}
+
+	return false;
+}
+
 static
 bool is_legal_top_level_kind (Type::Kind kind)
 {
@@ -3782,7 +3797,7 @@ XamlElementInstance::FindPropertyElement (XamlParserInfo *p, const char *el, con
 	// We didn't find anything so try looking up in managed
 	if (p->loader) {
 		Value *v = new Value ();
-		if (p->loader->LookupObject (p, p->GetTopElementPtr (), GetAsValue (), p->current_namespace->GetUri (), el, false, v)) {
+		if (p->loader->LookupObject (p, p->GetTopElementPtr (), GetAsValue (), p->current_namespace->GetUri (), el, false, true, v)) {
 			XamlElementInfoManaged *res = new XamlElementInfoManaged (g_strdup (p->current_namespace->GetUri ()), el, info, v->GetKind (), v);
 			XamlElementInfo *container = p->current_namespace->FindElement (p, type_name, NULL, false);
 			info->SetPropertyOwnerKind (container->GetKind ());
@@ -3797,14 +3812,34 @@ XamlElementInstance::FindPropertyElement (XamlParserInfo *p, const char *el, con
 }
 
 static XamlElementInfo *
-create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name, bool create)
+create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name, const char **attr, bool create)
 {
 	if (!p->loader)
 		return NULL;
 
+	char* type_name = NULL;
+	char* type_xmlns = NULL;
+	const char* use_xmlns = NULL;
+
+	if (x_namespace) {
+		// We might have an x:Class attribute specified, so we need to use that for the
+		// type_name that we pass to LookupObject
+		if (strcmp ("Application", name)) {
+			type_name = x_namespace->FindTypeName (attr, &type_xmlns);
+			if (type_name) {
+				name = type_name;
+				use_xmlns = type_xmlns;
+			}
+		}
+	}
+
 	Value *v = new Value ();
-	if (!p->loader->LookupObject (p, NULL, NULL, NULL, name, create, v)) {
+	if (!p->loader->LookupObject (p, use_xmlns ? p->GetTopElementPtr () : NULL, NULL, use_xmlns, name, create, false, v)) {
 		delete v;
+		if (type_name)
+			g_free (type_name);
+		if (type_xmlns)
+			g_free (type_xmlns);
 		return NULL;
 	}
 

@@ -171,14 +171,16 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private unsafe bool LookupObject (Value* top_level, Value *parent, string xmlns, string name, bool create, out Value value)
+		private unsafe bool LookupObject (Value* top_level, Value *parent, string xmlns, string name, bool create, bool is_property, out Value value)
 		{
 			if (name == null)
 				throw new ArgumentNullException ("type_name");
 
-			int dot = name.IndexOf (".");
-			if (dot > 0)
+			
+			if (is_property) {
+				int dot = name.IndexOf (".");
 				return LookupPropertyObject (top_level, parent, xmlns, name, dot, create, out value);
+			}
 
 			if (top_level == null && xmlns == null) {
 				return LookupComponentFromName (top_level, name, create, out value);
@@ -1166,10 +1168,10 @@ namespace Mono.Xaml
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// genereting an exception and unwinding the stack.
 		//
-		private unsafe bool cb_lookup_object (IntPtr loader, IntPtr parser, Value* top_level, Value* parent, string xmlns, string name, bool create, out Value value)
+		private unsafe bool cb_lookup_object (IntPtr loader, IntPtr parser, Value* top_level, Value* parent, string xmlns, string name, bool create, bool is_property, out Value value)
 		{
 			try {
-				return LookupObject (top_level, parent, xmlns, name, create, out value);
+				return LookupObject (top_level, parent, xmlns, name, create, is_property, out value);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::LookupObject ({0}, {1}, {2}, {3}) failed: {3} ({4}).", (IntPtr)top_level, xmlns, create, name, ex.Message, ex.GetType ().FullName);
 				Console.WriteLine (ex);
