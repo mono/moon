@@ -1477,12 +1477,17 @@ TextLayout::Layout ()
 		
 		word.font = font = attrs->Font ();
 		
-		if (!OverrideLineHeight ()) {
-			line->descend = MIN (line->descend, font->Descender ());
-			line->height = MAX (line->height, font->Height ());
-		}
+		//if (!OverrideLineHeight ()) {
+		//	line->descend = MIN (line->descend, font->Descender ());
+		//	line->height = MAX (line->height, font->Height ());
+		//}
 		
 		if (*inptr == '\0') {
+			if (!OverrideLineHeight ()) {
+				line->descend = MIN (line->descend, font->Descender ());
+				line->height = MAX (line->height, font->Height ());
+			}
+			
 			actual_height += line->height;
 			break;
 		}
@@ -1497,6 +1502,11 @@ TextLayout::Layout ()
 			while (inptr < inend) {
 				// check for line-breaks
 				if (IsLineBreak (inptr, inend - inptr, &n_bytes, &n_chars)) {
+					if (line->length == 0 && !OverrideLineHeight ()) {
+						line->descend = font->Descender ();
+						line->height = font->Height ();
+					}
+					
 					line->length += n_bytes;
 					run->length += n_bytes;
 					line->count += n_chars;
@@ -1518,6 +1528,11 @@ TextLayout::Layout ()
 				
 				if (word.length > 0) {
 					// append the word to the run/line
+					if (!OverrideLineHeight ()) {
+						line->descend = MIN (line->descend, font->Descender ());
+						line->height = MAX (line->height, font->Height ());
+					}
+					
 					line->advance += word.advance;
 					run->advance += word.advance;
 					line->width = line->advance;
@@ -1540,6 +1555,11 @@ TextLayout::Layout ()
 				layout_lwsp (&word, inptr, inend);
 				
 				if (word.length > 0) {
+					if (!OverrideLineHeight ()) {
+						line->descend = MIN (line->descend, font->Descender ());
+						line->height = MAX (line->height, font->Height ());
+					}
+					
 					line->advance += word.advance;
 					run->advance += word.advance;
 					line->length += word.length;
@@ -1571,7 +1591,7 @@ TextLayout::Layout ()
 					line = new TextLayoutLine (this, inptr - text, offset);
 					
 					if (!OverrideLineHeight ()) {
-						if (*inptr == '\0' || inptr < inend) {
+						if (*inptr == '\0') {
 							line->descend = font->Descender ();
 							line->height = font->Height ();
 						}
@@ -1579,16 +1599,14 @@ TextLayout::Layout ()
 						line->height = line_height;
 					}
 					
+					if (linebreak && *inptr == '\0')
+						actual_height += line->height;
+					
 					g_ptr_array_add (lines, line);
 					prev = 0;
 				}
 				
 				if (inptr < inend) {
-					if (!OverrideLineHeight ()) {
-						line->descend = font->Descender ();
-						line->height = font->Height ();
-					}
-					
 					// more text to layout with the current attrs...
 					run = new TextLayoutRun (line, attrs, inptr - text);
 					g_ptr_array_add (line->runs, run);

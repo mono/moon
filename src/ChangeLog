@@ -1,3 +1,8 @@
+2009-06-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (Layout): Don't apply font height to the line unless
+	text has been rendered on that line using that font.
+
 2009-06-10  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Add another param to LookupObject to specify whether
