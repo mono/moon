@@ -1,3 +1,9 @@
+2009-06-10  Alan McGovern  <amcgovern@novell.com>
+
+	* Deployment.cs:
+	* Application.cs: Parse enough of the init params to make 352
+	  fail instantly instead of timing out.
+
 2009-06-05  Chris Toshok  <toshok@ximian.com>
 
 	* Deployment.cs: if the assembly file doesn't exist inside the

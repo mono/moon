@@ -483,9 +483,9 @@ namespace System.Windows {
 		public event StartupEventHandler Startup;
 		public event EventHandler<ApplicationUnhandledExceptionEventArgs> UnhandledException;
 
-		internal void OnStartup () {
+		internal void OnStartup (StartupEventArgs e) {
 			if (Startup != null){
-				Startup (this, new StartupEventArgs ());
+				Startup (this, e);
 			}	
 		}
 

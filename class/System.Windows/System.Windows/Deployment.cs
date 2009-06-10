@@ -305,9 +305,21 @@ namespace System.Windows {
 
 			Events.InitSurface (Surface.Native);
 
-			instance.OnStartup ();
+			StartupEventArgs args = new  StartupEventArgs();
+			ParseInitParams (args.InitParams);
+			instance.OnStartup (args);
 
 			return true;
+		}
+		
+		void ParseInitParams (IDictionary<string, string> initParams)
+		{
+			foreach (var pair in initParams) {
+				if (pair.Key == "culture")
+						System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo (pair.Value);
+				else if (pair.Key == "uiculture")
+					System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo (pair.Value);
+			}
 		}
 	}
 }
