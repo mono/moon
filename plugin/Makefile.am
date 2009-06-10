@@ -60,6 +60,7 @@ libmoonplugin_la_SOURCES = \
 	plugin-debug.cpp	\
 	plugin-debug.h		\
 	plugin-utils.cpp	\
+	plugin-spinner.h	\
 	windowless.cpp		\
 	windowless.h
 

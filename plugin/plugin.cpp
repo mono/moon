@@ -20,6 +20,7 @@
 #include <dlfcn.h>
 
 #include "plugin.h"
+#include "plugin-spinner.h"
 #include "plugin-class.h"
 #include "plugin-debug.h"
 #include "browser-bridge.h"
@@ -829,7 +830,10 @@ PluginInstance::CreateWindow ()
 		StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
 		
 		NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
-	}
+	} else {
+		xaml_loader = PluginXamlLoader::FromStr (PLUGIN_SPINNER, this, surface);
+		LoadXAML ();
+	} 
 	if (onSourceDownloadProgressChanged != NULL) {
 		char *retval = NPN_strdup (onSourceDownloadProgressChanged);
 		NPVariant npvalue;

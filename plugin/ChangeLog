@@ -1,3 +1,10 @@
+2009-06-10  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (CreateWindow): add a simple spinner if nothing is
+	specified.
+
+	* plugin-spinner.h: new simple spinner.
+
 2009-06-08  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (class PluginClosure): new class to wrap
