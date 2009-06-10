@@ -423,7 +423,7 @@ MediaPlayer::Initialize ()
 	start_pts = 0;
 	current_pts = 0;
 	target_pts = 0;
-	first_live_pts = G_MAXULONG;
+	first_live_pts = G_MAXUINT64;
 	
 	audio_stream_count = 0;
 	height = 0;

@@ -1,5 +1,9 @@
 2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp: use the correct max value for guint64.
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaplayer.cpp|h: Make flags a thread-safe variable, since
 	we might write to it from an audio thread.
 
