@@ -1,3 +1,16 @@
+2009-06-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: SL does not follow RFC2616 for 301 
+	and will redirect on GET too.
+	* ClientAccessPolicy.cs: Do not allow '%', ".." or "./" in cross
+	domain URL since this is "often" the case (see MS bug URL). Fix
+	local path matching and throw if a policy resource path is empty.
+	* FlashCrossDomainPolicy.cs: Remove AllowAccessFromIdentity and 
+	allow site-control when set to 'by-ftp-filename'.
+	* FlashCrossDomainPolicyParser.cs: Throw if a boolean value is not 
+	'true' or 'false'. Remove code from "allow-access-from-identity"
+	since this is not supported by Silverlight.
+
 2009-06-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* BrowserHttpWebRequestInternal.cs: Override Headers so this internal

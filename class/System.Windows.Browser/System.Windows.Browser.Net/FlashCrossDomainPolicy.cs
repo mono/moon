@@ -45,12 +45,10 @@ namespace System.Windows.Browser.Net {
 		{
 			AllowedAccesses = new List<AllowAccessFrom> ();
 			AllowedHttpRequestHeaders = new List<AllowHttpRequestHeadersFrom> ();
-			AllowedIdentities = new List<AllowAccessFromIdentity> ();
 		}
 
 		public List<AllowAccessFrom> AllowedAccesses { get; private set; }
 		public List<AllowHttpRequestHeadersFrom> AllowedHttpRequestHeaders { get; private set; }
-		public List<AllowAccessFromIdentity> AllowedIdentities { get; private set; }
 
 		public string SiteControl {
 			get { return String.IsNullOrEmpty (site_control) ? "all" : site_control; }
@@ -62,6 +60,7 @@ namespace System.Windows.Browser.Net {
 			switch (SiteControl) {
 			case "all":
 			case "master-only":
+			case "by-ftp-filename":
 				break;
 			default:
 				// others, e.g. 'none', are not supported/accepted
@@ -74,9 +73,7 @@ namespace System.Windows.Browser.Net {
 			if (AllowedHttpRequestHeaders.Count > 0 && 
 			    AllowedHttpRequestHeaders.Any (h => h.IsRejected (uri, headerKeys)))
 				return false;
-			if (AllowedIdentities.Count > 0 &&
-			    !AllowedIdentities.Any (a => a.IsAllowed (uri, headerKeys)))
-				return false;
+
 			return true;
 		}
 
@@ -130,23 +127,6 @@ namespace System.Windows.Browser.Net {
 				return (Secure && uri.Scheme != Uri.UriSchemeHttps); // <- FIXME looks bad, needs test
 			}
 		}
-
-		public class AllowAccessFromIdentity
-		{
-			public AllowAccessFromIdentity ()
-			{
-				throw new NotSupportedException ("Silverlight does not support allow-access-from-identity specification in cross-domain.xml");
-			}
-
-			public string Fingerprint { get; set; }
-			public string FingerprintAlgorithm { get; set; }
-
-			public bool IsAllowed (Uri uri, string [] headerKeys)
-			{
-				throw new InvalidOperationException ("Silverlight does not support allow-access-from specification in cross-domain.xml");
-			}
-		}
-
 	}
 }
 

@@ -38,6 +38,8 @@ using System.Xml;
 
 /*
 
+Specification: http://www.adobe.com/devnet/articles/crossdomain_policy_file_spec.html
+
 # This grammar is based on the xsd from Adobe, but the schema is wrong.
 # It should have used interleave (all). Some crossdomain.xml are invalidated.
 # (For example, try mono-xmltool --validate-xsd http://www.adobe.com/xml/schemas/PolicyFile.xsd http://twitter.com/crossdomain.xml)
@@ -82,6 +84,19 @@ namespace System.Windows.Browser.Net {
 
 	partial class FlashCrossDomainPolicy {
 
+		static bool ReadBooleanAttribute (XmlReader reader, string attribute)
+		{
+			switch (reader.GetAttribute (attribute)) {
+			case null:
+			case "true":
+				return true;
+			case "false":
+				return false;
+			default:
+				throw new XmlException ();
+			}
+		}
+
 		static public ICrossDomainPolicy FromStream (Stream stream)
 		{
 			FlashCrossDomainPolicy cdp = new FlashCrossDomainPolicy ();
@@ -108,7 +123,7 @@ namespace System.Windows.Browser.Net {
 					case "allow-access-from":
 						var a = new AllowAccessFrom () {
 							Domain = reader.GetAttribute ("domain"),
-							Secure = reader.GetAttribute ("secure") == "true" };
+							Secure = ReadBooleanAttribute (reader, "secure") };
 /* Silverlight policies are used for sockets
 						var p = reader.GetAttribute ("to-ports");
 						if (p == "*")
@@ -122,26 +137,9 @@ namespace System.Windows.Browser.Net {
 					case "allow-http-request-headers-from":
 						var h = new AllowHttpRequestHeadersFrom () {
 							Domain = reader.GetAttribute ("domain"),
-							Secure = reader.GetAttribute ("secure") == "true" };
+							Secure = ReadBooleanAttribute (reader, "secure") };
 						h.Headers.SetHeaders (reader.GetAttribute ("headers"));
 						cdp.AllowedHttpRequestHeaders.Add (h);
-						reader.Skip ();
-						break;
-					case "allow-access-from-identity":
-						if (reader.IsEmptyElement)
-							throw new XmlException ("non-empty element 'allow-access-from-identity' is expected");
-						reader.ReadStartElement ();
-						reader.MoveToContent ();
-						if (reader.IsEmptyElement)
-							throw new XmlException ("non-empty element 'signatory' is expected");
-						reader.ReadStartElement ("signatory", String.Empty);
-						reader.MoveToContent ();
-						if (reader.LocalName != "certificate" || reader.NamespaceURI != String.Empty)
-							throw new XmlException ("element 'certificate' is expected");
-						var i = new AllowAccessFromIdentity () {
-							Fingerprint = reader.GetAttribute ("fingerprint"),
-							FingerprintAlgorithm = reader.GetAttribute ("fingerprint-algorithm") };
-						cdp.AllowedIdentities.Add (i);
 						reader.Skip ();
 						break;
 					default:

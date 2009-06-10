@@ -253,10 +253,7 @@ namespace System.Windows.Browser.Net {
 			// FIXME - there's likely a maximum number of redirection allowed because throwing an exception
 			switch (response.RealStatusCode) {
 			case 301:	// Moved Permanently, RFC2616 10.3.2
-					// If the 301 status code is received in response to a request other than GET or HEAD, 
-					// the user agent MUST NOT automatically redirect the request unless it can be confirmed
-					// by the user, since this might change the conditions under which the request was issued.
-				return (Method == "POST");
+					// Silverlight always redirect (i.e. not just POST requests)
 			case 302:	// Found, RFC2616 10.3.3
 					// main one used by ASP/ASPX Redirect
 			case 303:	// See Other, RFC2616 10.3.4

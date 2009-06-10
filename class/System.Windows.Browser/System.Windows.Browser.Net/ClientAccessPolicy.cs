@@ -88,9 +88,15 @@ namespace System.Windows.Browser.Net {
 
 		public override bool IsAllowed (Uri uri, params string [] headerKeys)
 		{
-			// is a policy applies then we're not allowed to use './' or '../' inside the URI
-			if (uri.OriginalString.Contains ("./"))
+			// Path Restriction for cross-domain requests
+			// http://msdn.microsoft.com/en-us/library/cc838250(VS.95).aspx
+			string original = uri.OriginalString;
+			if (original.Contains ('%') || original.Contains ("./") || original.Contains ("..")) {
+				// note: tests show that it only applies to Silverlight policy (seems to work with Flash)
+				// and only if we're not granting full access (i.e. '/' with all subpaths)
+				// https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=466043
 				return false;
+			}
 
 			foreach (AccessPolicy policy in AccessPolicyList) {
 				// does something allow our URI in this policy ?
@@ -167,8 +173,18 @@ namespace System.Windows.Browser.Net {
 			{
 				foreach (var gr in Resources) {
 					if (gr.IncludeSubpaths) {
-						if (uri.LocalPath.StartsWith (gr.Path, StringComparison.Ordinal))
-							return true;
+						string granted = gr.Path;
+						string local = uri.LocalPath;
+						if (local.StartsWith (granted, StringComparison.Ordinal)) {
+							// "/test" equals "/test" and "test/xyx" but not "/test2"
+							// "/test/" equals "test/xyx" but not "/test" or "/test2"
+							if (local.Length == granted.Length)
+								return true;
+							else if (granted [granted.Length - 1] == '/')
+								return true;
+							else if (local [granted.Length] == '/')
+								return true;
+						}
 					} else {
 						if (uri.LocalPath == gr.Path)
 							return true;
@@ -178,9 +194,19 @@ namespace System.Windows.Browser.Net {
 			}
 		}
 
-		public class Resource
-		{
-			public string Path { get; set; }
+		public class Resource {
+			private string path;
+
+			public string Path { 
+				get { return path; }
+				set {
+					// an empty Path Ressource makes the *whole* policy file invalid
+					if (String.IsNullOrEmpty (value))
+						throw new NotSupportedException ();
+					path = value;
+				}
+			}
+
 			public bool IncludeSubpaths { get; set; }
 		}
 	}
