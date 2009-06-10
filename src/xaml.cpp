@@ -905,10 +905,8 @@ class DefaultNamespace : public XamlNamespace {
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
 	{
 		Type* t = Type::Find (el, false);
-		if (t && !kind_requires_managed_load (t->GetKind ())) {
-			printf ("creating native element info:  %s\n", t->GetName ());
+		if (t && !kind_requires_managed_load (t->GetKind ()))
 			return new XamlElementInfoNative (t);
-		}
 
 		if (enums_is_enum_name (el))
 			return new XamlElementInfoEnum (g_strdup (el));
