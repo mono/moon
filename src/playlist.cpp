@@ -996,7 +996,7 @@ Playlist::PlayNext (bool fail)
 		return;
 	}
 
-	if (HasDuration() && current_entry->GetDuration()->IsForever ()) {
+	if (current_entry->HasDuration() && current_entry->GetDuration()->IsForever ()) {
 		element->SetPlayRequested ();
 		current_entry->PlayAsync ();
 		return;

@@ -1,3 +1,8 @@
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: When checking if an entry has duration, check
+	the right entry. Fixes a possible crash.
+
 2009-06-10  Alan McGovern  <amcgovern@novell.com>
 
 	* multiscaleimage.cpp: The FadeIn storyboard should emit a MotionFinished
