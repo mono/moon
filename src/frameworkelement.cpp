@@ -243,7 +243,7 @@ FrameworkElement::ComputeActualSize ()
 	UIElement *parent = GetVisualParent ();
 
 	if ((parent && !parent->Is (Type::CANVAS)) || (!Is (Type::CANVAS) && IsLayoutContainer ()))
-		return Size (0,0);
+		return GetDesiredSize ();
 
 	Size actual (GetMinWidth (), GetMinHeight ());
 	actual = actual.Max (GetWidth (), GetHeight ());
@@ -476,6 +476,14 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	if (!doarrange)
 		return;
+
+	/*
+	 * FIXME I'm not happy with doing this here but until I come
+	 * up with a better plan make sure that layout elements have
+	 * been measured at least once
+	 */
+	if (IsContainer () && !LayoutInformation::GetLastMeasure (this))
+		Measure (Size (finalRect.width, finalRect.height));
 
 	LayoutInformation::SetLayoutSlot (this, &finalRect);
 	ClearValue (LayoutInformation::LayoutClipProperty);
