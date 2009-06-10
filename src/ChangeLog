@@ -1,3 +1,10 @@
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: When we get a stream as the source, set download
+	progress immediately to 1.0. Also emit DownloadProgressChanged just
+	after opening the file (to ensure that we emit DownloadProgressChanged
+	at least once). This makes MS DRT #420 not time out.
+
 2009-06-10  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp (UpdateLayout): if we find a unloaded

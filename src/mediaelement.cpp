@@ -958,6 +958,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	
 	flags |= MediaOpenedEmitted;
 	Emit (MediaOpenedEvent);
+	Emit (DownloadProgressChangedEvent);
 }
 
 void
@@ -1195,6 +1196,8 @@ MediaElement::SetStreamSource (ManagedStreamCallbacks *callbacks)
 	
 	CreatePlaylist ();
 	playlist->GetCurrentEntry ()->InitializeWithStream (callbacks);
+	
+	SetDownloadProgress (1.0);
 }
 
 IMediaDemuxer *
