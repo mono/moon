@@ -526,6 +526,30 @@ PlaylistEntry::GetDuration ()
 	return duration;
 }
 
+Duration *
+PlaylistEntry::GetInheritedDuration ()
+{
+	if (HasDuration ()) {
+		return GetDuration ();
+	} else if (parent != NULL) {
+		return parent->GetInheritedDuration ();
+	} else {
+		return NULL;
+	}
+}
+
+bool
+PlaylistEntry::HasInheritedDuration ()
+{
+	if (HasDuration ()) {
+		return true;
+	} else if (parent != NULL) {
+		return parent->HasInheritedDuration ();
+	} else {
+		return false;
+	}
+}
+
 void 
 PlaylistEntry::SetDuration (Duration *duration)
 {
@@ -1212,6 +1236,7 @@ PlaylistRoot::PlaylistRoot (MediaElement *element)
 	
 	mplayer = element->GetMediaPlayer ();
 	mplayer->AddHandler (MediaPlayer::MediaEndedEvent, MediaEndedCallback, this);
+	mplayer->AddHandler (MediaPlayer::BufferUnderflowEvent, BufferUnderflowCallback, this);
 	mplayer->ref ();
 }
 
@@ -1233,9 +1258,9 @@ PlaylistEntry::DumpInternal (int tabs)
 {
 	printf ("%*s%s %i\n", tabs, "", GetTypeName (), GET_OBJ_ID (this));
 	tabs++;
+	printf ("%*sDuration: %s %.2f seconds\n", tabs, "", HasDuration () ? "yes" : "no", HasDuration () ? GetDuration ()->ToSecondsFloat () : 0.0);
 	printf ("%*sMedia: %i %s\n", tabs, "", GET_OBJ_ID (media), media ? "" : "(null)");
 	if (media) {
-		tabs++;
 		printf ("%*sUri: %s\n", tabs, "", media->GetUri ());
 		printf ("%*sDemuxer: %i %s\n", tabs, "", GET_OBJ_ID (media->GetDemuxer ()), media->GetDemuxer () ? media->GetDemuxer ()->GetTypeName () : "N/A");
 		printf ("%*sSource:  %i %s\n", tabs, "", GET_OBJ_ID (media->GetSource ()), media->GetSource () ? media->GetSource ()->GetTypeName () : "N/A");
@@ -1248,7 +1273,8 @@ Playlist::DumpInternal (int tabs)
 {
 	PlaylistNode *node;
 	
-	printf ("%*s%s %i (%i entries)\n", tabs, "", GetTypeName (), GET_OBJ_ID (this), entries->Length ());
+	PlaylistEntry::DumpInternal (tabs);
+	printf ("%*s %i entries:\n", tabs, "", entries->Length ());
 	node = (PlaylistNode *) entries->First ();
 	while (node != NULL) {
 		node->GetEntry ()->DumpInternal (tabs + 2);
@@ -1294,6 +1320,13 @@ PlaylistRoot::EmitStopEvent (EventObject *obj)
 	root->Emit (StopEvent);
 }
 
+void
+PlaylistRoot::EmitBufferUnderflowEvent (EventObject *obj)
+{
+	PlaylistRoot *root = (PlaylistRoot *) obj;
+	root->Emit (BufferUnderflowEvent);
+}
+
 MediaPlayer *
 PlaylistRoot::GetMediaPlayer ()
 {
@@ -1325,6 +1358,18 @@ PlaylistRoot::MediaEndedHandler (MediaPlayer *mplayer, EventArgs *args)
 	OnEntryEnded ();
 	
 	// Emit (MediaEndedEvent, args);
+}
+
+void
+PlaylistRoot::BufferUnderflowHandler (MediaPlayer *mplayer, EventArgs *args)
+{
+	LOG_PLAYLIST ("PlaylistRoot::BufferUnderflowHandler (%p, %p)\n", mplayer, args);
+	
+	if (Surface::InMainThread ()) {
+		EmitBufferUnderflowEvent (this);
+	} else {
+		AddTickCall (EmitBufferUnderflowEvent);
+	}
 }
 
 /*

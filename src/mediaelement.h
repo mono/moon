@@ -74,7 +74,6 @@ class MediaElement : public FrameworkElement {
 		
 	double GetBufferedSize (); // not thread-safe
 	double CalculateBufferingProgress (); // not thread-safe
-	void UpdateProgress (); // not thread-safe
 	
 	void Reinitialize (); // not thread-safe
 	
@@ -96,6 +95,7 @@ class MediaElement : public FrameworkElement {
 	EVENTHANDLER (MediaElement, Play, PlaylistRoot, EventArgs); // Not thread-safe
 	EVENTHANDLER (MediaElement, Pause, PlaylistRoot, EventArgs); // Not thread-safe
 	EVENTHANDLER (MediaElement, Stop, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, BufferUnderflow, PlaylistRoot, EventArgs); // Not thread-safe
 	
 	EVENTHANDLER (MediaElement, ShuttingDown, Deployment, EventArgs); // Not thread-safe
 	

@@ -187,6 +187,7 @@ class MediaPlayer : public EventObject {
 	guint64 GetTargetPts ();
 	
 	const static int MediaEndedEvent; // This is raised when both audio and video has finished (or either one if not both are present).
+	const static int BufferUnderflowEvent;
 };
 
 #endif /* __MOON_MPLAYER_H__ */

@@ -792,53 +792,16 @@ MediaElement::CalculateBufferingProgress ()
 }
 
 void
-MediaElement::UpdateProgress ()
+MediaElement::BufferUnderflowHandler (PlaylistRoot *sender, EventArgs *args)
 {
-	double progress, current;
-	bool emit = false;
-	
-	LOG_MEDIAELEMENT_EX ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state));
-	VERIFY_MAIN_THREAD;
-	
-	if (IsPlaying () && mplayer->IsBufferUnderflow () && GetBufferedSize () == 0.0) {
-		// We're waiting for more data, switch to the 'Buffering' state.
-		LOG_MEDIAELEMENT ("MediaElement::UpdateProgress (): Switching to 'Buffering', previous_position: "
-				  "%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, mplayer->GetPosition (): %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, buffered size: %.2f\n", 
-				  previous_position, MilliSeconds_FromPts (previous_position), mplayer->GetPosition (),
-				  MilliSeconds_FromPts (mplayer->GetPosition ()),
-				  GetBufferedSize ());
+	LOG_MEDIAELEMENT ("MediaElement::BufferUnderflow (): Switching to 'Buffering', previous_position: %" G_GUINT64_FORMAT " ms, mplayer->GetPosition (): %" G_GUINT64_FORMAT " ms, buffered size: %.2f\n", 
+		 MilliSeconds_FromPts (previous_position), MilliSeconds_FromPts (mplayer->GetPosition ()), GetBufferedSize ());
 		
-		flags |= PlayRequested;
-		SetBufferingProgress (0.0);
-		Emit (BufferingProgressChangedEvent);
-		SetState (MediaStateBuffering);
-		mplayer->Pause ();
-		emit = true;
-	}
-	
-	//if (media && media->GetDemuxer ())
-	//	media->GetDemuxer ()->PrintBufferInformation ();
-			
-	if (IsBuffering ()) {
-		progress = CalculateBufferingProgress ();
-		current = GetBufferingProgress ();
-		
-		if (current > progress) {
-			// Somebody might have seeked further away after the first change to Buffering,
-			// in which case the progress goes down. Don't emit any events in this case.
-			emit = false;
-		}
-		
-		// Emit the event if it's 100%, or a change of at least 0.05%
-		if (emit || (progress == 1.0 && current != 1.0) || (progress - current) >= 0.05) {
-			SetBufferingProgress (progress);
-			//printf ("MediaElement::UpdateProgress (): Emitting BufferingProgressChanged: progress: %.3f, current: %.3f\n", progress, current);
-			Emit (BufferingProgressChangedEvent);
-		}
-		
-		if (progress == 1.0)
-			BufferingComplete ();
-	}
+	flags |= PlayRequested;
+	SetBufferingProgress (0.0);
+	Emit (BufferingProgressChangedEvent);
+	SetState (MediaStateBuffering);
+	mplayer->Pause ();
 }
 
 void
@@ -932,6 +895,7 @@ MediaElement::SetPlaylist (PlaylistRoot *value)
 		playlist->AddHandler (PlaylistRoot::CurrentStateChangedEvent, CurrentStateChangedCallback, this);
 		playlist->AddHandler (PlaylistRoot::MediaErrorEvent, MediaErrorCallback, this);
 		playlist->AddHandler (PlaylistRoot::MediaEndedEvent, MediaEndedCallback, this);
+		playlist->AddHandler (PlaylistRoot::BufferUnderflowEvent, BufferUnderflowCallback, this);
 		playlist->AddHandler (PlaylistRoot::DownloadProgressChangedEvent, DownloadProgressChangedCallback, this);
 		playlist->AddHandler (PlaylistRoot::BufferingProgressChangedEvent, BufferingProgressChangedCallback, this);
 		playlist->AddHandler (PlaylistRoot::PlayEvent, PlayCallback, this);
@@ -1180,7 +1144,7 @@ MediaElement::DownloadProgressChangedHandler (PlaylistRoot *playlist, EventArgs 
 void
 MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler ()\n");
+	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): %f\n", GetBufferingProgress ());
 	VERIFY_MAIN_THREAD;
 	
 	Emit (BufferingProgressChangedEvent);

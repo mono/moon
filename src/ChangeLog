@@ -1,5 +1,28 @@
 2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp|h: PlaylistEntry: Add support for getting duration for
+	parent entries/playlists too. Also propagate the BufferUnderflow
+	event.
+
+	* pipeline.cpp: Change logic when filling the buffer to request
+	a frame from the least-buffered stream. This solves an issue with
+	live streams, we might end up playing audio only when the video
+	buffer was empty and the audio buffer never full.
+
+	* mediaplayer.cpp|h: When determining duration of an entry, check
+	the entry's parents too for duration. We also need to set
+	first_live_pts when rendering. This makes MS DRT #129
+	not time out. Add a BufferUnderflow to inform listeners of any
+	buffer underflows.
+
+	* mediaelement.cpp|h: Handle the BufferUnderflow event, pause
+	playback and update states accordingly. Remove UpdateProgress,
+	unused.
+
+	* type-generated.cpp: Regenerated.
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaplayer.cpp: use the correct max value for guint64.
 
 2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>

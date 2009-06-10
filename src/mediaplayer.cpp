@@ -333,8 +333,8 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 		return false;
 	}
 
-	if (entry != NULL && entry->HasDuration () && entry->GetDuration ()->HasTimeSpan ()) {
-		asx_duration = TimeSpan_ToPts (entry->GetDuration ()->GetTimeSpan ());
+	if (entry != NULL && entry->HasInheritedDuration () && entry->GetInheritedDuration ()->HasTimeSpan ()) {
+		asx_duration = TimeSpan_ToPts (entry->GetInheritedDuration ()->GetTimeSpan ());
 		if (asx_duration < duration || GetBit (IsLive)) {
 			duration = asx_duration;
 			SetBit (FixedDuration);
@@ -650,17 +650,18 @@ MediaPlayer::AdvanceFrame ()
 		//		current_pts, MilliSeconds_FromPts (current_pts),
 		//		duration, MilliSeconds_FromPts (duration));
 		
+		if (GetBit (IsLive)) {
+			first_live_pts = MIN (current_pts, first_live_pts);
+		}
+
 		if (GetBit (FixedDuration)) {
-/*
-			printf ("MediaPlayer::AdvanceFrame (): (fixed duration, live: %i) current_pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, duration: %llu = %llu ms, first_live_pts: %llu = %llu ms\n",
-				element->IsLive (),
-				current_pts, MilliSeconds_FromPts (current_pts),
-				duration, MilliSeconds_FromPts (duration),
-				first_live_pts, MilliSeconds_FromPts (first_live_pts),
-				current_pts - first_live_pts, MilliSeconds_FromPts (current_pts - first_live_pts));
-*/
+			/*
+			printf ("MediaPlayer::AdvanceFrame (): (fixed duration, live: %i) current_pts: %" G_GUINT64_FORMAT " ms, duration: %" G_GUINT64_FORMAT " ms, first_live_pts: %" G_GUINT64_FORMAT " ms, diff: %"  G_GUINT64_FORMAT "ms\n",
+				GetBit (IsLive), MilliSeconds_FromPts (current_pts), MilliSeconds_FromPts (duration), MilliSeconds_FromPts (first_live_pts), MilliSeconds_FromPts (current_pts - first_live_pts));
+			*/
 			if (GetBit (IsLive)) {
 				if (current_pts - first_live_pts > duration) {
+					// TODO: Move this out of AdvanceFrame, here it only works for media which has video, not for audio-only media.
 					AudioFinished ();
 					VideoFinished ();
 				}

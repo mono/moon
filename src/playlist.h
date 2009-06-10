@@ -151,8 +151,10 @@ public:
 	void SetStartTime (TimeSpan start_time);
 
 	Duration *GetDuration ();
+	Duration *GetInheritedDuration ();
 	void SetDuration (Duration *duration);
 	bool HasDuration () { return (set_values & PlaylistKind::Duration); }
+	bool HasInheritedDuration ();
 
 	Duration *GetRepeatDuration ();
 	void SetRepeatDuration (Duration *duration);
@@ -291,6 +293,7 @@ private:
 	MediaPlayer *mplayer;
 
 	static void EmitStopEvent (EventObject *obj);
+	static void EmitBufferUnderflowEvent (EventObject *obj);
 protected:
 	virtual ~PlaylistRoot () {}
 	
@@ -317,9 +320,11 @@ public:
 	const static int MediaEndedEvent;
 	const static int DownloadProgressChangedEvent;
 	const static int BufferingProgressChangedEvent;
+	const static int BufferUnderflowEvent;
 	
 	// Event handlers
 	EVENTHANDLER (PlaylistRoot, MediaEnded, MediaPlayer, EventArgs);
+	EVENTHANDLER (PlaylistRoot, BufferUnderflow, MediaPlayer, EventArgs);
 	
 #if DEBUG
 	void Dump ();

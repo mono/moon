@@ -2560,6 +2560,8 @@ void
 IMediaDemuxer::FillBuffersInternal ()
 {
 	IMediaStream *stream;
+	IMediaStream *request_stream = NULL;
+	guint64 min_buffered_size = G_MAXUINT64;
 	MediaResult result = MEDIA_SUCCESS;
 	guint64 buffering_time = media->GetBufferingTime ();
 	guint64 buffered_size = 0;
@@ -2569,6 +2571,8 @@ IMediaDemuxer::FillBuffersInternal ()
 	// If we're waiting for something, there's nothing to do here.
 	if (pending_stream != NULL)
 		return;
+
+	// Find the stream with the smallest buffered size, and request a frame from that stream.
 
 	for (int i = 0; i < GetStreamCount (); i++) {
 		stream = GetStream (i);
@@ -2587,20 +2591,20 @@ IMediaDemuxer::FillBuffersInternal ()
 		if (buffered_size >= buffering_time)
 			continue;
 		
-		if (buffered_size < buffering_time) {
-			LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): codec: %s, result: %i, buffered size: %llu ms, buffering time: %llu ms\n",
-				stream->codec, result, MilliSeconds_FromPts (buffered_size), MilliSeconds_FromPts (buffering_time));
-			
-			if (stream->GetInputEnded ()) {
-				stream->GetDecoder ()->InputEnded ();
-			} else {
-				GetFrameAsync (stream);
-				break;
-			}
+		if (stream->GetInputEnded ()) {
+			stream->GetDecoder ()->InputEnded ();
+		} else if (buffered_size < min_buffered_size) {
+			min_buffered_size = buffered_size;
+			request_stream = stream;
 		}
 		
 		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): codec: %s, result: %i, buffered size: %" G_GUINT64_FORMAT " ms, buffering time: %" G_GUINT64_FORMAT " ms, last popped time: %llu ms\n", 
 				stream->codec, result, MilliSeconds_FromPts (buffered_size), MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (stream->GetLastPoppedPts ()));
+	}
+	
+	if (request_stream != NULL) {
+		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): requesting frame from %s stream, min_buffered_size: " G_GUINT64_FORMAT " ms\n", request_stream->GetStreamTypeName (), MilliSeconds_FromPts (min_buffered_size));
+		GetFrameAsync (request_stream);
 	}
 	
 	media->ReportBufferingProgress (buffering_time == 0 ? 0 : buffered_size / buffering_time);
