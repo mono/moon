@@ -248,7 +248,7 @@ namespace System.Windows {
 		// extracted since Assembly.GetName is security critical
 		void SetEntryAssembly (Assembly asm)
 		{
-			if (asm.GetName ().Name == EntryPointAssembly)
+			if (string.Equals (asm.GetName ().Name, EntryPointAssembly, StringComparison.OrdinalIgnoreCase))
 				EntryAssembly = asm;
 		}
 

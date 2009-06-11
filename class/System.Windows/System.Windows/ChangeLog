@@ -1,3 +1,9 @@
+2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Deployment.cs: When looking for the entry point assembly, we
+	have to match names case insensitively. This makes MS DRT
+	#519 and #520 load their entry point assemblies.
+
 2009-06-10  Alan McGovern  <amcgovern@novell.com>
 
 	* Deployment.cs:
