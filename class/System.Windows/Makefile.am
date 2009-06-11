@@ -114,13 +114,18 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/ImageAutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/ItemAutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/ItemsControlAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/ListBoxAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/ListBoxItemAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/PatternInterface.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/RangeBaseAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RepeatButtonAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/SelectorAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/SelectorItemAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/TextBlockAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/TextBoxAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ThumbAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/SliderAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/WindowAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Provider/IDockProvider.cs		\
 	$(srcdir)/System.Windows.Automation.Provider/IExpandCollapseProvider.cs	\
 	$(srcdir)/System.Windows.Automation.Provider/IGridItemProvider.cs	\

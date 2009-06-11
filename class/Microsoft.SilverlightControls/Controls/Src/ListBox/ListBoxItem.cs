@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input; 
 using System.Windows.Media.Animation;
 using System.Windows.Controls.Primitives;
+using System.Windows.Automation.Peers;
 
 #if WPF 
 using PropertyChangedCallback = System.Windows.FrameworkPropertyMetadata;
@@ -202,5 +203,10 @@ namespace System.Windows.Controls
                  VisualStateManager.GoToState (this, "SelectedUnfocused", true);
             }
         }
+
+	protected override AutomationPeer OnCreateAutomationPeer ()
+	{
+		return new ListBoxItemAutomationPeer (this);
+	}
     }
 }

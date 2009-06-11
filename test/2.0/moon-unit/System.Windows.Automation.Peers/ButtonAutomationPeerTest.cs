@@ -35,11 +35,24 @@ using System.Windows.Controls.Primitives;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Automation.Peers {
 
 	[TestClass]
 	public class ButtonAutomationPeerTest : FrameworkElementAutomationPeerTest {
+
+		public class ButtonConcrete : Button {
+			public ButtonConcrete ()
+				: base ()
+			{
+			}
+
+			protected override AutomationPeer OnCreateAutomationPeer ()
+			{
+				return new ButtonAutomationPeerPoker (this);
+			}
+		}
 
 		public class ButtonAutomationPeerPoker : ButtonAutomationPeer, FrameworkElementAutomationPeerContract {
 
@@ -220,14 +233,53 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			// FIXME: Implement when MoonAtkBridge is ready
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public override void ContentTest ()
+		{
+			Assert.IsTrue (IsContentPropertyElement (), "ButtonElement ContentElement.");
+
+			bool buttonLoaded = false;
+			Button button = CreateConcreteFrameworkElement () as Button;
+			button.Loaded += (o, e) => buttonLoaded = true;
+			TestPanel.Children.Add (button);
+
+			// StackPanel and two TextBlocks
+			bool stackPanelLoaded = false;
+			StackPanel stackPanel = new StackPanel ();
+			stackPanel.Children.Add (new TextBlock () { Text = "Text0" });
+			stackPanel.Children.Add (new TextBlock () { Text = "Text1" });
+			stackPanel.Loaded += (o, e) => stackPanelLoaded = true;
+
+			EnqueueConditional (() => buttonLoaded, "ButtonLoaded #0");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (button);
+				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
+
+				Assert.IsNull (peer.GetChildren (), "GetChildren #0");
+				button.Content = stackPanel;
+			});
+			EnqueueConditional (() => buttonLoaded && stackPanelLoaded, "ButtonLoaded #1");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (button);
+				Assert.IsNotNull (peer.GetChildren (), "GetChildren #1");
+				Assert.AreEqual (2, peer.GetChildren ().Count, "GetChildren.Count #1");
+				// We add one TextBlock
+				stackPanel.Children.Add (new TextBlock () { Text = "Text2" });
+				Assert.IsNotNull (peer.GetChildren (), "GetChildren #2");
+				Assert.AreEqual (3, peer.GetChildren ().Count, "GetChildren.Count #2");
+			});
+			EnqueueTestComplete ();
+		}
+
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
-			return new Button ();
+			return new ButtonConcrete ();
 		}
 
 		protected override FrameworkElementAutomationPeerContract CreateConcreteFrameworkElementAutomationPeer (FrameworkElement element)
 		{
-			return new ButtonAutomationPeerPoker (element as Button);
+			return new ButtonAutomationPeerPoker (element as ButtonConcrete);
 		}
 	}
 }

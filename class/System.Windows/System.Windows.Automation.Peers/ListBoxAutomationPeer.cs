@@ -17,50 +17,33 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-// Copyright (c) 2008 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2009 Novell, Inc. (http://www.novell.com)
 //
 // Contact:
 //   Moonlight Team (moonlight-list@lists.ximian.com)
 //
 
-using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace System.Windows.Automation.Peers {
-	public abstract class ItemAutomationPeer : FrameworkElementAutomationPeer {
 
-		internal ItemAutomationPeer (UIElement uielement, object item, ItemsControlAutomationPeer itemsPeer) : base ((ContentControl)uielement)
-		{
-			this.item = item;
-			this.itemsPeer = itemsPeer; 
-		}
-
-		protected ItemAutomationPeer (UIElement uielement) : base ((ContentControl)uielement)
+	public class ListBoxAutomationPeer : SelectorAutomationPeer {
+		public ListBoxAutomationPeer (ListBox listbox) : base (listbox)
 		{
 		}
 
-		protected override string GetNameCore ()
+		protected override AutomationControlType GetAutomationControlTypeCore ()
 		{
-			if (item == null)
-				return string.Empty;
-			return item.ToString ();
+			return AutomationControlType.List;
 		}
 
-		protected override string GetItemTypeCore ()
+		protected override string GetClassNameCore ()
 		{
-			return string.Empty;
+			return "ListBox";
 		}
 
-		protected ItemsControlAutomationPeer ItemsControlAutomationPeer {
-			get { return itemsPeer; }
-		}
-
-		protected object Item {
-			get { return item ?? Owner; }
-		}
-
-		private object item;
-		private ItemsControlAutomationPeer itemsPeer;
 	}
+
 }

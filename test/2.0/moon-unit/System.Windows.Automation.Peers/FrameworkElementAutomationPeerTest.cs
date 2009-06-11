@@ -28,20 +28,23 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
+using System.Windows.Markup;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
+using System.Windows.Media;
 
 namespace MoonTest.System.Windows.Automation.Peers {
 
 	[TestClass]
-	public class FrameworkElementAutomationPeerTest {
-
+	public class FrameworkElementAutomationPeerTest : SilverlightTest {
 		[TestMethod]
 		public void CreatePeerForElement ()
 		{
@@ -755,6 +758,35 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			FrameworkElementAutomationPeer realPeer 
 				= FrameworkElementAutomationPeer.CreatePeerForElement (element) as FrameworkElementAutomationPeer;
 			Assert.AreSame (element, realPeer.Owner, "#0");
+		}
+
+		[TestMethod]
+		public virtual void ContentTest ()
+		{
+			Assert.IsFalse (IsContentPropertyElement (), 
+				"FrameworkElementAutomationPeer is not ContentElement. Override this method");
+		}
+
+		protected bool IsContentPropertyElement ()
+		{
+			UIElement uielement = CreateConcreteFrameworkElement ();
+
+			object[] attributes
+				= uielement.GetType ().GetCustomAttributes (typeof (ContentPropertyAttribute), true);
+			if (attributes.Length == 0)
+				return false;
+
+			ContentPropertyAttribute attribute = (ContentPropertyAttribute) attributes[0];
+			PropertyInfo propertyInfo = uielement.GetType ().GetProperty (attribute.Name,
+				BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty);
+			if (propertyInfo == null)
+				return false;
+
+			MethodInfo methodInfo = propertyInfo.GetGetMethod ();
+			if (methodInfo == null)
+				return false;
+
+			return true;
 		}
 
 		protected virtual FrameworkElement CreateConcreteFrameworkElement ()

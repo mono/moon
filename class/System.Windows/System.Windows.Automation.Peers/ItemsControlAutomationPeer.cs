@@ -29,11 +29,12 @@ using System.Collections.Generic;
 
 namespace System.Windows.Automation.Peers {
 
-	public class ItemsControlAutomationPeer : FrameworkElementAutomationPeer {
+	public abstract class ItemsControlAutomationPeer : FrameworkElementAutomationPeer {
 		protected ItemsControlAutomationPeer (ItemsControl items) : base (items)
 		{
 		}
 
+		[MonoTODO ("According to MSDN: this implementation returns a non-null result for Scroll")]
 		public override object GetPattern (PatternInterface pattern)
 		{
 			return base.GetPattern (pattern);
@@ -41,7 +42,12 @@ namespace System.Windows.Automation.Peers {
 
 		protected override List<AutomationPeer> GetChildrenCore ()
 		{
-			throw new NotImplementedException ();
+			return GetChildrenInternal ();
+		}
+
+		internal virtual List<AutomationPeer> GetChildrenInternal ()
+		{
+			return null;
 		}
 	}
 

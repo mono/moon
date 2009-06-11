@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Markup;
+using System.Windows.Media;
 
 namespace System.Windows.Automation.Peers {
 
@@ -67,7 +69,7 @@ namespace System.Windows.Automation.Peers {
 
 		protected override List<AutomationPeer> GetChildrenCore ()
 		{
-			return null;
+			return GetChildrenRecursively (owner);
 		}
 
 		public override object GetPattern (PatternInterface pattern)
@@ -237,6 +239,41 @@ namespace System.Windows.Automation.Peers {
 
 		internal virtual string ClassNameCore {
 			get { return null; }
+		}
+
+		#endregion
+
+		#region Internal methods 
+
+		// This method is used by GetChildrenCore to get Children on ContentPropertyAttribute-decorated 
+		// classes and is also called by the bridge to create RootVisual's children
+		internal static List<AutomationPeer> GetChildrenRecursively (UIElement uielement)
+		{
+			List<AutomationPeer> children = new List<AutomationPeer> ();
+
+			int childrenCount = VisualTreeHelper.GetChildrenCount (uielement);
+			for (int child = 0; child < childrenCount; child++) {
+				UIElement contentUIElement 
+					= VisualTreeHelper.GetChild (uielement, child) as  UIElement;
+				if (contentUIElement == null)
+					continue;
+
+				AutomationPeer peer 
+					= FrameworkElementAutomationPeer.CreatePeerForElement (contentUIElement);
+				if (peer != null)
+					children.Add (peer);
+				else {
+					List<AutomationPeer> returnedChildren 
+						= GetChildrenRecursively (contentUIElement);
+					if (returnedChildren != null)
+						children.AddRange (returnedChildren);
+				}
+			}
+
+			if (children.Count == 0)
+				return null;
+			
+			return children;
 		}
 
 		#endregion

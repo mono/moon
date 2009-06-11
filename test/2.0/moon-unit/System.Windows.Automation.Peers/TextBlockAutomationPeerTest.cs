@@ -35,6 +35,7 @@ using System.Windows.Controls;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Automation.Peers {
 
@@ -240,6 +241,36 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			AutomationPeer realLabeledByPeer = FrameworkElementAutomationPeer.CreatePeerForElement (labeledBy);
 			Assert.AreSame (realLabeledByPeer, feap.GetLabeledBy (), "GetLabeledBy Same #3");
 			Assert.AreSame (realLabeledByPeer, feap.GetLabeledByCore_ (), "GetLabeledByCore Same #3");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void ContentTest ()
+		{
+			Assert.IsTrue (IsContentPropertyElement (), "TextBlock ContentElement.");
+
+			bool textBlockLoaded = false;
+			TextBlock textBlock = CreateConcreteFrameworkElement () as TextBlock;
+			textBlock.Loaded += (o, e) => textBlockLoaded = true;
+			TestPanel.Children.Add (textBlock);
+
+			EnqueueConditional (() => textBlockLoaded, "TextBlock #0");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (textBlock);
+				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
+
+				Assert.IsNull (peer.GetChildren (), "GetChildren #0");
+				textBlock.Text = "Hello world!";
+			});
+			// We add the text
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (textBlock);
+				Assert.IsNull (peer.GetChildren (), "GetChildren #1");
+				// Remove text
+				textBlock.Text = string.Empty;
+				Assert.IsNull (peer.GetChildren (), "GetChildren #2");
+			});
+			EnqueueTestComplete ();
 		}
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()

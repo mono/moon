@@ -1,3 +1,21 @@
+2009-06-11  Mario Carrion  <mcarrion@novell.com>
+
+	* ItemAutomationPeer.cs: Implemented as abstract class.
+	* WindowAutomationPeer.cs: New file. Fake peer used by the
+	accessibility bridge as root for all peers.
+	* ListBoxAutomationPeer.cs: New file. ListBoxAutomationPeer
+	implementation.
+	* SelectorAutomationPeer.cs: New file, SelectorAutomationPeer
+	implementation.
+	* ListBoxItemAutomationPeer.cs: New file. ListBoxItemAutomationPeer
+	implementation.
+	* ItemsControlAutomationPeer.cs: Implemented as abstract class,
+	GetChildrenCore implementation.
+	* SelectorItemAutomationPeer.cs: New file, SelectorItemAutomationPeer
+	implementation.
+	* FrameworkElementAutomationPeer.cs: GetChildrenCore implementation,
+	new internal static method: GetChildrenRecursively.
+
 2009-05-22  Mario Carrion  <mcarrion@novell.com>
 
 	* AutomationPeer.cs: Implementation: EventsSource, 

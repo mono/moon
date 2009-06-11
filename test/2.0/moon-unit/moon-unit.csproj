@@ -110,6 +110,8 @@
     <Compile Include="System.Windows.Automation.Peers\PatternInterfaceTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RangeBaseAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RepeatButtonAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\SelectorAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\SelectorItemAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\SliderAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\TextBlockAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\TextBoxAutomationPeerTest.cs" />

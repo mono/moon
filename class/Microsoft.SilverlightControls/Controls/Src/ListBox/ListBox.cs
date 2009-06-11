@@ -14,6 +14,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media; 
+using System.Windows.Automation.Peers; 
  
 namespace System.Windows.Controls
 {
@@ -800,5 +801,10 @@ namespace System.Windows.Controls
             }
         }
 #endif 
+
+	protected override AutomationPeer OnCreateAutomationPeer ()
+	{
+		return new ListBoxAutomationPeer (this);
+	}
     } 
 }

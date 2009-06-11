@@ -1,3 +1,21 @@
+2009-06-11  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: New files added: 
+	SelectorItemAutomationPeerTest.cs and SelectorAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs, 
+	System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: 
+	Subclassing FrameworkElementAutomationPeerTest.
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs: 
+	Implementation ContentTest
+	* System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: 
+	New file. Tests SelectorAutomationPeer.
+	* System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: 
+	ContentTest overridden.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	New file. Tests SelectorItemAutomationPeer.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Subclassing SilverlightTest, new test added: ContentTest.
+
 2009-06-11  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls.Primitives/PopupTest.cs: Make

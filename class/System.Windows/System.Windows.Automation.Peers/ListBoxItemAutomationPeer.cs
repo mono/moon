@@ -17,7 +17,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-// Copyright (c) 2008 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2009 Novell, Inc. (http://www.novell.com)
 //
 // Contact:
 //   Moonlight Team (moonlight-list@lists.ximian.com)
@@ -25,42 +25,43 @@
 
 using System;
 using System.Windows;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace System.Windows.Automation.Peers {
-	public abstract class ItemAutomationPeer : FrameworkElementAutomationPeer {
+	public class ListBoxItemAutomationPeer : SelectorItemAutomationPeer, IScrollItemProvider {
 
-		internal ItemAutomationPeer (UIElement uielement, object item, ItemsControlAutomationPeer itemsPeer) : base ((ContentControl)uielement)
-		{
-			this.item = item;
-			this.itemsPeer = itemsPeer; 
-		}
-
-		protected ItemAutomationPeer (UIElement uielement) : base ((ContentControl)uielement)
+		public ListBoxItemAutomationPeer (ListBoxItem owner) : base (owner)
 		{
 		}
 
-		protected override string GetNameCore ()
+		public override object GetPattern (PatternInterface patternInterface)
 		{
-			if (item == null)
-				return string.Empty;
-			return item.ToString ();
+			if (patternInterface == PatternInterface.ScrollItem) 
+				return this;
+
+			return base.GetPattern (patternInterface);
 		}
 
-		protected override string GetItemTypeCore ()
+		protected override AutomationControlType GetAutomationControlTypeCore ()
 		{
-			return string.Empty;
+			return AutomationControlType.ListItem;
 		}
 
-		protected ItemsControlAutomationPeer ItemsControlAutomationPeer {
-			get { return itemsPeer; }
+		protected override string GetClassNameCore ()
+		{
+			return "ListBoxItem";
 		}
 
-		protected object Item {
-			get { return item ?? Owner; }
+		#region ISelectionItemProvider realization
+
+		[MonoTODO ("Implement")]
+		void IScrollItemProvider.ScrollIntoView ()
+		{
 		}
 
-		private object item;
-		private ItemsControlAutomationPeer itemsPeer;
+		#endregion
+
 	}
 }
