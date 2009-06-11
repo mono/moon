@@ -831,8 +831,8 @@ PluginInstance::CreateWindow ()
 		
 		NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
 	} else {
-		xaml_loader = PluginXamlLoader::FromStr (PLUGIN_SPINNER, this, surface);
-		LoadXAML ();
+		//xaml_loader = PluginXamlLoader::FromStr (PLUGIN_SPINNER, this, surface);
+		//LoadXAML ();
 	} 
 	if (onSourceDownloadProgressChanged != NULL) {
 		char *retval = NPN_strdup (onSourceDownloadProgressChanged);
