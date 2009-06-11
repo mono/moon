@@ -312,8 +312,7 @@ Surface::Surface (MoonWindow *window)
 	captured = NULL;
 	
 	focused_element = NULL;
-	prev_focused_element = NULL;
-	raised_focus_changed = false;
+	focus_changed_events = new Queue ();
 	can_raise_focus_changed = false;
 
 	full_screen = false;
@@ -1035,6 +1034,25 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 	ENDTIMER (expose, "redraw");
 #endif
 
+}
+
+FocusChangedNode::FocusChangedNode (UIElement *lost_focus, UIElement *got_focus)
+{
+	this->lost_focus = lost_focus;
+	this->got_focus = got_focus;
+	
+	if (lost_focus)
+		lost_focus->ref ();
+	if (got_focus)
+		got_focus->ref ();
+}
+
+FocusChangedNode::~FocusChangedNode ()
+{
+	if (lost_focus)
+		lost_focus->unref ();
+	if (got_focus)
+		got_focus->unref ();
 }
 
 RenderNode::RenderNode (UIElement *el,
@@ -1791,21 +1809,22 @@ Surface::HandleUICrossing (GdkEventCrossing *event)
 void
 Surface::GenerateFocusChangeEvents()
 {
-	while (!raised_focus_changed) {
-		raised_focus_changed = true;
+	while (!focus_changed_events->IsEmpty ()) {
+		FocusChangedNode *node = (FocusChangedNode *) focus_changed_events->Pop ();
 	
 		List *el_list;
-		if (prev_focused_element) {
-			el_list = ElementPathToRoot (prev_focused_element);
+		if (node->lost_focus) {
+			el_list = ElementPathToRoot (node->lost_focus);
 			EmitEventOnList (UIElement::LostFocusEvent, el_list, NULL, -1);
 			delete (el_list);
 		}
 	
-		if (focused_element) {
-			el_list = ElementPathToRoot (focused_element);
+		if (node->got_focus) {
+			el_list = ElementPathToRoot (node->got_focus);
 			EmitEventOnList (UIElement::GotFocusEvent, el_list, NULL, -1);
 			delete (el_list);
 		}
+		delete node;
 	}
 }
 
@@ -1818,10 +1837,8 @@ Surface::FocusElement (UIElement *focused)
 	if (focused == focused_element)
 		return true;
 
-	prev_focused_element = focused_element;
-
+	focus_changed_events->Push (new FocusChangedNode (focused_element, focused));
 	focused_element = focused;
-	raised_focus_changed = false;
 	return true;
 }
 

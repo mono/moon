@@ -1,5 +1,12 @@
 2009-06-11  Alan McGovern  <amcgovern@novell.com>
 
+	* runtime.h:
+	* runtime.cpp: The uielements involved in GotFocus/LostFocus
+	  events need to be stored in a queue so that focusing
+	  multiple elements in one tick works correctly.
+
+2009-06-11  Alan McGovern  <amcgovern@novell.com>
+
 	* popup.h:
 	* popup.cpp:
 	* type-generated.cpp: Make Popup.[Opened|Closed] asynchronous.

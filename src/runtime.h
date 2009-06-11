@@ -327,8 +327,7 @@ private:
 	// The element holding the keyboard focus, and the one that
 	// held it previously (so we can emit lostfocus events async)
 	UIElement *focused_element;
-	UIElement *prev_focused_element;
-	bool raised_focus_changed;
+	Queue *focus_changed_events;
 	
 	// If we are in the middle of a mouse down event, we raise any pending
 	// focus changed events. If this results in focus being changed to a
@@ -408,6 +407,16 @@ private:
 
 	static void toplevel_loaded (EventObject *sender, EventArgs *args, gpointer closure);
 	void ToplevelLoaded (UIElement *element);
+};
+
+/* for emitting focus changed events */
+class FocusChangedNode : public List::Node {
+public:
+	UIElement *lost_focus;
+	UIElement *got_focus;
+	
+	FocusChangedNode (UIElement *lost_focus, UIElement *got_focus);
+	virtual ~FocusChangedNode ();
 };
 
 /* for hit testing */
