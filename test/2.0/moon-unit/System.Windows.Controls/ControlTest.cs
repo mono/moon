@@ -339,7 +339,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ArrangeAppliesTemplate ()
 		{
 			ConcreteControl c = (ConcreteControl)XamlReader.Load (@"
