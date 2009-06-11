@@ -106,6 +106,7 @@ class MediaElement : public FrameworkElement {
 	void EmitMediaEnded ();
 	
 	void AddStreamedMarker (TimelineMarker *marker); // Thread-safe
+	void AddStreamedMarker (MediaMarker *marker); // Thread-safe
 	static MediaResult AddStreamedMarkerCallback (MediaClosure *closure); // Thread-safe
 	void CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *col, bool remove); // Not thread-safe
 	void CheckMarkers (guint64 from, guint64 to); // Not thread-safe

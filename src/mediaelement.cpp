@@ -124,17 +124,28 @@ MediaElement::AddStreamedMarkerCallback (MediaClosure *c)
 	if (mmarker == NULL)
 		return MEDIA_FAIL;
 	
-	guint64 pts = mmarker->Pts ();
+	element->AddStreamedMarker (mmarker);
 	
-	TimelineMarker *marker = new TimelineMarker ();
+	return MEDIA_SUCCESS;
+}
+
+void
+MediaElement::AddStreamedMarker (MediaMarker *mmarker)
+{
+	guint64 pts;
+	TimelineMarker *marker;
+	
+	g_return_if_fail (mmarker != NULL);
+	
+	pts = mmarker->Pts ();
+	
+	marker = new TimelineMarker ();
 	marker->SetText (mmarker->Text ());
 	marker->SetType (mmarker->Type ());
 	marker->SetTime (pts);
 	
-	element->AddStreamedMarker (marker);
+	AddStreamedMarker (marker);
 	marker->unref ();
-	
-	return MEDIA_SUCCESS;
 }
 
 void
@@ -170,6 +181,13 @@ MediaElement::ReadMarkers (Media *media, IMediaDemuxer *demuxer)
 				marker_closure = new MediaMarkerFoundClosure (media, AddStreamedMarkerCallback, this);
 			
 			stream->SetCallback (marker_closure);
+			
+			MediaMarker *m = stream->Pop ();
+			while (m != NULL) {
+				AddStreamedMarker (m);
+				m->unref ();
+				m = stream->Pop ();
+			}
 			break;
 		}
 	}

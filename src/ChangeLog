@@ -1,3 +1,13 @@
+2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: MarkerStream: if there is no callback, store
+	the markers in a list instead of just dropping them. Fixes an 
+	issue with our #150 where we'd lose markers since the stream
+	had processed them before getting a callback.
+
+	* mediaelement.cpp: Check if a marker stream has stored markers
+	(which would have been added before the calback was set).
+
 2009-06-10  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp (Arrange): measure containers if they

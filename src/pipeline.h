@@ -1424,7 +1424,9 @@ public:
 class MarkerStream : public IMediaStream {
 private:
 	MediaMarkerFoundClosure *closure;
-
+	Mutex mutex;
+	List list; // a list of markers found while there were no callback.
+	
 protected:
 	virtual ~MarkerStream () {}
 
@@ -1449,6 +1451,7 @@ public:
 	void MarkerFound (MediaFrame *frame);
 	
 	virtual void FrameEnqueued ();
+	MediaMarker *Pop ();
 };
 
 class PassThroughDecoder : public IMediaDecoder {

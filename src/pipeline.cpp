@@ -3557,9 +3557,30 @@ MarkerStream::FrameEnqueued ()
 		closure->SetMarker (NULL);
 	} else {
 		LOG_PIPELINE ("MarkerStream::FrameEnqueued (): No callback.\n");
+		mutex.Lock ();
+		list.Append (new MediaMarker::Node (frame->marker));
+		mutex.Unlock ();
 	}
 	
 	frame->unref ();
+}
+
+MediaMarker *
+MarkerStream::Pop ()
+{
+	MediaMarker *result = NULL;
+	MediaMarker::Node *node;
+	
+	mutex.Lock ();
+	node = (MediaMarker::Node *) list.First ();
+	if (node != NULL) {
+		result = node->marker;
+		result->ref ();
+		list.Remove (node);
+	}
+	mutex.Unlock ();
+	
+	return result;
 }
 
 void
