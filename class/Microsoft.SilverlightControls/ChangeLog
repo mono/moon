@@ -1,3 +1,9 @@
+2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* SDKControls/Data/src/Properties/AssemblyInfo.cs:
+	MS' tests are using a test binary with a different public key,
+	expose our internals to that binary too.
+
 2009-06-11  Mario Carrion  <mcarrion@novell.com>
 
 	* Controls/Src/ListBox/ListBox.cs, 
