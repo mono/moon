@@ -1,5 +1,9 @@
 2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Fix warning/typo in printf.
+
+2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: MarkerStream: if there is no callback, store
 	the markers in a list instead of just dropping them. Fixes an 
 	issue with our #150 where we'd lose markers since the stream

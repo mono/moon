@@ -2603,7 +2603,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	}
 	
 	if (request_stream != NULL) {
-		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): requesting frame from %s stream, min_buffered_size: " G_GUINT64_FORMAT " ms\n", request_stream->GetStreamTypeName (), MilliSeconds_FromPts (min_buffered_size));
+		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): requesting frame from %s stream, min_buffered_size: %" G_GUINT64_FORMAT " ms\n", request_stream->GetStreamTypeName (), MilliSeconds_FromPts (min_buffered_size));
 		GetFrameAsync (request_stream);
 	}
 	
