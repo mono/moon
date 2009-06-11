@@ -11,6 +11,18 @@
 #include "popup.h"
 #include "runtime.h"
 
+void
+Popup::emit_opened (EventObject *sender)
+{
+	((Popup *)sender)->Emit (Popup::OpenedEvent);
+}
+
+void
+Popup::emit_closed (EventObject *sender)
+{
+	((Popup *)sender)->Emit (Popup::ClosedEvent);
+}
+	
 Popup::Popup ()
 {
 	SetObjectType (Type::POPUP);
@@ -35,7 +47,6 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 	
 	if (args->GetId () == Popup::IsOpenProperty) {
-		Emit (Popup::IsOpenChangedEvent);
 		if (args->GetNewValue () && args->GetNewValue ()->AsBool ())
 			Show (GetChild ());
 		else
@@ -75,6 +86,7 @@ Popup::Hide (UIElement *child)
 	if (!visible)
 		return;
 
+	AddTickCall (Popup::emit_closed);
 	visible = false;
 
 	if (child)
@@ -95,7 +107,8 @@ Popup::Show (UIElement *child)
 {
 	if (visible)
 		return;
-		
+
+	AddTickCall (Popup::emit_opened);
 	visible = true;
 
 	if (child)

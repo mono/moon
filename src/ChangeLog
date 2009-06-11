@@ -1,3 +1,9 @@
+2009-06-11  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.h:
+	* popup.cpp:
+	* type-generated.cpp: Make Popup.[Opened|Closed] asynchronous.
+
 2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* src.mdp: Define HAVE_CONFIG_H to fix build in MD.

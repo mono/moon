@@ -152,7 +152,6 @@ namespace MoonTest.System.Windows.Controls.Primitives
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void OpenCloseEventTest4 ()
 		{
 			bool opened = false;

@@ -1,5 +1,10 @@
 2009-06-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls.Primitives/PopupTest.cs: Make
+	  Popup.[Opened|Closed] asynchronous.
+
+2009-06-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ControlTest.cs:
 	  Control.ArrangeAppliesTemplate passes now.
 

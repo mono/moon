@@ -52,8 +52,11 @@ class Popup : public FrameworkElement {
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
-	const static int IsOpenChangedEvent;
+	const static int OpenedEvent;
+	const static int ClosedEvent;
  private:
+ 	static void emit_opened (EventObject *sender);
+	static void emit_closed (EventObject *sender);
 	EVENTHANDLER (Popup, ShuttingDown, Deployment, EventArgs);
  	void Hide (UIElement *child);
  	void Show (UIElement *child);

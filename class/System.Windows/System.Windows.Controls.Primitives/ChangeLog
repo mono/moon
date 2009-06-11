@@ -1,3 +1,7 @@
+2009-06-11  Alan McGovern  <amcgovern@novell.com>
+
+	* Popup.cs: Make Popup.[Opened|Closed] asynchronous.
+
 2009-06-02  Chris Toshok  <toshok@ximian.com>
 
 	* LayoutInformation.cs (GetRawLayoutData): the MS test harness

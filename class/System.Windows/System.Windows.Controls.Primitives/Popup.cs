@@ -37,50 +37,41 @@ namespace System.Windows.Controls.Primitives {
 
 	public sealed partial class Popup : FrameworkElement
 	{
-		static UnmanagedEventHandler DoNothing = delegate { };
-		static UnmanagedEventHandler isopen_changed = Events.CreateSafeHandler (delegate (IntPtr a, IntPtr b, IntPtr closure) {
-			((Popup) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeIsOpenChanged ();
+		static object OpenedEvent = new object ();
+		static object ClosedEvent = new object ();
+		
+		static UnmanagedEventHandler closed_changed = Events.CreateSafeHandler (delegate (IntPtr a, IntPtr b, IntPtr closure) {
+			((Popup) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeClosed ();
 		});
 		
-		EventHandler closed_event;
-		EventHandler opened_event;
+		static UnmanagedEventHandler opened_changed = Events.CreateSafeHandler (delegate (IntPtr a, IntPtr b, IntPtr closure) {
+			((Popup) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeOpened ();
+		});
 		
 		internal event EventHandler ClickedOutside;
 
 		Canvas _clickCatcher;
 		
 		public event EventHandler Closed {
-			add {
-				if (EventList [IsOpenChangedEvent] == null)
-					RegisterEvent (IsOpenChangedEvent, "IsOpenChanged", isopen_changed, DoNothing);
-				closed_event += value;
-			}
-			remove {
-				closed_event -= value;
-				if (closed_event == null && opened_event == null)
-					UnregisterEvent (IsOpenChangedEvent, "IsOpenChanged", isopen_changed, DoNothing);
-			}
+			add { RegisterEvent (ClosedEvent, "Closed", closed_changed, value); }
+			remove { UnregisterEvent (ClosedEvent, "Closed", closed_changed, value); }
 		}
 		
 		public event EventHandler Opened {
-			add {
-				if (EventList [IsOpenChangedEvent] == null)
-					RegisterEvent (IsOpenChangedEvent, "IsOpenChanged", isopen_changed, DoNothing);
-				opened_event += value;
-			}
-			remove  {
-				opened_event -= value;
-				if (closed_event == null && opened_event == null)
-					UnregisterEvent (IsOpenChangedEvent, "IsOpenChanged", isopen_changed, DoNothing);
-			}
+			add { RegisterEvent (OpenedEvent, "Opened", opened_changed, value); }
+			remove  { UnregisterEvent (OpenedEvent, "Opened", opened_changed, value); }
+		}
+
+		void InvokeClosed ()
+		{
+			EventHandler h = (EventHandler) EventList [ClosedEvent];
+			if (h != null)
+				h (this, EventArgs.Empty);
 		}
 		
-		static object IsOpenChangedEvent = new object ();
-		
-		void InvokeIsOpenChanged ()
+		void InvokeOpened ()
 		{
-			Console.WriteLine ("\nIs Open? {0}", IsOpen);
-			EventHandler h = IsOpen ? opened_event : closed_event;
+			EventHandler h = (EventHandler) EventList [OpenedEvent];
 			if (h != null)
 				h (this, EventArgs.Empty);
 		}
