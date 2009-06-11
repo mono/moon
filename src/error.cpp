@@ -74,8 +74,13 @@ ParserErrorEventArgs::~ParserErrorEventArgs ()
 //
 
 MoonError::MoonError ()
-  : number ((ErrorType)0), code (0), message (0), char_position (-1), line_number (-1), gchandle_ptr (NULL)
 {
+	number = (ErrorType) 0;
+	code = 0;
+	message = 0;
+	char_position = -1;
+	line_number = -1;
+	gchandle_ptr = NULL;
 }
 
 MoonError::~MoonError ()

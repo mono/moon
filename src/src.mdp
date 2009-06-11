@@ -25,7 +25,7 @@
         <Include>/mono/main/install/include</Include>
         <Include>/mono/main/install/lib/pkgconfig/../../include/mono-1.0</Include>
       </Includes>
-      <CodeGeneration WarningLevel="All" WarningsAsErrors="False" OptimizationLevel="0" ExtraCompilerArguments="-x none" ExtraLinkerArguments="" DefineSymbols="DEBUG MONODEVELOP HAVE_SYS_TIME_H" ctype="CCompilationParameters" />
+      <CodeGeneration WarningLevel="All" WarningsAsErrors="False" OptimizationLevel="0" ExtraCompilerArguments="-x none" ExtraLinkerArguments="" DefineSymbols="DEBUG MONODEVELOP HAVE_SYS_TIME_H HAVE_CONFIG_H" ctype="CCompilationParameters" />
     </Configuration>
     <Configuration name="Release" ctype="CProjectConfiguration">
       <Output directory="bin/Release" output="src" />

@@ -39,7 +39,7 @@ determine_platform_image (const char *image_name)
 {
 	struct stat info;
 	gchar *dir, *name;
-	int i;
+	unsigned int i;
 
 	if (!image_name)
 		return FALSE;

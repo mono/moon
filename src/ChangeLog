@@ -1,5 +1,13 @@
 2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* src.mdp: Define HAVE_CONFIG_H to fix build in MD.
+
+	* security.c: Fix signed/unsigned mismatch warning.
+
+	* error.cpp: Fix warning about not initialize in correct order.
+
+2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Fix warning/typo in printf.
 
 2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
