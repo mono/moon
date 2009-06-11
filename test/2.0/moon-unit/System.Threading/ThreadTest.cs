@@ -43,6 +43,15 @@ namespace MoonTest.System.Threading
 		static EventHandler<ApplicationUnhandledExceptionEventArgs> ex_handler;
 
 		[TestMethod]
+		[MoonlightBug]
+		public void BeginInvokeTest ()
+		{
+			AsyncCallback c = delegate { };
+			Assert.Throws<NotSupportedException> (() => c.BeginInvoke (null, null, null), "#1");
+			Assert.Throws<NotSupportedException> (() => c.EndInvoke (null), "#2");
+		}
+
+		[TestMethod]
 		[Asynchronous]
 		public void ThreadExceptionTest ()
 		{
@@ -58,14 +67,35 @@ namespace MoonTest.System.Threading
 				e.Handled = true;
 				dispatcher.BeginInvoke (delegate () 
 				{
-					Mono.Moonlight.UnitTesting.App.Instance.CustomUnhandledExceptionHandler -= ex_handler;
+					Mono.Moonlight.UnitTesting.Testing.CustomUnhandledExceptionHandler -= ex_handler;
 					ex_handler = null;
 				});
 			};
-			Mono.Moonlight.UnitTesting.App.Instance.CustomUnhandledExceptionHandler += ex_handler;
+			Mono.Moonlight.UnitTesting.Testing.CustomUnhandledExceptionHandler += ex_handler;
 			
 			EnqueueConditional (() => unhandled_exception_raised);
 			EnqueueConditional (() => ex_handler == null); // wait until the cleanup has happened too
+			EnqueueTestComplete ();
+
+			t.Start ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[ExpectedException (typeof (InvalidOperationException))]
+		[MoonlightBug]
+		public void ThreadExceptionTest2 ()
+		{
+			bool unhandled_exception_raised = false;
+			Thread t = new Thread (delegate () { throw new InvalidOperationException ("This shouldn't be caught"); });
+
+			App app = Mono.Moonlight.UnitTesting.App.Instance;
+			app.CustomUnhandledExceptionHandler += delegate (object sender, ApplicationUnhandledExceptionEventArgs e) {
+				unhandled_exception_raised = true;
+			};
+
+			EnqueueSleep (500);
+			Enqueue (() => Assert.IsFalse (unhandled_exception_raised, "#1"));
 			EnqueueTestComplete ();
 
 			t.Start ();
