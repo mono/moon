@@ -772,6 +772,8 @@ class XamlElementInstanceNative : public XamlElementInstance {
 
 	virtual DependencyObject *CreateItem ();
 
+	virtual XamlElementInfo* FindPropertyElement (XamlParserInfo *p, const char *el, const char *dot);
+	
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value);
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child);
@@ -3081,9 +3083,9 @@ is_managed_kind (Type::Kind kind)
 static bool
 kind_requires_managed_load (Type::Kind kind)
 {
-//	if (kind == Type::USERCONTROL) {
-//		return true;
-//	}
+	if (kind == Type::USERCONTROL) {
+		return true;
+	}
 
 	return false;
 }
@@ -3779,33 +3781,22 @@ XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, c
 XamlElementInfo *
 XamlElementInstance::FindPropertyElement (XamlParserInfo *p, const char *el, const char *dot)
 {
-	char *type_name = g_strndup (el, dot - el);
-
-	if (IsDependencyObject ()) {
-		const char *prop_name = dot + 1;
-		DependencyProperty *prop = DependencyProperty::GetDependencyProperty (info->GetKind (), prop_name);
-		if (prop) {
-			XamlElementInfoNative *info = new XamlElementInfoNative (Type::Find (prop->GetPropertyType ()));
-			info->SetPropertyOwnerKind (prop->GetOwnerType ());
-			g_free (type_name);
-			return info;
-		}
-	}
-
 	// We didn't find anything so try looking up in managed
-	if (p->loader) {
-		Value *v = new Value ();
-		if (p->loader->LookupObject (p, p->GetTopElementPtr (), GetAsValue (), p->current_namespace->GetUri (), el, false, true, v)) {
-			XamlElementInfoManaged *res = new XamlElementInfoManaged (g_strdup (p->current_namespace->GetUri ()), el, info, v->GetKind (), v);
-			XamlElementInfo *container = p->current_namespace->FindElement (p, type_name, NULL, false);
-			info->SetPropertyOwnerKind (container->GetKind ());
-			g_free (type_name);
-			return res;
-		}
-		delete v;
+	if (!p->loader)
+		return NULL;
+
+	Value *v = new Value ();
+	if (p->loader->LookupObject (p, p->GetTopElementPtr (), GetAsValue (), p->current_namespace->GetUri (), el, false, true, v)) {
+		char *type_name = g_strndup (el, dot - el);
+		
+		XamlElementInfoManaged *res = new XamlElementInfoManaged (g_strdup (p->current_namespace->GetUri ()), el, info, v->GetKind (), v);
+		XamlElementInfo *container = p->current_namespace->FindElement (p, type_name, NULL, false);
+		info->SetPropertyOwnerKind (container->GetKind ());
+		g_free (type_name);
+		return res;
 	}
 
-	g_free (type_name);
+	delete v;
 	return NULL;
 }
 
@@ -3881,6 +3872,22 @@ XamlElementInfoNative::CreateWrappedElementInstance (XamlParserInfo *p, Dependen
 	res->SetDependencyObject (o);
 
 	return res;
+}
+
+XamlElementInfo *
+XamlElementInstanceNative::FindPropertyElement (XamlParserInfo *p, const char *el, const char *dot)
+{
+	if (IsDependencyObject ()) {
+		const char *prop_name = dot + 1;
+		DependencyProperty *prop = DependencyProperty::GetDependencyProperty (info->GetKind (), prop_name);
+		if (prop) {
+			XamlElementInfoNative *info = new XamlElementInfoNative (Type::Find (prop->GetPropertyType ()));
+			info->SetPropertyOwnerKind (prop->GetOwnerType ());
+			return info;
+		}
+	}
+
+	return XamlElementInstance::FindPropertyElement (p, el, dot);
 }
 
 XamlElementInstance *
@@ -3966,11 +3973,9 @@ XamlElementInstanceNative::CreateItem ()
 bool
 XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
 {
-	if (property->info->RequiresManagedSet ()) {
-		if (!p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, GetAsValue (), this, GetParentPointer (), property->info->xmlns, property->element_name, value->GetAsValue (), NULL)) {
-			return false;
-		}
-	}
+	if (property->info->RequiresManagedSet ())
+		return p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, GetAsValue (), this, GetParentPointer (), property->info->xmlns, property->element_name, value->GetAsValue (), NULL);
+
 	return dependency_object_set_property (p, this, property, value);
 }
 
@@ -4324,6 +4329,10 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 {
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	if (parent->element_type == XamlElementInstance::PROPERTY) {
+
+		if (parent->info->RequiresManagedSet ())
+			return;
+
 		char **prop_name = g_strsplit (parent->element_name, ".", -1);
 		Type *owner = types->Find (prop_name [0]);
 

@@ -1,3 +1,12 @@
+2009-06-11  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Re-enable the force USERCONTROL to be managed thingy.
+	- Don't try to set managed properties in
+	dependency_object_add_child.
+	- Make sure we only create managed property elements for managed
+	items, even if they are DOBs, otherwise UserControl.Resources gets
+	a native property info.
+
 2009-06-11  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.h:
