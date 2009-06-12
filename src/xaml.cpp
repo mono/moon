@@ -1898,8 +1898,10 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 	if (p->error_args)
 		return;
 
-	if (p->loader != NULL && p->loader->callbacks.import_xaml_xmlns != NULL)
-		p->loader->callbacks.import_xaml_xmlns (p->loader, p, uri);
+	if (p->loader != NULL && p->loader->callbacks.import_xaml_xmlns != NULL) {
+		if (!p->loader->callbacks.import_xaml_xmlns (p->loader, p, uri))
+			return parser_error (p, p->current_element ? p->current_element->element_name : NULL, prefix, 2005, "Unknown namespace %s", uri);
+	}
 
 	for (int i = 0; default_namespace_names [i]; i++) {
 		if (!strcmp (default_namespace_names [i], uri)) {

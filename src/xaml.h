@@ -26,7 +26,7 @@ typedef bool (*xaml_lookup_object_callback) (void *loader, void *parser, Value *
 typedef void (*xaml_create_gchandle_callback) ();
 typedef bool (*xaml_set_property_callback) (void *loader, void *parser, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value *value, void *value_data);
 typedef bool (*xaml_add_to_container_callback) (void *loader, void *parser, Value *top_level, const char* xmlns, const char* prop_name, const char* key_name, Value *container, void *container_data, Value *child, void *child_data);
-typedef void (*xaml_import_xaml_xmlns_callback) (void *loader, void *parser, const char* xmlns);
+typedef bool (*xaml_import_xaml_xmlns_callback) (void *loader, void *parser, const char* xmlns);
 typedef const char* (*xaml_get_content_property_name_callback) (void *loader, void *parser, Value *object);
 
 struct XamlLoaderCallbacks {

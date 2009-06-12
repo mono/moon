@@ -1,5 +1,10 @@
 2009-06-12  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp|h: import_xmlns now validates the namespace so we can
+	raise an error if it is invalid.
+
+2009-06-12  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Don't allow dtds.
 
 2009-06-12  Jackson Harper  <jackson@ximian.com>

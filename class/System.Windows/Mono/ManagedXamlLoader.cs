@@ -1105,6 +1105,27 @@ namespace Mono.Xaml
 			return xmlns.Substring (start, end - start);
 		}
 
+		private static bool ValidateXmlns (string xmlns)
+		{
+			Uri dummy = null;
+			if (Uri.TryCreate (xmlns, UriKind.Absolute, out dummy))
+				return true;
+
+			int start = xmlns.IndexOf ("clr-namespace");
+			int end = start + "clr-namespace".Length;
+			if (end >= xmlns.Length || xmlns [end] != ':')
+				return false;
+
+			start = xmlns.IndexOf ("assembly");
+			if (start > 0) {
+				end = start + "assembly".Length;
+				if (end >= xmlns.Length || xmlns [end] != '=')
+					return false;
+			}
+
+			return true;
+		}
+
 		private unsafe MethodInfo GetSetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string prop_name)
 		{
 			string assembly_name = AssemblyNameFromXmlns (xmlns);
@@ -1212,12 +1233,16 @@ namespace Mono.Xaml
 			}
 		}
 
-		private void cb_import_xaml_xmlns (IntPtr loader, IntPtr parser, string xmlns)
+		private bool cb_import_xaml_xmlns (IntPtr loader, IntPtr parser, string xmlns)
 		{
 			try {
+				if (!ValidateXmlns (xmlns))
+					return false;
 				Application.ImportXamlNamespace (xmlns);
+				return true;
 			} catch (Exception ex) {
 				Console.WriteLine ("Application::ImportXamlNamespace ({0}) threw an exception:\n{1}", xmlns, ex);
+				return false;
 			}
 
 		}
