@@ -1,5 +1,9 @@
 2009-06-12  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Don't allow dtds.
+
+2009-06-12  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: SL doesn't handle NaN the same way that strtod does.
 
 2009-06-12  Jackson Harper  <jackson@ximian.com>
