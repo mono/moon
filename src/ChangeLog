@@ -1,5 +1,9 @@
 2009-06-12  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: SL doesn't handle NaN the same way that strtod does.
+
+2009-06-12  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Use the value attribute parsing for enum types, this
 	allows them to have x:Key and x:Name attributes.
 

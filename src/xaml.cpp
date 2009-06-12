@@ -3262,10 +3262,15 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 			return true;
 		}
 
-		errno = 0;
-		d = g_ascii_strtod (s, &endptr); 
-		
-		if (errno || endptr == s || *endptr) {
+		bool is_nan = false;
+		if (!g_ascii_strcasecmp (s, "NAN"))
+			is_nan = true;
+		else {
+			errno = 0;
+			d = g_ascii_strtod (s, &endptr);
+		}
+
+		if (is_nan || errno || endptr == s || *endptr) {
 			if (prop_name
 			    && (!strcmp (prop_name, "Width") || !strcmp (prop_name, "Height"))
 			    && !g_ascii_strcasecmp (s, "Auto"))
