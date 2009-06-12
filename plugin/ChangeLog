@@ -1,3 +1,11 @@
+2009-06-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp|h: Fix 'enableHtmlAccess' to have a different 
+	default value when used for the same 'site of origin' (true)
+	wrt to be used for 'cross-domain' applications (false).
+	* plugin-class.cpp: Add restrictions on cross-domain applications
+	based on the manifest ExternalCallersFromCrossDomain value.
+
 2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Disable the spinner for now, it's breaking a lot of

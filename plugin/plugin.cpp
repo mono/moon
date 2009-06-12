@@ -395,8 +395,8 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	id = NULL;
 
 	windowless = false;
-	// XXX default is true for same-domain applications, false for cross-domain applications XXX
-	enable_html_access = true;
+	default_enable_html_access = true;	// should we use the default value (wrt the HTML script supplied value)
+	enable_html_access = false;		// default to most restricted
 	allow_html_popup_window = false;
 	xembed_supported = FALSE;
 
@@ -568,6 +568,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			id = g_strdup (argv [i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "enablehtmlaccess")) {
+			default_enable_html_access = false; // we're using the application value, not the default one
 			enable_html_access = !g_ascii_strcasecmp (argv [i], "true");
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "allowhtmlpopupwindow")) {
@@ -1195,6 +1196,21 @@ PluginInstance::LoadXAML ()
 }
 
 #if PLUGIN_SL_2_0
+static bool
+same_site_of_origin (const char *url1, const char *url2)
+{
+	bool result = false;
+	Uri *uri1 = new Uri ();
+	if (uri1->Parse (url1)) {
+		Uri *uri2 = new Uri ();
+		if (uri2->Parse (url2))
+			result = Uri::SameSiteOfOrigin (uri1, uri2);
+		delete uri2;
+	}
+	delete uri1;
+	return result;
+}
+
 //
 // Loads a XAP file
 //
@@ -1206,8 +1222,17 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 		return;
 	}
 
-	if (source_location)
-		g_free (source_location);
+	// Determine if the HTML location and the XAP location are on the same 'site of origin' or not
+	bool same_soo = same_site_of_origin (surface->GetSourceLocation (), url);
+	cross_domain_app = !same_soo;
+
+	// if the application did not specify 'enablehtmlaccess' then we use its default value
+	// which is TRUE for same-site applications and FALSE for cross-domain applications
+	if (default_enable_html_access)
+		enable_html_access = same_soo;
+
+	g_free (source_location);
+
 	source_location = g_strdup (url);
 
 	Deployment::GetCurrent ()->Reinitialize ();

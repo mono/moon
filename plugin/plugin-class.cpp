@@ -2312,6 +2312,9 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		if (!check_arg_list ("s", argCount, args))
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_FINDNAME");
 
+		if (plugin->IsCrossDomainApplication ())
+			THROW_JS_EXCEPTION ("XDomain Restriction");
+
 		if (!plugin->GetSurface() || !plugin->GetSurface()->GetToplevel ())
 			return true;
 
@@ -2784,6 +2787,10 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 	case MoonId_FindName: {
 		if (!check_arg_list ("s", argCount, args))
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_FINDNAME");
+
+		PluginInstance *plugin = (PluginInstance*) instance->pdata;
+		if (plugin->IsCrossDomainApplication ())
+			THROW_JS_EXCEPTION ("XDomain Restriction");
 
 		char *name = STRDUP_FROM_VARIANT (args [0]);
 
@@ -4090,6 +4097,12 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 					 const NPVariant *args, guint32 argCount,
 					 NPVariant *result)
 {
+	PluginInstance *plugin = (PluginInstance*) instance->pdata;
+	if (plugin->IsCrossDomainApplication ()) {
+		if (Deployment::GetCurrent ()->GetExternalCallersFromCrossDomain () == CrossDomainAccessNoAccess)
+			THROW_JS_EXCEPTION ("XDomain Restriction");
+	}
+
 	ScriptableMethod *method = (ScriptableMethod*)g_hash_table_lookup (methods, name);
 	Value rv, **vargs = NULL;
 	guint32 i;

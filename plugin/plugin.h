@@ -123,6 +123,8 @@ class PluginInstance
 	gint32 GetActualHeight ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	gint32 GetActualWidth ();
+
+	bool IsCrossDomainApplication () { return cross_domain_app; }
 	
 	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 	
@@ -194,6 +196,8 @@ class PluginInstance
 	int source_size;
 
 	bool windowless;
+	bool cross_domain_app;
+	bool default_enable_html_access;
 	bool enable_html_access;
 	bool allow_html_popup_window;
 	bool enable_framerate_counter;
