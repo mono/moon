@@ -249,3 +249,15 @@ Validators::ContentControlContentValidator (DependencyObject* instance, Dependen
 
 	return true;
 }
+
+bool
+Validators::CrossDomainValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (instance->GetValueNoDefault (property)) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
+			g_strdup_printf ("Property 'ExternalCallersFromCrossDomain' cannot be changed.\n"));
+		return false;
+	}
+	return true;
+}
+

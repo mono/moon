@@ -168,6 +168,14 @@ namespace System.Windows {
 
 			if (EntryPointType == null)
 				throw new Exception ("No entrypoint defined in the AppManifest.xaml");
+
+			try {
+				// this is a "set once" property, we set it to its default in case it was not part of the manifest
+				ExternalCallersFromCrossDomain = CrossDomainAccess.NoAccess;
+			}
+			catch (ArgumentException) {
+				// a value was already set (should be quite rare)
+			}
 		}
 
 		internal bool InitializeDeployment () {

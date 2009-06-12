@@ -316,7 +316,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::DEPLOYMENT, "Surface", false, Type::SURFACE);
 	DependencyProperty::Register (this, Type::DEPLOYMENT, "RuntimeVersion", false, Type::STRING);
 	DependencyProperty::Register (this, Type::DEPLOYMENT, "Parts", false, Type::ASSEMBLYPART_COLLECTION);
-	DependencyProperty::Register (this, Type::DEPLOYMENT, "ExternalCallersFromCrossDomain", false, new Value (CrossDomainAccessNoAccess), Type::INT32);
+	DependencyProperty::RegisterFull (this, Type::DEPLOYMENT, "ExternalCallersFromCrossDomain", false, new Value (CrossDomainAccessNoAccess), Type::INT32, false, false, false, NULL, Validators::CrossDomainValidator, NULL, false);
 	DependencyProperty::Register (this, Type::DEPLOYMENT, "EntryPointType", false, Type::STRING);
 	DependencyProperty::Register (this, Type::DEPLOYMENT, "EntryPointAssembly", false, Type::STRING);
 	DependencyProperty::Register (this, Type::COLUMNDEFINITION, "Width", false, new Value (GridLength (1.0, GridUnitTypeStar)), Type::GRIDLENGTH);
@@ -4071,6 +4071,19 @@ void
 Deployment::SetParts (AssemblyPartCollection *value)
 {
 	SetValue (Deployment::PartsProperty, Value (value));
+}
+
+CrossDomainAccess
+Deployment::GetExternalCallersFromCrossDomain ()
+{
+	Value *value = GetValue (Deployment::ExternalCallersFromCrossDomainProperty);
+	return (CrossDomainAccess) value->AsInt32 ();
+}
+
+void
+Deployment::SetExternalCallersFromCrossDomain (CrossDomainAccess value)
+{
+	SetValue (Deployment::ExternalCallersFromCrossDomainProperty, Value (value));
 }
 
 GridLength *

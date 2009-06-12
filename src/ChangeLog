@@ -1,3 +1,14 @@
+2009-06-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyproperty.g.cpp: Regenerated
+	* deployment.h: Update ExternalCallersFromCrossDomainProperty
+	generator-related properties and add unmanaged accessors
+	* enumscpp|h: Remove CrossDomainAccessFullAccess value which was
+	dropped after SL2 beta2
+	* uri.cpp|h: Add new Uri::SameSiteOfOrigin method
+	* validators.cpp|h: Add new CrossDomainValidator that ensure we
+	can set only once Deployment::ExternalCallersFromCrossDomainProperty
+
 2009-06-11  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Re-enable the force USERCONTROL to be managed thingy.

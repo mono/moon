@@ -1,3 +1,9 @@
+2009-06-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Deployment.cs: Make sure ExternalCallersFromCrossDomain is set
+	once (e.g. if not part of the manifest). This will seal the value
+	so it won't be possible to change it afterward.
+
 2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Deployment.cs: When looking for the entry point assembly, we

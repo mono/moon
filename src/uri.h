@@ -47,6 +47,7 @@ public:
 	/* @GenerateCBinding */
 	static bool Equals (const Uri *left, const Uri *right);
 	static bool IsNullOrEmpty (const Uri *uri);
+	static bool SameSiteOfOrigin (const Uri *left, const Uri *right);
 
 	/* @GenerateCBinding */
 	guint GetHashCode ();

@@ -49,7 +49,7 @@ protected:
 /* @Namespace=System.Windows */
 class Deployment : public DependencyObject {
 public:
- 	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal,GenerateAccessors,Validator=CrossDomainValidator */
 	const static int ExternalCallersFromCrossDomainProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
 	const static int EntryPointAssemblyProperty;
@@ -106,6 +106,9 @@ public:
 
 	void SetXapLocation (const char *location);
 	const char *GetXapLocation ();
+
+	CrossDomainAccess GetExternalCallersFromCrossDomain ();
+	void SetExternalCallersFromCrossDomain (CrossDomainAccess value);
 
 	const static int ShuttingDownEvent;
 

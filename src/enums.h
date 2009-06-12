@@ -299,9 +299,9 @@ enum VerticalAlignment {
 };
 
 enum CrossDomainAccess {
-        CrossDomainAccessNoAccess,
-        CrossDomainAccessFullAccess,
-        CrossDomainAccessScriptableOnly,
+	CrossDomainAccessNoAccess = 0,
+	// CrossDomainAccessFullAccess (1) was removed before final SL2 release
+	CrossDomainAccessScriptableOnly = 2,
 };
 
 enum FillBehavior {

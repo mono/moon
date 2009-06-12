@@ -1,3 +1,9 @@
+2009-06-12  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows/DeploymentTest.cs: Test that the Deployment.
+	ExternalCallersFromCrossDomain property can only be set in the
+	manifest, i.e. is a read-only value from managed code.
+
 2009-06-11  Mario Carrion  <mcarrion@novell.com>
 
 	* moon-unit.csproj: New files added: 

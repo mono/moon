@@ -622,3 +622,27 @@ Uri::IsScheme (const char *scheme)
 
 	return true;
 }
+
+bool 
+Uri::SameSiteOfOrigin (const Uri *left, const Uri *right)
+{
+	// works only on absolute URI
+	if (!left || !left->isAbsolute || !right || !right->isAbsolute)
+		return false;
+
+	if (left->port != right->port)
+		return false;
+
+	if (!left->scheme || !right->scheme || (strcmp (left->scheme, right->scheme) != 0))
+		return false;
+
+	// comparing 2 file:/// URI where no hosts is present
+	if (!left->host && !right->host && (strcmp (left->scheme, "file") == 0))
+		return true;
+
+	if (!left->host || !right->host || (strcmp (left->host, right->host) != 0))
+		return false;
+
+	return true;
+}
+

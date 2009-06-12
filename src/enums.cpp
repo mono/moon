@@ -286,7 +286,6 @@ static enum_map_t orientation_map [] = {
 
 static enum_map_t cross_domain_access_map [] = {
 	MAP_ENUM (CrossDomainAccess, NoAccess), 
-	MAP_ENUM (CrossDomainAccess, FullAccess), 
 	MAP_ENUM (CrossDomainAccess, ScriptableOnly),
 	END_MAPPING 
 };

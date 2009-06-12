@@ -39,6 +39,7 @@ public:
 	static ValueValidator IsSetterSealedValidator;
 	static ValueValidator ContentControlContentValidator;
 	static ValueValidator NameValidator;
+	static ValueValidator CrossDomainValidator;
 };
 
 #endif /* __VALIDATORS_H__ */
