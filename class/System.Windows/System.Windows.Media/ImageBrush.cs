@@ -30,7 +30,28 @@ using Mono;
 namespace System.Windows.Media {
 
 	public sealed partial class ImageBrush : TileBrush {
-
-		public event EventHandler<ExceptionRoutedEventArgs> ImageFailed;
+		static object ImageFailedEvent = new object ();
+		
+		public event EventHandler<ExceptionRoutedEventArgs> ImageFailed {
+			add {
+				RegisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
+			}
+			remove {
+				UnregisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
+			}
+		}
+		
+		static UnmanagedEventHandler image_failed = Events.CreateSafeHandler (image_failed_cb);
+		
+		private static void image_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
+			((ImageBrush) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeImageFailed (calldata);
+		}
+		
+		private void InvokeImageFailed (IntPtr calldata)
+		{
+			EventHandler<ExceptionRoutedEventArgs> h = (EventHandler<ExceptionRoutedEventArgs>) EventList [ImageFailedEvent];
+			if (h != null)
+				h (this, new ExceptionRoutedEventArgs (calldata));
+		}
 	}
 }
