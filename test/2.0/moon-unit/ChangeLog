@@ -1,3 +1,7 @@
+2009-06-12  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/PrimitiveTest.cs: Fixed this issue magicidently.
+
 2009-06-12  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows/DeploymentTest.cs: Test that the Deployment.
