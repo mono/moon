@@ -1,3 +1,8 @@
+2009-06-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Use the value attribute parsing for enum types, this
+	allows them to have x:Key and x:Name attributes.
+
 2009-06-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* dependencyproperty.g.cpp: Regenerated

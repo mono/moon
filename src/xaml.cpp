@@ -849,7 +849,7 @@ class XamlElementInstanceEnum : public XamlElementInstance {
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) { return false; }
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value) { return false; }
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) { }
-	virtual void SetAttributes (XamlParserInfo *p, const char **attr) { }
+	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
 
 	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value) { return false; }
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value) { return CreateEnumFromString (value); }
@@ -4046,6 +4046,12 @@ XamlElementInstanceEnum::CreateEnumFromString (const char* str)
 	return true;
 }
 
+void
+XamlElementInstanceEnum::SetAttributes (XamlParserInfo *p, const char **attr)
+{
+	value_type_set_attributes (p, this, attr);
+}
+
 XamlElementInstance *
 XamlElementInfoEnum::CreateElementInstance (XamlParserInfo *p)
 {
@@ -4663,7 +4669,6 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 {
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
 
-start_parse:
 	for (int i = 0; attr [i]; i += 2) {
 
 		if (p->error_args)
