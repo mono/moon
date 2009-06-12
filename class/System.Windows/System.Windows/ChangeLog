@@ -1,3 +1,8 @@
+2009-06-12  Alan McGovern  <amcgovern@novell.com>
+
+	* Deployment.cs: Ensure that the handlers for Resized and
+	  FullScreen are only registered once.
+
 2009-06-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Deployment.cs: Make sure ExternalCallersFromCrossDomain is set

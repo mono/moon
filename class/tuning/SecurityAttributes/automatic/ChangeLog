@@ -1,3 +1,7 @@
+2009-06-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: Regen
+
 2008-06-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.auto.s[s]c: Remove the (now) unneeded attributes

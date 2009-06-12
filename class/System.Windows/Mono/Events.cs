@@ -223,12 +223,6 @@ namespace Mono {
 			Content.InvokeFullScreenChange ();
 		}
 
-		internal static void InitSurface (IntPtr surface)
-		{
-			NativeMethods.event_object_add_handler (surface, "Resize", surface_resized, IntPtr.Zero, IntPtr.Zero);
-			NativeMethods.event_object_add_handler (surface, "FullScreenChange", surface_full_screen_changed, IntPtr.Zero, IntPtr.Zero);
-		}
-
 		internal static void AddHandler (DependencyObject obj, string eventName, UnmanagedEventHandler handler)
 		{
 			NativeMethods.event_object_add_handler (obj.native, eventName, handler, obj.native, IntPtr.Zero);

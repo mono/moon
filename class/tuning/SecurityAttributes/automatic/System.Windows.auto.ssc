@@ -1,11 +1,10 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 463 methods
+# 462 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
 +SSC-M: System.Void Mono.EasingFunctionWrapper::ReportException(System.Exception)
-+SSC-M: System.Void Mono.Events::InitSurface(System.IntPtr)
 +SSC-M: System.Void Mono.Events::AddHandler(System.Windows.DependencyObject,System.String,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void Mono.Events::RemoveHandler(System.Windows.DependencyObject,System.String,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void Mono.Events::ReportException(System.Exception)
@@ -217,11 +216,11 @@
 +SSC-M: System.Void System.Windows.Input.StylusPoint::.ctor(System.Double,System.Double)
 +SSC-M: System.Void System.Windows.Input.StylusPointCollection::.ctor()
 +SSC-M: System.Void System.Windows.Input.StylusPointCollection::Add(System.Windows.Input.StylusPointCollection)
-+SSC-M: System.Void System.Windows.Interop.Content::add_Resized(System.EventHandler)
 +SSC-M: System.Double System.Windows.Interop.Content::get_ActualHeight()
 +SSC-M: System.Double System.Windows.Interop.Content::get_ActualWidth()
 +SSC-M: System.Boolean System.Windows.Interop.Content::get_IsFullScreen()
 +SSC-M: System.Void System.Windows.Interop.Content::set_IsFullScreen(System.Boolean)
++SSC-M: System.Void System.Windows.Interop.Content::EnsureRegistered()
 +SSC-M: System.Void System.Windows.Interop.PluginHost::SetPluginHandle(System.IntPtr)
 +SSC-M: System.Boolean System.Windows.Interop.Settings::get_EnableHTMLAccess()
 +SSC-M: System.Int32 System.Windows.Interop.Settings::get_MaxFrameRate()

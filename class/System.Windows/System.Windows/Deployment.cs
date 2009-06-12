@@ -311,8 +311,6 @@ namespace System.Windows {
 
 			SetCurrentApplication (instance);
 
-			Events.InitSurface (Surface.Native);
-
 			StartupEventArgs args = new  StartupEventArgs();
 			ParseInitParams (args.InitParams);
 			instance.OnStartup (args);
