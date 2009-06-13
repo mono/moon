@@ -1,3 +1,9 @@
+2009-06-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp|h: Move cross-domain application check earlier to
+	not register the events (e.g. onLoad, onError...) for cross-domain
+	applications. Complete fix for DRT 361, 362, 364, 365 and 370
+
 2009-06-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin.cpp|h: Fix 'enableHtmlAccess' to have a different 

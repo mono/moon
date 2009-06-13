@@ -523,6 +523,28 @@ PluginInstance::GetSources ()
 #endif
 
 
+static bool
+same_site_of_origin (const char *url1, const char *url2)
+{
+	bool result = false;
+	Uri *uri1 = new Uri ();
+	if (uri1->Parse (url1)) {
+		Uri *uri2 = new Uri ();
+
+		if (uri2->Parse (url2)) {
+			// if only one of the two URI is absolute then the second one is relative to the first, 
+			// which makes it part of the same site of origin
+			if ((uri1->isAbsolute && !uri2->isAbsolute) || (!uri1->isAbsolute && uri2->isAbsolute))
+				result = true;
+			else
+				result = Uri::SameSiteOfOrigin (uri1, uri2);
+		}
+		delete uri2;
+	}
+	delete uri1;
+	return result;
+}
+
 void
 PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 {
@@ -834,59 +856,21 @@ PluginInstance::CreateWindow ()
 	} else {
 		//xaml_loader = PluginXamlLoader::FromStr (PLUGIN_SPINNER, this, surface);
 		//LoadXAML ();
-	} 
-	if (onSourceDownloadProgressChanged != NULL) {
-		char *retval = NPN_strdup (onSourceDownloadProgressChanged);
-		NPVariant npvalue;
-
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onSourceDownloadProgressChanged");
-		NPN_SetProperty (instance, GetRootObject (), 
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
-	}
-	if (onSourceDownloadCompleted != NULL) {
-		char *retval = NPN_strdup (onSourceDownloadCompleted);
-		NPVariant npvalue;
-
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onSourceDownloadCompleted");
-		NPN_SetProperty (instance, GetRootObject (), 
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
-	}
-	if (onError != NULL) {
-		char *retval = NPN_strdup (onError);
-		NPVariant npvalue;
-
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onError");
-		NPN_SetProperty (instance, GetRootObject (), 
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
 	}
 
-	if (onResize != NULL) {
-		char *retval = NPN_strdup (onResize);
-		NPVariant npvalue;
+	char* page_url = GetPageLocation ();
+	// note: source might not be an absolute URL at this stage - but that only indicates that it's relative to the page url
+	cross_domain_app = !same_site_of_origin (page_url, source);
+	g_free (page_url);
 
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onResize");
-		NPN_SetProperty (instance, GetRootObject ()->content,
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
-	}
+	// if the application did not specify 'enablehtmlaccess' then we use its default value
+	// which is TRUE for same-site applications and FALSE for cross-domain applications
+	if (default_enable_html_access)
+		enable_html_access = !cross_domain_app;
 
-	if (onLoad != NULL) {
-		char *retval = NPN_strdup (onLoad);
-		NPVariant npvalue;
-
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onLoad");
-		NPN_SetProperty (instance, GetRootObject (), 
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
-	}
+	// events notifications are not sent for cross-domain applications
+	if (!cross_domain_app)
+		RegisterEvents ();
 
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);
@@ -937,6 +921,61 @@ PluginInstance::CreateWindow ()
 		gtk_container_add (GTK_CONTAINER (container), ((MoonWindowGtk*)moon_window)->GetWidget());
 		//display = gdk_drawable_get_display (surface->GetWidget()->window);
 		gtk_widget_show_all (container);
+	}
+}
+
+void
+PluginInstance::RegisterEvents ()
+{
+	if (onSourceDownloadProgressChanged != NULL) {
+		char *retval = NPN_strdup (onSourceDownloadProgressChanged);
+		NPVariant npvalue;
+
+		STRINGZ_TO_NPVARIANT (retval, npvalue);
+		NPIdentifier identifier = NPN_GetStringIdentifier ("onSourceDownloadProgressChanged");
+		NPN_SetProperty (instance, GetRootObject (), 
+				 identifier, &npvalue);
+		NPN_MemFree (retval);
+	}
+	if (onSourceDownloadCompleted != NULL) {
+		char *retval = NPN_strdup (onSourceDownloadCompleted);
+		NPVariant npvalue;
+
+		STRINGZ_TO_NPVARIANT (retval, npvalue);
+		NPIdentifier identifier = NPN_GetStringIdentifier ("onSourceDownloadCompleted");
+		NPN_SetProperty (instance, GetRootObject (), 
+				 identifier, &npvalue);
+		NPN_MemFree (retval);
+	}
+	if (onError != NULL) {
+		char *retval = NPN_strdup (onError);
+		NPVariant npvalue;
+
+		STRINGZ_TO_NPVARIANT (retval, npvalue);
+		NPIdentifier identifier = NPN_GetStringIdentifier ("onError");
+		NPN_SetProperty (instance, GetRootObject (), 
+				 identifier, &npvalue);
+		NPN_MemFree (retval);
+	}
+	if (onResize != NULL) {
+		char *retval = NPN_strdup (onResize);
+		NPVariant npvalue;
+
+		STRINGZ_TO_NPVARIANT (retval, npvalue);
+		NPIdentifier identifier = NPN_GetStringIdentifier ("onResize");
+		NPN_SetProperty (instance, GetRootObject ()->content,
+				 identifier, &npvalue);
+		NPN_MemFree (retval);
+	}
+	if (onLoad != NULL) {
+		char *retval = NPN_strdup (onLoad);
+		NPVariant npvalue;
+
+		STRINGZ_TO_NPVARIANT (retval, npvalue);
+		NPIdentifier identifier = NPN_GetStringIdentifier ("onLoad");
+		NPN_SetProperty (instance, GetRootObject (), 
+				 identifier, &npvalue);
+		NPN_MemFree (retval);
 	}
 }
 
@@ -1066,12 +1105,10 @@ PluginInstance::SetInitParams (const char *value)
 	initParams = g_strdup (value);
 }
 
-void
-PluginInstance::SetPageURL ()
+char*
+PluginInstance::GetPageLocation ()
 {
-	if (source_location != NULL)
-		return;
-	
+	char *location = NULL;
 	NPIdentifier str_location = NPN_GetStringIdentifier ("location");
 	NPIdentifier str_href = NPN_GetStringIdentifier ("href");
 	NPVariant location_property;
@@ -1083,15 +1120,27 @@ PluginInstance::SetPageURL ()
 		if (NPN_GetProperty (instance, window, str_location, &location_property)) {
 			// Get the location property from the location object.
 			if (NPN_GetProperty (instance, location_property.value.objectValue, str_href, &location_object )) {
-				this->source_location = g_strndup (NPVARIANT_TO_STRING (location_object).utf8characters, NPVARIANT_TO_STRING (location_object).utf8length);
-				if (surface)
-					surface->SetSourceLocation (this->source_location);
+				location = g_strndup (NPVARIANT_TO_STRING (location_object).utf8characters, NPVARIANT_TO_STRING (location_object).utf8length);
 				NPN_ReleaseVariantValue (&location_object);
 			}
 			NPN_ReleaseVariantValue (&location_property);
 		}
 	}
 	NPN_ReleaseObject (window);
+	return location;
+}
+
+void
+PluginInstance::SetPageURL ()
+{
+	if (source_location != NULL)
+		return;
+	
+	char* location = GetPageLocation ();
+	if (location && surface) {
+		this->source_location = location;
+		surface->SetSourceLocation (this->source_location);
+	}
 }
 
 
@@ -1196,21 +1245,6 @@ PluginInstance::LoadXAML ()
 }
 
 #if PLUGIN_SL_2_0
-static bool
-same_site_of_origin (const char *url1, const char *url2)
-{
-	bool result = false;
-	Uri *uri1 = new Uri ();
-	if (uri1->Parse (url1)) {
-		Uri *uri2 = new Uri ();
-		if (uri2->Parse (url2))
-			result = Uri::SameSiteOfOrigin (uri1, uri2);
-		delete uri2;
-	}
-	delete uri1;
-	return result;
-}
-
 //
 // Loads a XAP file
 //
@@ -1221,15 +1255,6 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 		g_warning ("Couldn't initialize the plugin AppDomain");
 		return;
 	}
-
-	// Determine if the HTML location and the XAP location are on the same 'site of origin' or not
-	bool same_soo = same_site_of_origin (surface->GetSourceLocation (), url);
-	cross_domain_app = !same_soo;
-
-	// if the application did not specify 'enablehtmlaccess' then we use its default value
-	// which is TRUE for same-site applications and FALSE for cross-domain applications
-	if (default_enable_html_access)
-		enable_html_access = same_soo;
 
 	g_free (source_location);
 
