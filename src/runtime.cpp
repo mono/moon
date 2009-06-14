@@ -11,9 +11,7 @@
  * 
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <gtk/gtk.h>
 
@@ -1035,6 +1033,16 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 #endif
 
 }
+
+/* for emitting focus changed events */
+class FocusChangedNode : public List::Node {
+public:
+	UIElement *lost_focus;
+	UIElement *got_focus;
+	
+	FocusChangedNode (UIElement *lost_focus, UIElement *got_focus);
+	virtual ~FocusChangedNode ();
+};
 
 FocusChangedNode::FocusChangedNode (UIElement *lost_focus, UIElement *got_focus)
 {

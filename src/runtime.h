@@ -409,16 +409,6 @@ private:
 	void ToplevelLoaded (UIElement *element);
 };
 
-/* for emitting focus changed events */
-class FocusChangedNode : public List::Node {
-public:
-	UIElement *lost_focus;
-	UIElement *got_focus;
-	
-	FocusChangedNode (UIElement *lost_focus, UIElement *got_focus);
-	virtual ~FocusChangedNode ();
-};
-
 /* for hit testing */
 class UIElementNode : public List::Node {
 public:

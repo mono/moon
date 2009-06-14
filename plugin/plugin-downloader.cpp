@@ -11,9 +11,7 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include "plugin-downloader.h"
 #include "browser-bridge.h"

@@ -10,9 +10,7 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#if HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include "validators.h"
 #include "thickness.h"

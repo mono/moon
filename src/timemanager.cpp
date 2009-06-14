@@ -9,9 +9,7 @@
  * 
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include "clock.h"
 #include "timeline.h"

@@ -711,9 +711,7 @@ class Generator {
 		
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ();
-		text.AppendLine ("#ifdef HAVE_CONFIG_H");
 		text.AppendLine ("#include <config.h>");
-		text.AppendLine ("#endif");
 		text.AppendLine ();
 		headers.Sort ();
 		foreach (string h in headers) {
@@ -1919,9 +1917,7 @@ class Generator {
 		header.AppendLine ("G_BEGIN_DECLS");
 		header.AppendLine ();
 		
-		impl.AppendLine ("#ifdef HAVE_CONFIG_H");
 		impl.AppendLine ("#include <config.h>");
-		impl.AppendLine ("#endif");
 		impl.AppendLine ();
 		impl.AppendLine ("#include <stdio.h>");
 		impl.AppendLine ("#include <stdlib.h>");
@@ -2086,9 +2082,7 @@ class Generator {
 		
 		Helper.WriteWarningGenerated (text);
 					
-		text.AppendLine ("#ifdef HAVE_CONFIG_H");
 		text.AppendLine ("#include <config.h>");
-		text.AppendLine ("#endif");
 		text.AppendLine ();
 		text.AppendLine ("#include <stdlib.h>");
 
