@@ -42,15 +42,16 @@
 static const int NullFlag = 1;
     
 Value*
-Value::CreateUnrefPtr (DependencyObject* dob)
+Value::CreateUnrefPtr (EventObject* dob)
 {
 	Value *result = new Value (dob);
-	dob->unref ();
+	if (dob)
+		dob->unref ();
 	return result;
 }
 
 Value
-Value::CreateUnref (DependencyObject* dob)
+Value::CreateUnref (EventObject* dob)
 {
 	Value result (dob);
 	dob->unref ();

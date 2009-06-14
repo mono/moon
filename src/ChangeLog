@@ -1,5 +1,13 @@
 2009-06-14  Andreia Gaita  <avidigal@novell.com>
 
+	* value.[h.in|cpp]: (CreateUnref*) Accept EventObject instead of DPs, since 
+	there are certain refcounted objects that aren't child classes of
+	DependencyObject.
+	Wrap null objects but don't try to unref them.
+	* value.h: regen
+
+2009-06-14  Andreia Gaita  <avidigal@novell.com>
+
 	* debug.[h|cpp]: add max frame arg for finer control when getting 
 	stack traces
 

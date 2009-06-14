@@ -350,8 +350,8 @@ public:
 	// Useful in cases like this:
 	//   SetValue (SomeProperty, new DependencyObject ())
 	// in which case we have to unref the newly created object.
-	static Value* CreateUnrefPtr (DependencyObject* dob);
-	static Value  CreateUnref (DependencyObject* dob);
+	static Value* CreateUnrefPtr (EventObject* dob);
+	static Value  CreateUnref (EventObject* dob);
 
 	bool GetIsNull ();
 	void SetIsNull (bool isNull);
