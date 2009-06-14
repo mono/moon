@@ -311,8 +311,9 @@ namespace System.Windows {
 
 			SetCurrentApplication (instance);
 
-			StartupEventArgs args = new  StartupEventArgs();
-			ParseInitParams (args.InitParams);
+			StartupEventArgs args = new StartupEventArgs();
+			if (args.InitParams != null)
+				ParseInitParams (args.InitParams);
 			instance.OnStartup (args);
 
 			return true;
