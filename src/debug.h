@@ -26,10 +26,13 @@
  * Stacktrace (debug) stuff
  */
 
+
 #if DEBUG
 
-char* get_stack_trace_prefix (const char* prefix);
-void print_stack_trace_prefix (const char* prefix); 
+#define MAX_STACK_FRAMES 10
+
+char* get_stack_trace_prefix (const char* prefix, int maxframes = MAX_STACK_FRAMES);
+void print_stack_trace_prefix (const char* prefix, int maxframes = MAX_STACK_FRAMES); 
 
 void print_reftrace (const char * type, const char * typname, int refcount, bool keep);
 void dump_frames (void);

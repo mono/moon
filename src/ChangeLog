@@ -1,3 +1,8 @@
+2009-06-14  Andreia Gaita  <avidigal@novell.com>
+
+	* debug.[h|cpp]: add max frame arg for finer control when getting 
+	stack traces
+
 2009-06-12  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: import_xmlns now validates the namespace so we can
