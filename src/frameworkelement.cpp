@@ -318,7 +318,11 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *
 	
 	if (GetClip ()) {
 		RenderClipPath (cr, true);
-		if (!cairo_in_fill (cr, host.x, host.y)) {
+		cairo_save (cr);
+		cairo_identity_matrix (cr);
+		bool res = cairo_in_fill (cr, host.x, host.y);
+		cairo_restore (cr);
+		if (!res) {
 			cairo_restore (cr);
 			return;
 		}

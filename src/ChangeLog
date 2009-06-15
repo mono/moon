@@ -1,3 +1,9 @@
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: We're hittesting the clip, we use
+	  user-space coordinates, so apply the identity matrix to get
+	  the correct result.
+
 2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.h: Expose MediaFrame::IsKeyFrame to C.
