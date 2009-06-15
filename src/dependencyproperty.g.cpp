@@ -69,8 +69,8 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::GRADIENTBRUSH, "GradientStops", false, NULL, Type::GRADIENTSTOP_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
 	DependencyProperty::Register (this, Type::GRADIENTBRUSH, "ColorInterpolationMode", false, new Value (ColorInterpolationModeSRgbLinearInterpolation), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::INKPRESENTER, "Strokes", false, NULL, Type::STROKE_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
-	DependencyProperty::Register (this, Type::BRUSH, "Transform", false, new Value (new MatrixTransform ()), Type::TRANSFORM);
-	DependencyProperty::Register (this, Type::BRUSH, "RelativeTransform", false, new Value (new MatrixTransform ()), Type::TRANSFORM);
+	DependencyProperty::Register (this, Type::BRUSH, "Transform", false, Value::CreateUnrefPtr (new MatrixTransform ()), Type::TRANSFORM);
+	DependencyProperty::Register (this, Type::BRUSH, "RelativeTransform", false, Value::CreateUnrefPtr (new MatrixTransform ()), Type::TRANSFORM);
 	DependencyProperty::Register (this, Type::BRUSH, "Opacity", false, new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::BRUSH, "Changed", false, Type::BOOL);
 	DependencyProperty::Register (this, Type::RECTANGLE, "RadiusY", false, new Value (0.0), Type::DOUBLE);
@@ -117,7 +117,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "LineStackingStrategy", false, new Value (LineStackingStrategyMaxHeight), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "LineHeight", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::TEXTBLOCK, "Inlines", false, NULL, Type::INLINE_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
-	DependencyProperty::Register (this, Type::TEXTBLOCK, "Foreground", false, new Value (new SolidColorBrush("black")), Type::BRUSH);
+	DependencyProperty::Register (this, Type::TEXTBLOCK, "Foreground", false, Value::CreateUnrefPtr (new SolidColorBrush("black")), Type::BRUSH);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontWeight", false, new Value (TEXTBLOCK_FONT_WEIGHT), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStyle", false, new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStretch", false, new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
@@ -183,7 +183,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::CONTROL, "IsTabStop", false, new Value (true), Type::BOOL);
 	DependencyProperty::Register (this, Type::CONTROL, "IsEnabled", false, new Value (true), Type::BOOL);
 	DependencyProperty::Register (this, Type::CONTROL, "HorizontalContentAlignment", false, new Value (HorizontalAlignmentCenter), Type::INT32);
-	DependencyProperty::Register (this, Type::CONTROL, "Foreground", false, new Value (new SolidColorBrush("black")), Type::BRUSH);
+	DependencyProperty::Register (this, Type::CONTROL, "Foreground", false, Value::CreateUnrefPtr (new SolidColorBrush("black")), Type::BRUSH);
 	DependencyProperty::Register (this, Type::CONTROL, "FontWeight", false, new Value (CONTROL_FONT_WEIGHT), Type::INT32);
 	DependencyProperty::Register (this, Type::CONTROL, "FontStyle", false, new Value (CONTROL_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::CONTROL, "FontStretch", false, new Value (CONTROL_FONT_STRETCH), Type::INT32);
@@ -290,7 +290,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::INPUTMETHOD, "IsInputMethodEnabled", false, NULL, Type::BOOL, true, false, false, NULL, NULL, NULL, false);
 	DependencyProperty::Register (this, Type::INLINE, "TextDecorations", false, new Value (TextDecorationsNone), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::INLINE, "Language", false, new Value ("en-US"), Type::STRING, false, false, false, NULL, Validators::NonNullValidator, NULL, false);
-	DependencyProperty::Register (this, Type::INLINE, "Foreground", false, new Value (new SolidColorBrush("black")), Type::BRUSH);
+	DependencyProperty::Register (this, Type::INLINE, "Foreground", false, Value::CreateUnrefPtr (new SolidColorBrush("black")), Type::BRUSH);
 	DependencyProperty::Register (this, Type::INLINE, "FontWeight", false, new Value (TEXTBLOCK_FONT_WEIGHT), Type::INT32);
 	DependencyProperty::Register (this, Type::INLINE, "FontStyle", false, new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
 	DependencyProperty::Register (this, Type::INLINE, "FontStretch", false, new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
@@ -827,7 +827,7 @@ VisualBrush::GetVisual ()
 void
 VisualBrush::SetVisual (UIElement *value)
 {
-	SetValue (VisualBrush::VisualProperty, Value (value));
+	SetValue (VisualBrush::VisualProperty, Value::CreateUnrefPtr (value));
 }
 
 const char *
@@ -853,7 +853,7 @@ ImageBrush::GetImageSource ()
 void
 ImageBrush::SetImageSource (ImageSource *value)
 {
-	SetValue (ImageBrush::ImageSourceProperty, Value (value));
+	SetValue (ImageBrush::ImageSourceProperty, Value::CreateUnrefPtr (value));
 }
 
 double
@@ -1040,7 +1040,7 @@ GradientBrush::GetGradientStops ()
 void
 GradientBrush::SetGradientStops (GradientStopCollection *value)
 {
-	SetValue (GradientBrush::GradientStopsProperty, Value (value));
+	SetValue (GradientBrush::GradientStopsProperty, Value::CreateUnrefPtr (value));
 }
 
 ColorInterpolationMode
@@ -1066,7 +1066,7 @@ InkPresenter::GetStrokes ()
 void
 InkPresenter::SetStrokes (StrokeCollection *value)
 {
-	SetValue (InkPresenter::StrokesProperty, Value (value));
+	SetValue (InkPresenter::StrokesProperty, Value::CreateUnrefPtr (value));
 }
 
 Transform *
@@ -1079,7 +1079,7 @@ Brush::GetTransform ()
 void
 Brush::SetTransform (Transform *value)
 {
-	SetValue (Brush::TransformProperty, Value (value));
+	SetValue (Brush::TransformProperty, Value::CreateUnrefPtr (value));
 }
 
 Transform *
@@ -1092,7 +1092,7 @@ Brush::GetRelativeTransform ()
 void
 Brush::SetRelativeTransform (Transform *value)
 {
-	SetValue (Brush::RelativeTransformProperty, Value (value));
+	SetValue (Brush::RelativeTransformProperty, Value::CreateUnrefPtr (value));
 }
 
 double
@@ -1144,7 +1144,7 @@ Polyline::GetPoints ()
 void
 Polyline::SetPoints (PointCollection *value)
 {
-	SetValue (Polyline::PointsProperty, Value (value));
+	SetValue (Polyline::PointsProperty, Value::CreateUnrefPtr (value));
 }
 
 FillRule
@@ -1170,7 +1170,7 @@ Polygon::GetPoints ()
 void
 Polygon::SetPoints (PointCollection *value)
 {
-	SetValue (Polygon::PointsProperty, Value (value));
+	SetValue (Polygon::PointsProperty, Value::CreateUnrefPtr (value));
 }
 
 FillRule
@@ -1196,7 +1196,7 @@ Path::GetData ()
 void
 Path::SetData (Geometry *value)
 {
-	SetValue (Path::DataProperty, Value (value));
+	SetValue (Path::DataProperty, Value::CreateUnrefPtr (value));
 }
 
 double
@@ -1295,7 +1295,7 @@ MultiScaleImage::GetSource ()
 void
 MultiScaleImage::SetSource (MultiScaleTileSource *value)
 {
-	SetValue (MultiScaleImage::SourceProperty, Value (value));
+	SetValue (MultiScaleImage::SourceProperty, Value::CreateUnrefPtr (value));
 }
 
 bool
@@ -1355,7 +1355,7 @@ Image::GetSource ()
 void
 Image::SetSource (ImageSource *value)
 {
-	SetValue (Image::SourceProperty, Value (value));
+	SetValue (Image::SourceProperty, Value::CreateUnrefPtr (value));
 }
 
 DataTemplate *
@@ -1368,7 +1368,7 @@ ContentControl::GetContentTemplate ()
 void
 ContentControl::SetContentTemplate (DataTemplate *value)
 {
-	SetValue (ContentControl::ContentTemplateProperty, Value (value));
+	SetValue (ContentControl::ContentTemplateProperty, Value::CreateUnrefPtr (value));
 }
 
 bool
@@ -1424,7 +1424,7 @@ Grid::GetRowDefinitions ()
 void
 Grid::SetRowDefinitions (RowDefinitionCollection *value)
 {
-	SetValue (Grid::RowDefinitionsProperty, Value (value));
+	SetValue (Grid::RowDefinitionsProperty, Value::CreateUnrefPtr (value));
 }
 
 gint32
@@ -1467,7 +1467,7 @@ Grid::GetColumnDefinitions ()
 void
 Grid::SetColumnDefinitions (ColumnDefinitionCollection *value)
 {
-	SetValue (Grid::ColumnDefinitionsProperty, Value (value));
+	SetValue (Grid::ColumnDefinitionsProperty, Value::CreateUnrefPtr (value));
 }
 
 gint32
@@ -1617,7 +1617,7 @@ TextBlock::GetInlines ()
 void
 TextBlock::SetInlines (InlineCollection *value)
 {
-	SetValue (TextBlock::InlinesProperty, Value (value));
+	SetValue (TextBlock::InlinesProperty, Value::CreateUnrefPtr (value));
 }
 
 Brush *
@@ -1630,7 +1630,7 @@ TextBlock::GetForeground ()
 void
 TextBlock::SetForeground (Brush *value)
 {
-	SetValue (TextBlock::ForegroundProperty, Value (value));
+	SetValue (TextBlock::ForegroundProperty, Value::CreateUnrefPtr (value));
 }
 
 FontWeights
@@ -1788,7 +1788,7 @@ Popup::GetChild ()
 void
 Popup::SetChild (UIElement *value)
 {
-	SetValue (Popup::ChildProperty, Value (value));
+	SetValue (Popup::ChildProperty, Value::CreateUnrefPtr (value));
 }
 
 double
@@ -1907,7 +1907,7 @@ MediaElement::GetMarkers ()
 void
 MediaElement::SetMarkers (TimelineMarkerCollection *value)
 {
-	SetValue (MediaElement::MarkersProperty, Value (value));
+	SetValue (MediaElement::MarkersProperty, Value::CreateUnrefPtr (value));
 }
 
 bool
@@ -2098,7 +2098,7 @@ MediaElement::GetAttributes ()
 void
 MediaElement::SetAttributes (MediaAttributeCollection *value)
 {
-	SetValue (MediaElement::AttributesProperty, Value (value));
+	SetValue (MediaElement::AttributesProperty, Value::CreateUnrefPtr (value));
 }
 
 double
@@ -2137,7 +2137,7 @@ Shape::GetStroke ()
 void
 Shape::SetStroke (Brush *value)
 {
-	SetValue (Shape::StrokeProperty, Value (value));
+	SetValue (Shape::StrokeProperty, Value::CreateUnrefPtr (value));
 }
 
 double
@@ -2215,7 +2215,7 @@ Shape::GetStrokeDashArray ()
 void
 Shape::SetStrokeDashArray (DoubleCollection *value)
 {
-	SetValue (Shape::StrokeDashArrayProperty, Value (value));
+	SetValue (Shape::StrokeDashArrayProperty, Value::CreateUnrefPtr (value));
 }
 
 Stretch
@@ -2241,7 +2241,7 @@ Shape::GetFill ()
 void
 Shape::SetFill (Brush *value)
 {
-	SetValue (Shape::FillProperty, Value (value));
+	SetValue (Shape::FillProperty, Value::CreateUnrefPtr (value));
 }
 
 Stretch
@@ -2385,7 +2385,7 @@ Glyphs::GetFill ()
 void
 Glyphs::SetFill (Brush *value)
 {
-	SetValue (Glyphs::FillProperty, Value (value));
+	SetValue (Glyphs::FillProperty, Value::CreateUnrefPtr (value));
 }
 
 VerticalAlignment
@@ -2411,7 +2411,7 @@ Control::GetTemplate ()
 void
 Control::SetTemplate (ControlTemplate *value)
 {
-	SetValue (Control::TemplateProperty, Value (value));
+	SetValue (Control::TemplateProperty, Value::CreateUnrefPtr (value));
 }
 
 KeyboardNavigationMode
@@ -2503,7 +2503,7 @@ Control::GetForeground ()
 void
 Control::SetForeground (Brush *value)
 {
-	SetValue (Control::ForegroundProperty, Value (value));
+	SetValue (Control::ForegroundProperty, Value::CreateUnrefPtr (value));
 }
 
 FontWeights
@@ -2610,7 +2610,7 @@ Control::GetBorderBrush ()
 void
 Control::SetBorderBrush (Brush *value)
 {
-	SetValue (Control::BorderBrushProperty, Value (value));
+	SetValue (Control::BorderBrushProperty, Value::CreateUnrefPtr (value));
 }
 
 Brush *
@@ -2623,7 +2623,7 @@ Control::GetBackground ()
 void
 Control::SetBackground (Brush *value)
 {
-	SetValue (Control::BackgroundProperty, Value (value));
+	SetValue (Control::BackgroundProperty, Value::CreateUnrefPtr (value));
 }
 
 UIElementCollection *
@@ -2636,7 +2636,7 @@ Panel::GetChildren ()
 void
 Panel::SetChildren (UIElementCollection *value)
 {
-	SetValue (Panel::ChildrenProperty, Value (value));
+	SetValue (Panel::ChildrenProperty, Value::CreateUnrefPtr (value));
 }
 
 Brush *
@@ -2649,7 +2649,7 @@ Panel::GetBackground ()
 void
 Panel::SetBackground (Brush *value)
 {
-	SetValue (Panel::BackgroundProperty, Value (value));
+	SetValue (Panel::BackgroundProperty, Value::CreateUnrefPtr (value));
 }
 
 Thickness *
@@ -2690,7 +2690,7 @@ Border::GetChild ()
 void
 Border::SetChild (UIElement *value)
 {
-	SetValue (Border::ChildProperty, Value (value));
+	SetValue (Border::ChildProperty, Value::CreateUnrefPtr (value));
 }
 
 Thickness *
@@ -2717,7 +2717,7 @@ Border::GetBorderBrush ()
 void
 Border::SetBorderBrush (Brush *value)
 {
-	SetValue (Border::BorderBrushProperty, Value (value));
+	SetValue (Border::BorderBrushProperty, Value::CreateUnrefPtr (value));
 }
 
 Brush *
@@ -2730,7 +2730,7 @@ Border::GetBackground ()
 void
 Border::SetBackground (Brush *value)
 {
-	SetValue (Border::BackgroundProperty, Value (value));
+	SetValue (Border::BackgroundProperty, Value::CreateUnrefPtr (value));
 }
 
 TimelineCollection *
@@ -2743,7 +2743,7 @@ TimelineGroup::GetChildren ()
 void
 TimelineGroup::SetChildren (TimelineCollection *value)
 {
-	SetValue (TimelineGroup::ChildrenProperty, Value (value));
+	SetValue (TimelineGroup::ChildrenProperty, Value::CreateUnrefPtr (value));
 }
 
 const char *
@@ -2822,7 +2822,7 @@ PathGeometry::GetFigures ()
 void
 PathGeometry::SetFigures (PathFigureCollection *value)
 {
-	SetValue (PathGeometry::FiguresProperty, Value (value));
+	SetValue (PathGeometry::FiguresProperty, Value::CreateUnrefPtr (value));
 }
 
 Point *
@@ -2876,7 +2876,7 @@ GeometryGroup::GetChildren ()
 void
 GeometryGroup::SetChildren (GeometryCollection *value)
 {
-	SetValue (GeometryGroup::ChildrenProperty, Value (value));
+	SetValue (GeometryGroup::ChildrenProperty, Value::CreateUnrefPtr (value));
 }
 
 double
@@ -2955,7 +2955,7 @@ FrameworkElement::GetStyle ()
 void
 FrameworkElement::SetStyle (Style *value)
 {
-	SetValue (FrameworkElement::StyleProperty, Value (value));
+	SetValue (FrameworkElement::StyleProperty, Value::CreateUnrefPtr (value));
 }
 
 double
@@ -3190,7 +3190,7 @@ SplinePointKeyFrame::GetKeySpline ()
 void
 SplinePointKeyFrame::SetKeySpline (KeySpline *value)
 {
-	DependencyObject::SetValue (SplinePointKeyFrame::KeySplineProperty, Value (value));
+	DependencyObject::SetValue (SplinePointKeyFrame::KeySplineProperty, Value::CreateUnrefPtr (value));
 }
 
 EasingFunctionBase *
@@ -3203,7 +3203,7 @@ EasingPointKeyFrame::GetEasingFunction ()
 void
 EasingPointKeyFrame::SetEasingFunction (EasingFunctionBase *value)
 {
-	DependencyObject::SetValue (EasingPointKeyFrame::EasingFunctionProperty, Value (value));
+	DependencyObject::SetValue (EasingPointKeyFrame::EasingFunctionProperty, Value::CreateUnrefPtr (value));
 }
 
 PointKeyFrameCollection *
@@ -3216,7 +3216,7 @@ PointAnimationUsingKeyFrames::GetKeyFrames ()
 void
 PointAnimationUsingKeyFrames::SetKeyFrames (PointKeyFrameCollection *value)
 {
-	SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
+	SetValue (PointAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnrefPtr (value));
 }
 
 KeySpline *
@@ -3229,7 +3229,7 @@ SplineDoubleKeyFrame::GetKeySpline ()
 void
 SplineDoubleKeyFrame::SetKeySpline (KeySpline *value)
 {
-	DependencyObject::SetValue (SplineDoubleKeyFrame::KeySplineProperty, Value (value));
+	DependencyObject::SetValue (SplineDoubleKeyFrame::KeySplineProperty, Value::CreateUnrefPtr (value));
 }
 
 EasingFunctionBase *
@@ -3242,7 +3242,7 @@ EasingDoubleKeyFrame::GetEasingFunction ()
 void
 EasingDoubleKeyFrame::SetEasingFunction (EasingFunctionBase *value)
 {
-	DependencyObject::SetValue (EasingDoubleKeyFrame::EasingFunctionProperty, Value (value));
+	DependencyObject::SetValue (EasingDoubleKeyFrame::EasingFunctionProperty, Value::CreateUnrefPtr (value));
 }
 
 DoubleKeyFrameCollection *
@@ -3255,7 +3255,7 @@ DoubleAnimationUsingKeyFrames::GetKeyFrames ()
 void
 DoubleAnimationUsingKeyFrames::SetKeyFrames (DoubleKeyFrameCollection *value)
 {
-	SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
+	SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnrefPtr (value));
 }
 
 const char *
@@ -3411,7 +3411,7 @@ Style::GetSetters ()
 void
 Style::SetSetters (SetterBaseCollection *value)
 {
-	SetValue (Style::SettersProperty, Value (value));
+	SetValue (Style::SettersProperty, Value::CreateUnrefPtr (value));
 }
 
 bool
@@ -3437,7 +3437,7 @@ Stroke::GetStylusPoints ()
 void
 Stroke::SetStylusPoints (StylusPointCollection *value)
 {
-	SetValue (Stroke::StylusPointsProperty, Value (value));
+	SetValue (Stroke::StylusPointsProperty, Value::CreateUnrefPtr (value));
 }
 
 DrawingAttributes *
@@ -3450,7 +3450,7 @@ Stroke::GetDrawingAttributes ()
 void
 Stroke::SetDrawingAttributes (DrawingAttributes *value)
 {
-	SetValue (Stroke::DrawingAttributesProperty, Value (value));
+	SetValue (Stroke::DrawingAttributesProperty, Value::CreateUnrefPtr (value));
 }
 
 bool
@@ -3530,7 +3530,7 @@ PathFigure::GetSegments ()
 void
 PathFigure::SetSegments (PathSegmentCollection *value)
 {
-	SetValue (PathFigure::SegmentsProperty, Value (value));
+	SetValue (PathFigure::SegmentsProperty, Value::CreateUnrefPtr (value));
 }
 
 bool
@@ -3571,7 +3571,7 @@ void
 NameScope::SetNameScope (DependencyObject *obj, NameScope *value)
 {
 	if (!obj) return;
-	obj->SetValue (NameScope::NameScopeProperty, Value (value));
+	obj->SetValue (NameScope::NameScopeProperty, Value::CreateUnrefPtr (value));
 }
 
 gint32
@@ -3789,7 +3789,7 @@ Inline::GetForeground ()
 void
 Inline::SetForeground (Brush *value)
 {
-	SetValue (Inline::ForegroundProperty, Value (value));
+	SetValue (Inline::ForegroundProperty, Value::CreateUnrefPtr (value));
 }
 
 FontWeights
@@ -3935,7 +3935,7 @@ Geometry::GetTransform ()
 void
 Geometry::SetTransform (Transform *value)
 {
-	SetValue (Geometry::TransformProperty, Value (value));
+	SetValue (Geometry::TransformProperty, Value::CreateUnrefPtr (value));
 }
 
 double
@@ -4055,7 +4055,7 @@ Deployment::GetSurface ()
 void
 Deployment::SetSurface (Surface *value)
 {
-	SetValue (Deployment::SurfaceProperty, Value (value));
+	SetValue (Deployment::SurfaceProperty, Value::CreateUnrefPtr (value));
 }
 
 AssemblyPartCollection *
@@ -4068,7 +4068,7 @@ Deployment::GetParts ()
 void
 Deployment::SetParts (AssemblyPartCollection *value)
 {
-	SetValue (Deployment::PartsProperty, Value (value));
+	SetValue (Deployment::PartsProperty, Value::CreateUnrefPtr (value));
 }
 
 CrossDomainAccess
@@ -4173,7 +4173,7 @@ UIElement::GetTriggers ()
 void
 UIElement::SetTriggers (TriggerCollection *value)
 {
-	SetValue (UIElement::TriggersProperty, Value (value));
+	SetValue (UIElement::TriggersProperty, Value::CreateUnrefPtr (value));
 }
 
 ResourceDictionary *
@@ -4186,7 +4186,7 @@ UIElement::GetResources ()
 void
 UIElement::SetResources (ResourceDictionary *value)
 {
-	SetValue (UIElement::ResourcesProperty, Value (value));
+	SetValue (UIElement::ResourcesProperty, Value::CreateUnrefPtr (value));
 }
 
 Transform *
@@ -4199,7 +4199,7 @@ UIElement::GetRenderTransform ()
 void
 UIElement::SetRenderTransform (Transform *value)
 {
-	SetValue (UIElement::RenderTransformProperty, Value (value));
+	SetValue (UIElement::RenderTransformProperty, Value::CreateUnrefPtr (value));
 }
 
 Point *
@@ -4239,7 +4239,7 @@ UIElement::GetOpacityMask ()
 void
 UIElement::SetOpacityMask (Brush *value)
 {
-	SetValue (UIElement::OpacityMaskProperty, Value (value));
+	SetValue (UIElement::OpacityMaskProperty, Value::CreateUnrefPtr (value));
 }
 
 bool
@@ -4278,7 +4278,7 @@ UIElement::GetClip ()
 void
 UIElement::SetClip (Geometry *value)
 {
-	SetValue (UIElement::ClipProperty, Value (value));
+	SetValue (UIElement::ClipProperty, Value::CreateUnrefPtr (value));
 }
 
 EasingMode
@@ -4304,7 +4304,7 @@ Application::GetResources ()
 void
 Application::SetResources (ResourceDictionary *value)
 {
-	SetValue (Application::ResourcesProperty, Value (value));
+	SetValue (Application::ResourcesProperty, Value::CreateUnrefPtr (value));
 }
 
 KeySpline *
@@ -4317,7 +4317,7 @@ SplineColorKeyFrame::GetKeySpline ()
 void
 SplineColorKeyFrame::SetKeySpline (KeySpline *value)
 {
-	DependencyObject::SetValue (SplineColorKeyFrame::KeySplineProperty, Value (value));
+	DependencyObject::SetValue (SplineColorKeyFrame::KeySplineProperty, Value::CreateUnrefPtr (value));
 }
 
 EasingFunctionBase *
@@ -4330,7 +4330,7 @@ EasingColorKeyFrame::GetEasingFunction ()
 void
 EasingColorKeyFrame::SetEasingFunction (EasingFunctionBase *value)
 {
-	DependencyObject::SetValue (EasingColorKeyFrame::EasingFunctionProperty, Value (value));
+	DependencyObject::SetValue (EasingColorKeyFrame::EasingFunctionProperty, Value::CreateUnrefPtr (value));
 }
 
 ColorKeyFrameCollection *
@@ -4343,7 +4343,7 @@ ColorAnimationUsingKeyFrames::GetKeyFrames ()
 void
 ColorAnimationUsingKeyFrames::SetKeyFrames (ColorKeyFrameCollection *value)
 {
-	SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
+	SetValue (ColorAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnrefPtr (value));
 }
 
 Uri *
@@ -4409,7 +4409,7 @@ TransformGroup::GetChildren ()
 void
 TransformGroup::SetChildren (TransformCollection *value)
 {
-	SetValue (TransformGroup::ChildrenProperty, Value (value));
+	SetValue (TransformGroup::ChildrenProperty, Value::CreateUnrefPtr (value));
 }
 
 ScrollBarVisibility
@@ -4500,7 +4500,7 @@ TextBox::GetSelectionForeground ()
 void
 TextBox::SetSelectionForeground (Brush *value)
 {
-	SetValue (TextBox::SelectionForegroundProperty, Value (value));
+	SetValue (TextBox::SelectionForegroundProperty, Value::CreateUnrefPtr (value));
 }
 
 Brush *
@@ -4513,7 +4513,7 @@ TextBox::GetSelectionBackground ()
 void
 TextBox::SetSelectionBackground (Brush *value)
 {
-	SetValue (TextBox::SelectionBackgroundProperty, Value (value));
+	SetValue (TextBox::SelectionBackgroundProperty, Value::CreateUnrefPtr (value));
 }
 
 const char *
@@ -4820,7 +4820,7 @@ PolyQuadraticBezierSegment::GetPoints ()
 void
 PolyQuadraticBezierSegment::SetPoints (PointCollection *value)
 {
-	SetValue (PolyQuadraticBezierSegment::PointsProperty, Value (value));
+	SetValue (PolyQuadraticBezierSegment::PointsProperty, Value::CreateUnrefPtr (value));
 }
 
 PointCollection *
@@ -4833,7 +4833,7 @@ PolyLineSegment::GetPoints ()
 void
 PolyLineSegment::SetPoints (PointCollection *value)
 {
-	SetValue (PolyLineSegment::PointsProperty, Value (value));
+	SetValue (PolyLineSegment::PointsProperty, Value::CreateUnrefPtr (value));
 }
 
 PointCollection *
@@ -4846,7 +4846,7 @@ PolyBezierSegment::GetPoints ()
 void
 PolyBezierSegment::SetPoints (PointCollection *value)
 {
-	SetValue (PolyBezierSegment::PointsProperty, Value (value));
+	SetValue (PolyBezierSegment::PointsProperty, Value::CreateUnrefPtr (value));
 }
 
 Point *
@@ -4947,7 +4947,7 @@ PointAnimation::GetEasingFunction ()
 void
 PointAnimation::SetEasingFunction (EasingFunctionBase *value)
 {
-	SetValue (PointAnimation::EasingFunctionProperty, Value (value));
+	SetValue (PointAnimation::EasingFunctionProperty, Value::CreateUnrefPtr (value));
 }
 
 Point *
@@ -5008,7 +5008,7 @@ PasswordBox::GetSelectionForeground ()
 void
 PasswordBox::SetSelectionForeground (Brush *value)
 {
-	SetValue (PasswordBox::SelectionForegroundProperty, Value (value));
+	SetValue (PasswordBox::SelectionForegroundProperty, Value::CreateUnrefPtr (value));
 }
 
 Brush *
@@ -5021,7 +5021,7 @@ PasswordBox::GetSelectionBackground ()
 void
 PasswordBox::SetSelectionBackground (Brush *value)
 {
-	SetValue (PasswordBox::SelectionBackgroundProperty, Value (value));
+	SetValue (PasswordBox::SelectionBackgroundProperty, Value::CreateUnrefPtr (value));
 }
 
 const char *
@@ -5134,7 +5134,7 @@ ObjectAnimationUsingKeyFrames::GetKeyFrames ()
 void
 ObjectAnimationUsingKeyFrames::SetKeyFrames (ObjectKeyFrameCollection *value)
 {
-	SetValue (ObjectAnimationUsingKeyFrames::KeyFramesProperty, Value (value));
+	SetValue (ObjectAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnrefPtr (value));
 }
 
 Matrix *
@@ -5147,7 +5147,7 @@ MatrixTransform::GetMatrix ()
 void
 MatrixTransform::SetMatrix (Matrix *value)
 {
-	SetValue (MatrixTransform::MatrixProperty, Value (value));
+	SetValue (MatrixTransform::MatrixProperty, Value::CreateUnrefPtr (value));
 }
 
 Point *
@@ -5192,7 +5192,7 @@ void
 LayoutInformation::SetLayoutClip (DependencyObject *obj, Geometry *value)
 {
 	if (!obj) return;
-	obj->SetValue (LayoutInformation::LayoutClipProperty, Value (value));
+	obj->SetValue (LayoutInformation::LayoutClipProperty, Value::CreateUnrefPtr (value));
 }
 
 Size *
@@ -5266,7 +5266,7 @@ EventTrigger::GetActions ()
 void
 EventTrigger::SetActions (TriggerActionCollection *value)
 {
-	SetValue (EventTrigger::ActionsProperty, Value (value));
+	SetValue (EventTrigger::ActionsProperty, Value::CreateUnrefPtr (value));
 }
 
 double *
@@ -5367,7 +5367,7 @@ DoubleAnimation::GetEasingFunction ()
 void
 DoubleAnimation::SetEasingFunction (EasingFunctionBase *value)
 {
-	SetValue (DoubleAnimation::EasingFunctionProperty, Value (value));
+	SetValue (DoubleAnimation::EasingFunctionProperty, Value::CreateUnrefPtr (value));
 }
 
 double *
@@ -5517,7 +5517,7 @@ ColorAnimation::GetEasingFunction ()
 void
 ColorAnimation::SetEasingFunction (EasingFunctionBase *value)
 {
-	SetValue (ColorAnimation::EasingFunctionProperty, Value (value));
+	SetValue (ColorAnimation::EasingFunctionProperty, Value::CreateUnrefPtr (value));
 }
 
 Color *
@@ -5633,7 +5633,7 @@ BeginStoryboard::GetStoryboard ()
 void
 BeginStoryboard::SetStoryboard (Storyboard *value)
 {
-	SetValue (BeginStoryboard::StoryboardProperty, Value (value));
+	SetValue (BeginStoryboard::StoryboardProperty, Value::CreateUnrefPtr (value));
 }
 
 SweepDirection

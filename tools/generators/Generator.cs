@@ -767,7 +767,10 @@ class Generator {
 
 			if (is_full) {
 				if (has_default_value) {
-					text.Append ("new Value (");
+					if (default_value.StartsWith ("new "))
+						text.Append ("Value::CreateUnrefPtr (");
+					else
+						text.Append ("new Value (");
 					text.Append (default_value);
 					text.Append (")");
 				} else {
@@ -775,7 +778,10 @@ class Generator {
 				}
 			} else {
 				if (has_default_value) {
-					text.Append ("new Value (");
+					if (default_value.StartsWith ("new "))
+						text.Append ("Value::CreateUnrefPtr (");
+					else
+						text.Append ("new Value (");
 					text.Append (default_value);
 					text.Append (")");
 				}
@@ -1002,6 +1008,9 @@ class Generator {
 					}
 					else if ((value_str == null) || (!nullable_setter && prop_type.IsStruct)) {
 						text.AppendLine ("Value (*value));");
+					}
+					else if (prop_type.IsClass) {
+						text.AppendLine ("Value::CreateUnrefPtr (value));");
 					}
 					else {
 						text.AppendLine ("Value (value));");

@@ -1,3 +1,8 @@
+2009-06-15  Andreia Gaita  <avidigal@novell.com>
+
+	* Generator.cs: Use CreateUnrefPtr for DP registration when default
+	values are new object instances
+
 2009-06-02  Alan McGovern  <amcgovern@novell.com>
 
 	* TypeInfo.cs: ValueTypes should have TypeInfo.DefaultCtorVisible set
