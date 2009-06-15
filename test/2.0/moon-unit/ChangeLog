@@ -1,3 +1,8 @@
+2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: Add MoonlightBug
+	to a Loaded_styledChildOfNonStyledParent_styledSiblingInsertedBefore.
+
 2009-06-12  Jackson Harper  <jackson@ximian.com>
 
 	* misc/Parsing/PrimitiveTest.cs: Fixed this issue magicidently.

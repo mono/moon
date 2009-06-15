@@ -521,6 +521,7 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void Loaded_styledChildOfNonStyledParent_styledSiblingInsertedBefore ()
 		{
 			Canvas c = new Canvas ();
