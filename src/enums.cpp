@@ -183,6 +183,7 @@ static enum_map_t media_element_state_map [] = {
 	MAP_ENUM (MediaState, Opening),
 	MAP_ENUM (MediaState, Buffering),
 	MAP_ENUM (MediaState, Playing),
+	MAP_ENUM (MediaState, Paused),
 	MAP_ENUM (MediaState, Stopped),
 	MAP_ENUM (MediaState, Individualizing),
 	MAP_ENUM (MediaState, AcquiringLicense),
@@ -340,7 +341,7 @@ initialize_enums (void)
 
 	g_hash_table_insert (enum_map, (char *) "TabNavigation", keyboard_navigation_mode_map);
 
-	g_hash_table_insert (enum_map, (char *) "MediaElementState", media_element_state_map);
+	g_hash_table_insert (enum_map, (char *) "MediaState", media_element_state_map);
 
 	g_hash_table_insert (enum_map, (char *) "EasingMode", easing_mode_map);
 }

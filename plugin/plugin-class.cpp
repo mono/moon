@@ -2632,7 +2632,7 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 		} else if (prop->GetId () == MediaElement::CurrentStateProperty) {
 			// Javascript applications use strings, while managed use an enum
 			int enum_value = dob->GetValue (prop)->AsInt32 ();
-			const char *name = enums_int_to_str ("MediaElementState", enum_value);
+			const char *name = enums_int_to_str ("MediaState", enum_value);
 			string_to_npvariant (name, result);
 			return true;
 		} else {

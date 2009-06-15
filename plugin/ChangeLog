@@ -1,3 +1,8 @@
+2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: Update after MediaElementState -> MediaState 
+	name change.
+
 2009-06-13  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin.cpp|h: Move cross-domain application check earlier to
