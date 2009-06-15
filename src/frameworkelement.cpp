@@ -350,6 +350,70 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *
 	cairo_restore (cr);
 }
 
+// FIXME: This is not the fastest way of implementing this, decomposing the rectangle into
+// a series of points is probably going to be quite slow. It's a good first effort.
+void
+FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uielement_list)
+{
+	bool res = false;
+	if (!GetRenderVisible ())
+		return;
+
+	if (!GetHitTestVisible ())
+		return;
+		
+	if (bounds_with_children.height <= 0)
+		return;
+		
+	if (!bounds_with_children.IntersectsWith (r))
+		return;
+	
+	cairo_save (cr);
+	cairo_new_path (cr);
+	
+	if (GetClip ()) {
+		RenderClipPath (cr, true);
+		cairo_save (cr);
+		cairo_identity_matrix (cr);
+		
+		for (int i=r.x; i < r.x + r.width && !res; i++)
+			for (int j=r.y; j < r.y + r.height && !res; j++)
+				res = cairo_in_fill (cr, i, j);
+				
+		cairo_restore (cr);
+		if (!res) {
+			cairo_restore (cr);
+			return;
+		}
+	}
+
+	/* create our node and stick it on front */
+	List::Node *us = uielement_list->Prepend (new UIElementNode (this));
+
+	VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
+	while (UIElement *child = walker.Step ())
+		child->FindElementsInHostCoordinates (cr, r, uielement_list);
+
+	if (us == uielement_list->First ()) {
+		cairo_new_path (cr);
+		Region all(extents);
+		cairo_set_matrix (cr, &absolute_xform);
+		Render (cr, &all, true);
+		cairo_identity_matrix (cr);
+
+		res = false;
+		if (CanFindElement ()) {
+			for (int i= r.x; i < (r.x + r.width) && !res; i++)
+				for (int j= r.y; j < (r.y + r.height) && !res; j++)
+			    	res = cairo_in_fill (cr, i, j) || cairo_in_stroke (cr, i, j);
+		}
+		
+		if (!res)
+			uielement_list->Remove (us);
+	}
+	cairo_restore (cr);
+}
+
 void
 FrameworkElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 {

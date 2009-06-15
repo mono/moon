@@ -63,6 +63,7 @@ public:
 
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point P, List *uielement_list);
+	virtual void FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uielement_list);
 	
 	//virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);

@@ -1,3 +1,12 @@
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.cpp:
+	* frameworkelement.h:
+	* frameworkelement.cpp: Give an initial implementation of
+	  FindElementInHostCoordinates (UIElement, Rect) which treats
+	  the rect as a series of points and checks each one until a
+	  hit is found. Allows drt 280 to 
+
 2009-06-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* dependencyobject.cpp (Initialize): Initialize is_hydrated to
