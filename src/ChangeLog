@@ -1,5 +1,11 @@
 2009-06-15  Andreia Gaita  <avidigal@novell.com>
 
+	* deployment.cpp: (Reinitialize) AssemblyPartsCollection is reffed
+	inside SetParts, and since we don't store it anywhere else, drop a
+	ref after the call
+
+2009-06-15  Andreia Gaita  <avidigal@novell.com>
+
 	* dependencyproperty.cpp, animation.[h|cpp]: Fix animation storage so
 	it removes itself from the property list and gets deleted as soon as
 	possible, otherwise it will not only leak, but blow up once we start

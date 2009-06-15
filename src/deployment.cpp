@@ -376,7 +376,9 @@ void
 Deployment::Reinitialize ()
 {
 	downloaders = new List ();
-	SetParts (new AssemblyPartCollection ());
+	AssemblyPartCollection * parts = new AssemblyPartCollection ();
+	SetParts (parts);
+	parts->unref ();
 }
 
 void
