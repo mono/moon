@@ -1,3 +1,8 @@
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: We can hit an element in both stroke
+	  and fill.
+
 2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* playlist.cpp|h: When a media reports that it has been opened
