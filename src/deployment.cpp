@@ -335,8 +335,6 @@ Deployment::~Deployment()
 	g_hash_table_destroy (objects_alive);
 #endif
 
-	// FIXME: Deleting the types deletes the DPs and types, which could use us.  We need to move this somewhere
-	// delete types;
 }
 
 #if OBJECT_TRACKING
@@ -408,6 +406,10 @@ Deployment::Dispose ()
 		SetValue (NameScope::NameScopeProperty, NULL);
 
 	DependencyObject::Dispose ();
+	// FIXME: Deleting the types deletes the DPs and types, which could use us.  We need to move this somewhere
+	// UPDATE: moved...
+	types->Dispose ();
+
 }
 
 Types*

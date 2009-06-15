@@ -393,14 +393,24 @@ Types::Initialize ()
 	RegisterNativeProperties ();
 }
 
+void
+Types::Dispose ()
+{
+	//printf ("Types::Dispose (). this: %p\n", this);
+	for (int i = 0; i < properties.GetCount (); i++) {
+		delete (DependencyProperty *) properties [i];
+	}
+
+#if !OBJECT_TRACKING
+	//printf ("Types::Dispose: killing types\n");
+//	for (int i = 0; i < types.GetCount (); i++)
+//		delete (Type *) types [i];
+#endif
+}
+
 Types::~Types ()
 {
-	//printf ("Types::~Types (). this: %p\n", this);
-	for (int i = 0; i < properties.GetCount (); i++)
-		delete (DependencyProperty *) properties [i];
-	
-	for (int i = 0; i < types.GetCount (); i++)
-		delete (Type *) types [i];
+	Dispose ();
 }
 
 void

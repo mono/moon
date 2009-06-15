@@ -1,5 +1,12 @@
 2009-06-15  Andreia Gaita  <avidigal@novell.com>
 
+	* type.[h|cpp]: Dispose method added, to help separate between clearing
+	all the DPs and actually deleting the types. For now, just clears the
+	DPs and doesn't touch the type list.
+	* deployment.cpp: (Dispose) types are disposed here, for now.
+
+2009-06-15  Andreia Gaita  <avidigal@novell.com>
+
 	* dependencyproperty.g.cpp: regenerated
 
 2009-06-15  Jackson Harper  <jackson@ximian.com>

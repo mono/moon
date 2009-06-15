@@ -452,6 +452,7 @@ public:
 	bool IsAssignableFrom (Type::Kind destination, Type::Kind type);
 
 	void Initialize ();
+	void Dispose ();
 };
 
 G_BEGIN_DECLS
