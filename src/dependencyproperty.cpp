@@ -43,7 +43,7 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 AnimationStorage*
 DependencyProperty::GetAnimationStorageFor (DependencyObject *obj)
 {
-	if (! storage_hash)
+	if (!storage_hash)
 		return NULL;
 
 	return (AnimationStorage *) g_hash_table_lookup (storage_hash, obj);
@@ -53,7 +53,7 @@ AnimationStorage*
 DependencyProperty::AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage)
 {
 	// Create hash on first access to save some mem
-	if (! storage_hash)
+	if (!storage_hash)
 		storage_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
 
 	AnimationStorage *attached_storage = (AnimationStorage *) g_hash_table_lookup (storage_hash, obj);
@@ -67,7 +67,7 @@ DependencyProperty::AttachAnimationStorage (DependencyObject *obj, AnimationStor
 void
 DependencyProperty::DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage)
 {
-	if (! storage_hash)
+	if (!storage_hash)
 		return;
 
 	if (g_hash_table_lookup (storage_hash, obj) == storage)
@@ -78,9 +78,7 @@ static void
 detach_target_func (DependencyObject *obj, AnimationStorage *storage, gpointer unused)
 {
 	storage->DetachTarget ();
-	if (storage->IsFloating ()) {
-		delete storage;
-	}
+	delete storage;
 }
 
 DependencyProperty::~DependencyProperty ()

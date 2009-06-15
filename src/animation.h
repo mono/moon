@@ -960,13 +960,11 @@ public:
 	void ReAttachUpdateHandler ();
 	void DetachTarget ();
 	void FlagAsNonResetable ();
-	void Float ();
-	bool IsFloating () { return floating; };
 	bool IsLonely () { return (targetobj == NULL); };
 	bool IsCurrentStorage ();
 	Value* GetResetValue ();
 	Value* GetStopValue (void);
-	void DetachFromPrevStorage (void);
+	void DetachFromProperty (void);
 
 private:
 	void TargetObjectDestroyed ();
@@ -975,6 +973,9 @@ private:
 	void UpdatePropertyValue ();
 	static void update_property_value (EventObject *sender, EventArgs *calldata, gpointer data);
 
+	void AttachTargetHandler ();
+	void DetachTargetHandler ();
+
 	AnimationClock *clock;
 	Animation* timeline;
 	DependencyObject *targetobj;
@@ -982,7 +983,6 @@ private:
 	Value *baseValue;
 	Value *stopValue;
 	bool nonResetableFlag;
-	bool floating;
 	bool wasAttached;
 };
 
@@ -994,6 +994,7 @@ public:
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
 
 	bool HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
+	void DetachFromStorage ();
 
 	virtual void Stop ();
 	virtual void Begin (TimeSpan parentTime);

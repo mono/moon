@@ -1,5 +1,13 @@
 2009-06-15  Andreia Gaita  <avidigal@novell.com>
 
+	* dependencyproperty.cpp, animation.[h|cpp]: Fix animation storage so
+	it removes itself from the property list and gets deleted as soon as
+	possible, otherwise it will not only leak, but blow up once we start
+	clearing DPs.
+	Floating status is gone.
+
+2009-06-15  Andreia Gaita  <avidigal@novell.com>
+
 	* value.[h.in|cpp], debug.h, runtime.[h|cpp]: LOG_VALUE macro added,
 	and some extra debugging output for refcounting.
 	* value.h: regen

@@ -37,19 +37,39 @@
 KeyTime KeyTime::Paced (KeyTime::PACED);
 KeyTime KeyTime::Uniform (KeyTime::UNIFORM);
 
+/*
+AnimationStorage sits between an DependencyObject and a DependencyProperty.
+The AnimationClock creates a storage for DO, and the storage attaches itself to
+a DP. The DP keeps a list (hashtable) keyed by the DO pointer.
+
+The storage can be deleted when
+- The DP when it's clearing its list of storage objects. This happens when the DP
+is destroyed.
+- The AnimationClock is destroyed.
+- A new storage is created for the same dependencyobject. In this case, the previous
+storage that was on the list for the DO is replaced.
+
+This means the storage can disappear but both the DependencyProperty and the
+DependencyObject (and AnimationClock) that it referenced might still be
+alive. It is very important that when the storage is removed, the
+corresponding references to it be cleared, too - this means removing it
+from the DP list when it is deleted by the clock, or removing it from the clock
+when it's deleted by the DP, as well as clearing any event handlers that could
+still fire up after it's dead.
+*/
+
 
 AnimationStorage::AnimationStorage (AnimationClock *clock, Animation *timeline,
 				    DependencyObject *targetobj, DependencyProperty *targetprop)
 {
 	this->nonResetableFlag = false;
-	this->floating = false;
 	this->clock = clock;
 	this->timeline = timeline;
 	this->targetobj = targetobj;
 	this->targetprop = targetprop;
 
 	clock->AddHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
-	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
+	AttachTargetHandler ();
 
 	AnimationStorage *prev_storage = targetprop->AttachAnimationStorage (targetobj, this);
 
@@ -59,8 +79,7 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation *timeline,
 		Value *v = prev_storage->GetResetValue ();
 		stopValue = new Value (*v);
 		prev_storage->FlagAsNonResetable ();
-		if (prev_storage->IsFloating ())
-			delete prev_storage;
+		delete prev_storage;
 	} else {
 		stopValue = NULL;
 	}
@@ -75,10 +94,8 @@ AnimationStorage::target_object_destroyed (EventObject *, EventArgs *, gpointer 
 void
 AnimationStorage::TargetObjectDestroyed ()
 {
-	if (floating)
-		return;
-
-	targetprop->DetachAnimationStorage (targetobj, this);
+	if (targetprop != NULL)
+		targetprop->DetachAnimationStorage (targetobj, this);
 	targetobj = NULL;
 	DetachUpdateHandler ();
 }
@@ -152,10 +169,11 @@ AnimationStorage::ResetPropertyValue ()
 }
 
 void 
-AnimationStorage::DetachFromPrevStorage (void)
+AnimationStorage::DetachFromProperty (void)
 {
 	if (targetobj != NULL && targetprop != NULL) {
 		targetprop->DetachAnimationStorage (targetobj, this);
+		targetprop = NULL;
 	}
 }
 
@@ -164,7 +182,7 @@ AnimationStorage::DetachTarget ()
 {
 	DetachUpdateHandler ();
 	if (targetobj) {
-		targetobj->RemoveHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
+		DetachTargetHandler ();
 		targetobj = NULL;
 	}
 }
@@ -172,28 +190,29 @@ AnimationStorage::DetachTarget ()
 void
 AnimationStorage::DetachUpdateHandler ()
 {
-	if (clock != NULL) {
+	if (clock != NULL)
 		clock->RemoveHandler (Clock::CurrentTimeInvalidatedEvent, update_property_value, this);
-	}
 }
 
 void
 AnimationStorage::ReAttachUpdateHandler ()
 {
-	if (clock != NULL) {
+	if (clock != NULL)
 		clock->AddHandler (Clock::CurrentTimeInvalidatedEvent, update_property_value, this);
-	}
 }
 
 void
-AnimationStorage::Float ()
+AnimationStorage::AttachTargetHandler ()
 {
-	DetachUpdateHandler ();
-	DetachTarget ();
+	if (!targetobj) return;
+	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
+}
 
-	clock = NULL;
-	timeline = NULL;
-	targetprop = NULL;
+void
+AnimationStorage::DetachTargetHandler ()
+{
+	if (!targetobj) return;
+	targetobj->RemoveHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
 }
 
 Value*
@@ -218,10 +237,14 @@ AnimationStorage::~AnimationStorage ()
 	}
 
 	DetachUpdateHandler ();
-	
+
 	if (targetobj != NULL) {
-		targetobj->RemoveHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
-		targetprop->DetachAnimationStorage (targetobj, this);
+		DetachTargetHandler ();
+		DetachFromProperty ();
+	}
+
+	if (clock != NULL) {
+		clock->DetachFromStorage ();
 	}
 }
 
@@ -278,7 +301,7 @@ AnimationClock::Stop ()
 		storage->ResetPropertyValue ();
 		storage->DetachUpdateHandler ();
 		if (storage->IsCurrentStorage ())
-			storage->DetachFromPrevStorage ();
+			storage->DetachFromProperty ();
 	}
 
 	Clock::Stop ();
@@ -301,15 +324,18 @@ AnimationClock::~AnimationClock ()
 				delete storage;
 			else {
 				if (storage->IsCurrentStorage ()) {
-					// FIXME: Why don't we delete storage here? Sadly, we are leaking it on channel9
-					// ANSWER: The pointer to the storage is still held by the hash table in the DependencyProperty
-					// It gets destroyed next time sombody attaches an animation to the property. 
-					storage->Float ();
-				} else
+					storage->DetachFromProperty ();
 					delete storage;
+				}
 			}
 		}
 	}
+}
+
+void
+AnimationClock::DetachFromStorage ()
+{
+	storage = NULL;
 }
 
 Clock*
