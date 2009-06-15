@@ -32,6 +32,7 @@
 #include "mono/metadata/object.h"
 #include "fontsource.h"
 #include "utils.h"
+#include "debug.h"
 
 /**
  * Value implementation
@@ -43,6 +44,7 @@ Value*
 Value::CreateUnrefPtr (EventObject* dob)
 {
 	Value *result = new Value (dob);
+	LOG_VALUE ("unref Value [%p] %s\n", result, result->GetName());
 	if (dob)
 		dob->unref ();
 	return result;
@@ -52,6 +54,7 @@ Value
 Value::CreateUnref (EventObject* dob)
 {
 	Value result (dob);
+	LOG_VALUE ("unref Value [%p] %s\n", &result, result.GetName());
 	dob->unref ();
 	return result;
 }
@@ -166,6 +169,7 @@ Value::Value (EventObject* obj)
 			return;
 		}
 		k = obj->GetObjectType ();
+		LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
 		obj->ref ();
 		SetIsNull (false);
 	}
@@ -408,8 +412,10 @@ Value::Copy (const Value& v)
 		}
 		break;
 	default:
-		if (Is (Type::EVENTOBJECT) && u.dependency_object)
+		if (Is (Type::EVENTOBJECT) && u.dependency_object) {
+			LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
 			u.dependency_object->ref ();
+		}
 		break;
 	}
 }
@@ -477,8 +483,10 @@ Value::FreeValue ()
 		g_free (u.corner);
 		break;
 	default:
-		if (Is (Type::EVENTOBJECT) && u.dependency_object)
+		if (Is (Type::EVENTOBJECT) && u.dependency_object) {
+			LOG_VALUE ("unref Value [%p] %s\n", this, GetName());
 			u.dependency_object->unref ();
+		}
 	}
 }
 
@@ -642,3 +650,54 @@ Value::~Value ()
 	FreeValue ();
 }
 
+#if DEBUG
+char *
+Value::GetName ()
+{
+	GString *str = g_string_new ("");
+
+	switch (k) {
+	case Type::DOUBLE:
+		g_string_append_printf (str, "DOUBLE");
+		break;
+	case Type::STRING:
+		g_string_append_printf (str, "STRING");
+		break;
+	case Type::COLOR:
+		g_string_append_printf (str, "COLOR");
+		break;
+	case Type::POINT:
+		g_string_append_printf (str, "POINT");
+		break;
+	case Type::SIZE:
+		g_string_append_printf (str, "SIZE");
+		break;
+	case Type::RECT:
+		g_string_append_printf (str, "RECT");
+		break;
+	case Type::REPEATBEHAVIOR:
+		g_string_append_printf (str, "REPEATBEHAVIOR");
+		break;
+	case Type::THICKNESS:
+		g_string_append_printf (str, "THICKNESS");
+		break;
+	case Type::DURATION:
+		g_string_append_printf (str, "DURATION");
+		break;
+	case Type::KEYTIME:
+		g_string_append_printf (str, "KEYTIME");
+		break;
+	case Type::GRIDLENGTH:
+		g_string_append_printf (str, "GRIDLENGTH");
+		break;
+	default:
+		if (u.dependency_object)
+			g_string_append_printf (str, "[%s] [%p] %d", u.dependency_object->GetTypeName (), u.dependency_object, u.dependency_object->GetRefCount ());
+		else
+			g_string_append_printf (str, "UnknownType");
+		break;
+	}
+
+	return g_string_free (str, FALSE);
+}
+#endif

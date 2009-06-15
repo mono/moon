@@ -709,6 +709,7 @@ public:
 	explicit Value (gint64 i) {};
 
 	void Copy (const Value& other);
+	char *GetName ();
 };
 
 G_BEGIN_DECLS

@@ -161,6 +161,7 @@ static struct env_options debugs[] = {
 	{ "deployment",        RUNTIME_DEBUG_DEPLOYMENT,       true },
 	{ "mp3",               RUNTIME_DEBUG_MP3,              true },
 	{ "asf",               RUNTIME_DEBUG_ASF,              true },
+	{ "value",             RUNTIME_DEBUG_VALUE,            true },
 	{ NULL, 0, false }
 };
 

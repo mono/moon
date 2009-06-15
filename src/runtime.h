@@ -112,6 +112,7 @@ enum RuntimeDebugFlags {
 	RUNTIME_DEBUG_DEPLOYMENT        = 1 << 24,
 	RUNTIME_DEBUG_MSI               = 1 << 25,
 	RUNTIME_DEBUG_MP3               = 1 << 26,
+	RUNTIME_DEBUG_VALUE             = 1 << 27,
 };
 
 enum RuntimeDebugFlagsExtra {
