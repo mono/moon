@@ -1,3 +1,8 @@
+2009-06-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (Initialize): Initialize is_hydrated to
+	false.
+
 2009-06-15  Andreia Gaita  <avidigal@novell.com>
 
 	* type.[h|cpp]: Dispose method added, to help separate between clearing

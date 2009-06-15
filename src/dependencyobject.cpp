@@ -1743,6 +1743,7 @@ DependencyObject::Initialize ()
 	local_values = g_hash_table_new (g_direct_hash, g_direct_equal);
 	listener_list = NULL;
 	parent = NULL;
+	is_hydrated = false;
 	is_frozen = false;
 }
 
