@@ -1,5 +1,10 @@
 2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.cpp: same_site_of_origin: add nre protection. Makes
+	moonlight test #408 not crash.
+
+2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin-class.cpp: Update after MediaElementState -> MediaState 
 	name change.
 
