@@ -1,3 +1,7 @@
+2009-06-15  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Reorder errors.
+
 2009-06-15  Andreia Gaita  <avidigal@novell.com>
 
 	* deployment.cpp: (Reinitialize) AssemblyPartsCollection is reffed

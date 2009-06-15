@@ -1944,11 +1944,11 @@ start_doctype_handler (void *data,
 	if (p->InBufferingMode ())
 		return;
 
-	if (doctype_name)
-		return parser_error (p, NULL, NULL, 7016, "incorrect document syntax.");
-
 	if (sysid)
 		return parser_error (p, NULL, NULL, 7050, "DTD was found but is prohibited");
+	
+	if (doctype_name)
+		return parser_error (p, NULL, NULL, 7016, "incorrect document syntax.");
 }
 
 static void
