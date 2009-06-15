@@ -341,7 +341,7 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *
 		cairo_identity_matrix (cr);
 
 		if (!CanFindElement () || 
-		    !(cairo_in_fill (cr, host.x, host.y) || cairo_in_stroke (cr, host.x, host.y)))
+		    !(cairo_in_fill (cr, host.x, host.y)))
 				uielement_list->Remove (us);
 	}
 	cairo_restore (cr);

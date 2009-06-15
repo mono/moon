@@ -1,5 +1,10 @@
 2009-06-15  Alan McGovern  <amcgovern@novell.com>
 
+	* frameworkelement.cpp: Back that change out as it causes some
+	  regressions in the moon-unit tests.
+
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
 	* frameworkelement.cpp: We can hit an element in both stroke
 	  and fill.
 
