@@ -1,5 +1,11 @@
 2009-06-15  Alan McGovern  <amcgovern@novell.com>
 
+	* frameworkelement.cpp: Objects can be hit as long as their
+	  height as greater than zero and the point is in the fill or
+	  stroke.
+
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
 	* frameworkelement.cpp: Back that change out as it causes some
 	  regressions in the moon-unit tests.
 

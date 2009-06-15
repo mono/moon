@@ -310,6 +310,9 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *
 
 	if (!GetHitTestVisible ())
 		return;
+		
+	if (bounds_with_children.height <= 0)
+		return;
 	
 	cairo_save (cr);
 	cairo_new_path (cr);
@@ -341,7 +344,7 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *
 		cairo_identity_matrix (cr);
 
 		if (!CanFindElement () || 
-		    !(cairo_in_fill (cr, host.x, host.y)))
+		    !(cairo_in_fill (cr, host.x, host.y) || cairo_in_stroke (cr, host.x, host.y)))
 				uielement_list->Remove (us);
 	}
 	cairo_restore (cr);

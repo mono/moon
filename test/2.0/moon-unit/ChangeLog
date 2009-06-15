@@ -1,3 +1,10 @@
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Fix one corner
+	  case, mark two others as corner cases and create a new test
+	  from one of the corner cases which tests for the same thing
+	  but less strictly.
+
 2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows/FrameworkElementTest.cs: Add MoonlightBug

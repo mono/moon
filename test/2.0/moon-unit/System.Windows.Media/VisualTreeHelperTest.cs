@@ -315,7 +315,6 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("CornerCase")]
 		public void HitTest8()
 		{
 			Root.Width = 0;
@@ -683,6 +682,7 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("Corner case - cairo_in_stroke returns true for ~1 pixel outside the border")]
 		public void HitTest27()
 		{
 			Root.Children.Add(new TestControl());
@@ -695,6 +695,25 @@ namespace MoonTest.System.Windows.Media
 				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(91, 100), Root));
 				Assert.AreEqual(4, hits.Count, "#3");
 				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(89, 100), Root));
+				Assert.AreEqual(0, hits.Count, "#4");
+			});
+		}
+					
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest27b()
+		{
+			// Same test as 27 except we hittest 2 pixels outside the border instead of 1
+			Root.Children.Add(new TestControl());
+			
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(102, 102), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(100, 100), Root));
+				Assert.AreEqual(4, hits.Count, "#2");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(91, 100), Root));
+				Assert.AreEqual(4, hits.Count, "#3");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(88, 100), Root));
 				Assert.AreEqual(0, hits.Count, "#4");
 			});
 		}
@@ -766,6 +785,7 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("Corner case - cairo_in_stroke returns true for ~1 pixel outside the border")]
 		public void HitTest30b()
 		{
 			Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
