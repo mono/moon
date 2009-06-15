@@ -40,6 +40,7 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 	VERIFY_MAIN_THREAD;
 	
 	element = el;
+	element->ref ();
 
 	video_stream = NULL;
 	surface = NULL;
@@ -58,7 +59,7 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 MediaPlayer::~MediaPlayer ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::~MediaPlayer (), id=%i\n", GET_OBJ_ID (this));
-	
+	element->unref ();
 	VERIFY_MAIN_THREAD;
 }
 

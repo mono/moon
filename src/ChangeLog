@@ -1,3 +1,9 @@
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
+	* mediaplayer.cpp: The MediaPlayer should ref the MediaElement
+	  it's attached to otherwise it can access the element after
+	  the element has been destroyed. Stops 238 crashing.
+
 2009-06-14  Andreia Gaita  <avidigal@novell.com>
 
 	* value.[h.in|cpp]: (CreateUnref*) Accept EventObject instead of DPs, since 
