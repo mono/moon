@@ -251,8 +251,8 @@ class PluginInstance
 	void UpdateSourceByReference (const char *value);
 	void LoadXAML ();
 	void SetPageURL ();
-	void RegisterEvents ();
 	char* GetPageLocation ();
+	void CrossDomainApplicationCheck (const char *source);
 	
 	void TryLoadBridge (const char *prefix);
 	

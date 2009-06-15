@@ -838,6 +838,21 @@ PluginInstance::ReportCache (Surface *surface, long bytes, void *user_data)
 	g_free (msg);
 }
 
+static void
+register_event (NPP instance, const char *event_name, char *script_name, NPObject *npobj)
+{
+	if (!script_name)
+		return;
+
+	char *retval = NPN_strdup (script_name);
+	NPVariant npvalue;
+
+	STRINGZ_TO_NPVARIANT (retval, npvalue);
+	NPIdentifier identifier = NPN_GetStringIdentifier (event_name);
+	NPN_SetProperty (instance, npobj, identifier, &npvalue);
+	NPN_MemFree (retval);
+}
+
 void
 PluginInstance::CreateWindow ()
 {
@@ -861,19 +876,12 @@ PluginInstance::CreateWindow ()
 		//LoadXAML ();
 	}
 
-	char* page_url = GetPageLocation ();
-	// note: source might not be an absolute URL at this stage - but that only indicates that it's relative to the page url
-	cross_domain_app = !same_site_of_origin (page_url, source);
-	g_free (page_url);
-
-	// if the application did not specify 'enablehtmlaccess' then we use its default value
-	// which is TRUE for same-site applications and FALSE for cross-domain applications
-	if (default_enable_html_access)
-		enable_html_access = !cross_domain_app;
-
-	// events notifications are not sent for cross-domain applications
-	if (!cross_domain_app)
-		RegisterEvents ();
+	MoonlightScriptControlObject *root = GetRootObject ();
+	register_event (instance, "onSourceDownloadProgressChanged", onSourceDownloadProgressChanged, root);
+	register_event (instance, "onSourceDownloadCompleted", onSourceDownloadCompleted, root);
+	register_event (instance, "onError", onError, root);
+	register_event (instance, "onResize", onResize, root->content);
+	register_event (instance, "onLoad", onLoad, root);
 
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);
@@ -924,61 +932,6 @@ PluginInstance::CreateWindow ()
 		gtk_container_add (GTK_CONTAINER (container), ((MoonWindowGtk*)moon_window)->GetWidget());
 		//display = gdk_drawable_get_display (surface->GetWidget()->window);
 		gtk_widget_show_all (container);
-	}
-}
-
-void
-PluginInstance::RegisterEvents ()
-{
-	if (onSourceDownloadProgressChanged != NULL) {
-		char *retval = NPN_strdup (onSourceDownloadProgressChanged);
-		NPVariant npvalue;
-
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onSourceDownloadProgressChanged");
-		NPN_SetProperty (instance, GetRootObject (), 
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
-	}
-	if (onSourceDownloadCompleted != NULL) {
-		char *retval = NPN_strdup (onSourceDownloadCompleted);
-		NPVariant npvalue;
-
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onSourceDownloadCompleted");
-		NPN_SetProperty (instance, GetRootObject (), 
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
-	}
-	if (onError != NULL) {
-		char *retval = NPN_strdup (onError);
-		NPVariant npvalue;
-
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onError");
-		NPN_SetProperty (instance, GetRootObject (), 
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
-	}
-	if (onResize != NULL) {
-		char *retval = NPN_strdup (onResize);
-		NPVariant npvalue;
-
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onResize");
-		NPN_SetProperty (instance, GetRootObject ()->content,
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
-	}
-	if (onLoad != NULL) {
-		char *retval = NPN_strdup (onLoad);
-		NPVariant npvalue;
-
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onLoad");
-		NPN_SetProperty (instance, GetRootObject (), 
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
 	}
 }
 
@@ -1397,6 +1350,20 @@ PluginInstance::Evaluate (const char *code)
 	return (void*)res;
 }
 
+void
+PluginInstance::CrossDomainApplicationCheck (const char *source)
+{
+	char* page_url = GetPageLocation ();
+	// note: source might not be an absolute URL at this stage - but that only indicates that it's relative to the page url
+	cross_domain_app = !same_site_of_origin (page_url, source);
+	g_free (page_url);
+
+	// if the application did not specify 'enablehtmlaccess' then we use its default value
+	// which is TRUE for same-site applications and FALSE for cross-domain applications
+	if (default_enable_html_access)
+		enable_html_access = !cross_domain_app;
+}
+
 static bool
 is_xap (const char *path)
 {
@@ -1422,6 +1389,8 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		delete xaml_loader;
 		xaml_loader = NULL;
 		
+		CrossDomainApplicationCheck (stream->url);
+
 		Uri *uri = new Uri ();
 		
 		GetSurface ()->EmitSourceDownloadCompleted ();

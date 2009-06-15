@@ -1,3 +1,12 @@
+2009-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp|h: Move cross-domain application check to it's own
+	method. Call it once we download the source (it could be later
+	than anticipated). This fix sites using custom scripts like 
+	ASP.NET <asp:Silverlight>
+	* plugin-class.cpp: Don't emit javascript events for cross
+	domain applications.
+
 2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: same_site_of_origin: add nre protection. Makes
