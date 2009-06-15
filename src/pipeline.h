@@ -681,6 +681,7 @@ public:
 	bool IsDemuxed () { return (((MediaFrameState) state) & MediaFrameDemuxed) == MediaFrameDemuxed; }
 	bool IsConverted () { return (((MediaFrameState) state) & MediaFrameConverted) == MediaFrameConverted; }
 	bool IsPlanar () { return (((MediaFrameState) state) & MediaFramePlanar) == MediaFramePlanar; }
+	/* @GenerateCBinding */
 	bool IsKeyFrame () { return (((MediaFrameState) state) & MediaFrameKeyFrame) == MediaFrameKeyFrame; }
 	bool IsMarker () { return (((MediaFrameState) state) & MediaFrameMarker) == MediaFrameMarker; }
 	

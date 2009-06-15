@@ -1,5 +1,11 @@
 2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.h: Expose MediaFrame::IsKeyFrame to C.
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* enums.cpp: Rename MediaElementState -> MediaState. Add 'Paused'
 	to the enum->str conversion table.
 
