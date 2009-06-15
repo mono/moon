@@ -13,7 +13,7 @@
 #ifndef __TEXTBOX_H__
 #define __TEXTBOX_H__
 
-#include <glib.h>
+#include <gtk/gtk.h>
 #include <cairo.h>
 
 #include "fontsource.h"
