@@ -104,9 +104,11 @@ private:
 	bool play_when_available;
 	Playlist *parent;
 	Media *media;
+	bool opened; // if OpenCompleted event has been received
 
 	void Init (Playlist *parent);
-
+	void OpenMediaPlayer ();
+	
 protected:
 	PlaylistEntry (Type::Kind kind);
 	PlaylistEntry (Type::Kind kind, Playlist *parent);

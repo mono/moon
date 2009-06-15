@@ -801,8 +801,10 @@ MmsSource::ReportStreamChange (gint32 reason)
 	g_return_if_fail (root != NULL);
 		
 	Lock ();
-	if (current != NULL)
+	if (current != NULL) {
+		current->NotifyFinished ();
 		current->unref ();
+	}
 		
 	entry_media = new Media (root);
 	current = new MmsPlaylistEntry (entry_media, this);
@@ -864,8 +866,9 @@ MmsSource::NotifyFinished (guint32 reason)
 		// The server has finished streaming the current playlist entry. Other playlist
 		// entries still remain to be streamed. The server will transmit a stream change packet
 		// when it switches to the next entry.
-		
-		// do nothing
+		MmsPlaylistEntry *entry = GetCurrentReffed ();
+		entry->NotifyFinished ();
+		entry->unref ();
 	} else {
 		// ?
 	}
@@ -1048,6 +1051,12 @@ MmsPlaylistEntry::Dispose ()
 		demux->unref ();
 	
 	IMediaSource::Dispose ();
+}
+
+void
+MmsPlaylistEntry::NotifyFinished ()
+{
+	finished = true;
 }
 
 void

@@ -480,10 +480,10 @@ public:
 	/* @GenerateCBinding */
 	void SetDuration (guint64 value) { duration = value; }
 
-	bool GetInputEnded () { return input_ended; }
-	void SetInputEnded (bool value) { input_ended = value; }
-	bool GetOutputEnded () { return output_ended; }
-	void SetOutputEnded (bool value) { output_ended = value; }
+	bool GetInputEnded ();
+	void SetInputEnded (bool value);
+	bool GetOutputEnded ();
+	void SetOutputEnded (bool value);
 	
 	IMediaDemuxer *GetDemuxer ();
 	

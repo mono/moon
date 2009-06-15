@@ -2128,6 +2128,32 @@ IMediaStream::SetDecoder (IMediaDecoder *value)
 		decoder->ref ();
 }
 
+bool
+IMediaStream::GetOutputEnded ()
+{
+	return output_ended;
+}
+
+void
+IMediaStream::SetOutputEnded (bool value)
+{
+	printf ("%s::SetOutputEnded (%i)\n", GetTypeName (), value);
+	output_ended = value;
+}
+
+bool
+IMediaStream::GetInputEnded ()
+{
+	return input_ended;
+}
+
+void
+IMediaStream::SetInputEnded (bool value)
+{
+	printf ("%s::SetInputEnded (%i)\n", GetTypeName (), value);
+	input_ended = value;
+}
+
 guint64
 IMediaStream::GetBufferedSize ()
 {

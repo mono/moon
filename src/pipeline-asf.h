@@ -190,6 +190,8 @@ public:
 	//  0 - stream not selected
 	//  1 - stream selected
 	void GetSelectedStreams (gint64 max_bitrate, gint8 streams [128]); // main thread only
+	
+	void NotifyFinished (); // called by the MmsSource when we get the END packet for this entry. Main thread only.
 };
 
 /*

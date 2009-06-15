@@ -1,3 +1,16 @@
+2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp|h: When a media reports that it has been opened
+	successfully, check if we're the current element, and if not,
+	don't to anything more until we are the current element. This
+	fixes an issue with server side playlists where they would
+	only play the first entry.
+
+	* pipeline.cpp|h: Move code out of header.
+
+	* pipeline-asf.cpp|h: Inform the MmsPlaylistEntry whenever an
+	entry has finished.
+
 2009-06-15  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: We're hittesting the clip, we use
