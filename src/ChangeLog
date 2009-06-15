@@ -1,3 +1,8 @@
+2009-06-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (SetTextInternal): Get rid of some duplicated
+	code.
+
 2009-06-15  Alan McGovern  <amcgovern@novell.com>
 
 	* uielement.cpp:
