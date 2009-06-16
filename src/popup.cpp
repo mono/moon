@@ -86,6 +86,9 @@ Popup::Hide (UIElement *child)
 	if (!visible)
 		return;
 
+	// we intentionally don't track whether we've added a tick call
+	// (to make sure we only add it once).  for this event because
+	// multiple IsOpen changes cause multiple async events in SL.
 	AddTickCall (Popup::emit_closed);
 	visible = false;
 
@@ -108,6 +111,9 @@ Popup::Show (UIElement *child)
 	if (visible)
 		return;
 
+	// we intentionally don't track whether we've added a tick call
+	// (to make sure we only add it once).  for this event because
+	// multiple IsOpen changes cause multiple async events in SL.
 	AddTickCall (Popup::emit_opened);
 	visible = true;
 
