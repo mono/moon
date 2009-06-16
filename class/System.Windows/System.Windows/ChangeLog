@@ -1,3 +1,7 @@
+2009-06-16  Alan McGovern  <amcgovern@novell.com>
+
+	* Rect.cs: Fix a few more issues with Rect.Union 
+
 2009-06-12  Alan McGovern  <amcgovern@novell.com>
 
 	* Deployment.cs: Ensure that the handlers for Resized and
