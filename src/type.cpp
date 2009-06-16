@@ -410,9 +410,6 @@ Types::~Types ()
 
 	for (int i = 0; i < types.GetCount (); i++)
 		delete (Type *) types [i];
-
-	delete properties;
-	properties = NULL;
 }
 
 void

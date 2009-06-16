@@ -382,7 +382,7 @@ EventObject::unref ()
 
 	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
 
-	OBJECT_TRACK ("Unref", (deployment == NULL && Deployment::GetCurrent () == NULL) ? "<unknown>" : GetTypeName ());
+	OBJECT_TRACK ("Unref", ((deployment == NULL && Deployment::GetCurrent () == NULL) || deployment->isDead) ? "<unknown>" : GetTypeName ());
 
 	if (v == 0) {
 		Dispose ();
