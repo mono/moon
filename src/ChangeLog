@@ -1,3 +1,9 @@
+2009-06-16  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp: try to be more careful about clearing SHAPE_EMPTY
+	when properties change in preparation for fixing the autocreated
+	property notification stuff
+
 2009-06-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* multiscaleimage.cpp: Add a call to print_stack_trace, looks
@@ -757,12 +763,6 @@
 
 	* control.cpp|h: Control.IsEnabled propagates to its children
 	when the control is Loaded.
-=======
-2009-05-28  Alan McGovern  <amcgovern@novell.com>
-
-	* control.cpp|h: Control.IsEnabled propagates when the control
-	is loaded
->>>>>>> Stashed changes:src/ChangeLog
 
 2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 

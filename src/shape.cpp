@@ -861,8 +861,8 @@ Shape::InvalidateStretch ()
 {
 	extents = Rect (0, 0, -INFINITY, -INFINITY);
 	cairo_matrix_init_identity (&stretch_transform);
-	InvalidateMeasure ();
 	InvalidatePathCache ();
+	InvalidateMeasure ();
 }
 
 Rect 
@@ -970,6 +970,8 @@ Ellipse::ComputeShapeBounds (bool logical)
 	double w = GetWidth ();
 	double h = GetHeight ();
 
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
+
 	if (h <= 0.0 || w <= 0.0) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
@@ -1015,6 +1017,8 @@ Ellipse::BuildPath ()
 		SetShapeFlags (UIElement::SHAPE_EMPTY);		
 		return;
 	}
+
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
 	switch (stretch) {
 	case StretchNone:
@@ -1087,8 +1091,9 @@ Rect
 Rectangle::ComputeShapeBounds (bool logical)
 {
 	Rect rect = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
-	if (rect.width <= 0.0 || rect.height <= 0.0) { 
+	if (rect.width < 0.0 || rect.height < 0.0) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
 	}
