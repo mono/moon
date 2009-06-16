@@ -1,3 +1,9 @@
+2009-06-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp: Remove circular dependency between MediaPlayer
+	and MediaElement, clear out the element in Dispose and add a null
+	check before accessing the element. Fixes crash in MS DRT #238.
+
 2009-06-15  Andreia Gaita  <avidigal@novell.com>
 
 	* frameworkelement.cpp: delete UIElement nodes when we're done 

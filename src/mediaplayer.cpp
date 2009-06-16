@@ -40,7 +40,6 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 	VERIFY_MAIN_THREAD;
 	
 	element = el;
-	element->ref ();
 
 	video_stream = NULL;
 	surface = NULL;
@@ -59,7 +58,6 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 MediaPlayer::~MediaPlayer ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::~MediaPlayer (), id=%i\n", GET_OBJ_ID (this));
-	element->unref ();
 	VERIFY_MAIN_THREAD;
 }
 
@@ -73,6 +71,8 @@ MediaPlayer::Dispose ()
 	EventObject::Dispose ();
 	
 	Close ();
+	
+	element = NULL;
 }
 
 AudioSource *
@@ -804,7 +804,7 @@ MediaPlayer::AdvanceFrameCallback (void *user_data)
 void
 MediaPlayer::SetTimeout (gint32 timeout /* set to 0 to clear */)
 {
-	TimeManager *time_manager = element->GetTimeManager ();
+	TimeManager *time_manager = element ? element->GetTimeManager () : NULL;
 	bool clear = timeout == 0 || advance_frame_timeout_id != 0;
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::SetTimeout (%i) time_manager: %p id: %i\n", timeout, time_manager, GET_OBJ_ID (time_manager));
