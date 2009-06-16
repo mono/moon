@@ -1,5 +1,10 @@
 2009-06-16  Andreia Gaita  <avidigal@novell.com>
 
+	* DependencyObject.cs: a little code reuse and slight tweaking of the
+	dropref explanation. Also, drop the native ref on new objects, too.
+
+2009-06-16  Andreia Gaita  <avidigal@novell.com>
+
 	* Application.cs: Dispose properly by removing the application from the
 	ToggleRef list, the same pattern that DO uses. Also, drop the extra ref
 	that it has upon creation, ToggleRef has enough refs on it to go around.
