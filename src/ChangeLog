@@ -1,5 +1,10 @@
 2009-06-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* multiscaleimage.cpp: Add a call to print_stack_trace, looks
+	like abort () doesn't cause a stack trace.
+
+2009-06-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaplayer.cpp: Remove circular dependency between MediaPlayer
 	and MediaElement, clear out the element in Dispose and add a null
 	check before accessing the element. Fixes crash in MS DRT #238.

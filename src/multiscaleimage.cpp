@@ -67,6 +67,7 @@ qtree_insert (QTree* root, int level, int x, int y)
 #if DEBUG
  		// we seem to run into an infinite loop sporadically here for drt #2014 completely spamming the test output.
  		// abort to get a stack trace. 
+		print_stack_trace ();
 		abort ();
 #endif
 		g_warning ("QuadTree index out of range.");
