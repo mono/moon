@@ -584,6 +584,29 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
+		public void LayoutUpdatedAndLoaded ()
+		{
+			List<string> events = new List<string>();
+
+			Rectangle r = new Rectangle ();
+			r.LayoutUpdated += delegate { events.Add ("LayoutUpdated"); };
+			r.Loaded += delegate { events.Add ("Loaded"); };
+
+			TestPanel.Children.Add (r);
+
+			r.UpdateLayout ();
+			Assert.AreEqual (1, events.Count, "#1");
+			Assert.AreEqual ("LayoutUpdated", events [0], "#2");
+			Enqueue (() => {
+				Assert.IsTrue (events.Count >= 2, "#3");
+				Assert.AreEqual ("Loaded", events [1], "#4");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void LayoutUpdated ()
 		{
 			bool layoutUpdated = false;
