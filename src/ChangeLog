@@ -1,3 +1,7 @@
+2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Remove spurious printfs.
+
 2009-06-16  Andreia Gaita  <avidigal@novell.com>
 
 	* deployment.[h|cpp]: Try to dispose types only if there are no

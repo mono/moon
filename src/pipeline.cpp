@@ -2137,7 +2137,6 @@ IMediaStream::GetOutputEnded ()
 void
 IMediaStream::SetOutputEnded (bool value)
 {
-	printf ("%s::SetOutputEnded (%i)\n", GetTypeName (), value);
 	output_ended = value;
 }
 
@@ -2150,7 +2149,6 @@ IMediaStream::GetInputEnded ()
 void
 IMediaStream::SetInputEnded (bool value)
 {
-	printf ("%s::SetInputEnded (%i)\n", GetTypeName (), value);
 	input_ended = value;
 }
 
