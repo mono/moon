@@ -41,7 +41,6 @@ namespace System.Windows {
 	public sealed partial class Deployment : DependencyObject {
 		Types types;
 		List<Assembly> assemblies;
-		List<Assembly> delay_assemblies;
 		Assembly entry_point_assembly;
 		string xap_dir;
 
@@ -213,20 +212,21 @@ namespace System.Windows {
 				else {
 					WebClient client = new WebClient ();
 					client.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
-						if (e.Cancelled || (e.Error != null))
-							return;
+						// FIXME: this exception occurs outside InitializeDeployment and does not reach the plugin onError event
+						if (e.Error != null)
+							throw new MoonException (2105, string.Format ("Error while loading the '{0}' assembly : {1}", part.Source, e.Error.Message));
 
 						AssemblyPart a = new AssemblyPart ();
 
 						asm = a.Load (e.Result);
-						
+						assemblies.Add (asm);
 						SetEntryAssembly (asm);
 
 						Deployment d = Deployment.Current;
 						if (d.Assemblies.Count == Parts.Count + 1)
 							d.CreateApplication ();
 					};
-					client.OpenReadAsync (new Uri (part.Source, UriKind.Relative));
+					client.OpenReadAsync (new Uri (part.Source));
 					delay_load = true;
 				}
 			}

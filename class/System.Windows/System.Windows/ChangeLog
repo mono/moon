@@ -1,3 +1,11 @@
+2009-06-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* AssemblyPart.cs: Avoid side effects with Deployment (adding to
+	its assembly list). Allow a fast-path for MemoryStream (only).
+	* Deployment.cs: Throw an exception if an assembly cannot be 
+	downloaded. Support absolute URI (can be used for cross domain).
+	Remove unused list (delay_assemblies).
+
 2009-06-16  Alan McGovern  <amcgovern@novell.com>
 
 	* Rect.cs: Fix a few more issues with Rect.Union 

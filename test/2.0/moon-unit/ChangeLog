@@ -1,3 +1,10 @@
+2009-06-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/AssemblyPartCollectionTest.cs: New. Tests to 
+	check differences between Deployement and standalone cases.
+	* System.Windows/AssemblyPartTest.cs: Change GetLibraryStream to 
+	public so it can be reused.
+
 2009-06-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs: Fix one corner
