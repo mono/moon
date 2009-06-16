@@ -1,3 +1,9 @@
+2009-06-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp: Set default cross_domain_app to false since using
+	embedded XAML is valid (and not cross domain) and won't trigger
+	a load (to update the value). Should fix XAML #401 test
+
 2009-06-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin.cpp|h: Move cross-domain application check to it's own
