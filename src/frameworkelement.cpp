@@ -782,8 +782,10 @@ FrameworkElement::UpdateLayout ()
 			while (UIElementNode *node = (UIElementNode*)arrange_list->First ()) {
 				arrange_list->Unlink (node);
 				
-				if (surface && surface->needs_measure)
+				if (surface && surface->needs_measure) {
+					delete (node);
 					break;
+				}
 				
 				node->uielement->DoArrange ();
 				//if (node->uielement->GetVisuaParent ()->dirty_flags & dirty_arrange)

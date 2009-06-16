@@ -1,3 +1,8 @@
+2009-06-15  Andreia Gaita  <avidigal@novell.com>
+
+	* frameworkelement.cpp: delete UIElement nodes when we're done 
+	with them
+
 2009-06-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.cpp (SetTextInternal): Get rid of some duplicated
