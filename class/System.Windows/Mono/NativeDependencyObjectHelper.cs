@@ -232,7 +232,6 @@ namespace Mono {
 
 		static object CreateObject (Kind k, IntPtr raw)
 		{
-			NativeMethods.event_object_ref (raw);
 			switch (k){
 			case Kind.ARCSEGMENT: return new ArcSegment (raw, false);
 			case Kind.APPLICATION: return new Application (raw);

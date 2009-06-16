@@ -1,3 +1,9 @@
+2009-06-16  Andreia Gaita  <avidigal@novell.com>
+
+	* NativeDependencyObjectHelper.cs: (CreateObject) don't ref.
+	All objects are reffed by ToggleRef on creation (through the
+	NativeHandle assignment), so the hold is guaranteed there.
+
 2009-06-12  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Validate xml namespaces.
