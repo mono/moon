@@ -64,6 +64,8 @@ namespace System.Windows {
 		internal Application (IntPtr raw)
 		{
 			NativeHandle = raw;
+			// like with DOs, the previous call attaches a ToggleRef, so we drop a ref here
+			NativeMethods.event_object_unref (raw);
 
 			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb_safe);
 			apply_style = new ApplyStyleCallback (apply_style_cb_safe);
@@ -102,11 +104,28 @@ namespace System.Windows {
 
 			root_visual = null;
 			Application.Current = null;
-			// XXX free the application?
 
 			ReinitializeStaticData ();
 		}
 
+		~Application ()
+		{
+			Free ();
+		}
+
+		private void Free ()
+		{
+			if (_native != IntPtr.Zero) {
+				ToggleRef tref;
+				lock (NativeDependencyObjectHelper.objects) {
+					if (NativeDependencyObjectHelper.objects.TryGetValue (_native, out tref))
+						NativeDependencyObjectHelper.objects.Remove (_native);
+				}
+				if (tref != null)
+					tref.Free ();
+				GC.SuppressFinalize (this);
+			}
+		}
 
 		static void ReinitializeStaticData ()
 		{

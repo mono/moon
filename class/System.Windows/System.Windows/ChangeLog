@@ -1,3 +1,9 @@
+2009-06-16  Andreia Gaita  <avidigal@novell.com>
+
+	* Application.cs: Dispose properly by removing the application from the
+	ToggleRef list, the same pattern that DO uses. Also, drop the extra ref
+	that it has upon creation, ToggleRef has enough refs on it to go around.
+
 2009-06-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* AssemblyPart.cs: Avoid side effects with Deployment (adding to
