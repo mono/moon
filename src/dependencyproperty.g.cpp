@@ -252,7 +252,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TIMELINE, "RepeatBehavior", false, new Value (RepeatBehavior ((double) 1)), Type::REPEATBEHAVIOR);
 	DependencyProperty::Register (this, Type::TIMELINE, "FillBehavior", false, new Value (FillBehaviorHoldEnd), Type::INT32);
 	DependencyProperty::Register (this, Type::TIMELINE, "Duration", false, new Value (Duration::Automatic), Type::DURATION);
-	DependencyProperty::RegisterFull (this, Type::TIMELINE, "BeginTime", false, new Value (0,Type::TIMESPAN), Type::TIMESPAN, false, false, false, NULL, NULL, NULL, true);
+	DependencyProperty::RegisterFull (this, Type::TIMELINE, "BeginTime", false, new Value ((gint64) 0, Type::TIMESPAN), Type::TIMESPAN, false, false, false, NULL, NULL, NULL, true);
 	DependencyProperty::Register (this, Type::TIMELINE, "AutoReverse", false, new Value (false), Type::BOOL);
 	DependencyProperty::Register (this, Type::STYLUSPOINT, "Y", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::STYLUSPOINT, "X", false, new Value (0.0), Type::DOUBLE);
@@ -389,7 +389,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "SelectionBackground", false, Type::BRUSH);
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "SelectedText", false, new Value (""), Type::STRING);
 	DependencyProperty::RegisterFull (this, Type::PASSWORDBOX, "Password", false, new Value (""), Type::STRING, false, false, true, NULL, Validators::NonNullValidator, NULL, false);
-	DependencyProperty::Register (this, Type::PASSWORDBOX, "PasswordChar", false, new Value (9679), Type::CHAR);
+	DependencyProperty::Register (this, Type::PASSWORDBOX, "PasswordChar", false, new Value ((gunichar) 9679, Type::CHAR), Type::CHAR);
 	DependencyProperty::RegisterFull (this, Type::PASSWORDBOX, "MaxLength", false, new Value (0), Type::INT32, false, false, false, NULL, Validators::PositiveIntValidator, NULL, false);
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "FontSource", false, Type::FONTSOURCE);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "Value", false, Type::OBJECT);
@@ -5050,17 +5050,17 @@ PasswordBox::SetPassword (const char *value)
 	SetValue (PasswordBox::PasswordProperty, Value (value));
 }
 
-gint32
+gunichar
 PasswordBox::GetPasswordChar ()
 {
 	Value *value = GetValue (PasswordBox::PasswordCharProperty);
-	return value->AsInt32 ();
+	return value->AsChar ();
 }
 
 void
-PasswordBox::SetPasswordChar (gint32 value)
+PasswordBox::SetPasswordChar (gunichar value)
 {
-	SetValue (PasswordBox::PasswordCharProperty, Value (value));
+	SetValue (PasswordBox::PasswordCharProperty, Value (value, Type::CHAR));
 }
 
 gint32

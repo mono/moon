@@ -146,6 +146,14 @@ Value::Value (guint32 i)
 	SetIsNull (false);
 }
 
+Value::Value (gunichar c, Type::Kind as)
+{
+	Init ();
+	k = as;
+	u.c = c;
+	SetIsNull (false);
+}
+
 Value::Value (Color c)
 {
 	Init ();

@@ -320,6 +320,7 @@ public:
 	explicit Value (double d);
 	explicit Value (gint32 i);
 	explicit Value (guint32 i);
+	Value (gunichar c, Type::Kind as); // for use with char values.
 	Value (gint64 i, Type::Kind as); // Use for TimeSpan and int64 values.
 	Value (Color c);
 	Value (EventObject *obj);
@@ -364,6 +365,7 @@ public:
 	bool		Is (Type::Kind type) { return Type::IsSubclassOf (k, type); }
 
 	bool		AsBool ()	{ checked_get_exact (Type::BOOL, false, (bool)u.i32); }
+	gunichar	AsChar ()       { checked_get_exact (Type::CHAR, 0, u.c); }
 	double 		AsDouble ()	{ checked_get_exact (Type::DOUBLE, 0.0, u.d); }
 	float 		AsFloat ()	{ checked_get_exact (Type::FLOAT, 0.0, u.f); }
 	guint64		AsUInt64 ()	{ checked_get_exact (Type::UINT64, 0, u.ui64); }
@@ -672,6 +674,7 @@ public:
 		gint64 i64;
 		guint32 ui32;
 		gint32 i32;
+		gunichar c;
 		char *s;
 		EventObject *dependency_object;
 		Color *color;

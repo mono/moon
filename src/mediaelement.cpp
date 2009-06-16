@@ -1568,7 +1568,7 @@ MediaElementPropertyValueProvider::GetPosition ()
 	if (TimeSpan_FromPts (position) != -1) {
 		this->position = new Value (TimeSpan_FromPts (position), Type::TIMESPAN);
 	} else {
-		this->position = new Value (0, Type::TIMESPAN);
+		this->position = new Value ((TimeSpan) 0, Type::TIMESPAN);
 	}
 		
 	return this->position;

@@ -497,7 +497,7 @@ class PasswordBox : public TextBoxBase {
 	const static int FontSourceProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int MaxLengthProperty;
-	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
+	/* @PropertyType=char,DefaultValue=(gunichar) 9679\, Type::CHAR,Version=2.0,GenerateAccessors */
 	const static int PasswordCharProperty;
 	/* @PropertyType=string,DefaultValue=\"\",AlwaysChange,Version=2.0,GenerateAccessors,Validator=NonNullValidator */
 	const static int PasswordProperty;
@@ -535,8 +535,8 @@ class PasswordBox : public TextBoxBase {
 	void SetPassword (const char *password);
 	const char *GetPassword ();
 	
-	void SetPasswordChar (int c);
-	int GetPasswordChar ();
+	void SetPasswordChar (gunichar c);
+	gunichar GetPasswordChar ();
 	
 	void SetSelectionBackground (Brush *background);
 	virtual Brush *GetSelectionBackground ();

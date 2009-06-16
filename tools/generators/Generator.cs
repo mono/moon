@@ -880,8 +880,8 @@ class Generator {
 				prop_default = "false";
 				break;
 			case "char":
-				prop_type_str = "gint32";
-				value_str = "Int32";
+				prop_type_str = "gunichar";
+				value_str = "Char";
 				prop_default = "0";
 				break;
 			case "object":
@@ -1005,6 +1005,9 @@ class Generator {
 					if (prop_type.Name == "guint64" || prop_type.Name == "TimeSpan") {
 						text.AppendFormat ("Value (value, Type::{0}));\n",
 								   prop_type.KindName);
+					}
+					else if (prop_type.Name == "char") {
+						text.AppendLine ("Value (value, Type::CHAR));");
 					}
 					else if ((value_str == null) || (!nullable_setter && prop_type.IsStruct)) {
 						text.AppendLine ("Value (*value));");
@@ -1780,7 +1783,7 @@ class Generator {
 			text.AppendLine ("));");
 		};
 
-		f ("char", "INT32");
+		f ("char", "UINT32");
 		f ("object", "OBJECT");
 		f ("bool", "BOOL");
 		f ("double", "DOUBLE");

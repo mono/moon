@@ -3340,6 +3340,19 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		*v = new Value (i);
 		break;
 	}
+	case Type::CHAR: {
+		gunichar unichar = g_utf8_get_char_validated (str, -1);
+		const char *next;
+		
+		if ((int) unichar < 0)
+			return false;
+		
+		if (!(next = g_utf8_next_char (str)) || *next != '\0')
+			return false;
+		
+		*v = new Value (unichar, Type::CHAR);
+		break;
+	}
 	case Type::STRING: {
 		*v = new Value (str);
 		break;

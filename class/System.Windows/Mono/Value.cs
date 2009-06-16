@@ -166,10 +166,11 @@ namespace Mono {
 					return (i32 == (int) TextDecorationKind.Underline) ? TextDecorations.Underline : null;
 				else if (type != null && type.IsEnum)
 					return Enum.ToObject (type, i32);
-				else if (type == typeof (char))
-					return (char) i32;
 				else
 					return i32;
+
+			case Kind.CHAR:
+				return (char) value->u.ui32;
 
 			case Kind.SURFACE:
 				return new Surface (value->u.p);
@@ -183,7 +184,7 @@ namespace Mono {
 				string str = Marshal.PtrToStringAuto (value->u.p);
 				if (type == null)
 					return str;
-					
+				
 				// marshall back to the .NET type that we simply serialised as 'string' for unmanaged usage
 				if (type == typeof (System.Windows.Markup.XmlLanguage))
 					return XmlLanguage.GetLanguage (str);
@@ -409,7 +410,7 @@ namespace Mono {
 				}
 				else if (v is char) {
 					value.k = Kind.CHAR;
-					value.u.i32 = (int) (char)v;
+					value.u.ui32 = (uint) (char) v;
 				}
 				else if (v is string) {
 					value.k = Kind.STRING;

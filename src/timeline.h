@@ -22,7 +22,7 @@ class Timeline : public DependencyObject {
 public:
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int AutoReverseProperty;
- 	/* @PropertyType=TimeSpan,Nullable,DefaultValue=0\,Type::TIMESPAN */
+ 	/* @PropertyType=TimeSpan,Nullable,DefaultValue=(gint64) 0\, Type::TIMESPAN */
 	const static int BeginTimeProperty;
  	/* @PropertyType=Duration,DefaultValue=Duration::Automatic */
 	const static int DurationProperty;

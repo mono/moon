@@ -346,7 +346,7 @@ namespace Mono {
 				t = typeof (System.Windows.Shapes.Shape); 
 				types.Add (t, new ManagedType (t, Kind.SHAPE));
 				t = typeof (char);
-				types.Add (t, new ManagedType (t, Kind.INT32));
+				types.Add (t, new ManagedType (t, Kind.UINT32));
 				t = typeof (object);
 				types.Add (t, new ManagedType (t, Kind.OBJECT));
 				t = typeof (bool);

@@ -45,7 +45,7 @@ Validators::CursorValidator (DependencyObject* instance, DependencyProperty *pro
 {
 	// If the value is null, it means the default cursor has been set.
 	if (value->GetIsNull ())
-		value = new Value (MouseCursorDefault, Type::INT32);
+		value = new Value ((int) MouseCursorDefault);
 
 	return true;
 }
