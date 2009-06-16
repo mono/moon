@@ -1,5 +1,27 @@
 2009-06-16  Andreia Gaita  <avidigal@novell.com>
 
+	* deployment.[h|cpp]: Try to dispose types only if there are no
+	objects pending destruction. If there are, dispose only after
+	they are all cleared (on DrainUnrefs). This makes sure no properties
+	are destroyed while objects are still pending.
+	Added isDead flag, used when doing object tracking to protect against
+	trying to access type fields when the types have been destroyed
+	already (when doing ref logging and the final leak report).
+	Type destruction is slightly delayed when doing object tracking
+	to allow for the report (otherwise we wouldn't have any type names
+	on it, and that would be sad)
+
+	* type.cpp: fake-clear the properties list by setting it's count to 0
+	so access by id fails (in case someone wants to access the property
+	while we're disposing everything).
+	Delete all the registered types and kill the properties list when
+	destroying. By this point all properties and objects should be
+	dead.
+	* type.h.in: added dispose flag.
+	* type.h: regenerated
+
+2009-06-16  Andreia Gaita  <avidigal@novell.com>
+
 	* uielement.cpp: release all refs on dispose
 
 2009-06-16  Andreia Gaita  <avidigal@novell.com>

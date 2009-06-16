@@ -112,6 +112,10 @@ public:
 
 	const static int ShuttingDownEvent;
 
+#if OBJECT_TRACKING
+	bool isDead;
+#endif
+
 protected:
 	virtual ~Deployment ();
 

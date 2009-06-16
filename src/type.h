@@ -424,6 +424,7 @@ class Types {
 private:
 	ArrayList types;
 	ArrayList properties;
+	bool disposed;
 	
 	void RegisterNativeTypes ();
 	void RegisterNativeProperties ();

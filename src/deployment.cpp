@@ -361,7 +361,7 @@ Deployment::ReportLeaks ()
 			printf ("\tOldest %d objects alive:\n", counter);
 			for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
 				EventObject* obj = (EventObject *) last_n->pdata [i];
-				printf ("\t\t%i = %s, refcount: %i\n", obj->GetId (), obj->GetTypeName (), obj->GetRefCount ());
+				printf ("\t\t%p\t%i = %s, refcount: %i\n", obj, obj->GetId (), (isDead ? "<unknown>" : obj->GetTypeName ()), obj->GetRefCount ());
 			}
 		}
 
@@ -401,14 +401,16 @@ Deployment::Dispose ()
 
 	if (GetParts ())
 		SetParts (NULL);
-	
+
 	if (GetValue (NameScope::NameScopeProperty))
 		SetValue (NameScope::NameScopeProperty, NULL);
 
 	DependencyObject::Dispose ();
 	// FIXME: Deleting the types deletes the DPs and types, which could use us.  We need to move this somewhere
 	// UPDATE: moved...
-	types->Dispose ();
+
+	if (pending_unrefs == NULL)
+		types->Dispose ();
 
 }
 
@@ -508,11 +510,23 @@ Deployment::DrainUnrefs ()
 		g_free (list);
 		list = next;
 	}
+
+	if (IsDisposed () && pending_unrefs != NULL && types) {
+#if OBJECT_TRACKING
+		types->Dispose ();
+#else
+		delete types;
+#endif
+	}
+
 	
 #if OBJECT_TRACKING
 	if (IsDisposed () && g_atomic_pointer_get (&pending_unrefs) == NULL && objects_destroyed != objects_created) {
 		printf ("Moonlight: the current deployment (%p) has detected that probably no more objects will get freed on this deployment.\n", this);
 		ReportLeaks ();
+		isDead = TRUE;
+		if (types)
+			delete types;
 	}
 #endif
 }
