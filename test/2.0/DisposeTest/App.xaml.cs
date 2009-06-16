@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace DefaultValues2 {
+namespace DisposeTest {
 	public partial class App : Application {
 		public App ()
 		{
