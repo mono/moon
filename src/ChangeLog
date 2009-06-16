@@ -1,5 +1,9 @@
 2009-06-16  Andreia Gaita  <avidigal@novell.com>
 
+	* uielement.cpp: release all refs on dispose
+
+2009-06-16  Andreia Gaita  <avidigal@novell.com>
+
 	* control.[h|cpp]: Dispose() added. Don't be clingy, unref things
 
 2009-06-16  Jeffrey Stedfast  <fejj@novell.com>

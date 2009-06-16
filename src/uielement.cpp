@@ -80,6 +80,11 @@ UIElement::Dispose()
 			child->SetVisualParent (NULL);
 	}
 	
+	if (subtree_object) {
+		subtree_object->unref ();
+		subtree_object = NULL;
+	}
+
 	DependencyObject::Dispose();
 }
 
