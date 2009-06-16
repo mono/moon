@@ -33,8 +33,22 @@ Control::Control ()
 
 Control::~Control ()
 {
-	if (applied_template)
+}
+
+void
+Control::Dispose ()
+{
+	if (applied_template) {
 		applied_template->unref();
+		applied_template = NULL;
+	}
+
+	if (template_root) {
+		template_root->unref ();
+		template_root = NULL;
+	}
+
+	FrameworkElement::Dispose ();
 }
 
 void

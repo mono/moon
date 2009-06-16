@@ -35,6 +35,7 @@ class Control : public FrameworkElement {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Control ();
+	virtual void Dispose ();
 
 	virtual bool CanCaptureMouse () { return GetIsEnabled (); }
 	virtual bool CanFindElement () { return GetIsEnabled (); }
