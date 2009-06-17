@@ -1565,11 +1565,12 @@ MediaElementPropertyValueProvider::GetPosition ()
 	if (use_mplayer && (TimeSpan_FromPts (position) == -1))
 		position = element->mplayer->GetPosition ();
 	
-	if (TimeSpan_FromPts (position) != -1) {
-		this->position = new Value (TimeSpan_FromPts (position), Type::TIMESPAN);
+	if (TimeSpan_FromPts (position) == -1) {
+		position = 0;
 	} else {
-		this->position = new Value ((TimeSpan) 0, Type::TIMESPAN);
+		position = MIN (position, element->mplayer->GetDuration ());
 	}
 		
+	this->position = new Value (TimeSpan_FromPts (position), Type::TIMESPAN);
 	return this->position;
 }

@@ -1,3 +1,9 @@
+2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: When we stop, emit the StopEvent.
+
+	* mediaelement.cpp: Don't return a CurrentPosition > NaturalDuration.
+
 2009-06-16  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XamlElementInfoStaticResource,

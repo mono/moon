@@ -856,13 +856,18 @@ PlaylistEntry::PauseAsync ()
 void
 PlaylistEntry::StopAsync ()
 {
+	MediaPlayer *mplayer = GetMediaPlayer ();
+	PlaylistRoot *root = GetRoot ();
+	
 	LOG_PLAYLIST ("PlaylistEntry::Stop ()\n");
 
 	g_return_if_fail (media != NULL);
 
 	play_when_available = false;
-	
 	media->StopAsync ();
+	mplayer->Stop ();
+	
+	root->Emit (PlaylistRoot::StopEvent);
 }
 
 Media *
