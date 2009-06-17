@@ -144,6 +144,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	short need_im_reset:1;
 	short is_read_only:1;
 	short have_offset:1;
+	short multiline:1;
 	short selecting:1;
 	short setvalue:1;
 	short captured:1;

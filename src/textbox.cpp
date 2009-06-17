@@ -606,6 +606,7 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	need_im_reset = false;
 	is_read_only = false;
 	have_offset = false;
+	multiline = false;
 	selecting = false;
 	setvalue = true;
 	captured = false;
@@ -1340,13 +1341,32 @@ TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
 	TextBoxUndoAction *action;
 	int start, length;
 	gunichar *text;
-	glong len;
+	glong len, i;
 	
 	length = abs (selection_cursor - selection_anchor);
 	start = MIN (selection_anchor, selection_cursor);
 	
 	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &len)))
 		return;
+	
+	if (max_length > 0 && (buffer->len + len > max_length)) {
+		// paste cannot exceed MaxLength
+		len = max_length - buffer->len;
+		text = (gunichar *) g_realloc (text, UNICODE_LEN (len + 1));
+		text[len] = '\0';
+	}
+	
+	if (!multiline) {
+		// only paste the content of the first line
+		for (i = 0; i < len; i++) {
+			if (g_unichar_type (text[i]) == G_UNICODE_LINE_SEPARATOR) {
+				text = (gunichar *) g_realloc (text, UNICODE_LEN (i + 1));
+				text[i] = '\0';
+				len = i;
+				break;
+			}
+		}
+	}
 	
 	ResetIMContext ();
 	
@@ -1355,11 +1375,14 @@ TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
 		action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, len);
 		
 		buffer->Replace (start, length, text, len);
-	} else {
+	} else if (len > 0) {
 		// insert the text at the cursor position
 		action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, len);
 		
 		buffer->Insert (start, text, len);
+	} else {
+		g_free (text);
+		return;
 	}
 	
 	undo->Push (action);
@@ -2280,6 +2303,7 @@ TextBox::TextBox ()
 	
 	Initialize (Type::TEXTBOX, "System.Windows.Controls.TextBox");
 	events_mask = TEXT_CHANGED | SELECTION_CHANGED;
+	multiline = true;
 }
 
 void
