@@ -179,7 +179,8 @@ enum VirtualKeys {
     VK_OEM_MINUS     = 0xBD,
     VK_OEM_PERIOD    = 0xBE,
     VK_OEM_2         = 0xBF,
-    VK_OEM_3         = 0xC0
+    VK_OEM_3         = 0xC0,
+    VK_KP_ADD        = 0xFFBB
 };
 
 class InputProvider {

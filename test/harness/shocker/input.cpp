@@ -350,7 +350,7 @@ InputProvider::MapToKeysym (int key)
 	case VK_NUMPAD8: res = XK_KP_8; break;
 	case VK_NUMPAD9: res = XK_KP_9; break;
 	case VK_MULTIPLY: res = XK_KP_Multiply; break;
-	case VK_ADD: res = XK_KP_Add; break;
+	case VK_ADD: case VK_KP_ADD: res = XK_KP_Add; break;
 	case VK_SEPARATOR: res = XK_KP_Separator; break;
 	case VK_SUBTRACT: res = XK_KP_Subtract; break;
 	case VK_DECIMAL: res = XK_KP_Decimal; break;

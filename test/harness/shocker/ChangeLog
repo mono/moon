@@ -1,3 +1,8 @@
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
+	* input.h:
+	* input.cpp: Add VK_KP_ADD to the key map.
+
 2009-06-01  Chris Toshok  <toshok@ximian.com>
 
 	* shocker.cpp (GetTestDirectory): at the very least return a valid
