@@ -1,5 +1,14 @@
 2009-06-17  Alan McGovern  <amcgovern@novell.com>
 
+	* font.cpp: When the font cache is destroyed, set it to NULL
+	  so that if a Font is destroyed later it does not try to
+	  re-use the cache.
+	Null check the the FontFace cache before using it.
+	If the FT_Face stream is null already, don't try to destroy
+	  it.
+
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
 	* runtime.cpp: A subset of keypresses are allowed to bubble up
 	  when in fullscreen mode. Fixes drt 175.
 

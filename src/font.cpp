@@ -1358,14 +1358,16 @@ FontFace::~FontFace ()
 {
 	FT_Stream stream;
 	
-	g_hash_table_remove (FontFace::cache, pattern);
+	if (FontFace::cache)
+		g_hash_table_remove (FontFace::cache, pattern);
 	FcPatternDestroy (pattern);
 	
 	if (face && own_face) {
 		stream = face->stream;
 		FT_Done_Face (face);
 		
-		font_stream_destroy (stream);
+		if (stream)
+			font_stream_destroy (stream);
 	}
 }
 
@@ -1934,8 +1936,8 @@ TextFont::~TextFont ()
 		if (glyphs[i].path)
 			moon_path_destroy (glyphs[i].path);
 	}
-	
-	g_hash_table_remove (TextFont::cache, pattern);
+	if (TextFont::cache)
+		g_hash_table_remove (TextFont::cache, pattern);
 	FcPatternDestroy (pattern);
 	face->unref ();
 }
@@ -1950,6 +1952,7 @@ void
 TextFont::Shutdown ()
 {
 	g_hash_table_destroy (TextFont::cache);
+	TextFont::cache = NULL;
 }
 
 TextFont *
