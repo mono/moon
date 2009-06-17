@@ -1,5 +1,10 @@
 2009-06-17  Alan McGovern  <amcgovern@novell.com>
 
+	* uielement.cpp: Changing UIElement.Visibility should result
+	  in the measure being invalidated.
+
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
 	* font.cpp: When the font cache is destroyed, set it to NULL
 	  so that if a Font is destroyed later it does not try to
 	  re-use the cache.
