@@ -25,6 +25,7 @@
 #include "deployment.h"
 #include "bitmapimage.h"
 #include "uri.h"
+#include "textbox.h"
 
 /*** MoonlightUIElementClass *********/
 static NPObject *

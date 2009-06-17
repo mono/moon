@@ -172,6 +172,9 @@ enum PluginPropertyId {
 	MoonId_Detail,
 
 	MoonId_Focus,
+
+	MoonId_Select,
+	MoonId_SelectAll,
 	MoonId_UIElement_CaptureMouse,
 	MoonId_UIElement_TransformToVisual,
 	MoonId_UIElement_ReleaseMouseCapture,
@@ -831,13 +834,13 @@ struct MoonlightDownloaderObject : MoonlightDependencyObjectObject {
 
 /*** MoonlightTextBlock ***************************************************/
 
-struct MoonlightTextBlockType : MoonlightDependencyObjectType {
+struct MoonlightTextBlockType : MoonlightUIElementType {
 	MoonlightTextBlockType ();
 };
 
 
-struct MoonlightTextBlockObject : MoonlightDependencyObjectObject {
-	MoonlightTextBlockObject (NPP instance) : MoonlightDependencyObjectObject (instance)
+struct MoonlightTextBlockObject : MoonlightUIElementObject {
+	MoonlightTextBlockObject (NPP instance) : MoonlightUIElementObject (instance)
 	{
 		moonlight_type = Type::TEXTBLOCK;
 	}
@@ -861,6 +864,41 @@ struct MoonlightControlObject : MoonlightUIElementObject {
 	}
 
 	virtual bool Invoke (int id, NPIdentifier name, const NPVariant *args, guint32 argCount, NPVariant *result);
+};
+
+/*** MoonlightTextBox ***************************************************/
+
+struct MoonlightTextBoxType : MoonlightControlType {
+	MoonlightTextBoxType ();
+};
+
+
+struct MoonlightTextBoxObject : MoonlightControlObject {
+	MoonlightTextBoxObject (NPP instance) : MoonlightControlObject (instance)
+	{
+		moonlight_type = Type::TEXTBOX;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
+};
+
+
+/*** MoonlightPasswordBox ***************************************************/
+
+struct MoonlightPasswordBoxType : MoonlightControlType {
+	MoonlightPasswordBoxType ();
+};
+
+
+struct MoonlightPasswordBoxObject : MoonlightControlObject {
+	MoonlightPasswordBoxObject (NPP instance) : MoonlightControlObject (instance)
+	{
+		moonlight_type = Type::TEXTBOX;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
 };
 
 /*** MoonlightStylusInfoType ***************************************************/

@@ -21,6 +21,7 @@
 #include "deployment.h"
 #include "bitmapimage.h"
 #include "uri.h"
+#include "textbox.h"
 
 #ifdef DEBUG
 #define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s)\n" G_STRLOC, x)
@@ -277,6 +278,8 @@ enum DependencyObjectClassNames {
 	STYLUS_POINT_COLLECTION_CLASS,
 	STROKE_COLLECTION_CLASS,
 	STROKE_CLASS,
+	TEXT_BOX_CLASS,
+	PASSWORD_BOX_CLASS,
 	TEXT_BLOCK_CLASS,
 	EVENT_ARGS_CLASS,
 	ROUTED_EVENT_ARGS_CLASS,
@@ -2965,9 +2968,16 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	case Type::TEXTBLOCK:
 		np_class = dependency_object_classes [TEXT_BLOCK_CLASS];
 		break;
+	case Type::TEXTBOX:
+		np_class = dependency_object_classes [TEXT_BOX_CLASS];
+		break;
+	case Type::PASSWORDBOX:
+		np_class = dependency_object_classes [PASSWORD_BOX_CLASS];
+		break;
 	case Type::EVENTOBJECT: 
 	case Type::SURFACE: 
 		np_class = MoonlightEventObjectClass;
+		break;
 	case Type::STYLUSINFO:
 		np_class = dependency_object_classes [STYLUS_INFO_CLASS];
 		break;
@@ -3597,6 +3607,115 @@ MoonlightControlType::MoonlightControlType ()
 }
 
 
+/*** MoonlightTextBoxClass ***************************************************/
+
+static NPObject *
+moonlight_text_box_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightTextBoxObject (instance);
+}
+
+
+static const MoonNameIdMapping moonlight_text_box_mapping[] = {
+	{ "select", MoonId_Select },
+	{ "selectall", MoonId_SelectAll }
+};
+
+
+bool
+MoonlightTextBoxObject::Invoke (int id, NPIdentifier name,
+				  const NPVariant *args, guint32 argCount,
+				  NPVariant *result)
+{
+	TextBox *textbox = (TextBox *) GetDependencyObject ();
+	
+	switch (id) {
+	case MoonId_Select:
+		if (!check_arg_list ("ii", argCount, args))
+			THROW_JS_EXCEPTION ("select");
+
+		textbox->Select (NPVARIANT_TO_INT32 (args[0]),
+				 NPVARIANT_TO_INT32 (args[1]));
+
+		VOID_TO_NPVARIANT (*result);
+		
+		return true;
+	case MoonId_SelectAll:
+		if (argCount != 0)
+			THROW_JS_EXCEPTION ("selectAll");
+
+		textbox->SelectAll ();
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	default:
+		return MoonlightControlObject::Invoke (id, name, args, argCount, result);
+	}
+}
+
+MoonlightTextBoxType::MoonlightTextBoxType ()
+{
+	AddMapping (moonlight_text_box_mapping, G_N_ELEMENTS (moonlight_text_box_mapping));
+
+	allocate = moonlight_text_box_allocate;
+}
+
+/*** MoonlightPasswordBoxClass ***************************************************/
+
+static NPObject *
+moonlight_password_box_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightPasswordBoxObject (instance);
+}
+
+
+static const MoonNameIdMapping moonlight_password_box_mapping[] = {
+	{ "select", MoonId_Select },
+	{ "selectall", MoonId_SelectAll }
+};
+
+
+bool
+MoonlightPasswordBoxObject::Invoke (int id, NPIdentifier name,
+				  const NPVariant *args, guint32 argCount,
+				  NPVariant *result)
+{
+	PasswordBox *passwordbox = (PasswordBox *) GetDependencyObject ();
+	
+	switch (id) {
+	case MoonId_Select:
+		if (!check_arg_list ("ii", argCount, args))
+			THROW_JS_EXCEPTION ("select");
+
+		passwordbox->Select (NPVARIANT_TO_INT32 (args[0]),
+				     NPVARIANT_TO_INT32 (args[1]));
+
+		VOID_TO_NPVARIANT (*result);
+		
+		return true;
+	case MoonId_SelectAll:
+		if (argCount != 0)
+			THROW_JS_EXCEPTION ("selectAll");
+
+		passwordbox->SelectAll ();
+
+		VOID_TO_NPVARIANT (*result);
+
+		return true;
+	default:
+		return MoonlightControlObject::Invoke (id, name, args, argCount, result);
+	}
+}
+
+MoonlightPasswordBoxType::MoonlightPasswordBoxType ()
+{
+	AddMapping (moonlight_password_box_mapping, G_N_ELEMENTS (moonlight_password_box_mapping));
+
+	allocate = moonlight_password_box_allocate;
+}
+
+
 /*** MoonlightTextBlockClass ***************************************************/
 
 static NPObject *
@@ -3633,7 +3752,7 @@ MoonlightTextBlockObject::Invoke (int id, NPIdentifier name,
 		
 		return true;
 	default:
-		return MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);
+		return MoonlightUIElementObject::Invoke (id, name, args, argCount, result);
 	}
 }
 
@@ -4570,6 +4689,8 @@ plugin_init_classes (void)
 	dependency_object_classes [TEXT_BLOCK_CLASS] = new MoonlightTextBlockType ();
 	dependency_object_classes [UI_ELEMENT_CLASS] = new MoonlightUIElementType ();
 	dependency_object_classes [CONTROL_CLASS] = new MoonlightControlType ();
+	dependency_object_classes [TEXT_BOX_CLASS] = new MoonlightTextBoxType ();
+	dependency_object_classes [PASSWORD_BOX_CLASS] = new MoonlightPasswordBoxType ();
 	/* Event Arg Types */
 	dependency_object_classes [EVENT_ARGS_CLASS] = new MoonlightEventArgsType ();
 	dependency_object_classes [ROUTED_EVENT_ARGS_CLASS] = new MoonlightRoutedEventArgsType ();

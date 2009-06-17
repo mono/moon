@@ -1,3 +1,10 @@
+2009-06-17  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h.in, plugin-class.cpp: add textbox and passwordbox
+	types (select and selectAll methods.)
+
+	* plugin-class.g.*, cbinding.h: regen.
+
 2009-06-17  Alan McGovern  <amcgovern@novell.com>
 
 	* plugin-class.g.cpp.in: We need to include textbox.h 
