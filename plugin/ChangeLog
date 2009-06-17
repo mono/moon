@@ -1,3 +1,7 @@
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
+	* plugin-class.g.cpp.in: We need to include textbox.h 
+
 2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: SetXapLocation must be set before 
