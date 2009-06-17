@@ -1,3 +1,8 @@
+2009-06-17  Chris Toshok  <toshok@ximian.com>
+
+	* MarkupExpressionParser.cs (LookupNamedResource): throw a
+	XamlParseException if name is null.
+
 2009-06-16  Chris Toshok  <toshok@ximian.com>
 
 	* StaticResource.cs: add an internal class so that the managed

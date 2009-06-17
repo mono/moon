@@ -165,6 +165,9 @@ namespace Mono.Xaml {
 
 		private object LookupNamedResource (DependencyObject dob, string name)
 		{
+			if (name == null)
+				throw new XamlParseException ("you must specify a key in {StaticResource}");
+
 			IntPtr value_ptr = NativeMethods.xaml_lookup_named_item (parser, target_data, name);
 			object o = Value.ToObject (null, value_ptr);
 
