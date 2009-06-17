@@ -466,7 +466,8 @@ Uri::Combine (const Uri *relative_uri)
 {
 	if (relative_uri->isAbsolute)
 		g_warning ("Uri::Combine (): Not a relative Uri");
-	Combine (relative_uri->path);
+	if (relative_uri->path)
+		Combine (relative_uri->path);
 }
 
 static void

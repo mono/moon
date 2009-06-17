@@ -1,5 +1,9 @@
 2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* uri.cpp: Add a null check to prevent a crash.
+
+2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* uri.cpp: Flag a lot more characters as url unsafe, and 
 	fix printf specifiers for url encoded characters to not 
 	include extra 'ff' sequences for every encoded character.
