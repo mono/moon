@@ -147,7 +147,7 @@ class Generator {
 
 						switch (parameter.ParameterType.GetNPType ()) {
 							case "i":
-								args.Add ("\t\t\tint arg" + i + " = NPVARIANT_TO_INT32 (args[" + i + "])");
+								args.Add ("\t\t\tint arg" + i + " = NPVARIANT_TO_INT32 (args[" + i + "]);");
 								parms.Add ("arg" + i);
 								break;
 							case "s":
