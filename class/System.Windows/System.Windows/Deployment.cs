@@ -226,7 +226,7 @@ namespace System.Windows {
 						if (d.Assemblies.Count == Parts.Count + 1)
 							d.CreateApplication ();
 					};
-					client.OpenReadAsync (new Uri (part.Source));
+					client.OpenReadAsync (new Uri (part.Source, UriKind.RelativeOrAbsolute));
 					delay_load = true;
 				}
 			}
