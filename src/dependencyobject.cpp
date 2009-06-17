@@ -696,6 +696,10 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 bool
 EventObject::Emit (char *event_name, EventArgs *calldata, bool only_unemitted)
 {
+	Deployment *deployment = GetDeployment ();
+	if (deployment && deployment->isDead)
+		return false;
+
 	int id = GetType()->LookupEvent (event_name);
 
 	if (id == -1) {
@@ -732,6 +736,10 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 {
 	if (IsDisposed ())
 		return false;
+
+	Deployment *deployment = GetDeployment ();
+	if (deployment && deployment->isDead)
+		return false;
 	
 	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
 		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
@@ -747,7 +755,6 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 	}
 
 	if (!Surface::InMainThread ()) {
-		Deployment *deployment = GetDeployment ();
 		Surface *surface = deployment ? deployment->GetSurface () : NULL;
 		
 		if (surface == NULL) {

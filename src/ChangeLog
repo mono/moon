@@ -1,5 +1,9 @@
 2009-06-17  Andreia Gaita  <avidigal@novell.com>
 
+	* dependencyobject.cpp: (Emit) if types have been destroyed, bail out
+
+2009-06-17  Andreia Gaita  <avidigal@novell.com>
+
 	* xaml.cpp: fix typo
 
 2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>

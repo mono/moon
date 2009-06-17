@@ -254,6 +254,7 @@ Deployment::InnerConstructor ()
 	types = NULL;
 	downloaders = NULL;
 
+	isDead = false;
 #if OBJECT_TRACKING
 	objects_alive = NULL;
 	pthread_mutex_init (&objects_alive_mutex, NULL);
@@ -515,6 +516,7 @@ Deployment::DrainUnrefs ()
 #if OBJECT_TRACKING
 		types->Dispose ();
 #else
+		isDead = true;
 		delete types;
 #endif
 	}
@@ -524,7 +526,7 @@ Deployment::DrainUnrefs ()
 	if (IsDisposed () && g_atomic_pointer_get (&pending_unrefs) == NULL && objects_destroyed != objects_created) {
 		printf ("Moonlight: the current deployment (%p) has detected that probably no more objects will get freed on this deployment.\n", this);
 		ReportLeaks ();
-		isDead = TRUE;
+		isDead = true;
 		if (types)
 			delete types;
 	}
