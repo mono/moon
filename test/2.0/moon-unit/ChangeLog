@@ -1,3 +1,8 @@
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyPropertyTest.cs: chars are properly
+	  supported now. Remove MoonlightBug
+
 2009-06-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/AssemblyPartCollectionTest.cs: New. Tests to 

@@ -1306,7 +1306,6 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void Managed_Interfaces ()
 		{
 			InterfaceDPs dp = new InterfaceDPs ();
