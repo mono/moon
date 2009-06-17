@@ -197,7 +197,7 @@ class XamlContextInternal {
 		delete top_element;
 	}
 
-	char *CreateIngorableTagOpen ()
+	char *CreateIgnorableTagOpen ()
 	{
 		GString *str = g_string_new ("<" INTERNAL_IGNORABLE_ELEMENT " ");
 		g_hash_table_foreach (imported_namespaces, add_namespace_to_ignorable, str);
@@ -2221,7 +2221,7 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 	*/
 
 	if (context) {
-		prepend = context->internal->CreateIngorableTagOpen ();
+		prepend = context->internal->CreateIgnorableTagOpen ();
 		append = context->internal->CreateIgnorableTagClose ();
 
 		inputs [0] = prepend;
