@@ -168,6 +168,8 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 
 		InvalidateVisibility ();
 		InvalidateMeasure ();
+		if (GetVisualParent ())
+			GetVisualParent ()->InvalidateMeasure ();
 	} else if (args->GetId () == UIElement::IsHitTestVisibleProperty) {
 		if (args->GetNewValue()->AsBool())
 			flags |= UIElement::HIT_TEST_VISIBLE;

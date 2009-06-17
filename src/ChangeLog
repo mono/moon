@@ -1,5 +1,11 @@
 2009-06-17  Alan McGovern  <amcgovern@novell.com>
 
+	* uielement.cpp: Changing UIElement::Visibility should also
+	  invalidate the parents measure. This allows DRT 2050 to
+	  complete without timing out.
+
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
 	* uielement.cpp: Changing UIElement.Visibility should result
 	  in the measure being invalidated.
 
