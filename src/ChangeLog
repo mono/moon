@@ -1,5 +1,13 @@
 2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* downloader.cpp|h: Add an Open overload which takes an Uri
+	instead of a string.
+
+	* deepzoomimagetilesource.cpp:
+	* bitmapimage.cpp: Use the Uri overload of Downloader::Open.
+
+2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp: When we stop, emit the StopEvent.
 
 	* mediaelement.cpp: Don't return a CurrentPosition > NaturalDuration.

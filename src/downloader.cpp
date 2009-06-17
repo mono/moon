@@ -336,17 +336,14 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 }
 
 void
-Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy policy)
+Downloader::OpenInitialize ()
 {
-	LOG_DOWNLOADER ("Downloader::Open (%s, %s)\n", verb, uri);
-	
 	send_queued = false;
 	started = false;
 	aborted = false;
 	completed = false;
 	file_size = -2;
 	total = 0;
-	access_policy = policy;
 
 	g_free (failed_msg);
 	g_free (filename);
@@ -354,18 +351,44 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	failed_msg = NULL;
 	filename = NULL;
 	buffer = NULL;
+}
+
+void
+Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy policy)
+{
+	LOG_DOWNLOADER ("Downloader::Open (%s, %s)\n", verb, uri);
+	
+	OpenInitialize ();
 	
 	Uri *url = new Uri ();
-	if (!url->Parse (uri))
-		return;
+	if (url->Parse (uri))
+		Open (verb, url, policy);
+		
+	delete url;
+}
+
+void
+Downloader::Open (const char *verb, Uri *url, DownloaderAccessPolicy policy)
+{
+	Uri *src_uri = NULL;
+	
+	LOG_DOWNLOADER ("Downloader::Open (%s, %p)\n", verb, url);
+	
+	OpenInitialize ();
+	
+	access_policy = policy;
 	
 	if (!url->isAbsolute) {
 		const char *source_location = NULL;
 		source_location = GetDeployment ()->GetXapLocation ();
 		if (source_location) {
-			if (!url->Parse (source_location))
+			src_uri = new Uri ();
+			if (!src_uri->Parse (source_location)) {
+				delete src_uri;
 				return;
-			url->Combine (uri);
+			}
+			src_uri->Combine (url);
+			url = src_uri;
 		}
 	}
 
@@ -377,12 +400,12 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 		failed_msg = g_strdup ("Security Policy Violation");
 		Abort ();
 		g_free (location);
-		delete url;
+		delete src_uri;
 		return;
 	}
 	g_free (location);
 
-	if (strncmp (uri, "mms://", 6) == 0) {
+	if (url->GetScheme () != NULL && strcmp (url->GetScheme (), "mms") == 0) {
 		internal_dl = (InternalDownloader *) new MmsDownloader (this);
 	} else {
 		internal_dl = (InternalDownloader *) new FileDownloader (this);
@@ -394,7 +417,7 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	char *struri = url->ToString ();
 	internal_dl->Open (verb, struri);
 	g_free (struri);
-	delete url;
+	delete src_uri;
 }
 
 void

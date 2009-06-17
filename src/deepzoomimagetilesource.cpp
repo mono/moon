@@ -193,7 +193,7 @@ DeepZoomImageTileSource::download_uri (const char* url)
 
 	LOG_MSI ("DZITS: download_uri (%s)\n", uri->ToString ());
 
-	downloader->Open ("GET", uri->ToString (), NoPolicy);
+	downloader->Open ("GET", uri, NoPolicy);
 	
 	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 	downloader->AddHandler (downloader->DownloadFailedEvent, downloader_failed, this);

@@ -106,6 +106,8 @@ class Downloader : public DependencyObject {
 
 	DownloaderAccessPolicy access_policy;
 
+	void OpenInitialize ();
+	
  protected:
 	virtual ~Downloader ();
 	
@@ -136,6 +138,7 @@ class Downloader : public DependencyObject {
 	char *GetResponseText (const char *Partname, gint64 *size);
 	char *GetDownloadedFilename (const char *partname);
 	void Open (const char *verb, const char *uri, DownloaderAccessPolicy policy);
+	void Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy);
 	void SendInternal ();
 	void Send ();
 	void SendNow ();
