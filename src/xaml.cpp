@@ -74,8 +74,6 @@ class XamlElementInfoManaged;
 class XamlElementInstanceManaged;
 class XamlElementInfoImportedManaged;
 class XamlElementInstanceTemplate;
-class XamlElementInfoStaticResource;
-class XamlElementInstanceStaticResource;
 
 #define INTERNAL_IGNORABLE_ELEMENT "MoonlightInternalIgnorableElement"
 
@@ -98,27 +96,16 @@ static const char* default_namespace_names [] = {
 #define PRIMITIVE_NAMESPACE_URI "clr-namespace:System;assembly=mscorlib"
 
 
-static const char* begin_buffering_element_names [] = {
-	"DataTemplate",
-	"ItemTemplate",
-	"ItemsPanelTemplate",
-	"ControlTemplate",
-	NULL
-};
-
 static bool value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop_name, const char *str, Value **v);
 static bool dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 static bool set_managed_attached_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 static void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child, bool fail_if_no_prop);
 static void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
 static void value_type_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
-static bool handle_markup_in_managed (const char* attr_value);
-static bool handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char* attr_name, const char* attr_value, DependencyProperty *prop, Value **value);
 static bool element_begins_buffering (Type::Kind kind);
 static bool is_managed_kind (Type::Kind kind);
 static bool kind_requires_managed_load (Type::Kind kind);
 static bool is_legal_top_level_kind (Type::Kind kind);
-static bool is_static_resource_element (const char *el);
 static Value *lookup_resource_dictionary (ResourceDictionary *rd, const char *name, bool *exists);
 static void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *format, ...);
 
@@ -674,12 +661,6 @@ class XamlParserInfo {
 		xml_buffer_start_index = 0;
 	}
 
-	bool LookupNamedResource (const char *name, Value **v)
-	{
-		*v = xaml_lookup_named_item (this, current_element, name);
-		return *v != NULL;
-	}
-
 	FrameworkTemplate *GetTemplateParent (XamlElementInstance *item)
 	{
 		XamlElementInstance *parent = item->parent;
@@ -853,35 +834,6 @@ class XamlElementInstanceEnum : public XamlElementInstance {
 	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value) { return CreateEnumFromString (value); }
 };
 
-class XamlElementInfoStaticResource : public XamlElementInfo {
- public:
-	XamlElementInfoStaticResource (const char *name) : XamlElementInfo (NULL, name, Type::INVALID)
-	{
-	}
-
-	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
-	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
-	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name) { return NULL; }
-};
-
-class XamlElementInstanceStaticResource : public XamlElementInstance {
-
- public:
-	XamlElementInstanceStaticResource (XamlElementInfoStaticResource *element_info, const char *name, ElementType type);
-
-	virtual bool IsDependencyObject () { return false; }
-	virtual Value *GetAsValue () { return value; }
-
-	virtual DependencyObject *CreateItem () { return NULL; }
-	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) { return false; }
-	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value) { return false; }
-	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) { }
-	virtual void SetAttributes (XamlParserInfo *p, const char **attr);
-
-	virtual bool TrySetContentProperty (XamlParserInfo *p, XamlElementInstance *value) { return false; }
-	virtual bool TrySetContentProperty (XamlParserInfo *p, const char *value) { return false; }
-};
-
 class XamlElementInstanceTemplate : public XamlElementInstanceNative {
 public:
 	XamlElementInstanceTemplate (XamlElementInfoNative *element_info, XamlParserInfo *parser_info, const char *name, ElementType type, bool create_item = true)
@@ -910,9 +862,6 @@ class DefaultNamespace : public XamlNamespace {
 
 		if (enums_is_enum_name (el))
 			return new XamlElementInfoEnum (g_strdup (el));
-
-		if (is_static_resource_element (el))
-			return new XamlElementInfoStaticResource (g_strdup (el));
 
 		XamlElementInfo* managed_element = create_element_info_from_imported_managed_type (p, el, attr, create);
 		if (managed_element)
@@ -1523,9 +1472,9 @@ start_element (void *data, const char *el, const char **attr)
 	
 	if (elem) {
 		if (p->hydrate_expecting){
+			/*
 			Type::Kind expecting_type =  p->hydrate_expecting->GetObjectType ();
 
-			/*
 			if (!types->IsSubclassOf (expecting_type, elem->GetKind ())) {
 				parser_error (p, el, NULL, -1, "Invalid top-level element found %s, expecting %s", el,
 					      types->Find (expecting_type)->GetName ());
@@ -3093,18 +3042,12 @@ kind_requires_managed_load (Type::Kind kind)
 	return false;
 }
 
-static
-bool is_legal_top_level_kind (Type::Kind kind)
+static bool
+is_legal_top_level_kind (Type::Kind kind)
 {
 	if (kind == Type::MANAGED || kind == Type::OBJECT || Type::IsSubclassOf (kind, Type::DEPENDENCY_OBJECT))
 		return true;
 	return false;
-}
-
-static bool
-is_static_resource_element (const char *el)
-{
-	return !strcmp (el, "StaticResource");
 }
 
 // NOTE: Keep definition in sync with class/System.Windows/Mono/NativeMethods.cs
@@ -3994,7 +3937,7 @@ XamlElementInstanceNative::CreateItem ()
 bool
 XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
 {
-	if (property->info->RequiresManagedSet ())
+	if (property->info->RequiresManagedSet () || value->info->RequiresManagedSet ())
 		return p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, GetAsValue (), this, GetParentPointer (), property->info->xmlns, property->element_name, value->GetAsValue (), NULL);
 
 	return dependency_object_set_property (p, this, property, value);
@@ -4083,42 +4026,6 @@ XamlElementInstance *
 XamlElementInfoEnum::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
 {
 	XamlElementInstance *res = new XamlElementInstanceEnum (this, name, XamlElementInstance::ELEMENT);
-	return res;
-}
-
-XamlElementInstanceStaticResource::XamlElementInstanceStaticResource (XamlElementInfoStaticResource *element_info, const char *name, ElementType type) :
-	XamlElementInstance (element_info, name, type)
-{
-}
-
-void
-XamlElementInstanceStaticResource::SetAttributes (XamlParserInfo *p, const char **attr)
-{
-	for (int i = 0; attr [i]; i += 2) {
-		// Skip empty attrs
-		if (attr[i + 1] == NULL || attr[i + 1][0] == '\0')
-			continue;
-
-		if (!strcmp ("ResourceKey", attr [i])) {
-			Value *v = xaml_lookup_named_item (p, this, attr [i + 1]);
-			if (!v)
-				parser_error (p, element_name, attr [i], 2024,
-					      "Could not locate StaticResource %s.", attr [i + 1]);
-			value = v;
-		}
-	}
-}
-
-XamlElementInstance *
-XamlElementInfoStaticResource::CreateElementInstance (XamlParserInfo *p)
-{
-	return new XamlElementInstanceStaticResource (this, name, XamlElementInstance::ELEMENT);
-}
-
-XamlElementInstance *
-XamlElementInfoStaticResource::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
-{
-	XamlElementInstance *res = new XamlElementInstanceStaticResource (this, name, XamlElementInstance::ELEMENT);
 	return res;
 }
 
@@ -4556,7 +4463,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 					sb->SetIsSealed (false);
 				}
 
-				if (!is_managed_kind (value->info->GetKind ())) {
+				if (!is_managed_kind (value->info->GetKind ()) && !value->info->RequiresManagedSet()) {
 					if (!dep->SetValueWithError (prop, value->GetAsValue (), &err))
 						parser_error (p, item->element_name, NULL, err.code, err.message);
 				} else {
@@ -4779,15 +4686,8 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			bool need_setvalue = true;
 			bool need_managed = false;
 			if (attr[i+1][0] == '{' && attr[i+1][strlen(attr[i+1]) - 1] == '}') {
-				need_setvalue = handle_xaml_markup_extension (p, item, attr [i], attr_value, prop, &v);
-				v_set = v != NULL;
-
-				if (p->error_args) {
-					g_free (attr_value);
-					return;
-				}
-
-				need_managed = handle_markup_in_managed (attr_value);
+				need_setvalue = true;
+				need_managed = true;
 			}
 
 			if (!need_setvalue) {
@@ -4795,7 +4695,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				continue;
 			}
 
-			if (!need_managed && (attr_value [0] && attr_value [0] == '{') && (attr_value [1] && attr_value [1] == '}')) {
+			if ((attr_value [0] && attr_value [0] == '{') && (attr_value [1] && attr_value [1] == '}')) {
 				// {} is an escape sequence so you can have strings like {StaticResource}
 				char *nv = attr_value;
 				attr_value = g_strdup (attr_value + 2);
@@ -4860,156 +4760,6 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 }
 
 
-enum XamlMarkupParseError {
-	XamlMarkupParseErrorNone,
-	XamlMarkupParseErrorEmpty,
-	XamlMarkupParseErrorSyntax,
-};
-
-enum XamlMarkupExtensionType {
-	XamlMarkupExtensionNone = -1,
-	XamlMarkupExtensionStaticResource,
-	XamlMarkupExtensionTemplateBinding,
-	XamlMarkupExtensionBinding,
-};
-
-static char *
-xaml_markup_parse_argument (const char **markup, XamlMarkupParseError *err)
-{
-	const char *start, *inptr = *markup;
-	
-	while (*inptr && g_ascii_isspace (*inptr))
-		inptr++;
-	
-	start = inptr;
-	while (*inptr && *inptr != '}')
-		inptr++;
-	
-	if (*inptr != '}') {
-		*err = XamlMarkupParseErrorSyntax;
-		return NULL;
-	}
-	
-	if (inptr == start) {
-		*err = XamlMarkupParseErrorEmpty;
-		return NULL;
-	}
-	
-	*err = XamlMarkupParseErrorNone;
-	*markup = inptr + 1;
-	
-	while (g_ascii_isspace (inptr[-1]))
-		inptr--;
-	
-	return g_strndup (start, inptr - start);
-}
-
-#define MARKUP_EXTENSION(name) { XamlMarkupExtension##name, #name, sizeof (#name) - 1 }
-
-static struct {
-	XamlMarkupExtensionType type;
-	const char *name;
-	size_t n;
-} markup_extensions[] = {
-	MARKUP_EXTENSION (StaticResource),
-	MARKUP_EXTENSION (TemplateBinding),
-	MARKUP_EXTENSION (Binding),
-};
-
-static XamlMarkupExtensionType
-xaml_markup_extension_type (const char *name, size_t n)
-{
-	guint i;
-	
-	for (i = 0; i < G_N_ELEMENTS (markup_extensions); i++) {
-		if (markup_extensions[i].n == n && !strncmp (markup_extensions[i].name, name, n))
-			return markup_extensions[i].type;
-	}
-	
-	return XamlMarkupExtensionNone;
-}
-
-static bool
-handle_markup_in_managed (const char* attr_value)
-{
-	XamlMarkupExtensionType type = XamlMarkupExtensionNone;
-	const char *inptr, *start = attr_value + 1; // skip the initial '{'
-	// Find the beginning of the extension name
-	while (*start && g_ascii_isspace (*start))
-		start++;
-	
-	// Find the end of the extension name
-	inptr = start;
-	while (*inptr && *inptr != '}' && !g_ascii_isspace (*inptr))
-		inptr++;
-	
-	type = xaml_markup_extension_type (start, inptr - start);
-
-	return type == XamlMarkupExtensionBinding || type == XamlMarkupExtensionTemplateBinding;
-}
-
-// return value = do we need to SetValue with the [Out] Value* ?
-//
-static bool
-handle_xaml_markup_extension (XamlParserInfo *p, XamlElementInstance *item, const char *attr_name, const char *attr_value, DependencyProperty *prop, Value **value)
-{
-	const char *inptr, *start = attr_value + 1; // skip the initial '{'
-	XamlMarkupExtensionType type = XamlMarkupExtensionNone;
-	XamlMarkupParseError err;
-	char *argument;
-	
-	// Find the beginning of the extension name
-	while (*start && g_ascii_isspace (*start))
-		start++;
-	
-	// Find the end of the extension name
-	inptr = start;
-	while (*inptr && *inptr != '}' && !g_ascii_isspace (*inptr))
-		inptr++;
-	
-	type = xaml_markup_extension_type (start, inptr - start);
-	
-	switch (type) {
-	case XamlMarkupExtensionStaticResource:
-		if (!(argument = xaml_markup_parse_argument (&inptr, &err)) || *inptr != '\0') {
-			switch (err) {
-			case XamlMarkupParseErrorEmpty:
-				parser_error (p, item->element_name, attr_name, 2024,
-					      "Empty StaticResource reference for property %s.",
-					      attr_name);
-				break;
-			default:
-				parser_error (p, item->element_name, attr_name, 2024,
-					      "Syntax error in StaticResource markup for property %s.",
-					      attr_name);
-				break;
-			}
-			
-			g_free (argument);
-			return false;
-		} else {
-			if (!p->LookupNamedResource (argument, value)) {
-				// XXX don't know the proper values here...
-				parser_error (p, item->element_name, attr_name, 2024,
-					      "Could not locate StaticResource %s for property %s.",
-					      argument, attr_name);
-				g_free (argument);
-				return false;
-			}
-
-			convert_value_type (prop->GetPropertyType (), attr_name, value);
-
-			g_free (argument);
-			return true;
-		}
-		break;
-	default:
-		return true;
-	}
-}
-
-
-	
 static Value *
 lookup_named_item (XamlElementInstance *top, const char *name)
 {

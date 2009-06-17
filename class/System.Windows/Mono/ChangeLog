@@ -1,3 +1,25 @@
+2009-06-16  Chris Toshok  <toshok@ximian.com>
+
+	* StaticResource.cs: add an internal class so that the managed
+	parser can easily create StaticResource objects from
+	<StaticResource> elements.
+
+	* ManagedXamlLoader.cs (SetPropertyFromValue): if obj_value is a
+	StaticResource, use a hack and replace obj_value with a
+	"{StaticResource $resourceKey}" string so we re-use the same code
+	path.
+	(TrySetExpression): we need to call ConvertType on the
+	StaticResource's lookup value.  This allows us to use int
+	resources for double properties.
+	(LookupPropertyObject): clean up a tiny bit, and we never need to
+	return an *actual* value here.  the type is the important part, so
+	just return a nulled object with the correct kind.
+
+2009-06-14  Chris Toshok  <toshok@ximian.com>
+
+	* MarkupExpressionParser.cs (ParseExpression): fix compiler
+	warnings.
+
 2009-06-16  Andreia Gaita  <avidigal@novell.com>
 
 	* NativeDependencyObjectHelper.cs: (CreateObject) don't ref.

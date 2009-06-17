@@ -261,24 +261,22 @@ namespace Mono.Xaml
 				value.IsNull = true;
 				value.k = mt.native_handle;
 				return true;
-			} else
+			} else {
+
 				pi = parent.GetType ().GetProperty (name.Substring (dot + 1), BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
-			if (pi == null) {
-				value = Value.Empty;
-				return false;
-			}
+				if (pi == null) {
+					value = Value.Empty;
+					return false;
+				}
 
-			object obj = pi.GetValue (parent, null);
-			if (obj == null) {
 				ManagedType mt = Deployment.Current.Types.Find (pi.PropertyType);
 				value = Value.Empty;
 				value.k = mt.native_handle;
 				value.IsNull = true;
-			} else
-				value = Value.FromObject (obj);
 
-			return true;
+				return true;
+			}
 		}
 
 		private unsafe bool LookupComponentFromName (Value* top_level, string name, bool create, out Value value)
@@ -392,6 +390,7 @@ namespace Mono.Xaml
 			}
 			else {
 				// static resources fall into this
+				o = ConvertType (null, prop.PropertyType, o);
 				dob.SetValue (prop, o);
 			}
 
@@ -942,7 +941,12 @@ namespace Mono.Xaml
 				FrameworkElement fe = (FrameworkElement) target;
 				fe.SetBinding (DependencyProperty.Lookup (fe.GetKind (), pi.Name), (Binding) obj_value);
 				return true;
-			};
+			}
+
+			if (obj_value is StaticResource) {
+				StaticResource sr = (StaticResource)obj_value;
+				obj_value = "{StaticResource " + sr.ResourceKey + "}";
+			}
 
 			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
 				IList the_list = (IList) pi.GetValue (target, null);

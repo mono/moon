@@ -75,12 +75,14 @@ namespace Mono.Xaml {
 			string orig = expression;
 
 			object result = null;
-			if (TryHandler ("^{\\s*Binding\\s*", ParseBinding, ref expression, out result))
-				;
-			else if (TryHandler ("^{\\s*StaticResource\\s*", ParseStaticResource, ref expression, out result))
-				;
-			else if (TryHandler ("^{\\s*TemplateBinding\\s*", ParseTemplateBinding, ref expression, out result))
-				;
+			bool rv = false;
+
+			if (!rv)
+				rv = TryHandler ("^{\\s*Binding\\s*", ParseBinding, ref expression, out result);
+			if (!rv)
+				rv = TryHandler ("^{\\s*StaticResource\\s*", ParseStaticResource, ref expression, out result);
+			if (!rv)
+				rv = TryHandler ("^{\\s*TemplateBinding\\s*", ParseTemplateBinding, ref expression, out result);
 
 			return result;
 		}

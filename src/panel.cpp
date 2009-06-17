@@ -22,27 +22,12 @@ Panel::Panel ()
 {
 	SetObjectType (Type::PANEL);
 	mouse_over = NULL;
+
+	SetSubtreeObject (GetChildren());
 }
 
 Panel::~Panel()
 {
-}
-
-DependencyObject *
-Panel::GetSubtreeObject ()
-{
-	DependencyObject *obj;
-	
-	if ((obj = UIElement::GetSubtreeObject ()))
-		return obj;
-	
-	// cause our ChildrenProperty to be auto-created
-	obj = GetChildren ();
-	
-	// set it as our subtree object
-	SetSubtreeObject (obj);
-	
-	return obj;
 }
 
 #define DEBUG_BOUNDS 0
@@ -170,10 +155,6 @@ Panel::MeasureOverride (Size availableSize)
 	return result;
 }
 
-//
-// Intercept any changes to the children property and mirror that into our
-// own variable
-//
 void
 Panel::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {

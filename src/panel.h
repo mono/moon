@@ -62,8 +62,6 @@ class Panel : public FrameworkElement {
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);
 
-	virtual DependencyObject *GetSubtreeObject ();
-	
 	//
 	// Property Accessors
 	//

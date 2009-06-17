@@ -1583,11 +1583,11 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 				if (error->number)
 					g_warning ("the error was: %s", error->message);
 			}
-		}
 
-		if (property && property->GetChangedCallback () != NULL) {
-			PropertyChangeHandler callback = property->GetChangedCallback ();
-			callback (this, &args, error, NULL);
+			if (property && property->GetChangedCallback () != NULL) {
+				PropertyChangeHandler callback = property->GetChangedCallback ();
+				callback (this, &args, error, NULL);
+			}
 		}
  	}
 }

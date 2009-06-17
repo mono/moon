@@ -1,3 +1,34 @@
+2009-06-16  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlElementInfoStaticResource,
+	XamlElementInstanceStaticResource): remove these classes.
+	(begin_buffering_element_names): remove this unused variable.
+	(XamlParserInfo::LookupNamedResource): remove.
+	(DefaultNamespace::FindElement): remove the
+	XamlElementInfoStaticResource case, and just let the managed
+	loader create the StaticResource element itself.
+	(is_static_resource_element): remove.
+	(XamlElementInstanceNative::SetProperty): defer to the loader if
+	either the property or the value RequiresManagedSet.
+	(dependency_object_set_property): defer to the loader if the value
+	RequiresManagedSet.
+	(dependency_object_set_attributes): remove all processing of
+	markup extensions from unmanaged code.
+	(xaml_markup_parse_argument): remove.
+	(xaml_markup_extension_type): remove.
+	(handle_markup_in_managed): remove.
+	(handle_xaml_markup_extension): remove.
+	
+	* panel.h|cpp (Panel::Panel): just set our subtree object here.
+	(Panel::GetSubtreeObject): remove.
+	
+	* provider.cpp (AutoCreatePropertyValueProvider::GetPropertyValue):
+	don't notify listeners when creating an auto-created value.
+
+	* dependencyobject.cpp (DependencyObject::ProviderValueChanged):
+	only call the property's change callback if we're notifying
+	listeners.
+
 2009-06-17  Andreia Gaita  <avidigal@novell.com>
 
 	* dependencyobject.cpp: (Emit) if types have been destroyed, bail out
