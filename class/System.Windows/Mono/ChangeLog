@@ -1,5 +1,10 @@
 2009-06-17  Chris Toshok  <toshok@ximian.com>
 
+	* ManagedXamlLoader.cs (ConvertType): use a MoonlightTypeConverter
+	if there's no converter for the property (or the property type).
+
+2009-06-17  Chris Toshok  <toshok@ximian.com>
+
 	* MarkupExpressionParser.cs (LookupNamedResource): throw a
 	XamlParseException if name is null.
 

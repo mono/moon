@@ -1056,6 +1056,14 @@ namespace Mono.Xaml
 				return value;
 
 			TypeConverter converter = Helper.GetConverterFor (pi, t);
+			if (converter == null) {
+				try {
+					converter = new MoonlightTypeConverter (pi == null ? null : pi.Name, t);
+				} catch {
+					converter = null;
+				}
+			}
+
 			if (converter != null && converter.CanConvertFrom (value.GetType ()))
 				return converter.ConvertFrom (value);
 
