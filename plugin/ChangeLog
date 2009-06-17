@@ -1,3 +1,11 @@
+2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: SetXapLocation must be set before 
+	ManagedInitializeDeployment is called, since
+	ManagedInitializeDeployment ends up executing managed code, which
+	may need SetXapLocation to be set (for downloading files). 
+	MS DRT #483 is an example.
+
 2009-06-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin.cpp: Set default cross_domain_app to false since using

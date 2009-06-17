@@ -1218,8 +1218,8 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 	source_location = g_strdup (url);
 
 	Deployment::GetCurrent ()->Reinitialize ();
-	ManagedInitializeDeployment (fname);
 	GetDeployment()->SetXapLocation (url);
+	ManagedInitializeDeployment (fname);
 }
 
 void
