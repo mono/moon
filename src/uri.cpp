@@ -20,8 +20,30 @@
 
 
 /* see rfc1738, section 2.2 */
-#define is_unsafe(c) (((unsigned char) c) <= 0x1f || ((unsigned char) c) == 0x7f)
-
+static bool is_unsafe (unsigned char c)
+{
+	if (c <= 0x1f || c >= 0x7f)
+		return true;
+	
+	switch (c) {
+	case '<':
+	case '>':
+	case '"':
+	case '#':
+	case '%':
+	case '{':
+	case '}':
+	case '|':
+	case '\\':
+	case '^':
+	case '~':
+	case '[':
+	case ']':
+	case '`':
+		return true;
+	}
+	return false;
+}
 
 Uri::Uri ()
 {
@@ -461,7 +483,7 @@ append_url_encoded (GString *string, const char *in, const char *extra)
 		g_string_append_len (string, start, inptr - start);
 		
 		while (*inptr && (is_unsafe (*inptr) || strchr (extra, *inptr)))
-			g_string_append_printf (string, "%%%.02hx", *inptr++);
+			g_string_append_printf (string, "%%%.02hhx", *inptr++);
 	}
 }
 

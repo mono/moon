@@ -1,5 +1,13 @@
 2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* uri.cpp: Flag a lot more characters as url unsafe, and 
+	fix printf specifiers for url encoded characters to not 
+	include extra 'ff' sequences for every encoded character.
+
+	This fixes parts of MS DRT #641.
+
+2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* downloader.cpp|h: Add an Open overload which takes an Uri
 	instead of a string.
 
