@@ -1175,7 +1175,7 @@ Surface::SetMouseCapture (UIElement *capture)
 		return capture == captured || capture == pendingCapture;
 
 	if (emittingMouseEvent) {
-			pendingCapture = capture;
+		pendingCapture = capture;
 	}
 	else {
 		PerformCapture (capture);
@@ -1648,7 +1648,27 @@ Surface::FullScreenKeyHandled (GdkEventKey *key)
 	if (key->keyval == GDK_Escape)
 		SetFullScreen (false);
 	
-	return true;
+	switch (key->keyval) {
+		case GDK_Down:
+		case GDK_Up:
+		case GDK_Left:
+		case GDK_Right:
+		case GDK_KP_Space:
+		case GDK_space:
+		case GDK_Tab:
+		case GDK_Page_Down:
+		case GDK_Page_Up:
+		case GDK_Home:
+		case GDK_End:
+		case GDK_Return:
+		case GDK_KP_Enter:
+			return false;
+			
+		// Explicitly listing GDK_Escape here as it should never bubble up
+		case GDK_Escape:
+		default:
+			return true;
+	}
 }
 
 gboolean
