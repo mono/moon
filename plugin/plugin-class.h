@@ -894,7 +894,7 @@ struct MoonlightPasswordBoxType : MoonlightControlType {
 struct MoonlightPasswordBoxObject : MoonlightControlObject {
 	MoonlightPasswordBoxObject (NPP instance) : MoonlightControlObject (instance)
 	{
-		moonlight_type = Type::TEXTBOX;
+		moonlight_type = Type::PASSWORDBOX;
 	}
 
 	virtual bool Invoke (int id, NPIdentifier name,
