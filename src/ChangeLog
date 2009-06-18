@@ -1,3 +1,14 @@
+2009-06-18  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* uielement.h:
+	* control.cpp: When the visual parent changes on a Control, it
+	  needs to search up the visual tree to find out the Enabled
+	  state of the first Control it finds. When raising the
+	  IsEnabledChanged events, the control must emit its event
+	  before controls in its subtree emit their events. Fixes drt
+	  911.
+
 2009-06-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (Paste): Don't allow pastes to exceed MaxLength and

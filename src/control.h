@@ -54,6 +54,7 @@ public:
 	virtual void ElementRemoved (UIElement *item);
 	
 	virtual void OnApplyTemplate ();
+	virtual void SetVisualParent (UIElement *visual_parent);
 
 	virtual bool Focus (bool recurse = true);
 	

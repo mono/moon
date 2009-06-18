@@ -105,15 +105,46 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	NotifyListenersOfPropertyChange (args, error);
 }
 
+void
+Control::SetVisualParent (UIElement *visual_parent)
+{
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	FrameworkElement::SetVisualParent (visual_parent);
+	
+	if (!visual_parent) {
+		enabled_parent = true;
+	} else {
+		UIElement *parent = GetVisualParent ();
+		while (parent) {
+			if (!types->IsSubclassOf (parent->GetObjectType (), Type::CONTROL)) {
+				parent = parent->GetVisualParent ();
+			}
+			else {
+				this->enabled_parent = ((Control *)parent)->GetIsEnabled ();
+				break;
+			}
+		}
+	}
+	SetValue (Control::IsEnabledProperty, Value (enabled_local));
+}
+
 bool
 Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
+	
 	if (property->GetId () == Control::IsEnabledProperty) {
+		if (GetName () && !strcmp (GetName (), "multilineTextBox")) {
+			printf ("\nSetting");
+			//getchar ();
+		}
 		this->enabled_local = value->AsBool ();
 
-		UpdateEnabled ();
-		Value v (enabled_local && enabled_parent);
-		return FrameworkElement::SetValueWithErrorImpl (property, &v, error);
+		
+		Value v (enabled_local && (enabled_parent));
+		bool b = FrameworkElement::SetValueWithErrorImpl (property, &v, error);
+		if (b)
+			UpdateEnabled ();
+		return b;
 	}
 	return FrameworkElement::SetValueWithErrorImpl (property, value, error);
 }
@@ -254,7 +285,7 @@ Control::UpdateEnabled ()
 			continue;
 
 		Control *control = (Control *)child;
-		control->enabled_parent = enabled_local && enabled_parent;
+		control->enabled_parent = (enabled_local && enabled_parent);
 		control->SetValue (Control::IsEnabledProperty, Value (control->enabled_local));
 		walker.SkipBranch ();
 	}
