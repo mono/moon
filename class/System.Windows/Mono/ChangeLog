@@ -1,3 +1,7 @@
+2009-06-18  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Value.cs: Comment some code to avoid crash when using FontSource
+
 2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* GeneratedPInvokes.cs: regen

@@ -1,3 +1,7 @@
+2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* textblock.cpp: Avoid crash when using FontSource
+
 2009-06-18  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h:

@@ -42,9 +42,12 @@ namespace Mono {
 		public IntPtr source;
 	}
 
+#if false
+	// does not work
 	internal struct UnmanagedFontSource {
 		public IntPtr stream;
 	}
+#endif
 
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct UnmanagedPropertyPath {
@@ -209,7 +212,8 @@ namespace Mono {
 				UnmanagedFontFamily *family = (UnmanagedFontFamily*)value->u.p;
 				return new FontFamily (family == null ? null : Marshal.PtrToStringAuto (family->source));
 			}
-
+#if false
+			// does not work, treat it like MANAGED for the time being
 			case Kind.FONTSOURCE: {
 				UnmanagedFontSource *source = (UnmanagedFontSource *) value->u.p;
 				ManagedStreamCallbacks callbacks;
@@ -222,7 +226,7 @@ namespace Mono {
 					
 				return new FontSource (wrapper.stream);
 			}
-
+#endif
 			case Kind.PROPERTYPATH: {
 				UnmanagedPropertyPath *propertypath = (UnmanagedPropertyPath *) value->u.p;
 				if (propertypath == null)
@@ -486,6 +490,8 @@ namespace Mono {
 					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontFamily));
 					Marshal.StructureToPtr (family, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
+#if false
+				// does not work, treat it as MANAGED for the time being
 				else if (v is FontSource) {
 					FontSource source = (FontSource) v;
 					
@@ -500,6 +506,7 @@ namespace Mono {
 						value.IsNull = true;
 					}
 				}
+#endif
 				else if (v is PropertyPath) {
 					PropertyPath propertypath = (PropertyPath) v;
 					value.k = Kind.PROPERTYPATH;

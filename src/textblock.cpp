@@ -865,6 +865,9 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		dirty = layout->SetTextAlignment ((TextAlignment) args->GetNewValue()->AsInt32 ());
 	} else if (args->GetId () == TextBlock::PaddingProperty) {
 		dirty = true;
+	} else if (args->GetId () == TextBlock::FontSourceProperty) {
+		// FIXME: avoid crashing until this gets implemented (see DRT426-428)
+		g_warning ("TextBlock::FontSourceProperty is not implemented");
 	}
 	
 	if (invalidate) {
