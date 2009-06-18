@@ -1,3 +1,7 @@
+2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BaseDomainPolicy.cs: Use SourceUri instead of (removed) RootUri
+
 2009-06-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs: SL does not follow RFC2616 for 301 

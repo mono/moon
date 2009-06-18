@@ -90,7 +90,11 @@ class PluginInstance
 	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetSource () { return this->source; }
 	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetSourceOriginal () { return this->source_original; }
+	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetSourceLocation () { return this->source_location; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetSourceLocationOriginal () { return this->source_location_original; }
 	char *GetId () { return this->id; }
 	
 	void SetSource (const char *value);
@@ -182,7 +186,9 @@ class PluginInstance
 	// Property fields
 	char *initParams;
 	char *source;
+	char *source_original;
 	char *source_location;
+	char *source_location_original;
 	guint source_idle;
 	char *onLoad;
 	char *background;

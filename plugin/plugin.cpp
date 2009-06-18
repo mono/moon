@@ -380,8 +380,10 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	
 	// Property fields
 	source_location = NULL;
+	source_location_original = NULL;
 	initParams = NULL;
 	source = NULL;
+	source_original = NULL;
 	source_idle = 0;
 	onLoad = NULL;
 	onError = NULL;
@@ -473,6 +475,9 @@ PluginInstance::~PluginInstance ()
 #endif
 
 	g_free (source);
+	g_free (source_original);
+	g_free (source_location);
+	g_free (source_location_original);
 
 	if (source_idle)
 		g_source_remove (source_idle);
@@ -578,8 +583,11 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			 *
 			 * TODO: Find a site that has data:application/x-silverlight,SOMEDATA and figure out what we do with it
 			 */
-			if (g_ascii_strncasecmp (argv[i], "data:application/x-silverlight", 30) != 0 && argv[i][strlen(argv[i])-1] != ',')
+			if (g_ascii_strncasecmp (argv[i], "data:application/x-silverlight", 30) != 0 && argv[i][strlen(argv[i])-1] != ',') {
 				source = g_strdup (argv[i]);
+				// we must be able to retrieve the original source, e.g. after a redirect
+				source_original = g_strdup (source);
+			}
 		}
 		else if (!g_ascii_strcasecmp (argn[i], "background")) {
 			background = g_strdup (argv[i]);
@@ -613,6 +621,9 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		  //fprintf (stderr, "unhandled attribute %s='%s' in PluginInstance::Initialize\n", argn[i], argv[i]);
 		}
 	}
+
+	// like 'source' the original location can also be required later (for cross-domain checks after redirections)
+	source_location_original = GetPageLocation ();
 
 	guint32 supportsWindowless = FALSE; // NPBool + padding
 
@@ -1357,6 +1368,11 @@ PluginInstance::CrossDomainApplicationCheck (const char *source)
 	char* page_url = GetPageLocation ();
 	// note: source might not be an absolute URL at this stage - but that only indicates that it's relative to the page url
 	cross_domain_app = !same_site_of_origin (page_url, source);
+	if (!cross_domain_app) {
+		// we need also to consider a web page having cross-domain XAP that redirects to a XAP on the SOO
+		// this will still be considered a cross-domain
+		cross_domain_app = !same_site_of_origin (page_url, source_original);
+	}
 	g_free (page_url);
 
 	// if the application did not specify 'enablehtmlaccess' then we use its default value

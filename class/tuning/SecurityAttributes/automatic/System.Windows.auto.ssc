@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 462 methods
+# 463 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -17,10 +17,11 @@
 +SSC-M: System.Object Mono.MoonlightValueConverter::Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
 +SSC-M: Mono.INativeDependencyObjectWrapper Mono.NativeDependencyObjectHelper::FromIntPtr(System.IntPtr)
-+SSC-M: System.Object Mono.NativeDependencyObjectHelper::CreateObject(Mono.Kind,System.IntPtr)
 +SSC-M: System.String Mono.NativeMethods::plugin_instance_get_init_params(System.IntPtr)
 +SSC-M: System.String Mono.NativeMethods::plugin_instance_get_source(System.IntPtr)
 +SSC-M: System.String Mono.NativeMethods::plugin_instance_get_source_location(System.IntPtr)
++SSC-M: System.String Mono.NativeMethods::plugin_instance_get_source_location_original(System.IntPtr)
++SSC-M: System.String Mono.NativeMethods::plugin_instance_get_source_original(System.IntPtr)
 +SSC-M: System.Int32 Mono.NativeMethods::collection_add(System.IntPtr,Mono.Value&)
 +SSC-M: System.IntPtr Mono.NativeMethods::collection_get_value_at(System.IntPtr,System.Int32)
 +SSC-M: System.Boolean Mono.NativeMethods::collection_insert(System.IntPtr,System.Int32,Mono.Value&)

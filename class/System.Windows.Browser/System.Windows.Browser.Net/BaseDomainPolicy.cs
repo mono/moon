@@ -48,7 +48,7 @@ namespace System.Windows.Browser.Net {
 		static public Uri ApplicationUri { get; set; }
 #else
 		static public Uri ApplicationUri {
-			get { return PluginHost.RootUri; }
+			get { return PluginHost.SourceUri; }
 		}
 #endif
 

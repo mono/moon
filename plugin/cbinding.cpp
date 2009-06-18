@@ -105,6 +105,26 @@ plugin_instance_get_source_location (PluginInstance *instance)
 }
 
 
+const char *
+plugin_instance_get_source_location_original (PluginInstance *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetSourceLocationOriginal ();
+}
+
+
+const char *
+plugin_instance_get_source_original (PluginInstance *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetSourceOriginal ();
+}
+
+
 Surface *
 plugin_instance_get_surface (PluginInstance *instance)
 {

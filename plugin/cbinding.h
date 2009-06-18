@@ -817,6 +817,12 @@ const char *plugin_instance_get_source (PluginInstance *instance);
 const char *plugin_instance_get_source_location (PluginInstance *instance);
 
 /* @GeneratePInvoke */
+const char *plugin_instance_get_source_location_original (PluginInstance *instance);
+
+/* @GeneratePInvoke */
+const char *plugin_instance_get_source_original (PluginInstance *instance);
+
+/* @GeneratePInvoke */
 Surface *plugin_instance_get_surface (PluginInstance *instance);
 
 /* @GeneratePInvoke */

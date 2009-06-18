@@ -1,3 +1,10 @@
+2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* cbinding.cpp|h: regen
+	* plugin.cpp|h: Keep the original location and source (before any
+	redirection can happen) and use them in the check for cross-domain
+	applications. Fixing DRT 955-958
+
 2009-06-17  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h.in, plugin-class.cpp: add textbox and passwordbox

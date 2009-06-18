@@ -76,6 +76,32 @@ namespace Mono {
 			return s;
 		}
 
+		[DllImport ("moonplugin", EntryPoint="plugin_instance_get_source_location_original")]
+		// const char *plugin_instance_get_source_location_original (PluginInstance *instance);
+		private extern static IntPtr plugin_instance_get_source_location_original_ (IntPtr instance);
+		public static string plugin_instance_get_source_location_original (IntPtr instance)
+		{
+			IntPtr result;
+			result = plugin_instance_get_source_location_original_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moonplugin", EntryPoint="plugin_instance_get_source_original")]
+		// const char *plugin_instance_get_source_original (PluginInstance *instance);
+		private extern static IntPtr plugin_instance_get_source_original_ (IntPtr instance);
+		public static string plugin_instance_get_source_original (IntPtr instance)
+		{
+			IntPtr result;
+			result = plugin_instance_get_source_original_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
 		[DllImport ("moonplugin")]
 		// Surface *plugin_instance_get_surface (PluginInstance *instance);
 		public extern static IntPtr plugin_instance_get_surface (IntPtr instance);

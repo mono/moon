@@ -1,3 +1,7 @@
+2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* GeneratedPInvokes.cs: regen
+
 2009-06-17  Chris Toshok  <toshok@ximian.com>
 
 	* ManagedXamlLoader.cs (ConvertType): use a MoonlightTypeConverter
