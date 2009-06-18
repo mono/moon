@@ -134,13 +134,22 @@ string_to_npvariant (const char *value, NPVariant *result)
 static void
 value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject *parent_obj = NULL, DependencyProperty *parent_property = NULL)
 {
+	char utf8[8];
+	int n;
+	
 	if (!v) {
 		NULL_TO_NPVARIANT (*result);
 		return;
 	}
+	
 	switch (v->GetKind ()) {
 	case Type::BOOL:
 		BOOLEAN_TO_NPVARIANT (v->AsBool(), *result);
+		break;
+	case Type::CHAR:
+		n = g_unichar_to_utf8 (v->AsChar (), utf8);
+		utf8[n] = '\0';
+		string_to_npvariant (utf8, result);
 		break;
 	case Type::INT32:
 		INT32_TO_NPVARIANT (v->AsInt32(), *result);
