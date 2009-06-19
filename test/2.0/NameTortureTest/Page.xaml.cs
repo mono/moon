@@ -35,6 +35,7 @@ namespace NameTortureTest
 		{
 			RunTests ("AddItemToCanvasInTemplate");
 			RunTests ("BasicXamlReaderTests");
+			RunTests ("CustomControlInTemplate");
 			RunTests ("AddXamlReaderOutputToExistingTreeVisualType");
 			RunTests ("AddXamlReaderOutputToExistingTreeNonVisualType");
 			RunTests ("UserControlNamescope1");
@@ -279,6 +280,28 @@ namespace NameTortureTest
 			c = new Canvas ();
 			c.Children.Add (new CanvasSubclass());
 			c.Children.Add (new CanvasSubclass());
+		}
+
+		public void CustomControlInTemplate ()
+		{
+			MyControl c = (MyControl)System.Windows.Markup.XamlReader.Load(@"
+<clr:MyControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+               xmlns:clr=""clr-namespace:NameTortureTest;assembly=NameTortureTest""> 
+    <clr:MyControl.Template>
+        <ControlTemplate>
+            <clr:CustomControl x:Name=""CustomControl"" />
+        </ControlTemplate>
+    </clr:MyControl.Template>
+</clr:MyControl>
+");
+			c.ApplyTemplate();
+			CustomControl custom = (CustomControl) c.GetTemplateChild("CustomControl");
+			custom.ApplyTemplate();
+			Assert.IsNotNull (custom, "Custom control should be findable");
+			Assert.IsNull (custom.FindName("LayoutRoot"), "Cannot FindName 'LayoutRoot' in CustomControl");
+			Assert.IsNull(c.GetTemplateChild("LayoutRoot"), "Cannot GetTemplateChild 'LayoutRoot' in MyControl");
+			Assert.IsNull(c.FindName("LayoutRoot"), "Cannot FindName 'LayoutRoot' in MyControl");
 		}
 
 		public void UserControlNamescope4 ()

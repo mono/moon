@@ -72,3 +72,8 @@
     controls namescope, not the private template namescope.
 
     tested by: AddItemToCanvasInTemplate
+
+13. If a control inside a template does a LoadComponants call, the resulting
+    elements can not be found via GetTemplateChild or FindName anywhere.
+
+   tested by: CustomControlInTemplate
