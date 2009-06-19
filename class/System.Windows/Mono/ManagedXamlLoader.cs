@@ -70,9 +70,9 @@ namespace Mono.Xaml
 				callbacks.lookup_object = new LookupObjectCallback (cb_lookup_object);
 				callbacks.create_gchandle = new CreateGCHandleCallback (cb_create_gchandle);
 				callbacks.set_property = new SetPropertyCallback (cb_set_property);
-				callbacks.add_to_container = new AddToContainerCallback (cb_add_to_container);
 				callbacks.import_xaml_xmlns = new ImportXamlNamespaceCallback (cb_import_xaml_xmlns);
 				callbacks.get_content_property_name = new GetContentPropertyNameCallback (cb_get_content_property_name);
+				callbacks.add_child = new AddChildCallback (cb_add_child);
 			}
 
 			NativeMethods.xaml_loader_set_callbacks (native_loader, callbacks);
@@ -717,73 +717,170 @@ namespace Mono.Xaml
 			return false;
 		}
 
-		private unsafe bool AddToContainer (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, string full_prop_name, string key_name, Value* parent_ptr, IntPtr parent_data, Value* child_ptr, IntPtr child_data)
+		private unsafe bool AddChild (IntPtr loader, IntPtr parser, Value *top_level, Value* parent_parent_ptr, bool parent_is_property, string parent_xmlns, Value *parent_ptr, IntPtr parent_data, Value* child_ptr, IntPtr child_data)
 		{
-			string error;
+			object parent_parent = Value.ToObject (null, parent_parent_ptr);
 			object parent = Value.ToObject (null, parent_ptr);
 			object child = Value.ToObject (null, child_ptr);
 
-			if (parent == null || child == null) {
-				Console.Error.WriteLine ("AddToContainer supplied with null {0}.", parent == null ? "parent" : "child");
+			if (parent_is_property)
+				return AddChildToProperty (parser, top_level, parent_parent, parent_xmlns, parent, child, child_data);
+
+			return AddChildToItem (parser, top_level, parent_parent_ptr, parent, parent_data, child_ptr, child, child_data);
+		}
+
+		private unsafe bool AddChildToProperty (IntPtr parser, Value *top_level, object parent_parent, string parent_xmlns, object parent, object child, IntPtr child_data)
+		{
+			string full_prop_name = parent as string;
+
+			if (full_prop_name == null) {
+				Console.Error.WriteLine ("Attempting to add child to non string parent {0} as a property.", parent);
 				return false;
 			}
 
-			Console.WriteLine ("AddToContainer ({0}, {1}, {2}, {3})", parent, child, full_prop_name, key_name);
-			if (full_prop_name != null) {
+			
+			int dot = full_prop_name.IndexOf ('.');
+			if (dot < 1)
+				return false;
+			string type_name = full_prop_name.Substring (0, dot);
+			string prop_name = full_prop_name.Substring (++dot, full_prop_name.Length - dot);
 
-				int dot = full_prop_name.IndexOf ('.');
-				if (dot < 1)
-					return false;
-				string type_name = full_prop_name.Substring (0, dot);
-				string prop_name = full_prop_name.Substring (++dot, full_prop_name.Length - dot);
+			Type target_type = TypeFromString (parser, top_level, parent_xmlns, type_name);
 
-				Type target_type = TypeFromString (parser, top_level, xmlns, type_name);
-				if (target_type == null) {
-					Console.Error.WriteLine ("Type '{0}' with xmlns '{1}' could not be found", type_name, xmlns);
+			if (target_type == null) {
+				Console.Error.WriteLine ("Type '{0}' with xmlns '{1}' could not be found", type_name, parent_xmlns);
+				return false;
+			}
+
+			if (!target_type.IsAssignableFrom (parent_parent.GetType ())) {
+				// This would happen with an attached property, we don't need to do anything here....do we?
+				return false;
+			}
+
+			PropertyInfo pi = parent_parent.GetType ().GetProperty (prop_name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+
+			if (pi == null) {
+				Console.Error.WriteLine ("Property does not exist. {0}", prop_name);
+				return false;
+			}
+
+			if (typeof (ResourceDictionary).IsAssignableFrom (pi.PropertyType) && !(child is ResourceDictionary)) {
+				ResourceDictionary the_dict = (ResourceDictionary) pi.GetValue (parent_parent, null);
+				string key_name = NativeMethods.xaml_get_element_key (parser, child_data);
+
+				if (key_name == null) {
+					// Throw proper error here
+					Console.Error.WriteLine ("Attempting to add item to a resource dictionary without an x:Key or x:Name");
 					return false;
 				}
 
-				if (!target_type.IsAssignableFrom (parent.GetType ())) {
-					// This should probably happen when we have attached properties
-					Console.Error.WriteLine ("Attempting to set property on non parent type: {0} {1} {2}", target_type, parent, full_prop_name);
-					return false;
-				}
-
-				PropertyInfo pi = parent.GetType ().GetProperty (prop_name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-
-				if (pi == null) {
-					Console.Error.WriteLine ("Property does not exist. {0}", prop_name);
-					return false;
-				}
-
-				if (typeof (ResourceDictionary).IsAssignableFrom (pi.PropertyType) && !(child is ResourceDictionary)) {
-					ResourceDictionary the_dict = (ResourceDictionary) pi.GetValue (parent, null);
-
+				if (the_dict == null) {
+					the_dict = (ResourceDictionary) Activator.CreateInstance (pi.PropertyType);
 					if (the_dict == null) {
-						the_dict = (ResourceDictionary) Activator.CreateInstance (pi.PropertyType);
-						if (the_dict == null) {
-							Console.Error.WriteLine ("Unable to create instance of dictionary: " + pi.PropertyType);
-							return false;
-						}
-						pi.SetValue (parent, the_dict, null);
-					}
-
-					try {
-						the_dict.Add (key_name, child);
-						if (child is DependencyObject && parent is DependencyObject && !(the_dict is DependencyObject)) {
-							NativeMethods.dependency_object_set_parent (((DependencyObject) child).native, ((DependencyObject) parent).native);
-						}
-
-						return true;
-					} catch (Exception e) {
-						// Fall through to string
-						Console.Error.WriteLine (e);
+						Console.Error.WriteLine ("Unable to create instance of dictionary: " + pi.PropertyType);
 						return false;
 					}
+					pi.SetValue (parent_parent, the_dict, null);
+				}
+
+				try {
+					the_dict.Add (key_name, child);
+					if (child is DependencyObject && parent_parent is DependencyObject && !(the_dict is DependencyObject)) {
+						NativeMethods.dependency_object_set_parent (((DependencyObject) child).native, ((DependencyObject) parent_parent).native);
+					}
+
+					return true;
+				} catch (Exception e) {
+					// Fall through to string
+					Console.Error.WriteLine (e);
+					return false;
 				}
 			}
 
-			return false;
+			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(child is IList)) {
+				IList the_list = (IList) pi.GetValue (parent_parent, null);
+
+				if (the_list == null) {
+					the_list = (IList) Activator.CreateInstance (pi.PropertyType);
+					if (the_list == null) {
+						Console.Error.WriteLine ("Unable to create instance of list: " + pi.PropertyType);
+						return false;
+					}
+					pi.SetValue (parent_parent, the_list, null);
+				}
+
+				try {
+					the_list.Add (child);
+
+					if (child is DependencyObject && parent_parent is DependencyObject && !(the_list is DependencyObject)) {
+						NativeMethods.dependency_object_set_parent (((DependencyObject)child).native, ((DependencyObject)parent_parent).native);
+					}
+
+					return true;
+				}
+				catch {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		private unsafe bool AddChildToItem (IntPtr parser, Value *top_level, Value *parent_parent_ptr, object parent, IntPtr parent_data, Value *child_ptr, object child, IntPtr child_data)
+		{
+			ResourceDictionary the_dict = parent as ResourceDictionary;
+			if (the_dict != null) {
+				string key_name = NativeMethods.xaml_get_element_key (parser, child_data);
+
+				if (key_name == null) {
+					Console.Error.WriteLine ("Attempting to add item to a resource dictionary without an x:Key or x:Name");
+					throw new XamlParseException (-1, -1, "You must specify an x:Key or x:Name for elements in a ResourceDictionary");
+				}
+
+				try {
+					the_dict.Add (key_name, child);
+					if (child is DependencyObject && parent is DependencyObject && !(the_dict is DependencyObject)) {
+						NativeMethods.dependency_object_set_parent (((DependencyObject) child).native, ((DependencyObject) parent).native);
+					}
+
+					return true;
+				} catch (Exception e) {
+					// Fall through to string
+					Console.Error.WriteLine (e);
+					return false;
+				}
+			}
+
+			IList the_list = parent as IList;
+			if (the_list != null) {
+
+				try {
+					the_list.Add (child);
+
+					if (child is DependencyObject && parent is DependencyObject && !(the_list is DependencyObject)) {
+						NativeMethods.dependency_object_set_parent (((DependencyObject)child).native, ((DependencyObject)parent).native);
+					}
+
+					return true;
+				}
+				catch {
+					return false;
+				}
+			}
+
+			Type parent_type = parent.GetType ();
+			string content_property = GetContentPropertyName (parent_type);
+			if (content_property == null)
+				return false;
+
+			PropertyInfo pi = parent_type.GetProperty (content_property, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+			if (pi == null) {
+				Console.Error.WriteLine ("Unable to find content property {0} on type {1}", content_property, parent_type);
+				return false;
+			}
+
+			string error;
+			return SetPropertyFromValue (parser, top_level, parent, parent_data, parent_parent_ptr, pi, child_ptr, child_data, out error);
 		}
 
 		private unsafe Type LookupType (Value* top_level, string assembly_name, string full_name)
@@ -974,10 +1071,15 @@ namespace Mono.Xaml
 					// through to the string case
 					// below.
 				}
-			}
+ 			}
+
+//			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
+//				// This case is handled in the AddChild code
+//				return true;
+//			}
 
 			if (typeof (ResourceDictionary).IsAssignableFrom (pi.PropertyType) && !(obj_value is ResourceDictionary)) {
-				// This case is handled in the add to container code
+				// This case is handled in the AddChild code
 				return true;
 			}
 
@@ -1067,6 +1169,7 @@ namespace Mono.Xaml
 			if (converter != null && converter.CanConvertFrom (value.GetType ()))
 				return converter.ConvertFrom (value);
 
+			
 			try {
 				if (t.IsEnum && value is string)
 					return Enum.Parse (t, (string)value);
@@ -1190,6 +1293,16 @@ namespace Mono.Xaml
 			 return Regex.IsMatch (value, "^{\\s*x:Null\\s*}");
 		}
 
+		private string GetContentPropertyName (Type t)
+		{
+			object [] o = t.GetCustomAttributes (typeof (ContentPropertyAttribute), true);
+			if (o.Length == 0)
+				return null;
+			ContentPropertyAttribute cpa = (ContentPropertyAttribute ) o [0];
+
+			return cpa.Name;
+		}
+
 		///
 		///
 		/// Callbacks invoked by the xaml.cpp C++ parser
@@ -1201,7 +1314,7 @@ namespace Mono.Xaml
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// genereting an exception and unwinding the stack.
 		//
-		private unsafe bool cb_lookup_object (IntPtr loader, IntPtr parser, Value* top_level, Value* parent, string xmlns, string name, bool create, bool is_property, out Value value)
+		private unsafe bool cb_lookup_object (IntPtr loader, IntPtr parser, Value* top_level, Value* parent, string xmlns, string name, bool create, bool is_property, out Value value, ref MoonError error)
 		{
 			try {
 				return LookupObject (top_level, parent, xmlns, name, create, is_property, out value);
@@ -1209,6 +1322,7 @@ namespace Mono.Xaml
 				Console.Error.WriteLine ("ManagedXamlLoader::LookupObject ({0}, {1}, {2}, {3}) failed: {3} ({4}).", (IntPtr)top_level, xmlns, create, name, ex.Message, ex.GetType ().FullName);
 				Console.WriteLine (ex);
 				value = Value.Empty;
+				error = new MoonError (ex);
 				return false;
 			}
 		}
@@ -1223,29 +1337,19 @@ namespace Mono.Xaml
 		// Proxy so that we return IntPtr.Zero in case of any failures, instead of
 		// generating an exception and unwinding the stack.
 		//
-		private unsafe bool cb_set_property (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, Value* target, IntPtr target_data, Value* target_parent, string prop_xmlns, string name, Value* value_ptr, IntPtr value_data)
+		private unsafe bool cb_set_property (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, Value* target, IntPtr target_data, Value* target_parent, string prop_xmlns, string name, Value* value_ptr, IntPtr value_data, ref MoonError error)
 		{
 			try {
 				return SetProperty (loader, parser, top_level, xmlns, target, target_data, target_parent, prop_xmlns, name, value_ptr, value_data);
 			} catch (Exception ex) {
 				Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", (IntPtr)top_level, xmlns, (IntPtr)target, name, (IntPtr)value_ptr, ex.Message);
 				Console.Error.WriteLine (ex);
+				error = new MoonError (ex);
 				return false;
 			}
 		}
 
-		private unsafe bool cb_add_to_container (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, string prop_name, string key_name, Value* parent, IntPtr parent_data, Value* child, IntPtr child_data)
-		{
-			try {
-				return AddToContainer (loader, parser, top_level, xmlns, prop_name, key_name, parent, parent_data, child, child_data);
-			} catch (Exception ex) {
-				Console.Error.WriteLine ("ManagedXamlLoader::AddToContainer ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}) threw an exception: {5}.", (IntPtr)top_level, xmlns, prop_name, key_name, (IntPtr)parent, parent_data, (IntPtr)child, child_data, ex.Message);
-				Console.Error.WriteLine (ex);
-				return false;
-			}
-		}
-
-		private bool cb_import_xaml_xmlns (IntPtr loader, IntPtr parser, string xmlns)
+		private bool cb_import_xaml_xmlns (IntPtr loader, IntPtr parser, string xmlns, ref MoonError error)
 		{
 			try {
 				if (!ValidateXmlns (xmlns))
@@ -1254,12 +1358,13 @@ namespace Mono.Xaml
 				return true;
 			} catch (Exception ex) {
 				Console.WriteLine ("Application::ImportXamlNamespace ({0}) threw an exception:\n{1}", xmlns, ex);
+				error = new MoonError (ex);
 				return false;
 			}
 
 		}
 
-		private unsafe string cb_get_content_property_name (IntPtr loader, IntPtr parser, Value* object_ptr)
+		private unsafe string cb_get_content_property_name (IntPtr loader, IntPtr parser, Value* object_ptr, ref MoonError error)
 		{
 			object obj = Value.ToObject (null, object_ptr);
 
@@ -1267,13 +1372,22 @@ namespace Mono.Xaml
 				return null;
 
 			Type t = obj.GetType ();
-			object [] o = t.GetCustomAttributes (typeof (ContentPropertyAttribute), true);
-			if (o.Length == 0)
-				return null;
-			ContentPropertyAttribute cpa = (ContentPropertyAttribute ) o [0];
-
-			return cpa.Name;
+			return GetContentPropertyName (t);
+			
 		}
+
+		private unsafe bool cb_add_child (IntPtr loader, IntPtr parser, Value *top_level, Value* parent_parent, bool parent_is_property, string parent_xmlns, Value *parent, IntPtr parent_data, Value* child, IntPtr child_data, ref MoonError error)
+		{
+			try {
+				return AddChild (loader, parser, top_level, parent_parent, parent_is_property, parent_xmlns, parent, parent_data, child, child_data);
+			} catch (Exception ex) {
+				Console.Error.WriteLine (ex);
+				error = new MoonError (ex);
+				return false;
+			}
+				
+		}
+
 #endregion
 	}
 }

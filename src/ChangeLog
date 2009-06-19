@@ -1,3 +1,10 @@
+2009-06-19  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: We now have a managed version of AddChild so remove
+	all the AddToContainer junk and use the managed AddChild instead.
+	- Add MoonError to all the callbacks. Not handling the errors yet,
+	but at least they are there now.
+
 2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml.cpp: Add comment about absolute/relative paths

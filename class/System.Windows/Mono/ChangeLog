@@ -1,3 +1,10 @@
+2009-06-19  Jackson Harper  <jackson@ximian.com>
+
+	* XamlLoaderCallbacks.cs: Remove AddToContainer andd AddChild
+	- Add MoonError to all the callbacks.
+	* ManagedXamlLoader.cs: New managed version of AddChild remove
+	AddToContainer
+	
 2009-06-18  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Value.cs: Comment some code to avoid crash when using FontSource

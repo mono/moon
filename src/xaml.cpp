@@ -401,29 +401,11 @@ class XamlElementInstance : public List::Node {
 	void SetName (XamlParserInfo *p, const char *name)
 	{
 		this->x_name = g_strdup (name);
-		if (IsDependencyObject ()) {
-			AddToParentContainer (p, this->x_name);
-		}
 	}
 
 	void SetKey (XamlParserInfo *p, const char *key)
 	{
 		this->x_key = g_strdup (key);
-		if (IsDependencyObject ()) {
-			AddToParentContainer (p, this->x_key);
-		}
-	}
-
-	void AddToParentContainer (XamlParserInfo *p, const char *name)
-	{
-		if (!parent || parent->element_type != XamlElementInstance::PROPERTY || !parent->parent) {
-			return;
-		}
-		parent->parent->AddToContainer (p, name, parent->element_name, this);
-	}
-
-	virtual void AddToContainer (XamlParserInfo *p, const char *name, const char *prop_namem, XamlElementInstance *item)
-	{
 	}
 
 	virtual bool IsDependencyObject ()
@@ -1137,8 +1119,6 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 		return is_dependency_object;
 	}
 
-	virtual void AddToContainer (XamlParserInfo *p, const char *name, const char *prop_name, XamlElementInstance *item);
-
 	virtual bool SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value);
 
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
@@ -1248,7 +1228,8 @@ XamlLoader::LookupObject (void *p, Value *top_level, Value *parent, const char* 
 	if (callbacks.lookup_object) {
 		if (!vm_loaded && !LoadVM ())
 			return false;
-		bool res = callbacks.lookup_object (this, p, top_level, parent, xmlns, type_name, create, is_property, value);
+		MoonError error;
+		bool res = callbacks.lookup_object (this, p, top_level, parent, xmlns, type_name, create, is_property, value, &error);
 		return res;
 	}
 		
@@ -1259,7 +1240,8 @@ const char *
 XamlLoader::GetContentPropertyName (void *p, Value *object)
 {
 	if (callbacks.get_content_property_name) {
-		return callbacks.get_content_property_name (this, p, object);
+		MoonError error;
+		return callbacks.get_content_property_name (this, p, object, &error);
 	}
 	return NULL;
 }
@@ -1267,17 +1249,21 @@ XamlLoader::GetContentPropertyName (void *p, Value *object)
 bool
 XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char* prop_xmlns, const char *name, Value *value, void* value_data)
 {
-	if (callbacks.set_property)
-		return callbacks.set_property (this, p, top_level, xmlns, target, target_data, target_parent, prop_xmlns, name, value, value_data);
+	if (callbacks.set_property) {
+		MoonError error;
+		return callbacks.set_property (this, p, top_level, xmlns, target, target_data, target_parent, prop_xmlns, name, value, value_data, &error);
+	}
 
 	return false;
 }
 
 bool
-XamlLoader::AddToContainer (void *p, Value *top_level, const char*xmlns, const char* prop_name, const char* key_name, Value *container, void *container_data, Value *child, void *child_data)
+XamlLoader::AddChild (void *p, Value *top_level, Value *parent_parent, bool parent_is_property, const char* parent_xmlns, Value *parent, void *parent_data, Value *child, void *child_data)
 {
-	if (callbacks.add_to_container)
-		return callbacks.add_to_container (this, p, top_level, xmlns, prop_name, key_name, container, container_data, child, child_data);
+	if (callbacks.add_child) {
+		MoonError error;
+		return callbacks.add_child (this, p, top_level, parent_parent, parent_is_property, parent_xmlns, parent, parent_data, child, child_data, &error);
+	}
 	return false;
 }
 
@@ -1749,10 +1735,6 @@ end_element_handler (void *data, const char *el)
 
 			if (p->current_element->parent)
 				p->current_element->parent->AddChild (p, p->current_element);
-
-			// for value types we have to wait until they're fully parsed to add them to their parent container.
-			if (p->current_element->GetKey() || p->current_element->GetName())
-				p->current_element->AddToParentContainer (p, p->current_element->GetKey() ? p->current_element->GetKey() : p->current_element->GetName());
 		}
 		break;
 	case XamlElementInstance::PROPERTY: {
@@ -1846,7 +1828,8 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 		return;
 
 	if (p->loader != NULL && p->loader->callbacks.import_xaml_xmlns != NULL) {
-		if (!p->loader->callbacks.import_xaml_xmlns (p->loader, p, uri))
+		MoonError error;
+		if (!p->loader->callbacks.import_xaml_xmlns (p->loader, p, uri, &error))
 			return parser_error (p, p->current_element ? p->current_element->element_name : NULL, prefix, 2005, "Unknown namespace %s", uri);
 	}
 
@@ -4094,13 +4077,6 @@ XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, c
 		this->is_dependency_object = false;
 }
 
-void
-XamlElementInstanceManaged::AddToContainer (XamlParserInfo *p, const char *key, const char *prop_name, XamlElementInstance *item)
-{
-	if (p->loader)
-		p->loader->AddToContainer (p, p->GetTopElementPtr (), info->xmlns, prop_name, key, GetAsValue (), this, item->GetAsValue (), item);
-}
-
 void *
 XamlElementInstanceManaged::GetManagedPointer ()
 {
@@ -4141,7 +4117,15 @@ XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance 
 void
 XamlElementInstanceManaged::AddChild (XamlParserInfo *p, XamlElementInstance *child)
 {
-	dependency_object_add_child (p, this, child, false);
+	if (element_type == XamlElementInstance::PROPERTY) {
+		Value *prop = new Value (element_name);
+		p->loader->AddChild (p, p->GetTopElementPtr (), GetParentPointer (), true, info->xmlns, prop, this, child->GetAsValue (), child);
+		delete prop;
+		return;
+	}
+
+	p->loader->AddChild (p, p->GetTopElementPtr (), GetParentPointer (), false, info->xmlns, GetAsValue (), this, child->GetAsValue (), child);
+
 }
 
 void
@@ -4383,8 +4367,9 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 	}
 
 
-	if (parent->element_type != XamlElementInstance::PROPERTY)
+	if (parent->element_type != XamlElementInstance::PROPERTY) {
 		parent->TrySetContentProperty (p, child);
+	}
 
 	// Do nothing if we aren't adding to a collection, or a content property collection
 }
