@@ -1,3 +1,12 @@
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am:
+	* shocker.mdp: Updated with new files.
+
+	* harness.cpp|h: Add a method to communicate with our test harness.
+
+	* shocker.cpp: Implement CompareImages.
+
 2009-06-17  Alan McGovern  <amcgovern@novell.com>
 
 	* input.h:

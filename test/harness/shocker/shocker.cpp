@@ -42,6 +42,7 @@
 #include "logging.h"
 #include "input.h"
 #include "shutdown-manager.h"
+#include "harness.h"
 
 
 // hack to track down the actual error message that
@@ -298,9 +299,27 @@ SetKeyboardInputSpeed (ShockerScriptableControlObject* obj, char* name, const NP
 static void
 CompareImages (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	printf ("[shocker] CompareImages: Not implemented\n");
-	print_stack_trace ();
-	BOOLEAN_TO_NPVARIANT (true, *result);
+	bool res = false;
+	char *msg;
+	int output;
+	
+	g_assert (arg_count >= 6);
+	g_assert (NPVARIANT_IS_STRING (args [0]));
+	g_assert (NPVARIANT_IS_STRING (args [1]));
+	g_assert (NPVARIANT_IS_NUMBER (args [2]));
+	g_assert (NPVARIANT_IS_STRING (args [3]));
+	g_assert (NPVARIANT_IS_STRING (args [4]));
+	g_assert (NPVARIANT_IS_BOOLEAN (args [5]));
+	
+	msg = g_strdup_printf ("TestHost.CompareImages %s|%s|%i|%s|%s|%i", 
+		STR_FROM_VARIANT (args [0]), STR_FROM_VARIANT (args [1]), NUMBER_TO_INT32 (args [2]), 
+		STR_FROM_VARIANT (args [3]), STR_FROM_VARIANT (args [4]), NPVARIANT_TO_BOOLEAN (args [5]));
+	
+	if (send_harness_message (msg, &output))
+		res = output == 0;
+	g_free (msg);
+	
+	BOOLEAN_TO_NPVARIANT (res, *result);
 }
 
 static void

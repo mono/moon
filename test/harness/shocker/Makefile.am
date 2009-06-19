@@ -19,6 +19,8 @@ libshocker_la_SOURCES = 	\
 	input.cpp		\
 	image-capture.h		\
 	image-capture.cpp	\
+	harness.h			\
+	harness.cpp			\
 	shutdown-manager.h	\
 	shutdown-manager.cpp
 

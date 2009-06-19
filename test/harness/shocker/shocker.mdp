@@ -33,6 +33,8 @@
     <File name="shocker.h" subtype="Code" buildaction="Nothing" />
     <File name="shutdown-manager.cpp" subtype="Code" buildaction="Compile" />
     <File name="shutdown-manager.h" subtype="Code" buildaction="Nothing" />
+    <File name="harness.cpp" subtype="Code" buildaction="Compile" />
+    <File name="harness.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
