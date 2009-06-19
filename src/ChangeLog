@@ -1,3 +1,12 @@
+2009-06-18  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp: try to get the shape flags right once again trap
+	explicit small values properly.  Add Clipping logic to clip shapes
+	to the fe values when explicitly set.
+
+	* frameworkelement.cpp: look at stretch even when we have no
+	children.
+
 2009-06-19  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: We now have a managed version of AddChild so remove

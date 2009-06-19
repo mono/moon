@@ -372,13 +372,33 @@ Shape::Clip (cairo_t *cr)
 {
 	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
 	Rect specified = Rect (0, 0, GetWidth (), GetHeight ());
+	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 	
-	/*
-	if (!IsDegenerate () && !isnan (specified.width) && !isnan (specified.height)) {
-		specified.Draw (cr);
-		cairo_clip (cr);
+	/* 
+	 * NOTE the clumbsy rounding up to 1 here is based on tests like
+	 * test-shape-path-stretch.xaml where it silverlight attempts
+	 * to make sure something is always drawn a better mechanism
+	 * is warranted
+	 */
+	if (!IsDegenerate () && GetVisualParent ()->Is (Type::CANVAS)) {
+		bool clip_bounds = false;
+		if (!isnan (specified.width) && specified.width >= 1) { // && paint.width > specified.width) {
+			paint.width = specified.width;
+			paint.height = isnan (specified.height) ? 0 : MAX (1, specified.height);
+			clip_bounds = true;
+		}
+
+		if (!isnan (specified.height) && specified.height >= 1) { // && paint.height > specified.height) {
+			paint.height = specified.height;
+			paint.width = isnan (specified.width) ? 0 : MAX (1, specified.width);
+			clip_bounds = true;
+		}
+	       
+		if (clip_bounds) {
+			paint.Draw (cr);
+			cairo_clip (cr);
+		}
 	}
-	*/
 
 	if (!layout_clip)
 		return;
@@ -905,7 +925,7 @@ Shape::GetNaturalBounds ()
 void
 Shape::InvalidatePathCache (bool free)
 {
-	SetShapeFlags (UIElement::SHAPE_NORMAL);
+	//SetShapeFlags (UIElement::SHAPE_NORMAL);
 	if (path) {
 		if (free) {
 			moon_path_destroy (path);
@@ -967,21 +987,41 @@ Ellipse::ComputeStretchBounds ()
 Rect
 Ellipse::ComputeShapeBounds (bool logical)
 {
-	double w = GetWidth ();
-	double h = GetHeight ();
-
+	Rect rect = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
+	double t = GetStrokeThickness ();
 
-	if (h <= 0.0 || w <= 0.0) { 
+	if (rect.width < 0.0 || rect.height < 0.0 || GetWidth () <= 0.0 || GetHeight () <= 0.0) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
 	}
 	
-	double t = IsStroked () ? GetStrokeThickness () : 0.0;
-	return Rect (0, 0, MAX (GetActualWidth (), t), MAX (GetActualHeight (), t));
+	switch (GetStretch ()) {
+	case StretchNone:
+		rect.width = rect.height = 0.0;
+		break;
+	case StretchUniform:
+		rect.width = rect.height = (rect.width < rect.height) ? rect.width : rect.height;
+		break;
+	case StretchUniformToFill:
+		rect.width = rect.height = (rect.width > rect.height) ? rect.width : rect.height;
+		break;
+	case StretchFill:
+		/* nothing needed here.  the assignment of w/h above
+		   is correct for this case. */
+		break;
+	}
+
+	if (rect.width <= t || rect.height <= t){
+		rect.width = MAX (rect.width, t + t * 0.001);
+		rect.height = MAX (rect.height, t + t * 0.001);
+		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
+	} else
+		SetShapeFlags (UIElement::SHAPE_NORMAL);
+
+	return rect;
 }
 
-// The Ellipse shape can be drawn while ignoring properties:
 // * Shape::StrokeStartLineCap
 // * Shape::StrokeEndLineCap
 // * Shape::StrokeLineJoin
@@ -1006,17 +1046,15 @@ Ellipse::DrawShape (cairo_t *cr, bool do_op)
 void
 Ellipse::BuildPath ()
 {
-	if (IsEmpty ())
-		return;
-	
 	Stretch stretch = GetStretch ();
 	double t = IsStroked () ? GetStrokeThickness () : 0.0;
 	Rect rect = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
 
-	if (rect.width < 0.0 || rect.height < 0.0) {
+	if (rect.width < 0.0 || rect.height < 0.0 || GetWidth () <= 0.0 || GetHeight () <= 0.0) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);		
 		return;
 	}
+
 
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
@@ -1093,7 +1131,7 @@ Rectangle::ComputeShapeBounds (bool logical)
 	Rect rect = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
-	if (rect.width < 0.0 || rect.height < 0.0) { 
+	if (rect.width < 0.0 || rect.height < 0.0 || GetWidth () <= 0.0 || GetHeight () <= 0.0) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
 	}
