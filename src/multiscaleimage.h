@@ -64,6 +64,8 @@ class MultiScaleImage : public MediaBase {
  public:
 	void EmitImageOpenSucceeded ();
 	void EmitMotionFinished ();
+	void EmitImageFailed ();
+	void EmitImageOpenFailed ();
 	void TileOpened (BitmapImage *bitmapImage);
 	void TileFailed (BitmapImage *bitmapImage);
 

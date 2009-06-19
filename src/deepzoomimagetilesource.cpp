@@ -125,6 +125,7 @@ DeepZoomImageTileSource::Init ()
 	get_tile_func = get_tile_layer;
 	display_rects = NULL;
 	parsed_callback = NULL;	
+	failed_callback = NULL;
 	isCollection = false;
 	subimages = NULL;
 	nested = false;
@@ -330,6 +331,9 @@ void
 DeepZoomImageTileSource::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	LOG_MSI ("DL failed\n");
+	DeepZoomImageTileSource *obj = (DeepZoomImageTileSource *) closure;
+	if (obj->failed_callback)
+		obj->failed_callback (obj->cb_userdata);
 }
 
 void

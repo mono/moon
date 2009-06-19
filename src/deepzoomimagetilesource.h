@@ -29,6 +29,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	Downloader* downloader;
 
 	parsed_cb parsed_callback;
+	parsed_cb failed_callback;
 	void *cb_userdata;
 
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -66,9 +67,10 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	bool IsParsed () {return parsed; }
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
-	void set_parsed_cb (parsed_cb callback, void *userdata)
+	void set_parsed_cb (parsed_cb callback, parsed_cb f_callback, void *userdata)
 	{
 		parsed_callback = callback;
+		failed_callback = f_callback;
 		cb_userdata = userdata;
 	}
 

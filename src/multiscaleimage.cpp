@@ -387,6 +387,20 @@ multi_scale_image_handle_parsed (void *userdata)
 	msi->EmitImageOpenSucceeded ();
 }
 
+static void
+multi_scale_image_handle_failed (void *userdata)
+{
+	MultiScaleImage *msi = (MultiScaleImage*)userdata;
+	msi->EmitImageOpenFailed ();
+}
+
+static void
+multi_scale_subimage_handle_failed (void *userdata)
+{
+	MultiScaleImage *msi = (MultiScaleImage*)userdata;
+	msi->EmitImageFailed ();
+}
+
 void
 multi_scale_subimage_handle_parsed (void *userdata)
 {
@@ -611,7 +625,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			//if the subimage is unparsed, trigger the download
 			if (from_layer > ((DeepZoomImageTileSource *)source)->GetMaxLevel () && !((DeepZoomImageTileSource *)sub_image->source)->IsDownloaded () ) {
-				((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_subimage_handle_parsed, this);
+				((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_subimage_handle_parsed, multi_scale_subimage_handle_failed, this);
 				((DeepZoomImageTileSource*)sub_image->source)->Download ();
 				break;
 			}
@@ -884,7 +898,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	if (source->GetImageWidth () < 0 && !is_collection) {
 		LOG_MSI ("nothing to render so far...\n");
 		if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
-			((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_parsed, this);
+			((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_parsed, multi_scale_image_handle_failed, this);
 			((DeepZoomImageTileSource*)source)->Download ();
 		}
 		return;
@@ -945,6 +959,7 @@ MultiScaleImage::TileFailed (BitmapImage *bitmapimage)
 		is_downloading |= (ctx->state == BitmapImageBusy);
 	SetIsDownloading (is_downloading);
 	Invalidate ();
+	EmitImageFailed ();
 }
 
 void
@@ -1014,7 +1029,7 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 		if (args->GetNewValue() &&
 		    args->GetNewValue ()->Is (Type::DEEPZOOMIMAGETILESOURCE) && 
 		    (newsource = args->GetNewValue()->AsDeepZoomImageTileSource ())) {
-			newsource->set_parsed_cb (multi_scale_image_handle_parsed, this);
+			newsource->set_parsed_cb (multi_scale_image_handle_parsed, multi_scale_image_handle_failed, this);
 			newsource->Download ();
 		}
 
@@ -1050,6 +1065,20 @@ MultiScaleImage::OnCollectionItemChanged (Collection *col, DependencyObject *obj
 		subimages_sorted = false;
 		Invalidate ();
 	}
+}
+
+void
+MultiScaleImage::EmitImageFailed ()
+{
+	LOG_MSI ("MSI::Emitting image failed\n");
+	Emit (MultiScaleImage::ImageFailedEvent);
+}
+
+void
+MultiScaleImage::EmitImageOpenFailed ()
+{
+	LOG_MSI ("MSI::Emitting image open failed\n");
+	Emit (MultiScaleImage::ImageOpenFailedEvent);
 }
 
 void
