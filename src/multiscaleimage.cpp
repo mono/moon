@@ -285,6 +285,7 @@ MultiScaleImage::MultiScaleImage ()
 	pan_sb = NULL;
 	fadein_sb = NULL;
 	subimages_sorted = false;
+	pending_motion_completed = false;
 }
 
 MultiScaleImage::~MultiScaleImage ()
@@ -835,6 +836,13 @@ motion_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
 	msi->EmitMotionFinished ();
 }
 
+static void
+motion_finished_delayed (EventObject *sender)
+{
+	LOG_MSI ("MSI::motion_finished_delayed ()\n");
+	((MultiScaleImage *) sender)->EmitMotionFinished ();
+}
+
 void
 MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 {
@@ -1092,6 +1100,7 @@ void
 MultiScaleImage::EmitMotionFinished ()
 {
 	LOG_MSI ("Emitting MotionFinished\n");
+	pending_motion_completed = false;
 	Emit (MultiScaleImage::MotionFinishedEvent);
 }
 
@@ -1099,6 +1108,10 @@ void
 MultiScaleImage::SetViewportWidth (double value)
 {
 	if (!GetUseSprings ()) {
+		if (!pending_motion_completed) {
+			AddTickCall (motion_finished_delayed);
+			pending_motion_completed = true;
+		}
 		SetValue (MultiScaleImage::ViewportWidthProperty, Value (value));
 		return;
 	}
@@ -1136,6 +1149,10 @@ void
 MultiScaleImage::SetViewportOrigin (Point value)
 {
 	if (!GetUseSprings ()) {
+		if (!pending_motion_completed) {
+			AddTickCall (motion_finished_delayed);
+			pending_motion_completed = true;
+		}
 		SetValue (MultiScaleImage::ViewportOriginProperty, Value (value));
 		return;
 	}

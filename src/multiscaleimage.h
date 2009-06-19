@@ -32,6 +32,7 @@ class MultiScaleImage : public MediaBase {
 	bool cache_contains (Uri* filename, bool check_empty_tile);
 	MultiScaleTileSource *source;
 	bool subimages_sorted;
+	bool pending_motion_completed;
 
 	cairo_user_data_key_t width_key;
 	cairo_user_data_key_t height_key;
