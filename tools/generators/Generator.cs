@@ -162,11 +162,11 @@ class Generator {
 								parms.Add ("(" + parameter.ParameterType.WriteFormatted () + ") arg" + i);
 								break;
 							case "d":
-								args.Add ("\t\t\tint arg" + i + " = NPVARIANT_TO_DOUBLE (args[" + i + "])");
+								args.Add ("\t\t\tdouble arg" + i + " = NPVARIANT_TO_DOUBLE (args[" + i + "]);");
 								parms.Add ("arg" + i);
 								break;
 							case "b":
-								args.Add ("\t\t\tint arg" + i + " = NPVARIANT_TO_BOOLEAN (args[" + i + "])");
+								args.Add ("\t\t\tbool arg" + i + " = NPVARIANT_TO_BOOLEAN (args[" + i + "]);");
 								parms.Add ("arg" + i);
 								break;
 						}
