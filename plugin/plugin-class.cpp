@@ -297,6 +297,7 @@ enum DependencyObjectClassNames {
 	MARKER_REACHED_EVENT_ARGS_CLASS,
 	MOUSE_EVENT_ARGS_CLASS,
 	DOWNLOAD_PROGRESS_EVENT_ARGS_CLASS,
+	MULTI_SCALE_IMAGE_CLASS,
 
 	DEPENDENCY_OBJECT_CLASS_NAMES_LAST
 };
@@ -2983,6 +2984,9 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	case Type::PASSWORDBOX:
 		np_class = dependency_object_classes [PASSWORD_BOX_CLASS];
 		break;
+	case Type::MULTISCALEIMAGE:
+		np_class = dependency_object_classes [MULTI_SCALE_IMAGE_CLASS];
+		break;
 	case Type::EVENTOBJECT: 
 	case Type::SURFACE: 
 		np_class = MoonlightEventObjectClass;
@@ -4700,6 +4704,7 @@ plugin_init_classes (void)
 	dependency_object_classes [CONTROL_CLASS] = new MoonlightControlType ();
 	dependency_object_classes [TEXT_BOX_CLASS] = new MoonlightTextBoxType ();
 	dependency_object_classes [PASSWORD_BOX_CLASS] = new MoonlightPasswordBoxType ();
+	dependency_object_classes [MULTI_SCALE_IMAGE_CLASS] = new MoonlightMultiScaleImageType ();
 	/* Event Arg Types */
 	dependency_object_classes [EVENT_ARGS_CLASS] = new MoonlightEventArgsType ();
 	dependency_object_classes [ROUTED_EVENT_ARGS_CLASS] = new MoonlightRoutedEventArgsType ();

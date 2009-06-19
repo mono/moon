@@ -1149,4 +1149,41 @@ MultiScaleImage::SetIsDownloading (bool value)
 	SetValue (MultiScaleImage::IsDownloadingProperty, Value (value));
 }
 
+int
+MultiScaleImage::LogicalToElementX (int x, int y)
+{
+	return LogicalToElementPoint (Point (x, y)).x;
+}
 
+int
+MultiScaleImage::LogicalToElementY (int x, int y)
+{
+	return LogicalToElementPoint (Point (x, y)).y;
+}
+
+MultiScaleSubImage *
+MultiScaleImage::GetIthSubImage (int index)
+{
+	MultiScaleSubImageCollection *sub_images = GetSubImages ();
+	Value *value;
+	
+	if (sub_images == NULL)
+		return NULL;
+	
+	value = sub_images->GetValueAt (index);
+	
+	if (value == NULL)
+		return NULL;
+			
+	return value->AsMultiScaleSubImage ();
+}
+
+int
+MultiScaleImage::GetSubImageCount ()
+{
+	MultiScaleSubImageCollection *sub_images = GetSubImages ();
+	
+	if (sub_images == NULL)
+		return 0;
+	return sub_images->GetCount ();
+}

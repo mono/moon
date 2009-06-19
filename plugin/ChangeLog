@@ -1,5 +1,15 @@
 2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin-class.cpp: Add support for MultiScaleImage methods.
+
+	* plugin-class.g.cpp.in: Added required header.
+
+	* plugin-class.g.cpp:
+	* plugin-class.h:
+	* cbinding.h: Regenerated.
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.mdp: Updated with new files.
 
 2009-06-18  Jeffrey Stedfast  <fejj@novell.com>

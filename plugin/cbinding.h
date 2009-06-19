@@ -682,6 +682,8 @@ struct MoonlightMediaElementObject;
 struct MoonlightMediaElementType;
 struct MoonlightMouseEventArgsObject;
 struct MoonlightMouseEventArgsType;
+struct MoonlightMultiScaleImageObject;
+struct MoonlightMultiScaleImageType;
 struct MoonlightObject;
 struct MoonlightObjectType;
 struct MoonlightPasswordBoxObject;

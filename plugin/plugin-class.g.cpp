@@ -26,7 +26,96 @@
 #include "bitmapimage.h"
 #include "uri.h"
 #include "textbox.h"
+#include "multiscaleimage.h"
 
+/*** MoonlightMultiScaleImageClass *********/
+static NPObject *
+moonlight_multiscaleimage_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightMultiScaleImageObject (instance);
+}
+
+static const MoonNameIdMapping moonlight_multiscaleimage_mapping[] = {
+	{"getithsubimage", MoonId_MultiScaleImage_GetIthSubImage},
+	{"getsubimagecount", MoonId_MultiScaleImage_GetSubImageCount},
+	{"logicaltoelementx", MoonId_MultiScaleImage_LogicalToElementX},
+	{"logicaltoelementy", MoonId_MultiScaleImage_LogicalToElementY},
+	{"zoomaboutlogicalpoint", MoonId_MultiScaleImage_ZoomAboutLogicalPoint}
+};
+
+bool
+MoonlightMultiScaleImageObject::Invoke (int id, NPIdentifier name,
+				   const NPVariant *args, guint32 argCount,
+				   NPVariant *result)
+{
+	MultiScaleImage *dob = (MultiScaleImage*)GetDependencyObject ();
+
+	switch (id) {
+
+		case MoonId_MultiScaleImage_GetIthSubImage: {
+			if (!check_arg_list ("i", argCount, args))
+				THROW_JS_EXCEPTION ("GetIthSubImage");
+			int arg0 = NPVARIANT_TO_INT32 (args[0]);
+			MultiScaleSubImage * ret = dob->GetIthSubImage(arg0);
+			if (ret)
+				OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, ret), *result);
+			else
+				NULL_TO_NPVARIANT (*result);
+			return true;
+			break;
+		}
+
+		case MoonId_MultiScaleImage_GetSubImageCount: {
+			int ret = dob->GetSubImageCount();
+			INT32_TO_NPVARIANT (ret, *result);
+			return true;
+			break;
+		}
+
+		case MoonId_MultiScaleImage_LogicalToElementX: {
+			if (!check_arg_list ("ii", argCount, args))
+				THROW_JS_EXCEPTION ("LogicalToElementX");
+			int arg0 = NPVARIANT_TO_INT32 (args[0]);
+			int arg1 = NPVARIANT_TO_INT32 (args[1]);
+			int ret = dob->LogicalToElementX(arg0,arg1);
+			INT32_TO_NPVARIANT (ret, *result);
+			return true;
+			break;
+		}
+
+		case MoonId_MultiScaleImage_LogicalToElementY: {
+			if (!check_arg_list ("ii", argCount, args))
+				THROW_JS_EXCEPTION ("LogicalToElementY");
+			int arg0 = NPVARIANT_TO_INT32 (args[0]);
+			int arg1 = NPVARIANT_TO_INT32 (args[1]);
+			int ret = dob->LogicalToElementY(arg0,arg1);
+			INT32_TO_NPVARIANT (ret, *result);
+			return true;
+			break;
+		}
+
+		case MoonId_MultiScaleImage_ZoomAboutLogicalPoint: {
+			if (!check_arg_list ("ddd", argCount, args))
+				THROW_JS_EXCEPTION ("ZoomAboutLogicalPoint");
+			double arg0 = NPVARIANT_TO_DOUBLE (args[0]);
+			double arg1 = NPVARIANT_TO_DOUBLE (args[1]);
+			double arg2 = NPVARIANT_TO_DOUBLE (args[2]);
+			dob->ZoomAboutLogicalPoint(arg0,arg1,arg2);
+			VOID_TO_NPVARIANT (*result);
+			return true;
+			break;
+		}
+	}
+
+	return MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);
+}
+
+MoonlightMultiScaleImageType::MoonlightMultiScaleImageType ()
+{
+	AddMapping (moonlight_multiscaleimage_mapping, G_N_ELEMENTS (moonlight_multiscaleimage_mapping));
+
+	allocate = moonlight_multiscaleimage_allocate;
+}
 /*** MoonlightUIElementClass *********/
 static NPObject *
 moonlight_uielement_allocate (NPP instance, NPClass *klass)

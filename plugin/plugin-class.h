@@ -175,6 +175,11 @@ enum PluginPropertyId {
 
 	MoonId_Select,
 	MoonId_SelectAll,
+	MoonId_MultiScaleImage_GetIthSubImage,
+	MoonId_MultiScaleImage_GetSubImageCount,
+	MoonId_MultiScaleImage_LogicalToElementX,
+	MoonId_MultiScaleImage_LogicalToElementY,
+	MoonId_MultiScaleImage_ZoomAboutLogicalPoint,
 	MoonId_UIElement_CaptureMouse,
 	MoonId_UIElement_TransformToVisual,
 	MoonId_UIElement_ReleaseMouseCapture,
@@ -368,6 +373,23 @@ extern MoonlightDependencyObjectObject *DependencyObjectCreateWrapper (NPP insta
 
 /*************** AUTO GENERATED CLASSES ****************************/
 
+/*** MoonlightMultiScaleImageClass *********/
+struct MoonlightMultiScaleImageType : MoonlightDependencyObjectType {
+	MoonlightMultiScaleImageType ();
+};
+
+extern MoonlightMultiScaleImageType *MoonlightMultiScaleImageClass;
+
+struct MoonlightMultiScaleImageObject : MoonlightDependencyObjectObject {
+	MoonlightMultiScaleImageObject (NPP instance) : MoonlightDependencyObjectObject (instance)
+	{
+		moonlight_type = Type::MULTISCALEIMAGE;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+		const NPVariant *args, guint32 argCount, NPVariant *result);
+
+};
 /*** MoonlightUIElementClass *********/
 struct MoonlightUIElementType : MoonlightDependencyObjectType {
 	MoonlightUIElementType ();

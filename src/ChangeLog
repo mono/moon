@@ -1,3 +1,9 @@
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* multiscaleimage.cpp|h: Add support for methods exposed to JS.
+
+	* cbinding.h: Regenerated.
+
 2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* textblock.cpp: Avoid crash when using FontSource
