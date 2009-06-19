@@ -1,3 +1,8 @@
+2009-06-19  Larry Ewing  <lewing@novell.com>
+
+	* 02-group-clip, 02-group-clip.README: Patch to fix a cairo bug we
+	found and was fixed upstream.
+
 2008-09-15  Geoff Norton  <gnorton@novell.com>
 
 	* 01-tesselate-edges, 01-tesselate-edges.README: Patch to 
