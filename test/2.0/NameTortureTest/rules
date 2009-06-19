@@ -67,3 +67,8 @@
 
 11. If you try to reparent a visual type into a tree where it causes a
     name conflict, the operation throws an ArgumentException.
+
+12. Adding an item to the subtree of a template registers the name with the
+    controls namescope, not the private template namescope.
+
+    tested by: AddItemToCanvasInTemplate

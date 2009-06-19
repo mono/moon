@@ -33,6 +33,7 @@ namespace NameTortureTest
 
 		public void RunTests ()
 		{
+			RunTests ("AddItemToCanvasInTemplate");
 			RunTests ("BasicXamlReaderTests");
 			RunTests ("AddXamlReaderOutputToExistingTreeVisualType");
 			RunTests ("AddXamlReaderOutputToExistingTreeNonVisualType");
@@ -99,6 +100,32 @@ namespace NameTortureTest
 				log.Background = new SolidColorBrush(Colors.Red);
 
 			status.Text = string.Format ("Assertions: {0}, Failures: {1}", Assert.TotalCount, Assert.TotalFailures);
+		}
+
+		public void AddItemToCanvasInTemplate ()
+		{
+			Rectangle rect = new Rectangle { Name = "Rect" };
+            		MyControl c = (MyControl)System.Windows.Markup.XamlReader.Load(@"
+<clr:MyControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+               xmlns:clr=""clr-namespace:NameTortureTest;assembly=NameTortureTest""> 
+    <clr:MyControl.Template>
+        <ControlTemplate>
+            <Canvas x:Name=""Canvas"">
+                <ContentPresenter />
+            </Canvas>
+        </ControlTemplate>
+    </clr:MyControl.Template>
+</clr:MyControl>
+");
+			if (c == null)
+				Console.WriteLine ("C is null!??!??!?!");
+		    c.Content = new object ();
+		    c.ApplyTemplate();
+		    Canvas canvas = (Canvas)c.TemplateCanvas;
+		    canvas.Children.Add(rect);
+		    Assert.IsTrue(rect == c.FindName("Rect"), "Element should be findable from the control");
+		    Assert.IsNull (c.GetTemplateChild("Rect"), "Rect is not added to the template namescope");
 		}
 
 		public void BasicXamlReaderTests ()
