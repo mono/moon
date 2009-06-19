@@ -1,5 +1,10 @@
 2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml.cpp: Add comment about absolute/relative paths
+	for MSI.
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* multiscaleimage.cpp: When an image has been opened,
 	invalidate everything.
 
