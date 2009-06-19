@@ -1094,6 +1094,11 @@ MultiScaleImage::EmitImageOpenSucceeded ()
 {
 	LOG_MSI ("\nMSI::Emitting open suceeded\n");
 	Emit (MultiScaleImage::ImageOpenSucceededEvent);
+	// This is a hack that removes at least one timeout (#291),
+	// possibly because an invalidation gets lost somehow.
+	// Since we only start downloading when we try to
+	// render the msi, the test effectively hangs.
+	FullInvalidate (true);
 }
 
 void

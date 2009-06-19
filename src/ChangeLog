@@ -1,5 +1,10 @@
 2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* multiscaleimage.cpp: When an image has been opened,
+	invalidate everything.
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* multiscaleimage.cpp|h: Emit MotionFinished after
 	SetViewportWidth/SetViewportOrigin has been called.
 
