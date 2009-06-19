@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 523 methods needs to be decorated.
+# 525 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -137,22 +137,28 @@
 +SC-M: System.Boolean Mono.NativeMethods::value_from_str_with_typename(System.String,System.String,System.String,System.IntPtr&)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.AddToContainerCallback::Invoke(System.IntPtr,System.IntPtr,Mono.Value*,System.String,System.String,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr)
++SC-M: System.Boolean Mono.Xaml.AddChildCallback::Invoke(System.IntPtr,System.IntPtr,Mono.Value*,Mono.Value*,System.Boolean,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr,Mono.MoonError&)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.LookupObjectCallback::Invoke(System.IntPtr,System.IntPtr,Mono.Value*,Mono.Value*,System.String,System.String,System.Boolean,System.Boolean,Mono.Value&)
++SC-M: System.Boolean Mono.Xaml.LookupObjectCallback::Invoke(System.IntPtr,System.IntPtr,Mono.Value*,Mono.Value*,System.String,System.String,System.Boolean,System.Boolean,Mono.Value&,Mono.MoonError&)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::AddToContainer(System.IntPtr,System.IntPtr,Mono.Value*,System.String,System.String,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr)
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::AddChild(System.IntPtr,System.IntPtr,Mono.Value*,Mono.Value*,System.Boolean,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_add_to_container(System.IntPtr,System.IntPtr,Mono.Value*,System.String,System.String,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr)
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::AddChildToItem(System.IntPtr,Mono.Value*,Mono.Value*,System.Object,System.IntPtr,Mono.Value*,System.Object,System.IntPtr)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_lookup_object(System.IntPtr,System.IntPtr,Mono.Value*,Mono.Value*,System.String,System.String,System.Boolean,System.Boolean,Mono.Value&)
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::AddChildToProperty(System.IntPtr,Mono.Value*,System.Object,System.String,System.Object,System.Object,System.IntPtr)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_set_property(System.IntPtr,System.IntPtr,Mono.Value*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr)
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_add_child(System.IntPtr,System.IntPtr,Mono.Value*,Mono.Value*,System.Boolean,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr,Mono.MoonError&)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_lookup_object(System.IntPtr,System.IntPtr,Mono.Value*,Mono.Value*,System.String,System.String,System.Boolean,System.Boolean,Mono.Value&,Mono.MoonError&)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_set_property(System.IntPtr,System.IntPtr,Mono.Value*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&)
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::LookupComponentFromName(Mono.Value*,System.String,System.Boolean,Mono.Value&)
@@ -194,7 +200,7 @@
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetPropertyReflection(Mono.Value*,System.IntPtr,System.IntPtr,System.String,System.Object,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,System.String&)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.SetPropertyCallback::Invoke(System.IntPtr,System.IntPtr,Mono.Value*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr)
++SC-M: System.Boolean Mono.Xaml.SetPropertyCallback::Invoke(System.IntPtr,System.IntPtr,Mono.Value*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::back_ease_ease_in_core(System.IntPtr,System.Double)
@@ -260,16 +266,16 @@
 +SC-M: System.Double Mono.NativeMethods::stylus_point_get_y(System.IntPtr)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.IAsyncResult Mono.Xaml.AddToContainerCallback::BeginInvoke(System.IntPtr,System.IntPtr,Mono.Value*,System.String,System.String,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr,System.AsyncCallback,System.Object)
++SC-M: System.IAsyncResult Mono.Xaml.AddChildCallback::BeginInvoke(System.IntPtr,System.IntPtr,Mono.Value*,Mono.Value*,System.Boolean,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr,Mono.MoonError&,System.AsyncCallback,System.Object)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.IAsyncResult Mono.Xaml.GetContentPropertyNameCallback::BeginInvoke(System.IntPtr,System.IntPtr,Mono.Value*,System.AsyncCallback,System.Object)
++SC-M: System.IAsyncResult Mono.Xaml.GetContentPropertyNameCallback::BeginInvoke(System.IntPtr,System.IntPtr,Mono.Value*,Mono.MoonError&,System.AsyncCallback,System.Object)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.IAsyncResult Mono.Xaml.LookupObjectCallback::BeginInvoke(System.IntPtr,System.IntPtr,Mono.Value*,Mono.Value*,System.String,System.String,System.Boolean,System.Boolean,Mono.Value&,System.AsyncCallback,System.Object)
++SC-M: System.IAsyncResult Mono.Xaml.LookupObjectCallback::BeginInvoke(System.IntPtr,System.IntPtr,Mono.Value*,Mono.Value*,System.String,System.String,System.Boolean,System.Boolean,Mono.Value&,Mono.MoonError&,System.AsyncCallback,System.Object)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.IAsyncResult Mono.Xaml.SetPropertyCallback::BeginInvoke(System.IntPtr,System.IntPtr,Mono.Value*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,System.AsyncCallback,System.Object)
++SC-M: System.IAsyncResult Mono.Xaml.SetPropertyCallback::BeginInvoke(System.IntPtr,System.IntPtr,Mono.Value*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&,System.AsyncCallback,System.Object)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::collection_add_with_error_(System.IntPtr,Mono.Value&,Mono.MoonError&)
@@ -1133,10 +1139,10 @@
 +SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetSetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.String Mono.Xaml.GetContentPropertyNameCallback::Invoke(System.IntPtr,System.IntPtr,Mono.Value*)
++SC-M: System.String Mono.Xaml.GetContentPropertyNameCallback::Invoke(System.IntPtr,System.IntPtr,Mono.Value*,Mono.MoonError&)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.String Mono.Xaml.ManagedXamlLoader::cb_get_content_property_name(System.IntPtr,System.IntPtr,Mono.Value*)
++SC-M: System.String Mono.Xaml.ManagedXamlLoader::cb_get_content_property_name(System.IntPtr,System.IntPtr,Mono.Value*,Mono.MoonError&)
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Type Mono.Xaml.ManagedXamlLoader::LookupType(Mono.Value*,System.String,System.String)
