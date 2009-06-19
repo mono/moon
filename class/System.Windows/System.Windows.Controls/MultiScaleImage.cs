@@ -195,9 +195,9 @@ namespace System.Windows.Controls {
 
 		void InvokeImageFailed ()
 		{
-			EventHandler h = (EventHandler) EventList [ImageFailedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [ImageFailedEvent];
 			if (h != null)
-				h (this, EventArgs.Empty);
+				h (this, new RoutedEventArgs ());
 		}
 
 		private void InvokeImageOpenFailed ()

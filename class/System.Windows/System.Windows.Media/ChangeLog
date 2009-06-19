@@ -1,3 +1,8 @@
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* DeepZoomImageTileSource.cs: Print fixme to console to speed up
+	debugging.
+
 2009-06-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ImageBrush.cs: Implement ImageFailed event propagation from
