@@ -1,3 +1,7 @@
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.mdp: Updated with new files.
+
 2009-06-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin-class.cpp (value_to_variant): Handle Type::CHAR by
