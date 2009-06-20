@@ -1,3 +1,8 @@
+2009-06-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/ReflectionTest.cs: Show the behavior of trying to invoke
+	private methods from a public type inside platform code.
+
 2009-06-17  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/DependencyPropertyTest.cs: chars are properly
