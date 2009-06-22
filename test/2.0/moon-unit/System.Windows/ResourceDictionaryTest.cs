@@ -505,5 +505,16 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual (r.Width, 300, "1");
 			Assert.AreEqual (tb.FontFamily, new FontFamily ("Arial"), "2");
 		}
+
+		[TestMethod]
+		public void SpacesInKeys ()
+		{
+			Canvas c = (Canvas)XamlReader.Load (@"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:sys=""clr-namespace:System;assembly=mscorlib"">
+<Canvas.Resources><sys:Int32 x:Key=""an int"">300</sys:Int32></Canvas.Resources>
+<Rectangle x:Name=""rect"" Width=""{StaticResource an int}""/></Canvas>");
+			Rectangle r = (Rectangle)c.FindName ("rect");
+
+			Assert.AreEqual (r.Width, 300, "1");
+		}
 	}
 }
