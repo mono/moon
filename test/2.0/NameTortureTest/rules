@@ -63,7 +63,10 @@
 10. For visual types (FrameworkElement subclasses), when you remove the
     object as a child from a container, the name is unregistered.
     Adding it to a subtree causes the name to be registered in the
-    subtree's name scope.
+    subtree's name scope *except* when that visual type was instantiated
+    as part of a ControlTemplate.
+    
+    tested by: AddTemplateItemToNewSubtree
 
 11. If you try to reparent a visual type into a tree where it causes a
     name conflict, the operation throws an ArgumentException.
