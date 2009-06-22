@@ -1,3 +1,8 @@
+2009-06-22  Brad Taylor  <brad@getcoded.net>
+
+	* ToggleButtonAutomationPeer.cs: Implement automation peer for Toggle
+	Button.
+
 2009-06-11  Mario Carrion  <mcarrion@novell.com>
 
 	* ItemAutomationPeer.cs: Implemented as abstract class.

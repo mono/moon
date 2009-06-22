@@ -1,3 +1,9 @@
+2009-06-22  Brad Taylor  <brad@getcoded.net>
+
+	* moon-unit.csproj: 
+	* System.Windows.Automation.Peers/ToggleButtonAutomationPeerTest.cs: 
+	Add test for Toggle Button's automation peer.
+
 2009-06-22  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: This test passes now.

@@ -1,3 +1,8 @@
+2009-06-22  Brad Taylor  <brad@getcoded.net>
+
+	* RuntimeControls/SilverlightControls/Primitives/ToggleButton.cs:
+	Return a new ToggleButtonAutomationPeer.
+
 2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* SDKControls/Data/src/Properties/AssemblyInfo.cs:

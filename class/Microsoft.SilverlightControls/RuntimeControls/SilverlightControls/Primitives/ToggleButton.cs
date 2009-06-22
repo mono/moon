@@ -311,5 +311,9 @@ namespace System.Windows.Controls.Primitives
 			return string.Format("System.Windows.Controls.Primitives.ToggleButton Content:{0} IsChecked:{1}", content, ischecked);
 		}
 
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			return new ToggleButtonAutomationPeer (this);
+		}
     } 
 }
