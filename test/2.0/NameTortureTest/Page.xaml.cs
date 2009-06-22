@@ -161,7 +161,8 @@ namespace NameTortureTest
 			Canvas c = (Canvas)XamlReader.Load (@"
 <Canvas
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" >
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    x:Name=""root"" >
   <Canvas.Background>
     <SolidColorBrush x:Name=""brush"" />
   </Canvas.Background>
@@ -180,6 +181,14 @@ namespace NameTortureTest
 			// and also those created with Name where appropriate
 			Assert.IsNotNull (c.FindName ("text"), "4");
 			Assert.IsNotNull (c.FindName ("run1"), "5");
+
+			// Adding this canvas to the root and calling testArea.FindName does not find the elements
+			testArea.Children.Add (c);
+			Assert.IsNull (testArea.FindName ("brush"), "6");
+			Assert.IsNull (testArea.FindName ("root"), "7");
+
+			c.Children.Add (new Rectangle { Name = "MyName" });
+			Assert.IsNotNull (c.FindName ("MyName"), "8");
 
 			// root of loaded tree is not a FWE
 			ResourceDictionary rd = (ResourceDictionary)XamlReader.Load (@"
