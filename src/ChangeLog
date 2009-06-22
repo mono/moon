@@ -1,3 +1,9 @@
+2009-06-22  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Pass the full prop name to managed
+	- If managed fails to set the property, delete it so unmanaged can
+	try
+
 2009-06-22  Larry Ewing  <lewing@novell.com>
 
 	* provider.cpp: make UIElement::UseLayoutRounding inherited, this

@@ -4696,16 +4696,23 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			Type::Kind itemKind = item->info->GetKind();
 
 			if (need_managed || is_managed_kind (propKind) || types->Find (itemKind)->IsCustomType () || (v && is_managed_kind (v->GetKind ()))) {
+				bool str_value = false;
 				if (!v_set) {
 					v = new Value (g_strdup (attr [i + 1])); // Note that we passed the non escaped value, not attr_value
 					v_set = true;
+					str_value = true;
 				}
 
-				if (p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), NULL, g_strdup (prop->GetName ()), v, NULL)) {
+				if (p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), NULL, g_strdup (attr [i]), v, NULL)) {
 					delete v;
 					g_free (attr_value);
 					continue;
+				} else {
+					if (str_value)
+						delete v;
+					v_set = value_from_str_with_parser (p, prop->GetPropertyType(), prop->GetName(), attr_value, &v);
 				}
+					
 			}
 
 			if (!v_set && !value_is_explicit_null (attr [i + 1])) { // Check the non escaped value
