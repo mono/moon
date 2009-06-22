@@ -290,7 +290,7 @@ namespace Mono.Xaml {
 				while (end < remaining.Length && (allow_spaces || !Char.IsWhiteSpace (remaining [end])) && remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '=')
 					end++;
 			}
-			
+
 			if (end == 0) {
 				next = Char.MaxValue;
 				return null;
@@ -304,7 +304,7 @@ namespace Mono.Xaml {
 				res = remaining.Substring (0, end);
 			remaining = remaining.Substring (end + 1);
 
-			return res;
+			return res.TrimEnd ();
 		}
 	}
 }

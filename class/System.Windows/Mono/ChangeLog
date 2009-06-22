@@ -1,5 +1,11 @@
 2009-06-22  Chris Toshok  <toshok@ximian.com>
 
+	* MarkupExpressionParser.cs: trim the end of the result from
+	GetNextPiece so that we don't include trailing spaces in static
+	resource keys.
+
+2009-06-22  Chris Toshok  <toshok@ximian.com>
+
 	* MarkupExpressionParser.cs: add a copyright/license blurb, and
 	add a "allowed_spaces" argument to GetNextPiece.  This is so
 	StaticResources can refer to keys that contain spaces.  Unbreaks
