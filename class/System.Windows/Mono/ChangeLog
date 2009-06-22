@@ -1,3 +1,10 @@
+2009-06-22  Chris Toshok  <toshok@ximian.com>
+
+	* MarkupExpressionParser.cs: add a copyright/license blurb, and
+	add a "allowed_spaces" argument to GetNextPiece.  This is so
+	StaticResources can refer to keys that contain spaces.  Unbreaks
+	the iis smooth streaming site.
+
 2009-06-19  Jackson Harper  <jackson@ximian.com>
 
 	* XamlLoaderCallbacks.cs: Remove AddToContainer andd AddChild

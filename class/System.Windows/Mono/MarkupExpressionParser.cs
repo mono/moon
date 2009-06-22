@@ -1,4 +1,30 @@
-
+//
+// MarkupExpressionParser.cs
+//
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
+//
+// Copyright 2009 Novell, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
 using System.Linq;
@@ -111,7 +137,7 @@ namespace Mono.Xaml {
 				return binding;
 
 			string remaining = expression;
-			string piece = GetNextPiece (ref remaining, out next);
+			string piece = GetNextPiece (ref remaining, out next, false);
 			
 
 			if (next == '=')
@@ -120,7 +146,7 @@ namespace Mono.Xaml {
 				binding.Path = new PropertyPath (piece);
 
 			do {
-				piece = GetNextPiece (ref remaining, out next);
+				piece = GetNextPiece (ref remaining, out next, false);
 
 				if (piece == null)
 					break;
@@ -135,7 +161,7 @@ namespace Mono.Xaml {
 		public object ParseStaticResource (ref string expression)
 		{
 			char next;
-			string name = GetNextPiece (ref expression, out next);
+			string name = GetNextPiece (ref expression, out next, true);
 
 			object o = LookupNamedResource (target, name);
 
@@ -152,7 +178,7 @@ namespace Mono.Xaml {
 			TemplateBindingExpression tb = new TemplateBindingExpression ();
 
 			char next;
-			string prop = GetNextPiece (ref expression, out next);
+			string prop = GetNextPiece (ref expression, out next, false);
 			FrameworkTemplate template = GetParentTemplate ();
 
 			tb.Target = (FrameworkElement)target;
@@ -206,7 +232,7 @@ namespace Mono.Xaml {
 					str_value = (string) value;
 			}
 			else {
-				str_value = GetNextPiece (ref remaining, out next);
+				str_value = GetNextPiece (ref remaining, out next, false);
 			}
 
 			switch (prop) {
@@ -252,7 +278,7 @@ namespace Mono.Xaml {
 			}
 		}
 
-		private static string GetNextPiece (ref string remaining, out char next)
+		private static string GetNextPiece (ref string remaining, out char next, bool allow_spaces)
 		{
 			int end = 0;
 			remaining = remaining.TrimStart ();
@@ -261,7 +287,7 @@ namespace Mono.Xaml {
 			
 			if (end == -1 || end == 0) {
 				end = 0;
-				while (end < remaining.Length && !Char.IsWhiteSpace (remaining [end]) && remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '=')
+				while (end < remaining.Length && (allow_spaces || !Char.IsWhiteSpace (remaining [end])) && remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '=')
 					end++;
 			}
 			
