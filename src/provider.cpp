@@ -192,6 +192,10 @@ IsPropertyInherited (int propertyId)
 	if (propertyId == FrameworkElement::p) return true; \
 	} G_STMT_END
 
+#define PROP_U(p) G_STMT_START { \
+	if (propertyId == UIElement::p) return true; \
+        } G_STMT_END
+
 #define PROP_I(p) G_STMT_START { \
 	if (propertyId == Inline::p) return true; \
 	} G_STMT_END
@@ -202,6 +206,8 @@ IsPropertyInherited (int propertyId)
 	PROP_CTI (FontStyleProperty);
 	PROP_CTI (FontWeightProperty);
 	PROP_CTI (FontSizeProperty);
+
+	PROP_U (UseLayoutRoundingProperty);
 
 	PROP_F (LanguageProperty);
 	PROP_F (DataContextProperty);
@@ -256,6 +262,13 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 		parentPropertyId = FrameworkElement::p;			\
 	}								\
 	} G_STMT_END
+
+#define INHERIT_U_U(p) \
+	G_STMT_START {							\
+	if (property->GetId () == UIElement::p) {		\
+		parentPropertyId = UIElement::p;			\
+	}								\
+	} G_STMT_END
 	
 	DependencyObject *parent = NULL;
 
@@ -273,7 +286,9 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 				INHERIT_F_F (LanguageProperty);
 				INHERIT_F_F (DataContextProperty);
-					
+				
+				INHERIT_U_U (UseLayoutRoundingProperty);
+
 				if (parentPropertyId != -1)
 					return parent->GetValue (types->GetProperty (parentPropertyId));
 

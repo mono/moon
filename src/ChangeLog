@@ -1,5 +1,8 @@
 2009-06-22  Larry Ewing  <lewing@novell.com>
 
+	* provider.cpp: make UIElement::UseLayoutRounding inherited, this
+	doesn't make it pass 2019 but it does a lot more. 
+
 	* shape.cpp: mirror the silverlight logic for canvas children with
 	only one of w/h set.  Fixes ms test 23.
 
