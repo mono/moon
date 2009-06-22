@@ -1,3 +1,7 @@
+2009-06-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: This test passes now.
+
 2009-06-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/ReflectionTest.cs: Show the behavior of trying to invoke

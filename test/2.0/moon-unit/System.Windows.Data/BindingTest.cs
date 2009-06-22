@@ -1426,7 +1426,6 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 			
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlPropertyPathTest ()
 		{
 			Mono.Moonlight.BindingConverter c = new Mono.Moonlight.BindingConverter ();
