@@ -996,6 +996,13 @@ Ellipse::ComputeShapeBounds (bool logical)
 		return Rect ();
 	}
 	
+	if (GetVisualParent () && GetVisualParent ()->Is (Type::CANVAS)) {
+		if (isnan (GetWidth ()) != isnan (GetHeight ())) {
+			SetShapeFlags (UIElement::SHAPE_EMPTY);
+			return Rect ();
+		}
+	}
+
 	switch (GetStretch ()) {
 	case StretchNone:
 		rect.width = rect.height = 0.0;
@@ -1134,6 +1141,13 @@ Rectangle::ComputeShapeBounds (bool logical)
 	if (rect.width < 0.0 || rect.height < 0.0 || GetWidth () <= 0.0 || GetHeight () <= 0.0) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
+	}
+
+	if (GetVisualParent () && GetVisualParent ()->Is (Type::CANVAS)) {
+		if (isnan (GetWidth ()) != isnan (GetHeight ())) {
+			SetShapeFlags (UIElement::SHAPE_EMPTY);
+			return Rect ();
+		}
 	}
 
 	double t = IsStroked () ? GetStrokeThickness () : 0.0;
