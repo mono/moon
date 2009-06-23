@@ -1,3 +1,12 @@
+2009-06-22  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h.in|cpp: MediaElements and Images need to subclass
+	from UIElement here instead of DependencyObject, or else we can't
+	call UIElement methods on them.  gets fixture #282 further than
+	the stupid .js error.
+
+	* plugin-class.h: regen
+
 2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-class.cpp: Add support for MultiScaleImage methods.

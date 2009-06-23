@@ -3413,7 +3413,7 @@ MoonlightMediaElementObject::Invoke (int id, NPIdentifier name,
 	}
 
 	default:
-		return MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);
+		return MoonlightUIElementObject::Invoke (id, name, args, argCount, result);
 	}
 }
 
@@ -3460,7 +3460,7 @@ MoonlightImageObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 	}
 
 	default:
-		return MoonlightDependencyObjectObject::GetProperty (id, name, result);
+		return MoonlightUIElementObject::GetProperty (id, name, result);
 	}
 }
 
@@ -3489,7 +3489,7 @@ MoonlightImageObject::Invoke (int id, NPIdentifier name,
 		
 		return true;
 	default:
-		return MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);
+		return MoonlightUIElementObject::Invoke (id, name, args, argCount, result);
 	}
 }
 

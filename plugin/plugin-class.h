@@ -785,13 +785,13 @@ struct MoonlightStoryboardObject : MoonlightDependencyObjectObject {
 
 /*** MoonlightMediaElement ***************************************************/
 
-struct MoonlightMediaElementType : MoonlightDependencyObjectType {
+struct MoonlightMediaElementType : MoonlightUIElementType {
 	MoonlightMediaElementType ();
 };
 
 
-struct MoonlightMediaElementObject : MoonlightDependencyObjectObject {
-	MoonlightMediaElementObject (NPP instance) : MoonlightDependencyObjectObject (instance)
+struct MoonlightMediaElementObject : MoonlightUIElementObject {
+	MoonlightMediaElementObject (NPP instance) : MoonlightUIElementObject (instance)
 	{
 		moonlight_type = Type::MEDIAELEMENT;
 	}
@@ -802,13 +802,13 @@ struct MoonlightMediaElementObject : MoonlightDependencyObjectObject {
 
 /*** MoonlightImage ***************************************************/
 
-struct MoonlightImageType : MoonlightDependencyObjectType {
+struct MoonlightImageType : MoonlightUIElementType {
 	MoonlightImageType ();
 };
 
 
-struct MoonlightImageObject : MoonlightDependencyObjectObject {
-	MoonlightImageObject (NPP instance) : MoonlightDependencyObjectObject (instance)
+struct MoonlightImageObject : MoonlightUIElementObject {
+	MoonlightImageObject (NPP instance) : MoonlightUIElementObject (instance)
 	{
 		moonlight_type = Type::IMAGE;
 	}
