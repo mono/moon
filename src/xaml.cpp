@@ -4148,13 +4148,21 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, XamlElemen
 bool
 XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char *value)
 {
+	if (Type::IsSubclassOf (info->GetKind (), Type::CONTENTCONTROL)) {
+		// Content controls are not allowed to have their content set as text, they need to have a child element
+		// if you want to set the content of a contentcontrol to text you need to use attribute syntax
+		return false;
+	}
+
 	if (!XamlElementInstance::TrySetContentProperty (p, value)) {
 		const char* prop_name = info->GetContentProperty (p);
-		if (!p->cdata_content)
+		if (!p->cdata_content) 
 			return false;
 		Value v = Value (value);
-		return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, prop_name, &v, NULL);
+		bool res = p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, prop_name, &v, NULL);
+		return res;
 	}
+
 	return false;
 }
 
