@@ -1,5 +1,10 @@
 2009-06-22  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Don't skip empty attributes anymore, this should be
+	handled by all the null stuff.
+
+2009-06-22  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Pass the full prop name to managed
 	- If managed fails to set the property, delete it so unmanaged can
 	try

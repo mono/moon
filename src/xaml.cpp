@@ -4589,10 +4589,6 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 		if (p->error_args)
 			return;
 
-		// Skip empty attrs
-		if (attr[i + 1] == NULL || attr[i + 1][0] == '\0')
-			continue;
-		
 		// Setting attributes like x:Class can change item->item, so we
 		// need to make sure we have an up to date pointer
 		DependencyObject *dep = item->GetAsDependencyObject ();
