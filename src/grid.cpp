@@ -287,6 +287,48 @@ Grid::MeasureOverride (Size availableSize)
 	return results;
 }
 
+void
+Grid::Render (cairo_t *cr, Region *region, bool path_only)
+{
+	Panel::Render (cr, region, path_only);
+	if (path_only || !GetShowGridLines ())
+		return;
+
+	double offset = 0;
+	double dash = 5;
+	ColumnDefinitionCollection *cols = GetColumnDefinitions ();
+	RowDefinitionCollection *rows = GetRowDefinitions ();
+	
+	cairo_set_line_width(cr, 1.0);
+	// Initially render a blue color
+	cairo_set_dash (cr, &dash, 1, offset);
+	cairo_set_source_rgb (cr, 0.4, 0.4, 1.0);
+
+	// Draw gridlines between each pair of columns/rows
+	for (int count = 0; count < 2; count++) {
+
+		for (int i = 0, offset = 0; i < cols->GetCount () - 1; i++) {
+			ColumnDefinition *def = cols->GetValueAt (i)->AsColumnDefinition ();
+			offset += def->GetActualWidth ();
+			cairo_move_to (cr, offset, 0);
+			cairo_line_to (cr, offset, GetActualHeight ());
+		}
+		
+		for (int i = 0, offset = 0; i < rows->GetCount () -1; i++) {
+			RowDefinition *def = rows->GetValueAt (i)->AsRowDefinition ();
+			offset += def->GetActualHeight ();
+			cairo_move_to (cr, 0, offset);
+			cairo_line_to (cr, GetActualWidth (), offset);
+		}
+		
+		cairo_stroke (cr);
+		
+		// For the second pass render a yellow color in the gaps between the previous dashes
+		cairo_set_dash (cr, &dash, 1, dash);
+		cairo_set_source_rgb (cr, 1.0, 1.0, 0.3);
+	}
+}
+
 Size
 Grid::ArrangeOverride (Size finalSize)
 {

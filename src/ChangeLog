@@ -1,3 +1,8 @@
+2009-06-23  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: Implement Grid.ShowGridlines
+
 2009-06-22  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Pass the full prop name to managed

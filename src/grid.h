@@ -164,6 +164,8 @@ class Grid : public Panel {
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 
+	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
+
 	// property accessors
 	ColumnDefinitionCollection *GetColumnDefinitions ();
 	void SetColumnDefinitions (ColumnDefinitionCollection* value);
