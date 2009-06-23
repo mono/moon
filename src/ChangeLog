@@ -1,5 +1,9 @@
 2009-06-23  Alan McGovern  <amcgovern@novell.com>
 
+	* grid.cpp: A dash length of 4 seems to be more correct.
+
+2009-06-23  Alan McGovern  <amcgovern@novell.com>
+
 	* grid.h:
 	* grid.cpp: Implement Grid.ShowGridlines
 

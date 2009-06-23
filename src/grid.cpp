@@ -295,7 +295,7 @@ Grid::Render (cairo_t *cr, Region *region, bool path_only)
 		return;
 
 	double offset = 0;
-	double dash = 5;
+	double dash = 4;
 	ColumnDefinitionCollection *cols = GetColumnDefinitions ();
 	RowDefinitionCollection *rows = GetRowDefinitions ();
 	
