@@ -1,3 +1,11 @@
+2009-06-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.sc: Add internal calls
+	* mscorlib.auto.ssc: Add (some) internal calls and icall callers
+	* System.Core.auto.ssc: Remove TimeZoneInfo.FindSystemTimeZoneByFileName
+	* System.Net.auto.sc: Add internal calls
+	* System.Net.auto.ssc: Adjust SSC with new SC icalls
+
 2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.s[s]c: Add new pinvokes to get the original
