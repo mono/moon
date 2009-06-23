@@ -1,3 +1,8 @@
+2009-06-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Add a new Binding test
+	  to ensure we correctly handle binding.Path = null;
+
 2009-06-22  Brad Taylor  <brad@getcoded.net>
 
 	* moon-unit.csproj: 

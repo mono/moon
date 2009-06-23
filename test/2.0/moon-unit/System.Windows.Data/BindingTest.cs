@@ -900,6 +900,12 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void NullPath ()
+		{
+			Assert.Throws<NullReferenceException> (() => new Binding ("Path").Path = null);
+		}
+
+		[TestMethod]
 		public void ReadLocalProperty ()
 		{
 			PropertyUpdater data = new PropertyUpdater ();
