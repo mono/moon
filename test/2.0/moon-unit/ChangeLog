@@ -1,3 +1,7 @@
+2009-06-23 Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebClientTest.cs: Add test cases for BaseAddress
+
 2009-06-23  Jackson Harper  <jackson@ximian.com>
 
 	* System.Windows.Controls/RowDefinitionTest.cs:

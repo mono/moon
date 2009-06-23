@@ -64,6 +64,39 @@ namespace MoonTest.System.Net {
 		}
 
 		[TestMethod]
+		public void BaseAddress ()
+		{
+			WebClient wc = new WebClient ();
+			Uri uri = new Uri (wc.BaseAddress);
+			Assert.IsTrue (uri.IsAbsoluteUri, "IsAbsoluteUri");
+			Assert.IsTrue (wc.BaseAddress.EndsWith (".xap"), ".xap");
+
+			wc.BaseAddress = "http://mono-project.com";
+			// note the suffixed '/'
+			Assert.AreEqual ("http://mono-project.com/", wc.BaseAddress, "BaseAddress-1");
+
+			wc.BaseAddress = null;
+			Assert.AreEqual (String.Empty, wc.BaseAddress, "BaseAddress-null");
+
+			wc.BaseAddress = String.Empty;
+			Assert.AreEqual (String.Empty, wc.BaseAddress, "BaseAddress-empty");
+
+			wc.BaseAddress = "http://mono-project.com/oops there are spaces";
+			Assert.AreEqual ("http://mono-project.com/oops there are spaces", wc.BaseAddress, "BaseAddress-4");
+
+			wc.BaseAddress = uri.AbsoluteUri;
+			Assert.AreEqual (Uri.UnescapeDataString (uri.AbsoluteUri), wc.BaseAddress, "BaseAddress-2");
+
+			Assert.Throws<ArgumentException> (delegate {
+				wc.BaseAddress = "/non-absolute-uri";
+			}, "non absolute uri");
+
+			Assert.Throws<ArgumentException> (delegate {
+				wc.BaseAddress = "!";
+			}, "invalid uri");
+		}
+
+		[TestMethod]
 		public void Headers ()
 		{
 			WebClient wc = new WebClient ();
