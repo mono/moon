@@ -366,20 +366,28 @@ Value::Copy (const Value& v)
 		}
 		break;
 	case Type::COLOR:
-		u.color = g_new (Color, 1);
-		*u.color = *v.u.color;
+		if (v.u.color) {
+			u.color = g_new (Color, 1);
+			*u.color = *v.u.color;
+		}
 		break;
 	case Type::POINT:
-		u.point = g_new (Point, 1);
-		*u.point = *v.u.point;
+		if (v.u.point) {
+			u.point = g_new (Point, 1);
+			*u.point = *v.u.point;
+		}
 		break;
 	case Type::RECT:
-		u.rect = g_new (Rect, 1);
-		*u.rect = *v.u.rect;
+		if (v.u.rect) {
+			u.rect = g_new (Rect, 1);
+			*u.rect = *v.u.rect;
+		}
 		break;
 	case Type::SIZE:
-		u.size = g_new (Size, 1);
-		*u.size = *v.u.size;
+		if (v.u.size) {
+			u.size = g_new (Size, 1);
+			*u.size = *v.u.size;
+		}
 		break;
 	case Type::URI:
 		if (v.u.uri) {
@@ -390,31 +398,43 @@ Value::Copy (const Value& v)
 		}
 		break;
 	case Type::REPEATBEHAVIOR:
-		u.repeat = g_new (RepeatBehavior, 1);
-		*u.repeat = *v.u.repeat;
+		if (v.u.repeat) {
+			u.repeat = g_new (RepeatBehavior, 1);
+			*u.repeat = *v.u.repeat;
+		}
 		break;
 	case Type::DURATION:
-		u.duration = g_new (Duration, 1);
-		*u.duration = *v.u.duration;
+		if (v.u.duration) {
+			u.duration = g_new (Duration, 1);
+			*u.duration = *v.u.duration;
+		}
 		break;
 	case Type::KEYTIME:
-		u.keytime = g_new (KeyTime, 1);
-		*u.keytime = *v.u.keytime;
+		if (v.u.keytime) {
+			u.keytime = g_new (KeyTime, 1);
+			*u.keytime = *v.u.keytime;
+		}
 		break;
 	case Type::GRIDLENGTH:
-		u.grid_length = g_new (GridLength, 1);
-		*u.grid_length = *v.u.grid_length;
+		if (v.u.grid_length) {
+			u.grid_length = g_new (GridLength, 1);
+			*u.grid_length = *v.u.grid_length;
+		}
 		break;
 	case Type::THICKNESS:
-		u.thickness = g_new (Thickness, 1);
-		*u.thickness = *v.u.thickness;
+		if (v.u.thickness) {
+			u.thickness = g_new (Thickness, 1);
+			*u.thickness = *v.u.thickness;
+		}
 		break;
 	case Type::CORNERRADIUS:
-		u.corner = g_new (CornerRadius, 1);
-		*u.corner = *v.u.corner;
+		if (v.u.corner) {
+			u.corner = g_new (CornerRadius, 1);
+			*u.corner = *v.u.corner;
+		}
 		break;
 	case Type::MANAGEDTYPEINFO:
-		if (u.type_info) {
+		if (v.u.type_info) {
 			u.type_info = g_new (ManagedTypeInfo, 1);
 			*u.type_info = *v.u.type_info;
 		}
