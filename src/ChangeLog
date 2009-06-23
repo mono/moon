@@ -1,5 +1,9 @@
 2009-06-23  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Handle empty buffers
+	
+2009-06-23  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: ContentControl can not have string content set this
 	way, if the content object is a string it needs to be set with
 	attributes.
