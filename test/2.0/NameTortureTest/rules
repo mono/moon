@@ -60,13 +60,17 @@
 9. If you try to reparent a non-visual type into a tree where it
    causes a name conflict, the operation throws an ArgumentException.
 
-10. For visual types (FrameworkElement subclasses), when you remove the
+10a. For visual types (FrameworkElement subclasses), when you remove the
     object as a child from a container, the name is unregistered.
     Adding it to a subtree causes the name to be registered in the
-    subtree's name scope *except* when that visual type was instantiated
-    as part of a ControlTemplate.
-    
+    subtree's name scope.
+
+10b. If the visual type was instantiated as part of a template, it is never
+     registered in other namescopes, only the template namescope. If the item
+     is renamed, the template namescope is not updated with the new name.
+     
     tested by: AddTemplateItemToNewSubtree
+               ChangeNameOfTemplatedItem
 
 11. If you try to reparent a visual type into a tree where it causes a
     name conflict, the operation throws an ArgumentException.
@@ -80,3 +84,5 @@
     elements can not be found via GetTemplateChild or FindName anywhere.
 
    tested by: CustomControlInTemplate
+
+14. 

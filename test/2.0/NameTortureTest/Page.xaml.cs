@@ -36,6 +36,7 @@ namespace NameTortureTest
 			RunTests ("AddItemToCanvasInTemplate");
 			RunTests ("AddTemplateItemToNewSubtree");
 			RunTests ("BasicXamlReaderTests");
+			RunTests ("ChangeNameOfTemplatedItem");
 			RunTests ("CustomControlInTemplate");
 			RunTests ("AddXamlReaderOutputToExistingTreeVisualType");
 			RunTests ("AddXamlReaderOutputToExistingTreeNonVisualType");
@@ -202,6 +203,38 @@ namespace NameTortureTest
 
 			Assert.IsNotNull (rd["border"], "6");
 			Assert.IsNotNull (((Border)rd["border"]).FindName("hi"), "7");
+		}
+
+		public void ChangeNameOfTemplatedItem ()
+		{
+            MyControl c = (MyControl)System.Windows.Markup.XamlReader.Load(@"
+<clr:MyControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+               xmlns:clr=""clr-namespace:NameTortureTest;assembly=NameTortureTest""> 
+    <clr:MyControl.Template>
+        <ControlTemplate>
+			<Canvas x:Name=""Parent"">
+				<Canvas x:Name=""Canvas"">
+					<ContentPresenter />
+				</Canvas>
+			</Canvas>
+        </ControlTemplate>
+    </clr:MyControl.Template>
+</clr:MyControl>
+");
+		    c.Content = new object ();
+		    c.ApplyTemplate();
+			Canvas parent = (Canvas) c.GetTemplateChild ("Parent");
+		    Canvas canvas = (Canvas) c.GetTemplateChild("Canvas");
+			canvas.Name = "OtherCanvas";
+			Assert.IsTrue (canvas == c.GetTemplateChild ("Canvas"), "Namescope is not updated");
+
+			parent.Children.Remove (canvas);
+			testArea.Children.Add (canvas);
+			Assert.IsNull (testArea.FindName ("OtherCanvas"), "Name is not registered");
+
+			canvas.Name = "FinalName";
+			Assert.IsNull (testArea.FindName ("FinalName"), "Name changes are not registered");
 		}
 
 		public void AddXamlReaderOutputToExistingTreeVisualType ()
