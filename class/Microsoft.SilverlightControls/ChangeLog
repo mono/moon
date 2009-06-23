@@ -1,3 +1,8 @@
+2009-06-23  Brad Taylor  <brad@getcoded.net>
+
+	* RuntimeControls/SilverlightControls/CheckBox.cs: Return new
+	CheckBoxAutomationPeer.
+
 2009-06-22  Brad Taylor  <brad@getcoded.net>
 
 	* RuntimeControls/SilverlightControls/Primitives/ToggleButton.cs:

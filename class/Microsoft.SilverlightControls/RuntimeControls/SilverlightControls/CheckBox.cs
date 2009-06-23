@@ -60,5 +60,10 @@ namespace System.Windows.Controls
                 }
             } 
         } 
+
+        protected override AutomationPeer OnCreateAutomationPeer ()
+        {
+            return new CheckBoxAutomationPeer (this);
+        }
     }
 } 

@@ -184,56 +184,57 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public override void GetName ()
 		{
-			ToggleButton toggleButton = new ToggleButton ();
-			ToggleButtonAutomationPeerPoker tbap
-				= new ToggleButtonAutomationPeerPoker (toggleButton);
+			ToggleButton toggleButton = CreateConcreteFrameworkElement () as ToggleButton;
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (toggleButton);
 
-			Assert.AreEqual (String.Empty, tbap.GetName (), "GetName");
-			Assert.AreEqual (String.Empty, tbap.GetNameCore_ (), "GetName");
+			Assert.AreEqual (String.Empty, feap.GetName (), "GetName");
+			Assert.AreEqual (String.Empty, feap.GetNameCore_ (), "GetName");
 
 			string name = "Yarr!";
 			toggleButton.Content = new TextBlock {Text = name};
-			Assert.AreEqual (name, tbap.GetName (), "GetName #1");
-			Assert.AreEqual (name, tbap.GetNameCore_ (), "GetNameCore #1");
+			Assert.AreEqual (name, feap.GetName (), "GetName #1");
+			Assert.AreEqual (name, feap.GetNameCore_ (), "GetNameCore #1");
 
 			name = "En Garde!";
 			toggleButton.Content = name;
-			Assert.AreEqual (name, tbap.GetName (), "GetName #2");
-			Assert.AreEqual (name, tbap.GetNameCore_ (), "GetNameCore #2");
+			Assert.AreEqual (name, feap.GetName (), "GetName #2");
+			Assert.AreEqual (name, feap.GetNameCore_ (), "GetNameCore #2");
 
 			toggleButton.Content = String.Empty;
-			Assert.AreEqual (String.Empty, tbap.GetName (), "GetName #2");
-			Assert.AreEqual (String.Empty, tbap.GetNameCore_ (), "GetNameCore #2");
+			Assert.AreEqual (String.Empty, feap.GetName (), "GetName #2");
+			Assert.AreEqual (String.Empty, feap.GetNameCore_ (), "GetNameCore #2");
 
 			toggleButton.Content = null;
-			Assert.AreEqual (String.Empty, tbap.GetName (), "GetName #3");
-			Assert.AreEqual (String.Empty, tbap.GetNameCore_ (), "GetNameCore #3");
+			Assert.AreEqual (String.Empty, feap.GetName (), "GetName #3");
+			Assert.AreEqual (String.Empty, feap.GetNameCore_ (), "GetNameCore #3");
 		}
 
 		[TestMethod]
 		public override void GetPattern ()
 		{
-			ToggleButtonAutomationPeerPoker tbap
-				= new ToggleButtonAutomationPeerPoker (new ToggleButton ());
+			FrameworkElementAutomationPeer peer
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ())
+					as FrameworkElementAutomationPeer;
 
-			Assert.IsNull (tbap.GetPattern (PatternInterface.Dock), "Dock");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.Grid), "Grid");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.GridItem), "GridItem");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.Invoke), "Invoke");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.MultipleView), "MultipleView");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.RangeValue), "RangeValue");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.Scroll), "Scroll");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.ScrollItem), "ScrollItem");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.Selection), "Selection");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.SelectionItem), "SelectionItem");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.Table), "Table");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.TableItem), "TableItem");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.Transform), "Transform");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.Window), "Window");
-			Assert.IsNull (tbap.GetPattern (PatternInterface.Value), "Value");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Dock), "Dock");
+			Assert.IsNull (peer.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Grid), "Grid");
+			Assert.IsNull (peer.GetPattern (PatternInterface.GridItem), "GridItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Invoke), "Invoke");
+			Assert.IsNull (peer.GetPattern (PatternInterface.MultipleView), "MultipleView");
+			Assert.IsNull (peer.GetPattern (PatternInterface.RangeValue), "RangeValue");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Scroll), "Scroll");
+			Assert.IsNull (peer.GetPattern (PatternInterface.ScrollItem), "ScrollItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Selection), "Selection");
+			Assert.IsNull (peer.GetPattern (PatternInterface.SelectionItem), "SelectionItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Table), "Table");
+			Assert.IsNull (peer.GetPattern (PatternInterface.TableItem), "TableItem");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Transform), "Transform");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Window), "Window");
+			Assert.IsNull (peer.GetPattern (PatternInterface.Value), "Value");
 
-			Assert.IsNotNull (tbap.GetPattern (PatternInterface.Toggle), "Toggle");
+			Assert.IsNotNull (peer.GetPattern (PatternInterface.Toggle), "Toggle");
 		}
 
 		[TestMethod]
@@ -302,11 +303,12 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void ToggleProviderToggleState ()
 		{
-			ToggleButton toggleButton = new ToggleButton ();
-			ToggleButtonAutomationPeerPoker tbap
-				= new ToggleButtonAutomationPeerPoker (toggleButton);
+			ToggleButton toggleButton = CreateConcreteFrameworkElement ()
+				as ToggleButton;
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (toggleButton);
 
-			IToggleProvider toggleProvider = tbap as IToggleProvider;
+			IToggleProvider toggleProvider = feap as IToggleProvider;
 
                         // Test two-state toggling
 			toggleButton.IsThreeState = false;
@@ -350,13 +352,13 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void ToggleProviderToggle ()
 		{
-			ToggleButton toggleButton = new ToggleButton ();
-			ToggleButtonAutomationPeerPoker tbap
-				= new ToggleButtonAutomationPeerPoker (toggleButton);
+			ToggleButton toggleButton = CreateConcreteFrameworkElement () as ToggleButton;
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (toggleButton);
 
 			toggleButton.IsEnabled = false;
 
-			IToggleProvider toggleProvider = tbap as IToggleProvider;
+			IToggleProvider toggleProvider = feap as IToggleProvider;
 
 			try {
 				toggleProvider.Toggle ();

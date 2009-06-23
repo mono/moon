@@ -1,3 +1,11 @@
+2009-06-23  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/ToggleButtonAutomationPeerTest.cs:
+	Refactor to allow CheckBoxAutomationPeerTest to share more code.
+
+	* System.Windows.Automation.Peers/CheckBoxAutomationPeerTest.cs: Add
+	test for CheckBox's automation peer.
+
 2009-06-23 Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/WebClientTest.cs: Add test cases for BaseAddress

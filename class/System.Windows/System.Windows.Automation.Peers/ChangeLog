@@ -1,3 +1,9 @@
+2009-06-23  Brad Taylor  <brad@getcoded.net>
+
+	* Makefile.am: 
+	* System.Windows.Automation.Peers/CheckBoxAutomationPeer.cs: Implement
+	automation peer for CheckBox.
+
 2009-06-22  Brad Taylor  <brad@getcoded.net>
 
 	* ToggleButtonAutomationPeer.cs: Implement automation peer for Toggle
