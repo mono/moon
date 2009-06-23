@@ -727,14 +727,16 @@ FrameworkElement::UpdateLayout ()
 		i++;
 		DeepTreeWalker measure_walker (element);
 		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
-			if (!child->IsLoaded ()) {
+			FrameworkElement *parent = (FrameworkElement*)child->GetVisualParent ();
+			
+			if (parent && parent->IsLoaded () && !child->IsLoaded ()) {
 				LOG_LAYOUT ("FrameworkElement::UpdateLayout: element (%p) not yet loaded\n", child);
 
-				List *load_list = WalkTreeForLoaded (false);
-				EmitSubtreeLoad  (load_list);
+				List *load_list = child->WalkTreeForLoaded (false);
+				child->EmitSubtreeLoad  (load_list);
 				delete load_list;
 			}
-
+			
 			if ((child->flags & UIElement::RENDER_VISIBLE) == 0) {
 				
 				measure_walker.SkipBranch ();
@@ -744,7 +746,7 @@ FrameworkElement::UpdateLayout ()
 			if (child->dirty_flags & DirtyMeasure) {
 				UIElement *parent = child->GetVisualParent ();
 				if ((parent && !parent->Is (Type::CANVAS)) || child->IsContainer ()) {
-					measure_list->Prepend (new UIElementNode (child));
+					measure_list->Append (new UIElementNode (child));
 					//g_warning ("adding %p, %s", child, child->GetTypeName ());
 				} else if (!measure_list->IsEmpty ()) {
 					measure_walker.SkipBranch ();
@@ -755,13 +757,13 @@ FrameworkElement::UpdateLayout ()
 				continue;
 			
 			if (child->dirty_flags & DirtyArrange)
-				arrange_list->Prepend (new UIElementNode (child));
+				arrange_list->Append (new UIElementNode (child));
 			
 			if (!arrange_list->IsEmpty ())
 				continue;
 			
 			if (child->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
-				size_list->Prepend (new UIElementNode (child));
+				size_list->Append (new UIElementNode (child));
 			
 			if (!size_list->IsEmpty ())
 				continue;

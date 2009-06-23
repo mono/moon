@@ -1,3 +1,8 @@
+2009-06-23  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (UpdateLayout): reorder the way we process
+	the lyout queues. Fixes ms 409.
+
 2009-06-23  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Handle empty buffers
