@@ -3405,7 +3405,8 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		DoubleCollection *doubles = DoubleCollection::FromStr (s);
 		if (!doubles) {
 			g_free (s);
-			return false;
+			*v = new Value (new DoubleCollection ());
+			return true;
 		}
 
 		*v = new Value (doubles);
@@ -3416,7 +3417,8 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		PointCollection *points = PointCollection::FromStr (s);
 		if (!points) {
 			g_free (s);
-			return false;
+			*v = new Value (new PointCollection ());
+			return true;
 		}
 
 		*v = new Value (points);
@@ -4588,10 +4590,6 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 
 		if (p->error_args)
 			return;
-
-		// Skip empty attrs
-		if (attr[i + 1] == NULL || attr[i + 1][0] == '\0')
-			continue;
 
 		// Setting attributes like x:Class can change item->item, so we
 		// need to make sure we have an up to date pointer

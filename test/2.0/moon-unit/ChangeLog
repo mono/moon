@@ -1,3 +1,9 @@
+2009-06-23  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows.Controls/RowDefinitionTest.cs:
+	* System.Windows.Controls/ColumnDefinitionTest.cs: We handle empty
+	attribute strings properly now, remove MonoBug.
+
 2009-06-23  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Add a new Binding test

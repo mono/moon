@@ -52,13 +52,10 @@ namespace System.Windows
 #endif
 		public object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
-			if (value is string)
-			{
-				string text = (string) value;
-				return (!string.IsNullOrEmpty(text)) ?
-					new PropertyPath(text) :
-					null;
-			}
+			string str_val = value as string;
+			if (str_val != null)
+				return new PropertyPath (str_val);
+
 			return TypeConverters.ConvertFrom<PropertyPath>(this, value);
 		}
 	}

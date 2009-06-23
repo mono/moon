@@ -1,3 +1,8 @@
+2009-06-23  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Another stab at not skipping empty attributes. Fixed
+	all the unit test regression this caused last night.
+
 2009-06-23  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.cpp: A dash length of 4 seems to be more correct.
