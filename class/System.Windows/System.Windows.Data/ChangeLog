@@ -1,3 +1,8 @@
+2009-06-23  Alan McGovern  <amcgovern@novell.com>
+
+	* Binding.cs: Don't null check value before using it, we
+	  should throw a nullref if it's null.
+
 2009-05-20  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: DataBinding and ManagedXamlLoader
