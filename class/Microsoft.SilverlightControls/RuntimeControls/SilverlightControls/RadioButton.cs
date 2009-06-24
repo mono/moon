@@ -263,6 +263,11 @@ namespace System.Windows.Controls
                 }
             }
         } 
+
+        protected override AutomationPeer OnCreateAutomationPeer ()
+        {
+            return new RadioButtonAutomationPeer (this);
+        }
 		
 		// Moonlight: This method wasn't included in the control drop. 
 		public override string ToString ()

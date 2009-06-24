@@ -301,7 +301,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		#region IToggleProvider tests
 
 		[TestMethod]
-		public void ToggleProviderToggleState ()
+		public void ToggleProvider_ToggleState ()
 		{
 			ToggleButton toggleButton = CreateConcreteFrameworkElement ()
 				as ToggleButton;
@@ -350,7 +350,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void ToggleProviderToggle ()
+		public virtual void ToggleProvider_Toggle ()
 		{
 			ToggleButton toggleButton = CreateConcreteFrameworkElement () as ToggleButton;
 			FrameworkElementAutomationPeerContract feap

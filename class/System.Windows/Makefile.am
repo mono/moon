@@ -119,6 +119,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/ListBoxAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ListBoxItemAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/PatternInterface.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/RadioButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RangeBaseAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RepeatButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/SelectorAutomationPeer.cs	\

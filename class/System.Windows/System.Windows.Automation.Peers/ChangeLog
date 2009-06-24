@@ -1,8 +1,11 @@
+2009-06-24  Brad Taylor  <brad@getcoded.net>
+
+	* RadioButtonAutomationpeer.cs: Implement automation peer for
+	RadioButton.
+
 2009-06-23  Brad Taylor  <brad@getcoded.net>
 
-	* Makefile.am: 
-	* System.Windows.Automation.Peers/CheckBoxAutomationPeer.cs: Implement
-	automation peer for CheckBox.
+	* CheckBoxAutomationPeer.cs: Implement automation peer for CheckBox.
 
 2009-06-22  Brad Taylor  <brad@getcoded.net>
 

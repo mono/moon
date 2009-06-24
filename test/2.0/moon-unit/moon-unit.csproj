@@ -109,6 +109,7 @@
     <Compile Include="System.Windows.Automation.Peers\ItemAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ItemsControlAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\PatternInterfaceTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\RadioButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RangeBaseAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RepeatButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\SelectorAutomationPeerTest.cs" />
