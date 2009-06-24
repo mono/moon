@@ -151,7 +151,13 @@ class Grid : public Panel {
 	const static int RowDefinitionsProperty;
  	/* @PropertyType=gint32,DefaultValue=1,Attached,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int RowSpanProperty;
- 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+
+	/* 
+	 * NOTE: The ShowGridLines property defaults to false but appears
+	 * to be uninitialized before InitializeComponents is called
+	 * causing the current moon-unit test to fail.
+	 */
+ 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int ShowGridLinesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
