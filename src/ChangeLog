@@ -1,5 +1,9 @@
 2009-06-24  Larry Ewing  <lewing@novell.com>
 
+	* panel.cpp (Render): add layout clipping to panel rendering.
+
+2009-06-24  Larry Ewing  <lewing@novell.com>
+
 	* grid.h: stop drawing the gridlines by default.  See comment for
 	details.
 
