@@ -34,6 +34,7 @@ using System.Windows.Markup;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows.Media.Animation;
 
 namespace MoonTest.System.Windows.Markup {
 
@@ -66,6 +67,21 @@ namespace MoonTest.System.Windows.Markup {
 			RepeatButton rb = (c.Children [0] as RepeatButton);
 			Assert.IsNotNull (rb, "RepeatButton");
 			Assert.AreEqual ("oops", rb.Name, "Name");
+		}
+
+		[TestMethod]
+		public void EnumAsContent ()
+		{
+			DiscreteObjectKeyFrame kf = (DiscreteObjectKeyFrame) XamlReader.Load (@"
+<DiscreteObjectKeyFrame xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" >
+	<DiscreteObjectKeyFrame.Value>
+		<Visibility>Visible</Visibility>
+	</DiscreteObjectKeyFrame.Value>
+</DiscreteObjectKeyFrame>
+");
+			Assert.IsNotNull (kf.Value, "#1");
+			Assert.AreEqual (0, Convert.ToInt32 (kf.Value), "#2");
+			Assert.IsInstanceOfType<uint> (kf.Value, "#3");
 		}
 	}
 }
