@@ -181,6 +181,116 @@ audio_stream_get_channels (AudioStream *instance)
 
 
 int
+audio_stream_get_input_bit_rate (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetInputBitRate ();
+}
+
+
+int
+audio_stream_get_input_bits_per_sample (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetInputBitsPerSample ();
+}
+
+
+int
+audio_stream_get_input_block_align (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetInputBlockAlign ();
+}
+
+
+int
+audio_stream_get_input_channels (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetInputChannels ();
+}
+
+
+int
+audio_stream_get_input_sample_rate (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetInputSampleRate ();
+}
+
+
+int
+audio_stream_get_output_bit_rate (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetOutputBitRate ();
+}
+
+
+int
+audio_stream_get_output_bits_per_sample (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetOutputBitsPerSample ();
+}
+
+
+int
+audio_stream_get_output_block_align (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetOutputBlockAlign ();
+}
+
+
+int
+audio_stream_get_output_channels (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetOutputChannels ();
+}
+
+
+int
+audio_stream_get_output_sample_rate (AudioStream *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetOutputSampleRate ();
+}
+
+
+int
 audio_stream_get_sample_rate (AudioStream *instance)
 {
 	if (instance == NULL)
@@ -188,6 +298,156 @@ audio_stream_get_sample_rate (AudioStream *instance)
 		return (int) 0;
 	
 	return instance->GetSampleRate ();
+}
+
+
+void
+audio_stream_set_bit_rate (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetBitRate (value);
+}
+
+
+void
+audio_stream_set_bits_per_sample (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetBitsPerSample (value);
+}
+
+
+void
+audio_stream_set_block_align (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetBlockAlign (value);
+}
+
+
+void
+audio_stream_set_channels (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetChannels (value);
+}
+
+
+void
+audio_stream_set_input_bit_rate (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetInputBitRate (value);
+}
+
+
+void
+audio_stream_set_input_bits_per_sample (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetInputBitsPerSample (value);
+}
+
+
+void
+audio_stream_set_input_block_align (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetInputBlockAlign (value);
+}
+
+
+void
+audio_stream_set_input_channels (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetInputChannels (value);
+}
+
+
+void
+audio_stream_set_input_sample_rate (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetInputSampleRate (value);
+}
+
+
+void
+audio_stream_set_output_bit_rate (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetOutputBitRate (value);
+}
+
+
+void
+audio_stream_set_output_bits_per_sample (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetOutputBitsPerSample (value);
+}
+
+
+void
+audio_stream_set_output_block_align (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetOutputBlockAlign (value);
+}
+
+
+void
+audio_stream_set_output_channels (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetOutputChannels (value);
+}
+
+
+void
+audio_stream_set_output_sample_rate (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetOutputSampleRate (value);
+}
+
+
+void
+audio_stream_set_sample_rate (AudioStream *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetSampleRate (value);
 }
 
 

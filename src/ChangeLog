@@ -1,3 +1,10 @@
+2009-06-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: AudioStream: add possibility of having different
+	input and output formats.
+
+	* cbinding.cpp|h: Regenerated.
+
 2009-06-24  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (matrix_from_str): handle "Identity" here.

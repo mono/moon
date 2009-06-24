@@ -1211,12 +1211,19 @@ public:
  
 class AudioStream : public IMediaStream {
 private:
-	int bits_per_sample;
-	int block_align;
-	int sample_rate;
-	int channels;
-	int bit_rate;
+	/* input format */
+	int input_bits_per_sample;
+	int input_block_align;
+	int input_sample_rate;
+	int input_channels;
+	int input_bit_rate;
 	
+	/* output format */
+	int output_bits_per_sample;
+	int output_block_align;
+	int output_sample_rate;
+	int output_channels;
+	int output_bit_rate;
 protected:
 	virtual ~AudioStream () {}
 
@@ -1229,21 +1236,83 @@ public:
 	
 	virtual MediaStreamType GetType () { return MediaTypeAudio; }
 
+	// TODO: remove the non Input/Output accessors
+	// wait until later since it is a two-way codec abi breakage.
+
 	/* @GenerateCBinding */
-	int GetBitsPerSample () { return bits_per_sample; }
-	void SetBitsPerSample (int value) { bits_per_sample = value; }
+	int GetBitsPerSample () { return input_bits_per_sample; }
 	/* @GenerateCBinding */
-	int GetBlockAlign () { return block_align; }
-	void SetBlockAlign (int value) { block_align = value; }
+	void SetBitsPerSample (int value) { output_bits_per_sample = input_bits_per_sample = value; }
 	/* @GenerateCBinding */
-	int GetSampleRate () { return sample_rate; }
-	void SetSampleRate (int value) { sample_rate = value; }
+	int GetBlockAlign () { return input_block_align; }
 	/* @GenerateCBinding */
-	int GetChannels () { return channels; }
-	void SetChannels (int value) { channels = value; }
+	void SetBlockAlign (int value) { output_block_align = input_block_align = value; }
 	/* @GenerateCBinding */
-	int GetBitRate () { return bit_rate; }
-	void SetBitRate (int value) { bit_rate = value; }
+	int GetSampleRate () { return input_sample_rate; }
+	/* @GenerateCBinding */
+	void SetSampleRate (int value) { output_sample_rate = input_sample_rate = value; }
+	/* @GenerateCBinding */
+	int GetChannels () { return input_channels; }
+	/* @GenerateCBinding */
+	void SetChannels (int value) { output_channels = input_channels = value; }
+	/* @GenerateCBinding */
+	int GetBitRate () { return input_bit_rate; }
+	/* @GenerateCBinding */
+	void SetBitRate (int value) { output_bit_rate = input_bit_rate = value; }
+	
+	// input accessors
+	
+	/* @GenerateCBinding */
+	int GetInputBitsPerSample () { return input_bits_per_sample; }
+	/* @GenerateCBinding */
+	void SetInputBitsPerSample (int value) { input_bits_per_sample = value; }
+	
+	/* @GenerateCBinding */
+	int GetInputBlockAlign () { return input_block_align; }
+	/* @GenerateCBinding */
+	void SetInputBlockAlign (int value) { input_block_align = value; }
+	
+	/* @GenerateCBinding */
+	int GetInputSampleRate () { return input_sample_rate; }
+	/* @GenerateCBinding */
+	void SetInputSampleRate (int value) { input_sample_rate = value; }
+	
+	/* @GenerateCBinding */
+	int GetInputChannels () { return input_channels; }
+	/* @GenerateCBinding */
+	void SetInputChannels (int value) { input_channels = value; }
+	
+	/* @GenerateCBinding */
+	int GetInputBitRate () { return input_bit_rate; }
+	/* @GenerateCBinding */
+	void SetInputBitRate (int value) { input_bit_rate = value; }
+	
+	// output accessors
+	
+	/* @GenerateCBinding */
+	int GetOutputBitsPerSample () { return output_bits_per_sample; }
+	/* @GenerateCBinding */
+	void SetOutputBitsPerSample (int value) { output_bits_per_sample = value; }
+	
+	/* @GenerateCBinding */
+	int GetOutputBlockAlign () { return output_block_align; }
+	/* @GenerateCBinding */
+	void SetOutputBlockAlign (int value) { output_block_align = value; }
+	
+	/* @GenerateCBinding */
+	int GetOutputSampleRate () { return output_sample_rate; }
+	/* @GenerateCBinding */
+	void SetOutputSampleRate (int value) { output_sample_rate = value; }
+	
+	/* @GenerateCBinding */
+	int GetOutputChannels () { return output_channels; }
+	/* @GenerateCBinding */
+	void SetOutputChannels (int value) { output_channels = value; }
+	
+	/* @GenerateCBinding */
+	int GetOutputBitRate () { return output_bit_rate; }
+	/* @GenerateCBinding */
+	void SetOutputBitRate (int value) { output_bit_rate = value; }
 };
 
 /*

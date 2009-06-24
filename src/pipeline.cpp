@@ -4028,13 +4028,18 @@ AudioStream::AudioStream (Media *media, int codec_id, int bits_per_sample, int b
 {
 	this->codec_id = codec_id;
 	this->codec = CreateCodec (codec_id);
-	this->bits_per_sample = bits_per_sample;
-	this->block_align = block_align;
-	this->sample_rate = sample_rate;
-	this->channels = channels;
-	this->bit_rate = bit_rate;
 	this->extra_data = extra_data;
 	this->extra_data_size = extra_data_size;
+	input_bits_per_sample = bits_per_sample;
+	output_bits_per_sample = bits_per_sample;
+	input_block_align = block_align;
+	output_block_align = block_align;
+	input_sample_rate = sample_rate;
+	output_sample_rate = sample_rate;
+	input_channels = channels;
+	output_channels = channels;
+	input_bit_rate = bit_rate;
+	output_bit_rate = bit_rate;
 }
 
 /*

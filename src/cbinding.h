@@ -838,7 +838,57 @@ int audio_stream_get_block_align (AudioStream *instance);
 
 int audio_stream_get_channels (AudioStream *instance);
 
+int audio_stream_get_input_bit_rate (AudioStream *instance);
+
+int audio_stream_get_input_bits_per_sample (AudioStream *instance);
+
+int audio_stream_get_input_block_align (AudioStream *instance);
+
+int audio_stream_get_input_channels (AudioStream *instance);
+
+int audio_stream_get_input_sample_rate (AudioStream *instance);
+
+int audio_stream_get_output_bit_rate (AudioStream *instance);
+
+int audio_stream_get_output_bits_per_sample (AudioStream *instance);
+
+int audio_stream_get_output_block_align (AudioStream *instance);
+
+int audio_stream_get_output_channels (AudioStream *instance);
+
+int audio_stream_get_output_sample_rate (AudioStream *instance);
+
 int audio_stream_get_sample_rate (AudioStream *instance);
+
+void audio_stream_set_bit_rate (AudioStream *instance, int value);
+
+void audio_stream_set_bits_per_sample (AudioStream *instance, int value);
+
+void audio_stream_set_block_align (AudioStream *instance, int value);
+
+void audio_stream_set_channels (AudioStream *instance, int value);
+
+void audio_stream_set_input_bit_rate (AudioStream *instance, int value);
+
+void audio_stream_set_input_bits_per_sample (AudioStream *instance, int value);
+
+void audio_stream_set_input_block_align (AudioStream *instance, int value);
+
+void audio_stream_set_input_channels (AudioStream *instance, int value);
+
+void audio_stream_set_input_sample_rate (AudioStream *instance, int value);
+
+void audio_stream_set_output_bit_rate (AudioStream *instance, int value);
+
+void audio_stream_set_output_bits_per_sample (AudioStream *instance, int value);
+
+void audio_stream_set_output_block_align (AudioStream *instance, int value);
+
+void audio_stream_set_output_channels (AudioStream *instance, int value);
+
+void audio_stream_set_output_sample_rate (AudioStream *instance, int value);
+
+void audio_stream_set_sample_rate (AudioStream *instance, int value);
 
 /**
  * BackEase
