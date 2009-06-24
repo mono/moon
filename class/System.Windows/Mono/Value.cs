@@ -42,6 +42,18 @@ namespace Mono {
 		public IntPtr source;
 	}
 
+	internal struct UnmanagedFontWeight {
+		public FontWeightKind weight;
+	}
+
+	internal struct UnmanagedFontStyle {
+		public FontStyleKind style;
+	}
+
+	internal struct UnmanagedFontStretch {
+		public FontStretchKind stretch;
+	}
+
 #if false
 	// does not work
 	internal struct UnmanagedFontSource {
@@ -159,12 +171,6 @@ namespace Mono {
 				int i32 = value->u.i32;
 				if (type == typeof (System.Windows.Input.Cursor))
 					return Cursors.FromEnum ((CursorType)i32);
-				else if (type == typeof (FontStretch))
-					return new FontStretch ((FontStretchKind) i32);
-				else if (type == typeof (FontStyle))
-					return new FontStyle ((FontStyleKind) i32);
-				else if (type == typeof (FontWeight))
-					return new FontWeight ((FontWeightKind) i32);
 				else if (type == typeof (TextDecorationCollection))
 					return (i32 == (int) TextDecorationKind.Underline) ? TextDecorations.Underline : null;
 				else if (type != null && type.IsEnum)
@@ -212,6 +218,22 @@ namespace Mono {
 				UnmanagedFontFamily *family = (UnmanagedFontFamily*)value->u.p;
 				return new FontFamily (family == null ? null : Marshal.PtrToStringAuto (family->source));
 			}
+
+			case Kind.FONTSTRETCH: {
+				UnmanagedFontStretch *stretch = (UnmanagedFontStretch*)value->u.p;
+				return new FontStretch (stretch == null ? FontStretchKind.Normal : stretch->stretch);
+			}
+
+			case Kind.FONTSTYLE: {
+				UnmanagedFontStyle *style = (UnmanagedFontStyle*)value->u.p;
+				return new FontStyle (style == null ? FontStyleKind.Normal : style->style);
+			}
+
+			case Kind.FONTWEIGHT: {
+				UnmanagedFontWeight *weight = (UnmanagedFontWeight*)value->u.p;
+				return new FontWeight (weight == null ? FontWeightKind.Normal : weight->weight);
+			}
+
 #if false
 			// does not work, treat it like MANAGED for the time being
 			case Kind.FONTSOURCE: {
@@ -267,12 +289,12 @@ namespace Mono {
 					return new Color ();
 				return color->ToColor ();
 			}
-					
+
 			case Kind.MATRIX:
 			case Kind.UNMANAGEDMATRIX: {
 				return new Matrix (value->u.p);
 			}
-					
+
 			case Kind.DURATION: {
 				Duration* duration = (Duration*)value->u.p;
 				return (duration == null) ? Duration.Automatic : *duration;
@@ -562,11 +584,28 @@ namespace Mono {
 					value.u.p = Marshal.AllocHGlobal (sizeof (GridLength));
 					Marshal.StructureToPtr (gl, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
-				else if ((v is FontStretch) || (v is FontStyle) || (v is FontWeight) || (v is PixelFormat)) {
+				else if (v is FontStretch) {
+					FontStretch stretch = (FontStretch) v;
+					value.k = Kind.FONTSTRETCH;
+					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontStretch));
+					Marshal.StructureToPtr (stretch, value.u.p, false); // Unmanaged and managed structure layout is equal.
+				}
+				else if (v is FontStyle) {
+					FontStyle style = (FontStyle) v;
+					value.k = Kind.FONTSTYLE;
+					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontStyle));
+					Marshal.StructureToPtr (style, value.u.p, false); // Unmanaged and managed structure layout is equal.
+				}
+				else if (v is FontWeight) {
+					FontWeight weight = (FontWeight) v;
+					value.k = Kind.FONTWEIGHT;
+					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontWeight));
+					Marshal.StructureToPtr (weight, value.u.p, false); // Unmanaged and managed structure layout is equal.
+				}
+				else if (v is PixelFormat) {
+					// FIXME we need to make an unmanaged PixelFormat struct and
+					// marshal it like the FontStretch/Style/Weight structs above.
 					value.k = Kind.INT32;
-					// this next line works because each of the above struct types implements
-					// GetHashCode by returning an enum value that maps directly to the enums
-					// we use in unmanaged code.
 					value.u.i32 = v.GetHashCode ();
 				}
 				else if (v is TextDecorationCollection) {

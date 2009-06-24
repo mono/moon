@@ -20,6 +20,9 @@
 #include "xaml.h"
 #include "template.h"
 #include "fontfamily.h"
+#include "fontstretch.h"
+#include "fontstyle.h"
+#include "fontweight.h"
 
 #define CONTROL_FONT_FAMILY  "Portable User Interface"
 #define CONTROL_FONT_STRETCH FontStretchesNormal
@@ -85,14 +88,14 @@ public:
 	void SetFontSize (double size);
 	double GetFontSize ();
 	
-	void SetFontStretch (FontStretches stretch);
-	FontStretches GetFontStretch ();
+	void SetFontStretch (FontStretch* stretch);
+	FontStretch* GetFontStretch ();
 	
-	void SetFontStyle (FontStyles style);
-	FontStyles GetFontStyle ();
+	void SetFontStyle (FontStyle* style);
+	FontStyle* GetFontStyle ();
 	
-	void SetFontWeight (FontWeights weight);
-	FontWeights GetFontWeight ();
+	void SetFontWeight (FontWeight* weight);
+	FontWeight* GetFontWeight ();
 	
 	void SetForeground (Brush *fg);
 	Brush *GetForeground ();
@@ -137,11 +140,11 @@ public:
 	const static int FontFamilyProperty;
 	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
 	const static int FontSizeProperty;
-	/* @PropertyType=FontStretch,DefaultValue=CONTROL_FONT_STRETCH,GenerateAccessors */
+	/* @PropertyType=FontStretch,DefaultValue=FontStretch(CONTROL_FONT_STRETCH),GenerateAccessors */
 	const static int FontStretchProperty;
-	/* @PropertyType=FontStyle,DefaultValue=CONTROL_FONT_STYLE,GenerateAccessors */
+	/* @PropertyType=FontStyle,DefaultValue=FontStyle(CONTROL_FONT_STYLE),GenerateAccessors */
 	const static int FontStyleProperty;
-	/* @PropertyType=FontWeight,DefaultValue=CONTROL_FONT_WEIGHT,GenerateAccessors */
+	/* @PropertyType=FontWeight,DefaultValue=FontWeight(CONTROL_FONT_WEIGHT),GenerateAccessors */
 	const static int FontWeightProperty;
 	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
 	const static int ForegroundProperty;

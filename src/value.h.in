@@ -25,6 +25,9 @@
 
 struct FontFamily;
 struct FontSource;
+struct FontWeight;
+struct FontStyle;
+struct FontStretch;
 struct PropertyPath;
 struct Color;
 struct Duration;
@@ -68,6 +71,9 @@ public:
 	Value (EventObject *obj);
 	Value (FontFamily family);
 	Value (FontSource source);
+	Value (FontWeight weight);
+	Value (FontStyle style);
+	Value (FontStretch stretch);
 	Value (PropertyPath propertypath);
 	Value (Point pt);
 	Value (Rect rect);
@@ -121,6 +127,9 @@ public:
 	Rect*		AsRect ()	{ checked_get_exact (Type::RECT, NULL, u.rect); }
 	Size*		AsSize ()	{ checked_get_exact (Type::SIZE, NULL, u.size); }
 	FontFamily*	AsFontFamily ()	{ checked_get_exact (Type::FONTFAMILY, NULL, u.fontfamily); }
+	FontWeight*	AsFontWeight ()	{ checked_get_exact (Type::FONTWEIGHT, NULL, u.fontweight); }
+	FontStyle*	AsFontStyle ()	{ checked_get_exact (Type::FONTSTYLE, NULL, u.fontstyle); }
+	FontStretch*	AsFontStretch() { checked_get_exact (Type::FONTSTRETCH, NULL, u.fontstretch); }
 	FontSource*	AsFontSource ()	{ checked_get_exact (Type::FONTSOURCE, NULL, u.fontsource); }
 	PropertyPath*	AsPropertyPath ()	{ checked_get_exact (Type::PROPERTYPATH, NULL, u.propertypath); }
 	char*		AsString ()	{ checked_get_exact (Type::STRING, NULL, u.s); }
@@ -173,6 +182,9 @@ public:
 		Size *size;
 		FontFamily *fontfamily;
 		FontSource *fontsource;
+		FontWeight *fontweight;
+		FontStretch *fontstretch;
+		FontStyle *fontstyle;
 		PropertyPath *propertypath;
 		RepeatBehavior *repeat;
 		Duration *duration;

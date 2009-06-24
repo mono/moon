@@ -299,9 +299,9 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::FLOAT] = new Type (Type::FLOAT, Type::OBJECT, true, false, "float", 0, 0, NULL, 5, FLOAT_Interfaces, true, NULL, NULL);
 	types [(int) Type::FONTFAMILY] = new Type (Type::FONTFAMILY, Type::OBJECT, true, false, "FontFamily", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::FONTSOURCE] = new Type (Type::FONTSOURCE, Type::OBJECT, true, false, "FontSource", 0, 0, NULL, 0, NULL, true, NULL, NULL);
-	types [(int) Type::FONTSTRETCH] = new Type (Type::FONTSTRETCH, Type::OBJECT, false, false, "System.Windows.FontStretch", 0, 0, NULL, 0, NULL, false, NULL, NULL);
-	types [(int) Type::FONTSTYLE] = new Type (Type::FONTSTYLE, Type::OBJECT, false, false, "System.Windows.FontStyle", 0, 0, NULL, 0, NULL, false, NULL, NULL);
-	types [(int) Type::FONTWEIGHT] = new Type (Type::FONTWEIGHT, Type::OBJECT, false, false, "System.Windows.FontWeight", 0, 0, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::FONTSTRETCH] = new Type (Type::FONTSTRETCH, Type::OBJECT, true, false, "FontStretch", 0, 0, NULL, 0, NULL, true, NULL, NULL);
+	types [(int) Type::FONTSTYLE] = new Type (Type::FONTSTYLE, Type::OBJECT, true, false, "FontStyle", 0, 0, NULL, 0, NULL, true, NULL, NULL);
+	types [(int) Type::FONTWEIGHT] = new Type (Type::FONTWEIGHT, Type::OBJECT, true, false, "FontWeight", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::FRAMEWORKELEMENT] = new Type (Type::FRAMEWORKELEMENT, Type::UIELEMENT, false, false, "FrameworkElement", 2, 19, FRAMEWORKELEMENT_Events, 0, NULL, false, (create_inst_func *) framework_element_new, NULL);
 	types [(int) Type::FRAMEWORKTEMPLATE] = new Type (Type::FRAMEWORKTEMPLATE, Type::DEPENDENCY_OBJECT, false, false, "FrameworkTemplate", 0, 1, NULL, 0, NULL, false, (create_inst_func *) framework_template_new, NULL);
 	types [(int) Type::GENERALTRANSFORM] = new Type (Type::GENERALTRANSFORM, Type::DEPENDENCY_OBJECT, false, false, "GeneralTransform", 0, 1, NULL, 0, NULL, false, (create_inst_func *) general_transform_new, NULL);

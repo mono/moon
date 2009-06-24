@@ -118,9 +118,9 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "LineHeight", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::TEXTBLOCK, "Inlines", false, NULL, Type::INLINE_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "Foreground", false, Value::CreateUnrefPtr (new SolidColorBrush("black")), Type::BRUSH);
-	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontWeight", false, new Value (TEXTBLOCK_FONT_WEIGHT), Type::INT32);
-	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStyle", false, new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
-	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStretch", false, new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
+	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontWeight", false, new Value (FontWeight(TEXTBLOCK_FONT_WEIGHT)), Type::FONTWEIGHT);
+	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStyle", false, new Value (FontStyle(TEXTBLOCK_FONT_STYLE)), Type::FONTSTYLE);
+	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontStretch", false, new Value (FontStretch(TEXTBLOCK_FONT_STRETCH)), Type::FONTSTRETCH);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontSource", false, Type::FONTSOURCE);
 	DependencyProperty::RegisterFull (this, Type::TEXTBLOCK, "FontSize", false, NULL, Type::DOUBLE, false, false, false, NULL, NULL, AutoCreators::CreateDefaultFontSize, false);
 	DependencyProperty::Register (this, Type::TEXTBLOCK, "FontGUID", false, Type::STRING);
@@ -184,9 +184,9 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::CONTROL, "IsEnabled", false, new Value (true), Type::BOOL);
 	DependencyProperty::Register (this, Type::CONTROL, "HorizontalContentAlignment", false, new Value (HorizontalAlignmentCenter), Type::INT32);
 	DependencyProperty::Register (this, Type::CONTROL, "Foreground", false, Value::CreateUnrefPtr (new SolidColorBrush("black")), Type::BRUSH);
-	DependencyProperty::Register (this, Type::CONTROL, "FontWeight", false, new Value (CONTROL_FONT_WEIGHT), Type::INT32);
-	DependencyProperty::Register (this, Type::CONTROL, "FontStyle", false, new Value (CONTROL_FONT_STYLE), Type::INT32);
-	DependencyProperty::Register (this, Type::CONTROL, "FontStretch", false, new Value (CONTROL_FONT_STRETCH), Type::INT32);
+	DependencyProperty::Register (this, Type::CONTROL, "FontWeight", false, new Value (FontWeight(CONTROL_FONT_WEIGHT)), Type::FONTWEIGHT);
+	DependencyProperty::Register (this, Type::CONTROL, "FontStyle", false, new Value (FontStyle(CONTROL_FONT_STYLE)), Type::FONTSTYLE);
+	DependencyProperty::Register (this, Type::CONTROL, "FontStretch", false, new Value (FontStretch(CONTROL_FONT_STRETCH)), Type::FONTSTRETCH);
 	DependencyProperty::RegisterFull (this, Type::CONTROL, "FontSize", false, NULL, Type::DOUBLE, false, false, false, NULL, NULL, AutoCreators::CreateDefaultFontSize, false);
 	DependencyProperty::Register (this, Type::CONTROL, "FontFamily", false, new Value (FontFamily(CONTROL_FONT_FAMILY)), Type::FONTFAMILY);
 	DependencyProperty::Register (this, Type::CONTROL, "DefaultStyleKey", false, Type::MANAGEDTYPEINFO);
@@ -291,9 +291,9 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::INLINE, "TextDecorations", false, new Value (TextDecorationsNone), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::INLINE, "Language", false, new Value ("en-US"), Type::STRING, false, false, false, NULL, Validators::NonNullValidator, NULL, false);
 	DependencyProperty::Register (this, Type::INLINE, "Foreground", false, Value::CreateUnrefPtr (new SolidColorBrush("black")), Type::BRUSH);
-	DependencyProperty::Register (this, Type::INLINE, "FontWeight", false, new Value (TEXTBLOCK_FONT_WEIGHT), Type::INT32);
-	DependencyProperty::Register (this, Type::INLINE, "FontStyle", false, new Value (TEXTBLOCK_FONT_STYLE), Type::INT32);
-	DependencyProperty::Register (this, Type::INLINE, "FontStretch", false, new Value (TEXTBLOCK_FONT_STRETCH), Type::INT32);
+	DependencyProperty::Register (this, Type::INLINE, "FontWeight", false, new Value (FontWeight(TEXTBLOCK_FONT_WEIGHT)), Type::FONTWEIGHT);
+	DependencyProperty::Register (this, Type::INLINE, "FontStyle", false, new Value (FontStyle(TEXTBLOCK_FONT_STYLE)), Type::FONTSTYLE);
+	DependencyProperty::Register (this, Type::INLINE, "FontStretch", false, new Value (FontStretch(TEXTBLOCK_FONT_STRETCH)), Type::FONTSTRETCH);
 	DependencyProperty::Register (this, Type::INLINE, "FontSource", false, Type::FONTSOURCE);
 	DependencyProperty::RegisterFull (this, Type::INLINE, "FontSize", false, NULL, Type::DOUBLE, false, false, false, NULL, NULL, AutoCreators::CreateDefaultFontSize, false);
 	DependencyProperty::Register (this, Type::INLINE, "FontGUID", false, Type::STRING);
@@ -1633,43 +1633,46 @@ TextBlock::SetForeground (Brush *value)
 	SetValue (TextBlock::ForegroundProperty, Value::CreateUnrefPtr (value));
 }
 
-FontWeights
+FontWeight *
 TextBlock::GetFontWeight ()
 {
 	Value *value = GetValue (TextBlock::FontWeightProperty);
-	return (FontWeights) value->AsInt32 ();
+	return value ? value->AsFontWeight () : NULL;
 }
 
 void
-TextBlock::SetFontWeight (FontWeights value)
+TextBlock::SetFontWeight (FontWeight *value)
 {
-	SetValue (TextBlock::FontWeightProperty, Value (value));
+	if (!value) return;
+	SetValue (TextBlock::FontWeightProperty, Value (*value));
 }
 
-FontStyles
+FontStyle *
 TextBlock::GetFontStyle ()
 {
 	Value *value = GetValue (TextBlock::FontStyleProperty);
-	return (FontStyles) value->AsInt32 ();
+	return value ? value->AsFontStyle () : NULL;
 }
 
 void
-TextBlock::SetFontStyle (FontStyles value)
+TextBlock::SetFontStyle (FontStyle *value)
 {
-	SetValue (TextBlock::FontStyleProperty, Value (value));
+	if (!value) return;
+	SetValue (TextBlock::FontStyleProperty, Value (*value));
 }
 
-FontStretches
+FontStretch *
 TextBlock::GetFontStretch ()
 {
 	Value *value = GetValue (TextBlock::FontStretchProperty);
-	return (FontStretches) value->AsInt32 ();
+	return value ? value->AsFontStretch () : NULL;
 }
 
 void
-TextBlock::SetFontStretch (FontStretches value)
+TextBlock::SetFontStretch (FontStretch *value)
 {
-	SetValue (TextBlock::FontStretchProperty, Value (value));
+	if (!value) return;
+	SetValue (TextBlock::FontStretchProperty, Value (*value));
 }
 
 FontSource *
@@ -2506,43 +2509,46 @@ Control::SetForeground (Brush *value)
 	SetValue (Control::ForegroundProperty, Value::CreateUnrefPtr (value));
 }
 
-FontWeights
+FontWeight *
 Control::GetFontWeight ()
 {
 	Value *value = GetValue (Control::FontWeightProperty);
-	return (FontWeights) value->AsInt32 ();
+	return value ? value->AsFontWeight () : NULL;
 }
 
 void
-Control::SetFontWeight (FontWeights value)
+Control::SetFontWeight (FontWeight *value)
 {
-	SetValue (Control::FontWeightProperty, Value (value));
+	if (!value) return;
+	SetValue (Control::FontWeightProperty, Value (*value));
 }
 
-FontStyles
+FontStyle *
 Control::GetFontStyle ()
 {
 	Value *value = GetValue (Control::FontStyleProperty);
-	return (FontStyles) value->AsInt32 ();
+	return value ? value->AsFontStyle () : NULL;
 }
 
 void
-Control::SetFontStyle (FontStyles value)
+Control::SetFontStyle (FontStyle *value)
 {
-	SetValue (Control::FontStyleProperty, Value (value));
+	if (!value) return;
+	SetValue (Control::FontStyleProperty, Value (*value));
 }
 
-FontStretches
+FontStretch *
 Control::GetFontStretch ()
 {
 	Value *value = GetValue (Control::FontStretchProperty);
-	return (FontStretches) value->AsInt32 ();
+	return value ? value->AsFontStretch () : NULL;
 }
 
 void
-Control::SetFontStretch (FontStretches value)
+Control::SetFontStretch (FontStretch *value)
 {
-	SetValue (Control::FontStretchProperty, Value (value));
+	if (!value) return;
+	SetValue (Control::FontStretchProperty, Value (*value));
 }
 
 double
@@ -3792,43 +3798,46 @@ Inline::SetForeground (Brush *value)
 	SetValue (Inline::ForegroundProperty, Value::CreateUnrefPtr (value));
 }
 
-FontWeights
+FontWeight *
 Inline::GetFontWeight ()
 {
 	Value *value = GetValue (Inline::FontWeightProperty);
-	return (FontWeights) value->AsInt32 ();
+	return value ? value->AsFontWeight () : NULL;
 }
 
 void
-Inline::SetFontWeight (FontWeights value)
+Inline::SetFontWeight (FontWeight *value)
 {
-	SetValue (Inline::FontWeightProperty, Value (value));
+	if (!value) return;
+	SetValue (Inline::FontWeightProperty, Value (*value));
 }
 
-FontStyles
+FontStyle *
 Inline::GetFontStyle ()
 {
 	Value *value = GetValue (Inline::FontStyleProperty);
-	return (FontStyles) value->AsInt32 ();
+	return value ? value->AsFontStyle () : NULL;
 }
 
 void
-Inline::SetFontStyle (FontStyles value)
+Inline::SetFontStyle (FontStyle *value)
 {
-	SetValue (Inline::FontStyleProperty, Value (value));
+	if (!value) return;
+	SetValue (Inline::FontStyleProperty, Value (*value));
 }
 
-FontStretches
+FontStretch *
 Inline::GetFontStretch ()
 {
 	Value *value = GetValue (Inline::FontStretchProperty);
-	return (FontStretches) value->AsInt32 ();
+	return value ? value->AsFontStretch () : NULL;
 }
 
 void
-Inline::SetFontStretch (FontStretches value)
+Inline::SetFontStretch (FontStretch *value)
 {
-	SetValue (Inline::FontStretchProperty, Value (value));
+	if (!value) return;
+	SetValue (Inline::FontStretchProperty, Value (*value));
 }
 
 FontSource *

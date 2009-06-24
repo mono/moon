@@ -242,16 +242,16 @@ Inline::UpdateFontDescription ()
 	if (font->SetFamily (family_name))
 		changed = true;
 	
-	if (font->SetStyle (GetFontStyle ()))
+	if (font->SetStyle (GetFontStyle ()->style))
 		changed = true;
 	
-	if (font->SetWeight (GetFontWeight ()))
+	if (font->SetWeight (GetFontWeight ()->weight))
 		changed = true;
 	
 	if (font->SetSize (GetFontSize ()))
 		changed = true;
 	
-	if (font->SetStretch (GetFontStretch ()))
+	if (font->SetStretch (GetFontStretch ()->stretch))
 		changed = true;
 	
 	if (font->SetLanguage (GetLanguage ()))
@@ -661,9 +661,9 @@ TextBlock::Layout (Size constraint)
 		}
 		
 		desc->SetFilename (GetFontFilename (), GetFontGUID ());
-		desc->SetStretch (GetFontStretch ());
-		desc->SetWeight (GetFontWeight ());
-		desc->SetStyle (GetFontStyle ());
+		desc->SetStretch (GetFontStretch ()->stretch);
+		desc->SetWeight (GetFontWeight ()->weight);
+		desc->SetStyle (GetFontStyle ()->style);
 		desc->SetSize (GetFontSize ());
 		desc->SetFamily (family_name);
 		

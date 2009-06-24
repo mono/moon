@@ -88,7 +88,17 @@ namespace Mono {
 					else
 						return new GridLength (double.Parse (str_val), GridUnitType.Pixel);
 				}
+
+				if (destinationType == typeof (FontWeight))
+					return new FontWeight ((FontWeightKind) Enum.Parse (typeof (FontWeightKind), str_val, true));
+
+				if (destinationType == typeof (FontStyle))
+					return new FontStyle ((FontStyleKind) Enum.Parse (typeof (FontStyleKind), str_val, true));
+
+				if (destinationType == typeof (FontStretch))
+					return new FontStretch ((FontStretchKind) Enum.Parse (typeof (FontStretchKind), str_val, true));
 			}
+
 			if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
 				return new SolidColorBrush ((Color)value);
 			}
@@ -102,10 +112,7 @@ namespace Mono {
 				   unmanaged code when the managed
 				   code has structs is painful all
 				   over. */
-				if (k == Kind.FONTSTRETCH ||
-				    k == Kind.FONTWEIGHT ||
-				    k == Kind.FONTSTYLE ||
-				    k == Kind.CURSOR)
+				if (k == Kind.CURSOR)
 					k = Kind.INT32;
 
 				// XXX this leaks unmanaged_value?

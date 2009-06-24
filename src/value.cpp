@@ -31,6 +31,7 @@
 #include "cornerradius.h"
 #include "mono/metadata/object.h"
 #include "fontsource.h"
+#include "transform.h"
 #include "utils.h"
 #include "debug.h"
 
@@ -190,6 +191,33 @@ Value::Value (FontFamily family)
 	k = Type::FONTFAMILY;
 	u.fontfamily = g_new (FontFamily, 1);
 	u.fontfamily->source = g_strdup (family.source);
+	SetIsNull (false);
+}
+
+Value::Value (FontWeight weight)
+{
+	Init ();
+	k = Type::FONTWEIGHT;
+	u.fontweight = g_new (FontWeight, 1);
+	u.fontweight->weight = weight.weight;
+	SetIsNull (false);
+}
+
+Value::Value (FontStretch stretch)
+{
+	Init ();
+	k = Type::FONTSTRETCH;
+	u.fontstretch = g_new (FontStretch, 1);
+	u.fontstretch->stretch = stretch.stretch;
+	SetIsNull (false);
+}
+
+Value::Value (FontStyle style)
+{
+	Init ();
+	k = Type::FONTSTYLE;
+	u.fontstyle = g_new (FontStyle, 1);
+	u.fontstyle->style = style.style;
 	SetIsNull (false);
 }
 
@@ -357,6 +385,24 @@ Value::Copy (const Value& v)
 			memcpy (u.fontsource->stream, v.u.fontsource->stream, sizeof (ManagedStreamCallbacks));
 		}
 		break;
+	case Type::FONTWEIGHT:
+		if (v.u.fontweight) {
+			u.fontweight = g_new (FontWeight, 1);
+			*u.fontweight = *v.u.fontweight;
+		}
+		break;
+	case Type::FONTSTRETCH:
+		if (v.u.fontstretch) {
+			u.fontstretch = g_new (FontStretch, 1);
+			*u.fontstretch = *v.u.fontstretch;
+		}
+		break;
+	case Type::FONTSTYLE:
+		if (v.u.fontstyle) {
+			u.fontstyle = g_new (FontStyle, 1);
+			*u.fontstyle = *v.u.fontstyle;
+		}
+		break;
 	case Type::PROPERTYPATH:
 		if (v.u.propertypath) {
 			u.propertypath = g_new (PropertyPath, 1);
@@ -463,6 +509,15 @@ Value::FreeValue ()
 			g_free (u.fontfamily->source);
 			g_free (u.fontfamily);
 		}
+		break;
+	case Type::FONTWEIGHT:
+		g_free (u.fontweight);
+		break;
+	case Type::FONTSTYLE:
+		g_free (u.fontstyle);
+		break;
+	case Type::FONTSTRETCH:
+		g_free (u.fontstretch);
 		break;
 	case Type::FONTSOURCE:
 		if (u.fontsource) {
@@ -598,6 +653,12 @@ Value::operator== (const Value &v) const
 		return !strcmp (u.s, v.u.s);
 	case Type::FONTFAMILY:
 		return *u.fontfamily == *v.u.fontfamily;
+	case Type::FONTWEIGHT:
+		return *u.fontweight == *v.u.fontweight;
+	case Type::FONTSTYLE:
+		return *u.fontstyle == *v.u.fontstyle;
+	case Type::FONTSTRETCH:
+		return *u.fontstretch == *v.u.fontstretch;
 	case Type::FONTSOURCE:
 		if (u.fontsource && v.u.fontsource)
 			return u.fontsource->stream->handle == v.u.fontsource->stream->handle;

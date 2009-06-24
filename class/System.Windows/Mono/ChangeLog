@@ -1,3 +1,11 @@
+2009-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs: don't store FontStretch/Style/Weight as int32's.  we
+	use structs in unmanaged now too.
+
+	* MoonlightTypeConverter.cs: convert FontStretch/Style/Weight here
+	without going back to unmanaged.
+
 2009-06-22  Chris Toshok  <toshok@ximian.com>
 
 	* MarkupExpressionParser.cs: trim the end of the result from

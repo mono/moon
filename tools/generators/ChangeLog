@@ -1,3 +1,12 @@
+2009-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs: remove the explicit specification of
+	FontWeight/Stretch/Style TypeInfos, since they're created
+	automatically from the structs now.
+
+	* FieldInfo.cs (DPPropertyType): remove the mapping of
+	FontWeight/Stretch/Style to their unmanaged enums.
+
 2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: Fix JSBinding generation.

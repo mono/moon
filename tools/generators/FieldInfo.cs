@@ -78,12 +78,6 @@ class FieldInfo : MemberInfo {
 					return "char*";
 				case "PixelFormat":	
 					return "PixelFormats";
-				case "FontStretch":	
-					return "FontStretches";
-				case "FontWeight":
-					return "FontWeights";
-				case "FontStyle":
-					return "FontStyles";
 				}
 			}
 			

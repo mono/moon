@@ -2494,6 +2494,10 @@ key_spline_from_str (const char *str, KeySpline **res)
 Matrix *
 matrix_from_str (const char *str)
 {
+	if (!g_ascii_strcasecmp ("Identity", str)) {
+		return new Matrix ();
+	}
+
 	DoubleCollection *values = DoubleCollection::FromStr (str);
 	Matrix *matrix;
 	
@@ -3428,6 +3432,31 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		points->unref ();
 		break;
 	}
+	case Type::TRANSFORMGROUP: {
+		if (IS_NULL_OR_EMPTY(s)) {
+			g_free (s);
+			return true;
+		}
+
+		Matrix *mv = matrix_from_str (s);
+		if (!mv) {
+			g_free (s);
+			return false;
+		}
+
+		TransformGroup *tg = new TransformGroup ();
+		MatrixTransform *t = new MatrixTransform ();
+		t->SetValue (MatrixTransform::MatrixProperty, Value (mv));
+
+		tg->GetChildren()->Add (t);
+		t->unref ();
+
+		*v = new Value (tg);
+		tg->unref ();
+		mv->unref ();
+		break;
+	}
+	case Type::MATRIXTRANSFORM:
 	case Type::TRANSFORM: {
 		if (IS_NULL_OR_EMPTY(s)) {
 			g_free (s);
@@ -3544,6 +3573,27 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	}
 	case Type::FONTFAMILY: {
 		*v = new Value (FontFamily (s)); 
+		break;
+	}
+	case Type::FONTWEIGHT: {
+		int fw = enums_str_to_int ("FontWeight", s);
+		if (fw == -1)
+			return false;
+		*v = new Value (FontWeight ((FontWeights)fw));
+		break;
+	}
+	case Type::FONTSTYLE: {
+		int fs = enums_str_to_int ("FontStyle", s);
+		if (fs == -1)
+			return false;
+		*v = new Value (FontStyle ((FontStyles)fs));
+		break;
+	}
+	case Type::FONTSTRETCH: {
+		int fs = enums_str_to_int ("FontStretch", s);
+		if (fs == -1)
+			return false;
+		*v = new Value (FontStretch ((FontStretches)fs));
 		break;
 	}
 	case Type::PROPERTYPATH: {

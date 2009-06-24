@@ -1,3 +1,38 @@
+2009-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (matrix_from_str): handle "Identity" here.
+	(value_from_str_with_parser): you can also create TransformGroups
+	directly using the matrix syntax.  Also, add support for parsing
+	FontWeight/FontStyle/FontWeight structs here since we can't just
+	rely on the enum_* stuff alone to do it.
+
+	* value.h.in, value.cpp: add support for
+	FontWeight/FontStyle/FontWeight structs.
+
+	* textblock.cpp (Inline::UpdateFontDescription): track the
+	struct-update.
+	(TextBlock::Layout): same.
+
+	* textbox.cpp (TextBoxBase::Initialize): same.
+	(TextBoxBase::OnPropertyChanged): same.
+
+	* fontweight.h, fontstyle.h, fontstretch.h: new files, we're using
+	structs now for these.
+	
+	* textblock.h, control.h: use the FontWeight/FontStyle/FontWeight
+	struct types for properties instead of our internal enums.
+
+	* Makefile.am (libmoon_include_headers): add fontstretch.h
+	fontstyle.h, and fontweight.h
+
+	* type-generated.cpp: regen.
+
+	* cbinding.h|cppp: regen.
+
+	* dependencyproperty.g.cpp: regen.
+
+	* value.h: regen.
+	
 2009-06-24  Larry Ewing  <lewing@novell.com>
 
 	* panel.cpp (Render): add layout clipping to panel rendering.

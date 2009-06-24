@@ -1,3 +1,8 @@
+2009-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* FontStyleKind.cs: we need to add Oblique back in here so it can
+	be handled by the managed code in MoonlightTypeConverter.
+
 2009-06-23  Jackson Harper  <jackson@ximian.com>
 
 	* PropertyPathConverter.cs: We should still create property paths

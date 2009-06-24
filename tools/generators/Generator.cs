@@ -1190,10 +1190,6 @@ class Generator {
 		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true, true, true, false));
 		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2, true));
 
-
-		all.Children.Add (new TypeInfo ("System.Windows.FontStretch", "FONTSTRETCH", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("System.Windows.FontWeight", "FONTWEIGHT", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("System.Windows.FontStyle", "FONTSTYLE", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.Input.Cursor", "CURSOR", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
 

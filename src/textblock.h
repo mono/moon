@@ -16,15 +16,18 @@
 #include <glib.h>
 #include <cairo.h>
 
-#include <frameworkelement.h>
-#include <downloader.h>
-#include <moon-path.h>
-#include <thickness.h>
-#include <fontfamily.h>
-#include <fontsource.h>
-#include <layout.h>
-#include <brush.h>
-#include <font.h>
+#include "frameworkelement.h"
+#include "downloader.h"
+#include "moon-path.h"
+#include "thickness.h"
+#include "fontfamily.h"
+#include "fontstretch.h"
+#include "fontstyle.h"
+#include "fontweight.h"
+#include "fontsource.h"
+#include "layout.h"
+#include "brush.h"
+#include "font.h"
 
 #define TEXTBLOCK_FONT_FAMILY  "Portable User Interface"
 #define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
@@ -53,11 +56,11 @@ class Inline : public DependencyObject, public ITextAttributes {
 	const static int FontFamilyProperty;
  	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
 	const static int FontSizeProperty;
- 	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH,GenerateAccessors */
+ 	/* @PropertyType=FontStretch,DefaultValue=FontStretch(TEXTBLOCK_FONT_STRETCH),GenerateAccessors */
 	const static int FontStretchProperty;
- 	/* @PropertyType=FontStyle,DefaultValue=TEXTBLOCK_FONT_STYLE,GenerateAccessors */
+ 	/* @PropertyType=FontStyle,DefaultValue=FontStyle(TEXTBLOCK_FONT_STYLE),GenerateAccessors */
 	const static int FontStyleProperty;
- 	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT,GenerateAccessors */
+ 	/* @PropertyType=FontWeight,DefaultValue=FontWeight(TEXTBLOCK_FONT_WEIGHT),GenerateAccessors */
 	const static int FontWeightProperty;
  	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
 	const static int ForegroundProperty;
@@ -94,14 +97,14 @@ class Inline : public DependencyObject, public ITextAttributes {
 	void SetFontSize (double value);
 	double GetFontSize ();
 	
-	void SetFontStretch (FontStretches value);
-	FontStretches GetFontStretch ();
+	void SetFontStretch (FontStretch* value);
+	FontStretch* GetFontStretch ();
 	
-	void SetFontStyle (FontStyles value);
-	FontStyles GetFontStyle ();
+	void SetFontStyle (FontStyle* value);
+	FontStyle* GetFontStyle ();
 	
-	void SetFontWeight (FontWeights value);
-	FontWeights GetFontWeight ();
+	void SetFontWeight (FontWeight* value);
+	FontWeight* GetFontWeight ();
 	
 	void SetFontSource (FontSource *source);
 	FontSource *GetFontSource ();
@@ -216,11 +219,11 @@ class TextBlock : public FrameworkElement {
 	const static int FontFamilyProperty;
  	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
 	const static int FontSizeProperty;
- 	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH,GenerateAccessors */
+ 	/* @PropertyType=FontStretch,DefaultValue=FontStretch(TEXTBLOCK_FONT_STRETCH),GenerateAccessors */
 	const static int FontStretchProperty;
- 	/* @PropertyType=FontStyle,DefaultValue=TEXTBLOCK_FONT_STYLE,GenerateAccessors */
+ 	/* @PropertyType=FontStyle,DefaultValue=FontStyle(TEXTBLOCK_FONT_STYLE),GenerateAccessors */
 	const static int FontStyleProperty;
- 	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT,GenerateAccessors */
+ 	/* @PropertyType=FontWeight,DefaultValue=FontWeight(TEXTBLOCK_FONT_WEIGHT),GenerateAccessors */
 	const static int FontWeightProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int FontSourceProperty;
@@ -274,14 +277,14 @@ class TextBlock : public FrameworkElement {
 	void SetFontSize (double size);
 	double GetFontSize ();
 	
-	void SetFontStretch (FontStretches stretch);
-	FontStretches GetFontStretch ();
+	void SetFontStretch (FontStretch* stretch);
+	FontStretch* GetFontStretch ();
 	
-	void SetFontStyle (FontStyles style);
-	FontStyles GetFontStyle ();
+	void SetFontStyle (FontStyle* style);
+	FontStyle* GetFontStyle ();
 	
-	void SetFontWeight (FontWeights weight);
-	FontWeights GetFontWeight ();
+	void SetFontWeight (FontWeight* weight);
+	FontWeight* GetFontWeight ();
 	
 	void SetFontSource (FontSource *source);
 	FontSource *GetFontSource ();

@@ -42,6 +42,9 @@ libmoon_include_headers = 	\
 	font.h			\
 	fontfamily.h		\
 	fontsource.h		\
+	fontstretch.h		\
+	fontstyle.h		\
+	fontweight.h		\
 	frameworkelement.h 	\
 	fullscreen.h		\
 	geometry.h		\

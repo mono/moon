@@ -573,9 +573,9 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	
 	font = new TextFontDescription ();
 	font->SetFamily (GetFontFamily()->source);
-	font->SetStretch (GetFontStretch());
-	font->SetWeight (GetFontWeight());
-	font->SetStyle (GetFontStyle());
+	font->SetStretch (GetFontStretch()->stretch);
+	font->SetWeight (GetFontWeight()->weight);
+	font->SetStyle (GetFontStyle()->style);
 	font->SetSize (GetFontSize());
 	
 	downloader = NULL;
@@ -2028,15 +2028,15 @@ TextBoxBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		changed = TextBoxModelChangedFont;
 		font->SetSize (size);
 	} else if (args->GetId () == Control::FontStretchProperty) {
-		FontStretches stretch = (FontStretches) args->GetNewValue()->AsInt32 ();
+		FontStretches stretch = args->GetNewValue()->AsFontStretch()->stretch;
 		changed = TextBoxModelChangedFont;
 		font->SetStretch (stretch);
 	} else if (args->GetId () == Control::FontStyleProperty) {
-		FontStyles style = (FontStyles) args->GetNewValue()->AsInt32 ();
+		FontStyles style = args->GetNewValue()->AsFontStyle ()->style;
 		changed = TextBoxModelChangedFont;
 		font->SetStyle (style);
 	} else if (args->GetId () == Control::FontWeightProperty) {
-		FontWeights weight = (FontWeights) args->GetNewValue()->AsInt32 ();
+		FontWeights weight = args->GetNewValue()->AsFontWeight ()->weight;
 		changed = TextBoxModelChangedFont;
 		font->SetWeight (weight);
 	}

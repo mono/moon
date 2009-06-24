@@ -16,14 +16,17 @@
 #include <glib.h>
 #include <cairo.h>
 
-#include <frameworkelement.h>
-#include <downloader.h>
-#include <fontfamily.h>
-#include <moon-path.h>
-#include <thickness.h>
-#include <layout.h>
-#include <brush.h>
-#include <font.h>
+#include "frameworkelement.h"
+#include "downloader.h"
+#include "fontfamily.h"
+#include "fontstretch.h"
+#include "fontstyle.h"
+#include "fontweight.h"
+#include "moon-path.h"
+#include "thickness.h"
+#include "layout.h"
+#include "brush.h"
+#include "font.h"
 
 /* @Namespace=System.Windows.Documents */
 class Glyphs : public FrameworkElement {

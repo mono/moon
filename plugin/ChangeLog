@@ -1,3 +1,7 @@
+2009-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* cbinding.h: regen.
+
 2009-06-22  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h.in|cpp: MediaElements and Images need to subclass
