@@ -312,7 +312,6 @@ Surface::Surface (MoonWindow *window)
 	
 	focused_element = NULL;
 	focus_changed_events = new Queue ();
-	can_raise_focus_changed = false;
 
 	full_screen = false;
 	user_initiated_event = false;
@@ -679,6 +678,13 @@ Surface::SetFullScreen (bool value)
 	}
 	
 	UpdateFullScreen (value);
+}
+
+void
+Surface::SetUserInitiatedEvent (bool value)
+{
+	GenerateFocusChangeEvents ();
+	user_initiated_event = value;
 }
 
 bool
@@ -1376,10 +1382,6 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			layers->GetValueAt (i)->AsUIElement ()->HitTest (ctx, p, new_input_list);
 
 		if (mouse_down) {
-			can_raise_focus_changed = true;
-			// Raise any pending focus changed events
-			GenerateFocusChangeEvents ();
-			
 			if (!GetFocusedElement ()) {
 				for (int i = layers->GetCount () - 1; i >= 0; i--) {
 					if (layers->GetValueAt (i)->AsUIElement ()->Focus ())
@@ -1395,7 +1397,6 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			}
 			// Raise any events caused by the focus changing this tick
 			GenerateFocusChangeEvents ();
-			can_raise_focus_changed = false;
 		}
 		
 		
@@ -1919,7 +1920,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 		toplevel->EmitKeyDown (event);
 		handled = true;
 	}
-				    
+
 	SetUserInitiatedEvent (false);
 	
 	return handled;

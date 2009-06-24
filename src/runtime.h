@@ -215,7 +215,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetFullScreen (bool value);
 
-	void SetUserInitiatedEvent (bool value) { user_initiated_event = value; }
+	void SetUserInitiatedEvent (bool value);
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	bool IsUserInitiatedEvent () { return user_initiated_event; }
 
@@ -329,11 +329,6 @@ private:
 	// held it previously (so we can emit lostfocus events async)
 	UIElement *focused_element;
 	Queue *focus_changed_events;
-	
-	// If we are in the middle of a mouse down event, we raise any pending
-	// focus changed events. If this results in focus being changed to a
-	// different control, that focus changed event is raised immediately
-	bool can_raise_focus_changed;
 
 	// the list of elements (from most deeply nested to the
 	// toplevel) we've most recently sent a mouse event to.
