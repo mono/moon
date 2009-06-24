@@ -1,3 +1,8 @@
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: When the template
+	  is applied the dropdown should be closed if it's open.
+
 2009-06-24  Brad Taylor  <brad@getcoded.net>
 
 	* System.Windows.Automation.Peers/ToggleButtonAutomationPeerTest.cs:

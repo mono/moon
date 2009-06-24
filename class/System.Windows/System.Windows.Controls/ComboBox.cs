@@ -88,9 +88,17 @@ namespace System.Windows.Controls
 			set { SetValue (ItemContainerStyleProperty, value); }
 		}
 		
+		int FocusedIndex {
+			get; set;
+		}
+		
 		public double MaxDropDownHeight {
 			get { return (double) GetValue (MaxDropDownHeightProperty); }
 			set { SetValue (MaxDropDownHeightProperty, value); }
+		}
+		
+		ScrollViewer ScrollViewer {
+			get; set;
 		}
 		
 		public object SelectionBoxItem {
@@ -178,19 +186,24 @@ namespace System.Windows.Controls
 		{
 			if (_popup != null)
 				_popup.IsOpen = true;
-			ComboBoxItem t = SelectedItem as ComboBoxItem;
-			if (t == null && Items.Count > 0)
-				t = Items [0] as ComboBoxItem;
-			
-			if (t != null)
+
+			ComboBoxItem t = null;
+
+			FocusedIndex = Items.Count > 0 ? Math.Max (SelectedIndex, 0) : -1;
+			if (FocusedIndex > -1)
+				t = GetContainerItem (FocusedIndex) as ComboBoxItem;
+
+			if (t != null) {
 				t.Focus ();
-			else 
-				Console.WriteLine ("Nothing to focus");
+			}
+			else {
+				FocusedIndex = -1;
+			}	
+			
 			EventHandler h = DropDownOpened;
 			if (h != null)
 				h (this, e);
 		}
-
 
 		protected override Size ArrangeOverride (Size arrangeBounds)
 		{
@@ -233,20 +246,37 @@ namespace System.Windows.Controls
 			if (element != item)
 				cb.Content = item;
 			cb.ParentSelector = this;
+			
+			if (item == SelectedItem)
+				GetContainerItem (SelectedIndex).Focus ();
 		}
 
 		
 		public override void OnApplyTemplate ()
 		{
 			base.OnApplyTemplate ();
+			IsDropDownOpen = false;
+			
 			_contentPresenter = GetTemplateChild ("ContentPresenter") as ContentPresenter;
+			ScrollViewer = GetTemplateChild("ScrollViewer") as ScrollViewer;
 			_popup = GetTemplateChild ("Popup") as Popup;
 			_contentPresenterBorder = GetTemplateChild ("ContentPresenterBorder") as FrameworkElement;
 			_dropDownToggle = GetTemplateChild ("DropDownToggle") as ToggleButton;
 			
+			if (ScrollViewer != null) {
+				ScrollViewer.TemplatedParentHandlesScrolling = true;
+			}
 			if (_popup != null) {
 				_popup.CatchClickedOutside ();
 				_popup.ClickedOutside += delegate { IsDropDownOpen = false; };
+				
+				// The popup will never receive a key press event so we need to chain the event
+				// using Popup.Child
+				if (_popup.Child != null) {
+					_popup.Child.KeyDown += delegate(object sender, KeyEventArgs e) {
+						OnKeyDown (e);
+					};
+				}
 			}
 			if (_dropDownToggle != null) {
 				_dropDownToggle.MouseLeftButtonDown += (o, e) => {
@@ -297,21 +327,62 @@ namespace System.Windows.Controls
 		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
 			base.OnMouseLeftButtonDown (e);
-			Focus ();
-			IsSelectionActive = true;
-			IsDropDownOpen = true;
-			UpdateVisualState (true);
+			if (!e.Handled) {
+				Focus ();
+				IsSelectionActive = true;
+				IsDropDownOpen = true;
+			}
 		}
 
 		protected override void OnKeyDown (KeyEventArgs e)
 		{
-			if (e.Key == Key.Enter ||
-			    e.Key == Key.Space) {
-				IsDropDownOpen = true;
-				UpdateVisualState (true);
+			base.OnKeyDown (e);
+			if (!e.Handled) {
+				e.Handled = true;
+				switch (e.Key) {
+				case Key.Escape:
+					IsDropDownOpen = false;
+					break;
+					
+				case Key.Enter:
+				case Key.Space:
+					if (IsDropDownOpen && FocusedIndex != SelectedIndex) {
+						SelectedIndex = FocusedIndex;
+						IsDropDownOpen = false;
+					} else {
+						IsDropDownOpen = true;
+					}
+					break;
+					
+				case Key.Down:
+					if (IsDropDownOpen) {
+						if (FocusedIndex < Items.Count - 1) {
+							FocusedIndex ++;
+							GetContainerItem (FocusedIndex).Focus ();
+						}
+					} else {
+						SelectedIndex = Math.Min (SelectedIndex + 1, Items.Count - 1);
+					}
+					break;
+					
+				case Key.Up:
+					if (IsDropDownOpen) {
+						if (FocusedIndex > 0) {
+							FocusedIndex --;
+							GetContainerItem (FocusedIndex).Focus ();
+						}
+					} else if (SelectedIndex != -1) {
+						SelectedIndex = Math.Max (SelectedIndex - 1, 0);
+					}
+					break;
+					
+				default:
+					e.Handled = false;
+					break;
+				}
+			} else {
+				Console.WriteLine ("Already handled");
 			}
-			else
-				base.OnKeyDown (e);
 		}
 
 		void UpdateDisplayedItem ()

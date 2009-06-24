@@ -915,5 +915,14 @@ namespace MoonTest.System.Windows.Controls {
             box.SelectedItem = box.Items[0];
             Assert.IsTrue(changed, "#2");
         }
+		
+		[TestMethod]
+		public void TemplateClosesDropdown ()
+		{
+			ComboBox box = new ComboBox ();
+			box.IsDropDownOpen = true;
+			box.ApplyTemplate ();
+			Assert.IsFalse (box.IsDropDownOpen, "#1");
+		}
 	}
 }

@@ -1,3 +1,8 @@
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Start implementing the required behaviour to
+	  handle key presses.
+
 2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MultiScaleImage.cs: Use correct event handler type to prevent
