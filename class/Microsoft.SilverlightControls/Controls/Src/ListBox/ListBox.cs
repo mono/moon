@@ -124,11 +124,6 @@ namespace System.Windows.Controls
             TabNavigation = KeyboardNavigationMode.Once; 
             // Focusable not supported by Silverlight
 #endif
-            SelectionChanged += delegate(object sender, SelectionChangedEventArgs e) {
-                object removed = e.RemovedItems.Count == 1 ? e.RemovedItems [0] : null;
-                object added  = e.AddedItems.Count == 1 ? e.AddedItems [0] : null;
-                OnSelectedItemChanged (removed, added);
-            };
             IsTabStop = false; 
 
             // Set default values for ScrollViewer attached properties 
@@ -534,7 +529,7 @@ namespace System.Windows.Controls
         /// </summary>
         /// <param name="oldValue">Old value of the property.</param> 
         /// <param name="newValue">New value of the property.</param>
-        private void OnSelectedItemChanged(object oldValue, object newValue)
+        internal override void OnSelectedItemChanged(object oldValue, object newValue)
         { 
             if (oldValue != null) {
                 ListBoxItem oldItem = GetListBoxItemForObject (oldValue);

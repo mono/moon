@@ -1,5 +1,11 @@
 2009-06-24  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ListBox/ListBox.cs: Add another method to
+	  selector to allow subclasses to easily set the IsSelected
+	  property when the SelectedItem changes.
+
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ListBox/ListBoxItem.cs: The only way to get the
 	  initial focus correct for the drop down list in ComboBox is
 	  if it receives notification of when its ComboBoxItems are

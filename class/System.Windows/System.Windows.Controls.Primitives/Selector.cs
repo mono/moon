@@ -43,10 +43,10 @@ namespace System.Windows.Controls.Primitives {
 		// This is not a core property because it is a non-parenting property
 		public static readonly DependencyProperty SelectedItemProperty =
 			DependencyProperty.Register ("SelectedItem", typeof(object), typeof(Selector),
-						     new PropertyMetadata(new PropertyChangedCallback(OnSelectedItemChanged)));
+						     new PropertyMetadata(new PropertyChangedCallback(OnSelectedItemChanged_cb)));
 
 		
-		static void OnSelectedItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		static void OnSelectedItemChanged_cb (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			((Selector) o).SelectedItemChanged (o, e);
 		}
@@ -121,9 +121,18 @@ namespace System.Windows.Controls.Primitives {
 				changing = false;
 			}
 		}
+		
+		internal virtual void OnSelectedItemChanged (object oldValue, object newValue)
+		{
+			
+		}
 
 		void RaiseSelectionChanged (object o, SelectionChangedEventArgs e)
 		{
+			object oldVal = e.RemovedItems.Count == 1 ? e.RemovedItems [0] : null;
+			object newVal = e.AddedItems.Count == 1 ? e.AddedItems [0] : null;
+			OnSelectedItemChanged (oldVal, newVal);
+			
 			SelectionChangedEventHandler h = SelectionChanged;
 			if (h != null)
 				h (o, e);
