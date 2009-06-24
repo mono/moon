@@ -193,12 +193,11 @@ namespace System.Windows.Controls
 			if (FocusedIndex > -1)
 				t = GetContainerItem (FocusedIndex) as ComboBoxItem;
 
-			if (t != null) {
+			// If the ItemsPresenter hasn't attached yet 't' will be null.
+			// When the itemsPresenter attaches, focus will be set in
+			// PrepareContainerForItemOverride.
+			if (t != null)
 				t.Focus ();
-			}
-			else {
-				FocusedIndex = -1;
-			}	
 			
 			EventHandler h = DropDownOpened;
 			if (h != null)
@@ -235,7 +234,18 @@ namespace System.Windows.Controls
 			SelectedItem = listBoxItem.Item ?? listBoxItem;
 			UpdateDisplayedItem ();
 		}
-		
+
+		internal override void NotifyListItemLoaded (ListBoxItem listBoxItem)
+		{
+			base.NotifyListItemLoaded (listBoxItem);
+			object item = listBoxItem.Item;
+			int index = Items.IndexOf (item);
+			if (index == FocusedIndex) {
+				listBoxItem.Focus ();
+				listBoxItem.ChangeVisualState ();
+			}
+		}
+
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
 			base.PrepareContainerForItemOverride (element, item);
@@ -246,9 +256,6 @@ namespace System.Windows.Controls
 			if (element != item)
 				cb.Content = item;
 			cb.ParentSelector = this;
-			
-			if (item == SelectedItem)
-				GetContainerItem (SelectedIndex).Focus ();
 		}
 
 		
@@ -301,7 +308,7 @@ namespace System.Windows.Controls
 			isFocused = true;
 			UpdateVisualState (true);
 		}
-		
+
 		protected override void OnLostFocus (RoutedEventArgs e)
 		{
 			base.OnLostFocus (e);

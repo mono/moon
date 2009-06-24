@@ -1,3 +1,10 @@
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs: The only way to get the
+	  initial focus correct for the drop down list in ComboBox is
+	  if it receives notification of when its ComboBoxItems are
+	  loaded.
+
 2009-06-24  Brad Taylor  <brad@getcoded.net>
 
 	* RuntimeControls/SilverlightControls/RadioButton.cs: Return new

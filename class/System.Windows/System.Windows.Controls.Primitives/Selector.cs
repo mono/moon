@@ -177,6 +177,11 @@ namespace System.Windows.Controls.Primitives {
 			
 		}
 		
+		internal virtual void NotifyListItemLoaded (ListBoxItem listBoxItem)
+		{
+			
+		}
+		
 		internal virtual void NotifyListItemGotFocus(ListBoxItem listBoxItemNewFocus)
 		{
 			

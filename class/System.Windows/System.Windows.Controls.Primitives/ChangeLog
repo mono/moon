@@ -1,3 +1,9 @@
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: The only way to get the initial focus correct
+	  for the drop down list in ComboBox is if it receives
+	  notification of when its ComboBoxItems are loaded.
+
 2009-06-11  Alan McGovern  <amcgovern@novell.com>
 
 	* Popup.cs: Make Popup.[Opened|Closed] asynchronous.

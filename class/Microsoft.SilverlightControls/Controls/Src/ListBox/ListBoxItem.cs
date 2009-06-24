@@ -84,6 +84,13 @@ namespace System.Windows.Controls
             IsTabStop = true;
         }
  
+        
+        internal override void InvokeLoaded ()
+        {
+            if (ParentSelector != null)
+                ParentSelector.NotifyListItemLoaded (this);
+        }
+
         /// <summary> 
         /// Invoked whenever application code or internal processes call
         /// ApplyTemplate. 
