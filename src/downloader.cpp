@@ -131,6 +131,8 @@ Downloader::GetDownloadedFilename (const char *partname)
 {
 	LOG_DOWNLOADER ("Downloader::GetDownloadedFilename (%s)\n", filename);
 	
+	g_return_val_if_fail (internal_dl != NULL && internal_dl->Is (Type::FILEDOWNLOADER), NULL);
+	
 	// This is a horrible hack to work around mozilla bug #444160
 	// Basically if a very small file is downloaded (<64KB in mozilla as of Jan5/09
 	// it can be inserted into a shared cache map, and served up to us without ever
@@ -582,7 +584,7 @@ Downloader::SetFilename (const char *fname)
 	
 	filename = g_strdup (fname);
 	
-	((FileDownloader *)internal_dl)->SetFilename (filename);
+	internal_dl->SetFilename (filename);
 }
 
 void

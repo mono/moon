@@ -45,7 +45,7 @@ class FileDownloader : public InternalDownloader {
 	
 	const char *GetUnzippedPath ();
 
-	void SetFilename (char *fname) { g_free (filename); filename = g_strdup (fname); }
+	virtual void SetFilename (const char *fname) { g_free (filename); filename = g_strdup (fname); }
 	void SetUnlink (bool value) { unlinkit = value; }
 };
 

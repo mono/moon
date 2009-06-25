@@ -37,6 +37,7 @@ class InternalDownloader : public EventObject {
 	virtual void Write (void *buf, gint32 offset, gint32 n) = 0;
 	virtual char *GetResponseText (const char *partname, gint64 *size) = 0; 
 	virtual char *GetDownloadedFilename (const char *partname) = 0;
+	virtual void SetFilename (const char *fname) = 0;
 };
 
 #endif /* __INTERNAL_DOWNLOADER_H__ */

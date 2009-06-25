@@ -1,3 +1,14 @@
+2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* downloader.cpp:
+	* mms-downloader.h:
+	* file-downloader.h:
+	* internal-downloader.h: Add a SetFilename abstract method to 
+	InternalDownloader, provide implementations in FileDownloader
+	and MmsDownloader and call the abstract method in the downloader
+	instead of blindly casting an InternalDownloader to a FileDownloader
+	when it might be an MmsDownloader.
+
 2009-06-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp|h: AudioStream: add possibility of having different
