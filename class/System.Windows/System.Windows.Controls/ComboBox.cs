@@ -121,10 +121,29 @@ namespace System.Windows.Controls
 		
 		void IsDropDownOpenChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			if ((bool) e.NewValue)
+			if ((bool)e.NewValue) {
+				if (_popup != null)
+					_popup.IsOpen = true;
+
+				ComboBoxItem t = null;
+				FocusedIndex = Items.Count > 0 ? Math.Max (SelectedIndex, 0) : -1;
+				if (FocusedIndex > -1)
+					t = GetContainerItem (FocusedIndex) as ComboBoxItem;
+
+				// If the ItemsPresenter hasn't attached yet 't' will be null.
+				// When the itemsPresenter attaches, focus will be set when the
+				// item is loaded
+				if (t != null)
+					t.Focus ();
+
 				OnDropDownOpened (EventArgs.Empty);
-			else
+			} else {
+				if (_popup != null)
+					_popup.IsOpen = false;
+				Focus ();
+
 				OnDropDownClosed (EventArgs.Empty);
+			}
 
 			UpdateDisplayedItem ();
 			UpdateVisualState (true);
@@ -173,10 +192,6 @@ namespace System.Windows.Controls
 
 		protected virtual void OnDropDownClosed (EventArgs e)
 		{
-			if (_popup != null)
-				_popup.IsOpen = false;
-			Focus ();
-			
 			EventHandler h = DropDownClosed;
 			if (h != null)
 				h (this, e);
@@ -184,21 +199,6 @@ namespace System.Windows.Controls
 		
 		protected virtual void OnDropDownOpened (EventArgs e)
 		{
-			if (_popup != null)
-				_popup.IsOpen = true;
-
-			ComboBoxItem t = null;
-
-			FocusedIndex = Items.Count > 0 ? Math.Max (SelectedIndex, 0) : -1;
-			if (FocusedIndex > -1)
-				t = GetContainerItem (FocusedIndex) as ComboBoxItem;
-
-			// If the ItemsPresenter hasn't attached yet 't' will be null.
-			// When the itemsPresenter attaches, focus will be set in
-			// PrepareContainerForItemOverride.
-			if (t != null)
-				t.Focus ();
-			
 			EventHandler h = DropDownOpened;
 			if (h != null)
 				h (this, e);

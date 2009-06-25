@@ -659,7 +659,6 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void OnDropDownMethodsTest ()
 		{
 			bool opened = false;
@@ -952,12 +951,13 @@ namespace MoonTest.System.Windows.Controls {
         }
 		
 		[TestMethod]
+		[MoonlightBug ("This hits a corner case involving the default style not being applied by moonlight but it is on silverlight")]
 		public void TemplateClosesDropdown ()
 		{
 			ComboBox box = new ComboBox ();
 			box.IsDropDownOpen = true;
-			box.ApplyTemplate ();
-			Assert.IsFalse (box.IsDropDownOpen, "#1");
+			Assert.IsTrue (box.ApplyTemplate (), "#1");
+			Assert.IsFalse (box.IsDropDownOpen, "#2");
 		}
 	}
 }

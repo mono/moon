@@ -87,6 +87,7 @@ namespace System.Windows.Controls
         
         internal override void InvokeLoaded ()
         {
+            base.InvokeLoaded ();
             if (ParentSelector != null)
                 ParentSelector.NotifyListItemLoaded (this);
         }

@@ -1,3 +1,8 @@
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Handle IsDropDownOpenChanged in a non-virtual
+	  method.
+
 2009-06-24  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs: Add another method to selector to allow

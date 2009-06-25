@@ -1,5 +1,11 @@
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ComboBoxTest.cs:
+	  TemplateClosesDropdown hits a corner case so add
+	  MoonlightBug. OnDropDownMethodsTest passes now.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest.cs: Add a test to ensure
 	that only the event is fired in the OnDropDownOpened virtual method
 

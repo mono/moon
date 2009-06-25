@@ -1,3 +1,8 @@
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs: Call the base
+	  InvokeLoaded method.
+
 2009-06-24  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ListBox/ListBox.cs: Add another method to
