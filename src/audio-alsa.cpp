@@ -298,7 +298,21 @@ AlsaSource::SetupHW ()
 	}
 
 	// set audio format
-	err = snd_pcm_hw_params_set_format (pcm, params, SND_PCM_FORMAT_S16);
+	switch (GetInputBytesPerSample ()) {
+	case 2: // 16 bit audio
+		err = snd_pcm_hw_params_set_format (pcm, params, SND_PCM_FORMAT_S16);
+		SetOutputBytesPerSample (2);
+		break;
+	case 3: // 24 bit audio
+		// write as 32 bit audio, this is a lot easier to write to than 24 bit.
+		err = snd_pcm_hw_params_set_format (pcm, params, SND_PCM_FORMAT_S32);
+		SetOutputBytesPerSample (4);
+		break;
+	default:
+		LOG_AUDIO ("AlsaSource::SetupHW (): Invalid input bytes per sample, expected 2 or 3, got %i\n", GetInputBytesPerSample ());
+		goto cleanup;
+	}
+	
 	if (err < 0) {
 		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (sample format not available for playback): %s\n", snd_strerror (err));
 		goto cleanup;
@@ -414,7 +428,7 @@ AlsaSource::WriteRW ()
 	
 	LOG_ALSA ("AlsaSource::WriteRW (): entering play loop, avail: %lld, sample size: %i\n", (gint64) avail, (int) period_size);
 	
-	buffer = g_malloc (avail * 4);
+	buffer = g_malloc (avail * GetOutputBytesPerFrame ());
 	
 	frames = Write (buffer, (guint32) avail);
 

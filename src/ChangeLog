@@ -8,6 +8,17 @@
 
 2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio.cpp|h: Add support for having different input (from the
+	codec) and output (to the device) formats. This is required for
+	pulseaudio 0.10 which doesn't support 24 bit audio, only 16 and 32
+	bit. Also add support for multi channel audio.
+
+	* audio-alsa.cpp:
+	* audio-pulse.cpp: Add support for multi channel and 24 bit audio
+	and update according to audio API changes.
+
+2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio-alsa.cpp: Fix debug output by not duplicating declarations.
 
 2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>

@@ -85,6 +85,8 @@ class AudioSource : public EventObject {
 		
 	guint32 channels; // The number of channels
 	guint32 sample_rate; // The sample rate in the audio source
+	guint32 input_bytes_per_sample; // The number of bytes per sample
+	guint32 output_bytes_per_sample; // The number of bytes per sample in the output. Defaults to same as input_bytes_per_sample.
 	
 	pthread_mutex_t mutex;
 	
@@ -101,9 +103,9 @@ class AudioSource : public EventObject {
 	AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream);
 	virtual ~AudioSource ();
 		
-	// Writes samples to the specified destination
-	// Returns the number of samples actually written
-	// sample: consists of 1 audio sample of 16 bytes * number of channels
+	// Writes frames to the specified destination
+	// Returns the number of frames actually written
+	// frame: consists of 1 audio sample of input_bytes_per_sample bytes * number of channels
 	guint32 Write (void *dest, guint32 samples);
 	guint32 WriteFull (AudioData **channel_data /* Array of info about channels, NULL ended. */, guint32 samples);
 	
@@ -148,7 +150,13 @@ class AudioSource : public EventObject {
 	// This may happen if nothing has been done yet (the derived audio source hasn't
 	// requested any writes).
 	guint64 GetCurrentPts ();
-	guint32 GetBytesPerFrame ();
+	guint32 GetInputBytesPerFrame ();
+	guint32 GetOutputBytesPerFrame ();
+	guint32 GetInputBytesPerSample ();
+	guint32 GetOutputBytesPerSample ();
+	
+	/* This method must only be called during initilization so that output_bytes_per_sample is thread-safe without locking */
+	void SetOutputBytesPerSample (guint32 value);
 	
 	AudioStream *GetStreamReffed ();
 	bool IsQueueEmpty ();
