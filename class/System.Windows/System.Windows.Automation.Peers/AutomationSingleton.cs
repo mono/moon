@@ -77,6 +77,14 @@ namespace System.Windows.Automation.Peers {
 			if (!AccessibilityEnabled || peer == null)
 				return;
 
+			if (object.Equals (newValue, oldValue))
+				return;
+
+			// We are going to raise changes only when the value ACTUALLY CHANGES
+			IAutomationCacheProperty cachedProperty = peer.GetCachedProperty (property);
+			if (cachedProperty != null && object.Equals (newValue, cachedProperty.OldValue))
+				return;
+
 			if (AutomationPropertyChanged != null)
 				AutomationPropertyChanged (this, 
 				                           new AutomationPropertyChangedEventArgs (peer, 

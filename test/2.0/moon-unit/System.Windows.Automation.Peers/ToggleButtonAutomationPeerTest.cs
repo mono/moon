@@ -180,7 +180,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			#endregion
 		}
 
-		[Ignore]
 		[TestMethod]
 		public override void GetName ()
 		{
@@ -301,7 +300,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		#region IToggleProvider tests
 
 		[TestMethod]
-		public void ToggleProvider_ToggleState ()
+		public virtual void ToggleProvider_ToggleState ()
 		{
 			ToggleButton toggleButton = CreateConcreteFrameworkElement ()
 				as ToggleButton;

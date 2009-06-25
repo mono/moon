@@ -23,8 +23,8 @@ namespace System.Windows.Automation.Peers
 		public ButtonAutomationPeer (Button owner)
 			: base (owner)
 		{
-			owner.Click += delegate (object sender, RoutedEventArgs args) {
-				AutomationSingleton.Instance.RaiseAutomationEvent (this, AutomationEvents.InvokePatternOnInvoked);
+			owner.Click += (s, a) => { 
+				RaiseAutomationEvent (AutomationEvents.InvokePatternOnInvoked); 
 			};
 		}
 
@@ -42,7 +42,7 @@ namespace System.Windows.Automation.Peers
 		{
 			if (patternInterface == PatternInterface.Invoke)
 				return this;
-			return null;
+			return base.GetPattern (patternInterface);
 		}
 
 		void IInvokeProvider.Invoke ()

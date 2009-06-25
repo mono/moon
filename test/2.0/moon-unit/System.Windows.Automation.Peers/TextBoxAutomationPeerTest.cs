@@ -34,6 +34,7 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 
+using Microsoft.Silverlight.Testing;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -260,6 +261,14 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsNull (feap.GetLabeledByCore_ (), "GetLabeledByCore #2");
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public override void GetBoundingRectangle ()
+		{
+			base.GetBoundingRectangle ();
+
+			TestLocationAndSize ();
+		}
 		#region IValueProvider tests
 		
 		[TestMethod]

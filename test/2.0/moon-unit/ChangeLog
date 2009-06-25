@@ -1,3 +1,16 @@
+2009-06-25  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs: 
+	Subclassing from ButtonBaseAutomationPeerTest. Testing 
+	GetBoundingRectangle and GetName.
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs,
+	  System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: 
+	Testing GetBoundingRectangle.
+	* System.Windows.Automation.Peers/ToggleButtonAutomationPeerTest.cs: 
+	Ignore attribute removed.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Testing GetBoundingRectangle, GetChildren and HasKeyboardFocus.
+
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ListBoxTest.cs: Add test to see what

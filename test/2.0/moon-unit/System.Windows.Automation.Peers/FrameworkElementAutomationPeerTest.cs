@@ -40,6 +40,7 @@ using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Media;
+using System.Windows.Input;
 
 namespace MoonTest.System.Windows.Automation.Peers {
 
@@ -373,19 +374,24 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetBoundingRectangle ()
 		{
+			AutomationPeer peer
+				= FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
 			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Rect boundingRectangle = feap.GetBoundingRectangle ();
+				= peer as FrameworkElementAutomationPeerContract;
+
+			Rect boundingRectangle = peer.GetBoundingRectangle ();
 			Assert.AreEqual (0, boundingRectangle.X, "GetBoundingRectangle X");
 			Assert.AreEqual (0, boundingRectangle.Y, "GetBoundingRectangle Y");
 			Assert.AreEqual (0, boundingRectangle.Width, "GetBoundingRectangle Width");
 			Assert.AreEqual (0, boundingRectangle.Height, "GetBoundingRectangle Height");
 
-			boundingRectangle = feap.GetBoundingRectangleCore_ ();
-			Assert.AreEqual (0, boundingRectangle.X, "GetBoundingRectangleCore X");
-			Assert.AreEqual (0, boundingRectangle.Y, "GetBoundingRectangleCore Y");
-			Assert.AreEqual (0, boundingRectangle.Width, "GetBoundingRectangleCore Width");
-			Assert.AreEqual (0, boundingRectangle.Height, "GetBoundingRectangleCore Height");
+			if (feap != null) {
+				boundingRectangle = feap.GetBoundingRectangleCore_ ();
+				Assert.AreEqual (0, boundingRectangle.X, "GetBoundingRectangleCore X");
+				Assert.AreEqual (0, boundingRectangle.Y, "GetBoundingRectangleCore Y");
+				Assert.AreEqual (0, boundingRectangle.Width, "GetBoundingRectangleCore Width");
+				Assert.AreEqual (0, boundingRectangle.Height, "GetBoundingRectangleCore Height");
+			}
 
 			Assert.AreNotSame (Rect.Empty, boundingRectangle, "GetBoundingRectangleCore Isempty");
 		}
@@ -393,10 +399,13 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetChildren ()
 		{
+			AutomationPeer peer 
+				= FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.AreEqual (null, peer.GetChildren (), "GetChildren");
 			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.AreEqual (null, feap.GetChildren (), "GetChildren");
-			Assert.AreEqual (null, feap.GetChildrenCore_ (), "GetChildrenCore");
+				= peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (null, feap.GetChildrenCore_ (), "GetChildrenCore");
 		}
 
 		[TestMethod]
@@ -516,12 +525,31 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public virtual void HasKeyboardFocus ()
 		{
-			FrameworkElementAutomationPeerContract feap 
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.IsFalse (feap.HasKeyboardFocus (), "HasKeyboardFocus");
-			Assert.IsFalse (feap.HasKeyboardFocusCore_ (), "HasKeyboardFocusCore");
+			Enqueue (() => {
+				// Some FrameworkElement subclasses are sealed, so we are doing this.
+				AutomationPeer peer 
+					= FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+				FrameworkElementAutomationPeerContract feap
+					= peer as FrameworkElementAutomationPeerContract;
+				Assert.IsFalse (peer.HasKeyboardFocus (), "HasKeyboardFocus #0");
+				if (feap != null)
+					Assert.IsFalse (feap.HasKeyboardFocusCore_ (), "HasKeyboardFocusCore #0");
+
+				Control control = feap as Control;
+				if (control != null) {
+					control.Focus ();
+
+					FocusManager.GetFocusedElement (); // To synchronize call
+
+					Assert.IsTrue (peer.HasKeyboardFocus (), "HasKeyboardFocus #1");
+					if (feap != null)
+						Assert.IsTrue (feap.HasKeyboardFocusCore_ (), "HasKeyboardFocusCore #1");
+				}
+			});
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
@@ -767,8 +795,98 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				"FrameworkElementAutomationPeer is not ContentElement. Override this method");
 		}
 
+		// All "visible" controls must override GetBoundingRectangle and call this method
+		protected void TestLocationAndSize ()
+		{
+			bool concreteLoaded = false;
+			bool concreteLayoutUpdated = false;
+			FrameworkElement concrete = CreateConcreteFrameworkElement ();
+			concrete.Loaded += (o, e) => concreteLoaded = true;
+			concrete.LayoutUpdated += (o, e) => concreteLayoutUpdated = true;
+			AutomationPeer bap = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
+
+			// I'm going to add a canvas to explicitly indicate Width/Height
+			bool canvasLoaded = false;
+			bool canvasLayoutUpdated = false;
+			Canvas canvas = new Canvas ();
+			canvas.Children.Add (concrete);
+			canvas.Loaded += (o, e) => canvasLoaded = true;
+			canvas.LayoutUpdated += (o, e) => canvasLayoutUpdated = true;
+
+			concrete.SetValue (Canvas.TopProperty, (double) 10);
+			concrete.SetValue (Canvas.LeftProperty, (double) 30);
+			concrete.SetValue (Canvas.WidthProperty, (double) 152);
+			concrete.SetValue (Canvas.HeightProperty, (double) 234);
+			concreteLayoutUpdated = false;
+
+			TestPanel.Children.Add (canvas);
+
+			EnqueueConditional (() => concreteLoaded && canvasLoaded, "ConcreteLoaded #0");
+			// Testing Widht & Height
+			Enqueue (() => {
+				Rect boundingRectangle = bap.GetBoundingRectangle ();
+				Assert.AreEqual (30, boundingRectangle.X, "GetBoundingRectangle X #0");
+				Assert.AreEqual (10, boundingRectangle.Y, "GetBoundingRectangle Y #0");
+				Assert.AreEqual (152, boundingRectangle.Width, "GetBoundingRectangle Width #0");
+				Assert.AreEqual (234, boundingRectangle.Height, "GetBoundingRectangle Height #0");
+				concreteLayoutUpdated = false;
+
+				concrete.SetValue (Canvas.TopProperty, (double) 100);
+				concrete.SetValue (Canvas.LeftProperty, (double) 300);
+				// Now using the properties, shouldn't affect
+				concrete.Width = 200;
+				concrete.Height = 350;
+			});
+			EnqueueConditional (() => concreteLayoutUpdated, "ConcreteLayoutUpdated #0");
+			Enqueue (() => {
+				Rect boundingRectangle = bap.GetBoundingRectangle ();
+
+				Assert.AreEqual (300, boundingRectangle.X, "GetBoundingRectangle X #1");
+				Assert.AreEqual (100, boundingRectangle.Y, "GetBoundingRectangle Y #1");
+				Assert.AreEqual (200, boundingRectangle.Width, "GetBoundingRectangle Width #1");
+				Assert.AreEqual (350, boundingRectangle.Height, "GetBoundingRectangle Height #1");
+				concreteLayoutUpdated = false;
+			});
+			Enqueue (() => {
+				// A more complex layout, a canvas containing a canvas in a canvas with a button
+				canvas.Children.Remove (concrete);
+				canvasLayoutUpdated = false;
+
+				Canvas first = new Canvas ();
+				canvas.Children.Add (first);
+				first.SetValue (Canvas.LeftProperty, (double) 10);
+				first.SetValue (Canvas.TopProperty, (double) 20);
+				first.SetValue (Canvas.WidthProperty, (double) 300);
+				first.SetValue (Canvas.HeightProperty, (double) 300);
+
+				Canvas second = new Canvas ();
+				first.Children.Add (second);
+				second.SetValue (Canvas.LeftProperty, (double) 10);
+				second.SetValue (Canvas.TopProperty, (double) 20);
+				second.SetValue (Canvas.WidthProperty, (double) 200);
+				second.SetValue (Canvas.HeightProperty, (double) 200);
+
+				second.Children.Add (concrete);
+				concrete.SetValue (Canvas.LeftProperty, (double) 5);
+				concrete.SetValue (Canvas.TopProperty, (double) 5);
+				concrete.SetValue (Canvas.WidthProperty, (double) 100);
+				concrete.SetValue (Canvas.HeightProperty, (double) 100);
+			});
+			EnqueueConditional (() => concreteLayoutUpdated && canvasLayoutUpdated, "ConcreteLayoutUpdated #1");
+			Enqueue (() => {
+				Rect boundingRectangle = bap.GetBoundingRectangle ();
+
+				Assert.AreEqual (25, boundingRectangle.X, "GetBoundingRectangle X #2");
+				Assert.AreEqual (45, boundingRectangle.Y, "GetBoundingRectangle Y #2");
+				Assert.AreEqual (100, boundingRectangle.Width, "GetBoundingRectangle Width #2");
+				Assert.AreEqual (100, boundingRectangle.Height, "GetBoundingRectangle Height #2");
+			});			
+			EnqueueTestComplete ();
+		}
+
 		protected bool IsContentPropertyElement ()
 		{
+
 			UIElement uielement = CreateConcreteFrameworkElement ();
 
 			object[] attributes

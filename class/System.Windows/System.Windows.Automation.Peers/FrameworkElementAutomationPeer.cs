@@ -30,18 +30,47 @@ using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Linq;
 
 namespace System.Windows.Automation.Peers {
 
 	public class FrameworkElementAutomationPeer : AutomationPeer {
 
-		private UIElement owner;
+		private FrameworkElement owner;
 
 		public FrameworkElementAutomationPeer (FrameworkElement owner)
 		{
 			if (owner == null)
 				throw new NullReferenceException ("owner");
 			this.owner = owner;
+			
+			// Default Automation events
+			owner.GotFocus += (o, a) => {
+				bool hasKeyboardFocus = HasKeyboardFocus ();
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
+				                           !hasKeyboardFocus,
+				                           hasKeyboardFocus);
+			};
+			owner.LostFocus += (o, a) => {
+				bool hasKeyboardFocus = HasKeyboardFocus ();
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
+				                           !hasKeyboardFocus,
+				                           hasKeyboardFocus);
+			};
+
+			owner.SizeChanged += (o, s) => {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.BoundingRectangleProperty, 
+				                           s.PreviousSize, 
+							   s.NewSize);
+			};
+
+			Control control = owner as Control;
+			if (control != null)
+				control.IsEnabledChanged += (o, e) => {
+					RaisePropertyChangedEvent (AutomationElementIdentifiers.IsEnabledProperty, 
+								   e.OldValue,
+					                           e.NewValue); 
+				};
 		}
 
 		public UIElement Owner {
@@ -69,7 +98,7 @@ namespace System.Windows.Automation.Peers {
 
 		protected override List<AutomationPeer> GetChildrenCore ()
 		{
-			return GetChildrenRecursively (owner);
+			return ChildrenCore;
 		}
 
 		public override object GetPattern (PatternInterface pattern)
@@ -108,7 +137,10 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override Rect GetBoundingRectangleCore ()
 		{
-			return new Rect (0, 0, 0, 0);
+			if (VisualTreeHelper.GetParent (owner) == null)
+				return new Rect (0, 0, 0, 0);
+
+			return GetBoundingRectangleFrom (owner);
 		}
 		
 		protected override string GetClassNameCore ()
@@ -145,7 +177,7 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool HasKeyboardFocusCore ()
 		{
-			return false;
+			return owner == System.Windows.Input.FocusManager.GetFocusedElement ();
 		}
 		
 		protected override bool IsContentElementCore ()
@@ -160,6 +192,11 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool IsEnabledCore ()
 		{
+			Control ownerAsControl = owner as Control;
+			if (ownerAsControl != null)
+				return ownerAsControl.IsEnabled;
+
+			// Fall back to default value
 			return true;
 		}
 		
@@ -207,8 +244,10 @@ namespace System.Windows.Automation.Peers {
 
 		internal override AutomationPeer GetParentCore ()
 		{
-			return GetParentPeer (Owner as FrameworkElement);
+			return GetParentPeer (owner);
 		}
+
+		#region Private Methods
 
 		private AutomationPeer GetParentPeer (FrameworkElement element)
 		{
@@ -216,17 +255,15 @@ namespace System.Windows.Automation.Peers {
 			if (element == null)
 				return null;
 
-			FrameworkElement parent = element.Parent as FrameworkElement;
+			FrameworkElement parent = VisualTreeHelper.GetParent (element) as FrameworkElement;
 			if (parent == null)
 				return null;
 
 			// Some parents don't return an Automation Peer (for example: Border or Panel subclasses)
-			AutomationPeer peer = FrameworkElementAutomationPeer.FromElement (parent);
-			if (peer == null)
-				peer = GetParentPeer (parent);
-			
-			return peer;
+			return FrameworkElementAutomationPeer.FromElement (parent);
 		}
+
+		#endregion
 
 		#region Internal properties
 
@@ -241,30 +278,31 @@ namespace System.Windows.Automation.Peers {
 			get { return null; }
 		}
 
+		internal virtual List<AutomationPeer> ChildrenCore {
+			get { return GetChildrenRecursively (owner); }
+		}
+
 		#endregion
 
 		#region Internal methods 
 
-		// This method is used by GetChildrenCore to get Children on ContentPropertyAttribute-decorated 
-		// classes and is also called by the bridge to create RootVisual's children
 		internal static List<AutomationPeer> GetChildrenRecursively (UIElement uielement)
 		{
 			List<AutomationPeer> children = new List<AutomationPeer> ();
-
 			int childrenCount = VisualTreeHelper.GetChildrenCount (uielement);
+
 			for (int child = 0; child < childrenCount; child++) {
-				UIElement contentUIElement 
-					= VisualTreeHelper.GetChild (uielement, child) as  UIElement;
-				if (contentUIElement == null)
+				UIElement element = VisualTreeHelper.GetChild (uielement, child) as UIElement;
+				if (element == null)
 					continue;
 
 				AutomationPeer peer 
-					= FrameworkElementAutomationPeer.CreatePeerForElement (contentUIElement);
+					= FrameworkElementAutomationPeer.CreatePeerForElement (element);
 				if (peer != null)
 					children.Add (peer);
 				else {
 					List<AutomationPeer> returnedChildren 
-						= GetChildrenRecursively (contentUIElement);
+						= GetChildrenRecursively (element);
 					if (returnedChildren != null)
 						children.AddRange (returnedChildren);
 				}
@@ -272,10 +310,34 @@ namespace System.Windows.Automation.Peers {
 
 			if (children.Count == 0)
 				return null;
-			
+
 			return children;
+		}
+
+		internal Rect GetBoundingRectangleFrom (FrameworkElement owner)
+		{
+			Point location = owner.TransformToVisual (Application.Current.RootVisual).Transform (new Point ());
+			
+			double width = (double) owner.GetValue (FrameworkElement.WidthProperty);
+			double height = (double) owner.GetValue (FrameworkElement.HeightProperty);
+			
+			if (double.IsNaN (width))
+				width = 0;
+			if (double.IsNaN (height))
+				height = 0;
+
+			// Some Controls may not be honoring the specified Height or Width and would
+			// use a different value, that's why we need to test these properties too, 
+			// Examples of those Controls are TextBlock and Image.
+			if (height == 0)
+				height = (double) owner.GetValue (FrameworkElement.ActualHeightProperty);
+			if (width == 0)
+				width = (double) owner.GetValue (FrameworkElement.ActualWidthProperty);
+
+			return new Rect (location.X, location.Y, width, height);
 		}
 
 		#endregion
 	}
+
 }

@@ -1,3 +1,20 @@
+2009-06-25  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationPeer.cs: New internal
+	method GetCachedProperty.
+	* System.Windows.Automation.Peers/AutomationSingleton.cs: Raising
+	event only when cached value is different than new value.
+	* System.Windows.Automation.Peers/ButtonAutomationPeer.cs: Calling base
+	in GetPattern.
+	* System.Windows.Automation.Peers/WindowAutomationPeer.cs: Method 
+	overridden: GetBoundingRectangleCore.
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeer.cs: Valid
+	GetNameCore and ChildrenCore implementation.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs: owner
+	private variable changed to FrameworkElement. Raising default events.
+	Valid implementations: ChildrenCore, GetBoundingRectangle, 
+	HasKeyboardFocusCore and IsEnabledCore.
+
 2009-06-16  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (system_windows_sources): add StaticResource.cs

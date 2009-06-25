@@ -31,6 +31,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
 
 using Mono.Moonlight.UnitTesting;
@@ -40,7 +41,7 @@ using Microsoft.Silverlight.Testing;
 namespace MoonTest.System.Windows.Automation.Peers {
 
 	[TestClass]
-	public class ButtonAutomationPeerTest : FrameworkElementAutomationPeerTest {
+	public class ButtonAutomationPeerTest : ButtonBaseAutomationPeerTest {
 
 		public class ButtonConcrete : Button {
 			public ButtonConcrete ()
@@ -230,7 +231,12 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void IInvokeProvider_Invoke ()
 		{
-			// FIXME: Implement when MoonAtkBridge is ready
+			AutomationPeer peer 
+				= FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			IInvokeProvider invoke = peer.GetPattern (PatternInterface.Invoke) as IInvokeProvider;
+			Assert.IsNotNull (invoke, "InvokeProvider is null");
+
+			invoke.Invoke ();
 		}
 
 		[TestMethod]
@@ -270,6 +276,69 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.AreEqual (3, peer.GetChildren ().Count, "GetChildren.Count #2");
 			});
 			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void GetBoundingRectangle ()
+		{
+			base.GetBoundingRectangle ();
+
+			TestLocationAndSize ();
+		}
+
+		[TestMethod]
+		public override void GetName ()
+		{
+			base.GetName ();
+
+			// LAMESPEC: MSDN: A string that contains the name, minus the accelerator key. 
+
+			ButtonConcrete button = CreateConcreteFrameworkElement () as ButtonConcrete;
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (button);
+			Assert.IsNotNull (peer, "IsNotNull #0");
+
+			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #0");
+			
+			button.Content = "Hello I'm button";
+			Assert.AreEqual ("Hello I'm button", peer.GetName (), "GetName #1");
+			
+			button.Content = "Hello I'm &button";
+			Assert.AreEqual ("Hello I'm &button", peer.GetName (), "GetName #2");
+			
+			button.Content = "Hello I'm &&button";
+			Assert.AreEqual ("Hello I'm &&button", peer.GetName (), "GetName #3");
+
+			button.Content = null;
+			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #4");
+
+			TextBox textbox = new TextBox ();
+			textbox.Text = "I'm textbox";
+			button.Content = textbox;
+
+			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #5");
+
+			TextBlock textblock = new TextBlock ();
+			textblock.Text = "I'm textblock";
+			button.Content = textblock;
+
+			Assert.AreEqual ("I'm textblock", peer.GetName (), "GetName #6");
+
+			button.Content = "I'm a button";
+			Assert.AreEqual ("I'm a button", peer.GetName (), "GetName #7");
+
+			// Now usin a stack panel with a textblock
+			StackPanel panel = new StackPanel ();
+			panel.Children.Add (new TextBlock () { Text = "Textblock in Stackpanel1" });
+
+			button.Content = panel;
+			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #8");
+			
+			panel.Children.Add (new TextBlock () { Text = "Textblock in Stackpanel2" });
+			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #9");
+
+			button.Content = "What's up?";
+			Assert.AreEqual ("What's up?", peer.GetName (), "GetName #10");
 		}
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()

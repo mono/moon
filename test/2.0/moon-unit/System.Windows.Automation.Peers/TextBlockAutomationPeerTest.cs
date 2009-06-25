@@ -273,6 +273,15 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			EnqueueTestComplete ();
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public override void GetBoundingRectangle ()
+		{
+			base.GetBoundingRectangle ();
+
+			TestLocationAndSize ();
+		}
+
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
 			return new TextBlock ();

@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Automation.Provider;
 
@@ -317,6 +318,11 @@ namespace System.Windows.Automation.Peers {
 										                Delegate = GetAutomationControlType }
 				};
 			}
+		}
+
+		internal IAutomationCacheProperty GetCachedProperty (AutomationProperty property)
+		{
+			return cacheProperties.First (p => p.Property == property);
 		}
 
 		internal IEnumerable<IAutomationCacheProperty> CacheProperties {

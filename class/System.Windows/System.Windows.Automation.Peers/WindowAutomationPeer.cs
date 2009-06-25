@@ -33,5 +33,10 @@ namespace System.Windows.Automation.Peers
 		{
 			return "Window";
 		}
+
+		protected override Rect GetBoundingRectangleCore ()
+		{
+			return GetBoundingRectangleFrom ((FrameworkElement) Owner);
+		}
 	}
 }
