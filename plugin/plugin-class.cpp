@@ -199,6 +199,21 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		string_to_npvariant (family ? family : "", result);
 		break;
 	}
+	case Type::FONTWEIGHT: {
+		const char *weight = enums_int_to_str ("FontWeight", v->AsFontWeight() ? v->AsFontWeight()->weight : FontWeightsNormal);
+		string_to_npvariant (weight, result);
+		break;
+	}
+	case Type::FONTSTYLE: {
+		const char *style = enums_int_to_str ("FontStyle", v->AsFontStyle() ? v->AsFontStyle()->style : FontStylesNormal);
+		string_to_npvariant (style, result);
+		break;
+	}
+	case Type::FONTSTRETCH: {
+		const char *stretch = enums_int_to_str ("FontStretch", v->AsFontStretch() ? v->AsFontStretch()->stretch : FontStretchesNormal);
+		string_to_npvariant (stretch, result);
+		break;
+	}
 	case Type::COLOR: {
 		Color *c = v->AsColor ();
 		gint32 color = ((((gint32)(c->a * 255.0)) << 24) | (((gint32)(c->r * 255.0)) << 16) | 
