@@ -59,7 +59,9 @@ namespace System.Windows.Controls
 
 		public static readonly DependencyProperty MaxDropDownHeightProperty =
 			DependencyProperty.RegisterCore ("MaxDropDownHeight", typeof (double), typeof (ComboBox),
-						     new PropertyMetadata (double.PositiveInfinity, null));
+						     new PropertyMetadata (double.PositiveInfinity, delegate (DependencyObject sender, DependencyPropertyChangedEventArgs e) {
+								     ((ComboBox) sender).MaxDropDownHeightChanged (sender, e);
+							     }));
 		
 
 		public event EventHandler DropDownClosed;
@@ -157,7 +159,7 @@ namespace System.Windows.Controls
 		
 		void MaxDropDownHeightChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-
+			UpdatePopupMaxHeight ((double) e.NewValue);
 		}
 
 		#endregion
@@ -265,6 +267,7 @@ namespace System.Windows.Controls
 			_dropDownToggle = GetTemplateChild ("DropDownToggle") as ToggleButton;
 
 			if (_popup != null) {
+				UpdatePopupMaxHeight (MaxDropDownHeight);
 				_popup.CatchClickedOutside ();
 				_popup.ClickedOutside += delegate { IsDropDownOpen = false; };
 				
@@ -433,6 +436,13 @@ namespace System.Windows.Controls
 			content = DisplayedItem.Content;
 			DisplayedItem.Content = null;
 			_contentPresenter.Content = content;
+		}
+		
+		void UpdatePopupMaxHeight (double height)
+		{
+			if (_popup != null && _popup.Child is FrameworkElement) {
+				((FrameworkElement) _popup.Child).MaxHeight = height;
+			}
 		}
 
 		private string ItemDebugString (object item)
