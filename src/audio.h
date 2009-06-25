@@ -25,6 +25,10 @@ class AudioPlayer;
 #include "dependencyobject.h"
 #include "pipeline.h"
 
+// uncomment to dump raw audio data to /tmp.
+// the exact command to play the raw audio file will be printed to stdout
+// #define DUMP_AUDIO
+
 enum AudioFlags {
 	// The AudioSource has been initialized correctly.
 	// This flag is removed if SetState (AudioError) is called.
@@ -89,6 +93,10 @@ class AudioSource : public EventObject {
 	
 	EVENTHANDLER (AudioSource, FirstFrameEnqueued, EventObject, EventArgs);
 	
+#ifdef DUMP_AUDIO
+	FILE *dump_fd;
+#endif
+
  protected:
 	AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream);
 	virtual ~AudioSource ();

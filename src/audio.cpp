@@ -78,11 +78,23 @@ AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream
 	
 	if (channels != 1 && channels != 2)
 		SetState (AudioError);
+	
+#ifdef DUMP_AUDIO
+	char *fname = g_strdup_printf ("/tmp/AudioSource-%iHz-%iChannels-%iBit.raw", sample_rate, channels, input_bytes_per_sample * 8);
+	dump_fd = fopen (fname, "w+");
+	printf ("AudioSource: Dumping pcm data to: %s, command line to play:\n", fname);
+	printf ("play -s -t raw -%i -c %i --rate %i %s\n", input_bytes_per_sample, channels, sample_rate, fname);
+	g_free (fname);
+#endif
 }
 
 AudioSource::~AudioSource ()
 {
 	pthread_mutex_destroy (&mutex);
+	
+#ifdef DUMP_AUDIO
+	fclose (dump_fd);
+#endif
 }
 
 void
@@ -607,6 +619,10 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 				*(write_ptr [channel]) = (gint16) CLAMP (value, -32768, 32767);
 				write_ptr [channel] = (gint16 *) (((char *) write_ptr [channel]) + channel_data [channel]->distance);
 				read_ptr++;
+#ifdef DUMP_AUDIO	
+		fwrite ((((char *) current_frame->frame->buffer) + current_frame->bytes_used), 1, bytes_written, dump_fd);	
+#endif
+
 			}
 		}
 		
