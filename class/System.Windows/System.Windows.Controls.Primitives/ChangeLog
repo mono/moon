@@ -1,5 +1,12 @@
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
+	* Selector.cs: Move the handling of the ScrollViewer template
+	  element and default values of ScrollbarVisibility to the
+	  Selector class so it can be shared between ComboBox and
+	  ListBox. Fix some default value issues too.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
 	* Selector.cs: cleanup - make 'changing' a property.
 
 2009-06-24  Alan McGovern  <amcgovern@novell.com>

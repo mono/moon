@@ -30,7 +30,8 @@ using System.Collections.Specialized;
 
 namespace System.Windows.Controls.Primitives {
 	public abstract class Selector : ItemsControl {
-		
+		internal const string TemplateScrollViewerName = "ScrollViewer";
+
 		public static readonly DependencyProperty SelectedIndexProperty =
 			DependencyProperty.RegisterCore ("SelectedIndex", typeof(int), typeof(Selector),
 						     new PropertyMetadata(-1, new PropertyChangedCallback(OnSelectedIndexChanged)));
@@ -53,7 +54,9 @@ namespace System.Windows.Controls.Primitives {
 
 		internal Selector ()
 		{
-			
+			// Set default values for ScrollViewer attached properties 
+			ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
+			ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
 		}
 
 		bool Changing {
@@ -72,6 +75,10 @@ namespace System.Windows.Controls.Primitives {
 		public object SelectedItem {
 			get { return GetValue (SelectedItemProperty); }
 			set { SetValue (SelectedItemProperty, value); }
+		}
+
+		internal ScrollViewer TemplateScrollViewer {
+			get; private set;
 		}
 
 		
@@ -159,6 +166,20 @@ namespace System.Windows.Controls.Primitives {
 			ListBoxItem lbItem = (ListBoxItem) element;
 			lbItem.Content = null;
 			lbItem.IsSelected = false;
+		}
+
+		public override void OnApplyTemplate ()
+		{
+			base.OnApplyTemplate ();
+			TemplateScrollViewer = GetTemplateChild("ScrollViewer") as ScrollViewer;
+			
+			if (TemplateScrollViewer != null)
+			{
+				TemplateScrollViewer.TemplatedParentHandlesScrolling = true;
+				// Update ScrollViewer values
+				TemplateScrollViewer.HorizontalScrollBarVisibility = ScrollViewer.GetHorizontalScrollBarVisibility(this); 
+				TemplateScrollViewer.VerticalScrollBarVisibility = ScrollViewer.GetVerticalScrollBarVisibility(this); 
+			}
 		}
 
 		protected override void OnItemsChanged (System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

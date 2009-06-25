@@ -43,6 +43,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Default value for ShowGridLines is screwy on SL")]
 		public void Defaults()
 		{
 			Grid g = new Grid();

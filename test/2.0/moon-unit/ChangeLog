@@ -1,5 +1,23 @@
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ListBoxTest.cs: Add test to see what
+	  the default state of ScrollbarVisibility is
+
+	* System.Windows.Controls/ComboBoxTest.cs: Add test to see
+	  what the default state of ScollbarVisibility is
+
+	* misc/DefaultValues.cs:
+	* System.Windows.Controls/GridTest.cs: ShowGridLines is a bit
+	  strange under SL so mark test as moonlight bug for the
+	  moment.
+
+	* moon-unit.mdp: Add missing files to the sln
+
+	* System.Windows.Markup/XamlReaderTest.cs: Add moonlight bug
+	  to EnumAsContent
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest.cs:
 	  TemplateClosesDropdown hits a corner case so add
 	  MoonlightBug. OnDropDownMethodsTest passes now.

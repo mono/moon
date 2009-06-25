@@ -647,11 +647,11 @@ namespace System.Windows.Controls
             else 
             {
                 ListBox listBox = d as ListBox;
-                if ((null != listBox) && (null != listBox.ElementScrollViewer)) 
+                if ((null != listBox) && (null != listBox.TemplateScrollViewer)) 
                 {
                     // Push the attached property values from ListBox to ScrollViewer because
                     // it's not possible to set up corresponding Bindings in OnApplyTemplate 
-                    listBox.ElementScrollViewer.SetValue(e.Property, e.NewValue); 
+                    listBox.TemplateScrollViewer.SetValue(e.Property, e.NewValue); 
                 }
             } 
         }

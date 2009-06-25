@@ -21,7 +21,7 @@ namespace System.Windows.Controls
     /// <summary>
     /// Control that implements a list of selectable items. 
     /// </summary> 
-    [TemplatePart(Name = ListBox.ElementScrollViewerName, Type = typeof(ScrollViewer))]
+    [TemplatePart(Name = Selector.TemplateScrollViewerName, Type = typeof(ScrollViewer))]
     public class ListBox : Selector
     {
         /// <summary>
@@ -46,12 +46,6 @@ namespace System.Windows.Controls
         public static readonly DependencyProperty IsSelectionActiveProperty = DependencyProperty.RegisterReadOnlyCore (
             "IsSelectionActive", typeof(bool), typeof(ListBox), 
             new PropertyMetadata(new PropertyChangedCallback(OnIsSelectionActiveChanged))); 
-
-        /// <summary> 
-        /// Identifies the optional ScrollViewer element from the template.
-        /// </summary>
-        internal ScrollViewer ElementScrollViewer { get; set; } 
-        private const string ElementScrollViewerName = "ScrollViewer";
 
         /// <summary>
         /// Tracks the ListBoxItem that just lost focus. 
@@ -104,27 +98,8 @@ namespace System.Windows.Controls
             Focusable = true; 
 #else 
             // DirectionalNavigation not supported by Silverlight
-            TabNavigation = KeyboardNavigationMode.Once; 
             // Focusable not supported by Silverlight
 #endif
-            IsTabStop = false; 
-
-            // Set default values for ScrollViewer attached properties 
-            ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
-            ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
-        } 
- 
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate(); 
-            ElementScrollViewer = GetTemplateChild(ElementScrollViewerName) as ScrollViewer;
-            if (null != ElementScrollViewer)
-            {
-                ElementScrollViewer.TemplatedParentHandlesScrolling = true;
-                // Update ScrollViewer values
-                ElementScrollViewer.HorizontalScrollBarVisibility = ScrollViewer.GetHorizontalScrollBarVisibility(this); 
-                ElementScrollViewer.VerticalScrollBarVisibility = ScrollViewer.GetVerticalScrollBarVisibility(this); 
-            }
         } 
 
         /// <summary>
@@ -270,7 +245,7 @@ namespace System.Windows.Controls
         /// <param name="item">Object to scroll.</param> 
         public void ScrollIntoView(object item)
         {
-            if ((null != ElementScrollViewer) && Items.Contains(item)) 
+            if ((null != TemplateScrollViewer) && Items.Contains(item)) 
             { 
                 Rect itemsHostRect;
                 Rect listBoxItemRect; 
@@ -279,7 +254,7 @@ namespace System.Windows.Controls
                     if (IsVerticalOrientation()) 
                     {
                         // Scroll into view vertically (first make the right bound visible, then the left)
-                        double verticalOffset = ElementScrollViewer.VerticalOffset; 
+                        double verticalOffset = TemplateScrollViewer.VerticalOffset; 
                         double verticalDelta = 0; 
                         if (itemsHostRect.Bottom < listBoxItemRect.Bottom)
                         { 
@@ -290,12 +265,12 @@ namespace System.Windows.Controls
                         {
                             verticalOffset -= itemsHostRect.Top - (listBoxItemRect.Top - verticalDelta); 
                         } 
-                        ElementScrollViewer.ScrollToVerticalOffset(verticalOffset);
+                        TemplateScrollViewer.ScrollToVerticalOffset(verticalOffset);
                     } 
                     else
                     {
                         // Scroll into view horizontally (first make the bottom bound visible, then the top) 
-                        double horizontalOffset = ElementScrollViewer.HorizontalOffset;
+                        double horizontalOffset = TemplateScrollViewer.HorizontalOffset;
                         double horizontalDelta = 0;
                         if (itemsHostRect.Right < listBoxItemRect.Right) 
                         { 
@@ -306,7 +281,7 @@ namespace System.Windows.Controls
                         { 
                             horizontalOffset -= itemsHostRect.Left - (listBoxItemRect.Left - horizontalDelta);
                         }
-                        ElementScrollViewer.ScrollToHorizontalOffset(horizontalOffset); 
+                        TemplateScrollViewer.ScrollToHorizontalOffset(horizontalOffset); 
                     } 
                 }
             } 
@@ -495,9 +470,9 @@ namespace System.Windows.Controls
         /// <param name="key">Key corresponding to the direction.</param>
         private void ElementScrollViewerScrollInDirection(Key key) 
         { 
-            if (null != ElementScrollViewer)
+            if (null != TemplateScrollViewer)
             { 
-                ElementScrollViewer.ScrollInDirection(key);
+                TemplateScrollViewer.ScrollInDirection(key);
             }
         } 
 
@@ -636,8 +611,8 @@ namespace System.Windows.Controls
             DependencyObject ItemsHost = VisualTreeHelper.GetChild(this, 0);
             ItemsHost = VisualTreeHelper.GetChild(ItemsHost, 0);
             FrameworkElement itemsHost =
-                (null != ElementScrollViewer) ?
-                    ((null != ElementScrollViewer.ElementScrollContentPresenter) ? ElementScrollViewer.ElementScrollContentPresenter as FrameworkElement : ElementScrollViewer as FrameworkElement) : 
+                (null != TemplateScrollViewer) ?
+                    ((null != TemplateScrollViewer.ElementScrollContentPresenter) ? TemplateScrollViewer.ElementScrollContentPresenter as FrameworkElement : TemplateScrollViewer as FrameworkElement) : 
                     ItemsHost as FrameworkElement;
             Debug.Assert(null != itemsHost);
             itemsHostRect = new Rect(new Point(), new Point(itemsHost.RenderSize.Width, itemsHost.RenderSize.Height)); 
@@ -702,9 +677,9 @@ namespace System.Windows.Controls
             if ((null != item) && !IsOnCurrentPage(item))
             { 
                 ScrollIntoView(item);
-                if (null != ElementScrollViewer)
+                if (null != TemplateScrollViewer)
                 { 
-                    ElementScrollViewer.UpdateLayout(); 
+                    TemplateScrollViewer.UpdateLayout(); 
                 }
             } 
             // Inlined implementation of NavigateByPageInternal
@@ -723,20 +698,20 @@ namespace System.Windows.Controls
                 }
                 else 
                 { 
-                    if (null != ElementScrollViewer)
+                    if (null != TemplateScrollViewer)
                     { 
                         // Scroll a page in the relevant direction
                         if (IsVerticalOrientation())
                         { 
-                            ElementScrollViewer.ScrollToVerticalOffset(Math.Max(0, Math.Min(ElementScrollViewer.ScrollableHeight,
-                                ElementScrollViewer.VerticalOffset + (ElementScrollViewer.ViewportHeight * (forward ? 1 : -1)))));
+                            TemplateScrollViewer.ScrollToVerticalOffset(Math.Max(0, Math.Min(TemplateScrollViewer.ScrollableHeight,
+                                TemplateScrollViewer.VerticalOffset + (TemplateScrollViewer.ViewportHeight * (forward ? 1 : -1)))));
                         } 
                         else 
                         {
-                            ElementScrollViewer.ScrollToHorizontalOffset(Math.Max(0, Math.Min(ElementScrollViewer.ScrollableWidth, 
-                                ElementScrollViewer.HorizontalOffset + (ElementScrollViewer.ViewportWidth * (forward ? 1 : -1)))));
+                            TemplateScrollViewer.ScrollToHorizontalOffset(Math.Max(0, Math.Min(TemplateScrollViewer.ScrollableWidth, 
+                                TemplateScrollViewer.HorizontalOffset + (TemplateScrollViewer.ViewportWidth * (forward ? 1 : -1)))));
                         }
-                        ElementScrollViewer.UpdateLayout(); 
+                        TemplateScrollViewer.UpdateLayout(); 
                     }
                     // Select the "edge" element
                     newFocusedIndex = GetFirstItemOnCurrentPage(_focusedIndex, forward); 

@@ -337,6 +337,8 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (lb.ReadLocalValue (ListBox.ItemContainerStyleProperty), DependencyProperty.UnsetValue, "ItemContainerStyle = Unset");
 
 			Assert.IsNull (lb.ItemTemplate, "ItemTemplate == null");
+			Assert.AreEqual (ScrollViewer.GetHorizontalScrollBarVisibility (lb), ScrollBarVisibility.Auto, "Horizontal Scroll Vis");
+			Assert.AreEqual (ScrollViewer.GetVerticalScrollBarVisibility (lb), ScrollBarVisibility.Auto, "Vertical Scroll Vis");
 		}
 
 		[TestMethod]

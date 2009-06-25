@@ -1,5 +1,12 @@
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
+	* ComboBox.cs: Move the handling of the ScrollViewer template
+	  element and default values of ScrollbarVisibility to the
+	  Selector class so it can be shared between ComboBox and
+	  ListBox. Fix some default value issues too.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
 	* ComboBox.cs: Handle IsDropDownOpenChanged in a non-virtual
 	  method.
 

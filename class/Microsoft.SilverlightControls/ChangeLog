@@ -1,5 +1,14 @@
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ListBox/ListBox.cs:
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Move the handling
+	  of the ScrollViewer template element and default values of
+	  ScrollbarVisibility to the Selector class so it can be
+	  shared between ComboBox and ListBox. Fix some default value
+	  issues too.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ListBox/ListBox.cs: Simplify ListBox and make
 	  it similar to how ComboBox operates.
 

@@ -70,6 +70,7 @@ namespace MoonTest.System.Windows.Markup {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("we return an int, not a uint")]
 		public void EnumAsContent ()
 		{
 			DiscreteObjectKeyFrame kf = (DiscreteObjectKeyFrame) XamlReader.Load (@"

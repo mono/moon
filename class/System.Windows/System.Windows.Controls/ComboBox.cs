@@ -96,11 +96,7 @@ namespace System.Windows.Controls
 			get { return (double) GetValue (MaxDropDownHeightProperty); }
 			set { SetValue (MaxDropDownHeightProperty, value); }
 		}
-		
-		ScrollViewer ScrollViewer {
-			get; set;
-		}
-		
+
 		public object SelectionBoxItem {
 			get; private set;
 		}
@@ -258,21 +254,16 @@ namespace System.Windows.Controls
 			cb.ParentSelector = this;
 		}
 
-		
 		public override void OnApplyTemplate ()
 		{
 			base.OnApplyTemplate ();
 			IsDropDownOpen = false;
 			
 			_contentPresenter = GetTemplateChild ("ContentPresenter") as ContentPresenter;
-			ScrollViewer = GetTemplateChild("ScrollViewer") as ScrollViewer;
 			_popup = GetTemplateChild ("Popup") as Popup;
 			_contentPresenterBorder = GetTemplateChild ("ContentPresenterBorder") as FrameworkElement;
 			_dropDownToggle = GetTemplateChild ("DropDownToggle") as ToggleButton;
-			
-			if (ScrollViewer != null) {
-				ScrollViewer.TemplatedParentHandlesScrolling = true;
-			}
+
 			if (_popup != null) {
 				_popup.CatchClickedOutside ();
 				_popup.ClickedOutside += delegate { IsDropDownOpen = false; };
