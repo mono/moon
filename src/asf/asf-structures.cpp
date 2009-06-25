@@ -453,7 +453,7 @@ asf_single_payload::FillInAll (ASFContext *context, asf_error_correction_data* e
 	stream_id = stream_id & 0x7F;
 	
 	if (!parser->IsValidStream (stream_id)) {
-		parser->AddError (g_strdup_printf ("asf_single_payload::FillInAll: Invalid stream number (%d).", (int) stream_id));
+		ASF_LOG_ERROR ("asf_single_payload::FillInAll: Invalid stream number (%d).", (int) stream_id);
 		return MEDIA_INVALID_DATA;
 	}
 	
