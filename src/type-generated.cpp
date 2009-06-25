@@ -440,6 +440,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::POLYQUADRATICBEZIERSEGMENT] = new Type (Type::POLYQUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, false, "PolyQuadraticBezierSegment", 0, 1, NULL, 0, NULL, true, (create_inst_func *) poly_quadratic_bezier_segment_new, NULL);
 	types [(int) Type::POPUP] = new Type (Type::POPUP, Type::FRAMEWORKELEMENT, false, false, "Popup", 2, 21, POPUP_Events, 0, NULL, true, (create_inst_func *) popup_new, "Child");
 	types [(int) Type::POWEREASE] = new Type (Type::POWEREASE, Type::EASINGFUNCTIONBASE, false, false, "PowerEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) power_ease_new, NULL);
+	types [(int) Type::PROGRESSEVENTARGS] = new Type (Type::PROGRESSEVENTARGS, Type::EVENTARGS, false, false, "ProgressEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROGRESSIVESOURCE] = new Type (Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, false, "ProgressiveSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROPERTYPATH] = new Type (Type::PROPERTYPATH, Type::OBJECT, true, false, "PropertyPath", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::PULSESOURCE] = new Type (Type::PULSESOURCE, Type::AUDIOSOURCE, false, false, "PulseSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);

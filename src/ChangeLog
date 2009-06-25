@@ -1,5 +1,13 @@
 2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.h: Added a ProgressEventArgs class.
+
+	* value.h:
+	* type.h:
+	* type-generated.cpp: Regenerated.
+
+2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio-alsa.cpp: Fix debug output by not duplicating declarations.
 
 2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>

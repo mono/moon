@@ -239,6 +239,7 @@ class PolyLineSegment;
 class PolyQuadraticBezierSegment;
 class Popup;
 class PowerEase;
+class ProgressEventArgs;
 class ProgressiveSource;
 class PulseSource;
 class QuadraticBezierSegment;
@@ -595,6 +596,7 @@ public:
 	PolyQuadraticBezierSegment*              AsPolyQuadraticBezierSegment (Types *types = NULL) { checked_get_subclass (Type::POLYQUADRATICBEZIERSEGMENT, PolyQuadraticBezierSegment) }
 	Popup*                                   AsPopup (Types *types = NULL) { checked_get_subclass (Type::POPUP, Popup) }
 	PowerEase*                               AsPowerEase (Types *types = NULL) { checked_get_subclass (Type::POWEREASE, PowerEase) }
+	ProgressEventArgs*                       AsProgressEventArgs (Types *types = NULL) { checked_get_subclass (Type::PROGRESSEVENTARGS, ProgressEventArgs) }
 	ProgressiveSource*                       AsProgressiveSource (Types *types = NULL) { checked_get_subclass (Type::PROGRESSIVESOURCE, ProgressiveSource) }
 	PulseSource*                             AsPulseSource (Types *types = NULL) { checked_get_subclass (Type::PULSESOURCE, PulseSource) }
 	QuadraticBezierSegment*                  AsQuadraticBezierSegment (Types *types = NULL) { checked_get_subclass (Type::QUADRATICBEZIERSEGMENT, QuadraticBezierSegment) }

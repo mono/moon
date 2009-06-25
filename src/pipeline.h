@@ -314,6 +314,19 @@ public:
 };
 
 /*
+ * ProgressEventArgs
+ */
+class ProgressEventArgs : public EventArgs {
+public:
+	double progress;
+	
+	ProgressEventArgs (double progress)
+	{
+		this->progress = progress;
+	}
+};
+
+/*
  * MediaWork
  */ 
 
