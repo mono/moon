@@ -1,5 +1,9 @@
 2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp: Improve debug output.
+
+2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.h: Added a ProgressEventArgs class.
 
 	* value.h:

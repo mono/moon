@@ -265,17 +265,20 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 			astream->SetSelected (true);
 			audio->ref ();
 			LOG_MEDIAPLAYER ("MediaPlayer::Open(): Selected audio stream (%d) properties:\n"
-					 "\tchannels: %d\n"
-					 "\tsample_rate: %d\n"
-					 "\tbit_rate: %d\n"
-					 "\tblock_align: %d\n"
-					 "\tbits_per_sample: %d\n"
+					 "\tchannels: Input: %d Output: %d\n"
+					 "\tsample_rate: Input: %d Output: %d\n"
+					 "\tbit_rate: Input: %d Output: %d\n"
+					 "\tblock_align: Input: %d Output: %d\n"
+					 "\tbits_per_sample: Input: %d Output: %d\n"
 					 "\tcodec_id: 0x%x\n"
 					 "\tduration: %" G_GUINT64_FORMAT "\n"
 					 "\textra data size: %d\n",
-					 astream->index, astream->GetChannels (), astream->GetSampleRate (), astream->GetBitRate (),
-					 astream->GetBlockAlign (), astream->GetBitsPerSample (), astream->GetCodecId (),
-					 astream->GetDuration (), astream->GetExtraDataSize ());
+					 astream->index, astream->GetChannels (), astream->GetOutputChannels (), 
+					 astream->GetSampleRate (), astream->GetOutputSampleRate (),
+					 astream->GetBitRate (), astream->GetOutputBitRate (),
+					 astream->GetBlockAlign (), astream->GetOutputBlockAlign (),
+					 astream->GetBitsPerSample (), astream->GetOutputBitsPerSample (),
+					 astream->GetCodecId (), astream->GetDuration (), astream->GetExtraDataSize ());
 			if (astream->extra_data_size > 0) {
 				int n;
 				LOG_MEDIAPLAYER ("\textra data: ");
