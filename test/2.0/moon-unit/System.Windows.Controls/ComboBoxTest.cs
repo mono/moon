@@ -39,6 +39,7 @@ using Microsoft.Silverlight.Testing;
 using System.Windows.Media;
 using System.Text;
 using System.Windows.Media.Animation;
+using System.Windows.Controls.Primitives;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -51,14 +52,19 @@ namespace MoonTest.System.Windows.Controls {
 	public class FakeComboBox : ComboBox {
 		public List<Value> methods = new List<Value> ();
 
+		public bool CallBaseOnDropDown { get; set; }
 		public bool CallBaseOnItemsChanged { get; set; }
 		public DependencyObject ContainerItem {
 			get; set;
+		}
+		public Popup TemplatePopup {
+			get { return (Popup) GetTemplateChild ("Popup"); }
 		}
 		
 		public FakeComboBox ()
 		{
 			CallBaseOnItemsChanged = true;
+			CallBaseOnDropDown = true;
 			this.SelectionChanged += (o, e) => methods.Add (new Value { MethodName = "SelectionChangedEvent", ReturnValue = e });
 			this.DropDownClosed += delegate { methods.Add (new Value { MethodName = "DropDownClosedEvent" }); };
 			this.DropDownOpened += delegate { methods.Add (new Value { MethodName = "DropDownOpenedEvent" }); };
@@ -112,12 +118,16 @@ namespace MoonTest.System.Windows.Controls {
 
 		protected override void OnDropDownClosed (EventArgs e)
 		{
+			if (!CallBaseOnDropDown)
+				return;
 			methods.Add (new Value { MethodName = "OnDropDownClosed", MethodParams = new object [] { e } });
 			base.OnDropDownClosed (e);
 		}
 
 		protected override void OnDropDownOpened (EventArgs e)
 		{
+			if (!CallBaseOnDropDown)
+				return;
 			methods.Add (new Value { MethodName = "OnDropDownOpened", MethodParams = new object [] { e } });
 			base.OnDropDownOpened (e);
 		}
@@ -647,6 +657,31 @@ namespace MoonTest.System.Windows.Controls {
 			);
 		}
 		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void OnDropDownMethodsTest ()
+		{
+			bool opened = false;
+			FakeComboBox box = new FakeComboBox { CallBaseOnDropDown = false };
+			TestPanel.Children.Add (box);
+
+			box.DropDownOpened += delegate { opened = true; };
+			box.ApplyTemplate ();
+			Enqueue (() => {
+				box.IsDropDownOpen = true;
+			});
+			Enqueue (() => {
+				try {
+					Assert.IsFalse (opened, "#1");
+					Assert.IsTrue (box.TemplatePopup.IsOpen, "#2");
+				} finally {
+					box.IsDropDownOpen = false;
+				}
+			});
+			EnqueueTestComplete ();
+		}
+
 		[TestMethod]
 		public void OwnContainerTest ()
 		{
