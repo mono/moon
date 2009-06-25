@@ -521,6 +521,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	NPVariant result;
 	int argcount = 1;
 	PluginInstance *plugin = (PluginInstance *)proxy->instance->pdata;
+	Deployment *previous_deployment;
 	
 	if (plugin == NULL) {
 		// Firefox can invalidate our NPObjects after the plugin itself
@@ -536,6 +537,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 		return;
 	}
 
+	previous_deployment = Deployment::GetCurrent ();
 	Deployment::SetCurrent (plugin->GetDeployment ());
 
 	if (js_sender->GetObjectType () == Type::SURFACE) {
@@ -588,6 +590,8 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	}
 	if (proxy->one_shot)
 		proxy->RemoveHandler();
+	
+	Deployment::SetCurrent (previous_deployment);
 }
 
 void
