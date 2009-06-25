@@ -137,6 +137,7 @@ class Grid : public Panel {
 
  protected:
 	virtual ~Grid ();
+	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
 
  public:
  	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors,Validator=PositiveIntValidator */
@@ -166,11 +167,10 @@ class Grid : public Panel {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
-	
+	virtual void ComputeBounds ();
+
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
-
-	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 
 	// property accessors
 	ColumnDefinitionCollection *GetColumnDefinitions ();
