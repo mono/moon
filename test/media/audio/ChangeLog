@@ -1,3 +1,11 @@
+2009-06-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BigBuckBunny*:
+	* test-all.html:
+	* test-all.js:
+	* README.multichannel: Added multi channel (5.1 and 7.1)
+	audio samples as well as 24 bit audio samples.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* drtlist.xml: Delete old-style drtlists.
