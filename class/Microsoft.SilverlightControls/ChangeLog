@@ -1,5 +1,10 @@
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ListBox/ListBox.cs: Simplify ListBox and make
+	  it similar to how ComboBox operates.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ListBox/ListBoxItem.cs: Call the base
 	  InvokeLoaded method.
 

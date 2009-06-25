@@ -53,23 +53,6 @@ namespace System.Windows.Controls
         internal ScrollViewer ElementScrollViewer { get; set; } 
         private const string ElementScrollViewerName = "ScrollViewer";
 
-        /// <summary> 
-        /// Maps objects in the Items collection to the corresponding 
-        /// ListBoxItem containers
-        /// </summary> 
-        private IDictionary<object, ListBoxItem> ObjectToListBoxItem
-        {
-            get 
-            {
-                if (null == _objectToListBoxItem)
-                { 
-                    _objectToListBoxItem = new Dictionary<object, ListBoxItem>(); 
-                }
-                return _objectToListBoxItem; 
-            }
-        }
-        private Dictionary<object, ListBoxItem> _objectToListBoxItem; 
-
         /// <summary>
         /// Tracks the ListBoxItem that just lost focus. 
         /// </summary>
@@ -211,7 +194,6 @@ namespace System.Windows.Controls
                 { 
                     listBoxItem.Content = item;
                 }
-                ObjectToListBoxItem[item] = listBoxItem; 
             } 
             // Apply ItemContainerStyle
             if ((null != ItemContainerStyle) && (null == listBoxItem.Style)) 
@@ -223,7 +205,7 @@ namespace System.Windows.Controls
             // If IsSelected, select the new item 
             if (listBoxItem.IsSelected) 
             {
-                SelectedItem = listBoxItem.Item ?? listBoxItem; 
+                SelectedItem = listBoxItem.Item; 
             }
         }
 
@@ -241,22 +223,17 @@ namespace System.Windows.Controls
             // Silverlight bug workaround
             if (null == item) 
             { 
-                item = (null == listBoxItem.Item) ? listBoxItem : listBoxItem.Item;
+                item = listBoxItem.Item;
             } 
 #endif
             // If necessary, unselect the selected item that is being removed
-            if ((listBoxItem.Item ?? listBoxItem) == SelectedItem) 
+            if (listBoxItem.Item == SelectedItem) 
             {
                 SelectedItem = null;
             } 
             // Clear the ListBoxItem state 
             listBoxItem.IsSelected = false;
             listBoxItem.ParentSelector = null; 
-            if (listBoxItem != item)
-            {
-                Debug.Assert(ObjectToListBoxItem.ContainsKey(item)); 
-                ObjectToListBoxItem.Remove(item);
-            }
         } 
 
         /// <summary> 
@@ -498,7 +475,7 @@ namespace System.Windows.Controls
                     (newFocusedIndex < Items.Count))
                 { 
                     // A key press will change the focused ListBoxItem
-                    ListBoxItem listBoxItem = GetListBoxItemForObject(Items[newFocusedIndex]);
+                    ListBoxItem listBoxItem = GetContainerItem (newFocusedIndex);
                     Debug.Assert(null != listBoxItem); 
                     ScrollIntoView(listBoxItem.Item ?? listBoxItem);
                     _suppressNextLostFocus = true; 
@@ -532,12 +509,12 @@ namespace System.Windows.Controls
         internal override void OnSelectedItemChanged(object oldValue, object newValue)
         { 
             if (oldValue != null) {
-                ListBoxItem oldItem = GetListBoxItemForObject (oldValue);
+                ListBoxItem oldItem = GetContainerItem (Items.IndexOf (oldValue));
                  if (oldItem != null)
                     oldItem.IsSelected = false;
             }
             if (newValue != null) {
-                ListBoxItem newItem = GetListBoxItemForObject (newValue);
+                ListBoxItem newItem = GetContainerItem (Items.IndexOf (newValue));
                 if (newItem != null)
                     newItem.IsSelected = true;
             }
@@ -564,9 +541,9 @@ namespace System.Windows.Controls
         /// <param name="newItemContainerStyle">The value of the property after the change.</param>
         void OnItemContainerStyleChanged(Style oldItemContainerStyle, Style newItemContainerStyle) 
         { 
-            foreach (object item in Items)
+            for (int i = 0; i < Items.Count; i++)
             { 
-                ListBoxItem listBoxItem = GetListBoxItemForObject(item);
+                ListBoxItem listBoxItem = GetContainerItem (i);
                 if (null != listBoxItem)  // May be null if GetContainerForItemOverride has not been called yet
                 { 
                     if ((null == listBoxItem.Style) || (oldItemContainerStyle == listBoxItem.Style))
@@ -610,29 +587,14 @@ namespace System.Windows.Controls
         {
             if (null != SelectedItem) 
             {
-                ListBoxItem selectedListBoxItem = GetListBoxItemForObject(SelectedItem); 
+                ListBoxItem selectedListBoxItem = GetContainerItem (Items.IndexOf (SelectedItem)); 
                 if (null != selectedListBoxItem)
                 {
                     selectedListBoxItem.ChangeVisualState(); 
                  }
             }
         }
- 
-        /// <summary>
-        /// Gets the ListBoxItem corresponding to the specified item.
-        /// </summary> 
-        /// <param name="value">The item being looked up.</param> 
-        /// <returns>Corresponding ListBoxItem.</returns>
-        private ListBoxItem GetListBoxItemForObject(object value) 
-        {
-            ListBoxItem selectedListBoxItem = value as ListBoxItem;
-            if (null == selectedListBoxItem) 
-            {
-                ObjectToListBoxItem.TryGetValue(value, out selectedListBoxItem);
-            } 
-            return selectedListBoxItem; 
-        }
- 
+
         /// <summary>
         /// Indicate whether the orientation of the ListBox's items is vertical.
         /// </summary> 
@@ -668,7 +630,7 @@ namespace System.Windows.Controls
         /// <remarks>Similar to WPF's corresponding ItemsControl method.</remarks>
         private bool IsOnCurrentPage(object item, out Rect itemsHostRect, out Rect listBoxItemRect)
         { 
-            ListBoxItem listBoxItem = GetListBoxItemForObject(item); 
+            ListBoxItem listBoxItem = GetContainerItem (Items.IndexOf (item));
             Debug.Assert(null != listBoxItem);
             // Get Rect for item host element 
             DependencyObject ItemsHost = VisualTreeHelper.GetChild(this, 0);
