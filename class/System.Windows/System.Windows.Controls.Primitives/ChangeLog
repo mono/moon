@@ -1,3 +1,7 @@
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: cleanup - make 'changing' a property.
+
 2009-06-24  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: Add another method to selector to allow

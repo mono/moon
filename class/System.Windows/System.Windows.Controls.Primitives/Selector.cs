@@ -56,53 +56,56 @@ namespace System.Windows.Controls.Primitives {
 			
 		}
 
+		bool Changing {
+			get; set;
+		}
+
 		internal bool IsSelectionActive {
 			get; set;
 		}
-		
+
 		public int SelectedIndex {
 			get { return (int)GetValue(SelectedIndexProperty); }
 			set { SetValue (SelectedIndexProperty, value); }
 		}
 
-		
 		public object SelectedItem {
 			get { return GetValue (SelectedItemProperty); }
 			set { SetValue (SelectedItemProperty, value); }
 		}
 
-		bool changing;
+		
 		public event SelectionChangedEventHandler SelectionChanged;
 
 		void SelectedIndexChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			object oldItem = SelectedItem;
 			int newVal = (int) e.NewValue;
-			if (newVal == (int) e.OldValue || changing) {
+			if (newVal == (int) e.OldValue || Changing) {
 				SelectedIndex = newVal;
 				return;
 			}
 
-			changing = true;
+			Changing = true;
 			try {
 				if (newVal < 0)
 					ClearValue (SelectedItemProperty);
 				else if (newVal < Items.Count)
 					SelectedItem = Items [newVal];
 			} finally {
-				changing = false;
+				Changing = false;
 			}
 			RaiseSelectionChanged (o, new SelectionChangedEventArgs (oldItem, SelectedItem));
 		}
 		
 		void SelectedItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			if (e.NewValue == e.OldValue || changing) {
+			if (e.NewValue == e.OldValue || Changing) {
 				SelectedItem = e.NewValue;
 				return;
 			}
 			
-			changing = true;
+			Changing = true;
 			try {
 				int index = e.NewValue == null ? -1 : Items.IndexOf (e.NewValue);
 				if (index == -1 && e.NewValue != null) {
@@ -118,7 +121,7 @@ namespace System.Windows.Controls.Primitives {
 					RaiseSelectionChanged (o, new SelectionChangedEventArgs (e.OldValue, e.NewValue));
 				}
 			} finally {
-				changing = false;
+				Changing = false;
 			}
 		}
 		
@@ -163,10 +166,10 @@ namespace System.Windows.Controls.Primitives {
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
 				// Ensure we don't fire a SelectionChanged event when we're just updating the index
-				changing = true;
+				Changing = true;
 				if (e.NewStartingIndex <= SelectedIndex)
 					SelectedIndex ++;
-				changing = false;
+				Changing = false;
 				break;
 			case NotifyCollectionChangedAction.Reset:
 				SelectedIndex = -1;
