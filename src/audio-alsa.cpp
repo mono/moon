@@ -232,7 +232,6 @@ AlsaSource::SetupHW ()
 	guint32 channels = GetChannels ();
 
 	if (debug) {
-		snd_output_t *output = NULL;
 		err = snd_output_stdio_attach (&output, stdout, 0);
 		if (err < 0)
 			LOG_AUDIO ("AlsaSource::SetupHW (): Could not create alsa output: %s\n", snd_strerror (err));
