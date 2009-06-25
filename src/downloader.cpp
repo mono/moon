@@ -304,10 +304,8 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
 			retval = false;
 		//X-Scheme: no
+		//X-Domain: "allowed to same scheme and same or different sites" (MSDN)
 		if (!same_scheme (target, source))
-			retval = false;
-		//X-Domain: if not https
-		if (scheme_is (source, "https") && !same_domain (target, source))
 			retval = false;
 		break;
 	case XamlPolicy: //XAML files, font files

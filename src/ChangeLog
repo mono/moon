@@ -1,3 +1,8 @@
+2009-06-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* downloader.cpp: Fix MediaElement policy wrt cross-domain access.
+	Fix two unnumbered DRT tests.
+
 2009-06-25  Chris Toshok  <toshok@ximian.com>
 
 	* resources.h|cpp: add a "from_resource_dictionary_api" bool so we
