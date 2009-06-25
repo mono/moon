@@ -1,8 +1,15 @@
 2009-06-25  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp (_set_dependency_property_value): add a
+	MoonError parameter so we can communicate it back to our callers.
+	(MoonlightTextBoxObject::Invoke): use textbox->SelectWithError and
+	throw the exception if it failed.
+	(MoonlightPasswordBoxObject::Invoke): same.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp (MoonlightCollectionObject::Invoke): add
 	"remove(string)" support for resource dictionaries.
-
 2009-06-25  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (value_to_variant): add support for

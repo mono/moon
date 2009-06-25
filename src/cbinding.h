@@ -2575,10 +2575,10 @@ TextBox *text_box_new (void);
  * TextBoxBase
  **/
 /* @GeneratePInvoke */
-void text_box_base_select (TextBoxBase *instance, int start, int length);
+void text_box_base_select_all (TextBoxBase *instance);
 
 /* @GeneratePInvoke */
-void text_box_base_select_all (TextBoxBase *instance);
+bool text_box_base_select_with_error (TextBoxBase *instance, int start, int length, MoonError *error);
 
 /**
  * TextBoxView

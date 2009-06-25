@@ -318,7 +318,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	// Selection Operations
 	//
 	/* @GenerateCBinding,GeneratePInvoke */
-	void Select (int start, int length);
+	bool SelectWithError (int start, int length, MoonError *error);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SelectAll ();

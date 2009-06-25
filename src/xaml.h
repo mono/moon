@@ -74,7 +74,7 @@ G_BEGIN_DECLS
 
 void        xaml_init (void);
 
-bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value);
+bool        xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value, MoonError *error);
 
 bool        time_span_from_str (const char *str, TimeSpan *res);
 /* @GeneratePInvoke */

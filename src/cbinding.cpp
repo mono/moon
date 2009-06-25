@@ -4570,22 +4570,24 @@ text_box_new (void)
  * TextBoxBase
  **/
 void
-text_box_base_select (TextBoxBase *instance, int start, int length)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->Select (start, length);
-}
-
-
-void
 text_box_base_select_all (TextBoxBase *instance)
 {
 	if (instance == NULL)
 		return;
 	
 	instance->SelectAll ();
+}
+
+
+bool
+text_box_base_select_with_error (TextBoxBase *instance, int start, int length, MoonError *error)
+{
+	if (instance == NULL)
+		return false;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called text_box_base_select_with_error () with error == NULL.");
+	return instance->SelectWithError (start, length, error);
 }
 
 

@@ -5,6 +5,19 @@
 
 2009-06-25  Chris Toshok  <toshok@ximian.com>
 
+	* textbox.h|cpp (TextBoxBase::SelectWithError): we need to
+	generate ArgumentExceptions here if start/length are out of range.
+	This could, in the future, be entirely handled by the setter
+	methods but for now we don't pass a MoonError to them.
+
+	* xaml.h|cpp (xaml_set_property_from_str): this method takes an
+	additional MoonError parameter so we can communicate back if there
+	was a problem.  Also, call SetValueWithError.
+
+	* cbinding.h|cpp: regen.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
 	* resources.h|cpp: add a "from_resource_dictionary_api" bool so we
 	can tell in AddedToCollection and RemovedFromCollection if we got
 	there from using ResourceDictionary's string-based api or

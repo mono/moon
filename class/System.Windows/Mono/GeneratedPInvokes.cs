@@ -1911,12 +1911,22 @@ namespace Mono {
 		public extern static IntPtr text_box_new ();
 
 		[DllImport ("moon")]
-		// void text_box_base_select (TextBoxBase *instance, int start, int length);
-		public extern static void text_box_base_select (IntPtr instance, int start, int length);
-
-		[DllImport ("moon")]
 		// void text_box_base_select_all (TextBoxBase *instance);
 		public extern static void text_box_base_select_all (IntPtr instance);
+
+		[DllImport ("moon", EntryPoint="text_box_base_select_with_error")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool text_box_base_select_with_error (TextBoxBase *instance, int start, int length, MoonError *error);
+		private extern static bool text_box_base_select_with_error_ (IntPtr instance, int start, int length, out MoonError error);
+		public static bool text_box_base_select (IntPtr instance, int start, int length)
+		{
+			bool result;
+			MoonError error;
+			result = text_box_base_select_with_error_ (instance, start, length, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
 
 		[DllImport ("moon")]
 		// TextBoxView *text_box_view_new ();

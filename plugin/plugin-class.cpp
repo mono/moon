@@ -2523,7 +2523,7 @@ _get_dependency_property (DependencyObject *obj, char *attrname)
 }
 
 static bool
-_set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop, const NPVariant *value)
+_set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop, const NPVariant *value, MoonError *error)
 {
 	if (npvariant_is_moonlight_object (*value)) {
 		MoonlightObject *obj = (MoonlightObject *) NPVARIANT_TO_OBJECT (*value);
@@ -2607,11 +2607,11 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			return true;
 		}
 		
-		rv = xaml_set_property_from_str (dob, prop, strval);
+		rv = xaml_set_property_from_str (dob, prop, strval, error);
 		
 		if (strval != strbuf)
 			g_free (strval);
-		
+
 		return rv;
 	}
 	
@@ -2736,7 +2736,8 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 	NPN_MemFree (strname);
 	
 	if (prop) {
-		if (_set_dependency_property_value (dob, prop, value)) {
+		MoonError error;
+		if (_set_dependency_property_value (dob, prop, value, &error)) {
 			return true;
 		} else {
 			THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");
@@ -3668,14 +3669,18 @@ MoonlightTextBoxObject::Invoke (int id, NPIdentifier name,
 				  NPVariant *result)
 {
 	TextBox *textbox = (TextBox *) GetDependencyObject ();
+	MoonError err;
 	
 	switch (id) {
 	case MoonId_Select:
 		if (!check_arg_list ("ii", argCount, args))
 			THROW_JS_EXCEPTION ("select");
 
-		textbox->Select (NPVARIANT_TO_INT32 (args[0]),
-				 NPVARIANT_TO_INT32 (args[1]));
+		if (!textbox->SelectWithError (NPVARIANT_TO_INT32 (args[0]),
+					       NPVARIANT_TO_INT32 (args[1]),
+					       &err)) {
+			THROW_JS_EXCEPTION (err.message);
+		}
 
 		VOID_TO_NPVARIANT (*result);
 		
@@ -3722,14 +3727,18 @@ MoonlightPasswordBoxObject::Invoke (int id, NPIdentifier name,
 				  NPVariant *result)
 {
 	PasswordBox *passwordbox = (PasswordBox *) GetDependencyObject ();
+	MoonError err;
 	
 	switch (id) {
 	case MoonId_Select:
 		if (!check_arg_list ("ii", argCount, args))
 			THROW_JS_EXCEPTION ("select");
 
-		passwordbox->Select (NPVARIANT_TO_INT32 (args[0]),
-				     NPVARIANT_TO_INT32 (args[1]));
+		if (!passwordbox->SelectWithError (NPVARIANT_TO_INT32 (args[0]),
+						   NPVARIANT_TO_INT32 (args[1]),
+						   &err)) {
+			THROW_JS_EXCEPTION (err.message);
+		}
 
 		VOID_TO_NPVARIANT (*result);
 		

@@ -2110,12 +2110,19 @@ TextBoxBase::ClearSelection (int start)
 	BatchPop ();
 }
 
-void
-TextBoxBase::Select (int start, int length)
+bool
+TextBoxBase::SelectWithError (int start, int length, MoonError *error)
 {
-	if ((start < 0) || (length < 0))
-		return;
-	
+	if (start < 0) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, "selection start must be >= 0");
+		return false;
+	}
+
+	if (length < 0) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, "selection length must be >= 0");
+		return false;
+	}
+
 	if (start > buffer->len)
 		start = buffer->len;
 	
@@ -2130,12 +2137,14 @@ TextBoxBase::Select (int start, int length)
 	ResetIMContext ();
 	
 	SyncAndEmit ();
+
+	return true;
 }
 
 void
 TextBoxBase::SelectAll ()
 {
-	Select (0, buffer->len);
+	SelectWithError (0, buffer->len, NULL);
 }
 
 bool

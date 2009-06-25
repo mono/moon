@@ -3997,7 +3997,7 @@ XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *
 	if (!dep)
 		return false;
 
-	return xaml_set_property_from_str (item, dep, value);
+	return xaml_set_property_from_str (item, dep, value, NULL/*XXX*/);
 }
 
 void
@@ -4549,20 +4549,21 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 }
 
 bool
-xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value)
+xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, const char *value, MoonError *error)
 {
 	Value *v = NULL;
-	
+	bool rv = true;
+
 	if (!value_from_str (prop->GetPropertyType(), prop->GetName(), value, &v))
 		return false;
 	
 	// it's possible for (a valid) value to be NULL (and we must keep the default value)
 	if (v) {
-		obj->SetValue (prop, v);
+		rv = obj->SetValueWithError (prop, v, error);
 		delete v;
 	}
 	
-	return true;
+	return rv;
 }
 
 bool
