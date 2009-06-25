@@ -4023,7 +4023,7 @@ MoonlightDownloaderObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 			
 			STRINGN_TO_NPVARIANT (s, (guint32) size, *result);
 		} else {
-			NULL_TO_NPVARIANT (*result);
+			string_to_npvariant ("", result);
 		}
 		
 		return true;
@@ -4090,7 +4090,7 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 			
 			STRINGN_TO_NPVARIANT (s, (guint32) size, *result);
 		} else {
-			NULL_TO_NPVARIANT (*result);
+			string_to_npvariant ("", result);
 		}
 		g_free (part);
 
