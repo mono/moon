@@ -99,7 +99,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::USERCONTROL, "Content", false, Type::UIELEMENT);
 	DependencyProperty::Register (this, Type::CONTENTCONTROL, "ContentTemplate", false, Type::DATATEMPLATE);
 	DependencyProperty::RegisterFull (this, Type::CONTENTCONTROL, "Content", false, NULL, Type::OBJECT, false, false, false, NULL, Validators::ContentControlContentValidator, NULL, false);
-	DependencyProperty::Register (this, Type::GRID, "ShowGridLines", false, new Value (true), Type::BOOL);
+	DependencyProperty::Register (this, Type::GRID, "ShowGridLines", false, new Value (false), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::GRID, "RowSpan", false, new Value (1), Type::INT32, true, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::GRID, "Row", false, new Value (0), Type::INT32, true, false, false, NULL, Validators::PositiveIntValidator, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::GRID, "RowDefinitions", false, NULL, Type::ROWDEFINITION_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
