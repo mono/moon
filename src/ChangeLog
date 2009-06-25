@@ -1,3 +1,15 @@
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* resources.h|cpp: add a "from_resource_dictionary_api" bool so we
+	can tell in AddedToCollection and RemovedFromCollection if we got
+	there from using ResourceDictionary's string-based api or
+	Collection's object-based api.  Take care of adding/removing the
+	key for the object in those methods if we didn't come from the RD
+	api.
+
+	* type.cpp (Type): quiet valgrind down by using "delete []"
+	instead of "delete" to free up the interfaces array.
+
 2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaplayer.cpp: Improve debug output.

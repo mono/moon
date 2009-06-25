@@ -58,7 +58,7 @@ Type::~Type ()
 		properties = NULL;
 	}
 
-	delete interfaces;
+	delete [] interfaces;
 }
 
 const char *

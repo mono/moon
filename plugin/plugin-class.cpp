@@ -3128,6 +3128,14 @@ MoonlightCollectionObject::Invoke (int id, NPIdentifier name,
 		return true;
 	}
 	case MoonId_Remove: {
+		if (col->GetObjectType () == Type::RESOURCE_DICTIONARY) {
+			if (check_arg_list ("s", argCount, args)) {
+				bool res = ((ResourceDictionary*)col)->Remove (NPVARIANT_TO_STRING (args[0]).utf8characters);
+				BOOLEAN_TO_NPVARIANT (res, *result);
+				return true;
+			}
+		}
+
 		if (!check_arg_list ("o", argCount, args) ||
 		    !npvariant_is_dependency_object (args[0]))
 			THROW_JS_EXCEPTION ("remove");

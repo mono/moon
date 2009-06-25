@@ -1,5 +1,10 @@
 2009-06-25  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp (MoonlightCollectionObject::Invoke): add
+	"remove(string)" support for resource dictionaries.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp (value_to_variant): add support for
 	FontWeight/Style/Stretch here.  Fixes DRT test 94.
 
