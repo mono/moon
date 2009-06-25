@@ -1,5 +1,11 @@
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControl.cs: Correctly handle the Reset and Replace
+	  events by using AddItemsToPresenter and
+	  RemoveItemsFromPresenter.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
 	* ComboBox.cs: Propagate MaxDropDownHeight to the popup child.
 
 2009-06-25  Alan McGovern  <amcgovern@novell.com>

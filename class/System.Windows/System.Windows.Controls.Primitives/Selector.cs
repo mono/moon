@@ -166,6 +166,8 @@ namespace System.Windows.Controls.Primitives {
 			ListBoxItem lbItem = (ListBoxItem) element;
 			lbItem.Content = null;
 			lbItem.IsSelected = false;
+			if (SelectedItem == item)
+				SelectedItem = null;
 		}
 
 		public override void OnApplyTemplate ()

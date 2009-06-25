@@ -1,3 +1,9 @@
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: Add more tests to
+	  ensure we call ClearContainerForItem in the right places and
+	  emit the events in the correct order.
+
 2009-06-25  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs: 

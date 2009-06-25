@@ -83,7 +83,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		protected override void ClearContainerForItemOverride (global::System.Windows.DependencyObject element, object item)
 		{
-			methods.Add (new Value { MethodParams = new object [] { element, item } });
+			methods.Add (new Value { MethodName = "ClearContainerForItemOverride", MethodParams = new object [] { element, item } });
 			base.ClearContainerForItemOverride (element, item);
 		}
 
@@ -147,6 +147,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		protected override void PrepareContainerForItemOverride (global::System.Windows.DependencyObject element, object item)
 		{
+			methods.Add (new Value { MethodName = "PrepareContainerForItemOverride", MethodParams = new object [] { element, item } });
 			base.PrepareContainerForItemOverride (element, item);
 		}
 	}
@@ -952,6 +953,62 @@ namespace MoonTest.System.Windows.Controls {
             box.SelectedItem = box.Items[0];
             Assert.IsTrue(changed, "#2");
         }
+
+		[TestMethod]
+		[Asynchronous]
+		public void SelectThenClear ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			CreateAsyncTest (box,
+				() => box.ApplyTemplate (),
+				() => {
+					box.Items.Add (new object ());
+					box.Items.Add (new object ());
+					box.Items.Add (new object ());
+
+				},
+				() => { box.IsDropDownOpen = true; },
+				() => { box.SelectedItem = box.Items [0]; },
+				() => {
+					box.methods.Clear ();
+					box.Items.Clear ();
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [0].MethodName, "#1");
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [1].MethodName, "#2");
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [2].MethodName, "#3");
+					Assert.AreEqual ("SelectionChangedEvent", box.methods [3].MethodName, "#4");
+					Assert.AreEqual ("OnItemsChanged", box.methods [4].MethodName, "#5");
+					Assert.IsNull (box.SelectedItem, "#1");
+
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void SelectThenClear2 ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			CreateAsyncTest (box,
+				() => box.ApplyTemplate (),
+				() => {
+					box.Items.Add (new object ());
+					box.Items.Add (new object ());
+					box.Items.Add (new object ());
+				},
+				// Check to see if the items are cleared in the reverse order they were added in
+				() => { box.IsDropDownOpen = true; },
+				() => { box.SelectedItem = box.Items.Last (); },
+				() => {
+					box.methods.Clear ();
+					box.Items.Clear ();
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [0].MethodName, "#1");
+					Assert.AreEqual ("SelectionChangedEvent", box.methods [1].MethodName, "#4");
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [2].MethodName, "#2");
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [3].MethodName, "#3");
+
+				}
+			);
+		}
 		
 		[TestMethod]
 		[MoonlightBug ("This hits a corner case involving the default style not being applied by moonlight but it is on silverlight")]

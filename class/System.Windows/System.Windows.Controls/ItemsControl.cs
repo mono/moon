@@ -30,6 +30,7 @@ using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace System.Windows.Controls {
 
@@ -156,7 +157,12 @@ namespace System.Windows.Controls {
 		{
 			if (_presenter == null || _presenter._elementRoot == null)
 				return null;
-			
+
+			// If this method is called in response to the collection being cleared,
+			// we can get an index of -1 when using GetContainerItem (Items.IndexOf (o))
+			if (index < 0 || index >= _presenter._elementRoot.Children.Count)
+				return null;
+
 			ListBoxItem item = _presenter._elementRoot.Children [index] as ListBoxItem;
 			return item;
 		}
@@ -193,16 +199,17 @@ namespace System.Windows.Controls {
 				switch (e.Action) {
 				case NotifyCollectionChangedAction.Reset:
 					// the list has gone away, so clear the children of the panel
-					panel.Children.Clear ();
+					RemoveItemsFromPresenter (0, panel.Children.Count);
 					break;
 				case NotifyCollectionChangedAction.Add:
 					AddItemsToPresenter (e.NewItems, e.NewStartingIndex);
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					RemoveItemsFromPresenter (e.OldItems, e.OldStartingIndex);
+					RemoveItemsFromPresenter (e.OldStartingIndex, e.OldItems.Count);
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					DependencyObject element = panel.Children[e.NewStartingIndex];
+					RemoveItemsFromPresenter (e.OldStartingIndex, e.OldItems.Count);
+					AddItemsToPresenter (e.NewItems, e.NewStartingIndex);
 					break;
 				}
 			}
@@ -251,15 +258,18 @@ namespace System.Windows.Controls {
 				PrepareContainerForItemOverride (container as DependencyObject, item);
 			}
 		}
-
-		void RemoveItemsFromPresenter (IList oldItems, int oldIndex)
+		
+		void RemoveItemsFromPresenter (int index, int count)
 		{
 			if (_presenter == null || _presenter._elementRoot == null)
 				return;
 
 			StackPanel panel = _presenter._elementRoot;
-			for (int i = 0; i < oldItems.Count; i ++)
-				panel.Children.RemoveAt (oldIndex);
+			while (count-- > 0) {
+				ListBoxItem box = (ListBoxItem) panel.Children [index + count];
+				ClearContainerForItemOverride (box, box.Item);
+				panel.Children.RemoveAt (index + count);
+			}
 		}
 
 		protected virtual void PrepareContainerForItemOverride (DependencyObject element, object item)

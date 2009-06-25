@@ -1,5 +1,10 @@
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
+	* Selector.cs: When clearing the container, set the selected
+	  item to null if that item used to be selected.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
 	* Selector.cs: Move the handling of the ScrollViewer template
 	  element and default values of ScrollbarVisibility to the
 	  Selector class so it can be shared between ComboBox and
