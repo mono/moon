@@ -1,7 +1,7 @@
 AC_DEFUN([MOONLIGHT_CHECK_MONO],
 [
 	MONO_REQUIRED_VERSION=2.0
-	MONO_REQUIRED_BROWSER_VERSION=2.5
+	MONO_REQUIRED_BROWSER_VERSION=2.4
 
 	MOON_ARG_ENABLED_BY_DEFAULT([browser-support], [Disable the browser plugin])
 	browser_support=$enableval

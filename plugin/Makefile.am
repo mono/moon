@@ -96,6 +96,12 @@ dist-hook:
 	mkdir $(distdir)/moz-sdk
 	-cp $(srcdir)/moz-sdk/*.h $(distdir)/moz-sdk
 
+inst-%: $(OUTPUT_DIR)/%
+	-mkdir -p $(DESTDIR)$(pkglibdir)/plugin/
+	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(DESTDIR)$(pkglibdir)/plugin/$*
+	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(DESTDIR)$(pkglibdir)/plugin/$*.mdb
+
+
 # gross hack needed because of the way the bridges are located
 all-local:
 	@mkdir -p .libs

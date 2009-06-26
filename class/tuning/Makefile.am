@@ -136,14 +136,14 @@ endif
 end-install: $(END_INSTALL_TARGETS)
 
 inst-mono-%: $(OUTPUT_DIR)/%
-	-mkdir -p $(prefix)/lib/mono/2.1
-	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(prefix)/lib/mono/2.1/$*
-	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(prefix)/lib/mono/2.1/$*.mdb
+	-mkdir -p $(DESTDIR)$(prefix)/lib/mono/2.1
+	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(DESTDIR)$(prefix)/lib/mono/2.1/$*
+	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(DESTDIR)$(prefix)/lib/mono/2.1/$*.mdb
 
 inst-%: $(OUTPUT_DIR)/%
-	-mkdir -p $(pkglibdir)/plugin/
-	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(pkglibdir)/plugin/$*
-	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(pkglibdir)/plugin/$*.mdb
+	-mkdir -p $(DESTDIR)$(pkglibdir)/plugin/
+	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(DESTDIR)$(pkglibdir)/plugin/$*
+	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(DESTDIR)$(pkglibdir)/plugin/$*.mdb
 
 retune:
 	rm -f output.stamp && $(MAKE) output.stamp
