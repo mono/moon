@@ -1,3 +1,7 @@
+2009-06-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uri.cpp (ToString): Respct the UriHideQuery flag.
+
 2009-06-26  Larry Ewing  <lewing@novell.com>
 
 	* border.h: change the default value.

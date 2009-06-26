@@ -547,7 +547,7 @@ Uri::ToString (UriToStringFlags flags) const
 	if (this->params)
 		g_datalist_foreach ((GData **) &this->params, append_param, string);
 	
-	if (this->query) {
+	if (this->query && !(flags & UriHideQuery)) {
 		g_string_append_c (string, '?');
 		append_url_encoded (string, this->query, "#");
 	}
