@@ -1,5 +1,10 @@
 2009-06-25  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp (thickness_mapping): fix the mapping of "top"
+	to MoonId_Top, not MoonId_Right.  Fixes drt test 421.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
 	* plugin.cpp (PluginXamlLoader::SetProperty): track change to
 	xaml_is_valid_event_name.
 

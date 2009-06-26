@@ -1161,7 +1161,7 @@ thickness_mapping[] = {
 	{ "bottom", MoonId_Bottom },
 	{ "left", MoonId_Left },
 	{ "right", MoonId_Right },
-	{ "top", MoonId_Right }
+	{ "top", MoonId_Top }
 };
 
 void
