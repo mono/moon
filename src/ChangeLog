@@ -1,5 +1,13 @@
 2009-06-26  Jeffrey Stedfast  <fejj@novell.com>
 
+	* fonts.cpp (LoadPortableUserInterface): Only set that we've
+	loaded PUI, not each individual fallback face. The other faces may
+	match user-specified faces, but there may also be a font source
+	that it is loading them from (which may differ from the locally
+	installed faces).
+
+2009-06-26  Jeffrey Stedfast  <fejj@novell.com>
+
 	* runtime.cpp: Don't need to call font_init() or font_shutdown()
 	anymore.
 

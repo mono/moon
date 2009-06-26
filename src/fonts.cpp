@@ -133,16 +133,14 @@ LoadPortableUserInterface (FontManager *manager, GHashTable *loaded, GPtrArray *
 		families = default_fonts[i].families;
 		
 		for (j = 0; families[j]; j++) {
-			if (g_hash_table_lookup (loaded, families[j]))
-				continue;
-			
 			if ((face = manager->OpenFont (families[j], stretch, weight, style))) {
-				g_hash_table_insert (loaded, (void *) families[j], GINT_TO_POINTER (true));
 				g_ptr_array_add (faces, face);
 				break;
 			}
 		}
 	}
+	
+	g_hash_table_insert (loaded, (char *) "Portable User Interface", GINT_TO_POINTER (true));
 }
 
 TextFont *
