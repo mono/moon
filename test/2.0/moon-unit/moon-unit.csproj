@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -108,6 +108,7 @@
     <Compile Include="System.Windows.Automation.Peers\ImageAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ItemAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ItemsControlAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\MediaElementAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\PatternInterfaceTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RadioButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RangeBaseAutomationPeerTest.cs" />

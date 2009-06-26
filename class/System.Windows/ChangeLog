@@ -1,3 +1,9 @@
+2009-06-26  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationPeer.cs: [MonoTODO] removed.
+	* System.Windows.Automation.Peers/MediaElementAutomationPeer.cs:  New 
+	file, implements MediaElement automation peer.
+
 2009-06-25  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/AutomationPeer.cs: New internal

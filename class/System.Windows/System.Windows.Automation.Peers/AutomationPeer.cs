@@ -33,7 +33,6 @@ using System.Windows.Automation.Provider;
 
 namespace System.Windows.Automation.Peers {
 
-	[MonoTODO]
 	public abstract class AutomationPeer : DependencyObject {
 
 		protected AutomationPeer ()

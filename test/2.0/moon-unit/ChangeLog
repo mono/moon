@@ -1,3 +1,9 @@
+2009-06-26  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj.user: File added.
+	* System.Windows.Automation.Peers/MediaElementAutomationPeerTest.cs: 
+	Tests MediaElement automation peer.
+
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ComboBoxTest.cs: Add more tests to
