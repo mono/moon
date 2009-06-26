@@ -49,7 +49,6 @@
 #include "utils.h"
 #include "error.h"
 #include "debug.h"
-#include "font.h"
 #include "uri.h"
 
 //

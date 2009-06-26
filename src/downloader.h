@@ -309,9 +309,6 @@ G_BEGIN_DECLS
 
 void downloader_init (void);
 
-// FIXME: get rid of this
-const char *downloader_deobfuscate_font (Downloader *downloader, const char *path);
-
 G_END_DECLS
 
 #endif
