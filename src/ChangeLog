@@ -1,5 +1,11 @@
 2009-06-26  Alan McGovern  <amcgovern@novell.com>
 
+	* popup.h:
+	* popup.cpp: Handle popup hittesting when its closed in a way
+	  that doesn't suck.
+
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
 	* popup.cpp: Keep the RENDER_VISIBLE flag in sync with the
 	  IsOpen state so that hittesting works correctly.
 

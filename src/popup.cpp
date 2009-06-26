@@ -28,7 +28,6 @@ Popup::Popup ()
 	SetObjectType (Type::POPUP);
 	shutting_down = false;
 	visible = false;
-	flags &= ~UIElement::RENDER_VISIBLE;
 	GetDeployment ()->AddHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
 }
 
@@ -37,6 +36,13 @@ Popup::Dispose ()
 {
 	GetDeployment ()->RemoveHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
 	FrameworkElement::Dispose ();
+}
+
+void
+Popup::HitTest (cairo_t *cr, Point p, List *uielement_list)
+{
+	if (visible)
+		FrameworkElement::HitTest (cr, p, uielement_list);
 }
 
 void
@@ -93,7 +99,6 @@ Popup::Hide (UIElement *child)
 	// in SL.
 	AddTickCall (Popup::emit_closed);
 	visible = false;
-	flags &= ~UIElement::RENDER_VISIBLE;
 
 	if (child)
 		Deployment::GetCurrent ()->GetSurface ()->DetachLayer (child);
@@ -120,7 +125,6 @@ Popup::Show (UIElement *child)
 	// in SL.
 	AddTickCall (Popup::emit_opened);
 	visible = true;
-	flags |= UIElement::RENDER_VISIBLE;
 
 	if (child)
 		Deployment::GetCurrent ()->GetSurface ()->AttachLayer (child);
