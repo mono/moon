@@ -1,5 +1,10 @@
 2009-06-26  Alan McGovern  <amcgovern@novell.com>
 
+	* ComboBox.cs: Switch ComboBox to use the DropDownToggle
+	  template item as the trigger to open/close the popup.
+
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
 	* ComboBox.cs: Fix some ListBox focus/selection related bugs.
 	  Move ComboBox.OnSelectedItemChanged and
 	  ListBox.OnSelectedItemChanged to Selector as they have

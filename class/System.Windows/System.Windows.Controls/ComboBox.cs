@@ -119,10 +119,13 @@ namespace System.Windows.Controls
 		
 		void IsDropDownOpenChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			if ((bool)e.NewValue) {
-				if (_popup != null)
-					_popup.IsOpen = true;
-
+			bool open = (bool) e.NewValue;
+			if (_popup != null)
+				_popup.IsOpen = open;
+			if (_dropDownToggle != null)
+				_dropDownToggle.IsChecked = open;
+			
+			if (open) {
 				ComboBoxItem t = null;
 				FocusedIndex = Items.Count > 0 ? Math.Max (SelectedIndex, 0) : -1;
 				if (FocusedIndex > -1)
@@ -136,8 +139,6 @@ namespace System.Windows.Controls
 
 				OnDropDownOpened (EventArgs.Empty);
 			} else {
-				if (_popup != null)
-					_popup.IsOpen = false;
 				Focus ();
 
 				OnDropDownClosed (EventArgs.Empty);
@@ -146,17 +147,7 @@ namespace System.Windows.Controls
 			UpdateDisplayedItem ();
 			UpdateVisualState (true);
 		}
-		
-		void IsSelectionActiveChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
-		{
 
-		}
-		
-		void ItemContainerStyleChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
-		{
-
-		}
-		
 		void MaxDropDownHeightChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
 			UpdatePopupMaxHeight ((double) e.NewValue);
@@ -280,13 +271,11 @@ namespace System.Windows.Controls
 				}
 			}
 			if (_dropDownToggle != null) {
-				_dropDownToggle.MouseLeftButtonDown += (o, e) => {
-					Console.WriteLine ("Toggle toggled");
-					IsDropDownOpen = true;
-				};
-				_dropDownToggle.Click += delegate {
-						Console.WriteLine ("Clicked");
+				_dropDownToggle.Checked += delegate {
 						IsDropDownOpen = true;
+				};
+				_dropDownToggle.Unchecked += delegate {
+						IsDropDownOpen = false;
 				};
 			}
 		}
@@ -331,7 +320,6 @@ namespace System.Windows.Controls
 			if (!e.Handled) {
 				Focus ();
 				IsSelectionActive = true;
-				IsDropDownOpen = true;
 			}
 		}
 
