@@ -266,8 +266,14 @@ namespace System.Windows.Controls {
 
 			StackPanel panel = _presenter._elementRoot;
 			while (count-- > 0) {
+#if this_is_broken
+				// FIXME we can't just assume that an ItemsControl subclass
+				// is using ListBoxItems (ItemsControl definitely doesn't) for
+				// containers.
+				
 				ListBoxItem box = (ListBoxItem) panel.Children [index + count];
 				ClearContainerForItemOverride (box, box.Item);
+#endif
 				panel.Children.RemoveAt (index + count);
 			}
 		}
