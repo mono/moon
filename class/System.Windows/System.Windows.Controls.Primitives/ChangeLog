@@ -1,3 +1,10 @@
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Fix some ListBox focus/selection related bugs.
+	  Move ComboBox.OnSelectedItemChanged and
+	  ListBox.OnSelectedItemChanged to Selector as they have
+	  indentical codepaths after the last refactorings.
+
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: When clearing the container, set the selected

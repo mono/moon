@@ -132,9 +132,21 @@ namespace System.Windows.Controls.Primitives {
 			}
 		}
 		
-		internal virtual void OnSelectedItemChanged (object oldValue, object newValue)
+		void OnSelectedItemChanged (object oldValue, object newValue)
 		{
-			
+			if (oldValue != null) {
+				ListBoxItem oldItem = GetContainerItem (Items.IndexOf (oldValue));
+				if (oldItem != null)
+					oldItem.IsSelected = false;
+			}
+
+			if (newValue != null) {
+				ListBoxItem newItem = GetContainerItem (Items.IndexOf (newValue));
+				if (newItem != null) {
+					newItem.IsSelected = true;
+					newItem.Focus ();
+				}
+			}
 		}
 
 		void RaiseSelectionChanged (object o, SelectionChangedEventArgs e)

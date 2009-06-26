@@ -319,15 +319,6 @@ namespace System.Windows.Controls
         { 
             // Track the focused index 
             _focusedIndex = Items.IndexOf(listBoxItemNewFocus.Item);
-
-            // Select the focused ListBoxItem iff transitioning from another focused ListBoxItem 
-            if ((null != listBoxItemNewFocus) && 
-                (null != _listBoxItemOldFocus) &&
-                (this == _listBoxItemOldFocus.ParentSelector) && 
-                (listBoxItemNewFocus != _listBoxItemOldFocus))
-            {
-                SelectedItem = listBoxItemNewFocus.Item; 
-            }
             _listBoxItemOldFocus = null;
         } 
  
@@ -362,11 +353,7 @@ namespace System.Windows.Controls
                             if (ModifierKeys.Alt != (Keyboard.Modifiers & (ModifierKeys.Control | ModifierKeys.Alt)))
                             {
                                 // KeyEventArgs.OriginalSource (used by WPF) isn't available in Silverlight; use FocusManager.GetFocusedElement instead 
-                                ListBoxItem listBoxItem = FocusManager.GetFocusedElement( 
-#if WPF
-                                    FocusManager.GetFocusScope(this) 
-#endif
-                                    ) as ListBoxItem;
+                                ListBoxItem listBoxItem = FocusManager.GetFocusedElement() as ListBoxItem;
                                 if (null != listBoxItem) 
                                 {
                                     if ((ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) && listBoxItem.IsSelected)
@@ -379,7 +366,7 @@ namespace System.Windows.Controls
                                     } 
                                     handled = true;
                                 }
-                            } 
+                            }
                         } 
                         break;
                     case Key.Home: 
@@ -453,8 +440,12 @@ namespace System.Windows.Controls
                     ListBoxItem listBoxItem = GetContainerItem (newFocusedIndex);
                     Debug.Assert(null != listBoxItem); 
                     ScrollIntoView(listBoxItem.Item);
-                    _suppressNextLostFocus = true; 
-                    listBoxItem.Focus();
+                    _suppressNextLostFocus = true;
+                    if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
+                        listBoxItem.Focus();
+                    } else {
+                        SelectedItem = listBoxItem.Item;
+                    }
                     handled = true;
                 } 
                 if (handled)
@@ -475,25 +466,6 @@ namespace System.Windows.Controls
                 TemplateScrollViewer.ScrollInDirection(key);
             }
         } 
-
-        /// <summary>
-        /// Perform the actions necessary to handle a selection property change. 
-        /// </summary>
-        /// <param name="oldValue">Old value of the property.</param> 
-        /// <param name="newValue">New value of the property.</param>
-        internal override void OnSelectedItemChanged(object oldValue, object newValue)
-        { 
-            if (oldValue != null) {
-                ListBoxItem oldItem = GetContainerItem (Items.IndexOf (oldValue));
-                 if (oldItem != null)
-                    oldItem.IsSelected = false;
-            }
-            if (newValue != null) {
-                ListBoxItem newItem = GetContainerItem (Items.IndexOf (newValue));
-                if (newItem != null)
-                    newItem.IsSelected = true;
-            }
-        }
 
         /// <summary>
         /// Implements the ItemContainerStyleProperty PropertyChangedCallback. 
