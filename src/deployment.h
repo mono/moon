@@ -14,6 +14,7 @@
 
 #include "enums.h"
 #include "dependencyobject.h"
+#include "fontmanager.h"
 #include "application.h"
 #include "collection.h"
 #include "downloader.h"
@@ -106,7 +107,9 @@ public:
 
 	void SetXapLocation (const char *location);
 	const char *GetXapLocation ();
-
+	
+	FontManager *GetFontManager ();
+	
 	CrossDomainAccess GetExternalCallersFromCrossDomain ();
 	void SetExternalCallersFromCrossDomain (CrossDomainAccess value);
 
@@ -126,7 +129,8 @@ private:
 	static gboolean DrainUnrefs (gpointer ptr);
 
 	Types* types;
-	Application* current_app;
+	FontManager *font_manager;
+	Application *current_app;
 	MonoDomain *domain;
 	List *downloaders;
 

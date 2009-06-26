@@ -1,5 +1,28 @@
 2009-06-26  Jeffrey Stedfast  <fejj@novell.com>
 
+	* runtime.cpp: Don't need to call font_init() or font_shutdown()
+	anymore.
+
+	* deployment.cpp: Create a new FontManager per Deployment and
+	provide an access method to get at it.
+
+	* textblock.cpp, glyphs.cpp, textbox.cpp: Updated for the font
+	loading APIs.
+
+	* provider.cpp: Removed FontFilenameProperty and FontGUIDProperty
+	inheritance, these no longer exist.
+
+	* fonts.cpp|h: New source files with the higher-level abstraction
+	for font loading, glyph manipulation, etc.
+
+	* fontmanager.cpp|h: New source files containing a FontManager
+	class which handles caching of font faces and indexing of font
+	resources. Serves as platform-dependent font loading layer.
+
+	* font.cpp|h: Removed.
+
+2009-06-26  Jeffrey Stedfast  <fejj@novell.com>
+
 	* uri.cpp (ToString): Respct the UriHideQuery flag.
 
 2009-06-26  Larry Ewing  <lewing@novell.com>

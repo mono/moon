@@ -214,8 +214,6 @@ IsPropertyInherited (int propertyId)
 
 	PROP_I (LanguageProperty);
 	PROP_I (TextDecorationsProperty);
-	PROP_I (FontFilenameProperty);
-	PROP_I (FontGUIDProperty);
 
 	return false;
 }
@@ -315,8 +313,6 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 		INHERIT_I_T (LanguageProperty);
 		INHERIT_I_T (TextDecorationsProperty);
-		INHERIT_I_T (FontFilenameProperty);
-		INHERIT_I_T (FontGUIDProperty);
 		
 		if (parentPropertyId != -1) {
 			return parent->GetValue (parentPropertyId);

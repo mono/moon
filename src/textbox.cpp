@@ -572,13 +572,13 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	AddHandler (UIElement::KeyUpEvent, TextBoxBase::key_up, this);
 	
 	font = new TextFontDescription ();
-	font->SetFamily (GetFontFamily()->source);
-	font->SetStretch (GetFontStretch()->stretch);
-	font->SetWeight (GetFontWeight()->weight);
-	font->SetStyle (GetFontStyle()->style);
-	font->SetSize (GetFontSize());
+	font->SetFamily (GetFontFamily ()->source);
+	font->SetStretch (GetFontStretch ()->stretch);
+	font->SetWeight (GetFontWeight ()->weight);
+	font->SetStyle (GetFontStyle ()->style);
+	font->SetSize (GetFontSize ());
 	
-	downloader = NULL;
+	downloaders = g_ptr_array_new ();
 	
 	contentElement = NULL;
 	
@@ -627,7 +627,8 @@ TextBoxBase::~TextBoxBase ()
 	ResetIMContext ();
 	g_object_unref (im_ctx);
 	
-	CleanupDownloader ();
+	CleanupDownloaders ();
+	g_ptr_array_free (downloaders, true);
 	
 	delete buffer;
 	delete undo;
@@ -644,14 +645,19 @@ TextBoxBase::SetSurface (Surface *surface)
 }
 
 void
-TextBoxBase::CleanupDownloader ()
+TextBoxBase::CleanupDownloaders ()
 {
-	if (downloader) {
+	Downloader *downloader;
+	guint i;
+	
+	for (i = 0; i < downloaders->len; i++) {
+		downloader = (Downloader *) downloaders->pdata[i];
 		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
 		downloader->Abort ();
 		downloader->unref ();
-		downloader = NULL;
 	}
+	
+	g_ptr_array_set_size (downloaders, 0);
 }
 
 double
@@ -1891,12 +1897,12 @@ TextBoxBase::EmitCursorPositionChanged (double height, double x, double y)
 }
 
 void
-TextBoxBase::DownloaderComplete ()
+TextBoxBase::DownloaderComplete (Downloader *downloader)
 {
-	const char *path, *guid = NULL;
+	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+	char *resource, *filename;
 	InternalDownloader *idl;
-	char *filename;
-	size_t len;
+	const char *path;
 	Uri *uri;
 	
 	// get the downloaded file path (enforces a mozilla workaround for files smaller than 64k)
@@ -1912,17 +1918,6 @@ TextBoxBase::DownloaderComplete ()
 		return;
 	
 	uri = downloader->GetUri ();
-	path = uri->GetPath ();
-	
-	len = path ? strlen (path) : 0;
-	
-	if (len > 6 && !g_ascii_strcasecmp (path + len - 6, ".odttf")) {
-		// if the font file is obfuscated, use the basename of the path as the guid
-		if (!(guid = strrchr (path, '/')))
-			guid = path;
-		else
-			guid++;
-	}
 	
 	// If the downloaded file was a zip file, this'll get the path to the
 	// extracted zip directory, else it will simply be the path to the
@@ -1930,7 +1925,9 @@ TextBoxBase::DownloaderComplete ()
 	if (!(path = ((FileDownloader *) idl)->GetUnzippedPath ()))
 		return;
 	
-	font->SetFilename (path, guid);
+	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
+	manager->AddResource (resource, path);
+	g_free (resource);
 	
 	Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedFont, NULL));
 }
@@ -1938,50 +1935,42 @@ TextBoxBase::DownloaderComplete ()
 void
 TextBoxBase::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	((TextBoxBase *) closure)->DownloaderComplete ();
+	((TextBoxBase *) closure)->DownloaderComplete ((Downloader *) sender);
 }
 
 void
-TextBoxBase::SetFontSource (Downloader *downloader)
+TextBoxBase::AddFontSource (Downloader *downloader)
 {
-	if (downloader) {
-		this->downloader = downloader;
-		downloader->ref ();
-		
-		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-		if (downloader->Started () || downloader->Completed ()) {
-			if (downloader->Completed ())
-				DownloaderComplete ();
-		} else {
-			// This is what actually triggers the download
-			downloader->Send ();
-		}
+	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+	g_ptr_array_add (downloaders, downloader);
+	downloader->ref ();
+	
+	if (downloader->Started () || downloader->Completed ()) {
+		if (downloader->Completed ())
+			DownloaderComplete (downloader);
 	} else {
-		font->SetFilename (NULL, NULL);
+		// This is what actually triggers the download
+		downloader->Send ();
 	}
 }
 
 void
-TextBoxBase::SetFontResource (const char *resource)
+TextBoxBase::AddFontResource (const char *resource)
 {
+	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	Application *application = Application::GetCurrent ();
-	const char *guid = NULL;
+	Downloader *downloader;
 	Surface *surface;
-	char *filename;
-	size_t len;
+	char *path;
 	Uri *uri;
-	
-	ClearFontSource ();
 	
 	uri = new Uri ();
 	
-	if (!application || !uri->Parse (resource) || !(filename = application->GetResourceAsPath (uri))) {
+	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (uri))) {
 		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
 			downloader->Open ("GET", resource, XamlPolicy);
-			SetFontSource (downloader);
+			AddFontSource (downloader);
 			downloader->unref ();
-		} else {
-			font->SetFilename (NULL, NULL);
 		}
 		
 		delete uri;
@@ -1989,16 +1978,9 @@ TextBoxBase::SetFontResource (const char *resource)
 		return;
 	}
 	
+	manager->AddResource (resource, path);
+	g_free (path);
 	delete uri;
-	
-	// check if the resource is an obfuscated font
-	len = strlen (resource);
-	if (len > 6 && !g_ascii_strcasecmp (resource + len - 6, ".odttf"))
-		guid = resource;
-	
-	font->SetFilename (filename, guid);
-	
-	g_free (filename);
 }
 
 void
@@ -2007,22 +1989,28 @@ TextBoxBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
 	
 	if (args->GetId () == Control::FontFamilyProperty) {
-		FontFamily *family = args->GetNewValue() ? args->GetNewValue()->AsFontFamily () : NULL;
-		const char *family_name = NULL;
-		char *resource;
+		FontFamily *family = args->GetNewValue () ? args->GetNewValue ()->AsFontFamily () : NULL;
+		char **families, *fragment;
+		int i;
 		
-		if (family && family->source && (family_name = strchr (family->source, '#'))) {
-			// FontFamily can reference a font resource in the form "<resource>#<family name>"
-			resource = g_strndup (family->source, family_name - family->source);
-			SetFontResource (resource);
-			g_free (resource);
-			family_name++;
-		} else if (family) {
-			family_name = family->source;
+		CleanupDownloaders ();
+		ClearFontSource ();
+		
+		if (family && family->source) {
+			families = g_strsplit (family->source, ",", -1);
+			for (i = 0; families[i]; i++) {
+				g_strstrip (families[i]);
+				if ((fragment = strchr (families[i], '#'))) {
+					// the first portion of this string is the resource name...
+					*fragment = '\0';
+					AddFontResource (families[i]);
+				}
+			}
+			g_strfreev (families);
 		}
 		
+		font->SetFamily (family ? family->source : NULL);
 		changed = TextBoxModelChangedFont;
-		font->SetFamily (family_name);
 	} else if (args->GetId () == Control::FontSizeProperty) {
 		double size = args->GetNewValue()->AsDouble ();
 		changed = TextBoxModelChangedFont;

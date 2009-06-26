@@ -2155,7 +2155,6 @@ runtime_init (const char *platform_dir, guint32 flags)
 	Deployment::Initialize (platform_dir, (flags & RUNTIME_INIT_CREATE_ROOT_DOMAIN) != 0);
 
 	xaml_init ();
-	font_init ();
 	downloader_init ();
 	Media::Initialize ();
 }
@@ -2167,8 +2166,6 @@ runtime_shutdown (void)
 		return;
 
 	Media::Shutdown ();
-	
-	font_shutdown ();
 	
 	inited = false;
 }

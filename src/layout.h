@@ -19,7 +19,7 @@
 
 #include <brush.h>
 #include <enums.h>
-#include <font.h>
+#include <fonts.h>
 #include <list.h>
 
 class TextLayout;

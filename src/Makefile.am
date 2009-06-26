@@ -39,7 +39,8 @@ libmoon_include_headers = 	\
 	error.h			\
 	eventargs.h		\
 	file-downloader.h	\
-	font.h			\
+	fontmanager.h		\
+	fonts.h			\
 	fontfamily.h		\
 	fontsource.h		\
 	fontstretch.h		\
@@ -148,7 +149,8 @@ libmoon_la_SOURCES = 		\
 	error.cpp		\
 	eventargs.cpp		\
 	file-downloader.cpp	\
-	font.cpp		\
+	fontmanager.cpp		\
+	fonts.cpp		\
 	frameworkelement.cpp	\
 	geometry.cpp		\
 	glyphs.cpp		\

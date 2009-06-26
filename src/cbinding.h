@@ -377,6 +377,7 @@ class FfmpegDemuxer;
 class FileDownloader;
 class FileSource;
 class FontFace;
+class FontManager;
 class FrameworkElement;
 class FrameworkElementProvider;
 class FrameworkTemplate;

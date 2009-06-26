@@ -23,8 +23,8 @@
 #include "control.h"
 #include "layout.h"
 #include "brush.h"
+#include "fonts.h"
 #include "size.h"
-#include "font.h"
 
 
 /* @Namespace=System.Windows.Input */
@@ -129,7 +129,8 @@ class TextBoxBase : public Control, public ITextAttributes {
 	DependencyObject *contentElement;
 	
 	TextFontDescription *font;
-	Downloader *downloader;
+	GPtrArray *downloaders;
+	
 	TextBoxUndoStack *undo;
 	TextBoxUndoStack *redo;
 	int selection_anchor;
@@ -231,11 +232,11 @@ class TextBoxBase : public Control, public ITextAttributes {
 	
 	void SyncAndEmit (bool sync_text = true);
 	
-	void SetFontResource (const char *resource);
-	void SetFontSource (Downloader *downloader);
+	void AddFontResource (const char *resource);
+	void AddFontSource (Downloader *downloader);
 	
-	void CleanupDownloader ();
-	void DownloaderComplete ();
+	void CleanupDownloaders ();
+	void DownloaderComplete (Downloader *downloader);
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	

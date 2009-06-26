@@ -266,6 +266,7 @@ Deployment::InnerConstructor ()
 	g_hash_table_insert (current_hash, domain, this);
 	pthread_mutex_unlock (&hash_mutex);
 	
+	font_manager = new FontManager ();
 	types = new Types ();
 	types->Initialize ();
 	downloaders = new List ();
@@ -308,7 +309,9 @@ Deployment::~Deployment()
 	pthread_mutex_unlock (&hash_mutex);
 
 	mono_domain_set (root_domain, FALSE);
-
+	
+	delete font_manager;
+	
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
 	if (domain != root_domain)
 		mono_domain_unload (domain);
@@ -419,6 +422,12 @@ Types*
 Deployment::GetTypes ()
 {
 	return types;
+}
+
+FontManager *
+Deployment::GetFontManager ()
+{
+	return font_manager;
 }
 
 Application*

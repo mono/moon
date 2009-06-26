@@ -26,18 +26,17 @@
 #include "thickness.h"
 #include "layout.h"
 #include "brush.h"
-#include "font.h"
+#include "fonts.h"
 
 /* @Namespace=System.Windows.Documents */
 class Glyphs : public FrameworkElement {
-	TextFontDescription *desc;
 	Downloader *downloader;
 	
 	moon_path *path;
+	TextFont *font;
 	gunichar *text;
 	List *attrs;
 	Brush *fill;
-	int index;
 	
 	double origin_x;
 	double origin_y;
@@ -59,6 +58,7 @@ class Glyphs : public FrameworkElement {
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
+	void LoadFont (const Uri *uri, const char *path);
 	void DownloadFont (Surface *surface, Uri *uri);
 	bool SetFontResource (const Uri *uri);
 	
