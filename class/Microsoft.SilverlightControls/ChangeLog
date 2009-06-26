@@ -1,3 +1,9 @@
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: Always set ListBox.Item (as
+	  ComboBox does) which removes the need for all the
+	  "listBoxItem.Item ?? listBoxItem" calls.
+
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ListBox/ListBox.cs:

@@ -145,6 +145,7 @@ namespace System.Windows.Controls
             listBoxItem.ParentSelector = this; 
             // Prepare the ListBoxItem wrapper 
             bool setContent = true;
+            listBoxItem.Item = item;
             if (listBoxItem != item) 
             {
                 // If not a ListBoxItem, propagate the ListBox's ItemTemplate
@@ -164,7 +165,6 @@ namespace System.Windows.Controls
                 } 
 #endif
                 // Push the item into the ListBoxItem container 
-                listBoxItem.Item = item;
                 if (setContent)
                 { 
                     listBoxItem.Content = item;
@@ -305,7 +305,7 @@ namespace System.Windows.Controls
             else
             { 
                 Console.WriteLine ("Selecting: {0}/{1}", listBoxItem.Name, listBoxItem.Content);
-                object item = listBoxItem.Item ?? listBoxItem;
+                object item = listBoxItem.Item;
                 SelectedItem = item;
                 ScrollIntoView(item); 
             }
@@ -318,7 +318,7 @@ namespace System.Windows.Controls
         internal override void NotifyListItemGotFocus(ListBoxItem listBoxItemNewFocus)
         { 
             // Track the focused index 
-            _focusedIndex = Items.IndexOf(listBoxItemNewFocus.Item ?? listBoxItemNewFocus);
+            _focusedIndex = Items.IndexOf(listBoxItemNewFocus.Item);
 
             // Select the focused ListBoxItem iff transitioning from another focused ListBoxItem 
             if ((null != listBoxItemNewFocus) && 
@@ -326,7 +326,7 @@ namespace System.Windows.Controls
                 (this == _listBoxItemOldFocus.ParentSelector) && 
                 (listBoxItemNewFocus != _listBoxItemOldFocus))
             {
-                SelectedItem = listBoxItemNewFocus.Item ?? listBoxItemNewFocus; 
+                SelectedItem = listBoxItemNewFocus.Item; 
             }
             _listBoxItemOldFocus = null;
         } 
@@ -375,7 +375,7 @@ namespace System.Windows.Controls
                                     }
                                     else 
                                     {
-                                        SelectedItem  = listBoxItem.Item ?? listBoxItem;
+                                        SelectedItem  = listBoxItem.Item;
                                     } 
                                     handled = true;
                                 }
@@ -452,7 +452,7 @@ namespace System.Windows.Controls
                     // A key press will change the focused ListBoxItem
                     ListBoxItem listBoxItem = GetContainerItem (newFocusedIndex);
                     Debug.Assert(null != listBoxItem); 
-                    ScrollIntoView(listBoxItem.Item ?? listBoxItem);
+                    ScrollIntoView(listBoxItem.Item);
                     _suppressNextLostFocus = true; 
                     listBoxItem.Focus();
                     handled = true;
