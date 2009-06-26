@@ -1,3 +1,8 @@
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.cpp: Keep the RENDER_VISIBLE flag in sync with the
+	  IsOpen state so that hittesting works correctly.
+
 2009-06-25  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.h|cpp (xaml_is_valid_event_name): pass in the type of the

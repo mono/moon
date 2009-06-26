@@ -28,6 +28,7 @@ Popup::Popup ()
 	SetObjectType (Type::POPUP);
 	shutting_down = false;
 	visible = false;
+	flags &= ~UIElement::RENDER_VISIBLE;
 	GetDeployment ()->AddHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
 }
 
@@ -92,6 +93,7 @@ Popup::Hide (UIElement *child)
 	// in SL.
 	AddTickCall (Popup::emit_closed);
 	visible = false;
+	flags &= ~UIElement::RENDER_VISIBLE;
 
 	if (child)
 		Deployment::GetCurrent ()->GetSurface ()->DetachLayer (child);
@@ -118,6 +120,7 @@ Popup::Show (UIElement *child)
 	// in SL.
 	AddTickCall (Popup::emit_opened);
 	visible = true;
+	flags |= UIElement::RENDER_VISIBLE;
 
 	if (child)
 		Deployment::GetCurrent ()->GetSurface ()->AttachLayer (child);
