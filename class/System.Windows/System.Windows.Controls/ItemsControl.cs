@@ -51,9 +51,13 @@ namespace System.Windows.Controls {
 		private bool itemsIsDataBound;
 		private ItemCollection items;
 		private ItemsPresenter _presenter;
+		Dictionary <DependencyObject, object> ContainerToItems {
+			get; set;
+		}
 
 		public ItemsControl ()
 		{
+			ContainerToItems = new Dictionary<DependencyObject, object> ();
 			DefaultStyleKey = typeof (ItemsControl);
 		}
 
@@ -254,8 +258,9 @@ namespace System.Windows.Controls {
 						f.DataContext  = item;
 				}
 
+				PrepareContainerForItemOverride (container, item);
 				panel.Children.Insert (newIndex + i, (UIElement) container);
-				PrepareContainerForItemOverride (container as DependencyObject, item);
+				ContainerToItems.Add (container, item);
 			}
 		}
 		
@@ -266,15 +271,11 @@ namespace System.Windows.Controls {
 
 			StackPanel panel = _presenter._elementRoot;
 			while (count-- > 0) {
-#if this_is_broken
-				// FIXME we can't just assume that an ItemsControl subclass
-				// is using ListBoxItems (ItemsControl definitely doesn't) for
-				// containers.
-				
-				ListBoxItem box = (ListBoxItem) panel.Children [index + count];
-				ClearContainerForItemOverride (box, box.Item);
-#endif
+				DependencyObject container = panel.Children [index + count];
+				object item = ContainerToItems [container];
 				panel.Children.RemoveAt (index + count);
+				ContainerToItems.Remove (container);
+				ClearContainerForItemOverride (container, item);
 			}
 		}
 

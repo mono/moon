@@ -1,3 +1,11 @@
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: The items added to the contentpresenter are
+	  constrained to be UIElements (FrameworkElements?), not
+	  ListBoxItems. Therefore keep a dictionary in ItemsControl to
+	  map containers to items so we can correctly call
+	  ClearContainerForItemOverride when the item is removed. 
+
 2009-06-25  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs: Correctly handle the Reset and Replace
