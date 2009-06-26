@@ -196,7 +196,8 @@ TextFont::Load (const TextFontDescription *desc)
 			g_ptr_array_add (faces, face);
 	}
 	
-	if (faces->len == 0 && !g_hash_table_lookup (loaded, "Portable User Interface"))
+	// always add PUI as fallback unless already added
+	if (!g_hash_table_lookup (loaded, "Portable User Interface"))
 		LoadPortableUserInterface (manager, loaded, faces, stretch, weight, style);
 	
 	g_hash_table_destroy (loaded);

@@ -226,6 +226,7 @@ static struct {
 	
 	// changes nothing
 	{ "Regular",          7, 0,      0                           },
+	{ "W3",               2, 0,      0                           },  // as in Hiragino Mincho Pro W3
 };
 
 static void
@@ -1048,7 +1049,7 @@ IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontI
 	if (!(dir = opendir (path->str)))
 		return fontdir != NULL;
 	
-	LOG_FONT (stdout, "  * indexing font directory `%s'...\n", path->str);
+	LOG_FONT (stderr, "  * indexing font directory `%s'...\n", path->str);
 	
 	g_string_append_c (path, G_DIR_SEPARATOR);
 	len = path->len;
