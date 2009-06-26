@@ -4567,44 +4567,26 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 }
 
 bool
-xaml_is_valid_event_name (const char *name)
+xaml_is_valid_event_name (Type::Kind kind, const char *name, bool allow_desktop_events)
 {
-	return (
-		!strcmp (name, "BufferingProgressChanged") ||
-		!strcmp (name, "Completed") ||
-		!strcmp (name, "CurrentStateChanged") ||
-		!strcmp (name, "DownloadFailed") ||
-		!strcmp (name, "DownloadProgressChanged") ||
-		!strcmp (name, "Error") ||
-		!strcmp (name, "FullScreenChange") ||
-		!strcmp (name, "GotFocus") ||
-		!strcmp (name, "ImageFailed") ||
-		!strcmp (name, "ImageOpenFailed") ||
-		!strcmp (name, "ImageOpenSucceeded") ||
-		!strcmp (name, "KeyDown") ||
-		!strcmp (name, "KeyUp") ||
-		!strcmp (name, "Loaded") ||
-		!strcmp (name, "LostFocus") ||
-		!strcmp (name, "MarkerReached") ||
-		!strcmp (name, "MediaEnded") ||
-		!strcmp (name, "MediaFailed") ||
-		!strcmp (name, "MediaOpened") ||
-		!strcmp (name, "MotionFinished") ||
-		!strcmp (name, "MouseEnter") ||
-		!strcmp (name, "MouseLeave") ||
-		!strcmp (name, "MouseLeftButtonDown") ||
-		!strcmp (name, "MouseLeftButtonUp") ||
-		!strcmp (name, "MouseMove") ||
-		!strcmp (name, "Resize") ||
-		!strcmp (name, "SelectionChanged") ||
-		!strcmp (name, "TextChanged") ||
-		!strcmp (name, "ViewportChanged") ||
+	Type *type = Type::Find (kind);
+	if (!type)
+		return false;
 
-		(((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) != 0)
-		 && (!strcmp (name, "MouseRightButtonDown") ||
-		     !strcmp (name, "MouseRightButtonUp") ||
-		     !strcmp (name, "MouseWheel")))
-		);
+	int event_id = type->LookupEvent (name);
+	if (event_id == -1)
+		return false;
+
+	if (!allow_desktop_events || (moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0) {
+		// if we're not allowing desktop-only events, or if the user hasn't allowed them,
+		// return false if the name corresponds to one of them.
+		if (!strcmp (name, "MouseRightButtonDown") ||
+		    !strcmp (name, "MouseRightButtonUp") ||
+		    !strcmp (name, "MouseWheel"))
+		return false;
+	}
+
+	return true;
 }
 
 static void

@@ -1,5 +1,10 @@
 2009-06-25  Chris Toshok  <toshok@ximian.com>
 
+	* plugin.cpp (PluginXamlLoader::SetProperty): track change to
+	xaml_is_valid_event_name.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp (_set_dependency_property_value): add a
 	MoonError parameter so we can communicate it back to our callers.
 	(MoonlightTextBoxObject::Invoke): use textbox->SelectWithError and

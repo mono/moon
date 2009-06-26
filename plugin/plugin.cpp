@@ -1963,7 +1963,7 @@ PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns
 	if (value->GetKind () != Type::STRING)
 		return false;
 
-	if (!xaml_is_valid_event_name (name))
+	if (!xaml_is_valid_event_name (target->GetKind(), name, false))
 		return false;
 
 	const char* function_name = value->AsString ();

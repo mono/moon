@@ -85,7 +85,7 @@ bool        convert_property_value_to_enum_str (DependencyProperty *prop, Value 
 
 void	    xaml_parse_xmlns (const char *xmlns, char **type_name, char **ns, char **assembly);
 
-bool        xaml_is_valid_event_name (const char *name);
+bool        xaml_is_valid_event_name (Type::Kind kind, const char *name, bool allow_desktop_events);
 
 /* @GeneratePInvoke */
 XamlLoader *xaml_loader_new (const char *filename, const char *str, Surface *surface);

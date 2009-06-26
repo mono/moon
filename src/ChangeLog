@@ -1,3 +1,10 @@
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.h|cpp (xaml_is_valid_event_name): pass in the type of the
+	object we're looking the event up on, and a flag as to whether or
+	not to allow desktop-specific events.  and just look up the event
+	from the type system instead of having the hardcoded list.
+
 2009-06-25  Larry Ewing  <lewing@novell.com>
 
 	* grid.cpp, grid.h (PostRender): move the grid lines from Render to
