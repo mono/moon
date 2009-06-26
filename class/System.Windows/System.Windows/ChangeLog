@@ -1,3 +1,7 @@
+2009-06-26  Larry Ewing  <lewing@novell.com>
+
+	* CornerRadius.cs: reorder the struct members.
+
 2009-06-24  Chris Toshok  <toshok@ximian.com>
 
 	* FontStyleKind.cs: we need to add Oblique back in here so it can

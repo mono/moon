@@ -34,7 +34,7 @@ public:
 	const static int BorderThicknessProperty;
 	/* @PropertyType=UIElement,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int ChildProperty;
-	/* @PropertyType=CornerRadius,GenerateAccessors,Validator=CornerRadiusValidator */
+	/* @PropertyType=CornerRadius,GenerateAccessors,DefaultValue=CornerRadius(0),Validator=CornerRadiusValidator */
 	const static int CornerRadiusProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness(0),GenerateAccessors,Validator=BorderThicknessValidator */
 	const static int PaddingProperty;

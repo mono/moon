@@ -1,3 +1,9 @@
+2009-06-26  Larry Ewing  <lewing@novell.com>
+
+	* plugin-class.h.in: add MoonlightCornerRadius and MoonIds.
+
+	* plugin-class.cpp: implement cornerradius foo.
+
 2009-06-25  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (thickness_mapping): fix the mapping of "top"

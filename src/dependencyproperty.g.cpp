@@ -196,7 +196,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::PANEL, "Children", false, NULL, Type::UIELEMENT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
 	DependencyProperty::Register (this, Type::PANEL, "Background", false, Type::BRUSH);
 	DependencyProperty::RegisterFull (this, Type::BORDER, "Padding", false, new Value (Thickness(0)), Type::THICKNESS, false, false, false, NULL, Validators::BorderThicknessValidator, NULL, false);
-	DependencyProperty::RegisterFull (this, Type::BORDER, "CornerRadius", false, NULL, Type::CORNERRADIUS, false, false, false, NULL, Validators::CornerRadiusValidator, NULL, false);
+	DependencyProperty::RegisterFull (this, Type::BORDER, "CornerRadius", false, new Value (CornerRadius(0)), Type::CORNERRADIUS, false, false, false, NULL, Validators::CornerRadiusValidator, NULL, false);
 	DependencyProperty::Register (this, Type::BORDER, "Child", false, Type::UIELEMENT);
 	DependencyProperty::RegisterFull (this, Type::BORDER, "BorderThickness", false, new Value (Thickness(0)), Type::THICKNESS, false, false, false, NULL, Validators::BorderThicknessValidator, NULL, false);
 	DependencyProperty::Register (this, Type::BORDER, "BorderBrush", false, Type::BRUSH);

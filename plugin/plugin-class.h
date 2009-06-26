@@ -60,6 +60,10 @@ enum PluginPropertyId {
 	MoonId_Right,
 	MoonId_Top,
 	MoonId_Bottom,
+	MoonId_TopLeft,
+	MoonId_TopRight,
+	MoonId_BottomLeft,
+	MoonId_BottomRight,
 	MoonId_Width,
 	MoonId_Height,
 	MoonId_Seconds,
@@ -554,6 +558,34 @@ struct MoonlightThickness : MoonlightObject {
 	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
 
 	Thickness* GetValue ();
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+
+	DependencyProperty *parent_property;
+	DependencyObject *parent_obj;
+};
+
+/*** MoonlightCornerRadiusClass  ****************************************************************/
+struct MoonlightCornerRadiusType : MoonlightObjectType {
+	MoonlightCornerRadiusType ();
+};
+
+extern MoonlightCornerRadiusType *MoonlightCornerRadiusClass;
+
+struct MoonlightCornerRadius : MoonlightObject {
+	MoonlightCornerRadius (NPP instance) : MoonlightObject (instance)
+	{
+		moonlight_type = Type::CORNERRADIUS;
+		parent_property = NULL;
+		parent_obj = NULL;
+	}
+
+	virtual ~MoonlightCornerRadius ();
+
+	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
+
+	CornerRadius* GetValue ();
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);

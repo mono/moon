@@ -659,6 +659,8 @@ struct MoonlightContentObject;
 struct MoonlightContentType;
 struct MoonlightControlObject;
 struct MoonlightControlType;
+struct MoonlightCornerRadius;
+struct MoonlightCornerRadiusType;
 struct MoonlightDependencyObjectObject;
 struct MoonlightDependencyObjectType;
 struct MoonlightDownloaderObject;

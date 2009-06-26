@@ -1,3 +1,9 @@
+2009-06-26  Larry Ewing  <lewing@novell.com>
+
+	* border.h: change the default value.
+
+	* cornerradius.h: reorder the bottom* arguments.
+
 2009-06-26  Alan McGovern  <amcgovern@novell.com>
 
 	* popup.h:

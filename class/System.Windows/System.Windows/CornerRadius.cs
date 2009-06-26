@@ -37,8 +37,8 @@ namespace System.Windows
 	{
 		private double top_left;
 		private double top_right;
-		private double bottom_left;
 		private double bottom_right;
+		private double bottom_left;
 		
 		public CornerRadius (double uniformRadius) : this (uniformRadius, uniformRadius, uniformRadius, uniformRadius)
 		{

@@ -177,7 +177,15 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 			str = buf = g_strdup_printf ("<b>(%g, %g)</b>", point->x, point->y);
 			break;
 		}
-		case Type::CORNERRADIUS:
+		case Type::CORNERRADIUS: {
+			CornerRadius *CornerRadius = value->AsCornerRadius ();
+			str = buf = g_strdup_printf ("<b>%g, %g, %g, %g</b>", 
+						     CornerRadius->topLeft, 
+						     CornerRadius->topRight, 
+						     CornerRadius->bottomLeft,
+						     CornerRadius->bottomRight);
+			break;
+		}
 		case Type::KEYTIME:
 		default:
 			str = "<i>(unknown)</i>";

@@ -233,6 +233,12 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		OBJECT_TO_NPVARIANT (thickness, *result);
 		break;
 	}
+	case Type::CORNERRADIUS: {
+		MoonlightCornerRadius *corner_radius = (MoonlightCornerRadius *) NPN_CreateObject (((MoonlightObject *) npobj)->instance, MoonlightCornerRadiusClass);
+		corner_radius->SetParentInfo (parent_obj, parent_property);
+		OBJECT_TO_NPVARIANT (corner_radius, *result);
+		break;
+	}
 	case Type::NPOBJ: {
 		OBJECT_TO_NPVARIANT ((NPObject *) v->AsNPObj (), *result);
 		break;
@@ -1235,6 +1241,93 @@ MoonlightThicknessType::MoonlightThicknessType ()
 }
 
 MoonlightThicknessType *MoonlightThicknessClass;
+
+/*** CornerRadius ***/
+static NPObject *
+CornerRadius_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightCornerRadius (instance);
+}
+
+static const MoonNameIdMapping
+CornerRadius_mapping[] = {
+	{ "bottomright", MoonId_BottomRight },
+	{ "bottomleft", MoonId_BottomLeft },
+	{ "topright", MoonId_TopRight },
+	{ "topleft", MoonId_TopLeft }
+};
+
+void
+MoonlightCornerRadius::SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property)
+{
+	this->parent_obj = parent_obj;
+	this->parent_property = parent_property;
+	parent_obj->ref();
+}
+
+CornerRadius*
+MoonlightCornerRadius::GetValue()
+{
+	Value *v = parent_obj->GetValue (parent_property);
+	return (v ? v->AsCornerRadius() : NULL);
+}
+
+bool
+MoonlightCornerRadius::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	switch (id) {
+	case MoonId_Name:
+		string_to_npvariant ("", result);
+		return true;
+	case MoonId_TopLeft:
+		DOUBLE_TO_NPVARIANT (GetValue ()->topLeft, *result);
+		return true;
+	case MoonId_TopRight:
+		DOUBLE_TO_NPVARIANT (GetValue ()->topRight, *result);
+		return true;
+	case MoonId_BottomLeft:
+		DOUBLE_TO_NPVARIANT (GetValue ()->bottomLeft, *result);
+		return true;
+	case MoonId_BottomRight:
+		DOUBLE_TO_NPVARIANT (GetValue ()->bottomRight, *result);
+		return true;
+	default:
+		return MoonlightObject::GetProperty (id, name, result);
+	}
+}
+
+bool
+MoonlightCornerRadius::SetProperty (int id, NPIdentifier name, const NPVariant *value)
+{
+	switch (id) {
+	case MoonId_Name:
+		return true;
+
+	case MoonId_TopLeft:
+	case MoonId_TopRight:
+	case MoonId_BottomLeft:
+	case MoonId_BottomRight:
+		return true;
+
+	default:
+		return MoonlightObject::SetProperty (id, name, value);
+	}
+}
+
+MoonlightCornerRadius::~MoonlightCornerRadius ()
+{
+	if (parent_obj)
+		parent_obj->unref ();
+}
+
+MoonlightCornerRadiusType::MoonlightCornerRadiusType ()
+{
+	allocate = CornerRadius_allocate;
+
+	AddMapping (CornerRadius_mapping, G_N_ELEMENTS (CornerRadius_mapping));
+}
+
+MoonlightCornerRadiusType *MoonlightCornerRadiusClass;
 
 /*** MoonlightDownloadProgressEventArgsClass  **************************************************************/
 
@@ -4762,6 +4855,7 @@ plugin_init_classes (void)
 	MoonlightTimeSpanClass = new MoonlightTimeSpanType ();
 	MoonlightKeyTimeClass = new MoonlightKeyTimeType ();
 	MoonlightThicknessClass = new MoonlightThicknessType ();
+	MoonlightCornerRadiusClass = new MoonlightCornerRadiusType ();
 }
 
 void
@@ -4788,5 +4882,6 @@ plugin_destroy_classes (void)
 	delete MoonlightTimeSpanClass; MoonlightTimeSpanClass = NULL;
 	delete MoonlightKeyTimeClass; MoonlightKeyTimeClass = NULL;
 	delete MoonlightThicknessClass; MoonlightThicknessClass = NULL;
+	delete MoonlightCornerRadiusClass; MoonlightCornerRadiusClass = NULL;
 	delete MoonlightMarkerReachedEventArgsClass; MoonlightMarkerReachedEventArgsClass = NULL;
 }
