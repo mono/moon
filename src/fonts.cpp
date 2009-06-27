@@ -30,24 +30,14 @@
 
 TextFont::TextFont (FontFace **faces, int n_faces, double size)
 {
-	FontFaceExtents extents;
-	int i;
-	
-	faces[0]->GetExtents (size, &this->extents);
-	for (i = 1; i < n_faces; i++) {
-		faces[i]->GetExtents (size, &extents);
-		//this->extents.underline_position = MAX (this->extents.underline_position, extents.underline_position);
-		this->extents.descent = MIN (this->extents.descent, extents.descent);
-		this->extents.ascent = MAX (this->extents.ascent, extents.ascent);
-		this->extents.height = MAX (this->extents.height, extents.height);
-	}
-	
 	this->simulate = StyleSimulationsNone;
 	this->n_faces = n_faces;
 	this->faces = faces;
 	this->n_glyphs = 0;
 	this->size = size;
 	this->desc = NULL;
+	
+	UpdateFaceExtents ();
 }
 
 TextFont::~TextFont ()
@@ -68,6 +58,24 @@ TextFont::ClearGlyphCache ()
 	}
 	
 	n_glyphs = 0;
+}
+
+void
+TextFont::UpdateFaceExtents ()
+{
+	faces[0]->GetExtents (size, &this->extents);
+	
+#if 0
+	for (int i = 1; i < n_faces; i++) {
+		FontFaceExtents extents;
+		
+		faces[i]->GetExtents (size, &extents);
+		//this->extents.underline_position = MAX (this->extents.underline_position, extents.underline_position);
+		this->extents.descent = MIN (this->extents.descent, extents.descent);
+		this->extents.ascent = MAX (this->extents.ascent, extents.ascent);
+		this->extents.height = MAX (this->extents.height, extents.height);
+	}
+#endif
 }
 
 TextFont *
@@ -220,9 +228,10 @@ TextFont::SetSize (double size)
 	if (this->size == size)
 		return false;
 	
-	ClearGlyphCache ();
-	
 	this->size = size;
+	
+	UpdateFaceExtents ();
+	ClearGlyphCache ();
 	
 	return true;
 }
@@ -239,9 +248,9 @@ TextFont::SetStyleSimulations (StyleSimulations simulate)
 	if (this->simulate == simulate)
 		return false;
 	
-	ClearGlyphCache ();
-	
 	this->simulate = simulate;
+	
+	ClearGlyphCache ();
 	
 	return true;
 }

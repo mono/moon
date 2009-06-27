@@ -513,11 +513,9 @@ static void
 print_parse_error (const char *in, const char *where, const char *reason)
 {
 	if (debug_flags & RUNTIME_DEBUG_TEXT) {
-		int i;
-	
 		fprintf (stderr, "Glyph Indices parse error: \"%s\": %s\n", in, reason);
 		fprintf (stderr, "                            ");
-		for (i = 0; i < (where - in); i++)
+		for (int i = 0; i < (where - in); i++)
 			fputc (' ', stderr);
 		fprintf (stderr, "^\n");
 	}
@@ -756,6 +754,7 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		Surface *surface = GetSurface ();
 		
 		CleanupDownloader ();
+		dirty = true;
 		delete font;
 		font = NULL;
 		
@@ -769,15 +768,11 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 					// queue a font download
 					uri_changed = true;
 				}
-				
-				invalidate = false;
 			} else {
 				uri_changed = false;
-				invalidate = true;
 			}
 		} else {
 			uri_changed = false;
-			invalidate = true;
 		}
 	} else if (args->GetId () == Glyphs::FillProperty) {
 		fill = args->GetNewValue() ? args->GetNewValue()->AsBrush() : NULL;

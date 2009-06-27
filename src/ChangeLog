@@ -1,3 +1,16 @@
+2009-06-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* glyphs.cpp (OnPropertyChanged): When the FontUriProperty
+	changes, the layout *always* gets dirty. We also always need to
+	invalidate.
+
+	* fonts.cpp (TextFont::UpdateFaceExtents): New helper method to
+	calculate/update the font extents. Only use the extents of the
+	first face - this fixes a bunch of MS DRTs.
+	(TextFont::.ctor): Call UpdateFaceExtents().
+	(TextFont::SetSize): Need to call UpdateFaceExtents() here. Fixes
+	a number of regressions (like MS DRT #43).
+
 2009-06-27  Chris Toshok  <toshok@ximian.com>
 
 	* grid.cpp (Grid::OnCollectionItemChanged): don't

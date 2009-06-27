@@ -1195,6 +1195,8 @@ FontManager::AddResource (const char *resource, const char *path)
 	FontIndex *index;
 	struct stat st;
 	
+	LOG_FONT (stderr, "Adding font resource '%s' at %s\n", resource, path);
+	
 	if ((cur_val = (const char *) g_hash_table_lookup (resources, resource)))
 		return;
 	

@@ -37,6 +37,7 @@ class TextFont {
 	TextFont (FontFace **faces, int n_faces, double size);
 	
 	GlyphInfo *GetGlyphInfo (FontFace *face, gunichar unichar, guint32 index);
+	void UpdateFaceExtents ();
 	void ClearGlyphCache ();
 	
  public:
