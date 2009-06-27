@@ -29,11 +29,5 @@ using Mono;
 namespace System.Windows.Controls {
 
 	public sealed partial class ColumnDefinition : DependencyObject {
-
-		public double ActualWidth {
-			get {
-				return NativeMethods.column_definition_get_actual_width (native);
-			}
-		}
 	}
 }

@@ -943,17 +943,6 @@ column_definition_new (void)
 }
 
 
-double
-column_definition_get_actual_width (ColumnDefinition *instance)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->GetActualWidth ();
-}
-
-
 /**
  * ColumnDefinitionCollection
  **/
@@ -3913,17 +3902,6 @@ routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *el)
 /**
  * RowDefinition
  **/
-double
-row_definition_get_actual_height (RowDefinition *instance)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->GetActualHeight ();
-}
-
-
 RowDefinition *
 row_definition_new (void)
 {

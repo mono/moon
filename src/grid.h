@@ -35,9 +35,6 @@ struct GridLength {
 
 /* @Namespace=System.Windows.Controls */
 class ColumnDefinition : public DependencyObject {
-	// Actual width computed
-	double actual;
-	
  protected:
 	virtual ~ColumnDefinition ();
 	
@@ -48,15 +45,16 @@ class ColumnDefinition : public DependencyObject {
 	const static int MinWidthProperty;
  	/* @PropertyType=GridLength,DefaultValue=GridLength (1.0\, GridUnitTypeStar),GenerateAccessors */
 	const static int WidthProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
+	const static int ActualWidthProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ColumnDefinition ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	double GetActualWidth () { return actual; }
-	void SetActualWidth (double value) { actual = value; }
-
 	// property accessors
+	double GetActualWidth ();
+	void SetActualWidth (double value);
+
 	double GetMaxWidth();
 	void SetMaxWidth (double value);
 
@@ -69,9 +67,6 @@ class ColumnDefinition : public DependencyObject {
 
 /* @Namespace=System.Windows.Controls */
 class RowDefinition : public DependencyObject {
-	// Actual height computed
-	double actual;
-	
  protected:
 	virtual ~RowDefinition ();
 	
@@ -82,15 +77,16 @@ class RowDefinition : public DependencyObject {
 	const static int MaxHeightProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int MinHeightProperty;
-	
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
+	const static int ActualHeightProperty;
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	RowDefinition ();
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	double GetActualHeight () { return actual; }
-	void SetActualHeight (double value) { actual = value; }
 
 	// property accessors
+	double GetActualHeight ();
+	void SetActualHeight (double value);
+
 	double GetMaxHeight();
 	void SetMaxHeight (double value);
 

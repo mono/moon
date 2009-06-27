@@ -563,7 +563,6 @@ ColumnDefinitionCollection::AddedToCollection (Value *value, MoonError *error)
 //
 
 ColumnDefinition::ColumnDefinition ()
-  : actual (0.0)
 {
 	SetObjectType (Type::COLUMNDEFINITION);
 }
@@ -600,7 +599,6 @@ RowDefinitionCollection::AddedToCollection (Value *value, MoonError *error)
 //
 
 RowDefinition::RowDefinition ()
-  : actual (0.0)
 {
 	SetObjectType (Type::ROWDEFINITION);
 }

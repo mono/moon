@@ -92,6 +92,8 @@ enum PluginPropertyId {
 	MoonId_DeviceType,
 	MoonId_IsInverted,
 	MoonId_Handled,
+	MoonId_GridUnitType,
+	MoonId_Value,
 
 	// event names (handled by the property setters)
 	MoonId_BufferingProgressChanged,
@@ -539,6 +541,34 @@ struct MoonlightCornerRadius : MoonlightObject {
 	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
 
 	CornerRadius* GetValue ();
+
+	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
+	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);
+
+	DependencyProperty *parent_property;
+	DependencyObject *parent_obj;
+};
+
+/*** MoonlightGridLengthClass  ****************************************************************/
+struct MoonlightGridLengthType : MoonlightObjectType {
+	MoonlightGridLengthType ();
+};
+
+extern MoonlightGridLengthType *MoonlightGridLengthClass;
+
+struct MoonlightGridLength : MoonlightObject {
+	MoonlightGridLength (NPP instance) : MoonlightObject (instance)
+	{
+		moonlight_type = Type::GRIDLENGTH;
+		parent_property = NULL;
+		parent_obj = NULL;
+	}
+
+	virtual ~MoonlightGridLength ();
+
+	void SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property);
+
+	GridLength* GetValue ();
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 	virtual bool SetProperty (int id, NPIdentifier unmapped, const NPVariant *value);

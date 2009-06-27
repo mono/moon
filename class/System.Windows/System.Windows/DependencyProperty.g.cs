@@ -327,9 +327,15 @@ namespace System.Windows.Controls {
 	}
 
 	partial class ColumnDefinition {
+		private static readonly DependencyProperty ActualWidthProperty = DependencyProperty.Lookup (Kind.COLUMNDEFINITION, "ActualWidth", typeof (double));
 		public static readonly DependencyProperty MaxWidthProperty = DependencyProperty.Lookup (Kind.COLUMNDEFINITION, "MaxWidth", typeof (double));
 		public static readonly DependencyProperty MinWidthProperty = DependencyProperty.Lookup (Kind.COLUMNDEFINITION, "MinWidth", typeof (double));
 		public static readonly DependencyProperty WidthProperty = DependencyProperty.Lookup (Kind.COLUMNDEFINITION, "Width", typeof (GridLength));
+
+		public double ActualWidth {
+			get { return (double) GetValue (ActualWidthProperty); }
+			private set { SetValue (ActualWidthProperty, value); }
+		}
 
 		public double MaxWidth {
 			get { return (double) GetValue (MaxWidthProperty); }
@@ -754,9 +760,15 @@ namespace System.Windows.Controls {
 	}
 
 	partial class RowDefinition {
+		private static readonly DependencyProperty ActualHeightProperty = DependencyProperty.Lookup (Kind.ROWDEFINITION, "ActualHeight", typeof (double));
 		public static readonly DependencyProperty HeightProperty = DependencyProperty.Lookup (Kind.ROWDEFINITION, "Height", typeof (GridLength));
 		public static readonly DependencyProperty MaxHeightProperty = DependencyProperty.Lookup (Kind.ROWDEFINITION, "MaxHeight", typeof (double));
 		public static readonly DependencyProperty MinHeightProperty = DependencyProperty.Lookup (Kind.ROWDEFINITION, "MinHeight", typeof (double));
+
+		public double ActualHeight {
+			get { return (double) GetValue (ActualHeightProperty); }
+			private set { SetValue (ActualHeightProperty, value); }
+		}
 
 		public GridLength Height {
 			get { return (GridLength) GetValue (HeightProperty); }

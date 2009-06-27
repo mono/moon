@@ -458,10 +458,6 @@ namespace Mono {
 		public extern static IntPtr column_definition_new ();
 
 		[DllImport ("moon")]
-		// double column_definition_get_actual_width (ColumnDefinition *instance);
-		public extern static double column_definition_get_actual_width (IntPtr instance);
-
-		[DllImport ("moon")]
 		// ColumnDefinitionCollection *column_definition_collection_new ();
 		public extern static IntPtr column_definition_collection_new ();
 
@@ -1599,10 +1595,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *el);
 		public extern static void routed_event_args_set_source (IntPtr instance, IntPtr el);
-
-		[DllImport ("moon")]
-		// double row_definition_get_actual_height (RowDefinition *instance);
-		public extern static double row_definition_get_actual_height (IntPtr instance);
 
 		[DllImport ("moon")]
 		// RowDefinition *row_definition_new ();

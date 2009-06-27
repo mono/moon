@@ -22,6 +22,7 @@
 #include "bitmapimage.h"
 #include "uri.h"
 #include "textbox.h"
+#include "grid.h"
 
 #ifdef DEBUG
 #define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s)\n" G_STRLOC, x)
@@ -186,6 +187,12 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		MoonlightTimeSpan *timespan = (MoonlightTimeSpan *) NPN_CreateObject (((MoonlightObject *) npobj)->instance, MoonlightTimeSpanClass);
 		timespan->SetParentInfo (parent_obj, parent_property);
 		OBJECT_TO_NPVARIANT (timespan, *result);
+		break;
+	}
+	case Type::GRIDLENGTH: {
+		MoonlightGridLength *gridlength = (MoonlightGridLength *) NPN_CreateObject (((MoonlightObject *) npobj)->instance, MoonlightGridLengthClass);
+		gridlength->SetParentInfo (parent_obj, parent_property);
+		OBJECT_TO_NPVARIANT (gridlength, *result);
 		break;
 	}
 	case Type::URI: {
@@ -1328,6 +1335,100 @@ MoonlightCornerRadiusType::MoonlightCornerRadiusType ()
 }
 
 MoonlightCornerRadiusType *MoonlightCornerRadiusClass;
+
+/*** GridLength ***/
+static NPObject *
+gridlength_allocate (NPP instance, NPClass *klass)
+{
+	return new MoonlightGridLength (instance);
+}
+
+static const MoonNameIdMapping
+gridlength_mapping[] = {
+	{ "gridunittype", MoonId_GridUnitType },
+	{ "value", MoonId_Value },
+};
+
+void
+MoonlightGridLength::SetParentInfo (DependencyObject *parent_obj, DependencyProperty *parent_property)
+{
+	this->parent_obj = parent_obj;
+	this->parent_property = parent_property;
+	parent_obj->ref();
+}
+
+GridLength*
+MoonlightGridLength::GetValue()
+{
+	Value *v = parent_obj->GetValue (parent_property);
+	return (v ? v->AsGridLength() : NULL);
+}
+
+bool
+MoonlightGridLength::GetProperty (int id, NPIdentifier name, NPVariant *result)
+{
+	switch (id) {
+	case MoonId_Name:
+		string_to_npvariant ("", result);
+		return true;
+	case MoonId_Value:
+		DOUBLE_TO_NPVARIANT (GetValue ()->val, *result);
+		return true;
+	case MoonId_GridUnitType:
+		string_to_npvariant (enums_int_to_str ("GridUnitType", GetValue()->type), result);
+		return true;
+	default:
+		return MoonlightObject::GetProperty (id, name, result);
+	}
+}
+
+bool
+MoonlightGridLength::SetProperty (int id, NPIdentifier name, const NPVariant *value)
+{
+	GridLength *current_gridlength = GetValue();
+	GridLength gridlength;
+
+	if (current_gridlength)
+		gridlength = *current_gridlength;
+
+	switch (id) {
+	case MoonId_Name:
+		return true;
+
+	case MoonId_Value:
+		gridlength.val = NPVARIANT_TO_DOUBLE (*value);
+		parent_obj->SetValue (parent_property, Value(gridlength.val));
+		return true;
+	case MoonId_GridUnitType: {
+		int unit_type = enums_str_to_int ("GridUnitType", NPVARIANT_TO_STRING (*value).utf8characters);
+		if (unit_type == -1)
+			return false; // FIXME: throw an exception?
+
+		gridlength.type = (GridUnitType)unit_type;
+
+		parent_obj->SetValue (parent_property, Value(gridlength));
+		return true;
+	}
+		
+	default:
+		return MoonlightObject::SetProperty (id, name, value);
+	}
+}
+
+MoonlightGridLength::~MoonlightGridLength ()
+{
+	if (parent_obj)
+		parent_obj->unref ();
+}
+
+MoonlightGridLengthType::MoonlightGridLengthType ()
+{
+	allocate = gridlength_allocate;
+
+	AddMapping (gridlength_mapping, G_N_ELEMENTS (gridlength_mapping));
+}
+
+MoonlightGridLengthType *MoonlightGridLengthClass;
 
 /*** MoonlightDownloadProgressEventArgsClass  **************************************************************/
 
@@ -4856,6 +4957,7 @@ plugin_init_classes (void)
 	MoonlightKeyTimeClass = new MoonlightKeyTimeType ();
 	MoonlightThicknessClass = new MoonlightThicknessType ();
 	MoonlightCornerRadiusClass = new MoonlightCornerRadiusType ();
+	MoonlightGridLengthClass = new MoonlightGridLengthType ();
 }
 
 void
@@ -4883,5 +4985,6 @@ plugin_destroy_classes (void)
 	delete MoonlightKeyTimeClass; MoonlightKeyTimeClass = NULL;
 	delete MoonlightThicknessClass; MoonlightThicknessClass = NULL;
 	delete MoonlightCornerRadiusClass; MoonlightCornerRadiusClass = NULL;
+	delete MoonlightGridLengthClass; MoonlightGridLengthClass = NULL;
 	delete MoonlightMarkerReachedEventArgsClass; MoonlightMarkerReachedEventArgsClass = NULL;
 }

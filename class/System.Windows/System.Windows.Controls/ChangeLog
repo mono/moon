@@ -1,3 +1,9 @@
+2009-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* ColumnDefinition.cs: remove explicit property getter.
+
+	* RowDefinition.cs: remove explicit property getter.
+
 2009-06-26  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs: Switch ComboBox to use the DropDownToggle

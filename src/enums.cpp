@@ -289,6 +289,13 @@ static enum_map_t cross_domain_access_map [] = {
 	END_MAPPING 
 };
 
+static enum_map_t grid_unit_type_map [] = {
+	MAP_ENUM (GridUnitType, Auto),
+	MAP_ENUM (GridUnitType, Pixel),
+	MAP_ENUM (GridUnitType, Star),
+	END_MAPPING 
+};
+
 static enum_map_t easing_mode_map [] = {
 	MAP_ENUM_FULL ("EaseIn", EasingModeIn), 
 	MAP_ENUM_FULL ("EaseOut", EasingModeOut),
@@ -342,6 +349,7 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "TabNavigation", keyboard_navigation_mode_map);
 
 	g_hash_table_insert (enum_map, (char *) "MediaState", media_element_state_map);
+	g_hash_table_insert (enum_map, (char *) "GridUnitType", grid_unit_type_map);
 
 	g_hash_table_insert (enum_map, (char *) "EasingMode", easing_mode_map);
 }

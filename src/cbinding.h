@@ -1090,9 +1090,6 @@ ColorKeyFrameCollection *color_key_frame_collection_new (void);
 /* @GeneratePInvoke */
 ColumnDefinition *column_definition_new (void);
 
-/* @GeneratePInvoke */
-double column_definition_get_actual_width (ColumnDefinition *instance);
-
 /**
  * ColumnDefinitionCollection
  **/
@@ -2311,9 +2308,6 @@ void routed_event_args_set_source (RoutedEventArgs *instance, DependencyObject *
 /**
  * RowDefinition
  **/
-/* @GeneratePInvoke */
-double row_definition_get_actual_height (RowDefinition *instance);
-
 /* @GeneratePInvoke */
 RowDefinition *row_definition_new (void);
 
