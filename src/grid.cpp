@@ -73,7 +73,10 @@ Grid::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyC
 			return;
 		}
 	} else if (col == GetColumnDefinitions () || col == GetRowDefinitions ()) {
-		InvalidateMeasure ();
+		if (args->GetId() != ColumnDefinition::ActualWidthProperty 
+		    && args->GetId() != RowDefinition::ActualHeightProperty) {
+			InvalidateMeasure ();
+		}
 		return;
 	}
 	

@@ -1,3 +1,9 @@
+2009-06-27  Chris Toshok  <toshok@ximian.com>
+
+	* grid.cpp (Grid::OnCollectionItemChanged): don't
+	InvalidateMeasure() when the grid's actualwidth or row's
+	actualheight is set.  this gets us into an infinite loop.
+
 2009-06-26  Chris Toshok  <toshok@ximian.com>
 
 	* enums.cpp (grid_unit_type_map): add a mapping for GridUnitType.
