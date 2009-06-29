@@ -976,31 +976,6 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
-		public void CompletedEvent2 ()
-		{
-			int completeCount = 0;
-			Storyboard sb = new Storyboard ();
-			sb.Completed += delegate { completeCount++; };
-
-			ObjectAnimationUsingKeyFrames anim = new ObjectAnimationUsingKeyFrames { Duration=TimeSpan.FromMilliseconds (1) };
-			anim.KeyFrames.Add (new DiscreteObjectKeyFrame { KeyTime = TimeSpan.FromSeconds (0), Value = "5" });
-			sb.Children.Add (anim);
-
-			Rectangle target = new Rectangle ();
-			Storyboard.SetTarget (anim, target);
-			Storyboard.SetTargetProperty (anim, new PropertyPath (Rectangle.WidthProperty));
-
-			sb.Begin ();
-
-			long start = Environment.TickCount;
-			EnqueueConditional (() => Environment.TickCount - start > 200);
-			Enqueue (() => Assert.AreEqual (1, completeCount, "#1"));
-			EnqueueTestComplete ();
-		}
-		
-		[TestMethod]
-		[Asynchronous]
 		public void TargetInterfaceProperty ()
 		{
 			Test t = new Test { Value = 5 };
@@ -1506,8 +1481,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
-		public void ZeroLengthStoryboard ()
+		public void ZeroDurationStoryboard ()
 		{
 			int completeCount = 0;
 			Storyboard sb = new Storyboard ();

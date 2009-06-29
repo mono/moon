@@ -399,7 +399,7 @@ Clock::RaiseAccumulatedEvents ()
 	}
 
 	if ((queued_events & CURRENT_STATE_INVALIDATED) != 0) {
-		if (state == Clock::Active)
+		if (state != Clock::Stopped)
 			has_started = true;
 		Emit (CurrentStateInvalidatedEvent);
 	}
@@ -412,7 +412,7 @@ Clock::RaiseAccumulatedCompleted ()
 {
 	if (emit_completed) {
 		emit_completed = false;
-// 		printf ("clock %p (%s) completed\n", this, GetTimeline()->GetTypeName());
+//  		printf ("clock %p (%s) completed\n", this, GetName ());
 		Emit (CompletedEvent);
 		has_completed = true;
 	}
@@ -427,9 +427,9 @@ Clock::SetRootParentTime (TimeSpan parentTime)
 void
 Clock::Begin (TimeSpan parentTime)
 {
+// 	printf ("clock %p (%s) begin\n", this, GetName ());
 	emit_completed = false;
 	has_completed = false;
-	has_started = false;
 	was_stopped = false;
 	is_paused = false;
 
@@ -546,7 +546,7 @@ Clock::Stop ()
 void
 Clock::Reset ()
 {
-// 	printf ("clock %p (%s) reset\n", this, GetTimeline()->GetTypeName());
+//  	printf ("clock %p (%s) reset\n", this, GetName());
 	calculated_natural_duration = false;
 	state = Clock::Stopped;
 	progress = 0.0;
@@ -579,7 +579,6 @@ ClockGroup::ClockGroup (TimelineGroup *timeline, bool timemanager_clockgroup)
 	this->timemanager_clockgroup = timemanager_clockgroup;
 
 	child_clocks = NULL;
-	idle_hint = false;
 }
 
 void
@@ -591,8 +590,6 @@ ClockGroup::AddChild (Clock *clock)
 	child_clocks = g_list_append (child_clocks, clock);
 	clock->ref ();
 	clock->SetTimeManager (GetTimeManager());
-
-	idle_hint = false;
 }
 
 void
@@ -615,8 +612,6 @@ ClockGroup::RemoveChild (Clock *clock)
 void
 ClockGroup::Begin (TimeSpan parentTime)
 {
-	idle_hint = false;
-	
 	Clock::Begin (parentTime);
 
 	for (GList *l = child_clocks; l; l = l->next) {
@@ -633,8 +628,6 @@ ClockGroup::Begin (TimeSpan parentTime)
 void
 ClockGroup::SkipToFill ()
 {
-	idle_hint = true;
-
 	if (child_clocks == NULL)
 		Stop ();
 	else

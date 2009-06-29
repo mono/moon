@@ -302,7 +302,6 @@ public:
 
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
-	bool IsIdle () { return idle_hint; };
 
 	virtual void SetTimeManager (TimeManager *manager);
 
@@ -326,7 +325,6 @@ protected:
 
 private:
 	TimelineGroup *timeline;
-	bool idle_hint;
 	bool timemanager_clockgroup;
 };
 

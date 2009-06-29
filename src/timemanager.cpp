@@ -62,7 +62,7 @@ public:
 
 	virtual bool UpdateFromParentTime (TimeSpan parentTime)
 	{
-		bool rv = ClockGroup::UpdateFromParentTime (parentTime);
+		bool rv = Clock::UpdateFromParentTime (parentTime);
 
 		bool children_rv = false;
 		for (GList *l = child_clocks; l; l = l->next) {

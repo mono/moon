@@ -1,5 +1,19 @@
 2009-06-28  Chris Toshok  <toshok@ximian.com>
 
+	* clock.h|cpp (Clock::RaiseAccumulatedEvents): switch (state ==
+	Clock::Active) to (state != Clock::Stopped) to tell whether or not
+	we've started (since we can start directly in the filling state.)
+
+	Also remove all the idle_hint stuff, since it's no longer used.
+
+	* timemanager.cpp (RootClockGroup::UpdateFromParentTime): not sure
+	why this method is needed at all, but at the very lease we need to
+	stop calling ClockGroup::UpdateFromParentTime, since this method
+	very nearly duplicates that one (and we're therefore looping over
+	the child clocks twice).
+
+2009-06-28  Chris Toshok  <toshok@ximian.com>
+
 	* color.cpp (named_colors): update these so that text-colors.xaml
 	passes.
 
