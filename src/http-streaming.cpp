@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * http-streaming.cpp: 
  *
@@ -11,6 +12,7 @@
  */
 
 #include <config.h>
+
 #include <string.h>
 
 #include "http-streaming.h"

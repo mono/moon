@@ -677,7 +677,6 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 			case 2: {
 				// 24bit audio -> 16bit audio
 				gint16 *read_ptr = (gint16 *) (((char *) current_frame->frame->buffer) + current_frame->bytes_used);
-				gint32 *wr_ptr;
 				
 				for (guint32 i = 0; i < frames_to_write; i++) {
 					for (guint32 channel = 0; channel < channels; channel++) {
@@ -695,7 +694,6 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 			case 4: {
 				// 24bit audio -> 32bit audio
 				gint32 *read_ptr = (gint32 *) (((char *) current_frame->frame->buffer) + current_frame->bytes_used);
-				gint32 *wr_ptr;
 				
 				for (guint32 i = 0; i < frames_to_write; i++) {
 					for (guint32 channel = 0; channel < channels; channel++) {

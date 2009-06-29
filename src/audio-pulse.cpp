@@ -222,7 +222,7 @@ PulseSource::InitializePA ()
 		pa_channel_map_init_stereo (&channel_map);
 	} else if (format.channels == 6 || format.channels == 8) {
 		channel_map.channels = format.channels;
-		for (int c = 0; c < PA_CHANNELS_MAX; c++)
+		for (guint c = 0; c < PA_CHANNELS_MAX; c++)
 			channel_map.map [c] = PA_CHANNEL_POSITION_INVALID;
 		
 		// this map needs testing with a 5.1/7.1 system.
