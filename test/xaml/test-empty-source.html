@@ -36,7 +36,7 @@ function disable (sender, args) {
     window.setTimeout (function () {
 		TestHost.CaptureSingleImage ("", "test-empty-source.html.png", 0, 0, 500, 500);
 		TestHost.SignalShutdown (document.name);
-    }, 200);
+    }, 500);
 }
 
 function OnPluginError (sender, args)
