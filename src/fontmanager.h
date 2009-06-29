@@ -20,14 +20,17 @@
 #include "moon-path.h"
 #include "enums.h"
 
+class FontManager;
+class FontFace;
+
 bool FontWeightIsBold (FontWeights weight);
 
 struct GlyphMetrics {
 	double horiBearingX;
-	double horiBearingY;
+	//double horiBearingY;
 	double horiAdvance;
-	double height;
-	double width;
+	//double height;
+	//double width;
 };
 
 struct GlyphInfo {
@@ -35,6 +38,7 @@ struct GlyphInfo {
 	gunichar unichar;
 	guint32 index;
 	moon_path *path;
+	FontFace *face;
 	gint64 atime;
 };
 
@@ -46,7 +50,6 @@ struct FontFaceExtents {
 	double height;
 };
 
-class FontManager;
 
 class FontFace {
 	FontManager *manager;

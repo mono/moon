@@ -1,3 +1,16 @@
+2009-06-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (LoadGlyph): Save some memory by dropping some
+	of the GlyphMetrics fields.
+
+	* layout.cpp: Updated to keep track of the previous GlyphInfo
+	rather than the previous GlyphInfo's index.
+
+	* fonts.cpp (TextFont::GetGlyphInfo): Set the GlyphInfo face.
+	(TextFont::Kerning): Modified to take GlyphInfo arguments rather
+	than face indexes since they are worthless w/o knowing which font
+	face the indexes of each are for.
+
 2009-06-29  Alan McGovern  <amcgovern@novell.com>
 
 	* control.cpp: Propagate the IsEnabled changes down the visual

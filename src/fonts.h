@@ -55,7 +55,7 @@ class TextFont {
 	GlyphInfo *GetGlyphInfo (gunichar unichar);
 	GlyphInfo *GetGlyphInfoByIndex (guint32 index);
 	
-	double Kerning (guint32 left, guint32 right);
+	double Kerning (GlyphInfo *left, GlyphInfo *right);
 	double Descender ();
         double Ascender ();
 	double Height ();

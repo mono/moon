@@ -262,9 +262,16 @@ TextFont::GetStyleSimulations ()
 }
 
 double
-TextFont::Kerning (guint32 left, guint32 right)
+TextFont::Kerning (GlyphInfo *left, GlyphInfo *right)
 {
+#ifdef ENABLE_KERNING
+	if (left->face != right->face)
+		return 0.0;
+	
+	return left->face->Kerning (size, left->index, right->index);
+#else
 	return 0.0;
+#endif
 }
 
 double
@@ -315,6 +322,7 @@ TextFont::GetGlyphInfo (FontFace *face, gunichar unichar, guint32 index)
 	
 	glyph.unichar = unichar;
 	glyph.index = index;
+	glyph.face = face;
 	glyph.atime = now;
 	glyph.path = NULL;
 	

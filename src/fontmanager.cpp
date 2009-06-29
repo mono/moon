@@ -986,11 +986,11 @@ FontFace::LoadGlyph (double size, GlyphInfo *glyph, StyleSimulations simulate)
 	metrics = &face->glyph->metrics;
 	
 	glyph->metrics.horiBearingX = DOUBLE_FROM_26_6 (metrics->horiBearingX) * scale;
-	glyph->metrics.horiBearingY = DOUBLE_FROM_26_6 (metrics->horiBearingY) * scale;
+	//glyph->metrics.horiBearingY = DOUBLE_FROM_26_6 (metrics->horiBearingY) * scale;
 	// always prefer linearHoriAdvance over horiAdvance since the later is rounded to an integer
 	glyph->metrics.horiAdvance = DOUBLE_FROM_16_16 (face->glyph->linearHoriAdvance + hori_adj) * scale;
-	glyph->metrics.height = DOUBLE_FROM_26_6 (metrics->height + bbox_adj) * scale;
-	glyph->metrics.width = DOUBLE_FROM_26_6 (metrics->width + bbox_adj) * scale;
+	//glyph->metrics.height = DOUBLE_FROM_26_6 (metrics->height + bbox_adj) * scale;
+	//glyph->metrics.width = DOUBLE_FROM_26_6 (metrics->width + bbox_adj) * scale;
 	
 	return true;
 }

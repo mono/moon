@@ -635,7 +635,6 @@ struct WordBreakOpportunity {
 	const char *inptr;
 	double advance;
 	guint32 index;
-	guint32 prev;
 	gunichar c;
 	int count;
 };
@@ -651,7 +650,7 @@ struct LayoutWord {
 	TextFont *font;
 	
 	// <input/output>
-	guint32 prev;          // previous glyph index; used for kerning
+	GlyphInfo *prev;       // previous glyph; used for kerning
 	
 	// <output>
 	double advance;        // the advance-width of the 'word'
@@ -685,7 +684,7 @@ IsLineBreak (const char *text, size_t left, size_t *n_bytes, size_t *n_chars)
 }
 
 static inline void
-layout_word_init (LayoutWord *word, double line_advance, guint32 prev)
+layout_word_init (LayoutWord *word, double line_advance, GlyphInfo *prev)
 {
 	word->line_advance = line_advance;
 	word->prev = prev;
@@ -702,7 +701,7 @@ layout_word_init (LayoutWord *word, double line_advance, guint32 prev)
 static void
 layout_lwsp (LayoutWord *word, const char *in, const char *inend)
 {
-	guint32 prev = word->prev;
+	GlyphInfo *prev = word->prev;
 	GUnicodeBreakType btype;
 	const char *inptr = in;
 	const char *start;
@@ -756,14 +755,14 @@ layout_lwsp (LayoutWord *word, const char *in, const char *inend)
 		
 		// calculate total glyph advance
 		advance = glyph->metrics.horiAdvance;
-		if ((prev != 0) && APPLY_KERNING (c))
-			advance += word->font->Kerning (prev, glyph->index);
+		if ((prev != NULL) && APPLY_KERNING (c))
+			advance += word->font->Kerning (prev, glyph);
 		else if (glyph->metrics.horiBearingX < 0)
 			advance -= glyph->metrics.horiBearingX;
 		
 		word->line_advance += advance;
 		word->advance += advance;
-		prev = glyph->index;
+		prev = glyph;
 	}
 	
 	word->length = (inptr - in);
@@ -786,7 +785,7 @@ static bool
 layout_word_nowrap (LayoutWord *word, const char *in, const char *inend, double max_width)
 {
 	GUnicodeBreakType btype = G_UNICODE_BREAK_UNKNOWN;
-	guint32 prev = word->prev;
+	GlyphInfo *prev = word->prev;
 	const char *inptr = in;
 	const char *start;
 	GlyphInfo *glyph;
@@ -831,14 +830,14 @@ layout_word_nowrap (LayoutWord *word, const char *in, const char *inend, double 
 		
 		// calculate total glyph advance
 		advance = glyph->metrics.horiAdvance;
-		if ((prev != 0) && APPLY_KERNING (c))
-			advance += word->font->Kerning (prev, glyph->index);
+		if ((prev != NULL) && APPLY_KERNING (c))
+			advance += word->font->Kerning (prev, glyph);
 		else if (glyph->metrics.horiBearingX < 0)
 			advance -= glyph->metrics.horiBearingX;
 		
 		word->line_advance += advance;
 		word->advance += advance;
-		prev = glyph->index;
+		prev = glyph;
 	}
 	
 	word->length = (inptr - in);
@@ -919,7 +918,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 {
 	GUnicodeBreakType btype = G_UNICODE_BREAK_UNKNOWN;
 	bool line_start = word->line_advance == 0.0;
-	guint32 prev = word->prev;
+	GlyphInfo *prev = word->prev;
 	WordBreakOpportunity op;
 	const char *inptr = in;
 	const char *start;
@@ -1036,14 +1035,14 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		if ((glyph = word->font->GetGlyphInfo (c))) {
 			// calculate total glyph advance
 			advance = glyph->metrics.horiAdvance;
-			if ((prev != 0) && APPLY_KERNING (c))
-				advance += word->font->Kerning (prev, glyph->index);
+			if ((prev != NULL) && APPLY_KERNING (c))
+				advance += word->font->Kerning (prev, glyph);
 			else if (glyph->metrics.horiBearingX < 0)
 				advance -= glyph->metrics.horiBearingX;
 			
 			word->line_advance += advance;
 			word->advance += advance;
-			prev = glyph->index;
+			prev = glyph;
 		} else {
 			advance = 0.0;
 		}
@@ -1054,13 +1053,11 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			op.count = word->count;
 			op.inptr = inptr;
 			op.btype = btype;
-			op.prev = prev;
 			op.c = c;
 		} else {
 			g_array_remove_index (word->break_ops, word->break_ops->len - 1);
 			op.advance += advance;
 			op.inptr = inptr;
-			op.prev = prev;
 			op.count++;
 		}
 		
@@ -1114,14 +1111,14 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		if ((glyph = word->font->GetGlyphInfo (c))) {
 			// calculate total glyph advance
 			advance = glyph->metrics.horiAdvance;
-			if ((prev != 0) && APPLY_KERNING (c))
-				advance += word->font->Kerning (prev, glyph->index);
+			if ((prev != NULL) && APPLY_KERNING (c))
+				advance += word->font->Kerning (prev, glyph);
 			else if (glyph->metrics.horiBearingX < 0)
 				advance -= glyph->metrics.horiBearingX;
 			
 			word->line_advance += advance;
 			word->advance += advance;
-			prev = glyph->index;
+			prev = glyph;
 		} else {
 			advance = 0.0;
 		}
@@ -1129,7 +1126,6 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		g_array_remove_index (word->break_ops, word->break_ops->len - 1);
 		op.advance += advance;
 		op.inptr = inptr;
-		op.prev = prev;
 		op.count++;
 		g_array_append_val (word->break_ops, op);
 	}
@@ -1170,18 +1166,18 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			if (i > 1 && i == word->break_ops->len) {
 				// break after the previous glyph
 				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
+				word->prev = word->font->GetGlyphInfo (op.c);
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				word->prev = op.prev;
 				
 				return true;
 			} else if (i < word->break_ops->len) {
 				// break after this glyph
+				word->prev = word->font->GetGlyphInfo (op.c);
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				word->prev = op.prev;
 				
 				return true;
 			}
@@ -1189,10 +1185,10 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_WORD_JOINER:
 			// cannot break before or after this character (unless forced)
 			if (force && i < word->break_ops->len) {
+				word->prev = word->font->GetGlyphInfo (op.c);
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				word->prev = op.prev;
 				
 				return true;
 			}
@@ -1206,10 +1202,10 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_INSEPARABLE:
 			// only restriction is no breaking between inseparables unless we have to
 			if (line_start && i < word->break_ops->len) {
+				word->prev = word->font->GetGlyphInfo (op.c);
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				word->prev = op.prev;
 				
 				return true;
 			}
@@ -1218,10 +1214,10 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 			if (i > 1) {
 				// break after the previous glyph
 				op = g_array_index (word->break_ops, WordBreakOpportunity, i - 2);
+				word->prev = word->font->GetGlyphInfo (op.c);
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				word->prev = op.prev;
 				
 				return true;
 			}
@@ -1229,10 +1225,10 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_CLOSE_PUNCTUATION:
 			if (i < word->break_ops->len && (force || btype != G_UNICODE_BREAK_INFIX_SEPARATOR)) {
 				// we can safely break after this character
+				word->prev = word->font->GetGlyphInfo (op.c);
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				word->prev = op.prev;
 				
 				return true;
 			}
@@ -1246,10 +1242,10 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_INFIX_SEPARATOR:
 			if (i < word->break_ops->len && (force || btype != G_UNICODE_BREAK_NUMERIC)) {
 				// we can safely break after this character
+				word->prev = word->font->GetGlyphInfo (op.c);
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				word->prev = op.prev;
 				
 				return true;
 			}
@@ -1269,10 +1265,10 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_ALPHABETIC:
 			// only break if we have no choice...
 			if ((line_start || fixed || force) && i < word->break_ops->len) {
+				word->prev = word->font->GetGlyphInfo (op.c);
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				word->prev = op.prev;
 				
 				return true;
 			}
@@ -1280,10 +1276,10 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_IDEOGRAPHIC:
 			if (i < word->break_ops->len && btype != G_UNICODE_BREAK_NON_STARTER) {
 				// we can safely break after this character
+				word->prev = word->font->GetGlyphInfo (op.c);
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				word->prev = op.prev;
 				
 				return true;
 			}
@@ -1291,10 +1287,10 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_NUMERIC:
 			// only break if we have no choice...
 			if (line_start && i < word->break_ops->len && (force || btype != G_UNICODE_BREAK_INFIX_SEPARATOR)) {
+				word->prev = word->font->GetGlyphInfo (op.c);
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				word->prev = op.prev;
 				
 				return true;
 			}
@@ -1307,10 +1303,10 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_PREFIX:
 			// do not break after characters with these break-types (unless forced)
 			if (force && i < word->break_ops->len) {
+				word->prev = word->font->GetGlyphInfo (op.c);
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				word->prev = op.prev;
 				
 				return true;
 			}
@@ -1336,10 +1332,10 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		case G_UNICODE_BREAK_AFTER:
 			if (i < word->break_ops->len) {
 				// we can safely break after this character
+				word->prev = word->font->GetGlyphInfo (op.c);
 				word->length = (op.inptr - in);
 				word->advance = op.advance;
 				word->count = op.count;
-				word->prev = op.prev;
 				
 				return true;
 			}
@@ -1432,11 +1428,11 @@ TextLayout::Layout ()
 	size_t n_bytes, n_chars;
 	TextLayoutLine *line;
 	TextLayoutRun *run;
+	GlyphInfo *prev;
 	LayoutWord word;
 	TextFont *font;
 	bool linebreak;
 	int offset = 0;
-	guint32 prev;
 	bool wrapped;
 	
 	if (!isnan (actual_width))
@@ -1494,7 +1490,7 @@ TextLayout::Layout ()
 		while (inptr < inend) {
 			linebreak = false;
 			wrapped = false;
-			prev = 0;
+			prev = NULL;
 			
 			// layout until eoln or until we reach max_width
 			while (inptr < inend) {
@@ -1601,7 +1597,7 @@ TextLayout::Layout ()
 						actual_height += line->height;
 					
 					g_ptr_array_add (lines, line);
-					prev = 0;
+					prev = NULL;
 				}
 				
 				if (inptr < inend) {
@@ -1629,12 +1625,12 @@ TextLayout::Layout ()
 }
 
 static inline TextLayoutGlyphCluster *
-GenerateGlyphCluster (TextFont *font, guint32 *kern, const char *text, int start, int length)
+GenerateGlyphCluster (TextFont *font, GlyphInfo **pglyph, const char *text, int start, int length)
 {
 	TextLayoutGlyphCluster *cluster = new TextLayoutGlyphCluster (start, length);
 	const char *inend = text + start + length;
 	const char *inptr = text + start;
-	guint32 prev = *kern;
+	GlyphInfo *prev = *pglyph;
 	double x0, x1, y0;
 	GlyphInfo *glyph;
 	int size = 0;
@@ -1683,14 +1679,14 @@ GenerateGlyphCluster (TextFont *font, guint32 *kern, const char *text, int start
 			if (!(glyph = font->GetGlyphInfo (c)))
 				continue;
 			
-			if ((prev != 0) && APPLY_KERNING (c))
-				x0 += font->Kerning (prev, glyph->index);
+			if ((prev != NULL) && APPLY_KERNING (c))
+				x0 += font->Kerning (prev, glyph);
 			else if (glyph->metrics.horiBearingX < 0)
 				x0 += glyph->metrics.horiBearingX;
 			
 			font->AppendPath (cluster->path, glyph, x0, y0);
 			x0 += glyph->metrics.horiAdvance;
-			prev = glyph->index;
+			prev = glyph;
 			
 			if (!g_unichar_isspace (c))
 				x1 = x0;
@@ -1702,7 +1698,7 @@ GenerateGlyphCluster (TextFont *font, guint32 *kern, const char *text, int start
 	cluster->uadvance = x1;	
 	cluster->advance = x0;
 	
-	*kern = prev;
+	*pglyph = prev;
 	
 	return cluster;
 }
@@ -1718,7 +1714,7 @@ TextLayoutRun::GenerateCache ()
 	TextFont *font = attrs->Font ();
 	TextLayoutGlyphCluster *cluster;
 	const char *selection_end;
-	guint32 prev = 0;
+	GlyphInfo *prev = NULL;
 	int len;
 	
 	// cache the glyph cluster leading up to the selection
@@ -2022,8 +2018,7 @@ TextLayoutLine::GetCursorFromX (const Point &offset, double x)
 {
 	const char *text, *inend, *ch, *inptr;
 	TextLayoutRun *run = NULL;
-	GlyphInfo *glyph;
-	guint32 prev = 0;
+	GlyphInfo *prev, *glyph;
 	TextFont *font;
 	int cursor;
 	gunichar c;
@@ -2037,6 +2032,7 @@ TextLayoutLine::GetCursorFromX (const Point &offset, double x)
 	text = layout->GetText ();
 	inptr = text + start;
 	cursor = this->offset;
+	prev = NULL;
 	
 	for (i = 0; i < runs->len; i++) {
 		run = (TextLayoutRun *) runs->pdata[i];
@@ -2077,8 +2073,8 @@ TextLayoutLine::GetCursorFromX (const Point &offset, double x)
 			if (!(glyph = font->GetGlyphInfo (c)))
 				continue;
 			
-			if ((prev != 0) && APPLY_KERNING (c))
-				x0 += font->Kerning (prev, glyph->index);
+			if ((prev != NULL) && APPLY_KERNING (c))
+				x0 += font->Kerning (prev, glyph);
 			else if (glyph->metrics.horiBearingX < 0)
 				x0 += glyph->metrics.horiBearingX;
 			
@@ -2094,7 +2090,7 @@ TextLayoutLine::GetCursorFromX (const Point &offset, double x)
 			}
 			
 			x0 += glyph->metrics.horiAdvance;
-			prev = glyph->index;
+			prev = glyph;
 		}
 	} else if (i > 0) {
 		// x is beyond the end of the last run
@@ -2145,12 +2141,11 @@ TextLayout::GetCursor (const Point &offset, int index)
 {
 	const char *inptr, *inend, *pchar;
 	double height, x0, y0, y1;
+	GlyphInfo *prev, *glyph;
 	TextLayoutLine *line;
 	TextLayoutRun *run;
-	GlyphInfo *glyph;
 	TextFont *font;
 	int cursor = 0;
-	guint32 prev;
 	gunichar c;
 	
 	//printf ("TextLayout::GetCursor (%d)\n", index);
@@ -2217,7 +2212,7 @@ TextLayout::GetCursor (const Point &offset, int index)
 			// cursor is in this run...
 			font = run->attrs->Font ();
 			inptr = text + run->start;
-			prev = 0;
+			prev = NULL;
 			
 			while (cursor < index) {
 				if ((c = utf8_getc (&inptr, inend - inptr)) == (gunichar) -1)
@@ -2232,13 +2227,13 @@ TextLayout::GetCursor (const Point &offset, int index)
 				if (!(glyph = font->GetGlyphInfo (c)))
 					continue;
 				
-				if ((prev != 0) && APPLY_KERNING (c))
-					x0 += font->Kerning (prev, glyph->index);
+				if ((prev != NULL) && APPLY_KERNING (c))
+					x0 += font->Kerning (prev, glyph);
 				else if (glyph->metrics.horiBearingX < 0)
 					x0 += glyph->metrics.horiBearingX;
 				
 				x0 += glyph->metrics.horiAdvance;
-				prev = glyph->index;
+				prev = glyph;
 			}
 			
 			break;
