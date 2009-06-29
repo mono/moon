@@ -1,3 +1,7 @@
+2009-06-29  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Store enums as INTs.
+
 2009-06-28  Chris Toshok  <toshok@ximian.com>
 
 	* clock.h|cpp (Clock::RaiseAccumulatedEvents): switch (state ==

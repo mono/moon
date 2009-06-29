@@ -782,7 +782,7 @@ class XamlElementInstanceValueType : public XamlElementInstance {
 
 class XamlElementInfoEnum : public XamlElementInfo {
  public:
-	XamlElementInfoEnum (const char *name) : XamlElementInfo (NULL, name, Type::INVALID)
+	XamlElementInfoEnum (const char *name) : XamlElementInfo (NULL, name, Type::INT32)
 	{
 	}
 
@@ -4334,8 +4334,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 			// XamlElementInfoEnum has Type::INVALID as
 			// its kind, which is why that first check is
 			// here.
-			if (child->info->GetKind() != Type::INVALID &&
-			    child->info->GetKind() != Type::MANAGED &&
+			if (child->info->GetKind() != Type::MANAGED &&
 			    !types->Find (child->info->GetKind())->IsCtorVisible()) {
 				// we can't instantiate this type
 				return parser_error (p, child->element_name, NULL, 2007,
