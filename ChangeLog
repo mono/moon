@@ -1,3 +1,7 @@
+2009-06-29  Rusty Howell  <rhowell@novell.com>
+
+	 * configure.ac: bump version to 1.9.5.99
+
 2009-06-02  Rusty Howell  <rhowell@novell.com>
 
 	 * configure.ac:
