@@ -1,3 +1,10 @@
+2009-06-29  Alan McGovern  <amcgovern@novell.com>
+
+	* input.cpp: Speed up logarithmic mouse moving significantly
+	  otherwise 557 can never pass. It currently times out less
+	  than 50% of the way through the test as we spend too long
+	  moving the mouse.
+
 2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am:
