@@ -1,3 +1,8 @@
+2009-06-29  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp: Propagate the IsEnabled changes down the visual
+	  tree in OnPropertyChanged, not in SetValue.
+
 2009-06-29  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Store enums as INTs.

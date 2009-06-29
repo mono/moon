@@ -99,6 +99,7 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		 || args->GetId () == Control::BorderThicknessProperty) {
 		InvalidateMeasure ();
 	} else if (args->GetId () == Control::IsEnabledProperty) {
+		UpdateEnabled ();
 		if (!args->GetNewValue ()->AsBool ())
 			ReleaseMouseCapture ();
 	}
@@ -133,18 +134,10 @@ Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, Moon
 {
 	
 	if (property->GetId () == Control::IsEnabledProperty) {
-		if (GetName () && !strcmp (GetName (), "multilineTextBox")) {
-			printf ("\nSetting");
-			//getchar ();
-		}
 		this->enabled_local = value->AsBool ();
 
-		
 		Value v (enabled_local && (enabled_parent));
-		bool b = FrameworkElement::SetValueWithErrorImpl (property, &v, error);
-		if (b)
-			UpdateEnabled ();
-		return b;
+		return FrameworkElement::SetValueWithErrorImpl (property, &v, error);
 	}
 	return FrameworkElement::SetValueWithErrorImpl (property, value, error);
 }
