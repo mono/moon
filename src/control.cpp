@@ -99,7 +99,6 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		 || args->GetId () == Control::BorderThicknessProperty) {
 		InvalidateMeasure ();
 	} else if (args->GetId () == Control::IsEnabledProperty) {
-		UpdateEnabled ();
 		if (!args->GetNewValue ()->AsBool ())
 			ReleaseMouseCapture ();
 	}
@@ -137,7 +136,13 @@ Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, Moon
 		this->enabled_local = value->AsBool ();
 
 		Value v (enabled_local && (enabled_parent));
-		return FrameworkElement::SetValueWithErrorImpl (property, &v, error);
+		
+		// If we don't propagate the changes down the tree here, the EnabledChanged events
+		// from the subtree are raised in the wrong order
+		bool b = FrameworkElement::SetValueWithErrorImpl (property, &v, error);
+		if (b)
+			UpdateEnabled ();
+		return  b;
 	}
 	return FrameworkElement::SetValueWithErrorImpl (property, value, error);
 }

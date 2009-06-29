@@ -1,3 +1,8 @@
+2009-06-29  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp: Unregress drt 911, EnabledChanged events fire
+	  at the correct time again.
+
 2009-06-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fontmanager.cpp (LoadGlyph): Save some memory by dropping some
