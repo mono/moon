@@ -397,7 +397,7 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	windowless = false;
 	cross_domain_app = false;		// false, since embedded xaml (in html) won't load anything (to change this value)
 	default_enable_html_access = true;	// should we use the default value (wrt the HTML script supplied value)
-	enable_html_access = false;		// default to most restricted
+	enable_html_access = true;		// an empty plugin must return TRUE before loading anything else (e.g. scripting)
 	allow_html_popup_window = false;
 	xembed_supported = FALSE;
 

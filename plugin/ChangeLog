@@ -1,3 +1,9 @@
+2009-06-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp: Initialize enable_html_access to true since the value
+	can be queried before anything is loaded (e.g. scripting). Remove
+	failure message from DRT #21 bitmap.
+
 2009-06-26  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h.in|cpp: add support for GridLengths.
