@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 463 methods
+# 461 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -47,10 +47,11 @@
 +SSC-M: System.Void Mono.NativeMethods::storyboard_seek(System.IntPtr,System.Int64)
 +SSC-M: System.Void Mono.NativeMethods::storyboard_skip_to_fill(System.IntPtr)
 +SSC-M: System.Void Mono.NativeMethods::storyboard_stop(System.IntPtr)
++SSC-M: System.Boolean Mono.NativeMethods::text_box_base_select(System.IntPtr,System.Int32,System.Int32)
 +SSC-M: System.IntPtr Mono.NativeMethods::uielement_get_transform_to_uielement(System.IntPtr,System.IntPtr)
 +SSC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file(System.IntPtr,System.String,System.Boolean,Mono.Kind&)
-+SSC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string(System.IntPtr,System.String,System.Boolean,Mono.Kind&)
-+SSC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string(System.IntPtr,System.String,System.IntPtr,System.Boolean,Mono.Kind&)
++SSC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string(System.IntPtr,System.String,System.Boolean,System.Boolean,Mono.Kind&)
++SSC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string(System.IntPtr,System.String,System.IntPtr,System.Boolean,System.Boolean,Mono.Kind&)
 +SSC-M: System.String Mono.NativeMethods::xap_unpack(System.String)
 +SSC-M: System.String Mono.NativeMethods::save_file_dialog_show(System.String,System.String,System.Int32)
 +SSC-M: System.String Mono.NativeMethods::xaml_uri_for_prefix(System.IntPtr,System.String)
@@ -99,7 +100,6 @@
 +SSC-M: System.Void System.Windows.Controls.Border::.ctor()
 +SSC-M: System.Void System.Windows.Controls.Canvas::.ctor()
 +SSC-M: System.Void System.Windows.Controls.ColumnDefinition::.ctor()
-+SSC-M: System.Double System.Windows.Controls.ColumnDefinition::get_ActualWidth()
 +SSC-M: System.Void System.Windows.Controls.ColumnDefinitionCollection::.ctor()
 +SSC-M: System.Void System.Windows.Controls.ContentControl::.ctor()
 +SSC-M: System.Boolean System.Windows.Controls.ContentControl::get_ContentSetsParent()
@@ -146,13 +146,11 @@
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::SelectAll()
 +SSC-M: System.Void System.Windows.Controls.Primitives.Popup::.ctor()
 +SSC-M: System.Void System.Windows.Controls.RowDefinition::.ctor()
-+SSC-M: System.Double System.Windows.Controls.RowDefinition::get_ActualHeight()
 +SSC-M: System.Void System.Windows.Controls.RowDefinitionCollection::.ctor()
 +SSC-M: System.IO.Stream System.Windows.Controls.SaveFileDialog::OpenFile()
 +SSC-M: System.Nullable`1<System.Boolean> System.Windows.Controls.SaveFileDialog::ShowDialog()
 +SSC-M: System.Void System.Windows.Controls.TextBlock::.ctor()
 +SSC-M: System.Void System.Windows.Controls.TextBox::.ctor()
-+SSC-M: System.Void System.Windows.Controls.TextBox::Select(System.Int32,System.Int32)
 +SSC-M: System.Void System.Windows.Controls.TextBox::SelectAll()
 +SSC-M: System.Void System.Windows.Controls.TextChangedEventArgs::.ctor()
 +SSC-M: System.Void System.Windows.Controls.UIElementCollection::.ctor()

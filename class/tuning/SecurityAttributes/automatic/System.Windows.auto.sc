@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 525 methods needs to be decorated.
+# 523 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -116,6 +116,9 @@
 +SC-M: System.Boolean Mono.NativeMethods::surface_is_version_supported(System.String)
 
 # p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::text_box_base_select_with_error_(System.IntPtr,System.Int32,System.Int32,Mono.MoonError&)
+
+# p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::type_get_value_type(Mono.Kind)
 
 # p/invoke declaration
@@ -212,9 +215,6 @@
 +SC-M: System.Double Mono.NativeMethods::circle_ease_ease_in_core(System.IntPtr,System.Double)
 
 # p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::column_definition_get_actual_width(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::cubic_ease_ease_in_core(System.IntPtr,System.Double)
 
 # p/invoke declaration
@@ -246,9 +246,6 @@
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::quintic_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::row_definition_get_actual_height(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::sine_ease_ease_in_core(System.IntPtr,System.Double)
@@ -1109,13 +1106,13 @@
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_with_error_(System.IntPtr,System.String,System.Boolean,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_get_context(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,System.IntPtr,System.Boolean,Mono.Kind&,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,System.IntPtr,System.Boolean,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_new(System.String,System.String,System.IntPtr)
@@ -1464,9 +1461,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::surface_set_full_screen(System.IntPtr,System.Boolean)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::text_box_base_select(System.IntPtr,System.Int32,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::text_box_base_select_all(System.IntPtr)

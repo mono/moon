@@ -1,3 +1,8 @@
+2009-06-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.s[s]c: Regen wrt changes in TextBox and XAML 
+	loader p/invokes and callers.
+
 2009-06-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.sc: Add internal calls
