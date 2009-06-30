@@ -96,6 +96,7 @@ Clock::Clock (Timeline *tl)
 	time_manager = NULL;
 	parent_clock = NULL;
 	is_paused = false;
+	is_seeking = false;
 	begin_pause_time = 0;
 	accumulated_pause_time = 0;
 	has_started = false;
@@ -172,6 +173,31 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	// autoreverse.  it is simple the timespan our clock has been
 	// running.
 	TimeSpan localTime = (parentTime - root_parent_time - timeline->GetBeginTime() - accumulated_pause_time) * timeline->GetSpeedRatio();
+
+	if (is_seeking) {
+		// if we're seeking, we need to arrange for the above
+		// localTime formula to keep time correctly.  we clear
+		// accumulated_pause_time, and adjust root_parent_time
+		// such that we can re-evaluate localTime and have
+		// localTime = seek_time.
+
+		accumulated_pause_time = 0;
+
+		/* seek_time = localTime
+
+		   seek_time = (parentTime - root_parent_time - timeline->BeginTime() - 0) * timeline->GetSpeedRatio ()
+
+		          seek_time
+  		   ------------------------- = parentTime - root_parent_time - timeline->BeginTime();
+		   timeline->GetSpeedRatio()
+                                                                                  seek_time         
+		   root_parent_time = parentTime - timeline->BeginTime() - -------------------------
+									   timeline->GetSpeedRatio()
+		*/
+		root_parent_time = parentTime - timeline->GetBeginTime () - seek_time / timeline->GetSpeedRatio ();
+		localTime = seek_time;
+		is_seeking = false;
+	}
 
 	// the clock doesn't update and we don't progress if the
 	// translated local time is before our begin time.  Keep in
@@ -501,12 +527,17 @@ Clock::Seek (TimeSpan timespan)
 		seek_time = (timespan - timeline->GetBeginTime ()) * timeline->GetSpeedRatio ();
 	} else
 		seek_time = timespan * timeline->GetSpeedRatio ();
+
+	is_seeking = true;
 }
 
 void
 Clock::SeekAlignedToLastTick (TimeSpan timespan)
 {
-	// FIXME: this does a synchronous seek before returning
+	Seek (timespan);
+
+	if (parent_clock)
+		UpdateFromParentTime (parent_clock->GetCurrentTime());
 }
 
 void
@@ -555,6 +586,7 @@ Clock::Reset ()
 	begin_time = -1;
 	begin_on_tick = false;
 	is_paused = false;
+	is_seeking = false;
 	begin_pause_time = 
 		accumulated_pause_time = 0;
 	has_started = false;
@@ -632,12 +664,6 @@ ClockGroup::SkipToFill ()
 		Stop ();
 	else
 		Clock::SkipToFill ();
-}
-
-void
-ClockGroup::Seek (TimeSpan timespan)
-{
-	Clock::Seek (timespan);
 }
 
 void
