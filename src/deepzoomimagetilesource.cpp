@@ -269,6 +269,9 @@ LOG_MSI ("Parsing DeepZoom %s\n", filename);
 	parsed = true;
 
 LOG_MSI ("Done parsing...\n");
+
+	XML_ParserFree (p);
+
 	if (parsed_callback)
 		parsed_callback (cb_userdata);
 }

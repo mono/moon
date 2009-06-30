@@ -1,3 +1,7 @@
+2009-06-30  Jackson Harper  <jackson@ximian.com>
+
+	* deepzoomimagetilesource.cpp: Parsers need to be freed.
+
 2009-06-30  Alan McGovern  <amcgovern@novell.com>
 
 	* popup.cpp: According to the docs, a popup which is GC'ed
