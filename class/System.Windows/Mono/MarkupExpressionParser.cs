@@ -247,7 +247,9 @@ namespace Mono.Xaml {
 				b.Path = new PropertyPath (str_value);
 				break;
 			case "Source":
-				b.Source = value;
+				// if the expression was: Source="{StaticResource xxx}" then 'value' will be populated
+				// If the expression was  Source="5" then 'str_value' will be populated.
+				b.Source = value ?? str_value;
 				break;
 			case "Converter":
 				IValueConverter value_converter = value as IValueConverter;
