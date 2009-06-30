@@ -42,8 +42,6 @@ class MultiScaleImage : public MediaBase {
 	static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
 	GList *bitmapimages;
-	BitmapImageContext *GetFreeBitmapImageContext ();
-	void DownloadTile (BitmapImageContext *ctx, Uri *tile, int subimage, int level, int x, int y);
 	BitmapImageContext *GetBitmapImageContext (BitmapImage *bitmapimage);
 
 	void RenderSingle (cairo_t *cr, Region *region);
@@ -166,6 +164,9 @@ class MultiScaleImage : public MediaBase {
 	const static int ImageOpenSucceededEvent;
 	const static int MotionFinishedEvent;
 	const static int ViewportChangedEvent;
+
+	BitmapImageContext *GetFreeBitmapImageContext ();
+	void DownloadTile (BitmapImageContext *ctx, Uri *tile, int subimage, int level, int x, int y);
 };
 
 #endif /* __MULTISCALIMAGE_H__ */

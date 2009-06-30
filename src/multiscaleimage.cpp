@@ -384,6 +384,19 @@ multi_scale_image_handle_parsed (void *userdata)
 	}
 	msi->Invalidate ();
 
+	//try to get the first tiles
+	BitmapImageContext *bitmapimagectx;
+	int layer = 0;
+	//Get the first tiles
+	while ((bitmapimagectx = msi->GetFreeBitmapImageContext ())) {
+		Uri *tile = new Uri ();
+		if (source->get_tile_func (layer, 0, 0, tile, source))
+			msi->DownloadTile (bitmapimagectx, tile, -1, layer, 0, 0);
+		delete tile;
+		layer ++;
+	}
+
+
 	//FIXME: we're only emitting this in deepzoom case
 	msi->EmitImageOpenSucceeded ();
 }
@@ -888,6 +901,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		cairo_surface_set_user_data (surface, &full_opacity_at_key, to, g_free);
 		LOG_MSI ("caching %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
 		QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &(ctx->subimage));
+		if (!subimage_cache)
+			g_hash_table_insert (cache, new int(ctx->subimage), (subimage_cache = qtree_new ()));
 		qtree_insert_with_value (subimage_cache, surface, ctx->level, ctx->x, ctx->y);
 
 		ctx->state = BitmapImageFree;
