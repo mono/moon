@@ -35,6 +35,20 @@ namespace System.Windows.Automation.Peers {
 
 		protected SelectorAutomationPeer (Selector owner) : base (owner)
 		{
+			// Since Selector only supports one item selected we are only raising SelectionItemPatternOnElementSelected
+			owner.SelectionChanged += (o, e) => {
+				if (owner.SelectedIndex == -1) 
+					return;
+				
+				UIElement selectedItem = GetChildAtIndex (owner.SelectedIndex);
+				if (selectedItem != null) {
+					AutomationPeer peer 
+						= FrameworkElementAutomationPeer.CreatePeerForElement (selectedItem);
+					if (peer != null)
+						peer.RaiseAutomationEvent (AutomationEvents.SelectionItemPatternOnElementSelected);
+				}
+					
+			};
 		}
 
 		public override object GetPattern (PatternInterface pattern)
@@ -57,43 +71,28 @@ namespace System.Windows.Automation.Peers {
 			Selector selector = Owner as Selector;
 
 			if (selector.SelectedIndex == -1)
-				return new IRawElementProviderSimple [0];
-			else if (VisualTreeHelper.GetChildrenCount (selector) >= selector.SelectedIndex)
-				return new IRawElementProviderSimple [0];
+				return null;
 
-			UIElement uielement
-				= VisualTreeHelper.GetChild (selector, selector.SelectedIndex) as UIElement;
+			UIElement uielement = GetChildAtIndex (selector.SelectedIndex);
 			if (uielement == null)
-				return new IRawElementProviderSimple [0];
+				return null;
 
 			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (uielement);
 			if (peer != null)
 				return new IRawElementProviderSimple [] { ProviderFromPeer (peer) };
-			else
-				return new IRawElementProviderSimple [0];
+			
+			return null;
 		}
 
-
-		[MonoTODO("Confirm returned value with tests")]
 		bool ISelectionProvider.CanSelectMultiple {
 			get { return false; }
 		}
 
-		[MonoTODO("Confirm returned value with tests")]
 		bool ISelectionProvider.IsSelectionRequired {
 			get { return false; }
 		}
 
 		#endregion
-
-		internal override List<AutomationPeer> GetChildrenInternal ()
-		{
-			Selector selector = Owner as Selector;
-			if (selector.Items.Count > 0)
-				return FrameworkElementAutomationPeer.GetChildrenRecursively (selector);
-			
-			return null;
-		}
 
 	}
 }

@@ -1,5 +1,5 @@
-//
-// Unit tests for ItemsControlAutomationPeer
+   //
+// Unit tests for ButtonBaseAutomationPeer
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -27,11 +27,10 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Automation.Peers;
-using System.Windows.Automation.Provider;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 using Microsoft.Silverlight.Testing;
 using Mono.Moonlight.UnitTesting;
@@ -40,36 +39,29 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Automation.Peers {
 
 	[TestClass]
-	public class ItemsControlAutomationPeerTest : FrameworkElementAutomationPeerTest {
-
-		public class ItemsControlConcrete : ItemsControl {
-			public ItemsControlConcrete () : base ()
-			{
-			}
-
-			protected override AutomationPeer OnCreateAutomationPeer ()
-			{
-				return new ItemsControlAutomationPeerPoker (this);
-			}
-		}
-
-		public class ItemsControlAutomationPeerPoker : ItemsControlAutomationPeer, FrameworkElementAutomationPeerContract {
-
-			public ItemsControlAutomationPeerPoker (ItemsControlConcrete items) :
-				base (items)
+	public class ListBoxAutomationPeerTest : SelectorAutomationPeerTest {
+		
+		public class ListBoxAutomationPeerConcrete : ListBoxAutomationPeer, FrameworkElementAutomationPeerContract {
+			public ListBoxAutomationPeerConcrete (ListBoxConcrete owner)
+				: base (owner)
 			{
 			}
 
 			#region Overridden Methods
 
-			public List<AutomationPeer> GetChildrenCore_ ()
+			public string GetClassNameCore_ ()
 			{
-				return base.GetChildrenCore ();
+				return base.GetClassNameCore ();
+			}
+
+			public AutomationControlType GetAutomationControlTypeCore_ ()
+			{
+				return base.GetAutomationControlTypeCore ();
 			}
 
 			#endregion
 
-			#region Wrapper Methods
+			#region FrameworkElementAutomationPeerContract Members
 
 			public AutomationPeer GetLabeledByCore_ ()
 			{
@@ -101,22 +93,22 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				return base.GetAccessKeyCore ();
 			}
 
-			public AutomationControlType GetAutomationControlTypeCore_ ()
-			{
-				return base.GetAutomationControlTypeCore ();
-			}
-
 			public string GetAutomationIdCore_ ()
 			{
 				return base.GetAutomationIdCore ();
 			}
 
-			public Rect GetBoundingRectangleCore_ ()
+			public global::System.Windows.Rect GetBoundingRectangleCore_ ()
 			{
 				return base.GetBoundingRectangleCore ();
 			}
 
-			public Point GetClickablePointCore_ ()
+			public global::System.Collections.Generic.List<AutomationPeer> GetChildrenCore_ ()
+			{
+				return base.GetChildrenCore ();
+			}
+
+			public global::System.Windows.Point GetClickablePointCore_ ()
 			{
 				return base.GetClickablePointCore ();
 			}
@@ -176,58 +168,51 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				return base.IsRequiredForFormCore ();
 			}
 
-			public string GetClassNameCore_ ()
-			{
-				return base.GetClassNameCore ();
-			}
-
 			#endregion
 		}
 
+		public class ListBoxConcrete : ListBox {
+			public ListBoxConcrete () : base ()
+			{
+			}
+
+			protected override AutomationPeer OnCreateAutomationPeer ()
+			{
+				return new ListBoxAutomationPeerConcrete (this);
+			}
+		}
+
 		[TestMethod]
-		public override void GetPattern ()
+		public override void GetClassName ()
 		{
-			ItemsControlAutomationPeerPoker icap = new ItemsControlAutomationPeerPoker (new ItemsControlConcrete ());
-
-			Assert.IsNull (icap.GetPattern (PatternInterface.Dock), "Dock");
-			Assert.IsNull (icap.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
-			Assert.IsNull (icap.GetPattern (PatternInterface.Grid), "Grid");
-			Assert.IsNull (icap.GetPattern (PatternInterface.GridItem), "GridItem");
-			Assert.IsNull (icap.GetPattern (PatternInterface.Invoke), "Invoke");
-			Assert.IsNull (icap.GetPattern (PatternInterface.MultipleView), "MultipleView");
-			Assert.IsNull (icap.GetPattern (PatternInterface.RangeValue), "RangeValue");
-			Assert.IsNull (icap.GetPattern (PatternInterface.Scroll), "Scroll");
-			Assert.IsNull (icap.GetPattern (PatternInterface.ScrollItem), "ScrollItem");
-			Assert.IsNull (icap.GetPattern (PatternInterface.Selection), "Selection");
-			Assert.IsNull (icap.GetPattern (PatternInterface.SelectionItem), "SelectionItem");
-			Assert.IsNull (icap.GetPattern (PatternInterface.Table), "Table");
-			Assert.IsNull (icap.GetPattern (PatternInterface.TableItem), "TableItem");
-			Assert.IsNull (icap.GetPattern (PatternInterface.Toggle), "Toggle");
-			Assert.IsNull (icap.GetPattern (PatternInterface.Transform), "Transform");
-			Assert.IsNull (icap.GetPattern (PatternInterface.Value), "Value");
-			Assert.IsNull (icap.GetPattern (PatternInterface.Window), "Window");
+			FrameworkElementAutomationPeerContract feap
+				= FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ()) as FrameworkElementAutomationPeerContract;
+			Assert.AreEqual ("ListBox", feap.GetClassName (), "GetClassNameCore");
+			Assert.AreEqual ("ListBox", feap.GetClassNameCore_ (), "GetClassNameCoreCore");
 		}
 
-		protected override FrameworkElement CreateConcreteFrameworkElement ()
+		[TestMethod]
+		public override void GetAutomationControlType ()
 		{
-			return new ItemsControlConcrete ();
-		}
-
-		protected override FrameworkElementAutomationPeerContract CreateConcreteFrameworkElementAutomationPeer (FrameworkElement element)
-		{
-			return new ItemsControlAutomationPeerPoker (element as ItemsControlConcrete);
+			FrameworkElementAutomationPeerContract feap
+				= FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ()) as FrameworkElementAutomationPeerContract;
+			Assert.AreEqual (AutomationControlType.List, feap.GetAutomationControlType (), "GetAutomationControlType");
+			Assert.AreEqual (AutomationControlType.List, feap.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
 		}
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("This is not yet working on Moonlight")]
 		public override void ContentTest ()
 		{
-			Assert.IsTrue (IsContentPropertyElement (), "ItemsControl ContentElement.");
+			Assert.IsTrue (IsContentPropertyElement (), "ListBox ContentElement.");
 
 			bool concreteLoaded = false;
-			ItemsControlConcrete concrete = CreateConcreteFrameworkElement () as ItemsControlConcrete;
+			bool concreteLayoutUpdate = false;
+			ListBoxConcrete concrete = CreateConcreteFrameworkElement () as ListBoxConcrete;
+			concrete.Width = 300;
+			concrete.Height = 300;
 			concrete.Loaded += (o, e) => concreteLoaded = true;
+			concrete.LayoutUpdated += (o, e) => concreteLayoutUpdate = true;
 			TestPanel.Children.Add (concrete);
 
 			// StackPanel with two TextBlocks
@@ -243,21 +228,48 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
 
 				Assert.IsNull (peer.GetChildren (), "GetChildren #0");
+
+				concreteLayoutUpdate = false;
 				concrete.Items.Add (stackPanel);
 				// Also one extra TextBlock
 				concrete.Items.Add (new TextBlock () { Text = "Text2" });
 			});
-			EnqueueConditional (() => concreteLoaded && stackPanelLoaded, "ConcreteLoaded #1");
+			EnqueueConditional (() => concreteLoaded && stackPanelLoaded && concreteLayoutUpdate, "ConcreteLoaded #1");
 			Enqueue (() => {
-				stackPanelLoaded = false;
 				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
-				Assert.IsNull (peer.GetChildren (), "GetChildren #1");
-				// We add another TextBlock and nothing changes
+				Assert.IsNotNull (peer.GetChildren (), "GetChildren #1");
+
+				// Is 2 because StackPanel is wrapped into 1 ListBoxItem
+				Assert.AreEqual (2, peer.GetChildren ().Count, "GetChildren.Count #1");
+				// We add another TextBlock
+				concreteLayoutUpdate = false;
 				stackPanel.Children.Add (new TextBlock () { Text = "Text3" });
-				Assert.IsNull (peer.GetChildren (), "GetChildren #2");
+				Assert.AreEqual (2, peer.GetChildren ().Count, "GetChildren.Count #2");
+				concrete.Items.Add (new TextBlock () { Text = "Text4" });
+				Assert.AreEqual (3, peer.GetChildren ().Count, "GetChildren.Count #3");
+				concreteLayoutUpdate = false;
+			});
+			// Let's add more children in order to show scrollbars
+			EnqueueConditional (() => concreteLoaded && stackPanelLoaded && concreteLayoutUpdate, "ConcreteLoaded #2");
+			Enqueue (() => {
+				for (int child = 0; child < 10; child++)
+					concrete.Items.Add (new TextBlock () { Text = string.Format ("Child: {0}", child) });
+				
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
+				Assert.IsNotNull (peer.GetChildren (), "GetChildren #2");
+				Assert.AreEqual (13, peer.GetChildren ().Count, "GetChildren.Count #4");
 			});
 			EnqueueTestComplete ();
 		}
 
+		protected override FrameworkElement CreateConcreteFrameworkElement ()
+		{
+			return new ListBoxConcrete ();
+		}
+
+		protected override FrameworkElementAutomationPeerContract CreateConcreteFrameworkElementAutomationPeer (FrameworkElement element)
+		{
+			return new ListBoxAutomationPeerConcrete (element as ListBoxConcrete);
+		}
 	}
 }

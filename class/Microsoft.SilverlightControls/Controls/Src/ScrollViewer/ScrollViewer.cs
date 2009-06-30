@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives; 
 using System.Windows.Input;
+using System.Windows.Automation.Peers;
 #if WPF
 using PropertyChangedCallback = System.Windows.FrameworkPropertyMetadata; 
 #endif
@@ -671,5 +672,10 @@ namespace System.Windows.Controls
             } 
         } 
 #endif
+
+	protected override AutomationPeer OnCreateAutomationPeer ()
+	{
+		return new ScrollViewerAutomationPeer (this);
+	}
     }
 } 

@@ -34,6 +34,7 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Automation;
 
 using Microsoft.Silverlight.Testing;
 using Mono.Moonlight.UnitTesting;
@@ -276,6 +277,63 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			});
 			EnqueueTestComplete ();
 		}
+
+		#region Pattern Tests
+
+		[TestMethod]
+		[Asynchronous]
+		[SilverlightBug("A11y implementation doesn't work")]
+		public void ISelectionProvider_Methods ()
+		{
+			bool concreteLoaded = false;
+			Selector selector = CreateConcreteFrameworkElement () as Selector;
+			selector.Width = 300;
+			selector.Height = 400;
+			selector.Loaded += (o, e) => concreteLoaded = true;
+
+			selector.Items.Add (new TextBlock () { Text = "Item0" });
+			selector.Items.Add (new TextBlock () { Text = "Item1" });
+
+			TestPanel.Children.Add (selector);
+
+			EnqueueConditional (() => concreteLoaded, "ConcreteLoaded #0");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (selector);
+
+				ISelectionProvider selectionProvider = peer.GetPattern (PatternInterface.Selection) as ISelectionProvider;
+				Assert.IsNotNull (selectionProvider, "Selection Provider");
+
+				Assert.IsFalse (selectionProvider.CanSelectMultiple, "CanSelectMultiple #0");
+				Assert.IsFalse (selectionProvider.IsSelectionRequired, "IsSelectionRequired #0");
+
+				IRawElementProviderSimple[] selection = selectionProvider.GetSelection ();
+				Assert.IsNull (selection, "GetSelection #0");
+
+				selector.SelectedIndex = 1;
+				selection = selectionProvider.GetSelection ();
+				Assert.IsNotNull (selection, "GetSelection #1");
+
+				Assert.AreEqual (1, selector.SelectedIndex, "SelectedIndex #0");
+				
+				selectionProvider = peer.GetPattern (PatternInterface.Selection) as ISelectionProvider;
+				Assert.AreEqual (1, selection.Length, "GetSelection #2");
+				IRawElementProviderSimple first = selection [0];
+
+				selector.Items.Add (new TextBlock () { Text = "Item1" });
+				selector.SelectedIndex = 0;
+				selection = selectionProvider.GetSelection ();
+				Assert.IsNotNull (selection, "GetSelection #3");
+				Assert.AreEqual (1, selection.Length, "GetSelection #4");
+
+				selector.SelectedIndex = 1;
+				selection = selectionProvider.GetSelection ();
+				Assert.IsNotNull (selection, "GetSelection #5");
+				Assert.AreEqual (1, selection.Length, "GetSelection #6");
+			});
+			EnqueueTestComplete ();
+		}
+
+		#endregion
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{

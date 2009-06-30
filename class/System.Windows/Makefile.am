@@ -123,6 +123,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/RadioButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RangeBaseAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RepeatButtonAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/ScrollBarAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/ScrollViewerAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/SelectorAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/SelectorItemAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/TextBlockAutomationPeer.cs	\

@@ -739,5 +739,10 @@ namespace System.Windows.Controls.Primitives
         /// </summary> 
         private double _dragValue;
         #endregion Member Variables
+
+	protected override AutomationPeer OnCreateAutomationPeer ()
+	{
+		return new ScrollBarAutomationPeer (this);
+	}
     } 
 } 

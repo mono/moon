@@ -23,55 +23,78 @@
 //   Moonlight Team (moonlight-list@lists.ximian.com)
 //
 
-using System;
 using System.Windows;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 
 namespace System.Windows.Automation.Peers {
-	public class ListBoxItemAutomationPeer : SelectorItemAutomationPeer, IScrollItemProvider {
 
-		public ListBoxItemAutomationPeer (ListBoxItem owner) : base (owner)
+	[MonoTODO("Write tests")]
+	public class ScrollViewerAutomationPeer : FrameworkElementAutomationPeer, IScrollProvider {
+	
+		public ScrollViewerAutomationPeer (ScrollViewer owner) : base (owner)
 		{
 		}
 
 		public override object GetPattern (PatternInterface patternInterface)
 		{
-			if (patternInterface == PatternInterface.ScrollItem) 
+			if (patternInterface == PatternInterface.Scroll)
 				return this;
-
-			return base.GetPattern (patternInterface);
+			else
+				return base.GetPattern (patternInterface);
 		}
 
 		protected override AutomationControlType GetAutomationControlTypeCore ()
 		{
-			return AutomationControlType.ListItem;
+			return AutomationControlType.Pane;
 		}
 
 		protected override string GetClassNameCore ()
 		{
-			return "ListBoxItem";
+			return "ScrollViewer";
 		}
 
-		#region ISelectionItemProvider realization
-
-		void IScrollItemProvider.ScrollIntoView ()
+		protected override bool IsControlElementCore ()
 		{
-			ListBoxAutomationPeer listboxPeer 
-				= ItemsControlAutomationPeer as ListBoxAutomationPeer;
-			if (listboxPeer == null)
-				return;
+			return true;
+		}
 
-			ListBox listbox = listboxPeer.Owner as ListBox;
-			if (listbox == null)
-				return;
+		#region IScrollProvide realization
 
-			ListBoxItem listboxItem = Owner as ListBoxItem;
-			listbox.ScrollIntoView (listboxItem);
+		void IScrollProvider.Scroll (ScrollAmount horizontalAmount, ScrollAmount verticalAmount)
+		{
+		}
+
+		void IScrollProvider.SetScrollPercent (double horizontalPercent, double verticalPercent)
+		{
+		}
+
+		bool IScrollProvider.HorizontallyScrollable { 
+			get { return false; }
+		}
+
+		double IScrollProvider.HorizontalScrollPercent { 
+			get { return (double) 0; }
+		}
+
+		double IScrollProvider.HorizontalViewSize { 
+			get { return (double) 0; }
+		}
+
+		bool IScrollProvider.VerticallyScrollable { 
+			get { return false; }
+		}
+
+		double IScrollProvider.VerticalScrollPercent { 
+			get { return (double) 0; }
+		}
+
+		double IScrollProvider.VerticalViewSize { 
+			get { return (double) 0; }
 		}
 
 		#endregion
 
 	}
+
 }

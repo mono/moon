@@ -907,6 +907,14 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			return true;
 		}
 
+		protected bool IsRunningMono ()
+		{
+			if (!systemWindowsLoaded)
+				LoadSystemWindows ();
+
+			return automationSingleton != null;
+		}
+
 		protected virtual FrameworkElement CreateConcreteFrameworkElement ()
 		{
 			return new ConcreteFrameworkElement ();
@@ -916,5 +924,33 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		{
 			return new FrameworkElementAutomationPeerPoker (element);
 		}
+
+		private void LoadSystemWindows ()
+		{
+			if (systemWindowsLoaded)
+				return;
+			systemWindowsLoaded = true;
+
+			// We try to load System.Windows to also listen for our internal events!
+			// "System.Windows, Version=3.0.0.0, Culture=neutral, PublicKeyToken=07 38 eb 9f 13 2e d7 56"
+			AssemblyName name = new AssemblyName ();
+			name.Name = "System.Windows";
+			name.Version = new Version (3, 0, 0, 0);
+			name.CultureInfo = new global::System.Globalization.CultureInfo (string.Empty);
+			name.SetPublicKeyToken (new byte[] {0x07, 0x38, 0xeb, 0x9f, 0x13, 0x2e, 0xd7, 0x56});
+			
+			Assembly assembly = Assembly.Load (name);
+			Type singletonType = assembly.GetType ("System.Windows.Automation.Peers.AutomationSingleton");
+			if (singletonType == null)
+				return;
+			
+			FieldInfo info = singletonType.GetField ("Instance", BindingFlags.Public | BindingFlags.Static);
+			automationSingleton = info.GetValue (null);
+
+			Console.WriteLine ("IS NULL;L??? {0}", automationSingleton == null);
+		}
+
+		private bool systemWindowsLoaded;
+		private object automationSingleton;
 	}
 }

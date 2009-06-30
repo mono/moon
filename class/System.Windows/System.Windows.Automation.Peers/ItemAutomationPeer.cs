@@ -24,27 +24,21 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace System.Windows.Automation.Peers {
 	public abstract class ItemAutomationPeer : FrameworkElementAutomationPeer {
 
-		internal ItemAutomationPeer (UIElement uielement, object item, ItemsControlAutomationPeer itemsPeer) : base ((ContentControl)uielement)
-		{
-			this.item = item;
-			this.itemsPeer = itemsPeer; 
-		}
-
-		protected ItemAutomationPeer (UIElement uielement) : base ((ContentControl)uielement)
+		protected ItemAutomationPeer (UIElement uielement) : base ((ContentControl) uielement)
 		{
 		}
 
 		protected override string GetNameCore ()
 		{
-			if (item == null)
-				return string.Empty;
-			return item.ToString ();
+			return ((ContentControl) Owner).Content as string ?? string.Empty;
 		}
 
 		protected override string GetItemTypeCore ()
@@ -53,14 +47,34 @@ namespace System.Windows.Automation.Peers {
 		}
 
 		protected ItemsControlAutomationPeer ItemsControlAutomationPeer {
-			get { return itemsPeer; }
+			get { 
+				FrameworkElement frameworkElement = Owner as FrameworkElement;
+				if (frameworkElement == null || frameworkElement.Parent == null) 
+					return null;
+
+				UIElement parent = frameworkElement.Parent as UIElement;
+				if (parent == null)
+					return null;
+
+				AutomationPeer peer 
+					= FrameworkElementAutomationPeer.CreatePeerForElement (parent);
+				return peer as ItemsControlAutomationPeer; 
+			}
 		}
 
 		protected object Item {
-			get { return item ?? Owner; }
+			get { return Owner; }
 		}
 
-		private object item;
-		private ItemsControlAutomationPeer itemsPeer;
+		internal override List<AutomationPeer> ChildrenCore {
+			get {
+				ContentControl owner = (ContentControl) Owner;
+				if (owner.Content == null || owner.Content is string)
+					return null;
+				else
+					return base.ChildrenCore; 
+			}
+		}
+
 	}
 }

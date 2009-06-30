@@ -48,12 +48,7 @@ namespace System.Windows.Automation.Peers {
 
 		void ISelectionItemProvider.AddToSelection ()
 		{
-			if (!IsEnabled ())
-				throw new ElementNotEnabledException();
-
-			Selector control = SelectorOwner;
-			if (control != null)
-				control.SelectedItem = Item;
+			((ISelectionItemProvider) this).Select ();
 		}
 
 		void ISelectionItemProvider.RemoveFromSelection ()
@@ -74,6 +69,9 @@ namespace System.Windows.Automation.Peers {
 				throw new ElementNotEnabledException ();
 
 			Selector control = SelectorOwner;
+			if (control.SelectedIndex != -1)
+				throw new InvalidOperationException ();
+
 			if (control != null)
 				control.SelectedItem = Item;
 		}
@@ -86,7 +84,7 @@ namespace System.Windows.Automation.Peers {
 		}
 
 		IRawElementProviderSimple ISelectionItemProvider.SelectionContainer {
-			get { return base.ProviderFromPeer (ItemsControlAutomationPeer); }
+			get { return ProviderFromPeer (ItemsControlAutomationPeer); }
 		}
 
 		#endregion

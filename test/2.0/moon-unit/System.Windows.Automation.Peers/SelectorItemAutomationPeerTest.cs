@@ -170,7 +170,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			#endregion
 		}
 
-		public class SelectorItemControlConcrete : ContentControl {
+		public class SelectorItemControlConcrete : ListBoxItem {
 			public SelectorItemControlConcrete ()
 				: base ()
 			{
@@ -293,7 +293,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsTrue (IsContentPropertyElement (), "SelectorItem ContentElement.");
 
 			bool concreteLoaded = false;
-			SelectorItemControlConcrete concrete = CreateConcreteFrameworkElement () as SelectorItemControlConcrete;
+			ListBoxItem concrete = CreateConcreteFrameworkElement () as ListBoxItem;
 			concrete.Loaded += (o, e) => concreteLoaded = true;
 			TestPanel.Children.Add (concrete);
 
@@ -324,6 +324,100 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			});
 			EnqueueTestComplete ();
 		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void GetName ()
+		{
+			Assert.IsTrue (IsContentPropertyElement (), "SelectorItem ContentElement.");
+
+			bool listboxLoaded = false;
+			ListBox listbox = new ListBox ();
+			ListBoxItem concrete = CreateConcreteFrameworkElement () as ListBoxItem;
+			listbox.Loaded += (o, e) => listboxLoaded = true;
+			listbox.Items.Add (concrete);
+			TestPanel.Children.Add (listbox);
+
+			EnqueueConditional (() => listboxLoaded, "ListBoxLoaded #0");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (listbox);
+				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
+
+				List<AutomationPeer> children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #0");
+				Assert.AreEqual (1, children.Count, "GetChildren.Count #0");
+
+				Assert.AreEqual (string.Empty, children[0].GetName (), "children[0].GetName #0");
+				
+				concrete.Content = "ListBoxItem0";
+				Assert.AreEqual ("ListBoxItem0", children[0].GetName (), "children[0].GetName #1");
+
+				concrete.Content = "Hellooooooooo";
+				Assert.AreEqual ("Hellooooooooo", children[0].GetName (), "children[0].GetName #2");
+
+				Assert.IsNull (children [0].GetChildren (), "children[0].GetChildren");
+			});
+			EnqueueTestComplete ();
+		}
+
+		#region Pattern Tests
+
+		[TestMethod]
+		[Asynchronous]
+		[SilverlightBug("A11y implementation doesn't work")]
+		public virtual void ISelectionItemProvider_Methods ()
+		{
+			bool concreteLoaded = false;
+			ListBox listbox = new ListBox ();
+			SelectorItemControlConcrete selectorItem = CreateConcreteFrameworkElement () as SelectorItemControlConcrete;
+			selectorItem.Content = "1";
+			SelectorItemControlConcrete secondSelectorItem = new SelectorItemControlConcrete () { Content = "2" };
+			listbox.Loaded += (o, e) => concreteLoaded = true;
+
+			listbox.Items.Add (selectorItem);
+			listbox.Items.Add (secondSelectorItem);
+
+			TestPanel.Children.Add (listbox);
+
+			EnqueueConditional (() => concreteLoaded, "ConcreteLoaded #0");
+			Enqueue (() => {
+				AutomationPeer peer1 = FrameworkElementAutomationPeer.CreatePeerForElement (selectorItem);
+				AutomationPeer peer2 = FrameworkElementAutomationPeer.CreatePeerForElement (secondSelectorItem);
+
+				ISelectionItemProvider selectionItemProvider1 = peer1.GetPattern (PatternInterface.SelectionItem) as ISelectionItemProvider;
+				Assert.IsNotNull (selectionItemProvider1, "SelectionItem Provider #0");
+
+				ISelectionItemProvider selectionItemProvider2 = peer2.GetPattern (PatternInterface.SelectionItem) as ISelectionItemProvider;
+				Assert.IsNotNull (selectionItemProvider2, "SelectionItem Provider #1");
+
+				// By default both are not selected
+				Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #0");
+				Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #1");
+				
+				selectionItemProvider1.AddToSelection ();
+				Assert.IsTrue (selectionItemProvider1.IsSelected, "IsSelected #2");
+				Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #3");
+
+				Assert.Throws<InvalidOperationException> (() => {
+					selectionItemProvider2.AddToSelection ();
+				}, "AddToSelection #0");
+
+				Assert.Throws<InvalidOperationException> (() => {
+					selectionItemProvider2.Select ();
+				}, "Select #1");
+
+				selectionItemProvider1.RemoveFromSelection ();
+				Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #4");
+				Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #5");
+
+				selectionItemProvider1.Select ();
+				Assert.IsTrue (selectionItemProvider1.IsSelected, "IsSelected #5");
+				Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #6");
+			});
+			EnqueueTestComplete ();
+		}
+
+		#endregion
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{

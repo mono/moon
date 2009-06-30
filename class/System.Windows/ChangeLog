@@ -1,3 +1,21 @@
+2009-06-30  Mario Carrion  <mcarrion@novell.com>
+
+	* Makefile.am: Files added: ScrollViewerAutomationPeer.cs and 
+	ScrollBarAutomationPeer.cs.
+	* System.Windows.Automation.Peers/ItemAutomationPeer.cs: Fixed
+	properties: ItemsControlAutomationPeer and ChildrenCore.
+	* System.Windows.Automation.Peers/SelectorAutomationPeer.cs: Raises 
+	SelectionItemPatternOnElementSelected, fixes GetSelection.
+	* System.Windows.Automation.Peers/ListBoxItemAutomationPeer.cs: 
+	ScrollIntoView implementation.
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeer.cs: 
+	Fixed children, returns scrollbars only when visible.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeer.cs: 
+	Fixed SelectionContainer.
+	* System.Windows.Automation.Peers/ScrollBarAutomationPeer.cs, 
+	  System.Windows.Automation.Peers/ScrollViewerAutomationPeer.cs: New
+	files.
+
 2009-06-26  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/AutomationPeer.cs: [MonoTODO] removed.

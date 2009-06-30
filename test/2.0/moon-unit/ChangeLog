@@ -1,3 +1,21 @@
+2009-06-30  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: New files added: ListBoxAutomationPeerTest.cs and
+	ListBoxItemAutomationPeerTest.cs
+	* System.Windows.Automation.Peers/ListBoxAutomationPeerTest.cs: New
+	test for ListBoxAutomationPeer class.
+	* System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: Testing
+	ISelectionProvider methods.
+	* System.Windows.Automation.Peers/ListBoxItemAutomationPeerTest.cs: New
+	test for ListBoxItemAutomationPeer class.
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs: 
+	Removed commented code, using MoonlightBug in ContentTest.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	Methods overridden: GetName. Testing ISelectionItemProvider methods.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	New methods: IsRunningMono, LoadSystemWindows, used to handle a11y 
+	events on Moonlight.
+
 2009-06-30  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Add tests covering the
