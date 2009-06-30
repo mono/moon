@@ -1,3 +1,9 @@
+2009-06-30  Alan McGovern  <amcgovern@novell.com>
+
+	* plugin-class.cpp: Use SetValueWithError instead of SetValue
+	  and propagate the exception back to javascript. Fixes drt
+	  638
+
 2009-06-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin.cpp: Initialize enable_html_access to true since the value

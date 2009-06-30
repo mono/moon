@@ -2728,9 +2728,9 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 		
 		if (Type::IsSubclassOf (obj->moonlight_type, Type::DEPENDENCY_OBJECT) && obj->moonlight_type != Type::INVALID) {
 			MoonlightDependencyObjectObject *depobj = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (*value);
-			dob->SetValue (prop, Value (depobj->GetDependencyObject ()));
+			dob->SetValueWithError (prop, Value (depobj->GetDependencyObject ()), error);
 			
-			return true;
+			return error->number == 0;
 		}
 		
 		switch (obj->moonlight_type) {
@@ -2782,15 +2782,15 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			if (Type::IsSubclassOf (prop->GetPropertyType(), Type::DEPENDENCY_OBJECT)) {
 				DependencyObject *val = NULL;
 				
-				dob->SetValue (prop, Value (val));
+				dob->SetValueWithError (prop, Value (val), error);
 			} else if (prop->GetPropertyType() == Type::STRING) {
 				char *val = NULL;
 				
-				dob->SetValue (prop, Value (val));
+				dob->SetValueWithError (prop, Value (val), error);
 			} else 
-				dob->SetValue (prop, NULL);
+				dob->SetValueWithError (prop, NULL, error);
 			
-			return true;
+			return error->number == 0;
 		} else if (NPVARIANT_IS_VOID (*value)) {
 			d(printf ("unhandled variant type VOID in do.set_property for (%s::%s)\n",
 				  dob->GetTypeName (), prop->GetName()));
