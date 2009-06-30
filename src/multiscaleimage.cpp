@@ -998,11 +998,6 @@ MultiScaleImage::GetFreeBitmapImageContext ()
 	guint num_dl = 6;
 	BitmapImageContext *ctx;
 	GList *list;
-#if RUNTIME_DEBUG_MSI
-	LOG_MSI ("\nBitmapImages: %d\n", num_dl);
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
-		LOG_MSI ("\tstate: %d, source: %s\n", ctx->state, ctx->bitmapimage->GetUriSource ()->ToString());
-#endif
 	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
 		if (ctx->state == BitmapImageFree)
 			return ctx;
