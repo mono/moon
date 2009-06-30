@@ -169,9 +169,6 @@ namespace System.Windows.Data {
 
 		public void Invalidate ()
 		{
-			if (Binding.Mode == BindingMode.OneTime)
-				return;
-			
 			cached = false;
 			cachedValue = null;
 			info = null;

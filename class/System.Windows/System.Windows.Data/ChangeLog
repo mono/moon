@@ -1,3 +1,8 @@
+2009-06-30  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: OneTime bindings can be
+	  invalidated and they do reflect the new value.
+
 2009-06-23  Alan McGovern  <amcgovern@novell.com>
 
 	* Binding.cs: Don't null check value before using it, we
