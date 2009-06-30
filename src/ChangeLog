@@ -1,5 +1,10 @@
 2009-06-30  Alan McGovern  <amcgovern@novell.com>
 
+	* popup.cpp: According to the docs, a popup which is GC'ed
+	  should be closed. Ensure that this happens.
+
+2009-06-30  Alan McGovern  <amcgovern@novell.com>
+
 	* popup.cpp: If the child is set after the popup is opened,
 	  make sure it is shown. Ensure that we now only emit the
 	  Opened/Closed events when the popup IsOpen state changes.

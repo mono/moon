@@ -34,6 +34,8 @@ Popup::Popup ()
 void
 Popup::Dispose ()
 {
+	if (!shutting_down && GetIsOpen ())
+		Hide (GetChild ());
 	GetDeployment ()->RemoveHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
 	FrameworkElement::Dispose ();
 }
@@ -108,8 +110,6 @@ Popup::Hide (UIElement *child)
 void
 Popup::SetSurface (Surface *s)
 {
-	 if (!shutting_down && !s && GetIsOpen ())
-	 	SetIsOpen (false);
 	FrameworkElement::SetSurface (s);
 }
 
