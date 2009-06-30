@@ -1,3 +1,9 @@
+2009-06-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (style_diff): Improved a bit so that we never
+	return G_MAXINT if any font by the same name is found, no matter
+	what style differences there are.
+
 2009-06-30  Jackson Harper  <jackson@ximian.com>
 
 	* deepzoomimagetilesource.cpp: Parsers need to be freed.

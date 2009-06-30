@@ -1225,18 +1225,14 @@ style_diff (FontStyleInfo *actual, FontStyleInfo *desired)
 	if (actual->slant == desired->slant)
 		return weight;
 	
-	if (actual->slant == FontStylesNormal && desired->slant == FontStylesItalic) {
-		// we can emulate italic, but we would still prefer the real
+	if (actual->slant == FontStylesNormal) {
+		// we can emulate italic/oblique, but we would still prefer the real
 		// italic font if we can find it so apply a slight penalty
 		return 1000 + weight;
 	}
 	
-	if (actual->slant != FontStylesNormal && desired->slant != FontStylesNormal) {
-		// ouch, apply a huge penalty
-		return 1000000 + weight;
-	}
-	
-	return G_MAXINT;
+	// ouch, apply a huge penalty
+	return 1000000 + weight;
 }
 
 static FaceInfo *
