@@ -533,6 +533,7 @@ class XamlParserInfo {
 	char* buffer_until_element;
 	int buffer_depth;
 	GString *buffer;
+	bool validate_templates;
 
  private:
 	GList *created_elements;
@@ -566,6 +567,7 @@ class XamlParserInfo {
 		buffer = NULL;
 		xml_buffer = NULL;
 		multi_buffer_offset = 0;
+		validate_templates = false;
 
 		namespace_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	}
@@ -592,13 +594,6 @@ class XamlParserInfo {
 	{
 		xml_buffer_start_index = XML_GetCurrentByteIndex (parser) - multi_buffer_offset;
 		buffer = g_string_new (NULL);
-	}
-
-	void EndBuffering ()
-	{
-		g_free (buffer_until_element);
-		buffer_until_element = NULL;
-		multi_buffer_offset = 0;
 	}
 
 	bool ShouldBeginBuffering ()
@@ -644,6 +639,23 @@ class XamlParserInfo {
 
 		this->xml_buffer = xml_buffer;
 		xml_buffer_start_index = 0;
+	}
+
+	void ValidateTemplate (const char* buffer, XamlContext* context)
+	{
+		XamlLoader *loader = new XamlLoader (NULL, buffer, NULL, context);
+		Type::Kind dummy;
+
+		// TODO: Do we need to set the binding source during validation?
+		MoonError error;
+		loader->CreateFromStringWithError (buffer, true, true, &dummy, &error);
+
+		delete loader;
+
+		if (error.number != MoonError::NO_ERROR) {
+			int line_number = error.line_number + XML_GetCurrentLineNumber (parser);
+			error_args = new ParserErrorEventArgs (error.message, file_name, line_number, error.char_position, error.code, NULL, NULL);
+		}
 	}
 
 	FrameworkTemplate *GetTemplateParent (XamlElementInstance *item)
@@ -1704,6 +1716,13 @@ end_element_handler (void *data, const char *el)
 
 				XamlContext *context = create_xaml_context (p, template_, p->loader->GetContext());
 
+				if (p->validate_templates) {
+					p->ValidateTemplate (buffer, context);
+
+					if (p->error_args)
+						return;
+				}
+
                                 template_->SetXamlBuffer (context, buffer);
 				p->current_element = p->current_element->parent;
 			}
@@ -2061,10 +2080,10 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 }
 
 Value *
-XamlLoader::CreateFromString (const char *xaml, bool create_namescope,
+XamlLoader::CreateFromString (const char *xaml, bool create_namescope, bool validate_templates,
 			      Type::Kind *element_type)
 {
-	return HydrateFromString (xaml, NULL, create_namescope, element_type);
+	return HydrateFromString (xaml, NULL, create_namescope, validate_templates, element_type);
 }
 
 DependencyObject *
@@ -2084,7 +2103,7 @@ XamlLoader::CreateDependencyObjectFromFile (const char *xaml, bool create_namesc
 DependencyObject *
 XamlLoader::CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type)
 {
-	return value_to_dependency_object (CreateFromString (xaml, create_namescope, element_type));
+	return value_to_dependency_object (CreateFromString (xaml, create_namescope, false, element_type));
 }
 
 /**
@@ -2092,7 +2111,7 @@ XamlLoader::CreateDependencyObjectFromString (const char *xaml, bool create_name
  * data
  */
 Value *
-XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type)
+XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool create_namescope, bool validate_templates, Type::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS ("utf-8", '|');
 	XamlParserInfo *parser_info = NULL;
@@ -2128,6 +2147,7 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 	parser_info->namescope->SetTemporary (!create_namescope);
 
 	parser_info->loader = this;
+	parser_info->validate_templates = validate_templates;
 	
 	//
 	// If we are hydrating, we are not null
@@ -2240,9 +2260,9 @@ XamlLoader::CreateFromFileWithError (const char *xaml_file, bool create_namescop
 }
 
 Value *
-XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error)
+XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error)
 {
-	Value *res = CreateFromString (xaml, create_namescope, element_type);
+	Value *res = CreateFromString (xaml, create_namescope, validate_templates, element_type);
 	if (error_args && error_args->error_code != -1) {
 		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
 		MoonError::SetXamlPositionInfo (error, error_args->char_position, error_args->line_number);
@@ -2251,9 +2271,9 @@ XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope,
 }
 
 Value *
-XamlLoader::HydrateFromStringWithError (const char *xaml, DependencyObject *object, bool create_namescope, Type::Kind *element_type, MoonError *error)
+XamlLoader::HydrateFromStringWithError (const char *xaml, DependencyObject *object, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error)
 {
-	Value *res = HydrateFromString (xaml, object, create_namescope, element_type);
+	Value *res = HydrateFromString (xaml, object, create_namescope, validate_templates, element_type);
 	if (error_args && error_args->error_code != -1) {
 		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
 		MoonError::SetXamlPositionInfo (error, error_args->char_position, error_args->line_number);

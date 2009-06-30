@@ -51,7 +51,9 @@ namespace System.Windows.Markup
 		[EditorBrowsable (EditorBrowsableState.Never)]
 		public static object LoadWithInitialTemplateValidation (string xaml)
 		{
-			throw new NotImplementedException ();
+			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Assembly.GetCallingAssembly (), Deployment.Current.Surface.Native, PluginHost.Handle);
+			
+			return loader.CreateObjectFromString (xaml, true, true);
 		}
 	}
 }

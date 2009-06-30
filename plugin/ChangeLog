@@ -1,3 +1,9 @@
+2009-06-30  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp: Update function signature, add the validate
+	templates param
+	* cbinding.h: regen
+
 2009-06-30  Alan McGovern  <amcgovern@novell.com>
 
 	* plugin-class.cpp: Use SetValueWithError instead of SetValue

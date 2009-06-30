@@ -231,15 +231,20 @@ namespace Mono.Xaml
 		
 		//
 		// Creates a native object for the given xaml.
-		// 
+		//
 		public IntPtr CreateFromString (string xaml, bool createNamescope, out Kind kind)
+		{
+			return CreateFromString (xaml, createNamescope, false, out kind);
+		}
+
+		public IntPtr CreateFromString (string xaml, bool createNamescope, bool validateTemplates, out Kind kind)
 		{
 			if (xaml == null)
 				throw new ArgumentNullException ("xaml");
 
 			try {
 				CreateNativeLoader (null, xaml);
-				return NativeMethods.xaml_loader_create_from_string (NativeLoader, xaml, createNamescope, out kind);
+				return NativeMethods.xaml_loader_create_from_string (NativeLoader, xaml, createNamescope, validateTemplates, out kind);
 			}
 			finally {
 				FreeNativeLoader ();
@@ -254,7 +259,7 @@ namespace Mono.Xaml
 			try {
 				Kind k;
 				CreateNativeLoader (null, xaml);
-				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, dependency_object, true, out k);
+				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, dependency_object, true, false, out k);
 				if (ret == IntPtr.Zero)
 					throw new Exception ("Invalid XAML file");
 			}
@@ -284,6 +289,7 @@ namespace Mono.Xaml
 		// Creates a managed dependency object from the xaml.
 		// 
 		public abstract object CreateObjectFromString (string xaml, bool createNamescope);
+		public abstract object CreateObjectFromString (string xaml, bool createNamescope, bool validateTemplates);
 		public abstract object CreateObjectFromFile (string path, bool createNamescope);
 	}
 }

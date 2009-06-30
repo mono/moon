@@ -88,8 +88,13 @@ namespace Mono.Xaml
 		
 		// 
 		// Creates a managed dependency object from the xaml.
-		// 
+		//
 		public override object CreateObjectFromString (string xaml, bool createNamescope)
+		{
+			return CreateObjectFromString (xaml, createNamescope, false);
+		}
+
+		public override object CreateObjectFromString (string xaml, bool createNamescope, bool validateTemplates)
 		{
 			if (xaml == null)
 				throw new ArgumentNullException ("xaml");
@@ -100,7 +105,7 @@ namespace Mono.Xaml
 			
 			DependencyObject.Initialize ();
 			
-			top = CreateFromString (xaml, createNamescope, out kind);
+			top = CreateFromString (xaml, createNamescope, validateTemplates, out kind);
 			
 			if (top == IntPtr.Zero)
 				return null;

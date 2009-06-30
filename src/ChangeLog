@@ -1,3 +1,9 @@
+2009-06-30  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Add a flag for template validation
+	- Implement template validation and propogate errors up
+	* cbinding.cpp: regen
+
 2009-06-30  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: download the first num_dl (6) levels while the

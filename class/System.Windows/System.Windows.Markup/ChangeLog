@@ -1,3 +1,7 @@
+2009-06-30  Jackson Harper  <jackson@ximian.com>
+
+	* XamlReader.cs: Implement LoadWithInitialTemplateValidation
+
 2009-06-08  Jackson Harper  <jackson@ximian.com>
 
 	* XamlParseException.cs: Remove line/position info from the

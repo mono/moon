@@ -2583,7 +2583,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 
 		loader->LoadVM ();
 
-		Value *val = loader->CreateFromStringWithError (xaml, create_namescope, &element_type, &error);
+		Value *val = loader->CreateFromStringWithError (xaml, create_namescope, false, &element_type, &error);
 		if (val && val->Is (Type::DEPENDENCY_OBJECT))
 			dep = val->AsDependencyObject ();
 			

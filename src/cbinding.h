@@ -676,6 +676,8 @@ struct MoonlightEventArgs;
 struct MoonlightEventArgsType;
 struct MoonlightEventObjectObject;
 struct MoonlightEventObjectType;
+struct MoonlightGridLength;
+struct MoonlightGridLengthType;
 struct MoonlightImageBrushObject;
 struct MoonlightImageBrushType;
 struct MoonlightImageObject;
@@ -2858,13 +2860,13 @@ DependencyObject *xaml_context_get_template_binding_source (XamlContext *instanc
 Value *xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, int *element_type, MoonError *error);
 
 /* @GeneratePInvoke */
-Value *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, int *element_type, MoonError *error);
+Value *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, bool validate_templates, int *element_type, MoonError *error);
 
 /* @GeneratePInvoke */
 XamlContext *xaml_loader_get_context (XamlLoader *instance);
 
 /* @GeneratePInvoke */
-Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, int *element_type, MoonError *error);
+Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, bool validate_templates, int *element_type, MoonError *error);
 
 /**
  * Xap

@@ -676,6 +676,8 @@ struct MoonlightEventArgs;
 struct MoonlightEventArgsType;
 struct MoonlightEventObjectObject;
 struct MoonlightEventObjectType;
+struct MoonlightGridLength;
+struct MoonlightGridLengthType;
 struct MoonlightImageBrushObject;
 struct MoonlightImageBrushType;
 struct MoonlightImageObject;
