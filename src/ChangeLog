@@ -1,3 +1,10 @@
+2009-06-30  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.cpp: If the child is set after the popup is opened,
+	  make sure it is shown. Ensure that we now only emit the
+	  Opened/Closed events when the popup IsOpen state changes.
+	  Allows 503 to progress further.
+
 2009-06-30  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Add a flag for template validation

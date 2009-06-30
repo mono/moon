@@ -54,17 +54,25 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 	
 	if (args->GetId () == Popup::IsOpenProperty) {
-		if (args->GetNewValue () && args->GetNewValue ()->AsBool ())
+		// we intentionally don't track whether we've added a tick
+		// call (to make sure we only add it once) for this event
+		// because multiple IsOpen changes cause multiple async events
+		// in SL.
+		if (args->GetNewValue () && args->GetNewValue ()->AsBool ()) {
 			Show (GetChild ());
-		else
+			AddTickCall (Popup::emit_opened);
+		}
+		else {
 			Hide (GetChild ());
+			AddTickCall (Popup::emit_closed);
+		}
 	} else if (args->GetId () == Popup::ChildProperty) {
 		if (args->GetOldValue () && !args->GetOldValue ()->GetIsNull ()) {
 			FrameworkElement *el = args->GetOldValue ()->AsFrameworkElement ();
-			if (el->GetLogicalParent () == this) {
+			if (GetIsOpen ())
 				Hide (el);
-				el->SetLogicalParent (NULL, error);
-			}
+
+			el->SetLogicalParent (NULL, error);
 			if (error->number)
 				return;
 		}
@@ -76,7 +84,7 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			
 			if (GetIsOpen ())
 				Show (el);
-		}	
+		}
 	}
 	NotifyListenersOfPropertyChange (args, error);
 }
@@ -90,18 +98,11 @@ Popup::ShuttingDownHandler (Deployment *sender, EventArgs *args)
 void
 Popup::Hide (UIElement *child)
 {
-	if (!visible)
+	if (!visible || !child)
 		return;
 
-	// we intentionally don't track whether we've added a tick
-	// call (to make sure we only add it once) for this event
-	// because multiple IsOpen changes cause multiple async events
-	// in SL.
-	AddTickCall (Popup::emit_closed);
 	visible = false;
-
-	if (child)
-		Deployment::GetCurrent ()->GetSurface ()->DetachLayer (child);
+	Deployment::GetCurrent ()->GetSurface ()->DetachLayer (child);
 }
 
 void
@@ -109,23 +110,15 @@ Popup::SetSurface (Surface *s)
 {
 	 if (!shutting_down && !s && GetIsOpen ())
 	 	SetIsOpen (false);
-
 	FrameworkElement::SetSurface (s);
 }
 
 void
 Popup::Show (UIElement *child)
 {
-	if (visible)
+	if (visible || !child)
 		return;
 
-	// we intentionally don't track whether we've added a tick
-	// call (to make sure we only add it once) for this event
-	// because multiple IsOpen changes cause multiple async events
-	// in SL.
-	AddTickCall (Popup::emit_opened);
 	visible = true;
-
-	if (child)
-		Deployment::GetCurrent ()->GetSurface ()->AttachLayer (child);
+	Deployment::GetCurrent ()->GetSurface ()->AttachLayer (child);
 }
