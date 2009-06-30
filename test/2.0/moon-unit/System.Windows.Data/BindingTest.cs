@@ -312,6 +312,59 @@ namespace MoonTest.System.Windows.Data
 			r.DataContext = null;
 			Assert.AreEqual(null, r.Fill, "#1");
 		}
+		
+		[TestMethod]
+		public void DataContext_Applied ()
+		{
+			Canvas c = (Canvas) XamlReader.Load (@"	
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	 DataContext=""100"" >
+	<Ellipse Width=""{Binding Source=200}"" Height=""{Binding Mode=OneTime}"" />
+</Canvas>
+");
+			Ellipse e = (Ellipse) c.Children [0];
+			Assert.IsTrue (double.IsNaN (e.Height), "#1");
+			TestPanel.Children.Add (c);
+			Assert.AreEqual (100, e.Height, "#2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContext_Applied2 ()
+		{
+			bool loaded = false;
+			Canvas c = (Canvas) XamlReader.Load (@"	
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	 DataContext=""100"" >
+	<Ellipse Width=""{Binding Source=200}"" Height=""{Binding Mode=OneTime}"" />
+</Canvas>
+");
+			Ellipse e = (Ellipse) c.Children [0];
+			e.Loaded += delegate { loaded = true; Assert.AreEqual (100, e.Height, "#3"); };
+			Assert.IsTrue (double.IsNaN (e.Height), "#2");
+
+			CreateAsyncTest (c,
+				() => Assert.AreEqual (100, e.Height, "#1")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContext_Applied3 ()
+		{
+			// Create an ellipse which will bind to the parent datacontext
+			Ellipse e = new Ellipse ();
+			e.SetBinding (Ellipse.HeightProperty, new Binding ());
+
+			// Check to see if the binding is applied correctly after the FE is loaded
+			Canvas c = new Canvas { DataContext = 100.0 };
+			c.Children.Add (e);
+			Assert.IsTrue (double.IsNaN (e.Height), "#1");
+
+			CreateAsyncTest (c,
+				() => Assert.AreEqual (100, e.Height, "#2")
+			);
+		}
 
 		[TestMethod]
 		public void DataContext_ChangeParentOneWay ()
@@ -790,6 +843,25 @@ namespace MoonTest.System.Windows.Data
 			Assert.IsTrue(rectangle.ReadLocalValue(Rectangle.OpacityProperty) is BindingExpressionBase, "#2");
 			data.Opacity = 0;
 			Assert.AreNotEqual (data.Opacity, rectangle.Opacity, "#3");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TestOnceOffBinding2 ()
+		{
+			Canvas c = new Canvas { DataContext = 5.0 };
+			Rectangle r = new Rectangle ();
+			r.SetBinding (Rectangle.HeightProperty, new Binding { Mode = BindingMode.OneTime });
+			Assert.IsInstanceOfType<BindingExpressionBase> (r.ReadLocalValue (Rectangle.HeightProperty), "#1");
+			c.Children.Add (r);
+			Assert.IsInstanceOfType<BindingExpressionBase> (r.ReadLocalValue (Rectangle.HeightProperty), "#2");
+			CreateAsyncTest (c,
+				() => c.DataContext = 6.0,
+				() => {
+					Assert.IsInstanceOfType<BindingExpressionBase> (r.ReadLocalValue (Rectangle.HeightProperty), "#3");
+					Assert.AreEqual (6.0, r.Height, "#2");
+				}
+			);
 		}
 
 		[TestMethod]

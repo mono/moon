@@ -1,3 +1,8 @@
+2009-06-30  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Add tests covering the
+	  last few changes to the databinding code.
+
 2009-06-26  Mario Carrion  <mcarrion@novell.com>
 
 	* moon-unit.csproj.user: File added.
