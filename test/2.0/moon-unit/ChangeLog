@@ -1,5 +1,10 @@
 2009-06-30  Mario Carrion  <mcarrion@novell.com>
 
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	Fixed failing test.
+
+2009-06-30  Mario Carrion  <mcarrion@novell.com>
+
 	* moon-unit.csproj: New files added: ListBoxAutomationPeerTest.cs and
 	ListBoxItemAutomationPeerTest.cs
 	* System.Windows.Automation.Peers/ListBoxAutomationPeerTest.cs: New

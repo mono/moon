@@ -369,9 +369,9 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		{
 			bool concreteLoaded = false;
 			ListBox listbox = new ListBox ();
-			SelectorItemControlConcrete selectorItem = CreateConcreteFrameworkElement () as SelectorItemControlConcrete;
+			ListBoxItem selectorItem = CreateConcreteFrameworkElement () as ListBoxItem;
 			selectorItem.Content = "1";
-			SelectorItemControlConcrete secondSelectorItem = new SelectorItemControlConcrete () { Content = "2" };
+			ListBoxItem secondSelectorItem = new ListBoxItem () { Content = "2" };
 			listbox.Loaded += (o, e) => concreteLoaded = true;
 
 			listbox.Items.Add (selectorItem);
