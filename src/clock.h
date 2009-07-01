@@ -193,6 +193,7 @@ public:
 	Timeline*   GetTimeline ()        { return timeline; }
 	Duration    GetNaturalDuration ();
 	bool        GetIsPaused ()        { return is_paused; }
+	bool        GetIsSeeking ()       { return is_seeking; }
 	bool        GetHasStarted ()      { return has_started; }
 	bool        GetWasStopped ()      { return was_stopped; }
 	void        ClearHasStarted ()    { has_started = false; }

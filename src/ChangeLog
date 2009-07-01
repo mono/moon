@@ -5,6 +5,12 @@
 
 2009-06-30  Chris Toshok  <toshok@ximian.com>
 
+	* clock.h|cpp: Seeking doesn't start the clock.  And we have to
+	support UpdateFromParentTime even while paused, since we can seek
+	while paused.  Fixes 392 (along with actually fixing the test..)
+
+2009-06-30  Chris Toshok  <toshok@ximian.com>
+
 	* clock.h|cpp: fix Seek and SeekAlignedToLastTick.  fixed DRT
 	tests 393 and 396.
 

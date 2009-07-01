@@ -157,10 +157,6 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	// and [0-$forever] for Forever durations.  Automatic
 	// durations are translated into timespans.
 
-	// if we're currently paused there's nothing at all to do.
-	if (is_paused)
-		return true;
-
 	// root_parent_time is the time we were added to our parent clock.
 	// timeline->GetBeginTime() is expressed in the time-space of the parent clock.
 	//
@@ -181,6 +177,7 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 		// such that we can re-evaluate localTime and have
 		// localTime = seek_time.
 
+		begin_pause_time = 0;
 		accumulated_pause_time = 0;
 
 		/* seek_time = localTime
@@ -197,6 +194,11 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 		root_parent_time = parentTime - timeline->GetBeginTime () - seek_time / timeline->GetSpeedRatio ();
 		localTime = seek_time;
 		is_seeking = false;
+	}
+	else if (is_paused) {
+		// if we're paused and not seeking, we don't update
+		// anything.
+		return true;
 	}
 
 	// the clock doesn't update and we don't progress if the
@@ -457,7 +459,6 @@ Clock::Begin (TimeSpan parentTime)
 	emit_completed = false;
 	has_completed = false;
 	was_stopped = false;
-	is_paused = false;
 
 	/* we're starting.  initialize our current_time field */
 	SetCurrentTime ((parentTime - root_parent_time - timeline->GetBeginTime ()) * timeline->GetSpeedRatio());
@@ -519,14 +520,7 @@ Clock::Resume ()
 void
 Clock::Seek (TimeSpan timespan)
 {
-	// Start the clock if seeking into it's timespan
-	if (!GetHasStarted() && !GetWasStopped() && (GetBeginOnTick() || timeline->GetBeginTime () <= timespan)) {
-		if (GetBeginOnTick())
-			BeginOnTick (false);
-		Begin (timespan); // FIXME
-		seek_time = (timespan - timeline->GetBeginTime ()) * timeline->GetSpeedRatio ();
-	} else
-		seek_time = timespan * timeline->GetSpeedRatio ();
+	seek_time = timespan * timeline->GetSpeedRatio ();
 
 	is_seeking = true;
 }
@@ -697,8 +691,7 @@ ClockGroup::UpdateFromParentTime (TimeSpan parentTime)
 	// ClockGroups (which correspond to storyboards generally)
 	// only cause their children to update (and therefore for
 	// animations to hold/progress their value) if they are
-	// active.  if they're stopped or paused, it's simple -
-	// nothing should happens.
+	// active, or if they've had Seek called on them.
 	//
 	// but it also happens when the clockgroup is in the Filling
 	// state.  This means that you can attach a handler to
@@ -707,7 +700,7 @@ ClockGroup::UpdateFromParentTime (TimeSpan parentTime)
 	// targetting.  and the new setting isnt clobbered by the
 	// animation like it would be if the storyboard was active.
 
-	bool update_child_clocks = (current_state == Clock::Active && !GetIsPaused());
+	bool update_child_clocks = (current_state == Clock::Active || GetIsSeeking());
 
 	for (GList *l = child_clocks; l; l = l->next) {
 		Clock *clock = (Clock*)l->data;
