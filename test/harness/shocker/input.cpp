@@ -128,16 +128,26 @@ InputProvider::MoveMouseLogarithmic (int x, int y)
 	int current_x;
 	int current_y;
 	float mult;
-
+	
 	GetCursorPos (current_x, current_y);
 	
 	while (current_x != x || current_y != y) {
-		mult = abs (current_x - x) > 20 ? 3.0 : 2.0;
-		current_x += (current_x < x ? 1.0 : -1.0 ) * mult * log (1 + abs (current_x - x));
-
-		mult = abs (current_y - y) > 20 ? 3.0 : 2.0;
-		current_y += (current_y < y ? 1.0 : -1.0 ) * mult * log (1 + abs (current_y - y));
-
+		if (current_x != x) {
+			mult = abs (current_x - x) > 20 ? 3.0 : 2.0;
+			if (abs (current_x - x) < 10)
+				current_x += (current_x < x ? 1.0 : -1.0 );
+			else
+				current_x += (current_x < x ? 1.0 : -1.0 ) * mult * log (1 + abs (current_x - x));
+		}
+		
+		if (current_y != y) {
+			mult = abs (current_y - y) > 20 ? 3.0 : 2.0;
+			if (abs (current_y - y) < 10)
+				current_y += (current_y < y ? 1.0 : -1.0 );
+			else
+				current_y += (current_y < y ? 1.0 : -1.0 ) * mult * log (1 + abs (current_y - y));
+		}
+		
 		XTestFakeMotionEvent (display, XSCREEN_OF_POINTER, current_x, current_y, CurrentTime);
 		XFlush (display);
 
