@@ -641,15 +641,17 @@ class XamlParserInfo {
 		xml_buffer_start_index = 0;
 	}
 
-	void ValidateTemplate (const char* buffer, XamlContext* context)
+	void ValidateTemplate (const char* buffer, XamlContext* context, FrameworkTemplate *binding_source)
 	{
 		XamlLoader *loader = new XamlLoader (NULL, buffer, NULL, context);
 		Type::Kind dummy;
 
-		// TODO: Do we need to set the binding source during validation?
-		MoonError error;
-		loader->CreateFromStringWithError (buffer, true, true, &dummy, &error);
+		context->SetTemplateBindingSource (binding_source);
 
+		MoonError error;
+		Value *result = loader->CreateFromStringWithError (buffer, true, true, &dummy, &error);
+
+		delete result;
 		delete loader;
 
 		if (error.number != MoonError::NO_ERROR) {
@@ -1717,7 +1719,7 @@ end_element_handler (void *data, const char *el)
 				XamlContext *context = create_xaml_context (p, template_, p->loader->GetContext());
 
 				if (p->validate_templates) {
-					p->ValidateTemplate (buffer, context);
+					p->ValidateTemplate (buffer, context, template_);
 
 					if (p->error_args)
 						return;
