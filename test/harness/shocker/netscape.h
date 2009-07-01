@@ -35,7 +35,7 @@
 
 #include <stdio.h>
 #include "npapi.h"
-#include "npupp.h"
+#include "npfunctions.h"
 
 
 #define NP_VERSION_MIN_SUPPORTED  13

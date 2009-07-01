@@ -104,56 +104,56 @@ Browser::Instance ()
 NPObject*
 Browser::CreateObject (NPP npp, NPClass *klass)
 {
-	return CallNPN_CreateObjectProc (browser_funcs.createobject, npp, klass);
+	return browser_funcs.createobject (npp, klass);
 }
 
 NPObject*
 Browser::RetainObject (NPObject* npobj)
 {
-	return CallNPN_RetainObjectProc (browser_funcs.retainobject, npobj);
+	return browser_funcs.retainobject (npobj);
 }
 
 void
 Browser::ReleaseObject (NPObject* npobj)
 {
-	return CallNPN_ReleaseObjectProc (browser_funcs.releaseobject, npobj);
+	return browser_funcs.releaseobject (npobj);
 }
 
 NPUTF8 *
 Browser::UTF8FromIdentifier (NPIdentifier identifier)
 {
-	return CallNPN_UTF8FromIdentifierProc (browser_funcs.utf8fromidentifier, identifier);
+	return browser_funcs.utf8fromidentifier (identifier);
 }
 
 NPIdentifier
 Browser::GetStringIdentifier (const char* name)
 {
-	return CallNPN_GetStringIdentifierProc (browser_funcs.getstringidentifier, name);
+	return browser_funcs.getstringidentifier (name);
 }
 
 NPError
 Browser::GetValue(NPP instance, NPNVariable variable, void *value)
 {
-	NPError rv = CallNPN_GetValueProc (browser_funcs.getvalue, instance, variable, value);
+	NPError rv = browser_funcs.getvalue (instance, variable, value);
 	return rv;
 }
 
 bool
 Browser::GetProperty (NPP npp, NPObject* obj, NPIdentifier propertyName, NPVariant *result)
 {
-	return CallNPN_GetPropertyProc (browser_funcs.getproperty, npp, obj, propertyName, result);
+	return browser_funcs.getproperty (npp, obj, propertyName, result);
 }
 
 bool
 Browser::SetProperty (NPP npp, NPObject* obj, NPIdentifier propertyName, NPVariant *value)
 {
-	return CallNPN_SetPropertyProc (browser_funcs.setproperty, npp, obj, propertyName, value);
+	return browser_funcs.setproperty (npp, obj, propertyName, value);
 }
 
 bool
 Browser::Invoke (NPP npp, NPObject* obj, NPIdentifier method_name, const NPVariant *args, uint32_t arg_count, NPVariant *result)
 {
-	return CallNPN_InvokeProc (browser_funcs.invoke, npp, obj, method_name, args, arg_count, result);
+	return browser_funcs.invoke (npp, obj, method_name, args, arg_count, result);
 }
 
 
