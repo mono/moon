@@ -1,3 +1,14 @@
+2009-07-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* shutdown-manager.cpp: #include stdlib.h and unistd.h for exit()
+	and getenv().
+
+	* plugin.cpp (Plugin_New): Fixed to actually return the value it
+	was obviously meant to return. Also fixed undefined types errors.
+
+	* input.cpp (SendKeyInput): There is no uint32, use guint32
+	instead.
+
 2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Include the plugins moz-sdk directory.

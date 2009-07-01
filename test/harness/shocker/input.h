@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -198,7 +199,7 @@ public:
 
 	bool MouseIsAtPosition (int x, int y);
 
-	void SendKeyInput (uint32 key_code, bool key_down);
+	void SendKeyInput (guint32 key_code, bool key_down);
 private:
 	Display *display;
 	Window root_window;

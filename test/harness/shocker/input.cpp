@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -30,9 +31,9 @@
  */
 
 
-
-#include <math.h>
+#include <stdlib.h>
 #include <unistd.h>
+#include <math.h>
 
 #define XK_MISCELLANY
 #define XK_LATIN1
@@ -212,7 +213,7 @@ InputProvider::MouseLeftButtonUp ()
 }
 
 void
-InputProvider::SendKeyInput (uint32 keysym, bool key_down)
+InputProvider::SendKeyInput (guint32 keysym, bool key_down)
 {
 	LOG_INPUT ("InputProvider::SendKeyInput (%i, %i)\n", keysym, key_down);
 	g_assert (display);

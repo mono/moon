@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -32,8 +33,12 @@
  * 
  */
 
-#include <stdio.h>
+
 #include <glib.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include "shutdown-manager.h"
 #include "input.h"
