@@ -423,6 +423,7 @@ TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	Paint (cr);
+
 	cairo_restore (cr);
 }
 
@@ -508,7 +509,24 @@ TextBlock::ArrangeOverride (Size finalSize)
 	Layout (constraint);
 	
 	arranged = Size (actual_width, actual_height).GrowBy (padding);
-	arranged = arranged.Max (finalSize);
+	HorizontalAlignment horiz = GetHorizontalAlignment ();
+	
+	if (!isnan (GetWidth ())) {
+		arranged.width = GetWidth ();
+	} else if (horiz == HorizontalAlignmentStretch) {
+		arranged.width = finalSize.width;
+	}
+
+	if (!isnan (GetHeight ()))
+		arranged.height = GetHeight ();
+
+	arranged = arranged.Max (GetMinWidth (), GetMinHeight ());
+	arranged = arranged.Min (GetMaxWidth (), GetMaxHeight ());
+
+	layout->SetAvailableWidth (arranged.GrowBy (-padding).width);
+
+
+	//arranged = arranged.Max (finalSize);
 	
 	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
 	//	printf ("\treturn { %f, %f };\n", arranged.width, arranged.height);
