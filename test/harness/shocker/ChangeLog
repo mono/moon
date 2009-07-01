@@ -1,5 +1,9 @@
 2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Makefile.am: Include the plugins moz-sdk directory.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* netscape.h: Include npfunctions.h instead of npupp.h. Seems
 	to fix build after installing ff 3.5.
 
