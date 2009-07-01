@@ -420,8 +420,6 @@ TextBlock::AddFontResource (const char *resource)
 void
 TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 {
-	//layout->SetAvailableWidth (GetActualWidth ());
-	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	Paint (cr);
@@ -514,6 +512,8 @@ TextBlock::ArrangeOverride (Size finalSize)
 	
 	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
 	//	printf ("\treturn { %f, %f };\n", arranged.width, arranged.height);
+	
+	layout->SetAvailableWidth (arranged.GrowBy (-padding).width);
 	
 	return arranged;
 }
