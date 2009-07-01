@@ -1,3 +1,9 @@
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: SetMarkerTimeout: when unreffing self
+	use a delayed timeout, since we can be the last ref, this
+	ensures the stack is unwound first.
+
 2009-06-30  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp (Render): get CornerRound rendering closer to the sl

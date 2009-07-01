@@ -256,7 +256,7 @@ MediaElement::SetMarkerTimeout (bool start)
 		if (marker_timeout != 0) {
 			tm->RemoveTimeout (marker_timeout);
 			marker_timeout = 0;
-			unref (); // unref self
+			unref_delayed (); // unref self. Since this might be the last ref to ourselves, use a delayed unref to unwind the stack first.
 		}
 	}
 }
