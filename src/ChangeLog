@@ -1,5 +1,9 @@
 2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mms-downloader.cpp: Don't leak the uri.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* downloader.h: Make OpenInitialize public so that the
 	MmsDownloader can reinitialize it when sending new requests.
 

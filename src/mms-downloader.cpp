@@ -67,6 +67,7 @@ MmsDownloader::~MmsDownloader ()
 {
 	LOG_MMS ("MmsDownloader::~MmsDownloader ()\n");
 
+	g_free (uri);
 	g_free (buffer);
 	g_free (client_id);
 	g_free (playlist_gen_id);
