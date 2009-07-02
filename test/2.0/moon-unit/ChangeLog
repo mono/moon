@@ -1,3 +1,12 @@
+2009-07-02  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am:
+	* moon-unit.mdp:
+	* System.Windows/VSMControl.xaml:
+	* System.Windows/VSMControl.xaml.cs:
+	* System.Windows/VisualStateManagerTest.cs: Add extra tests to
+	  see how VSM interacts with templates.
+
 2009-06-30  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 

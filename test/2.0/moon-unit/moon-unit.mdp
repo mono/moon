@@ -176,6 +176,8 @@
     <File name="misc/Parsing/PrimitiveTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Markup/XamlReaderTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Markup/XmlLanguageTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows/VSMControl.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="System.Windows/VSMControl.xaml.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
