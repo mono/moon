@@ -105,8 +105,6 @@ class Downloader : public DependencyObject {
 	InternalDownloader *internal_dl;
 
 	DownloaderAccessPolicy access_policy;
-
-	void OpenInitialize ();
 	
  protected:
 	virtual ~Downloader ();
@@ -147,6 +145,7 @@ class Downloader : public DependencyObject {
 	// when writing unmanaged code for downloader implementations
 	// or data sinks.
 	
+	void OpenInitialize ();
 	void InternalAbort ();
 	void InternalWrite (void *buf, gint32 offset, gint32 n);
 	void InternalOpen (const char *verb, const char *uri);

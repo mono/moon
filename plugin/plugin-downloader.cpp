@@ -227,6 +227,7 @@ PluginDownloader::Send ()
 {
 	d (printf ("PluginDownloader::Send (), this: %p, dl: %p\n", this, dl));
 	
+	finished = false;
 	this->offset = 0;
 	this->request->GetResponse (plugin_downloader_started, plugin_downloader_available, plugin_downloader_finished, this);
 }
