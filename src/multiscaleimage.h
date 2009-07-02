@@ -72,6 +72,9 @@ class MultiScaleImage : public MediaBase {
 	double GetInternalViewportWidth ();
 	void SetInternalViewportWidth (double width);
 
+	bool is_fading;
+	bool is_zooming;
+	bool is_panning;
 
  protected:
 	virtual ~MultiScaleImage ();
@@ -81,6 +84,9 @@ class MultiScaleImage : public MediaBase {
 	void EmitMotionFinished ();
 	void EmitImageFailed ();
 	void EmitImageOpenFailed ();
+	void FadeFinished ();
+	void ZoomFinished ();
+	void PanFinished ();
 	void TileOpened (BitmapImage *bitmapImage);
 	void TileFailed (BitmapImage *bitmapImage);
 

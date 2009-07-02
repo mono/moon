@@ -288,6 +288,8 @@ MultiScaleImage::MultiScaleImage ()
 	fadein_sb = NULL;
 	subimages_sorted = false;
 	pending_motion_completed = false;
+
+	is_zooming = is_fading = is_panning = false;
 }
 
 MultiScaleImage::~MultiScaleImage ()
@@ -844,11 +846,49 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	}
 }
 
+void
+MultiScaleImage::FadeFinished ()
+{
+	is_fading = false;
+	if (!is_fading && !is_zooming && !is_panning)
+		EmitMotionFinished ();
+}
+
+void
+MultiScaleImage::ZoomFinished ()
+{
+	is_zooming = false;
+	if (!is_fading && !is_zooming && !is_panning)
+		EmitMotionFinished ();
+}
+
+void
+MultiScaleImage::PanFinished ()
+{
+	is_panning = false;
+	if (!is_fading && !is_zooming && !is_panning)
+		EmitMotionFinished ();
+}
+
 static void
-motion_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
+fade_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	MultiScaleImage *msi = (MultiScaleImage *) closure;
-	msi->EmitMotionFinished ();
+	msi->FadeFinished ();	
+}
+
+static void
+pan_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	MultiScaleImage *msi = (MultiScaleImage *) closure;
+	msi->PanFinished ();		
+}
+
+static void
+zoom_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	MultiScaleImage *msi = (MultiScaleImage *) closure;
+	msi->ZoomFinished ();		
 }
 
 static void
@@ -885,7 +925,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			TimelineCollection *tlc = new TimelineCollection ();
 			tlc->Add (fadein_animation);
 			fadein_sb->SetChildren(tlc);
-			fadein_sb->AddHandler (Storyboard::CompletedEvent, motion_finished, this);
+			fadein_sb->AddHandler (Storyboard::CompletedEvent, fade_finished, this);
 #if DEBUG
 			fadein_sb->SetName ("Multiscale Fade-In");
 #endif
@@ -897,6 +937,8 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 		double *to = new double (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
 		fadein_animation->SetFrom (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble());
 		fadein_animation->SetTo (*to);
+
+		is_fading = true;
 
 		fadein_sb->BeginWithError(NULL);
 
@@ -1147,7 +1189,7 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 		zoom_sb = new Storyboard ();
 		zoom_sb->SetManualTarget (this);
 		zoom_sb->SetTargetProperty (zoom_sb, new PropertyPath ("(MultiScaleImage.InternalViewportWidth)"));
-		zoom_sb->AddHandler (Storyboard::CompletedEvent, motion_finished, this);
+		zoom_sb->AddHandler (Storyboard::CompletedEvent, zoom_finished, this);
 		zoom_animation = new DoubleAnimationUsingKeyFrames ();
 		zoom_animation->SetDuration (Duration::FromSeconds (4));
 		zoom_animation->SetKeyFrames (new DoubleKeyFrameCollection ());
@@ -1167,6 +1209,8 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 	}
 
 	LOG_MSI ("animating zoom from %f to %f\n\n", GetViewportWidth(), value)	
+
+	is_zooming = true;
 
 	zoom_animation->GetKeyFrames ()->GetValueAt (0)->AsSplineDoubleKeyFrame ()->SetValue (value);
 	zoom_sb->BeginWithError (NULL);
@@ -1188,7 +1232,7 @@ MultiScaleImage::SetInternalViewportOrigin (Point* value)
 		pan_sb = new Storyboard ();
 		pan_sb->SetManualTarget (this);
 		pan_sb->SetTargetProperty (pan_sb, new PropertyPath ("(MultiScaleImage.InternalViewportOrigin)"));
-		pan_sb->AddHandler (Storyboard::CompletedEvent, motion_finished, this);
+		pan_sb->AddHandler (Storyboard::CompletedEvent, pan_finished, this);
 		pan_animation = new PointAnimationUsingKeyFrames ();
 		pan_animation->SetDuration (Duration::FromSeconds (4));
 		pan_animation->SetKeyFrames (new PointKeyFrameCollection ());
@@ -1206,6 +1250,7 @@ MultiScaleImage::SetInternalViewportOrigin (Point* value)
 	} else
 		pan_sb->PauseWithError (NULL);
 
+	is_panning = true;
 	pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->SetValue (*value);
 	pan_sb->BeginWithError (NULL);
 }

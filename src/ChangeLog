@@ -4,6 +4,12 @@
 
 2009-07-02  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h|cpp: handle the various motion finished separately
+	and only emit th eMotionFinished event if all the 3 (zoom, pan, fade)
+	animations are completed.
+
+2009-07-02  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.h|cpp: use 2 internals dp for animating pan & zoom.
 	use a custom property provider so getting vp origin or width returns
 	the current value, while setting them sets the animation's targets.
