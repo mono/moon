@@ -2596,8 +2596,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	MediaResult result = MEDIA_SUCCESS;
 	guint64 buffering_time = media->GetBufferingTime ();
 	guint64 buffered_size = 0;
-	bool all_ended = true;
-	bool any_ended = false;
+	int ended = 0;
 	
 	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %llu = %llu ms, pending_stream: %i %s\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, MilliSeconds_FromPts (buffering_time), GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetStreamTypeName () : "NULL");
 
@@ -2617,10 +2616,9 @@ IMediaDemuxer::FillBuffersInternal ()
 			continue;
 
 		if (stream->GetOutputEnded ()) {
-			any_ended = true;
+			ended++;
 			continue;
 		}
-		all_ended = false;
 	
 		buffered_size = stream->GetBufferedSize ();
 			
@@ -2629,6 +2627,10 @@ IMediaDemuxer::FillBuffersInternal ()
 		
 		if (stream->GetInputEnded ()) {
 			stream->GetDecoder ()->InputEnded ();
+			
+			if (stream->GetOutputEnded ())
+				ended++;
+			
 		} else if (buffered_size < min_buffered_size) {
 			min_buffered_size = buffered_size;
 			request_stream = stream;
@@ -2643,7 +2645,7 @@ IMediaDemuxer::FillBuffersInternal ()
 		GetFrameAsync (request_stream);
 	}
 	
-	if (all_ended && any_ended) {
+	if (ended == GetStreamCount ()) {
 		media->ReportBufferingProgress (1.0);
 	} else {
 		media->ReportBufferingProgress ((buffering_time == 0 || buffering_time == 0) ? 0 : ((double) buffered_size / (double) buffering_time));

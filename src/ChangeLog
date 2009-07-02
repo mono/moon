@@ -1,3 +1,10 @@
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: FillBuffers: Take into account that
+	decoders may call SetOutputEnded once SetInputEnded
+	is called, and update the number of ended streams
+	immediately. Fixes our test #111.
+
 2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp:
