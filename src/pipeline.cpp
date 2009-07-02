@@ -481,7 +481,7 @@ Media::ReportOpenDecoderCompleted (IMediaDecoder *decoder)
 void
 Media::ReportErrorOccurred (ErrorEventArgs *args)
 {
-	LOG_PIPELINE ("Media::ReportErrorOccurred (%p)\n", args);
+	LOG_PIPELINE ("Media::ReportErrorOccurred (%p %s)\n", args, args == NULL ? NULL : args->error_message);
 	
 	error_reported = true;
 	EmitSafe (MediaErrorEvent, args);

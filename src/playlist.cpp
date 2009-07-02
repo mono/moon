@@ -2656,7 +2656,7 @@ PlaylistParser::ParsingError (ErrorEventArgs *args)
 	LOG_PLAYLIST ("PlaylistParser::ParsingError (%s)\n", args->error_message);
 	
 	XML_StopParser (internal->parser, false);
-	g_warning ("TODO: raise event element->ReportErrorOccurred (args);");
+	printf ("TODO: PlaylistParser::ParsingError ('%s'): raise event element->ReportErrorOccurred\n", args->error_message);
 }
 
 
