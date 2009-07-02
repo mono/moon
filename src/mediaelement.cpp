@@ -1188,10 +1188,12 @@ MediaElement::SetUriSource (Uri *uri)
 	g_return_if_fail (uri != NULL);
 	g_return_if_fail (playlist == NULL);
 	
-	CreatePlaylist ();
-	char *str = uri->ToString ();
-	playlist->GetCurrentEntry ()->InitializeWithUri (str);
-	g_free (str);
+	if (uri != NULL && uri->originalString != NULL && uri->originalString [0] != 0) {
+		CreatePlaylist ();
+		char *str = uri->ToString ();
+		playlist->GetCurrentEntry ()->InitializeWithUri (str);
+		g_free (str);
+	}
 }
 
 void
