@@ -2597,6 +2597,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	guint64 buffering_time = media->GetBufferingTime ();
 	guint64 buffered_size = 0;
 	int ended = 0;
+	int media_streams = 0;
 	
 	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %llu = %llu ms, pending_stream: %i %s\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, MilliSeconds_FromPts (buffering_time), GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetStreamTypeName () : "NULL");
 
@@ -2615,6 +2616,7 @@ IMediaDemuxer::FillBuffersInternal ()
 			stream->GetType () != MediaTypeAudio)
 			continue;
 
+		media_streams++;
 		if (stream->GetOutputEnded ()) {
 			ended++;
 			continue;
@@ -2645,7 +2647,7 @@ IMediaDemuxer::FillBuffersInternal ()
 		GetFrameAsync (request_stream);
 	}
 	
-	if (ended == GetStreamCount ()) {
+	if (ended == media_streams) {
 		media->ReportBufferingProgress (1.0);
 	} else {
 		media->ReportBufferingProgress ((buffering_time == 0 || buffering_time == 0) ? 0 : ((double) buffered_size / (double) buffering_time));
