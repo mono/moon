@@ -63,19 +63,7 @@ TextFont::ClearGlyphCache ()
 void
 TextFont::UpdateFaceExtents ()
 {
-	faces[0]->GetExtents (size, &this->extents);
-	
-#if 0
-	for (int i = 1; i < n_faces; i++) {
-		FontFaceExtents extents;
-		
-		faces[i]->GetExtents (size, &extents);
-		//this->extents.underline_position = MAX (this->extents.underline_position, extents.underline_position);
-		this->extents.descent = MIN (this->extents.descent, extents.descent);
-		this->extents.ascent = MAX (this->extents.ascent, extents.ascent);
-		this->extents.height = MAX (this->extents.height, extents.height);
-	}
-#endif
+	faces[0]->GetExtents (size, &extents);
 }
 
 TextFont *

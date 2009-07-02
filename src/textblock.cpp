@@ -466,15 +466,9 @@ TextBlock::ComputeActualSize ()
 Size
 TextBlock::MeasureOverride (Size availableSize)
 {
-	//const char *text = layout->GetText ();
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size desired;
-	
-	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23))) {
-	//	printf ("\nTextBlock::MeasureOverride(availableSize = { %f, %f })\n", availableSize.width, availableSize.height);
-	//	printf ("\tText = \"%s\";\n", text);
-	//}
 	
 	constraint = availableSize.GrowBy (-padding);
 	Layout (constraint);
@@ -486,50 +480,33 @@ TextBlock::MeasureOverride (Size availableSize)
 	
 	desired = desired.Min (availableSize);
 	
-	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
-	//	printf ("\treturn { %f, %f };\n", desired.width, desired.height);
-	
 	return desired;
 }
 
 Size
 TextBlock::ArrangeOverride (Size finalSize)
 {
-	//const char *text = layout->GetText ();
+	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size arranged;
-	
-	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23))) {
-	//	printf ("\nTextBlock::ArrangeOverride(finalSize = { %f, %f })\n", finalSize.width, finalSize.height);
-	//	printf ("\tText = \"%s\";\n", text);
-	//}
 	
 	constraint = finalSize.GrowBy (-padding);
 	Layout (constraint);
 	
 	arranged = Size (actual_width, actual_height).GrowBy (padding);
-	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	
 	if (!isnan (GetWidth ())) {
 		arranged.width = GetWidth ();
 	} else if (horiz == HorizontalAlignmentStretch) {
 		arranged.width = finalSize.width;
 	}
-
+	
 	if (!isnan (GetHeight ()))
 		arranged.height = GetHeight ();
-
+	
 	arranged = arranged.Max (GetMinWidth (), GetMinHeight ());
 	arranged = arranged.Min (GetMaxWidth (), GetMaxHeight ());
-
-	layout->SetAvailableWidth (arranged.GrowBy (-padding).width);
-
-
-	//arranged = arranged.Max (finalSize);
-	
-	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
-	//	printf ("\treturn { %f, %f };\n", arranged.width, arranged.height);
 	
 	layout->SetAvailableWidth (arranged.GrowBy (-padding).width);
 	
@@ -629,8 +606,6 @@ TextBlock::UpdateFontDescriptions (bool force)
 void
 TextBlock::Layout (Size constraint)
 {
-	//const char *text = layout->GetText ();
-	
 	if (was_set && !GetValueNoDefault (TextBlock::TextProperty)) {
 		// If the Text property had been set once upon a time,
 		// but is currently empty, Silverlight seems to set
@@ -662,9 +637,6 @@ TextBlock::Layout (Size constraint)
 		
 		layout->GetActualExtents (&actual_width, &actual_height);
 	}
-	
-	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23)))
-	//	printf ("\tTextBlock::Layout(constraint = { %f, %f }) => %f, %f\n", constraint.width, constraint.height, actual_width, actual_height);
 	
 	dirty = false;
 }
