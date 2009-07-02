@@ -475,6 +475,11 @@ AlsaSource::WriteMmap ()
 	if (!PreparePcm (&available_samples))
 		return false;
 	
+	if (GetFlag (AudioEnded)) {
+		Underflowed ();
+		return false;
+	}
+	
 	LOG_ALSA_EX ("AlsaSource::WriteMmap (): entering play loop, avail: %lld, sample size: %i\n", (gint64) available_samples, (int) period_size);
 	
 	frames = available_samples;
