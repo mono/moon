@@ -469,6 +469,7 @@ class Mp3Demuxer;
 class Mp3DemuxerInfo;
 class Mp3FrameReader;
 class MultiScaleImage;
+class MultiScaleImagePropertyValueProvider;
 class MultiScaleSubImage;
 class MultiScaleSubImageCollection;
 class MultiScaleTileSource;
@@ -1992,12 +1993,6 @@ Point multi_scale_image_logical_to_element_point (MultiScaleImage *instance, Poi
 
 /* @GeneratePInvoke */
 MultiScaleImage *multi_scale_image_new (void);
-
-/* @GeneratePInvoke */
-void multi_scale_image_set_viewport_origin (MultiScaleImage *instance, Point p);
-
-/* @GeneratePInvoke */
-void multi_scale_image_set_viewport_width (MultiScaleImage *instance, double width);
 
 /* @GeneratePInvoke */
 void multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);

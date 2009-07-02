@@ -469,6 +469,7 @@ class Mp3Demuxer;
 class Mp3DemuxerInfo;
 class Mp3FrameReader;
 class MultiScaleImage;
+class MultiScaleImagePropertyValueProvider;
 class MultiScaleSubImage;
 class MultiScaleSubImageCollection;
 class MultiScaleTileSource;

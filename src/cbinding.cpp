@@ -3204,26 +3204,6 @@ multi_scale_image_new (void)
 
 
 void
-multi_scale_image_set_viewport_origin (MultiScaleImage *instance, Point p)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetViewportOrigin (p);
-}
-
-
-void
-multi_scale_image_set_viewport_width (MultiScaleImage *instance, double width)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetViewportWidth (width);
-}
-
-
-void
 multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 {
 	if (instance == NULL)

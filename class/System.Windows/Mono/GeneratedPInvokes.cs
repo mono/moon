@@ -1318,14 +1318,6 @@ namespace Mono {
 		public extern static IntPtr multi_scale_image_new ();
 
 		[DllImport ("moon")]
-		// void multi_scale_image_set_viewport_origin (MultiScaleImage *instance, Point p);
-		public extern static void multi_scale_image_set_viewport_origin (IntPtr instance, Point p);
-
-		[DllImport ("moon")]
-		// void multi_scale_image_set_viewport_width (MultiScaleImage *instance, double width);
-		public extern static void multi_scale_image_set_viewport_width (IntPtr instance, double width);
-
-		[DllImport ("moon")]
 		// void multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
 		public extern static void multi_scale_image_zoom_about_logical_point (IntPtr instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
 
