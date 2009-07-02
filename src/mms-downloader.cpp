@@ -195,7 +195,9 @@ MmsDownloader::Open (const char *verb, const char *uri)
 		}
 	}
 
+	dl->OpenInitialize ();
 	dl->SetRequireCustomHeaderSupport (true);
+	dl->SetDisableCache (true);
 	dl->InternalOpen (verb, this->uri);
 
 	set_common_dl_headers (dl, this, NULL);
@@ -224,8 +226,10 @@ MmsDownloader::Play ()
 	LOG_MMS ("MmsDownloader::Play () requested_pts: %" G_GUINT64_FORMAT "\n", pts);
 
 	g_return_if_fail (source != NULL);
-	g_return_if_fail (client_id != NULL);
-	g_return_if_fail (playlist_gen_id != NULL);
+
+	g_free (buffer);
+	buffer = NULL;
+	size = 0;
 
 	entry = source->GetCurrentReffed ();
 
@@ -233,7 +237,9 @@ MmsDownloader::Play ()
 
 	dl->InternalAbort ();
 
+	dl->OpenInitialize ();
 	dl->SetRequireCustomHeaderSupport (true);
+	dl->SetDisableCache (true);
 	dl->InternalOpen ("GET", uri);
 
 	pragma = g_string_new (NULL);
@@ -453,6 +459,11 @@ MmsDownloader::ProcessEndPacket (MmsHeader *header, MmsPacket *packet, char *pay
 	MmsHeaderReason *hr = (MmsHeaderReason *) header;
 
 	g_return_val_if_fail (source != NULL, false);
+
+	g_free (playlist_gen_id);
+	playlist_gen_id = NULL;
+	g_free (client_id);
+	client_id = NULL;
 
 	source->NotifyFinished (hr->reason);
 

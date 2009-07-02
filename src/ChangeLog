@@ -1,5 +1,10 @@
 2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mms-downloader.cpp: Do better initialization and cleanup of
+	downloader and state variables to prevent issues when seeking.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mms-downloader.cpp: Write: Don't use math when not necessary to
 	avoid overflows, and if we end up freeing the buffer set the size
 	accordingly.
