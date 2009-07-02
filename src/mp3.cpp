@@ -920,7 +920,7 @@ Mp3Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	
 	result = reader->TryReadFrame (&frame);
 
-	if (result == MEDIA_DEMUXER_ERROR || result == MEDIA_BUFFER_UNDERFLOW || result == MEDIA_DEMUXER_ERROR) {
+	if (result == MEDIA_DEMUXER_ERROR || result == MEDIA_BUFFER_UNDERFLOW || result == MEDIA_DEMUXER_ERROR || result == MEDIA_NOT_ENOUGH_DATA) {
 		MediaGetFrameClosure *closure = new MediaGetFrameClosure (media, GetFrameCallback, this, stream);
 		media->EnqueueWork (closure, false);
 		closure->unref ();

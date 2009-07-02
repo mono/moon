@@ -1,5 +1,10 @@
 2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mp3.cpp: GetFrameAsyncInternal: if we don't have enough data,
+	try again later.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mp3.cpp: Fix parsing of xing vbr headers causing wrong
 	duration to get calculated of the file.
 
