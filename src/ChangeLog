@@ -1,5 +1,18 @@
 2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Use ProgressEventArgs to pass buffering progress
+	to MediaElement. Clamp BufferingProgress to 0.0 <=> 1.0, and if
+	all streams have finished their output, set buffering progress
+	to 1.0.
+
+	* playlist.cpp: Properly forward progress event args.
+
+	* mediaelement.cpp: Set buffering progress when it changes,
+	and raise BufferingProgressChanged. Don't try to autoplay
+	when buffering progress is < 1.0, wait until it reaches 1.0.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio-pulse.cpp: Fix warning.
 
 2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>

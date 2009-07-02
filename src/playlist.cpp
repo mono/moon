@@ -395,7 +395,9 @@ PlaylistEntry::DownloadProgressChangedHandler (Media *media, EventArgs *args)
 	
 	g_return_if_fail (root != NULL);
 	
-	root->Emit (PlaylistRoot::DownloadProgressChangedEvent);
+	if (args)
+		args->ref ();
+	root->Emit (PlaylistRoot::DownloadProgressChangedEvent, args);
 }
 
 void
@@ -407,7 +409,9 @@ PlaylistEntry::BufferingProgressChangedHandler (Media *media, EventArgs *args)
 	
 	g_return_if_fail (root != NULL);
 	
-	root->Emit (PlaylistRoot::BufferingProgressChangedEvent);
+	if (args)
+		args->ref ();
+	root->Emit (PlaylistRoot::BufferingProgressChangedEvent, args);
 }
 
 void

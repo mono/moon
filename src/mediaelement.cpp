@@ -1161,10 +1161,20 @@ MediaElement::DownloadProgressChangedHandler (PlaylistRoot *playlist, EventArgs 
 void
 MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
+	ProgressEventArgs *pea = (ProgressEventArgs *) args;
+	
 	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): %f\n", GetBufferingProgress ());
 	VERIFY_MAIN_THREAD;
 	
+	g_return_if_fail (pea != NULL);
+
+	SetBufferingProgress (pea->progress);
 	Emit (BufferingProgressChangedEvent);
+	
+	if (pea->progress >= 1.0 && GetState () == MediaStateBuffering) {
+		LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): buffer full, playing...\n");
+		PlayOrStop ();
+	}
 }
 
 void
@@ -1266,8 +1276,13 @@ MediaElement::PlayOrStop ()
 		playlist->PlayAsync ();
 	} else if (GetAutoPlay () && !(flags & AutoPlayed)) {
 		// Autoplay us.
-		flags |= AutoPlayed;
-		playlist->PlayAsync ();
+		if (GetBufferingProgress () >= 1.0) {
+			flags |= AutoPlayed;
+			playlist->PlayAsync ();
+		} else {
+			LOG_MEDIAELEMENT ("MediaElement::PlayOrStop (): Going into buffering...\n");
+			SetState (MediaStateBuffering);
+		}
 	} else {
 		SetState (MediaStatePlaying);
 		SetState (MediaStateStopped);

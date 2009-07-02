@@ -408,12 +408,12 @@ Media::InMediaThread ()
 void
 Media::ReportBufferingProgress (double progress)
 {
-	LOG_PIPELINE ("Media::ReportBufferingProgress (%.2f)\n", progress);
+	LOG_BUFFERING ("Media::ReportBufferingProgress (%.3f), buffering_progress: %.3f\n", progress, buffering_progress);
 	
-	progress = MAX (progress, 1.0);
+	progress = MAX (MIN (progress, 1.0), 0.0);
 	
 	if (progress > buffering_progress && (progress > buffering_progress + 0.005 || progress == 1.0)) {
-		EmitSafe (BufferingProgressChangedEvent);
+		EmitSafe (BufferingProgressChangedEvent, new ProgressEventArgs (progress));
 		buffering_progress = progress;
 	}
 }
@@ -421,11 +421,13 @@ Media::ReportBufferingProgress (double progress)
 void
 Media::ReportDownloadProgress (double progress)
 {
+	LOG_PIPELINE ("Media::ReportDownloadProgress (%.3f), download_progress: %.3f\n", download_progress);
+
 	g_return_if_fail (progress >= download_progress);
 	
 	if (progress != download_progress) {
 		download_progress = progress;
-		EmitSafe (DownloadProgressChangedEvent);
+		EmitSafe (DownloadProgressChangedEvent, new ProgressEventArgs (progress));
 	}
 }
 
@@ -2589,6 +2591,8 @@ IMediaDemuxer::FillBuffersInternal ()
 	MediaResult result = MEDIA_SUCCESS;
 	guint64 buffering_time = media->GetBufferingTime ();
 	guint64 buffered_size = 0;
+	bool all_ended = true;
+	bool any_ended = false;
 	
 	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %llu = %llu ms, pending_stream: %i %s\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, MilliSeconds_FromPts (buffering_time), GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetStreamTypeName () : "NULL");
 
@@ -2607,8 +2611,11 @@ IMediaDemuxer::FillBuffersInternal ()
 			stream->GetType () != MediaTypeAudio)
 			continue;
 
-		if (stream->GetOutputEnded ())
+		if (stream->GetOutputEnded ()) {
+			any_ended = true;
 			continue;
+		}
+		all_ended = false;
 	
 		buffered_size = stream->GetBufferedSize ();
 			
@@ -2631,7 +2638,11 @@ IMediaDemuxer::FillBuffersInternal ()
 		GetFrameAsync (request_stream);
 	}
 	
-	media->ReportBufferingProgress (buffering_time == 0 ? 0 : buffered_size / buffering_time);
+	if (all_ended && any_ended) {
+		media->ReportBufferingProgress (1.0);
+	} else {
+		media->ReportBufferingProgress ((buffering_time == 0 || buffering_time == 0) ? 0 : ((double) buffered_size / (double) buffering_time));
+	}
 	
 	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal () [Done]. BufferedSize: %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (GetBufferedSize ()));
 }
