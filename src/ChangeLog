@@ -1,5 +1,9 @@
 2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio-pulse.cpp: Fix warning.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio-alsa.cpp: WriteMmap: If we try to write with an audio
 	source which has ended, call Underflowed, since that's what's
 	happened.
