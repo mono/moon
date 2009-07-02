@@ -346,6 +346,10 @@ AlsaSource::SetupHW ()
 	err = snd_pcm_hw_params (pcm, params);
 	if (err < 0) {
 		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (unable to set hw params for playback: %s)\n", snd_strerror (err));
+		if (debug && output != NULL) {
+			LOG_AUDIO ("AlsaSource::SetupHW (): current hw configurations:\n");
+			snd_pcm_hw_params_dump (params, output);
+		}
 		goto cleanup;
 	}
 	
