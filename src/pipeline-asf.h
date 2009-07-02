@@ -163,6 +163,9 @@ public:
 	virtual MediaResult Initialize ();
 	virtual MediaSourceType GetType () { return MediaSourceTypeMmsEntry; }
 	
+	virtual bool CanSeekToPts () { return true; } // thread safe
+	virtual MediaResult SeekToPts (guint64 pts);  // thread safe
+	
 	virtual bool Eof () { return finished && queue.IsEmpty (); } // thread safe
 	virtual IMediaDemuxer *CreateDemuxer (Media *media); // thread safe
 	bool IsFinished ();  // thread safe

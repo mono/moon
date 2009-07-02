@@ -1053,6 +1053,20 @@ MmsPlaylistEntry::Dispose ()
 	IMediaSource::Dispose ();
 }
 
+MediaResult
+MmsPlaylistEntry::SeekToPts (guint64 pts)
+{
+	MmsSource *ms = GetParentReffed ();
+	if (ms) {
+		ms->SeekToPts (pts);
+		ms->unref ();
+		return MEDIA_SUCCESS;
+	} else {
+		fprintf (stderr, "MmsPlaylistEntry::SeekToPts (%llu): Could not seek to pts, no parent.\n", pts);
+		return MEDIA_FAIL;
+	}
+}
+
 void
 MmsPlaylistEntry::NotifyFinished ()
 {
