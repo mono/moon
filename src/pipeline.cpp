@@ -421,7 +421,7 @@ Media::ReportBufferingProgress (double progress)
 void
 Media::ReportDownloadProgress (double progress)
 {
-	LOG_PIPELINE ("Media::ReportDownloadProgress (%.3f), download_progress: %.3f\n", download_progress);
+	LOG_PIPELINE ("Media::ReportDownloadProgress (%.3f), download_progress: %.3f\n", progress, download_progress);
 
 	g_return_if_fail (progress >= download_progress);
 	

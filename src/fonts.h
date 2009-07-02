@@ -77,6 +77,7 @@ class TextFontDescription {
 	
 	char *source;
 	char *family;
+	char *language;
 	FontStretches stretch;
 	FontWeights weight;
 	FontStyles style;
@@ -95,6 +96,9 @@ class TextFontDescription {
 	bool SetFamily (const char *family);
 	const char *GetFamily () const;
 	char **GetFamilies () const;
+	
+	bool SetLanguage (const char *lang);
+	const char *GetLanguage () const;
 	
 	bool SetStretch (FontStretches stretch);
 	FontStretches GetStretch () const;

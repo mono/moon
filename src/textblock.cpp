@@ -227,8 +227,8 @@ Inline::UpdateFontDescription (const char *source, bool force)
 	if (font->SetSize (GetFontSize ()))
 		changed = true;
 	
-	//if (font->SetLanguage (GetLanguage ()))
-	//	changed = true;
+	if (font->SetLanguage (GetLanguage ()))
+		changed = true;
 	
 	if (force) {
 		font->Reload ();
@@ -728,12 +728,21 @@ TextBlock::SetTextInternal (const char *text)
 void
 TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
-	//if (dirty)
-	//	g_error ("entering changed while dirty");
-
 	bool invalidate = true;
+	
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args, error);
+		
+		if (args->GetId () == FrameworkElement::LanguageProperty) {
+			// a change in xml:lang might change font characteristics
+			if (UpdateFontDescriptions (false)) {
+				InvalidateMeasure ();
+				InvalidateArrange ();
+				UpdateBounds (true);
+				dirty = true;
+			}
+		}
+		
 		/*
 		if (args->GetId () == FrameworkElement::WidthProperty) {
 			//if (layout->SetMaxWidth (args->GetNewValue()->AsDouble ()))

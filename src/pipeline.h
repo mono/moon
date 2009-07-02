@@ -316,6 +316,7 @@ public:
 /*
  * ProgressEventArgs
  */
+/* @Namespace=None */
 class ProgressEventArgs : public EventArgs {
 public:
 	double progress;

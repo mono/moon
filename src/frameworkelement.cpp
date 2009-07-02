@@ -642,7 +642,6 @@ FrameworkElement::Arrange (Rect finalRect)
 	rectangle->SetRect (&layout_clip);
 	LayoutInformation::SetLayoutClip (this, rectangle);
 	rectangle->unref ();
-
 	
 	if (old != response) {
 		if (!LayoutInformation::GetLastRenderSize (this))

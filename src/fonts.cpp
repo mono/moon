@@ -118,14 +118,87 @@ static struct {
 	{ "ko", { "Malgun Gothic", "Dotum", "Arial Unicode MS", "Batang", NULL, NULL } },
 };
 
-static void
-LoadPortableUserInterface (FontManager *manager, GHashTable *loaded, GPtrArray *faces, FontStretches stretch, FontWeights weight, FontStyles style)
+static const char lang_table[256] = {
+	 0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0,
+	 0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0,
+	 0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,  '-',  0,   0,
+	'0', '1', '2', '3', '4', '5', '6', '7',  '8', '9',  0,   0,   0,   0,   0,   0,
+	'-', 'a', 'b', 'c', 'd', 'e', 'f', 'g',  'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+	'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,  '-',
+	 0,  'a', 'b', 'c', 'd', 'e', 'f', 'g',  'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+	'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,   0
+};
+
+static char *
+canon_lang (const char *lang)
 {
+	const char *s = lang;
+	char *canon, *d;
+	
+	d = canon = (char *) g_malloc (strlen (lang) + 1);
+	while (*s != '\0')
+		*d++ = lang_table[(unsigned char) *s++];
+	
+	*d = '\0';
+	
+	return canon;
+}
+
+#if 0
+static bool
+langs_equal (const char *lang0, const char *lang1)
+{
+	const unsigned char *p0 = (const unsigned char *) lang0;
+	const unsigned char *p1 = (const unsigned char *) lang1;
+	
+	while (lang_table[*p0] && lang_table[*p0] == lang_table[*p1])
+		p0++, p1++;
+	
+	return lang_table[*p0] == lang_table[*p1];
+}
+#endif
+
+static bool
+langs_match (const char *pattern, const char *actual)
+{
+	size_t n = strlen (pattern);
+	
+	return strncmp (pattern, actual, n) == 0 &&
+		(actual[n] == '\0' || actual[n] == '-');
+}
+
+static void
+LoadPortableUserInterface (FontManager *manager, GHashTable *loaded, GPtrArray *faces, const char *lang, FontStretches stretch, FontWeights weight, FontStyles style)
+{
+	guint preferred = G_N_ELEMENTS (default_fonts);
 	const char **families;
 	FontFace *face;
 	guint i, j;
 	
+	if (lang != NULL) {
+		// use the xml:lang tag to load the preferred default font first
+		for (i = 0; i < G_N_ELEMENTS (default_fonts); i++) {
+			if (langs_match (default_fonts[i].lang, lang)) {
+				families = default_fonts[i].families;
+				
+				for (j = 0; families[j]; j++) {
+					if ((face = manager->OpenFont (families[j], stretch, weight, style))) {
+						g_ptr_array_add (faces, face);
+						break;
+					}
+				}
+				
+				preferred = i;
+				break;
+			}
+		}
+	}
+	
+	// now load the remaining default font faces...
 	for (i = 0; i < G_N_ELEMENTS (default_fonts); i++) {
+		if (i == preferred)
+			continue;
+		
 		families = default_fonts[i].families;
 		
 		for (j = 0; families[j]; j++) {
@@ -146,6 +219,7 @@ TextFont::Load (const TextFontDescription *desc)
 	FontStretches stretch = desc->GetStretch ();
 	FontWeights weight = desc->GetWeight ();
 	const char *source = desc->GetSource ();
+	const char *lang = desc->GetLanguage ();
 	char **families = desc->GetFamilies ();
 	FontStyles style = desc->GetStyle ();
 	GHashTable *loaded;
@@ -165,7 +239,7 @@ TextFont::Load (const TextFontDescription *desc)
 				continue;
 			
 			if (!g_ascii_strcasecmp (families[i], "Portable User Interface")) {
-				LoadPortableUserInterface (manager, loaded, faces, stretch, weight, style);
+				LoadPortableUserInterface (manager, loaded, faces, lang, stretch, weight, style);
 			} else {
 				face = NULL;
 				
@@ -194,7 +268,7 @@ TextFont::Load (const TextFontDescription *desc)
 	
 	// always add PUI as fallback unless already added
 	if (!g_hash_table_lookup (loaded, "Portable User Interface"))
-		LoadPortableUserInterface (manager, loaded, faces, stretch, weight, style);
+		LoadPortableUserInterface (manager, loaded, faces, lang, stretch, weight, style);
 	
 	g_hash_table_destroy (loaded);
 	
@@ -475,6 +549,7 @@ TextFontDescription::TextFontDescription ()
 	changed = true;
 	font = NULL;
 	
+	language = NULL;
 	family = NULL;
 	source = NULL;
 	
@@ -486,6 +561,8 @@ TextFontDescription::TextFontDescription ()
 
 TextFontDescription::~TextFontDescription ()
 {
+	g_free (language);
+	g_free (source);
 	g_free (family);
 	delete font;
 }
@@ -583,6 +660,44 @@ TextFontDescription::SetFamily (const char *family)
 		if (this->family) {
 			g_free (this->family);
 			this->family = NULL;
+			this->changed = true;
+			changed = true;
+		} else {
+			changed = false;
+		}
+	}
+	
+	return changed;
+}
+
+const char *
+TextFontDescription::GetLanguage () const
+{
+	return language;
+}
+
+bool
+TextFontDescription::SetLanguage (const char *lang)
+{
+	bool changed;
+	char *canon;
+	
+	if (lang) {
+		canon = canon_lang (lang);
+		
+		if (!this->language || g_ascii_strcasecmp (this->language, canon) != 0) {
+			g_free (this->language);
+			this->language = canon;
+			this->changed = true;
+			changed = true;
+		} else {
+			g_free (canon);
+			changed = false;
+		}
+	} else {
+		if (this->language) {
+			g_free (this->language);
+			this->language = NULL;
 			this->changed = true;
 			changed = true;
 		} else {
