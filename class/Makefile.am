@@ -5,9 +5,11 @@ endif
 SUBDIRS += System.Windows System.Windows.Browser System.Windows.Controls System.Windows.Controls.Data
 
 if INCLUDE_BROWSER_MANAGED_CODE
-TUNER_ASSEMBLIES = monolinker.exe Mono.Tuner.dll Mono.Cecil.dll Mono.Cecil.Mdb.dll
+NET_1_1_ASSEMBLIES = Mono.Cecil.dll Mono.Cecil.Mdb.dll
+NET_2_0_ASSEMBLIES = monolinker.exe Mono.Tuner.dll
+TUNER_ASSEMBLIES =  $(NET_1_1_ASSEMBLIES) $(NET_2_0_ASSEMBLIES)
 LOCAL_ASSEMBLIES = $(TUNER_ASSEMBLIES:%=lib/tuner/%)
-MCS_ASSEMBLIES = $(TUNER_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_1_1/%)
+MCS_ASSEMBLIES = $(NET_1_1_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_1_1/%) $(NET_2_0_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_2_0/%)
 
 noinst_SCRIPTS = $(LOCAL_ASSEMBLIES)
 
