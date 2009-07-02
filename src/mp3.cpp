@@ -286,14 +286,11 @@ mpeg_check_vbr_headers (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource 
 		return false;
 	
 	if (!strncmp ((const char *) buffer, "Xing", 4)) {
-		bufptr = buffer + 8;
-		if (buffer[7] & 0x01) {
+		if (buffer [7] & 0x01) {
 			// decode the number of frames
-			for (i = 0; i < 4; i++)
-				nframes = (nframes << 8) | *bufptr++;
-		} if (buffer[7] & 0x02) {
-			for (i = 0, size = 0; i < 4; i++)
-				size = (size << 8) | *bufptr++;
+			nframes = (buffer [8] << 24) + (buffer [9] << 16) + (buffer [10] << 8) + buffer [11];
+		} else if (buffer [7] & 0x02) {
+			size = (buffer [8] << 24) + (buffer [9] << 16) + (buffer [10] << 8) + buffer [11];
 			
 			// calculate the frame length
 			len = mpeg_frame_length (mpeg, true);
