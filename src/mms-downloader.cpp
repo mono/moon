@@ -327,7 +327,7 @@ MmsDownloader::ProcessResponseHeader (const char *header, const char *value)
 void
 MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 {
-	LOG_MMS ("MmsDownloader::Write (%p. %i, %i)\n", buf, off, n);
+	LOG_MMS ("MmsDownloader::Write (%p, %i, %i)\n", buf, off, n);
 
 	MmsHeader *header;
 	MmsPacket *packet;
@@ -369,7 +369,7 @@ MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 			break;
 		}
 
-		if (size - offset > 0) {
+		if (size > offset) {
 			// FIXME: We should refactor this to increment the buffer pointer to the new position
 			// but coalense the free / malloc / memcpy into batches to improve performance on big
 			// streams
@@ -378,12 +378,12 @@ MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 			g_free (buffer);
 
 			buffer = new_buffer;
+			size -= offset;
 		} else {
 			g_free (buffer);
 			buffer = NULL;
+			size = 0;
 		}
-
-		size -= offset;
 	}
 }
 

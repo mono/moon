@@ -1,5 +1,11 @@
 2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mms-downloader.cpp: Write: Don't use math when not necessary to
+	avoid overflows, and if we end up freeing the buffer set the size
+	accordingly.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mms-downloader.cpp: Use thread-safe tick call from media thread.
 
 2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
