@@ -1,3 +1,13 @@
+2009-07-01  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (INCLUDES): turns out we need to include ../plugin
+	here to deal with type-generated/type.h/etc.
+
+	* type.h.in: fix annoying indent problem.
+
+	* cbinding.h, dependencyproperty.g.cpp, type-generated.cpp,
+	value.h, type.h: regen
+
 2009-07-01  Larry Ewing  <lewing@novell.com>
 
 	* textblock.cpp (ArrangeOverride): take alignment into account

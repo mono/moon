@@ -16,6 +16,7 @@
 #include <ctype.h>
 
 #include "plugin-class.h"
+#include "plugin-accessibility.h"
 #include "browser-bridge.h"
 #include "plugin.h"
 #include "deployment.h"
@@ -2386,10 +2387,13 @@ MoonlightContentObject::~MoonlightContentObject ()
 		g_hash_table_destroy (registered_scriptable_objects);
 		registered_scriptable_objects = NULL;
 	}
+	if (accessibility)
+		accessibility->unref();
 }
 
 static const MoonNameIdMapping
 moonlight_content_mapping[] = {
+	{ "accessibility", MoonId_Accessibility },
 	{ "actualheight", MoonId_ActualHeight },
 	{ "actualwidth", MoonId_ActualWidth },
 	{ "createfromxaml", MoonId_CreateFromXaml },
@@ -2424,6 +2428,14 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 	PluginInstance *plugin = (PluginInstance*) instance->pdata;
 
 	switch (id) {
+	case MoonId_Accessibility: {
+		if (!accessibility)
+			accessibility = new Accessibility ();
+		MoonlightEventObjectObject *acc = EventObjectCreateWrapper (instance, accessibility);
+
+		OBJECT_TO_NPVARIANT (acc, *result);
+		return true;
+	}
 	case MoonId_ActualHeight:
 		INT32_TO_NPVARIANT (plugin->GetActualHeight (), *result);
 		return true;
@@ -2493,6 +2505,9 @@ MoonlightContentObject::SetProperty (int id, NPIdentifier name, const NPVariant 
 	Surface *surface = NULL;
 
 	switch (id) {
+	case MoonId_Accessibility:
+		THROW_JS_EXCEPTION ("AG_E_RUNTIME_SETVALUE");
+		break;
 	case MoonId_FullScreen:
 		surface = plugin->GetSurface ();
 		if (surface != NULL)

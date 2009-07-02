@@ -23,9 +23,9 @@
 
 #define Region _XxRegion
 #define Visual _XxVisual
-#include <npapi.h>
-#include <npfunctions.h>
-#include <npruntime.h>
+#include "moz-sdk/npapi.h"
+#include "moz-sdk/npfunctions.h"
+#include "moz-sdk/npruntime.h"
 #undef Region
 #undef Visual
 

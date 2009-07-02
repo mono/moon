@@ -50,6 +50,8 @@
 #include "pipeline-ffmpeg.h"
 #include "pipeline-nocodec-ui.h"
 #include "playlist.h"
+#include "plugin-accessibility.h"
+#include "plugin-class.h"
 #include "popup.h"
 #include "resources.h"
 #include "runtime.h"
@@ -72,6 +74,7 @@
 #include "writeablebitmap.h"
 #include "yuv-converter.h"
 
+const int Accessibility::PerformActionEvent = 1;
 const int BitmapImage::DownloadProgressEvent = 1;
 const int BitmapImage::ImageFailedEvent = 2;
 const int BitmapImage::ImageOpenedEvent = 3;
@@ -165,6 +168,7 @@ const int UIElement::MouseRightButtonUpEvent = 14;
 const int UIElement::MouseWheelEvent = 15;
 const int UIElement::UnloadedEvent = 16;
 
+const char *ACCESSIBILITY_Events [] = { "PerformAction", NULL };
 const char *BITMAPIMAGE_Events [] = { "DownloadProgress", "ImageFailed", "ImageOpened", NULL };
 const Type::Kind BOOL_Interfaces[] = { Type::ICOMPARABLE, Type::ICOMPARABLE_BOOL, Type::ICONVERTIBLE, Type::IEQUATABLE_BOOL };
 const Type::Kind CHAR_Interfaces[] = { Type::ICOMPARABLE, Type::ICOMPARABLE_CHAR, Type::ICONVERTIBLE, Type::IEQUATABLE_CHAR };
@@ -208,6 +212,7 @@ void
 Types::RegisterNativeTypes ()
 {
 	types [(int) Type::INVALID] = new Type (Type::INVALID, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL );
+	types [(int) Type::ACCESSIBILITY] = new Type (Type::ACCESSIBILITY, Type::DEPENDENCY_OBJECT, false, false, "Accessibility", 1, 2, ACCESSIBILITY_Events, 0, NULL, true, NULL, NULL);
 	types [(int) Type::ALSASOURCE] = new Type (Type::ALSASOURCE, Type::AUDIOSOURCE, false, false, "AlsaSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ANIMATION] = new Type (Type::ANIMATION, Type::TIMELINE, false, false, "Animation", 0, 2, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::ANIMATIONCLOCK] = new Type (Type::ANIMATIONCLOCK, Type::CLOCK, false, false, "AnimationClock", 0, 4, NULL, 0, NULL, false, NULL, NULL);

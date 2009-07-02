@@ -2096,9 +2096,6 @@ class Generator {
 
 		headers.Add ("cbinding.h");
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
-			if (t.IsPluginMember)
-				continue;
-			
 			if (t.C_Constructor == string.Empty || t.C_Constructor == null || !t.GenerateCBindingCtor) {
 				//Console.WriteLine ("{0} does not have a C ctor", t.FullName);
 				if (t.GetTotalEventCount () == 0)

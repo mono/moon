@@ -17,9 +17,6 @@
 #include <config.h>
 #include "moonlight.h"
 
-#include "npapi.h"
-#include "npfunctions.h"
-
 #if PLUGIN_SL_2_0
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
@@ -126,18 +123,18 @@ load (void)
 
 	void *real_plugin = dlopen (plugin_path, RTLD_LAZY | RTLD_GLOBAL);
 
+	if (real_plugin == NULL){
+		fprintf (stderr, "Unable to load the real plugin %s\n", dlerror ());
+		fprintf (stderr, "plugin_path is %s\n", plugin_path);
+		return FALSE;
+	}
+
 	// Must dllmap moonplugin, otherwise it doesn't know where to get it
 	char* plugin_config = g_strdup_printf("<?xml version=\"1.0\" encoding=\"utf-8\"?><configuration><dllmap dll=\"moonplugin\" target=\"%s\" /></configuration>",plugin_path);
 	mono_config_parse_memory(plugin_config);
 	g_free (plugin_config);
 
 	g_free (plugin_path);
-
-	if (real_plugin == NULL){
-		fprintf (stderr, "Unable to load the real plugin %s\n", dlerror ());
-		fprintf (stderr, "plugin_path is %s\n", plugin_path);
-		return FALSE;
-	}
 
 	initialize = (np_initialize_func) dlsym (real_plugin, LOADER_RENAMED_NAME(NP_Initialize));
 	if (initialize == NULL){

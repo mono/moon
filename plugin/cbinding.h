@@ -10,6 +10,7 @@
 
 #include "enums.h"
 
+class Accessibility;
 class AlsaSource;
 class Animation;
 class AnimationClock;
@@ -267,6 +268,7 @@ class WriteableBitmap;
 class YUVConverter;
 
 
+class Accessibility;
 class AlsaPlayer;
 class AlsaSource;
 class Animation;

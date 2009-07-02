@@ -16,9 +16,6 @@
 
 #include "moonlight.h"
 
-#include "npapi.h"
-#include "npfunctions.h"
-
 // Global function table
 static NPNetscapeFuncs MozillaFuncs;
 

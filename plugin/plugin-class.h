@@ -98,6 +98,7 @@ enum PluginPropertyId {
 	MoonId_Handled,
 	MoonId_GridUnitType,
 	MoonId_Value,
+	MoonId_Accessibility,
 
 	// event names (handled by the property setters)
 	MoonId_BufferingProgressChanged,
@@ -657,6 +658,7 @@ struct MoonlightContentObject : MoonlightObject {
 	MoonlightContentObject (NPP instance) : MoonlightObject (instance)
 	{
 		registered_scriptable_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
+		accessibility = NULL;
 	}
 
 	virtual ~MoonlightContentObject ();
@@ -668,6 +670,7 @@ struct MoonlightContentObject : MoonlightObject {
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
 
+	DependencyObject *accessibility;
 	GHashTable *registered_scriptable_objects;
 };
 

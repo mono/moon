@@ -10,7 +10,6 @@ noinst_LTLIBRARIES = libmoonpluginxpi.la libmoonloaderxpi.la
 INCLUDES = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/zip \
-	-I$(srcdir)/moz-sdk \
 	-I/usr/include/X11 \
 	$(PLUGIN_CFLAGS) \
 	-Wall
@@ -44,24 +43,26 @@ INCLUDES += -I$(top_srcdir)/src/asf
 libmoonplugin_la_SOURCES = \
 	cbinding.h	\
 	cbinding.cpp	\
-	browser-bridge.h	\
-	moonlight.h		\
-	npstream-request.cpp	\
-	npstream-request.h	\
-	plugin.cpp		\
-	plugin.h		\
-	plugin-downloader.cpp	\
-	plugin-downloader.h	\
-	plugin-entry.cpp 	\
-	plugin-glue.cpp 	\
-	plugin-class.cpp 	\
-	plugin-class.g.cpp 	\
-	plugin-class.h		\
-	plugin-debug.cpp	\
-	plugin-debug.h		\
-	plugin-utils.cpp	\
-	plugin-spinner.h	\
-	windowless.cpp		\
+	browser-bridge.h		\
+	moonlight.h			\
+	npstream-request.cpp		\
+	npstream-request.h		\
+	plugin.cpp			\
+	plugin.h			\
+	plugin-accessibility.cpp	\
+	plugin-accessibility.h		\
+	plugin-downloader.cpp		\
+	plugin-downloader.h		\
+	plugin-entry.cpp 		\
+	plugin-glue.cpp 		\
+	plugin-class.cpp 		\
+	plugin-class.g.cpp 		\
+	plugin-class.h			\
+	plugin-debug.cpp		\
+	plugin-debug.h			\
+	plugin-utils.cpp		\
+	plugin-spinner.h		\
+	windowless.cpp			\
 	windowless.h
 
 

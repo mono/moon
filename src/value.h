@@ -53,6 +53,7 @@ class DependencyProperty;
 class Surface;
 class AnimationStorage;
 
+class Accessibility;
 class AlsaSource;
 class Animation;
 class AnimationClock;
@@ -410,6 +411,7 @@ public:
 	gint64* 	AsNullableInt64 ()	{ checked_get_exact (Type::INT64, NULL, &u.i64); }
 	gint32* 	AsNullableInt32 ()	{ checked_get_exact (Type::INT32, NULL, &u.i32); }
 	
+	Accessibility*                           AsAccessibility (Types *types = NULL) { checked_get_subclass (Type::ACCESSIBILITY, Accessibility) }
 	AlsaSource*                              AsAlsaSource (Types *types = NULL) { checked_get_subclass (Type::ALSASOURCE, AlsaSource) }
 	Animation*                               AsAnimation (Types *types = NULL) { checked_get_subclass (Type::ANIMATION, Animation) }
 	AnimationClock*                          AsAnimationClock (Types *types = NULL) { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }

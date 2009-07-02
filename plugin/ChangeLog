@@ -1,3 +1,29 @@
+2009-07-01  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-proxy.cpp (load): check the return value of
+	dlopen(libmono.so) before we make use of mono_config_parse_memory.
+
+	* plugin-entry.cpp: remove the moz-sdk includes, since they get
+	pulled in from moonlight.h
+
+	* plugin-class.h|cpp (MoonlightContentObject::GetProperty): add
+	Accessibility support.
+	(MoonlightContentObject::SetProperty): same.
+	(MoonlightContentObject::~MoonlightContentObject): unref the
+	accessibility object.
+
+	* moonlight.h: add the moz-sdk/ prefix for the np* headers here.
+
+	* Makefile.am (libmoonplugin_la_SOURCES): add
+	plugin-accessibility.
+	(INCLUDES): remove the moz-sdk include, and add it the #includes
+	so things work when files are included from the src/ directory.
+
+	* plugin-accessibility.h|cpp: new DependencyObject subclass to
+	represent the plugin's content.accessibility object.
+	
+	* cbinding.h, plugin-class.h: regen.
+
 2009-06-30  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp: Update function signature, add the validate
