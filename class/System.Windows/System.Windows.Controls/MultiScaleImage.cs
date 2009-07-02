@@ -88,12 +88,12 @@ namespace System.Windows.Controls {
 		
 		public Point ViewportOrigin {
 			get { return (Point) GetValue (ViewportOriginProperty); }
-			set { NativeMethods.multi_scale_image_set_viewport_origin (this.native, value); }
+			set { SetValue (ViewportOriginProperty, value); }
 		}
 		
 		public double ViewportWidth {
 			get { return (double) GetValue (ViewportWidthProperty); }
-			set { NativeMethods.multi_scale_image_set_viewport_width (this.native, value); }
+			set { SetValue (ViewportWidthProperty, value); }
 		}
 		
 		public void ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
