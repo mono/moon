@@ -741,7 +741,8 @@ Mp3FrameReader::FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMedi
 						if (vbr->type == MpegXingHeader)
 							len = (guint32) mpeg_frame_length (mpeg, true);
 						
-						return offset + len;
+						*result = offset + len;
+						return MEDIA_SUCCESS;
 					}
 					
 					if (!source->IsPositionAvailable (offset + len + 4, &eof)) {
@@ -798,6 +799,8 @@ Mp3Demuxer::OpenDemuxerAsyncInternal ()
 MediaResult
 Mp3Demuxer::ReadHeader ()
 {
+	LOG_MP3 ("Mp3Demuxer::ReadHeader ()\n");
+
 	MediaResult result;
 	IMediaStream **streams = NULL;
 	gint64 stream_start;
@@ -982,6 +985,8 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 	result = Mp3FrameReader::FindMpegHeader (&mpeg, &vbr, source, stream_start, &header_start);
 	
 	source->Seek (0, SEEK_SET);
+	
+	LOG_MP3 ("Mp3DemuxerInfo::Supports (%p) result: %i\n", source, result);
 	
 	return result;
 }
