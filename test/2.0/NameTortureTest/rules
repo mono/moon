@@ -76,9 +76,13 @@
     name conflict, the operation throws an ArgumentException.
 
 12. Adding an item to the subtree of a template registers the name with the
-    controls namescope, not the private template namescope.
+    controls namescope, not the private template namescope. Items added in
+    this way can only be found by calling FindName () on the Control who owns
+    the template.
 
     tested by: AddItemToCanvasInTemplate
+    moon-unit: AddStateAtRuntime
+               
 
 13. If a control inside a template does a LoadComponants call, the resulting
     elements can not be found via GetTemplateChild or FindName anywhere.
