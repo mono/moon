@@ -1168,8 +1168,10 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 	
 	g_return_if_fail (pea != NULL);
 
-	SetBufferingProgress (pea->progress);
-	Emit (BufferingProgressChangedEvent);
+	if (GetBufferingProgress () != pea->progress) {
+		SetBufferingProgress (pea->progress);
+		Emit (BufferingProgressChangedEvent);
+	}
 	
 	if (pea->progress >= 1.0 && GetState () == MediaStateBuffering) {
 		LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): buffer full, playing...\n");

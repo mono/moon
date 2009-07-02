@@ -2647,10 +2647,12 @@ IMediaDemuxer::FillBuffersInternal ()
 		GetFrameAsync (request_stream);
 	}
 	
-	if (ended == media_streams) {
-		media->ReportBufferingProgress (1.0);
-	} else {
-		media->ReportBufferingProgress ((buffering_time == 0 || buffering_time == 0) ? 0 : ((double) buffered_size / (double) buffering_time));
+	if (media_streams > 0) {
+		if (ended == media_streams) {
+			media->ReportBufferingProgress (1.0);
+		} else {
+			media->ReportBufferingProgress ((buffering_time == 0 || buffering_time == 0) ? 0 : ((double) buffered_size / (double) buffering_time));
+		}
 	}
 	
 	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal () [Done]. BufferedSize: %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (GetBufferedSize ()));

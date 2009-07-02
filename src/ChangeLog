@@ -1,3 +1,11 @@
+2009-07-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+       * mediaelement.cpp: Protect against emitting BufferingProgressChanged
+       when the actual value hasn't changed.
+
+       * pipeline.cpp: FillBuffers: don't report any buffering progress
+       if we don't have any media streams.
+
 2009-07-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fonts.cpp (LoadPortableUserInterface): Now takes a 'lang'
