@@ -1193,6 +1193,10 @@ MediaElement::SetUriSource (Uri *uri)
 		char *str = uri->ToString ();
 		playlist->GetCurrentEntry ()->InitializeWithUri (str);
 		g_free (str);
+	} else {
+		UpdateBounds ();
+		InvalidateMeasure ();
+		InvalidateArrange ();
 	}
 }
 
