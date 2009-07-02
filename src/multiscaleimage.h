@@ -28,6 +28,8 @@ struct BitmapImageContext;
 
 /* @Namespace=System.Windows.Controls,ManagedDependencyProperties=Manual */
 class MultiScaleImage : public MediaBase {
+	friend class MultiScaleImagePropertyValueProvider;
+
 	GHashTable *cache;
 	bool cache_contains (Uri* filename, bool check_empty_tile);
 	MultiScaleTileSource *source;
@@ -57,6 +59,20 @@ class MultiScaleImage : public MediaBase {
 	void SetIsDownloading (bool value);
 	void SetIsIdle (bool value);
 
+	/* @PropertyType=double,DefaultValue=0.0,Version=2.0 */
+	const static int TileFadeProperty;
+	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateGetter */
+	const static int InternalViewportOriginProperty;
+	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
+	const static int InternalViewportWidthProperty;
+
+	Point* GetInternalViewportOrigin ();
+	void SetInternalViewportOrigin (Point* p);
+
+	double GetInternalViewportWidth ();
+	void SetInternalViewportWidth (double width);
+
+
  protected:
 	virtual ~MultiScaleImage ();
 
@@ -84,13 +100,11 @@ class MultiScaleImage : public MediaBase {
 	const static int SubImagesProperty;
 	/* @PropertyType=bool,DefaultValue=true,Version=2.0,GenerateAccessors */
 	const static int UseSpringsProperty;
-	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateGetter */
+	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
 	const static int ViewportOriginProperty;
-	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
+	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
 	const static int ViewportWidthProperty;
 
-	/* @PropertyType=double,DefaultValue=0.0,Version=2.0 */
-	const static int TileFadeProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	MultiScaleImage ();
@@ -147,11 +161,9 @@ class MultiScaleImage : public MediaBase {
 	void SetUseSprings (bool spring);
 
 	Point* GetViewportOrigin ();
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetViewportOrigin (Point p);
+	void SetViewportOrigin (Point* p);
 
 	double GetViewportWidth ();
-	/* @GenerateCBinding,GeneratePInvoke */
 	void SetViewportWidth (double width);
 
 	MultiScaleSubImageCollection *GetSubImages ();
@@ -168,5 +180,24 @@ class MultiScaleImage : public MediaBase {
 	BitmapImageContext *GetFreeBitmapImageContext ();
 	void DownloadTile (BitmapImageContext *ctx, Uri *tile, int subimage, int level, int x, int y);
 };
+
+/*
+ * MultiScaleImagePropertyValueProvider
+ */
+ 
+class MultiScaleImagePropertyValueProvider : public FrameworkElementProvider {
+ private:
+	Value *viewport_origin;
+	Value *viewport_width;
+
+	Value *GetViewportOrigin ();
+	Value *GetViewportWidth ();
+
+ public:
+	MultiScaleImagePropertyValueProvider (MultiScaleImage *obj, PropertyPrecedence precedence);
+	virtual ~MultiScaleImagePropertyValueProvider ();
+	virtual Value *GetPropertyValue (DependencyProperty *property);
+};
+
 
 #endif /* __MULTISCALIMAGE_H__ */

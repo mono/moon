@@ -277,6 +277,8 @@ MultiScaleImage::MultiScaleImage ()
 //		init = false;
 //		MultiScaleImage::SubImagesProperty->SetValueValidator (MultiScaleSubImageCollectionValidator);	
 //	}
+	providers [PropertyPrecedence_DynamicValue] = new MultiScaleImagePropertyValueProvider (this, PropertyPrecedence_DynamicValue);
+
 	SetObjectType (Type::MULTISCALEIMAGE); 
 	source = NULL;
 	bitmapimages = NULL;
@@ -312,7 +314,7 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 	double width = GetViewportWidth () / zoomIncrementFactor;
 	SetViewportWidth (width);
 	if (!isnan(zoomCenterLogicalX) && !isnan(zoomCenterLogicalY)) {
-		SetViewportOrigin (Point (zoomCenterLogicalX - (zoomCenterLogicalX - GetViewportOrigin()->x) / zoomIncrementFactor,
+		SetViewportOrigin (new Point (zoomCenterLogicalX - (zoomCenterLogicalX - GetViewportOrigin()->x) / zoomIncrementFactor,
 					  zoomCenterLogicalY - (zoomCenterLogicalY - GetViewportOrigin()->y) / zoomIncrementFactor));
 	}
 }
@@ -1021,15 +1023,25 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	if (args->GetId () == MultiScaleImage::AllowDownloadingProperty && args->GetNewValue () && args->GetNewValue()->AsBool ())
 		Invalidate();
 
-	if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
+	if (args->GetId () == MultiScaleImage::InternalViewportOriginProperty) {
 		Emit (MultiScaleImage::ViewportChangedEvent);
 		Invalidate ();
 	}
 
-	if (args->GetId () == MultiScaleImage::ViewportWidthProperty) {
+	if (args->GetId () == MultiScaleImage::InternalViewportWidthProperty) {
 		//LOG_MSI ("ViewportWidth set to %f\n", args->GetNewValue()->AsDouble ());
 		Emit (MultiScaleImage::ViewportChangedEvent);
 		Invalidate ();
+	}
+
+	if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
+		SetInternalViewportOrigin (args->GetNewValue ()->AsPoint ());
+		ClearValue (MultiScaleImage::ViewportOriginProperty, false);
+	}
+	
+	if (args->GetId () == MultiScaleImage::ViewportWidthProperty) {
+		SetInternalViewportWidth (args->GetNewValue ()->AsDouble ());
+		ClearValue (MultiScaleImage::ViewportWidthProperty, false);
 	}
 
 	if (args->GetId () == MultiScaleImage::TileFadeProperty) {
@@ -1120,21 +1132,21 @@ MultiScaleImage::EmitMotionFinished ()
 }
 
 void
-MultiScaleImage::SetViewportWidth (double value)
+MultiScaleImage::SetInternalViewportWidth (double value)
 {
 	if (!GetUseSprings ()) {
 		if (!pending_motion_completed) {
 			AddTickCall (motion_finished_delayed);
 			pending_motion_completed = true;
 		}
-		SetValue (MultiScaleImage::ViewportWidthProperty, Value (value));
+		SetValue (MultiScaleImage::InternalViewportWidthProperty, Value (value));
 		return;
 	}
 
 	if (!zoom_sb) {
 		zoom_sb = new Storyboard ();
 		zoom_sb->SetManualTarget (this);
-		zoom_sb->SetTargetProperty (zoom_sb, new PropertyPath ("(MultiScaleImage.ViewportWidth)"));
+		zoom_sb->SetTargetProperty (zoom_sb, new PropertyPath ("(MultiScaleImage.InternalViewportWidth)"));
 		zoom_sb->AddHandler (Storyboard::CompletedEvent, motion_finished, this);
 		zoom_animation = new DoubleAnimationUsingKeyFrames ();
 		zoom_animation->SetDuration (Duration::FromSeconds (4));
@@ -1161,21 +1173,21 @@ MultiScaleImage::SetViewportWidth (double value)
 }
 
 void
-MultiScaleImage::SetViewportOrigin (Point value)
+MultiScaleImage::SetInternalViewportOrigin (Point* value)
 {
 	if (!GetUseSprings ()) {
 		if (!pending_motion_completed) {
 			AddTickCall (motion_finished_delayed);
 			pending_motion_completed = true;
 		}
-		SetValue (MultiScaleImage::ViewportOriginProperty, Value (value));
+		SetValue (MultiScaleImage::InternalViewportOriginProperty, Value (*value));
 		return;
 	}
 
 	if (!pan_sb) {
 		pan_sb = new Storyboard ();
 		pan_sb->SetManualTarget (this);
-		pan_sb->SetTargetProperty (pan_sb, new PropertyPath ("(MultiScaleImage.ViewportOrigin)"));
+		pan_sb->SetTargetProperty (pan_sb, new PropertyPath ("(MultiScaleImage.InternalViewportOrigin)"));
 		pan_sb->AddHandler (Storyboard::CompletedEvent, motion_finished, this);
 		pan_animation = new PointAnimationUsingKeyFrames ();
 		pan_animation->SetDuration (Duration::FromSeconds (4));
@@ -1194,7 +1206,7 @@ MultiScaleImage::SetViewportOrigin (Point value)
 	} else
 		pan_sb->PauseWithError (NULL);
 
-	pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->SetValue (value);
+	pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->SetValue (*value);
 	pan_sb->BeginWithError (NULL);
 }
 
@@ -1247,4 +1259,54 @@ MultiScaleImage::GetSubImageCount ()
 	if (sub_images == NULL)
 		return 0;
 	return sub_images->GetCount ();
+}
+
+/*
+ * MultiScaleImagePropertyValueProvider
+ */
+
+MultiScaleImagePropertyValueProvider::MultiScaleImagePropertyValueProvider (MultiScaleImage *msi, PropertyPrecedence precedence)
+	: FrameworkElementProvider (msi, precedence)
+{
+	viewport_origin = NULL;
+	viewport_width = NULL;
+}
+
+MultiScaleImagePropertyValueProvider::~MultiScaleImagePropertyValueProvider ()
+{
+	delete viewport_origin;
+	delete viewport_width;
+}
+
+Value *
+MultiScaleImagePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
+{
+	// We verify main thread here too in case some object in the pipeline happens to want a property on the media element
+	VERIFY_MAIN_THREAD;
+	
+	if (property->GetId () == MultiScaleImage::ViewportOriginProperty)
+		return GetViewportOrigin ();
+	if (property->GetId () == MultiScaleImage::ViewportWidthProperty)
+		return GetViewportWidth ();
+	return FrameworkElementProvider::GetPropertyValue (property);
+}
+
+Value *
+MultiScaleImagePropertyValueProvider::GetViewportOrigin ()
+{
+	MultiScaleImage *msi = (MultiScaleImage *) obj;
+
+	delete viewport_origin;
+	viewport_origin = new Value (*(msi->GetInternalViewportOrigin ()));
+	return viewport_origin;
+}
+
+Value *
+MultiScaleImagePropertyValueProvider::GetViewportWidth ()
+{
+	MultiScaleImage *msi = (MultiScaleImage *) obj;
+
+	delete viewport_width;
+	viewport_width = new Value (msi->GetInternalViewportWidth ());	
+	return viewport_width;
 }
