@@ -829,6 +829,11 @@ Media::SelectDemuxerAsync ()
 	
 			if (result == MEDIA_NOT_ENOUGH_DATA) {
 				LOG_PIPELINE ("Media::SelectDemuxer (): '%s' can't determine whether it can handle the media or not due to not enough data being available yet.\n", demuxerInfo->GetName ());
+				
+				MediaClosure *closure = new MediaClosure (this, OpenInternal, this);
+				EnqueueWork (closure, false);
+				closure->unref ();
+				
 				return false;
 			}
 			

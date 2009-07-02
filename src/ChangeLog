@@ -1,5 +1,10 @@
 2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: If we couldn't select a demuxer because of
+	not having enough data yet, try again later.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: If Source (or UriSource) is either null
 	or an empty string, we're only supposed to clean up, not 
 	trying to play the null/empty string.
