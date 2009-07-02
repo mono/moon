@@ -1,3 +1,8 @@
+2009-07-02  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Fix error code so it gets propogated up when
+	validating templates.
+
 2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp: Fix printf.

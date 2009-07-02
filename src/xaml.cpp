@@ -1208,7 +1208,7 @@ class ManagedNamespace : public XamlNamespace {
 
 		Value *value = new Value ();
 		if (!p->loader->LookupObject (p, p->GetTopElementPtr (), p->current_element ? p->current_element->GetAsValue () : NULL, use_xmlns, el, create, false, value)) {
-			parser_error (p, el, NULL, -1, "Unable to resolve managed type %s.", el);
+			parser_error (p, el, NULL, 2007, "Unable to resolve managed type %s.", el);
 			delete value;
 			if (type_name)
 				g_free (type_name);
