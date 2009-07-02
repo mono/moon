@@ -23,9 +23,6 @@
 #include "debug.h"
 #include "mediaplayer.h"
 
-
-int play_24bit_audio = 2; // 2 = not set, 1 = yes, 0 = no
-
 /*
  * AudioSource::AudioFrame
  */
@@ -76,14 +73,6 @@ AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream
 	input_bytes_per_sample = stream->GetOutputBitsPerSample () / 8;
 	output_bytes_per_sample = input_bytes_per_sample;
 	
-	if (input_bytes_per_sample == 3) {
-		if (play_24bit_audio == 2) {
-			play_24bit_audio = getenv ("MOONLIGHT_AUDIO_PLAY_24_BIT") != NULL ? 1 : 0;
-		}
-		if (play_24bit_audio == 0)
-			printf ("Moonlight: This site seems to use 24bit audio, which does not work correctly with the current codec pack. Playing silence (instead of static noise).\n");
-	}
-
 	pthread_mutexattr_init (&attribs);
 	pthread_mutexattr_settype (&attribs, PTHREAD_MUTEX_RECURSIVE);
 	pthread_mutex_init (&mutex, &attribs);
@@ -683,7 +672,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 						read_ptr = (gint16 *) (((gint8 *) read_ptr) + 1); // +1 byte
 						value = *read_ptr;
 						value = (gint16) CLAMP (((value * volumes [channel]) >> 13), -32768, 32767);
-						*write_ptr [channel] = value * play_24bit_audio; // FIXME: the codec pack seems to give us bad output, SL just plays silence
+						*write_ptr [channel] = value;
 						write_ptr [channel] = (gint16 *) (((char *) write_ptr [channel]) + channel_data [channel]->distance);
 						read_ptr += 1; // +2 bytes
 					}
@@ -713,7 +702,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 						// from the 24 bit sample. Not quite sure how to do this with 32bit math without
 						// losing information though.
 						value = (value >> 13) * (volumes [channel]);
-						*((gint32 *) write_ptr [channel]) = value * play_24bit_audio; // FIXME: the codec pack seems to give us bad output, SL just plays silence
+						*((gint32 *) write_ptr [channel]) = value;
 						write_ptr [channel] = (gint16 *) (((char *) write_ptr [channel]) + channel_data [channel]->distance);
 						read_ptr = (gint32 *) (((gint8 *) read_ptr) + 3); // += input_bytes_per_sample;
 					}
