@@ -882,31 +882,41 @@ namespace NameTortureTest
 			Storyboard resourceSB = c.Resources ["ResourceSB"] as Storyboard;
 			Storyboard templateSb = (Storyboard) c.GetTemplateChild ("TemplateSB");
 			Grid grid = c.TemplateGrid;
-
+			Rectangle rect = (Rectangle) grid.FindName ("Rect");
 			Rectangle fakeGrid = new Rectangle { Name = "Grid" };
 
 			c.TemplateGrid.Children.Add (Bob);
 			testArea.Children.Add (c);
 
-				Assert.IsNull (testArea.FindName ("LayoutRoot"), "LayoutRoot.FindName (\"LayoutRoot\")");
-				Assert.IsTrue (c == testArea.FindName ("Custom"), "LayoutRoot.FindName (\"Custom\")");
-				Assert.IsNull (testArea.FindName ("Grid"), "LayoutRoot.FindName (\"Grid\")");
-				Assert.IsNull (testArea.FindName ("Bob"), "LayoutRoot.FindName (\"Bob\")");
+			Assert.IsNull (testArea.FindName ("LayoutRoot"), "LayoutRoot.FindName (\"LayoutRoot\")");
+			Assert.IsTrue (testArea.FindName ("Custom") == c, "LayoutRoot.FindName (\"Custom\")");
+			Assert.IsNull (testArea.FindName ("Grid"), "LayoutRoot.FindName (\"Grid\")");
+			Assert.IsNull (testArea.FindName ("Bob"), "LayoutRoot.FindName (\"Bob\")");
+			Assert.IsNull (testArea.FindName ("Rect"), "LayoutRoot.FindName (\"Rect\")");
 
-				Assert.IsNull (c.FindName ("LayoutRoot"), "c.FindName (\"LayoutRoot\"): {0}");
-				Assert.IsTrue (c == c.FindName ("Custom"), "c.FindName (\"Custom\"): {0}");
-				Assert.IsNull (c.FindName ("Grid"), "c.FindName (\"Grid\"): {0}");
-				Assert.IsTrue (Bob == c.FindName ("Bob"), "c.FindName (\"Bob\"): {0}");
+			Assert.IsNull (c.FindName ("LayoutRoot"), "c.FindName (\"LayoutRoot\")");
+			Assert.IsTrue (c.FindName ("Custom") == c, "c.FindName (\"Custom\")");
+			Assert.IsNull (c.FindName ("Grid"), "c.FindName (\"Grid\")");
+			Assert.IsTrue (c.FindName ("Bob") == Bob, "c.FindName (\"Bob\")");
+			Assert.IsNull (c.FindName ("Rect"), "c.FindName (\"Rect\")");
 
-				Assert.IsNull (grid.FindName ("LayoutRoot"), "grid.FindName (\"LayoutRoot\"): {0}");
-				Assert.IsNull (grid.FindName ("Custom"), "grid.FindName (\"Custom\"): {0}");
-				Assert.IsTrue (grid == grid.FindName ("Grid"), "grid.FindName (\"Grid\"): {0}");
-				Assert.IsNull (grid.FindName ("Bob"), "grid.FindName (\"Bob\"): {0}");
+			Assert.IsNull (grid.FindName ("LayoutRoot"), "grid.FindName (\"LayoutRoot\")");
+			Assert.IsNull (grid.FindName ("Custom"), "grid.FindName (\"Custom\")");
+			Assert.IsTrue (grid.FindName ("Grid") == grid, "grid.FindName (\"Grid\")");
+			Assert.IsNull (grid.FindName ("Bob"), "grid.FindName (\"Bob\")");
+			Assert.IsTrue (grid.FindName ("Rect") == rect, "grid.FindName (\"Rect\")");
 
-				Assert.IsNull (Bob.FindName ("LayoutRoot"), "Bob.FindName (\"LayoutRoot\"): {0}");
-				Assert.IsTrue (c == Bob.FindName ("Custom"), "Bob.FindName (\"Custom\"): {0}");
-				Assert.IsNull (Bob.FindName ("Grid"), "Bob.FindName (\"Grid\"): {0}");
-				Assert.IsTrue (Bob == Bob.FindName ("Bob"), "Bob.FindName (\"Bob\"): {0}");
+			Assert.IsNull (Bob.FindName ("LayoutRoot"), "Bob.FindName (\"LayoutRoot\")");
+			Assert.IsTrue (Bob.FindName ("Custom") == c, "Bob.FindName (\"Custom\")");
+			Assert.IsNull (Bob.FindName ("Grid"), "Bob.FindName (\"Grid\")");
+			Assert.IsTrue (Bob.FindName ("Bob") == Bob, "Bob.FindName (\"Bob\")");
+			Assert.IsNull (Bob.FindName ("Rect"), "Bob.FindName (\"Rect\")");
+
+			Assert.IsNull (rect.FindName ("LayoutRoot"), "rect.FindName (\"LayoutRoot\")");
+			Assert.IsNull (rect.FindName ("Custom"), "rect.FindName (\"Custom\")");
+			Assert.IsTrue (rect.FindName ("Grid") == c.TemplateGrid, "rect.FindName (\"Grid\")");
+			Assert.IsNull (rect.FindName ("Bob"), "rect.FindName (\"Bob\")");
+			Assert.IsTrue (rect.FindName ("Rect") == rect, "rect.FindName (\"Rect\")");
 		}
 
 		public void UserControlEmbeddedInXaml ()

@@ -10,6 +10,7 @@
     <Control.Template>
         <ControlTemplate>
             <Grid x:Name="Grid">
+                <Rectangle x:Name="Rect" />
                 <Grid.Resources>
                     <Storyboard x:Name="TemplateSB" Storyboard.TargetName="Grid" Storyboard.TargetProperty="Width">
                         <DoubleAnimation From="101" To="200" Duration="0" />
