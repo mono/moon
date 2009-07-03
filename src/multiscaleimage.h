@@ -26,7 +26,7 @@
 void multi_scale_image_handle_parsed (void *userdata);
 struct BitmapImageContext;
 
-/* @Namespace=System.Windows.Controls,ManagedDependencyProperties=Manual */
+/* @Namespace=System.Windows.Controls */
 class MultiScaleImage : public MediaBase {
 	friend class MultiScaleImagePropertyValueProvider;
 
@@ -59,11 +59,11 @@ class MultiScaleImage : public MediaBase {
 	void SetIsDownloading (bool value);
 	void SetIsIdle (bool value);
 
-	/* @PropertyType=double,DefaultValue=0.0,Version=2.0 */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
 	const static int TileFadeProperty;
-	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateGetter */
+	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
 	const static int InternalViewportOriginProperty;
-	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
+	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter,GenerateManagedAccessors=false,ManagedFieldAccess=Private */
 	const static int InternalViewportWidthProperty;
 
 	Point* GetInternalViewportOrigin ();
@@ -102,7 +102,7 @@ class MultiScaleImage : public MediaBase {
 	const static int IsIdleProperty;
 	/* @PropertyType=MultiScaleTileSource,Version=2.0,GenerateAccessors */
 	const static int SourceProperty;
-	/* @PropertyType=MultiScaleSubImageCollection,AutoCreateValue,ReadOnly,Version=2.0,GenerateGetter */
+	/* @PropertyType=MultiScaleSubImageCollection,AutoCreateValue,ReadOnly,Version=2.0,GenerateGetter,GenerateManagedAccessors=false */
 	const static int SubImagesProperty;
 	/* @PropertyType=bool,DefaultValue=true,Version=2.0,GenerateAccessors */
 	const static int UseSpringsProperty;
