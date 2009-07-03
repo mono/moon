@@ -1351,6 +1351,8 @@ MmsPlaylistEntry::ParseHeader (void *buffer, gint32 size)
 	g_return_val_if_fail (parser == NULL, MEDIA_FAIL);
 	g_return_val_if_fail (media != NULL, MEDIA_FAIL);
 	
+	media->ReportDownloadProgress (1.0);
+	
 	asf_src = new MemorySource (media, buffer, size, 0, false);
 	asf_parser = new ASFParser (asf_src, media);
 	result = asf_parser->ReadHeader ();	
