@@ -271,6 +271,7 @@ MmsDownloader::ProcessResponseHeaderCallback (gpointer context, const char *head
 {
 	MmsDownloader *dl = (MmsDownloader *) context;
 	g_return_if_fail (dl != NULL);
+	dl->SetCurrentDeployment ();
 	dl->ProcessResponseHeader (header, value);
 }
 
