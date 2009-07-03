@@ -50,6 +50,7 @@ namespace NameTortureTest
 			RunTests ("StaticResourceNamesConflictingOnSibling");
 			RunTests ("StaticResourceNamesConflictingBetweenResourceAndElement");
 			RunTests ("StaticResourceUserControls");
+			RunTests ("TemplatedControl");
 			RunTests ("UserControlEmbeddedInXaml");
 
  			HtmlPage.RegisterScriptableObject ("Assert", new JSAsserter());
@@ -79,6 +80,7 @@ namespace NameTortureTest
 			if (Assert.Failures > 0)
 				log.Background = new SolidColorBrush(Colors.Red);
 
+			testArea.Children.Clear ();
 			status.Text = string.Format ("Assertions: {0}, Failures: {1}", Assert.TotalCount, Assert.TotalFailures);
 		}
 
@@ -102,6 +104,7 @@ namespace NameTortureTest
 			if (Assert.Failures > 0)
 				log.Background = new SolidColorBrush(Colors.Red);
 
+			testArea.Children.Clear ();
 			status.Text = string.Format ("Assertions: {0}, Failures: {1}", Assert.TotalCount, Assert.TotalFailures);
 		}
 		
@@ -868,6 +871,42 @@ namespace NameTortureTest
 			StaticResourceUserControls2 s2 = new StaticResourceUserControls2();
 
 			Assert.IsNotNull (s2.Resources["localNameForUserControl4"], "3");
+		}
+
+		public void TemplatedControl ()
+		{
+			TemplatedControl c = new TemplatedControl { Name = "Custom" };
+			c.ApplyTemplate ();
+
+			Rectangle Bob = new Rectangle { Name = "Bob" };
+			Storyboard resourceSB = c.Resources ["ResourceSB"] as Storyboard;
+			Storyboard templateSb = c.TemplateSB;
+			Grid grid = c.TemplateGrid;
+
+			Rectangle fakeGrid = new Rectangle { Name = "Grid" };
+
+			c.TemplateGrid.Children.Add (Bob);
+			testArea.Children.Add (c);
+
+				Assert.IsNull (testArea.FindName ("LayoutRoot"), "LayoutRoot.FindName (\"LayoutRoot\")");
+				Assert.IsTrue (c == testArea.FindName ("Custom"), "LayoutRoot.FindName (\"Custom\")");
+				Assert.IsNull (testArea.FindName ("Grid"), "LayoutRoot.FindName (\"Grid\")");
+				Assert.IsNull (testArea.FindName ("Bob"), "LayoutRoot.FindName (\"Bob\")");
+
+				Assert.IsNull (c.FindName ("LayoutRoot"), "c.FindName (\"LayoutRoot\"): {0}");
+				Assert.IsTrue (c == c.FindName ("Custom"), "c.FindName (\"Custom\"): {0}");
+				Assert.IsNull (c.FindName ("Grid"), "c.FindName (\"Grid\"): {0}");
+				Assert.IsTrue (Bob == c.FindName ("Bob"), "c.FindName (\"Bob\"): {0}");
+
+				Assert.IsNull (grid.FindName ("LayoutRoot"), "grid.FindName (\"LayoutRoot\"): {0}");
+				Assert.IsNull (grid.FindName ("Custom"), "grid.FindName (\"Custom\"): {0}");
+				Assert.IsTrue (grid == grid.FindName ("Grid"), "grid.FindName (\"Grid\"): {0}");
+				Assert.IsNull (grid.FindName ("Bob"), "grid.FindName (\"Bob\"): {0}");
+
+				Assert.IsNull (Bob.FindName ("LayoutRoot"), "Bob.FindName (\"LayoutRoot\"): {0}");
+				Assert.IsTrue (c == Bob.FindName ("Custom"), "Bob.FindName (\"Custom\"): {0}");
+				Assert.IsNull (Bob.FindName ("Grid"), "Bob.FindName (\"Grid\"): {0}");
+				Assert.IsTrue (Bob == Bob.FindName ("Bob"), "Bob.FindName (\"Bob\"): {0}");
 		}
 
 		public void UserControlEmbeddedInXaml ()

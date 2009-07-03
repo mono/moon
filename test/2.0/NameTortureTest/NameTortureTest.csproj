@@ -78,6 +78,9 @@
     <Compile Include="StaticResourceUserControls2.xaml.cs">
       <DependentUpon>StaticResourceUserControls2.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TemplatedControl.xaml.cs">
+      <DependentUpon>TemplatedControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControl1.xaml.cs">
       <DependentUpon>UserControl1.xaml</DependentUpon>
     </Compile>
@@ -128,6 +131,10 @@
     <Content Include="NameTortureTest.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Page Include="TemplatedControl.xaml">
+      <SubType>Page</SubType>
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
     <Page Include="StaticResourceUserControls1.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
