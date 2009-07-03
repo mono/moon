@@ -1,5 +1,9 @@
 2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Fix printf.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: Handle DownloadProgressChanged events
 	properly.
 
