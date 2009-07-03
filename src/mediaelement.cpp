@@ -1144,17 +1144,15 @@ MediaElement::MediaEndedHandler (PlaylistRoot *playlist, EventArgs *args)
 void
 MediaElement::DownloadProgressChangedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
+	ProgressEventArgs *pea = (ProgressEventArgs *) args;
 	Media *media;
 	
-	LOG_MEDIAELEMENT ("MediaElement::DownloadProgressChangedHandler ()\n");
+	LOG_MEDIAELEMENT ("MediaElement::DownloadProgressChangedHandler (): %f\n", pea ? pea->progress : -1.0);
 	VERIFY_MAIN_THREAD;
 	
-	g_return_if_fail (playlist != NULL);
+	g_return_if_fail (pea != NULL);
 	
-	media = playlist->GetCurrentMedia ();
-	if (media != NULL)
-		SetDownloadProgress (media->GetDownloadProgress ());
-		
+	SetDownloadProgress (pea->progress);
 	Emit (DownloadProgressChangedEvent);
 }
 
@@ -1163,7 +1161,7 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 {
 	ProgressEventArgs *pea = (ProgressEventArgs *) args;
 	
-	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): %f\n", GetBufferingProgress ());
+	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): %f\n", pea ? pea->progress : -1.0);
 	VERIFY_MAIN_THREAD;
 	
 	g_return_if_fail (pea != NULL);
