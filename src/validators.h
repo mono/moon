@@ -36,6 +36,7 @@ public:
 	static ValueValidator StyleValidator;
 	static ValueValidator TemplateValidator;
 	static ValueValidator IsTimelineValidator;
+	static ValueValidator StoryboardTargetPropertyValidator;
 	static ValueValidator IsSetterSealedValidator;
 	static ValueValidator ContentControlContentValidator;
 	static ValueValidator NameValidator;

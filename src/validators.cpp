@@ -17,6 +17,8 @@
 #include "cornerradius.h"
 #include "style.h"
 #include "frameworkelement.h"
+#include "animation.h"
+#include "propertypath.h"
 #include "namescope.h"
 
 bool
@@ -216,6 +218,24 @@ Validators::IsTimelineValidator (DependencyObject* instance, DependencyProperty 
 		return false;
 	}
 	
+	return true;
+}
+
+bool
+Validators::StoryboardTargetPropertyValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (!IsTimelineValidator (instance, property, value, error))
+		return false;
+
+	PropertyPath *existing = Storyboard::GetTargetProperty (instance);
+
+	if (existing && existing->property != NULL) {
+		// it was initialized using a DP, we only allow it to be overriden with another DP.
+		PropertyPath *new_path = value->AsPropertyPath();
+		if (new_path->property == NULL)
+			return false;
+	}
+
 	return true;
 }
 

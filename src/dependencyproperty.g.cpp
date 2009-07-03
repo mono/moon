@@ -362,7 +362,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBOX, "HorizontalScrollBarVisibility", false, new Value (ScrollBarVisibilityHidden), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBOX, "FontSource", false, Type::FONTSOURCE);
 	DependencyProperty::Register (this, Type::TEXTBOX, "AcceptsReturn", false, new Value (false), Type::BOOL);
-	DependencyProperty::RegisterFull (this, Type::STORYBOARD, "TargetProperty", false, NULL, Type::PROPERTYPATH, true, false, false, NULL, Validators::IsTimelineValidator, NULL, false);
+	DependencyProperty::RegisterFull (this, Type::STORYBOARD, "TargetProperty", false, NULL, Type::PROPERTYPATH, true, false, false, NULL, Validators::StoryboardTargetPropertyValidator, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::STORYBOARD, "TargetName", false, NULL, Type::STRING, true, false, false, NULL, Validators::IsTimelineValidator, NULL, false);
 	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "CenterY", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "CenterX", false, new Value (0.0), Type::DOUBLE);

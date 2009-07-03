@@ -874,7 +874,7 @@ class Storyboard : public ParallelTimeline {
 public:
  	/* @PropertyType=string,Attached,GenerateAccessors,Validator=IsTimelineValidator */
 	const static int TargetNameProperty;
- 	/* @PropertyType=PropertyPath,Attached,GenerateAccessors,Validator=IsTimelineValidator */
+ 	/* @PropertyType=PropertyPath,Attached,GenerateAccessors,Validator=StoryboardTargetPropertyValidator */
 	const static int TargetPropertyProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
