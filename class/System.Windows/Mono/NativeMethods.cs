@@ -55,6 +55,7 @@ namespace Mono {
 	internal delegate void   DownloaderBodyFunc (IntPtr state, IntPtr body, int length);
 	internal delegate IntPtr DownloaderCreateWebRequestFunc (string method, string uri, IntPtr context);
 	internal delegate void   DownloaderSetResponseHeaderCallbackFunc (IntPtr native, DownloaderResponseHeaderCallback callback, IntPtr context);
+	internal delegate IntPtr DownloaderGetResponseFunc (IntPtr native);
 
 	internal delegate void DownloaderResponseHeaderCallback (IntPtr context, string header, string value);
 

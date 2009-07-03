@@ -695,7 +695,8 @@ Downloader::SetFunctions (DownloaderCreateStateFunc create_state,
 			  DownloaderHeaderFunc header,
 			  DownloaderBodyFunc body,
 			  DownloaderCreateWebRequestFunc request,
-			  DownloaderSetResponseHeaderCallbackFunc response_header_callback)
+			  DownloaderSetResponseHeaderCallbackFunc response_header_callback,
+			  DownloaderGetResponseFunc get_response)
 {
 	LOG_DOWNLOADER ("Downloader::SetFunctions\n");
 	Downloader::create_state = create_state;
@@ -707,6 +708,7 @@ Downloader::SetFunctions (DownloaderCreateStateFunc create_state,
 	Downloader::body_func = body;
 	Downloader::request_func = request;
 	Downloader::set_response_header_callback_func = response_header_callback;
+	Downloader::get_response_func = get_response;
 }
 
 
@@ -774,6 +776,14 @@ Downloader::SetResponseHeaderCallback (DownloaderResponseHeaderCallback callback
 {
 	if (set_response_header_callback_func != NULL)
 		set_response_header_callback_func (downloader_state, callback, context);
+}
+
+DownloaderResponse *
+Downloader::GetResponse ()
+{
+	if (get_response_func != NULL)
+		return get_response_func (downloader_state);
+	return NULL;
 }
 
 void
@@ -858,6 +868,13 @@ dummy_downloader_set_response_header_callback (gpointer state, DownloaderRespons
 	g_warning ("downloader_set_function has never been called.\n");
 }
 
+static DownloaderResponse *
+dummy_downloader_get_response (gpointer state)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+	return NULL;
+}
+
 DownloaderCreateStateFunc Downloader::create_state = dummy_downloader_create_state;
 DownloaderDestroyStateFunc Downloader::destroy_state = dummy_downloader_destroy_state;
 DownloaderOpenFunc Downloader::open_func = dummy_downloader_open;
@@ -867,6 +884,7 @@ DownloaderHeaderFunc Downloader::header_func = dummy_downloader_header;
 DownloaderBodyFunc Downloader::body_func = dummy_downloader_body;
 DownloaderCreateWebRequestFunc Downloader::request_func = dummy_downloader_create_web_request;
 DownloaderSetResponseHeaderCallbackFunc Downloader::set_response_header_callback_func = dummy_downloader_set_response_header_callback;
+DownloaderGetResponseFunc Downloader::get_response_func = dummy_downloader_get_response;
 
 void
 downloader_init (void)

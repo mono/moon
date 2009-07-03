@@ -809,8 +809,8 @@ namespace Mono {
 		public extern static void downloader_notify_size (IntPtr instance, long size);
 
 		[DllImport ("moon")]
-		// void downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, DownloaderSetResponseHeaderCallbackFunc response_header_callback);
-		public extern static void downloader_set_functions (Mono.DownloaderCreateStateFunc create_state, Mono.DownloaderDestroyStateFunc destroy_state, Mono.DownloaderOpenFunc open, Mono.DownloaderSendFunc send, Mono.DownloaderAbortFunc abort, Mono.DownloaderHeaderFunc header, Mono.DownloaderBodyFunc body, Mono.DownloaderCreateWebRequestFunc request, Mono.DownloaderSetResponseHeaderCallbackFunc response_header_callback);
+		// void downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, DownloaderSetResponseHeaderCallbackFunc response_header_callback, DownloaderGetResponseFunc get_response);
+		public extern static void downloader_set_functions (Mono.DownloaderCreateStateFunc create_state, Mono.DownloaderDestroyStateFunc destroy_state, Mono.DownloaderOpenFunc open, Mono.DownloaderSendFunc send, Mono.DownloaderAbortFunc abort, Mono.DownloaderHeaderFunc header, Mono.DownloaderBodyFunc body, Mono.DownloaderCreateWebRequestFunc request, Mono.DownloaderSetResponseHeaderCallbackFunc response_header_callback, Mono.DownloaderGetResponseFunc get_response);
 
 		[DllImport ("moon")]
 		// void downloader_write (Downloader *instance, void *buf, gint32 offset, gint32 n);

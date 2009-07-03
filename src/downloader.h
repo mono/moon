@@ -21,6 +21,7 @@
 
 class FileDownloader;
 class Downloader;
+class DownloaderResponse;
 
 /* @CBindingRequisite */
 typedef void     (* DownloaderResponseHeaderCallback) (gpointer context, const char *header, const char *value);
@@ -55,6 +56,8 @@ typedef void     (* DownloaderBodyFunc) (gpointer state, void *body, guint32 len
 typedef gpointer (* DownloaderCreateWebRequestFunc) (const char *method, const char *uri, gpointer context);
 /* @CBindingRequisite */
 typedef void     (* DownloaderSetResponseHeaderCallbackFunc) (gpointer state, DownloaderResponseHeaderCallback callback, gpointer context);
+/* @CBindingRequisite */
+typedef DownloaderResponse * (* DownloaderGetResponseFunc) (gpointer state);
 
 enum DownloaderAccessPolicy {
 	DownloaderPolicy,
@@ -76,6 +79,7 @@ class Downloader : public DependencyObject {
 	static DownloaderBodyFunc body_func;
 	static DownloaderCreateWebRequestFunc request_func;
 	static DownloaderSetResponseHeaderCallbackFunc set_response_header_callback_func;
+	static DownloaderGetResponseFunc get_response_func;
 
 	// Set by the consumer
 	DownloaderNotifySizeFunc notify_size;
@@ -189,7 +193,8 @@ class Downloader : public DependencyObject {
 				  DownloaderHeaderFunc header,
 				  DownloaderBodyFunc body,
 			      DownloaderCreateWebRequestFunc request,
-			      DownloaderSetResponseHeaderCallbackFunc response_header_callback
+			      DownloaderSetResponseHeaderCallbackFunc response_header_callback,
+			      DownloaderGetResponseFunc get_response
 				);
 		
 	bool Started ();
@@ -211,6 +216,7 @@ class Downloader : public DependencyObject {
 	void *CreateWebRequest (const char *method, const char *uri);
 	void SetResponseHeaderCallback (DownloaderResponseHeaderCallback callback, gpointer context);
 
+	DownloaderResponse * GetResponse ();
 	//
 	// Property Accessors
 	//

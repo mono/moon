@@ -312,6 +312,9 @@ class TypeReference {
 			case "DownloaderSetResponseHeaderCallbackFunc":
 				managed_type = "Mono.DownloaderSetResponseHeaderCallbackFunc";
 				break;
+			case "DownloaderGetResponseFunc":
+				managed_type = "Mono.DownloaderGetResponseFunc";
+				break;
 			case "XamlLoaderCallbacks":
 				managed_type = "Xaml.XamlLoaderCallbacks";
 				break;

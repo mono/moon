@@ -154,6 +154,15 @@ plugin_downloader_set_response_header_callback (gpointer state, DownloaderRespon
 	pd->SetResponseHeaderCallback (callback, context);
 }
 
+static DownloaderResponse *
+plugin_downloader_get_response (gpointer state)
+{
+	if (!state)
+		return NULL;
+	
+	return ((PluginDownloader *) state)->getResponse ();
+}
+
 PluginDownloader::PluginDownloader (Downloader *dl)
 {
 	d (printf ("PluginDownloader::PluginDownloader (), this: %p, dl: %p\n", this, dl));
@@ -358,7 +367,8 @@ downloader_initialize (void)
 		&plugin_downloader_set_header,
 		&plugin_downloader_set_body,
 		&plugin_downloader_create_webrequest,
-		&plugin_downloader_set_response_header_callback);
+		&plugin_downloader_set_response_header_callback,
+		&plugin_downloader_get_response);
 }
 
 void

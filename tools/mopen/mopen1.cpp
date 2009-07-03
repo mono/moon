@@ -233,7 +233,8 @@ static int LoadXaml (const char* file)
 				  downloader_header,
 				  downloader_body,
 				  downloader_request,
-				  false);
+				  NULL,
+				  NULL);
 
 	Type::Kind et;
 

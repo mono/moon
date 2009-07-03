@@ -1620,9 +1620,9 @@ downloader_notify_size (Downloader *instance, gint64 size)
 
 
 void
-downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, DownloaderSetResponseHeaderCallbackFunc response_header_callback)
+downloader_set_functions (DownloaderCreateStateFunc create_state, DownloaderDestroyStateFunc destroy_state, DownloaderOpenFunc open, DownloaderSendFunc send, DownloaderAbortFunc abort, DownloaderHeaderFunc header, DownloaderBodyFunc body, DownloaderCreateWebRequestFunc request, DownloaderSetResponseHeaderCallbackFunc response_header_callback, DownloaderGetResponseFunc get_response)
 {
-	Downloader::SetFunctions (create_state, destroy_state, open, send, abort, header, body, request, response_header_callback);
+	Downloader::SetFunctions (create_state, destroy_state, open, send, abort, header, body, request, response_header_callback, get_response);
 }
 
 

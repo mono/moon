@@ -773,6 +773,7 @@ typedef void ( * DownloaderHeaderFunc ) ( gpointer state , const char * header ,
 typedef void ( * DownloaderBodyFunc ) ( gpointer state , void * body , guint32 length ) ;
 typedef gpointer ( * DownloaderCreateWebRequestFunc ) ( const char * method , const char * uri , gpointer context ) ;
 typedef void ( * DownloaderSetResponseHeaderCallbackFunc ) ( gpointer state , DownloaderResponseHeaderCallback callback , gpointer context ) ;
+typedef DownloaderResponse * ( * DownloaderGetResponseFunc ) ( gpointer state ) ;
 typedef guint32 ( * DownloaderResponseStartedHandler ) ( DownloaderResponse * response , gpointer context ) ;
 typedef guint32 ( * DownloaderResponseDataAvailableHandler ) ( DownloaderResponse * response , gpointer context , char * buffer , guint32 length ) ;
 typedef guint32 ( * DownloaderResponseFinishedHandler ) ( DownloaderResponse * response , gpointer context , bool success , gpointer data , const char * uri ) ;

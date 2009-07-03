@@ -1,3 +1,7 @@
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MoonlightRuntime.cs: Update according to API changes.
+
 2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Moonlight.Gtk/ManagedDownloader.cs:
