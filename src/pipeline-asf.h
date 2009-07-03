@@ -119,6 +119,7 @@ public:
 	void SetMmsMetadata (const char *playlist_gen_id, const char *broadcast_id, HttpStreamingFeatures features); // Main thread only
 	MediaResult ParseHeader (void *buffer, gint32 size); // Main thread only
 	void ReportStreamChange (gint32 reason); // called by the MmsDownloader when we get a C (stream change) packet. Main thread only.
+	void ReportDownloadFailure (); // called by the MmsDownloader when the download fails (404 for instance). Main thread only.
 
 	// returns the MmsDownloader for the Downloader
 	// you must own a ref to the downloader (since this method must be thread safe, 

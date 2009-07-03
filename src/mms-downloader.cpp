@@ -58,6 +58,7 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl, Type::MM
 	content_descriptions = NULL;
 
 	requested_pts = 0;
+	failure_reported = false;
 
 	dl->SetRequireCustomHeaderSupport (true);
 	dl->SetDisableCache (true);
@@ -280,6 +281,18 @@ MmsDownloader::ProcessResponseHeader (const char *header, const char *value)
 	char *duped;
 
 	LOG_MMS ("MmsDownloader::ProcessResponseHeader ('%s', '%s')\n", header, value);
+
+	if (failure_reported)
+		return;
+
+	// check response code
+	DownloaderResponse *response = this->dl->GetResponse ();
+	if (response != NULL && response->GetResponseStatus () != 200) {
+		fprintf (stderr, "Moonlight: The MmsDownloader could not load the uri '%s', got response status: %i (expected 200)\n", uri, response->GetResponseStatus ());
+		failure_reported = true;
+		source->ReportDownloadFailure ();
+		return;
+	}
 
 	g_return_if_fail (header != NULL);
 	g_return_if_fail (value != NULL);

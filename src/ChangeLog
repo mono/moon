@@ -1,8 +1,16 @@
 2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp|h:
+	* mms-downloader.cpp|h: If downloading the mms url
+	doesn't succeed, raise an error. Fixes MS DRT #222
+	completely.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp:
 	* mediaelement.cpp: When playing an mms stream, SL sets
 	DownloadProgress to 1.0 after downloading the header.
+	Makes MS DRT #222 reach a bit further.
 
 2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 

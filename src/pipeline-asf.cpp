@@ -782,6 +782,22 @@ MmsSource::GetCurrentReffed ()
 }
 
 void
+MmsSource::ReportDownloadFailure ()
+{
+	Media *media;
+	
+	LOG_MMS ("MmsSource::ReportDownloadFailure ()\n");
+	VERIFY_MAIN_THREAD;
+	
+	media = GetMediaReffed ();
+	
+	g_return_if_fail (media != NULL);
+	
+	media->ReportErrorOccurred ("MmsDownloader failed");
+	media->unref ();
+}
+
+void
 MmsSource::ReportStreamChange (gint32 reason)
 {
 	Media *media;
@@ -1341,6 +1357,8 @@ MediaResult
 MmsPlaylistEntry::ParseHeader (void *buffer, gint32 size)
 {
 	VERIFY_MAIN_THREAD;
+	
+	LOG_MMS ("MmsPlaylistEntry::ParseHeader (%p, %i)\n", buffer, size);
 	
 	MediaResult result;
 	MemorySource *asf_src = NULL;

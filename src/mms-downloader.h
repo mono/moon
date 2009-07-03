@@ -71,6 +71,7 @@ class MmsDownloader : public InternalDownloader {
 	char *buffer;
 	char *client_id;
 	char *playlist_gen_id;
+	bool failure_reported;
 
 	guint32 size;
 	
