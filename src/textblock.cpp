@@ -501,9 +501,12 @@ TextBlock::ArrangeOverride (Size finalSize)
 	} else if (horiz == HorizontalAlignmentStretch) {
 		arranged.width = finalSize.width;
 	}
-	
-	if (!isnan (GetHeight ()))
+
+	if (!isnan (GetHeight ())) {
 		arranged.height = GetHeight ();
+	} else if (horiz == HorizontalAlignmentStretch) {
+		arranged.height = MAX (arranged.height, finalSize.height);
+	}
 	
 	arranged = arranged.Max (GetMinWidth (), GetMinHeight ());
 	arranged = arranged.Min (GetMaxWidth (), GetMaxHeight ());
