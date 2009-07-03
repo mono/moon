@@ -1,5 +1,9 @@
 2009-07-03  Alan McGovern  <amcgovern@novell.com>
 
+	* runtime.cpp: We don't need to change these actually.
+
+2009-07-03  Alan McGovern  <amcgovern@novell.com>
+
 	* runtime.cpp: When inside the if statement, we know that
 	  toplevel and element are the same, so use 'element' instead
 	  of 'toplevel' in case the toplevel is removed during the
