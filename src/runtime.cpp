@@ -525,14 +525,14 @@ Surface::ToplevelLoaded (UIElement *element)
 		//
 		// If the did not get a size specified
 		//
-		if (normal_window && normal_window->GetWidth() == 0 && normal_window->GetHeight() == 0 && toplevel) {
+		if (normal_window && normal_window->GetWidth() == 0 && normal_window->GetHeight() == 0 && element) {
 			/*
 			 * this should only be hit in the nonplugin case ans is
 			 * simply here to give a reasonable default size
 			 */
 			Value *vh, *vw;
-			vw = toplevel->GetValue (FrameworkElement::WidthProperty);
-			vh = toplevel->GetValue (FrameworkElement::HeightProperty);
+			vw = element->GetValue (FrameworkElement::WidthProperty);
+			vh = element->GetValue (FrameworkElement::HeightProperty);
 			if (vh || vw)
 				normal_window->Resize (MAX (vw ? (int)vw->AsDouble () : 0, 0),
 						       MAX (vh ? (int)vh->AsDouble () : 0, 0));
@@ -540,13 +540,13 @@ Surface::ToplevelLoaded (UIElement *element)
 
 		Emit (ResizeEvent);
 
-		toplevel->UpdateTotalRenderVisibility ();
-		toplevel->UpdateTotalHitTestVisibility ();
-		toplevel->FullInvalidate (true);
+		element->UpdateTotalRenderVisibility ();
+		element->UpdateTotalHitTestVisibility ();
+		element->FullInvalidate (true);
 
 		// we call this two here so that the layout pass proceeds when
 		// we next process the dirty list.
-		toplevel->InvalidateMeasure ();
+		element->InvalidateMeasure ();
 	}
 }
 
