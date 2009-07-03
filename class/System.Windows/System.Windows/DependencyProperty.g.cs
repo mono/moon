@@ -655,6 +655,67 @@ namespace System.Windows.Controls {
 		}
 	}
 
+	partial class MultiScaleImage {
+		public static readonly DependencyProperty AllowDownloadingProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "AllowDownloading", typeof (bool));
+		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "AspectRatio", typeof (double));
+		public static readonly DependencyProperty BlurFactorProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "BlurFactor", typeof (double));
+		private static readonly DependencyProperty InternalViewportOriginProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "InternalViewportOrigin", typeof (Point));
+		private static readonly DependencyProperty InternalViewportWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "InternalViewportWidth", typeof (double));
+		public static readonly DependencyProperty IsDownloadingProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "IsDownloading", typeof (bool));
+		public static readonly DependencyProperty IsIdleProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "IsIdle", typeof (bool));
+		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "Source", typeof (MultiScaleTileSource));
+		public static readonly DependencyProperty SubImagesProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "SubImages", typeof (MultiScaleSubImageCollection));
+		private static readonly DependencyProperty TileFadeProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "TileFade", typeof (double));
+		public static readonly DependencyProperty UseSpringsProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "UseSprings", typeof (bool));
+		public static readonly DependencyProperty ViewportOriginProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "ViewportOrigin", typeof (Point));
+		public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "ViewportWidth", typeof (double));
+
+		public bool AllowDownloading {
+			get { return (bool) GetValue (AllowDownloadingProperty); }
+			set { SetValue (AllowDownloadingProperty, value); }
+		}
+
+		public double AspectRatio {
+			get { return (double) GetValue (AspectRatioProperty); }
+			set { SetValue (AspectRatioProperty, value); }
+		}
+
+		public double BlurFactor {
+			get { return (double) GetValue (BlurFactorProperty); }
+			set { SetValue (BlurFactorProperty, value); }
+		}
+
+		public bool IsDownloading {
+			get { return (bool) GetValue (IsDownloadingProperty); }
+			set { SetValue (IsDownloadingProperty, value); }
+		}
+
+		public bool IsIdle {
+			get { return (bool) GetValue (IsIdleProperty); }
+			set { SetValue (IsIdleProperty, value); }
+		}
+
+		public MultiScaleTileSource Source {
+			get { return (MultiScaleTileSource) GetValue (SourceProperty); }
+			set { SetValue (SourceProperty, value); }
+		}
+
+		public bool UseSprings {
+			get { return (bool) GetValue (UseSpringsProperty); }
+			set { SetValue (UseSpringsProperty, value); }
+		}
+
+		public Point ViewportOrigin {
+			get { return (Point) GetValue (ViewportOriginProperty); }
+			set { SetValue (ViewportOriginProperty, value); }
+		}
+
+		public double ViewportWidth {
+			get { return (double) GetValue (ViewportWidthProperty); }
+			set { SetValue (ViewportWidthProperty, value); }
+		}
+	}
+
 	partial class MultiScaleSubImage {
 		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "AspectRatio", typeof (double));
 		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "Opacity", typeof (double));
