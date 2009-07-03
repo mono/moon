@@ -19,11 +19,6 @@ namespace NameTortureTest
 			get { return GetTemplateChild ("Grid") as Grid; }
 		}
 
-		public Storyboard TemplateSB
-		{
-			get { return GetTemplateChild ("TemplateSB") as Storyboard; }
-		}
-
 		public TemplatedControl ()
 		{
 			InitializeComponent ();

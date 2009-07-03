@@ -880,7 +880,7 @@ namespace NameTortureTest
 
 			Rectangle Bob = new Rectangle { Name = "Bob" };
 			Storyboard resourceSB = c.Resources ["ResourceSB"] as Storyboard;
-			Storyboard templateSb = c.TemplateSB;
+			Storyboard templateSb = (Storyboard) c.GetTemplateChild ("TemplateSB");
 			Grid grid = c.TemplateGrid;
 
 			Rectangle fakeGrid = new Rectangle { Name = "Grid" };
