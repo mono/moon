@@ -1,3 +1,7 @@
+2009-07-03  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleImage.cs: the generator can do this
+
 2009-07-02  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* MultiScaleImage.cs: use SetValue instead of p/invoking native
