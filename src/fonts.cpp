@@ -28,10 +28,11 @@
 // TextFont
 //
 
-TextFont::TextFont (FontFace **faces, int n_faces, double size)
+TextFont::TextFont (FontFace **faces, int n_faces, int master, double size)
 {
 	this->simulate = StyleSimulationsNone;
 	this->n_faces = n_faces;
+	this->master = master;
 	this->faces = faces;
 	this->n_glyphs = 0;
 	this->size = size;
@@ -63,7 +64,7 @@ TextFont::ClearGlyphCache ()
 void
 TextFont::UpdateFaceExtents ()
 {
-	faces[0]->GetExtents (size, &extents);
+	faces[master]->GetExtents (size, &extents);
 }
 
 TextFont *
@@ -79,7 +80,7 @@ TextFont::Load (const char *resource, int index, double size, StyleSimulations s
 		return NULL;
 	}
 	
-	font = new TextFont (faces, 1, size);
+	font = new TextFont (faces, 1, 0, size);
 	font->simulate = simulate;
 	
 	return font;
@@ -167,8 +168,8 @@ langs_match (const char *pattern, const char *actual)
 		(actual[n] == '\0' || actual[n] == '-');
 }
 
-static void
-LoadPortableUserInterface (FontManager *manager, GHashTable *loaded, GPtrArray *faces, const char *lang, FontStretches stretch, FontWeights weight, FontStyles style)
+static int
+LoadPortableUserInterface (FontManager *manager, GPtrArray *faces, const char *lang, FontStretches stretch, FontWeights weight, FontStyles style)
 {
 	guint preferred = G_N_ELEMENTS (default_fonts);
 	const char **families;
@@ -177,7 +178,7 @@ LoadPortableUserInterface (FontManager *manager, GHashTable *loaded, GPtrArray *
 	
 	if (lang != NULL) {
 		// use the xml:lang tag to load the preferred default font first
-		for (i = 0; i < G_N_ELEMENTS (default_fonts); i++) {
+		for (i = 1; i < G_N_ELEMENTS (default_fonts); i++) {
 			if (langs_match (default_fonts[i].lang, lang)) {
 				families = default_fonts[i].families;
 				
@@ -209,7 +210,10 @@ LoadPortableUserInterface (FontManager *manager, GHashTable *loaded, GPtrArray *
 		}
 	}
 	
-	g_hash_table_insert (loaded, (char *) "Portable User Interface", GINT_TO_POINTER (true));
+	if (preferred < G_N_ELEMENTS (default_fonts))
+		return 1;
+	
+	return 0;
 }
 
 TextFont *
@@ -222,6 +226,7 @@ TextFont::Load (const TextFontDescription *desc)
 	const char *lang = desc->GetLanguage ();
 	char **families = desc->GetFamilies ();
 	FontStyles style = desc->GetStyle ();
+	int lucida, master = -1;
 	GHashTable *loaded;
 	GPtrArray *faces;
 	FontFace *face;
@@ -239,7 +244,9 @@ TextFont::Load (const TextFontDescription *desc)
 				continue;
 			
 			if (!g_ascii_strcasecmp (families[i], "Portable User Interface")) {
-				LoadPortableUserInterface (manager, loaded, faces, lang, stretch, weight, style);
+				lucida = LoadPortableUserInterface (manager, faces, lang, stretch, weight, style);
+				if (master == -1)
+					master = lucida;
 			} else {
 				face = NULL;
 				
@@ -253,8 +260,12 @@ TextFont::Load (const TextFontDescription *desc)
 				if (face == NULL)
 					face = manager->OpenFont (families[i], stretch, weight, style);
 				
-				if (face != NULL)
+				if (face != NULL) {
+					if (master == -1)
+						master = 0;
+					
 					g_ptr_array_add (faces, face);
+				}
 			}
 			
 			g_hash_table_insert (loaded, families[i], GINT_TO_POINTER (true));
@@ -267,8 +278,11 @@ TextFont::Load (const TextFontDescription *desc)
 	}
 	
 	// always add PUI as fallback unless already added
-	if (!g_hash_table_lookup (loaded, "Portable User Interface"))
-		LoadPortableUserInterface (manager, loaded, faces, lang, stretch, weight, style);
+	if (!g_hash_table_lookup (loaded, "Portable User Interface")) {
+		lucida = LoadPortableUserInterface (manager, faces, lang, stretch, weight, style);
+		if (master == -1)
+			master = lucida;
+	}
 	
 	g_hash_table_destroy (loaded);
 	
@@ -277,7 +291,7 @@ TextFont::Load (const TextFontDescription *desc)
 		return NULL;
 	}
 	
-	font = new TextFont ((FontFace **) faces->pdata, faces->len, desc->GetSize ());
+	font = new TextFont ((FontFace **) faces->pdata, faces->len, master, desc->GetSize ());
 	g_ptr_array_free (faces, false);
 	font->desc = desc;
 	

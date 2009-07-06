@@ -30,11 +30,12 @@ class TextFont {
 	FontFace **faces;
 	int n_faces;
 	double size;
+	int master;
 	
 	GlyphInfo glyphs[GLYPH_CACHE_SIZE];
 	int n_glyphs;
 	
-	TextFont (FontFace **faces, int n_faces, double size);
+	TextFont (FontFace **faces, int n_faces, int master, double size);
 	
 	GlyphInfo *GetGlyphInfo (FontFace *face, gunichar unichar, guint32 index);
 	void UpdateFaceExtents ();

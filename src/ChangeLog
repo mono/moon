@@ -1,3 +1,15 @@
+2009-07-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes drt 249.
+
+	* fonts.cpp (LoadPortableUserInterface): Return the index of the
+	Lucida font face.
+	(TextFont::Load): If PUI is our first family, keep track of which
+	face the Lucida face is and use that as our master. Otherwise use
+	the first face.
+	(TextFont::UpdateFaceExtents): Use the 'master' face to get the
+	extents from, rather than the first face.
+
 2009-07-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* playlist.cpp: PlayNext: play even if previous entry didn't fail.
