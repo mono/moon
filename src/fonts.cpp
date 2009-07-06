@@ -115,7 +115,7 @@ static struct {
 } default_fonts[] = {
 	{ "",   { "Lucida Sans Unicode", "Liberation Sans", "Bitstream Vera Sans", "DejaVu Sans", "Luxi Sans", NULL } },
 	{ "zh", { "SimSun", "SimHei", "Microsoft YaHei", "Arial Unicode MS", NULL, NULL } },
-	{ "ja", { "Meiryo", "MS PMincho", "MS PGothic", "MS UI Gothic", NULL, NULL } },
+	{ "ja", { "MS Mincho", "Meiryo", "MS PMincho", "MS PGothic", "MS UI Gothic", NULL } },
 	{ "ko", { "Gulim", "Malgun Gothic", "Dotum", "Arial Unicode MS", "Batang", NULL } },
 };
 
