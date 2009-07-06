@@ -65,6 +65,7 @@ class DefaultNamespace;
 class XNamespace;
 class XmlNamespace;
 class PrimitiveNamespace;
+class MCIgnorableNamespace;
 class XamlElementInfoNative;
 class XamlElementInstanceNative;
 class XamlElementInstanceValueType;
@@ -94,6 +95,7 @@ static const char* default_namespace_names [] = {
 #define X_NAMESPACE_URI "http://schemas.microsoft.com/winfx/2006/xaml"
 #define XML_NAMESPACE_URI "http://www.w3.org/XML/1998/namespace"
 #define PRIMITIVE_NAMESPACE_URI "clr-namespace:System;assembly=mscorlib"
+#define MC_IGNORABLE_NAMESPACE_URI "http://schemas.openxmlformats.org/markup-compatibility/2006"
 
 
 static bool value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop_name, const char *str, Value **v);
@@ -108,6 +110,7 @@ static bool kind_requires_managed_load (Type::Kind kind);
 static bool is_legal_top_level_kind (Type::Kind kind);
 static Value *lookup_resource_dictionary (ResourceDictionary *rd, const char *name, bool *exists);
 static void parser_error (XamlParserInfo *p, const char *el, const char *attr, int error_code, const char *format, ...);
+static gboolean namespace_for_prefix (gpointer key, gpointer value, gpointer user_data);
 
 static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name, const char **attr, bool create);
 static void destroy_created_namespace (gpointer data, gpointer user_data);
@@ -115,8 +118,13 @@ static void destroy_created_namespace (gpointer data, gpointer user_data);
 class XamlNamespace {
  public:
 	const char *name;
+	bool is_ignored;
 
-	XamlNamespace () : name (NULL) { }
+	XamlNamespace ()
+	{
+		name = NULL;
+		is_ignored = false;
+	}
 
 	virtual ~XamlNamespace () { }
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create) = 0;
@@ -1098,6 +1106,61 @@ class PrimitiveNamespace : public XamlNamespace {
 	virtual const char* GetPrefix () { return prefix; }
 };
 
+
+class MCIgnorableNamespace : public XamlNamespace {
+
+ private:
+	char *prefix;
+
+ public:
+	MCIgnorableNamespace (char *prefix)
+	{
+		this->prefix = prefix;
+	}
+
+	virtual ~MCIgnorableNamespace ()
+	{
+		if (prefix)
+			g_free (prefix);
+	}
+
+	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
+	{
+		return NULL;
+	}
+
+	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
+	{
+		if (!strcmp ("Ignorable", attr)) {
+			const char *start = value;
+			do {
+				const char *space = strchr (start, ' ');
+				char *prefix;
+				if (space) {
+					prefix = g_strndup (start, space - start);
+					start = space + 1;
+				} else {
+					prefix = g_strdup (start);
+					start = NULL;
+				}
+
+				XamlNamespace *ns = (XamlNamespace *) g_hash_table_find (p->namespace_map, namespace_for_prefix, prefix);
+				if (ns)
+					ns->is_ignored = true;
+				
+			} while (start);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	virtual const char* GetUri () { return MC_IGNORABLE_NAMESPACE_URI; }
+	virtual const char* GetPrefix () { return prefix; }
+};
+
+
 static void
 destroy_created_namespace (gpointer data, gpointer user_data)
 {
@@ -1362,7 +1425,7 @@ xaml_loader_set_callbacks (XamlLoader* loader, XamlLoaderCallbacks callbacks)
 	loader->vm_loaded = true;
 }
 
-gboolean
+static gboolean
 namespace_for_prefix (gpointer key, gpointer value, gpointer user_data)
 {
 	XamlNamespace *ns = (XamlNamespace *) value;
@@ -1621,6 +1684,12 @@ start_element_handler (void *data, const char *el, const char **attr)
 		next_namespace = default_namespace;
 		element = name [0];
 	}
+
+	if (next_namespace->is_ignored) {
+		p->current_namespace = next_namespace;
+		return;
+	}
+
 	p->next_element = element;
 
 	flush_char_data (p);
@@ -1697,6 +1766,9 @@ end_element_handler (void *data, const char *el)
 		return;
 
 	if (p->error_args)
+		return;
+
+	if (p->current_namespace->is_ignored)
 		return;
 
 	if (!p->current_element) {
@@ -1870,6 +1942,10 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 		PrimitiveNamespace *pn = new PrimitiveNamespace (g_strdup (prefix));
 		g_hash_table_insert (p->namespace_map, g_strdup (uri), pn);
 		p->AddCreatedNamespace (pn);
+	} else if (!strcmp (MC_IGNORABLE_NAMESPACE_URI, uri)) {
+		MCIgnorableNamespace *mc = new MCIgnorableNamespace (g_strdup (prefix));
+		g_hash_table_insert (p->namespace_map, g_strdup (uri), mc);
+		p->AddCreatedNamespace (mc);
 	} else {
 		if (!p->loader) {
 			return parser_error (p, (p->current_element ? p->current_element->element_name : NULL), prefix, -1,
