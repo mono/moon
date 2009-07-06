@@ -1028,7 +1028,7 @@ Playlist::PlayNext (bool fail)
 		current_node = (PlaylistNode *) current_node->next;
 	
 		current_entry = GetCurrentEntry ();
-		if (current_entry && fail) {
+		if (current_entry) {
 			element->SetPlayRequested ();
 			current_entry->OpenAsync ();
 		} 
