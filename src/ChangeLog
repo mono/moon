@@ -1,3 +1,7 @@
+2009-07-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* src.mdp: Updated.
+
 2009-07-03  Larry Ewing  <lewing@novell.com>
 
 	* textblock.cpp (ArrangeOverride): try to get textblock height

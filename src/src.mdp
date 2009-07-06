@@ -7,6 +7,7 @@
       <Output directory="bin/Debug" output="src" />
       <Build debugmode="True" target="SharedLibrary" />
       <Execution runwithwarnings="True" consolepause="True" />
+      <EnvironmentVariables />
       <Includes>
         <Include>${ProjectDir}</Include>
         <Include>${CombineDir}</Include>
@@ -63,8 +64,6 @@
     <File name="downloader.h" subtype="Code" buildaction="Nothing" />
     <File name="enums.h" subtype="Code" buildaction="Nothing" />
     <File name="error.h" subtype="Code" buildaction="Nothing" />
-    <File name="font.cpp" subtype="Code" buildaction="Compile" />
-    <File name="font.h" subtype="Code" buildaction="Nothing" />
     <File name="frameworkelement.cpp" subtype="Code" buildaction="Compile" />
     <File name="frameworkelement.h" subtype="Code" buildaction="Nothing" />
     <File name="fullscreen.h" subtype="Code" buildaction="Nothing" />
@@ -264,6 +263,13 @@
     <File name="timemanager.cpp" subtype="Code" buildaction="Compile" />
     <File name="timemanager.h" subtype="Code" buildaction="Nothing" />
     <File name="codec-version.h" subtype="Code" buildaction="Nothing" />
+    <File name="fontmanager.cpp" subtype="Code" buildaction="Compile" />
+    <File name="fontmanager.h" subtype="Code" buildaction="Nothing" />
+    <File name="fonts.cpp" subtype="Code" buildaction="Compile" />
+    <File name="fonts.h" subtype="Code" buildaction="Nothing" />
+    <File name="fontstretch.h" subtype="Code" buildaction="Nothing" />
+    <File name="fontstyle.h" subtype="Code" buildaction="Nothing" />
+    <File name="fontweight.h" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>
