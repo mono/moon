@@ -72,6 +72,9 @@ class MultiScaleImage : public MediaBase {
 	double GetInternalViewportWidth ();
 	void SetInternalViewportWidth (double width);
 
+	double zoom_target;
+	Point pan_target;
+
 	bool is_fading;
 	bool is_zooming;
 	bool is_panning;

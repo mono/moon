@@ -1,3 +1,8 @@
+2009-07-06  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp, multiscaleimage.h: keep the zoom and pan targets
+	so ZoomAbout *= the target's value for zoom, not the current one.
+
 2009-07-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes drt 249.

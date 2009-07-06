@@ -312,12 +312,22 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 	if (pan_sb)
 		pan_sb->PauseWithError (NULL);
 
+	double viewport_width;
+	Point viewport_origin;
 
-	double width = GetViewportWidth () / zoomIncrementFactor;
+	if (GetUseSprings () && zoom_sb && pan_sb) {
+		viewport_width = zoom_target;
+		viewport_origin = pan_target;
+	} else {
+		viewport_width = GetViewportWidth ();
+		viewport_origin = GetViewportOrigin ();
+	}
+
+	double width = viewport_width / zoomIncrementFactor;
 	SetViewportWidth (width);
 	if (!isnan(zoomCenterLogicalX) && !isnan(zoomCenterLogicalY)) {
-		SetViewportOrigin (new Point (zoomCenterLogicalX - (zoomCenterLogicalX - GetViewportOrigin()->x) / zoomIncrementFactor,
-					  zoomCenterLogicalY - (zoomCenterLogicalY - GetViewportOrigin()->y) / zoomIncrementFactor));
+		SetViewportOrigin (new Point (zoomCenterLogicalX - (zoomCenterLogicalX - viewport_origin.x) / zoomIncrementFactor,
+					  zoomCenterLogicalY - (zoomCenterLogicalY - viewport_origin.y) / zoomIncrementFactor));
 	}
 }
 
@@ -1077,11 +1087,13 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	}
 
 	if (args->GetId () == MultiScaleImage::ViewportOriginProperty) {
+		pan_target = Point (args->GetNewValue ()->AsPoint ()->x, args->GetNewValue ()->AsPoint ()->y);
 		SetInternalViewportOrigin (args->GetNewValue ()->AsPoint ());
 		ClearValue (MultiScaleImage::ViewportOriginProperty, false);
 	}
 	
 	if (args->GetId () == MultiScaleImage::ViewportWidthProperty) {
+		zoom_target = args->GetNewValue ()->AsDouble ();
 		SetInternalViewportWidth (args->GetNewValue ()->AsDouble ());
 		ClearValue (MultiScaleImage::ViewportWidthProperty, false);
 	}
