@@ -1,3 +1,9 @@
+2009-07-06  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: ItemsControl should be setting both the
+	  Parent and LogicalParent, otherwise DO names aren't
+	  registered. Fixes drt 547. 
+
 2009-07-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* MultiScaleImage.cs: the generator can do this

@@ -227,6 +227,10 @@ namespace System.Windows.Controls {
 			if (ItemsSource != null)
 				return;
 			foreach (object o in items) {
+				DependencyObject dep = o as DependencyObject;
+				if (dep != null)
+					Mono.NativeMethods.dependency_object_set_parent (dep.native, parent);
+				
 				FrameworkElement el = o as FrameworkElement;
 				if (el != null)
 					Mono.NativeMethods.framework_element_set_logical_parent (el.native, parent);
