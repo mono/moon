@@ -823,7 +823,8 @@ namespace Mono.Xaml
 
 					return true;
 				}
-				catch {
+				catch (Exception e) {
+					Console.WriteLine (e);
 					return false;
 				}
 			}
@@ -883,6 +884,34 @@ namespace Mono.Xaml
 				Console.Error.WriteLine ("Unable to find content property {0} on type {1}", content_property, parent_type);
 				return false;
 			}
+
+			//
+			// Is the content property a collection
+			//
+			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(child is IList)) {
+				the_list = (IList) pi.GetValue (parent, null);
+
+				if (the_list == null) {
+					the_list = (IList) Activator.CreateInstance (pi.PropertyType);
+					if (the_list == null) {
+						Console.Error.WriteLine ("Unable to create instance of list: " + pi.PropertyType);
+						return false;
+					}
+					pi.SetValue (parent, the_list, null);
+				}
+
+				try {
+					the_list.Add (child);
+
+					if (child is DependencyObject && parent is DependencyObject && !(the_list is DependencyObject)) {
+						NativeMethods.dependency_object_set_parent (((DependencyObject)child).native, ((DependencyObject)parent).native);
+					}
+					return true;
+				}
+				catch (Exception e) {
+					return false;
+				}
+ 			}
 
 			string error;
 			return SetPropertyFromValue (parser, top_level, parent, parent_data, parent_parent_ptr, pi, child_ptr, child_data, out error);
@@ -1051,37 +1080,9 @@ namespace Mono.Xaml
 			}
 
 			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
-				IList the_list = (IList) pi.GetValue (target, null);
-
-				if (the_list == null) {
-					the_list = (IList) Activator.CreateInstance (pi.PropertyType);
-					if (the_list == null) {
-						error = "Unable to create instance of list: " + pi.PropertyType;
-						return false;
-					}
-					pi.SetValue (target, the_list, null);
-				}
-
-				try {
-					the_list.Add (obj_value);
-
-					if (obj_value is DependencyObject && target is DependencyObject && !(the_list is DependencyObject)) {
-						NativeMethods.dependency_object_set_parent (((DependencyObject)obj_value).native, ((DependencyObject)target).native);
-					}
-
-					return true;
-				}
-				catch {
-					// don't return here, fall
-					// through to the string case
-					// below.
-				}
- 			}
-
-//			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
-//				// This case is handled in the AddChild code
-//				return true;
-//			}
+				// This case is handled in the AddChild code
+				return true;
+			}
 
 			if (typeof (ResourceDictionary).IsAssignableFrom (pi.PropertyType) && !(obj_value is ResourceDictionary)) {
 				// This case is handled in the AddChild code
