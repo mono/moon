@@ -116,7 +116,7 @@ static struct {
 	{ "",   { "Lucida Sans Unicode", "Liberation Sans", "Bitstream Vera Sans", "DejaVu Sans", "Luxi Sans", NULL } },
 	{ "zh", { "SimSun", "SimHei", "Microsoft YaHei", "Arial Unicode MS", NULL, NULL } },
 	{ "ja", { "Meiryo", "MS PMincho", "MS PGothic", "MS UI Gothic", NULL, NULL } },
-	{ "ko", { "Malgun Gothic", "Dotum", "Arial Unicode MS", "Batang", NULL, NULL } },
+	{ "ko", { "Gulim", "Malgun Gothic", "Dotum", "Arial Unicode MS", "Batang", NULL } },
 };
 
 static const char lang_table[256] = {
@@ -403,7 +403,7 @@ TextFont::GetGlyphInfo (FontFace *face, gunichar unichar, guint32 index)
 	glyph.path = NULL;
 	
 	if (desc != NULL) {
-		// figure out what to similate
+		// figure out what to simulate
 		simulate = StyleSimulationsNone;
 		if (FontWeightIsBold (desc->GetWeight ()) && !face->IsBold ())
 			simulate = (StyleSimulations) (simulate | StyleSimulationsBold);
