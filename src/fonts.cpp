@@ -114,9 +114,9 @@ static struct {
 	const char *families[6];
 } default_fonts[] = {
 	{ "",   { "Lucida Sans Unicode", "Liberation Sans", "Bitstream Vera Sans", "DejaVu Sans", "Luxi Sans", NULL } },
-	{ "zh", { "SimSun", "SimHei", "Microsoft YaHei", "Arial Unicode MS", NULL, NULL } },
 	{ "ja", { "MS Gothic", "Meiryo", "MS PMincho", "MS PGothic", "MS UI Gothic", NULL } },
 	{ "ko", { "Gulim", "Malgun Gothic", "Dotum", "Arial Unicode MS", "Batang", NULL } },
+	{ "zh", { "SimSun", "SimHei", "Microsoft YaHei", "Arial Unicode MS", NULL, NULL } },
 };
 
 static const char lang_table[256] = {
