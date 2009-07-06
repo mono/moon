@@ -60,33 +60,57 @@
 9. If you try to reparent a non-visual type into a tree where it
    causes a name conflict, the operation throws an ArgumentException.
 
-10a. For visual types (FrameworkElement subclasses), when you remove the
+10. For visual types (FrameworkElement subclasses), when you remove the
     object as a child from a container, the name is unregistered.
     Adding it to a subtree causes the name to be registered in the
     subtree's name scope.
 
-10b. If the visual type was instantiated as part of a template, it is never
-     registered in other namescopes, only the template namescope. If the item
-     is renamed, the template namescope is not updated with the new name.
-     
-    tested by: AddTemplateItemToNewSubtree
-               ChangeNameOfTemplatedItem
-
 11. If you try to reparent a visual type into a tree where it causes a
     name conflict, the operation throws an ArgumentException.
 
-12. Adding an item to the subtree of a template registers the name with the
-    controls namescope, not the private template namescope. Items added in
-    this way can only be found by calling FindName () on the Control who owns
-    the template.
 
-    tested by: AddItemToCanvasInTemplate
-    moon-unit: AddStateAtRuntime
-               
+-- Controls and Templates --
 
-13. If a control inside a template does a LoadComponants call, the resulting
+Note: 
+A) 'Template item' refers to all DOs which are part of the ControlTemplate.
+B) Control namescope is the the namescope registered on the Control
+C) Template namescope is the namescope registered on the root element of the
+   ControlTemplate
+
+1. Templated controls (Control and ContentControl) create a namescope at the
+   template root and register the names of all template items there.
+   
+   tested by: TemplatedControl
+   
+2. On a templated control, GetTemplateChild is equivalent to calling FindName on
+   the template root.
+
+3. Calling FindName () on a template item looks up in the template namescope.
+   Storyboards will look up the template namescope if they are a template item,
+   otherwise they look up the control namescope.
+   
+   tested by: TemplatedControl
+              StoryboardTemplateItem
+
+4. Adding an item to the subtree of a templated control registers the name with
+   the control namescope, not the template namescope.
+
+   tested by: AddItemToCanvasInTemplate
+   moon-unit: AddStateAtRuntime
+
+5. Renaming an item which was instantiated as part of a template does not update
+   the template namescope with the new value.
+   
+   tested by: ChangeNameOfTemplatedItem
+
+6. Moving a template item to another subtree does not register the name in the
+   new subtree.
+
+   tested by: AddTemplateItemToNewSubtree
+              
+7. If a control inside a template does a LoadComponants call, the resulting
     elements can not be found via GetTemplateChild or FindName anywhere.
 
    tested by: CustomControlInTemplate
 
-14. 
+
