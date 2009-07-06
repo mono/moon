@@ -320,7 +320,7 @@ MultiScaleImage::ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomC
 		viewport_origin = pan_target;
 	} else {
 		viewport_width = GetViewportWidth ();
-		viewport_origin = GetViewportOrigin ();
+		viewport_origin = *GetViewportOrigin ();
 	}
 
 	double width = viewport_width / zoomIncrementFactor;
