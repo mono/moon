@@ -1146,7 +1146,6 @@ void
 MediaElement::DownloadProgressChangedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
 	ProgressEventArgs *pea = (ProgressEventArgs *) args;
-	Media *media;
 	
 	LOG_MEDIAELEMENT ("MediaElement::DownloadProgressChangedHandler (): %f\n", pea ? pea->progress : -1.0);
 	VERIFY_MAIN_THREAD;
