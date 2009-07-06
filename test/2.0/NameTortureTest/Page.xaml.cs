@@ -49,6 +49,7 @@ namespace NameTortureTest
 			RunTests ("StaticResourceNameLookup");
 			RunTests ("StaticResourceNamesConflictingOnSibling");
 			RunTests ("StaticResourceNamesConflictingBetweenResourceAndElement");
+			RunTests ("StoryboardTemplateItem");
 			RunTests ("StaticResourceUserControls");
 			RunTests ("TemplatedControl");
 			RunTests ("UserControlEmbeddedInXaml");
@@ -871,6 +872,41 @@ namespace NameTortureTest
 			StaticResourceUserControls2 s2 = new StaticResourceUserControls2();
 
 			Assert.IsNotNull (s2.Resources["localNameForUserControl4"], "3");
+		}
+
+		public void StoryboardTemplateItem ()
+		{
+            MyControl c = (MyControl)System.Windows.Markup.XamlReader.Load(@"
+<clr:MyControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+               xmlns:clr=""clr-namespace:NameTortureTest;assembly=NameTortureTest""> 
+    <clr:MyControl.Template>
+        <ControlTemplate>
+            <Canvas x:Name=""Canvas"">
+                
+            </Canvas>
+        </ControlTemplate>
+    </clr:MyControl.Template>
+</clr:MyControl>
+");
+		    c.Content = new object ();
+		    c.ApplyTemplate();
+			Canvas canvas = (Canvas) c.GetTemplateChild ("Canvas");
+
+
+			Storyboard sb = new Storyboard ();
+			DoubleAnimation anim = new DoubleAnimation ();
+			Storyboard.SetTargetName (anim, "Canvas");
+			Storyboard.SetTargetProperty (anim, new PropertyPath ("Width"));
+			sb.Children.Add (anim);
+			Assert.Throws<InvalidOperationException> (() => sb.Begin (), "Not in tree, cannot find 'Canvas'");
+
+			canvas.Resources.Add ("Key", sb);
+			Assert.Throws<InvalidOperationException> (() => sb.Begin (), "In template resources, cannot find 'Canvas'");
+
+			canvas.Resources.Clear ();
+			c.Resources.Add ("Key", sb);
+			Assert.Throws<InvalidOperationException> (() => sb.Begin (), "In control resources, cannot find 'Canvas'");
 		}
 
 		public void TemplatedControl ()
