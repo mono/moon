@@ -472,6 +472,7 @@ namespace System.Windows.Controls
                 } 
 
 		double max_new_value = Math.Max (newValue, 0);
+                max_new_value = Math.Min (ScrollableHeight, max_new_value);
                 // Update ScrollContentPresenter 
                 if (Orientation.Horizontal == orientation)
                 {
