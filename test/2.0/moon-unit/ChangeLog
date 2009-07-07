@@ -1,5 +1,10 @@
 2009-07-07  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/VisualStateTest.cs: Add the test showing that
+	  VisualState.Storyboard is not a core DP.
+
+2009-07-07  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/VisualStateManagerTest.cs: Remove
 	  MoonlightBug from tests which pass now.
 

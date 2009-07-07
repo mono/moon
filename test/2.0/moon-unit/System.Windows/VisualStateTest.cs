@@ -12,11 +12,12 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows
 {
 	[TestClass]
-	public partial class VisualStateTest
+	public partial class VisualStateTest : SilverlightTest
 	{
 		[TestMethod]
 		public void TestParse ()
@@ -57,6 +58,18 @@ namespace MoonTest.System.Windows
 			VisualState st = new VisualState ();
 			Assert.AreEqual ("", st.Name, "1");
 			Assert.IsNull (st.Storyboard, "2");
+		}
+
+		[TestMethod]
+		public void UseStoryboardThrice ()
+		{
+			Storyboard sb = new Storyboard ();
+			VisualState s1 = new VisualState { Storyboard = sb };
+			VisualState s2 = new VisualState { Storyboard = sb };
+
+			TestPanel.Resources.Add ("a", s1);
+			TestPanel.Resources.Add ("b", s2);
+			TestPanel.Resources.Add ("c", sb);
 		}
 	}
 }
