@@ -220,7 +220,8 @@ namespace System.Windows
 
             // Generate dynamicTransition Storyboard
             Storyboard dynamicTransition = GenerateDynamicTransitionAnimations(element, group, state, transition);
-
+			dynamicTransition.SetValue (Control.IsTemplateItemProperty, true);
+			
             // If the transition is null, then we want to instantly snap. The dynamicTransition will
             // consist of everything that is being moved back to the default state.
             // If the transition.Duration and explicit storyboard duration is zero, then we want both the dynamic
@@ -386,6 +387,7 @@ namespace System.Windows
                 // for, GenerateToAnimation will return null, and we should just keep going.
                 if (toAnimation != null)
                 {
+                    EnsureTarget (root, pair.Value, toAnimation);
                     toAnimation.Duration = dynamic.Duration;
                     dynamic.Children.Add(toAnimation);
                 }
@@ -394,24 +396,14 @@ namespace System.Windows
                 currentAnimations.Remove(pair.Key);
             }
 
-            // Generate the "from" animations
+			// Generate the "from" animations
             foreach (KeyValuePair<TimelineDataToken, Timeline> pair in currentAnimations)
             {
                 Timeline fromAnimation = GenerateFromAnimation(pair.Value);
                 if (fromAnimation != null)
                 {
+                    EnsureTarget (root, pair.Value, fromAnimation);
                     fromAnimation.Duration = dynamic.Duration;
-                    string targetName = Storyboard.GetTargetName(pair.Value);
-                    Storyboard.SetTargetName(fromAnimation, targetName);
-
-                    // If the targetName of the existing Animation is known, then look up the
-                    // target
-                    DependencyObject target = String.IsNullOrEmpty(targetName) ?
-                                                null : root.FindName(targetName) as DependencyObject;
-                    if (target != null)
-                    {
-                        Storyboard.SetTarget(fromAnimation, target);
-                    }
 
                     PropertyPath propertyName = Storyboard.GetTargetProperty(pair.Value);
                     Storyboard.SetTargetProperty(fromAnimation, propertyName);
@@ -420,6 +412,18 @@ namespace System.Windows
             }
 
             return dynamic;
+        }
+
+        static void EnsureTarget (FrameworkElement root, Timeline source, Timeline dest)
+        {
+            dest.SetValue (Control.IsTemplateItemProperty, source.GetValue (Control.IsTemplateItemProperty));
+            if (source.ManualTarget != null) {
+                Storyboard.SetTarget (dest, source.ManualTarget);
+            } else {
+                string targetName = Storyboard.GetTargetName(source);
+                if (!string.IsNullOrEmpty (targetName))
+                    Storyboard.SetTargetName (dest, targetName);
+            }
         }
 
         private static Timeline GenerateFromAnimation(Timeline timeline)

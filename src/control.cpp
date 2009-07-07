@@ -167,8 +167,11 @@ Control::ApplyTemplate ()
 	if (!el)
 		return false;
 
+	NameScope::GetNameScope (el)->Lock ();
 	ElementAdded (el);
 
+	MoonError e;
+	template_root->SetParent (this, &e);
 	OnApplyTemplate ();
 
 	return true;

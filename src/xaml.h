@@ -139,6 +139,7 @@ G_END_DECLS
 
 
 class XamlLoader {
+	bool expanding_template;
 	Surface *surface;
 	char *filename;
 	char *str;
@@ -165,6 +166,9 @@ class XamlLoader {
 	char *GetFilename () { return filename; }
 	char *GetString () { return str; }
 	Surface *GetSurface () { return surface; }
+	
+	bool GetExpandingTemplate () { return expanding_template; }
+	void SetExpandingTemplate (bool value) { expanding_template = value; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	XamlContext *GetContext () { return context; }

@@ -49,6 +49,7 @@ FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 		XamlLoader *loader = new XamlLoader (NULL, xaml_buffer, GetSurface(), xaml_context);
 		Type::Kind dummy;
 
+		loader->SetExpandingTemplate (true);
 		xaml_context->SetTemplateBindingSource (templateBindingSource);
 
 		DependencyObject *result = loader->CreateDependencyObjectFromString (xaml_buffer, true, &dummy);

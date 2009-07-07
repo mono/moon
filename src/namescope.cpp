@@ -16,6 +16,7 @@
 NameScope::NameScope ()
 {
 	SetObjectType (Type::NAMESCOPE);
+	is_locked = false;
 	names = NULL;
 	temporary = false;
 }

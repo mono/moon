@@ -22,10 +22,8 @@ namespace MoonTest.System.Windows {
 
 		const string RootName = "Grid";
 
-
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void AddStateAtRuntime ()
 		{
 			Rectangle rect = new Rectangle { Name = RootName };
@@ -64,6 +62,8 @@ namespace MoonTest.System.Windows {
 
 					// Once it's findable from the control, the storyboard will resolve to the new element and succeed
 					Assert.IsTrue (VisualStateManager.GoToState (c, "C", false), "#8");
+			},
+			() => {
 					Assert.AreEqual (700, rect.Width, "#9");
 					// The template element 'Grid' is not changed
 					Assert.IsTrue (Double.IsNaN (c.TemplateGrid.Width), "#10");
@@ -93,7 +93,6 @@ namespace MoonTest.System.Windows {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("Namescope issues - when VSM calls 'start' on the storyboard, the rectangle can't be found")]
 		public void ManagedVisualStates ()
 		{
 			Rectangle r = new Rectangle { Name = "rect", Width = 0 };
@@ -177,17 +176,12 @@ namespace MoonTest.System.Windows {
 			Grid g = null;
 			c.ApplyTemplate ();
 			CreateAsyncTest (c,
-				() => Console.WriteLine ("A"),
 				() => g = (Grid) VisualTreeHelper.GetChild (c, 0),
-				() => Console.WriteLine ("B"),
 				() => Assert.IsTrue (VisualStateManager.GoToState (c, "A", false), "#1"),
-				() => Console.WriteLine ("C"),
 				() => Assert.AreEqual (100, g.Width, "#2"),
 				() => Assert.IsTrue (VisualStateManager.GoToState (c, "B", false), "#3"),
 				() => Assert.AreEqual (200, g.Width, "#4"),
-				() => Console.WriteLine ("d"),
 				() => Assert.IsTrue (VisualStateManager.GoToState (c, "A", true), "#5"),
-				() => Console.WriteLine ("E"),
 				() => Assert.AreEqual (100, g.Width, "#6"),
 				() => Assert.IsTrue (VisualStateManager.GoToState (c, "B", true), "#7"),
 				() => Assert.AreEqual (200, g.Width, "#8")

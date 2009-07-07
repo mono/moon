@@ -1,3 +1,11 @@
+2009-07-07  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.g.cs: Add an "IsTemplateItem" attached
+	  property.
+
+	* VisualState.cs: Update VSM so that it works now that we have
+	  better namescope handling.
+
 2009-06-26  Chris Toshok  <toshok@ximian.com>
 
 	* DependencyProperty.g.cs: regen.

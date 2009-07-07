@@ -36,7 +36,7 @@ namespace System.Windows {
 	public sealed class VisualState : DependencyObject
 	{
 		private static readonly DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
-		private static readonly DependencyProperty StoryboardProperty = DependencyProperty.RegisterCore ("Storyboard", typeof (Storyboard), typeof (VisualState), null);
+		private static readonly DependencyProperty StoryboardProperty = DependencyProperty.Register ("Storyboard", typeof (Storyboard), typeof (VisualState), null);
 
 		public VisualState()
 		{
