@@ -107,6 +107,13 @@ namespace System.Windows
                     continue;
                 }
 
+                foreach (Storyboard sb in newStoryboards) {
+                    try {
+                        element.Resources.Add (sb.native.ToString (), sb);
+                    } catch {
+                        
+                    }
+                }
                 newStoryboards[index].Begin();
 
                 // Silverlight had an issue where initially, a checked CheckBox would not show the check mark
@@ -124,7 +131,10 @@ namespace System.Windows
                 {
                     continue;
                 }
-
+                foreach (Storyboard sb in CurrentStoryboards) {
+                    if (element.Resources.Contains (sb.native.ToString ()))
+                        element.Resources.Remove (sb.native.ToString ());
+                }
                 CurrentStoryboards[index].Stop();
             }
 

@@ -277,9 +277,11 @@ public:
 	bool HasProperty (Type::Kind whatami, DependencyProperty *property, bool inherits);
 
 	DependencyObject *FindName (const char *name);
+	DependencyObject *FindName (const char *name, bool template_item);
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *FindName (const char *name, Type::Kind *element_kind);
 	NameScope *FindNameScope ();
+	NameScope *FindNameScope (bool template_namescope);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetName ();

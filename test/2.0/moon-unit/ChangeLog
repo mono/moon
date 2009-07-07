@@ -1,3 +1,8 @@
+2009-07-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/VisualStateManagerTest.cs: These tests pass
+	  now.
+
 2009-07-02  Alan McGovern  <amcgovern@novell.com>
 
 	* Makefile.am:
