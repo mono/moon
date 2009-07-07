@@ -1,3 +1,9 @@
+2009-07-07  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Lookup properties on the owner type so attached
+	properties get looked up properly when setting them via text ie
+	<Canvas.Left>5</Canvas.Left>
+
 2009-07-06  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Ignored elements should buffer their contents

@@ -4108,8 +4108,8 @@ XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *
 	if (!owner)
 		return false;
 
-	dep = item->GetDependencyProperty (prop_name [1]);
-	if (!dep)
+	dep = DependencyProperty::GetDependencyProperty (owner->GetKind (), prop_name [1]);
+	if (!dep) 
 		return false;
 
 	return xaml_set_property_from_str (item, dep, value, NULL/*XXX*/);
