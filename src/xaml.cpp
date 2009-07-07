@@ -588,29 +588,6 @@ class XamlParserInfo {
 
 	void AddCreatedElement (DependencyObject* element)
 	{
-		// When instantiating a template, some elements are created which are not explicitly
-		// mentioned in the xaml. Therefore we need to keep walking up the tree until we find
-		// the last element which we set a value for Control::IsTemplateItem and propagate
-		// it from there.
-		XamlElementInstance *instance = current_element;
-		while (instance) {
-			if (!instance->IsDependencyObject () || !instance->GetAsDependencyObject ()) {
-				instance = instance->parent;
-				continue;
-			}
-			if (!instance->GetAsDependencyObject ()->ReadLocalValue (Control::IsTemplateItemProperty)) {
-				instance = instance->parent;
-				continue;
-			}
-			Control::SetIsTemplateItem (element, Control::GetIsTemplateItem (instance->GetAsDependencyObject ()));
-			break;
-		}
-		
-		if (instance == NULL)
-			Control::SetIsTemplateItem (element, loader->GetExpandingTemplate ());
-
-		if (Control::GetIsTemplateItem (element))
-			NameScope::SetNameScope (element, namescope);
 		created_elements = g_list_prepend (created_elements, element);
 	}
 
@@ -1397,7 +1374,6 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface,
 	this->context = context;
 	this->vm_loaded = false;
 	this->error_args = NULL;
-	this->expanding_template = false;
 
 	if (context) {
 		callbacks = context->internal->callbacks;		

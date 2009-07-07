@@ -1,25 +1,3 @@
-2009-07-07  Alan McGovern  <amcgovern@novell.com>
-
-	* xaml.h:
-	* xaml.cpp:
-	* template.cpp: When expanding a template, mark all the
-	  children as TemplateItems so they will be able to look up
-	  the correct namescope.
-
-	* namescope.h:
-	* namescope.cpp: Add the ability to lock a namescope so it can
-	  be recognised as a template namescope.
-
-	* control.h:
-	* control.cpp:
-	* dependencyproperty.g.cpp: Add an "IsTemplateItem" attached
-	  property.
-
-	* dependencyobject.h:
-	* dependencyobject.cpp: Add extra overloads to FindName and
-	  FindNameScope so that we can tell whether we are looking up
-	  a template name or regular name.
-
 2009-07-06  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Ignored elements should buffer their contents

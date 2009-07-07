@@ -1921,40 +1921,27 @@ DependencyObject::HasProperty (Type::Kind whatami, DependencyProperty *property,
 DependencyObject *
 DependencyObject::FindName (const char *name)
 {
-	return FindName (name, Control::GetIsTemplateItem (this));
-}
-
-DependencyObject *
-DependencyObject::FindName (const char *name, bool template_item)
-{
 	NameScope *scope = NameScope::GetNameScope (this);
 	
-	if (scope && (template_item == scope->GetIsLocked ()))
+	if (scope)
 		return scope->FindName (name);
 	
 	if (parent)
-		return parent->FindName (name, template_item);
+		return parent->FindName (name);
 	
 	return NULL;
 }
 
-NameScope *
-DependencyObject::FindNameScope ()
-{
-	return FindNameScope (Control::GetIsTemplateItem (this));
-}
-
 NameScope*
-DependencyObject::FindNameScope (bool template_namescope)
+DependencyObject::FindNameScope ()
 {
 	NameScope *scope = NameScope::GetNameScope (this);
 
-	// Only template namescopes are locked (for the moment)
-	if (scope && (template_namescope == scope->GetIsLocked ()))
+	if (scope)
 		return scope;
 
 	if (parent)
-		return parent->FindNameScope (template_namescope);
+		return parent->FindNameScope ();
 
 	return NULL;
 }

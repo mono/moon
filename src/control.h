@@ -67,6 +67,7 @@ public:
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetTemplateChild (const char *name);
+	
 	const static int TemplateAppliedEvent;
 
 	//
@@ -125,9 +126,6 @@ public:
 
 	void SetDefaultStyleKey (ManagedTypeInfo *value);
 	ManagedTypeInfo* GetDefaultStyleKey ();
-	
-	static void SetIsTemplateItem (DependencyObject *object, bool value);
-	static bool GetIsTemplateItem (DependencyObject *object);
 
 	// Events
 	const static int IsEnabledChangedEvent;
@@ -154,8 +152,6 @@ public:
 	const static int HorizontalContentAlignmentProperty;
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int IsEnabledProperty;
-	/* @PropertyType=bool,DefaultValue=false,Attached,GenerateAccessors */
-	const static int IsTemplateItemProperty;
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int IsTabStopProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */

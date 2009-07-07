@@ -20,7 +20,6 @@
 /* @ManagedDependencyProperties=None */
 class NameScope : public DependencyObject {
 	GHashTable *names;
-	bool is_locked;
 	bool temporary;
 	
 	static void ObjectDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure);
@@ -41,9 +40,6 @@ class NameScope : public DependencyObject {
 	void UnregisterName (const char *name);
 	
 	DependencyObject *FindName (const char *name);
-	
-	bool GetIsLocked () { return is_locked; }
-	void Lock () { is_locked = true; }
 	
 	void SetTemporary (bool flag) { temporary = flag; }
 	bool GetTemporary () { return temporary; }
