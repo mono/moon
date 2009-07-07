@@ -235,30 +235,38 @@ same_domain (const Uri *uri1, const Uri *uri2)
 
 // Reference:	URL Access Restrictions in Silverlight 2
 //		http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
-static bool
-check_redirection_policy (const Uri *uri, const char *final_uri, DownloaderAccessPolicy policy)
+bool
+Downloader::CheckRedirectionPolicy (const char *url)
 {
-	if (!uri || !final_uri)
-		return true;
-	
-	Uri *final = new Uri ();
-	final->Parse (final_uri);
+	if (!url)
+		return false;
 
-	char *struri = uri->ToString ();
+	// the original URI
+	Uri *source = GetUri ();
+	if (Uri::IsNullOrEmpty (source))
+		return false;
+
+	char *strsrc = source->ToString ();
 	// if the original URI and the end URI are identical then there was no redirection involved
-	bool retval = (g_ascii_strcasecmp (struri, final_uri) == 0);
+	bool retval = (g_ascii_strcasecmp (strsrc, url) == 0);
+	g_free (strsrc);
 
-	if (!retval) {
+	if (!retval)
+		return false;
+
+	// the destination URI
+	Uri *dest = new Uri ();
+	if (!dest->Parse (url)) {
 		// there was a redirection, but is it allowed ?
-		switch (policy) {
+		switch (access_policy) {
 		case DownloaderPolicy:
 			// Redirection allowed for 'same domain' and 'same scheme'
-			if (!same_domain (uri, final) || !same_scheme (uri, final))
+			if (!same_domain (source, dest) || !same_scheme (source, dest))
 				retval = false;
 			break;
 		case MediaPolicy:
 			// Redirection allowed for: 'same scheme' and 'same or different sites'
-			if (!same_scheme (uri, final))
+			if (!same_scheme (source, dest))
 				retval = false;
 			break;
 		case XamlPolicy:
@@ -272,9 +280,7 @@ check_redirection_policy (const Uri *uri, const char *final_uri, DownloaderAcces
 		}
 	}
 
-	g_free (struri);
-	
-	delete final;
+	delete dest;
 	
 	return retval;
 }
@@ -621,13 +627,6 @@ Downloader::NotifyFinished (const char *final_uri)
 	if (!GetSurface ())
 		return;
 	
-	if (!check_redirection_policy (GetUri (), final_uri, access_policy)) {
-		LOG_DOWNLOADER ("aborting due to security policy violation\n");
-		failed_msg = g_strdup ("Security Policy Violation");
-		Abort ();
-		return;
-	}
-
 	SetDownloadProgress (1.0);
 	
 	Emit (DownloadProgressChangedEvent);
