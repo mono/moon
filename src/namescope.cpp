@@ -69,6 +69,9 @@ NameScope::ObjectDestroyedEvent (EventObject *sender, EventArgs *args, gpointer 
 void
 NameScope::RegisterName (const char *name, DependencyObject *object)
 {
+	if (GetIsLocked ())
+		return;
+
 	if (!names) {
 		names = g_hash_table_new_full (g_str_hash, g_str_equal,
 					       (GDestroyNotify)g_free,
@@ -90,6 +93,9 @@ NameScope::RegisterName (const char *name, DependencyObject *object)
 void
 NameScope::UnregisterName (const char *name)
 {
+	if (GetIsLocked ())
+		return;
+
 	if (!names)
 		return;
 

@@ -1,5 +1,11 @@
 2009-07-07  Alan McGovern  <amcgovern@novell.com>
 
+	* namescope.cpp: Once a namescope is locked, don't allow names
+	  to be registered or unregistered. Fixes the case where the
+	  name is changed on a template item.
+
+2009-07-07  Alan McGovern  <amcgovern@novell.com>
+
 	* xaml.h:
 	* xaml.cpp:
 	* template.cpp: When expanding a template, mark all the
