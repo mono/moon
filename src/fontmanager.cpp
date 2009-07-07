@@ -1235,6 +1235,27 @@ style_diff (FontStyleInfo *actual, FontStyleInfo *desired)
 	return 1000000 + weight;
 }
 
+static void
+canon_font_family_and_style (FontStyleInfo *desired, const char *family, FontStretches stretch, FontWeights weight, FontStyles style)
+{
+	desired->width = FontStretchesNormal;
+	desired->weight = FontWeightsNormal;
+	desired->slant = FontStylesNormal;
+	desired->family_name = NULL;
+	desired->set = 0;
+	
+	// extract whatever little style info we can from the family name
+	style_info_parse (family, desired, true);
+	
+	// override style with user-specified attributes
+	if (!(desired->set & Width))
+		desired->width = stretch;
+	if (!(desired->set & Weight))
+		desired->weight = weight;
+	if (!(desired->set & Slant))
+		desired->slant = style;
+}
+
 static FaceInfo *
 IndexMatchFace (FontIndex *index, const char *family, FontStretches stretch, FontWeights weight, FontStyles style)
 {
@@ -1247,22 +1268,7 @@ IndexMatchFace (FontIndex *index, const char *family, FontStretches stretch, Fon
 	
 	LOG_FONT (stderr, "  * searching index for %s; %s\n", family, style_info_to_string (stretch, weight, style));
 	
-	desired.width = FontStretchesNormal;
-	desired.weight = FontWeightsNormal;
-	desired.slant = FontStylesNormal;
-	desired.family_name = NULL;
-	desired.set = 0;
-	
-	// extract whatever little style info we can from the family name
-	style_info_parse (family, &desired, true);
-	
-	// override style with user-specified attributes
-	if (!(desired.set & Weight))
-		desired.weight = weight;
-	if (!(desired.set & Width))
-		desired.width = stretch;
-	if (!(desired.set & Slant))
-		desired.slant = style;
+	canon_font_family_and_style (&desired, family, stretch, weight, style);
 	
 	LOG_FONT (stderr, "    * canonicalized family/style: %s; %s\n", desired.family_name,
 		  style_info_to_string (desired.width, desired.weight, desired.slant));
@@ -1372,6 +1378,7 @@ FontFace *
 FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeights weight, FontStyles style)
 {
 	FcPattern *pattern, *matched;
+	FontStyleInfo desired;
 	FcChar8 *filename;
 	FcResult result;
 	FontFace *face;
@@ -1380,12 +1387,14 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 	LOG_FONT (stderr, "Attempting to load installed font: %s %s... ", family,
 		  style_info_to_string (stretch, weight, style));
 	
+	canon_font_family_and_style (&desired, family, stretch, weight, style);
+	
 	pattern = FcPatternCreate ();
 	FcPatternAddDouble (pattern, FC_DPI, dpi);
-	FcPatternAddString (pattern, FC_FAMILY, (const FcChar8 *) family);
-	FcPatternAddInteger (pattern, FC_WIDTH, fc_width (stretch));
-	FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (weight));
-	FcPatternAddInteger (pattern, FC_SLANT, fc_slant (style));
+	FcPatternAddString (pattern, FC_FAMILY, (const FcChar8 *) desired.family_name);
+	FcPatternAddInteger (pattern, FC_WIDTH, fc_width (desired.width));
+	FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (desired.weight));
+	FcPatternAddInteger (pattern, FC_SLANT, fc_slant (desired.slant));
 	FcDefaultSubstitute (pattern);
 	
 	if (!(matched = FcFontMatch (NULL, pattern, &result))) {
@@ -1411,7 +1420,7 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 	FcPatternDestroy (matched);
 	
 	if ((face = OpenFontFace ((const char *) filename, NULL, index))) {
-		if (g_ascii_strcasecmp (face->GetFamilyName (), family) != 0) {
+		if (g_ascii_strcasecmp (face->GetFamilyName (), desired.family_name) != 0) {
 			LOG_FONT (stderr, "family mismatch\n");
 			face->unref ();
 			return NULL;
