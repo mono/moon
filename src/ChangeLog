@@ -4,8 +4,6 @@
 	function to canonicalize font family & style info, split out of
 	IndexMatchFace().
 	(IndexMatchFace): Use the new function.
-	(OpenSystemFont): Use the new function before passing off to
-	FontConfig.
 
 2009-07-07  Jackson Harper  <jackson@ximian.com>
 

@@ -1378,7 +1378,6 @@ FontFace *
 FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeights weight, FontStyles style)
 {
 	FcPattern *pattern, *matched;
-	FontStyleInfo desired;
 	FcChar8 *filename;
 	FcResult result;
 	FontFace *face;
@@ -1387,14 +1386,12 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 	LOG_FONT (stderr, "Attempting to load installed font: %s %s... ", family,
 		  style_info_to_string (stretch, weight, style));
 	
-	canon_font_family_and_style (&desired, family, stretch, weight, style);
-	
 	pattern = FcPatternCreate ();
 	FcPatternAddDouble (pattern, FC_DPI, dpi);
-	FcPatternAddString (pattern, FC_FAMILY, (const FcChar8 *) desired.family_name);
-	FcPatternAddInteger (pattern, FC_WIDTH, fc_width (desired.width));
-	FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (desired.weight));
-	FcPatternAddInteger (pattern, FC_SLANT, fc_slant (desired.slant));
+	FcPatternAddString (pattern, FC_FAMILY, (const FcChar8 *) family);
+	FcPatternAddInteger (pattern, FC_WIDTH, fc_width (stretch));
+	FcPatternAddInteger (pattern, FC_WEIGHT, fc_weight (weight));
+	FcPatternAddInteger (pattern, FC_SLANT, fc_slant (style));
 	FcDefaultSubstitute (pattern);
 	
 	if (!(matched = FcFontMatch (NULL, pattern, &result))) {
@@ -1420,7 +1417,7 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 	FcPatternDestroy (matched);
 	
 	if ((face = OpenFontFace ((const char *) filename, NULL, index))) {
-		if (g_ascii_strcasecmp (face->GetFamilyName (), desired.family_name) != 0) {
+		if (g_ascii_strcasecmp (face->GetFamilyName (), family) != 0) {
 			LOG_FONT (stderr, "family mismatch\n");
 			face->unref ();
 			return NULL;
