@@ -1,5 +1,10 @@
 2009-07-06  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Ignored elements should buffer their contents
+	- Add in Ignored attributes
+
+2009-07-06  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Implement ignorable namespaces.
 
 2009-07-06  Larry Ewing  <lewing@novell.com>

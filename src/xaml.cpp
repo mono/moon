@@ -115,6 +115,11 @@ static gboolean namespace_for_prefix (gpointer key, gpointer value, gpointer use
 static XamlElementInfo *create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *name, const char **attr, bool create);
 static void destroy_created_namespace (gpointer data, gpointer user_data);
 
+enum BufferMode {
+	BUFFER_MODE_TEMPLATE,
+	BUFFER_MODE_IGNORE
+};
+
 class XamlNamespace {
  public:
 	const char *name;
@@ -540,6 +545,7 @@ class XamlParserInfo {
 
 	char* buffer_until_element;
 	int buffer_depth;
+	BufferMode buffer_mode;
 	GString *buffer;
 	bool validate_templates;
 
@@ -590,10 +596,11 @@ class XamlParserInfo {
 		created_namespaces = g_list_prepend (created_namespaces, ns);
 	}
 
-	void QueueBeginBuffering (char* buffer_until)
+	void QueueBeginBuffering (char* buffer_until, BufferMode mode)
 	{
 		buffer_until_element = buffer_until;
 		buffer_depth = 1;
+		buffer_mode = mode;
 
 		xml_buffer_start_index = -1;
 	}
@@ -1290,6 +1297,9 @@ class ManagedNamespace : public XamlNamespace {
 
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
 	{
+		if (is_ignored)
+			return true;
+
 		if (p->loader) {
 			Value v = Value (value);
 			return p->loader->SetProperty (p, p->GetTopElementPtr (), item->info->xmlns, item->GetAsValue (), item, item->GetParentPointer (), xmlns, attr, &v, NULL);
@@ -1526,7 +1536,7 @@ start_element (void *data, const char *el, const char **attr)
 		if (!strcmp (p->buffer_until_element, el))
 			p->buffer_depth++;
 		return;
-	}
+	}	
 
 	const char *dot = strchr (el, '.');
 	if (!dot)
@@ -1619,7 +1629,7 @@ start_element (void *data, const char *el, const char **attr)
 	p->current_element = inst;
 
 	if (elem && element_begins_buffering (elem->GetKind ())) {
-		p->QueueBeginBuffering (g_strdup (el));
+		p->QueueBeginBuffering (g_strdup (el), BUFFER_MODE_TEMPLATE);
 	}
 }
 
@@ -1687,6 +1697,10 @@ start_element_handler (void *data, const char *el, const char **attr)
 
 	if (next_namespace->is_ignored) {
 		p->current_namespace = next_namespace;
+		if (!p->InBufferingMode ())
+			p->QueueBeginBuffering (g_strdup (element), BUFFER_MODE_IGNORE);
+		
+		start_element (data, element, attr); // This will force the buffering to start/build depth if needed
 		return;
 	}
 
@@ -1768,9 +1782,6 @@ end_element_handler (void *data, const char *el)
 	if (p->error_args)
 		return;
 
-	if (p->current_namespace->is_ignored)
-		return;
-
 	if (!p->current_element) {
 		g_warning ("p->current_element == NULL, current_element = %p (%s)\n",
 			   p->current_element, p->current_element ? p->current_element->element_name : "<NULL>");
@@ -1783,25 +1794,31 @@ end_element_handler (void *data, const char *el)
 			p->buffer_depth--;
 
 			if (p->buffer_depth == 0) {
-				// OK we are done buffering, the element we are buffering for
-				FrameworkTemplate* template_ = (FrameworkTemplate *) p->current_element->GetAsDependencyObject ();
+				if (p->buffer_mode == BUFFER_MODE_TEMPLATE) {
+					// OK we are done buffering, the element we are buffering for
+					FrameworkTemplate* template_ = (FrameworkTemplate *) p->current_element->GetAsDependencyObject ();
 
-                                char* buffer = p->ClearBuffer ();
+					char* buffer = p->ClearBuffer ();
 
-				XamlContext *context = create_xaml_context (p, template_, p->loader->GetContext());
+					XamlContext *context = create_xaml_context (p, template_, p->loader->GetContext());
 
-				if (p->validate_templates) {
-					p->ValidateTemplate (buffer, context, template_);
+					if (p->validate_templates) {
+						p->ValidateTemplate (buffer, context, template_);
 
-					if (p->error_args)
-						return;
+						if (p->error_args)
+							return;
+					}
+
+					template_->SetXamlBuffer (context, buffer);
+					p->current_element = p->current_element->parent;
+				} else if (p->buffer_mode == BUFFER_MODE_IGNORE) {
+					// For now we'll actually keep/clear this buffer because it makes testing easier
+					char *buffer = p->ClearBuffer ();
+					g_free (buffer);
 				}
-
-                                template_->SetXamlBuffer (context, buffer);
-				p->current_element = p->current_element->parent;
 			}
 		}
-		
+
 		g_free (name);
 		return;
 	}
