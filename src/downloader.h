@@ -59,10 +59,13 @@ typedef void     (* DownloaderSetResponseHeaderCallbackFunc) (gpointer state, Do
 /* @CBindingRequisite */
 typedef DownloaderResponse * (* DownloaderGetResponseFunc) (gpointer state);
 
+// Reference:	URL Access Restrictions in Silverlight 2
+//		http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
 enum DownloaderAccessPolicy {
 	DownloaderPolicy,
 	MediaPolicy,
 	XamlPolicy,
+	FontPolicy,
 	StreamingPolicy,
 	NoPolicy
 };

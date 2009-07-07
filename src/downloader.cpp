@@ -233,6 +233,8 @@ same_domain (const Uri *uri1, const Uri *uri2)
 	return (g_ascii_strcasecmp (uri1->GetHost (), uri2->GetHost ()) == 0);
 }
 
+// Reference:	URL Access Restrictions in Silverlight 2
+//		http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
 static bool
 check_redirection_policy (const Uri *uri, const char *final_uri, DownloaderAccessPolicy policy)
 {
@@ -241,27 +243,33 @@ check_redirection_policy (const Uri *uri, const char *final_uri, DownloaderAcces
 	
 	Uri *final = new Uri ();
 	final->Parse (final_uri);
-	char *struri = NULL;
 
-	bool retval = true;
-	switch (policy) {
-	case DownloaderPolicy:
-	case XamlPolicy:
-	case StreamingPolicy: //Streaming media
-		//Redirection allowed: same domain.
-		struri = uri->ToString ();
-		if (g_ascii_strcasecmp (struri, final_uri) == 0)
+	char *struri = uri->ToString ();
+	// if the original URI and the end URI are identical then there was no redirection involved
+	bool retval = (g_ascii_strcasecmp (struri, final_uri) == 0);
+
+	if (!retval) {
+		// there was a redirection, but is it allowed ?
+		switch (policy) {
+		case DownloaderPolicy:
+			// Redirection allowed for 'same domain' and 'same scheme'
+			if (!same_domain (uri, final) || !same_scheme (uri, final))
+				retval = false;
 			break;
-		if (!same_domain (uri, final))
+		case MediaPolicy:
+			// Redirection allowed for: 'same scheme' and 'same or different sites'
+			if (!same_scheme (uri, final))
+				retval = false;
+			break;
+		case XamlPolicy:
+		case FontPolicy:
+		case StreamingPolicy:
+			// Redirection NOT allowed
 			retval = false;
-		break;
-	case MediaPolicy:
-		struri = uri->ToString ();
-		if (g_ascii_strcasecmp (struri, final_uri) != 0)
-			retval = false;
-		break;
-	default:
-		break;
+			break;
+		default:
+			break;
+		}
 	}
 
 	g_free (struri);
@@ -271,6 +279,8 @@ check_redirection_policy (const Uri *uri, const char *final_uri, DownloaderAcces
 	return retval;
 }
 
+// Reference:	URL Access Restrictions in Silverlight 2
+//		http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
 static bool
 validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy policy)
 {
@@ -294,7 +304,8 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		//X-Scheme: no
 		if (!same_scheme (target, source))
 			retval = false;
-		//X-Domain: no
+		//X-Domain: requires policy file
+		// FIXME only managed is implemented
 		if (!same_domain (target, source))
 			retval = false;
 		break;
@@ -303,17 +314,28 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
 			retval = false;
 		//X-Scheme: no
-		//X-Domain: "allowed to same scheme and same or different sites" (MSDN)
 		if (!same_scheme (target, source))
 			retval = false;
+		//X-Domain: Allowed
 		break;
-	case XamlPolicy: //XAML files, font files
+	case XamlPolicy:
 		//Allowed schemes: http, https, file
 		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
 			retval = false;
 		//X-Scheme: no
 		if (!same_scheme (target, source))
 			retval =false;
+		//X-domain: allowed if not HTTPS to HTTPS
+		if (!same_domain (target, source) && scheme_is (target, "https") && scheme_is (source, "https"))
+			retval = false;
+		break;
+	case FontPolicy:
+		//Allowed schemes: http, https, file
+		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
+			retval = false;
+		//X-Scheme: no
+		if (!same_scheme (target, source))
+			retval = false;
 		//X-domain: no
 		if (!same_domain (target, source))
 			retval = false;
@@ -325,6 +347,10 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		//X-scheme: Not from https
 		if (scheme_is (source, "https") && !same_scheme (source, target))
 			retval = false;
+		//X-domain: allowed if not HTTPS to HTTPS
+		if (!same_domain (target, source) && scheme_is (target, "https") && scheme_is (source, "https"))
+			retval = false;
+		break;
 	default:
 		break;
 	}

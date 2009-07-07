@@ -689,7 +689,7 @@ Glyphs::DownloadFont (Surface *surface, Uri *uri)
 {
 	if ((downloader = surface->CreateDownloader ())) {
 		char *str = uri->ToString (UriHideFragment);
-		downloader->Open ("GET", str, XamlPolicy);
+		downloader->Open ("GET", str, FontPolicy);
 		g_free (str);
 		
 		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
