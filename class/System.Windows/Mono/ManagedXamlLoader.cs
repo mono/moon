@@ -1067,90 +1067,100 @@ namespace Mono.Xaml
 		{
 			error = null;
 			object obj_value = Value.ToObject (null, value_ptr);
+			SetterBase sb = target as SetterBase;
 
-			if (obj_value is Binding && target is FrameworkElement) {
-				FrameworkElement fe = (FrameworkElement) target;
-				fe.SetBinding (DependencyProperty.Lookup (fe.GetKind (), pi.Name), (Binding) obj_value);
-				return true;
-			}
+			try {
+				if (sb != null)
+					sb.IsSealed = false;
 
-			if (obj_value is StaticResource) {
-				StaticResource sr = (StaticResource)obj_value;
-				obj_value = "{StaticResource " + sr.ResourceKey + "}";
-			}
-
-			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
-				// This case is handled in the AddChild code
-				return true;
-			}
-
-			if (typeof (ResourceDictionary).IsAssignableFrom (pi.PropertyType) && !(obj_value is ResourceDictionary)) {
-				// This case is handled in the AddChild code
-				return true;
-			}
-
-			string str_value = obj_value as string;
-			if (str_value != null) {
-				IntPtr unmanaged_value;
-
-				//
-				// HACK: This really shouldn't be here, but I don't want to bother putting it in Helper, because that
-				// code probably should be moved into this file
-				//
-				if (pi.PropertyType == typeof (Type)) {
-					Type t = TypeFromString (parser, top_level, str_value);
-					if (t != null) {
-						pi.SetValue (target, t, null);
-						return true;
-					}
-				}
-
-				if (pi.PropertyType == typeof (DependencyProperty)) {
-					DependencyProperty dp = DependencyPropertyFromString (parser, top_level, target, target_parent_ptr, str_value);
-					if (dp != null) {
-						pi.SetValue (target, dp, null);
-						return true;
-					}
-				}
-
-				if (typeof (System.Windows.Data.Binding).IsAssignableFrom (pi.PropertyType) && MarkupExpressionParser.IsBinding (str_value)) {
-					MarkupExpressionParser p = new MarkupExpressionParser (null, pi.Name,  parser, target_data);
-
-					string expression = str_value;
-					obj_value = p.ParseExpression (ref expression);
-
-					if (!(obj_value is Binding))
-						return false;
-
-					pi.SetValue (target, obj_value, null);
+				if (obj_value is Binding && target is FrameworkElement) {
+					FrameworkElement fe = (FrameworkElement) target;
+					fe.SetBinding (DependencyProperty.Lookup (fe.GetKind (), pi.Name), (Binding) obj_value);
 					return true;
 				}
 
-				if (MarkupExpressionParser.IsStaticResource (str_value)) {
-					// FIXME: The NUnit tests show we need to use the parent of the target to resolve
-					// the StaticResource, but are there any cases where we should use the actual target?
-					DependencyObject parent = Value.ToObject (null, target_parent_ptr) as DependencyObject;
-					if (parent == null)
-						return false;
-					MarkupExpressionParser p = new MarkupExpressionParser (parent, "", parser, target_data);
-					obj_value = p.ParseExpression (ref str_value);
-					obj_value = ConvertType (pi, pi.PropertyType, obj_value);
-					pi.SetValue (target, obj_value, null);
+				if (obj_value is StaticResource) {
+					StaticResource sr = (StaticResource)obj_value;
+					obj_value = "{StaticResource " + sr.ResourceKey + "}";
+				}
+
+				if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
+					// This case is handled in the AddChild code
 					return true;
 				}
 
-				SetCLRPropertyFromString (target, pi, str_value, out error, out unmanaged_value);
+				if (typeof (ResourceDictionary).IsAssignableFrom (pi.PropertyType) && !(obj_value is ResourceDictionary)) {
+					// This case is handled in the AddChild code
+					return true;
+				}
 
-				if (error == null && unmanaged_value != IntPtr.Zero)
-					obj_value = Value.ToObject (null, unmanaged_value);
-				else
-					return error == null;
-			} else {
-				obj_value = Value.ToObject (pi.PropertyType, value_ptr);
+				string str_value = obj_value as string;
+				if (str_value != null) {
+					IntPtr unmanaged_value;
+
+					//
+					// HACK: This really shouldn't be here, but I don't want to bother putting it in Helper, because that
+					// code probably should be moved into this file
+					//
+					if (pi.PropertyType == typeof (Type)) {
+						Type t = TypeFromString (parser, top_level, str_value);
+						if (t != null) {
+							pi.SetValue (target, t, null);
+							return true;
+						}
+					}
+
+					if (pi.PropertyType == typeof (DependencyProperty)) {
+						DependencyProperty dp = DependencyPropertyFromString (parser, top_level, target, target_parent_ptr, str_value);
+						if (dp != null) {
+							pi.SetValue (target, dp, null);
+							return true;
+						}
+					}
+
+					if (typeof (System.Windows.Data.Binding).IsAssignableFrom (pi.PropertyType) && MarkupExpressionParser.IsBinding (str_value)) {
+						MarkupExpressionParser p = new MarkupExpressionParser (null, pi.Name,  parser, target_data);
+
+						string expression = str_value;
+						obj_value = p.ParseExpression (ref expression);
+
+						if (!(obj_value is Binding))
+							return false;
+
+						pi.SetValue (target, obj_value, null);
+						return true;
+					}
+
+					if (MarkupExpressionParser.IsStaticResource (str_value)) {
+						// FIXME: The NUnit tests show we need to use the parent of the target to resolve
+						// the StaticResource, but are there any cases where we should use the actual target?
+						DependencyObject parent = Value.ToObject (null, target_parent_ptr) as DependencyObject;
+						if (parent == null)
+							return false;
+						MarkupExpressionParser p = new MarkupExpressionParser (parent, "", parser, target_data);
+						obj_value = p.ParseExpression (ref str_value);
+						obj_value = ConvertType (pi, pi.PropertyType, obj_value);
+						pi.SetValue (target, obj_value, null);
+						return true;
+					}
+
+					SetCLRPropertyFromString (target, pi, str_value, out error, out unmanaged_value);
+
+					if (error == null && unmanaged_value != IntPtr.Zero)
+						obj_value = Value.ToObject (null, unmanaged_value);
+					else
+						return error == null;
+				} else {
+					obj_value = Value.ToObject (pi.PropertyType, value_ptr);
+				}
+
+				obj_value = ConvertType (pi, pi.PropertyType, obj_value);
+				pi.SetValue (target, obj_value, null);
+
+			} finally {
+				if (sb != null)
+					sb.IsSealed = true;
 			}
-
-			obj_value = ConvertType (pi, pi.PropertyType, obj_value);
-			pi.SetValue (target, obj_value, null);
 			return true;
 		}
 

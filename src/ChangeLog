@@ -1,3 +1,8 @@
+2009-07-07  Jackson Harper  <jackson@ximian.com>
+
+	* style.h: Need an internal setter for IsSealed so we can do the
+	parser seal/unseal hack.
+
 2009-07-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* downloader.cpp|h: Add a new FontPolicy since it differs from 

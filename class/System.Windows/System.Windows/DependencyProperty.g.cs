@@ -199,7 +199,7 @@ namespace System.Windows {
 
 		public bool IsSealed {
 			get { return (bool) GetValue (IsSealedProperty); }
-			private set { SetValue (IsSealedProperty, value); }
+			internal set { SetValue (IsSealedProperty, value); }
 		}
 	}
 
