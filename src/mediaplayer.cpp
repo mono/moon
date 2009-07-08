@@ -330,10 +330,6 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	}
 	
 	duration = media->GetDemuxer ()->GetDuration ();
-	if (start_pts >= duration + MilliSeconds_ToPts (6000) /* This random value (6000) is as close as I could get without spending hours testing */) {
-		element->ReportErrorOccurred (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
-		return false;
-	}
 
 	if (entry != NULL && entry->HasInheritedDuration () && entry->GetInheritedDuration ()->HasTimeSpan ()) {
 		asx_duration = TimeSpan_ToPts (entry->GetInheritedDuration ()->GetTimeSpan ());
@@ -343,13 +339,6 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 		}
 	}
 
-	// FIXME handle here repeat and infinite durations and so...
-
-	if (start_pts <= duration)
-		duration -= start_pts;
-	else
-		duration = 0;
-	
 	SetBit (LoadFramePending);
 	
 	media->AddSafeHandler (Media::SeekCompletedEvent, SeekCompletedCallback, this);

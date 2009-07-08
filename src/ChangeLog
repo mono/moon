@@ -1,5 +1,12 @@
 2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp: All starting points seem to be allowed now, so don't
+	throw an error event for starting point > duration anymore. Also duration
+	is always the entire length of the media, regardless of when we start and
+	how long we're supposed to play.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* error.cpp|h: Add custom information to ErrorEventArgs, to provide
 	better Moonlight debugging and in some cases we need more information
 	than what MS reports.
