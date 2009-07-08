@@ -1,9 +1,3 @@
-2009-07-07  Sebastien Pouliot  <sebastien@ximian.com>
-
-	* downloader.cpp|h: Don't check redirection AFTER downloading the
-	data. Expose CheckRedirectionPolicy so the plugin can check for
-	the redirection policy when creating a new stream.
-
 2009-07-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fontmanager.cpp (canon_font_family_and_style): New convenience

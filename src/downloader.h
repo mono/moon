@@ -172,8 +172,6 @@ class Downloader : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void NotifySize (gint64 size);
 	
-	bool CheckRedirectionPolicy (const char *url);
-
 	void SetFilename (const char *fname);
 	char *GetBuffer () { return buffer; }
 	gint64 GetSize () { return total; }

@@ -1138,12 +1138,8 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 
 	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
 		StreamNotify *notify = (StreamNotify *) stream->notifyData;
-		Downloader *dl = (Downloader *) notify->pdata;
-		// check if (a) it's a redirection and (b) if it is allowed for the current downloader policy
-		if (!dl->CheckRedirectionPolicy (stream->url))
-			return NPERR_INVALID_URL;
-
-		npstream_request_set_stream_data (dl, instance, stream);
+		
+		npstream_request_set_stream_data ((Downloader *) notify->pdata, instance, stream);
 		*stype = NP_ASFILE;
 		return NPERR_NO_ERROR;
 	}
