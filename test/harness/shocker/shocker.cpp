@@ -349,11 +349,15 @@ IsInputLocaleInstalled (ShockerScriptableControlObject* obj, char* name, const N
 static void
 GetTestDirectory (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
-	printf ("[shocker] GetTestDirectory: Not implemented\n");
-	print_stack_trace ();
+	const char* dir = getenv ("MOONLIGHT_HARNESS_TESTDIRECTORY");
+
+	if (!dir) {
+		printf ("[shocker] GetTestDirectory: MOONLIGHT_HARNESS_TESTDIRECTORY IS NOT SET, using /tmp instead.\n");
+		dir = "/tmp";
+	}
 
 	char *retval;
-	retval = NPN_strdup ("/tmp");
+	retval = NPN_strdup (dir);
 	STRINGZ_TO_NPVARIANT (retval, *result);
 }
 
