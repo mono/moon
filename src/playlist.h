@@ -126,16 +126,16 @@ public:
 	void SetBase (Uri *base);
 
 	const char *GetTitle ();
-	void SetTitle (char *title);
+	void SetTitle (const char *title);
 
 	const char *GetAuthor ();
-	void SetAuthor (char *author);
+	void SetAuthor (const char *author);
 
 	const char *GetAbstract ();
-	void SetAbstract (char *abstract);
+	void SetAbstract (const char *abstract);
 
 	const char *GetCopyright ();
-	void SetCopyright (char *copyright);
+	void SetCopyright (const char *copyright);
 
 	Uri *GetSourceName ();
 	void SetSourceName (Uri *source_name);
@@ -150,10 +150,10 @@ public:
 	bool HasInheritedDuration ();
 	
 	const char *GetInfoTarget ();
-	void SetInfoTarget (char *info_target);
+	void SetInfoTarget (const char *info_target);
 
 	const char *GetInfoURL ();
-	void SetInfoURL (char *info_url);
+	void SetInfoURL (const char *info_url);
 
 	bool GetClientSkip ();
 	void SetClientSkip (bool value);

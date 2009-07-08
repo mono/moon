@@ -451,10 +451,10 @@ PlaylistEntry::GetTitle ()
 }
 
 void 
-PlaylistEntry::SetTitle (char *title)
+PlaylistEntry::SetTitle (const char *title)
 {
 	if (!(set_values & PlaylistKind::Title)) {
-		this->title = title;
+		this->title = g_strdup (title);
 		set_values = (PlaylistKind::Kind) (set_values | PlaylistKind::Title);
 	}
 }
@@ -465,10 +465,10 @@ PlaylistEntry::GetAuthor ()
 	return author;
 }
 
-void PlaylistEntry::SetAuthor (char *author)
+void PlaylistEntry::SetAuthor (const char *author)
 {
 	if (!(set_values & PlaylistKind::Author)) {
-		this->author = author;
+		this->author = g_strdup (author);
 		set_values = (PlaylistKind::Kind) (set_values | PlaylistKind::Author);
 	}
 }
@@ -480,10 +480,10 @@ PlaylistEntry::GetAbstract ()
 }
 
 void 
-PlaylistEntry::SetAbstract (char *abstract)
+PlaylistEntry::SetAbstract (const char *abstract)
 {
 	if (!(set_values & PlaylistKind::Abstract)) {
-		this->abstract = abstract;
+		this->abstract = g_strdup (abstract);
 		set_values = (PlaylistKind::Kind) (set_values | PlaylistKind::Abstract);
 	}
 }
@@ -495,10 +495,10 @@ PlaylistEntry::GetCopyright ()
 }
 
 void 
-PlaylistEntry::SetCopyright (char *copyright)
+PlaylistEntry::SetCopyright (const char *copyright)
 {
 	if (!(set_values & PlaylistKind::Copyright)) {
-		this->copyright = copyright;
+		this->copyright = g_strdup (copyright);
 		set_values = (PlaylistKind::Kind) (set_values | PlaylistKind::Copyright);
 	}
 }
@@ -578,9 +578,10 @@ PlaylistEntry::GetInfoTarget ()
 }
 
 void
-PlaylistEntry::SetInfoTarget (char *info_target)
+PlaylistEntry::SetInfoTarget (const char *info_target)
 {
-	this->info_target = info_target;
+	g_free (this->info_target);
+	this->info_target = g_strdup (info_target);
 }
 
 const char *
@@ -590,9 +591,10 @@ PlaylistEntry::GetInfoURL ()
 }
 
 void
-PlaylistEntry::SetInfoURL (char *info_url)
+PlaylistEntry::SetInfoURL (const char *info_url)
 {
-	this->info_url = info_url;
+	g_free (this->info_url);
+	this->info_url = g_strdup (info_url);
 }
 
 bool
@@ -1201,10 +1203,10 @@ Playlist::MergeWith (PlaylistEntry *entry)
 	LOG_PLAYLIST ("Playlist::MergeWith (%p)\n", entry);
 
 	SetBase (entry->GetBase () ? new Uri (*entry->GetBase ()) : NULL);
-	SetTitle (g_strdup (entry->GetTitle ()));
-	SetAuthor (g_strdup (entry->GetAuthor ()));
-	SetAbstract (g_strdup (entry->GetAbstract ()));
-	SetCopyright (g_strdup (entry->GetCopyright ()));
+	SetTitle (entry->GetTitle ());
+	SetAuthor (entry->GetAuthor ());
+	SetAbstract (entry->GetAbstract ());
+	SetCopyright (entry->GetCopyright ());
 
 	SetSourceName (entry->GetSourceName () ? new Uri (*entry->GetSourceName ()) : NULL);
 	if (entry->HasDuration ()) 
@@ -1765,10 +1767,10 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 		for (int i = 0; attrs [i] != NULL; i += 2) {
 			if (str_match (attrs [i], "HREF")) {
 				if (GetCurrentEntry () != NULL)
-					GetCurrentEntry ()->SetInfoURL (g_strdup (attrs [i+1]));
+					GetCurrentEntry ()->SetInfoURL (attrs [i+1]);
 			} else if (str_match (attrs [i], "TARGET")) {
 				if (GetCurrentEntry () != NULL)
-					GetCurrentEntry ()->SetInfoTarget (g_strdup (attrs [i+1]));
+					GetCurrentEntry ()->SetInfoTarget (attrs [i+1]);
 			} else {
 				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
 				break;
