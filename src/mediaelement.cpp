@@ -973,7 +973,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	PlayOrStop ();
 	
 	flags |= MediaOpenedEmitted;
-	Emit (MediaOpenedEvent);
+	Emit (MediaOpenedEvent, new RoutedEventArgs ());
 	SetDownloadProgress (media->GetDownloadProgress ());
 	Emit (DownloadProgressChangedEvent);
 }
