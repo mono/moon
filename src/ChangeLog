@@ -1,5 +1,11 @@
 2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* error.cpp|h: Add custom information to ErrorEventArgs, to provide
+	better Moonlight debugging and in some cases we need more information
+	than what MS reports.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* media.cpp: MediaAttributes are case-insensitive.
 
 2009-07-07  Jeffrey Stedfast  <fejj@novell.com>

@@ -22,11 +22,25 @@ ErrorEventArgs::ErrorEventArgs (ErrorType type, int code, const char *msg)
 	error_type = type;
 	error_code = code;
 	error_message = g_strdup (msg);
+	extended_message = NULL;
+	extended_code = 0;
+}
+
+ErrorEventArgs::ErrorEventArgs (ErrorType type, int code, const char *msg, int extended_error_code, const char *extended_msg)
+{
+	SetObjectType(Type::ERROREVENTARGS);
+
+	error_type = type;
+	error_code = code;
+	error_message = g_strdup (msg);
+	extended_message = g_strdup (extended_msg);
+	extended_code = extended_error_code;
 }
 
 ErrorEventArgs::~ErrorEventArgs ()
 {
 	g_free (error_message);
+	g_free (extended_message);
 }
 
 
