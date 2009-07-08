@@ -1966,29 +1966,52 @@ PlaylistParser::OnASXText (const char *text, int len)
 }
 
 bool
-PlaylistParser::IsASX3 (IMediaSource *source)
+PlaylistParser::Is (IMediaSource *source, const char *asx_header)
 {
-	static const char *asx_header = "<ASX";
+	bool result = false;
 	int asx_header_length = strlen (asx_header);
 	char buffer [20];
 	
-	if (!source->Peek (buffer, asx_header_length))
-		return false;
+	do {
+		result = source->Peek ((guint8 *) buffer, asx_header_length);
+		if (!result)
+			goto cleanup;
 		
-	return g_ascii_strncasecmp (asx_header, buffer, asx_header_length) == 0;
+		// skip any whitespace	
+		char c = buffer [0];
+		switch (c) {
+		case ' ':
+		case '\t':
+		case 10:
+		case 13: {
+			result = source->ReadAll ((guint8 *) buffer, 1);
+			if (!result)
+				goto cleanup;
+			continue;
+		}
+		default:
+			result = !g_ascii_strncasecmp (buffer, asx_header, asx_header_length);
+			goto cleanup;
+		}
+	} while (true);
+	
+cleanup:
+
+	source->Seek (0, SEEK_SET);
+	
+	return result;
+}
+
+bool
+PlaylistParser::IsASX3 (IMediaSource *source)
+{
+	return Is (source, "<ASX");
 }
 
 bool
 PlaylistParser::IsASX2 (IMediaSource *source)
 {
-	static const char *asx2_header = "[Reference]";
-	int asx2_header_length = strlen (asx2_header);
-	char buffer [20];
-	
-	if (!source->Peek (buffer, asx2_header_length))
-		return false;
-		
-	return g_ascii_strncasecmp (asx2_header, buffer, asx2_header_length) == 0;
+	return Is (source, "[Reference]");
 }
 
 bool

@@ -1322,17 +1322,11 @@ ASXDemuxer::OpenDemuxerAsyncInternal ()
 MediaResult
 ASXDemuxerInfo::Supports (IMediaSource *source)
 {
-	char buffer[4];
-	bool result;
-	
-	if (!source->Peek ((guint8 *) buffer, 4))
+	if (PlaylistParser::IsASX2 (source) || PlaylistParser::IsASX3 (source)) {
+		return MEDIA_SUCCESS;
+	} else {
 		return MEDIA_FAIL;
-	
-	result = !g_ascii_strncasecmp (buffer, "<asx", 4) ||
-		!g_ascii_strncasecmp (buffer, "[Ref", 4) ||
-		!g_ascii_strncasecmp (buffer, "<?ws", 4);
-
-	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
+	}
 }
 
 IMediaDemuxer *
