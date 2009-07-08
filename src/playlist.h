@@ -322,6 +322,7 @@ private:
 	PlaylistParserInternal *internal;
 	IMediaSource *source;
 	bool was_playlist;
+	ErrorEventArgs *error_args;
 	// For <ASX* files, this is 3 (or 0 if no version attribute was found).
 	// for [Ref* files, this is 2.
 	// The presence of a version does not guarantee that the playlist
@@ -390,6 +391,8 @@ public:
 	// if the playlist wasn't parsed correctly.
 	bool WasPlaylist () { return was_playlist; }
 	void ParsingError (ErrorEventArgs *args = NULL);
+	
+	ErrorEventArgs *GetErrorEventArgs () { return error_args; }
 
 	static PlaylistKind::Kind StringToKind (const char *str);
 	static const char *KindToString (PlaylistKind::Kind kind);

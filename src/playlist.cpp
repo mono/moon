@@ -302,7 +302,6 @@ PlaylistEntry::OpenCompletedHandler (Media *media, EventArgs *args)
 	Playlist *playlist;
 		
 	LOG_PLAYLIST ("PlaylistEntry::OpenCompletedHandler (%p, %p)\n", media, args);
-	
 	opened = true;
 	
 	g_return_if_fail (media != NULL);
@@ -1380,7 +1379,7 @@ PlaylistParser::PlaylistParser (PlaylistRoot *root, IMediaSource *source)
 	this->playlist = NULL;
 	this->current_entry = NULL;
 	this->current_text = NULL;
-	
+	this->error_args = NULL;
 }
 
 void
@@ -1421,6 +1420,10 @@ PlaylistParser::Cleanup ()
 	delete internal;
 	if (playlist)
 		playlist->unref ();
+	if (error_args) {
+		error_args->unref ();
+		error_args = NULL;
+	}
 }
 
 PlaylistParser::~PlaylistParser ()
@@ -2241,7 +2244,12 @@ PlaylistParser::ParsingError (ErrorEventArgs *args)
 	LOG_PLAYLIST ("PlaylistParser::ParsingError (%s)\n", args->error_message);
 	
 	XML_StopParser (internal->parser, false);
-	printf ("TODO: PlaylistParser::ParsingError ('%s'): raise event element->ReportErrorOccurred\n", args->error_message);
+	if (error_args) {
+		if (args)
+			args->unref ();
+		return; // don't overwrite any previous errors.
+	}
+	error_args = args; // don't ref, this method is called like this: ParsingError (new ErrorEventArgs (...));, so the caller gives us the ref he has
 }
 
 

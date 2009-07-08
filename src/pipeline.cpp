@@ -483,6 +483,12 @@ Media::ReportErrorOccurred (ErrorEventArgs *args)
 {
 	LOG_PIPELINE ("Media::ReportErrorOccurred (%p %s)\n", args, args == NULL ? NULL : args->error_message);
 	
+	if (args) {
+		fprintf (stderr, "Moonlight: %s %i %s %s\n", enums_int_to_str ("ErrorType", args->error_type), args->error_code, args->error_message, args->extended_message);
+	} else {
+		fprintf (stderr, "Moonlight: Unspecified media error.\n");
+	}
+	
 	error_reported = true;
 	EmitSafe (MediaErrorEvent, args);
 }
@@ -860,8 +866,8 @@ Media::SelectDemuxerAsync ()
 					break;
 				}
 			}
-			char *msg = g_strdup_printf ("No demuxers registered to handle the media source `%s'.", source_name);
-			ReportErrorOccurred (msg);
+			char *msg = g_strdup_printf ("No demuxers registered to handle the media source '%s'.", source_name);
+			ReportErrorOccurred (new ErrorEventArgs (MediaError, 3001, "AG_E_INVALID_FILE_FORMAT", MEDIA_UNKNOWN_CODEC, msg));
 			g_free (msg);
 			return false;
 		}
@@ -1274,6 +1280,7 @@ ASXDemuxer::OpenDemuxerAsyncInternal ()
 {
 	MediaResult result;
 	PlaylistRoot *root;
+	ErrorEventArgs *args = NULL;
 	
 	g_return_if_fail (media != NULL);
 	
@@ -1289,15 +1296,23 @@ ASXDemuxer::OpenDemuxerAsyncInternal ()
 		playlist->ref ();
 	} else {
 		result = MEDIA_FAIL;
+		args = parser->GetErrorEventArgs ();
+		if (args != NULL)
+			args->ref ();
 	}
 
 	delete parser;
 
 	if (MEDIA_SUCCEEDED (result)) {
 		ReportOpenDemuxerCompleted ();
+	} else if (args != NULL) {
+		args->ref (); // calling ReportErrorOccurred with an event args will end up unreffing it
+		ReportErrorOccurred (args);
 	} else {
 		ReportErrorOccurred (result);
 	}
+	if (args)
+		args->unref ();
 }
 
 /*
