@@ -1,5 +1,16 @@
 2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.h|cpp: Add support for PARAMS elements in ASX files. Fix
+	some casing changes with media attributes. PlayNext: fix logic, after
+	finishing a nested playlist we must play the next entry in our playlist,
+	not finish right away. If the pipeline raises a MediaError event due to
+	missing a codec (which is most likely due to an unsupported media file),
+	don't propagate the error, just play the next entry. Fix a lot of error
+	code/message changes from 1.0 to 2.0. MS DRT #78 now passes, as well
+	as 99.6% of our playlist tests.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.h:
 	* playlist.h|cpp: Unify playlist detection into one place and add
 	support for skipping initial whitespace in the file.

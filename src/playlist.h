@@ -86,6 +86,7 @@ private:
 	bool client_skip;
 	TimeSpan start_time;
 	Duration *duration;
+	GHashTable *params;
 
 	PlaylistKind::Kind set_values;
 	
@@ -158,6 +159,8 @@ public:
 	bool GetClientSkip ();
 	void SetClientSkip (bool value);
 
+	void AddParams (const char *name, const char *value);
+	
 	// non-ASX properties
 
 	Playlist *GetParent () { return parent; }
@@ -219,7 +222,7 @@ private:
 	void OnMediaDownloaded ();
 
 	void MergeWith (PlaylistEntry *entry);
-	void PlayNext (bool fail);
+	bool PlayNext (); // returns false if nothing more to play
 
 protected:
 	Playlist (Type::Kind kind);
@@ -251,7 +254,7 @@ public:
 
 	bool IsCurrentEntryLastEntry ();
 	void OnEntryEnded ();
-	void OnEntryFailed ();
+	void OnEntryFailed (ErrorEventArgs *args);
 
 	void Print (int depth);
 	
