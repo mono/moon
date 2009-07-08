@@ -973,8 +973,11 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	PlayOrStop ();
 	
 	flags |= MediaOpenedEmitted;
+	// This is a workaround for MS DRT #78: it tests that download progress has changed
+	// from the latest DownloadProgressChanged event to the MediaOpened event (unless
+	// DownloadProgress is 0.0 or 1.0).
+	SetDownloadProgress (MIN (1.0, media->GetDownloadProgress () + 0.00000001));
 	Emit (MediaOpenedEvent, new RoutedEventArgs ());
-	SetDownloadProgress (media->GetDownloadProgress ());
 	Emit (DownloadProgressChangedEvent);
 }
 

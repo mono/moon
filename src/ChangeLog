@@ -1,5 +1,10 @@
 2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: When emitting MediaOpened, ensure that DownloadProgress
+	has changed at least a tiny bit.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: MediaOpened event comes with an empty RoutedEventArgs.
 
 2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
