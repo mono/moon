@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 523 methods needs to be decorated.
+# 521 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1250,7 +1250,7 @@
 +SC-M: System.Void Mono.NativeMethods::downloader_response_set_header_visitor(System.IntPtr,Mono.HeaderVisitor,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_set_functions(Mono.DownloaderCreateStateFunc,Mono.DownloaderDestroyStateFunc,Mono.DownloaderOpenFunc,Mono.DownloaderSendFunc,Mono.DownloaderAbortFunc,Mono.DownloaderHeaderFunc,Mono.DownloaderBodyFunc,Mono.DownloaderCreateWebRequestFunc,Mono.DownloaderSetResponseHeaderCallbackFunc)
++SC-M: System.Void Mono.NativeMethods::downloader_set_functions(Mono.DownloaderCreateStateFunc,Mono.DownloaderDestroyStateFunc,Mono.DownloaderOpenFunc,Mono.DownloaderSendFunc,Mono.DownloaderAbortFunc,Mono.DownloaderHeaderFunc,Mono.DownloaderBodyFunc,Mono.DownloaderCreateWebRequestFunc,Mono.DownloaderSetResponseHeaderCallbackFunc,Mono.DownloaderGetResponseFunc)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::downloader_write(System.IntPtr,System.IntPtr,System.Int32,System.Int32)
@@ -1365,12 +1365,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::mouse_event_args_get_position(System.IntPtr,System.IntPtr,System.Double&,System.Double&)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_image_set_viewport_origin(System.IntPtr,System.Windows.Point)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_image_set_viewport_width(System.IntPtr,System.Double)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::multi_scale_image_zoom_about_logical_point(System.IntPtr,System.Double,System.Double,System.Double)

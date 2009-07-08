@@ -1,3 +1,8 @@
+2009-07-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.s[s]c: Update downloader_set_functions signature
+	and remove multi_scale_image_set_viewport_[origin|width] p/invokes
+
 2009-06-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.s[s]c: Regen wrt changes in TextBox and XAML 
