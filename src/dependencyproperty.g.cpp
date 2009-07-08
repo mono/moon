@@ -131,7 +131,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::POPUP, "IsOpen", false, new Value (false), Type::BOOL);
 	DependencyProperty::Register (this, Type::POPUP, "HorizontalOffset", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::POPUP, "Child", false, NULL, Type::UIELEMENT, false, false, false, NULL, Validators::ContentControlContentValidator, NULL, false);
-	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Volume", false, new Value (0.5), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Volume", false, new Value (0.5), Type::DOUBLE, false, false, false, NULL, Validators::VolumeValidator, NULL, false);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Stretch", false, new Value (StretchUniform), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Source", false, NULL, Type::URI, false, false, true, NULL, NULL, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "RenderedFramesPerSecond", false, new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL, NULL, false);
@@ -149,7 +149,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "CanPause", false, new Value (false), Type::BOOL, false, true, false, NULL, NULL, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "BufferingTime", false, NULL, Type::TIMESPAN, false, false, false, NULL, Validators::BufferingTimeValidator, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "BufferingProgress", false, new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL, NULL, false);
-	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Balance", false, new Value (0.0), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Balance", false, new Value (0.0), Type::DOUBLE, false, false, false, NULL, Validators::BalanceValidator, NULL, false);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "AutoPlay", false, new Value (true), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "AudioStreamIndex", false, NULL, Type::INT32, false, false, false, NULL, Validators::AudioStreamIndexValidator, NULL, true);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "AudioStreamCount", false, new Value (0), Type::INT32, false, true, false, NULL, NULL, NULL, false);

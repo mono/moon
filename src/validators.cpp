@@ -43,6 +43,34 @@ Validators::AudioStreamIndexValidator (DependencyObject* instance, DependencyPro
 }
 
 bool
+Validators::BalanceValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (value) {
+		if (value->AsDouble () > 1.0) {
+			value->Set ((double) 1.0);
+		} else if (value->AsDouble () < -1.0) {
+			value->Set ((double) -1.0);
+		}
+	}
+	
+	return true;
+}
+
+bool
+Validators::VolumeValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (value) {
+		if (value->AsDouble () > 1.0) {
+			value->Set ((double) 1.0);
+		} else if (value->AsDouble () < 0.0) {
+			value->Set ((double) 0.0);
+		}
+	}
+	
+	return true;
+}
+
+bool
 Validators::CursorValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	// If the value is null, it means the default cursor has been set.

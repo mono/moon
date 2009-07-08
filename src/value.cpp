@@ -82,6 +82,12 @@ Value::SetIsNull (bool isNull)
 }
 
 void
+Value::Set (double value)
+{
+	u.d = value;
+}
+
+void
 Value::Init ()
 {
 	padding = 0;

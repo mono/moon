@@ -149,7 +149,7 @@ class MediaElement : public FrameworkElement {
 	const static int AudioStreamIndexProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int AutoPlayProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,Validator=BalanceValidator */
 	const static int BalanceProperty;
  	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,GenerateAccessors */
 	const static int BufferingProgressProperty;
@@ -179,7 +179,7 @@ class MediaElement : public FrameworkElement {
 	const static int SourceProperty;
  	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
 	const static int StretchProperty;
- 	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors,Validator=VolumeValidator */
 	const static int VolumeProperty;
 
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ReadOnly */

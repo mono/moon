@@ -1,3 +1,14 @@
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* validators.cpp|h:
+	* mediaelement.h: Add validators for Balance and Volume.
+	This fixes MS DRT #960.
+
+	* value.cpp|in: Add support for changing a value.
+
+	* value.h:
+	* dependencyproperty.g.cpp: Regenerated.
+
 2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* playlist.h|cpp: Add support for PARAMS elements in ASX files. Fix
