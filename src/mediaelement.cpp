@@ -985,6 +985,7 @@ MediaElement::SetProperties (Media *media)
 	PlaylistEntry *entry;
 	Duration *natural_duration;
 	bool can_seek = true;
+	bool can_pause = true;
 	
 	LOG_MEDIAELEMENT ("MediaElement::SetProperties (%p)\n", media);
 	
@@ -1001,14 +1002,15 @@ MediaElement::SetProperties (Media *media)
 	
 	
 	if (entry->GetIsLive ()) {
-		natural_duration = new Duration (TimeSpan_FromPts (0));
+		can_seek = false;
+		can_pause = false;
 	} else {
-		natural_duration = new Duration (TimeSpan_FromPts (mplayer->GetDuration ()));
+		can_seek = entry->GetClientSkip ();
+		can_pause = true;
 	}
 	
-	can_seek = entry->GetClientSkip ();
-	
-	SetCanPause (true);
+	natural_duration = new Duration (TimeSpan_FromPts (mplayer->GetDuration ()));
+	SetCanPause (can_pause);
 	SetCanSeek (can_seek);
 	SetNaturalDuration (natural_duration);
 	SetNaturalVideoHeight ((double) mplayer->GetVideoHeight ());

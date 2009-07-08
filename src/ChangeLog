@@ -1,5 +1,10 @@
 2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: Properly set CanPause and CanSeek, and always use 
+	mediaplayer's duration as NaturalDuration.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaplayer.cpp: All starting points seem to be allowed now, so don't
 	throw an error event for starting point > duration anymore. Also duration
 	is always the entire length of the media, regardless of when we start and
