@@ -1422,12 +1422,17 @@ PlaylistParser::Setup (XmlType type)
 void
 PlaylistParser::Cleanup ()
 {
-	if (kind_stack)
+	if (kind_stack) {
 		kind_stack->Clear (true);
-	delete kind_stack;
+		delete kind_stack;
+		kind_stack = NULL;
+	}
 	delete internal;
-	if (playlist)
+	internal = NULL;
+	if (playlist) {
 		playlist->unref ();
+		playlist = NULL;
+	}
 	if (error_args) {
 		error_args->unref ();
 		error_args = NULL;
