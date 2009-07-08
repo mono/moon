@@ -1,0 +1,8 @@
+<ASX version="3.0">
+	<PARAM name="author" value="good author" />
+	<AUTHOR>bad author</AUTHOR>
+	<ABSTRACT>good abstract</ABSTRACT>
+	<PARAM name="ABSTRACT" value="bad abstract" />
+	<PARAM name="TestName" value="good testname"/>
+	<ENTRYREF HREF="timecode-short.wmv" />
+</ASX>
