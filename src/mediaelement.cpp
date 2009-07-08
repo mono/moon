@@ -968,6 +968,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	if (flags & MissingCodecs)
 		CodecDownloader::ShowUI (GetDeployment ()->GetSurface ());
 
+	entry->PopulateMediaAttributes ();
 	SetProperties (media);
 	
 	PlayOrStop ();

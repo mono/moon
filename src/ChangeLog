@@ -1,5 +1,10 @@
 2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: We need to populate media attributes before raising
+	MediaOpened.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: When emitting MediaOpened, ensure that DownloadProgress
 	has changed at least a tiny bit.
 
