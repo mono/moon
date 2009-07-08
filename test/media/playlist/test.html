@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head><title>ASX parser test</title></head>
+
+<body>
+	<div id="PlaylistHost" style="background:#FFFFFF"></div>
+	<div id="log"></div>
+    <script type="text/javascript">
+		var asx_file = window.location.search.substring (1);// "ASX_FILE";
+		//alert (asx_file);
+		var result = [];
+
+		var head = document.getElementsByTagName ("head")[0];
+		var script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.src = asx_file + ".js";
+		head.appendChild(script);
+    </script>
+
+	<script src="../../js/js/utils.js" type="text/javascript"></script>
+	<script src="../../js/js/testplugin.js" type="text/javascript"></script>
+	<script src="all-data.js"></script>
+
+	<script type="text/javascript">//alert ("opened: " + asx_file);</script>
+</body>
+</html>
+

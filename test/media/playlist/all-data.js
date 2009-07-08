@@ -9,6 +9,7 @@ var printf_counter = 0;
 var complete_log = [];
 
 var test_plugin = null;
+var finished = false;
 
 function mergeNullandUndef (arg)
 {
@@ -47,6 +48,9 @@ function log_to_div (msg)
 
 function log (msg)
 {
+	if (finished)
+		return;
+
 	log_to_div (msg);
 	printf_formatted (msg, "append");
 	complete_log.push (msg);
@@ -86,6 +90,10 @@ function logAttributes (media)
 
 function OnTestFinished ()
 {
+	if (finished)
+		return;
+	finished = true;
+
 	printf ("    \"\"\n", "append");
 	printf ("];\n", "append");
 
@@ -130,7 +138,7 @@ function OnTestFinished ()
 
 	try {
 		if (failed) {
-			test_plugin.LogResult (0);
+			test_plugin.LogResult (-1);
 		} else {
 			test_plugin.LogResult (1);
 		}
@@ -143,7 +151,7 @@ function OnTestFinished ()
 function OnMediaOpened (e, args)
 {
 	clearTimeout (timeout);
-	log ("OnMediaOpened (" + e + " [" + e.Source + "], " + mergeNullandUndef(args) + " [" + ErrorEventArgsToOneLineString (args) + "])");
+	log ("OnMediaOpened (" + e + " [" + e.Source + "], " + mergeNullandUndef(args));
 	logAttributes (e);
 	OnTestFinished ();
 }
@@ -197,34 +205,39 @@ function NextASX ()
 	me.Source = file;
 }
 
-function OnPluginLoad (e, args)
+function OnPluginLoaded (e, args)
 {
 	test_plugin = document.getElementById ("_TestPlugin");
+	e = document.getElementById ("_MoonlightControl");
 
 	plugin = e;
 	top = e.content.findName ("Top");
+	check_can_start ();
+}
+
+function check_can_start ()
+{
+	if (!TestPluginReady) {
+		setTimeout (check_can_start, 50);
+		return;
+	}
 	NextASX ();
 }
 
-Silverlight.createObject (
-"all.xaml", document.getElementById("PlaylistHost"), "Player",
+function createPlugin ()
 {
-	width:'10',
-	height:'10',
-	inplaceInstallPrompt:false,
-	background:'green',
-	isWindowless:'false',
-	framerate:'24',
-	version:'1.0'
-},
-    {
-	onError: OnPluginError,
-	onLoad: OnPluginLoad
-},
-	null
-);
+	document.write (
+	'<div>' +
+	'	<embed type="application/x-silverlight" width="10" height="10"' +
+	'		id="_MoonlightControl" Source="all.xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"' +
+	'		style="position:absolute; left:0px; top:0px" background="green">' +
+	'	</embed>' +
+	'</div>'
+	);
+}
+createPlugin ();
 
-
+/*
 function createTestPlugin () {
 	var found = false;
 	for (var i = 0; i < navigator.plugins.length; i++) {
@@ -246,6 +259,6 @@ function createTestPlugin () {
 			"</div>");
 	}
 }
-
-createTestPlugin ();
+*/
+//createTestPlugin ();
 
