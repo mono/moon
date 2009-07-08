@@ -1594,7 +1594,7 @@ void
 PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 {
 	PlaylistKind::Kind kind = StringToKind (name);
-	Uri *uri;
+	Uri *uri = NULL;
 	bool failed;
 
 	LOG_PLAYLIST ("PlaylistParser::OnStartElement (%s, %p), kind = %d\n", name, attrs, kind);
