@@ -900,6 +900,7 @@ Playlist::Playlist (Playlist *parent, IMediaSource *source)
 	opened = false;
 	Init ();
 	this->source = source;
+	this->source->ref ();
 }
 
 Playlist::Playlist (Type::Kind kind)
@@ -940,6 +941,11 @@ Playlist::Dispose ()
 		}
 		delete entries;
 		entries = NULL;
+	}
+	
+	if (source) {
+		source->unref ();
+		source = NULL;
 	}
 	
 	PlaylistEntry::Dispose ();
@@ -1388,6 +1394,8 @@ PlaylistParser::SetSource (IMediaSource *new_source)
 	if (source)
 		source->unref ();
 	source = new_source;
+	if (source)
+		source->ref ();
 }
 
 void
