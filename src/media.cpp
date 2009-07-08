@@ -596,7 +596,7 @@ MediaAttributeCollection::GetItemByName (const char *name)
 		if (!(value = attr->GetName ()))
 			continue;
 		
-		if (!strcmp (value, name))
+		if (!g_ascii_strcasecmp (value, name))
 			return attr;
 	}
 	
