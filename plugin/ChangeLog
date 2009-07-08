@@ -1,3 +1,8 @@
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: EventObjectCreateWrapper: return null as the
+	wrapper for a null object.
+
 2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-downloader.h: Add response getter.

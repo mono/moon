@@ -3179,6 +3179,9 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 	MoonlightEventObjectObject *depobj;
 	NPClass *np_class;
 	
+	if (obj == NULL)
+		return NULL;
+	
 	depobj = (MoonlightEventObjectObject *) plugin->LookupWrappedObject (obj);
 	
 	if (depobj) {
