@@ -1304,7 +1304,7 @@ MediaElement::PlayOrStop ()
 		playlist->PlayAsync ();
 	} else {
 		SetState (MediaStatePlaying);
-		SetState (MediaStateStopped);
+		SetState (MediaStatePaused);
 	}
 }
 

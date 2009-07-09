@@ -1,5 +1,9 @@
 2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: If we don't AutoPlay, we end up Paused, not Stopped.
+
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: Don't go directly into a Buffering state, when
 	MediaOpened is emitted we must be either in Paused or Playing state.
 
