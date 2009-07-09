@@ -633,7 +633,7 @@ Uri::GetHashCode ()
 }
 
 bool
-Uri::IsScheme (const char *scheme)
+Uri::IsScheme (const char *scheme) const
 {
 	if (!!this->scheme != !!scheme)
 		return false;

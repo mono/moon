@@ -53,7 +53,8 @@ public:
 	/* @GenerateCBinding */
 	guint GetHashCode ();
 
-	bool IsScheme (const char *scheme);
+	bool IsScheme (const char *scheme) const;
+	bool IsAbsolute () const { return isAbsolute; }
 
 	const char *GetScheme () const { return scheme; }
 	const char *GetHost () const { return host; }

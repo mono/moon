@@ -215,12 +215,6 @@ Downloader::InternalOpen (const char *verb, const char *uri)
 }
 
 static bool
-scheme_is (const Uri *uri, const char *scheme)
-{
-	return uri->GetScheme () && !strcmp (uri->GetScheme (), scheme);
-}
-
-static bool
 same_scheme (const Uri *uri1, const Uri *uri2)
 {
 	return uri1->GetScheme () && uri2->GetScheme () &&
@@ -235,46 +229,58 @@ same_domain (const Uri *uri1, const Uri *uri2)
 
 // Reference:	URL Access Restrictions in Silverlight 2
 //		http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
-static bool
-check_redirection_policy (const Uri *uri, const char *final_uri, DownloaderAccessPolicy policy)
+bool
+Downloader::CheckRedirectionPolicy (const char *url)
 {
-	if (!uri || !final_uri)
+	if (!url)
+		return false;
+
+	// the original URI
+	Uri *source = GetUri ();
+	if (Uri::IsNullOrEmpty (source))
+		return false;
+
+	// if the (original) source is relative then the (final) 'url' will be the absolute version of the uri
+	if (!source->IsAbsolute ())
 		return true;
-	
-	Uri *final = new Uri ();
-	final->Parse (final_uri);
 
-	char *struri = uri->ToString ();
+	char *strsrc = source->ToString ();
 	// if the original URI and the end URI are identical then there was no redirection involved
-	bool retval = (g_ascii_strcasecmp (struri, final_uri) == 0);
+	bool retval = (g_ascii_strcasecmp (strsrc, url) == 0);
+	g_free (strsrc);
+	if (retval)
+		return true;
 
-	if (!retval) {
+	// the destination URI
+	Uri *dest = new Uri ();
+	if (dest->Parse (url)) {
 		// there was a redirection, but is it allowed ?
-		switch (policy) {
+		switch (access_policy) {
 		case DownloaderPolicy:
 			// Redirection allowed for 'same domain' and 'same scheme'
-			if (!same_domain (uri, final) || !same_scheme (uri, final))
-				retval = false;
+			// note: if 'dest' is relative then it's the same scheme and site
+			if (!dest->IsAbsolute () || (same_domain (source, dest) && same_scheme (source, dest)))
+				retval = true;
 			break;
 		case MediaPolicy:
 			// Redirection allowed for: 'same scheme' and 'same or different sites'
-			if (!same_scheme (uri, final))
-				retval = false;
+			// note: if 'dest' is relative then it's the same scheme and site
+			if (!dest->IsAbsolute () || same_scheme (source, dest))
+				retval = true;
 			break;
 		case XamlPolicy:
 		case FontPolicy:
 		case StreamingPolicy:
 			// Redirection NOT allowed
-			retval = false;
 			break;
 		default:
+			// no policy (e.g. downloading codec EULA and binary) is allowed
+			retval = true;
 			break;
 		}
 	}
 
-	g_free (struri);
-	
-	delete final;
+	delete dest;
 	
 	return retval;
 }
@@ -287,19 +293,22 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 	if (!location || !source)
 		return true;
 	
-	if (source->GetHost () == NULL) {
+	if (!source->IsAbsolute ()) {
 		//relative uri, not checking policy
 		return true;
 	}
 
 	Uri *target = new Uri ();
-	target->Parse (location);
+	if (!target->Parse (location)) {
+		delete target;
+		return false;
+	}
 
 	bool retval = true;
 	switch (policy) {
 	case DownloaderPolicy:
 		//Allowed schemes: http, https
-		if (!scheme_is (target, "http") && !scheme_is (target, "https"))
+		if (!target->IsScheme ("http") && !target->IsScheme ("https"))
 			retval = false;
 		//X-Scheme: no
 		if (!same_scheme (target, source))
@@ -311,7 +320,7 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		break;
 	case MediaPolicy: //Media, images, ASX
 		//Allowed schemes: http, https, file
-		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
+		if (!target->IsScheme ("http") && !target->IsScheme ("https") && !target->IsScheme ("file"))
 			retval = false;
 		//X-Scheme: no
 		if (!same_scheme (target, source))
@@ -320,18 +329,18 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		break;
 	case XamlPolicy:
 		//Allowed schemes: http, https, file
-		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
+		if (!target->IsScheme ("http") && !target->IsScheme ("https") && !target->IsScheme ("file"))
 			retval = false;
 		//X-Scheme: no
 		if (!same_scheme (target, source))
 			retval =false;
 		//X-domain: allowed if not HTTPS to HTTPS
-		if (!same_domain (target, source) && scheme_is (target, "https") && scheme_is (source, "https"))
+		if (!same_domain (target, source) && target->IsScheme ("https") && source->IsScheme ("https"))
 			retval = false;
 		break;
 	case FontPolicy:
 		//Allowed schemes: http, https, file
-		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
+		if (!target->IsScheme ("http") && !target->IsScheme ("https") && !target->IsScheme ("file"))
 			retval = false;
 		//X-Scheme: no
 		if (!same_scheme (target, source))
@@ -342,13 +351,13 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		break;
 	case StreamingPolicy: //Streaming media
 		//Allowed schemes: http
-		if (!scheme_is (target, "http"))
+		if (!target->IsScheme ("http"))
 			retval = false;
 		//X-scheme: Not from https
-		if (scheme_is (source, "https") && !same_scheme (source, target))
+		if (source->IsScheme ("https") && !same_scheme (source, target))
 			retval = false;
 		//X-domain: allowed if not HTTPS to HTTPS
-		if (!same_domain (target, source) && scheme_is (target, "https") && scheme_is (source, "https"))
+		if (!same_domain (target, source) && target->IsScheme ("https") && source->IsScheme ("https"))
 			retval = false;
 		break;
 	default:
@@ -621,13 +630,6 @@ Downloader::NotifyFinished (const char *final_uri)
 	if (!GetSurface ())
 		return;
 	
-	if (!check_redirection_policy (GetUri (), final_uri, access_policy)) {
-		LOG_DOWNLOADER ("aborting due to security policy violation\n");
-		failed_msg = g_strdup ("Security Policy Violation");
-		Abort ();
-		return;
-	}
-
 	SetDownloadProgress (1.0);
 	
 	Emit (DownloadProgressChangedEvent);
