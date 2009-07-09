@@ -1,5 +1,10 @@
 2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: Don't go directly into a Buffering state, when
+	MediaOpened is emitted we must be either in Paused or Playing state.
+
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: Seek: if CanSeek is false, don't seek.
 
 2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>

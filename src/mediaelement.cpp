@@ -1300,13 +1300,8 @@ MediaElement::PlayOrStop ()
 		playlist->PlayAsync ();
 	} else if (GetAutoPlay () && !(flags & AutoPlayed)) {
 		// Autoplay us.
-		if (GetBufferingProgress () >= 1.0) {
-			flags |= AutoPlayed;
-			playlist->PlayAsync ();
-		} else {
-			LOG_MEDIAELEMENT ("MediaElement::PlayOrStop (): Going into buffering...\n");
-			SetState (MediaStateBuffering);
-		}
+		flags |= AutoPlayed;
+		playlist->PlayAsync ();
 	} else {
 		SetState (MediaStatePlaying);
 		SetState (MediaStateStopped);
