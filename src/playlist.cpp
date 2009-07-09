@@ -2088,7 +2088,7 @@ PlaylistParser::Is (IMediaSource *source, const char *asx_header)
 {
 	bool result = false;
 	int asx_header_length = strlen (asx_header);
-	char buffer [20];
+	unsigned char buffer [20];
 	
 	do {
 		result = source->Peek ((guint8 *) buffer, asx_header_length);
@@ -2096,7 +2096,7 @@ PlaylistParser::Is (IMediaSource *source, const char *asx_header)
 			goto cleanup;
 		
 		// skip any whitespace	
-		char c = buffer [0];
+		unsigned char c = buffer [0];
 		switch (c) {
 		case ' ':
 		case '\t':
@@ -2107,8 +2107,18 @@ PlaylistParser::Is (IMediaSource *source, const char *asx_header)
 				goto cleanup;
 			continue;
 		}
+		case 0xef: {
+			if (buffer [1] == 0xbb && buffer [2] == 0xbf) { // UTF-8 BOM: EF BB BF 
+				result = source->ReadAll ((guint8 *) buffer, 3);
+				if (!result)
+					goto cleanup;
+				continue;
+			}
+			// TODO: there might be other BOMs we should handle too
+			// fall through
+		}
 		default:
-			result = !g_ascii_strncasecmp (buffer, asx_header, asx_header_length);
+			result = !g_ascii_strncasecmp ((const char *) buffer, asx_header, asx_header_length);
 			goto cleanup;
 		}
 	} while (true);

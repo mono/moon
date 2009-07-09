@@ -1,5 +1,9 @@
 2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp: Skip UTF8 boms when checking if a file is a playlist.
+
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: If we don't AutoPlay, we end up Paused, not Stopped.
 
 2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
