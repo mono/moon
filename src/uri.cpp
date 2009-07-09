@@ -20,7 +20,8 @@
 
 
 /* see rfc1738, section 2.2 */
-static bool is_unsafe (unsigned char c)
+static bool
+is_unsafe (unsigned char c)
 {
 	if (c <= 0x1f || c >= 0x7f)
 		return true;
@@ -43,6 +44,68 @@ static bool is_unsafe (unsigned char c)
 		return true;
 	}
 	return false;
+}
+
+static void
+uri_params_clear (Uri::Param **params)
+{
+	Uri::Param *next, *param = *params;
+	
+	while (param) {
+		next = param->next;
+		g_free (param->value);
+		g_free (param->name);
+		g_free (param);
+		param = next;
+	}
+	
+	*params = NULL;
+}
+
+static Uri::Param *
+uri_params_copy (Uri::Param *params)
+{
+	Uri::Param *list, *param, *cur, *tail;
+	
+	list = NULL;
+	tail = (Uri::Param *) &list;
+	
+	cur = params;
+	while (cur) {
+		param = g_new (Uri::Param, 1);
+		param->value = g_strdup (cur->value);
+		param->name = g_strdup (cur->name);
+		param->next = NULL;
+		
+		tail->next = param;
+		tail = param;
+		
+		cur = cur->next;
+	}
+	
+	return list;
+}
+
+static bool
+uri_params_equal (Uri::Param *params0, Uri::Param *params1)
+{
+	// Note: this might need to be changed to allow params out of order
+	Uri::Param *p0 = params0;
+	Uri::Param *p1 = params1;
+	
+	while (p0) {
+		if (!p1 || strcmp (p0->name, p1->name) != 0
+		    || strcmp (p0->value, p1->value) != 0)
+			return false;
+		
+		p0 = p0->next;
+		p1 = p1->next;
+	}
+	
+	if (p1 != NULL)
+		return false;
+	
+	return true;
 }
 
 Uri::Uri ()
@@ -70,12 +133,12 @@ Uri::Uri (const Uri& uri)
 	host = NULL;
 	port = 0;
 	path = NULL;
-	g_datalist_init (&params);
+	params = NULL;
 	query = NULL;
 	fragment = NULL;
 	originalString = NULL;
 	isAbsolute = false;
-
+	
 	Uri::Copy (&uri, this);
 }
 
@@ -93,27 +156,16 @@ Uri::Free ()
 	g_free (passwd); passwd = NULL;
 	g_free (host); host = NULL;
 	g_free (path); path = NULL;
-	g_datalist_clear (&params);
-	g_datalist_init (&params);
+	uri_params_clear (&params);
 	g_free (query); query = NULL;
 	g_free (fragment); fragment = NULL;
 	g_free (originalString); originalString = NULL;
 	isAbsolute = false;
 }
 
-static void
-clone_params (GQuark quark, gpointer data, gpointer user_data)
-{
-	gchar *str = (gchar *) data;
-	GData **params = (GData **) user_data;
-	g_datalist_id_set_data_full (params, quark, g_strdup (str), g_free);
-}
-
 void
 Uri::Copy (const Uri *from, Uri *to)
 {
-	g_datalist_init (&to->params);
-	
 	if (from != NULL) {
 		to->scheme = g_strdup (from->scheme);
 		to->user = g_strdup (from->user);
@@ -122,7 +174,7 @@ Uri::Copy (const Uri *from, Uri *to)
 		to->host = g_strdup (from->host);
 		to->port = from->port;
 		to->path = g_strdup (from->path);
-		g_datalist_foreach ((GData**)&from->params, clone_params, &to->params);
+		to->params = uri_params_copy (from->params);
 		to->query = g_strdup (from->query);
 		to->fragment = g_strdup (from->fragment);
 		to->originalString = g_strdup (from->originalString);
@@ -197,17 +249,18 @@ bool
 Uri::Parse (const char *uri, bool allow_trailing_sep)
 {
 	char *name, *value, *scheme = NULL, *user = NULL, *auth = NULL, *passwd = NULL, *host = NULL, *path = NULL, *query = NULL, *fragment = NULL;
+	Uri::Param *param, *tail, *params = NULL;
 	register const char *start, *inptr;
 	bool isAbsolute;
 	bool parse_path = false;
-	GData *params = NULL;
 	int port = -1;
 	size_t n;
 	
+	tail = (Uri::Param *) &params;
 	start = uri;
 
 	isAbsolute = true;
-
+	
 	if (!*start) {
 		isAbsolute = false;
 		goto done;
@@ -387,8 +440,13 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 					value = g_strdup ("");
 				}
 				
-				g_datalist_set_data_full (&params, name, value, g_free);
-				g_free (name);
+				param = g_new (Uri::Param, 1);
+				param->value = value;
+				param->name = name;
+				param->next = NULL;
+				
+				tail->next = param;
+				tail = param;
 			}
 			
 			if (*inptr == '#')
@@ -489,21 +547,22 @@ append_url_encoded (GString *string, const char *in, const char *extra)
 }
 
 static void
-append_param (GQuark key_id, gpointer value, gpointer user_data)
+append_param (GString *string, Uri::Param *param)
 {
-	GString *string = (GString *) user_data;
-	
 	g_string_append_c (string, ';');
-	append_url_encoded (string, g_quark_to_string (key_id), "?=#");
-	if (*((char *) value)) {
+	
+	append_url_encoded (string, param->name, "?=#");
+	
+	if (param->value && *param->value) {
 		g_string_append_c (string, '=');
-		append_url_encoded (string, (const char *) value, "?;#");
+		append_url_encoded (string, param->value, "?;#");
 	}
 }
 
 char *
 Uri::ToString (UriToStringFlags flags) const
 {
+	Uri::Param *param;
 	GString *string;
 	char *uri;
 	
@@ -544,8 +603,11 @@ Uri::ToString (UriToStringFlags flags) const
 		g_string_append_c (string, '/');
 	}
 	
-	if (this->params)
-		g_datalist_foreach ((GData **) &this->params, append_param, string);
+	param = this->params;
+	while (param) {
+		append_param (string, param);
+		param = param->next;
+	}
 	
 	if (this->query && !(flags & UriHideQuery)) {
 		g_string_append_c (string, '?');
@@ -594,8 +656,8 @@ Uri::operator== (const Uri &v) const
 	if (!!fragment != !!v.fragment
 	    || (fragment && strcmp (fragment, v.fragment)))
 		return false;
-	
-	// XXX we don't compare this->data vs v.data yet.
+	if (!uri_params_equal (params, v.params))
+		return false;
 	
 	// we intentionally don't compare original strings
 	return true;

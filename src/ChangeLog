@@ -1,5 +1,11 @@
 2009-07-09  Jeffrey Stedfast  <fejj@novell.com>
 
+	Fixes DRT #246
+
+	* uri.cpp: Don't use a GData for params, instead use a custom
+	linked-list. This makes it easier to compare param lists.
+	(operator==): Compare params.
+
 	* textbox.cpp (TextBoxBase::OnFocusOut): When we focus out, clear
 	the selection.
 

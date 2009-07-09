@@ -66,6 +66,11 @@ public:
 	const char *GetPath () const { return path; }
 	const char *GetQuery () const { return query; }
 	
+	struct Param {
+		struct Param *next;
+		char *name, *value;
+	};
+	
 	bool isAbsolute;
 
 	char *scheme;
@@ -75,7 +80,7 @@ public:
 	char *host;
 	int port;
 	char *path;
-	GData *params;
+	Param *params;
 	char *query;
 	char *fragment;
 
