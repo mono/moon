@@ -1853,6 +1853,9 @@ TextBoxBase::mouse_move (EventObject *sender, EventArgs *args, gpointer closure)
 void
 TextBoxBase::OnFocusOut (EventArgs *args)
 {
+	ClearSelection (0);
+	SyncAndEmit ();
+	
 	focused = false;
 	
 	if (view)
