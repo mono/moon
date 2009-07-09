@@ -1,5 +1,9 @@
 2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: Seek: if CanSeek is false, don't seek.
+
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp|h: Emit CurrentState events asynchronously.
 
 2009-07-08  Larry Ewing  <lewing@novell.com>

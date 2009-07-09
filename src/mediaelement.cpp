@@ -1406,6 +1406,11 @@ MediaElement::Seek (TimeSpan to)
 
 	if (GetSurface () == NULL)
 		return;
+		
+	if (!GetCanSeek ()) {
+		LOG_MEDIAELEMENT ("MediaElement::Seek (): CanSeek is false, not seeking\n");
+		return;
+	}
 	
 	switch (state) {
 	case MediaStateIndividualizing:
