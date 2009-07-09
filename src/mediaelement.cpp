@@ -821,6 +821,18 @@ MediaElement::BufferUnderflowHandler (PlaylistRoot *sender, EventArgs *args)
 }
 
 void
+MediaElement::EmitStateChangedAsync ()
+{
+	AddTickCallSafe (EmitStateChanged);
+}
+
+void
+MediaElement::EmitStateChanged (EventObject *obj)
+{
+	((MediaElement *) obj)->Emit (CurrentStateChangedEvent);
+}
+
+void
 MediaElement::SetState (MediaState state)
 {
 	bool emit = false;
@@ -839,7 +851,7 @@ MediaElement::SetState (MediaState state)
 	mutex.Unlock ();
 	
 	if (emit) // Don't emit with mutex locked.
-		Emit (CurrentStateChangedEvent);
+		EmitStateChangedAsync ();
 }
 
 void

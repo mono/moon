@@ -104,6 +104,8 @@ class MediaElement : public FrameworkElement {
 	void SetProperties (Media *media);
 	
 	void EmitMediaEnded ();
+	void EmitStateChangedAsync ();
+	static void EmitStateChanged (EventObject *obj);
 	
 	void AddStreamedMarker (TimelineMarker *marker); // Thread-safe
 	void AddStreamedMarker (MediaMarker *marker); // Thread-safe
