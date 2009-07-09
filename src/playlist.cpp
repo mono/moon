@@ -887,18 +887,13 @@ PlaylistEntry::PauseAsync ()
 void
 PlaylistEntry::StopAsync ()
 {
-	MediaPlayer *mplayer = GetMediaPlayer ();
 	PlaylistRoot *root = GetRoot ();
 	
 	LOG_PLAYLIST ("PlaylistEntry::Stop ()\n");
 
-	g_return_if_fail (media != NULL);
-
 	play_when_available = false;
-	media->StopAsync ();
-	mplayer->Stop ();
-	
-	root->Emit (PlaylistRoot::StopEvent);
+	if (media != NULL)
+		media->StopAsync ();
 }
 
 Media *
@@ -1195,17 +1190,16 @@ Playlist::PauseAsync ()
 void
 Playlist::StopAsync ()
 {
-	PlaylistEntry *current_entry;
+	PlaylistNode *node;
 
 	LOG_PLAYLIST ("Playlist::Stop ()\n");
 
-	current_entry = GetCurrentEntry ();
-	
-	g_return_if_fail (current_entry != NULL);
-
-	current_entry->StopAsync ();
-
-	current_node = (PlaylistNode *) entries->First ();
+	node = (PlaylistNode *) entries->First ();
+	current_node = node;  // reset to first node
+	while (node != NULL) {
+		node->GetEntry ()->StopAsync ();
+		node = (PlaylistNode *) node->next;
+	}
 }
 
 void
@@ -1392,11 +1386,7 @@ PlaylistRoot::StopAsync ()
 	Playlist::StopAsync ();
 	mplayer->Stop ();
 	
-	entry = GetCurrentPlaylistEntry ();
-	g_return_if_fail (entry != NULL);
-	
-	mplayer->Open (entry->GetMedia (), this);
-	
+	OpenAsync ();
 	AddTickCall (EmitStopEvent);
 }
 

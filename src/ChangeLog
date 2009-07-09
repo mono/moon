@@ -1,5 +1,12 @@
 2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp: StopAsync: (PlaylistEntry): don't stop the MediaPlayer,
+	the root takes care of that. (Playlist): loop over all children and
+	call StopAsync on them, this way all nested playlists are reset properly
+	(PlaylistRoot): when done stopping, reopen us.
+
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp: Skip UTF8 boms when checking if a file is a playlist.
 
 2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
