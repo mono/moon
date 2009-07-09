@@ -967,15 +967,25 @@ namespace Mono.Xaml
 			error = null;
 
 			object new_value = null;
+			bool do_set = true;
+
 			try {
 				if (IsExplicitNull (value))
 					new_value = null;
 				else
 					new_value = MoonlightTypeConverter.ConvertObject (pi, value, target.GetType ());
-				pi.SetValue (target, new_value, null);
-				return;
-			} catch (Exception ex) {
-				Console.Error.WriteLine (ex);
+			} catch (Exception e) {
+				do_set = false;
+			}
+
+			if (do_set) {
+				try {
+					pi.SetValue (target, new_value, null);
+					return;
+				} catch (Exception ex) {
+					error = ex.Message;
+					return;
+				}
 			}
 
 			//
