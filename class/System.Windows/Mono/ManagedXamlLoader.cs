@@ -970,9 +970,14 @@ namespace Mono.Xaml
 			bool do_set = true;
 
 			try {
-				if (IsExplicitNull (value))
+				if (IsExplicitNull (value)) {
+					Type t = pi.PropertyType;
+					if (t.IsValueType && !(t.IsGenericType && t.GetGenericTypeDefinition () == typeof (Nullable<>))) {
+						error = "Unable to set non nullable type to null.";
+						return;
+					}
 					new_value = null;
-				else
+				} else
 					new_value = MoonlightTypeConverter.ConvertObject (pi, value, target.GetType ());
 			} catch (Exception e) {
 				do_set = false;
