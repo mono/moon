@@ -1112,7 +1112,7 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 		// something greater than Type::LASTTYPE.  Only check
 		// built-in types for null Types registered on the
 		// managed side has their own check there.
-		if (property->GetPropertyType () < Type::LASTTYPE && !(Type::IsSubclassOf (property->GetPropertyType(), Type::DEPENDENCY_OBJECT)) && !property->IsNullable ()) {
+		if (!CanPropertyBeSetToNull (property)) {
 			MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
 					   g_strdup_printf ("Can not set a non-nullable scalar type to NULL (property: %s)",
 							    property->GetName()));
@@ -1121,6 +1121,24 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 	}
 
 	return true;
+}
+
+bool
+DependencyObject::CanPropertyBeSetToNull (DependencyProperty* property)
+{
+	if (property->GetPropertyType () > Type::LASTTYPE)
+		return true;
+
+	if (Type::IsSubclassOf (property->GetPropertyType(), Type::DEPENDENCY_OBJECT))
+		return true;
+
+	if (property->IsNullable ())
+		return true;
+
+	if (Type::IsSubclassOf (property->GetPropertyType (), Type::STRING))
+		return true;
+
+	return false;
 }
 
 bool
