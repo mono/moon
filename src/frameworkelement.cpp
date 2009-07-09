@@ -244,6 +244,7 @@ FrameworkElement::ComputeActualSize ()
 		return GetDesiredSize ();
 
 	Size actual (GetMinWidth (), GetMinHeight ());
+
 	actual = actual.Max (GetWidth (), GetHeight ());
 	actual = actual.Min (GetMaxWidth (), GetMaxHeight ());
 
@@ -577,6 +578,9 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	if (!isnan (GetHeight ()))
 		offer.height = GetHeight ();
+
+	offer = offer.Min (GetMaxWidth (), GetMaxHeight ());
+	offer = offer.Max (GetMinWidth (), GetMinHeight ());
 
 	if (arrange_cb)
 		response = (*arrange_cb)(offer);

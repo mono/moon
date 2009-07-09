@@ -1,3 +1,8 @@
+2009-07-08  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (Arrange): apply min/max values to the
+	offer.
+
 2009-07-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fontmanager.cpp (FontManager::OpenSystemFont): Make 2 attempts
