@@ -102,6 +102,10 @@ public:
 	static Value* CreateUnrefPtr (EventObject* dob);
 	static Value  CreateUnref (EventObject* dob);
 
+	// essentially the same as the copy constructor, except it
+	// does a deep copy of DependencyObjects.
+	static Value* Clone (Value *v, Types *types = NULL);
+
 	bool GetIsNull ();
 	void SetIsNull (bool isNull);
 	void Set (double value);

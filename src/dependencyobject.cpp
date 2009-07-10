@@ -1778,6 +1778,75 @@ DependencyObject::Freeze()
 	is_frozen = true;
 }
 
+struct CloneClosure {
+	Types *types;
+	DependencyObject *old_do;
+	DependencyObject *new_do;
+};
+
+void
+DependencyObject::clone_local_value (DependencyProperty *key, Value *value, gpointer data)
+{
+	CloneClosure *closure = (CloneClosure*)data;
+
+	// don't clone the name property, or we end up with nasty
+	// duplicate name errors.
+ 	if (key->GetId() == DependencyObject::NameProperty)
+ 		return;
+
+	Value *cv = Value::Clone (value, closure->types);
+
+	closure->new_do->SetValue (key, cv);
+
+	delete cv;
+}
+
+void
+DependencyObject::clone_autocreated_value (DependencyProperty *key, Value *value, gpointer data)
+{
+	CloneClosure *closure = (CloneClosure*)data;
+
+	Value *old_value = closure->old_do->GetValue (key, PropertyPrecedence_AutoCreate);
+
+	// this should create the new object
+	Value *new_value = closure->new_do->GetValue (key, PropertyPrecedence_AutoCreate);
+
+	if (old_value && !old_value->GetIsNull() && old_value->Is (Type::DEPENDENCY_OBJECT) && 
+	    new_value && !new_value->GetIsNull() && new_value->Is (Type::DEPENDENCY_OBJECT)) {
+		DependencyObject *new_obj = new_value->AsDependencyObject(closure->types);
+		DependencyObject *old_obj = old_value->AsDependencyObject(closure->types);
+		
+		new_obj->CloneCore (closure->types, old_obj);
+	}
+}
+
+DependencyObject*
+DependencyObject::Clone (Types *types)
+{
+	Type *t = types->Find (GetObjectType());
+
+	DependencyObject *new_do = t->CreateInstance();
+
+	if (new_do)
+		new_do->CloneCore (types, (DependencyObject*)this); // this cast should be unnecessary.  but C++ const behavior sucks.
+
+	return new_do;
+}
+
+void
+DependencyObject::CloneCore (Types *types, DependencyObject* fromObj)
+{
+	CloneClosure closure;
+	closure.types = types;
+	closure.old_do = fromObj;
+	closure.new_do = this;
+
+	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) fromObj->providers[PropertyPrecedence_AutoCreate];
+
+	g_hash_table_foreach (autocreate->auto_values, (GHFunc)DependencyObject::clone_autocreated_value, &closure);
+	g_hash_table_foreach (fromObj->local_values, (GHFunc)DependencyObject::clone_local_value, &closure);
+}
+
 static void
 free_listener (gpointer data, gpointer user_data)
 {

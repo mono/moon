@@ -37,6 +37,23 @@ NameScope::~NameScope ()
 	}
 }
 
+static void
+register_name (char *key, DependencyObject *obj, NameScope* ns)
+{
+	ns->RegisterName (key, obj);
+}
+
+void
+NameScope::CloneCore (Types *types, DependencyObject *fromObj)
+{
+	NameScope *ns = (NameScope*)fromObj;
+
+	g_hash_table_foreach (ns->names, (GHFunc)register_name, this);
+
+	is_locked = ns->is_locked;
+	temporary = ns->temporary;
+}
+
 void
 NameScope::Dispose ()
 {

@@ -1037,6 +1037,41 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		public void PromotingDefaultValue ()
+		{
+			TextBlock tb = new TextBlock ();
+			tb.Text = "Hi there";
+
+			Storyboard sb = new Storyboard { Duration = new Duration (TimeSpan.FromMilliseconds(500)) };
+			ColorAnimation anim = new ColorAnimation { To = Colors.Blue, Duration = new Duration (TimeSpan.FromSeconds(0)) };
+			Storyboard.SetTarget (anim, tb);
+			Storyboard.SetTargetProperty (anim, new PropertyPath ("(TextBlock.Foreground).(SolidColorBrush.Color)"));
+
+			sb.Children.Add (anim);
+
+			Assert.AreEqual (DependencyProperty.UnsetValue, tb.ReadLocalValue (TextBlock.ForegroundProperty), "#0");
+
+			bool completed = false;
+
+			sb.Completed += (o,e) => completed = true;
+
+			sb.Begin ();
+
+			// beginning the storyboard promotes default values to local values.
+
+			Assert.AreNotEqual (DependencyProperty.UnsetValue, tb.ReadLocalValue (TextBlock.ForegroundProperty), "#1");
+
+			// but the value is identical to the default value (i.e. SolidColorBrush ("Black"))
+
+			Assert.AreEqual (Colors.Black, ((SolidColorBrush)tb.ReadLocalValue (TextBlock.ForegroundProperty)).Color, "#2");
+			
+			EnqueueConditional (() => completed);
+			Enqueue (() => { Console.WriteLine ("testing animated value"); Assert.AreEqual (Colors.Blue, ((SolidColorBrush)tb.ReadLocalValue (TextBlock.ForegroundProperty)).Color, "#3"); });
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		[MoonlightBug]
 		public void TargetSameProperty ()
 		{

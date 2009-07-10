@@ -36,6 +36,7 @@
 #include "mediaelement.h"
 #include "multiscaleimage.h"
 #include "multiscalesubimage.h"
+#include "namescope.h"
 #include "panel.h"
 #include "pipeline.h"
 #include "popup.h"
@@ -3366,6 +3367,16 @@ multi_scale_tile_source_set_tile_width (MultiScaleTileSource *instance, int widt
 		return;
 	
 	instance->SetTileWidth (width);
+}
+
+
+/**
+ * NameScope
+ **/
+NameScope *
+name_scope_new (void)
+{
+	return new NameScope ();
 }
 
 
