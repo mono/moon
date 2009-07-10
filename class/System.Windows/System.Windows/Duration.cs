@@ -126,7 +126,7 @@ namespace System.Windows {
 		public Duration Subtract (Duration duration)
 		{
 			if (kind == duration.kind && kind == DurationKind.TimeSpan)
-				return new Duration (time_span.Add (duration.time_span));
+				return new Duration (time_span.Subtract (duration.time_span));
 
 			return this;
 		}
