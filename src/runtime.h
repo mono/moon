@@ -170,7 +170,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Resize (int width, int height);
 
-	void EmitSourceDownloadCompleted ();
+	void EmitSourceDownloadComplete ();
 	void EmitSourceDownloadProgressChanged (DownloadProgressEventArgs *args);
 	void EmitError (ErrorEventArgs *args);
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -208,7 +208,7 @@ public:
 	const static int ErrorEvent;
 	const static int LoadEvent;
 	const static int SourceDownloadProgressChangedEvent;
-	const static int SourceDownloadCompletedEvent;
+	const static int SourceDownloadCompleteEvent;
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	bool GetFullScreen () { return full_screen; }

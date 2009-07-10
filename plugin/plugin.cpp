@@ -389,7 +389,7 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	onError = NULL;
 	onResize = NULL;
 	onSourceDownloadProgressChanged = NULL;
-	onSourceDownloadCompleted = NULL;
+	onSourceDownloadComplete = NULL;
 	splashscreensource = NULL;
 	background = NULL;
 	id = NULL;
@@ -614,8 +614,8 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		else if (!g_ascii_strcasecmp (argn [i], "onSourceDownloadProgressChanged")) {
 			onSourceDownloadProgressChanged = g_strdup (argv [i]);
 		}
-		else if (!g_ascii_strcasecmp (argn [i], "onSourceDownloadCompleted")) {
-			onSourceDownloadCompleted = g_strdup (argv [i]);
+		else if (!g_ascii_strcasecmp (argn [i], "onSourceDownloadComplete")) {
+			onSourceDownloadComplete = g_strdup (argv [i]);
 		}
 		else {
 		  //fprintf (stderr, "unhandled attribute %s='%s' in PluginInstance::Initialize\n", argn[i], argv[i]);
@@ -890,7 +890,7 @@ PluginInstance::CreateWindow ()
 
 	MoonlightScriptControlObject *root = GetRootObject ();
 	register_event (instance, "onSourceDownloadProgressChanged", onSourceDownloadProgressChanged, root);
-	register_event (instance, "onSourceDownloadCompleted", onSourceDownloadCompleted, root);
+	register_event (instance, "onSourceDownloadComplete", onSourceDownloadComplete, root);
 	register_event (instance, "onError", onError, root);
 	register_event (instance, "onResize", onResize, root->content);
 	register_event (instance, "onLoad", onLoad, root);
@@ -1414,7 +1414,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 
 		Uri *uri = new Uri ();
 		
-		GetSurface ()->EmitSourceDownloadCompleted ();
+		GetSurface ()->EmitSourceDownloadComplete ();
 
 		if (uri->Parse (stream->url, false) && is_xap (uri->GetPath())) {
 			LoadXAP (stream->url, fname);

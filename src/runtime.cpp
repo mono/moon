@@ -638,9 +638,9 @@ Surface::Resize (int width, int height)
 }
 
 void
-Surface::EmitSourceDownloadCompleted ()
+Surface::EmitSourceDownloadComplete ()
 {
-	Emit (SourceDownloadCompletedEvent, NULL);
+	Emit (SourceDownloadCompleteEvent, NULL);
 }
 
 void

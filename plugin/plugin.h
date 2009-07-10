@@ -197,7 +197,7 @@ class PluginInstance
 	char *id;
 	char *splashscreensource;
 	char *onSourceDownloadProgressChanged;
-	char *onSourceDownloadCompleted;
+	char *onSourceDownloadComplete;
 
 	int source_size;
 

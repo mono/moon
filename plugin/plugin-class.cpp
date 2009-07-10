@@ -114,6 +114,7 @@ map_moon_id_to_event_name (int moon_id)
 	case MoonId_OnError: name = "Error"; break;
 	case MoonId_OnLoad: name = "Load"; break;
 	case MoonId_OnSourceDownloadProgressChanged: name = "SourceDownloadProgressChanged"; break;
+	case MoonId_OnSourceDownloadComplete: name = "SourceDownloadComplete"; break;
 	}
 
 	return name;
@@ -2045,7 +2046,7 @@ scriptable_control_mapping[] = {
 	{ "settings", MoonId_Settings },
 	{ "source", MoonId_Source },
 	{ "onsourcedownloadprogresschanged", MoonId_OnSourceDownloadProgressChanged },
-	{ "onsourcedownloadcompleted", MoonId_OnSourceDownloadCompleted },
+	{ "onsourcedownloadcomplete", MoonId_OnSourceDownloadComplete },
 };
 
 MoonlightScriptControlObject::~MoonlightScriptControlObject ()
@@ -2097,7 +2098,7 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 	case MoonId_OnError:
 	case MoonId_OnLoad:
 	case MoonId_OnSourceDownloadProgressChanged:
-	case MoonId_OnSourceDownloadCompleted: {
+	case MoonId_OnSourceDownloadComplete: {
 		const char *event_name = map_moon_id_to_event_name (id);
 		EventObject *obj = plugin->GetSurface ();
 
@@ -2144,7 +2145,7 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 	case MoonId_OnError:
 	case MoonId_OnLoad:
 	case MoonId_OnSourceDownloadProgressChanged:
-	case MoonId_OnSourceDownloadCompleted: {
+	case MoonId_OnSourceDownloadComplete: {
 		const char *event_name = map_moon_id_to_event_name (id);
 		EventObject *obj = plugin->GetSurface ();
 

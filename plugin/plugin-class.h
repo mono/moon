@@ -125,7 +125,7 @@ enum PluginPropertyId {
 	MoonId_OnError,
 	MoonId_OnLoad,
 	MoonId_OnSourceDownloadProgressChanged,
-	MoonId_OnSourceDownloadCompleted,
+	MoonId_OnSourceDownloadComplete,
 
 	// method names
 	MoonId_GetPosition = 0x8000,
