@@ -1407,6 +1407,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		LoadXAML ();
 	}
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
+		bool splash = (xaml_loader != NULL);
 		delete xaml_loader;
 		xaml_loader = NULL;
 		
@@ -1414,7 +1415,8 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 
 		Uri *uri = new Uri ();
 		
-		GetSurface ()->EmitSourceDownloadComplete ();
+		if (splash)
+			GetSurface ()->EmitSourceDownloadComplete ();
 
 		if (uri->Parse (stream->url, false) && is_xap (uri->GetPath())) {
 			LoadXAP (stream->url, fname);
