@@ -67,8 +67,9 @@ public:
 	const char *GetQuery () const { return query; }
 	
 	struct Param {
-		struct Param *next;
-		char *name, *value;
+		Param *next;
+		char *value;
+		char *name;
 	};
 	
 	bool isAbsolute;
