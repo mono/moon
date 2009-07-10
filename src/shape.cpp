@@ -373,24 +373,29 @@ Shape::Clip (cairo_t *cr)
 	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
 	Rect specified = Rect (0, 0, GetWidth (), GetHeight ());
 	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
-	
+	UIElement *parent = GetVisualParent ();
+	bool in_flow = parent && !parent->Is (Type::CANVAS);
+
 	/* 
 	 * NOTE the clumbsy rounding up to 1 here is based on tests like
 	 * test-shape-path-stretch.xaml where it silverlight attempts
 	 * to make sure something is always drawn a better mechanism
 	 * is warranted
 	 */
-	if (!IsDegenerate () && GetVisualParent ()->Is (Type::CANVAS)) {
+	if (!IsDegenerate ()) {
 		bool clip_bounds = false;
 		if (!isnan (specified.width) && specified.width >= 1) { // && paint.width > specified.width) {
 			paint.width = specified.width;
-			paint.height = isnan (specified.height) ? 0 : MAX (1, specified.height);
+			if (!in_flow)
+				paint.height = isnan (specified.height) ? 0 : MAX (1, specified.height);
 			clip_bounds = true;
 		}
 
 		if (!isnan (specified.height) && specified.height >= 1) { // && paint.height > specified.height) {
 			paint.height = specified.height;
-			paint.width = isnan (specified.width) ? 0 : MAX (1, specified.width);
+
+			if (!in_flow)
+				paint.width = isnan (specified.width) ? 0 : MAX (1, specified.width);
 			clip_bounds = true;
 		}
 	       
@@ -582,8 +587,8 @@ Shape::ComputeActualSize ()
 
 	switch (GetStretch ()) {
 	case StretchUniform:
-		sx = sy = MIN (sx, sy);
-		break;
+               sx = sy = MIN (sx, sy);
+               break;
 	case StretchUniformToFill:
 		sx = sy = MAX (sx, sy);
 		break;
@@ -615,25 +620,25 @@ Shape::MeasureOverride (Size availableSize)
 		desired.width = shape_bounds.width;
 	if (isinf (desired.height))
 		desired.height = shape_bounds.height;
-	
+
 	/* compute the scaling */
 	if (shape_bounds.width > 0)
 		sx = desired.width / shape_bounds.width;
 	if (shape_bounds.height > 0)
 		sy = desired.height / shape_bounds.height;
-
-	switch (GetStretch ()) {
+ 
+        switch (GetStretch ()) {
 	case StretchUniform:
-		sx = sy = MIN (sx, sy);
-		break;
 	case StretchUniformToFill:
+		// FIXME why are uniform and uniformtofill the same in this case?
+		// and should we be clamping on the other side... ugh...
 		sx = sy = MAX (sx, sy);
+		desired = Size (shape_bounds.width * sx, shape_bounds.height * sy);
 		break;
-	default:
+	case StretchFill:		
+		desired = desired.Min (shape_bounds.width, shape_bounds.height);
 		break;
 	}
-
-	desired = desired.Min (shape_bounds.width * sx, shape_bounds.height * sy);
 
 	return desired;
 }
