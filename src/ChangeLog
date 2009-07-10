@@ -1,5 +1,13 @@
 2009-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp|h: Store the last seeked-to position so that we never
+	return a value before that as the current Position. MS DRT #486 uses
+	a MediaStreamSource which returns frames before the seeked to position
+	after seeking, and the test checks that MediaElement's Position property
+	never returns a value before the seeked to position.
+
+2009-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.cpp: When we stop, we need to discard any audio data we might
 	have stored.
 

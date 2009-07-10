@@ -433,6 +433,7 @@ MediaElement::Reinitialize ()
 	last_played_pts = 0;
 	first_pts = G_MAXUINT64;
 	seek_to_position = -1;
+	seeked_to_position = 0;
 	buffering_mode = 0;
 	
 	mutex.Lock ();
@@ -1100,6 +1101,7 @@ MediaElement::StopHandler (PlaylistRoot *playlist, EventArgs *args)
 	entry = playlist->GetCurrentPlaylistEntry ();
 	
 	g_return_if_fail (entry != NULL);
+	seeked_to_position = 0;
 		
 	SetProperties (entry->GetMedia ());
 	
@@ -1432,6 +1434,7 @@ MediaElement::Seek (TimeSpan to)
 		
 		previous_position = to;
 		seek_to_position = to;
+		seeked_to_position = to;
 		
 		mplayer->NotifySeek (TimeSpan_ToPts (to));
 		playlist->SeekAsync (to);
@@ -1603,6 +1606,9 @@ MediaElementPropertyValueProvider::GetPosition ()
 	
 	if (use_mplayer && (TimeSpan_FromPts (position) == -1))
 		position = element->mplayer->GetPosition ();
+	
+	if (position < element->seeked_to_position)
+		position = element->seeked_to_position;
 	
 	if (TimeSpan_FromPts (position) == -1) {
 		position = 0;

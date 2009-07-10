@@ -46,6 +46,8 @@ class MediaElement : public FrameworkElement {
 	// before the actual seek is done, currently we just seek to the last position requested,
 	// the previous requests are ignored. -1 denotes that there are no pending seeks.
 	TimeSpan seek_to_position;
+	// This is the last seeked to position. Used to never ever return a Position below this value.
+	guint64 seeked_to_position;
 	
 	// Buffering can be caused by:
 	//   [1] When the media is opened, we automatically buffer an amount equal to BufferingTime.
