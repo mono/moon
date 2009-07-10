@@ -438,6 +438,8 @@ AudioSource::Stop ()
 	SetState (AudioStopped);
 	last_current_pts = G_MAXUINT64;
 	last_write_pts = G_MAXUINT64;
+	delete current_frame;
+	current_frame = NULL;
 	Unlock ();
 	Stopped ();
 }
@@ -744,7 +746,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	}
 	
 cleanup:
-	LOG_AUDIO_EX ("AudioSource::Write (%p, %u): Wrote %u samples, current pts: %" G_GUINT64_FORMAT ", volume: %.2f\n", channel_data, samples, result, MilliSeconds_FromPts (GetCurrentPts ()), this->volume);
+	LOG_AUDIO_EX ("AudioSource::WriteFull (%p, %u): Wrote %u samples, current pts: %" G_GUINT64_FORMAT ", volume: %.2f\n", channel_data, samples, result, MilliSeconds_FromPts (GetCurrentPts ()), this->volume);
 	
 	if (result > 0) {
 		last_write_pts = last_frame_pts + MilliSeconds_ToPts (last_frame_samples * 1000 / GetSampleRate ());
