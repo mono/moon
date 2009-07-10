@@ -101,7 +101,6 @@ namespace MoonTest.Misc
 		}
 
 		[TestMethod]
-		[MoonlightBug ("we don't throw an exception")]
 		public void ParseStringNamespaceAssemblyReversed ()
 		{
 			// Can't get away with not setting the namespace
