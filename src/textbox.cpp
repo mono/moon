@@ -739,6 +739,7 @@ TextBoxBase::CursorUp (int cursor, bool page)
 	return line->GetCursorFromX (Point (), x);
 }
 
+#ifdef EMULATE_GTK
 enum CharClass {
 	CharClassUnknown,
 	CharClassWhitespace,
@@ -756,12 +757,22 @@ char_class (gunichar c)
 	
 	return CharClassUnknown;
 }
+#else
+static bool
+is_start_of_word (TextBuffer *buffer, int index)
+{
+	// A 'word' starts with an AlphaNumeric immediately preceeded by lwsp
+	if (index > 0 && !g_unichar_isspace (buffer->text[index - 1]))
+		return false;
+	
+	return g_unichar_isalnum (buffer->text[index]);
+}
+#endif
 
 int
 TextBoxBase::CursorNextWord (int cursor)
 {
 	int i, lf, cr;
-	CharClass cc;
 	
 	// find the end of the current line
 	cr = CursorLineEnd (cursor);
@@ -778,7 +789,8 @@ TextBoxBase::CursorNextWord (int cursor)
 		return cursor;
 	}
 	
-	cc = char_class (buffer->text[cursor]);
+#ifdef EMULATE_GTK
+	CharClass cc = char_class (buffer->text[cursor]);
 	i = cursor;
 	
 	// skip over the word, punctuation, or run of whitespace
@@ -788,6 +800,21 @@ TextBoxBase::CursorNextWord (int cursor)
 	// skip any whitespace after the word/punct
 	while (i < cr && g_unichar_isspace (buffer->text[i]))
 		i++;
+#else
+	i = cursor;
+	
+	// skip to the end of the current word
+	while (i < cr && !g_unichar_isspace (buffer->text[i]))
+		i++;
+	
+	// skip any whitespace after the word
+	while (i < cr && g_unichar_isspace (buffer->text[i]))
+		i++;
+	
+	// find the start of the next word
+	while (i < cr && !is_start_of_word (buffer, i))
+		i++;
+#endif
 	
 	return i;
 }
@@ -796,7 +823,6 @@ int
 TextBoxBase::CursorPrevWord (int cursor)
 {
 	int begin, i, cr, lf;
-	CharClass cc;
 	
 	// find the beginning of the current line
 	lf = CursorLineBegin (cursor) - 1;
@@ -814,7 +840,8 @@ TextBoxBase::CursorPrevWord (int cursor)
 		return 0;
 	}
 	
-	cc = char_class (buffer->text[cursor - 1]);
+#ifdef EMULATE_GTK
+	CharClass cc = char_class (buffer->text[cursor - 1]);
 	begin = lf + 1;
 	i = cursor;
 	
@@ -828,6 +855,27 @@ TextBoxBase::CursorPrevWord (int cursor)
 		while (i > begin && char_class (buffer->text[i - 1]) == cc)
 			i--;
 	}
+#else
+	begin = lf + 1;
+	i = cursor;
+	
+	if (cursor < buffer->len) {
+		// skip to the beginning of this word
+		while (i > begin && !g_unichar_isspace (buffer->text[i - 1]))
+			i--;
+	}
+	
+	// skip to the start of the lwsp
+	while (i > begin && g_unichar_isspace (buffer->text[i - 1]))
+		i--;
+	
+	if (i > begin)
+		i--;
+	
+	// skip to the beginning of the word
+	while (i > begin && !is_start_of_word (buffer, i))
+		i--;
+#endif
 	
 	return i;
 }
@@ -1159,6 +1207,9 @@ TextBoxBase::KeyPressRight (GdkModifierType modifiers)
 	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to beginning of the next word
 		cursor = CursorNextWord (cursor);
+	} else if ((modifiers & SHIFT_MASK) == 0 && anchor != cursor) {
+		// set cursor at end of selection
+		cursor = MAX (anchor, cursor);
 	} else {
 		// move the cursor forward one character
 		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n') 
@@ -1194,6 +1245,9 @@ TextBoxBase::KeyPressLeft (GdkModifierType modifiers)
 	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to the beginning of the previous word
 		cursor = CursorPrevWord (cursor);
+	} else if ((modifiers & SHIFT_MASK) == 0 && anchor != cursor) {
+		// set cursor at start of selection
+		cursor = MIN (anchor, cursor);
 	} else {
 		// move the cursor backward one character
 		if (cursor >= 2 && buffer->text[cursor - 2] == '\r' && buffer->text[cursor - 1] == '\n')

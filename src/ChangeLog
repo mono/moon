@@ -1,5 +1,16 @@
 2009-07-10  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBoxBase::CursorNextWord): Emulate Windows
+	instead of Gtk+.
+	(TextBoxBase::CursorPrevWord): Same.
+	(TextBoxBase::KeyPressRight): If there is currently a selection
+	and the user presses ArrowRight by itself, set the anchor and
+	cursor at the end of the selection.
+	(TextBoxBase::KeyPressLeft): Same idea, but set them at the start
+	of the selection.
+
+2009-07-10  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp: Always set SelectionStart before
 	SelectionLength. Fixes a bug when selecting backwards from the end
 	of the buffer.
