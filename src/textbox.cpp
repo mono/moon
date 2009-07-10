@@ -786,7 +786,7 @@ TextBoxBase::CursorNextWord (int cursor)
 		i++;
 	
 	// skip any whitespace after the word/punct
-	while (i < cr && char_class (buffer->text[i]) == CharClassWhitespace)
+	while (i < cr && g_unichar_isspace (buffer->text[i]))
 		i++;
 	
 	return i;
@@ -906,8 +906,8 @@ TextBoxBase::KeyPressBackSpace (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -954,8 +954,8 @@ TextBoxBase::KeyPressDelete (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -983,8 +983,8 @@ TextBoxBase::KeyPressPageDown (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -1013,8 +1013,8 @@ TextBoxBase::KeyPressPageUp (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -1043,8 +1043,8 @@ TextBoxBase::KeyPressDown (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -1073,8 +1073,8 @@ TextBoxBase::KeyPressUp (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -1106,8 +1106,8 @@ TextBoxBase::KeyPressHome (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -1139,8 +1139,8 @@ TextBoxBase::KeyPressEnd (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -1174,8 +1174,8 @@ TextBoxBase::KeyPressRight (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -1209,8 +1209,8 @@ TextBoxBase::KeyPressLeft (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -1263,8 +1263,8 @@ TextBoxBase::KeyPressUnichar (gunichar c)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -1619,8 +1619,8 @@ TextBoxBase::DeleteSurrounding (int offset, int n_chars)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -1710,8 +1710,8 @@ TextBoxBase::Commit (const char *str)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
@@ -1788,8 +1788,8 @@ TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 		
 		BatchPush ();
 		emit = NOTHING_CHANGED;
-		SetSelectionLength (end - start);
 		SetSelectionStart (start);
+		SetSelectionLength (end - start);
 		BatchPop ();
 		
 		SyncAndEmit ();
@@ -1834,8 +1834,8 @@ TextBoxBase::OnMouseMove (MouseEventArgs *args)
 		
 		BatchPush ();
 		emit = NOTHING_CHANGED;
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		BatchPop ();
@@ -2191,8 +2191,8 @@ TextBoxBase::Undo ()
 	}
 	
 	BatchPush ();
-	SetSelectionLength (abs (cursor - anchor));
 	SetSelectionStart (MIN (anchor, cursor));
+	SetSelectionLength (abs (cursor - anchor));
 	emit = TEXT_CHANGED | SELECTION_CHANGED;
 	selection_anchor = anchor;
 	selection_cursor = cursor;
@@ -2239,8 +2239,8 @@ TextBoxBase::Redo ()
 	}
 	
 	BatchPush ();
-	SetSelectionLength (abs (cursor - anchor));
 	SetSelectionStart (MIN (anchor, cursor));
+	SetSelectionLength (abs (cursor - anchor));
 	emit = TEXT_CHANGED | SELECTION_CHANGED;
 	selection_anchor = anchor;
 	selection_cursor = cursor;
