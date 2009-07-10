@@ -407,7 +407,7 @@ Storyboard::GetTargetDependencyProperty ()
 }
 
 bool
-Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObject, PropertyPath *targetPropertyPath, GHashTable *promoted_values, MoonError *error)
+Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObject, PropertyPath *targetPropertyPath, MoonError *error)
 {
 	DependencyObject *localTargetObject = NULL;
 	PropertyPath *localTargetPropertyPath = NULL;
@@ -440,7 +440,6 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 			if (!HookupAnimationsRecurse ((Clock*)l->data,
 						      targetObject,
 						      targetPropertyPath,
-						      promoted_values,
 						      error))
 				return false;
 		}
@@ -462,7 +461,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 
 		realTargetObject = targetObject;
 
-		prop = resolve_property_path (&realTargetObject, targetPropertyPath, promoted_values);
+		prop = resolve_property_path (&realTargetObject, targetPropertyPath);
 
 		if (!prop || !realTargetObject) {
 			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "TargetProperty could not be resolved");
@@ -528,12 +527,8 @@ Storyboard::BeginWithError (MoonError *error)
 
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.
-	GHashTable *promoted_values = g_hash_table_new (g_direct_hash, g_direct_equal);
-	if (!HookupAnimationsRecurse (root_clock, NULL, NULL, promoted_values, error)) {
-		g_hash_table_destroy (promoted_values);
+	if (!HookupAnimationsRecurse (root_clock, NULL, NULL, error))
 		return false;
-	}
-	g_hash_table_destroy (promoted_values);
 
 	Deployment::GetCurrent()->GetSurface()->GetTimeManager()->AddClock (root_clock);
 

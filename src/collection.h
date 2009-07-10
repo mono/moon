@@ -32,7 +32,7 @@ class Collection : public DependencyObject {
 public:
  	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors */
 	const static int CountProperty;
-
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual Type::Kind GetElementType () = 0;
 	
@@ -94,9 +94,7 @@ protected:
 	virtual void RemovedFromCollection (Value *value) {}
 	
 	void SetCount (int count);
-
-	virtual void CloneCore (Types *types, DependencyObject* fromObj);
-
+	
 	Collection ();
 	virtual ~Collection ();
 	virtual void Dispose ();

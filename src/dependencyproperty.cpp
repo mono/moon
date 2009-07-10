@@ -298,7 +298,7 @@ lookup_type (DependencyObject *lu, const char* name)
 // Returns NULL on any error
 //
 DependencyProperty *
-resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTable *promoted_values)
+resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 {
 	g_return_val_if_fail (o != NULL, NULL);
 	g_return_val_if_fail (propertypath != NULL, NULL);
@@ -324,7 +324,6 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 	int index;
 	bool paren_open = false;
 	bool tick_open = false;
-	bool cloned = false;
 
 	while (inptr < inend) {
 		switch (*inptr++) {
@@ -349,29 +348,12 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 
 			// resolve the dependency property
 			if (res) {
-				DependencyObject *new_lu;
-
 				// make sure that we are getting what we expect
 				if (!(value = lu->GetValue (res)))
 					goto error;
-
-				if (!(new_lu = value->AsDependencyObject ()))
+				
+				if (!(lu = value->AsDependencyObject ()))
 					goto error;
-
-				if (!cloned && !g_hash_table_lookup (promoted_values, value)) {
-					// we need to clone the value here so that we deep copy any
-					// DO subclasses (such as brushes, etc) that we're promoting
-					// from a shared space (Styles, default values)
-					Value *cloned_value = Value::Clone (value);
-					lu->SetValue (res, cloned_value);
-					new_lu = cloned_value->AsDependencyObject();
-					delete cloned_value;
-
-					cloned_value = lu->GetValue (res);
-					g_hash_table_insert (promoted_values, cloned_value, cloned_value);
-				}
-
-				lu = new_lu;
 			}
 			
 			expression_found = false;
@@ -397,7 +379,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 			
 			if (!(collection = value->AsCollection ()))
 				goto error;
-
+				
 			if (!(value = collection->GetValueAt (index)))
 				goto error;
 			

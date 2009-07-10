@@ -411,7 +411,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MULTISCALESUBIMAGE] = new Type (Type::MULTISCALESUBIMAGE, Type::DEPENDENCY_OBJECT, false, false, "MultiScaleSubImage", 0, 1, NULL, 0, NULL, true, (create_inst_func *) multi_scale_sub_image_new, NULL);
 	types [(int) Type::MULTISCALESUBIMAGE_COLLECTION] = new Type (Type::MULTISCALESUBIMAGE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "MultiScaleSubImageCollection", 0, 3, NULL, 0, NULL, false, (create_inst_func *) multi_scale_sub_image_collection_new, NULL);
 	types [(int) Type::MULTISCALETILESOURCE] = new Type (Type::MULTISCALETILESOURCE, Type::DEPENDENCY_OBJECT, false, false, "MultiScaleTileSource", 0, 1, NULL, 0, NULL, false, (create_inst_func *) multi_scale_tile_source_new, NULL);
-	types [(int) Type::NAMESCOPE] = new Type (Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, false, "NameScope", 0, 1, NULL, 0, NULL, true, (create_inst_func *) name_scope_new, NULL);
+	types [(int) Type::NAMESCOPE] = new Type (Type::NAMESCOPE, Type::DEPENDENCY_OBJECT, false, false, "NameScope", 0, 1, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::NPOBJ] = new Type (Type::NPOBJ, Type::OBJECT, true, false, "NPObj", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::NULLDECODER] = new Type (Type::NULLDECODER, Type::IMEDIADECODER, false, false, "NullDecoder", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::OBJECT] = new Type (Type::OBJECT, Type::INVALID, false, false, "object", 0, 0, NULL, 0, NULL, false, NULL, NULL);

@@ -60,23 +60,6 @@ Value::CreateUnref (EventObject* dob)
 	return result;
 }
 
-Value*
-Value::Clone (Value *v, Types *types)
-{
-	if (!v)
-		return NULL;
-
-	if (!types)
-		types = Deployment::GetCurrent()->GetTypes();
-
-	if (types->IsSubclassOf (v->k, Type::DEPENDENCY_OBJECT)) {
-		return new Value (v->AsDependencyObject()->Clone (types));
-	}
-	else {
-		return new Value (*v);
-	}
-}
-
 Type::Kind
 Value::GetKind ()
 {

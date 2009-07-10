@@ -135,7 +135,7 @@ private:
 
 G_BEGIN_DECLS
 
-DependencyProperty *resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTable *promoted_values);
+DependencyProperty *resolve_property_path (DependencyObject **o, PropertyPath *propertypath);
 
 G_END_DECLS
 

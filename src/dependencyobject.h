@@ -227,9 +227,7 @@ public:
 	virtual void Dispose ();
 
 	void Freeze ();
-
-	DependencyObject* Clone (Types *types);
-
+	
 	DependencyProperty **GetProperties (bool only_changed);
 	
 	GHashTable *GetLocalValues () { return local_values; }
@@ -388,8 +386,6 @@ protected:
 	
 	void RemoveAllListeners ();
 
-	virtual void CloneCore (Types *types, DependencyObject* from);
-
 	PropertyValueProvider **providers;
 
 private:
@@ -400,9 +396,6 @@ private:
 
 	static void collection_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	static void collection_item_changed (EventObject *sender, EventArgs *args, gpointer closure);
-
-	static void clone_local_value (DependencyProperty *key, Value *value, gpointer data);
-	static void clone_autocreated_value (DependencyProperty *key, Value *value, gpointer data);
 
 	static gboolean dispose_value (gpointer key, gpointer value, gpointer data);
 

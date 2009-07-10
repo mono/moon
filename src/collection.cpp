@@ -36,20 +36,6 @@ Collection::Collection ()
 	generation = 0;
 }
 
-void
-Collection::CloneCore (Types* types, DependencyObject* fromObj)
-{
-	DependencyObject::CloneCore (types, fromObj);
-
-	Collection *c = (Collection*)fromObj;
-
-	for (guint i = 0; i < c->array->len; i++) {
-		Value *value = Value::Clone ((Value *) c->array->pdata[i]);
-		Add (value);
-		delete value;
-	}
-}
-
 Collection::~Collection ()
 {
 	g_ptr_array_free (array, true);
