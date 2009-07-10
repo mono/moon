@@ -921,6 +921,7 @@ protected:
 private:
 	bool HookupAnimationsRecurse (Clock *clock,
 				      DependencyObject *targetObject, PropertyPath *targetPropertyPath,
+				      GHashTable *promoted_values,
 				      MoonError *error);
 	void TeardownClockGroup ();
 	Clock *root_clock;

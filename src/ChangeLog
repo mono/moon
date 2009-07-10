@@ -1,3 +1,35 @@
+2009-07-10  Chris Toshok  <toshok@ximian.com>
+
+	* value.h.in|cpp (Value::Clone): new method, clone the DO if the
+	value contains one, and otherwise just copy the contents.
+
+	* namescope.cpp (NameScope::CloneCore): clone the mapping (hm,
+	this is probably wrong, as the mapping needs to reference cloned
+	objects, not the same objects that existed in the original
+	mapping.
+
+	* collection.h|cpp (Collection::CloneCore): clone the collection
+	contents.
+
+	* dependencyproperty.h|cpp (resolve_property_path): add a
+	promoted_values hashtable argument.  if the value has already been
+	promoted, don't do it again. promote the first value we can while
+	resolving the property path.  Don't promote UIElement subclasses
+	though.
+	
+	* dependencyobject.h|cpp: add api for cloning (deep copying) for
+	DependencyObjects.  DependencyObject::Clone is the public
+	interface, with subclasses overriding ::CloneCore if they need to.
+
+	* color.cpp (color_to_string): multiply by 255, not 256.
+
+	* animation.h|cpp (Storyboard::HookupAnimationsRecurse): this
+	takes a hashtable now so we don't promote values more than
+	once (doing so causes previous animations to target objects that
+	are no longer attached anywhere).
+
+	* cbinding.h, cbinding.cpp, value.h, type-generated.cpp: regen.
+
 2009-07-10  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (MeasureOverride): start working towards fixing

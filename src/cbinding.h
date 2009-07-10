@@ -2052,6 +2052,11 @@ void multi_scale_tile_source_set_tile_overlap (MultiScaleTileSource *instance, i
 void multi_scale_tile_source_set_tile_width (MultiScaleTileSource *instance, int width);
 
 /**
+ * NameScope
+ **/
+NameScope *name_scope_new (void);
+
+/**
  * ObjectAnimationUsingKeyFrames
  **/
 /* @GeneratePInvoke */

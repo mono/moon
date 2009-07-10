@@ -30,11 +30,15 @@ class NameScope : public DependencyObject {
  protected:
 	virtual ~NameScope ();
 
+	virtual void CloneCore (Types *types, DependencyObject *fromObj);
+
  public:
  	/* @PropertyType=NameScope,Attached,GenerateAccessors */
 	const static int NameScopeProperty;
 	
+	/* @GenerateCBinding*/
 	NameScope ();
+
 	virtual void Dispose ();
 	
 	void RegisterName (const char *name, DependencyObject *object);
