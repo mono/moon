@@ -53,13 +53,6 @@
 	SelectionLength. Fixes a bug when selecting backwards from the end
 	of the buffer.
 
-2009-07-10  Jackson Harper  <jackson@ximian.com>
-
-	* xaml.cpp: Don't auto add the default namespaces for
-	createfromfile anymore.
-	- Make sure elements don't already have their name set when we try
-	to set their name, ie <Canvas x:Name="foo" Name="bar" />
-	
 2009-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp|h: Store the last seeked-to position so that we never

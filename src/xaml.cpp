@@ -1016,17 +1016,10 @@ class XNamespace : public XamlNamespace {
 				}
 			}
 
-			if (item->GetName ()) {
-				parser_error (p, item->element_name, NULL, 2028, "1. The name already exists in the tree: %s  (name: %s  key:  %s).", value, item->GetName (), item->GetKey ());
-				printf (p->loader->GetString ());
-				return false;
-			}
-
 			item->SetName (p, value);
 
 			if (item->IsDependencyObject ()) {
 				NameScope *scope = p->namescope;
-				
 				if (!item->GetAsDependencyObject ()->SetName (value, scope)) {
 					if (IsParentResourceDictionary (p->current_element)) {
 						// FIXME: inside of a resource dictionary this has an extremly
@@ -2128,7 +2121,7 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 
 	// TODO: This is just in here temporarily, to make life less difficult for everyone
 	// while we are developing.  
-	// add_default_namespaces (parser_info);
+	add_default_namespaces (parser_info);
 
 	XML_SetUserData (p, parser_info);
 
@@ -4825,12 +4818,6 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 
 		if (prop) {
 			if (prop->GetId () == DependencyObject::NameProperty) {
-				
-				if (item->GetName ()) {
-					parser_error (p, item->element_name, NULL, 2028, "The name already exists in the tree: %s.", attr [i+1]);
-					return;
-				}
-
 				// XXX toshok - I don't like doing this here... but it fixes airlines.
 				item->SetKey (p, attr[i+1]);
 
