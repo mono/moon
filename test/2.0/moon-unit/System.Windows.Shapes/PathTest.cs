@@ -293,6 +293,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ComputeLargerSize_StretchFill_IntrinsicBorder ()
 		{
 			Border b = new Border ();
@@ -328,6 +329,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ComputeLargerSize_StretchUniform_IntrinsicBorder ()
 		{
 			Border b = new Border ();
@@ -363,6 +365,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void BorderComputeLargerSize_StretchUniform_IntrinsicBorder ()
 		{
 			Border b = new Border ();
@@ -398,6 +401,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void BorderComputeLargerSize_StretchUniform_SizedIntrinsicBorder ()
 		{
 			Border b = new Border ();
@@ -512,6 +516,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void ComputeReducedSize_StretchUniform_InstrinsicBorder ()
 		{
 			Border b = new Border ();
