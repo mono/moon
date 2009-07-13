@@ -87,7 +87,7 @@ Keyboard::MapKeyValToKey (guint keyval)
 {
 	switch (keyval) {
 	case GDK_BackSpace:				return KeyBACKSPACE;
-	case GDK_Tab:					return KeyTAB;
+	case GDK_Tab: case GDK_ISO_Left_Tab:		return KeyTAB;
 	case GDK_Return: case GDK_KP_Enter:		return KeyENTER;
 	case GDK_Shift_L: case GDK_Shift_R:		return KeySHIFT;
 	case GDK_Control_L: case GDK_Control_R:		return KeyCTRL;
