@@ -966,7 +966,7 @@ class XNamespace : public XamlNamespace {
 			return NULL;
 
 		for (int i = 0; attr [i]; i += 2) {
-			char *ns = strchr (attr [i], '|');
+			const char *ns = strchr (attr [i], '|');
 			if (!ns)
 				continue;
 					

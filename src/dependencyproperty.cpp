@@ -272,7 +272,7 @@ lookup_type (DependencyObject *lu, const char* name)
 	// we just verify that the type name matches the lookup type.
 	//
 
-	char *tname = strchr (name, ':');
+	const char *tname = strchr (name, ':');
 	if (!tname || ! *(++tname))
 		return NULL;
 
