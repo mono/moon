@@ -1016,6 +1016,11 @@ class XNamespace : public XamlNamespace {
 				}
 			}
 
+			if (item->GetName ()) {
+				parser_error (p, item->element_name, NULL, 2016, "Cannot specify both Name and x:Name attributes.");
+				return false;
+			}
+
 			item->SetName (p, value);
 
 			if (item->IsDependencyObject ()) {
@@ -4679,9 +4684,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 			// The items were added in add_child
 			return true;
 		} else {
-			// TODO: Do some error checking in here, this is a valid place to be
-			// if we are adding a non collection to a collection, so the non collection
-			// item will have already been added to the collection in add_child
+			parser_error (p, item->element_name, NULL, 2010, "does not support %s as content.", value->element_name);
 			res = false;
 		}
 	} else {
@@ -4825,6 +4828,12 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 
 		if (prop) {
 			if (prop->GetId () == DependencyObject::NameProperty) {
+
+				if (item->GetName ()) {
+					parser_error (p, item->element_name, NULL, 2016, "Cannot specify both Name and x:Name attributes.");
+					return;
+				}
+
 				// XXX toshok - I don't like doing this here... but it fixes airlines.
 				item->SetKey (p, attr[i+1]);
 
