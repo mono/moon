@@ -1763,20 +1763,6 @@ ProgressiveSource::CloseWriteFile ()
 	fclose (write_fd);
 	write_fd = NULL;
 }
-/*
- * MemoryNestedSource
- */
-
-MemoryNestedSource::MemoryNestedSource (MemorySource *src) : MemorySource (src->GetMedia (), src->GetMemory (), src->GetSize (), src->GetStart ())
-{
-	src->ref ();
-	this->src = src;
-}
-
-MemoryNestedSource::~MemoryNestedSource ()
-{
-	src->unref ();
-}
 
 /*
  * MemorySource

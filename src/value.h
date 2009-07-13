@@ -195,7 +195,6 @@ class MediaMarkerFoundClosure;
 class MediaPlayer;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
-class MemoryNestedSource;
 class MemorySource;
 class MmsDemuxer;
 class MmsDownloader;
@@ -558,7 +557,6 @@ public:
 	MediaPlayer*                             AsMediaPlayer (Types *types = NULL) { checked_get_subclass (Type::MEDIAPLAYER, MediaPlayer) }
 	MediaReportSeekCompletedClosure*         AsMediaReportSeekCompletedClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, MediaReportSeekCompletedClosure) }
 	MediaSeekClosure*                        AsMediaSeekClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIASEEKCLOSURE, MediaSeekClosure) }
-	MemoryNestedSource*                      AsMemoryNestedSource (Types *types = NULL) { checked_get_subclass (Type::MEMORYNESTEDSOURCE, MemoryNestedSource) }
 	MemorySource*                            AsMemorySource (Types *types = NULL) { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
 	MmsDemuxer*                              AsMmsDemuxer (Types *types = NULL) { checked_get_subclass (Type::MMSDEMUXER, MmsDemuxer) }
 	MmsDownloader*                           AsMmsDownloader (Types *types = NULL) { checked_get_subclass (Type::MMSDOWNLOADER, MmsDownloader) }

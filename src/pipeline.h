@@ -1174,23 +1174,6 @@ public:
 	virtual const char *ToString () { return "MemorySource"; }
 };
 
-
-// MemoryNestedSource is used to allow independent reading/seeking
-// into an already created MemorySource. This is required when we 
-// read data to calculate bufferingprogress (on main thread), while
-// the same data might get read on the worker thread. Using the same 
-// MemorySource would corrupt the current position.
-class MemoryNestedSource : public MemorySource {
-private:
-	MemorySource *src;
-
-protected:
-	virtual ~MemoryNestedSource ();
-	
-public:
-	MemoryNestedSource (MemorySource *src);
-};
-
 class VideoStream : public IMediaStream {
 protected:
 	virtual ~VideoStream ();

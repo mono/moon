@@ -397,7 +397,6 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MEDIAPLAYER] = new Type (Type::MEDIAPLAYER, Type::EVENTOBJECT, false, false, "MediaPlayer", 2, 3, MEDIAPLAYER_Events, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE] = new Type (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, Type::MEDIACLOSURE, false, false, "MediaReportSeekCompletedClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIASEEKCLOSURE] = new Type (Type::MEDIASEEKCLOSURE, Type::MEDIACLOSURE, false, false, "MediaSeekClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
-	types [(int) Type::MEMORYNESTEDSOURCE] = new Type (Type::MEMORYNESTEDSOURCE, Type::MEMORYSOURCE, false, false, "MemoryNestedSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEMORYSOURCE] = new Type (Type::MEMORYSOURCE, Type::IMEDIASOURCE, false, false, "MemorySource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSDEMUXER] = new Type (Type::MMSDEMUXER, Type::IMEDIADEMUXER, false, false, "MmsDemuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSDOWNLOADER] = new Type (Type::MMSDOWNLOADER, Type::INTERNALDOWNLOADER, false, false, "MmsDownloader", 0, 1, NULL, 0, NULL, false, NULL, NULL);
