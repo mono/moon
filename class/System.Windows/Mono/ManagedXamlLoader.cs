@@ -774,9 +774,7 @@ namespace Mono.Xaml
 				string key_name = NativeMethods.xaml_get_element_key (parser, child_data);
 
 				if (key_name == null) {
-					// Throw proper error here
-					Console.Error.WriteLine ("Attempting to add item to a resource dictionary without an x:Key or x:Name");
-					return false;
+					throw new XamlParseException (2034, "Elements in a ResourceDictionary must have x:Key or x:Name attribute.");
 				}
 
 				if (the_dict == null) {

@@ -97,6 +97,7 @@ namespace Mono
 			if (p != null) {
 				char_position = p.LinePosition;
 				line_number = p.LineNumber;
+				code = p.Code;
 			} else {
 				char_position = -1;
 				line_number = -1;
