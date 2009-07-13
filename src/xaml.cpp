@@ -1378,7 +1378,7 @@ XamlLoader::AddChild (void *p, Value *top_level, Value *parent_parent, bool pare
 		bool res = callbacks.add_child (this, p, top_level, parent_parent, parent_is_property, parent_xmlns, parent, parent_data, child, child_data, &error);
 
 		if (error.number != MoonError::NO_ERROR) {
-			parser_error ((XamlParserInfo *) p, ((XamlElementInstance *) child)->element_name, NULL, error.code, error.message);
+			parser_error ((XamlParserInfo *) p, ((XamlElementInstance *) child_data)->element_name, NULL, error.code, error.message);
 			return false;
 		}
 
