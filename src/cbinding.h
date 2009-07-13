@@ -2563,6 +2563,12 @@ void surface_set_full_screen (Surface *instance, bool value);
 Surface *surface_new (MoonWindow *window);
 
 /**
+ * TabNavigationWalker
+ **/
+/* @GeneratePInvoke */
+bool tab_navigation_walker_focus (UIElement *element, bool forwards);
+
+/**
  * TextBlock
  **/
 /* @GeneratePInvoke */

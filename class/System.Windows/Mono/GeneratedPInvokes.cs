@@ -1887,6 +1887,11 @@ namespace Mono {
 		public extern static IntPtr surface_new (IntPtr window);
 
 		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool tab_navigation_walker_focus (UIElement *element, bool forwards);
+		public extern static bool tab_navigation_walker_focus (IntPtr element, [MarshalAs (UnmanagedType.U1)] bool forwards);
+
+		[DllImport ("moon")]
 		// TextBlock *text_block_new ();
 		public extern static IntPtr text_block_new ();
 

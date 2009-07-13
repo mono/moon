@@ -151,6 +151,10 @@ namespace System.Windows.Controls {
 			OnKeyDown (e);
 			if (!e.Handled)
 				base.InvokeKeyDown (e);
+			if (!e.Handled && e.Key == Key.Tab) {
+				e.Handled = true;
+				Mono.NativeMethods.tab_navigation_walker_focus (native, (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.None);
+			}
 		}
 
 		// called before the event

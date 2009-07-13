@@ -1,5 +1,12 @@
 2009-07-13  Alan McGovern  <amcgovern@novell.com>
 
+	* cbinding.h:
+	* cbinding.cpp:
+	* tabnavigationwalker.h: TabNavigation should activate if the
+	  control does not handle the Tab key
+
+2009-07-13  Alan McGovern  <amcgovern@novell.com>
+
 	* src.mdp:
 	* cbinding.h:
 	* Makefile.am:

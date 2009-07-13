@@ -46,6 +46,7 @@
 #include "size.h"
 #include "style.h"
 #include "stylus.h"
+#include "tabnavigationwalker.h"
 #include "template.h"
 #include "textblock.h"
 #include "textbox.h"
@@ -4512,6 +4513,16 @@ Surface *
 surface_new (MoonWindow *window)
 {
 	return new Surface (window);
+}
+
+
+/**
+ * TabNavigationWalker
+ **/
+bool
+tab_navigation_walker_focus (UIElement *element, bool forwards)
+{
+	return TabNavigationWalker::Focus (element, forwards);
 }
 
 

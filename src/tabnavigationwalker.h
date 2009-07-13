@@ -14,8 +14,10 @@
 #include "dependencyobject.h"
 #include "control.h"
 
+/* @Namespace=None */
 class TabNavigationWalker {
  public:
+	/* @GenerateCBinding,GeneratePInvoke */
 	static bool Focus (UIElement *element, bool forwards);
 
  private:
