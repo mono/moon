@@ -98,6 +98,12 @@ namespace Mono
 				char_position = p.LinePosition;
 				line_number = p.LineNumber;
 				code = p.Code;
+
+				byte [] bytes = System.Text.Encoding.UTF8.GetBytes (p.Message);
+				message  = Marshal.AllocHGlobal (bytes.Length + 1);
+				Marshal.Copy (bytes, 0, message, bytes.Length);
+				Marshal.WriteByte (message, bytes.Length, 0);
+
 			} else {
 				char_position = -1;
 				line_number = -1;
