@@ -68,8 +68,7 @@ ASFDemuxer::SeekAsyncInternal (guint64 pts)
 	LOG_PIPELINE ("ASFDemuxer::Seek (%" G_GUINT64_FORMAT ")\n", pts);
 	
 	g_return_if_fail (reader != NULL);
-	g_return_if_fail (media != NULL);
-	g_return_if_fail (media->InMediaThread ());
+	g_return_if_fail (InMediaThread ());
 	
 	result = reader->Seek (pts);
 	
@@ -105,6 +104,9 @@ ASFDemuxer::ReadMarkers ()
 	
 	// Hookup to the marker (ASF_COMMAND_MEDIA) stream
 	MediaMarker *marker;
+	Media *media = GetMediaReffed ();
+	
+	g_return_if_fail (media != NULL);
 	
 	// Read the markers (if any)
 	List *markers = media->GetMarkers ();
@@ -174,9 +176,9 @@ ASFDemuxer::ReadMarkers ()
 	
 		
 cleanup:
-	
 	g_strfreev (command_types);
 	g_free (commands);
+	media->unref ();
 }
 
 void
@@ -198,8 +200,6 @@ ASFDemuxer::OpenDemuxerAsyncInternal ()
 	
 	LOG_PIPELINE ("ASFDemuxer::OpenDemuxerAsyncInternal ()\n");
 	
-	g_return_if_fail (media != NULL);
-	
 	result = Open ();
 	
 	if (MEDIA_SUCCEEDED (result)) {
@@ -218,9 +218,12 @@ ASFDemuxer::Open ()
 	ASFParser *asf_parser = NULL;
 	gint32 *stream_to_asf_index = NULL;
 	IMediaStream **streams = NULL;
+	Media *media = GetMediaReffed ();
 	int current_stream = 1;
 	int stream_count = 0;
 	int count;
+	
+	g_return_val_if_fail (media != NULL, MEDIA_FAIL);
 	
 	if (parser != NULL) {
 		asf_parser = parser;
@@ -274,7 +277,7 @@ ASFDemuxer::Open ()
 		}
 		
 		if (stream_properties->is_audio ()) {
-			AudioStream* audio = new AudioStream (GetMedia ());
+			AudioStream* audio = new AudioStream (media);
 
 			stream = audio;
 			
@@ -310,7 +313,7 @@ ASFDemuxer::Open ()
 				memcpy (audio->GetExtraData (), src, audio->GetExtraDataSize ());
 			}
 		} else if (stream_properties->is_video ()) {
-			VideoStream* video = new VideoStream (GetMedia ());
+			VideoStream* video = new VideoStream (media);
 			stream = video;
 			
 			const asf_video_stream_data* video_data = stream_properties->get_video_data ();
@@ -352,7 +355,7 @@ ASFDemuxer::Open ()
 				} 
 			}
 		} else if (stream_properties->is_command ()) {
-			MarkerStream* marker = new MarkerStream (GetMedia ());
+			MarkerStream* marker = new MarkerStream (media);
 			stream = marker;
 			stream->codec = g_strdup ("asf-marker");
 		} else {
@@ -408,6 +411,8 @@ ASFDemuxer::Open ()
 			
 	ReadMarkers ();
 	
+	media->unref ();
+	
 	return result;
 	
 failure:
@@ -427,6 +432,8 @@ failure:
 		g_free (streams);
 		streams = NULL;
 	}
+	
+	media->unref ();
 	
 	return result;
 }
@@ -469,9 +476,12 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	}
 
 	if (result == MEDIA_BUFFER_UNDERFLOW || result == MEDIA_NOT_ENOUGH_DATA) {
+		Media *media = GetMediaReffed ();
+		g_return_if_fail (media != NULL);
 		MediaClosure *closure = new MediaGetFrameClosure (media, GetFrameCallback, this, stream);
 		media->EnqueueWork (closure, false); // TODO: use a timeout here, no need to try again immediately.
 		closure->unref ();
+		media->unref ();
 		return;
 	}
 	
@@ -1459,10 +1469,12 @@ MmsPlaylistEntry::WritePacket (void *buf, gint32 n)
 	MemorySource *src;
 	ASFPacket *packet;
 	ASFParser *asf_parser;
-	Media *media;
+	Media *media = GetMediaReffed ();
 	
 	LOG_PIPELINE_ASF ("MmsPlaylistEntry::WritePacket (%p, %i), write_count: %lld\n", buf, n, write_count + 1);
 	VERIFY_MAIN_THREAD;
+
+	g_return_if_fail (media != NULL);
 
 	write_count++;
 	

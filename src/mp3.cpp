@@ -805,6 +805,7 @@ Mp3Demuxer::ReadHeader ()
 	IMediaStream *stream;
 	MpegFrameHeader mpeg;
 	AudioStream *audio;
+	Media *media;
 	guint8 buffer[10];
 	MpegVBRHeader vbr;
 	guint64 duration;
@@ -879,7 +880,10 @@ Mp3Demuxer::ReadHeader ()
 	// calculate the duration of the first frame
 	duration = mpeg_frame_duration (&mpeg);
 	
-	stream = audio = new AudioStream (GetMedia ());
+	media = GetMediaReffed ();	
+	stream = audio = new AudioStream (media);
+	media->unref ();
+	media = NULL;
 	reader = new Mp3FrameReader (source, audio, stream_start, len, duration, xing);
 	
 	audio->codec_id = CODEC_MP3;
@@ -921,9 +925,12 @@ Mp3Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	result = reader->TryReadFrame (&frame);
 
 	if (result == MEDIA_DEMUXER_ERROR || result == MEDIA_BUFFER_UNDERFLOW || result == MEDIA_DEMUXER_ERROR || result == MEDIA_NOT_ENOUGH_DATA) {
+		Media *media = GetMediaReffed ();
+		g_return_if_fail (media != NULL);
 		MediaGetFrameClosure *closure = new MediaGetFrameClosure (media, GetFrameCallback, this, stream);
 		media->EnqueueWork (closure, false);
 		closure->unref ();
+		media->unref ();
 		return;
 	}
 	

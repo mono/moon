@@ -260,14 +260,16 @@ PlaylistEntry::InitializeWithDemuxer (IMediaDemuxer *demuxer)
 	
 	g_return_if_fail (demuxer != NULL);
 	g_return_if_fail (root != NULL);
-	g_return_if_fail (demuxer->GetMedia () != NULL);
 	
-	media = demuxer->GetMedia ();
+	media = demuxer->GetMediaReffed ();
+	
+	g_return_if_fail (media != NULL);
 	
 	Initialize (media);
 	media->Initialize (demuxer);
 	if (!media->HasReportedError ())
 		media->OpenAsync ();
+	media->unref ();
 }
 
 void
@@ -2196,6 +2198,8 @@ PlaylistParser::ParseASX2 ()
 bool
 PlaylistParser::TryFixError (gint8 *current_buffer, int bytes_read)
 {
+	Media *media;
+	
 	if (XML_GetErrorCode (internal->parser) != XML_ERROR_INVALID_TOKEN)
 		return false;
 
@@ -2249,13 +2253,18 @@ PlaylistParser::TryFixError (gint8 *current_buffer, int bytes_read)
 	source->Seek (internal->bytes_read + bytes_read, SEEK_SET);
 	source->ReadSome (new_buffer + patched_size, new_size - patched_size);
 
-	MemorySource *reparse_source = new MemorySource (source->GetMedia (), new_buffer, new_size);
+	media = source->GetMediaReffed ();
+	
+	MemorySource *reparse_source = new MemorySource (media, new_buffer, new_size);
 	SetSource (reparse_source);
 	reparse_source->unref ();
 	
 	internal->reparse = true;
 
 	g_free (escape);
+	
+	if (media)
+		media->unref ();
 
 	return true;
 }

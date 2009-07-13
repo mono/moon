@@ -343,6 +343,8 @@ public:
  */
 class IMediaObject : public EventObject {
 private:
+	Media *media;
+	Mutex media_mutex;
 	// Media event handling
 	// media needs to support event handling on all threads, and EventObject isn't thread-safe
 	class EventData : public List::Node {
@@ -372,15 +374,12 @@ private:
 	static void EmitListCallback (EventObject *obj);
 	
 protected:
-	Media *media;
 	virtual ~IMediaObject () {}
 
 public:
 	IMediaObject (Type::Kind kind, Media *media);
 	virtual void Dispose ();
 	
-	// TODO: media should be protected with a mutex, and GetMedia should return a refcounted media.
-	Media *GetMedia () { return media; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	Media *GetMediaReffed ();
 	void SetMedia (Media *value);
@@ -394,6 +393,8 @@ public:
 	void AddSafeHandler (int event_id, EventHandler handler, EventObject *context, bool invoke_on_main_thread = true);
 	void RemoveSafeHandlers (EventObject *context);
 	void EmitSafe (int event_id, EventArgs *args = NULL);
+	
+	bool InMediaThread ();
 };
 
 class IMediaStream : public IMediaObject {
