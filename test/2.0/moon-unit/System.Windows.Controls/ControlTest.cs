@@ -34,6 +34,7 @@ using System.Windows.Input;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
 using System.Windows.Markup;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -159,7 +160,7 @@ namespace MoonTest.System.Windows.Controls {
 	}
 
 	[TestClass]
-	public class ControlTest {
+	public class ControlTest : SilverlightTest {
 		class MoreConcreteControl : ConcreteControl {
 		}
 
@@ -219,6 +220,22 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.Throws<ArgumentException> (delegate {
 				mc.DefaultStyleKey_ = typeof (Control);
 			}, "Control");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void FocusTest ()
+		{
+			bool gotfocus = false;
+			Button b = new Button ();
+			b.GotFocus += delegate { gotfocus = true; };
+
+			Assert.IsFalse (b.Focus (), "#1");
+			TestPanel.Children.Add (b);
+			Assert.IsTrue (b.Focus (), "#2");
+			Enqueue (() => { });
+			Enqueue (() => Assert.IsFalse (gotfocus, "#3"));
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]

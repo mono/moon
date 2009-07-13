@@ -266,8 +266,14 @@ Control::Focus (bool recurse)
 			walker.SkipBranch ();
 			continue;
 		}
-		
-		if (c->IsLoaded () && c->GetRenderVisible () && c->GetIsTabStop ())
+
+		// A control is focusable if it is attached to a visual tree whose root
+		// element has been loaded
+		bool loaded = false;
+		for (UIElement *check = this; !loaded && check != NULL; check = check->GetVisualParent ())
+			loaded |= check->IsLoaded ();
+
+		if (loaded && c->GetRenderVisible () && c->GetIsTabStop ())
 			return surface->FocusElement (c);
 		
 		if (!recurse)
