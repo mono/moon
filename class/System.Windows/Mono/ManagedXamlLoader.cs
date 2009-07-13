@@ -912,7 +912,13 @@ namespace Mono.Xaml
  			}
 
 			string error;
-			return SetPropertyFromValue (parser, top_level, parent, parent_data, parent_parent_ptr, pi, child_ptr, child_data, out error);
+
+			try {
+				return SetPropertyFromValue (parser, top_level, parent, parent_data, parent_parent_ptr, pi, child_ptr, child_data, out error);
+			} catch (Exception e) {
+				throw new XamlParseException (2010, String.Format ("{0} does not support {1} as content.", parent, child));
+				return false;
+			}
 		}
 
 		private unsafe Type LookupType (Value* top_level, string assembly_name, string full_name)
