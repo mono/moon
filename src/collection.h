@@ -200,7 +200,7 @@ protected:
 
 class DeepTreeWalker {
 public:
-	DeepTreeWalker (UIElement *top);
+	DeepTreeWalker (UIElement *top, Types *types = NULL);
 	UIElement *Step ();
 	void SkipBranch ();
 	~DeepTreeWalker ();

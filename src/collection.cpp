@@ -850,12 +850,12 @@ public:
 	UnsafeUIElementNode (UIElement *el) { uielement = el; }
 };
 
-DeepTreeWalker::DeepTreeWalker (UIElement *top)
+DeepTreeWalker::DeepTreeWalker (UIElement *top, Types *types)
 {
 	walk_list = new List ();
 	walk_list->Append (new UnsafeUIElementNode (top));
 	last = NULL;
-	types = Deployment::GetCurrent ()->GetTypes ();
+	this->types = types ? types : Deployment::GetCurrent ()->GetTypes ();
 }
 
 UIElement *

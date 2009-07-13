@@ -89,6 +89,7 @@ libmoon_include_headers = 	\
 	size.h			\
 	style.h			\
 	stylus.h		\
+	tabnavigationwalker.h	\
 	template.h		\
 	textblock.h		\
 	textbox.h		\
@@ -189,6 +190,7 @@ libmoon_la_SOURCES = 		\
 	size.cpp		\
 	style.cpp		\
 	stylus.cpp		\
+	tabnavigationwalker.cpp	\
 	template.cpp		\
 	textblock.cpp		\
 	textbox.cpp		\

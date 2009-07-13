@@ -270,6 +270,8 @@
     <File name="fontstretch.h" subtype="Code" buildaction="Nothing" />
     <File name="fontstyle.h" subtype="Code" buildaction="Nothing" />
     <File name="fontweight.h" subtype="Code" buildaction="Nothing" />
+    <File name="tabnavigationwalker.h" subtype="Code" buildaction="Nothing" />
+    <File name="tabnavigationwalker.cpp" subtype="Code" buildaction="Compile" />
   </Contents>
   <compiler ctype="GppCompiler" />
 </Project>

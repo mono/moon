@@ -1,5 +1,18 @@
 2009-07-13  Alan McGovern  <amcgovern@novell.com>
 
+	* src.mdp:
+	* cbinding.h:
+	* Makefile.am:
+	* collection.h:
+	* collection.cpp:
+	* tabnavigationwalker.h:
+	* tabnavigationwalker.cpp: Commit the initial implementation
+	  of the TabNavigationWalker. Supports the three tabbing modes
+	  and also forward/backward tabbing. Passes drt 323 except for
+	  a default focusing issue.
+
+2009-07-13  Alan McGovern  <amcgovern@novell.com>
+
 	* keyboard.cpp: Handle shift + tab (GDK_ISO_Left_Tab) as a
 	  KeyTab press.
 

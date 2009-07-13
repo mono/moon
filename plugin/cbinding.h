@@ -561,6 +561,7 @@ class StylusPoint;
 class StylusPointCollection;
 class Surface;
 class SystemTimeSource;
+class TabNavigationWalker;
 class TextBlock;
 class TextBox;
 class TextBoxBase;
