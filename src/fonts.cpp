@@ -270,8 +270,6 @@ TextFont::Load (const TextFontDescription *desc)
 			
 			g_hash_table_insert (loaded, families[i], GINT_TO_POINTER (true));
 		}
-		
-		g_strfreev (families);
 	} else if (source) {
 		if ((face = manager->OpenFont (source, 0)))
 			g_ptr_array_add (faces, face);
@@ -285,6 +283,7 @@ TextFont::Load (const TextFontDescription *desc)
 	}
 	
 	g_hash_table_destroy (loaded);
+	g_strfreev (families);
 	
 	if (faces->len == 0) {
 		g_ptr_array_free (faces, true);
