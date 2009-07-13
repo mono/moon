@@ -958,7 +958,7 @@ PluginInstance::UpdateSource ()
 	if (surface != NULL)
 		surface->DetachDownloaders ();
 
-	if (!source)
+	if (!source || strlen (source) == 0)
 		return;
 
 	char *pos = strchr (source, '#');
