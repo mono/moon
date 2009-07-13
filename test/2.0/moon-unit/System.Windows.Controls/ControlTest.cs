@@ -226,6 +226,7 @@ namespace MoonTest.System.Windows.Controls {
 		[Asynchronous]
 		public void FocusTest ()
 		{
+			// Show that Controls can be focused before they are loaded
 			bool gotfocus = false;
 			Button b = new Button ();
 			b.GotFocus += delegate { gotfocus = true; };
@@ -235,6 +236,54 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsTrue (b.Focus (), "#2");
 			Enqueue (() => { });
 			Enqueue (() => Assert.IsFalse (gotfocus, "#3"));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		public void FocusTest2 ()
+		{
+			// Show that focus is lost when the control is removed from the
+			// visual tree
+			Button b = new Button ();
+			TestPanel.Children.Add (b);
+			b.Focus ();
+			Assert.AreEqual (b, FocusManager.GetFocusedElement (), "#1");
+			TestPanel.Children.Clear ();
+			Assert.IsNull (FocusManager.GetFocusedElement (), "#2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void FocusTest3 ()
+		{
+			// Show that focus is preserved when an element is added/removed from
+			// the visual tree
+			bool gotfocus = false;
+			bool lostfocus = false;
+			Button b = new Button ();
+
+			Enqueue (() => {
+				TestPanel.Children.Add (b);
+				b.Focus ();
+			});
+			Enqueue (() => {
+				Assert.IsFalse (gotfocus, "#1");
+				Assert.IsFalse (lostfocus, "#2");
+
+				TestPanel.Children.Clear ();
+				Assert.IsNull (FocusManager.GetFocusedElement (), "#3");
+			});
+			Enqueue (() => {
+				Assert.IsFalse (gotfocus, "#4");
+				Assert.IsFalse (lostfocus, "#5");
+
+				TestPanel.Children.Add (b);
+				Assert.IsNull (FocusManager.GetFocusedElement (), "#6");
+			});
+			Enqueue (() => {
+				Assert.IsFalse (gotfocus, "#7");
+				Assert.IsFalse (lostfocus, "#8");
+			});
 			EnqueueTestComplete ();
 		}
 

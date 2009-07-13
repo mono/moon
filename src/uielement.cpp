@@ -767,6 +767,10 @@ UIElement::OnLoaded ()
 void
 UIElement::ClearLoaded ()
 {
+	Surface *s = Deployment::GetCurrent ()->GetSurface ();
+	if (s->GetFocusedElement () == this)
+		s->FocusElement (NULL);
+		
 	if (!IsLoaded ())
 		return;
 	
