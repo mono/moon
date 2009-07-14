@@ -44,6 +44,7 @@ public:
 	
 	virtual bool IsLayoutContainer () { return true; }
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);

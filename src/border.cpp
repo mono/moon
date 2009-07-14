@@ -211,6 +211,16 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	NotifyListenersOfPropertyChange (args, error);
 }
 
+void
+Border::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+{
+	if (prop && (prop->GetId () == Border::BackgroundProperty || prop->GetId () == Border::BorderBrushProperty)) {
+		Invalidate ();
+	}
+	else
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
+}
+
 bool 
 Border::InsideObject (cairo_t *cr, double x, double y)
 {
