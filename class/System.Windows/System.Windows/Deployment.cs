@@ -195,90 +195,62 @@ namespace System.Windows {
 			return LoadAssemblies ();
 		}
 
-		// note: throwing MoonException from here is ok since this code is called (sync) from the plugin
-		internal bool LoadAssemblies ()
-		{
+		internal bool LoadAssemblies () {
 			assemblies = new List <Assembly> ();
 			assemblies.Add (typeof (Application).Assembly);
 			
+			bool delay_load = false;
+
 			for (int i = 0; Parts != null && i < Parts.Count; i++) {
-				var source = Parts [i].Source;
+				var part = Parts [i];
 
-				string filename = Path.GetFullPath (Path.Combine (XapDir, source));
-				// note: the content of the AssemblyManifest.xaml file is untrusted
-				if (!filename.StartsWith (XapDir))
-					throw new MoonException (2105, string.Format ("Trying to load the assembly '{0}' outside the XAP directory.", source));
+				Assembly asm = LoadXapAssembly (part.Source);
+				if (asm != null) {
+					assemblies.Add (asm);
+					SetEntryAssembly (asm);
+				}
+				else {
+					WebClient client = new WebClient ();
+					client.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
+						// FIXME: this exception occurs outside InitializeDeployment and does not reach the plugin onError event
+						if (e.Error != null)
+							throw new MoonException (2105, string.Format ("Error while loading the '{0}' assembly : {1}", part.Source, e.Error.Message));
 
-				try {
-					Assembly asm = Assembly.LoadFrom (filename);
-					AssemblyRegister (asm);
-				} catch (FileNotFoundException) {
-					Uri uri = new Uri (source, UriKind.RelativeOrAbsolute);
-					// WebClient deals with relative URI but HttpWebRequest does not
-					// but we need the later to detect redirection
-					if (!uri.IsAbsoluteUri) {
-						string xap = NativeMethods.plugin_instance_get_source_location (PluginHost.Handle);
-						uri = new Uri (new Uri (xap), uri);
-					}
-					HttpWebRequest req = (HttpWebRequest) WebRequest.Create (uri);
-					req.BeginGetResponse (AssemblyGetResponse, req);
-				} catch (Exception e) {
-					throw new MoonException (2105, string.Format ("Error while loading the '{0}' assembly : {1}", source, e.Message));
+						AssemblyPart a = new AssemblyPart ();
+
+						asm = a.Load (e.Result);
+						assemblies.Add (asm);
+						SetEntryAssembly (asm);
+
+						Deployment d = Deployment.Current;
+						if (d.Assemblies.Count == Parts.Count + 1)
+							d.CreateApplication ();
+					};
+					client.OpenReadAsync (new Uri (part.Source, UriKind.RelativeOrAbsolute));
+					delay_load = true;
 				}
 			}
 
-			return true;
+			if (delay_load)
+				return true;
+
+			return CreateApplication ();
 		}
 
-		// note: throwing MoonException from here is NOT ok since this code is called async
-		// and the exception won't be reported, directly, to the caller
-		void AssemblyGetResponse (IAsyncResult result)
+		Assembly LoadXapAssembly (string name)
 		{
+			string filename = Path.GetFullPath (Path.Combine (XapDir, name));
+			// note: the content of the AssemblyManifest.xaml file is untrusted
+			if (!filename.StartsWith (XapDir))
+				throw new MoonException (2105, string.Format ("Trying to load the assembly '{0}' outside the XAP directory.", name));
+
 			try {
-				WebRequest wreq = (WebRequest) result.AsyncState;
-				HttpWebResponse wresp = (HttpWebResponse) wreq.EndGetResponse (result);
-				if (wresp.StatusCode != HttpStatusCode.OK) {
-					EmitError (2105, String.Format ("Error while downloading the '{0}'.", wreq.RequestUri));
-					return;
-				}
-
-				if (wresp.ResponseUri != wreq.RequestUri) {
-					EmitError (2105, "Redirection not allowed to download assemblies.");
-					return;
-				}
-
-				AssemblyPart a = new AssemblyPart ();
-				Assembly asm = a.Load (wresp.GetResponseStream ());
-				wresp.Close ();
-
-				Dispatcher.BeginInvoke (() => {
-					AssemblyRegister (asm);
-				});
+				return Assembly.LoadFrom (filename);
+			} catch (FileNotFoundException) {
+				return null;
+			} catch (Exception e) {
+				throw new MoonException (2105, string.Format ("Error while loading the '{0}' assembly : {1}", name, e.Message));
 			}
-			catch (Exception e) {
-				// we need to report everything since any error means CreateApplication won't be called
-				Dispatcher.BeginInvoke (() => {
-					EmitError (2103, e.ToString ());
-				});
-			}
-		}
-
-		// extracted since NativeMethods.surface_emit_error is security critical
-		void EmitError (int errorCode, string message)
-		{
-			// FIXME: 8 == EXECUTION_ENGINE_EXCEPTION code.  should it be something else?
-			NativeMethods.surface_emit_error (Deployment.Current.Surface.Native, 8, errorCode, message);
-		}
-
-		// note: only access 'assemblies' from the main thread
-		void AssemblyRegister (Assembly assembly)
-		{
-			assemblies.Add (assembly);
-			SetEntryAssembly (assembly);
-
-			// assemblies.Count wont ever be Parts.Count + 1 if we hit a exception while loading an assembly
-			if (assemblies.Count == Parts.Count + 1)
-				CreateApplication ();
 		}
 
 		// extracted since Assembly.GetName is security critical
@@ -296,21 +268,16 @@ namespace System.Windows {
 			}
 		}
 
-		// will be called when all assemblies are loaded (can be async for downloading)
-		// which means we need to report errors to the plugin, since it won't get it from calling managed code
-		internal bool CreateApplication ()
-		{
+		internal bool CreateApplication () {
 			SetCurrentApplication (null);
 
 			if (EntryAssembly == null)
 				throw new Exception ("Could not find the entry point assembly");
 
 			Type entry_type = EntryAssembly.GetType (EntryPointType);
-			if (entry_type == null) {
-				EmitError (2103, String.Format ("Could not find the startup type {0} on the {1}", 
-					EntryPointType, EntryPointAssembly));
-				return false;
-			}
+			if (entry_type == null)
+				throw new MoonException (2103, string.Format ("Could not find the startup type {0} on the {1}",
+									      EntryPointType, EntryPointAssembly));
 
 			if (!entry_type.IsSubclassOf (typeof (Application)) && entry_type != typeof (Application)) {
 #if SANITY
@@ -328,8 +295,7 @@ namespace System.Windows {
 				}
 #endif
 
-				EmitError (2103, "Startup type does not derive from System.Windows.Application");
-				return false;
+				throw new MoonException (2103, "Startup type does not derive from System.Windows.Application");
 			}
 			
 			foreach (Assembly a in Assemblies)
@@ -340,8 +306,7 @@ namespace System.Windows {
 			try {
 				instance = (Application) Activator.CreateInstance (entry_type);
 			} catch (Exception e) {
-				EmitError (2103, String.Format ("Error while creating the instance of type {0}", entry_type));
-				return false;
+				throw new MoonException (2103, string.Format ("Error while creating the instance of type {0}", entry_type));
 			}
 
 			SetCurrentApplication (instance);
