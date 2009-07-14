@@ -194,6 +194,8 @@ AudioSource::GetStreamReffed ()
 	AudioStream *result;
 	Lock ();
 	result = stream;
+	if (result)
+		result->ref ();
 	Unlock ();
 	return result;
 }
