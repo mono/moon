@@ -174,10 +174,11 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		return;
 	}
 
-	if (args->GetId () == Panel::BackgroundProperty)
+	if (args->GetId () == Panel::BackgroundProperty) {
+		/* several of the bounds values are conditional on having a brush */
+		UpdateBounds ();
 		Invalidate ();
-
-	if (args->GetId () == Panel::ChildrenProperty) {
+	} else if (args->GetId () == Panel::ChildrenProperty) {
 		Collection *collection;
 		
 		if (args->GetOldValue()) {

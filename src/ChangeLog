@@ -1,7 +1,12 @@
 2009-07-14  Larry Ewing  <lewing@novell.com>
 
+	* panel.cpp (OnPropertyChanged): make sure we invalidate the panel
+	bounds when the bg changes.  Fixes 641
+
+2009-07-14  Larry Ewing  <lewing@novell.com>
+
 	* border.cpp (OnSubPropertyChanged): elements must listen to
-	subproperty changes for brushes.
+	subproperty changes for brushes.  Fixes 2020
 
 2009-07-14  Alan McGovern  <amcgovern@novell.com>
 
