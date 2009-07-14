@@ -565,19 +565,27 @@ namespace System.Windows {
 		internal static void OnUnhandledException (object sender, Exception ex)
 		{
 			try {
+				string unmanaged_report = ex.Message;
+
 				if (Application.Current != null && Application.Current.UnhandledException != null) {
 					ApplicationUnhandledExceptionEventArgs args = new ApplicationUnhandledExceptionEventArgs (ex, false);
 					try {
 						Application.Current.UnhandledException (Application.Current, args);
+						if (args.Handled)
+							unmanaged_report = null;
 					} catch (Exception ex2) {
 						Console.WriteLine ("Exception caught in Application UnhandledException handler: " + ex2);
-						NativeMethods.surface_emit_error (Deployment.Current.Surface.Native,
-										  8, // FIXME: EXECUTION_ENGINE_EXCEPTION code.  should it be something else?
-										  4004,
-										  ex2.Message);
+						unmanaged_report = ex2.Message;
 					}
 				} else {
 					Console.WriteLine ("Unhandled Exception: " + ex);
+				}
+
+				if (unmanaged_report != null) {
+					NativeMethods.surface_emit_error (Deployment.Current.Surface.Native,
+									  8, // FIXME: EXECUTION_ENGINE_EXCEPTION code.  should it be something else?
+									  4004,
+									  unmanaged_report);
 				}
 			} catch {
 				// Make this completely safe.
