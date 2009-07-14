@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 459 methods
+# 460 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -113,6 +113,7 @@
 +SSC-M: System.Boolean System.Windows.Controls.Control::ApplyTemplate()
 +SSC-M: System.Boolean System.Windows.Controls.Control::Focus()
 +SSC-M: System.Windows.DependencyObject System.Windows.Controls.Control::GetTemplateChild(System.String)
++SSC-M: System.Void System.Windows.Controls.Control::InvokeKeyDown(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.ControlTemplate::.ctor()
 +SSC-M: System.Void System.Windows.Controls.CursorPositionChangedEventArgs::.ctor(System.IntPtr)
 +SSC-M: System.Void System.Windows.Controls.CursorPositionChangedEventArgs::.ctor()

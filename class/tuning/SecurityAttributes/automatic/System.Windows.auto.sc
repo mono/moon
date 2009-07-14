@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 521 methods needs to be decorated.
+# 522 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -114,6 +114,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::surface_is_version_supported(System.String)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::tab_navigation_walker_focus(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::text_box_base_select_with_error_(System.IntPtr,System.Int32,System.Int32,Mono.MoonError&)
