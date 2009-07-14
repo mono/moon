@@ -73,12 +73,12 @@ namespace System.Windows.Browser
 		
 		public HtmlWindow Navigate (Uri navigateToUri, string target)
 		{
-			return new HtmlWindow ((IntPtr) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target));
+			return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target);
 		}
 
 		public HtmlWindow Navigate (Uri navigateToUri, string target, string targetFeatures)
 		{
-			return new HtmlWindow ((IntPtr) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target, targetFeatures));
+			return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target, targetFeatures);
 		}
 
 		public void NavigateToBookmark (string bookmark)
