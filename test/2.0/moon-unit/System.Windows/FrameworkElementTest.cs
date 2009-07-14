@@ -585,7 +585,7 @@ namespace MoonTest.System.Windows {
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
-		public void Loaded_twice ()
+		public void Loaded_async ()
 		{
 			bool loaded = false;
 			Canvas canvas = new Canvas ();
@@ -598,15 +598,29 @@ namespace MoonTest.System.Windows {
 			});
 			EnqueueConditional (() => loaded, "#2");
 
-			// Then check that removing the element and adding again fires the
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void Loaded_twice ()
+		{
+			bool loaded = false;
+			Canvas canvas = new Canvas ();
+			canvas.Loaded += (o, e) => loaded = true;
+
+			Enqueue (() => TestPanel.Children.Add (canvas));
+			EnqueueConditional (() => loaded, "#1");
+
+			// Check that removing the element and adding again fires the
 			// loaded event again.
 			Enqueue (() => {
 				loaded = false;
 				TestPanel.Children.Clear ();
 				TestPanel.Children.Add (canvas);
-				Assert.IsFalse (loaded, "#3");
 			});
-			EnqueueConditional (() => loaded, "#4");
+			EnqueueConditional (() => loaded, "#2");
 
 			EnqueueTestComplete ();
 		}
@@ -626,13 +640,9 @@ namespace MoonTest.System.Windows {
 			canvas.Children.Add (button);
 
 			// Add a canvas + button to a loaded subtree and check the event is async.
-			Enqueue (() => {
-				TestPanel.Children.Add (canvas);
-				Assert.IsFalse (loaded_canvas, "#1a");
-				Assert.IsFalse (loaded_button, "#1b");
-			});
-			EnqueueConditional (() => loaded_canvas, "#2a");
-			EnqueueConditional (() => loaded_button, "#2b");
+			Enqueue (() => TestPanel.Children.Add (canvas));
+			EnqueueConditional (() => loaded_canvas, "#1");
+			EnqueueConditional (() => loaded_button, "#2");
 
 			// Then check that removing the element and adding again fires the
 			// loaded event again on the entire subtree
@@ -641,11 +651,9 @@ namespace MoonTest.System.Windows {
 				loaded_canvas = false;
 				TestPanel.Children.Clear ();
 				TestPanel.Children.Add (canvas);
-				Assert.IsFalse (loaded_canvas, "#3a");
-				Assert.IsFalse (loaded_button, "#3b");
 			});
-			EnqueueConditional (() => loaded_canvas, "#4a");
-			EnqueueConditional (() => loaded_button, "#4b");
+			EnqueueConditional (() => loaded_canvas, "#3");
+			EnqueueConditional (() => loaded_button, "#4");
 
 			EnqueueTestComplete ();
 		}
