@@ -585,6 +585,74 @@ namespace MoonTest.System.Windows {
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
+		public void Loaded_twice ()
+		{
+			bool loaded = false;
+			Canvas canvas = new Canvas ();
+			canvas.Loaded += (o, e) => loaded = true;
+
+			// Add a canvas to a loaded subtree and check the event is async.
+			Enqueue (() => {
+				TestPanel.Children.Add (canvas);
+				Assert.IsFalse (loaded, "#1");
+			});
+			EnqueueConditional (() => loaded, "#2");
+
+			// Then check that removing the element and adding again fires the
+			// loaded event again.
+			Enqueue (() => {
+				loaded = false;
+				TestPanel.Children.Clear ();
+				TestPanel.Children.Add (canvas);
+				Assert.IsFalse (loaded, "#3");
+			});
+			EnqueueConditional (() => loaded, "#4");
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void Loaded_subtree_twice ()
+		{
+			bool loaded_canvas = false;
+			bool loaded_button = false;
+			Canvas canvas = new Canvas ();
+			Button button = new Button ();
+
+			button.Loaded += (o, e) => loaded_button = true;
+			canvas.Loaded += (o, e) => loaded_canvas = true;
+			canvas.Children.Add (button);
+
+			// Add a canvas + button to a loaded subtree and check the event is async.
+			Enqueue (() => {
+				TestPanel.Children.Add (canvas);
+				Assert.IsFalse (loaded_canvas, "#1a");
+				Assert.IsFalse (loaded_button, "#1b");
+			});
+			EnqueueConditional (() => loaded_canvas, "#2a");
+			EnqueueConditional (() => loaded_button, "#2b");
+
+			// Then check that removing the element and adding again fires the
+			// loaded event again on the entire subtree
+			Enqueue (() => {
+				loaded_button = false;
+				loaded_canvas = false;
+				TestPanel.Children.Clear ();
+				TestPanel.Children.Add (canvas);
+				Assert.IsFalse (loaded_canvas, "#3a");
+				Assert.IsFalse (loaded_button, "#3b");
+			});
+			EnqueueConditional (() => loaded_canvas, "#4a");
+			EnqueueConditional (() => loaded_button, "#4b");
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
 		public void LayoutUpdatedAndLoaded ()
 		{
 			List<string> events = new List<string>();
