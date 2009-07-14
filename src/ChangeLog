@@ -1,3 +1,10 @@
+2009-07-14  Alan McGovern  <amcgovern@novell.com>
+
+	* tabnavigationwalker.cpp: If TabNavagationWalker::Focus () is
+	  called on a Control with the 'Cycle' navigation mode and
+	  none of the children of that node can be tabbed to, then
+	  focus remains on that control.
+
 2009-07-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fonts.cpp (TextFont::Load): Don't g_strfreev() the families

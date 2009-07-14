@@ -149,6 +149,10 @@ TabNavigationWalker::Focus (UIElement *element, bool forwards)
 			GetActiveNavigationMode (root->GetVisualParent (), types) == KeyboardNavigationModeOnce)) {
 			focused |= WalkChildren (root, current, forwards, types);
 		}
+
+		if (!focused && GetActiveNavigationMode (root, types) == KeyboardNavigationModeCycle)
+			return true;
+
 		current = root;
 		root = root->GetVisualParent ();
 	} while (!focused && root);
