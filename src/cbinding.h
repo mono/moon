@@ -1477,6 +1477,18 @@ Ellipse *ellipse_new (void);
 EllipseGeometry *ellipse_geometry_new (void);
 
 /**
+ * ErrorEventArgs
+ **/
+/* @GeneratePInvoke */
+int error_event_args_get_error_code (ErrorEventArgs *instance);
+
+/* @GeneratePInvoke */
+const char *error_event_args_get_error_message (ErrorEventArgs *instance);
+
+/* @GeneratePInvoke */
+int error_event_args_get_error_type (ErrorEventArgs *instance);
+
+/**
  * EventObject
  **/
 /* @GeneratePInvoke */

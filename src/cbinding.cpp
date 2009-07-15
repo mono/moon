@@ -25,6 +25,7 @@
 #include "deployment.h"
 #include "downloader.h"
 #include "easing.h"
+#include "error.h"
 #include "eventargs.h"
 #include "frameworkelement.h"
 #include "geometry.h"
@@ -1871,6 +1872,41 @@ EllipseGeometry *
 ellipse_geometry_new (void)
 {
 	return new EllipseGeometry ();
+}
+
+
+/**
+ * ErrorEventArgs
+ **/
+int
+error_event_args_get_error_code (ErrorEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetErrorCode ();
+}
+
+
+const char *
+error_event_args_get_error_message (ErrorEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetErrorMessage ();
+}
+
+
+int
+error_event_args_get_error_type (ErrorEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetErrorType ();
 }
 
 
