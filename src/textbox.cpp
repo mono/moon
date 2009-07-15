@@ -3260,6 +3260,7 @@ TextBoxView::Paint (cairo_t *cr)
 	
 	if (cursor_visible) {
 		cairo_antialias_t alias = cairo_get_antialias (cr);
+		Brush *caret = textbox->GetCaretBrush ();
 		double h = round (cursor.height);
 		double x = cursor.x;
 		double y = cursor.y;
@@ -3267,19 +3268,21 @@ TextBoxView::Paint (cairo_t *cr)
 		// disable antialiasing
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 		
-		// set the color to black
-		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
-		
 		// snap 'x' to the half-pixel grid (to try and get a sharp 1-pixel-wide line)
 		cairo_user_to_device (cr, &x, &y);
 		x = trunc (x) + 0.5; y = trunc (y);
 		cairo_device_to_user (cr, &x, &y);
 		
+		// set the cursor color
+		caret->SetupBrush (cr, cursor);
+		
 		// draw the cursor
 		cairo_set_line_width (cr, 1.0);
 		cairo_move_to (cr, x, y);
 		cairo_line_to (cr, x, y + h);
-		cairo_stroke (cr);
+		
+		// stroke the caret
+		caret->Stroke (cr);
 		
 		// restore antialiasing
 		cairo_set_antialias (cr, alias);

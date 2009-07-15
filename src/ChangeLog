@@ -1,3 +1,9 @@
+2009-07-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxView::Paint): Use the CaretBrush property to
+	get the brush used for rendering the blinking caret. This is a 3.0
+	feature.
+
 2009-07-15  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h:

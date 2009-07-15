@@ -326,6 +326,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	
 	virtual Brush *GetSelectionBackground () = 0;
 	virtual Brush *GetSelectionForeground () = 0;
+	virtual Brush *GetCaretBrush () = 0;
 	
 	virtual TextAlignment GetTextAlignment () { return TextAlignmentLeft; }
 	virtual TextWrapping GetTextWrapping () { return TextWrappingNoWrap; }
@@ -365,6 +366,8 @@ class TextBox : public TextBoxBase {
  public:
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
 	const static int AcceptsReturnProperty;
+	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),Version=2.0,GenerateAccessors */
+	const static int CaretBrushProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int FontSourceProperty;
 	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
@@ -409,6 +412,9 @@ class TextBox : public TextBoxBase {
 	//
 	void SetAcceptsReturn (bool accept);
 	bool GetAcceptsReturn ();
+	
+	void SetCaretBrush (Brush *caret);
+	virtual Brush *GetCaretBrush ();
 	
 	void SetFontSource (FontSource *source);
 	FontSource *GetFontSource ();
@@ -495,6 +501,8 @@ class PasswordBox : public TextBoxBase {
 	virtual ~PasswordBox ();
 	
  public:
+	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),Version=2.0,GenerateAccessors */
+	const static int CaretBrushProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int FontSourceProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
@@ -528,6 +536,9 @@ class PasswordBox : public TextBoxBase {
 	//
 	// Property Accesors
 	//
+	void SetCaretBrush (Brush *caret);
+	virtual Brush *GetCaretBrush ();
+	
 	void SetFontSource (FontSource *source);
 	FontSource *GetFontSource ();
 	

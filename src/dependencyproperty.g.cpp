@@ -362,6 +362,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TEXTBOX, "IsReadOnly", false, new Value (false), Type::BOOL);
 	DependencyProperty::Register (this, Type::TEXTBOX, "HorizontalScrollBarVisibility", false, new Value (ScrollBarVisibilityHidden), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBOX, "FontSource", false, Type::FONTSOURCE);
+	DependencyProperty::Register (this, Type::TEXTBOX, "CaretBrush", false, Value::CreateUnrefPtr (new SolidColorBrush("black")), Type::BRUSH);
 	DependencyProperty::Register (this, Type::TEXTBOX, "AcceptsReturn", false, new Value (false), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::STORYBOARD, "TargetProperty", false, NULL, Type::PROPERTYPATH, true, false, false, NULL, Validators::StoryboardTargetPropertyValidator, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::STORYBOARD, "TargetName", false, NULL, Type::STRING, true, false, false, NULL, Validators::IsTimelineValidator, NULL, false);
@@ -397,6 +398,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "PasswordChar", false, new Value ((gunichar) 9679, Type::CHAR), Type::CHAR);
 	DependencyProperty::RegisterFull (this, Type::PASSWORDBOX, "MaxLength", false, new Value (0), Type::INT32, false, false, false, NULL, Validators::PositiveIntValidator, NULL, false);
 	DependencyProperty::Register (this, Type::PASSWORDBOX, "FontSource", false, Type::FONTSOURCE);
+	DependencyProperty::Register (this, Type::PASSWORDBOX, "CaretBrush", false, Value::CreateUnrefPtr (new SolidColorBrush("black")), Type::BRUSH);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "Value", false, Type::OBJECT);
 	DependencyProperty::RegisterFull (this, Type::OBJECTKEYFRAME, "KeyTime", false, NULL, Type::KEYTIME, false, false, false, NULL, NULL, NULL, true);
 	DependencyProperty::Register (this, Type::OBJECTKEYFRAME, "ConvertedValue", false, Type::OBJECT);
@@ -750,81 +752,83 @@ const int TextBox::MaxLengthProperty = 307;
 const int TextBox::IsReadOnlyProperty = 308;
 const int TextBox::HorizontalScrollBarVisibilityProperty = 309;
 const int TextBox::FontSourceProperty = 310;
-const int TextBox::AcceptsReturnProperty = 311;
-const int Storyboard::TargetPropertyProperty = 312;
-const int Storyboard::TargetNameProperty = 313;
-const int SkewTransform::CenterYProperty = 314;
-const int SkewTransform::CenterXProperty = 315;
-const int SkewTransform::AngleYProperty = 316;
-const int SkewTransform::AngleXProperty = 317;
-const int SetterBaseCollection::IsSealedProperty = 318;
-const int ScaleTransform::ScaleYProperty = 319;
-const int ScaleTransform::ScaleXProperty = 320;
-const int ScaleTransform::CenterYProperty = 321;
-const int ScaleTransform::CenterXProperty = 322;
-const int RotateTransform::CenterYProperty = 323;
-const int RotateTransform::CenterXProperty = 324;
-const int RotateTransform::AngleProperty = 325;
-const int QuadraticBezierSegment::Point2Property = 326;
-const int QuadraticBezierSegment::Point1Property = 327;
-const int PolyQuadraticBezierSegment::PointsProperty = 328;
-const int PolyLineSegment::PointsProperty = 329;
-const int PolyBezierSegment::PointsProperty = 330;
-const int PointKeyFrame::ValueProperty = 331;
-const int PointKeyFrame::KeyTimeProperty = 332;
-const int PointAnimation::ToProperty = 333;
-const int PointAnimation::FromProperty = 334;
-const int PointAnimation::EasingFunctionProperty = 335;
-const int PointAnimation::ByProperty = 336;
-const int PasswordBox::SelectionStartProperty = 337;
-const int PasswordBox::SelectionLengthProperty = 338;
-const int PasswordBox::SelectionForegroundProperty = 339;
-const int PasswordBox::SelectionBackgroundProperty = 340;
-const int PasswordBox::SelectedTextProperty = 341;
-const int PasswordBox::PasswordProperty = 342;
-const int PasswordBox::PasswordCharProperty = 343;
-const int PasswordBox::MaxLengthProperty = 344;
-const int PasswordBox::FontSourceProperty = 345;
-const int ObjectKeyFrame::ValueProperty = 346;
-const int ObjectKeyFrame::KeyTimeProperty = 347;
-const int ObjectKeyFrame::ConvertedValueProperty = 348;
-const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 349;
-const int MatrixTransform::MatrixProperty = 350;
-const int LineSegment::PointProperty = 351;
-const int LayoutInformation::LayoutSlotProperty = 352;
-const int LayoutInformation::LayoutClipProperty = 353;
-const int LayoutInformation::LastRenderSizeProperty = 354;
-const int LayoutInformation::LastMeasureProperty = 355;
-const int LayoutInformation::LastArrangeProperty = 356;
-const int EventTrigger::RoutedEventProperty = 357;
-const int EventTrigger::ActionsProperty = 358;
-const int DoubleKeyFrame::ValueProperty = 359;
-const int DoubleKeyFrame::KeyTimeProperty = 360;
-const int DoubleAnimation::ToProperty = 361;
-const int DoubleAnimation::FromProperty = 362;
-const int DoubleAnimation::EasingFunctionProperty = 363;
-const int DoubleAnimation::ByProperty = 364;
-const int DependencyObject::NameProperty = 365;
-const int DeepZoomImageTileSource::UriSourceProperty = 366;
-const int ControlTemplate::TargetTypeProperty = 367;
-const int ColorKeyFrame::ValueProperty = 368;
-const int ColorKeyFrame::KeyTimeProperty = 369;
-const int ColorAnimation::ToProperty = 370;
-const int ColorAnimation::FromProperty = 371;
-const int ColorAnimation::EasingFunctionProperty = 372;
-const int ColorAnimation::ByProperty = 373;
-const int BitmapSource::PixelWidthProperty = 374;
-const int BitmapSource::PixelHeightProperty = 375;
-const int BitmapSource::PixelFormatProperty = 376;
-const int BezierSegment::Point3Property = 377;
-const int BezierSegment::Point2Property = 378;
-const int BezierSegment::Point1Property = 379;
-const int BeginStoryboard::StoryboardProperty = 380;
-const int ArcSegment::SweepDirectionProperty = 381;
-const int ArcSegment::SizeProperty = 382;
-const int ArcSegment::RotationAngleProperty = 383;
-const int ArcSegment::PointProperty = 384;
-const int ArcSegment::IsLargeArcProperty = 385;
+const int TextBox::CaretBrushProperty = 311;
+const int TextBox::AcceptsReturnProperty = 312;
+const int Storyboard::TargetPropertyProperty = 313;
+const int Storyboard::TargetNameProperty = 314;
+const int SkewTransform::CenterYProperty = 315;
+const int SkewTransform::CenterXProperty = 316;
+const int SkewTransform::AngleYProperty = 317;
+const int SkewTransform::AngleXProperty = 318;
+const int SetterBaseCollection::IsSealedProperty = 319;
+const int ScaleTransform::ScaleYProperty = 320;
+const int ScaleTransform::ScaleXProperty = 321;
+const int ScaleTransform::CenterYProperty = 322;
+const int ScaleTransform::CenterXProperty = 323;
+const int RotateTransform::CenterYProperty = 324;
+const int RotateTransform::CenterXProperty = 325;
+const int RotateTransform::AngleProperty = 326;
+const int QuadraticBezierSegment::Point2Property = 327;
+const int QuadraticBezierSegment::Point1Property = 328;
+const int PolyQuadraticBezierSegment::PointsProperty = 329;
+const int PolyLineSegment::PointsProperty = 330;
+const int PolyBezierSegment::PointsProperty = 331;
+const int PointKeyFrame::ValueProperty = 332;
+const int PointKeyFrame::KeyTimeProperty = 333;
+const int PointAnimation::ToProperty = 334;
+const int PointAnimation::FromProperty = 335;
+const int PointAnimation::EasingFunctionProperty = 336;
+const int PointAnimation::ByProperty = 337;
+const int PasswordBox::SelectionStartProperty = 338;
+const int PasswordBox::SelectionLengthProperty = 339;
+const int PasswordBox::SelectionForegroundProperty = 340;
+const int PasswordBox::SelectionBackgroundProperty = 341;
+const int PasswordBox::SelectedTextProperty = 342;
+const int PasswordBox::PasswordProperty = 343;
+const int PasswordBox::PasswordCharProperty = 344;
+const int PasswordBox::MaxLengthProperty = 345;
+const int PasswordBox::FontSourceProperty = 346;
+const int PasswordBox::CaretBrushProperty = 347;
+const int ObjectKeyFrame::ValueProperty = 348;
+const int ObjectKeyFrame::KeyTimeProperty = 349;
+const int ObjectKeyFrame::ConvertedValueProperty = 350;
+const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 351;
+const int MatrixTransform::MatrixProperty = 352;
+const int LineSegment::PointProperty = 353;
+const int LayoutInformation::LayoutSlotProperty = 354;
+const int LayoutInformation::LayoutClipProperty = 355;
+const int LayoutInformation::LastRenderSizeProperty = 356;
+const int LayoutInformation::LastMeasureProperty = 357;
+const int LayoutInformation::LastArrangeProperty = 358;
+const int EventTrigger::RoutedEventProperty = 359;
+const int EventTrigger::ActionsProperty = 360;
+const int DoubleKeyFrame::ValueProperty = 361;
+const int DoubleKeyFrame::KeyTimeProperty = 362;
+const int DoubleAnimation::ToProperty = 363;
+const int DoubleAnimation::FromProperty = 364;
+const int DoubleAnimation::EasingFunctionProperty = 365;
+const int DoubleAnimation::ByProperty = 366;
+const int DependencyObject::NameProperty = 367;
+const int DeepZoomImageTileSource::UriSourceProperty = 368;
+const int ControlTemplate::TargetTypeProperty = 369;
+const int ColorKeyFrame::ValueProperty = 370;
+const int ColorKeyFrame::KeyTimeProperty = 371;
+const int ColorAnimation::ToProperty = 372;
+const int ColorAnimation::FromProperty = 373;
+const int ColorAnimation::EasingFunctionProperty = 374;
+const int ColorAnimation::ByProperty = 375;
+const int BitmapSource::PixelWidthProperty = 376;
+const int BitmapSource::PixelHeightProperty = 377;
+const int BitmapSource::PixelFormatProperty = 378;
+const int BezierSegment::Point3Property = 379;
+const int BezierSegment::Point2Property = 380;
+const int BezierSegment::Point1Property = 381;
+const int BeginStoryboard::StoryboardProperty = 382;
+const int ArcSegment::SweepDirectionProperty = 383;
+const int ArcSegment::SizeProperty = 384;
+const int ArcSegment::RotationAngleProperty = 385;
+const int ArcSegment::PointProperty = 386;
+const int ArcSegment::IsLargeArcProperty = 387;
 
 UIElement *
 VisualBrush::GetVisual ()
@@ -4616,6 +4620,19 @@ TextBox::SetFontSource (FontSource *value)
 	SetValue (TextBox::FontSourceProperty, Value (*value));
 }
 
+Brush *
+TextBox::GetCaretBrush ()
+{
+	Value *value = GetValue (TextBox::CaretBrushProperty);
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+TextBox::SetCaretBrush (Brush *value)
+{
+	SetValue (TextBox::CaretBrushProperty, Value::CreateUnrefPtr (value));
+}
+
 bool
 TextBox::GetAcceptsReturn ()
 {
@@ -5122,6 +5139,19 @@ PasswordBox::SetFontSource (FontSource *value)
 {
 	if (!value) return;
 	SetValue (PasswordBox::FontSourceProperty, Value (*value));
+}
+
+Brush *
+PasswordBox::GetCaretBrush ()
+{
+	Value *value = GetValue (PasswordBox::CaretBrushProperty);
+	return value ? value->AsBrush () : NULL;
+}
+
+void
+PasswordBox::SetCaretBrush (Brush *value)
+{
+	SetValue (PasswordBox::CaretBrushProperty, Value::CreateUnrefPtr (value));
 }
 
 KeyTime *
