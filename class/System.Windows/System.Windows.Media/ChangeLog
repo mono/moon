@@ -2,7 +2,7 @@
 
 	* MediaStreamSource.cs: Fix parsing of audio extra data.
 
-2009-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MediaStreamSource.cs: Update according to AudioStream API changes.
 
