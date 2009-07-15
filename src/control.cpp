@@ -20,6 +20,7 @@
 #include "namescope.h"
 #include "application.h"
 #include "geometry.h"
+#include "tabnavigationwalker.h"
 
 Control::Control ()
 {
@@ -99,8 +100,14 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		 || args->GetId () == Control::BorderThicknessProperty) {
 		InvalidateMeasure ();
 	} else if (args->GetId () == Control::IsEnabledProperty) {
-		if (!args->GetNewValue ()->AsBool ())
+		if (!args->GetNewValue ()->AsBool ()) {
+			Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+			if (surface->GetFocusedElement () == this) {
+				// Focus on the next suitable element
+				TabNavigationWalker::Focus (this, true);
+			}
 			ReleaseMouseCapture ();
+		}
 	}
 	NotifyListenersOfPropertyChange (args, error);
 }

@@ -1,5 +1,10 @@
 2009-07-15  Alan McGovern  <amcgovern@novell.com>
 
+	* control.cpp: When the focused control is disabled, tab to
+	  the next suitable control.
+
+2009-07-15  Alan McGovern  <amcgovern@novell.com>
+
 	* runtime.h:
 	* runtime.cpp: Implement the default autofocusing behaviour
 	  which silverlight exhibits. Apparently if the root control
