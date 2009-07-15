@@ -1073,7 +1073,6 @@ MediaElement::PlayHandler (PlaylistRoot *playlist, EventArgs *args)
 	SetMarkerTimeout (true);
 	
 	SetState (MediaStatePlaying);
-	Emit (CurrentStateChangedEvent);
 }
 
 void
@@ -1085,7 +1084,6 @@ MediaElement::PauseHandler (PlaylistRoot *playlist, EventArgs *args)
 	SetMarkerTimeout (false);
 	
 	SetState (MediaStatePaused);
-	Emit (CurrentStateChangedEvent);
 }
 
 void
@@ -1109,7 +1107,6 @@ MediaElement::StopHandler (PlaylistRoot *playlist, EventArgs *args)
 	CheckMarkers (); // check one last time.
 	
 	SetState (MediaStateStopped);
-	Emit (CurrentStateChangedEvent);
 }
 
 void
