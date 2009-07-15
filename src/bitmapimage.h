@@ -16,6 +16,7 @@
 
 #include <gdk/gdkpixbuf.h>
 
+#include "utils.h"
 #include "dependencyobject.h"
 #include "downloader.h"
 #include "bitmapsource.h"
@@ -27,6 +28,7 @@ class BitmapImage : public BitmapSource {
 	GdkPixbufLoader *loader;
 	GError *error;
 	char *part_name;
+	Cancellable *get_res_aborter;
 
  protected:
 	virtual ~BitmapImage ();

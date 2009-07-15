@@ -145,6 +145,7 @@ BitmapImage::BitmapImage ()
 	loader = NULL;
 	error = NULL;
 	part_name = NULL;
+	get_res_aborter = NULL;
 }
 
 BitmapImage::~BitmapImage ()
@@ -165,7 +166,10 @@ BitmapImage::Dispose ()
 		CleanupDownloader ();
 		downloader->Abort ();
 	}
-	
+
+	if (get_res_aborter)
+		get_res_aborter->Cancel ();
+
 	BitmapSource::Dispose ();
 }
 
@@ -176,36 +180,37 @@ BitmapImage::uri_source_changed_callback (EventObject *user_data)
 	image->UriSourceChanged ();
 }
 
+void resource_notify (NotifyType type, gint64 args, gpointer user_data);
+
 void
 BitmapImage::UriSourceChanged ()
 {
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 	Application *current = Application::GetCurrent ();
 	Uri *uri = GetUriSource ();
-	Downloader *downloader;
-	
-	if (current && uri) {
-		int size = 0;
-		unsigned char *buffer = (unsigned char *) current->GetResource (uri, &size);
-		if (size > 0) {
-			PixbufWrite (buffer, 0, size);
-			PixmapComplete ();
-
-			g_free (buffer);
-			return;
-		}
-	}
 	
 	if (surface == NULL) {
 		SetBitmapData (NULL);
 		return;
 	}
 
-	if (!(downloader = surface->CreateDownloader ()))
-		return;
+	if (current && uri) {
+		get_res_aborter = new Cancellable ();
+		current->GetResource (uri, resource_notify, pixbuf_write, MediaPolicy, get_res_aborter, this);
+	}
+}
 
-	SetDownloader (downloader, uri, NULL);
-	downloader->unref ();
+void
+resource_notify (NotifyType type, gint64 args, gpointer user_data)
+{
+	BitmapImage *media = (BitmapImage *) user_data;
+
+	if (type == NotifyProgressChanged)
+		media->SetProgress ((double)(args)/100.0);
+	else if (type == NotifyFailed)
+		media->DownloaderFailed ();
+	else if (type == NotifyCompleted)
+		media->DownloaderComplete ();
 }
 
 
@@ -221,6 +226,9 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			downloader->unref ();
 			downloader = NULL;
 		}
+
+		if (get_res_aborter)
+			get_res_aborter->Cancel ();
 
 		if (Uri::IsNullOrEmpty (uri)) {
 			SetBitmapData (NULL);
@@ -304,11 +312,12 @@ BitmapImage::DownloaderProgressChanged ()
 void
 BitmapImage::DownloaderComplete ()
 {
-	CleanupDownloader ();
+	if (downloader)
+		CleanupDownloader ();
 
 	SetProgress (1.0);
 
-	if (loader == NULL) {
+	if (downloader && loader == NULL) {
 		char *filename = downloader->GetDownloadedFilename (part_name);
 
 		if (filename == NULL) {
@@ -344,8 +353,10 @@ BitmapImage::DownloaderComplete ()
 		}
 	}
 
-	downloader->unref ();
-	downloader = NULL;
+	if (downloader) {
+		downloader->unref ();
+		downloader = NULL;
+	}
 
 	PixmapComplete ();
 
@@ -405,10 +416,12 @@ failed:
 void
 BitmapImage::DownloaderFailed ()
 {
-	CleanupDownloader ();
+	if (downloader) {
+		CleanupDownloader ();
 
-	downloader->unref ();
-	downloader = NULL;
+		downloader->unref ();
+		downloader = NULL;
+	}
 
 	Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
 }

@@ -68,6 +68,12 @@
 
 2009-07-15  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* bitmapimage.h|cpp: drop the downloader references, rely on
+	Application::GetResource () for getting from resource AND downloading. The
+	old downloader mechanism for v1 js callbacks.
+
+2009-07-14  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* application.h|cpp: Application.GetResource () now try to get the resource
 	from the managed callback, then fallback to downloading.
 
