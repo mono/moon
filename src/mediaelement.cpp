@@ -1271,6 +1271,8 @@ MediaElement::SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxe
 	playlist->GetCurrentEntry ()->InitializeWithDemuxer (demuxer);
 	media->unref ();
 	
+	SetDownloadProgress (1.0);
+	
 	return demuxer;
 }
 
