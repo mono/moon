@@ -20,6 +20,8 @@
 /* @CBindingRequisite */
 typedef bool (*get_image_uri_func) (int level, int posX, int posY, Uri *uri, void* user_data);
 
+typedef void (*invalidate_tile_layer_func) (int level, int tilePositionX, int tilePositionY, int tileLayer);
+
 /* @Version=2,Namespace=System.Windows.Media */
 /* @CallInitialize */
 class MultiScaleTileSource : public DependencyObject {
@@ -31,6 +33,8 @@ class MultiScaleTileSource : public DependencyObject {
 	int tileOverlap; //how much the tiles overlap
 
 	virtual ~MultiScaleTileSource () {}
+
+	invalidate_tile_layer_func invalidate_cb;
 
  public:
 	get_image_uri_func get_tile_func;
@@ -68,6 +72,8 @@ class MultiScaleTileSource : public DependencyObject {
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer);
+
+	void set_invalidate_tile_layer_func (invalidate_tile_layer_func func);
 };
 
 #endif /* __TILESOURCE_H__ */

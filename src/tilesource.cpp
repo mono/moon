@@ -19,6 +19,7 @@ MultiScaleTileSource::MultiScaleTileSource ()
 	SetObjectType (Type::MULTISCALETILESOURCE); 
 	imageWidth = -1;
 	get_tile_func = NULL;
+	invalidate_cb = NULL;
 }
 
 long 
@@ -93,6 +94,13 @@ MultiScaleTileSource::set_image_uri_func (get_image_uri_func func)
 void
 MultiScaleTileSource::InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
 {
-	
+	if (invalidate_cb)
+		invalidate_cb (level, tilePositionX, tilePositionY, tileLayer);
+}
+
+void
+MultiScaleTileSource::set_invalidate_tile_layer_func (invalidate_tile_layer_func func)
+{
+	invalidate_cb = func;
 }
 

@@ -1,5 +1,10 @@
 2009-07-15  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* tilesource.h|cpp: add an invalidate_tile_layer_func so MSI can
+	hook itself in and invalidate the cache
+
+2009-07-15  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* tilesource.h|cpp: stub InvalidateTileLayer
 
 2009-07-15  Alan McGovern  <amcgovern@novell.com>
