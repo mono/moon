@@ -110,7 +110,6 @@ void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closu
 void
 Application::GetResource (const Uri *uri, NotifyFunc notify_cb, WriteFunc write_cb, DownloaderAccessPolicy policy, Cancellable *cancellable, gpointer user_data)
 {
-	g_warning ("GetResource");
 	if (!uri) {
 		g_warning ("Passing a null uri to Application::GetResource");
 		return;
@@ -121,7 +120,6 @@ Application::GetResource (const Uri *uri, NotifyFunc notify_cb, WriteFunc write_
 		ManagedStreamCallbacks stream = get_resource_cb (url);
 		g_free (url);
 		if (stream.handle) {
-			g_warning ("wo oh oh, got a stream");
 			if (notify_cb) {
 				notify_cb (NotifyStarted, NULL, user_data);
 				notify_cb (NotifySize, stream.Length (stream.handle), user_data);
