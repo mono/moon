@@ -1,3 +1,18 @@
+2009-07-15  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* control.cpp: Remove the Control::SetVisualParent override
+	  which ensures Control::IsEnabled is propagated correctly as
+	  this needs to be performed in UIElement::SetVisualParent.
+	  Set the subtreeobject before calling
+	  FrameworkElement::ElementAdded otherwise Control::IsEnabled
+	  cannot be propagated.
+
+	* uielement.h:
+	* uielement.cpp: Whenever the visual parent is changed on a
+	  UIElement we need to propagate Control::IsEnabled changes
+	  down the tree. Allows drt 557 to get a lot further.
+
 2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp: SetProperties: set last seeked-to pts to 0.

@@ -451,6 +451,23 @@ UIElement::SetVisualParent (UIElement *visual_parent)
 
 	if (visual_parent && visual_parent->GetSurface () != GetSurface())
 		SetSurface (visual_parent->GetSurface());
+
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	while (visual_parent) {
+		if (types->IsSubclassOf (visual_parent->GetObjectType (), Type::CONTROL)) {
+			((Control *)visual_parent)->UpdateEnabled ();
+			return;
+		}
+		visual_parent = visual_parent->GetVisualParent ();
+	}
+
+	DeepTreeWalker walker (this);
+	while (UIElement *e = walker.Step ()) {
+		if (!types->IsSubclassOf (e->GetObjectType (), Type::CONTROL))
+			continue;
+		((Control *)e)->SetEnabledParent (true);
+		walker.SkipBranch ();
+	}
 }
 
 void

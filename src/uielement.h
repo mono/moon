@@ -81,7 +81,7 @@ public:
 
 	virtual bool PermitsMultipleParents () { return false; }
 
-	virtual void SetVisualParent (UIElement *visual_parent);
+	void SetVisualParent (UIElement *visual_parent);
 	/* @GenerateCBinding,GeneratePInvoke */
 	UIElement *GetVisualParent () { return visual_parent; }
 
