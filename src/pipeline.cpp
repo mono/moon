@@ -449,6 +449,7 @@ Media::ReportSeekCompleted (guint64 pts)
 {
 	LOG_PIPELINE ("Media::ReportSeekCompleted (%llu), id: %i\n", pts, GET_OBJ_ID (this));
 	
+	buffering_progress = 0;
 	EmitSafe (SeekCompletedEvent);
 }
 
