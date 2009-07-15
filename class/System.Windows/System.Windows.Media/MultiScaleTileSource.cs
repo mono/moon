@@ -79,7 +79,7 @@ namespace System.Windows.Media
 		
 		protected void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
 		{
-			throw new NotImplementedException ();
+			NativeMethods.multi_scale_tile_source_invalidate_tile_layer (native, level, tilePositionX, tilePositionY, tileLayer);
 		}
 		
 		protected abstract void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources);

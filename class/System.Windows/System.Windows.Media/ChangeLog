@@ -1,3 +1,7 @@
+2009-07-15  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleTileSource.cs: call the native method for InvalidateTileLayer
+
 2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* DeepZoomImageTileSource.cs: Print fixme to console to speed up
