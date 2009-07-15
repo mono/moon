@@ -395,11 +395,11 @@ namespace System.Windows.Media
 							throw new ArgumentOutOfRangeException ("availableMediaStreams.MediaAttributes.CodecPrivateData", str_codec_private_data);
 						
 						wave = new WAVEFORMATEX (str_codec_private_data);
-						extra_data_size = (uint) str_codec_private_data.Length / 2;
+						extra_data_size = wave.Size;
 						byte [] buf = new byte [extra_data_size]; 
 						
 						for (int i = 0; i < buf.Length; i++)
-							buf[i] = byte.Parse (str_codec_private_data.Substring (i*2, 2), NumberStyles.HexNumber);
+							buf[i] = byte.Parse (str_codec_private_data.Substring (36 + i * 2, 2), NumberStyles.HexNumber);
 
 						extra_data = Marshal.AllocHGlobal ((int) extra_data_size);
 
@@ -464,6 +464,10 @@ namespace System.Windows.Media
 				BlockAlign = ReadUInt16 ();
 				BitsPerSample = ReadUInt16 ();
 				Size = ReadUInt16 ();
+/*
+				Console.WriteLine ("{0} => FormatTag: {1} Channels: {2} SamplesPerSec: {3} AvgBytesPerSec: {4} BlockAlign: {5} BitsPerSample: {6} Size: {7}", 
+				                   encoded, FormatTag, Channels, SamplesPerSec, AvgBytesPerSec, BlockAlign, BitsPerSample, Size);
+*/
 			}
 					
 			private byte ReadChar ()
