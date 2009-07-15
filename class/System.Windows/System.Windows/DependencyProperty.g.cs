@@ -765,6 +765,7 @@ namespace System.Windows.Controls {
 	}
 
 	partial class PasswordBox {
+		public static readonly DependencyProperty CaretBrushProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "CaretBrush", typeof (Brush));
 		internal static readonly DependencyProperty FontSourceProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "FontSource", typeof (FontSource));
 		public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "MaxLength", typeof (int));
 		public static readonly DependencyProperty PasswordCharProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "PasswordChar", typeof (char));
@@ -774,6 +775,11 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty SelectionForegroundProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionForeground", typeof (Brush));
 		internal static readonly DependencyProperty SelectionLengthProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionLength", typeof (int));
 		internal static readonly DependencyProperty SelectionStartProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionStart", typeof (int));
+
+		public Brush CaretBrush {
+			get { return (Brush) GetValue (CaretBrushProperty); }
+			set { SetValue (CaretBrushProperty, value); }
+		}
 
 		public FontSource FontSource {
 			get { return (FontSource) GetValue (FontSourceProperty); }
@@ -943,6 +949,7 @@ namespace System.Windows.Controls {
 
 	partial class TextBox {
 		public static readonly DependencyProperty AcceptsReturnProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "AcceptsReturn", typeof (bool));
+		public static readonly DependencyProperty CaretBrushProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "CaretBrush", typeof (Brush));
 		internal static readonly DependencyProperty FontSourceProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "FontSource", typeof (FontSource));
 		internal static readonly DependencyProperty HorizontalScrollBarVisibilityProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "HorizontalScrollBarVisibility", typeof (ScrollBarVisibility));
 		public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "IsReadOnly", typeof (bool));
@@ -960,6 +967,11 @@ namespace System.Windows.Controls {
 		public bool AcceptsReturn {
 			get { return (bool) GetValue (AcceptsReturnProperty); }
 			set { SetValue (AcceptsReturnProperty, value); }
+		}
+
+		public Brush CaretBrush {
+			get { return (Brush) GetValue (CaretBrushProperty); }
+			set { SetValue (CaretBrushProperty, value); }
 		}
 
 		public FontSource FontSource {
