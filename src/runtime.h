@@ -216,6 +216,8 @@ public:
 	void SetFullScreen (bool value);
 
 	void SetUserInitiatedEvent (bool value);
+	
+	bool FirstUserInitiatedEvent () { return first_user_initiated_event; }
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	bool IsUserInitiatedEvent () { return user_initiated_event; }
 
@@ -349,6 +351,9 @@ private:
 	bool full_screen;
 	Canvas *full_screen_message;
 	char *source_location;
+	
+	// True once we have received at least one user initiated event
+	bool first_user_initiated_event;
 	// Should be set to true only while executing MouseLeftButtonDown, 
 	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
 	bool user_initiated_event; 
@@ -378,6 +383,9 @@ private:
 	TimeSpan expose_handoff_last_timespan;
 	MoonlightExposeHandoffFunc expose_handoff;
 	void *expose_handoff_data;
+	
+	void AutoFocus ();
+	static void AutoFocusAsync (EventObject *sender);
 	
 	void Realloc ();
 	void ShowFullScreenMessage ();

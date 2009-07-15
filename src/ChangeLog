@@ -1,5 +1,16 @@
 2009-07-15  Alan McGovern  <amcgovern@novell.com>
 
+	* runtime.h:
+	* runtime.cpp: Implement the default autofocusing behaviour
+	  which silverlight exhibits. Apparently if the root control
+	  is focused, silverlight will keep attempting to focus a
+	  child of that control until it succeeds. Once a child
+	  control is focused, the focus changed events are emitted
+	  immediately, ignoring the usual focusing rules. Fixes DRT
+	  323.
+
+2009-07-15  Alan McGovern  <amcgovern@novell.com>
+
 	* uielement.cpp: When clearing the Loaded flag on a UIElement,
 	  we should clear the flag on all visual children too.
 

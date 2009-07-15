@@ -55,6 +55,7 @@
 #include "deployment.h"
 #include "grid.h"
 #include "cbinding.h"
+#include "tabnavigationwalker.h"
 
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1
@@ -314,6 +315,7 @@ Surface::Surface (MoonWindow *window)
 	focus_changed_events = new Queue ();
 
 	full_screen = false;
+	first_user_initiated_event = false;
 	user_initiated_event = false;
 
 	full_screen_message = NULL;
@@ -419,6 +421,31 @@ Surface::SetCursor (MouseCursor new_cursor)
 
 		active_window->SetCursor (cursor);
 	}
+}
+
+void
+Surface::AutoFocus ()
+{
+	// Silverlight will do anything to ensure that a control *other* than the
+	// root element is focused. The usual rule of "only emit focus changed
+	// events during a user initiated event" is ignored and instead keeps
+	// trying to focus a child of the TopLevel until it is successful.
+	if (!focused_element || focused_element == GetToplevel ())
+		TabNavigationWalker::Focus (GetToplevel (), true);
+
+	GenerateFocusChangeEvents ();
+
+	// If the focused element was removed by a GotFocus event handler or if
+	// we failed to focus a child of the top level element, try again next
+	// tick.
+	if (!focused_element || focused_element == GetToplevel ())
+		AddTickCall (Surface::AutoFocusAsync);
+}
+
+void
+Surface::AutoFocusAsync (EventObject *sender)
+{
+	((Surface *)sender)->AutoFocus ();
 }
 
 void
@@ -684,6 +711,7 @@ void
 Surface::SetUserInitiatedEvent (bool value)
 {
 	GenerateFocusChangeEvents ();
+	first_user_initiated_event = first_user_initiated_event | value;
 	user_initiated_event = value;
 }
 
@@ -1861,11 +1889,15 @@ Surface::GenerateFocusChangeEvents()
 bool
 Surface::FocusElement (UIElement *focused)
 {
+	bool queue_emit = FirstUserInitiatedEvent () && (focused == NULL || focused_element == NULL || focused_element == GetToplevel ());
 	if (focused == focused_element)
 		return true;
 
 	focus_changed_events->Push (new FocusChangedNode (focused_element, focused));
 	focused_element = focused;
+
+	if (queue_emit)
+		AddTickCall (Surface::AutoFocusAsync);
 	return true;
 }
 
