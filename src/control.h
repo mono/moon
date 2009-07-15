@@ -49,6 +49,7 @@ public:
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
+	virtual void OnLoaded ();
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 	
@@ -56,6 +57,7 @@ public:
 	virtual void ElementRemoved (UIElement *item);
 	
 	virtual void OnApplyTemplate ();
+	virtual void SetVisualParent (UIElement *visual_parent);
 
 	virtual bool Focus (bool recurse = true);
 	
@@ -127,9 +129,6 @@ public:
 	static void SetIsTemplateItem (DependencyObject *object, bool value);
 	static bool GetIsTemplateItem (DependencyObject *object);
 
-	void SetEnabledParent (bool value);
-	void UpdateEnabled ();
-
 	// Events
 	const static int IsEnabledChangedEvent;
 	
@@ -180,6 +179,7 @@ private:
 	ControlTemplate *applied_template;
 	bool enabled_local;
 	bool enabled_parent;
+	void UpdateEnabled ();
 };
 
 

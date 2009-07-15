@@ -77,6 +77,13 @@ Control::InsideObject (cairo_t *cr, double x, double y)
 }
 
 void
+Control::OnLoaded ()
+{
+	UpdateEnabled ();
+	FrameworkElement::OnLoaded ();
+}
+
+void
 Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::CONTROL) {
@@ -104,6 +111,29 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
 	}
 	NotifyListenersOfPropertyChange (args, error);
+}
+
+void
+Control::SetVisualParent (UIElement *visual_parent)
+{
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	FrameworkElement::SetVisualParent (visual_parent);
+	
+	if (!visual_parent) {
+		enabled_parent = true;
+	} else {
+		UIElement *parent = GetVisualParent ();
+		while (parent) {
+			if (!types->IsSubclassOf (parent->GetObjectType (), Type::CONTROL)) {
+				parent = parent->GetVisualParent ();
+			}
+			else {
+				this->enabled_parent = ((Control *)parent)->GetIsEnabled ();
+				break;
+			}
+		}
+	}
+	SetValue (Control::IsEnabledProperty, Value (enabled_local));
 }
 
 bool
@@ -182,12 +212,12 @@ Control::ElementAdded (UIElement *item)
 
 	template_root = item;
 
-	SetSubtreeObject (template_root);
-
 	if (template_root) {
 		template_root->ref ();
 		FrameworkElement::ElementAdded (template_root);
 	}
+
+	SetSubtreeObject (template_root);
 }
 
 void
@@ -258,15 +288,6 @@ Control::Focus (bool recurse)
 			return false;
 	}
 	return false;	
-}
-
-void
-Control::SetEnabledParent (bool value)
-{
-	if (enabled_parent != value) {
-		enabled_parent = value;
-		SetValue (Control::IsEnabledProperty, Value (enabled_local));
-	}
 }
 
 void
