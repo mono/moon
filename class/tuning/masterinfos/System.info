@@ -3,17 +3,24 @@
   <assembly name="System" version="2.0.5.0">
     <attributes>
       <attribute name="System.Diagnostics.DebuggableAttribute" />
-      <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
-          <property name="WrapNonExceptionThrows" value="True" />
+          <property name="AllInternalsVisible" value="False" />
         </properties>
       </attribute>
+      <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
+      <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
+        <properties>
+          <property name="WrapNonExceptionThrows" value="True" />
+        </properties>
+      </attribute>
+      <attribute name="System.Resources.SatelliteContractVersionAttribute" />
       <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
       <attribute name="System.CLSCompliantAttribute" />
       <attribute name="System.Reflection.AssemblyTitleAttribute" />
@@ -22,22 +29,15 @@
       <attribute name="System.Reflection.AssemblyCompanyAttribute" />
       <attribute name="System.Reflection.AssemblyProductAttribute" />
       <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
-      <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
       <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
-      <attribute name="System.Resources.SatelliteContractVersionAttribute" />
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+        <properties>
+          <property name="AllInternalsVisible" value="False" />
+        </properties>
+      </attribute>
       <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
       <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
       <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-        <properties>
-          <property name="AllInternalsVisible" value="False" />
-        </properties>
-      </attribute>
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-        <properties>
-          <property name="AllInternalsVisible" value="False" />
-        </properties>
-      </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
@@ -750,9 +750,9 @@
         <classes>
           <class name="LinkedList`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
+              <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Collections.Generic.ICollection`1[T]" />
@@ -958,9 +958,9 @@
           </class>
           <class name="Queue`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
               <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Collections.Generic.IEnumerable`1[T]" />
@@ -1056,8 +1056,8 @@
           </class>
           <class name="Stack`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
               <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
             </attributes>
             <interfaces>
@@ -1383,6 +1383,38 @@
                 <parameters />
               </method>
             </methods>
+          </class>
+          <class name="CancelEventArgs" type="class" base="System.EventArgs" charset="Ansi" layout="Auto">
+            <constructors>
+              <constructor name=".ctor(System.Boolean)" attrib="6278">
+                <parameters>
+                  <parameter name="cancel" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </constructor>
+              <constructor name=".ctor()" attrib="6278">
+                <parameters />
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="Cancel" attrib="0" ptype="System.Boolean" params="">
+                <methods>
+                  <method name="get_Cancel()" attrib="2182" returntype="System.Boolean">
+                    <attributes>
+                      <attribute name="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />
+                    </attributes>
+                    <parameters />
+                  </method>
+                  <method name="set_Cancel(System.Boolean)" attrib="2182" returntype="System.Void">
+                    <attributes>
+                      <attribute name="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />
+                    </attributes>
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
           </class>
           <class name="CategoryAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
@@ -1772,6 +1804,22 @@
               <field name="Never" attrib="32854" fieldtype="System.ComponentModel.EditorBrowsableState" value="1" />
             </fields>
           </class>
+          <class name="IChangeTracking" type="interface" abstract="true" charset="Ansi" layout="Auto">
+            <properties>
+              <property name="IsChanged" attrib="0" ptype="System.Boolean" params="">
+                <methods>
+                  <method name="get_IsChanged()" attrib="3526" abstract="true" virtual="true" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="AcceptChanges()" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
+                <parameters />
+              </method>
+            </methods>
+          </class>
           <class name="IComponent" type="interface" abstract="true" charset="Ansi" layout="Auto">
             <interfaces>
               <interface name="System.IDisposable" />
@@ -1846,6 +1894,16 @@
             <events>
               <event name="PropertyChanged" attrib="0" eventtype="System.ComponentModel.PropertyChangedEventHandler" />
             </events>
+          </class>
+          <class name="IRevertibleChangeTracking" type="interface" abstract="true" charset="Ansi" layout="Auto">
+            <interfaces>
+              <interface name="System.ComponentModel.IChangeTracking" />
+            </interfaces>
+            <methods>
+              <method name="RejectChanges()" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
+                <parameters />
+              </method>
+            </methods>
           </class>
           <class name="ISite" type="interface" abstract="true" charset="Ansi" layout="Auto">
             <attributes>
@@ -1925,6 +1983,12 @@
                 <parameters />
               </method>
             </methods>
+          </class>
+          <class name="ListSortDirection" type="enum" base="System.Enum" sealed="true" serializable="true" charset="Ansi" layout="Auto">
+            <fields>
+              <field name="Ascending" attrib="32854" fieldtype="System.ComponentModel.ListSortDirection" value="0" />
+              <field name="Descending" attrib="32854" fieldtype="System.ComponentModel.ListSortDirection" value="1" />
+            </fields>
           </class>
           <class name="ProgressChangedEventArgs" type="class" base="System.EventArgs" charset="Ansi" layout="Auto">
             <constructors>
@@ -2033,6 +2097,37 @@
             </methods>
           </class>
           <class name="PropertyDescriptor" type="class" base="System.Object" abstract="true" charset="Ansi" layout="Auto" />
+          <class name="ReadOnlyAttribute" type="class" base="System.Attribute" sealed="true" charset="Ansi" layout="Auto">
+            <attributes>
+              <attribute name="System.AttributeUsageAttribute" />
+            </attributes>
+            <constructors>
+              <constructor name=".ctor(System.Boolean)" attrib="6278">
+                <parameters>
+                  <parameter name="isReadOnly" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="IsReadOnly" attrib="0" ptype="System.Boolean" params="">
+                <methods>
+                  <method name="get_IsReadOnly()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="Equals(System.Object)" attrib="198" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="obj" position="0" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="GetHashCode()" attrib="198" virtual="true" returntype="System.Int32">
+                <parameters />
+              </method>
+            </methods>
+          </class>
           <class name="RunWorkerCompletedEventArgs" type="class" base="System.ComponentModel.AsyncCompletedEventArgs" charset="Ansi" layout="Auto">
             <constructors>
               <constructor name=".ctor(System.Object, System.Exception, System.Boolean)" attrib="6278">

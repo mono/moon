@@ -2,22 +2,22 @@
 <assemblies>
   <assembly name="Microsoft.VisualBasic" version="2.0.5.0">
     <attributes>
-      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
       <attribute name="System.Reflection.AssemblyDefaultAliasAttribute" />
       <attribute name="System.Reflection.AssemblyDescriptionAttribute" />
-      <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
       <attribute name="System.Reflection.AssemblyTitleAttribute" />
-      <attribute name="System.CLSCompliantAttribute" />
-      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
-      <attribute name="System.Reflection.AssemblyProductAttribute" />
-      <attribute name="System.Diagnostics.DebuggableAttribute" />
+      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
       <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
+      <attribute name="System.Reflection.AssemblyProductAttribute" />
+      <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
+      <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
+      <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+      <attribute name="System.Diagnostics.DebuggableAttribute" />
       <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
         <properties>
           <property name="WrapNonExceptionThrows" value="True" />
         </properties>
       </attribute>
-      <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
+      <attribute name="System.CLSCompliantAttribute" />
       <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
       <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
       <attribute name="System.Resources.SatelliteContractVersionAttribute" />
@@ -37,8 +37,8 @@
           </class>
           <class name="Collection" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Reflection.DefaultMemberAttribute" />
               <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
+              <attribute name="System.Reflection.DefaultMemberAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Collections.IEnumerable" />
@@ -1587,8 +1587,8 @@
               </method>
               <method name="LateIndexGet(System.Object, System.Object[], System.String[])" attrib="22" static="true" returntype="System.Object">
                 <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                   <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="Instance" position="0" attrib="0" type="System.Object" />
@@ -1609,8 +1609,8 @@
               </method>
               <method name="LateIndexSetComplex(System.Object, System.Object[], System.String[], System.Boolean, System.Boolean)" attrib="22" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                   <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="Instance" position="0" attrib="0" type="System.Object" />
@@ -1636,8 +1636,8 @@
               </method>
               <method name="LateSet(System.Object, System.Type, System.String, System.Object[], System.String[], System.Type[], System.Boolean, System.Boolean, Microsoft.VisualBasic.CallType)" attrib="22" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                   <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="Instance" position="0" attrib="0" type="System.Object" />
