@@ -138,4 +138,17 @@ public:
 	ssize_t Read (char *buf, size_t n);
 };
 
+typedef void (*CancelCallback) (gpointer user_data);
+
+class Cancellable {
+ private:
+	CancelCallback cancel_cb;
+	gpointer user_data;
+ public:
+	Cancellable ();
+
+	void Cancel ();
+	void SetCancelFuncAndData (CancelCallback cb, gpointer user_data);
+};
+
 #endif /* __UTILS_H__ */

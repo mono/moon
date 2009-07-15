@@ -962,4 +962,22 @@ char *parse_rfc_1945_token (char *input, char *c, char **end)
 	return start;
 }
 
+Cancellable::Cancellable ()
+{
+	cancel_cb = NULL;
+	user_data = NULL;
+}
 
+void
+Cancellable::Cancel ()
+{
+	if (cancel_cb)
+		cancel_cb (user_data);
+}
+
+void
+Cancellable::SetCancelFuncAndData (CancelCallback cb, gpointer data)
+{
+	cancel_cb = cb;
+	user_data = data;
+}
