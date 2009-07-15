@@ -5,6 +5,10 @@
 	* Deployment.cs: Extract a EmitError method so we avoid spreading
 	SSC to more methods.
 
+2009-07-15  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* Application.cs: GetResource returns a ManagedStreamCallbacks ptr
+
 2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ExceptionRoutedEventArgs.cs: Implement enough to get a decent

@@ -387,34 +387,28 @@ namespace System.Windows {
 			return null;
 		}
 
-		internal static IntPtr get_resource_cb_safe (string name, out int size)
+		internal static ManagedStreamCallbacks get_resource_cb_safe (string name)
 		{
 			try {
-				return get_resource_cb (name, out size);
+				return get_resource_cb (name);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_resource_cb: {0}", ex);
 				} catch {
 				}
 			}
-			size = 0;
-			return new IntPtr ();
+			return new ManagedStreamCallbacks ();
 		}
-		
-		internal static IntPtr get_resource_cb (string name, out int size)
-		{
-			size = 0;
-			try {
-				StreamResourceInfo info = GetResourceStream (new Uri (name, UriKind.Relative));
 
-				if (info == null)
-					return IntPtr.Zero;
-				
-				size = (int) info.Stream.Length;
-				return Helper.StreamToIntPtr (info.Stream);
-			} catch {
-				return IntPtr.Zero;
+		internal static ManagedStreamCallbacks get_resource_cb (string name)
+		{
+			StreamResourceInfo info = GetResourceStream (new Uri (name, UriKind.Relative));
+
+			if (info == null) {
+				return new ManagedStreamCallbacks ();
 			}
+
+			return new StreamWrapper (info.Stream).GetCallbacks ();
 		}
 
 		internal static Assembly GetAssembly (string name)
