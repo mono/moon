@@ -4,6 +4,8 @@
 	return NULL, so properly handle this error condition.
 	(IndexFontFile): Same.
 	(FontManager::OpenFontFace): Here too.
+	(OpenSystemFont): Don't destroy the FcPattern until after opening
+	the font (otherwise the filename will be free'd memory).
 
 	* textbox.cpp (TextBoxView::Paint): Use the CaretBrush property to
 	get the brush used for rendering the blinking caret. This is a 3.0

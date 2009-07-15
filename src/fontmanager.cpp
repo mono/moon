@@ -1442,12 +1442,11 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 			continue;
 		}
 		
-		FcPatternDestroy (matched);
-		
 		if ((face = OpenFontFace ((const char *) filename, NULL, index))) {
 			if (!g_ascii_strcasecmp (face->GetFamilyName (), desired.family_name)) {
 				LOG_FONT (stderr, "got %s %s\n", face->GetFamilyName (), face->GetStyleName ());
 				g_free (desired.family_name);
+				FcPatternDestroy (matched);
 				return face;
 			}
 			
@@ -1456,6 +1455,8 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 		} else {
 			LOG_FONT (stderr, "family not found\n");
 		}
+		
+		FcPatternDestroy (matched);
 	}
 	
 	g_free (desired.family_name);
