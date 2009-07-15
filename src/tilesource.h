@@ -65,6 +65,9 @@ class MultiScaleTileSource : public DependencyObject {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void set_image_uri_func (get_image_uri_func func);
+
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer);
 };
 
 #endif /* __TILESOURCE_H__ */

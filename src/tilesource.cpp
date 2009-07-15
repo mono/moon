@@ -90,4 +90,9 @@ MultiScaleTileSource::set_image_uri_func (get_image_uri_func func)
 		g_warning ("get_tile_func already set\n");
 }
 
+void
+MultiScaleTileSource::InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
+{
+	
+}
 
