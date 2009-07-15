@@ -68,6 +68,11 @@
 
 2009-07-15  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* application.h|cpp: Application.GetResource () now try to get the resource
+	from the managed callback, then fallback to downloading.
+
+2009-07-14  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* utils.h|cpp: Cancellable class, passed as method argument, allows
 	to abort an async action.
 

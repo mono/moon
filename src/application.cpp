@@ -97,22 +97,154 @@ Application::ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property
 	}
 }
 
-gpointer
-Application::GetResource (const Uri *uri, int *size)
+struct NotifyCtx {
+	gpointer user_data;
+	NotifyFunc notify_cb;
+};
+
+void downloader_abort (gpointer data);
+void downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
+void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+
+void
+Application::GetResource (const Uri *uri, NotifyFunc notify_cb, WriteFunc write_cb, DownloaderAccessPolicy policy, Cancellable *cancellable, gpointer user_data)
 {
-	if (get_resource_cb && uri) {
-		char *url = uri->ToString ();
-		gpointer ptr = get_resource_cb (url, size);
-		g_free (url);
-		
-		return ptr;
+	g_warning ("GetResource");
+	if (!uri) {
+		g_warning ("Passing a null uri to Application::GetResource");
+		return;
 	}
+
+	if (get_resource_cb && uri && !uri->isAbsolute) {
+		char *url = uri->ToString ();
+		ManagedStreamCallbacks stream = get_resource_cb (url);
+		g_free (url);
+		if (stream.handle) {
+			g_warning ("wo oh oh, got a stream");
+			if (notify_cb) {
+				notify_cb (NotifyStarted, NULL, user_data);
+				notify_cb (NotifySize, stream.Length (stream.handle), user_data);
+			}
+
+			char buffer [1024];
+			if (stream.CanSeek (stream.handle) && stream.Position (stream.handle) != 0)
+				stream.Seek (stream.handle, 0, 0);
 	
-	*size = 0;
+			gint32 nread;
+			gint32 offset = 0;
+			do {
+				nread = stream.Read (stream.handle, buffer, 0, 1024);
+				if (write_cb)
+					write_cb (buffer, offset, nread, user_data);
+				offset += nread;
+			} while (nread);
+
+			if (notify_cb)
+				notify_cb (NotifyCompleted, NULL, user_data);
+
+			return;
+		}
+	}	
+
+	//no get_resource_cb or empty stream
+	Downloader *downloader;
+	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+	if (!(downloader = surface->CreateDownloader ()))
+		return;
 	
-	return NULL;
+	NotifyCtx *ctx = g_new (NotifyCtx, 1);
+	ctx->user_data = user_data;
+	ctx->notify_cb = notify_cb;
+
+	if (notify_cb) {
+		downloader->AddHandler (Downloader::DownloadProgressChangedEvent, downloader_progress_changed, ctx);
+		downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, ctx);
+		downloader->AddHandler (Downloader::CompletedEvent, downloader_complete, ctx);
+	}
+
+	if (cancellable) {
+		cancellable->SetCancelFuncAndData (downloader_abort, downloader);
+	}
+
+	if (downloader->Completed ()) {
+		if (notify_cb)
+			notify_cb (NotifyCompleted, NULL, user_data);
+	} else {
+		if (!downloader->Started ()) {
+			downloader->Open ("GET", (Uri*)uri, policy);
+			downloader->SetStreamFunctions (write_cb, NULL, user_data);
+			downloader->Send ();
+		}
+	}
 }
 
+void
+downloader_abort (gpointer data)
+{
+	Downloader *dl = (Downloader *) data;
+	dl->Abort ();
+}
+
+void
+downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	NotifyCtx *ctx = (NotifyCtx *) closure;
+	Downloader *dl = (Downloader *) sender;
+	ctx->notify_cb (NotifyProgressChanged, (gint64) (100 * dl->GetDownloadProgress ()), ctx->user_data);
+}
+
+void
+downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	NotifyCtx *ctx = (NotifyCtx *) closure;
+	ctx->notify_cb (NotifyCompleted, NULL, ctx->user_data);
+	g_free (ctx);
+}
+
+void
+downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	NotifyCtx *ctx = (NotifyCtx *) closure;
+	ctx->notify_cb (NotifyFailed, NULL, ctx->user_data);
+	g_free (ctx);
+}
+
+//compatibility function, act like the old get_resource_cb
+gpointer
+Application::GetResourceAsBuffer (const Uri *uri, int *size)
+{
+	gpointer buffer = NULL;
+
+	if (!uri) {
+		g_warning ("Passing a null uri to Application::GetResource");
+		return NULL;
+	}
+
+	if (get_resource_cb && uri && !uri->isAbsolute) {
+		char *url = uri->ToString ();
+		ManagedStreamCallbacks stream = get_resource_cb (url);
+		g_free (url);
+
+		if (stream.handle) {
+
+			*size = stream.Length (stream.handle);
+			if (!size)
+				return NULL;
+
+			buffer = g_new (char, *size);
+
+			if (stream.CanSeek (stream.handle) && stream.Position (stream.handle) != 0)
+				stream.Seek (stream.handle, 0, 0);
+	
+			stream.Read (stream.handle, buffer, 0, *size);
+		}
+	}	
+	
+	return buffer;
+}
+
+//FIXME: nuke this!
 char *
 Application::GetResourceAsPath (const Uri *uri)
 {
@@ -160,14 +292,11 @@ Application::GetResourceAsPath (const Uri *uri)
 	g_free (dirname);
 	
 	// now we need to get the resource buffer and dump it to disk
-	url = uri->ToString ();
-	if (!(buf = get_resource_cb (url, &size))) {
+	if (!(buf = GetResourceAsBuffer (uri, &size))) {
 		g_free (path);
-		g_free (url);
 		return NULL;
 	}
 	
-	g_free (url);
 	
 	// create and save the buffer to disk
 	if ((fd = open (path, O_WRONLY | O_CREAT | O_EXCL, 0600)) == -1) {
