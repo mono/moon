@@ -3001,9 +3001,9 @@ media_frame_is_key_frame (MediaFrame *instance)
 
 
 MediaFrame *
-media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts)
+media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts, bool keyframe)
 {
-	return new MediaFrame (stream, buffer, buflen, pts);
+	return new MediaFrame (stream, buffer, buflen, pts, keyframe);
 }
 
 

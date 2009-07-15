@@ -2801,7 +2801,7 @@ MediaFrame::MediaFrame (IMediaStream *stream)
 	this->stream->ref ();
 }
 
-MediaFrame::MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts)
+MediaFrame::MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts, bool keyframe)
 	: EventObject (Type::MEDIAFRAME)
 {
 	Initialize ();
@@ -2814,12 +2814,17 @@ MediaFrame::MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, gu
 	this->buflen = buflen;
 	this->pts = pts;
 	
+#if 0	
 	if (buflen > 4 && false) {
 		printf ("MediaFrame::MediaFrame () %s buffer: ", stream->GetStreamTypeName ());
 		for (int i = 0; i < 4; i++)
 			printf (" 0x%x", buffer [i]);
 		printf ("\n");
 	}
+#endif
+
+	if (keyframe)
+		AddState (MediaFrameKeyFrame);
 }
 
 void

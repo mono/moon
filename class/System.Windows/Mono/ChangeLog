@@ -1,3 +1,7 @@
+2009-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
 2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerated.
@@ -2434,4 +2438,3 @@
 	* NativeMethods.cs: Added the beginning of the bindings to `moon'.
 
 	
-

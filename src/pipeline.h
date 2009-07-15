@@ -687,7 +687,7 @@ protected:
 public:
 	MediaFrame (IMediaStream *stream);
 	/* @GenerateCBinding,GeneratePInvoke */
-	MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts);
+	MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts, bool keyframe);
 	void Dispose ();
 	
 	/* @GenerateCBinding */

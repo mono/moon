@@ -1930,7 +1930,7 @@ gint32 media_frame_get_width (MediaFrame *instance);
 bool media_frame_is_key_frame (MediaFrame *instance);
 
 /* @GeneratePInvoke */
-MediaFrame *media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts);
+MediaFrame *media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts, bool keyframe);
 
 void media_frame_set_buffer (MediaFrame *instance, guint8 *value);
 

@@ -1282,8 +1282,8 @@ namespace Mono {
 		public extern static void media_element_stop (IntPtr instance);
 
 		[DllImport ("moon")]
-		// MediaFrame *media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts);
-		public extern static IntPtr media_frame_new (IntPtr stream, IntPtr buffer, uint buflen, ulong pts);
+		// MediaFrame *media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts, bool keyframe);
+		public extern static IntPtr media_frame_new (IntPtr stream, IntPtr buffer, uint buflen, ulong pts, [MarshalAs (UnmanagedType.U1)] bool keyframe);
 
 		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]

@@ -268,12 +268,12 @@ namespace System.Windows.Media
 			buf = new byte [buflen];
 			mediaStreamSample.Stream.Seek (mediaStreamSample.Offset, System.IO.SeekOrigin.Begin);
 			mediaStreamSample.Stream.Read (buf, 0, (int) buflen);
-
 			
 			buffer = Marshal.AllocHGlobal ((int) buflen);
 			Marshal.Copy (buf, 0, buffer, (int) buflen);
 			
-			frame = NativeMethods.media_frame_new (mediaStreamSample.MediaStreamDescription.NativeStream, buffer, buflen, (ulong) mediaStreamSample.Timestamp);
+			// TODO: check for KeyFrameFlag. Note that the pipeline must work even if it is never set, so I don't really see the point of it.
+			frame = NativeMethods.media_frame_new (mediaStreamSample.MediaStreamDescription.NativeStream, buffer, buflen, (ulong) mediaStreamSample.Timestamp, false);
 			
 			NativeMethods.imedia_demuxer_report_get_frame_completed (demuxer, frame);
 			
