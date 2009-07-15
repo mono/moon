@@ -1731,7 +1731,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 		element = name [0];
 	}
 
-	if (next_namespace->is_ignored) {
+	if (next_namespace && next_namespace->is_ignored) {
 		p->current_namespace = next_namespace;
 		if (!p->InBufferingMode ())
 			p->QueueBeginBuffering (g_strdup (element), BUFFER_MODE_IGNORE);
@@ -2037,11 +2037,13 @@ start_doctype_handler (void *data,
 }
 
 static void
-add_default_namespaces (XamlParserInfo *p)
+add_default_namespaces (XamlParserInfo *p, bool sl_xmlns)
 {
-	p->implicit_default_namespace = true;
-	g_hash_table_insert (p->namespace_map, g_strdup ("http://schemas.microsoft.com/winfx/2006/xaml/presentation"), default_namespace);
-	g_hash_table_insert (p->namespace_map, g_strdup (X_NAMESPACE_URI), x_namespace);
+	if (sl_xmlns) {
+		p->implicit_default_namespace = true;
+		g_hash_table_insert (p->namespace_map, g_strdup ("http://schemas.microsoft.com/winfx/2006/xaml/presentation"), default_namespace);
+		g_hash_table_insert (p->namespace_map, g_strdup (X_NAMESPACE_URI), x_namespace);
+	}
 	g_hash_table_insert (p->namespace_map, g_strdup (XML_NAMESPACE_URI), xml_namespace);
 }
 
@@ -2133,7 +2135,7 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 
 	// TODO: This is just in here temporarily, to make life less difficult for everyone
 	// while we are developing.  
-	add_default_namespaces (parser_info);
+	add_default_namespaces (parser_info, false);
 
 	XML_SetUserData (p, parser_info);
 
@@ -2293,7 +2295,7 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 	}
 	
 	// from_str gets the default namespaces implictly added
-	add_default_namespaces (parser_info);
+	add_default_namespaces (parser_info, true);
 
 	XML_SetUserData (p, parser_info);
 
