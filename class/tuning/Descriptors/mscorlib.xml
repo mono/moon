@@ -4,6 +4,7 @@
 		<type fullname="System.AppDomain" preserve="all" />
 		<type fullname="System.Reflection.Assembly" preserve="all" />
 		<type fullname="System.Resources.RuntimeResourceSet" preserve="all" />
+		<type fullname="System.Runtime.InteropServices.Marshal" />
 		<type fullname="System.Security.SecurityCriticalAttribute" preserve="all" />
 		<type fullname="System.Security.SecuritySafeCriticalAttribute" preserve="all" />
 		<type fullname="System.Security.SecurityTransparentAttribute" preserve="all" />
