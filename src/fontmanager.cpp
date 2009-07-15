@@ -1069,7 +1069,8 @@ IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontI
 			goto next;
 		}
 		
-		stream = font_stream_new (path->str, NULL);
+		if (!(stream = font_stream_new (path->str, NULL)))
+			goto next;
 		
 		args.flags = FT_OPEN_STREAM;
 		args.stream = stream;
@@ -1150,7 +1151,8 @@ IndexFontFile (FT_Library libft2, const char *name, const char *path)
 	
 	LOG_FONT (stderr, "  * indexing font file `%s'...\n", path);
 	
-	stream = font_stream_new (path, NULL);
+	if (!(stream = font_stream_new (path, NULL)))
+		return NULL;
 	
 	args.flags = FT_OPEN_STREAM;
 	args.stream = stream;
@@ -1320,7 +1322,11 @@ FontManager::OpenFontFace (const char *filename, const char *guid, int index)
 		return ff;
 	}
 	
-	stream = font_stream_new (filename, guid);
+	if (!(stream = font_stream_new (filename, guid))) {
+		g_free (key);
+		return NULL;
+	}
+	
 	args.flags = FT_OPEN_STREAM;
 	args.stream = stream;
 	
