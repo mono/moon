@@ -3340,6 +3340,16 @@ multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance)
 }
 
 
+void
+multi_scale_tile_source_invalidate_tile_layer (MultiScaleTileSource *instance, int level, int tilePositionX, int tilePositionY, int tileLayer)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->InvalidateTileLayer (level, tilePositionX, tilePositionY, tileLayer);
+}
+
+
 MultiScaleTileSource *
 multi_scale_tile_source_new (void)
 {

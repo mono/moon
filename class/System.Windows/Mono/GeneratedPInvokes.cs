@@ -1371,6 +1371,10 @@ namespace Mono {
 		public extern static int multi_scale_tile_source_get_tile_width (IntPtr instance);
 
 		[DllImport ("moon")]
+		// void multi_scale_tile_source_invalidate_tile_layer (MultiScaleTileSource *instance, int level, int tilePositionX, int tilePositionY, int tileLayer);
+		public extern static void multi_scale_tile_source_invalidate_tile_layer (IntPtr instance, int level, int tilePositionX, int tilePositionY, int tileLayer);
+
+		[DllImport ("moon")]
 		// MultiScaleTileSource *multi_scale_tile_source_new ();
 		public extern static IntPtr multi_scale_tile_source_new ();
 

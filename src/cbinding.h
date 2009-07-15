@@ -2042,6 +2042,9 @@ int multi_scale_tile_source_get_tile_overlap (MultiScaleTileSource *instance);
 int multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance);
 
 /* @GeneratePInvoke */
+void multi_scale_tile_source_invalidate_tile_layer (MultiScaleTileSource *instance, int level, int tilePositionX, int tilePositionY, int tileLayer);
+
+/* @GeneratePInvoke */
 MultiScaleTileSource *multi_scale_tile_source_new (void);
 
 /* @GeneratePInvoke */
