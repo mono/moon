@@ -1009,6 +1009,8 @@ MediaElement::SetProperties (Media *media)
 	g_return_if_fail (media != NULL);
 	g_return_if_fail (playlist != NULL);
 	
+	seeked_to_position = 0;
+	
 	demuxer = media->GetDemuxer ();
 	entry = playlist->GetCurrentPlaylistEntry ();
 	
