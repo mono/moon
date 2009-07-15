@@ -1,3 +1,17 @@
+2009-07-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Threading/TimerTest.cs: New. Shows the bad (sync) 
+	behavior of Moonlight
+	* System.Threading/ThreadTest.cs: Ignore two test cases that
+	(should) kills the harness when executed from the bots (like it
+	happens when executed on Windows) since there's a OnError
+	event registred in javascript (inside test.html)
+	* System.Windows.Threading/CrossThreadAccessTest.cs: Make the
+	test cases [Asynchronous] since the sync-based Timer tests 
+	don't work (see new unit tests). As such Moonlight did not 
+	execute the delegates (so the tests were green anyway / empty)
+	but it causes problems within the runtime (GetHost returns null).
+
 2009-07-14  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/FrameworkElementTest.cs: Split up the new

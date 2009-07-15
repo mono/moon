@@ -53,6 +53,7 @@ namespace MoonTest.System.Threading
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("when executed under the DRT harness (e.g. bots) this will call the onError handler and shutdown the harness")]
 		public void ThreadExceptionTest ()
 		{
 			bool unhandled_exception_raised = false;
@@ -84,6 +85,7 @@ namespace MoonTest.System.Threading
 		[Asynchronous]
 		[ExpectedException (typeof (InvalidOperationException))]
 		[MoonlightBug]
+		[Ignore ("when executed under the DRT harness (e.g. bots) this will call the onError handler and shutdown the harness")]
 		public void ThreadExceptionTest2 ()
 		{
 			bool unhandled_exception_raised = false;

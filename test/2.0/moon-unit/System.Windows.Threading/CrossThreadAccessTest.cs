@@ -1,116 +1,129 @@
 using System;
-using System.Net;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mono.Moonlight.UnitTesting;
-using System.Threading;
 using System.Windows.Threading;
-using s=System;
 
+using Microsoft.Silverlight.Testing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Threading {
 
 	[TestClass]
-	public class CrossThreadAccessTest {
+	public class CrossThreadAccessTest : SilverlightTest {
 
-		[TestMethod]
-		public void ApplicationTest () {
+		private BackgroundWorker bw = new BackgroundWorker ();
+		private bool complete;
+		// async tests are nice but we need to make sure the async code gets executed
+		private bool executed;
 
-			Timer t = new Timer (delegate {
+		public CrossThreadAccessTest ()
+		{
+			bw.DoWork += delegate (object sender, DoWorkEventArgs e) {
+				Action action = (e.Argument as Action);
 				Assert.Throws<UnauthorizedAccessException> (delegate {
-					Application a = new Application ();
+					executed = true; // been there, done that :)
+					action ();
 				});
-			});
-			t.Change (0, Timeout.Infinite);
+			};
+			bw.RunWorkerCompleted += delegate {
+				complete = true;
+			};
+		}
+
+		private void CrossThreadTest (Action action)
+		{
+			executed = complete = false;
+			Enqueue (() => { bw.RunWorkerAsync (action); });
+			EnqueueConditional (() => { return executed && complete; });
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
-		public void LoadComponentTest () {
-
-			Timer t = new Timer (delegate {
-				Assert.Throws<UnauthorizedAccessException> (delegate {
-					Application.LoadComponent (this, new s.Uri ("/threads3;component/App.xaml", s.UriKind.Relative));
-				});
+		[Asynchronous]
+		public void ApplicationTest () 
+		{
+			CrossThreadTest (() => {
+				new Application ();
 			});
-			t.Change (0, Timeout.Infinite);
 		}
 
 		[TestMethod]
-		public void GetRootVisualTest () {
-
-			Timer t = new Timer (delegate {
-				Assert.Throws<UnauthorizedAccessException> (delegate {
-					UIElement e = Application.Current.RootVisual;
-				});
+		[Asynchronous]
+		public void LoadComponentTest ()
+		{
+			CrossThreadTest (() => {
+				Application.LoadComponent (this, new Uri ("/threads3;component/App.xaml", UriKind.Relative));
 			});
-			t.Change (0, Timeout.Infinite);
 		}
 
 		[TestMethod]
-		public void SetRootVisualTest () {
+		[Asynchronous]
+		public void GetRootVisualTest () 
+		{
+			CrossThreadTest (() => {
+				Assert.IsNotNull (Application.Current.RootVisual);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void SetRootVisualTest () 
+		{
 			TextBlock b = new TextBlock ();
-			Timer t = new Timer (delegate {
-				Assert.Throws<UnauthorizedAccessException> (delegate {
-					Application.Current.RootVisual = b;
-				});
+			CrossThreadTest (() => {
+				Application.Current.RootVisual = b;
 			});
-			t.Change (0, Timeout.Infinite);
 		}
 
 		[TestMethod]
-		public void EventTest () {
+		[Asynchronous]
+		public void EventTest ()
+		{
 			TextBlock e1 = new TextBlock ();
-			Timer t = new Timer (delegate {
-				Assert.Throws<UnauthorizedAccessException> (delegate {
-					e1.GotFocus += delegate (object sender, RoutedEventArgs ev) {
-
-					};
-				});
+			CrossThreadTest (() => {
+				e1.GotFocus += delegate (object sender, RoutedEventArgs ev) {
+				};
 			});
-			t.Change (0, Timeout.Infinite);
 		}
 
 		[TestMethod]
-		public void CreateDependencyObjectTest () {
-			Timer t = new Timer (delegate {
-				Assert.Throws<UnauthorizedAccessException> (delegate {
-					new TextBlock ();
-				});
+		[Asynchronous]
+		public void CreateDependencyObjectTest ()
+		{
+			CrossThreadTest (() => {
+				new TextBlock ();
 			});
-			t.Change (0, Timeout.Infinite);
 		}
 
 		[TestMethod]
-		public void DependencyObjectFindNameTest () {
+		[Asynchronous]
+		public void DependencyObjectFindNameTest ()
+		{
 			TextBlock b = new TextBlock ();
-			Timer t = new Timer (delegate {
-				Assert.Throws<UnauthorizedAccessException> (delegate {
-					b.FindName ("t");
-				});
+			CrossThreadTest (() => {
+				b.FindName ("t");
 			});
-			t.Change (0, Timeout.Infinite);
 		}
 
 		[TestMethod]
-		public void CreateDependencyPropertyTest () {
+		[Asynchronous]
+		public void CreateDependencyPropertyTest ()
+		{
 			TextBlock e1 = new TextBlock ();
-			Timer t = new Timer (delegate {
-				Assert.Throws<UnauthorizedAccessException> (delegate {
-					e1.Text = "";
-				});
+			CrossThreadTest (() => {
+				e1.Text = "";
 			});
-			t.Change (0, Timeout.Infinite);
 		}
 
 		[TestMethod]
-		public void DispatcherTimerTest () {
-			Timer t = new Timer (delegate {
-				Assert.Throws<UnauthorizedAccessException> (delegate {
-					new DispatcherTimer ();
-				});
+		[Asynchronous]
+		public void DispatcherTimerTest ()
+		{
+			CrossThreadTest (() => {
+				new DispatcherTimer ();
 			});
-			t.Change (0, Timeout.Infinite);
 		}
 	}
 }
+
