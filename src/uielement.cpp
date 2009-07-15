@@ -767,6 +767,7 @@ UIElement::OnLoaded ()
 void
 UIElement::ClearLoaded ()
 {
+	UIElement *e = NULL;
 	Surface *s = Deployment::GetCurrent ()->GetSurface ();
 	if (s->GetFocusedElement () == this)
 		s->FocusElement (NULL);
@@ -777,6 +778,9 @@ UIElement::ClearLoaded ()
 	flags &= ~UIElement::IS_LOADED;
 	
 	Emit (UnloadedEvent, NULL, true);
+	VisualTreeWalker walker (this);
+	while ((e = walker.Step ()))
+		e->ClearLoaded ();
 }
 
 bool
