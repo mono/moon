@@ -35,6 +35,7 @@ bool
 TabNavigationWalker::FocusChild ()
 {
 	UIElement *child;
+	bool child_is_control;
 	int current_index = -1;
 
 	// Add each branch of the visual tree to the array and then sort them
@@ -83,21 +84,20 @@ TabNavigationWalker::FocusChild ()
 				break;
 
 			child = (UIElement *) tab_sorted->pdata [(i + current_index + 1) % tab_sorted->len];
+			child_is_control = types->IsSubclassOf (child->GetObjectType (), Type::CONTROL);
+
+			if (child_is_control && !((Control *)child)->GetIsEnabled ())
+				continue;
 
 			// When tabbing backwards, we recurse all children *before* attempting to select this node
 			if (ReverseTab () && WalkChildren (child))
-					return true;
+				return true;
 
-			if (types->IsSubclassOf (child->GetObjectType (), Type::CONTROL)) {
-				if (!((Control *)child)->GetIsEnabled ())
-					continue;
-
-				if (TabTo ((Control *)child))
-					return true;
-			}
+			if (child_is_control && TabTo ((Control *)child))
+				return true;
 
 			if (ForwardTab () && WalkChildren (child))
-					return true;
+				return true;
 		}
 	}
 
