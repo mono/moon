@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 462 methods
+# 463 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -94,7 +94,6 @@
 +SSC-M: System.Windows.Application System.Windows.Application::get_Current()
 +SSC-M: System.Void System.Windows.Application::set_Current(System.Windows.Application)
 +SSC-M: System.Void System.Windows.Application::set_RootVisual(System.Windows.UIElement)
-+SSC-M: System.Void System.Windows.Application::OnUnhandledException(System.Object,System.Exception)
 +SSC-M: System.Void System.Windows.AssemblyPart::.ctor()
 +SSC-M: System.Reflection.Assembly System.Windows.AssemblyPart::Load(System.IO.Stream)
 +SSC-M: System.Void System.Windows.AssemblyPartCollection::.ctor()
@@ -175,6 +174,7 @@
 +SSC-M: System.Boolean System.Windows.Deployment::InitializeDeployment()
 +SSC-M: System.Boolean System.Windows.Deployment::InitializeDeployment(System.IntPtr,System.String)
 +SSC-M: System.Reflection.Assembly System.Windows.Deployment::LoadXapAssembly(System.String)
++SSC-M: System.Void System.Windows.Deployment::EmitError(System.Int32,System.String)
 +SSC-M: System.Void System.Windows.Deployment::SetEntryAssembly(System.Reflection.Assembly)
 +SSC-M: System.Void System.Windows.Deployment::TerminateCurrentApplication()
 +SSC-M: System.Boolean System.Windows.Deployment::CreateApplication()
@@ -360,6 +360,7 @@
 +SSC-M: System.Void System.Windows.Media.MultiScaleTileSource::set_TileOverlap(System.Int32)
 +SSC-M: System.Void System.Windows.Media.MultiScaleTileSource::Initialize()
 +SSC-M: System.Void System.Windows.Media.MultiScaleTileSource::Finalize()
++SSC-M: System.Void System.Windows.Media.MultiScaleTileSource::InvalidateTileLayer(System.Int32,System.Int32,System.Int32,System.Int32)
 +SSC-M: System.Boolean System.Windows.Media.MultiScaleTileSource::GetImageUriSafe(System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr)
 +SSC-M: System.Void System.Windows.Media.PathFigure::.ctor()
 +SSC-M: System.Void System.Windows.Media.PathFigureCollection::.ctor()

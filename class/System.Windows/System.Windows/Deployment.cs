@@ -253,6 +253,13 @@ namespace System.Windows {
 			}
 		}
 
+		// extracted since NativeMethods.surface_emit_error is security critical
+		internal void EmitError (int errorCode, string message)
+		{
+			// FIXME: 8 == EXECUTION_ENGINE_EXCEPTION code.  should it be something else?
+			NativeMethods.surface_emit_error (Surface.Native, 8, errorCode, message);
+		}
+
 		// extracted since Assembly.GetName is security critical
 		void SetEntryAssembly (Assembly asm)
 		{
