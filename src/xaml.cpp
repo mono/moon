@@ -1347,7 +1347,8 @@ XamlLoader::LookupObject (void *p, Value *top_level, Value *parent, const char* 
 		if (!vm_loaded && !LoadVM ())
 			return false;
 		MoonError error;
-		bool res = callbacks.lookup_object (this, p, top_level, parent, xmlns, type_name, create, is_property, value, &error);
+		XamlCallbackData data = XamlCallbackData (this, p, top_level);
+		bool res = callbacks.lookup_object (&data, parent, xmlns, type_name, create, is_property, value, &error);
 		return res;
 	}
 		
@@ -1355,11 +1356,12 @@ XamlLoader::LookupObject (void *p, Value *top_level, Value *parent, const char* 
 }
 
 const char *
-XamlLoader::GetContentPropertyName (void *p, Value *object)
+XamlLoader::GetContentPropertyName (void *p, Value *top_level, Value *object)
 {
 	if (callbacks.get_content_property_name) {
 		MoonError error;
-		return callbacks.get_content_property_name (this, p, object, &error);
+		XamlCallbackData data = XamlCallbackData (this, p, top_level);
+		return callbacks.get_content_property_name (&data, object, &error);
 	}
 	return NULL;
 }
@@ -1369,7 +1371,8 @@ XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *ta
 {
 	if (callbacks.set_property) {
 		MoonError error;
-		return callbacks.set_property (this, p, top_level, xmlns, target, target_data, target_parent, prop_xmlns, name, value, value_data, &error);
+		XamlCallbackData data = XamlCallbackData (this, p, top_level);
+		return callbacks.set_property (&data, xmlns, target, target_data, target_parent, prop_xmlns, name, value, value_data, &error);
 	}
 
 	return false;
@@ -1380,7 +1383,8 @@ XamlLoader::AddChild (void *p, Value *top_level, Value *parent_parent, bool pare
 {
 	if (callbacks.add_child) {
 		MoonError error;
-		bool res = callbacks.add_child (this, p, top_level, parent_parent, parent_is_property, parent_xmlns, parent, parent_data, child, child_data, &error);
+		XamlCallbackData data = XamlCallbackData (this, p, top_level);
+		bool res = callbacks.add_child (&data, parent_parent, parent_is_property, parent_xmlns, parent, parent_data, child, child_data, &error);
 
 		if (error.number != MoonError::NO_ERROR) {
 			parser_error ((XamlParserInfo *) p, ((XamlElementInstance *) child_data)->element_name, NULL, error.code, error.message);
@@ -1978,7 +1982,9 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 
 	if (p->loader != NULL && p->loader->callbacks.import_xaml_xmlns != NULL) {
 		MoonError error;
-		if (!p->loader->callbacks.import_xaml_xmlns (p->loader, p, uri, &error))
+		XamlCallbackData data = XamlCallbackData (p->loader, p, p->GetTopElementPtr ());
+		printf ("unmanaged xmlns:  %s\n", uri);
+		if (!p->loader->callbacks.import_xaml_xmlns (&data, uri, &error))
 			return parser_error (p, p->current_element ? p->current_element->element_name : NULL, prefix, 2005, "Unknown namespace %s", uri);
 	}
 
@@ -4229,7 +4235,7 @@ XamlElementInfoManaged::GetContentProperty (XamlParserInfo *p)
 		return NULL;
 
 	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (p, obj);
+	const char *res = p->loader->GetContentPropertyName (p, p->GetTopElementPtr (), obj);
 	if (res)
 		return res;
 	return XamlElementInfo::GetContentProperty (p);
@@ -4405,7 +4411,7 @@ XamlElementInfoImportedManaged::GetContentProperty (XamlParserInfo *p)
 
 	
 	// TODO: We could cache this, but for now lets keep things as simple as possible.
-	const char *res = p->loader->GetContentPropertyName (p, obj);
+	const char *res = p->loader->GetContentPropertyName (p, p->GetTopElementPtr (), obj);
 	if (res)
 		return res;
 	

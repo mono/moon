@@ -22,12 +22,25 @@
 
 class XamlLoader;
 
-typedef bool (*xaml_lookup_object_callback) (void *loader, void *parser, Value *top_level, Value *parent, const char *xmlns, const char *name, bool create, bool is_property, Value *value, MoonError *error);
+struct XamlCallbackData {
+	void *loader;
+	void *parser;
+	Value *top_level;
+
+	XamlCallbackData (void *loader, void *parser, Value *top_level)
+	{
+		this->loader = loader;
+		this->parser = parser;
+		this->top_level = top_level;
+	}
+};
+
+typedef bool (*xaml_lookup_object_callback) (XamlCallbackData *data, Value *parent, const char *xmlns, const char *name, bool create, bool is_property, Value *value, MoonError *error);
 typedef void (*xaml_create_gchandle_callback) ();
-typedef bool (*xaml_set_property_callback) (void *loader, void *parser, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value *value, void *value_data, MoonError *error);
-typedef bool (*xaml_import_xaml_xmlns_callback) (void *loader, void *parser, const char* xmlns, MoonError *error);
-typedef const char* (*xaml_get_content_property_name_callback) (void *loader, void *parser, Value *object, MoonError *error);
-typedef bool (*xaml_add_child_callback) (void *loader, void *parser, Value *top_level, Value *parent_parent, bool parent_is_property, const char* parent_xmlns, Value *parent, void *parent_data, Value *child, void *child_data, MoonError *error);
+typedef bool (*xaml_set_property_callback) (XamlCallbackData *data, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value *value, void *value_data, MoonError *error);
+typedef bool (*xaml_import_xaml_xmlns_callback) (XamlCallbackData *data, const char* xmlns, MoonError *error);
+typedef const char* (*xaml_get_content_property_name_callback) (XamlCallbackData *data, Value *object, MoonError *error);
+typedef bool (*xaml_add_child_callback) (XamlCallbackData *data, Value *parent_parent, bool parent_is_property, const char* parent_xmlns, Value *parent, void *parent_data, Value *child, void *child_data, MoonError *error);
 
 struct XamlLoaderCallbacks {
 
@@ -161,7 +174,7 @@ class XamlLoader {
 	virtual bool SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value *value, void *value_data);
 	virtual bool AddChild (void *p, Value *top_level, Value *parent_parent, bool parent_is_property, const char* parent_xmlns, Value *parent, void *parent_data, Value *child, void *child_data);
 
-	virtual const char *GetContentPropertyName (void *p, Value *object);
+	virtual const char *GetContentPropertyName (void *p, Value *top_level, Value *object);
 
 	char *GetFilename () { return filename; }
 	char *GetString () { return str; }

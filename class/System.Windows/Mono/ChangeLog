@@ -1,3 +1,9 @@
+2009-07-15  Jackson Harper  <jackson@ximian.com>
+
+	* XamlLoaderCallbacks.cs:
+	* ManagedXamlLoader.cs: Consolidate some of the data passed to
+	every callback and not used much into a struct.
+
 2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerated.

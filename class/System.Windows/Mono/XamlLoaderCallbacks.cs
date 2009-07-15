@@ -36,13 +36,13 @@ using Mono;
 
 namespace Mono.Xaml
 {
-	unsafe internal delegate bool LookupObjectCallback (IntPtr loader, IntPtr parser, Value* top_level, Value* parent, string xmlns, string name, [MarshalAs (UnmanagedType.U1)] bool create, [MarshalAs (UnmanagedType.U1)] bool is_property, out Value value, ref MoonError error);
+	unsafe internal delegate bool LookupObjectCallback (XamlCallbackData *data, Value* parent, string xmlns, string name, [MarshalAs (UnmanagedType.U1)] bool create, [MarshalAs (UnmanagedType.U1)] bool is_property, out Value value, ref MoonError error);
 	unsafe internal delegate void CreateGCHandleCallback ();
 
-	unsafe internal delegate bool SetPropertyCallback (IntPtr loader, IntPtr parser, Value* top_level, string xmlns, Value* target, IntPtr target_data, Value* target_parent, string prop_xmlns, string name, Value* value, IntPtr value_data, ref MoonError error);
-	unsafe internal delegate bool ImportXamlNamespaceCallback (IntPtr loader, IntPtr parser, string xmlns, ref MoonError error);
-	unsafe internal delegate string GetContentPropertyNameCallback (IntPtr loader, IntPtr parser, Value* object_ptr, ref MoonError error);
-	unsafe internal delegate bool AddChildCallback (IntPtr loader, IntPtr parser, Value *top_level, Value* parent_parent, [MarshalAs (UnmanagedType.U1)] bool parent_is_property, string parent_xmlns, Value *parent, IntPtr parent_data, Value* child, IntPtr child_data, ref MoonError error);
+	unsafe internal delegate bool SetPropertyCallback (XamlCallbackData *data, string xmlns, Value* target, IntPtr target_data, Value* target_parent, string prop_xmlns, string name, Value* value, IntPtr value_data, ref MoonError error);
+	unsafe internal delegate bool ImportXamlNamespaceCallback (XamlCallbackData *data, string xmlns, ref MoonError error);
+	unsafe internal delegate string GetContentPropertyNameCallback (XamlCallbackData *data, Value* object_ptr, ref MoonError error);
+	unsafe internal delegate bool AddChildCallback (XamlCallbackData *data, Value* parent_parent, [MarshalAs (UnmanagedType.U1)] bool parent_is_property, string parent_xmlns, Value *parent, IntPtr parent_data, Value* child, IntPtr child_data, ref MoonError error);
 	
 	internal struct XamlLoaderCallbacks {
 		public LookupObjectCallback lookup_object;
@@ -51,6 +51,12 @@ namespace Mono.Xaml
 		public ImportXamlNamespaceCallback import_xaml_xmlns;
 		public GetContentPropertyNameCallback get_content_property_name;
 		public AddChildCallback add_child;
+	}
+
+	internal unsafe struct XamlCallbackData {
+		public IntPtr loader;
+		public IntPtr parser;
+		public Value *top_level;
 	}
 
 	internal enum AssemblyLoadResult
