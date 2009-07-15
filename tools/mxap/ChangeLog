@@ -1,3 +1,7 @@
+2009-07-15  Jb Evain  <jbevain@novell.com>
+
+	* mxap.cs: Generate xap with a SL3.0 runtime version. 
+
 2009-05-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mxap.cs: Add support for compiler defines using -d: Also add a

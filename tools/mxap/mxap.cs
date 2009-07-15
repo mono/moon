@@ -31,7 +31,7 @@ namespace Moonlight {
 		private string cs_sources;
 		private string cd;
 		private bool in_place = true;
-		const string RuntimeVersion = "2.0.31005.0";
+		const string RuntimeVersion = "3.0.40624.0";
 
 		public string CSSources {
 			get { return cs_sources; }
