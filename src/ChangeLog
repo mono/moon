@@ -1,3 +1,10 @@
+2009-07-15  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp: Ensure that the control loses focus when it is
+	  disabled even if there are no other focusable controls. Also
+	  ensure the surface is not null before using it, fixes a
+	  regression in 432.
+
 2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* error.h: ErrorEventArg: Add accessors that can be pinvoked.

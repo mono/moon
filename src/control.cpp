@@ -102,8 +102,9 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == Control::IsEnabledProperty) {
 		if (!args->GetNewValue ()->AsBool ()) {
 			Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-			if (surface->GetFocusedElement () == this) {
-				// Focus on the next suitable element
+			if (surface && surface->GetFocusedElement () == this) {
+				// Ensure this element loses focus, then try to focus the next suitable element
+				surface->FocusElement (NULL);
 				TabNavigationWalker::Focus (this, true);
 			}
 			ReleaseMouseCapture ();
