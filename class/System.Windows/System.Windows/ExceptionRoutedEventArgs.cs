@@ -28,6 +28,8 @@
 
 using System;
 
+using Mono;
+
 namespace System.Windows
 {
 	public sealed class ExceptionRoutedEventArgs : RoutedEventArgs
@@ -36,7 +38,11 @@ namespace System.Windows
 		
 		internal ExceptionRoutedEventArgs (IntPtr raw) : base (raw)
 		{
-			error_exception = new Exception ("TODO"); // This prevents a lot of the MS tests from throwing NRE's and timing out.
+			string msg = NativeMethods.error_event_args_get_error_message (raw);
+			int code = NativeMethods.error_event_args_get_error_code (raw);
+			int type = NativeMethods.error_event_args_get_error_type (raw);
+			
+			error_exception = new Exception (msg); // TODO: find out which kind of exception we need to create here
 		}
 
 		public Exception ErrorException {

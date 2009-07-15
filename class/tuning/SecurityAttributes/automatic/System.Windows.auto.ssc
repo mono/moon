@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 460 methods
+# 462 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
@@ -37,6 +37,7 @@
 +SSC-M: System.Boolean Mono.NativeMethods::dependency_object_set_value(System.IntPtr,System.IntPtr,Mono.Value&)
 +SSC-M: System.String Mono.NativeMethods::dependency_property_get_name(System.IntPtr)
 +SSC-M: System.String Mono.NativeMethods::downloader_response_get_response_status_text(System.IntPtr)
++SSC-M: System.String Mono.NativeMethods::error_event_args_get_error_message(System.IntPtr)
 +SSC-M: System.String Mono.NativeMethods::event_object_get_type_name(System.IntPtr)
 +SSC-M: System.Void Mono.NativeMethods::framework_element_set_logical_parent(System.IntPtr,System.IntPtr)
 +SSC-M: System.Boolean Mono.NativeMethods::resource_dictionary_add(System.IntPtr,System.String,Mono.Value&)
@@ -183,6 +184,7 @@
 +SSC-M: System.Void System.Windows.Documents.LineBreak::.ctor()
 +SSC-M: System.Void System.Windows.Documents.Run::.ctor()
 +SSC-M: System.Void System.Windows.EventTrigger::.ctor()
++SSC-M: System.Void System.Windows.ExceptionRoutedEventArgs::.ctor(System.IntPtr)
 +SSC-M: System.Void System.Windows.FrameworkElement::.ctor()
 +SSC-M: System.Void System.Windows.FrameworkElement::Initialize()
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::MeasureOverride(System.Windows.Size)

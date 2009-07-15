@@ -39,6 +39,13 @@ public:
 	//  3 (MEDIA_UNKNOWN_CODEC): used by playlist to determine if we should raise a MediaFailed event or just continue to play the next entry.
 	int extended_code;
 	char *extended_message;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetErrorMessage () { return error_message; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetErrorCode () { return error_code; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetErrorType () { return error_type; }	
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */

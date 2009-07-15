@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 522 methods needs to be decorated.
+# 525 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -296,6 +296,12 @@
 +SC-M: System.Int32 Mono.NativeMethods::downloader_response_get_response_status(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::error_event_args_get_error_code(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::error_event_args_get_error_type(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::event_object_add_handler(System.IntPtr,System.String,Mono.UnmanagedEventHandler,System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
@@ -579,6 +585,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::ellipse_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::error_event_args_get_error_message_(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::event_object_get_surface(System.IntPtr)

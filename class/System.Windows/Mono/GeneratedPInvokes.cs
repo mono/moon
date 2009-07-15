@@ -920,6 +920,27 @@ namespace Mono {
 		public extern static IntPtr ellipse_geometry_new ();
 
 		[DllImport ("moon")]
+		// int error_event_args_get_error_code (ErrorEventArgs *instance);
+		public extern static int error_event_args_get_error_code (IntPtr instance);
+
+		[DllImport ("moon", EntryPoint="error_event_args_get_error_message")]
+		// const char *error_event_args_get_error_message (ErrorEventArgs *instance);
+		private extern static IntPtr error_event_args_get_error_message_ (IntPtr instance);
+		public static string error_event_args_get_error_message (IntPtr instance)
+		{
+			IntPtr result;
+			result = error_event_args_get_error_message_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon")]
+		// int error_event_args_get_error_type (ErrorEventArgs *instance);
+		public extern static int error_event_args_get_error_type (IntPtr instance);
+
+		[DllImport ("moon")]
 		// int event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
 		public extern static int event_object_add_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data, IntPtr data_dtor);
 

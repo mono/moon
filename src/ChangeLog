@@ -1,3 +1,9 @@
+2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* error.h: ErrorEventArg: Add accessors that can be pinvoked.
+
+	* cbinding.cpp|h: Regenerated.
+
 2009-07-15  Alan McGovern  <amcgovern@novell.com>
 
 	* control.cpp: When the focused control is disabled, tab to
