@@ -881,7 +881,7 @@ PluginInstance::CreateWindow ()
 
 	if (splashscreensource != NULL) {
 		StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
-		
+
 		NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
 	} else {
 		//xaml_loader = PluginXamlLoader::FromStr (PLUGIN_SPINNER, this, surface);
@@ -893,7 +893,6 @@ PluginInstance::CreateWindow ()
 	register_event (instance, "onSourceDownloadComplete", onSourceDownloadComplete, root);
 	register_event (instance, "onError", onError, root);
 	register_event (instance, "onResize", onResize, root->content);
-	register_event (instance, "onLoad", onLoad, root);
 
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);
@@ -1197,6 +1196,9 @@ PluginInstance::LoadXAML ()
 	ManagedInitializeDeployment (NULL);
 	xaml_loader->LoadVM ();
 
+	MoonlightScriptControlObject *root = GetRootObject ();
+	register_event (instance, "onLoad", onLoad, root);
+
 	const char *missing = xaml_loader->TryLoad (&error);
 
 	if (!our_surface)
@@ -1231,6 +1233,9 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 	g_free (source_location);
 
 	source_location = g_strdup (url);
+
+	MoonlightScriptControlObject *root = GetRootObject ();
+	register_event (instance, "onLoad", onLoad, root);
 
 	Deployment::GetCurrent ()->Reinitialize ();
 	GetDeployment()->SetXapLocation (url);
@@ -1414,7 +1419,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		CrossDomainApplicationCheck (stream->url);
 
 		Uri *uri = new Uri ();
-		
+
 		if (splash)
 			GetSurface ()->EmitSourceDownloadComplete ();
 
@@ -1950,7 +1955,7 @@ PluginXamlLoader::TryLoad (int *error)
 	}
 	
 	//d(printf ("PluginXamlLoader::TryLoad () succeeded.\n"));
-	
+
 	GetSurface ()->Attach ((Panel*) element);
 
 	// xaml_create_from_* passed us a ref which we don't need to

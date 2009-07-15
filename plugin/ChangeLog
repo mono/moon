@@ -1,3 +1,8 @@
+2009-07-15  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp: reconnect onload in LoadXAML and LoadXAP so that
+	source changes reset the oneshot call.  Fixes DRT#21.
+
 2009-07-13  Sebastien Pouliot  <sebastien at ximian.com> 
 
 	* plugin.cpp: Check for NULL *and* Empty inside UpdateSource.
