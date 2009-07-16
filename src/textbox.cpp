@@ -310,7 +310,7 @@ class TextBoxUndoActionInsert : public TextBoxUndoAction {
 	bool growable;
 	
 	TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar c);
-	TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar *inserted, int length);
+	TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar *inserted, int length, bool atomic = false);
 	virtual ~TextBoxUndoActionInsert ();
 	
 	bool Insert (int start, const gunichar *text, int len);
@@ -365,7 +365,7 @@ TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int sele
 	this->growable = true;
 }
 
-TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar *inserted, int length)
+TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar *inserted, int length, bool atomic)
 {
 	this->type = TextBoxUndoActionTypeInsert;
 	this->selection_anchor = selection_anchor;
@@ -374,7 +374,7 @@ TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int sele
 	this->start = start;
 	
 	this->buffer = new TextBuffer (inserted, length);
-	this->growable = false;
+	this->growable = !atomic;
 }
 
 TextBoxUndoActionInsert::~TextBoxUndoActionInsert ()
@@ -1437,7 +1437,7 @@ TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
 		buffer->Replace (start, length, text, len);
 	} else if (len > 0) {
 		// insert the text at the cursor position
-		action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, len);
+		action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, len, true);
 		
 		buffer->Insert (start, text, len);
 	} else {
