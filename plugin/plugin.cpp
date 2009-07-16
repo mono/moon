@@ -962,6 +962,7 @@ PluginInstance::UpdateSource ()
 
 	char *pos = strchr (source, '#');
 	if (pos) {
+		// FIXME: this will crash if this object has been deleted by the time IdleUpdateSourceByReference is called.
 		source_idle = g_idle_add (IdleUpdateSourceByReference, this);
 		SetPageURL ();
 	} else {
@@ -1000,6 +1001,8 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	NPVariant _elementName;
 	NPVariant _textContent;
 
+	Deployment::SetCurrent (deployment);
+	
 	NPIdentifier id_ownerDocument = NPN_GetStringIdentifier ("ownerDocument");
 	NPIdentifier id_getElementById = NPN_GetStringIdentifier ("getElementById");
 	NPIdentifier id_textContent = NPN_GetStringIdentifier ("textContent");
