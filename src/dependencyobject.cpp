@@ -404,6 +404,13 @@ EventObject::unref ()
 		if (getenv ("MOONLIGHT_ENABLE_TOGGLEREF"))
 			toggleNotifyListener->Invoke (true);
 	}
+
+#if SANITY
+	if (v < 0) {
+		g_warning ("EventObject::Unref (): NEGATIVE REFCOUNT id: %i v: %i refcount: %i", GET_OBJ_ID (this), v, refcount);
+		print_stack_trace ();
+	}
+#endif
 }
 
 void
