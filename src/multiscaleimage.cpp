@@ -909,6 +909,13 @@ motion_finished_delayed (EventObject *sender)
 }
 
 void
+multi_scale_image_invalidate_tile_layer (int level, int tilePositionX, int tilePositionY, int tileLayer, void *userdata)
+{
+	MultiScaleImage *msi = (MultiScaleImage *)userdata;
+	msi->InvalidateTileLayer (level, tilePositionX, tilePositionY, tileLayer);
+}
+
+void
 MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	LOG_MSI ("MSI::Render\n");
@@ -967,9 +974,13 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			     ((DeepZoomImageTileSource *)source)->IsCollection () &&
 			     GetSubImages ();
 
-	if (!(source = GetSource ())) {
-		LOG_MSI ("no sources set, nothing to render\n");
-		return;
+	if (!source) {
+		source = GetSource ();
+		if (!source) {
+			LOG_MSI ("no sources set, nothing to render\n");
+			return;
+		}
+		source->set_invalidate_tile_layer_func (multi_scale_image_invalidate_tile_layer, this);
 	}
 
 	if (source->GetImageWidth () < 0 && !is_collection) {
@@ -1316,6 +1327,18 @@ MultiScaleImage::GetSubImageCount ()
 	if (sub_images == NULL)
 		return 0;
 	return sub_images->GetCount ();
+}
+
+void
+MultiScaleImage::InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
+{
+	//invaldate the full cache for now
+	LOG_MSI ("InvalidateTileLayer: Invalidating the full cache\n");
+	if (cache) {
+		g_hash_table_destroy (cache);
+		cache = g_hash_table_new_full (g_int_hash, g_int_equal, g_free, (GDestroyNotify)qtree_destroy);
+	}
+	Invalidate ();
 }
 
 /*

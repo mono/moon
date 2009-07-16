@@ -188,6 +188,8 @@ class MultiScaleImage : public MediaBase {
 
 	BitmapImageContext *GetFreeBitmapImageContext ();
 	void DownloadTile (BitmapImageContext *ctx, Uri *tile, int subimage, int level, int x, int y);
+
+	void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer);
 };
 
 /*
