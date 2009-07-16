@@ -161,4 +161,27 @@ private:
 	static MonoDomain *root_domain;
 };
 
+/*
+ * DeploymentStack: 
+ *  for all calls into javascript we need to push/pop the current deployment.
+ *  this class is (ab)uses C++ for this, just put a "DeploymentStack deployment_push_pop;" 
+ *  in every method which needs to push/pop the current deployment. the compiler will
+ *  all the ctor in the beginning of the method, and the dtor in the end.
+ */
+class DeploymentStack {
+public:
+	DeploymentStack ()
+	{
+		deployment = Deployment::GetCurrent ();
+	}
+	
+	~DeploymentStack ()
+	{
+		Deployment::SetCurrent (deployment);
+	}
+
+private:
+	Deployment *deployment;
+};
+
 #endif /* __DEPLOYMENT_H__ */

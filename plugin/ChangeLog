@@ -1,3 +1,9 @@
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-entry.cpp: Push/Pop the current deployment on every
+	transition to the browser. Makes MS DRT #2003 not spew a lot
+	of deployment mismatch warnings.
+
 2009-07-15  Larry Ewing  <lewing@novell.com>
 
 	* plugin.cpp: reconnect onload in LoadXAML and LoadXAP so that
