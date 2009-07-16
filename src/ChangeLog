@@ -1,3 +1,8 @@
+2009-07-16  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h: mark the ViewportOrigin and ViewportWidth
+	properties as AlwaysChange. fix drt #291.
+
 2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.cpp: Retrieve all instance variables we need into local variables

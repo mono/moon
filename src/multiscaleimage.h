@@ -109,9 +109,9 @@ class MultiScaleImage : public MediaBase {
 	const static int SubImagesProperty;
 	/* @PropertyType=bool,DefaultValue=true,Version=2.0,GenerateAccessors */
 	const static int UseSpringsProperty;
-	/* @PropertyType=Point,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
+	/* @PropertyType=Point,AlwaysChange,DefaultValue=Point(0\,0),Version=2.0,GenerateAccessors */
 	const static int ViewportOriginProperty;
-	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateAccessors */
+	/* @PropertyType=double,AlwaysChange,DefaultValue=1.0,Version=2.0,GenerateAccessors */
 	const static int ViewportWidthProperty;
 
 
