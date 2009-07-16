@@ -118,15 +118,6 @@ AnimationStorage::IsCurrentStorage ()
 	return false;
 }
 
-Value*
-AnimationStorage::GetStopValue ()
-{
-	if (stopValue)
-		return stopValue;
-
-	return baseValue;
-}
-
 void
 AnimationStorage::update_property_value (EventObject *, EventArgs *, gpointer closure)
 {
@@ -139,7 +130,7 @@ AnimationStorage::UpdatePropertyValue ()
 	if (targetobj == NULL)
 		return;
 
-	Value *current_value = clock->GetCurrentValue (baseValue, NULL/*XXX*/);
+	Value *current_value = clock->GetCurrentValue (baseValue, stopValue ? stopValue : baseValue);
 	if (current_value != NULL && timeline->GetTimelineStatus () == Timeline::TIMELINE_STATUS_OK) {
 		Applier *applier = clock->GetTimeManager ()->GetApplier ();
 		applier->AddPropertyChange (targetobj, targetprop, new Value (*current_value), APPLIER_PRECEDENCE_ANIMATION);
@@ -162,10 +153,9 @@ AnimationStorage::ResetPropertyValue ()
 
 	Applier *applier = clock->GetTimeManager ()->GetApplier ();
 
-	if (stopValue)
-		applier->AddPropertyChange (targetobj, targetprop, new Value (*stopValue), APPLIER_PRECEDENCE_ANIMATION_RESET);
-	else
-		applier->AddPropertyChange (targetobj, targetprop, new Value (*baseValue), APPLIER_PRECEDENCE_ANIMATION_RESET);
+	applier->AddPropertyChange (targetobj, targetprop,
+				    stopValue ? new Value (*stopValue) : new Value (*baseValue),
+				    APPLIER_PRECEDENCE_ANIMATION_RESET);
 }
 
 void 
@@ -698,9 +688,11 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 	else if (doubleByCached) {
 		end = start + *doubleByCached;
 	}
-	else {
-		end = start;
+	else if (defaultDestinationValue->Is(Type::DOUBLE)) {
+		end = defaultDestinationValue->AsDouble();
 	}
+	else
+		end = start;
 
 	double progress = animationClock->GetCurrentProgress ();
 
@@ -787,6 +779,9 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	}
 	else if (colorByCached) {
 		end = start + *colorByCached;
+	}
+	else if (defaultDestinationValue->Is(Type::COLOR)) {
+		end = *defaultDestinationValue->AsColor();
 	}
 	else {
 		end = start;
@@ -881,6 +876,9 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	}
 	else if (pointByCached) {
 		end = start + *pointByCached;
+	}
+	else if (defaultDestinationValue->Is(Type::POINT)) {
+		end = *defaultDestinationValue->AsPoint();
 	}
 	else {
 		end = start;

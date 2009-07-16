@@ -1,3 +1,29 @@
+2009-07-15  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h|cpp (Clock::CalculateFillTime): split this out from
+	Clock::Begin since we can seek on a clock that hasn't actually hit
+	Clock::Begin yet.
+	(Clock::Begin): call CalculateFillTime.
+	(Clock::UpdateFromParentTime): change our calculations slightly
+	for what localTime is in the face of a seek, and update
+	progress/localtime even when stopped.  Also, call
+	CalculateFillTime if we're seeking on a clock that hasn't started,
+	to make sure we get the proper progress.
+	(Clock::Seek): don't apply the SpeedRatio here, we do it in
+	UpdateFromParentTime.
+
+	* animation.h|cpp (AnimationStorage::GetStopValue): remove, it's
+	never used.
+	(AnimationStorage::UpdatePropertyValue): pass the stopValue or
+	baseValue as the defaultDestinationValue to
+	AnimationClock::GetCurrentValue.
+	(AnimationStorage::ResetPropertyValue): use ?: instead of if+else.
+	(DoubleAnimation::GetCurrentValue): if there's a correctly typed
+	defaultDestinationValue, use that before the base case of end =
+	start.
+	(ColorAnimation::GetCurrentValue): same.
+	(PointAnimation::GetCurrentValue): same.
+
 2009-07-15  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Consolidate some of the data passed to

@@ -157,6 +157,12 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	// and [0-$forever] for Forever durations.  Automatic
 	// durations are translated into timespans.
 
+	if (!GetHasStarted() && !GetWasStopped() && (GetBeginOnTick() || timeline->GetBeginTime () <= parentTime)) {
+		if (GetBeginOnTick())
+			BeginOnTick (false);
+		Begin (parentTime);
+	}
+
 	// root_parent_time is the time we were added to our parent clock.
 	// timeline->GetBeginTime() is expressed in the time-space of the parent clock.
 	//
@@ -169,6 +175,8 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	// autoreverse.  it is simple the timespan our clock has been
 	// running.
 	TimeSpan localTime = (parentTime - root_parent_time - timeline->GetBeginTime() - accumulated_pause_time) * timeline->GetSpeedRatio();
+
+	bool seek_completed = false;
 
 	if (is_seeking) {
 		// if we're seeking, we need to arrange for the above
@@ -191,9 +199,13 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 		   root_parent_time = parentTime - timeline->BeginTime() - -------------------------
 									   timeline->GetSpeedRatio()
 		*/
-		root_parent_time = parentTime - timeline->GetBeginTime () - seek_time / timeline->GetSpeedRatio ();
-		localTime = seek_time;
+		root_parent_time = parentTime - (timeline->GetBeginTime () - seek_time) / timeline->GetSpeedRatio ();
+		localTime = (seek_time - timeline->GetBeginTime()) * timeline->GetSpeedRatio();
 		is_seeking = false;
+		seek_completed = true;
+
+		if (!GetHasStarted())
+			CalculateFillTime ();
 	}
 	else if (is_paused) {
 		// if we're paused and not seeking, we don't update
@@ -209,14 +221,12 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	if (localTime < 0)
 		return true;
 
-	if (!GetHasStarted() && !GetWasStopped() && (GetBeginOnTick() || timeline->GetBeginTime () <= parentTime)) {
-		if (GetBeginOnTick())
-			BeginOnTick (false);
-		Begin (parentTime);
-	}
+	if (GetClockState () == Clock::Stopped) {
+		if (!seek_completed)
+			return false;
 
-	if (GetClockState () == Clock::Stopped)
-		return false;
+		// even for stopped clocks we update their position if they're seeked.
+	}
 
 	double normalizedTime = 0.0;
 
@@ -382,7 +392,6 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 
 	SetCurrentTime (localTime);
 	progress = normalizedTime;
-
 	return true;
 }
 
@@ -453,9 +462,26 @@ Clock::SetRootParentTime (TimeSpan parentTime)
 }
 
 void
+Clock::CalculateFillTime ()
+{
+	if (GetNaturalDuration().HasTimeSpan()) {
+		RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
+		if (repeat->HasDuration ()) {
+			fillTime = (repeat->GetDuration() * timeline->GetSpeedRatio ());
+		}
+		else if (repeat->HasCount ()) {
+			fillTime = repeat->GetCount() * GetNaturalDuration().GetTimeSpan() * (timeline->GetAutoReverse() ? 2 : 1);
+		}
+		else {
+			fillTime = GetNaturalDuration().GetTimeSpan() * (timeline->GetAutoReverse() ? 2 : 1);
+		}
+	}
+}
+
+void
 Clock::Begin (TimeSpan parentTime)
 {
-// 	printf ("clock %p (%s) begin\n", this, GetName ());
+	//printf ("clock %p (%s) begin\n", this, GetName ());
 	emit_completed = false;
 	has_completed = false;
 	was_stopped = false;
@@ -477,18 +503,7 @@ Clock::Begin (TimeSpan parentTime)
 	else
 		progress = 0.0;
 
-	if (GetNaturalDuration().HasTimeSpan()) {
-		RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
-		if (repeat->HasDuration ()) {
-			fillTime = (repeat->GetDuration() * timeline->GetSpeedRatio ());
-		}
-		else if (repeat->HasCount ()) {
-			fillTime = repeat->GetCount() * GetNaturalDuration().GetTimeSpan() * (timeline->GetAutoReverse() ? 2 : 1);
-		}
-		else {
-			fillTime = GetNaturalDuration().GetTimeSpan() * (timeline->GetAutoReverse() ? 2 : 1);
-		}
-	}
+	CalculateFillTime ();
 
 	SetClockState (Clock::Active);
 
@@ -499,6 +514,8 @@ Clock::Begin (TimeSpan parentTime)
 void
 Clock::Pause ()
 {
+ 	//printf ("clock %p (%s) paused\n", this, GetName ());
+
 	if (is_paused)
 		return;
 
@@ -520,7 +537,9 @@ Clock::Resume ()
 void
 Clock::Seek (TimeSpan timespan)
 {
-	seek_time = timespan * timeline->GetSpeedRatio ();
+ 	//printf ("clock %p (%s) seek to timespan %lld\n", this, GetName (), timespan);
+
+	seek_time = timespan;
 
 	is_seeking = true;
 }

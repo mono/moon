@@ -964,7 +964,6 @@ public:
 	bool IsLonely () { return (targetobj == NULL); };
 	bool IsCurrentStorage ();
 	Value* GetResetValue ();
-	Value* GetStopValue (void);
 	void DetachFromProperty (void);
 
 private:

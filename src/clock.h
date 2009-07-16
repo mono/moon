@@ -246,6 +246,8 @@ protected:
 	void SetClockState (ClockState state);
 	void SetCurrentTime (TimeSpan ts);
 
+	void CalculateFillTime ();
+
 	void Completed ();
 	
 	// events to queue up
