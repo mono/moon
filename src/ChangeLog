@@ -43,6 +43,11 @@
 
 2009-07-16  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp: reset the bitmapimage uri for the next time,
+	avoid issues while reusing dlders for the same images, like in drt2013
+
+2009-07-16  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* tilesource.h|cpp, multiscleimage.h|cpp: invalidate the full msi cache
 	on tilesource InvalidateTileLayer ().
 

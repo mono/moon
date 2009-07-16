@@ -966,6 +966,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			g_hash_table_insert (cache, new int(ctx->subimage), (subimage_cache = qtree_new ()));
 		qtree_insert_with_value (subimage_cache, surface, ctx->level, ctx->x, ctx->y);
 
+		ctx->bitmapimage->SetUriSource (NULL);
 		ctx->state = BitmapImageFree;
 	}
 
