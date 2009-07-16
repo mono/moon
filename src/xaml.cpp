@@ -1300,6 +1300,11 @@ class ManagedNamespace : public XamlNamespace {
 				if (type_name) {
 					el = type_name;
 					use_xmlns = type_xmlns;
+
+					if (!p->hydrating) {
+						parser_error (p, el, "x:Class", 4005, "Cannot specify x:Class in xaml files outside of a xap.");
+						return NULL;
+					}
 				}
 			}
 		}
@@ -3973,6 +3978,11 @@ create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *n
 			if (type_name) {
 				name = type_name;
 				use_xmlns = type_xmlns;
+
+				if (!p->hydrating) {
+					parser_error (p, name, "x:Class", 4005, "Cannot specify x:Class in xaml files outside of a xap.");
+					return NULL;
+				}
 			}
 		}
 	}
