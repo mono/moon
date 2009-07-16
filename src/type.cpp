@@ -120,15 +120,27 @@ Type::LookupEvent (const char *event_name)
 }
 
 bool
+Type::IsSubclassOf (Deployment *deployment, Type::Kind type, Type::Kind super)
+{
+	return deployment->GetTypes ()->IsSubclassOf (type, super);
+}
+
+bool
 Type::IsSubclassOf (Type::Kind type, Type::Kind super)
 {
-	return Deployment::GetCurrent ()->GetTypes ()->IsSubclassOf (type, super);
+	return IsSubclassOf (Deployment::GetCurrent (), type, super);
+}
+
+bool
+Type::IsSubclassOf (Deployment *deployment, Type::Kind super)
+{
+	return deployment->GetTypes ()->IsSubclassOf (type, super);
 }
 
 bool 
 Type::IsSubclassOf (Type::Kind super)
 {
-	return Deployment::GetCurrent ()->GetTypes ()->IsSubclassOf (type, super);
+	return IsSubclassOf (Deployment::GetCurrent (), type, super);
 }
 
 bool
@@ -219,15 +231,36 @@ Types::IsAssignableFrom (Type::Kind destination, Type::Kind type)
 }
 
 Type *
+Type::Find (Deployment *deployment, const char *name)
+{
+	return deployment->GetTypes ()->Find (name);
+}
+
+Type *
 Type::Find (const char *name)
 {
-	return Deployment::GetCurrent ()->GetTypes ()->Find (name);
+	return Find (Deployment::GetCurrent (), name);
+}
+
+Type *
+Type::Find (Deployment *deployment, const char *name, bool ignore_case)
+{
+	return deployment->GetTypes ()->Find (name, ignore_case);
 }
 
 Type *
 Type::Find (const char *name, bool ignore_case)
 {
-	return Deployment::GetCurrent ()->GetTypes ()->Find (name, ignore_case);
+	return Find (Deployment::GetCurrent (), name, ignore_case);
+}
+
+Type *
+Type::Find (Deployment *deployment, Type::Kind type)
+{
+	if (type < Type::INVALID || type == Type::LASTTYPE)
+		return NULL;
+		
+	return deployment->GetTypes ()->Find (type);
 }
 
 Type *
@@ -236,7 +269,7 @@ Type::Find (Type::Kind type)
 	if (type < Type::INVALID || type == Type::LASTTYPE)
 		return NULL;
 	
-	return Deployment::GetCurrent ()->GetTypes ()->Find (type);
+	return Find (Deployment::GetCurrent (), type);
 }
 
 DependencyObject *

@@ -20,6 +20,7 @@
 #include <glib.h>
 #include "list.h"
 
+class Deployment;
 class DependencyObject;
 class DependencyProperty;
 class Surface;
@@ -351,14 +352,21 @@ public:
 		// END_MANAGED_MAPPING
 	};
 	
+	static Type *Find (Deployment *deployment, const char *name);
 	static Type *Find (const char *name);
+	static Type *Find (Deployment *deployment, Type::Kind type);
 	static Type *Find (Type::Kind type);
+	static Type *Find (Deployment *deployment, const char *name, bool ignore_case);
 	static Type *Find (const char *name, bool ignore_case);
 	
 	bool IsSubclassOf (Type::Kind super);
+	bool IsSubclassOf (Deployment *deployment, Type::Kind super);
+	static bool IsSubclassOf (Deployment *deployment, Type::Kind type, Type::Kind super);
 	static bool IsSubclassOf (Type::Kind type, Type::Kind super);
 
 	bool IsAssignableFrom (Type::Kind type);
+	bool IsAssignableFrom (Deployment *deployment, Type::Kind type);
+	static bool IsAssignableFrom (Deployment *deployment, Type::Kind assignable, Type::Kind type);
 	static bool IsAssignableFrom (Type::Kind assignable, Type::Kind type);
 
 	int LookupEvent (const char *event_name);

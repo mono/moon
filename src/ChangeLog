@@ -1,5 +1,14 @@
 2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* type.cpp|h.in: Add Find, IsAssignable and IsSubclassOf methods which
+	takes a Deployment argument for when we already have the Deployment handy.
+	This way we can avoid hitting Deployment::GetCurrent on some frequently used
+	methods.
+
+	* type.h: Regenerated.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.h: Add stack trace to warning.
 
 2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
