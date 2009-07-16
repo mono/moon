@@ -1396,13 +1396,6 @@ XamlLoader::AddChild (void *p, Value *top_level, Value *parent_parent, bool pare
 	return false;
 }
 
-gboolean
-xaml_loader_find_any (gpointer key, gpointer value, gpointer user_data)
-{
-	return TRUE;
-}
-
-
 XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface, XamlContext *context)
 {
 	this->filename = g_strdup (filename);
