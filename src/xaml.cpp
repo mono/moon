@@ -1976,7 +1976,6 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 	if (p->loader != NULL && p->loader->callbacks.import_xaml_xmlns != NULL) {
 		MoonError error;
 		XamlCallbackData data = XamlCallbackData (p->loader, p, p->GetTopElementPtr ());
-		printf ("unmanaged xmlns:  %s\n", uri);
 		if (!p->loader->callbacks.import_xaml_xmlns (&data, uri, &error))
 			return parser_error (p, p->current_element ? p->current_element->element_name : NULL, prefix, 2005, "Unknown namespace %s", uri);
 	}
