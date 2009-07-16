@@ -340,6 +340,7 @@ class DependencyObject;
 class DependencyObjectCollection;
 class DependencyProperty;
 class Deployment;
+class DeploymentStack;
 class DirtyLists;
 class DiscreteColorKeyFrame;
 class DiscreteDoubleKeyFrame;
@@ -751,6 +752,7 @@ struct Uri;
 struct Value;
 struct WAVEFORMATEX;
 struct WAVEFORMATEXTENSIBLE;
+struct XamlCallbackData;
 struct XamlLoaderCallbacks;
 
 typedef void ( * ApplyDefaultStyleCallback ) ( FrameworkElement * fwe , ManagedTypeInfo * key ) ;

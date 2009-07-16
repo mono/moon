@@ -85,8 +85,8 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::LINE, "Y1", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::LINE, "X2", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::LINE, "X1", false, new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "ViewportWidth", false, new Value (1.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "ViewportOrigin", false, new Value (Point(0,0)), Type::POINT);
+	DependencyProperty::RegisterFull (this, Type::MULTISCALEIMAGE, "ViewportWidth", false, new Value (1.0), Type::DOUBLE, false, false, true, NULL, NULL, NULL, false);
+	DependencyProperty::RegisterFull (this, Type::MULTISCALEIMAGE, "ViewportOrigin", false, new Value (Point(0,0)), Type::POINT, false, false, true, NULL, NULL, NULL, false);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "UseSprings", false, new Value (true), Type::BOOL);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "TileFade", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::MULTISCALEIMAGE, "SubImages", false, NULL, Type::MULTISCALESUBIMAGE_COLLECTION, false, true, false, NULL, NULL, AutoCreators::default_autocreator, false);
