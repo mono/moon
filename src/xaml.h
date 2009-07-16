@@ -159,11 +159,6 @@ class XamlLoader {
 	XamlContext *context;
 
  public:
-	enum AssemblyLoadResult {
-		SUCCESS = -1,
-		MissingAssembly = 1,
-		LoadFailure = 2
-	};
 
 	XamlLoader (const char *filename, const char *str, Surface *surface, XamlContext *context = NULL);
 	virtual ~XamlLoader ();
