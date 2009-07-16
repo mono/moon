@@ -173,7 +173,7 @@
 +SSC-M: System.Void System.Windows.Deployment::ReadManifest()
 +SSC-M: System.Boolean System.Windows.Deployment::InitializeDeployment()
 +SSC-M: System.Boolean System.Windows.Deployment::InitializeDeployment(System.IntPtr,System.String)
-+SSC-M: System.Reflection.Assembly System.Windows.Deployment::LoadXapAssembly(System.String)
++SSC-M: System.Boolean System.Windows.Deployment::LoadAssemblies()
 +SSC-M: System.Void System.Windows.Deployment::EmitError(System.Int32,System.String)
 +SSC-M: System.Void System.Windows.Deployment::SetEntryAssembly(System.Reflection.Assembly)
 +SSC-M: System.Void System.Windows.Deployment::TerminateCurrentApplication()
