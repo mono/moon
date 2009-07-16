@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 536 methods needs to be decorated.
+# 537 methods needs to be decorated.
 
 # internal call
 +SC-M: Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::FindProxy(System.IntPtr)
@@ -198,9 +198,6 @@
 
 # internal call
 +SC-M: System.Boolean System.Threading.Thread::Join_internal(System.Int32,System.IntPtr)
-
-# using 'System.Threading.NativeOverlapped*' as a parameter type
-+SC-M: System.Boolean System.Threading.ThreadPool::UnsafeQueueNativeOverlapped(System.Threading.NativeOverlapped*)
 
 # internal call
 +SC-M: System.Boolean System.Threading.WaitHandle::SignalAndWait_Internal(System.IntPtr,System.IntPtr,System.Int32,System.Boolean)
@@ -1352,6 +1349,9 @@
 +SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::basic_init(System.Reflection.Emit.AssemblyBuilder)
 
 # internal call
++SC-M: System.Void System.Reflection.Emit.DerivedType::create_unmanaged_type(System.Type)
+
+# internal call
 +SC-M: System.Void System.Reflection.Emit.DynamicMethod::create_dynamic_method(System.Reflection.Emit.DynamicMethod)
 
 # internal call
@@ -1371,6 +1371,9 @@
 
 # internal call
 +SC-M: System.Void System.Reflection.Emit.ModuleBuilder::RegisterToken(System.Object,System.Int32)
+
+# internal call
++SC-M: System.Void System.Reflection.Emit.ModuleBuilder::set_wrappers_type(System.Reflection.Emit.ModuleBuilder,System.Type)
 
 # internal call
 +SC-M: System.Void System.Reflection.Emit.ModuleBuilder::WriteToFile(System.IntPtr)
