@@ -1,5 +1,9 @@
 2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.h: Add stack trace to warning.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.cpp: Underflowed: if we haven't ended and don't have any more
 	frames, we need to set the Waiting bit so that we start playing again when
 	we get more frames.
