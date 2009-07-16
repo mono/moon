@@ -109,18 +109,18 @@ public:
 	
 	bool Is (Type::Kind k)
 	{
-		return Type::IsSubclassOf (GetObjectType (), k);
+		return Type::IsSubclassOf (GetDeployment (), GetObjectType (), k);
 	}
 	
 	Type *GetType ()
 	{
-		return Type::Find (GetObjectType ());
+		return Type::Find (GetDeployment (), GetObjectType ());
 	}
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual const char *GetTypeName ()
 	{
-		return Type::Find (GetObjectType ())->GetName ();
+		return Type::Find (GetDeployment (), GetObjectType ())->GetName ();
 	}	
 	
 	/* @GenerateCBinding,GeneratePInvoke */
