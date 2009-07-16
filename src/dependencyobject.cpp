@@ -367,6 +367,15 @@ EventObject::ref ()
 void 
 EventObject::unref ()
 {
+	// we need to retrieve all instance fields into locals before decreasing the refcount
+	// TODO: do we need some sort of gcc foo (volatile variables, memory barries)
+	// to ensure that gcc does not optimize the fetches below away
+	ToggleNotifyListener *toggle_listener = this->toggleNotifyListener;
+#if OBJECT_TRACKING
+	Deployment *depl = this->deployment ? this->deployment : Deployment::GetCurrent ();
+	const char *type_name = (depl == NULL || depl->isDead) ? NULL : Type::Find (depl, GetObjectType ())->GetName ();
+#endif	
+	
 #if SANITY
 	if (GetObjectType () != object_type)
 		printf ("EventObject::unref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
@@ -377,16 +386,22 @@ EventObject::unref ()
 		return;
 	}
 
-	if (refcount == 1 && events != NULL && events->emitting) {
+	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
+	
+	// from now on we can't access any instance fields if v > 0
+	// since another thread might have unreffed and caused our destruction
+
+	if (v == 0 && events != NULL && events->emitting) {
+		g_atomic_int_exchange_and_add (&refcount, 1);
 		unref_delayed ();
 		return;
 	}
 
-	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
-
-	OBJECT_TRACK ("Unref", ((deployment == NULL && Deployment::GetCurrent () == NULL) || deployment->isDead) ? "<unknown>" : GetTypeName ());
+	OBJECT_TRACK ("Unref", type_name);
 
 	if (v == 0) {
+		// here we *can* access instance fields, since we know that we haven't been
+		// desctructed already.
 		Dispose ();
 		
 #if SANITY
@@ -396,13 +411,19 @@ EventObject::unref ()
 
 		// We need to check again if the refcount really is zero,
 		// the object might have resurrected in the Dispose.
+		// TODO: we should disallow resurrection, it's not thread-safe
+		// if we got resurrected and unreffed, we'd be deleted by now
+		// in which case we'll double free here.
 		v = g_atomic_int_get (&refcount);
 		if (v == 0)
 			delete this;
 			
-	} else if (v == 1 && toggleNotifyListener) {
+	} else if (v == 1 && toggle_listener) {
+		// we know that toggle_listener hasn't been freed, since if it exists, it will have a ref to us which would prevent our destruction
+		// note that the instance field might point to garbage after decreasing the refcount above, so we access the local variable we 
+		// retrieved before decreasing the refcount.
 		if (getenv ("MOONLIGHT_ENABLE_TOGGLEREF"))
-			toggleNotifyListener->Invoke (true);
+			toggle_listener->Invoke (true);
 	}
 
 #if SANITY

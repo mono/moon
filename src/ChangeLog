@@ -1,5 +1,12 @@
 2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: Retrieve all instance variables we need into local variables
+	before decreasing the refcount. If the refcount is > 0 after decreasing it, we can't
+	access instance variables anymore, since another thread might have unreffed which would
+	cause the object to be deleted already.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: #if DEBUG -> #if SANITY and fix a typo in a comment.
 
 2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
