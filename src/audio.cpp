@@ -436,6 +436,8 @@ AudioSource::GetCurrentPts ()
 void
 AudioSource::Stop ()
 {
+	LOG_AUDIO ("AudioSource::Stop ()\n");
+	
 	Lock ();
 	SetState (AudioStopped);
 	last_current_pts = G_MAXUINT64;
@@ -449,6 +451,8 @@ AudioSource::Stop ()
 void
 AudioSource::Play ()
 {
+	LOG_AUDIO ("AudioSource::Play ()\n");
+	
 	SetState (AudioPlaying);
 	SetFlag ((AudioFlags) (AudioEnded | AudioEOF | AudioWaiting), false);
 	Played ();
@@ -457,6 +461,8 @@ AudioSource::Play ()
 void
 AudioSource::Pause ()
 {
+	LOG_AUDIO ("AudioSource::Pause ()\n");
+	
 	SetState (AudioPaused);
 	Paused ();
 }
@@ -474,6 +480,7 @@ AudioSource::Underflowed ()
 			SetFlag (AudioEnded, true);
 			mplayer->AudioFinished ();
 		} else if (IsQueueEmpty ()) {
+			SetFlag (AudioWaiting, true);
 			mplayer->SetBufferUnderflow ();
 		}
 	}
