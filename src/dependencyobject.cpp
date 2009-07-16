@@ -367,7 +367,7 @@ EventObject::ref ()
 void 
 EventObject::unref ()
 {
-#if DEBUG
+#if SANITY
 	if (GetObjectType () != object_type)
 		printf ("EventObject::unref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
 #endif
@@ -389,12 +389,12 @@ EventObject::unref ()
 	if (v == 0) {
 		Dispose ();
 		
-#if DEBUG
+#if SANITY
 		if ((flags & Disposed) == 0)
 			printf ("EventObject::unref (): the type '%s' (or any of its parent types) forgot to call its base class' Dispose method.\n", GetTypeName ());
 #endif
 
-		// We need to check again the the refcount really is zero,
+		// We need to check again if the refcount really is zero,
 		// the object might have resurrected in the Dispose.
 		v = g_atomic_int_get (&refcount);
 		if (v == 0)

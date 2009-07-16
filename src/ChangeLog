@@ -1,5 +1,9 @@
 2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: #if DEBUG -> #if SANITY and fix a typo in a comment.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: Add sanity check for refcount < 0.
 
 2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
