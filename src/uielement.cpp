@@ -64,6 +64,14 @@ UIElement::~UIElement()
 	delete dirty_region;
 }
 
+bool
+UIElement::IsSubtreeLoaded (UIElement *element)
+{
+	while (element && !element->IsLoaded ())
+		element = element->GetVisualParent ();
+	return element;
+}
+
 void
 UIElement::Dispose()
 {

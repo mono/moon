@@ -79,7 +79,13 @@ Control::InsideObject (cairo_t *cr, double x, double y)
 void
 Control::OnLoaded ()
 {
-	UpdateEnabled ();
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	UIElement *e = GetVisualParent ();
+	while (e && !types->IsSubclassOf (e->GetObjectType (), Type::CONTROL))
+		e = e->GetVisualParent ();
+	if (e)
+		((Control *)e)->UpdateEnabled ();
+
 	FrameworkElement::OnLoaded ();
 }
 
@@ -116,9 +122,11 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 void
 Control::SetVisualParent (UIElement *visual_parent)
 {
-	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	FrameworkElement::SetVisualParent (visual_parent);
-	
+	if (!UIElement::IsSubtreeLoaded (this))
+		return;
+
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	if (!visual_parent) {
 		enabled_parent = true;
 	} else {
@@ -139,9 +147,10 @@ Control::SetVisualParent (UIElement *visual_parent)
 bool
 Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
-	
 	if (property->GetId () == Control::IsEnabledProperty) {
 		this->enabled_local = value->AsBool ();
+		if ((enabled_local && enabled_parent) == GetIsEnabled ())
+			return true;
 
 		Value v (enabled_local && (enabled_parent));
 		

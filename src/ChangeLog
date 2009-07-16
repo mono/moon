@@ -1,3 +1,15 @@
+2009-07-16  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* uielement.h:
+	* control.cpp:
+	* uielement.cpp: 1) If the Control is not attached to a
+	  subtree which has been loaded, don't propagate IsEnabled to
+	  its children.
+	2) Whenever a Control is loaded we traverse it's visual
+	  parents until we find another control and propagate the
+	  IsEnabled state.
+
 2009-07-16  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.h: mark the ViewportOrigin and ViewportWidth

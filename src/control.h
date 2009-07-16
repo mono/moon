@@ -129,6 +129,7 @@ public:
 	static void SetIsTemplateItem (DependencyObject *object, bool value);
 	static bool GetIsTemplateItem (DependencyObject *object);
 
+	void UpdateEnabled ();
 	// Events
 	const static int IsEnabledChangedEvent;
 	
@@ -179,7 +180,6 @@ private:
 	ControlTemplate *applied_template;
 	bool enabled_local;
 	bool enabled_parent;
-	void UpdateEnabled ();
 };
 
 

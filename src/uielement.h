@@ -501,6 +501,9 @@ public:
 	const static int MouseRightButtonUpEvent;
 	const static int MouseWheelEvent;
 
+	// Helper method which checks recursively checks this element and its visual
+	// parents to see if any are loaded.
+	static bool IsSubtreeLoaded (UIElement *element);
 protected:
 	virtual ~UIElement ();
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);

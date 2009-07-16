@@ -42,6 +42,18 @@ namespace MoonTest.System.Windows.Controls {
 	[TestClass]
 	public partial class ContentControlTest : SilverlightTest {
 
+		class CanvasControl : UserControl
+		{
+			public Canvas Canvas {
+				get { return (Canvas) Content; }
+			}
+
+			public CanvasControl ()
+			{
+				Content = new Canvas ();
+			}
+		}
+
 		class ContentControlPoker : ContentControl {
 
 			public object DefaultStyleKey_ {
@@ -411,6 +423,76 @@ namespace MoonTest.System.Windows.Controls {
 			a.IsEnabledChanged += delegate { count++; };
 			a.IsEnabled = false;
 			Assert.AreEqual (0, count, "#1");
+		}
+
+		[TestMethod]
+		public void IsEnabled_Propagate ()
+		{
+			// IsEnabled changes propagate immediately on an element not in the live tree
+			CanvasControl root = new CanvasControl ();
+			CanvasControl child = new CanvasControl ();
+			root.Canvas.Children.Add (child);
+
+			root.IsEnabled = false;
+			Assert.IsFalse (child.IsEnabled, "#1");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IsEnabled_Propagate2a ()
+		{
+			IsEnabledPropgate2Core (false);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IsEnabled_Propagate2b ()
+		{
+			IsEnabledPropgate2Core (true);
+		}
+		
+		void IsEnabledPropgate2Core (bool useMiddleElement)
+		{
+			// Attaching a new control to the tree does not
+			// pick up the parent 'IsEnabled' value until
+			// the control is loaded.
+			bool enabled_when_loaded = false;
+			
+			CanvasControl root = new CanvasControl ();
+			Canvas middle = new Canvas ();
+			CanvasControl child = new CanvasControl ();
+
+			child.Loaded += (o, e) => enabled_when_loaded = child.IsEnabled;
+			root.IsEnabled = false;
+
+			if (useMiddleElement) {
+				root.Canvas.Children.Add (middle);
+				middle.Children.Add (child);
+			} else {
+				root.Canvas.Children.Add (child);
+			}
+
+			Assert.IsTrue (child.IsEnabled, "#1");
+			Enqueue (() => Assert.IsTrue (child.IsEnabled, "#2"));
+			Enqueue (() => TestPanel.Children.Add (root));
+			Enqueue (() => Assert.IsFalse (child.IsEnabled, "#3"));
+			Enqueue (() => Assert.IsFalse (enabled_when_loaded, "#4"));
+			EnqueueTestComplete ();	
+		}
+
+		[TestMethod]
+		public void IsEnabled_Propagate3 ()
+		{
+			// Check if disabling the control a second time
+			// propagates the value to the child
+			CanvasControl root = new CanvasControl ();
+			CanvasControl child = new CanvasControl ();
+
+			root.IsEnabled = false;
+			root.Canvas.Children.Add (child);
+			Assert.IsTrue (child.IsEnabled, "#1");
+			root.IsEnabled = false;
+			Assert.IsTrue (child.IsEnabled, "#2");
 		}
 
 		[TestMethod]
