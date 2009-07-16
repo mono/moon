@@ -705,6 +705,10 @@ ClockGroup::UpdateFromParentTime (TimeSpan parentTime)
 	// next tick.
 	ClockState current_state = GetClockState();
 
+	/* likewise, we need to cache this here since
+	   Clock::UpdateFromParentTime will clear it */
+	bool seeking = GetIsSeeking();
+
 	bool rv = Clock::UpdateFromParentTime (parentTime);
 
 	// ClockGroups (which correspond to storyboards generally)
@@ -719,7 +723,7 @@ ClockGroup::UpdateFromParentTime (TimeSpan parentTime)
 	// targetting.  and the new setting isnt clobbered by the
 	// animation like it would be if the storyboard was active.
 
-	bool update_child_clocks = (current_state == Clock::Active || GetIsSeeking());
+	bool update_child_clocks = (current_state == Clock::Active || seeking);
 
 	for (GList *l = child_clocks; l; l = l->next) {
 		Clock *clock = (Clock*)l->data;

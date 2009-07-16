@@ -11,6 +11,9 @@
 	to make sure we get the proper progress.
 	(Clock::Seek): don't apply the SpeedRatio here, we do it in
 	UpdateFromParentTime.
+	(ClockGroup::UpdateFromParentTime): we need to cache is_seeking
+	before the call to Clock::UpdateParentTime, since that call
+	clobbers it.
 
 	* animation.h|cpp (AnimationStorage::GetStopValue): remove, it's
 	never used.
