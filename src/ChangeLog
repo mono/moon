@@ -1,3 +1,8 @@
+2009-07-17 Rolf Bjarne Kvinge <RKvinge@novell.com>
+
+	* mediaelement.cpp: Only emit BufferingProgressChanged if it has gone up. The real
+	buffer level will fluctuate as we play.
+
 2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp|h: When we pause, store the current position, which we must return

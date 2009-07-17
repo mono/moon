@@ -1192,7 +1192,7 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 	
 	g_return_if_fail (pea != NULL);
 
-	if (GetBufferingProgress () != pea->progress) {
+	if (GetBufferingProgress () < pea->progress) {
 		SetBufferingProgress (pea->progress);
 		Emit (BufferingProgressChangedEvent);
 	}
