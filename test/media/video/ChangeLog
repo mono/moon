@@ -1,3 +1,10 @@
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* test-playlist-events.html:
+	* test-playlist-events.asx: Added. New test.
+
+	* test-seek-race.html: Add comments.
+
 2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* test-playlist-attributes.asx:
