@@ -1923,27 +1923,6 @@ MediaSeekClosure::MediaSeekClosure (Media *media, MediaCallback *callback, IMedi
 {
 	this->pts = pts;
 }
- 
-/*
- * MediaDecodeFrameClosure
- */
-
-MediaDecodeFrameClosure::MediaDecodeFrameClosure (Media *media, MediaCallback *callback, IMediaDecoder *context, MediaFrame *frame)
-	: MediaClosure (media, callback, context)
-{
-	this->frame = frame;
-	this->frame->ref ();
-}
-
-void
-MediaDecodeFrameClosure::Dispose ()
-{
-	if (frame) {
-		frame->unref ();
-		frame = NULL;
-	}
-	MediaClosure::Dispose ();
-}
 
 /*
  * MediaReportSeekCompletedClosure
@@ -3492,10 +3471,17 @@ IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 }
 
 MediaResult
-IMediaDecoder::DecodeFrameCallback (MediaClosure *c)
+IMediaDecoder::DecodeFrameCallback (MediaClosure *closure)
 {
-	MediaDecodeFrameClosure *closure = (MediaDecodeFrameClosure *) c;
-	closure->GetDecoder ()->DecodeFrameAsync (closure->GetFrame ());
+	
+	IMediaDecoder *decoder = (IMediaDecoder *) closure->GetContext ();
+	IMediaDecoder::FrameNode *node = (IMediaDecoder::FrameNode *) decoder->queue.Pop ();
+	
+	if (node != NULL) {
+		decoder->DecodeFrameAsync (node->frame);
+		delete node;
+	}
+
 	return MEDIA_SUCCESS;
 }
 
@@ -3504,13 +3490,14 @@ IMediaDecoder::DecodeFrameAsync (MediaFrame *frame)
 {
 	Media *media = GetMediaReffed ();
 
-	LOG_PIPELINE ("IMediaDecoder::DecodeFrameAsync (%p)\n", frame);
+	LOG_PIPELINE ("IMediaDecoder::DecodeFrameAsync (%p) %s\n", frame, (frame && frame->stream) ? frame->stream->GetStreamTypeName () : NULL);
 	
 	g_return_if_fail (frame != NULL);
 	g_return_if_fail (media != NULL);
 	
 	if (!media->InMediaThread ()) {
-		MediaClosure *closure = new MediaDecodeFrameClosure (media, DecodeFrameCallback, this, frame);
+		MediaClosure *closure = new MediaClosure (media, DecodeFrameCallback, this);
+		queue.Push (new FrameNode (frame));
 		media->EnqueueWork (closure);
 		closure->unref ();
 		return;

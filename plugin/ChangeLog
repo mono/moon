@@ -1,3 +1,7 @@
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
 2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: PluginInstance::UpdateSourceByReference: add a

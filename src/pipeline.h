@@ -222,25 +222,6 @@ public:
 };
 
 /*
- * MediaDecodeFrameClosure
- */
-class MediaDecodeFrameClosure : public MediaClosure {
-private:
-	MediaFrame *frame;
-
-protected:
-	virtual ~MediaDecodeFrameClosure () {}
-	
-public:
-	MediaDecodeFrameClosure (Media *media, MediaCallback *callback, IMediaDecoder *context, MediaFrame *frame);
-	virtual void Dispose ();
-	
-	MediaFrame *GetFrame () { return frame; }
-	IMediaDecoder *GetDecoder () { return (IMediaDecoder *) GetContext (); }
-};
-
-
-/*
  * MediaMarkerFoundClosure
  */
 class MediaMarkerFoundClosure : public MediaClosure {
@@ -883,9 +864,22 @@ private:
 	bool opened;
 	MoonPixelFormat pixel_format; // The pixel format this codec outputs. Open () should fill this in.
 	IMediaStream *stream;
+	Queue queue; // the list of frames to decode.
 		
 	static MediaResult DecodeFrameCallback (MediaClosure *closure);
 	
+	class FrameNode : public List::Node {
+	public:
+		FrameNode (MediaFrame *f) : frame (f)
+		{
+			frame->ref ();
+		}
+		~FrameNode ()
+		{
+			frame->unref ();
+		}
+		MediaFrame *frame;
+	};
 protected:
 	virtual ~IMediaDecoder () {}
 
@@ -920,6 +914,8 @@ public:
 	bool IsOpened () { return opened; }
 	MoonPixelFormat GetPixelFormat () { return pixel_format; }
 	IMediaStream *GetStream () { return stream; }	
+	
+	bool IsDecoderQueueEmpty () { return queue.IsEmpty (); }
 };
 
 

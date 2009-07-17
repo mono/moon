@@ -1,5 +1,17 @@
 2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp|h: When we get a decode frame request from another
+	thread, store the request on the demuxer in a list, instead of on the
+	media thread's stack. This ensures that decode frame requests are
+	decoded in the same order they're requested.
+
+	* type.h:
+	* value.h:
+	* cbinding.h:
+	* type-generated.cpp: Regenerated.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp|h: Added and Emit EntryChangedEvent.
 
 	* type-generated.cpp: Regenerated.
