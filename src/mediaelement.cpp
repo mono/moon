@@ -67,6 +67,7 @@ MediaElement::MediaElement ()
 	marker_closure = NULL;
 	mplayer = NULL;
 	playlist = NULL;
+	error_args = NULL;
 	flags = UseMediaWidth | UseMediaHeight;
 		
 	marker_timeout = 0;
@@ -440,6 +441,10 @@ MediaElement::Reinitialize ()
 	if (streamed_markers) {
 		streamed_markers->unref ();
 		streamed_markers = NULL;
+	}
+	if (error_args) {
+		error_args->unref ();
+		error_args = NULL;
 	}
 	mutex.Unlock ();
 	
@@ -1121,7 +1126,7 @@ MediaElement::CurrentStateChangedHandler (PlaylistRoot *playlist, EventArgs *arg
 void
 MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s\n", GetStateName (state));
+	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s\n", GetStateName (state), args ? args->error_message : NULL);
 	VERIFY_MAIN_THREAD;
 	
 	if (state == MediaStateError)
@@ -1515,11 +1520,39 @@ MediaElement::EnableAntiAlias (void)
 }
 
 void
+MediaElement::ReportErrorOccurredCallback (EventObject *obj)
+{
+	MediaElement *me = (MediaElement *) obj;
+	ErrorEventArgs *args;
+	
+	me->mutex.Lock ();
+	args = me->error_args;
+	me->error_args = NULL;
+	me->mutex.Unlock ();
+	
+	me->ReportErrorOccurred (args);
+	if (args)
+		args->unref ();
+}
+
+void
 MediaElement::ReportErrorOccurred (ErrorEventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::ReportErrorOccurred (%p)\n", args);
-	VERIFY_MAIN_THREAD;
+
+	if (!Surface::InMainThread ()) {
+		mutex.Lock ();
+		if (error_args)
+			error_args->unref ();
+		error_args = args;
+		if (error_args)
+			error_args->ref ();
+		mutex.Unlock ();
+		AddTickCallSafe (ReportErrorOccurredCallback);
+		return;
+	}
 	
+	VERIFY_MAIN_THREAD;
 	MediaErrorHandler (NULL, args);
 }
 
@@ -1527,9 +1560,10 @@ void
 MediaElement::ReportErrorOccurred (const char *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::ReportErrorOccurred ('%s')\n", args);
-	VERIFY_MAIN_THREAD;
 	
-	MediaErrorHandler (NULL, new ErrorEventArgs (MediaError, 3001, args));
+	ErrorEventArgs *eea = new ErrorEventArgs (MediaError, 3001, args);
+	ReportErrorOccurred (eea);
+	eea->unref ();
 }
 
 /*

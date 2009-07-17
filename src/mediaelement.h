@@ -30,6 +30,7 @@ class MediaElement : public FrameworkElement {
 	Mutex mutex;
 	
 	TimelineMarkerCollection *streamed_markers; // Thread-safe: Accesses to this field needs to use the mutex.
+	ErrorEventArgs *error_args; // Thread-safe: Accesses to this field needs to use the mutex.
 	MediaMarkerFoundClosure *marker_closure;
 	cairo_matrix_t matrix;
 	MediaPlayer *mplayer;
@@ -108,6 +109,7 @@ class MediaElement : public FrameworkElement {
 	void EmitMediaEnded ();
 	void EmitStateChangedAsync ();
 	static void EmitStateChanged (EventObject *obj);
+	static void ReportErrorOccurredCallback (EventObject *obj);
 	
 	void AddStreamedMarker (TimelineMarker *marker); // Thread-safe
 	void AddStreamedMarker (MediaMarker *marker); // Thread-safe
@@ -234,9 +236,9 @@ class MediaElement : public FrameworkElement {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Stop (); // Not thread-safe
 	
-	void ReportErrorOccurred (ErrorEventArgs *args); // Not thread-safe
+	void ReportErrorOccurred (ErrorEventArgs *args); // Thread safe
 	/* @GenerateCBinding,GeneratePInvoke */
-	void ReportErrorOccurred (const char *args); // Not thread-safe
+	void ReportErrorOccurred (const char *args); // Thread safe
 	
 	// State methods
 	bool IsClosed () { return state == MediaStateClosed; }
