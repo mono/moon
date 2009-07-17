@@ -92,6 +92,11 @@ namespace Mono
 			number = 9;
 			code = 0;
 			message = IntPtr.Zero;
+			
+			byte [] bytes = System.Text.Encoding.UTF8.GetBytes (ex.Message);
+			message  = Marshal.AllocHGlobal (bytes.Length + 1);
+			Marshal.Copy (bytes, 0, message, bytes.Length);
+			Marshal.WriteByte (message, bytes.Length, 0);
 
 			XamlParseException p = ex as XamlParseException;
 			if (p != null) {
@@ -99,12 +104,8 @@ namespace Mono
 				line_number = p.LineNumber;
 				code = p.Code;
 
-				byte [] bytes = System.Text.Encoding.UTF8.GetBytes (p.Message);
-				message  = Marshal.AllocHGlobal (bytes.Length + 1);
-				Marshal.Copy (bytes, 0, message, bytes.Length);
-				Marshal.WriteByte (message, bytes.Length, 0);
-
 			} else {
+				//System.Console.WriteLine (ex);
 				char_position = -1;
 				line_number = -1;
 			}
