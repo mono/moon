@@ -87,6 +87,8 @@ class MediaPlayer : public EventObject {
 	guint64 frames_update_timestamp;
 	guint32 dropped_frames;
 	guint32 rendered_frames;
+	double rendered_frames_per_second;
+	double dropped_frames_per_second;
 
 	static void LoadVideoFrameCallback (EventObject *object);
 	void LoadVideoFrame ();
@@ -171,6 +173,9 @@ class MediaPlayer : public EventObject {
 	
 	guint64 GetPosition () { return GetTargetPts (); }
 	guint64 GetDuration () { return duration; }
+	
+	double GetDroppedFramesPerSecond () { return dropped_frames_per_second; }
+	double GetRenderedFramesPerSecond () { return rendered_frames_per_second; }
 	
 	void SetMuted (bool muted);
 	bool GetMuted ();

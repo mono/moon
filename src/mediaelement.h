@@ -333,9 +333,13 @@ class MediaElementPropertyValueProvider : public FrameworkElementProvider {
  private:
  	Value *position;
  	Value *current_state;
+	Value *rendered_frames_per_second;
+	Value *dropped_frames_per_second;
 
 	Value *GetPosition ();
 	Value *GetCurrentState ();
+	Value *GetRenderedFramesPerSecond ();
+	Value *GetDroppedFramesPerSecond ();
  public:
 	MediaElementPropertyValueProvider (MediaElement *obj, PropertyPrecedence precedence);
 	virtual ~MediaElementPropertyValueProvider ();

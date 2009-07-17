@@ -1,5 +1,11 @@
 2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp|h:
+	* mediaelement.cpp|h: Use a property value provider for
+	Render/DroppedFramesPerSecond.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp|h: Make ReportErrorOccurred thread-safe. Managed code might
 	call us from a worker thread.
 

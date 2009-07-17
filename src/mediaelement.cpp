@@ -1575,12 +1575,16 @@ MediaElementPropertyValueProvider::MediaElementPropertyValueProvider (MediaEleme
 {
 	position = NULL;
 	current_state = NULL;
+	rendered_frames_per_second = NULL;
+	dropped_frames_per_second = NULL;
 }
 
 MediaElementPropertyValueProvider::~MediaElementPropertyValueProvider ()
 {
 	delete position;
 	delete current_state;
+	delete rendered_frames_per_second;
+	delete dropped_frames_per_second;
 }
 
 Value *
@@ -1594,8 +1598,48 @@ MediaElementPropertyValueProvider::GetPropertyValue (DependencyProperty *propert
 		
 	if (property->GetId () == MediaElement::CurrentStateProperty)
 		return GetCurrentState ();
+	
+	if (property->GetId () == MediaElement::DroppedFramesPerSecondProperty)
+		return GetDroppedFramesPerSecond ();
+	
+	if (property->GetId () == MediaElement::RenderedFramesPerSecondProperty)
+		return GetRenderedFramesPerSecond ();
 
 	return FrameworkElementProvider::GetPropertyValue (property);
+}
+
+Value *
+MediaElementPropertyValueProvider::GetDroppedFramesPerSecond ()
+{
+	MediaElement *element = (MediaElement *) obj;
+	MediaPlayer *mplayer = element->GetMediaPlayer ();
+	
+	delete dropped_frames_per_second;
+	
+	if (mplayer) {
+		dropped_frames_per_second = new Value (mplayer->GetDroppedFramesPerSecond ());
+	} else {
+		dropped_frames_per_second = NULL;
+	}
+	
+	return dropped_frames_per_second;
+}
+
+Value *
+MediaElementPropertyValueProvider::GetRenderedFramesPerSecond ()
+{
+	MediaElement *element = (MediaElement *) obj;
+	MediaPlayer *mplayer = element->GetMediaPlayer ();
+	
+	delete rendered_frames_per_second;
+	
+	if (mplayer) {
+		rendered_frames_per_second = new Value (mplayer->GetRenderedFramesPerSecond ());
+	} else {
+		rendered_frames_per_second = NULL;
+	}
+	
+	return rendered_frames_per_second;
 }
 
 Value *

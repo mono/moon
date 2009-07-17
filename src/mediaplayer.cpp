@@ -423,6 +423,8 @@ MediaPlayer::Initialize ()
 	frames_update_timestamp = 0;
 	rendered_frames = 0;
 	dropped_frames = 0;
+	rendered_frames_per_second = 0.0;
+	dropped_frames_per_second = 0.0;
 }
 
 void
@@ -630,6 +632,8 @@ MediaPlayer::AdvanceFrame ()
 			if (!HasAudio ())
 				SetBufferUnderflow ();
 			// If we have audio, we keep playing (and loosing frames) until the audio playing stops due to buffer underflow
+			// TODO: determine if we don't have video due to not having enough data (in which case we should start buffering),
+			// or if it is because the decoder can't keep up (in which case we should drop frames).
 			break;
 		}
 		
@@ -720,8 +724,8 @@ MediaPlayer::AdvanceFrame ()
 		dropped_frames = rendered_frames = 0;
 		frames_update_timestamp = now;
 
-		element->SetDroppedFramesPerSecond (dropped_frames_per_second);
-		element->SetRenderedFramesPerSecond (rendered_frames_per_second);
+		this->dropped_frames_per_second = dropped_frames_per_second;
+		this->rendered_frames_per_second = rendered_frames_per_second;
 	}
 	
 	return;
