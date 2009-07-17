@@ -1,3 +1,8 @@
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: PlaylistList::Dispose: set current_node to null, since we'll delete
+	it here.
+
 2009-07-17 Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* mediaelement.cpp: Only emit BufferingProgressChanged if it has gone up. The real

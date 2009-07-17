@@ -976,6 +976,8 @@ Playlist::Dispose ()
 
 	LOG_PLAYLIST ("Playlist::Dispose () id: %i\n", GET_OBJ_ID (this));
 	
+	current_node = NULL;
+	
 	if (entries != NULL) {
 		node = (PlaylistNode *) entries->First ();
 		while (node != NULL) {
