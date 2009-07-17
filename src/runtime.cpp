@@ -1208,13 +1208,10 @@ Surface::SetMouseCapture (UIElement *capture)
 	if (captured || pendingCapture)
 		return capture == captured || capture == pendingCapture;
 
-	if (emittingMouseEvent) {
-		pendingCapture = capture;
-	}
-	else {
-		PerformCapture (capture);
-	}
-	
+	if (!emittingMouseEvent)
+		return false;
+
+	pendingCapture = capture;
 	return true;
 }
 
@@ -1263,8 +1260,6 @@ Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int
 		emit_ctxs[idx] = node->uielement->StartEmit (event_id);
 	}
 
-	emittingMouseEvent = true;
-
 	EventArgs *args = CreateArgsForEvent(event_id, event);
 	bool args_are_routed = args->Is (Type::ROUTEDEVENTARGS);
 
@@ -1283,7 +1278,7 @@ Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int
 		if (args_are_routed && ((RoutedEventArgs*)args)->GetHandled())
 			break;
 	}
-	emittingMouseEvent = false;
+
 	args->unref();
 
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
@@ -1374,6 +1369,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 	if (emittingMouseEvent)
 		return false;
 
+	emittingMouseEvent = true;
 	if (zombie)
 		return false;
 
@@ -1513,6 +1509,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		PerformCapture (pendingCapture);
 	if (pendingReleaseCapture || (captured && !captured->CanCaptureMouse ()))
 		PerformReleaseCapture ();
+	emittingMouseEvent = false;
 	return handled;
 }
 
