@@ -1,3 +1,8 @@
+2009-07-17  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Documents/GlyphsTest.cs: A few more asserts to
+	make the difference between parse-time and run-time.
+
 2009-07-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* misc/DefaultValues.cs: Decorate some Glyphs tests with 

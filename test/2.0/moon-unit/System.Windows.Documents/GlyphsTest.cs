@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Windows.Documents;
 using System.Windows.Markup;
 
 using Mono.Moonlight.UnitTesting;
@@ -49,10 +50,15 @@ namespace MoonTest.System.Windows.Documents {
 		public void FontUri_Backslash_Absolute ()
 		{
 			string uri = @"\\server\dir\font.ttf";
-			Assert.AreEqual ("file://server/dir/font.ttf", new Uri (uri).ToString (), "Uri-UNC");
+			Uri u = new Uri (uri);
+			Assert.AreEqual ("file://server/dir/font.ttf", u.ToString (), "Uri-UNC");
 			Assert.Throws<XamlParseException> (delegate {
+				// the string with backslashes is not acceptable
 				XamlReader.Load (GetXaml (uri));
 			}, "UNC");
+			Glyphs g = new Glyphs ();
+			// but an Uri build from it (e.g. without the backslash) is ok
+			g.FontUri = u;
 		}
 
 		[TestMethod]
@@ -60,10 +66,15 @@ namespace MoonTest.System.Windows.Documents {
 		public void FontUri_Backslash_Relative ()
 		{
 			string uri = @"\font.ttf";
-			Assert.AreEqual (uri, new Uri (uri, UriKind.Relative).ToString (), "Uri-single-backslash");
+			Uri u = new Uri (uri, UriKind.Relative);
+			Assert.AreEqual (uri, u.ToString (), "Uri-single-backslash");
 			Assert.Throws<XamlParseException> (delegate {
+				// the string with backslashes is not acceptable
 				XamlReader.Load (GetXaml (uri));
 			}, "single-backslash");
+			Glyphs g = new Glyphs ();
+			// but an Uri build from it (even with the backslash) is ok
+			g.FontUri = u;
 		}
 	}
 }
