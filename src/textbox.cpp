@@ -76,11 +76,13 @@ class TextBuffer {
 	gunichar *text;
 	int len;
 	
-	TextBuffer (gunichar *text, int len)
+	TextBuffer (const gunichar *text, int len)
 	{
-		this->allocated = len + 1;
-		this->text = text;
-		this->len = len;
+		this->allocated = 0;
+		this->text = NULL;
+		this->len = 0;
+		
+		Append (text, len);
 	}
 	
 	TextBuffer ()
@@ -310,7 +312,7 @@ class TextBoxUndoActionInsert : public TextBoxUndoAction {
 	bool growable;
 	
 	TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar c);
-	TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar *inserted, int length, bool atomic = false);
+	TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, const gunichar *inserted, int length, bool atomic = false);
 	virtual ~TextBoxUndoActionInsert ();
 	
 	bool Insert (int start, const gunichar *text, int len);
@@ -331,7 +333,7 @@ class TextBoxUndoActionReplace : public TextBoxUndoAction {
 	gunichar *deleted;
 	int inlen;
 	
-	TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, gunichar *inserted, int inlen);
+	TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, const gunichar *inserted, int inlen);
 	TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, gunichar c);
 	virtual ~TextBoxUndoActionReplace ();
 };
@@ -365,7 +367,7 @@ TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int sele
 	this->growable = true;
 }
 
-TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar *inserted, int length, bool atomic)
+TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, const gunichar *inserted, int length, bool atomic)
 {
 	this->type = TextBoxUndoActionTypeInsert;
 	this->selection_anchor = selection_anchor;
@@ -422,7 +424,7 @@ TextBoxUndoActionDelete::~TextBoxUndoActionDelete ()
 	g_free (text);
 }
 
-TextBoxUndoActionReplace::TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, gunichar *inserted, int inlen)
+TextBoxUndoActionReplace::TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, const gunichar *inserted, int inlen)
 {
 	this->type = TextBoxUndoActionTypeReplace;
 	this->selection_anchor = selection_anchor;
@@ -431,7 +433,8 @@ TextBoxUndoActionReplace::TextBoxUndoActionReplace (int selection_anchor, int se
 	this->start = start;
 	
 	this->deleted = buffer->Substring (start, length);
-	this->inserted = inserted;
+	this->inserted = (gunichar *) g_malloc (UNICODE_LEN (inlen + 1));
+	memcpy (this->inserted, inserted, UNICODE_LEN (inlen + 1));
 	this->inlen = inlen;
 }
 
@@ -1398,21 +1401,22 @@ TextBoxBase::SyncAndEmit (bool sync_text)
 void
 TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
 {
+	int length = abs (selection_cursor - selection_anchor);
+	int start = MIN (selection_anchor, selection_cursor);
 	TextBoxUndoAction *action;
-	int start, length;
 	gunichar *text;
 	glong len, i;
-	
-	length = abs (selection_cursor - selection_anchor);
-	start = MIN (selection_anchor, selection_cursor);
 	
 	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &len)))
 		return;
 	
-	if (max_length > 0 && (buffer->len + len > max_length)) {
+	if (max_length > 0 && ((buffer->len - length) + len > max_length)) {
 		// paste cannot exceed MaxLength
-		len = max_length - buffer->len;
-		text = (gunichar *) g_realloc (text, UNICODE_LEN (len + 1));
+		len = max_length - (buffer->len - length);
+		if (len > 0)
+			text = (gunichar *) g_realloc (text, UNICODE_LEN (len + 1));
+		else
+			len = 0;
 		text[len] = '\0';
 	}
 	
@@ -1447,6 +1451,7 @@ TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
 	
 	undo->Push (action);
 	redo->Clear ();
+	g_free (text);
 	
 	emit |= TEXT_CHANGED;
 	start += len;
@@ -1713,20 +1718,40 @@ TextBoxBase::retrieve_surrounding (GtkIMContext *context, gpointer user_data)
 void
 TextBoxBase::Commit (const char *str)
 {
+	int length = abs (selection_cursor - selection_anchor);
+	int start = MIN (selection_anchor, selection_cursor);
 	TextBoxUndoAction *action;
 	int anchor, cursor;
-	int start, length;
 	gunichar *text;
-	glong len;
+	glong len, i;
 	
 	if (is_read_only)
 		return;
 	
-	length = abs (selection_cursor - selection_anchor);
-	start = MIN (selection_anchor, selection_cursor);
-	
 	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &len)))
 		return;
+	
+	if (max_length > 0 && ((buffer->len - length) + len > max_length)) {
+		// paste cannot exceed MaxLength
+		len = max_length - (buffer->len - length);
+		if (len > 0)
+			text = (gunichar *) g_realloc (text, UNICODE_LEN (len + 1));
+		else
+			len = 0;
+		text[len] = '\0';
+	}
+	
+	if (!multiline) {
+		// only paste the content of the first line
+		for (i = 0; i < len; i++) {
+			if (g_unichar_type (text[i]) == G_UNICODE_LINE_SEPARATOR) {
+				text = (gunichar *) g_realloc (text, UNICODE_LEN (i + 1));
+				text[i] = '\0';
+				len = i;
+				break;
+			}
+		}
+	}
 	
 	if (length > 0) {
 		// replace the currently selected text
@@ -1735,9 +1760,11 @@ TextBoxBase::Commit (const char *str)
 		redo->Clear ();
 		
 		buffer->Replace (start, length, text, len);
-	} else {
+	} else if (len > 0) {
 		// insert the text at the cursor position
 		TextBoxUndoActionInsert *insert = NULL;
+		
+		buffer->Insert (start, text, len);
 		
 		if ((action = undo->Peek ()) && action->type == TextBoxUndoActionTypeInsert) {
 			insert = (TextBoxUndoActionInsert *) action;
@@ -1752,13 +1779,15 @@ TextBoxBase::Commit (const char *str)
 		}
 		
 		redo->Clear ();
-		
-		buffer->Insert (start, text, len);
+	} else {
+		g_free (text);
+		return;
 	}
 	
 	emit = TEXT_CHANGED;
 	cursor = start + len;
 	anchor = cursor;
+	g_free (text);
 	
 	BatchPush ();
 	
@@ -2459,6 +2488,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				
 				undo->Push (action);
 				redo->Clear ();
+				g_free (text);
 				
 				emit |= TEXT_CHANGED;
 				
@@ -2558,6 +2588,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				
 				undo->Push (action);
 				redo->Clear ();
+				g_free (text);
 				
 				emit |= TEXT_CHANGED;
 				ClearSelection (0);
@@ -2832,6 +2863,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 				
 				undo->Push (action);
 				redo->Clear ();
+				g_free (text);
 				
 				emit |= TEXT_CHANGED;
 				SyncDisplayText ();
@@ -2869,6 +2901,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 				
 				undo->Push (action);
 				redo->Clear ();
+				g_free (text);
 				
 				ClearSelection (start + textlen);
 				emit |= TEXT_CHANGED;

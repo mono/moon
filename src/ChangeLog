@@ -1,3 +1,18 @@
+2009-07-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::Commit): Respect MaxLength and
+	multiline support.
+	(TextBoxBase::Paste): Consider the SelectionLength in our
+	MaxLength overflow calculation.
+	(TextBuffer::ctor): Instead of taking ownership of a string
+	buffer, just copy it instead. This keeps memory management more
+	obvious higher up.
+	(TextBoxUndoActionInsert::ctor): No longer takes ownership of the
+	'inserted' string.
+	(TextBoxUndoActionReplace::ctor): Same, so copy it.
+	(*Box::OnPropertyChanged): Fixed to g_free(text) after creating
+	the undo action. I think some of these situations leaked before.
+
 2009-07-17  Stephane Delcroix  <sdelcroix@novell.com>
 	
 	* multiscaleimage.cpp: allow up to 31 layers.
