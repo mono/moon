@@ -1321,4 +1321,21 @@ void
 MediaPlayer::SetBufferUnderflow ()
 {
 	SetBitTo (BufferUnderflow, true);
+	EmitBufferUnderflow ();
+}
+
+void
+MediaPlayer::EmitBufferUnderflow ()
+{
+	if (Surface::InMainThread ()) {
+		Emit (BufferUnderflowEvent);
+	} else {
+		AddTickCallSafe (EmitBufferUnderflowAsync);
+	}
+}
+
+void
+MediaPlayer::EmitBufferUnderflowAsync (EventObject *obj)
+{
+	((MediaPlayer *) obj)->EmitBufferUnderflow ();
 }

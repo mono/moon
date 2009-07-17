@@ -1,5 +1,9 @@
 2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp|h: Emit BufferUnderflowEvent when the buffer underflows.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp|h: Notify the decoder when a seek has completed so
 	that it can clean its state properly. FillBuffers: the final buffer size
 	is equal to the smallest buffer size of all the streams, not the buffer
