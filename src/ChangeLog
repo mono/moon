@@ -14,6 +14,10 @@
 	the undo action. I think some of these situations leaked before.
 
 2009-07-17  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: more protections against crash with 31 layers
+
+2009-07-17  Stephane Delcroix  <sdelcroix@novell.com>
 	
 	* multiscaleimage.cpp: allow up to 31 layers.
 
