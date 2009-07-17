@@ -1,5 +1,16 @@
 2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: OpenCompletedHander: Before emitting
+	DownloadProgressChangedEvent get the highest DownloadProgress value
+	from either our own dependency property or the media. For mms streams
+	download progress needs to be 1.0 when emitting MediaOpenedEvent,
+	the mms code sets media's DownloadProgress to 1.0 after parsing the
+	asf header correctly, but since the media emits the DownloadProgressChanged
+	event async, the dependency property in MediaElement hasn't been updated
+	yet in OpenCompletedHandler.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Allow buffering progress to go down, not only up.
 	Also fix progress events to only emit if delta > 0.5% or if equal
 	to lower/upper limits.
