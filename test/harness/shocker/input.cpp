@@ -47,7 +47,7 @@
 
 #define XSCREEN_OF_POINTER -1
 
-#define MOVE_MOUSE_LOGARITHMIC_INTERVAL  3
+#define MOVE_MOUSE_LOGARITHMIC_INTERVAL  30000
 
 #define MOUSE_IS_AT_POSITION_TOLERANCE	 2
 
@@ -128,7 +128,6 @@ InputProvider::MoveMouseLogarithmic (int x, int y)
 	int current_x;
 	int current_y;
 	float mult;
-	int counter = 0;
 	
 	GetCursorPos (current_x, current_y);
 	
@@ -149,7 +148,10 @@ InputProvider::MoveMouseLogarithmic (int x, int y)
 				current_y += (current_y < y ? 1.0 : -1.0 ) * mult * log (1 + abs (current_y - y));
 		}
 		
-		XTestFakeMotionEvent (display, XSCREEN_OF_POINTER, current_x, current_y, CurrentTime + (MOVE_MOUSE_LOGARITHMIC_INTERVAL * counter++));
+		XTestFakeMotionEvent (display, XSCREEN_OF_POINTER, current_x, current_y, CurrentTime);
+		XFlush (display);
+
+		usleep (MOVE_MOUSE_LOGARITHMIC_INTERVAL);
 	}
 }
 
