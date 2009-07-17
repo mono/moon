@@ -126,8 +126,10 @@ MediaPlayer::AudioFinished ()
 	}
 	
 	VERIFY_MAIN_THREAD;
-	SetBit (AudioEnded);
-	CheckFinished ();
+	if (!GetBit (AudioEnded)) {
+		SetBit (AudioEnded);
+		CheckFinished ();
+	}
 }
 
 void
@@ -136,8 +138,10 @@ MediaPlayer::VideoFinished ()
 	LOG_MEDIAPLAYER ("MediaPlayer::VideoFinished () VideoEnded: %i, AudioEnded: %i\n", GetBit (VideoEnded), GetBit (AudioEnded));
 	VERIFY_MAIN_THREAD;
 	
-	SetBit (VideoEnded);
-	CheckFinished ();
+	if (!GetBit (VideoEnded)) {
+		SetBit (VideoEnded);
+		CheckFinished ();
+	}
 }
 
 void
