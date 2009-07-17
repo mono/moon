@@ -297,6 +297,7 @@ public:
 	const static int DownloadProgressChangedEvent;
 	const static int BufferingProgressChangedEvent;
 	const static int BufferUnderflowEvent;
+	const static int EntryChangedEvent;
 	
 	// Event handlers
 	EVENTHANDLER (PlaylistRoot, MediaEnded, MediaPlayer, EventArgs);

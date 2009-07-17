@@ -1083,6 +1083,7 @@ Playlist::PlayNext ()
 		if (current_entry) {
 			LOG_PLAYLIST ("Playlist::PlayNext () playing entry: %p %s\n", current_entry, current_entry->GetFullSourceName ());
 			element->SetPlayRequested ();
+			root->Emit (PlaylistRoot::EntryChangedEvent);
 			current_entry->OpenAsync ();
 			return true;
 		}
