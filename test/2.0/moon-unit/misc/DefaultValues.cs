@@ -5877,6 +5877,7 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
+	[MoonlightBug]
         public void Test_GetValue_Glyphs ()
         {
             Glyphs widget = new Glyphs ();
@@ -6015,6 +6016,7 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
+	[MoonlightBug]
         public void Test_PropertyGetter_Glyphs ()
         {
             Glyphs widget = new Glyphs ();
@@ -6086,6 +6088,7 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
+	[MoonlightBug]
         public void Test_SetStringValue_Glyphs ()
         {
             Glyphs widget = new Glyphs ();
