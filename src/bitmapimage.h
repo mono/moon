@@ -38,7 +38,7 @@ class BitmapImage : public BitmapSource {
 	BitmapImage ();
 	virtual void Dispose ();
 
-	/* @PropertyType=Uri,GenerateAccessors,DefaultValue=Uri() */
+	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors,DefaultValue=Uri() */
 	const static int UriSourceProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int ProgressProperty;
