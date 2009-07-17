@@ -1334,6 +1334,24 @@ PlaylistRoot::Dispose ()
 	Playlist::Dispose ();
 }
 
+bool
+PlaylistRoot::IsSingleFile ()
+{
+	PlaylistEntry *entry;
+	
+	if (GetCount () != 1)
+		return false;
+	
+	entry = GetCurrentEntry ();
+	if (entry == NULL)
+		return false;
+	
+	if (entry->GetObjectType () == Type::PLAYLISTENTRY)
+		return true;
+	
+	return entry->IsSingleFile ();
+}
+
 #if DEBUG
 void
 PlaylistEntry::DumpInternal (int tabs)

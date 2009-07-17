@@ -102,6 +102,7 @@ class MediaElement : public FrameworkElement {
 	EVENTHANDLER (MediaElement, Pause, PlaylistRoot, EventArgs); // Not thread-safe
 	EVENTHANDLER (MediaElement, Stop, PlaylistRoot, EventArgs); // Not thread-safe
 	EVENTHANDLER (MediaElement, BufferUnderflow, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, EntryChanged, PlaylistRoot, EventArgs); // Not thread-safe
 	
 	EVENTHANDLER (MediaElement, ShuttingDown, Deployment, EventArgs); // Not thread-safe
 	

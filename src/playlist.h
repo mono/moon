@@ -280,6 +280,8 @@ public:
 	
 	virtual void StopAsync ();
 	
+	virtual bool IsSingleFile ();
+	
 	Media *GetCurrentMedia ();
 	MediaPlayer *GetMediaPlayer ();
 	

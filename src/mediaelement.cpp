@@ -936,7 +936,15 @@ MediaElement::SetPlaylist (PlaylistRoot *value)
 		playlist->AddHandler (PlaylistRoot::PlayEvent, PlayCallback, this);
 		playlist->AddHandler (PlaylistRoot::PauseEvent, PauseCallback, this);
 		playlist->AddHandler (PlaylistRoot::StopEvent, StopCallback, this);
+		playlist->AddHandler (PlaylistRoot::EntryChangedEvent, EntryChangedCallback, this);
 	}
+}
+
+void
+MediaElement::EntryChangedHandler (PlaylistRoot *playlist, EventArgs *args)
+{
+	LOG_MEDIAELEMENT ("MediaElement::EntryChangedHandler ()\n");
+	flags &= ~MediaOpenedEmitted;
 }
 
 void
@@ -990,17 +998,20 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	entry->PopulateMediaAttributes ();
 	SetProperties (media);
 	
-	PlayOrStop ();
+	if (!(flags & MediaOpenedEmitted)) {
+		flags |= MediaOpenedEmitted;
+		
+		PlayOrStop ();
 	
-	flags |= MediaOpenedEmitted;
-	// This is a workaround for MS DRT #78: it tests that download progress has changed
-	// from the latest DownloadProgressChanged event to the MediaOpened event (unless
-	// DownloadProgress is 0.0 or 1.0).
-	double progress = media->GetDownloadProgress ();
-	progress = MAX (progress, GetDownloadProgress ());
-	progress = MIN (progress + 0.00000001, 1.0);
-	SetDownloadProgress (progress);
-	Emit (MediaOpenedEvent, new RoutedEventArgs ());
+		// This is a workaround for MS DRT #78: it tests that download progress has changed
+		// from the latest DownloadProgressChanged event to the MediaOpened event (unless
+		// DownloadProgress is 0.0 or 1.0).
+		double progress = media->GetDownloadProgress ();
+		progress = MAX (progress, GetDownloadProgress ());
+		progress = MIN (progress + 0.00000001, 1.0);
+		SetDownloadProgress (progress);
+		Emit (MediaOpenedEvent, new RoutedEventArgs ());
+	}
 	Emit (DownloadProgressChangedEvent);
 }
 
@@ -1398,6 +1409,13 @@ MediaElement::Stop ()
 	case MediaStateBuffering:
 	case MediaStatePlaying:
 	case MediaStatePaused: // docs: stop
+		flags &= ~PlayRequested;
+
+		LOG_MEDIAELEMENT ("MediaElement::Stop (): state: %s, IsSingleFile: %i\n", GetStateName (state), playlist->IsSingleFile ());
+		
+		if (!playlist->IsSingleFile ())
+			flags &= ~MediaOpenedEmitted; // for playlists we must re-emit MediaOpened when the first entry/media has been re-loaded (even though we stop the first entry).
+		
 		playlist->StopAsync ();
 		break;
 	case MediaStateIndividualizing:
