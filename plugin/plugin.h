@@ -57,6 +57,8 @@ class PluginInstance
 	gint32 WriteReady (NPStream *stream);
 	gint32 Write (NPStream *stream, gint32 offset, gint32 len, void *buffer);
 	void UrlNotify (const char *url, NPReason reason, void *notifyData);
+	void LoadSplash ();
+	void FlushSplash ();
 	void Print (NPPrint *platformPrint);
 	int16_t EventHandle (void *event);
 	/* @GenerateCBinding,GeneratePInvoke */

@@ -894,32 +894,12 @@ PluginInstance::CreateWindow ()
 	register_event (instance, "onSourceDownloadProgressChanged", onSourceDownloadProgressChanged, root);
 	register_event (instance, "onSourceDownloadComplete", onSourceDownloadComplete, root);
 	register_event (instance, "onError", onError, root);
-	//	register_event (instance, "onResize", onResize, root->content);
+	//	register_event (instance, "onResize", onResize, rootx->content);
 
 	// NOTE: last testing showed this call causes opera to reenter but moving it is trouble and
 	// the bug is on opera's side.
 	SetPageURL ();
-	if (splashscreensource != NULL) {
-		char *pos = strchr (splashscreensource, '#');
-		if (pos) {
-			splashscreensource = pos+1;
-			loading_splash = true;
-			UpdateSourceByReference (splashscreensource);
-			loading_splash = false;
-			UpdateSource ();
-		} else {
-			StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
-			
-			// FIXME: check for errors
-			NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
-		}
-	} else {
-		xaml_loader = PluginXamlLoader::FromStr (PLUGIN_SPINNER, this, surface);
-		loading_splash = true;
-		LoadXAML ();
-		loading_splash = false;
-		UpdateSource ();
-	}
+	LoadSplash ();
 
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);
@@ -986,8 +966,6 @@ PluginInstance::UpdateSource ()
 	if (pos) {
 		// FIXME: this will crash if this object has been deleted by the time IdleUpdateSourceByReference is called.
 		source_idle = g_idle_add (IdleUpdateSourceByReference, this);
-		GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (1.0));
-		GetSurface ()->EmitSourceDownloadComplete ();
 		SetPageURL ();
 	} else {
 		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, source);
@@ -1011,6 +989,8 @@ PluginInstance::IdleUpdateSourceByReference (gpointer data)
 	if (pos && strlen (pos+1) > 0)
 		instance->UpdateSourceByReference (pos+1);
 
+	instance->GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (1.0));
+	instance->GetSurface ()->EmitSourceDownloadComplete ();
 	return FALSE;
 }
 
@@ -1041,7 +1021,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	bool nperr;
 	if (!(nperr = NPN_GetProperty (instance, host, id_ownerDocument, &_document))
 	    || !NPVARIANT_IS_OBJECT (_document)) {
-		printf ("no document (type == %d, nperr = %d)\n", _document.type, nperr);
+//		printf ("no document (type == %d, nperr = %d)\n", _document.type, nperr);
 		return;
 	}
 
@@ -1050,7 +1030,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	if (!(nperr = NPN_Invoke (instance, NPVARIANT_TO_OBJECT (_document), id_getElementById,
 				  &_elementName, 1, &_element))
 	    || !NPVARIANT_IS_OBJECT (_element)) {
-		printf ("no valid element named #%s (type = %d, nperr = %d)\n", value, _element.type, nperr);
+//		printf ("no valid element named #%s (type = %d, nperr = %d)\n", value, _element.type, nperr);
 		NPN_ReleaseVariantValue (&_document);
 	}
 
@@ -1231,9 +1211,9 @@ PluginInstance::LoadXAML ()
 		is_splash = false;
 		loading_splash = false;
 	} else {
-		register_event (instance, "onLoad", "", root);
+		register_event (instance, "onLoad", (char*)"", root);
 		//register_event (instance, "onError", "", root);
-		register_event (instance, "onResize", "", root->content);
+		register_event (instance, "onResize", (char*)"", root->content);
 		is_splash = true;
 		loading_splash = false;
 	}
@@ -1455,7 +1435,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
 		loading_splash = true;
 		LoadXAML ();
-		loading_splash = false;
+		FlushSplash ();
 	}
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		bool splash = (xaml_loader != NULL);
@@ -1669,6 +1649,47 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	
 	if (notify)
 		delete notify;
+}
+
+void
+PluginInstance::LoadSplash ()
+{
+	if (splashscreensource != NULL) {
+		char *pos = strchr (splashscreensource, '#');
+		if (pos) {
+			splashscreensource = pos+1;
+			loading_splash = true;
+			UpdateSourceByReference (splashscreensource);
+			FlushSplash ();
+			UpdateSource ();
+		} else {
+			StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
+			
+			// FIXME: check for errors
+			NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
+		}
+	} else {
+		xaml_loader = PluginXamlLoader::FromStr (PLUGIN_SPINNER, this, surface);
+		loading_splash = true;
+		LoadXAML ();
+		FlushSplash ();
+		UpdateSource ();
+	}
+}
+
+void
+PluginInstance::FlushSplash ()
+{
+	// FIXME we may want to flush all events here but since this is written to the
+	// tests I'm not sure.
+
+	UIElement *toplevel = GetSurface ()->GetToplevel ();
+	if (toplevel != NULL) {
+		List *list = toplevel->WalkTreeForLoaded (NULL);
+		toplevel->EmitSubtreeLoad (list);
+		delete list;
+	}
+	loading_splash = false;
 }
 
 void
