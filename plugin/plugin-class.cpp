@@ -2089,11 +2089,7 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 		string_to_npvariant (plugin->GetInitParams (), result);
 		return true;
 	case MoonId_IsLoaded:
-		if (!plugin->GetSurface ()) {
-			BOOLEAN_TO_NPVARIANT (false, *result);
-		} else {
-			BOOLEAN_TO_NPVARIANT (plugin->GetSurface()->IsLoaded(), *result);
-		}
+		BOOLEAN_TO_NPVARIANT (plugin->IsLoaded(), *result);
 		return true;
 	case MoonId_OnError:
 	case MoonId_OnLoad:

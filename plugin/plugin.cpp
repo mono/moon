@@ -400,6 +400,8 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	enable_html_access = true;		// an empty plugin must return TRUE before loading anything else (e.g. scripting)
 	allow_html_popup_window = false;
 	xembed_supported = FALSE;
+	loading_splash = false;
+	is_splash = false;
 
 	bridge = NULL;
 
@@ -865,6 +867,15 @@ register_event (NPP instance, const char *event_name, char *script_name, NPObjec
 	NPN_MemFree (retval);
 }
 
+bool
+PluginInstance::IsLoaded ()
+{
+	if (!GetSurface () || is_splash)
+		return false;
+
+	return GetSurface()->IsLoaded();
+}
+
 void
 PluginInstance::CreateWindow ()
 {
@@ -879,29 +890,40 @@ PluginInstance::CreateWindow ()
 	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
 
-	if (splashscreensource != NULL) {
-		StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
-
-		NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
-	} else {
-		//xaml_loader = PluginXamlLoader::FromStr (PLUGIN_SPINNER, this, surface);
-		//LoadXAML ();
-	}
-
 	MoonlightScriptControlObject *root = GetRootObject ();
 	register_event (instance, "onSourceDownloadProgressChanged", onSourceDownloadProgressChanged, root);
 	register_event (instance, "onSourceDownloadComplete", onSourceDownloadComplete, root);
 	register_event (instance, "onError", onError, root);
-	register_event (instance, "onResize", onResize, root->content);
+	//	register_event (instance, "onResize", onResize, root->content);
+
+	// NOTE: last testing showed this call causes opera to reenter but moving it is trouble and
+	// the bug is on opera's side.
+	SetPageURL ();
+	if (splashscreensource != NULL) {
+		char *pos = strchr (splashscreensource, '#');
+		if (pos) {
+			splashscreensource = pos+1;
+			loading_splash = true;
+			UpdateSourceByReference (splashscreensource);
+			loading_splash = false;
+			UpdateSource ();
+		} else {
+			StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
+			
+			// FIXME: check for errors
+			NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
+		}
+	} else {
+		xaml_loader = PluginXamlLoader::FromStr (PLUGIN_SPINNER, this, surface);
+		loading_splash = true;
+		LoadXAML ();
+		loading_splash = false;
+		UpdateSource ();
+	}
 
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);
 	surface->SetDownloaderContext (this);
-	
-	//SetPageURL ();
-	/* If we have a splash screen we dont start getting the source until we've resolved it */
-	if (splashscreensource == NULL)
-		UpdateSource ();
 	
 	surface->GetTimeManager()->SetMaximumRefreshRate (maxFrameRate);
 	
@@ -964,6 +986,8 @@ PluginInstance::UpdateSource ()
 	if (pos) {
 		// FIXME: this will crash if this object has been deleted by the time IdleUpdateSourceByReference is called.
 		source_idle = g_idle_add (IdleUpdateSourceByReference, this);
+		GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (1.0));
+		GetSurface ()->EmitSourceDownloadComplete ();
 		SetPageURL ();
 	} else {
 		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, source);
@@ -1017,7 +1041,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	bool nperr;
 	if (!(nperr = NPN_GetProperty (instance, host, id_ownerDocument, &_document))
 	    || !NPVARIANT_IS_OBJECT (_document)) {
-//		printf ("no document (type == %d, nperr = %d)\n", _document.type, nperr);
+		printf ("no document (type == %d, nperr = %d)\n", _document.type, nperr);
 		return;
 	}
 
@@ -1026,7 +1050,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	if (!(nperr = NPN_Invoke (instance, NPVARIANT_TO_OBJECT (_document), id_getElementById,
 				  &_elementName, 1, &_element))
 	    || !NPVARIANT_IS_OBJECT (_element)) {
-//		printf ("no valid element named #%s (type = %d, nperr = %d)\n", value, _element.type, nperr);
+		printf ("no valid element named #%s (type = %d, nperr = %d)\n", value, _element.type, nperr);
 		NPN_ReleaseVariantValue (&_document);
 	}
 
@@ -1200,7 +1224,19 @@ PluginInstance::LoadXAML ()
 	xaml_loader->LoadVM ();
 
 	MoonlightScriptControlObject *root = GetRootObject ();
-	register_event (instance, "onLoad", onLoad, root);
+	if (!loading_splash) {
+		register_event (instance, "onLoad", onLoad, root);
+		//register_event (instance, "onError", onError, root);
+		register_event (instance, "onResize", onResize, root->content);
+		is_splash = false;
+		loading_splash = false;
+	} else {
+		register_event (instance, "onLoad", "", root);
+		//register_event (instance, "onError", "", root);
+		register_event (instance, "onResize", "", root->content);
+		is_splash = true;
+		loading_splash = false;
+	}
 
 	const char *missing = xaml_loader->TryLoad (&error);
 
@@ -1238,7 +1274,12 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 	source_location = g_strdup (url);
 
 	MoonlightScriptControlObject *root = GetRootObject ();
+	
 	register_event (instance, "onLoad", onLoad, root);
+	//register_event (instance, "onError", onError, root);
+	register_event (instance, "onResize", onResize, root->content);
+	loading_splash = false;
+	is_splash = false;
 
 	Deployment::GetCurrent ()->Reinitialize ();
 	GetDeployment()->SetXapLocation (url);
@@ -1412,7 +1453,9 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 #endif
 	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
 		xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
+		loading_splash = true;
 		LoadXAML ();
+		loading_splash = false;
 	}
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		bool splash = (xaml_loader != NULL);
@@ -1423,8 +1466,6 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 
 		Uri *uri = new Uri ();
 
-		if (splash)
-			GetSurface ()->EmitSourceDownloadComplete ();
 
 		if (uri->Parse (stream->url, false) && is_xap (uri->GetPath())) {
 			LoadXAP (stream->url, fname);
@@ -1432,7 +1473,10 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 			xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
 			LoadXAML ();
 		}
-		
+
+		GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (1.0));
+		GetSurface ()->EmitSourceDownloadComplete ();
+
 		delete uri;
 	} else if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
 		Downloader *dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
@@ -1562,8 +1606,9 @@ PluginInstance::splashscreen_error_tickcall (EventObject *data)
 {
 	PluginClosure *closure = (PluginClosure*)data;
 	Surface *s = closure->plugin->GetSurface();
-
+	
 	s->EmitError (new ErrorEventArgs (RuntimeError, 2108, "Failed to download the splash screen"));
+	closure->plugin->is_splash = false;
 
 	// we need this check beccause the plugin might have been
 	// dtor'ed (and the surface zombified) in the amove EmitError.

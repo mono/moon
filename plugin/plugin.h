@@ -111,6 +111,8 @@ class PluginInstance
 	bool GetAllowHtmlPopupWindow ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetWindowless ();
+	bool IsLoaded ();
+
 	void SetMaxFrameRate (int value);
 	int  GetMaxFrameRate ();
 	Deployment *GetDeployment ();
@@ -207,6 +209,8 @@ class PluginInstance
 	bool enable_html_access;
 	bool allow_html_popup_window;
 	bool enable_framerate_counter;
+	bool loading_splash;
+	bool is_splash;
 	int maxFrameRate;
 
 	BrowserBridge *bridge;

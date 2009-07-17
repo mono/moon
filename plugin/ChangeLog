@@ -1,3 +1,12 @@
+2009-07-16  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp, plugin.h: rework the splash logic to handle document
+	fragment references and get closer to emitting the correct events
+	in the correct order.
+
+	* plugin-class.cpp: use PluginInstance::IsLoaded instead of poking
+	at the surface.
+
 2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* cbinding.h: Regenerated.
