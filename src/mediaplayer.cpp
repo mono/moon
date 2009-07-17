@@ -116,7 +116,7 @@ MediaPlayer::AudioFinishedCallback (EventObject *user_data)
 void
 MediaPlayer::AudioFinished ()
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinished ()\n");
+	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinished () VideoEnded: %i, AudioEnded: %i AudioSource id: %i\n", GetBit (VideoEnded), GetBit (AudioEnded), GET_OBJ_ID (audio_unlocked));
 
 	// This method must be thread-safe
 
@@ -133,7 +133,7 @@ MediaPlayer::AudioFinished ()
 void
 MediaPlayer::VideoFinished ()
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::VideoFinished ()\n");
+	LOG_MEDIAPLAYER ("MediaPlayer::VideoFinished () VideoEnded: %i, AudioEnded: %i\n", GetBit (VideoEnded), GetBit (AudioEnded));
 	VERIFY_MAIN_THREAD;
 	
 	SetBit (VideoEnded);
@@ -657,11 +657,13 @@ MediaPlayer::AdvanceFrame ()
 			if (GetBit (IsLive)) {
 				if (current_pts - first_live_pts > duration) {
 					// TODO: Move this out of AdvanceFrame, here it only works for media which has video, not for audio-only media.
+					StopAudio ();
 					AudioFinished ();
 					VideoFinished ();
 				}
 			} else {
 				if (current_pts > duration) {
+					StopAudio ();
 					AudioFinished ();
 					VideoFinished ();
 				}
@@ -1031,13 +1033,7 @@ MediaPlayer::NotifySeek (guint64 pts)
 	if (pts < start_pts)
 		pts = start_pts;
 	
-	// Stop the audio
-	audio = GetAudio (); // This returns a reffed AudioSource
-	if (audio) {
-		audio->Stop ();
-		audio->unref ();
-	}
-	
+	StopAudio ();
 	SetTimeout (0);
 
 	SetBit (Seeking);
@@ -1071,16 +1067,10 @@ MediaPlayer::SetCanSeek (bool value)
 void
 MediaPlayer::Stop ()
 {
-	AudioSource *audio;
-	
 	LOG_MEDIAPLAYER ("MediaPlayer::Stop (), state: %i\n", state_unlocked);
 	VERIFY_MAIN_THREAD;
 
-	audio = GetAudio (); // This returns a reffed AudioSource
-	if (audio) {
-		audio->Stop ();
-		audio->unref ();
-	}
+	StopAudio ();
 		
 	SetTimeout (0);
 	
@@ -1090,6 +1080,21 @@ MediaPlayer::Stop ()
 	SetState (Stopped);
 	RemoveBit (AudioEnded);
 	RemoveBit (VideoEnded);
+}
+
+void
+MediaPlayer::StopAudio ()
+{
+	AudioSource *audio;
+	
+	LOG_MEDIAPLAYER ("MediaPlayer::StopAudio (), state: %i\n", state_unlocked);
+	VERIFY_MAIN_THREAD;
+
+	audio = GetAudio (); // This returns a reffed AudioSource
+	if (audio) {
+		audio->Stop ();
+		audio->unref ();
+	}
 }
 
 double

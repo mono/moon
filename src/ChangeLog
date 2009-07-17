@@ -1,5 +1,11 @@
 2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp|h: Add a StopAudio method which stops the audio, and use
+	it whenever we stop the audio. AdvanceFrame: For media with a specified
+	duration stop the audio when we've reached the desired duration.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: OpenCompletedHander: Before emitting
 	DownloadProgressChangedEvent get the highest DownloadProgress value
 	from either our own dependency property or the media. For mms streams

@@ -108,6 +108,7 @@ class MediaPlayer : public EventObject {
 	void AdvanceFrame ();
 	static gboolean AdvanceFrameCallback (void *user_data);
 	
+	void StopAudio (); // Not thread-safe
  protected:
 	virtual ~MediaPlayer ();
 	
