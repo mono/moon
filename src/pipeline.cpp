@@ -412,9 +412,12 @@ Media::ReportBufferingProgress (double progress)
 	
 	progress = MAX (MIN (progress, 1.0), 0.0);
 	
-	if (progress > buffering_progress && (progress > buffering_progress + 0.005 || progress == 1.0)) {
-		EmitSafe (BufferingProgressChangedEvent, new ProgressEventArgs (progress));
+	if (progress == buffering_progress)
+		return;
+	
+	if (progress < buffering_progress || progress > (buffering_progress + 0.005) || progress == 1.0 || progress == 0.0) {
 		buffering_progress = progress;
+		EmitSafe (BufferingProgressChangedEvent, new ProgressEventArgs (progress));
 	}
 }
 
@@ -423,9 +426,15 @@ Media::ReportDownloadProgress (double progress)
 {
 	LOG_PIPELINE ("Media::ReportDownloadProgress (%.3f), download_progress: %.3f\n", progress, download_progress);
 
-	g_return_if_fail (progress >= download_progress);
+	progress = MAX (MIN (progress, 1.0), 0.0);
 	
-	if (progress != download_progress) {
+	// download progress can only go up
+	g_return_if_fail (progress >= download_progress);
+
+	if (progress == download_progress)
+		return;	
+
+	if (progress > (download_progress + 0.005) || progress == 1.0 || progress == 0.0) {
 		download_progress = progress;
 		EmitSafe (DownloadProgressChangedEvent, new ProgressEventArgs (progress));
 	}

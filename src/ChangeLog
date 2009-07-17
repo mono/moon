@@ -1,5 +1,11 @@
 2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Allow buffering progress to go down, not only up.
+	Also fix progress events to only emit if delta > 0.5% or if equal
+	to lower/upper limits.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp|h: When we get a decode frame request from another
 	thread, store the request on the demuxer in a list, instead of on the
 	media thread's stack. This ensures that decode frame requests are
