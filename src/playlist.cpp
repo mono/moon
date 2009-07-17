@@ -328,7 +328,7 @@ PlaylistEntry::OpenCompletedHandler (Media *media, EventArgs *args)
 		g_return_if_fail (parent != NULL);
 		
 		parent->ReplaceCurrentEntry (playlist);
-		playlist->OpenAsync ();
+		playlist->Open ();
 	} else {
 		if (parent->GetCurrentEntry () == this) {
 			OpenMediaPlayer ();
@@ -409,9 +409,9 @@ PlaylistEntry::BufferingProgressChangedHandler (Media *media, EventArgs *args)
 }
 
 void
-PlaylistEntry::SeekAsync (guint64 pts)
+PlaylistEntry::Seek (guint64 pts)
 {	
-	LOG_PLAYLIST ("PlaylistEntry::SeekAsync (%" G_GUINT64_FORMAT ")\n", pts);
+	LOG_PLAYLIST ("PlaylistEntry::Seek (%" G_GUINT64_FORMAT ")\n", pts);
 	
 	g_return_if_fail (media != NULL);
 	
@@ -836,7 +836,7 @@ PlaylistEntry::GetFullSourceName ()
 }
 
 void
-PlaylistEntry::OpenAsync ()
+PlaylistEntry::Open ()
 {
 	LOG_PLAYLIST ("PlaylistEntry::Open (), media = %p, FullSourceName = %s\n", media, GetFullSourceName ());
 
@@ -851,7 +851,7 @@ PlaylistEntry::OpenAsync ()
 }
 
 void
-PlaylistEntry::PlayAsync ()
+PlaylistEntry::Play ()
 {
 	MediaPlayer *mplayer = GetMediaPlayer ();
 	PlaylistRoot *root = GetRoot ();
@@ -868,7 +868,7 @@ PlaylistEntry::PlayAsync ()
 }
 
 void
-PlaylistEntry::PauseAsync ()
+PlaylistEntry::Pause ()
 {
 	MediaPlayer *mplayer = GetMediaPlayer ();
 	PlaylistRoot *root = GetRoot ();
@@ -887,10 +887,8 @@ PlaylistEntry::PauseAsync ()
 }
 
 void
-PlaylistEntry::StopAsync ()
+PlaylistEntry::Stop ()
 {
-	PlaylistRoot *root = GetRoot ();
-	
 	LOG_PLAYLIST ("PlaylistEntry::Stop ()\n");
 
 	play_when_available = false;
@@ -1022,7 +1020,7 @@ Playlist::IsCurrentEntryLastEntry ()
 }
 
 void
-Playlist::OpenAsync ()
+Playlist::Open ()
 {
 	PlaylistEntry *current_entry;
 
@@ -1040,7 +1038,7 @@ Playlist::OpenAsync ()
 	}
 	
 	if (current_entry)
-		current_entry->OpenAsync ();
+		current_entry->Open ();
 
 	opened = true;
 
@@ -1066,7 +1064,7 @@ Playlist::PlayNext ()
 
 	if (current_entry->HasDuration() && current_entry->GetDuration()->IsForever ()) {
 		element->SetPlayRequested ();
-		current_entry->PlayAsync ();
+		current_entry->Play ();
 		return true;
 	}
 
@@ -1084,7 +1082,7 @@ Playlist::PlayNext ()
 			LOG_PLAYLIST ("Playlist::PlayNext () playing entry: %p %s\n", current_entry, current_entry->GetFullSourceName ());
 			element->SetPlayRequested ();
 			root->Emit (PlaylistRoot::EntryChangedEvent);
-			current_entry->OpenAsync ();
+			current_entry->Open ();
 			return true;
 		}
 	}
@@ -1144,21 +1142,21 @@ Playlist::OnEntryFailed (ErrorEventArgs *args)
 }
 
 void
-Playlist::SeekAsync (guint64 pts)
+Playlist::Seek (guint64 pts)
 {
 	PlaylistEntry *current_entry;
 	
-	LOG_PLAYLIST ("Playlist::SeekAsync (%llu)\n", pts);
+	LOG_PLAYLIST ("Playlist::Seek (%llu)\n", pts);
 	
 	current_entry = GetCurrentEntry ();
 	
 	g_return_if_fail (current_entry != NULL);
 	
-	current_entry->SeekAsync (pts);
+	current_entry->Seek (pts);
 }
 
 void
-Playlist::PlayAsync ()
+Playlist::Play ()
 {
 	PlaylistEntry *current_entry;
 
@@ -1168,18 +1166,17 @@ Playlist::PlayAsync ()
  	
  	g_return_if_fail (current_entry != NULL);
  	
-	while (current_entry && current_entry->HasDuration () && current_entry->GetDuration () == 0) {
+	if (current_entry && current_entry->HasDuration () && current_entry->GetDuration () == 0) {
 		LOG_PLAYLIST ("Playlist::Open (), current entry (%s) has zero duration, skipping it.\n", current_entry->GetSourceName ()->ToString ());
 		OnEntryEnded ();
-		current_entry = GetCurrentEntry ();
+	} else {
+		if (current_entry)
+			current_entry->Play ();
 	}
-
-	if (current_entry)
-		current_entry->PlayAsync ();
 }
 
 void
-Playlist::PauseAsync ()
+Playlist::Pause ()
 {
 	PlaylistEntry *current_entry;
 
@@ -1189,11 +1186,11 @@ Playlist::PauseAsync ()
 	
 	g_return_if_fail (current_entry != NULL);
 
-	current_entry->PauseAsync ();
+	current_entry->Pause ();
 }
 
 void
-Playlist::StopAsync ()
+Playlist::Stop ()
 {
 	PlaylistNode *node;
 
@@ -1202,7 +1199,7 @@ Playlist::StopAsync ()
 	node = (PlaylistNode *) entries->First ();
 	current_node = node;  // reset to first node
 	while (node != NULL) {
-		node->GetEntry ()->StopAsync ();
+		node->GetEntry ()->Stop ();
 		node = (PlaylistNode *) node->next;
 	}
 }
@@ -1316,6 +1313,7 @@ PlaylistRoot::PlaylistRoot (MediaElement *element)
 {
 	this->element = element;
 	
+	seek_pts = 0;
 	mplayer = element->GetMediaPlayer ();
 	mplayer->AddHandler (MediaPlayer::MediaEndedEvent, MediaEndedCallback, this);
 	mplayer->AddHandler (MediaPlayer::BufferUnderflowEvent, BufferUnderflowCallback, this);
@@ -1395,29 +1393,98 @@ PlaylistRoot::Dump ()
 #endif
 
 void
-PlaylistRoot::StopAsync ()
+PlaylistRoot::SeekCallback (EventObject *obj)
 {
-	MediaPlayer *mplayer;
-	PlaylistEntry *entry;
+	PlaylistRoot *playlist = (PlaylistRoot *) obj;
 	
-	LOG_PLAYLIST ("PlaylistRoot::StopAsync ()\n");
+	LOG_PLAYLIST ("Playlist::SeekCallback () pts: %" G_GUINT64_FORMAT "\n", playlist->seek_pts);
 	
-	mplayer = GetMediaPlayer ();
-	
-	g_return_if_fail (mplayer != NULL);
-	
-	Playlist::StopAsync ();
-	mplayer->Stop ();
-	
-	OpenAsync ();
-	AddTickCall (EmitStopEvent);
+	if (playlist->seek_pts != G_MAXUINT64) {
+		guint64 pts = playlist->seek_pts;
+		playlist->seek_pts = G_MAXUINT64;
+		playlist->Seek (pts);
+	}
 }
 
 void
-PlaylistRoot::EmitStopEvent (EventObject *obj)
+PlaylistRoot::SeekAsync (guint64 pts)
 {
-	PlaylistRoot *root = (PlaylistRoot *) obj;
-	root->Emit (StopEvent);
+	LOG_PLAYLIST ("Playlist::SeekAsync (%" G_GUINT64_FORMAT ")\n", pts);
+	seek_pts = pts;
+	AddTickCall (SeekCallback);
+}
+
+void
+PlaylistRoot::PlayCallback (EventObject *obj)
+{
+	LOG_PLAYLIST ("Playlist::PlayCallback ()\n");
+	((PlaylistRoot *) obj)->Play ();
+}
+
+void
+PlaylistRoot::PlayAsync ()
+{
+	LOG_PLAYLIST ("Playlist::PlayAsync ()\n");
+	AddTickCall (PlayCallback);
+}
+
+void
+PlaylistRoot::PauseCallback (EventObject *obj)
+{
+	LOG_PLAYLIST ("Playlist::PauseCallback ()\n");
+	((PlaylistRoot *) obj)->Pause ();
+}
+
+void
+PlaylistRoot::PauseAsync ()
+{
+	LOG_PLAYLIST ("Playlist::PauseAsync ()\n");
+	AddTickCall (PauseCallback);
+}
+
+void
+PlaylistRoot::OpenCallback (EventObject *obj)
+{
+	LOG_PLAYLIST ("Playlist::OpenCallback ()\n");
+	((PlaylistRoot *) obj)->Open ();
+}
+
+void
+PlaylistRoot::OpenAsync ()
+{
+	LOG_PLAYLIST ("Playlist::OpenAsync ()\n");
+	AddTickCall (OpenCallback);
+}
+
+void
+PlaylistRoot::StopCallback (EventObject *obj)
+{
+	LOG_PLAYLIST ("Playlist::StopCallback ()\n");
+	((PlaylistRoot *) obj)->Stop ();
+}
+
+void
+PlaylistRoot::StopAsync ()
+{
+	LOG_PLAYLIST ("Playlist::StopAsync ()\n");
+	AddTickCall (StopCallback);
+}
+
+void
+PlaylistRoot::Stop ()
+{
+	MediaPlayer *mplayer;
+	
+	LOG_PLAYLIST ("PlaylistRoot::Stop ()\n");
+	
+	mplayer = GetMediaPlayer ();
+	
+	Playlist::Stop ();
+	if (mplayer != NULL)
+		mplayer->Stop ();
+	
+	OpenAsync ();
+	Emit (StopEvent); // we emit the event after enqueuing the Open request, do avoid funky side-effects of event emission.
 }
 
 void

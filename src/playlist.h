@@ -181,11 +181,11 @@ public:
 
 	// Playback methods
 
-	virtual void OpenAsync ();
-	virtual void PlayAsync ();
-	virtual void PauseAsync ();
-	virtual void StopAsync ();
-	virtual void SeekAsync (guint64 pts);
+	virtual void Play ();
+	virtual void Pause ();
+	virtual void Stop ();
+	virtual void Seek (guint64 pts);
+	virtual void Open ();
 	virtual void PopulateMediaAttributes ();
 	
 	virtual PlaylistEntry *GetCurrentPlaylistEntry () { return this; }
@@ -234,11 +234,11 @@ public:
 	
 	virtual void Dispose ();
 
-	virtual void OpenAsync ();
-	virtual void PlayAsync ();
-	virtual void PauseAsync ();
-	virtual void StopAsync ();
-	virtual void SeekAsync (guint64 to);
+	virtual void Play ();
+	virtual void Pause ();
+	virtual void Stop ();
+	virtual void Seek (guint64 to);
+	virtual void Open ();
 	virtual void PopulateMediaAttributes ();
 	
 	virtual void AddEntry (PlaylistEntry *entry);
@@ -258,6 +258,8 @@ public:
 
 	void Print (int depth);
 	
+	gint32 GetCount () { return entries ? entries->Length () : 0; }
+
 #if DEBUG
 	virtual void DumpInternal (int tabs);
 #endif
@@ -268,17 +270,30 @@ private:
 	MediaElement *element;
 	MediaPlayer *mplayer;
 
-	static void EmitStopEvent (EventObject *obj);
+	guint64 seek_pts; // the pts to seek to when SeekCallback is called.
+
 	static void EmitBufferUnderflowEvent (EventObject *obj);
+	static void StopCallback (EventObject *obj);
+	static void PlayCallback (EventObject *obj);
+	static void PauseCallback (EventObject *obj);
+	static void OpenCallback (EventObject *obj);
+	static void SeekCallback (EventObject *obj);
+	
 protected:
 	virtual ~PlaylistRoot () {}
+	
+	virtual void Stop ();
 	
 public:
 	PlaylistRoot (MediaElement *element);
 	virtual void Dispose (); // not thread-safe
 	virtual MediaElement *GetElement ();
 	
-	virtual void StopAsync ();
+	void StopAsync ();
+	void OpenAsync ();
+	void PlayAsync ();
+	void PauseAsync ();
+	void SeekAsync (guint64 pts);
 	
 	virtual bool IsSingleFile ();
 	

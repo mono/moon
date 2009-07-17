@@ -1,5 +1,17 @@
 2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp|h: Make the *Async methods really async, and add corresponding
+	non-async methods.
+
+	* mediaplayer.cpp: Don't allow Play while we're seeking.
+
+	* mediaelement.cpp: When calling any of the async methods on the playlist,
+	set the expected state immediately, since CurrentState is not async. Also
+	allow Play/Pause/Stop if we're already in the desired state, since there might
+	be another state changed pending.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaplayer.cpp|h: Emit BufferUnderflowEvent when the buffer underflows.
 
 2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>

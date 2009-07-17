@@ -1318,16 +1318,18 @@ MediaElement::PlayOrStop ()
 	
 	if (!GetCanPause ()) {
 		// If we can't pause, we play
+		SetState (MediaStatePlaying);
 		playlist->PlayAsync ();
 	} else if (flags & PlayRequested) {
 		// A Play has already been requested.
+		SetState (MediaStatePlaying);
 		playlist->PlayAsync ();
 	} else if (GetAutoPlay () && !(flags & AutoPlayed)) {
 		// Autoplay us.
 		flags |= AutoPlayed;
+		SetState (MediaStatePlaying);
 		playlist->PlayAsync ();
 	} else {
-		SetState (MediaStatePlaying);
 		SetState (MediaStatePaused);
 	}
 }
@@ -1346,12 +1348,13 @@ MediaElement::Pause ()
 		return;
 	case MediaStateClosed: // docs: No specified behaviour
 	case MediaStateError:  // docs: ? (says nothing)
-	case MediaStatePaused:// docs: no-op
 		return;
+	case MediaStatePaused:// docs: no-op
 	case MediaStateBuffering:
 	case MediaStatePlaying:
 	case MediaStateStopped: // docs: pause
 		paused_position = GetPosition ();
+		SetState (MediaStatePaused);
 		playlist->PauseAsync ();
 		break;
 	case MediaStateIndividualizing:
@@ -1375,11 +1378,12 @@ MediaElement::Play ()
 		flags |= PlayRequested;
 		break;
 	case MediaStateError:  // docs: ? (says nothing)
-	case MediaStatePlaying:// docs: no-op
 		return;
+	case MediaStatePlaying:// docs: no-op
 	case MediaStateBuffering:
 	case MediaStatePaused:
 	case MediaStateStopped:
+		SetState (MediaStatePlaying);
 		playlist->PlayAsync ();
 		break;
 	case MediaStateIndividualizing:
@@ -1416,6 +1420,7 @@ MediaElement::Stop ()
 		if (!playlist->IsSingleFile ())
 			flags &= ~MediaOpenedEmitted; // for playlists we must re-emit MediaOpened when the first entry/media has been re-loaded (even though we stop the first entry).
 		
+		SetState (MediaStateStopped);
 		playlist->StopAsync ();
 		break;
 	case MediaStateIndividualizing:

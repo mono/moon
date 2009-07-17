@@ -837,8 +837,8 @@ MediaPlayer::Play ()
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i, IsPlaying: %i, IsSeeking: %i\n", state_unlocked, IsPlaying (), IsSeeking ());
 	VERIFY_MAIN_THREAD;
-
-	if (IsPlaying () && !IsSeeking ())
+	
+	if (IsSeeking ())
 		return;
 	
 	SetState (Playing);
