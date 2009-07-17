@@ -435,6 +435,7 @@ MediaElement::Reinitialize ()
 	first_pts = G_MAXUINT64;
 	seek_to_position = -1;
 	seeked_to_position = 0;
+	paused_position = 0;
 	buffering_mode = 0;
 	
 	mutex.Lock ();
@@ -1162,6 +1163,7 @@ MediaElement::MediaEndedHandler (PlaylistRoot *playlist, EventArgs *args)
 	VERIFY_MAIN_THREAD;
 	
 	CheckMarkers ();
+	paused_position = GetPosition ();
 	SetState (MediaStatePaused);
 	Emit (MediaEndedEvent);
 }
@@ -1335,6 +1337,7 @@ MediaElement::Pause ()
 	case MediaStateBuffering:
 	case MediaStatePlaying:
 	case MediaStateStopped: // docs: pause
+		paused_position = GetPosition ();
 		playlist->PauseAsync ();
 		break;
 	case MediaStateIndividualizing:
@@ -1656,7 +1659,8 @@ MediaElementPropertyValueProvider::GetCurrentState ()
 Value *
 MediaElementPropertyValueProvider::GetPosition ()
 {
-	bool use_mplayer;
+	bool use_mplayer = false;;
+	bool use_pause = false;
 	MediaElement *element = (MediaElement *) obj;
 	guint64 position = TimeSpan_ToPts (element->seek_to_position);
 	
@@ -1674,17 +1678,24 @@ MediaElementPropertyValueProvider::GetPosition ()
 		use_mplayer = false;
 		break;
 	case MediaStateStopped:
+		position = 0;
+		break;
 	case MediaStateBuffering:
 	case MediaStatePlaying:
-	case MediaStatePaused:
 		use_mplayer = true;
+		break;
+	case MediaStatePaused:
+		use_pause = true;
 		break;
 	}
 	
 	// If a seek is pending, we need to return that position.
-	
-	if (use_mplayer && (TimeSpan_FromPts (position) == -1))
-		position = element->mplayer->GetPosition ();
+	if (use_mplayer) {
+		if (TimeSpan_FromPts (position) == -1)
+			position = element->mplayer->GetPosition ();
+	} else if (use_pause) {
+		position = element->paused_position;
+	}
 	
 	if (position < element->seeked_to_position)
 		position = element->seeked_to_position;

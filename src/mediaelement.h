@@ -49,6 +49,9 @@ class MediaElement : public FrameworkElement {
 	TimeSpan seek_to_position;
 	// This is the last seeked to position. Used to never ever return a Position below this value.
 	guint64 seeked_to_position;
+	// This is the position when Pause is called. Since the actually Pause is done async, we must report
+	// this value as the current Position.
+	guint64 paused_position;
 	
 	// Buffering can be caused by:
 	//   [1] When the media is opened, we automatically buffer an amount equal to BufferingTime.

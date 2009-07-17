@@ -1,5 +1,11 @@
 2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp|h: When we pause, store the current position, which we must return
+	while paused. It may differ from the actual position when we pause, since the actual
+	pause is done async.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaplayer.cpp|h:
 	* mediaelement.cpp|h: Use a property value provider for
 	Render/DroppedFramesPerSecond.
