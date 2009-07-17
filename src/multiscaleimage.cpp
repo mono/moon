@@ -64,12 +64,6 @@ QTreeNode*
 qtree_insert (QTree* root, int level, int x, int y)
 {
 	if ( x >= (1 << level) || y >= (1 << level)) {
-#if DEBUG
- 		// we seem to run into an infinite loop sporadically here for drt #2014 completely spamming the test output.
- 		// abort to get a stack trace. 
-		print_stack_trace ();
-		abort ();
-#endif
 		g_warning ("QuadTree index out of range.");
 		return NULL;
 	}
@@ -132,7 +126,7 @@ qtree_insert_with_value (QTree* root, void *data, int level, int x, int y)
 QTree *
 qtree_lookup (QTree* root, int level, int x, int y)
 {
-	if ( x >= 1 << level || y >= 1 << level) {
+	if ( x >= (uint)(1 << level) || y >= (uint)(1 << level)) {
 #if DEBUG
  		// we seem to run into an infinite loop sporadically here for drt #2014 completely spamming the test output.
  		// abort to get a stack trace. 
@@ -740,8 +734,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		bool blending = FALSE; //means at least a tile is not yet fully blended
 
 		//v_tile_X is the virtual tile size at this layer in relative coordinates
-		double v_tile_w = tile_width  * (double)(1 << (layers - from_layer)) / im_w;
-		double v_tile_h = tile_height * (double)(1 << (layers - from_layer)) / im_w;
+		double v_tile_w = tile_width  * (double)(uint)(1 << (layers - from_layer)) / im_w;
+		double v_tile_h = tile_height * (double)(uint)(1 << (layers - from_layer)) / im_w;
 
 		int i, j;
 		//This double loop iterate over the displayed part of the image and find all (i,j) being top-left corners of tiles
@@ -784,8 +778,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	int layer_to_render = from_layer;
 	while (from_layer >= 0 && layer_to_render <= to_layer) {
 		int i, j;
-		double v_tile_w = tile_width * (double)(1 << (layers - layer_to_render)) / im_w;
-		double v_tile_h = tile_height * (double)(1 << (layers - layer_to_render)) / im_w;
+		double v_tile_w = tile_width * (double)(uint)(1 << (layers - layer_to_render)) / im_w;
+		double v_tile_h = tile_height * (double)(uint)(1 << (layers - layer_to_render)) / im_w;
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
 				cairo_surface_t *image = (cairo_surface_t*)qtree_lookup_data (subimage_cache, layer_to_render, i, j);
@@ -831,8 +825,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	while (from_layer < optimal_layer) {
 		from_layer ++;
 
-		double v_tile_w = tile_width * (double)(1 << (layers - from_layer)) / im_w;
-		double v_tile_h = tile_height * (double)(1 << (layers - from_layer)) / im_w;
+		double v_tile_w = tile_width * (double)(uint)(1 << (layers - from_layer)) / im_w;
+		double v_tile_h = tile_height * (double)(uint)(1 << (layers - from_layer)) / im_w;
 		int i, j;
 
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {

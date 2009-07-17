@@ -1,4 +1,8 @@
 2009-07-17  Stephane Delcroix  <sdelcroix@novell.com>
+	
+	* multiscaleimage.cpp: allow up to 31 layers.
+
+2009-07-17  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: emit OpenImageSucceed for non DZ tile sources
 
