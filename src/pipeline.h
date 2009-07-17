@@ -483,6 +483,7 @@ public:
 	
 	IMediaDemuxer *GetDemuxer ();
 	
+	void ReportSeekCompleted ();
 #if DEBUG
 	void PrintBufferInformation ();
 #endif
@@ -862,6 +863,7 @@ class IMediaDecoder : public IMediaObject {
 private:
 	bool opening;
 	bool opened;
+	bool input_ended;
 	MoonPixelFormat pixel_format; // The pixel format this codec outputs. Open () should fill this in.
 	IMediaStream *stream;
 	Queue queue; // the list of frames to decode.
@@ -886,6 +888,10 @@ protected:
 	virtual void DecodeFrameAsyncInternal (MediaFrame *frame) = 0;
 	virtual void OpenDecoderAsyncInternal () = 0;
 	
+	// InputEnded is called when there is no more input. If the codec has delayed frames,
+	// it must call ReportDecodeFrameCompleted with those frames (all of them).
+	virtual void InputEnded () { };
+	
 public:
 	IMediaDecoder (Type::Kind kind, Media *media, IMediaStream *stream);
 	virtual void Dispose ();
@@ -894,12 +900,13 @@ public:
 	virtual void Cleanup (MediaFrame *frame) {}
 	virtual void CleanState () {}
 	virtual bool HasDelayedFrame () { return false; }
-	// InputEnded is called when there is no more input. If the codec has delayed frames,
-	// it must call ReportDecodeFrameCompleted with those frames (all of them).
-	virtual void InputEnded () { };
 	
 	virtual const char *GetName () { return GetTypeName (); }
 	
+	// This method is called when the demuxer has finished seeking.
+	void ReportSeekCompleted ();
+	// This method is called when the demuxer is out of data.
+	void ReportInputEnded ();
 	/* @GenerateCBinding */
 	void ReportDecodeFrameCompleted (MediaFrame *frame);
 	/* @GenerateCBinding */
@@ -1399,6 +1406,7 @@ protected:
 	virtual void DecodeFrameAsyncInternal (MediaFrame *frame);
 	virtual void OpenDecoderAsyncInternal ();
 	
+	virtual void InputEnded ();
 public:
 	/* @GenerateCBinding */
 	ExternalDecoder (Media *media, IMediaStream *stream, void *instance, const char *name,
@@ -1419,7 +1427,6 @@ public:
 	virtual bool HasDelayedFrame ();
 	
 	virtual const char *GetName () { return name; }
-	virtual void InputEnded ();
 };
 
 /*
