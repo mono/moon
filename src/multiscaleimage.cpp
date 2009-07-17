@@ -410,8 +410,6 @@ multi_scale_image_handle_parsed (void *userdata)
 		layer ++;
 	}
 
-
-	//FIXME: we're only emitting this in deepzoom case
 	msi->EmitImageOpenSucceeded ();
 }
 
@@ -1122,12 +1120,15 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	if (args->GetId () == MultiScaleImage::SourceProperty) {
 		source = NULL;
 		DeepZoomImageTileSource *newsource;
-		if (args->GetNewValue() &&
-		    args->GetNewValue ()->Is (Type::DEEPZOOMIMAGETILESOURCE) && 
-		    (newsource = args->GetNewValue()->AsDeepZoomImageTileSource ())) {
-			newsource->set_parsed_cb (multi_scale_image_handle_parsed, multi_scale_image_handle_failed, this);
-			newsource->Download ();
-		}
+		if (args->GetNewValue())
+			if (args->GetNewValue ()->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+				if (newsource = args->GetNewValue()->AsDeepZoomImageTileSource ()) {
+					newsource->set_parsed_cb (multi_scale_image_handle_parsed, multi_scale_image_handle_failed, this);
+					newsource->Download ();
+				}
+			} else {
+				EmitImageOpenSucceeded ();	
+			}
 
 		//FIXME: On source change
 		// - abort all downloaders
