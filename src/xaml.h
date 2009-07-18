@@ -157,6 +157,7 @@ class XamlLoader {
 	char *filename;
 	char *str;
 	XamlContext *context;
+	bool import_default_xmlns;
 
  public:
 
@@ -170,6 +171,10 @@ class XamlLoader {
 	virtual bool AddChild (void *p, Value *top_level, Value *parent_parent, bool parent_is_property, const char* parent_xmlns, Value *parent, void *parent_data, Value *child, void *child_data);
 
 	virtual const char *GetContentPropertyName (void *p, Value *top_level, Value *object);
+
+	// Loaders can override to have the default namespace added, this is for things like plugin.CreateFromXaml
+	virtual bool ImportDefaultXmlns () { return import_default_xmlns; }
+	void SetImportDefaultXmlns (bool v) { import_default_xmlns = v; }
 
 	char *GetFilename () { return filename; }
 	char *GetString () { return str; }

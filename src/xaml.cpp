@@ -686,6 +686,8 @@ class XamlParserInfo {
 
 		context->SetTemplateBindingSource (binding_source);
 
+		loader->SetImportDefaultXmlns (true);
+
 		MoonError error;
 		Value *result = loader->CreateFromStringWithError (buffer, true, true, &dummy, &error);
 
@@ -1412,6 +1414,7 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface,
 	this->vm_loaded = false;
 	this->error_args = NULL;
 	this->expanding_template = false;
+	this->import_default_xmlns = false;
 
 	if (context) {
 		callbacks = context->internal->callbacks;		
@@ -1709,6 +1712,12 @@ element_begins_buffering (Type::Kind kind)
 	return Type::IsSubclassOf (kind, Type::FRAMEWORKTEMPLATE);
 }
 
+static gboolean
+is_default_namespace (gpointer key, gpointer value, gpointer user_data)
+{
+	return value == default_namespace;
+}
+
 static void
 start_element_handler (void *data, const char *el, const char **attr)
 {
@@ -1731,6 +1740,9 @@ start_element_handler (void *data, const char *el, const char **attr)
 		// Use the default namespace for the next element
 		next_namespace = default_namespace;
 		element = name [0];
+	} else if (!next_namespace) {
+		if (!g_hash_table_find (p->namespace_map, is_default_namespace, NULL))
+			return parser_error (p, el, NULL, 2263, "AG_E_PARSER_MISSING_DEFAULT_NAMESPACE");
 	}
 
 	if (next_namespace && next_namespace->is_ignored) {
@@ -2298,7 +2310,7 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 	}
 	
 	// from_str gets the default namespaces implictly added
-	add_default_namespaces (parser_info, true);
+	add_default_namespaces (parser_info, ImportDefaultXmlns ());
 
 	XML_SetUserData (p, parser_info);
 

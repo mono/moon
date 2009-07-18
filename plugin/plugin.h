@@ -334,7 +334,7 @@ class StreamNotify
 
 class PluginXamlLoader : public XamlLoader
 {
-	PluginXamlLoader (const char *filename, const char *str, PluginInstance *plugin, Surface *surface);
+	PluginXamlLoader (const char *filename, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns);
 	bool InitializeLoader ();
 	PluginInstance *plugin;
 	bool initialized;
@@ -352,15 +352,16 @@ class PluginXamlLoader : public XamlLoader
 
 	static PluginXamlLoader *FromFilename (const char *filename, PluginInstance *plugin, Surface *surface)
 	{
-		return new PluginXamlLoader (filename, NULL, plugin, surface);
+		return new PluginXamlLoader (filename, NULL, plugin, surface, false);
 	}
 	
-	static PluginXamlLoader *FromStr (const char *str, PluginInstance *plugin, Surface *surface)
+	static PluginXamlLoader *FromStr (const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns = false)
 	{
-		return new PluginXamlLoader (NULL, str, plugin, surface);
+		return new PluginXamlLoader (NULL, str, plugin, surface, import_default_xmlns);
 	}
 	
 	bool IsManaged () { return xaml_is_managed; }
+
 	virtual bool LoadVM ();
 };
 

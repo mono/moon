@@ -1,3 +1,11 @@
+2009-07-18  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.h|cpp: New flag on the loader for determining whether or
+	not to auto import the default SL namespace.
+	- Throw the proper error if the default namespace isn't available.
+	* template.cpp: Templates get the default namespace auto
+	imported.
+
 2009-07-17  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp (Attach): copy the current framerate to the new
