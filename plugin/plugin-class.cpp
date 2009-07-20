@@ -3038,12 +3038,20 @@ MoonlightDependencyObjectObject::Invoke (int id, NPIdentifier name,
 		char *name = STRDUP_FROM_VARIANT (args [0]);
 
 		DependencyObject *element = dob->FindName (name);
-		g_free (name);
 		if (!element) {
-			NULL_TO_NPVARIANT (*result);
-			return true;
+			if (dob != plugin->GetSurface()->GetToplevel()) {
+				// fall back to looking the object up on the toplevel element
+				element = plugin->GetSurface()->GetToplevel ()->FindName (name);
+			}
+
+			if (!element) {
+				g_free (name);
+				NULL_TO_NPVARIANT (*result);
+				return true;
+			}
 		}
 
+		g_free (name);
 		OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, element), *result);
 		return true;
 	}
