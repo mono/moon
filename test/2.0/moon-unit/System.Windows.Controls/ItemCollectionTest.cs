@@ -198,6 +198,16 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual(0, ic.Count, "Count-6");
 		}
 
+		[TestMethod]
+		[MoonlightBug]
+		public void IndexOf_Int ()
+		{
+			ItemCollection c = GetCollection ();
+			c.Add (0);
+
+			Assert.AreEqual (-1, c.IndexOf (0), "Does not contain '0'");
+			Assert.AreEqual (0, c.IndexOf (c[0]), "Contains c [0]");
+		}
 
 		[TestMethod]
 		public void IndexOf_IntConst ()
