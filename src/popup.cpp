@@ -87,6 +87,11 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			if (GetIsOpen ())
 				Show (el);
 		}
+	} else if (args->GetId () == Popup::HorizontalOffsetProperty
+		   || args->GetId () == Popup::VerticalOffsetProperty) {
+		UIElement * child = GetChild ();
+		if (child)
+			child->UpdateTransform ();
 	}
 	NotifyListenersOfPropertyChange (args, error);
 }

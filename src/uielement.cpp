@@ -27,6 +27,7 @@
 #include "timemanager.h"
 #include "media.h"
 #include "resources.h"
+#include "popup.h"
 
 //#define DEBUG_INVALIDATE 0
 #define MIN_FRONT_TO_BACK_COUNT 25
@@ -401,8 +402,16 @@ UIElement::ComputeTransform ()
 	cairo_matrix_t old = absolute_xform;
 	cairo_matrix_init_identity (&absolute_xform);
 
-	if (GetVisualParent () != NULL)
+	if (GetVisualParent () != NULL) {
 		absolute_xform = GetVisualParent ()->absolute_xform;
+	} else if (GetParent () != NULL && GetParent ()->Is (Type::POPUP)) {  
+		// FIXME we shouldn't be examing a subclass type here but we'll do this
+		// for now to get popups in something approaching the right place while
+		// we figure out a cleaner way to handle it long term.
+		Popup *popup = (Popup *)GetParent ();
+		absolute_xform = popup->absolute_xform;
+		cairo_matrix_translate (&absolute_xform, popup->GetHorizontalOffset (), popup->GetVerticalOffset ());
+	}
 
 	cairo_matrix_multiply (&absolute_xform, &layout_xform, &absolute_xform);
 	cairo_matrix_multiply (&absolute_xform, &local_xform, &absolute_xform);
