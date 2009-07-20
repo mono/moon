@@ -448,7 +448,7 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		[MoonBug ("Multiple children for a setter value")]
+		[MoonlightBug ("Multiple children for a setter value")]
 		public void MultipleChildrenOnSetterValue ()
 		{
 			var c = XamlReader.Load (@"<Canvas
