@@ -346,6 +346,13 @@ namespace MoonTest.Misc.Parsing
 							</Canvas>");
 			the_block = (TextBlock) c.FindName ("the_block");
 			Assert.AreEqual ("   {       }  foo", the_block.Text, "#6");
+
+			Style style = (Style) XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007""
+						   	 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+						   	 TargetType=""TextBlock"" >
+							    <Setter Property=""Text"" Value=""{}{0:p2}"" />
+							</Style>");
+			Assert.AreEqual ("{0:p2}", ((Setter) style.Setters [0]).Value);
 		}
 
 		[TestMethod]
