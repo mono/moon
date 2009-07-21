@@ -137,6 +137,7 @@ namespace System.Windows.Controls
 				if (t != null)
 					t.Focus ();
 
+				UpdatePopupSizeAndPosition ();
 				OnDropDownOpened (EventArgs.Empty);
 			} else {
 				Focus ();
@@ -261,7 +262,8 @@ namespace System.Windows.Controls
 				UpdatePopupMaxHeight (MaxDropDownHeight);
 				_popup.CatchClickedOutside ();
 				_popup.ClickedOutside += delegate { IsDropDownOpen = false; };
-				
+				SizeChanged += delegate { UpdatePopupSizeAndPosition (); };
+
 				// The popup will never receive a key press event so we need to chain the event
 				// using Popup.Child
 				if (_popup.Child != null) {
@@ -393,8 +395,7 @@ namespace System.Windows.Controls
 				DisplayedItem.Content = content;
 				DisplayedItem = null;
 			}
-
-			// If nothing is selected or popup is open bail out
+TO			// If nothing is selected or popup is open bail out
 			if (SelectedItem == null || IsDropDownOpen) {
 				Console.WriteLine ("Bailing out: {0}/{1}", ItemDebugString (SelectedItem), IsDropDownOpen);
 				return;
@@ -411,6 +412,18 @@ namespace System.Windows.Controls
 			_contentPresenter.Content = content;
 		}
 		
+		void UpdatePopupSizeAndPosition ()
+		{
+			if (_popup == null)
+				return;
+
+			_popup.VerticalOffset = ActualHeight;
+
+			FrameworkElement fe = _popup.Child as FrameworkElement;
+			if (fe != null)
+				fe.Width = ActualWidth;
+		}
+
 		void UpdatePopupMaxHeight (double height)
 		{
 			if (_popup != null && _popup.Child is FrameworkElement) {
