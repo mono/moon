@@ -101,9 +101,14 @@ namespace System.Windows.Browser.Net {
 		{
 			FlashCrossDomainPolicy cdp = new FlashCrossDomainPolicy ();
 
+			// Silverlight accepts whitespaces before the XML - which is invalid XML
+			StreamReader sr = new StreamReader (stream);
+			while (Char.IsWhiteSpace ((char) sr.Peek ()))
+				sr.Read ();
+
 			XmlReaderSettings policy_settings = new XmlReaderSettings ();
 			policy_settings.DtdProcessing = DtdProcessing.Ignore;
-			using (XmlReader reader = XmlReader.Create (stream, policy_settings)) {
+			using (XmlReader reader = XmlReader.Create (sr, policy_settings)) {
 
 				reader.MoveToContent ();
 				if (reader.IsEmptyElement) {
