@@ -1,3 +1,21 @@
+2009-07-20  Chris Toshok  <toshok@ximian.com>
+
+	* Application.cs (Application::GetGenericXamlStyleFor): pass null
+	for the resource base.
+	(Application::LoadComponent): pass resourceLocator.ToString() for
+	the resource base.  This is essentially the fix for DRT 788.
+	(Application::GetResourceStream): wrap the XapDir stuff in a
+	try{}catch{} block to quiet things down.
+	(Application::get_resource_cb_safe): this takes a resourceBase
+	parameter now.
+	(Application::get_resource_cb): same, and if resourceBase is is
+	non-null/empty, combine it with the resource name, and try to look
+	it up that way first, before falling back to the
+	non-resourceBase'd location.
+
+	* Deployment.cs (Deployment.ReadManifest): pass null for
+	resource_base.
+
 2009-07-16  Sebastien Pouliot  <sebastien at ximian.com>
 
 	* Deployment.cs: Use EmitError when reporting errors in methods 

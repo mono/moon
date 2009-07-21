@@ -1,5 +1,16 @@
 2009-07-20  Chris Toshok  <toshok@ximian.com>
 
+	* plugin-class.cpp (MoonlightContentObject::Invoke): pass null for
+	resource_base.
+	(MoonlightContentObject::Invoke): same.
+
+	* plugin.h|cpp: add resource base parameters to all the XamlLoader
+	calls, and pass stream->url for that value when we have it.
+
+	* cbinding.h: regen.
+	
+2009-07-20  Chris Toshok  <toshok@ximian.com>
+
 	* plugin-class.cpp (MoonlightDependencyObjectObject::Invoke): add
 	the fallback findName lookup here, since we removed it from
 	DependencyObject::FindName.

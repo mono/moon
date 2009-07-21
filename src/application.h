@@ -25,7 +25,7 @@ typedef void (*ApplyStyleCallback)(FrameworkElement *fwe, Style *style);
 /* @CBindingRequisite */
 typedef void *(*ConvertKeyframeValueCallback)(int kind, DependencyProperty *property, Value *original, Value *converted);
 /* @CBindingRequisite */
-typedef ManagedStreamCallbacks (*GetResourceCallback)(const char *name);
+typedef ManagedStreamCallbacks (*GetResourceCallback)(const char *resourceBase, const char *name);
 
 enum NotifyType {NotifyStarted, NotifySize, NotifyProgressChanged, NotifyCompleted, NotifyFailed};
 typedef void (*NotifyFunc) (NotifyType type, gint64 args, gpointer user_data);
@@ -49,8 +49,8 @@ public:
 	
 	void ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property, Value *original, Value *converted);
 	
-	void GetResource (const Uri *uri, NotifyFunc notify_cb, WriteFunc write_cb, DownloaderAccessPolicy policy, Cancellable *cancellable, gpointer user_data);
-	char *GetResourceAsPath (const Uri *uri);
+	void GetResource (const char *resourceBase, const Uri *uri, NotifyFunc notify_cb, WriteFunc write_cb, DownloaderAccessPolicy policy, Cancellable *cancellable, gpointer user_data);
+	char *GetResourceAsPath (const char *resourceBase, const Uri *uri);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static Application *GetCurrent ();
@@ -67,7 +67,7 @@ protected:
 	virtual ~Application ();
 
 private:
-	gpointer GetResourceAsBuffer (const Uri *uri, int *size);
+	gpointer GetResourceAsBuffer (const char *resourceBase, const Uri *uri, int *size);
 	ApplyDefaultStyleCallback apply_default_style_cb;
 	ApplyStyleCallback apply_style_cb;
 	ConvertKeyframeValueCallback convert_keyframe_callback;

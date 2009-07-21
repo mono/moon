@@ -108,7 +108,10 @@ void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer clo
 void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
 void
-Application::GetResource (const Uri *uri, NotifyFunc notify_cb, WriteFunc write_cb, DownloaderAccessPolicy policy, Cancellable *cancellable, gpointer user_data)
+Application::GetResource (const char *resourceBase, const Uri *uri,
+			  NotifyFunc notify_cb, WriteFunc write_cb,
+			  DownloaderAccessPolicy policy,
+			  Cancellable *cancellable, gpointer user_data)
 {
 	if (!uri) {
 		g_warning ("Passing a null uri to Application::GetResource");
@@ -117,7 +120,7 @@ Application::GetResource (const Uri *uri, NotifyFunc notify_cb, WriteFunc write_
 
 	if (get_resource_cb && uri && !uri->isAbsolute) {
 		char *url = uri->ToString ();
-		ManagedStreamCallbacks stream = get_resource_cb (url);
+		ManagedStreamCallbacks stream = get_resource_cb (resourceBase, url);
 		g_free (url);
 		if (stream.handle) {
 			if (notify_cb) {
@@ -210,7 +213,7 @@ downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 
 //compatibility function, act like the old get_resource_cb
 gpointer
-Application::GetResourceAsBuffer (const Uri *uri, int *size)
+Application::GetResourceAsBuffer (const char *resourceBase, const Uri *uri, int *size)
 {
 	gpointer buffer = NULL;
 
@@ -221,7 +224,7 @@ Application::GetResourceAsBuffer (const Uri *uri, int *size)
 
 	if (get_resource_cb && uri && !uri->isAbsolute) {
 		char *url = uri->ToString ();
-		ManagedStreamCallbacks stream = get_resource_cb (url);
+		ManagedStreamCallbacks stream = get_resource_cb (resourceBase, url);
 		g_free (url);
 
 		if (stream.handle) {
@@ -244,7 +247,7 @@ Application::GetResourceAsBuffer (const Uri *uri, int *size)
 
 //FIXME: nuke this!
 char *
-Application::GetResourceAsPath (const Uri *uri)
+Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 {
 	char *dirname, *path, *filename, *url;
 	unzFile zipfile;
@@ -290,7 +293,7 @@ Application::GetResourceAsPath (const Uri *uri)
 	g_free (dirname);
 	
 	// now we need to get the resource buffer and dump it to disk
-	if (!(buf = GetResourceAsBuffer (uri, &size))) {
+	if (!(buf = GetResourceAsBuffer (resourceBase, uri, &size))) {
 		g_free (path);
 		return NULL;
 	}

@@ -2591,7 +2591,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		Type::Kind element_type;
 		MoonError error;
 		DependencyObject *dep = NULL;
-		XamlLoader *loader = PluginXamlLoader::FromStr (xaml, plugin, plugin->GetSurface(), true);
+		XamlLoader *loader = PluginXamlLoader::FromStr (NULL/*FIXME*/, xaml, plugin, plugin->GetSurface(), true);
 
 		loader->LoadVM ();
 
@@ -2628,7 +2628,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		g_free (path);
 		
 		if (fname != NULL) {
-			XamlLoader *loader = PluginXamlLoader::FromFilename (fname, plugin, plugin->GetSurface());
+			XamlLoader *loader = PluginXamlLoader::FromFilename (NULL/*FIXME*/, fname, plugin, plugin->GetSurface());
 			dep = loader->CreateDependencyObjectFromFile (fname, false, &element_type);
 			delete loader;
 

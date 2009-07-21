@@ -2,7 +2,7 @@
 # 463 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
-+SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
++SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
 +SSC-M: System.Void Mono.EasingFunctionWrapper::ReportException(System.Exception)
 +SSC-M: System.Void Mono.Events::AddHandler(System.Windows.DependencyObject,System.String,Mono.UnmanagedEventHandler)
@@ -77,7 +77,7 @@
 +SSC-M: System.IntPtr Mono.Value::StringToIntPtr(System.String)
 +SSC-M: System.Object Mono.Xaml.MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)
 +SSC-M: System.Windows.FrameworkTemplate Mono.Xaml.MarkupExpressionParser::GetParentTemplate()
-+SSC-M: Mono.Xaml.XamlLoader Mono.Xaml.XamlLoader::CreateManagedXamlLoader(System.Reflection.Assembly,System.IntPtr,System.IntPtr)
++SSC-M: Mono.Xaml.XamlLoader Mono.Xaml.XamlLoader::CreateManagedXamlLoader(System.Reflection.Assembly,System.String,System.IntPtr,System.IntPtr)
 +SSC-M: System.Void Mono.Xaml.XamlLoader::CreateNativeLoader(System.String,System.String)
 +SSC-M: System.Void Mono.Xaml.XamlLoader::FreeNativeLoader()
 +SSC-M: System.Int32 System.IO.SimpleUnmanagedMemoryStream::Read(System.Byte[],System.Int32,System.Int32)

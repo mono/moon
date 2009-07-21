@@ -47,9 +47,9 @@ namespace Mono {
 		/// <summary>
 		///   Creates a new Loader for a XAML file.
 		/// </summary>
-		public static ManagedXamlLoader CreateXamlLoader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
+		public static ManagedXamlLoader CreateXamlLoader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string resourceBase, string filename, string contents)
 		{
-			var loader = XamlLoader.CreateManagedXamlLoader (surface, plugin) as ManagedXamlLoader;
+			var loader = XamlLoader.CreateManagedXamlLoader (resourceBase, surface, plugin) as ManagedXamlLoader;
 			loader.Setup (native_loader, plugin, surface, filename, contents);
 			return loader;
 		}

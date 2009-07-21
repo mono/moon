@@ -1050,7 +1050,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	if (xaml_loader)
 		delete xaml_loader;
 
-	xaml_loader = PluginXamlLoader::FromStr (xaml, this, surface);
+	xaml_loader = PluginXamlLoader::FromStr (NULL/*FIXME*/, xaml, this, surface);
 	LoadXAML ();
 
 	g_free (xaml);
@@ -1432,7 +1432,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	AddSource (stream->url, fname);
 #endif
 	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
-		xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
+		xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);
 		loading_splash = true;
 		LoadXAML ();
 		FlushSplash ();
@@ -1450,7 +1450,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		if (uri->Parse (stream->url, false) && is_xap (uri->GetPath())) {
 			LoadXAP (stream->url, fname);
 		} else {
-			xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
+			xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);
 			LoadXAML ();
 		}
 
@@ -1669,7 +1669,7 @@ PluginInstance::LoadSplash ()
 			NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
 		}
 	} else {
-		xaml_loader = PluginXamlLoader::FromStr (PLUGIN_SPINNER, this, surface);
+		xaml_loader = PluginXamlLoader::FromStr (NULL, PLUGIN_SPINNER, this, surface);
 		loading_splash = true;
 		LoadXAML ();
 		FlushSplash ();
@@ -1947,9 +1947,9 @@ PluginXamlLoader::InitializeLoader ()
 		return true;
 
 	if (GetFilename ()) {
-		managed_loader = plugin->ManagedCreateXamlLoaderForFile (this, GetFilename ());
+		managed_loader = plugin->ManagedCreateXamlLoaderForFile (this, GetResourceBase(), GetFilename ());
 	} else if (GetString ()) {
-		managed_loader = plugin->ManagedCreateXamlLoaderForString (this, GetString ());
+		managed_loader = plugin->ManagedCreateXamlLoaderForString (this, GetResourceBase(), GetString ());
 	} else {
 		return false;
 	}
@@ -2056,8 +2056,8 @@ PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns
 	return true;
 }
 
-PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns)
-	: XamlLoader (filename, str, surface)
+PluginXamlLoader::PluginXamlLoader (const char *resourceBase, const char *filename, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns)
+	: XamlLoader (resourceBase, filename, str, surface)
 {
 	this->plugin = plugin;
 	xaml_is_managed = false;
@@ -2085,9 +2085,9 @@ PluginXamlLoader::~PluginXamlLoader ()
 }
 
 PluginXamlLoader *
-plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *surface)
+plugin_xaml_loader_from_str (const char *resourceBase, const char *str, PluginInstance *plugin, Surface *surface)
 {
-	return PluginXamlLoader::FromStr (str, plugin, surface);
+	return PluginXamlLoader::FromStr (resourceBase, str, plugin, surface);
 }
 
 
@@ -2223,7 +2223,7 @@ PluginInstance::ManagedExceptionToErrorEventArgs (MonoObject *exc)
 }
 
 gpointer
-PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *file, const char *str)
+PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str)
 {
 	MonoObject *loader;
 	MonoObject *exc = NULL;
@@ -2231,15 +2231,16 @@ PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *
 		return NULL;
 
 	PluginInstance *this_obj = this;
-	void *params [5];
+	void *params [6];
 
 	Deployment::SetCurrent (deployment);
 
 	params [0] = &native_loader;
 	params [1] = &this_obj;
 	params [2] = &surface;
-	params [3] = file ? mono_string_new (mono_domain_get (), file) : NULL;
-	params [4] = str ? mono_string_new (mono_domain_get (), str) : NULL;
+	params [3] = resourceBase ? mono_string_new (mono_domain_get (), resourceBase) : NULL;
+	params [4] = file ? mono_string_new (mono_domain_get (), file) : NULL;
+	params [5] = str ? mono_string_new (mono_domain_get (), str) : NULL;
 	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, &exc);
 
 	if (exc) {
@@ -2251,15 +2252,15 @@ PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *
 }
 
 gpointer
-PluginInstance::ManagedCreateXamlLoaderForFile (XamlLoader *native_loader, const char *file)
+PluginInstance::ManagedCreateXamlLoaderForFile (XamlLoader *native_loader, const char *resourceBase, const char *file)
 {
-	return ManagedCreateXamlLoader (native_loader, file, NULL);
+	return ManagedCreateXamlLoader (native_loader, resourceBase, file, NULL);
 }
 
 gpointer
-PluginInstance::ManagedCreateXamlLoaderForString (XamlLoader* native_loader, const char *str)
+PluginInstance::ManagedCreateXamlLoaderForString (XamlLoader* native_loader, const char *resourceBase, const char *str)
 {
-	return ManagedCreateXamlLoader (native_loader, NULL, str);
+	return ManagedCreateXamlLoader (native_loader, resourceBase, NULL, str);
 }
 
 void

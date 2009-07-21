@@ -81,15 +81,16 @@ namespace Mono.Xaml
 		// since we have to support multiple surfaces for the non-browser case.
 		protected IntPtr surface;
 		protected IntPtr plugin;
+		protected string resourceBase;
 
-		public static XamlLoader CreateManagedXamlLoader (IntPtr surface, IntPtr plugin)
+		public static XamlLoader CreateManagedXamlLoader (string resourceBase, IntPtr surface, IntPtr plugin)
 		{
-			return CreateManagedXamlLoader (typeof (DependencyObject).Assembly, surface, plugin);
+			return CreateManagedXamlLoader (typeof (DependencyObject).Assembly, resourceBase, surface, plugin);
 		}
 
-		public static XamlLoader CreateManagedXamlLoader (Assembly assembly, IntPtr surface, IntPtr plugin)
+		public static XamlLoader CreateManagedXamlLoader (Assembly assembly, string resourceBase, IntPtr surface, IntPtr plugin)
 		{
-			return new ManagedXamlLoader (assembly, surface, plugin);
+			return new ManagedXamlLoader (assembly, resourceBase, surface, plugin);
 		}
 		
 		public static int gen = 0;
@@ -99,9 +100,10 @@ namespace Mono.Xaml
 			gen++;
 		}
 		
-		public XamlLoader (IntPtr surface, IntPtr plugin)
+		public XamlLoader (string resourceBase, IntPtr surface, IntPtr plugin)
 		{
 			gen++;
+			this.resourceBase = resourceBase;
 			this.surface = surface;
 			this.plugin = plugin;
 		}
@@ -219,7 +221,7 @@ namespace Mono.Xaml
 				throw new Exception ("The surface where the xaml should be loaded is not set.");
 			
 			//Console.WriteLine ("ManagedXamlLoader::CreateNativeLoader (): surface: {0}", surface);
-			native_loader = NativeMethods.xaml_loader_new (filename, contents, surface);
+			native_loader = NativeMethods.xaml_loader_new (resourceBase, filename, contents, surface);
 			
 			if (native_loader == IntPtr.Zero)
 				throw new Exception ("Unable to create native loader.");

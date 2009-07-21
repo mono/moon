@@ -65,7 +65,7 @@ namespace Mono {
 	internal delegate void ApplyDefaultStyleCallback (IntPtr fwe_ptr, IntPtr type_info_ptr);
 	internal delegate void ApplyStyleCallback (IntPtr fwe_ptr, IntPtr style_ptr);
 	internal delegate void ConvertKeyframeValueCallback (Mono.Kind kind, IntPtr property, IntPtr original, out Value converted);
-	internal delegate ManagedStreamCallbacks GetResourceCallback (string name);
+	internal delegate ManagedStreamCallbacks GetResourceCallback (string resourceBase, string name);
 
 	// Used in databinding to interact with managed objects
 	internal delegate Value GetValueCallback ();

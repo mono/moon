@@ -1,3 +1,52 @@
+2009-07-20  Chris Toshok  <toshok@ximian.com>
+
+	* application.h|cpp: add a ResourceBase parameter to all the
+	GetResource calls and to the GetResourceCallback delegate type.
+
+	* dependencyobject.h (DependencyObject::SetResourceBase,
+	DependencyObject::GetResourceBase): new methods.
+
+	* dependencyobject.cpp (DependencyObject::ProviderValueChanged):
+	"inherit" resource base from our parent (this might be very, very
+	wrong...)
+	(DependencyObject::Initialize): init resource_base to null.
+	(DependencyObject::~DependencyObject): free resource_base.
+
+	* bitmapimage.cpp (BitmapImage::UriSourceChanged): locate the
+	resource using our resource base.
+
+	* template.cpp (FrameworkTemplate::GetVisualTree): use the same
+	resource base when expanding the template.
+
+	* textblock.cpp (Inline::AddFontResource): locate the font using
+	our resource base.
+	(TextBlock::AddFontResource): same.
+
+	* textbox.cpp (TextBoxBase::AddFontResource): same.
+	using our resource base.
+
+	* glyphs.cpp (Glyphs::SetFontResource): same.
+
+	* xaml.cpp (XamlParserInfo::AddCreatedElement): factor out all
+	those SetSurface calls, and put it here.  Also, set the resource
+	base at the same time.
+	(XamlLoader::Initialize): store off the resource_base.
+	(XamlLoader::~XamlLoader): and free it.
+	(xaml_loader_new): take a resourceBase, and pass it along.
+	(XamlLoader::HydrateFromString): set the ResourceBase on the
+	toplevel object.
+	(create_element_info_from_imported_managed_type): remove the
+	SetSurface call, just call XamlParserInfo::AddCreatedElement.
+	(XamlElementInstanceNative::CreateItem): same.
+	(XamlElementInfoManaged::CreateElementInstance): same.
+	(XamlElementInfoManaged::CreateWrappedElementInstance): same.
+
+	* xaml.h (class XamlLoader): add a common Initialize method, and a
+	ctor overload that takes a "resource base", which is the uri which
+	we're loading from.  Also add a GetResourceBase() accessor.
+
+	* cbinding.h: regen
+
 2009-07-20  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp (ComputeTransform): add a hack for placing popup

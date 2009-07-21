@@ -53,7 +53,7 @@ namespace Mono.Xaml
 		{
 		}
 
-		public ManagedXamlLoader (Assembly assembly, IntPtr surface, IntPtr plugin) : base (surface, plugin)
+		public ManagedXamlLoader (Assembly assembly, string resourceBase, IntPtr surface, IntPtr plugin) : base (resourceBase, surface, plugin)
 		{
 			this.assembly = assembly;
 		}
@@ -359,39 +359,35 @@ namespace Mono.Xaml
 			if (prop == null)
 				return false;
 
-			if (o is Binding ||
-			    o is TemplateBindingExpression) {
+			if (o is Binding) {
+				Binding binding = o as Binding;
 
-				if (o is Binding) {
-					Binding binding = o as Binding;
+				dob.SetBinding (prop, binding);
+				return true;
+			}
+			else if (o is TemplateBindingExpression) {
+				TemplateBindingExpression tb = o as TemplateBindingExpression;
 
-					dob.SetBinding (prop, binding);
-					return true;
-				}
-				else if (o is TemplateBindingExpression) {
-					TemplateBindingExpression tb = o as TemplateBindingExpression;
+				IntPtr context = NativeMethods.xaml_loader_get_context (data->loader);
+				IntPtr source_ptr = NativeMethods.xaml_context_get_template_binding_source (context);
 
-					IntPtr context = NativeMethods.xaml_loader_get_context (data->loader);
-					IntPtr source_ptr = NativeMethods.xaml_context_get_template_binding_source (context);
+				DependencyObject templateSourceObject = NativeDependencyObjectHelper.FromIntPtr (source_ptr) as DependencyObject;
 
-					DependencyObject templateSourceObject = NativeDependencyObjectHelper.FromIntPtr (source_ptr) as DependencyObject;
+				if (templateSourceObject == null)
+					return false;
 
-					if (templateSourceObject == null)
-						return false;
-
-					DependencyProperty sourceProperty = DependencyProperty.Lookup (templateSourceObject.GetKind(),
+				DependencyProperty sourceProperty = DependencyProperty.Lookup (templateSourceObject.GetKind(),
 												       tb.SourcePropertyName);
-					if (sourceProperty == null)
-						return false;
+				if (sourceProperty == null)
+					return false;
 
-					tb.TargetProperty = prop;
-					tb.Source = templateSourceObject as Control;
-					tb.SourceProperty = sourceProperty;
+				tb.TargetProperty = prop;
+				tb.Source = templateSourceObject as Control;
+				tb.SourceProperty = sourceProperty;
 
-					dob.SetTemplateBinding (prop, tb);
+				dob.SetTemplateBinding (prop, tb);
 
-					return true;
-				}
+				return true;
 			}
 			else {
 				// static resources fall into this

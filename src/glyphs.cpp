@@ -711,7 +711,7 @@ Glyphs::SetFontResource (const Uri *uri)
 	Application *application = Application::GetCurrent ();
 	char *path;
 	
-	if (!application || !(path = application->GetResourceAsPath (uri)))
+	if (!application || !(path = application->GetResourceAsPath (GetResourceBase(), uri)))
 		return false;
 	
 	LoadFont (uri, path);

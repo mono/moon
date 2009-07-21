@@ -147,7 +147,7 @@ public:
 	//  the contained MediaElement's SetSurface(Lock) to be called).
 	bool SetSurfaceLock ();
 	void SetSurfaceUnlock ();
-	
+
 	// AddTickCall*: 
 	//  Queues a delegate which will be called on the main thread.
 	//  The delegate's parameter will be the 'this' pointer.
@@ -300,6 +300,9 @@ public:
 
 	virtual bool PermitsMultipleParents () { return true; }
 
+	void SetResourceBase (const char *resourceBase) { g_free (resource_base); resource_base = g_strdup (resourceBase); }
+	char *GetResourceBase () { return resource_base; }
+
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	// See the comment below about AddPropertyChangeListener for
@@ -412,6 +415,8 @@ private:
 
 	bool is_frozen;
 	bool is_hydrated;
+
+	char *resource_base;
 };
 
 #endif /* __MONO_DEPOBJECT_H__ */

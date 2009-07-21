@@ -97,7 +97,7 @@ Inline::AddFontResource (const char *resource)
 	
 	uri = new Uri ();
 	
-	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (uri))) {
+	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
 		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
 			downloader->Open ("GET", resource, FontPolicy);
 			AddFontSource (downloader);
@@ -400,7 +400,7 @@ TextBlock::AddFontResource (const char *resource)
 	
 	uri = new Uri ();
 	
-	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (uri))) {
+	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
 		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
 			downloader->Open ("GET", resource, FontPolicy);
 			AddFontSource (downloader);

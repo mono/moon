@@ -196,7 +196,7 @@ BitmapImage::UriSourceChanged ()
 
 	if (current && uri) {
 		get_res_aborter = new Cancellable ();
-		current->GetResource (uri, resource_notify, pixbuf_write, MediaPolicy, get_res_aborter, this);
+		current->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, MediaPolicy, get_res_aborter, this);
 	}
 }
 

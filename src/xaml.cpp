@@ -588,6 +588,12 @@ class XamlParserInfo {
 
 	void AddCreatedElement (DependencyObject* element)
 	{
+		// if we have a loader, set the surface and base resource location
+		if (loader) {
+			element->SetSurface (loader->GetSurface());
+			element->SetResourceBase (loader->GetResourceBase());
+		}
+
 		// When instantiating a template, some elements are created which are not explicitly
 		// mentioned in the xaml. Therefore we need to keep walking up the tree until we find
 		// the last element which we set a value for Control::IsTemplateItem and propagate
@@ -1403,9 +1409,21 @@ XamlLoader::AddChild (void *p, Value *top_level, Value *parent_parent, bool pare
 	return false;
 }
 
+XamlLoader::XamlLoader (const char *resourceBase, const char* filename, const char* str, Surface* surface, XamlContext *context)
+{
+	Initialize (resourceBase, filename, str, surface, context);
+}
+
 XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface, XamlContext *context)
 {
+	Initialize (NULL, filename, str, surface, context);
+}
+
+void
+XamlLoader::Initialize (const char *resourceBase, const char* filename, const char* str, Surface* surface, XamlContext *context)
+{
 	this->filename = g_strdup (filename);
+	this->resource_base = g_strdup (resourceBase);
 	this->str = g_strdup (str);
 	this->surface = surface;
 	if (surface)
@@ -1436,6 +1454,7 @@ XamlLoader::XamlLoader (const char* filename, const char* str, Surface* surface,
 XamlLoader::~XamlLoader ()
 {
 	g_free (filename);
+	g_free (resource_base);
 	g_free (str);
 	if (surface)
 		surface->unref ();
@@ -1453,9 +1472,9 @@ XamlLoader::LoadVM ()
 }
 
 XamlLoader* 
-xaml_loader_new (const char* filename, const char* str, Surface* surface)
+xaml_loader_new (const char *resourceBase, const char* filename, const char* str, Surface* surface)
 {
-	return new XamlLoader (filename, str, surface);
+	return new XamlLoader (resourceBase, filename, str, surface);
 }
 
 void
@@ -2304,6 +2323,7 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 		parser_info->hydrate_expecting = object;
 		parser_info->hydrating = true;
 		object->SetSurface (GetSurface());
+		object->SetResourceBase (GetResourceBase());
 	} else {
 		parser_info->hydrate_expecting = NULL;
 		parser_info->hydrating = false;
@@ -4012,13 +4032,8 @@ create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *n
 	XamlElementInfoImportedManaged *info = new  XamlElementInfoImportedManaged (g_strdup (name), NULL, v);
 
 	if (create) {
-		if (v->Is (Type::DEPENDENCY_OBJECT)) {
-			DependencyObject *dob = v->AsDependencyObject ();
-			if (p->loader)
-				dob->SetSurface (p->loader->GetSurface ());
-			p->AddCreatedElement (dob);
-			dob->SetSurface (p->loader->GetSurface ());
-		}
+		if (v->Is (Type::DEPENDENCY_OBJECT))
+			p->AddCreatedElement (v->AsDependencyObject());
 	}
 
 	return info;
@@ -4127,9 +4142,8 @@ XamlElementInstanceNative::CreateItem ()
 		item = element_info->GetType()->IsCtorVisible() ? element_info->GetType ()->CreateInstance () : NULL;
 
 		if (item) {
-			if (parser_info->loader)
-				item->SetSurface (parser_info->loader->GetSurface ());
-			
+			parser_info->AddCreatedElement (item);
+
 			// in case we must store the collection into the parent
 			if (dep && dep->GetPropertyType() == type->GetKind ()) {
 				MoonError err;
@@ -4137,8 +4151,6 @@ XamlElementInstanceNative::CreateItem ()
 				if (!((DependencyObject * ) walk->GetAsDependencyObject ())->SetValueWithError (dep, &item_value, &err))
 					parser_error (parser_info, element_name, NULL, err.code, err.message);
 			}
-			
-			parser_info->AddCreatedElement (item);
 		} else {
 			parser_error (parser_info, element_name, NULL, 2007, "Unknown element: %s.", element_name);
 		}
@@ -4260,11 +4272,8 @@ XamlElementInfoManaged::CreateElementInstance (XamlParserInfo *p)
 {
 	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, obj);
 
-	if (obj->Is (Type::DEPENDENCY_OBJECT)) {
-		if (p->loader)
-			inst->GetAsDependencyObject ()->SetSurface (p->loader->GetSurface ());
+	if (obj->Is (Type::DEPENDENCY_OBJECT))
 		p->AddCreatedElement (inst->GetAsDependencyObject ());
-	}
 
 	return inst;
 }
@@ -4274,8 +4283,6 @@ XamlElementInfoManaged::CreateWrappedElementInstance (XamlParserInfo *p, Depende
 {
 	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, new Value (o));
 
-	if (p->loader)
-		inst->GetAsDependencyObject ()->SetSurface (p->loader->GetSurface ());
 	p->AddCreatedElement (inst->GetAsDependencyObject ());
 
 	return inst;

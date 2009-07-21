@@ -190,7 +190,7 @@ namespace Moonlight.Gtk
 			XamlLoader.AllowMultipleSurfacesPerDomain = true;
             
 			return (DependencyObject)XamlLoader
-				.CreateManagedXamlLoader (surface, IntPtr.Zero)
+				.CreateManagedXamlLoader (null, surface, IntPtr.Zero)
 				.CreateObjectFromString (xaml, true) as DependencyObject;
 		}
 

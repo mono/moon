@@ -159,8 +159,8 @@ class PluginInstance
 	bool InitializePluginAppDomain ();
 	bool CreatePluginDeployment ();
 
-	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *file);
-	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *str);
+	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *resourceBase, const char *file);
+	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *resourceBase, const char *str);
 	void ManagedLoaderDestroy (gpointer loader_object);
 #endif
 	
@@ -251,7 +251,7 @@ class PluginInstance
 	bool ManagedInitializeDeployment (const char *file);
 	void ManagedDestroyApplication ();
 
-	gpointer ManagedCreateXamlLoader (XamlLoader* native_loader, const char *file, const char *str);
+	gpointer ManagedCreateXamlLoader (XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str);
 #endif
 
 	// The name of the file that we are missing, and we requested to be loaded
@@ -334,7 +334,7 @@ class StreamNotify
 
 class PluginXamlLoader : public XamlLoader
 {
-	PluginXamlLoader (const char *filename, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns);
+	PluginXamlLoader (const char *resourceBase, const char *filename, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns);
 	bool InitializeLoader ();
 	PluginInstance *plugin;
 	bool initialized;
@@ -350,14 +350,14 @@ class PluginXamlLoader : public XamlLoader
 
 	bool SetProperty (void *parser, Value *top_level, const char *xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value* value, void* value_data);
 
-	static PluginXamlLoader *FromFilename (const char *filename, PluginInstance *plugin, Surface *surface)
+	static PluginXamlLoader *FromFilename (const char *resourceBase, const char *filename, PluginInstance *plugin, Surface *surface)
 	{
-		return new PluginXamlLoader (filename, NULL, plugin, surface, false);
+		return new PluginXamlLoader (resourceBase, filename, NULL, plugin, surface, false);
 	}
 	
-	static PluginXamlLoader *FromStr (const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns = false)
+	static PluginXamlLoader *FromStr (const char *resourceBase, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns = false)
 	{
-		return new PluginXamlLoader (NULL, str, plugin, surface, import_default_xmlns);
+		return new PluginXamlLoader (resourceBase, NULL, str, plugin, surface, import_default_xmlns);
 	}
 	
 	bool IsManaged () { return xaml_is_managed; }
@@ -376,7 +376,7 @@ void plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_acces
 
 void *plugin_instance_load_url (PluginInstance *instance, char *url, gint32 *length);
 
-PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *surface);
+PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, const char *resourceBase, PluginInstance *plugin, Surface *surface);
 
 G_END_DECLS
 

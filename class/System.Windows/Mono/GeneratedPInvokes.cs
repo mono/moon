@@ -2319,8 +2319,8 @@ namespace Mono {
 		public extern static bool value_from_str (Kind type, string prop_name, string str, out IntPtr v);
 
 		[DllImport ("moon")]
-		// XamlLoader *xaml_loader_new (const char *filename, const char *str, Surface *surface);
-		public extern static IntPtr xaml_loader_new (string filename, string str, IntPtr surface);
+		// XamlLoader *xaml_loader_new (const char *resourceBase, const char *filename, const char *str, Surface *surface);
+		public extern static IntPtr xaml_loader_new (string resourceBase, string filename, string str, IntPtr surface);
 
 		[DllImport ("moon")]
 		// void xaml_loader_free (XamlLoader *loader);

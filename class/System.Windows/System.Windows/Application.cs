@@ -277,7 +277,7 @@ namespace System.Windows {
 					using (StreamReader sr = new StreamReader (info.Stream)) {
 						string generic_xaml = sr.ReadToEnd();
 
-						ManagedXamlLoader loader = new ManagedXamlLoader (type.Assembly, Deployment.Current.Surface.Native, PluginHost.Handle);
+						ManagedXamlLoader loader = new ManagedXamlLoader (type.Assembly, null, Deployment.Current.Surface.Native, PluginHost.Handle);
 
 						try {
 							rd = loader.CreateObjectFromString (generic_xaml, false) as ResourceDictionary;
@@ -320,7 +320,7 @@ namespace System.Windows {
 
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
 			Assembly loading_asm = component.GetType ().Assembly;
-			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, Deployment.Current.Surface.Native, PluginHost.Handle);
+			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, resourceLocator.ToString(), Deployment.Current.Surface.Native, PluginHost.Handle);
 
 			loader.Hydrate (wrapper.NativeHandle, xaml);
 		}
@@ -380,17 +380,19 @@ namespace System.Windows {
 					return new StreamResourceInfo (stream, string.Empty);
 			} catch {}
 
-			string res_file = Path.Combine (Deployment.Current.XapDir, resource);
-			if (File.Exists (res_file))
-				return StreamResourceInfo.FromFile (res_file);
+			try {
+				string res_file = Path.Combine (Deployment.Current.XapDir, resource);
+				if (File.Exists (res_file))
+					return StreamResourceInfo.FromFile (res_file);
+			} catch {}
 
 			return null;
 		}
 
-		internal static ManagedStreamCallbacks get_resource_cb_safe (string name)
+		internal static ManagedStreamCallbacks get_resource_cb_safe (string resourceBase, string name)
 		{
 			try {
-				return get_resource_cb (name);
+				return get_resource_cb (resourceBase, name);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_resource_cb: {0}", ex);
@@ -400,13 +402,26 @@ namespace System.Windows {
 			return new ManagedStreamCallbacks ();
 		}
 
-		internal static ManagedStreamCallbacks get_resource_cb (string name)
+		internal static ManagedStreamCallbacks get_resource_cb (string resourceBase, string name)
 		{
-			StreamResourceInfo info = GetResourceStream (new Uri (name, UriKind.Relative));
+			StreamResourceInfo info = null;
 
-			if (info == null) {
-				return new ManagedStreamCallbacks ();
+			if (!string.IsNullOrEmpty (resourceBase)) {
+				string combined = string.Format ("{0}{1}",
+								 resourceBase.Substring (0, resourceBase.LastIndexOf ('/') + 1),
+								 name);
+
+				try {
+					info = GetResourceStream (new Uri (combined, UriKind.Relative));
+				} catch {}
 			}
+
+			if (info == null)
+				info = GetResourceStream (new Uri (name, UriKind.Relative));
+
+
+			if (info == null)
+				return new ManagedStreamCallbacks ();
 
 			return new StreamWrapper (info.Stream).GetCallbacks ();
 		}

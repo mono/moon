@@ -101,7 +101,7 @@ void	    xaml_parse_xmlns (const char *xmlns, char **type_name, char **ns, char 
 bool        xaml_is_valid_event_name (Type::Kind kind, const char *name, bool allow_desktop_events);
 
 /* @GeneratePInvoke */
-XamlLoader *xaml_loader_new (const char *filename, const char *str, Surface *surface);
+XamlLoader *xaml_loader_new (const char *resourceBase, const char *filename, const char *str, Surface *surface);
 /* @GeneratePInvoke */
 void	    xaml_loader_free (XamlLoader *loader);
 /* @GeneratePInvoke */
@@ -155,13 +155,16 @@ class XamlLoader {
 	bool expanding_template;
 	Surface *surface;
 	char *filename;
+	char *resource_base;
 	char *str;
 	XamlContext *context;
 	bool import_default_xmlns;
 
+	void Initialize (const char *resourceBase, const char *filename, const char *str, Surface *surface, XamlContext *context);
  public:
 
 	XamlLoader (const char *filename, const char *str, Surface *surface, XamlContext *context = NULL);
+	XamlLoader (const char *resourceBase, const char *filename, const char *str, Surface *surface, XamlContext *context = NULL);
 	virtual ~XamlLoader ();
 	
 	virtual bool LoadVM ();
@@ -179,7 +182,8 @@ class XamlLoader {
 	char *GetFilename () { return filename; }
 	char *GetString () { return str; }
 	Surface *GetSurface () { return surface; }
-	
+	char *GetResourceBase () { return resource_base; }
+
 	bool GetExpandingTemplate () { return expanding_template; }
 	void SetExpandingTemplate (bool value) { expanding_template = value; }
 

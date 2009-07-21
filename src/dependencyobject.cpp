@@ -1598,10 +1598,12 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 		if (new_as_dep && setsParent) {
 			new_as_dep->SetSurface (GetSurface ());
-			
+
 			new_as_dep->SetParent (this, error);
 			if (error->number)
 				return;
+
+			new_as_dep->SetResourceBase (GetResourceBase());
 			
 			if (new_as_dep->Is(Type::COLLECTION)) {
 				new_as_dep->AddHandler (Collection::ChangedEvent, collection_changed, this);
@@ -1800,6 +1802,7 @@ DependencyObject::Initialize ()
 	parent = NULL;
 	is_hydrated = false;
 	is_frozen = false;
+	resource_base = NULL;
 }
 
 void
@@ -1890,6 +1893,7 @@ DependencyObject::~DependencyObject ()
 	local_values = NULL;
 	delete[] providers;
 	providers = NULL;
+	g_free (resource_base);
 }
 
 void
