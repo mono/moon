@@ -194,6 +194,15 @@
 			// Description:	no policy (404)
 			NotFound ();
 			break;
+		case "flash-15":
+			// Description:	simplest flash policy with some spaces before the XML (technically invalid XML)
+			// Result:	OK
+			if (path == "crossdomain.xml") {
+				Response.Write ("  <?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				FlashDefault (path);
+			}
+			break;
 
 		case "silverlight-1":
 			// Description:	simplest, allow everything, silverlight policy
@@ -302,6 +311,26 @@ Console.WriteLine ("{0} : {1}", SERVER_NAME, path);
 			} else if (path == "crossdomain.xml") {
 				// policy is invalid and we don't provide a flash policy alternative
 				NotFound ();
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-7":
+			// Description:	simplest silverlight policy with some spaces before the XML (technically invalid XML)
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"  <?xml version='1.0'?>
+<access-policy>
+	<cross-domain-access>
+		<policy>
+			<allow-from>
+				<domain uri='*'/>
+			</allow-from>
+			<grant-to>
+				<resource path='/' include-subpaths='true'/>
+			</grant-to>
+		</policy>
+	</cross-domain-access>
+</access-policy>");
 			} else {
 				Default (path);
 			}

@@ -93,6 +93,8 @@ namespace WebPolicies {
 			{ "http://flash-13/test/allow-all-domains-with-DTD-secure-invalid-value", CheckSecurityException },
 			// flash-14 has no crossdomain.xml (nor a clientaccesspolicy.xml)
 			{ "http://flash-14/", CheckSecurityException },
+			// flash-15 has an invalid (but accepted) XML policy with whitespace preceding the XML declaration
+			{ "http://flash-15/", CheckOk },
 
 			// add no policy test
 			// add redirection test (not allowed on policy files)
@@ -139,6 +141,8 @@ namespace WebPolicies {
 			{ "http://silverlight-6/test", CheckSecurityException },				// fail because "" is invalid
 			{ "http://silverlight-6/test/", CheckSecurityException },				// fail because "" is invalid
 			{ "http://silverlight-6/test/file", CheckSecurityException },				// fail because "" is invalid
+			// silverlight-7 has an invalid (but accepted) XML policy with whitespace preceding the XML declaration
+			{ "http://silverlight-7/", CheckOk },
 
 			// add redirection test (not allowed on policy files)
 			// return some binary file

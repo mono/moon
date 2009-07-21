@@ -1,3 +1,10 @@
+2009-07-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Global.asax: Add test case for both flash and silverlight 
+	policies where the XML is preceded by whitespaces (which is
+	invalid XML-wise but accepted by Silverlight).
+	* Page.xaml.cs: Call new test cases
+
 2009-06-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* all: New. Server app (Global.asax) and SL2 client application
