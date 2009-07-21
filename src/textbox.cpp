@@ -866,6 +866,9 @@ TextBoxBase::CursorPrevWord (int cursor)
 		// skip to the beginning of this word
 		while (i > begin && !g_unichar_isspace (buffer->text[i - 1]))
 			i--;
+		
+		if (i < cursor && is_start_of_word (buffer, i))
+			return i;
 	}
 	
 	// skip to the start of the lwsp
@@ -1509,9 +1512,37 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 		}
 		break;
 	case GDK_Delete:
-		if (!is_read_only) {
-			KeyPressDelete (modifiers);
-			args->SetHandled (true);
+		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
+			// Shift+Delete => Cut
+			if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				// copy selection to the clipboard and then cut
+				gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+				if (!is_read_only)
+					SetSelectedText ("");
+				args->SetHandled (true);
+			}
+		} else {
+			if (!is_read_only) {
+				KeyPressDelete (modifiers);
+				args->SetHandled (true);
+			}
+		}
+		break;
+	case GDK_Insert:
+		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
+			// Shift+Insert => Paste
+			if (!is_read_only && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				// paste clipboard contents to the buffer
+				gtk_clipboard_request_text (clipboard, TextBoxBase::paste, this);
+				args->SetHandled (true);
+			}
+		} else if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
+			// Control+Insert => Copy
+			if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				// copy selection to the clipboard
+				gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+				args->SetHandled (true);
+			}
 		}
 		break;
 	case GDK_KP_Page_Down:

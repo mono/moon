@@ -1,3 +1,10 @@
+2009-07-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::CursorPrevWord): Fixed the logic a
+	bit.
+	(TextBoxBase::OnKeyDown): Implemented alternate keybindings for
+	Cut/Copy/Paste.
+
 2009-07-21  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Raise errors from managed SetProperty.
