@@ -245,6 +245,13 @@ MouseIsAtPosition (ShockerScriptableControlObject* obj, char* name, const NPVari
 }
 
 static void
+MouseDoubleClick (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
+{
+	obj->GetInputProvider ()->MouseDoubleClick ();
+	BOOLEAN_TO_NPVARIANT (true, *result);
+}
+
+static void
 MouseLeftClick (ShockerScriptableControlObject* obj, char* name, const NPVariant* args, uint32_t arg_count, NPVariant *result)
 {
 	obj->GetInputProvider ()->MouseLeftClick ();
@@ -502,6 +509,7 @@ static ScriptableMethod scriptable_methods [] = {
 	{ "moveMouseLogarithmic", &MoveMouseLogarithmic },
 	{ "moveMouse", &MoveMouse },
 	{ "mouseIsAtPosition", &MouseIsAtPosition },
+	{ "mouseDoubleClick", &MouseDoubleClick },
 	{ "mouseLeftClick", &MouseLeftClick },
 	{ "mouseRightClick", &MouseRightClick },
 	{ "mouseLeftButtonDown", &MouseLeftButtonDown },

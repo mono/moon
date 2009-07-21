@@ -192,6 +192,7 @@ public:
 
 	void MoveMouseLogarithmic (int x, int y);
 	void MoveMouse (int x, int y);
+	void MouseDoubleClick ();
 	void MouseLeftClick ();
 	void MouseRightClick ();
 	void MouseLeftButtonDown ();

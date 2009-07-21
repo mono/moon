@@ -173,6 +173,26 @@ InputProvider::MouseIsAtPosition (int x, int y)
 }
 
 void
+InputProvider::MouseDoubleClick ()
+{
+	LOG_INPUT ("InputProvider::MouseDoubleClick ()\n");
+	g_assert (xtest_available);
+	g_assert (display);
+
+	XTestFakeButtonEvent (display, 1, true, CurrentTime);
+	XFlush (display);
+
+	XTestFakeButtonEvent (display, 1, false, CurrentTime);
+	XFlush (display);
+
+	XTestFakeButtonEvent (display, 1, true, CurrentTime);
+	XFlush (display);
+
+	XTestFakeButtonEvent (display, 1, false, CurrentTime);
+	XFlush (display);
+}
+
+void
 InputProvider::MouseLeftClick ()
 {
 	LOG_INPUT ("InputProvider::MouseLeftClick ()\n");
