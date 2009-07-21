@@ -1,5 +1,10 @@
 2009-07-21  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemsControlTest.cs: Add test for
+	  setting ItemsControl.ItemsSource through xaml.
+
+2009-07-21  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp:
 	* System.Windows.Media/DoubleCollectionTest.cs:
 	* System.Windows.Controls/ItemCollectionTest.cs: In order to

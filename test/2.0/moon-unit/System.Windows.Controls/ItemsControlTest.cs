@@ -43,7 +43,9 @@ using System.Windows.Markup;
 
 namespace MoonTest.System.Windows.Controls {
 
-		public class ItemsControlPoker : ItemsControl
+	public class ObjectCollection : Collection<object> { }
+
+	public class ItemsControlPoker : ItemsControl
 	{
 		public int CountAfterChange {
 			get; set;
@@ -730,6 +732,22 @@ namespace MoonTest.System.Windows.Controls {
 			stringCollection.Add("foo");
 
 			Assert.IsTrue (object.ReferenceEquals (ic.Items[0], f), "string is the same object");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ItemsSourceFromXaml ()
+		{
+			ItemsControl c = (ItemsControl) XamlReader.Load (@"
+<ItemsControl xmlns=""http://schemas.microsoft.com/client/2007""
+			xmlns:clr=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit"">
+	<ItemsControl.ItemsSource>
+		<clr:ObjectCollection>
+			<Rectangle />
+		</clr:ObjectCollection>
+	</ItemsControl.ItemsSource>
+</ItemsControl>");
+			Assert.AreEqual (1, c.Items.Count);
 		}
 	}
 }
