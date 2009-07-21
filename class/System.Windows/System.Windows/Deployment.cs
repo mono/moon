@@ -204,15 +204,25 @@ namespace System.Windows {
 			for (int i = 0; Parts != null && i < Parts.Count; i++) {
 				var source = Parts [i].Source;
 
-				string filename = Path.GetFullPath (Path.Combine (XapDir, source));
-				// note: the content of the AssemblyManifest.xaml file is untrusted
-				if (!filename.StartsWith (XapDir))
-					throw new MoonException (2105, string.Format ("Trying to load the assembly '{0}' outside the XAP directory.", source));
-
 				try {
-					Assembly asm = Assembly.LoadFrom (filename);
-					AssemblyRegister (asm);
-				} catch (FileNotFoundException) {
+					bool try_downloading = false;
+					string filename = Path.GetFullPath (Path.Combine (XapDir, source));
+					// note: the content of the AssemblyManifest.xaml file is untrusted
+					if (filename.StartsWith (XapDir)) {
+						try {
+							Assembly asm = Assembly.LoadFrom (filename);
+							AssemblyRegister (asm);
+						} catch (FileNotFoundException) {
+							try_downloading = true;
+						}
+					} else {
+						// we can hit a Part with a relative URI starting with a '/' which fails the above test
+						try_downloading = true;
+					}
+
+					if (!try_downloading)
+						continue;
+
 					Uri uri = new Uri (source, UriKind.RelativeOrAbsolute);
 					// WebClient deals with relative URI but HttpWebRequest does not
 					// but we need the later to detect redirection
