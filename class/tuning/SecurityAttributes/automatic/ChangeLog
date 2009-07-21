@@ -1,3 +1,14 @@
+2009-07-21  Alan McGovern  <amcgovern@novell.com>
+
+	* mscorlib.auto.sc:
+	* mscorlib.auto.ssc:
+	* System.Core.auto.ssc:
+	* System.Windows.auto.ssc: In order to make ItemsControl
+	  function correctly, it has to box all value types. This
+	  appears to break nothing but feels like a bit of a hack.
+	  Without this, selection is broken in itemscontrol for value
+	  types. 
+
 2009-07-16  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.auto.s[s]c, System.Core.auto.ssc: Regenerated for 

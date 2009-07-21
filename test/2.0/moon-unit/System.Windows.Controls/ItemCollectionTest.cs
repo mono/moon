@@ -199,7 +199,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void IndexOf_Int ()
 		{
 			ItemCollection c = GetCollection ();

@@ -1,3 +1,11 @@
+2009-07-21  Alan McGovern  <amcgovern@novell.com>
+
+	* PresentationFrameworkCollection.cs: In order to make
+	  ItemsControl function correctly, it has to box all value
+	  types. This appears to break nothing but feels like a bit of
+	  a hack. Without this, selection is broken in itemscontrol
+	  for value types. 
+
 2009-07-20  Chris Toshok  <toshok@ximian.com>
 
 	* Application.cs (Application::GetGenericXamlStyleFor): pass null
