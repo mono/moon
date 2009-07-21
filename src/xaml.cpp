@@ -1385,7 +1385,14 @@ XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *ta
 	if (callbacks.set_property) {
 		MoonError error;
 		XamlCallbackData data = XamlCallbackData (this, p, top_level);
-		return callbacks.set_property (&data, xmlns, target, target_data, target_parent, prop_xmlns, name, value, value_data, &error);
+		bool res = callbacks.set_property (&data, xmlns, target, target_data, target_parent, prop_xmlns, name, value, value_data, &error);
+
+		if (error.number != MoonError::NO_ERROR) {
+			parser_error ((XamlParserInfo *) p, ((XamlElementInstance *) target_data)->element_name, NULL, error.code, error.message);
+			return false;
+		}
+
+		return res;
 	}
 
 	return false;

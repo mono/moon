@@ -1,5 +1,9 @@
 2009-07-21  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Raise errors from managed SetProperty.
+
+2009-07-21  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Don't raise errors if we are a managed element, let
 	the managed SetProperty handle that stuff.
 
