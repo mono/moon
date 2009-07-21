@@ -99,7 +99,7 @@ static const char* default_namespace_names [] = {
 
 
 static bool value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop_name, const char *str, Value **v);
-static bool dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
+static bool dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value, bool raise_errors);
 static bool set_managed_attached_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 static void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child, bool fail_if_no_prop);
 static void dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr);
@@ -4165,7 +4165,7 @@ XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *
 	if (property->info->RequiresManagedSet () || value->info->RequiresManagedSet ())
 		return p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, GetAsValue (), this, GetParentPointer (), property->info->xmlns, property->element_name, value->GetAsValue (), NULL);
 
-	return dependency_object_set_property (p, this, property, value);
+	return dependency_object_set_property (p, this, property, value, true);
 }
 
 bool
@@ -4337,7 +4337,7 @@ XamlElementInstanceManaged::GetParentPointer ()
 bool
 XamlElementInstanceManaged::SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value)
 {
-	if (GetAsDependencyObject () != NULL && dependency_object_set_property (p, this, property, value))
+	if (GetAsDependencyObject () != NULL && dependency_object_set_property (p, this, property, value, false))
 		return true;
 	return p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), property->info->xmlns, property->element_name, value->GetAsValue (), value);
 }
@@ -4638,7 +4638,7 @@ set_managed_attached_property (XamlParserInfo *p, XamlElementInstance *item, Xam
 }
 
 static bool
-dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value)
+dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value, bool raise_errors)
 {
 	char **prop_name = g_strsplit (property->element_name, ".", -1);
 	DependencyObject *dep = item->GetAsDependencyObject ();
@@ -4647,7 +4647,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
 
 	if (types->Find (item->info->GetKind ())->IsValueType ()) {
-		parser_error (p, item->element_name, NULL, -1, "Value types (%s) do not have properties.", property->element_name);
+		if (raise_errors) parser_error (p, item->element_name, NULL, -1, "Value types (%s) do not have properties.", property->element_name);
 		g_strfreev (prop_name);
 		return false;
 	}
@@ -4659,7 +4659,8 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 
 	if (!dep) {
 		// FIXME is this really where this check should live
-		parser_error (p, item->element_name, NULL, 2030,
+		if (raise_errors)
+			parser_error (p, item->element_name, NULL, 2030,
 			      "Property element %s cannot be used inside another property element.",
 			      property->element_name);
 	
@@ -4671,13 +4672,15 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 
 	if (prop) {
 		if (prop->IsReadOnly ()) {
-			parser_error (p, item->element_name, NULL, 2014,
-				      "The attribute %s is read only and cannot be set.", prop->GetName ());
+			if (raise_errors)
+				parser_error (p, item->element_name, NULL, 2014,
+					"The attribute %s is read only and cannot be set.", prop->GetName ());
 			res = false;
 		} else if (types->IsSubclassOf (value->info->GetKind (), prop->GetPropertyType())) {
 			// an empty collection can be NULL and valid
 			if (item->IsPropertySet (prop->GetName())) {
-				parser_error (p, item->element_name, NULL, 2033,
+				if (raise_errors)
+					parser_error (p, item->element_name, NULL, 2033,
 						"Cannot specify the value multiple times for property: %s.",
 						property->element_name);
 				res = false;
@@ -4693,11 +4696,18 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 				}
 
 				if (!is_managed_kind (value->info->GetKind ()) && !value->info->RequiresManagedSet()) {
-					if (!dep->SetValueWithError (prop, value->GetAsValue (), &err))
-						parser_error (p, item->element_name, NULL, err.code, err.message);
+					if (!dep->SetValueWithError (prop, value->GetAsValue (), &err)) {
+						if (raise_errors)
+							parser_error (p, item->element_name, NULL, err.code, err.message);
+						res = false;
+						goto cleanup;
+					}
 				} else {
 					if (!p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), NULL, prop_name [1], value->GetAsValue (), NULL)) {
-						parser_error (p, item->element_name, NULL, err.code, err.message);
+						if (raise_errors)
+							parser_error (p, item->element_name, NULL, err.code, err.message);
+						res = false;
+						goto cleanup;
 					}
 				}
 					
@@ -4713,7 +4723,8 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 			// The items were added in add_child
 			return true;
 		} else {
-			parser_error (p, item->element_name, NULL, 2010, "does not support %s as content.", value->element_name);
+			if (raise_errors)
+				parser_error (p, item->element_name, NULL, 2010, "does not support %s as content.", value->element_name);
 			res = false;
 		}
 	} else {
@@ -4721,6 +4732,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 		res = false;
 	}
 
+cleanup:
 	g_strfreev (prop_name);
 	return res;
 }
