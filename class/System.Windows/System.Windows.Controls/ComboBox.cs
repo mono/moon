@@ -395,7 +395,7 @@ namespace System.Windows.Controls
 				DisplayedItem.Content = content;
 				DisplayedItem = null;
 			}
-TO			// If nothing is selected or popup is open bail out
+			// If nothing is selected or popup is open bail out
 			if (SelectedItem == null || IsDropDownOpen) {
 				Console.WriteLine ("Bailing out: {0}/{1}", ItemDebugString (SelectedItem), IsDropDownOpen);
 				return;
