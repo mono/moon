@@ -212,7 +212,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "RadiusY", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::RECTANGLEGEOMETRY, "RadiusX", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::PATHGEOMETRY, "FillRule", false, new Value (FillRuleEvenOdd), Type::INT32);
-	DependencyProperty::Register (this, Type::PATHGEOMETRY, "Figures", false, Type::PATHFIGURE_COLLECTION);
+	DependencyProperty::RegisterFull (this, Type::PATHGEOMETRY, "Figures", false, NULL, Type::PATHFIGURE_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
 	DependencyProperty::Register (this, Type::LINEGEOMETRY, "StartPoint", false, Type::POINT);
 	DependencyProperty::Register (this, Type::LINEGEOMETRY, "EndPoint", false, Type::POINT);
 	DependencyProperty::Register (this, Type::GEOMETRYGROUP, "FillRule", false, new Value (FillRuleEvenOdd), Type::INT32);
