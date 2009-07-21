@@ -735,7 +735,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ItemsSourceFromXaml ()
 		{
 			ItemsControl c = (ItemsControl) XamlReader.Load (@"
