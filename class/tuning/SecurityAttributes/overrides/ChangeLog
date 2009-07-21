@@ -1,3 +1,10 @@
+2009-07-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.manual: Change ObjectReader::SetObjectValue to SSC to let it
+	set, using reflection, private fields. This let Tuva get to the download
+	part without disabling security. 
+	http://research.microsoft.com/apps/tools/tuva/
+
 2009-06-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: Change Thread::StartSafe to MoonlightUnhandledException

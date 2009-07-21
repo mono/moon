@@ -17,3 +17,6 @@
 # delegate checks are at creation, not invoke, time. this makes [Multicast]Delegate.DynamicInvoke [SecuritySafeCritical] methods
 +SC-M: System.Object System.Delegate::DynamicInvokeImpl(System.Object[])
 
+# deserializable between threads (e.g. CurrentCulture) requires reflection
++SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::SetObjectValue(System.Object,System.String,System.Reflection.MemberInfo,System.Runtime.Serialization.SerializationInfo,System.Object,System.Type,System.Int32[])
+
