@@ -1,3 +1,12 @@
+2009-07-22  Sebastien Pouliot  <sebastien at ximian.com> 
+
+	* plugin-class.cpp: Fix DEBUG_WARN_NOTIMPLEMENTED macro to output 
+	all related information on the same line. Use NULL_TO_NPVARIANT
+	with MoonId_MethodName (since this is a string).
+	* windowless.cpp: Initialize GdkEventKey correctly (valgrind) and
+	provide a Window pointer so we avoid a SEGSIGV when TextBox calls
+	gtk_im_context_xim_filter_keypress (webide)
+
 2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-class.cpp: Incorporate significant advances in debugging

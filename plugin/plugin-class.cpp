@@ -26,7 +26,7 @@
 #include "grid.h"
 
 #ifdef DEBUG
-#define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s)\n" G_STRLOC, x)
+#define DEBUG_WARN_NOTIMPLEMENTED(x) printf ("not implemented: (%s) " G_STRLOC "\n", x)
 #define d(x) x
 #else
 #define DEBUG_WARN_NOTIMPLEMENTED(x)
@@ -774,7 +774,7 @@ MoonlightErrorEventArgs::GetProperty (int id, NPIdentifier name, NPVariant *resu
 		return true;
 	case MoonId_MethodName:
 		DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.methodName");
-		INT32_TO_NPVARIANT (0, *result);
+		NULL_TO_NPVARIANT (*result);
 		return true;
 	case MoonId_XamlFile:
 		if (args->error_type == ParserError) {
