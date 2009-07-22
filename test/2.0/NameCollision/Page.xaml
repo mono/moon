@@ -1,0 +1,11 @@
+<UserControl x:Class="NameCollision.Page"
+	     xmlns="http://schemas.microsoft.com/client/2007"
+	     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	     xmlns:nc="clr-namespace:NameCollision"
+	     Width="400" Height="300">
+
+	     <Grid>
+	        <TextBlock x:Name="IntroText" Style="{StaticResource IntroText}" Text="Hi, I am the intro text, Im in an intro control and I reference myself in a StaticResource." />
+	     </Grid>
+
+</UserControl>
