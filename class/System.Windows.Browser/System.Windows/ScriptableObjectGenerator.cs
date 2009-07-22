@@ -57,7 +57,7 @@ namespace System.Windows
 		{
 			object ret;
 			if (!TryChangeType (value, type, culture, out ret))
-				throw new NotSupportedException ();
+				throw new NotSupportedException (string.Format ("Can't change type from {0} to {1}", value.GetType ().FullName, type.FullName));
 			return ret;
 		}
 
