@@ -787,6 +787,15 @@ namespace MoonTest.System.Windows {
 		}
 		
 		[TestMethod]
+		public void DataContextTest2 ()
+		{
+			ContentControl c = new ContentControl();
+			TestPanel.Children.Add (c);
+			c.DataContext = new Rectangle { Name = "Name" };
+			Assert.AreSame(c.DataContext, c.FindName ("Name"), "#1");
+		}
+		
+		[TestMethod]
 		public void MeasureOverride ()
 		{
 			Border b = new Border ();
