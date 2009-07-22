@@ -1,3 +1,8 @@
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: Move initialization
+	to ctor.
+
 2009-07-22  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/DependencyPropertyTest.cs: Update test

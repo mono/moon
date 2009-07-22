@@ -61,6 +61,11 @@ namespace MoonTest.System.Windows.Browser
 			HtmlPage.RegisterScriptableObject ("scriptable", scriptable);
 			HtmlPage.RegisterScriptableObject ("scriptabletype", scriptabletype);
 			HtmlPage.RegisterCreateableType ("createable", typeof (CreateableType));
+
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+				strplugin = "document.getElementById('silverlight')";
+			else
+				strplugin = "document.getElementById('silverlightControlHost').getElementsByTagName('object')[0]";
 		}
 
 		[TestMethod]
@@ -70,10 +75,6 @@ namespace MoonTest.System.Windows.Browser
 			var c = content.GetProperty("calc") as ScriptObject;
 			Assert.AreEqual (calc, c.ManagedObject, "ManagedObject");
 
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
-				strplugin = "document.getElementById('silverlight')";
-			else
-				strplugin = "document.getElementById('silverlightControlHost').getElementsByTagName('object')[0]";
 		}
 
 		[TestMethod]
