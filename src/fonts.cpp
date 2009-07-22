@@ -202,10 +202,19 @@ LoadPortableUserInterface (FontManager *manager, GPtrArray *faces, const char *l
 		
 		families = default_fonts[i].families;
 		
-		for (j = 0; families[j]; j++) {
-			if ((face = manager->OpenFont (families[j], stretch, weight, style))) {
-				g_ptr_array_add (faces, face);
-				break;
+		if (i == 0 && Deployment::GetCurrent ()->IsLoadedFromXap ()) {
+			// Silverlight 2.0 applications default to Verdana instead of Lucida Sans Unicode
+			if (!(face = manager->OpenFont ("Verdana", stretch, weight, style)))
+				goto loop;
+			
+			g_ptr_array_add (faces, face);
+		} else {
+		 loop:
+			for (j = 0; families[j]; j++) {
+				if ((face = manager->OpenFont (families[j], stretch, weight, style))) {
+					g_ptr_array_add (faces, face);
+					break;
+				}
 			}
 		}
 	}

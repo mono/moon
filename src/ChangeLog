@@ -1,5 +1,9 @@
 2009-07-22  Jeffrey Stedfast  <fejj@novell.com>
 
+	* fonts.cpp (LoadPortableUserInterface): If the application is a
+	Silverlight 2.0 app, default to Verdana instead of Lucida Sans
+	Unicode.
+
 	* textbox.cpp (TextBoxBase::OnKeyDown): The clipboard Cut action
 	is a no-op for ReadOnly TextBox controls.
 
