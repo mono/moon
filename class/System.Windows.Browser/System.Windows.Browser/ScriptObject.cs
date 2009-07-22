@@ -33,7 +33,7 @@ using Mono;
 
 namespace System.Windows.Browser {
 	public class ScriptObject {
-		internal IntPtr handle;
+		IntPtr _handle;
 		object managed;
 
 		internal ScriptObject ()
@@ -42,8 +42,7 @@ namespace System.Windows.Browser {
 
 		internal ScriptObject (IntPtr handle)
 		{
-			// FIXME: do we need to do registration or whatever?
-			this.handle = handle;
+			this.Handle = handle;
 		}
 
 		internal ScriptObject (object obj)
@@ -52,12 +51,25 @@ namespace System.Windows.Browser {
 		}
 
 		internal IntPtr Handle {
-			get { return handle; }
+			get {
+				return _handle;
+			}
+			set {
+				if (_handle != IntPtr.Zero)
+					throw new InvalidOperationException ("ScriptObject.Handle is write-once.");
+				
+				_handle = value;
+				if (_handle != IntPtr.Zero)
+					NativeMethods.html_object_retain (WebApplication.Current.PluginHandle, _handle);
+			}
 		}
 
 		~ScriptObject ()
 		{
-			// FIXME: same as .ctor().
+			if (_handle != IntPtr.Zero) {
+				NativeMethods.html_object_release (WebApplication.Current.PluginHandle, _handle);
+				_handle = IntPtr.Zero;
+			}
 		}
 
 		public virtual void SetProperty (string name, object value)
@@ -136,7 +148,7 @@ namespace System.Windows.Browser {
 		internal T GetPropertyInternal<T> (string name)
 		{
 			Mono.Value res;
-			NativeMethods.html_object_get_property (WebApplication.Current.PluginHandle, handle, name, out res);
+			NativeMethods.html_object_get_property (WebApplication.Current.PluginHandle, Handle, name, out res);
 			if (res.k != Mono.Kind.INVALID)
 				return (T)ScriptableObjectWrapper.ObjectFromValue<T> (res);
 			return default (T);
@@ -153,7 +165,7 @@ namespace System.Windows.Browser {
 		{
 			Mono.Value dp = new Mono.Value ();
 			ScriptableObjectWrapper.ValueFromObject (ref dp, value);
-			NativeMethods.html_object_set_property (WebApplication.Current.PluginHandle, handle, name, ref dp);
+			NativeMethods.html_object_set_property (WebApplication.Current.PluginHandle, Handle, name, ref dp);
 		}
 
 		protected T InvokeInternal<T> (string name, params object [] args)
@@ -165,7 +177,7 @@ namespace System.Windows.Browser {
 			for (int i = 0; i < length; i++)
 				ScriptableObjectWrapper.ValueFromObject (ref vargs [i], args [i]);
 
-			NativeMethods.html_object_invoke (WebApplication.Current.PluginHandle, handle, name, vargs, (uint) length, out res);
+			NativeMethods.html_object_invoke (WebApplication.Current.PluginHandle, Handle, name, vargs, (uint) length, out res);
 
 			if (res.k != Mono.Kind.INVALID)
 				return (T)ScriptableObjectWrapper.ObjectFromValue<T> (res);
@@ -181,7 +193,7 @@ namespace System.Windows.Browser {
 			for (int i = 0; i < args.Length; i++)
 				ScriptableObjectWrapper.ValueFromObject (ref vargs [i], args [i]);
 
-			NativeMethods.html_object_invoke_self (WebApplication.Current.PluginHandle, handle, vargs, (uint)args.Length, out res);
+			NativeMethods.html_object_invoke_self (WebApplication.Current.PluginHandle, Handle, vargs, (uint)args.Length, out res);
 
 			if (res.k != Mono.Kind.INVALID)
 				return (T)ScriptableObjectWrapper.ObjectFromValue<T> (res);

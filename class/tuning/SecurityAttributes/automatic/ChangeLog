@@ -1,5 +1,9 @@
 2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* System.Windows.Browser.auto.ssc: Regenerated.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Windows.auto.sc: Regenerated.
 
 2009-07-21  Sebastien Pouliot  <sebastien@ximian.com> 

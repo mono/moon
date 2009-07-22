@@ -92,8 +92,8 @@ namespace System.Windows.Browser
 							add_event,
 							remove_event);
 			}
-			handle = NativeMethods.moonlight_object_to_npobject (moon_handle);
-			WebApplication.CachedObjects [handle] = new WeakReference (this);
+			Handle = NativeMethods.moonlight_object_to_npobject (moon_handle);
+			WebApplication.CachedObjects [Handle] = new WeakReference (this);
 		}
 
 		public void Register (string scriptKey)
