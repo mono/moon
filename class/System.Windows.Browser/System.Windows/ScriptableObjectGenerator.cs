@@ -71,6 +71,9 @@ namespace System.Windows
 			if (value.GetType() == type)
 				return true;
 
+			if (type.IsAssignableFrom (value.GetType ()))
+				return true;
+			
 			if (type.IsEnum) {
 				try {
 					ret = Enum.Parse (type, value.ToString(), true);
