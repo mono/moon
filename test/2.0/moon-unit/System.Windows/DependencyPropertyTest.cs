@@ -1377,6 +1377,15 @@ namespace MoonTest.System.Windows
 			Assert.IsTrue (c.PropertyChanged, "#1");
 		}
 
+		[TestMethod]
+		[MoonlightBug]
+		public void ManagedSameReference ()
+		{
+			string s = "Hi";
+			ManagedTestClass c = new ManagedTestClass ();
+			c._A_ = s;
+			Assert.AreSame (s, c._A_, "#1");
+		}
 #endregion
 	}
 	
@@ -1585,7 +1594,10 @@ namespace MoonTest.System.Windows
 		}
 
 		// Weird naming to not get into any reflection-hackery SL might do.
-		public string _A_ { get { return (string) GetValue (A.Property); } }
+		public string _A_ {
+			get { return (string) GetValue (A.Property); }
+			set { SetValue (A.Property, value); }
+		}
 		public string _b_ { get { return (string) GetValue (b.Property); } }
 		public string _C_ { get { return (string) GetValue (C.Property); } }
 		public string _c_ { get { return (string) GetValue (c.Property); } }
