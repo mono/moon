@@ -1,5 +1,9 @@
 2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* moon-unit.csproj: Updated.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Windows.Browser/ScriptableTest.cs: Move initialization
 	to ctor.
 

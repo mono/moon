@@ -1,4 +1,4 @@
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -233,11 +233,14 @@
     <Compile Include="System.Windows.Threading\CrossThreadAccessTest.cs" />
     <Compile Include="System.Windows.Threading\DispatcherTest.cs" />
     <Compile Include="System.Windows\ApplicationTest.cs" />
+    <Compile Include="System.Windows\AssemblyPartCollectionTest.cs" />
     <Compile Include="System.Windows\AssemblyPartTest.cs" />
     <Compile Include="System.Windows\CornerRadiusTest.cs" />
+    <Compile Include="System.Windows\DataTemplateTests.cs" />
     <Compile Include="System.Windows\DependencyObjectTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyAttachedTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyTest.cs" />
+    <Compile Include="System.Windows\DeploymentTest.cs" />
     <Compile Include="System.Windows\DurationTest.cs" />
     <Compile Include="System.Windows\FontStretchesTest.cs" />
     <Compile Include="System.Windows\FontStylesTest.cs" />
@@ -265,6 +268,9 @@
     <Compile Include="System.Windows\UIElementTest.cs" />
     <Compile Include="System.Windows\VisualStateManagerTest.cs" />
     <Compile Include="System.Windows\VisualStateTest.cs" />
+    <Compile Include="System.Windows\VSMControl.xaml.cs">
+      <DependentUpon>VSMControl.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -464,6 +470,10 @@
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Resource Include="System.Windows\VSMControl.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
     <Resource Include="System.Windows\XamlStyle.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
