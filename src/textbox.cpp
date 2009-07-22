@@ -1515,11 +1515,10 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Delete => Cut
 			if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
-				if (selection_cursor != selection_anchor) {
+				if (selection_cursor != selection_anchor && !is_read_only) {
 					// copy selection to the clipboard and then cut
 					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
-					if (!is_read_only)
-						SetSelectedText ("");
+					SetSelectedText ("");
 				}
 				args->SetHandled (true);
 			}
@@ -1605,11 +1604,10 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 			case GDK_x:
 				// Ctrl+X => Cut
 				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
-					if (selection_cursor != selection_anchor) {
+					if (selection_cursor != selection_anchor && !is_read_only) {
 						// copy selection to the clipboard and then cut
 						gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
-						if (!is_read_only)
-							SetSelectedText ("");
+						SetSelectedText ("");
 					}
 					args->SetHandled (true);
 				}

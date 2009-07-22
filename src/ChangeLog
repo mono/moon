@@ -1,4 +1,9 @@
-2009-07-22  Sebastien Pouliot  <sebastien at ximian.com>
+2009-07-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::OnKeyDown): The clipboard Cut action
+	is a no-op for ReadOnly TextBox controls.
+
+2009-07-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* runtime.cpp: Call GetMaximumRefreshRate before unreferencing
 	the current timemanager.
