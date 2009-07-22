@@ -916,12 +916,16 @@ namespace MoonTest.System.Windows {
 			// a setter exists in SL2 but can only be assigned from XAML
 			// so either (a) something else must happen after that; or
 			// (b) nothing happens, the name is just not considered (for some uses ?)
-			fe.Name = "ouch";
+			string name = "ouch";
+			fe.Name = name;
 			// not really
-			Assert.AreEqual ("ouch", fe.Name, "set_Name");
+			Assert.AreEqual (name, fe.Name, "set_Name - equal");
+			Assert.AreNotSame (name, fe.Name, "set_Name - same");
 			// unless it's a set once ?
-			fe.Name = "ouch^2";
-			Assert.AreEqual ("ouch^2", fe.Name, "again");
+			name = "ouch^2";
+			fe.Name = name;
+			Assert.AreEqual (name, fe.Name, "again - equal");
+			Assert.AreNotSame (name, fe.Name, "again - same");
 			// no, the doc is not (always) right, i.e. other conditions applies
 		}
 		
