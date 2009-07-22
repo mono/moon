@@ -9,3 +9,7 @@
 /moon-unit.sources
 /moon-unit.xap
 /*.pidb
+/*.suo
+/*.user
+/obj
+/Bin
