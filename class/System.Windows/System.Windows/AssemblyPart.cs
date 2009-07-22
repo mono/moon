@@ -79,7 +79,8 @@ namespace System.Windows {
 
 			try {
 				Assembly result = Assembly.Load (buffer);
-				Deployment.Current.Assemblies.Add (result);	
+				if (!Deployment.Current.Assemblies.Contains (result))
+					Deployment.Current.Assemblies.Add (result);	
 				return result;
 			}
 			catch {
