@@ -78,7 +78,9 @@ namespace System.Windows {
 				buffer = StreamToBuffer (assemblyStream);
 
 			try {
-				return Assembly.Load (buffer);
+				Assembly result = Assembly.Load (buffer);
+				Deployment.Current.Assemblies.Add (result);	
+				return result;
 			}
 			catch {
 				return null;

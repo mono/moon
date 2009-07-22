@@ -1,3 +1,8 @@
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* AssemblyPart.cs: When loading an assembly, add the assembly
+	to the current deployments list of assemblies.
+
 2009-07-21  Sebastien Pouliot  <sebastien at ximian.com>
 
 	* Deployment.cs: Make sure we try do download an AssemblyPart
