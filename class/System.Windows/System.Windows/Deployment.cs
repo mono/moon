@@ -43,7 +43,8 @@ namespace System.Windows {
 		List<Assembly> assemblies;
 		Assembly entry_point_assembly;
 		string xap_dir;
-
+		int pending_assemblies;
+		
 		public static Deployment Current {
 			get {
 				IntPtr dep = NativeMethods.deployment_get_current ();
@@ -201,6 +202,8 @@ namespace System.Windows {
 			assemblies = new List <Assembly> ();
 			assemblies.Add (typeof (Application).Assembly);
 			
+			pending_assemblies = Parts != null ? Parts.Count : 0;
+			
 			for (int i = 0; Parts != null && i < Parts.Count; i++) {
 				var source = Parts [i].Source;
 
@@ -280,9 +283,10 @@ namespace System.Windows {
 			assemblies.Add (assembly);
 			SetEntryAssembly (assembly);
 
-			// assemblies.Count wont ever be Parts.Count + 1 if we hit a exception while loading an assembly
-			if (assemblies.Count == Parts.Count + 1)
-				CreateApplication ();
+			pending_assemblies--;
+			
+			if (pending_assemblies == 0)
+				CreateApplication ();				
 		}
 
 		// extracted since NativeMethods.surface_emit_error is security critical

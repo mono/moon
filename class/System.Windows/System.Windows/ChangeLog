@@ -1,5 +1,12 @@
 2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Deployment.cs: AssemblyRegister: instead of relying on an
+	obscure (and broken) implementation detail on how to determine
+	when all assemblies have been loaded, maintain a real counter
+	of how many assemblies we're still waiting for.
+
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* AssemblyPart.cs: Don't add assemblies more than once to
 	Deployment.Assemblies.
 
