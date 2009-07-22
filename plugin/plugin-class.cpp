@@ -4399,34 +4399,53 @@ MoonlightScriptableObjectObject::~MoonlightScriptableObjectObject ()
 bool
 MoonlightScriptableObjectObject::HasProperty (NPIdentifier name)
 {
+	bool result;
+
 #if ds(!)0
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	printf ("scriptable has property %s\n", strname);
+	printf ("scriptable has property %x = %s\n", name, strname);
+#endif
+
+	result = (g_hash_table_lookup (properties, name) != NULL
+		|| g_hash_table_lookup (events, name)) || MoonlightObject::HasProperty (name);
+
+#if ds(!)0
+	printf ("scriptable has property %x = %s: result: %i\n", name, strname, result);
 	NPN_MemFree (strname);
 #endif
 
-	return (g_hash_table_lookup (properties, name) != NULL
-		|| g_hash_table_lookup (events, name)) || MoonlightObject::HasProperty (name);
+
+	return result;
 }
 
 bool
 MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
-	ScriptableProperty *prop = (ScriptableProperty*)g_hash_table_lookup (properties, name);
-	if (!prop)
-		return MoonlightObject::GetProperty (id, name, result);
-
+	bool res;
+	
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	ds(printf ("getting scriptable object property %s\n", strname));
+#if ds(!)0
+	printf ("getting scriptable object property %x = %s\n", name, strname);	
+#endif
 
-	Value v;
+	ScriptableProperty *prop = (ScriptableProperty*)g_hash_table_lookup (properties, name);
+	if (!prop) {
+		res = MoonlightObject::GetProperty (id, name, result);
+	} else {
+		Value v;
+	
+		getprop (managed_scriptable, strname, &v);
+	
+		value_to_variant (this, &v, result);
+		res = true;		
+	}
 
-	getprop (managed_scriptable, strname, &v);
-
-	value_to_variant (this, &v, result);
+#if ds(!)0
+	printf ("getting scriptable object property %x = %s result: %i\n", name, strname, result);
+#endif
 	NPN_MemFree (strname);
 
-	return true;
+	return res;
 }
 
 bool
@@ -4475,10 +4494,40 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 	return MoonlightObject::SetProperty (id, name, value);
 }
 
+#if ds(!)0
+void 
+dump_ptr_npid_hash (gpointer key, gpointer value, gpointer user_data)
+{
+	NPUTF8 *strname = NPN_UTF8FromIdentifier ((NPIdentifier) key );
+	printf (" %i (%s) => %p\n", (int) key, strname, value);
+	NPN_MemFree (strname);
+}
+#endif
+
 bool
 MoonlightScriptableObjectObject::HasMethod (NPIdentifier name)
 {
-	return g_hash_table_lookup (methods, name) != NULL;
+	bool result;
+	
+#if ds(!)0
+	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	printf ("MoonlightScriptableObjectObject::HasMethod (%x = %s) this: %p hash table: %p\n", name, strname, this, methods);
+#endif
+
+	result = g_hash_table_lookup (methods, name) != NULL;
+
+
+#if ds(!)0
+	if (!result) {
+		printf ("MoonlightScriptableObjectObject::HasMethod (%x = %s) failed, this: %p\n", name, strname, this);
+		g_hash_table_foreach (methods, dump_ptr_npid_hash, NULL);		
+	} else {
+		printf ("MoonlightScriptableObjectObject::HasMethod (%x = %s) this: %p result: %i\n", name, strname, this, result);
+	}
+	NPN_MemFree (strname);
+#endif
+	
+	return result;
 }
 
 bool
@@ -4626,7 +4675,9 @@ moonlight_scriptable_object_add_method (PluginInstance *plugin,
 					int parameter_count)
 
 {
-	ds(printf ("adding method named %s (return type = %d) to scriptable object %p\n", method_name, method_return_type, obj));
+	NPIdentifier id = NPID (method_name);
+
+	ds(printf ("adding method named %s (npid: %i) (return type = %d) to scriptable object %p\n", method_name, id, method_return_type, obj));
 	
 	ScriptableMethod *method = new ScriptableMethod ();
 	method->method_handle = method_handle;
@@ -4635,7 +4686,7 @@ moonlight_scriptable_object_add_method (PluginInstance *plugin,
 	memcpy (method->method_parameter_types, method_parameter_types, sizeof (int) * parameter_count);
 	method->parameter_count = parameter_count;
 
-	g_hash_table_insert (obj->methods, NPID(method_name), method);
+	g_hash_table_insert (obj->methods, id, method);
 }
 
 void
