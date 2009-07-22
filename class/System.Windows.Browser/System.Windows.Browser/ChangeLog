@@ -1,5 +1,9 @@
 2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* ScriptObject.cs: InvokeInternal: add null checks.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* HtmlWindow.cs: CreateInstance: add null check.
 
 2009-07-14  Jackson Harper  <jackson@ximian.com>

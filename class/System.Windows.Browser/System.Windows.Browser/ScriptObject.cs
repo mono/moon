@@ -158,13 +158,14 @@ namespace System.Windows.Browser {
 
 		protected T InvokeInternal<T> (string name, params object [] args)
 		{
+			int length = args == null ? 0 : args.Length;
 			Mono.Value res;
-			Mono.Value [] vargs = new Mono.Value [args.Length];
+			Mono.Value [] vargs = new Mono.Value [length];
 
-			for (int i = 0; i < args.Length; i++)
+			for (int i = 0; i < length; i++)
 				ScriptableObjectWrapper.ValueFromObject (ref vargs [i], args [i]);
 
-			NativeMethods.html_object_invoke (WebApplication.Current.PluginHandle, handle, name, vargs, (uint)args.Length, out res);
+			NativeMethods.html_object_invoke (WebApplication.Current.PluginHandle, handle, name, vargs, (uint) length, out res);
 
 			if (res.k != Mono.Kind.INVALID)
 				return (T)ScriptableObjectWrapper.ObjectFromValue<T> (res);
