@@ -4,6 +4,7 @@
       <Output directory="bin/Debug" output="plugin" />
       <Build debugmode="True" target="SharedLibrary" />
       <Execution runwithwarnings="True" consolepause="True" />
+      <EnvironmentVariables />
       <Includes>
         <Include>${ProjectDir}</Include>
         <Include>${CombineDir}</Include>
@@ -79,6 +80,7 @@
     <File name="plugin-class.g.cpp.in" subtype="Code" buildaction="Nothing" />
     <File name="plugin-utils.cpp" subtype="Code" buildaction="Nothing" />
     <File name="plugin-spinner.h" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-class.h.in" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
 </Project>
