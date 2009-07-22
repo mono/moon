@@ -63,6 +63,8 @@ namespace System.Windows
 
 		public bool TryChangeType (object value, Type type, CultureInfo culture, out object ret)
 		{
+			ScriptObject script_object;
+			
 			ret = value;
 
 			if (value == null)
@@ -70,6 +72,14 @@ namespace System.Windows
 
 			if (value.GetType() == type)
 				return true;
+
+			script_object = value as ScriptObject;
+			if (script_object != null) {
+				value = script_object.ManagedObject;
+				ret = value;
+				if (value.GetType () == type)
+					return true;
+			}
 
 			if (type.IsAssignableFrom (value.GetType ()))
 				return true;

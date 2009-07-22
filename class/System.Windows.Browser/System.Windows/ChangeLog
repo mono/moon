@@ -1,5 +1,10 @@
 2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* ScriptableObjectGenerator.cs: TryChangeType: Unwrap any
+	ScriptObjects.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* ScriptableObjectGenerator.cs: TryChangeType: check if source type
 	can be assigned to destination type. Fixes types using inheritance.
 
