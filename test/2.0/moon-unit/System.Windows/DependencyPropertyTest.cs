@@ -123,10 +123,13 @@ namespace MoonTest.System.Windows
 			Assert.AreNotSame (o, new ContentControl { Content = o }.GetValue (ContentControl.ContentProperty), "#13");
 			Assert.AreNotSame (o, new DiscreteObjectKeyFrame { Value = o }.GetValue (ObjectKeyFrame.ValueProperty), "#13");
 			
+			// DataContext appears to be the odd one out here - it likes to break the 'rule'
+			Assert.AreSame (o, new TextBox { DataContext = o }.GetValue (TextBox.DataContextProperty), "#12");
+			
+			
 			// 'User types' do preserve the object reference
 			Assert.AreSame (text, new TextBox { Tag = text }.GetValue(FrameworkElement.TagProperty), "#6");
 			Assert.AreSame (o, new TextBox { Tag = o }.GetValue (TextBox.TagProperty), "#11");
-			Assert.AreSame (o, new TextBox { DataContext = o }.GetValue (TextBox.DataContextProperty), "#12");
 
 			ManagedTestClass c = new ManagedTestClass ();
 			c.SetValue (ManagedTestClass.A.Property, text);

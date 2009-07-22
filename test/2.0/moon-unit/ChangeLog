@@ -1,5 +1,10 @@
 2009-07-22  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/DependencyPropertyTest.cs: Update test
+	  slightly
+
+2009-07-22  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/DependencyPropertyTest.cs: Add a test showing
 	  that 'core' types don't preserve the object reference when
 	  marshalling to/from native but custom types do.
