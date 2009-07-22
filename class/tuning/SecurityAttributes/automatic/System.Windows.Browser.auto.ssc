@@ -24,6 +24,7 @@
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::AddProperty(System.Reflection.PropertyInfo)
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::AddEvent(System.Reflection.EventInfo)
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::AddMethod(System.String,System.TypeCode[],System.TypeCode)
++SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::AddSpecialMethods()
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::AddMethod(System.Reflection.MethodInfo)
 +SSC-M: System.Object System.Windows.Browser.ScriptableObjectWrapper::ObjectFromValue<T>(Mono.Value)
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::InvokeFromUnmanaged(System.IntPtr,System.IntPtr,System.String,System.IntPtr[],System.Int32,Mono.Value&)

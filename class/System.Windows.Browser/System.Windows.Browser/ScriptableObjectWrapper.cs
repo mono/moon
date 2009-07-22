@@ -46,7 +46,8 @@ namespace System.Windows.Browser
 		Dictionary<IntPtr, Delegate> events;
 		Dictionary<string, List<MethodInfo>> methods;
 		Dictionary<string, PropertyInfo> properties;
-
+		Dictionary<string, List<ScriptableObjectEventInfo>> event_handlers;
+		
 		GCHandle obj_handle;
 		IntPtr moon_handle;
 		public IntPtr MoonHandle {
@@ -94,6 +95,8 @@ namespace System.Windows.Browser
 			}
 			Handle = NativeMethods.moonlight_object_to_npobject (moon_handle);
 			WebApplication.CachedObjects [Handle] = new WeakReference (this);
+			
+			AddSpecialMethods ();
 		}
 
 		public void Register (string scriptKey)
@@ -153,6 +156,32 @@ namespace System.Windows.Browser
 								args.Length);
 		}
 
+		public void AddSpecialMethods ()
+		{
+			TypeCode[] tcs;
+			
+			tcs = new TypeCode [] {TypeCode.String, TypeCode.Object};
+			
+			NativeMethods.moonlight_scriptable_object_add_method (WebApplication.Current.PluginHandle,
+								moon_handle,
+								IntPtr.Zero,
+								"addEventListener",
+								0,
+								tcs,
+								tcs.Length);
+			
+			NativeMethods.moonlight_scriptable_object_add_method (WebApplication.Current.PluginHandle,
+								moon_handle,
+								IntPtr.Zero,
+								"removeEventListener",
+								0,
+								tcs,
+								tcs.Length);
+			
+			// TODO: constructor and createManagedObject
+			
+		}
+		
 		public void AddMethod (MethodInfo mi)
 		{
 			ParameterInfo[] ps = mi.GetParameters();
@@ -375,11 +404,64 @@ namespace System.Windows.Browser
 			}
 
 			switch (name.ToLower ()) {
-				case "createmanagedobject":
-					if (args.Length == 1) {
-						ScriptableObjectWrapper wrapper = CreateObject ((string)args[0]);
-						ValueFromObject (ref ret, wrapper);
+			case "addeventlistener": {
+				ScriptableObjectEventInfo ei = new  ScriptableObjectEventInfo ();
+				ei.Name = (string) args [0];
+				ei.Callback = (ScriptObject) args [1];
+				ei.EventInfo = ManagedObject.GetType ().GetEvent (ei.Name);
+				
+				if (ei.EventInfo == null) {
+					// this is silently ignored.
+					return;
+				}
+				
+				List<ScriptableObjectEventInfo> list;
+				if (event_handlers == null)
+					event_handlers = new Dictionary<string, List<ScriptableObjectEventInfo>>();
+				if (!event_handlers.TryGetValue (ei.Name, out list)) {
+					list = new List<ScriptableObjectEventInfo> ();
+					event_handlers.Add (ei.Name, list);
+				}
+				list.Add (ei);
+				
+				ei.EventInfo.AddEventHandler (ManagedObject, ei.GetDelegate ());	
+				
+				break;
+			}
+			case "removeeventlistener": {
+				string event_name = (string) args [0];
+				ScriptObject scriptobject = (ScriptObject) args [1];
+
+				List<ScriptableObjectEventInfo> list;
+				if (!event_handlers.TryGetValue (event_name, out list)) {
+					// TODO: throw exception?
+					Console.WriteLine ("ScriptableObjectWrapper.Invoke ('removeEventListener'): There are no event listeners registered for '{0}'", event_name);
+					return;
+				}
+			
+				for (int i = list.Count - 1; i >= 0; i--) {
+					if (list [i].Callback == scriptobject) {
+						ScriptableObjectEventInfo ei = list [i];
+						ei.EventInfo.RemoveEventHandler (ManagedObject, ei.GetDelegate ());
+						list.RemoveAt (i);
+						return;
 					}
+				}
+				
+				// TODO: throw exception?
+				Console.WriteLine ("ScriptableObjectWrapper.Invoke ('removeEventListener'): Could not find the specified listener in the list of registered listeners for '{0}'", event_name);
+				
+				break;
+			}
+			case "createmanagedobject":
+				if (args.Length == 1) {
+					ScriptableObjectWrapper wrapper = CreateObject ((string)args[0]);
+					ValueFromObject (ref ret, wrapper);
+				}
+				break;
+			case "constructor":
+			default:
+				Console.WriteLine ("ScriptableObjectWrapper.Invoke: NOT IMPLEMENTED: {0}", name.ToLower ());
 				break;
 			}
 		}

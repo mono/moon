@@ -258,6 +258,97 @@ namespace MoonTest.System.Windows.Browser
 			a = window.Eval ("a = window.document.body;");
 			Assert.IsInstanceOfType (a, typeof (HtmlElement), "should be a HtmlElement");
 		}
+
+		[TestMethod]
+		public void AddRemoveHandlerTest ()
+		{
+			object o, result;
+
+			try {
+				HtmlPage.RegisterCreateableType ("eventCalculator", typeof (EventCalculator));
+
+				o = window.Eval ("scriptabletest_addeventhandler_1_result = 0;");
+				o = window.Eval ("scriptabletest_addeventhandler_2_result = 0;");
+				o = window.Eval (@"
+scriptabletest_addeventhandler_1_eventhandler = 
+function (sender, args) {
+	scriptabletest_addeventhandler_1_event_raised = true;
+	scriptabletest_addeventhandler_1_result = args.Result;
+}");
+				o = window.Eval (@"
+scriptabletest_addeventhandler_2_eventhandler = 
+function (sender, args) {
+	scriptabletest_addeventhandler_2_event_raised = true;
+	scriptabletest_addeventhandler_2_result = args.Result;
+}");
+				o = window.Eval ("scriptable = " + strplugin + ".content.services.createObject ('eventCalculator');");
+				o = window.Eval ("scriptable.addEventListener ('DoneEvent', scriptabletest_addeventhandler_1_eventhandler);");
+				o = window.Eval ("scriptable.addEventListener ('Done2Event', scriptabletest_addeventhandler_2_eventhandler);");
+				o = window.Eval ("scriptable.Add (1, 2);");
+
+				o = window.GetProperty ("scriptabletest_addeventhandler_1_event_raised");
+				Assert.IsInstanceOfType (o, typeof (bool), "#1 return type");
+				Assert.IsTrue ((bool) o, "#1 event raised");
+				result = window.GetProperty ("scriptabletest_addeventhandler_1_result");
+				Assert.IsInstanceOfType (result, typeof (double), "#1 result type");
+				Assert.AreEqual ((double) result, 3.0, "#1 result");
+
+
+				o = window.GetProperty ("scriptabletest_addeventhandler_2_event_raised");
+				Assert.IsInstanceOfType (o, typeof (bool), "#1.2 return type");
+				Assert.IsTrue ((bool) o, "#1.2 event raised");
+				result = window.GetProperty ("scriptabletest_addeventhandler_2_result");
+				Assert.IsInstanceOfType (result, typeof (double), "#1.2 result type");
+				Assert.AreEqual ((double) result, 3.0, "#1.2 result");
+
+				o = window.Eval ("scriptabletest_addeventhandler_1_event_raised = false;");
+
+				o = window.GetProperty ("scriptabletest_addeventhandler_1_event_raised");
+				Assert.IsInstanceOfType (o, typeof (bool), "#2 return type");
+				Assert.IsFalse ((bool) o, "#2 event raised");
+
+				o = window.Eval ("scriptable.removeEventListener ('DoneEvent', scriptabletest_addeventhandler_1_eventhandler);");
+				o = window.Eval ("scriptable.Add (1, 2);");
+
+				o = window.GetProperty ("scriptabletest_addeventhandler_1_event_raised");
+				Assert.IsInstanceOfType (o, typeof (bool), "#3 return type");
+				Assert.IsFalse ((bool) o, "#3 event raised");
+
+			} catch (Exception ex) {
+				throw;
+			} finally {
+				HtmlPage.UnregisterCreateableType ("eventCalculator");
+			}
+		}
+	}
+
+	[ScriptableType]
+	public class CalculationEventArgs : EventArgs
+	{
+		private int _result;
+		public int Result { get { return _result; } }
+		public CalculationEventArgs (int result)
+		{
+			_result = result;
+		}
+	}
+
+	[ScriptableType]
+	public class EventCalculator
+	{
+		public void Add (int a, int b)
+		{
+			if (DoneEvent != null)
+				DoneEvent (this, new CalculationEventArgs (a + b));
+			if (Done2Event != null)
+				Done2Event (this, new CalculationEventArgs (a + b));
+		}
+		public delegate void CalculationDone (object sender, EventArgs ea);
+		public delegate void CalculationDone2 (object sender, CalculationEventArgs ea);
+
+		
+		public event CalculationDone DoneEvent;
+		public event CalculationDone2 Done2Event;
 	}
 
 	public class Calculator {

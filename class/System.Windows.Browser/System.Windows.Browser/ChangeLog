@@ -1,5 +1,10 @@
 2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* ScriptableObjectEventInfo.cs:
+	* ScriptableObjectWrapper.cs: Add support for add/removeEventListener.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* ScriptableObjectWrapper.cs:
 	* ScriptObject.cs: Retain/Release the native object.
 
