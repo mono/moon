@@ -180,6 +180,10 @@ namespace Mono {
 		// void html_object_release (PluginInstance *plugin, NPObject *npobj);
 		public extern static void html_object_release (IntPtr plugin, IntPtr npobj);
 
+		[DllImport ("moonplugin")]
+		// void html_object_retain (PluginInstance *plugin, NPObject *npobj);
+		public extern static void html_object_retain (IntPtr plugin, IntPtr npobj);
+
 	
 		/* libmoon methods */
 	

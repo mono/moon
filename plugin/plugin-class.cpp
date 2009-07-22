@@ -4964,7 +4964,15 @@ html_object_detach_event (PluginInstance *plugin, const char *name, gpointer lis
 void
 html_object_release (PluginInstance *plugin, NPObject *npobj)
 {
-	NPN_ReleaseObject (npobj);
+	if (npobj != NULL)
+		NPN_ReleaseObject (npobj);
+}
+
+void
+html_object_retain (PluginInstance *plugin, NPObject *npobj)
+{
+	if (npobj != NULL)
+		NPN_RetainObject (npobj);
 }
 
 void
