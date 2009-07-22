@@ -1,3 +1,10 @@
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* site/test.html:
+	* site/index.html: Add a big fat warning that these two files
+	should be almost identical. Also make these files as identical
+	as possible.
+
 2009-07-21  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemsControlTest.cs: Add test for
@@ -4383,4 +4390,3 @@ again :)
 	  Tester.cs,
 	  site/web.config: Added some unittests for
 	  dependency properties.
-
