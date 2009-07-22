@@ -1,3 +1,8 @@
+2009-07-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs: Add an extra test to
+	  see if the object reference is always preserved
+
 2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* site/test.html:

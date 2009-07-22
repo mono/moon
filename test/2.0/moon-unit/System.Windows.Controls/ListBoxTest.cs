@@ -587,6 +587,18 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[MoonlightBug]
+		public void ReferenceDoesNotChangeTest ()
+		{
+			object str = "Hello";
+			ListBox box = new ListBox ();
+			box.Items.Add (str);
+			box.SelectedItem = str;
+			Assert.AreSame (str, box.SelectedItem, "#1");
+			Assert.AreSame (str, box.Items [0], "#2");
+		}
+		
+		[TestMethod]
+		[MoonlightBug]
 		[Asynchronous]
 		public void VisualTree ()
 		{
