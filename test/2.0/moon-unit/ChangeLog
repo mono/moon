@@ -1,3 +1,8 @@
+2009-07-22  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: reactivate scriptable
+	tests, the bots should run them fine now.
+
 2009-07-22  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ListBoxTest.cs: Add an extra test to
