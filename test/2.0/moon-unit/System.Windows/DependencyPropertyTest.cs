@@ -109,6 +109,38 @@ namespace MoonTest.System.Windows
 			}, "wrong value, callback is called later");
 		}
 
+		[TestMethod]
+		[MoonlightBug]
+		public void SameReferenceTest ()
+		{
+			object o = 5;
+			string text = "Hi";
+			
+			// 'Core' types do not preserve the object reference
+			Assert.AreNotSame (text, new TextBox { Text = text }.GetValue (TextBox.TextProperty), "#2");
+			Assert.AreNotSame (text, new TextBox { Name = text }.GetValue (FrameworkElement.NameProperty), "#3");
+			Assert.AreNotSame (text, new TimelineMarker { Type = text }.GetValue (TimelineMarker.TypeProperty), "#4");
+			Assert.AreNotSame (o, new ContentControl { Content = o }.GetValue (ContentControl.ContentProperty), "#13");
+			Assert.AreNotSame (o, new DiscreteObjectKeyFrame { Value = o }.GetValue (ObjectKeyFrame.ValueProperty), "#13");
+			
+			// 'User types' do preserve the object reference
+			Assert.AreSame (text, new TextBox { Tag = text }.GetValue(FrameworkElement.TagProperty), "#6");
+			Assert.AreSame (o, new TextBox { Tag = o }.GetValue (TextBox.TagProperty), "#11");
+			Assert.AreSame (o, new TextBox { DataContext = o }.GetValue (TextBox.DataContextProperty), "#12");
+
+			ManagedTestClass c = new ManagedTestClass ();
+			c.SetValue (ManagedTestClass.A.Property, text);
+			Assert.AreSame (text, c._A_, "#8");
+
+			ListBox box = new ListBox ();
+			box.Items.Add (text);
+			box.SelectedItem = text;
+			Assert.AreSame (text, box.GetValue (ListBox.SelectedItemProperty), "#9");
+			Assert.AreSame (text, box.GetValue (ListBox.SelectedItemProperty), "#10");
+
+
+		}
+
 #region Canvas Custom
 		[TestMethod ()]
 		public void Custom_Property_Parents ()
