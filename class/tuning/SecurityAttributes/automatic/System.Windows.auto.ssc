@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 463 methods
+# 464 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
@@ -133,6 +133,7 @@
 +SSC-M: System.Void System.Windows.Controls.MediaElement::Play()
 +SSC-M: System.Void System.Windows.Controls.MediaElement::SetSource(System.IO.Stream)
 +SSC-M: System.Void System.Windows.Controls.MediaElement::Stop()
++SSC-M: System.Void System.Windows.Controls.MediaElement::InvokeMarkerReached(System.IntPtr)
 +SSC-M: System.Void System.Windows.Controls.MultiScaleImage::.ctor()
 +SSC-M: System.Void System.Windows.Controls.MultiScaleImage::ZoomAboutLogicalPoint(System.Double,System.Double,System.Double)
 +SSC-M: System.Windows.Point System.Windows.Controls.MultiScaleImage::ElementToLogicalPoint(System.Windows.Point)
@@ -184,7 +185,7 @@
 +SSC-M: System.Void System.Windows.Documents.LineBreak::.ctor()
 +SSC-M: System.Void System.Windows.Documents.Run::.ctor()
 +SSC-M: System.Void System.Windows.EventTrigger::.ctor()
-+SSC-M: System.Void System.Windows.ExceptionRoutedEventArgs::.ctor(System.IntPtr)
++SSC-M: System.Windows.ExceptionRoutedEventArgs System.Windows.ExceptionRoutedEventArgs::FromErrorEventArgs(System.IntPtr)
 +SSC-M: System.Void System.Windows.FrameworkElement::.ctor()
 +SSC-M: System.Void System.Windows.FrameworkElement::Initialize()
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::MeasureOverride(System.Windows.Size)

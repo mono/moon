@@ -1,3 +1,8 @@
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.ssc:
+	* System.Windows.auto.sc: Regenerated.
+
 2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Browser.auto.ssc: Regenerated.

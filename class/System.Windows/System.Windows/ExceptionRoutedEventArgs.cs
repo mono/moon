@@ -36,17 +36,26 @@ namespace System.Windows
 	{
 		private Exception error_exception;
 		
+		internal ExceptionRoutedEventArgs (Exception ex) : base ()
+		{
+			error_exception = ex;
+		}
+		
 		internal ExceptionRoutedEventArgs (IntPtr raw) : base (raw)
+		{
+		}
+
+		public Exception ErrorException {
+			get { return error_exception; }				
+		}
+		
+		internal static ExceptionRoutedEventArgs FromErrorEventArgs (IntPtr raw)
 		{
 			string msg = NativeMethods.error_event_args_get_error_message (raw);
 			int code = NativeMethods.error_event_args_get_error_code (raw);
 			int type = NativeMethods.error_event_args_get_error_type (raw);
 			
-			error_exception = new Exception (msg); // TODO: find out which kind of exception we need to create here
-		}
-
-		public Exception ErrorException {
-			get { return error_exception; }				
+			return new ExceptionRoutedEventArgs (new Exception (msg)); // TODO: find out which kind of exception we need to create here
 		}
 	}
 }

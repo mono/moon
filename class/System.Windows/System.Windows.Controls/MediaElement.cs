@@ -275,7 +275,7 @@ namespace System.Windows.Controls {
 		{
 			EventHandler <ExceptionRoutedEventArgs> h = (EventHandler <ExceptionRoutedEventArgs>) EventList [MediaFailedEvent];
 			if (h != null) {
-				ExceptionRoutedEventArgs args = new ExceptionRoutedEventArgs (calldata);
+				ExceptionRoutedEventArgs args = ExceptionRoutedEventArgs.FromErrorEventArgs (calldata);
 				args.OriginalSource = this;
 				h (this, args);
 			}
