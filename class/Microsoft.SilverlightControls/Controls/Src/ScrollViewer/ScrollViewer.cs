@@ -79,6 +79,7 @@ namespace System.Windows.Controls
         public double ViewportWidth
         {
             get { return (double)GetValue(ViewportWidthProperty); } 
+            private set { SetValueImpl (ViewportWidthProperty, value); }
         } 
         /// <summary>
         /// Identifies the ViewportWidth dependency property. 
@@ -108,7 +109,8 @@ namespace System.Windows.Controls
         /// </summary> 
         public double ExtentWidth
         {
-            get { return (double)GetValue(ExtentWidthProperty); } 
+            get { return (double)GetValue(ExtentWidthProperty); }
+            private set { SetValueImpl (ExtentWidthProperty, value); }
         } 
         /// <summary>
         /// Identifies the ExtentWidth dependency property. 
@@ -154,6 +156,7 @@ namespace System.Windows.Controls
         public double ViewportHeight 
         { 
             get { return (double)GetValue(ViewportHeightProperty); }
+            private set { SetValueImpl (ViewportHeightProperty, value); }
         } 
         /// <summary>
         /// Identifies the ViewportHeight dependency property.
@@ -184,6 +187,7 @@ namespace System.Windows.Controls
         public double ExtentHeight 
         { 
             get { return (double)GetValue(ExtentHeightProperty); }
+            private set { SetValueImpl (ExtentHeightProperty, value); }
         } 
         /// <summary>
         /// Identifies the ViewportHeight dependency property.
@@ -375,6 +379,7 @@ namespace System.Windows.Controls
         { 
             // Call base implementation before making changes so ScrollContentPresenter will layout
             Size baseMeasureOverride = base.MeasureOverride(availableSize);
+            UpdateFromChild ();
             if (null != ElementScrollContentPresenter) 
             {
                 try
@@ -418,7 +423,7 @@ namespace System.Windows.Controls
                             break; 
                     }
                     SetValueImpl (ViewportHeightProperty, ElementScrollContentPresenter.ViewportHeight); 
-                    SetValueImpl (ScrollableHeightProperty, Math.Max(0, ElementScrollContentPresenter.ExtentHeight - ElementScrollContentPresenter.ViewportHeight));
+                    ScrollableHeight = Math.Max(0, ElementScrollContentPresenter.ExtentHeight - ElementScrollContentPresenter.ViewportHeight);
                     SetValueImpl (ComputedVerticalScrollBarVisibilityProperty, verticalVisibility);
                 } 
                 finally
@@ -427,6 +432,17 @@ namespace System.Windows.Controls
                 } 
             }
             return baseMeasureOverride; 
+        }
+        
+        internal void UpdateFromChild ()
+        {
+            ScrollContentPresenter p = ElementScrollContentPresenter;
+            if (p == null)
+                return;
+            ExtentHeight = p.ExtentHeight;
+            ExtentWidth = p.ExtentWidth;
+            ViewportHeight = p.ViewportHeight;
+            ViewportWidth = p.ViewportWidth;
         }
 
         /// <summary> 
@@ -438,13 +454,20 @@ namespace System.Windows.Controls
         { 
             if (null != ElementScrollContentPresenter)
             {
-                // Calculate new offset 
-                double newValue = (Orientation.Horizontal == orientation) ?
-                    Math.Min(ElementScrollContentPresenter.HorizontalOffset, ScrollableWidth) :
-                    Math.Min(ElementScrollContentPresenter.VerticalOffset, ScrollableHeight); 
+                double scrollable = (Orientation.Horizontal == orientation) ?
+                    ScrollableWidth :
+                    ScrollableHeight;
+                
+                double offset = (Orientation.Horizontal == orientation) ?
+                    ElementScrollContentPresenter.HorizontalOffset : 
+                    ElementScrollContentPresenter.VerticalOffset;
+                
                 double viewportDimension = (Orientation.Horizontal == orientation) ? 
                     ElementScrollContentPresenter.ViewportWidth :
                     ElementScrollContentPresenter.ViewportHeight; 
+                
+                // Calculate new offset 
+                double newValue = Math.Min (scrollable, offset);
                 switch (e.ScrollEventType)
                 {
                     case System.Windows.Controls.Primitives.ScrollEventType.ThumbPosition:
@@ -470,9 +493,8 @@ namespace System.Windows.Controls
                         newValue = double.MaxValue;
                         break; 
                 } 
-
-		double max_new_value = Math.Max (newValue, 0);
-                max_new_value = Math.Min (ScrollableHeight, max_new_value);
+                double max_new_value = Math.Max (newValue, 0);
+                max_new_value = Math.Min (scrollable, max_new_value);
                 // Update ScrollContentPresenter 
                 if (Orientation.Horizontal == orientation)
                 {

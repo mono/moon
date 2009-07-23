@@ -109,12 +109,12 @@ namespace System.Windows.Controls
                 ScrollBarVisibility.Disabled != ScrollOwner.HorizontalScrollBarVisibility ? double.PositiveInfinity : availableSize.Width,
                 ScrollBarVisibility.Disabled != ScrollOwner.VerticalScrollBarVisibility ? double.PositiveInfinity : availableSize.Height); 
             Size ExtentSize = base.MeasureOverride(ideal); 
-            ExtentWidth = ExtentSize.Width;
-            ExtentHeight = ExtentSize.Height; 
-            ViewportWidth = Math.Min(availableSize.Width, ExtentWidth);
-            ViewportHeight = Math.Min(availableSize.Height, ExtentHeight);
+            UpdateExtents (new Size (Math.Min(availableSize.Width, ExtentSize.Width),
+                                     Math.Min(availableSize.Width, ExtentSize.Height)),
+                           ExtentSize);
             SetHorizontalOffset (Math.Max (HorizontalOffset, 0)); 
             SetVerticalOffset (Math.Max (VerticalOffset, 0));
+            ScrollOwner.UpdateFromChild ();
             ScrollOwner.InvalidateMeasure();
             return new Size(ViewportWidth, ViewportHeight); 
         } 
@@ -148,13 +148,27 @@ namespace System.Windows.Controls
                 child.DesiredSize.Width,
                 child.DesiredSize.Height); 
             Rect arranged = new Rect(
-                desired.X - Math.Min(HorizontalOffset, ExtentWidth - ViewportWidth),
-                desired.Y - Math.Min(VerticalOffset, ExtentHeight - ViewportHeight), 
+                desired.X - Math.Max (0, Math.Min(HorizontalOffset, ExtentWidth - ViewportWidth)),
+                desired.Y - Math.Max (0, Math.Min(VerticalOffset, ExtentHeight - ViewportHeight)), 
                 Math.Max(desired.Width, finalSize.Width),
                 Math.Max(desired.Height, finalSize.Height));
             child.Arrange(arranged); 
             _clippingRectangle.Rect = new Rect(0, 0, finalSize.Width, finalSize.Height); 
+            UpdateExtents (new Size (finalSize.Width, finalSize.Height), new Size (ExtentWidth, ExtentHeight));
             return finalSize;
         } 
+        
+        void UpdateExtents (Size viewport, Size extents)
+        {
+            if (ViewportWidth != viewport.Width || ViewportHeight != viewport.Height ||
+                ExtentHeight != extents.Height || ExtentWidth != extents.Width) {
+                ScrollOwner.UpdateFromChild ();
+                this.ScrollOwner.InvalidateMeasure ();
+            }
+            ViewportWidth = viewport.Width;
+            ViewportHeight = viewport.Height;
+            ExtentWidth = extents.Width;
+            ExtentHeight = extents.Height;
+        }
     }
 }

@@ -1,3 +1,21 @@
+2009-07-23  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: 1) Fix the
+	  calculations for ScrollableHeight.
+	2) Ensure that the size of the Viewport and the Extents are
+	  kept in sync with the presenter.
+	3) Fixe issue where ScrollableHeight was being used when
+	  scrolling horizontally.
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: 1)
+	  Invalidate the measure of the parent whenever the viewport
+	  changes or the child extents change.
+	2) Give the correct dimensions to the Arrange call when
+	  arranging the child.
+	3) Ensure that the Extents/Viewport dimensions are udpated in
+	  the parent scrollviewer when they change in the
+	  ScrollContentPresenter
+
 2009-07-06  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs: Ensure that the
