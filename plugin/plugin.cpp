@@ -1756,6 +1756,9 @@ PluginInstance::SetSource (const char *value)
 	}
 
 	source = g_strdup (value);
+	// we may not have an original set at this point (e.g. when source is set via scripting)
+	if (!source_original)
+		source_original = g_strdup (value);
 
 	UpdateSource ();
 }
