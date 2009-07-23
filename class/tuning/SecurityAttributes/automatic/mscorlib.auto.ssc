@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 661 methods
+# 662 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::BuildTailoringTables(System.Globalization.CultureInfo,Mono.Globalization.Unicode.TailoringInfo,Mono.Globalization.Unicode.Contraction[]&,Mono.Globalization.Unicode.Level2Map[]&)
@@ -13,6 +13,7 @@
 +SSC-M: System.Void Mono.Interop.ComInteropProxy::.ctor(System.Type)
 +SSC-M: System.Void Mono.Interop.ComInteropProxy::CacheProxy()
 +SSC-M: Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::GetProxy(System.IntPtr,System.Type)
++SSC-M: Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::CreateProxy(System.Type)
 +SSC-M: System.Byte[] Mono.Security.BitConverterLE::GetBytes(System.Int16)
 +SSC-M: System.Byte[] Mono.Security.BitConverterLE::GetBytes(System.Int32)
 +SSC-M: System.Byte[] Mono.Security.BitConverterLE::GetBytes(System.Single)
@@ -24,10 +25,9 @@
 +SSC-M: System.Single Mono.Security.BitConverterLE::ToSingle(System.Byte[],System.Int32)
 +SSC-M: System.Double Mono.Security.BitConverterLE::ToDouble(System.Byte[],System.Int32)
 +SSC-M: System.Boolean Mono.Security.StrongName::Sign(System.String)
-+SSC-M: System.Void System.__ComObject::.ctor()
-+SSC-M: System.Void System.__ComObject::.ctor(System.Type)
 +SSC-M: System.Void System.__ComObject::.ctor(System.IntPtr)
 +SSC-M: System.Void System.__ComObject::Finalize()
++SSC-M: System.Void System.__ComObject::Initialize(System.Type)
 +SSC-M: System.IntPtr System.__ComObject::GetInterface(System.Type,System.Boolean)
 +SSC-M: System.Runtime.Remoting.ObjectHandle System.Activator::CreateInstance(System.String,System.String)
 +SSC-M: System.Runtime.Remoting.ObjectHandle System.Activator::CreateInstance(System.String,System.String,System.Object[])
@@ -349,6 +349,8 @@
 +SSC-M: System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.MethodInfo,System.Type[])
 +SSC-M: System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.Emit.SignatureHelper)
 +SSC-M: System.Void System.Reflection.Emit.ModuleBuilder::Save()
++SSC-M: System.Reflection.MethodInfo System.Reflection.Emit.PropertyOnTypeBuilderInst::GetGetMethod(System.Boolean)
++SSC-M: System.Reflection.MethodInfo System.Reflection.Emit.PropertyOnTypeBuilderInst::GetSetMethod(System.Boolean)
 +SSC-M: System.Byte[] System.Reflection.Emit.SignatureHelper::GetSignature()
 +SSC-M: System.Void System.Reflection.Emit.TypeBuilder::.ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.TypeAttributes,System.Int32)
 +SSC-M: System.Void System.Reflection.Emit.TypeBuilder::.ctor(System.Reflection.Emit.ModuleBuilder,System.String,System.Reflection.TypeAttributes,System.Type,System.Type[],System.Reflection.Emit.PackingSize,System.Int32,System.Type)
@@ -419,7 +421,6 @@
 +SSC-M: System.Reflection.FieldInfo[] System.Reflection.MonoGenericClass::GetFields(System.Reflection.BindingFlags)
 +SSC-M: System.Reflection.FieldInfo[] System.Reflection.MonoGenericClass::GetFields_impl(System.Reflection.BindingFlags,System.Type)
 +SSC-M: System.Reflection.PropertyInfo[] System.Reflection.MonoGenericClass::GetProperties(System.Reflection.BindingFlags)
-+SSC-M: System.Reflection.PropertyInfo[] System.Reflection.MonoGenericClass::GetProperties_impl(System.Reflection.BindingFlags,System.Type)
 +SSC-M: System.Reflection.EventInfo[] System.Reflection.MonoGenericClass::GetEvents_impl(System.Reflection.BindingFlags,System.Type)
 +SSC-M: System.Boolean System.Reflection.MonoGenericClass::IsAssignableFrom(System.Type)
 +SSC-M: System.Reflection.MethodInfo System.Reflection.MonoMethod::GetBaseDefinition()

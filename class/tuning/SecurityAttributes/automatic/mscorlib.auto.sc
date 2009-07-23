@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 537 methods needs to be decorated.
+# 536 methods needs to be decorated.
 
 # internal call
 +SC-M: Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::FindProxy(System.IntPtr)
@@ -915,9 +915,6 @@
 
 # internal call
 +SC-M: System.Reflection.PropertyInfo[] System.MonoType::GetPropertiesByName(System.String,System.Reflection.BindingFlags,System.Boolean,System.Type)
-
-# internal call
-+SC-M: System.Reflection.PropertyInfo[] System.Reflection.MonoGenericClass::GetProperties_internal(System.Type)
 
 # internal call
 +SC-M: System.Reflection.TypeAttributes System.MonoType::get_attributes(System.Type)

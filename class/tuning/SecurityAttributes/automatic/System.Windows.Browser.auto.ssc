@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows.Browser to call all [SecurityCritical] methods
-# 37 methods
+# 40 methods
 
 +SSC-M: System.Void System.Windows.Browser.HtmlObject/EventInfo::DomEventHandler(System.IntPtr,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Int32,System.Int32,System.Int32,System.IntPtr)
 +SSC-M: System.Void System.Windows.Browser.HtmlObject/EventInfo::DetachEvent()
