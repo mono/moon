@@ -155,7 +155,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
+		[MoonlightBug ("This fails on the bots but passes locally. Be careful removing this")]
 		public void ExtentHeightWidthTest3 ()
 		{
 			StackPanel panel = new StackPanel ();
