@@ -155,6 +155,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ExtentHeightWidthTest3 ()
 		{
 			StackPanel panel = new StackPanel ();
