@@ -1,5 +1,11 @@
 2009-07-23  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Add the missing
+	  setter in ScrollViewer.ScrollableHeight, not sure how that
+	  got missed out.
+
+2009-07-23  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ScrollViewer/ScrollViewer.cs: 1) Fix the
 	  calculations for ScrollableHeight.
 	2) Ensure that the size of the Viewport and the Extents are

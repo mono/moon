@@ -172,6 +172,7 @@ namespace System.Windows.Controls
         public double ScrollableHeight
         { 
             get { return (double)GetValue(ScrollableHeightProperty); }
+            set { SetValueImpl (ScrollableHeightProperty, value); }
         }
         /// <summary> 
         /// Identifies the ScrollableHeight dependency property. 
