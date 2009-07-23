@@ -149,7 +149,7 @@ namespace System.Windows.Controls {
 					scrollview.ScrollToVerticalOffset (args.CursorY);
 				} else if (args.CursorY + args.CursorHeight > offset + scrollview.ViewportHeight) {
 					// need to scroll down a bit
-					offset = (args.CursorY + args.CursorHeight) - scrollview.ViewportHeight;
+					offset = (args.CursorY + args.CursorHeight) - Math.Max (args.CursorHeight, scrollview.ViewportHeight);
 					scrollview.ScrollToVerticalOffset (offset);
 				}
 			}

@@ -1,3 +1,9 @@
+2009-07-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBox.cs (OnCursorPositionChanged): Added some special logic
+	for the case where the CursorHeight is greater than the
+	ViewportHeight. Fixes drt #317.
+
 2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MediaElement.cs: Don't treat a native ErrorEventArgs as an
