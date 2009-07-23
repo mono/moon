@@ -819,9 +819,16 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 	if (extents->underline_thickness < 1.0)
 		extents->underline_thickness = 1.0;
 	
+#if 1
 	extents->descent = FT_MulFix (face->descender, face->size->metrics.y_scale) * scale;
 	extents->ascent = FT_MulFix (face->ascender, face->size->metrics.y_scale) * scale;
 	extents->height = FT_MulFix (face->height, face->size->metrics.y_scale) * scale;
+#else
+	// this is an alternative way of calculating these metrics, might give us values a bit closer to Microsoft's
+	extents->descent = ((face->descender * 1.0) / face->units_per_EM) * size;
+	extents->ascent = ((face->ascender * 1.0) / face->units_per_EM) * size;
+	extents->height = ((face->height * 1.0) / face->units_per_EM) * size;
+#endif
 }
 
 double
