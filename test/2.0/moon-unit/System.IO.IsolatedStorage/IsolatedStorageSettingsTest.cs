@@ -189,7 +189,6 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("This regressed in r138386 (commit in mcs)")]
 		public void SiteSettingsTest ()
 		{
 			CheckAll (IsolatedStorageSettings.SiteSettings);
