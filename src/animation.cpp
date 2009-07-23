@@ -73,7 +73,11 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation *timeline,
 
 	AnimationStorage *prev_storage = targetobj->AttachAnimationStorage (targetprop, this);
 
-	baseValue = new Value(*targetobj->GetValue (targetprop));
+	baseValue = targetobj->GetValue (targetprop);
+	if (baseValue)
+		baseValue = new Value(*baseValue);
+	else
+		baseValue = new Value (targetprop->GetPropertyType ());
 
 	if (prev_storage) {
 		Value *v = prev_storage->GetResetValue ();
