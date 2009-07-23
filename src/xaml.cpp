@@ -5058,6 +5058,12 @@ xaml_lookup_named_item (void *parser, void *instance, const char* name)
 
 			bool exists = false;
 			res = lookup_resource_dictionary (rd, name, &exists);
+
+			if (res) {
+				Value *r = res;
+				res = Value::Clone (res, NULL);
+				delete r;
+			}
 		}
 	}
 
