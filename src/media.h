@@ -93,6 +93,7 @@ class MarkerReachedEventArgs : public EventArgs {
  public:
 	MarkerReachedEventArgs (TimelineMarker *marker);
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	TimelineMarker *GetMarker () { return marker; }
 };
 

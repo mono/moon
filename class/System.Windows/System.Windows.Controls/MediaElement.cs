@@ -220,7 +220,9 @@ namespace System.Windows.Controls {
 			if (h == null)
 				return;
 			
-			TimelineMarker marker = new TimelineMarker (calldata, false);
+			IntPtr timeline_marker = NativeMethods.marker_reached_event_args_get_marker (calldata);
+			
+			TimelineMarker marker = new TimelineMarker (timeline_marker, false);
 			
 			h (this, new TimelineMarkerRoutedEventArgs (marker));
 		}

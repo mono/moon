@@ -1226,6 +1226,10 @@ namespace Mono {
 		public extern static IntPtr line_segment_new ();
 
 		[DllImport ("moon")]
+		// TimelineMarker *marker_reached_event_args_get_marker (MarkerReachedEventArgs *instance);
+		public extern static IntPtr marker_reached_event_args_get_marker (IntPtr instance);
+
+		[DllImport ("moon")]
 		// cairo_matrix_t *matrix_get_matrix_values (Matrix *instance);
 		public extern static IntPtr matrix_get_matrix_values (IntPtr instance);
 

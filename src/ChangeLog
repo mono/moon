@@ -1,3 +1,11 @@
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* media.h: MarkerReachedEventArgs: make Markers accessible to
+	managed code.
+
+	* cbinding.h:
+	* cbinding.cpp: Regenerated.
+
 2009-07-22  Chris Toshok  <toshok@ximian.com>
 
 	* animation.h|cpp: add some more accessors for AnimationStorages

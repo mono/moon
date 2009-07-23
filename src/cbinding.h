@@ -1846,6 +1846,12 @@ LineGeometry *line_geometry_new (void);
 LineSegment *line_segment_new (void);
 
 /**
+ * MarkerReachedEventArgs
+ **/
+/* @GeneratePInvoke */
+TimelineMarker *marker_reached_event_args_get_marker (MarkerReachedEventArgs *instance);
+
+/**
  * Matrix
  **/
 /* @GeneratePInvoke */

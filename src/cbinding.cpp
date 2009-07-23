@@ -2764,6 +2764,19 @@ line_segment_new (void)
 
 
 /**
+ * MarkerReachedEventArgs
+ **/
+TimelineMarker *
+marker_reached_event_args_get_marker (MarkerReachedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetMarker ();
+}
+
+
+/**
  * Matrix
  **/
 cairo_matrix_t *
