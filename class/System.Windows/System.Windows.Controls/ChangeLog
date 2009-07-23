@@ -1,5 +1,10 @@
 2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* MediaElement.cs: Always provide a *RoutedEventArgs for events.
+	Fixes bug #513187.
+
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* MediaElement.cs: InvokeMarkerReached: the calldata we
 	get is a pointer to a MarkerReachedEventArgs, not a TimelineMarker.
 	
