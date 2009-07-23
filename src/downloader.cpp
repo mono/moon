@@ -224,7 +224,16 @@ same_scheme (const Uri *uri1, const Uri *uri2)
 static bool
 same_domain (const Uri *uri1, const Uri *uri2)
 {
-	return (g_ascii_strcasecmp (uri1->GetHost (), uri2->GetHost ()) == 0);
+	const char *host1 = uri1->GetHost ();
+	const char *host2 = uri2->GetHost ();
+	
+	if (host1 && host2)
+		return g_ascii_strcasecmp (host1, host2) == 0;
+	
+	if (!host1 && !host2)
+		return true;
+	
+	return false;
 }
 
 // Reference:	URL Access Restrictions in Silverlight 2
