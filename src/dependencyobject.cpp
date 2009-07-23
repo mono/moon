@@ -1803,6 +1803,7 @@ DependencyObject::Initialize ()
 	is_hydrated = false;
 	is_frozen = false;
 	resource_base = NULL;
+	storage_hash = NULL; // Create it on first usage request
 }
 
 void
@@ -1853,6 +1854,22 @@ DependencyObject::clone_autocreated_value (DependencyProperty *key, Value *value
 	}
 }
 
+void
+DependencyObject::clone_animation_storage (DependencyProperty *key, AnimationStorage *storage, gpointer data)
+{
+	CloneClosure *closure = (CloneClosure*)data;
+
+	// we need to fake an AnimationStorage so that any newly created animations on this clone get the right 
+	AnimationStorage *new_storage = new AnimationStorage (storage->GetClock(), storage->GetTimeline(),
+							      closure->new_do, key);
+
+	new_storage->FlagAsNonResetable();
+	new_storage->DetachTarget ();
+	new_storage->SetStopValue (storage->GetStopValue());
+
+	closure->new_do->AttachAnimationStorage (key, new_storage);
+}
+
 DependencyObject*
 DependencyObject::Clone (Types *types)
 {
@@ -1878,13 +1895,14 @@ DependencyObject::CloneCore (Types *types, DependencyObject* fromObj)
 
 	g_hash_table_foreach (autocreate->auto_values, (GHFunc)DependencyObject::clone_autocreated_value, &closure);
 	g_hash_table_foreach (fromObj->local_values, (GHFunc)DependencyObject::clone_local_value, &closure);
+	g_hash_table_foreach (fromObj->storage_hash, (GHFunc)DependencyObject::clone_animation_storage, &closure);
 }
 
 static void
-free_listener (gpointer data, gpointer user_data)
+detach_target_func (DependencyProperty *prop, AnimationStorage *storage, gpointer unused)
 {
-	Listener* listener = (Listener*) data;
-	delete listener;
+	storage->DetachTarget ();
+	delete storage;
 }
 
 DependencyObject::~DependencyObject ()
@@ -1894,6 +1912,19 @@ DependencyObject::~DependencyObject ()
 	delete[] providers;
 	providers = NULL;
 	g_free (resource_base);
+
+	if (storage_hash) {
+		g_hash_table_foreach (storage_hash, (GHFunc) detach_target_func, NULL);
+		g_hash_table_destroy (storage_hash);
+		storage_hash = NULL;
+	}
+}
+
+static void
+free_listener (gpointer data, gpointer user_data)
+{
+	Listener* listener = (Listener*) data;
+	delete listener;
 }
 
 void
@@ -2093,6 +2124,40 @@ DependencyObject::FindName (const char *name, Type::Kind *element_kind)
 	*element_kind = ret->GetObjectType ();
 
 	return ret;
+}
+
+AnimationStorage*
+DependencyObject::GetAnimationStorageFor (DependencyProperty *prop)
+{
+	if (!storage_hash)
+		return NULL;
+
+	return (AnimationStorage *) g_hash_table_lookup (storage_hash, prop);
+}
+
+AnimationStorage*
+DependencyObject::AttachAnimationStorage (DependencyProperty *prop, AnimationStorage *storage)
+{
+	// Create hash on first access to save some mem
+	if (!storage_hash)
+		storage_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+	AnimationStorage *attached_storage = (AnimationStorage *) g_hash_table_lookup (storage_hash, prop);
+	if (attached_storage)
+		attached_storage->DetachTarget ();
+
+	g_hash_table_insert (storage_hash, prop, storage);
+	return attached_storage;
+}
+
+void
+DependencyObject::DetachAnimationStorage (DependencyProperty *prop, AnimationStorage *storage)
+{
+	if (!storage_hash)
+		return;
+
+	if (g_hash_table_lookup (storage_hash, prop) == storage)
+		g_hash_table_remove (storage_hash, prop);
 }
 
 //

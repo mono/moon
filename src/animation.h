@@ -966,6 +966,12 @@ public:
 	Value* GetResetValue ();
 	void DetachFromProperty (void);
 
+	void SetStopValue (Value *value);
+	Value *GetStopValue ();
+
+	AnimationClock *GetClock ();
+	Animation *GetTimeline ();
+
 private:
 	void TargetObjectDestroyed ();
 	static void target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer data);

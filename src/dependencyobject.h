@@ -285,6 +285,10 @@ public:
 	NameScope *FindNameScope ();
 	NameScope *FindNameScope (bool template_namescope);
 
+	AnimationStorage *AttachAnimationStorage (DependencyProperty *prop, AnimationStorage *storage);
+	void DetachAnimationStorage (DependencyProperty *prop, AnimationStorage *storage);
+	AnimationStorage *GetAnimationStorageFor (DependencyProperty *prop);
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetName ();
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -406,8 +410,11 @@ private:
 
 	static void clone_local_value (DependencyProperty *key, Value *value, gpointer data);
 	static void clone_autocreated_value (DependencyProperty *key, Value *value, gpointer data);
+	static void clone_animation_storage (DependencyProperty *key, AnimationStorage *storage, gpointer data);
 
 	static gboolean dispose_value (gpointer key, gpointer value, gpointer data);
+
+	GHashTable *storage_hash; // keys: DependencyProperty, values: animation storage's
 
 	GHashTable        *local_values;
 	GSList            *listener_list;

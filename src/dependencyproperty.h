@@ -84,10 +84,6 @@ class DependencyProperty {
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetDefaultValue () { return default_value; }
 
-	AnimationStorage *AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
-	void DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
-	AnimationStorage *GetAnimationStorageFor (DependencyObject *obj);
-	
 	bool Validate (DependencyObject *instance, Value *value, MoonError *error);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
@@ -112,7 +108,6 @@ class DependencyProperty {
 	static DependencyProperty *GetDependencyPropertyFull (Type::Kind type, const char *name, bool inherits);
 
 private:
-	GHashTable *storage_hash; // keys: objects, values: animation storage's
 	int id;
 	
 	AutoCreator* autocreator; // invoked by AutoCreatePropertyValueProvider to create values

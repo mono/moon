@@ -32,7 +32,6 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->is_nullable = false;
 	this->is_attached = attached;
 	this->is_readonly = readonly;
-	this->storage_hash = NULL; // Create it on first usage request
 	this->always_change = always_change;
 	this->changed_callback = changed_callback;
 	this->validator = validator ? validator : Validators::default_validator;
@@ -40,58 +39,11 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->is_custom = is_custom;
 }
 
-AnimationStorage*
-DependencyProperty::GetAnimationStorageFor (DependencyObject *obj)
-{
-	if (!storage_hash)
-		return NULL;
-
-	return (AnimationStorage *) g_hash_table_lookup (storage_hash, obj);
-}
-
-AnimationStorage*
-DependencyProperty::AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage)
-{
-	// Create hash on first access to save some mem
-	if (!storage_hash)
-		storage_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
-
-	AnimationStorage *attached_storage = (AnimationStorage *) g_hash_table_lookup (storage_hash, obj);
-	if (attached_storage)
-		attached_storage->DetachTarget ();
-
-	g_hash_table_insert (storage_hash, obj, storage);
-	return attached_storage;
-}
-
-void
-DependencyProperty::DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage)
-{
-	if (!storage_hash)
-		return;
-
-	if (g_hash_table_lookup (storage_hash, obj) == storage)
-		g_hash_table_remove (storage_hash, obj);
-}
-
-static void
-detach_target_func (DependencyObject *obj, AnimationStorage *storage, gpointer unused)
-{
-	storage->DetachTarget ();
-	delete storage;
-}
-
 DependencyProperty::~DependencyProperty ()
 {
 	g_free (name);
 	if (default_value != NULL)
 		delete default_value;
-
-	if (storage_hash) {
-		g_hash_table_foreach (storage_hash, (GHFunc) detach_target_func, NULL);
-		g_hash_table_destroy (storage_hash);
-		storage_hash = NULL;
-	}
 	g_free (hash_key);
 }
 
