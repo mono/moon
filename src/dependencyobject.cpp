@@ -1895,7 +1895,8 @@ DependencyObject::CloneCore (Types *types, DependencyObject* fromObj)
 
 	g_hash_table_foreach (autocreate->auto_values, (GHFunc)DependencyObject::clone_autocreated_value, &closure);
 	g_hash_table_foreach (fromObj->local_values, (GHFunc)DependencyObject::clone_local_value, &closure);
-	g_hash_table_foreach (fromObj->storage_hash, (GHFunc)DependencyObject::clone_animation_storage, &closure);
+	if (fromObj->storage_hash)
+		g_hash_table_foreach (fromObj->storage_hash, (GHFunc)DependencyObject::clone_animation_storage, &closure);
 }
 
 static void
