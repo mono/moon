@@ -51,7 +51,7 @@ FrameworkElementProvider::GetPropertyValue (DependencyProperty *property)
 	Size actual = last.IsEmpty () ? Size () : last;
 	Surface *surface = obj->GetSurface ();
 
-	if (!LayoutInformation::GetLastMeasure (obj) || (surface && surface->IsTopLevel (element) && obj->Is (Type::PANEL)))
+	if (!LayoutInformation::GetPreviousConstraint (obj) || (surface && surface->IsTopLevel (element) && obj->Is (Type::PANEL)))
 		actual = element->ComputeActualSize ();
 
 	if (last != actual) {
@@ -446,7 +446,7 @@ FrameworkElement::Measure (Size availableSize)
 		}
 	}
 
-	Size *last = LayoutInformation::GetLastMeasure (this);
+	Size *last = LayoutInformation::GetPreviousConstraint (this);
 	bool domeasure = (this->dirty_flags & DirtyMeasure) > 0;
 
 	domeasure |= last ? ((*last).width != availableSize.width) && ((*last).height != availableSize.height) : true;
@@ -454,7 +454,7 @@ FrameworkElement::Measure (Size availableSize)
 	if (!domeasure)
 		return;
 
-	LayoutInformation::SetLastMeasure (this, &availableSize);
+	LayoutInformation::SetPreviousConstraint (this, &availableSize);
 
 	InvalidateArrange ();
 	UpdateBounds ();
@@ -550,7 +550,7 @@ FrameworkElement::Arrange (Rect finalRect)
 	 * up with a better plan make sure that layout elements have
 	 * been measured at least once
 	 */
-	if (IsContainer () && !LayoutInformation::GetLastMeasure (this))
+	if (IsContainer () && !LayoutInformation::GetPreviousConstraint (this))
 		Measure (Size (finalRect.width, finalRect.height));
 
 	LayoutInformation::SetLayoutSlot (this, &finalRect);

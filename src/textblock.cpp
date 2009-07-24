@@ -449,7 +449,7 @@ TextBlock::ComputeActualSize ()
 	Size result = FrameworkElement::ComputeActualSize ();
 	
 	//if (dirty) {
-	if (!LayoutInformation::GetLastMeasure (this)) {
+	if (!LayoutInformation::GetPreviousConstraint (this)) {
 		Size constraint = Size (INFINITY, INFINITY).Min (GetWidth (), GetHeight ());
 		
 		constraint = constraint.GrowBy (-padding);

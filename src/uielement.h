@@ -550,9 +550,9 @@ public:
 	/* @PropertyType=Rect,Attached,GenerateAccessors */
 	const static int LayoutSlotProperty;
 	/* @PropertyType=Size,Attached,GenerateAccessors */
-	const static int LastMeasureProperty;
+	const static int PreviousConstraintProperty;
 	/* @PropertyType=Size,Attached,GenerateAccessors */
-	const static int LastArrangeProperty;
+	const static int FinalRectProperty;
 	/* @PropertyType=Size,Attached,GenerateAccessors */
 	const static int LastRenderSizeProperty;
 
@@ -562,11 +562,11 @@ public:
 	static void SetLayoutSlot (DependencyObject *item, Rect *slot);
 	static Rect *GetLayoutSlot (DependencyObject *item);
 
-	static void SetLastMeasure (DependencyObject *item, Size *size);
-	static Size *GetLastMeasure (DependencyObject *item);
+	static void SetPreviousConstraint (DependencyObject *item, Size *size);
+	static Size *GetPreviousConstraint (DependencyObject *item);
 
-	static void SetLastArrange (DependencyObject *item, Size *size);
-	static Size *GetLastArrange (DependencyObject *item);
+	static void SetFinalRect (DependencyObject *item, Size *size);
+	static Size *GetFinalRect (DependencyObject *item);
 
 	static void SetLastRenderSize (DependencyObject *item, Size *size);
 	static Size *GetLastRenderSize (DependencyObject *item);

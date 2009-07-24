@@ -562,7 +562,7 @@ UIElement::InvalidateArrange ()
 void
 UIElement::DoMeasure ()
 {
-	Size *last = LayoutInformation::GetLastMeasure (this);
+	Size *last = LayoutInformation::GetPreviousConstraint (this);
 	UIElement *parent = GetVisualParent ();
 	Size infinite (INFINITY, INFINITY);
 
@@ -603,9 +603,9 @@ UIElement::DoArrange ()
 		if (IsLayoutContainer ()) {
 			desired = GetDesiredSize ();
 			if (surface && this == surface->GetToplevel ()) {
-				Size *measure = LayoutInformation::GetLastMeasure (this);
+				Size *measure = LayoutInformation::GetPreviousConstraint (this);
 				if (measure)
-					desired = desired.Max (*LayoutInformation::GetLastMeasure (this));
+					desired = desired.Max (*LayoutInformation::GetPreviousConstraint (this));
 				else 
 					desired = Size (surface->GetWindow ()->GetWidth (), surface->GetWindow ()->GetHeight ());
 			}

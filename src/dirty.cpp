@@ -442,12 +442,12 @@ Surface::UpdateLayout ()
 
 		// This is a hack to make sure the elements understand the currnet 
 		// size of the surface until it is moved to a proper location.
-		Size *last = LayoutInformation::GetLastMeasure (layer);
+		Size *last = LayoutInformation::GetPreviousConstraint (layer);
 		Size available = Size (active_window->GetWidth (), active_window->GetHeight ());
 		if (!last || (*last != available)) {
 			layer->InvalidateMeasure ();
 			Size size(active_window->GetWidth (), active_window->GetHeight ());
-			LayoutInformation::SetLastMeasure (layer, &size);
+			LayoutInformation::SetPreviousConstraint (layer, &size);
 		}
 
 		layer->UpdateLayout ();

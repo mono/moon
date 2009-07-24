@@ -405,11 +405,11 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::OBJECTANIMATIONUSINGKEYFRAMES, "KeyFrames", false, NULL, Type::OBJECTKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
 	DependencyProperty::Register (this, Type::MATRIXTRANSFORM, "Matrix", false, Type::MATRIX);
 	DependencyProperty::Register (this, Type::LINESEGMENT, "Point", false, Type::POINT);
+	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "PreviousConstraint", false, NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LayoutSlot", false, NULL, Type::RECT, true, false, false, NULL, NULL, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LayoutClip", false, NULL, Type::GEOMETRY, true, false, false, NULL, NULL, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LastRenderSize", false, NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false);
-	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LastMeasure", false, NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false);
-	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "LastArrange", false, NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false);
+	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "FinalRect", false, NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false);
 	DependencyProperty::Register (this, Type::EVENTTRIGGER, "RoutedEvent", false, Type::STRING);
 	DependencyProperty::RegisterFull (this, Type::EVENTTRIGGER, "Actions", false, NULL, Type::TRIGGERACTION_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
 	DependencyProperty::RegisterFull (this, Type::DOUBLEKEYFRAME, "Value", false, NULL, Type::DOUBLE, false, false, false, NULL, NULL, NULL, true);
@@ -795,11 +795,11 @@ const int ObjectKeyFrame::ConvertedValueProperty = 350;
 const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 351;
 const int MatrixTransform::MatrixProperty = 352;
 const int LineSegment::PointProperty = 353;
-const int LayoutInformation::LayoutSlotProperty = 354;
-const int LayoutInformation::LayoutClipProperty = 355;
-const int LayoutInformation::LastRenderSizeProperty = 356;
-const int LayoutInformation::LastMeasureProperty = 357;
-const int LayoutInformation::LastArrangeProperty = 358;
+const int LayoutInformation::PreviousConstraintProperty = 354;
+const int LayoutInformation::LayoutSlotProperty = 355;
+const int LayoutInformation::LayoutClipProperty = 356;
+const int LayoutInformation::LastRenderSizeProperty = 357;
+const int LayoutInformation::FinalRectProperty = 358;
 const int EventTrigger::RoutedEventProperty = 359;
 const int EventTrigger::ActionsProperty = 360;
 const int DoubleKeyFrame::ValueProperty = 361;
@@ -5228,6 +5228,22 @@ LineSegment::SetPoint (Point *value)
 	SetValue (LineSegment::PointProperty, Value (*value));
 }
 
+Size *
+LayoutInformation::GetPreviousConstraint (DependencyObject *obj)
+{
+	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::PreviousConstraintProperty);
+	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::PreviousConstraintProperty)->GetDefaultValue();
+	return value ? value->AsSize () : NULL;
+}
+
+void
+LayoutInformation::SetPreviousConstraint (DependencyObject *obj, Size *value)
+{
+	if (!obj) return;
+	if (!value) return;
+	obj->SetValue (LayoutInformation::PreviousConstraintProperty, Value (*value));
+}
+
 Rect *
 LayoutInformation::GetLayoutSlot (DependencyObject *obj)
 {
@@ -5276,35 +5292,19 @@ LayoutInformation::SetLastRenderSize (DependencyObject *obj, Size *value)
 }
 
 Size *
-LayoutInformation::GetLastMeasure (DependencyObject *obj)
+LayoutInformation::GetFinalRect (DependencyObject *obj)
 {
-	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LastMeasureProperty);
-	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::LastMeasureProperty)->GetDefaultValue();
+	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::FinalRectProperty);
+	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::FinalRectProperty)->GetDefaultValue();
 	return value ? value->AsSize () : NULL;
 }
 
 void
-LayoutInformation::SetLastMeasure (DependencyObject *obj, Size *value)
+LayoutInformation::SetFinalRect (DependencyObject *obj, Size *value)
 {
 	if (!obj) return;
 	if (!value) return;
-	obj->SetValue (LayoutInformation::LastMeasureProperty, Value (*value));
-}
-
-Size *
-LayoutInformation::GetLastArrange (DependencyObject *obj)
-{
-	Value *value = (!obj) ? NULL : obj->GetValue (LayoutInformation::LastArrangeProperty);
-	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (LayoutInformation::LastArrangeProperty)->GetDefaultValue();
-	return value ? value->AsSize () : NULL;
-}
-
-void
-LayoutInformation::SetLastArrange (DependencyObject *obj, Size *value)
-{
-	if (!obj) return;
-	if (!value) return;
-	obj->SetValue (LayoutInformation::LastArrangeProperty, Value (*value));
+	obj->SetValue (LayoutInformation::FinalRectProperty, Value (*value));
 }
 
 const char *

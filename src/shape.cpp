@@ -561,7 +561,7 @@ Shape::ComputeActualSize ()
 	double sx = 1.0;
 	double sy = 1.0;
 
-	if (!GetSurface ()) //|| LayoutInformation::GetLastMeasure (this) != NULL)
+	if (!GetSurface ()) //|| LayoutInformation::GetPreviousConstraint (this) != NULL)
 		return desired;
 
 	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE))
@@ -651,7 +651,7 @@ Shape::ArrangeOverride (Size finalSize)
 	double sx = 1.0;
 	double sy = 1.0;
 
-	//if (!LayoutInformation::GetLastMeasure (this))
+	//if (!LayoutInformation::GetPreviousConstraint (this))
 	//	MeasureOverride (finalSize);
 
 	if (GetStretch () == StretchNone) {
@@ -691,7 +691,7 @@ Shape::ArrangeOverride (Size finalSize)
 
 	arranged = Size (shape_bounds.width * sx, shape_bounds.height * sy);
 	
-	if ((Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) && LayoutInformation::GetLastMeasure (this)) {
+	if ((Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) && LayoutInformation::GetPreviousConstraint (this)) {
 		extents = Rect (0,0, arranged.width, arranged.height);
 		UpdateBounds ();
 	}
