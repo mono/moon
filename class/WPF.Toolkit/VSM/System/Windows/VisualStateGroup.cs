@@ -190,10 +190,10 @@ namespace System.Windows
         /// </summary>
 		public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanged {
 			add {
-				RegisterEvent (CurrentStateChangingEvent, "CurrentStateChanging", Events.current_state_changing, value);
+				RegisterEvent (CurrentStateChangedEvent, "CurrentStateChanged", Events.current_state_changed, value);
 			}
 			remove {
-				UnregisterEvent (CurrentStateChangingEvent, "CurrentStateChanging", Events.current_state_changing, value);
+				UnregisterEvent (CurrentStateChangedEvent, "CurrentStateChanged", Events.current_state_changed, value);
 			}
 		}
 

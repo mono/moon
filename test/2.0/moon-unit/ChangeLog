@@ -1,5 +1,11 @@
 2009-07-24  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/VisualStateTest.cs: Add test for
+	  adding/removing handlers for VisualStateGroup events. It
+	  spews errors to the term but doesn't actually fail visibly.
+
+2009-07-24  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/VisualStateTest.cs: Add a test to ensure that
 	  VisualStateGroup.Name is set correctly.
 
