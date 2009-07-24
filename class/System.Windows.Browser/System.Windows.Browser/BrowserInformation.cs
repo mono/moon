@@ -37,7 +37,13 @@ namespace System.Windows.Browser {
 		HtmlElement navigator;
 
 		public Version BrowserVersion {
-			get { return new Version (GetVersion ()); }
+			get {
+				try {
+					return new Version (GetVersion ());
+				} catch {
+					return new Version (); // don't throw an exception for weird/bad ua strings
+				}
+			}
 		}
 
 		public bool CookiesEnabled {
