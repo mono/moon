@@ -2150,6 +2150,30 @@ TextBoxBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		FontWeights weight = args->GetNewValue()->AsFontWeight ()->weight;
 		changed = TextBoxModelChangedFont;
 		font->SetWeight (weight);
+	} else if (args->GetId () == FrameworkElement::MinHeightProperty) {
+		// pass this along to our TextBoxView
+		if (view)
+			view->SetMinHeight (args->GetNewValue ()->AsDouble ());
+	} else if (args->GetId () == FrameworkElement::MaxHeightProperty) {
+		// pass this along to our TextBoxView
+		if (view)
+			view->SetMaxHeight (args->GetNewValue ()->AsDouble ());
+	} else if (args->GetId () == FrameworkElement::MinWidthProperty) {
+		// pass this along to our TextBoxView
+		if (view)
+			view->SetMinWidth (args->GetNewValue ()->AsDouble ());
+	} else if (args->GetId () == FrameworkElement::MaxWidthProperty) {
+		// pass this along to our TextBoxView
+		if (view)
+			view->SetMaxWidth (args->GetNewValue ()->AsDouble ());
+	} else if (args->GetId () == FrameworkElement::HeightProperty) {
+		// pass this along to our TextBoxView
+		if (view)
+			view->SetHeight (args->GetNewValue ()->AsDouble ());
+	} else if (args->GetId () == FrameworkElement::WidthProperty) {
+		// pass this along to our TextBoxView
+		if (view)
+			view->SetWidth (args->GetNewValue ()->AsDouble ());
 	}
 	
 	if (changed != TextBoxModelChangedNothing)
@@ -2190,6 +2214,13 @@ TextBoxBase::OnApplyTemplate ()
 	view = new TextBoxView ();
 	view->SetTextBox (this);
 	
+	view->SetMinHeight (GetMinHeight ());
+	view->SetMaxHeight (GetMaxHeight ());
+	view->SetMinWidth (GetMinWidth ());
+	view->SetMaxWidth (GetMaxWidth ());
+	view->SetHeight (GetHeight ());
+	view->SetWidth (GetWidth ());
+	
 	// Insert our TextBoxView
 	if (contentElement->Is (Type::CONTENTCONTROL)) {
 		ContentControl *control = (ContentControl *) contentElement;
@@ -2207,6 +2238,7 @@ TextBoxBase::OnApplyTemplate ()
 		g_warning ("TextBoxBase::OnApplyTemplate: don't know how to handle a ContentELement of type %s",
 			   contentElement->GetType ()->GetName ());
 		view->unref ();
+		view = NULL;
 	}
 	
 	Control::OnApplyTemplate ();
