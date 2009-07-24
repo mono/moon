@@ -126,7 +126,7 @@ namespace System.Windows.Controls
         /// <returns>The size of the control.</returns>
         protected override Size ArrangeOverride(Size finalSize)
         { 
-            if (null == ScrollOwner) 
+            if (null == ScrollOwner || _contentRoot == null) 
             {
                 return base.ArrangeOverride(finalSize); 
             }

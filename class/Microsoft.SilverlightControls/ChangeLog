@@ -1,3 +1,9 @@
+2009-07-24  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs:
+	  ContentRoot can be null in certain circumstances, so avoid
+	  throwing a null ref.
+
 2009-07-23  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs: Add the missing
