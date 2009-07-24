@@ -205,12 +205,32 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 	NotifyListenersOfPropertyChange (args, error);
 }
 
+Size
+FrameworkElement::ApplySizeConstraints (const Size &size)
+{
+	Size specified (GetWidth (), GetHeight ());
+	Size constrained (GetMinWidth (), GetMinHeight ());
+	
+	constrained = constrained.Max (size);
+
+	if (!isnan (specified.width))
+		constrained.width = specified.width;
+
+	if (!isnan (specified.height))
+		constrained.height = specified.height;
+
+	constrained = constrained.Min (GetMaxWidth (), GetMaxHeight ());
+	constrained = constrained.Max (GetMinWidth (), GetMinHeight ());
+	
+	return constrained;
+}
+
 void
 FrameworkElement::ComputeBounds ()
 {
 	Size size (GetActualWidth (), GetActualHeight ());
-	size = size.Max (GetWidth (), GetHeight ());
-	size = size.Min (GetWidth (), GetHeight ());
+	size = ApplySizeConstraints (size);
+
 	extents = Rect (0, 0, size.width, size.height);
 
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
@@ -243,10 +263,9 @@ FrameworkElement::ComputeActualSize ()
 	if ((parent && !parent->Is (Type::CANVAS)) || (!Is (Type::CANVAS) && IsLayoutContainer ()))
 		return GetDesiredSize ();
 
-	Size actual (GetMinWidth (), GetMinHeight ());
+	Size actual (0, 0);
 
-	actual = actual.Max (GetWidth (), GetHeight ());
-	actual = actual.Min (GetMaxWidth (), GetMaxHeight ());
+	actual = ApplySizeConstraints (actual);
 
 	return actual;
 }
@@ -461,15 +480,10 @@ FrameworkElement::Measure (Size availableSize)
 
 	dirty_flags &= ~DirtyMeasure;
 
-	Size specified = Size (GetWidth (), GetHeight ());
 	Thickness margin = *GetMargin ();
 	Size size = availableSize.GrowBy (-margin);
 
-	size = size.Min (specified);
-	size = size.Max (specified);
-
-	size = size.Min (GetMaxWidth (), GetMaxHeight ());
-	size = size.Max (GetMinWidth (), GetMinHeight ());
+	size = ApplySizeConstraints (size);
 
 	if (measure_cb)
 		size = (*measure_cb)(size);
@@ -477,12 +491,7 @@ FrameworkElement::Measure (Size availableSize)
 		size = MeasureOverride (size);
 
 	// postcondition the results
-	size = size.Min (specified);
-	size = size.Max (specified);
-
-	size = size.Min (GetMaxWidth (), GetMaxHeight ());
-	size = size.Max (GetMinWidth (), GetMinHeight ());
-
+	size = ApplySizeConstraints (size);
 	size = size.GrowBy (margin);
 	size = size.Min (availableSize);
 
@@ -498,13 +507,11 @@ Size
 FrameworkElement::MeasureOverride (Size availableSize)
 {
 	Size desired = Size (0,0);
-	Size specified = Size (GetWidth (), GetHeight ());
 
 	if (!IsLayoutContainer ())
 		return desired;
 	
-	availableSize = availableSize.Max (specified);
-	availableSize = availableSize.Min (specified);
+	availableSize = ApplySizeConstraints (availableSize);
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
@@ -515,8 +522,7 @@ FrameworkElement::MeasureOverride (Size availableSize)
 		desired = child->GetDesiredSize ();
 	}
 
-	desired = desired.Max (specified);
-	desired = desired.Min (specified);
+	desired = ApplySizeConstraints (desired);
 
 	return desired;
 }
@@ -573,14 +579,7 @@ FrameworkElement::Arrange (Rect finalRect)
 	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	VerticalAlignment vert = GetVerticalAlignment ();
 
-	if (!isnan (GetWidth ()))
-		offer.width = GetWidth ();
-
-	if (!isnan (GetHeight ()))
-		offer.height = GetHeight ();
-
-	offer = offer.Min (GetMaxWidth (), GetMaxHeight ());
-	offer = offer.Max (GetMinWidth (), GetMinHeight ());
+	offer = ApplySizeConstraints (offer);
 
 	if (arrange_cb)
 		response = (*arrange_cb)(offer);
@@ -658,13 +657,10 @@ FrameworkElement::Arrange (Rect finalRect)
 Size
 FrameworkElement::ArrangeOverride (Size finalSize)
 {
+	finalSize = ApplySizeConstraints (finalSize);
+
 	if (!IsLayoutContainer ())
-		return finalSize.Max (GetWidth (), GetHeight ());
-
-	Size specified = Size (GetWidth (), GetHeight ());
-
-	finalSize = finalSize.Max (specified);
-	finalSize = finalSize.Min (specified);
+		return finalSize;
 
 	Size arranged = finalSize;
 

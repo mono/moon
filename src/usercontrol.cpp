@@ -68,10 +68,8 @@ Size
 UserControl::MeasureOverride (Size availableSize)
 {
 	Size desired = Size (0,0);
-	Size specified = Size (GetWidth (), GetHeight ());
-
-	availableSize = availableSize.Max (specified);
-	availableSize = availableSize.Min (specified);
+	
+	availableSize = ApplySizeConstraints (availableSize);
 
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
@@ -87,8 +85,7 @@ UserControl::MeasureOverride (Size availableSize)
 
 	desired = desired.GrowBy (border);
 
-	desired = desired.Max (specified);
-	desired = desired.Min (specified);
+	desired = ApplySizeConstraints (desired);
 
 	return desired;
 }
@@ -98,10 +95,7 @@ UserControl::ArrangeOverride (Size finalSize)
 {
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
-	Size specified = Size (GetWidth (), GetHeight ());
-
-	finalSize = finalSize.Max (specified);
-	finalSize = finalSize.Min (specified);
+	finalSize = ApplySizeConstraints (finalSize);
 
 	Size arranged = finalSize;
 

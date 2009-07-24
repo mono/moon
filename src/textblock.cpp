@@ -508,8 +508,7 @@ TextBlock::ArrangeOverride (Size finalSize)
 		arranged.height = MAX (arranged.height, finalSize.height);
 	}
 	
-	arranged = arranged.Max (GetMinWidth (), GetMinHeight ());
-	arranged = arranged.Min (GetMaxWidth (), GetMaxHeight ());
+	arranged = ApplySizeConstraints (arranged);
 	
 	layout->SetAvailableWidth (arranged.GrowBy (-padding).width);
 	

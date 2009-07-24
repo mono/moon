@@ -248,7 +248,7 @@ Shape::ComputeStretchBounds ()
 	}
 	
 	Size framework (GetActualWidth (), GetActualHeight ());
-	Size specified = Size (GetWidth (), GetHeight ());
+	Size specified (GetWidth (), GetHeight ());
 
 	if (specified.width <= 0.0 || specified.height <= 0.0) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
@@ -692,6 +692,8 @@ Shape::ArrangeOverride (Size finalSize)
 	arranged = Size (shape_bounds.width * sx, shape_bounds.height * sy);
 	
 	if ((Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) && LayoutInformation::GetPreviousConstraint (this)) {
+		arranged = ApplySizeConstraints (arranged);
+		    
 		extents = Rect (0,0, arranged.width, arranged.height);
 		UpdateBounds ();
 	}

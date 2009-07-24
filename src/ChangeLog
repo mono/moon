@@ -1,5 +1,17 @@
 2009-07-24  Larry Ewing  <lewing@novell.com>
 
+	* border.cpp: Apply the default constraints more carefully.
+
+	* src/frameworkelement.cpp, src/frameworkelement.h: add
+	ApplySizeContraints method, use it.
+
+	* src/canvas.cpp:
+	* src/shape.cpp:
+	* src/textblock.cpp:
+	* src/usercontrol.cpp: use ApplySizeContraints method.
+
+2009-07-24  Larry Ewing  <lewing@novell.com>
+
 	Rename some of the layout information based on some
 	of the tests.
 

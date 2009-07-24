@@ -111,6 +111,10 @@ public:
 	virtual Size ArrangeOverride (Size finalSize);
 	virtual Size ComputeActualSize ();
 
+	
+	// Apply specific constraint values to the given size
+	Size ApplySizeConstraints (const Size &size);
+	
 	virtual void UpdateLayout ();
 	
 	const static int LayoutUpdatedEvent;

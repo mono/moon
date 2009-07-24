@@ -27,10 +27,6 @@ Size
 Border::MeasureOverride (Size availableSize)
 {
 	Size desired = Size (0,0);
-	Size specified = Size (GetWidth (), GetHeight ());
-
-	availableSize = availableSize.Max (specified);
-	availableSize = availableSize.Min (specified);
 
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
@@ -40,15 +36,15 @@ Border::MeasureOverride (Size availableSize)
 		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 		
-		child->Measure (availableSize.GrowBy (-border));
+		child->Measure (ApplySizeConstraints (availableSize.GrowBy (-border)));
 		desired = child->GetDesiredSize ();
 	}
 
 	desired = desired.GrowBy (border);
 
+	desired = ApplySizeConstraints (desired);
+
 	desired = desired.Min (availableSize);
-	desired = desired.Max (specified);
-	desired = desired.Min (specified);
 
 	return desired;
 }
@@ -57,11 +53,8 @@ Size
 Border::ArrangeOverride (Size finalSize)
 {
 	Thickness border = *GetPadding () + *GetBorderThickness ();
-
-	Size specified = Size (GetWidth (), GetHeight ());
-
-	finalSize = finalSize.Max (specified);
-	finalSize = finalSize.Min (specified);
+	
+	finalSize = ApplySizeConstraints (finalSize);
 
 	Size arranged = finalSize;
 	
@@ -87,9 +80,11 @@ Border::ArrangeOverride (Size finalSize)
 
 		if (GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ()))
 			arranged.width = MAX (arranged.width, finalSize.width);
-		    
+
 		if (GetVerticalAlignment () == VerticalAlignmentStretch || !isnan (GetHeight()))
 			arranged.height = MAX (arranged.height, finalSize.height);
+
+		arranged = ApplySizeConstraints (arranged);
 	}
 
 	return arranged;
