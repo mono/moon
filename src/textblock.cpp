@@ -27,7 +27,7 @@
 #include "utils.h"
 #include "debug.h"
 #include "uri.h"
-
+#include "geometry.h"
 
 // Unicode Line Separator (\u2028)
 static const char utf8_linebreak[3] = { 0xe2, 0x80, 0xa8 };
@@ -420,11 +420,32 @@ TextBlock::AddFontResource (const char *resource)
 void
 TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 {
+	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
+
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
+
+	if (layout_clip) {
+		layout_clip->Draw (cr);
+		cairo_clip (cr);
+	}
+		
 	Paint (cr);
 
 	cairo_restore (cr);
+}
+
+void
+TextBlock::ComputeBounds ()
+{
+	Size actual (GetActualWidth (), GetActualHeight ());
+	Size framework = ApplySizeConstraints (actual);
+
+	framework = framework.Max (actual);
+	
+	Rect extents = Rect (0,0,framework.width, framework.height);
+
+        bounds = bounds_with_children = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
 void
@@ -442,6 +463,8 @@ TextBlock::GetTransformOrigin ()
 		      actual_height * user_xform_origin->y);
 }
 
+
+
 Size
 TextBlock::ComputeActualSize ()
 {
@@ -450,8 +473,10 @@ TextBlock::ComputeActualSize ()
 	
 	//if (dirty) {
 	if (!LayoutInformation::GetPreviousConstraint (this)) {
-		Size constraint = Size (INFINITY, INFINITY).Min (GetWidth (), GetHeight ());
+		Size constraint = Size (INFINITY, INFINITY);
 		
+		constraint = ApplySizeConstraints (constraint);
+
 		constraint = constraint.GrowBy (-padding);
 		Layout (constraint);
 	}
@@ -497,13 +522,13 @@ TextBlock::ArrangeOverride (Size finalSize)
 	arranged = Size (actual_width, actual_height).GrowBy (padding);
 	
 	if (!isnan (GetWidth ())) {
-		arranged.width = GetWidth ();
+		arranged.width = MAX (arranged.width, GetWidth ());
 	} else if (horiz == HorizontalAlignmentStretch) {
-		arranged.width = finalSize.width;
+		arranged.width = MAX (arranged.width, finalSize.width);
 	}
 
 	if (!isnan (GetHeight ())) {
-		arranged.height = GetHeight ();
+		arranged.height = MAX (arranged.height, GetHeight ());
 	} else if (horiz == HorizontalAlignmentStretch) {
 		arranged.height = MAX (arranged.height, finalSize.height);
 	}

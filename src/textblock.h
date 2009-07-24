@@ -252,6 +252,7 @@ class TextBlock : public FrameworkElement {
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 	virtual Size ComputeActualSize ();
+	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
