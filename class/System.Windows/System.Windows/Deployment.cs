@@ -317,8 +317,10 @@ namespace System.Windows {
 		{
 			SetCurrentApplication (null);
 
-			if (EntryAssembly == null)
-				throw new Exception ("Could not find the entry point assembly");
+			if (EntryAssembly == null) {
+				EmitError (2103, "Could not find the entry point assembly") ;
+				return false;
+			}
 
 			Type entry_type = EntryAssembly.GetType (EntryPointType);
 			if (entry_type == null) {
@@ -362,21 +364,9 @@ namespace System.Windows {
 			SetCurrentApplication (instance);
 
 			StartupEventArgs args = new StartupEventArgs();
-			if (args.InitParams != null)
-				ParseInitParams (args.InitParams);
 			instance.OnStartup (args);
 
 			return true;
-		}
-		
-		void ParseInitParams (IDictionary<string, string> initParams)
-		{
-			foreach (var pair in initParams) {
-				if (pair.Key == "culture")
-						System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo (pair.Value);
-				else if (pair.Key == "uiculture")
-					System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo (pair.Value);
-			}
 		}
 	}
 }
