@@ -257,7 +257,7 @@ namespace Mono.Xaml
 				ParameterInfo [] set_params = set_method.GetParameters ();
 				if (set_params == null || set_params.Length < 2) {
 					value = Value.Empty;
-					Console.Error.WriteLine ("set method signature is inccorrect.");
+					Console.Error.WriteLine ("set method signature is incorrect.");
 					return false;
 				}
 
