@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -19,6 +20,27 @@ namespace MoonTest.System.Windows
 	[TestClass]
 	public partial class VisualStateTest : SilverlightTest
 	{
+		[TestMethod]
+		[MoonlightBug]
+		public void GroupNameTest ()
+		{
+			UserControl c = (UserControl) XamlReader.Load (@"
+<UserControl
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:clr=""clr-namespace:SilverlightApplication14""
+    x:Name=""RootControl"">
+    <VisualStateManager.VisualStateGroups>
+        <VisualStateGroup x:Name=""Tester"" />
+    </VisualStateManager.VisualStateGroups>
+    <Canvas>
+    
+    </Canvas>
+</UserControl>");
+			VisualStateGroup g = VisualStateManager.GetVisualStateGroups (c).Cast<VisualStateGroup> ().First ();
+			Assert.AreEqual ("Tester", g.Name, "#1");
+		}
+
 		[TestMethod]
 		public void TestParse ()
 		{
