@@ -196,7 +196,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Regressed to fix other layout rules waiting for fix to alignment logic to be fixed properly")]
 		public void ArrangeTooLongLineTest ()
 		{
 			Border b = new Border ();
