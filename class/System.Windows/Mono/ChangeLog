@@ -1,3 +1,9 @@
+2009-07-26  Jackson Harper  <jackson@ximian.com>
+
+	* Value.cs: Try casting to a INativeDependencyObjectWrapper
+	instead of a DependencyObject, this lets us stuff Applications in
+	Value without losing it's type.
+
 2009-07-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Helper.cs: Remove unused code.

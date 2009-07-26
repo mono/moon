@@ -385,17 +385,17 @@ namespace Mono {
 				if (v is IEasingFunction && !(v is EasingFunctionBase))
 					v = new EasingFunctionWrapper (v as IEasingFunction);
 
-				if (v is DependencyObject) {
-					DependencyObject dov = (DependencyObject) v;
+				if (v is INativeDependencyObjectWrapper) {
+					INativeDependencyObjectWrapper dov = (INativeDependencyObjectWrapper) v;
 
-					if (dov.native == IntPtr.Zero)
+					if (dov.NativeHandle == IntPtr.Zero)
 						throw new Exception (String.Format (
 							"Object {0} has not set its native property", dov.GetType()));
 
-					NativeMethods.event_object_ref (dov.native);
+					NativeMethods.event_object_ref (dov.NativeHandle);
 
 					value.k = dov.GetKind ();
-					value.u.p = dov.native;
+					value.u.p = dov.NativeHandle;
 
 				} else if (v is DependencyProperty) {
 					value.k = Kind.DEPENDENCYPROPERTY;
