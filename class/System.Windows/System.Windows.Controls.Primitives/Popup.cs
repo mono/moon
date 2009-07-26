@@ -50,6 +50,17 @@ namespace System.Windows.Controls.Primitives {
 		
 		internal event EventHandler ClickedOutside;
 
+		internal UIElement RealChild {
+			get {
+				if (_clickCatcher != null) {
+					Canvas root = Child as Canvas;
+					return root.Children[1];
+				}
+
+				return Child;
+			}
+		}
+
 		Canvas _clickCatcher;
 		
 		public event EventHandler Closed {

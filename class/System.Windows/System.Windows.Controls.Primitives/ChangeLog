@@ -1,3 +1,8 @@
+2009-07-26  Larry Ewing  <lewing@novell.com>
+
+	* Popup.cs: add another hack on top of the click catcher hack.  Is
+	this really how it is supposed to work.
+
 2009-06-26  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: Fix some ListBox focus/selection related bugs.

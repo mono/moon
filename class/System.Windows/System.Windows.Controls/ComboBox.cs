@@ -257,12 +257,12 @@ namespace System.Windows.Controls
 			_popup = GetTemplateChild ("Popup") as Popup;
 			_contentPresenterBorder = GetTemplateChild ("ContentPresenterBorder") as FrameworkElement;
 			_dropDownToggle = GetTemplateChild ("DropDownToggle") as ToggleButton;
+			LayoutUpdated += delegate { UpdatePopupSizeAndPosition (); };
 
 			if (_popup != null) {
 				UpdatePopupMaxHeight (MaxDropDownHeight);
 				_popup.CatchClickedOutside ();
 				_popup.ClickedOutside += delegate { IsDropDownOpen = false; };
-				SizeChanged += delegate { UpdatePopupSizeAndPosition (); };
 
 				// The popup will never receive a key press event so we need to chain the event
 				// using Popup.Child
@@ -270,6 +270,7 @@ namespace System.Windows.Controls
 					_popup.Child.KeyDown += delegate(object sender, KeyEventArgs e) {
 						OnKeyDown (e);
 					};
+					((FrameworkElement) _popup.RealChild).SizeChanged += delegate { UpdatePopupSizeAndPosition (); };
 				}
 			}
 			if (_dropDownToggle != null) {
@@ -417,11 +418,30 @@ namespace System.Windows.Controls
 			if (_popup == null)
 				return;
 
-			_popup.VerticalOffset = ActualHeight;
+			_popup.VerticalOffset = RenderSize.Height;
 
-			FrameworkElement fe = _popup.Child as FrameworkElement;
-			if (fe != null)
-				fe.Width = ActualWidth;
+
+			FrameworkElement child = _popup.RealChild as FrameworkElement;
+			if (child == null)
+				return;
+
+			child.MinWidth = ActualWidth;
+			
+			FrameworkElement root = Application.Current.RootVisual as FrameworkElement;
+			if (root == null)
+				return;
+
+			GeneralTransform xform = TransformToVisual (root);
+			
+			Point bottom_right = new Point (child.ActualWidth, ActualHeight + child.ActualHeight);
+			bottom_right = xform.Transform (bottom_right);
+
+			if (bottom_right.X > root.ActualWidth) {
+				_popup.HorizontalOffset = root.ActualWidth - bottom_right.X;
+			}
+			if (bottom_right.Y > root.ActualHeight) {
+				_popup.VerticalOffset = -child.ActualHeight;
+			}
 		}
 
 		void UpdatePopupMaxHeight (double height)
