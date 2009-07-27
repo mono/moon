@@ -100,12 +100,15 @@ Application::ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property
 struct NotifyCtx {
 	gpointer user_data;
 	NotifyFunc notify_cb;
+	WriteFunc write_cb;
 };
 
 void downloader_abort (gpointer data);
 void downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+void downloader_write (void *data, gint32 offset, gint32 n, void *closure);
+void downloader_notify_size (gint64 size, gpointer closure);
 
 void
 Application::GetResource (const char *resourceBase, const Uri *uri,
@@ -157,6 +160,7 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 	NotifyCtx *ctx = g_new (NotifyCtx, 1);
 	ctx->user_data = user_data;
 	ctx->notify_cb = notify_cb;
+	ctx->write_cb = write_cb;
 
 	if (notify_cb) {
 		downloader->AddHandler (Downloader::DownloadProgressChangedEvent, downloader_progress_changed, ctx);
@@ -174,10 +178,24 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 	} else {
 		if (!downloader->Started ()) {
 			downloader->Open ("GET", (Uri*)uri, policy);
-			downloader->SetStreamFunctions (write_cb, NULL, user_data);
+			downloader->SetStreamFunctions (downloader_write, downloader_notify_size, ctx);
 			downloader->Send ();
 		}
 	}
+}
+
+void
+downloader_notify_size (gint64 size, gpointer closure)
+{
+	NotifyCtx *ctx = (NotifyCtx *) closure;
+	ctx->notify_cb (NotifySize, size, ctx->user_data);
+}
+
+void
+downloader_write (void *data, gint32 offset, gint32 n, void *closure)
+{
+	NotifyCtx *ctx = (NotifyCtx *) closure;
+	ctx->write_cb (data, offset, n, ctx->user_data);
 }
 
 void
