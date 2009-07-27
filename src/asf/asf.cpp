@@ -1037,12 +1037,14 @@ ASFReader::Seek (guint64 pts)
 	bool found_all_keyframes = false;
 	bool found_keyframe [128]; // If we've found a key frame below the requested pts.
 	bool found_above [128]; // If we've found a frame which is above the requested pts.
+	bool found_any [128]; // If we've found any frame
 	guint64 highest_pts [128]; // The highest key frame pts below the requested pts.
 	guint64 highest_pi [128]; // The packet index where we found the highest key frame (see above).
 
 	for (int i = 0; i < 128; i++) {
 		found_keyframe [i] = readers [i] == NULL;
 		found_above [i] = readers [i] == NULL;
+		found_any [i] = readers [i] == NULL;
 		highest_pts [i] = 0;
 		highest_pi [i] = G_MAXUINT64;
 	}
@@ -1129,6 +1131,17 @@ ASFReader::Seek (guint64 pts)
 		// Check if we found key frames for all streams, if not, continue looping.
 		found_all_keyframes = true;
 		for (int i = 0; i < 128; i++) {
+			if (test_pi == 0 && !found_any [i]) {
+				// this is a lie, we haven't found a keyframe.
+				// but we've searched backwards until the first packet, and we didn't find *any* frame (for this stream),
+				// which means that there are no frames from the point where we started searching backwards
+				// untill the first packet. In this case we just assume that there is a keyframe at pts 0 for
+				// this stream.
+				found_keyframe [i] = true;
+				highest_pts [i] = 0;
+				highest_pi [0] = 0;
+			}
+			
 			if (!found_keyframe [i]) {
 				found_all_keyframes = false;
 				break;
