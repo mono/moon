@@ -197,14 +197,14 @@ class XamlLoader {
 
 	Value* CreateFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
 	Value* CreateFromString  (const char *xaml, bool create_namescope, bool validate_templates, Type::Kind *element_type);
-	Value* HydrateFromString (const char *xaml, DependencyObject *object, bool create_namescope, bool validate_templates, Type::Kind *element_type);
+	Value* HydrateFromString (const char *xaml, Value *object, bool create_namescope, bool validate_templates, Type::Kind *element_type);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value* CreateFromStringWithError  (const char *xaml, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
-	Value* HydrateFromStringWithError (const char *xaml, DependencyObject *obj, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error);
+	Value* HydrateFromStringWithError (const char *xaml, Value *obj, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error);
 	
 	XamlLoaderCallbacks callbacks;
 	ParserErrorEventArgs *error_args;

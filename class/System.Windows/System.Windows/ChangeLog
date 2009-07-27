@@ -1,3 +1,9 @@
+2009-07-27  Jackson Harper  <jackson@ximian.com>
+
+	* Deployment.cs:
+	* Application.cs: we hydrate with a Value* now because it
+	is legal to have non DOB top level elements that get hydrated.
+	
 2009-07-24  Sebastien Pouliot  <sebastien at ximian.com>
 
 	* Deployment.cs: Don't throw in CreateApplication (instead call 

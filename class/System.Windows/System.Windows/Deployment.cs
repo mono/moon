@@ -152,7 +152,7 @@ namespace System.Windows {
 				app_manifest_contents = r.ReadToEnd();
 
 			try {
-				loader.Hydrate (native, app_manifest_contents);
+				loader.Hydrate (Value.FromObject (this), app_manifest_contents);
 			}
 			catch (Exception e) {
 				throw new MoonException (7016, e.Message);

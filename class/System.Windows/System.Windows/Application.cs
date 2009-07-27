@@ -300,13 +300,13 @@ namespace System.Windows {
 		}
 
 		public static void LoadComponent (object component, Uri resourceLocator)
-		{
-			INativeDependencyObjectWrapper wrapper = component as INativeDependencyObjectWrapper;
+		{			
+			Value v = Value.FromObject (component);
 
 			// XXX still needed for the app.surface reference when creating the ManagedXamlLoader
-			Application app = wrapper as Application;
-			
-			if (wrapper == null)
+			Application app = component as Application;
+
+			if (component == null)
 				throw new ArgumentNullException ("component");
 
 			if (resourceLocator == null)
@@ -320,9 +320,9 @@ namespace System.Windows {
 
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
 			Assembly loading_asm = component.GetType ().Assembly;
-			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, resourceLocator.ToString(), Deployment.Current.Surface.Native, PluginHost.Handle);
 
-			loader.Hydrate (wrapper.NativeHandle, xaml);
+			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, resourceLocator.ToString(), Deployment.Current.Surface.Native, PluginHost.Handle);
+			loader.Hydrate (v, xaml);
 		}
 
 		/*

@@ -1,3 +1,9 @@
+2009-07-27  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Hydrate needs to accept Value* instead of a DOB.  It
+	is legal to hydrate a top level managed non DOB class.
+	* cbinding.cpp|h: regen
+
 2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mp3.cpp: When seeking and we don't have enough data to seek to

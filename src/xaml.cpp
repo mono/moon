@@ -330,7 +330,7 @@ class XamlElementInfo {
 	virtual bool RequiresManagedSet () { return false; }
 
 	virtual XamlElementInstance *CreateElementInstance (XamlParserInfo *p) = 0;
-	virtual XamlElementInstance *CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o) = 0;
+	virtual XamlElementInstance *CreateWrappedElementInstance (XamlParserInfo *p, Value *o) = 0;
 	virtual XamlElementInstance *CreatePropertyElementInstance (XamlParserInfo *p, const char *name) = 0;
 };
 
@@ -540,7 +540,7 @@ class XamlParserInfo {
         //
 	// If set, this is used to hydrate an existing object, not to create a new toplevel one
 	//
-	DependencyObject *hydrate_expecting;
+	Value *hydrate_expecting;
 	bool hydrating;
 
 	char* buffer_until_element;
@@ -782,7 +782,7 @@ class XamlElementInfoNative : public XamlElementInfo {
 	const char* GetContentProperty (XamlParserInfo *p);
 
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
-	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
+	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, Value *o);
 	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
 };
 
@@ -847,7 +847,7 @@ class XamlElementInfoEnum : public XamlElementInfo {
 	}
 
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
-	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
+	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, Value *o);
 	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name) { return NULL; }
 };
 
@@ -1064,10 +1064,10 @@ class XNamespace : public XamlNamespace {
 		}
 
 		if (!strcmp ("Class", attr)) {
-			if (!item->IsDependencyObject ()) {
+			if (!is_legal_top_level_kind (item->info->GetKind ())) {
 				// XXX don't know the proper values here...
 				parser_error (p, item->element_name, attr, -1,
-					      "Cannot specify x:Class type '%s' on value type element.", value);
+					      "Cannot specify x:Class type '%s' on value type element (%s).", value, item->element_name);
 				return false;
 			}
 
@@ -1228,7 +1228,7 @@ class XamlElementInfoManaged : public XamlElementInfo {
 	virtual bool RequiresManagedSet () { return true; }
 	
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
-	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
+	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, Value *o);
 	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
 };
 
@@ -1268,7 +1268,7 @@ class XamlElementInfoImportedManaged : public XamlElementInfoManaged {
 	const char* GetContentProperty (XamlParserInfo *p);
 
 	XamlElementInstance* CreateElementInstance (XamlParserInfo *p);
-	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o);
+	XamlElementInstance* CreateWrappedElementInstance (XamlParserInfo *p, Value *o);
 	XamlElementInstance* CreatePropertyElementInstance (XamlParserInfo *p, const char *name);
 };
 
@@ -1326,6 +1326,16 @@ class ManagedNamespace : public XamlNamespace {
 			if (type_xmlns)
 				g_free (type_xmlns);
 			return  NULL;
+		}
+
+		if (p->hydrate_expecting) {
+			//
+			// If we are hydrating a top level managed object, use the Value* passed
+			// to Hydrate as our value
+			//
+			Value *v = value;
+			value = p->hydrate_expecting;
+			delete v;
 		}
 
 		XamlElementInfoManaged *info = new XamlElementInfoManaged (xmlns, g_strdup (el), NULL, value->GetKind (), value);
@@ -2285,7 +2295,7 @@ XamlLoader::CreateDependencyObjectFromString (const char *xaml, bool create_name
  * data
  */
 Value *
-XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool create_namescope, bool validate_templates, Type::Kind *element_type)
+XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_namescope, bool validate_templates, Type::Kind *element_type)
 {
 	XML_Parser p = XML_ParserCreateNS ("utf-8", '|');
 	XamlParserInfo *parser_info = NULL;
@@ -2329,8 +2339,11 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 	if (object != NULL) {
 		parser_info->hydrate_expecting = object;
 		parser_info->hydrating = true;
-		object->SetSurface (GetSurface());
-		object->SetResourceBase (GetResourceBase());
+		if (Type::IsSubclassOf (object->GetKind (), Type::DEPENDENCY_OBJECT)) {
+			DependencyObject *dob = object->AsDependencyObject ();
+			dob->SetSurface (GetSurface());
+			dob->SetResourceBase (GetResourceBase());
+		}
 	} else {
 		parser_info->hydrate_expecting = NULL;
 		parser_info->hydrating = false;
@@ -2381,8 +2394,9 @@ XamlLoader::HydrateFromString (const char *xaml, DependencyObject *object, bool 
 			res = parser_info->top_element->GetAsValue ();
 			res = new Value (*res);
 			if (res->Is (Type::DEPENDENCY_OBJECT) && object) {
-				res->AsDependencyObject ()->unref ();
-				object->SetIsHydratedFromXaml (parser_info->hydrating);
+				DependencyObject *dob = res->AsDependencyObject ();
+				dob->unref ();
+				dob->SetIsHydratedFromXaml (parser_info->hydrating);
 			}
 		}
 
@@ -2446,7 +2460,7 @@ XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope,
 }
 
 Value *
-XamlLoader::HydrateFromStringWithError (const char *xaml, DependencyObject *object, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error)
+XamlLoader::HydrateFromStringWithError (const char *xaml, Value *object, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error)
 {
 	Value *res = HydrateFromString (xaml, object, create_namescope, validate_templates, element_type);
 	if (error_args && error_args->error_code != -1) {
@@ -4065,10 +4079,10 @@ XamlElementInfoNative::CreateElementInstance (XamlParserInfo *p)
 }
 
 XamlElementInstance *
-XamlElementInfoNative::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
+XamlElementInfoNative::CreateWrappedElementInstance (XamlParserInfo *p, Value *o)
 {
 	XamlElementInstance *res = new XamlElementInstanceNative (this, p, GetName (), XamlElementInstance::ELEMENT, false);
-	res->SetDependencyObject (o);
+	res->SetDependencyObject (o->AsDependencyObject ());
 
 	return res;
 }
@@ -4255,7 +4269,7 @@ XamlElementInfoEnum::CreateElementInstance (XamlParserInfo *p)
 }
 
 XamlElementInstance *
-XamlElementInfoEnum::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
+XamlElementInfoEnum::CreateWrappedElementInstance (XamlParserInfo *p, Value *o)
 {
 	XamlElementInstance *res = new XamlElementInstanceEnum (this, name, XamlElementInstance::ELEMENT);
 	return res;
@@ -4286,11 +4300,9 @@ XamlElementInfoManaged::CreateElementInstance (XamlParserInfo *p)
 }
 
 XamlElementInstance *
-XamlElementInfoManaged::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
+XamlElementInfoManaged::CreateWrappedElementInstance (XamlParserInfo *p, Value *o)
 {
-	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, new Value (o));
-
-	p->AddCreatedElement (inst->GetAsDependencyObject ());
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, o);
 
 	return inst;
 }
@@ -4447,9 +4459,9 @@ XamlElementInfoImportedManaged::GetContentProperty (XamlParserInfo *p)
 }
 
 XamlElementInstance *
-XamlElementInfoImportedManaged::CreateWrappedElementInstance (XamlParserInfo *p, DependencyObject *o)
+XamlElementInfoImportedManaged::CreateWrappedElementInstance (XamlParserInfo *p, Value *o)
 {
-	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, o->GetTypeName (), XamlElementInstance::ELEMENT, new Value (o));
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, Type::Find (o->GetKind ())->GetName (), XamlElementInstance::ELEMENT, o);
 
 	return inst;
 }

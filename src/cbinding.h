@@ -2896,7 +2896,7 @@ Value *xaml_loader_create_from_string_with_error (XamlLoader *instance, const ch
 XamlContext *xaml_loader_get_context (XamlLoader *instance);
 
 /* @GeneratePInvoke */
-Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, DependencyObject *obj, bool create_namescope, bool validate_templates, int *element_type, MoonError *error);
+Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, Value *obj, bool create_namescope, bool validate_templates, int *element_type, MoonError *error);
 
 /**
  * Xap

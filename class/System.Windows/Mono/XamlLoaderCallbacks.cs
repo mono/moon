@@ -262,12 +262,12 @@ namespace Mono.Xaml
 		//
 		// Hydrates the object dob from the given xaml
 		//
-		public void Hydrate (IntPtr dependency_object, string xaml)
+		public void Hydrate (Value value, string xaml)
 		{
 			try {
 				Kind k;
 				CreateNativeLoader (null, xaml);
-				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, dependency_object, true, false, out k);
+				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, ref value, true, false, out k);
 				if (ret == IntPtr.Zero)
 					throw new Exception ("Invalid XAML file");
 			}
