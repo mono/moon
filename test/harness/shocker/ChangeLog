@@ -1,3 +1,7 @@
+2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker.mdp: Use Makefile integration.
+
 2009-07-17  Alan McGovern  <amcgovern@novell.com>
 
 	* input.cpp: Make the delay 3ms not 4ms, otherwise 786 times
