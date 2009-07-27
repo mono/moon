@@ -496,8 +496,8 @@ FrameworkElement::Measure (Size availableSize)
 	size = size.Min (availableSize);
 
 	if (GetUseLayoutRounding ()) {
-		size.width = round (size.width);
-		size.height = round (size.height);
+		size.width = floor (size.width);
+		size.height = floor (size.height);
 	}
 
 	SetDesiredSize (size);
@@ -597,8 +597,8 @@ FrameworkElement::Arrange (Rect finalRect)
 	Size old (GetActualWidth (), GetActualHeight ());
 
 	if (in_layout && GetUseLayoutRounding ()) {
-		response.width = round (response.width);
-		response.height = round (response.height);
+		response.width = floor (response.width);
+		response.height = floor (response.height);
 	}
 
 	SetActualWidth (response.width);

@@ -209,6 +209,9 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			for (int i = 0; i < triggers->GetCount (); i++)
 				triggers->GetValueAt (i)->AsEventTrigger ()->SetTarget (this);
 		}
+	} else if (args->GetId () == UIElement::UseLayoutRoundingProperty) {
+		InvalidateMeasure ();
+		InvalidateArrange ();
 	}
 
 	NotifyListenersOfPropertyChange (args, error);
