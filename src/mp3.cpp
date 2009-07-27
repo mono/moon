@@ -432,8 +432,10 @@ Mp3FrameReader::Seek (guint64 pts)
 		return MEDIA_SUCCESS;
 	
 	if (pts == 0) {
-		if (!source->Seek (stream_start, SEEK_SET))
+		if (!source->Seek (stream_start, SEEK_SET)) {
+			LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT "): Seek error (#1)\n", pts);
 			goto exception;
+		}
 		
 		bit_rate = 0;
 		cur_pts = 0;
@@ -444,8 +446,10 @@ Mp3FrameReader::Seek (guint64 pts)
 	// if we are seeking to some place we've been, then we can use our jump table
 	if (used > 0 && pts < (jmptab[used - 1].pts + jmptab[used - 1].dur)) {
 		if (pts >= jmptab[used - 1].pts) {
-			if (!source->Seek (jmptab[used - 1].offset, SEEK_SET))
+			if (!source->Seek (jmptab[used - 1].offset, SEEK_SET)) {
+				LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT "): Seek error (#2)\n", pts)
 				goto exception;
+			}
 			
 			this->bit_rate = jmptab[used - 1].bit_rate;
 			this->cur_pts = jmptab[used - 1].pts;
@@ -456,8 +460,10 @@ Mp3FrameReader::Seek (guint64 pts)
 		// search for our requested pts
 		frame = MpegFrameSearch (pts);
 		
-		if (!source->Seek (jmptab[frame].offset, SEEK_SET))
+		if (!source->Seek (jmptab[frame].offset, SEEK_SET)) {
+			LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT "): Seek error (#3)\n", pts);
 			goto exception;
+		}
 		
 		this->bit_rate = jmptab[frame].bit_rate;
 		this->cur_pts = jmptab[frame].pts;
@@ -469,8 +475,10 @@ Mp3FrameReader::Seek (guint64 pts)
 	while (this->cur_pts < pts) {
 		result = SkipFrame ();
 
-		if (!MEDIA_SUCCEEDED (result))
+		if (!MEDIA_SUCCEEDED (result)) {
+			LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT "): Error while skipping frame: %i\n", pts, result);
 			goto exception;
+		}
 	}
 	
 	// pts requested is at the start of the next frame in the source
@@ -478,8 +486,10 @@ Mp3FrameReader::Seek (guint64 pts)
 		return MEDIA_SUCCESS;
 	
 	// pts requested was non-key frame, need to seek back to the most recent key frame
-	if (!source->Seek (jmptab[used - 1].offset, SEEK_SET))
+	if (!source->Seek (jmptab[used - 1].offset, SEEK_SET)) {
+			LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT "): Seek error (#4)\n", pts);
 		goto exception;
+	}
 	
 	this->bit_rate = jmptab[used - 1].bit_rate;
 	this->cur_pts = jmptab[used - 1].pts;
@@ -493,7 +503,9 @@ exception:
 	this->bit_rate = bit_rate;
 	this->cur_pts = cur_pts;
 	
-	return MEDIA_FAIL;
+	LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT "): Could not find pts\n", pts);
+	
+	return result;
 }
 
 MediaResult
@@ -675,6 +687,8 @@ Mp3Demuxer::SeekAsyncInternal (guint64 pts)
 	
 	if (MEDIA_SUCCEEDED (result)) {
 		ReportSeekCompleted (pts);
+	} else if (result == MEDIA_NOT_ENOUGH_DATA) {
+		EnqueueSeek (pts);
 	} else {
 		ReportErrorOccurred (result);
 	}
