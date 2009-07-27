@@ -1363,7 +1363,7 @@ UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *e
 		}
 	}
 
-	if (!ok) {
+	if (!ok || (to_element && !to_element->GetSurface ())) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
 				   "visual");
 		return NULL;

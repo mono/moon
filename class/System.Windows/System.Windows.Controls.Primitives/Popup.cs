@@ -117,14 +117,18 @@ namespace System.Windows.Controls.Primitives {
 
 		void UpdateCatcher ()
 		{
-			GeneralTransform xform = Application.Current.RootVisual.TransformToVisual (this);
+			try {
+				GeneralTransform xform = Application.Current.RootVisual.TransformToVisual (this);
+				
+				_clickCatcher.RenderTransform = (Transform)xform;
+			} catch (System.ArgumentException e) {
+				// Drop errors looking up the transform
+			}
 
-			_clickCatcher.RenderTransform = (Transform)xform;
 			Canvas.SetTop (_clickCatcher, -VerticalOffset);
 			Canvas.SetLeft (_clickCatcher, -HorizontalOffset);
 			_clickCatcher.Height = Application.Current.Host.Content.ActualHeight;
 			_clickCatcher.Width = Application.Current.Host.Content.ActualWidth;		
-
 		}
 	}
 }

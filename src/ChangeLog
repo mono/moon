@@ -1,3 +1,8 @@
+2009-07-27  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (GetTransformToUIElementWithError): signal and
+	error in the to_element doesn't have a Surface case.
+
 2009-07-26  Larry Ewing  <lewing@novell.com>
 
 	* rect.h: make PointInside inclusive on the top/left.
