@@ -499,8 +499,10 @@ Media::ReportErrorOccurred (ErrorEventArgs *args)
 		fprintf (stderr, "Moonlight: Unspecified media error.\n");
 	}
 	
-	error_reported = true;
-	EmitSafe (MediaErrorEvent, args);
+	if (!error_reported) {
+		error_reported = true;
+		EmitSafe (MediaErrorEvent, args);
+	}
 }
 
 void
