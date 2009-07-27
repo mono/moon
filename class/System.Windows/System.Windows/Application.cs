@@ -301,13 +301,13 @@ namespace System.Windows {
 
 		public static void LoadComponent (object component, Uri resourceLocator)
 		{			
+			if (component == null)
+				throw new ArgumentNullException ("component");
+
 			Value v = Value.FromObject (component);
 
 			// XXX still needed for the app.surface reference when creating the ManagedXamlLoader
 			Application app = component as Application;
-
-			if (component == null)
-				throw new ArgumentNullException ("component");
 
 			if (resourceLocator == null)
 				throw new ArgumentNullException ("resourceLocator");
