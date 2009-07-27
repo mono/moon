@@ -13,6 +13,7 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows
 {
@@ -45,7 +46,7 @@ namespace MoonTest.System.Windows
 	}
 		
 	[TestClass]
-	public partial class StyleTest
+	public partial class StyleTest : SilverlightTest
 	{
 		// NOTE: This test must be run first for it to work - do not remove the 'aaa' from the start of its name
 		[TestMethod]
@@ -62,7 +63,32 @@ namespace MoonTest.System.Windows
 			setter = (Setter) s.Setters [0];
 			Assert.IsNotNull (setter.Property);
 		}
-		
+
+		[TestMethod]
+		public void ApplyDefaultStyle ()
+		{
+			// Default style is applied when the element is added to the visual tree
+			Slider s = new Slider ();
+			Assert.AreEqual (1, s.Maximum, "#1");
+			TestPanel.Children.Add (s);
+			Assert.AreEqual (10, s.Maximum, "#2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ApplyDefaultStyle2 ()
+		{
+			// Default style is applied even if a regular style is applied
+			Style style = new Style { TargetType = typeof (Slider) };
+			style.Setters.Add (new Setter (Slider.BorderThicknessProperty, new Thickness (2, 2, 2, 2)));
+
+			Slider s = new Slider { Style = style };
+			Assert.AreEqual (1, s.Maximum, "#1");
+			CreateAsyncTest (s, () => {
+				Assert.AreEqual (10, s.Maximum, "#2");
+			});
+		}
+
 		[TestMethod]
 		public void Sealed ()
 		{

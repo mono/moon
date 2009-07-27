@@ -732,7 +732,7 @@ UIElement::WalkTreeForLoaded (bool *delay)
 
 		if (next->uielement->Is(Type::CONTROL)) {
 			Control *control = (Control*)next->uielement;
-			if (!control->GetStyle() && !control->default_style_applied) {
+			if (!control->default_style_applied) {
 				ManagedTypeInfo *key = control->GetDefaultStyleKey ();
 				if (key) {
 					if (Application::GetCurrent () == NULL)
