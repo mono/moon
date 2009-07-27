@@ -571,11 +571,12 @@ Media::Initialize (Downloader *downloader, const char *PartName)
 		InternalDownloader *idl = downloader->GetInternalDownloader ();
 		MmsDownloader *mms_dl = (idl && idl->GetObjectType () == Type::MMSDOWNLOADER) ? (MmsDownloader *) idl : NULL;
 		
-		if (mms_dl != NULL) {
-			source = new MmsSource (this, downloader);
-		} else {
-			source = new ProgressiveSource (this, downloader);
+		if (mms_dl == NULL) {
+			ReportErrorOccurred ("We don't support using downloaders which haven't started yet.");
+			return;
 		}
+		
+		source = new MmsSource (this, downloader);
 	} else {
 		source = new FileSource (this, file);
 	}
@@ -610,7 +611,7 @@ void
 Media::Initialize (const char *uri)
 {
 	Downloader *dl;
-	DownloaderAccessPolicy policy;
+	IMediaSource *source = NULL;
 	
 	LOG_PIPELINE ("Media::Initialize ('%s'), id: %i\n", uri, GET_OBJ_ID (this));	
 	
@@ -620,31 +621,34 @@ Media::Initialize (const char *uri)
 	g_return_if_fail (initialized == false);
 	g_return_if_fail (error_reported == false);
 	g_return_if_fail (source == NULL);
+	g_return_if_fail (this->source == NULL);
 	
 	this->uri = g_strdup (uri);
 	
-	dl = Surface::CreateDownloader (this);
 	
-	if (dl == NULL) {
-		ReportErrorOccurred ("Couldn't create downloader.");
+	if (g_str_has_prefix (uri, "mms://") || g_str_has_prefix (uri, "rtsp://")  || g_str_has_prefix (uri, "rtsps://")) {
+		dl = Surface::CreateDownloader (this);
+		if (dl == NULL) {
+			ReportErrorOccurred ("Couldn't create downloader.");
+			return;
+		}
+		
+		dl->Open ("GET", uri, StreamingPolicy);
+		
+		if (dl->GetFailedMessage () == NULL) {
+			Initialize (dl, NULL);
+		} else {
+			ReportErrorOccurred (new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR"));
+		}
+			
+		dl->unref ();
+		
 		return;
 	}
 	
-	if (g_str_has_prefix (uri, "mms://") || g_str_has_prefix (uri, "rtsp://")  || g_str_has_prefix (uri, "rtsps://")) {
-		policy = StreamingPolicy;
-	} else {
-		policy = MediaPolicy;
-	}
-	
-	dl->Open ("GET", uri, policy);
-	
-	if (dl->GetFailedMessage () == NULL) {
-		Initialize (dl, NULL);
-	} else {
-		ReportErrorOccurred (new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR"));
-	}
-		
-	dl->unref ();
+	source = new ProgressiveSource (this, uri);
+	Initialize (source);
+	source->unref ();
 }
 
 void
@@ -1596,27 +1600,25 @@ FileSource::Eof ()
  * ProgressiveSource
  */
 
-ProgressiveSource::ProgressiveSource (Media *media, Downloader *dl) : FileSource (media, true)
+ProgressiveSource::ProgressiveSource (Media *media, const char *uri) : FileSource (media, true)
 {
-	g_return_if_fail (dl != NULL);
-
 	write_pos = 0;
 	size = -1;
 	write_fd = NULL;
-	if (dl) {
-		downloader = dl;
-		downloader->ref ();
-	}
+	cancellable = NULL;
+	this->uri = g_strdup (uri);
 }
 
 void
 ProgressiveSource::Dispose ()
 {	
-	if (downloader) {
-		downloader->RemoveAllHandlers (this);
-		downloader->SetStreamFunctions (NULL, NULL, this);
-		downloader->unref ();
-		downloader = NULL;
+	g_free (uri);
+	uri = NULL;
+	
+	if (cancellable) {
+		cancellable->Cancel ();
+		delete cancellable;
+		cancellable = NULL;
 	}
 	
 	CloseWriteFile ();
@@ -1624,28 +1626,17 @@ ProgressiveSource::Dispose ()
 	FileSource::Dispose ();
 }
 
-Downloader *
-ProgressiveSource::GetDownloader ()
-{
-	return downloader;
-}
-
 MediaResult
 ProgressiveSource::Initialize ()
 {
-	MediaResult result;
+	MediaResult result = MEDIA_SUCCESS;
+	Application *application;
 	
-	if (downloader) {
-		downloader->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedCallback, this);
-		downloader->AddHandler (Downloader::CompletedEvent, DownloadCompleteCallback, this);
-		downloader->SetStreamFunctions (data_write, size_notify, this);
-				
-		if (!downloader->Started ())
-			downloader->Send ();
-	}
+	application = GetDeployment ()->GetCurrentApplication ();
 	
-	if (filename != NULL)
-		return MEDIA_SUCCESS;
+	g_return_val_if_fail (application != NULL, MEDIA_FAIL);
+	g_return_val_if_fail (filename == NULL, MEDIA_FAIL);
+	g_return_val_if_fail (cancellable == NULL, MEDIA_FAIL);
 
 	result = FileSource::Initialize ();
 
@@ -1654,7 +1645,9 @@ ProgressiveSource::Initialize ()
 
 	write_fd = fopen (filename, "w");
 	if (write_fd == NULL) {
-		fprintf (stderr, "Moonlight: Could not open a write handle to the file '%s'\n", filename);
+		char *msg = g_strdup_printf ("Could not open a write handle to the file '%s'\n", filename);
+		ReportErrorOccurred (msg);
+		g_free (msg);
 		return MEDIA_FAIL;
 	}
 
@@ -1665,7 +1658,55 @@ ProgressiveSource::Initialize ()
 		unlink (filename);
 	}
 	
-	return MEDIA_SUCCESS;
+	cancellable = new Cancellable ();
+	Uri *u = new Uri ();
+	if (u->Parse (uri)) {
+		application->GetResource (NULL, u, notify_func, data_write, MediaPolicy, cancellable, (gpointer) this);
+	} else {
+		result = MEDIA_FAIL;
+		char *msg = g_strdup_printf ("Could not parse the uri '%s'", uri);
+		ReportErrorOccurred (msg);
+		g_free (msg);
+	}
+	delete u;
+	
+	return result;
+}
+
+void
+ProgressiveSource::notify_func (NotifyType type, gint64 args, void *closure)
+{
+	g_return_if_fail (closure != NULL);
+	((ProgressiveSource *) closure)->Notify (type, args);
+}
+
+void
+ProgressiveSource::Notify (NotifyType type, gint64 args)
+{
+	LOG_PIPELINE ("ProgressiveSource::Notify (%i = %s, %" G_GINT64_FORMAT ")\n", 
+		type, 
+		type == ::NotifySize ? "NotifySize" : 
+			(type == NotifyCompleted ? "NotifyCompleted" : 
+			(type == NotifyFailed ? "NotifyFailed" : 
+			(type == NotifyStarted ? "NotifyStarted" : 
+			(type == NotifyProgressChanged ? "NotifyProgressChanged" : "unknown")))),
+		args);
+		
+	switch (type) {
+		case ::NotifySize:
+			NotifySize (args);
+			break;
+		case NotifyCompleted:
+			DownloadComplete ();
+			break;
+		case NotifyFailed:
+			DownloadFailed ();
+			break;
+		case NotifyStarted:
+		case NotifyProgressChanged:
+		default:
+			break;
+	}
 }
 
 void
@@ -1711,13 +1752,6 @@ cleanup:
 }
 
 void
-ProgressiveSource::size_notify (gint64 size, gpointer data)
-{
-	g_return_if_fail (data != NULL);
-	((ProgressiveSource *) data)->NotifySize (size);
-}
-
-void
 ProgressiveSource::NotifySize (gint64 size)
 {
 	LOG_PIPELINE ("ProgressiveSource::NotifySize (%lld)\n", size);
@@ -1728,28 +1762,19 @@ ProgressiveSource::NotifySize (gint64 size)
 }
 
 void
-ProgressiveSource::DownloadCompleteHandler (EventObject *sender, EventArgs *args)
+ProgressiveSource::DownloadComplete ()
 {
-	char *filename;
 	MediaResult result = MEDIA_SUCCESS;
 	Media *media = GetMediaReffed ();
 	
-	LOG_PIPELINE ("ProgressiveSource::DownloadCompleteHandler (%p, %p)\n", sender, args);
+	LOG_PIPELINE ("ProgressiveSource::DownloadComplete ()\n");
 	
 	Lock ();
-	if (write_pos == 0 && size != 0) {
-		if (downloader == NULL) {
-			result = MEDIA_FAIL;
-		} else if ((filename = downloader->GetDownloadedFilename (NULL)) == NULL) {
-			result = MEDIA_FAIL;
-		} else {
-			result = Open (filename);
-			size = FileSource::size;
-			write_pos = FileSource::size;
-		}
-	} else {
-		this->size = write_pos;
+	if (write_pos != size && size != -1) { // what happend here?
+		LOG_PIPELINE ("ProgressiveSource::DownloadComplete (): the downloaded size (%" G_GINT64_FORMAT ") != the reported size (%" G_GINT64_FORMAT	 ")\n", write_pos, size);
 	}
+
+	this->size = write_pos;
 	
 	// Close our write handle, we won't write more now
 	CloseWriteFile ();
@@ -1767,9 +1792,9 @@ ProgressiveSource::DownloadCompleteHandler (EventObject *sender, EventArgs *args
 }
 
 void
-ProgressiveSource::DownloadFailedHandler (EventObject *sender, ErrorEventArgs *args)
+ProgressiveSource::DownloadFailed ()
 {
-	LOG_PIPELINE ("ProgressiveSource::DownloadFailedHandler (%p, %p). TODO\n", sender, args);
+	LOG_PIPELINE ("ProgressiveSource::DownloadFailed ().\n");
 	
 	ReportErrorOccurred (new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR"));
 }

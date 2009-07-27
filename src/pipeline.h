@@ -157,6 +157,7 @@ typedef MediaResult MediaCallback (MediaClosure *closure);
 #include "error.h"
 #include "type.h"
 #include "enums.h"
+#include "application.h"
 
 /*
  * MediaClosure: 
@@ -1109,17 +1110,19 @@ private:
 	// handlers, one for reading (in FileSource) and the other one here
 	// for writing.
 	FILE *write_fd;
-	Downloader *downloader;
+	char *uri;
+	Cancellable *cancellable;
 	
 	virtual gint64 GetLastAvailablePositionInternal () { return size == write_pos ? write_pos : write_pos & ~(1024*4-1); }
 	virtual gint64 GetSizeInternal () { return size; }
 
-	EVENTHANDLER (ProgressiveSource, DownloadFailed,   EventObject, ErrorEventArgs);
-	EVENTHANDLER (ProgressiveSource, DownloadComplete, EventObject, EventArgs);
-	
 	static void data_write (void *data, gint32 offset, gint32 n, void *closure);
-	static void size_notify (gint64 size, gpointer data);
+	static void notify_func (NotifyType type, gint64 args, void *closure);
 
+	void Notify (NotifyType, gint64 args);
+
+	void DownloadComplete ();
+	void DownloadFailed ();
 	void DataWrite (void *data, gint32 offset, gint32 n);
 	void NotifySize (gint64 size);
 	void SetTotalSize (gint64 size);
@@ -1130,13 +1133,11 @@ protected:
 	virtual ~ProgressiveSource () {}
 
 public:
-	ProgressiveSource (Media *media, Downloader *downloader);
+	ProgressiveSource (Media *media, const char *uri);
 	virtual void Dispose ();
 	
 	virtual MediaResult Initialize (); 
 	virtual MediaSourceType GetType () { return MediaSourceTypeProgressive; }
-	
-	Downloader *GetDownloader ();
 };
 
 /*

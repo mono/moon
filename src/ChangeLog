@@ -1,5 +1,10 @@
 2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp|h: Use Application::GetResource instead of creating
+	downloaders to get data.
+
+2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: ReportErrorOccurred: don't propagate more than one
 	error.
 
