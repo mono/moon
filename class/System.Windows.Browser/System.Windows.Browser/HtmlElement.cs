@@ -80,12 +80,12 @@ namespace System.Windows.Browser
 
 		public void RemoveAttribute (string name)
 		{
-			InvokeInternal<object> (Handle, "removeAttribute", name);
+			InvokeInternal<object> ("removeAttribute", name);
 		}
 
 		public void RemoveChild (HtmlElement element)
 		{
-			InvokeInternal<object> (Handle, "removeChild", element);
+			InvokeInternal<object> ("removeChild", element);
 		}
 
 				
