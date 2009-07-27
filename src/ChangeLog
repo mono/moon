@@ -1,3 +1,13 @@
+2009-07-27  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (EventObject::DoEmit): we emit the XAML
+	handler *after* all registered handlers.  part of the fix for drt
+	234.
+
+	* window-gtk.cpp (MoonWindowGtk::button_press): ignore
+	double-click and triple click gdk events here.  part of the fix
+	for drt 234.
+
 2009-07-27  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Hydrate needs to accept Value* instead of a DOB.  It

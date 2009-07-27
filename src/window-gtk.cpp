@@ -424,6 +424,9 @@ MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer 
 	if (event->button != 1 && event->button != 3)
 		return false;
 
+	if (event->type != GDK_BUTTON_PRESS)
+		return false;
+
 	if (window->surface)
 		window->surface->HandleUIButtonPress (event);
 	

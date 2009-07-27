@@ -863,14 +863,28 @@ EventObject::StartEmit (int event_id)
 bool
 EventObject::DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata, bool only_unemitted)
 {
+	EventClosure *xaml_closure = NULL;
+
 	/* emit the events using the copied list */
 	for (int i = 0; i < ctx->length; i++) {
 		EventClosure *closure = ctx->closures[i];
+
+		if (closure->token == 0) {
+			xaml_closure = closure;
+			continue;
+		}
+
 		if (closure && closure->func
 		    && (!only_unemitted || closure->emit_count == 0)) {
 			closure->func (this, calldata, closure->data);
 			closure->emit_count ++;
 		}
+	}
+
+	if (xaml_closure && xaml_closure->func
+	    && (!only_unemitted || xaml_closure->emit_count == 0)) {
+		xaml_closure->func (this, calldata, xaml_closure->data);
+		xaml_closure->emit_count ++;
 	}
 
 	return ctx->length > 0;
