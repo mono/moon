@@ -1,5 +1,10 @@
 2009-07-26  Larry Ewing  <lewing@novell.com>
 
+	* Popup.cs: Add some logic to update the catcher position on
+	Layout changes.
+
+2009-07-26  Larry Ewing  <lewing@novell.com>
+
 	* Popup.cs: add another hack on top of the click catcher hack.  Is
 	this really how it is supposed to work.
 

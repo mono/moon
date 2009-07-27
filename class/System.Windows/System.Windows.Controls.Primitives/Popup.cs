@@ -111,9 +111,20 @@ namespace System.Windows.Controls.Primitives {
 				if (h != null)
 					h (this, EventArgs.Empty);
 			};
-			
+
+			_clickCatcher.LayoutUpdated += delegate { UpdateCatcher (); };
+		}
+
+		void UpdateCatcher ()
+		{
+			GeneralTransform xform = Application.Current.RootVisual.TransformToVisual (this);
+
+			_clickCatcher.RenderTransform = (Transform)xform;
+			Canvas.SetTop (_clickCatcher, -VerticalOffset);
+			Canvas.SetLeft (_clickCatcher, -HorizontalOffset);
 			_clickCatcher.Height = Application.Current.Host.Content.ActualHeight;
 			_clickCatcher.Width = Application.Current.Host.Content.ActualWidth;		
+
 		}
 	}
 }

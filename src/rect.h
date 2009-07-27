@@ -49,14 +49,14 @@ struct Rect {
 
         Rect Transform (cairo_matrix_t *matrix);
 
-	bool PointInside (double px, double py)
+	bool PointInside (double px, double py) const
 	{
-		return px > x && px < (x + width) && py > y && py < (y + height);
+		return px >= x && px < (x + width) && py >= y && py < (y + height);
 	}
 
 	bool PointInside (const Point& p) const
 	{
-		return p.x > x && p.x < (x + width) && p.y > y && p.y < (y + height);
+		return p.x >= x && p.x < (x + width) && p.y >= y && p.y < (y + height);
 	}
 
 	bool IntersectsWith (const Rect& rect) const

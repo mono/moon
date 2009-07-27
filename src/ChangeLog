@@ -1,3 +1,7 @@
+2009-07-26  Larry Ewing  <lewing@novell.com>
+
+	* rect.h: make PointInside inclusive on the top/left.
+
 2009-07-24  Larry Ewing  <lewing@novell.com>
 
 	* textblock.cpp:  Rework the bounds computation to be the max of

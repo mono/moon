@@ -262,7 +262,9 @@ namespace System.Windows.Controls
 			if (_popup != null) {
 				UpdatePopupMaxHeight (MaxDropDownHeight);
 				_popup.CatchClickedOutside ();
-				_popup.ClickedOutside += delegate { IsDropDownOpen = false; };
+				_popup.ClickedOutside += delegate { 
+					IsDropDownOpen = false; 
+				};
 
 				// The popup will never receive a key press event so we need to chain the event
 				// using Popup.Child
@@ -447,7 +449,7 @@ namespace System.Windows.Controls
 		void UpdatePopupMaxHeight (double height)
 		{
 			if (_popup != null && _popup.Child is FrameworkElement) {
-				((FrameworkElement) _popup.Child).MaxHeight = height;
+				((FrameworkElement) _popup.RealChild).MaxHeight = height;
 			}
 		}
 
