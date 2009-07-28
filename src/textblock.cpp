@@ -511,7 +511,6 @@ TextBlock::MeasureOverride (Size availableSize)
 Size
 TextBlock::ArrangeOverride (Size finalSize)
 {
-	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size arranged;
