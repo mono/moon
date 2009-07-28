@@ -992,7 +992,10 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 			break;
 		}
 	}
-	if (flags & MissingCodecs)
+
+	// check if we're missing the codecs *and* if they are not installed 
+	// since we could already have downloaded/installed them without refreshing the browser (leading to a crash)
+	if ((flags & MissingCodecs) && !Media::IsMSCodecsInstalled ())
 		CodecDownloader::ShowUI (GetDeployment ()->GetSurface ());
 
 	entry->PopulateMediaAttributes ();

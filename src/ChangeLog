@@ -1,3 +1,11 @@
+2009-07-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mediaelement.cpp: Add a check if the codecs have already been 
+	downloaded/installed without refreshing the browser. This will
+	stop additional dialogs showing up and fix a crash (x86_64) if
+	the codecs are downloaded/installed a second time in the same 
+	session.
+
 2009-07-27  Larry Ewing  <lewing@novell.com>
 
 	* src/border.cpp:
