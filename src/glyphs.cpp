@@ -25,7 +25,7 @@
 #include "utils.h"
 #include "debug.h"
 #include "uri.h"
-
+#include "geometry.h"
 
 #if DEBUG
 #define d(x) x
@@ -398,8 +398,14 @@ Glyphs::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	Point p = GetOriginPoint ();
-	Rect area = Rect (p.x, p.y, 0, 0);
+	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
+	if (layout_clip) {
+		layout_clip->Draw (cr);
+		cairo_clip (cr);
+	}
+
+	//Point p = GetOriginPoint ();
+	Rect area = Rect (left, top, 0, 0);
 	GetSizeForBrush (cr, &(area.width), &(area.height));
 	fill->SetupBrush (cr, area);
 	
@@ -416,6 +422,25 @@ Glyphs::ComputeActualSize ()
 		Layout ();
 
 	return Size (left + width, top + height);
+}
+
+Size
+Glyphs::MeasureOverride (Size availableSize)
+{
+	if (dirty)
+		Layout ();
+
+	return Size (left + width, top + height).Min (availableSize);
+}
+
+Size
+Glyphs::ArrangeOverride (Size finalSize)
+{
+	if (dirty)
+		Layout ();
+
+	finalSize = ApplySizeConstraints (finalSize);
+	return Size (left + width, top + height).Max (finalSize);
 }
 
 void 
@@ -442,7 +467,8 @@ Point
 Glyphs::GetTransformOrigin ()
 {
 	// Glyphs seems to always use 0,0 no matter what is specified in the RenderTransformOrigin nor the OriginX/Y points
-	return Point (0.0, 0.0);
+	Point *user_xform_origin = GetRenderTransformOrigin ();
+	return Point (0,0);
 }
 
 void
