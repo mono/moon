@@ -588,7 +588,7 @@ EventObject::AddXamlHandler (const char *event_name, EventHandler handler, gpoin
 		return -1;
 	}
 	
-	return AddHandler (id, handler, data, data_dtor);
+	return AddXamlHandler (id, handler, data, data_dtor);
 }
 
 int
@@ -869,10 +869,15 @@ EventObject::DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata, bool o
 	for (int i = 0; i < ctx->length; i++) {
 		EventClosure *closure = ctx->closures[i];
 
+#if FORCE_XAML_HANDLERS_LAST
+		// i thought this was required for drt 234, but it
+		// doesn't seem to be helping it, and it's breaking
+		// other p1 tests. - toshok
 		if (closure->token == 0) {
 			xaml_closure = closure;
 			continue;
 		}
+#endif
 
 		if (closure && closure->func
 		    && (!only_unemitted || closure->emit_count == 0)) {
