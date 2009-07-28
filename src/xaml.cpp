@@ -3665,8 +3665,16 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		mv->unref ();
 		break;
 	}
+	case Type::TRANSFORM:
+
+			if (!g_ascii_strcasecmp ("Identity", str)) {
+				*v = NULL;
+				return true;
+			}
+
+			// Intentional fall through, you can create a matrix from a TRANSFORM property, but not using Identity
 	case Type::MATRIXTRANSFORM:
-	case Type::TRANSFORM: {
+	{
 		if (IS_NULL_OR_EMPTY(s)) {
 			g_free (s);
 			return true;
@@ -3686,6 +3694,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		mv->unref ();
 		break;
 	}
+	case Type::UNMANAGEDMATRIX:
 	case Type::MATRIX: {
 		// note: unlike TRANSFORM this creates an empty, identity, matrix for an empty string
 		Matrix *matrix = matrix_from_str (s);

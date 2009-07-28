@@ -1,3 +1,10 @@
+2009-07-28  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Handle UNMANAGEDMATRIX, it's just a matrix with
+	another name
+	- Don't create a Matrix for TRANSFORM properties if "Identity" was
+	used as the string.  (kinda seems like an SL bug to me).
+
 2009-07-28  Jeffrey Stedfast  <fejj@novell.com>
 
 	* multiscaleimage.cpp: Fixed a bunch of compiler warnings.
