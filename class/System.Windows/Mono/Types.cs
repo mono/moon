@@ -140,6 +140,8 @@ namespace Mono
 
 				if (type.IsEnum && Enum.GetUnderlyingType (type) == typeof(int))
 					info.native_handle = Kind.INT32;
+				else if (type == typeof (System.Windows.Media.Matrix))
+					info.native_handle = Kind.UNMANAGEDMATRIX;
 				else
 					info.native_handle = NativeMethods.types_register_type (native, type.FullName, GCHandle.ToIntPtr (info.gc_handle), (parent != null ? parent.native_handle : Kind.INVALID), type.IsInterface, type.GetConstructor (new Type[] { }) != null, interface_kinds, interface_kinds.Length);
 				
