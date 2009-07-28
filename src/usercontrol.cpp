@@ -109,21 +109,12 @@ UserControl::ArrangeOverride (Size finalSize)
 
 		childRect = childRect.GrowBy (-border);
 
-		if (GetHorizontalAlignment () != HorizontalAlignmentStretch && isnan (GetWidth ()))
-			childRect.width = MIN (desired.width, childRect.width);
-
-		if (GetVerticalAlignment () != VerticalAlignmentStretch && isnan (GetHeight ()))
-			childRect.height = MIN (desired.height, childRect.height);
-
 		child->Arrange (childRect);
 		arranged = child->GetRenderSize ();
+
 		arranged = arranged.GrowBy (border);
 
-		if (GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ()))
-			arranged.width = MAX (arranged.width, finalSize.width);
-		    
-		if (GetVerticalAlignment () == VerticalAlignmentStretch || !isnan (GetHeight()))
-			arranged.height = MAX (arranged.height, finalSize.height);
+		arranged = arranged.Max (finalSize);
 	}
 
 	return arranged;

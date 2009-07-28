@@ -520,19 +520,8 @@ TextBlock::ArrangeOverride (Size finalSize)
 	Layout (constraint);
 	
 	arranged = Size (actual_width, actual_height).GrowBy (padding);
-	
-	if (!isnan (GetWidth ())) {
-		arranged.width = MAX (arranged.width, GetWidth ());
-	} else if (horiz == HorizontalAlignmentStretch) {
-		arranged.width = MAX (arranged.width, finalSize.width);
-	}
 
-	if (!isnan (GetHeight ())) {
-		arranged.height = MAX (arranged.height, GetHeight ());
-	} else if (horiz == HorizontalAlignmentStretch) {
-		arranged.height = MAX (arranged.height, finalSize.height);
-	}
-	
+	arranged = arranged.Max (finalSize);
 	arranged = ApplySizeConstraints (arranged);
 	
 	layout->SetAvailableWidth (arranged.GrowBy (-padding).width);

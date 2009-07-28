@@ -1,3 +1,15 @@
+2009-07-27  Larry Ewing  <lewing@novell.com>
+
+	* src/border.cpp:
+	* src/frameworkelement.cpp:
+	* src/media.cpp:
+	* src/shape.cpp:
+	* src/textblock.cpp:
+	* src/usercontrol.cpp: Move the alignment logic out of the
+	controls and into the Arrange call now.
+
+	Fixes DRT #335 improves several others.
+	
 2009-07-28  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Handle UNMANAGEDMATRIX, it's just a matrix with

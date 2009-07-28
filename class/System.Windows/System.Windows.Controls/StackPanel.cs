@@ -87,9 +87,10 @@ namespace System.Windows.Controls {
 
 		protected override sealed Size ArrangeOverride (Size finalSize) {
 			Size result = finalSize;
-			Rect requested = new Rect (0, 0, _desired.Width, _desired.Height);
+			Rect requested = new Rect (0,0,finalSize.Width, finalSize.Height); //new Rect (0, 0, _desired.Width, _desired.Height);
 			bool first = true;
-
+			
+			/*
 			HorizontalAlignment horiz = Double.IsNaN (Width) ? this.HorizontalAlignment : HorizontalAlignment.Stretch;
 			VerticalAlignment vert = Double.IsNaN (Height) ? this.VerticalAlignment : VerticalAlignment.Stretch;
 			
@@ -98,6 +99,7 @@ namespace System.Windows.Controls {
 			
 			if (VerticalAlignment == VerticalAlignment.Stretch)
 				requested.Height = finalSize.Height;
+			*/
 
 			requested.Width = Math.Min (requested.Width, this.MaxWidth);
 			requested.Width = Math.Max (requested.Width, this.MinWidth);

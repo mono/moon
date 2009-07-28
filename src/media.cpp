@@ -468,11 +468,7 @@ Image::ArrangeOverride (Size finalSize)
 		arranged = Size (shape_bounds.x + shape_bounds.width,
 				 shape_bounds.y + shape_bounds.height);
 
-		if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
-			arranged.width = MAX (arranged.width, finalSize.width);
-
-		if (GetVerticalAlignment () == VerticalAlignmentStretch)
-			arranged.height = MAX (arranged.height, finalSize.height);
+		arranged = arranged.Max (finalSize);
 
 		return arranged;
 	}

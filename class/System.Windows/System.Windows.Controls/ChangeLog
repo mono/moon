@@ -1,3 +1,7 @@
+2009-07-28  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: remove uneeded alignment logic.
+
 2009-07-26  Larry Ewing  <lewing@novell.com>
 
 	* ComboBox.cs: set MaxHeight on the real child (hate this hack).

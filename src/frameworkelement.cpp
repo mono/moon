@@ -199,6 +199,7 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 	}
 	else if (args->GetId () == FrameworkElement::HorizontalAlignmentProperty ||
 		 args->GetId () == FrameworkElement::VerticalAlignmentProperty) {
+		InvalidateArrange ();
 		FullInvalidate (true);
 	}
 
@@ -575,9 +576,16 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	Size offer (child_rect.width, child_rect.height);
 	Size response;
-	
+	Size desired = GetDesiredSize ().GrowBy (-margin);
+
 	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	VerticalAlignment vert = GetVerticalAlignment ();
+
+	if (horiz != HorizontalAlignmentStretch) 
+		offer.width = MIN (offer.width, desired.width);
+
+	if (vert != VerticalAlignmentStretch)
+		offer.height = MIN (offer.height, desired.height);
 
 	offer = ApplySizeConstraints (offer);
 
@@ -669,30 +677,15 @@ FrameworkElement::ArrangeOverride (Size finalSize)
 		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 
-		Size desired = child->GetDesiredSize ();
 		Rect childRect (0,0,finalSize.width,finalSize.height);
-
-		if (GetHorizontalAlignment () != HorizontalAlignmentStretch && isnan (GetWidth ()))
-			childRect.width = MIN (desired.width, childRect.width);
-
-		if (GetVerticalAlignment () != VerticalAlignmentStretch && isnan (GetHeight ()))
-			childRect.height = MIN (desired.height, childRect.height);
 
 		child->Arrange (childRect);
 		arranged = child->GetRenderSize ();
-	
-		if (GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ()))
-			arranged.width = MAX (arranged.width, finalSize.width);
-		    
-		if (GetVerticalAlignment () == VerticalAlignmentStretch || !isnan (GetHeight()))
-			arranged.height = MAX (arranged.height, finalSize.height);
+
+		arranged = arranged.Max (finalSize);
 	}
 
-	if (GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ()))
-		arranged.width = MAX (arranged.width, finalSize.width);
-	
-	if (GetVerticalAlignment () == VerticalAlignmentStretch || !isnan (GetHeight()))
-		arranged.height = MAX (arranged.height, finalSize.height);
+	arranged = arranged.Max (finalSize);
 
 	return arranged;
 }
