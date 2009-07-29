@@ -10,6 +10,7 @@
 +SSC-M: System.Void Mono.Events::ReportException(System.Exception)
 +SSC-M: System.Void Mono.Events::RaiseRoutedEvent(System.Delegate,System.Object,System.Windows.RoutedEventArgs)
 +SSC-M: System.IntPtr Mono.Helper::StreamToIntPtr(System.IO.Stream)
++SSC-M: System.Boolean Mono.Helper::CheckFileIntegrity(System.String)
 +SSC-M: System.Void Mono.Hosting::SurfaceAttach(System.IntPtr,System.Windows.Controls.Canvas)
 +SSC-M: System.Void Mono.MoonError::.ctor(System.Exception)
 +SSC-M: System.String Mono.MoonError::get_Message()

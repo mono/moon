@@ -5,7 +5,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2007, 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -30,15 +30,18 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Windows;
-using System.IO;
+
+using Mono.Security.Cryptography;
 
 namespace Mono {
 
-	internal static class Helper {
+	internal static partial class Helper {
 		internal static System.Globalization.CultureInfo DefaultCulture = System.Globalization.CultureInfo.GetCultureInfo ("en-US");
 		
 		public static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
@@ -111,5 +114,80 @@ namespace Mono {
 
 			return buf;
 		}
+
+#if NET_2_1
+		// only for the plugin, not for the desktop
+
+		const int MoonWalker = 0x6e6f6f6d;
+		const int BlockSize = 4096;
+
+		static bool IsSigned (Stream stream)
+		{
+			byte [] marker = new byte [4];
+			stream.Seek (-132, SeekOrigin.End);
+			if (stream.Read (marker, 0, 4) != 4)
+				return false;
+			return (BitConverter.ToInt32 (marker, 0) == MoonWalker);
+		}
+
+		static byte [] HashStream (Stream stream, int length)
+		{
+			stream.Position = 0;
+			byte [] buffer = new byte [BlockSize];
+			using (SHA1Managed digest = new SHA1Managed ()) {
+				while (length > 0) {
+					int len = stream.Read (buffer, 0, System.Math.Min (length, BlockSize));
+					if (len == length)
+						digest.TransformFinalBlock (buffer, 0, len);
+					else
+						digest.TransformBlock (buffer, 0, len, null, 0);
+					length -= len;
+				}
+				return digest.Hash;
+			}
+		}
+
+		public static bool CheckFileIntegrity (string filename)
+		{
+			if (filename == null)
+				return false;
+
+			byte [] hash = null;
+#if false
+			RSA rsa = CryptoConvert.FromCapiKeyBlob (codec_public_key_blob);
+
+			byte [] signature = new byte [128];
+			using (FileStream fs = File.OpenRead (filename)) {
+				if (!IsSigned (fs))
+					return false;
+
+				hash = HashStream (fs, (int) fs.Length - 132);
+
+				fs.Seek (-128, SeekOrigin.End);
+				if (fs.Read (signature, 0, 128) != 128)
+					return false;
+			}
+
+			RSAPKCS1SignatureDeformatter def = new RSAPKCS1SignatureDeformatter (rsa);
+			def.SetHashAlgorithm ("SHA1");
+			return def.VerifySignature (hash, signature);
+#else
+			// current codecs downloaded from MS are not signed - but we know their SHA1 digest
+			using (FileStream fs = File.OpenRead (filename)) {
+				hash = HashStream (fs, (int) fs.Length);
+				switch (BitConverter.ToString (hash)) {
+				// x86
+				case "DD-AC-09-75-DD-94-59-55-B5-8A-B5-0B-18-61-9D-B7-D3-93-B1-17":
+					return true;
+				// x86-64
+				case "DE-02-54-46-D1-D7-8F-49-98-BD-AA-AD-36-80-19-37-56-F3-C5-3B":
+					return true;
+				default:
+					return false;
+				}
+			}
+#endif
+		}
+#endif
 	}
 }

@@ -45,6 +45,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/GeneratedPInvokes.cs					\
 	$(srcdir)/Mono/Helper.cs						\
+	$(srcdir)/Mono/Helper.PublicKey.cs					\
 	$(srcdir)/Mono/Hosting.cs						\
 	$(srcdir)/Mono/INativeDependencyObjectWrapper.cs			\
 	$(srcdir)/Mono/Kind.cs							\
