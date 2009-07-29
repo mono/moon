@@ -1,3 +1,8 @@
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* utils.cpp|h: Cancellable: use strong typing to store the downloader and
+	ref it. This way the cancel callback can use the downloader safely.
+
 2009-07-29  Alan McGovern  <amcgovern@novell.com>
 
 	* textbox.h:

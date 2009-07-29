@@ -18,6 +18,7 @@
 #include <cairo.h>
 #include <sys/types.h>
 
+#include "downloader.h"
 #include "zip/unzip.h"
 
 G_BEGIN_DECLS
@@ -143,12 +144,14 @@ typedef void (*CancelCallback) (gpointer user_data);
 class Cancellable {
  private:
 	CancelCallback cancel_cb;
-	gpointer user_data;
+	Downloader *downloader;
+	
  public:
 	Cancellable ();
+	~Cancellable ();
 
 	void Cancel ();
-	void SetCancelFuncAndData (CancelCallback cb, gpointer user_data);
+	void SetCancelFuncAndData (CancelCallback cb, Downloader *user_data);
 };
 
 #endif /* __UTILS_H__ */
