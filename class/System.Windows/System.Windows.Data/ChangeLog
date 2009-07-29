@@ -1,3 +1,9 @@
+2009-07-29  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: If a two way binding is attached
+	  to TextBox.Text we should not update the source while the
+	  textbox has focus.
+
 2009-06-30  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: OneTime bindings can be

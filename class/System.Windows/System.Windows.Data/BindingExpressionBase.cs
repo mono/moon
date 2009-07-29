@@ -49,10 +49,6 @@ namespace System.Windows.Data {
 		internal Binding Binding {
 			get; private set;
 		}
-		
-		UnmanagedEventHandler LostFocusHandler {
-			get; set;
-		}
 
 		FrameworkElement Target {
 			get; set;
@@ -64,6 +60,10 @@ namespace System.Windows.Data {
 		
 		DependencyProperty Property {
 			get; set;
+		}
+		
+		bool TwoWayTextBoxText {
+			get { return Target is TextBox && Property == TextBox.TextProperty && Binding.Mode == BindingMode.TwoWay; }
 		}
 
 		// This is the object we're databound to
@@ -111,18 +111,14 @@ namespace System.Windows.Data {
 			Target = target;
 			Property = property;
 
-			if (target is TextBox && Property == TextBox.TextProperty && binding.Mode == BindingMode.TwoWay) {
-				LostFocusHandler = TextBoxLostFocus;
-				Events.AddHandler (target, "LostFocus", LostFocusHandler);
-			}
+			if (TwoWayTextBoxText)
+				((TextBox) target).LostFocus += TextBoxLostFocus;
 		}
 
 		internal override void Dispose ()
 		{
-			if (LostFocusHandler != null) {
-				Events.RemoveHandler (Target, "LostFocus", LostFocusHandler);
-				LostFocusHandler = null;
-			}
+			if (TwoWayTextBoxText)
+				((TextBox) Target).LostFocus -= TextBoxLostFocus;
 
 			if (cachedSource != null)
 				cachedSource.PropertyChanged -= PropertyChanged;
@@ -208,6 +204,9 @@ namespace System.Windows.Data {
 		internal void SetValue (object value)
 		{
 			try {
+				// TextBox.Text only updates a two way binding if it is *not* focused.
+				if (TwoWayTextBoxText && System.Windows.Input.FocusManager.GetFocusedElement () == Target)
+					return;
 				
 				if (updatingSource || PropertyInfo == null)
 					return;
@@ -270,10 +269,9 @@ namespace System.Windows.Data {
 			return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType ());
 		}
 
-		void TextBoxLostFocus (IntPtr sender, IntPtr calldata, IntPtr closure)
+		void TextBoxLostFocus (object sender, RoutedEventArgs e)
 		{
-			string text = ((TextBox)Target).Text;
-			SetValue (text);
+			SetValue (((TextBox) sender).Text);
 		}
 	}
 }
