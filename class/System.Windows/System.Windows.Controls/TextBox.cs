@@ -62,6 +62,14 @@ namespace System.Windows.Controls {
 			Loaded += delegate { ChangeVisualState (); };
 		}
 		
+		internal override void InvokeKeyDown (System.Windows.Input.KeyEventArgs k)
+		{
+			base.InvokeKeyDown (k);
+			if (!k.Handled)
+				Mono.NativeMethods.text_box_base_on_character_key_down (native, k.native);
+		}
+
+		
 		protected override void OnKeyDown (KeyEventArgs k)
 		{
 			base.OnKeyDown (k);
@@ -75,16 +83,6 @@ namespace System.Windows.Controls {
 			if (!k.Handled)
 				Mono.NativeMethods.text_box_base_on_key_up (native, k.native);
 		}
-
-		internal override void RaiseKeyDown (KeyEventArgs k)
-		{
-			// Processing of the 'Enter/Return' key and character keys (a, b, c etc) happen
-			// after the managed event is raised.
-			base.RaiseKeyDown (k);
-			if (!k.Handled)
-				Mono.NativeMethods.text_box_base_on_character_key_down (native, k.native);
-		}
-
 
 		protected override void OnMouseEnter (MouseEventArgs e)
 		{

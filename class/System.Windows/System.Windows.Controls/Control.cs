@@ -146,16 +146,12 @@ namespace System.Windows.Controls {
 				throw new ArgumentNullException ("e");
 		}
 
-		internal override void InvokeKeyDown (KeyEventArgs e)
+		internal override void InvokeKeyDown (KeyEventArgs k)
 		{
-			base.InvokeKeyDown (e);
-			if (!e.Handled)
-				OnKeyDown (e);
-		}
-		
-		internal override void RaiseKeyDown (System.Windows.Input.KeyEventArgs k)
-		{
-			base.RaiseKeyDown (k);
+			if (!k.Handled)
+				OnKeyDown (k);
+			if (!k.Handled)
+				base.InvokeKeyDown (k);
 			if (!k.Handled && k.Key == Key.Tab) {
 				// If the tab key is not handled by Control.OnKeyDown or by an eventhandler attached to the KeyDown event,
 				// we handle it and tab to the next control here.
@@ -163,7 +159,6 @@ namespace System.Windows.Controls {
 				Mono.NativeMethods.tab_navigation_walker_focus (native, (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.None);
 			}
 		}
-
 
 		// called before the event
 		protected virtual void OnKeyDown (KeyEventArgs e)

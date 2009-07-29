@@ -162,7 +162,6 @@ namespace Mono {
 			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
 			KeyEventArgs k = new KeyEventArgs (calldata);
 			e.InvokeKeyDown (k);
-			e.RaiseKeyDown (k);
 		}
 
 		static void mouse_motion_notify_callback (IntPtr target, IntPtr calldata, IntPtr closure)

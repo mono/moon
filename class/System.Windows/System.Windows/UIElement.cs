@@ -334,14 +334,6 @@ namespace System.Windows {
 #endif
 		internal virtual void InvokeKeyDown (KeyEventArgs k)
 		{
-			
-		}
-		
-		internal virtual void RaiseKeyDown (KeyEventArgs k)
-		{
-			if (k.Handled)
-				return;
-
 			KeyEventHandler h = (KeyEventHandler) EventList [KeyDownEvent];
 			if (h != null)
 				h (this, k);

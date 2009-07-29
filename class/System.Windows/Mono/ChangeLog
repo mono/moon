@@ -1,5 +1,10 @@
 2009-07-29  Alan McGovern  <amcgovern@novell.com>
 
+	* Events.cs: An extra RaiseKeyDown method is unnecessary -
+	  remove it and use InvokeKeyDown properly.
+
+2009-07-29  Alan McGovern  <amcgovern@novell.com>
+
 	* Events.cs:
 	* GeneratedPInvokes.cs: 1) TextBox cannot hook into Key press
 	  events in unmanaged code otherwise they never propagate to
