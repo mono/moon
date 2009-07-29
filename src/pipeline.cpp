@@ -3905,7 +3905,7 @@ bool
 NullDecoderInfo::Supports (const char *codec)
 {
 	const char *video_fourccs [] = { "wmv1", "wmv2", "wmv3", "wmva", "vc1", NULL };
-	const char *audio_fourccs [] = { "wmav1","wmav2", "mp3", NULL};
+	const char *audio_fourccs [] = { "wmav1","wmav2", "wmav3", "mp3", NULL};
 	
 	for (int i = 0; video_fourccs [i] != NULL; i++)
 		if (!strcmp (codec, video_fourccs [i]))
