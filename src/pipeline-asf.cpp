@@ -404,6 +404,10 @@ ASFDemuxer::Open ()
 	}
 	
 	SetStreams (streams, stream_count);
+	
+	for (int i = 0; i < stream_count; i++)
+		streams [i]->unref ();
+	
 	this->stream_to_asf_index = stream_to_asf_index;
 	this->parser = asf_parser;
 	
