@@ -156,7 +156,7 @@ namespace System.Windows.Controls {
 				// If the tab key is not handled by Control.OnKeyDown or by an eventhandler attached to the KeyDown event,
 				// we handle it and tab to the next control here.
 				k.Handled = true;
-				Mono.NativeMethods.tab_navigation_walker_focus (native, (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.None);
+				NativeMethods.tab_navigation_walker_focus (native, (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.None);
 			}
 		}
 

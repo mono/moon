@@ -51,6 +51,7 @@ namespace System.Windows.Controls {
 		bool IsFocused {
 			get; set;
 		}
+		
 		bool IsMouseOver {
 			get; set;
 		}
@@ -62,28 +63,27 @@ namespace System.Windows.Controls {
 			Loaded += delegate { ChangeVisualState (); };
 		}
 		
-		internal override void InvokeKeyDown (System.Windows.Input.KeyEventArgs k)
+		internal override void InvokeKeyDown (KeyEventArgs k)
 		{
 			base.InvokeKeyDown (k);
 			if (!k.Handled)
-				Mono.NativeMethods.text_box_base_on_character_key_down (native, k.native);
+				NativeMethods.text_box_base_on_character_key_down (native, k.native);
 		}
-
 		
 		protected override void OnKeyDown (KeyEventArgs k)
 		{
 			base.OnKeyDown (k);
 			if (!k.Handled)
-				Mono.NativeMethods.text_box_base_on_key_down (native, k.native);
+				NativeMethods.text_box_base_on_key_down (native, k.native);
 		}
-
+		
 		protected override void OnKeyUp (KeyEventArgs k)
 		{
 			base.OnKeyUp (k);
 			if (!k.Handled)
-				Mono.NativeMethods.text_box_base_on_key_up (native, k.native);
+				NativeMethods.text_box_base_on_key_up (native, k.native);
 		}
-
+		
 		protected override void OnMouseEnter (MouseEventArgs e)
 		{
 			IsMouseOver = true;
@@ -91,7 +91,7 @@ namespace System.Windows.Controls {
 			ChangeVisualState ();
 		}
 		
-		protected override void OnMouseLeave (System.Windows.Input.MouseEventArgs e)
+		protected override void OnMouseLeave (MouseEventArgs e)
 		{
 			IsMouseOver = false;
 			base.OnMouseLeave (e);
