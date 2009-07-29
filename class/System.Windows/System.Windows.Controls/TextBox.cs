@@ -27,6 +27,7 @@
 using Mono;
 using System.Windows;
 using System.Windows.Automation.Peers;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Documents;
 using System.Collections.Generic;
@@ -61,7 +62,31 @@ namespace System.Windows.Controls {
 			Loaded += delegate { ChangeVisualState (); };
 		}
 		
-		protected override void OnMouseEnter (System.Windows.Input.MouseEventArgs e)
+		protected override void OnKeyDown (KeyEventArgs k)
+		{
+			base.OnKeyDown (k);
+			if (!k.Handled)
+				Mono.NativeMethods.text_box_base_on_key_down (native, k.native);
+		}
+
+		protected override void OnKeyUp (KeyEventArgs k)
+		{
+			base.OnKeyUp (k);
+			if (!k.Handled)
+				Mono.NativeMethods.text_box_base_on_key_up (native, k.native);
+		}
+
+		internal override void RaiseKeyDown (KeyEventArgs k)
+		{
+			// Processing of the 'Enter/Return' key and character keys (a, b, c etc) happen
+			// after the managed event is raised.
+			base.RaiseKeyDown (k);
+			if (!k.Handled)
+				Mono.NativeMethods.text_box_base_on_character_key_down (native, k.native);
+		}
+
+
+		protected override void OnMouseEnter (MouseEventArgs e)
 		{
 			IsMouseOver = true;
 			base.OnMouseEnter (e);

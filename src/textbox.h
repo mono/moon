@@ -181,8 +181,6 @@ class TextBoxBase : public Control, public ITextAttributes {
 	// keypress events
 	static void key_down (EventObject *sender, EventArgs *args, void *closure);
 	static void key_up (EventObject *sender, EventArgs *args, void *closure);
-	void OnKeyDown (KeyEventArgs *args);
-	void OnKeyUp (KeyEventArgs *args);
 	
 	static void paste (GtkClipboard *clipboard, const char *text, gpointer closure);
 	void Paste (GtkClipboard *clipboard, const char *text);
@@ -201,18 +199,18 @@ class TextBoxBase : public Control, public ITextAttributes {
 	//
 	// Keyboard Input
 	//
-	void KeyPressUnichar (gunichar c);
+	bool KeyPressUnichar (gunichar c);
 	
-	void KeyPressBackSpace (GdkModifierType modifiers);
-	void KeyPressDelete (GdkModifierType modifiers);
-	void KeyPressPageDown (GdkModifierType modifiers);
-	void KeyPressPageUp (GdkModifierType modifiers);
-	void KeyPressHome (GdkModifierType modifiers);
-	void KeyPressEnd (GdkModifierType modifiers);
-	void KeyPressRight (GdkModifierType modifiers);
-	void KeyPressLeft (GdkModifierType modifiers);
-	void KeyPressDown (GdkModifierType modifiers);
-	void KeyPressUp (GdkModifierType modifiers);
+	bool KeyPressBackSpace (GdkModifierType modifiers);
+	bool KeyPressDelete (GdkModifierType modifiers);
+	bool KeyPressPageDown (GdkModifierType modifiers);
+	bool KeyPressPageUp (GdkModifierType modifiers);
+	bool KeyPressHome (GdkModifierType modifiers);
+	bool KeyPressEnd (GdkModifierType modifiers);
+	bool KeyPressRight (GdkModifierType modifiers);
+	bool KeyPressLeft (GdkModifierType modifiers);
+	bool KeyPressDown (GdkModifierType modifiers);
+	bool KeyPressUp (GdkModifierType modifiers);
 	
 	void ResetIMContext ();
 	
@@ -306,6 +304,13 @@ class TextBoxBase : public Control, public ITextAttributes {
 		else
 			return GetForeground ();
 	}
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnKeyDown (KeyEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnCharacterKeyDown (KeyEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnKeyUp (KeyEventArgs *args);
 	
 	//
 	// Undo/Redo Operations

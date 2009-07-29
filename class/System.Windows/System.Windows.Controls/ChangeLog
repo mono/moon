@@ -1,3 +1,25 @@
+2009-07-29  Alan McGovern  <amcgovern@novell.com>
+
+	* TextBox.cs:
+	* Control.cs: 1) TextBox cannot hook into Key press events in
+	  unmanaged code otherwise they never propagate to managed and
+	  the user cannot intercept them. Instead of hooking to the
+	  event in native code, just call native TextBox::OnKeyDown in
+	  the managed override.
+	2) Key press events are actually handled in two different
+	  places. 'Navigation' keypresses like Left/Right/PgUp are
+	  handled when the textbox OnKeyDown virtual method is
+	  invoked. 'Character' keypresses like 'a', 'b', 'c' are
+	  handled after the KeyDown event is emitted
+	3) If a key press does not affect the textbox state (i.e.
+	  pressing 'left' when the caret is already at the very left),
+	  then the keypress is not handled.
+	4) The KeyDown event is emitted even if OnKeyDown is overriden
+	  and the base method is not invoked.
+	5) The tab key should be interpreted as 'Focus next control'
+	  only after the KeyDown event handlers have run and the key
+	  press is not handled.
+
 2009-07-28  Larry Ewing  <lewing@novell.com>
 
 	* StackPanel.cs: remove uneeded alignment logic.

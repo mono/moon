@@ -1933,6 +1933,18 @@ namespace Mono {
 		public extern static IntPtr text_box_new ();
 
 		[DllImport ("moon")]
+		// void text_box_base_on_character_key_down (TextBoxBase *instance, KeyEventArgs *args);
+		public extern static void text_box_base_on_character_key_down (IntPtr instance, IntPtr args);
+
+		[DllImport ("moon")]
+		// void text_box_base_on_key_down (TextBoxBase *instance, KeyEventArgs *args);
+		public extern static void text_box_base_on_key_down (IntPtr instance, IntPtr args);
+
+		[DllImport ("moon")]
+		// void text_box_base_on_key_up (TextBoxBase *instance, KeyEventArgs *args);
+		public extern static void text_box_base_on_key_up (IntPtr instance, IntPtr args);
+
+		[DllImport ("moon")]
 		// void text_box_base_select_all (TextBoxBase *instance);
 		public extern static void text_box_base_select_all (IntPtr instance);
 

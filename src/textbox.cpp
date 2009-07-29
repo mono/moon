@@ -571,8 +571,6 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	AddHandler (UIElement::MouseMoveEvent, TextBoxBase::mouse_move, this);
 	AddHandler (UIElement::LostFocusEvent, TextBoxBase::focus_out, this);
 	AddHandler (UIElement::GotFocusEvent, TextBoxBase::focus_in, this);
-	AddHandler (UIElement::KeyDownEvent, TextBoxBase::key_down, this);
-	AddHandler (UIElement::KeyUpEvent, TextBoxBase::key_up, this);
 	
 	font = new TextFontDescription ();
 	font->SetFamily (GetFontFamily ()->source);
@@ -624,8 +622,6 @@ TextBoxBase::~TextBoxBase ()
 	RemoveHandler (UIElement::MouseMoveEvent, TextBoxBase::mouse_move, this);
 	RemoveHandler (UIElement::LostFocusEvent, TextBoxBase::focus_out, this);
 	RemoveHandler (UIElement::GotFocusEvent, TextBoxBase::focus_in, this);
-	RemoveHandler (UIElement::KeyDownEvent, TextBoxBase::key_down, this);
-	RemoveHandler (UIElement::KeyUpEvent, TextBoxBase::key_up, this);
 	
 	ResetIMContext ();
 	g_object_unref (im_ctx);
@@ -917,16 +913,17 @@ TextBoxBase::CursorLineEnd (int cursor, bool include)
 	return cur;
 }
 
-void
+bool
 TextBoxBase::KeyPressBackSpace (GdkModifierType modifiers)
 {
+	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	TextBoxUndoAction *action;
 	int start = 0, length = 0;
 	
 	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
-		return;
+		return handled;
 	
 	if (cursor != anchor) {
 		// BackSpace w/ active selection: delete the selected text
@@ -956,6 +953,7 @@ TextBoxBase::KeyPressBackSpace (GdkModifierType modifiers)
 		emit |= TEXT_CHANGED;
 		anchor = start;
 		cursor = start;
+		handled = true;
 	}
 	
 	// check to see if selection has changed
@@ -965,19 +963,22 @@ TextBoxBase::KeyPressBackSpace (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		handled = true;
 	}
+	return handled;
 }
 
-void
+bool
 TextBoxBase::KeyPressDelete (GdkModifierType modifiers)
 {
+	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	TextBoxUndoAction *action;
 	int start = 0, length = 0;
 	
 	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
-		return;
+		return false;
 	
 	if (cursor != anchor) {
 		// Delete w/ active selection: delete the selected text
@@ -1004,6 +1005,7 @@ TextBoxBase::KeyPressDelete (GdkModifierType modifiers)
 		
 		buffer->Cut (start, length);
 		emit |= TEXT_CHANGED;
+		handled = true;
 	}
 	
 	// check to see if selection has changed
@@ -1013,18 +1015,21 @@ TextBoxBase::KeyPressDelete (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		handled = true;
 	}
+	return handled;
 }
 
-void
+bool
 TextBoxBase::KeyPressPageDown (GdkModifierType modifiers)
 {
+	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
-		return;
+		return false;
 	
 	// move the cursor down one page from its current position
 	cursor = CursorDown (cursor, true);
@@ -1043,18 +1048,21 @@ TextBoxBase::KeyPressPageDown (GdkModifierType modifiers)
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = have;
+		handled = true;
 	}
+	return handled;
 }
 
-void
+bool
 TextBoxBase::KeyPressPageUp (GdkModifierType modifiers)
 {
+	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
-		return;
+		return false;
 	
 	// move the cursor up one page from its current position
 	cursor = CursorUp (cursor, true);
@@ -1073,18 +1081,21 @@ TextBoxBase::KeyPressPageUp (GdkModifierType modifiers)
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = have;
+		handled = true;
 	}
+	return handled;
 }
 
-void
+bool
 TextBoxBase::KeyPressDown (GdkModifierType modifiers)
 {
+	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	bool have;
 	
-	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
-		return;
+	if (!accepts_return || (modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
+		return false;
 	
 	// move the cursor down by one line from its current position
 	cursor = CursorDown (cursor, false);
@@ -1103,18 +1114,21 @@ TextBoxBase::KeyPressDown (GdkModifierType modifiers)
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = have;
+		handled = true;
 	}
+	return handled;
 }
 
-void
+bool
 TextBoxBase::KeyPressUp (GdkModifierType modifiers)
 {
+	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	bool have;
 	
-	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
-		return;
+	if (!accepts_return || (modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
+		return false;
 	
 	// move the cursor up by one line from its current position
 	cursor = CursorUp (cursor, false);
@@ -1133,17 +1147,20 @@ TextBoxBase::KeyPressUp (GdkModifierType modifiers)
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = have;
+		handled = true;
 	}
+	return handled;
 }
 
-void
+bool
 TextBoxBase::KeyPressHome (GdkModifierType modifiers)
 {
+	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	
 	if ((modifiers & ALT_MASK) != 0)
-		return;
+		return false;
 	
 	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to the beginning of the buffer
@@ -1166,17 +1183,20 @@ TextBoxBase::KeyPressHome (GdkModifierType modifiers)
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = false;
+		handled = true;
 	}
+	return handled;
 }
 
-void
+bool
 TextBoxBase::KeyPressEnd (GdkModifierType modifiers)
 {
+	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	
 	if ((modifiers & ALT_MASK) != 0)
-		return;
+		return false;
 	
 	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to the end of the buffer
@@ -1198,17 +1218,20 @@ TextBoxBase::KeyPressEnd (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		handled = true;
 	}
+	return handled;
 }
 
-void
+bool
 TextBoxBase::KeyPressRight (GdkModifierType modifiers)
 {
+	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	
 	if ((modifiers & ALT_MASK) != 0)
-		return;
+		return false;
 	
 	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to beginning of the next word
@@ -1236,17 +1259,20 @@ TextBoxBase::KeyPressRight (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		handled = true;
 	}
+	return handled;
 }
 
-void
+bool
 TextBoxBase::KeyPressLeft (GdkModifierType modifiers)
 {
+	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	
 	if ((modifiers & ALT_MASK) != 0)
-		return;
+		return false;
 	
 	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to the beginning of the previous word
@@ -1274,10 +1300,12 @@ TextBoxBase::KeyPressLeft (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		handled = true;
 	}
+	return handled;
 }
 
-void
+bool
 TextBoxBase::KeyPressUnichar (gunichar c)
 {
 	int length = abs (selection_cursor - selection_anchor);
@@ -1287,7 +1315,7 @@ TextBoxBase::KeyPressUnichar (gunichar c)
 	TextBoxUndoAction *action;
 	
 	if ((max_length > 0 && buffer->len >= max_length) || ((c == '\r') && !accepts_return))
-		return;
+		return false;
 	
 	if (length > 0) {
 		// replace the currently selected text
@@ -1329,6 +1357,7 @@ TextBoxBase::KeyPressUnichar (gunichar c)
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
+	return true;
 }
 
 void
@@ -1476,9 +1505,175 @@ TextBoxBase::paste (GtkClipboard *clipboard, const char *text, gpointer closure)
 void
 TextBoxBase::OnKeyDown (KeyEventArgs *args)
 {
+	bool handled = false;
 	GdkModifierType modifiers = (GdkModifierType) args->GetModifiers ();
 	guint key = args->GetKeyVal ();
 	GtkClipboard *clipboard;
+	gunichar c;
+	
+	ResetIMContext ();
+	
+	if (args->IsModifier ())
+		return;
+	
+	// set 'emit' to NOTHING_CHANGED so that we can figure out
+	// what has chanegd after applying the changes that this
+	// keypress will cause.
+	emit = NOTHING_CHANGED;
+	BatchPush ();
+	
+	switch (key) {
+	case GDK_BackSpace:
+		if (!is_read_only) {
+			handled = KeyPressBackSpace (modifiers);
+		}
+		break;
+	case GDK_Delete:
+		if (is_read_only)
+			break;
+
+		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
+			// Shift+Delete => Cut
+			if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				if (selection_cursor != selection_anchor) {
+					// copy selection to the clipboard and then cut
+					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+					SetSelectedText ("");
+					handled = true;
+				}
+			}
+		} else {
+			handled = KeyPressDelete (modifiers);
+		}
+		break;
+	case GDK_Insert:
+		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
+			// Shift+Insert => Paste
+			if (!is_read_only && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				// paste clipboard contents to the buffer
+				gtk_clipboard_request_text (clipboard, TextBoxBase::paste, this);
+				handled = true;
+			}
+		} else if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
+			// Control+Insert => Copy
+			if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				if (selection_cursor != selection_anchor) {
+					// copy selection to the clipboard
+					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+				}
+				handled = true;
+			}
+		}
+		break;
+	case GDK_KP_Page_Down:
+	case GDK_Page_Down:
+		handled = KeyPressPageDown (modifiers);
+		break;
+	case GDK_KP_Page_Up:
+	case GDK_Page_Up:
+		handled = KeyPressPageUp (modifiers);
+		break;
+	case GDK_KP_Home:
+	case GDK_Home:
+		handled = KeyPressHome (modifiers);
+		break;
+	case GDK_KP_End:
+	case GDK_End:
+		handled = KeyPressEnd (modifiers);
+		break;
+	case GDK_KP_Right:
+	case GDK_Right:
+		handled = KeyPressRight (modifiers);
+		break;
+	case GDK_KP_Left:
+	case GDK_Left:
+		handled = KeyPressLeft (modifiers);
+		break;
+	case GDK_KP_Down:
+	case GDK_Down:
+		handled = KeyPressDown (modifiers);
+		break;
+	case GDK_KP_Up:
+	case GDK_Up:
+		handled = KeyPressUp (modifiers);
+		break;
+	default:
+		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
+			switch (key) {
+			case GDK_A:
+			case GDK_a:
+				// Ctrl+A => Select All
+				handled = true;
+				SelectAll ();
+				break;
+			case GDK_C:
+			case GDK_c:
+				// Ctrl+C => Copy
+				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+					if (selection_cursor != selection_anchor) {
+						// copy selection to the clipboard
+						gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+						handled = true;
+					}
+				}
+				break;
+			case GDK_X:
+			case GDK_x:
+				// Ctrl+X => Cut
+				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+					if (selection_cursor != selection_anchor && !is_read_only) {
+						// copy selection to the clipboard and then cut
+						gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+						SetSelectedText ("");
+						handled = true;
+					}
+				}
+				break;
+			case GDK_V:
+			case GDK_v:
+				// Ctrl+V => Paste
+				if (!is_read_only && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+					// paste clipboard contents to the buffer
+					gtk_clipboard_request_text (clipboard, TextBoxBase::paste, this);
+					handled = true;
+				}
+				break;
+			case GDK_Y:
+			case GDK_y:
+				// Ctrl+Y => Redo
+				if (!is_read_only) {
+					handled = true;
+					Redo ();
+				}
+				break;
+			case GDK_Z:
+			case GDK_z:
+				// Ctrl+Z => Undo
+				if (!is_read_only) {
+					handled = true;
+					Undo ();
+				}
+				break;
+			default:
+				// unhandled Control commands
+				break;
+			}
+		}
+		break;
+	}
+	
+	if (handled)
+		args->SetHandled (handled);
+	BatchPop ();
+	
+	SyncAndEmit ();
+}
+
+void
+TextBoxBase::OnCharacterKeyDown (KeyEventArgs *args)
+{
+	bool handled = false;
+	guint key = args->GetKeyVal ();
 	gunichar c;
 	
 	if (!is_read_only && gtk_im_context_filter_keypress (im_ctx, args->GetEvent ())) {
@@ -1501,165 +1696,24 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 	switch (key) {
 	case GDK_Return:
 		if (!is_read_only) {
-			args->SetHandled (true);
-			KeyPressUnichar ('\r');
+			// FIXME: should be handled in the characterpress handler
+			handled = KeyPressUnichar ('\r');
 		}
-		break;
-	case GDK_BackSpace:
-		if (!is_read_only) {
-			KeyPressBackSpace (modifiers);
-			args->SetHandled (true);
-		}
-		break;
-	case GDK_Delete:
-		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
-			// Shift+Delete => Cut
-			if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
-				if (selection_cursor != selection_anchor && !is_read_only) {
-					// copy selection to the clipboard and then cut
-					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
-					SetSelectedText ("");
-				}
-				args->SetHandled (true);
-			}
-		} else {
-			if (!is_read_only) {
-				KeyPressDelete (modifiers);
-				args->SetHandled (true);
-			}
-		}
-		break;
-	case GDK_Insert:
-		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
-			// Shift+Insert => Paste
-			if (!is_read_only && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
-				// paste clipboard contents to the buffer
-				gtk_clipboard_request_text (clipboard, TextBoxBase::paste, this);
-				args->SetHandled (true);
-			}
-		} else if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
-			// Control+Insert => Copy
-			if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
-				if (selection_cursor != selection_anchor) {
-					// copy selection to the clipboard
-					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
-				}
-				args->SetHandled (true);
-			}
-		}
-		break;
-	case GDK_KP_Page_Down:
-	case GDK_Page_Down:
-		KeyPressPageDown (modifiers);
-		break;
-	case GDK_KP_Page_Up:
-	case GDK_Page_Up:
-		KeyPressPageUp (modifiers);
-		break;
-	case GDK_KP_Home:
-	case GDK_Home:
-		KeyPressHome (modifiers);
-		break;
-	case GDK_KP_End:
-	case GDK_End:
-		KeyPressEnd (modifiers);
-		break;
-	case GDK_KP_Right:
-	case GDK_Right:
-		KeyPressRight (modifiers);
-		break;
-	case GDK_KP_Left:
-	case GDK_Left:
-		KeyPressLeft (modifiers);
-		break;
-	case GDK_KP_Down:
-	case GDK_Down:
-		KeyPressDown (modifiers);
-		break;
-	case GDK_KP_Up:
-	case GDK_Up:
-		KeyPressUp (modifiers);
 		break;
 	default:
-		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
-			switch (key) {
-			case GDK_A:
-			case GDK_a:
-				// Ctrl+A => Select All
-				args->SetHandled (true);
-				SelectAll ();
-				break;
-			case GDK_C:
-			case GDK_c:
-				// Ctrl+C => Copy
-				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
-					if (selection_cursor != selection_anchor) {
-						// copy selection to the clipboard
-						gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
-					}
-					args->SetHandled (true);
-				}
-				break;
-			case GDK_X:
-			case GDK_x:
-				// Ctrl+X => Cut
-				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
-					if (selection_cursor != selection_anchor && !is_read_only) {
-						// copy selection to the clipboard and then cut
-						gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
-						SetSelectedText ("");
-					}
-					args->SetHandled (true);
-				}
-				break;
-			case GDK_V:
-			case GDK_v:
-				// Ctrl+V => Paste
-				if (!is_read_only && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
-					// paste clipboard contents to the buffer
-					gtk_clipboard_request_text (clipboard, TextBoxBase::paste, this);
-					args->SetHandled (true);
-				}
-				break;
-			case GDK_Y:
-			case GDK_y:
-				// Ctrl+Y => Redo
-				if (!is_read_only) {
-					args->SetHandled (true);
-					Redo ();
-				}
-				break;
-			case GDK_Z:
-			case GDK_z:
-				// Ctrl+Z => Undo
-				if (!is_read_only) {
-					args->SetHandled (true);
-					Undo ();
-				}
-				break;
-			default:
-				// unhandled Control commands
-				break;
-			}
-		} else if ((modifiers & (CONTROL_MASK | ALT_MASK)) == 0) {
+		if ((args->GetModifiers () & (CONTROL_MASK | ALT_MASK)) == 0) {
 			// normal character input
 			if ((c = args->GetUnicode ()) && !is_read_only) {
-				args->SetHandled (true);
-				KeyPressUnichar (c);
+				handled = KeyPressUnichar (c);
 			}
 		}
 		break;
 	}
-	
+	if (handled)
+		args->SetHandled (handled);
 	BatchPop ();
 	
 	SyncAndEmit ();
-}
-
-void
-TextBoxBase::key_down (EventObject *sender, EventArgs *args, void *closure)
-{
-	((TextBoxBase *) closure)->OnKeyDown ((KeyEventArgs *) args);
 }
 
 void
@@ -1671,12 +1725,6 @@ TextBoxBase::OnKeyUp (KeyEventArgs *args)
 		
 		args->SetHandled (true);
 	}
-}
-
-void
-TextBoxBase::key_up (EventObject *sender, EventArgs *args, void *closure)
-{
-	((TextBoxBase *) closure)->OnKeyUp ((KeyEventArgs *) args);
 }
 
 bool

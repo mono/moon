@@ -4609,6 +4609,36 @@ text_box_new (void)
  * TextBoxBase
  **/
 void
+text_box_base_on_character_key_down (TextBoxBase *instance, KeyEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnCharacterKeyDown (args);
+}
+
+
+void
+text_box_base_on_key_down (TextBoxBase *instance, KeyEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnKeyDown (args);
+}
+
+
+void
+text_box_base_on_key_up (TextBoxBase *instance, KeyEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnKeyUp (args);
+}
+
+
+void
 text_box_base_select_all (TextBoxBase *instance)
 {
 	if (instance == NULL)
