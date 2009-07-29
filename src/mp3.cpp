@@ -918,6 +918,7 @@ Mp3Demuxer::ReadHeader ()
 	stream_count = 1;
 	
 	SetStreams (streams, stream_count);
+	stream->unref ();
 	
 	return MEDIA_SUCCESS;
 }
