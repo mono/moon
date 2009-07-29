@@ -433,8 +433,6 @@ Surface::AutoFocus ()
 	if (!focused_element || focused_element == GetToplevel ())
 		TabNavigationWalker::Focus (GetToplevel (), true);
 
-	GenerateFocusChangeEvents ();
-
 	// If the focused element was removed by a GotFocus event handler or if
 	// we failed to focus a child of the top level element, try again next
 	// tick.
@@ -712,7 +710,6 @@ Surface::SetFullScreen (bool value)
 void
 Surface::SetUserInitiatedEvent (bool value)
 {
-	GenerateFocusChangeEvents ();
 	first_user_initiated_event = first_user_initiated_event | value;
 	user_initiated_event = value;
 }
@@ -1421,8 +1418,6 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 				if (el->Focus (false))
 					break;
 			}
-			// Raise any events caused by the focus changing this tick
-			GenerateFocusChangeEvents ();
 		}
 		
 		
@@ -1885,12 +1880,21 @@ Surface::GenerateFocusChangeEvents()
 	}
 }
 
+void
+Surface::GenerateFocusChangeEventsTickCall (EventObject *sender)
+{
+	((Surface *) sender)->GenerateFocusChangeEvents ();
+}
+
 bool
 Surface::FocusElement (UIElement *focused)
 {
 	bool queue_emit = FirstUserInitiatedEvent () && (focused == NULL || focused_element == NULL || focused_element == GetToplevel ());
 	if (focused == focused_element)
 		return true;
+
+	if (FirstUserInitiatedEvent () && focus_changed_events->IsEmpty ())
+		AddTickCall (GenerateFocusChangeEventsTickCall);
 
 	focus_changed_events->Push (new FocusChangedNode (focused_element, focused));
 	focused_element = focused;
