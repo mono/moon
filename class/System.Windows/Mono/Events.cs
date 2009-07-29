@@ -247,5 +247,17 @@ namespace Mono {
 
 			NativeMethods.plugin_instance_report_exception (System.Windows.Interop.PluginHost.Handle, msg, details, stack_trace, stack_trace.Length);
 		}
+		
+		internal static void RaiseRoutedEvent (Delegate d, object sender, RoutedEventArgs e)
+		{
+			if (d == null || NativeMethods.routed_event_args_get_handled (e.native))
+				return;
+
+			foreach (Delegate handler in d.GetInvocationList ()) {
+				handler.DynamicInvoke (sender, e);
+				if (NativeMethods.routed_event_args_get_handled (e.native))
+					return;
+			}
+		}
 	}
 }
