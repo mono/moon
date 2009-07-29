@@ -219,6 +219,7 @@ downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 	NotifyCtx *ctx = (NotifyCtx *) closure;
 	ctx->notify_cb (NotifyCompleted, NULL, ctx->user_data);
 	g_free (ctx);
+	((Downloader *) sender)->unref_delayed ();
 }
 
 void
@@ -227,6 +228,7 @@ downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 	NotifyCtx *ctx = (NotifyCtx *) closure;
 	ctx->notify_cb (NotifyFailed, NULL, ctx->user_data);
 	g_free (ctx);
+	((Downloader *) sender)->unref_delayed ();
 }
 
 //compatibility function, act like the old get_resource_cb
