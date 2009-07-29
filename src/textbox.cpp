@@ -916,14 +916,14 @@ TextBoxBase::CursorLineEnd (int cursor, bool include)
 bool
 TextBoxBase::KeyPressBackSpace (GdkModifierType modifiers)
 {
-	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	TextBoxUndoAction *action;
 	int start = 0, length = 0;
+	bool handled = false;
 	
 	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
-		return handled;
+		return false;
 	
 	if (cursor != anchor) {
 		// BackSpace w/ active selection: delete the selected text
@@ -965,17 +965,18 @@ TextBoxBase::KeyPressBackSpace (GdkModifierType modifiers)
 		emit |= SELECTION_CHANGED;
 		handled = true;
 	}
+	
 	return handled;
 }
 
 bool
 TextBoxBase::KeyPressDelete (GdkModifierType modifiers)
 {
-	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	TextBoxUndoAction *action;
 	int start = 0, length = 0;
+	bool handled = false;
 	
 	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
 		return false;
@@ -1017,15 +1018,16 @@ TextBoxBase::KeyPressDelete (GdkModifierType modifiers)
 		emit |= SELECTION_CHANGED;
 		handled = true;
 	}
+	
 	return handled;
 }
 
 bool
 TextBoxBase::KeyPressPageDown (GdkModifierType modifiers)
 {
-	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
@@ -1050,15 +1052,16 @@ TextBoxBase::KeyPressPageDown (GdkModifierType modifiers)
 		have_offset = have;
 		handled = true;
 	}
+	
 	return handled;
 }
 
 bool
 TextBoxBase::KeyPressPageUp (GdkModifierType modifiers)
 {
-	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
@@ -1083,15 +1086,16 @@ TextBoxBase::KeyPressPageUp (GdkModifierType modifiers)
 		have_offset = have;
 		handled = true;
 	}
+	
 	return handled;
 }
 
 bool
 TextBoxBase::KeyPressDown (GdkModifierType modifiers)
 {
-	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	bool have;
 	
 	if (!accepts_return || (modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
@@ -1116,15 +1120,16 @@ TextBoxBase::KeyPressDown (GdkModifierType modifiers)
 		have_offset = have;
 		handled = true;
 	}
+	
 	return handled;
 }
 
 bool
 TextBoxBase::KeyPressUp (GdkModifierType modifiers)
 {
-	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	bool have;
 	
 	if (!accepts_return || (modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
@@ -1149,15 +1154,16 @@ TextBoxBase::KeyPressUp (GdkModifierType modifiers)
 		have_offset = have;
 		handled = true;
 	}
+	
 	return handled;
 }
 
 bool
 TextBoxBase::KeyPressHome (GdkModifierType modifiers)
 {
-	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	
 	if ((modifiers & ALT_MASK) != 0)
 		return false;
@@ -1185,15 +1191,16 @@ TextBoxBase::KeyPressHome (GdkModifierType modifiers)
 		have_offset = false;
 		handled = true;
 	}
+	
 	return handled;
 }
 
 bool
 TextBoxBase::KeyPressEnd (GdkModifierType modifiers)
 {
-	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	
 	if ((modifiers & ALT_MASK) != 0)
 		return false;
@@ -1220,15 +1227,16 @@ TextBoxBase::KeyPressEnd (GdkModifierType modifiers)
 		emit |= SELECTION_CHANGED;
 		handled = true;
 	}
+	
 	return handled;
 }
 
 bool
 TextBoxBase::KeyPressRight (GdkModifierType modifiers)
 {
-	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	
 	if ((modifiers & ALT_MASK) != 0)
 		return false;
@@ -1261,15 +1269,16 @@ TextBoxBase::KeyPressRight (GdkModifierType modifiers)
 		emit |= SELECTION_CHANGED;
 		handled = true;
 	}
+	
 	return handled;
 }
 
 bool
 TextBoxBase::KeyPressLeft (GdkModifierType modifiers)
 {
-	bool handled = false;
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	
 	if ((modifiers & ALT_MASK) != 0)
 		return false;
@@ -1302,6 +1311,7 @@ TextBoxBase::KeyPressLeft (GdkModifierType modifiers)
 		emit |= SELECTION_CHANGED;
 		handled = true;
 	}
+	
 	return handled;
 }
 
@@ -1505,13 +1515,10 @@ TextBoxBase::paste (GtkClipboard *clipboard, const char *text, gpointer closure)
 void
 TextBoxBase::OnKeyDown (KeyEventArgs *args)
 {
-	bool handled = false;
 	GdkModifierType modifiers = (GdkModifierType) args->GetModifiers ();
 	guint key = args->GetKeyVal ();
 	GtkClipboard *clipboard;
-	gunichar c;
-	
-	ResetIMContext ();
+	bool handled = false;
 	
 	if (args->IsModifier ())
 		return;
@@ -1524,14 +1531,15 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 	
 	switch (key) {
 	case GDK_BackSpace:
-		if (!is_read_only) {
-			handled = KeyPressBackSpace (modifiers);
-		}
+		if (is_read_only)
+			break;
+		
+		handled = KeyPressBackSpace (modifiers);
 		break;
 	case GDK_Delete:
 		if (is_read_only)
 			break;
-
+		
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Delete => Cut
 			if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
@@ -1662,8 +1670,11 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 		break;
 	}
 	
-	if (handled)
+	if (handled) {
 		args->SetHandled (handled);
+		ResetIMContext ();
+	}
+	
 	BatchPop ();
 	
 	SyncAndEmit ();
@@ -1672,8 +1683,8 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 void
 TextBoxBase::OnCharacterKeyDown (KeyEventArgs *args)
 {
-	bool handled = false;
 	guint key = args->GetKeyVal ();
+	bool handled = false;
 	gunichar c;
 	
 	if (!is_read_only && gtk_im_context_filter_keypress (im_ctx, args->GetEvent ())) {
@@ -1682,9 +1693,7 @@ TextBoxBase::OnCharacterKeyDown (KeyEventArgs *args)
 		return;
 	}
 	
-	ResetIMContext ();
-	
-	if (args->IsModifier ())
+	if (is_read_only || args->IsModifier ())
 		return;
 	
 	// set 'emit' to NOTHING_CHANGED so that we can figure out
@@ -1695,22 +1704,20 @@ TextBoxBase::OnCharacterKeyDown (KeyEventArgs *args)
 	
 	switch (key) {
 	case GDK_Return:
-		if (!is_read_only) {
-			// FIXME: should be handled in the characterpress handler
-			handled = KeyPressUnichar ('\r');
-		}
+		handled = KeyPressUnichar ('\r');
 		break;
 	default:
 		if ((args->GetModifiers () & (CONTROL_MASK | ALT_MASK)) == 0) {
 			// normal character input
-			if ((c = args->GetUnicode ()) && !is_read_only) {
+			if ((c = args->GetUnicode ()))
 				handled = KeyPressUnichar (c);
-			}
 		}
 		break;
 	}
+	
 	if (handled)
 		args->SetHandled (handled);
+	
 	BatchPop ();
 	
 	SyncAndEmit ();
