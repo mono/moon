@@ -16,7 +16,10 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <mono/utils/mono-digest.h>
+
+#include <mono/jit/jit.h>
+#include <mono/metadata/appdomain.h>
+#include <mono/metadata/assembly.h>
 
 #include "codec-version.h"
 #include "pipeline-ui.h"
@@ -27,18 +30,6 @@
 #include "codec-url.h"
 
 #define EULA_URL "http://go.microsoft.com/fwlink/?LinkId=149579"
-
-#if defined (__linux__)
-#  if defined (__i386__)
-const unsigned char codec_sha1sum[] = {0xdd, 0xac, 0x09, 0x75, 0xdd, 0x94, 0x59, 0x55, 0xb5, 0x8a, 0xb5, 0x0b, 0x18, 0x61, 0x9d, 0xb7, 0xd3, 0x93, 0xb1, 0x17};
-#  elif defined (__x86_64__)
-const unsigned char codec_sha1sum[] = {0xde, 0x02, 0x54, 0x46, 0xd1, 0xd7, 0x8f, 0x49, 0x98, 0xbd, 0xaa, 0xad, 0x36, 0x80, 0x19, 0x37, 0x56, 0xf3, 0xc5, 0x3b};
-#  else
-const unsigned char codec_sha1sum[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-#  endif
-#else 
-const unsigned char codec_sha1sum[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-#endif
 
 bool CodecDownloader::running = false;
 
@@ -181,41 +172,35 @@ CodecDownloader::DownloadFailed (EventObject *sender, EventArgs *args)
 bool
 CodecDownloader::VerifyDownload (const char *filename)
 {
-        MonoSHA1Context ctx;
-	guchar digest[20];
-	guchar buffer[4096];
-	int fd;
-	ssize_t nread;
+	static MonoMethod *moon_codec_integrity = NULL;
 
-	if ((fd = open (filename, O_RDONLY)) == -1)
+	if (!moon_codec_integrity) {
+		MonoAssembly *sw = mono_assembly_load_with_partial_name ("System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", NULL);
+		if (!sw)
+			return false;
+
+		MonoImage *image = mono_assembly_get_image (sw);
+		if (!image)
+			return false;
+
+		MonoClass *klass = mono_class_from_name (image, "Mono", "Helper");
+		if (!klass)
+			return false;
+
+		moon_codec_integrity = mono_class_get_method_from_name (klass, "CheckFileIntegrity", 1);
+		if (!moon_codec_integrity)
+			return false;
+	}
+
+	void *params [1];
+	params [0] = mono_string_new (mono_domain_get (), filename);
+	MonoObject *exc = NULL;
+
+	MonoObject *ret = mono_runtime_invoke (moon_codec_integrity, NULL, params, &exc);
+	if (exc)
 		return false;
 
-        mono_sha1_init (&ctx);
-	do {
-		do {
-			nread = read (fd, buffer, sizeof (buffer));
-		} while (nread == -1 && errno == EINTR);
-
-		if (nread == -1) {
-			close (fd);
-			return false;
-		}
-
-		if (nread == 0)
-			break;
-
-		mono_sha1_update (&ctx, buffer, nread);
-	} while (true);
-
-	close (fd);
-
-        mono_sha1_final (&ctx, digest);
-
-	for (int i = 0; i < 20; i++) 
-		if (digest [i] != codec_sha1sum [i])
-			return false;
-
-	return true;
+	return (bool) (*(MonoBoolean *) mono_object_unbox (ret));
 }
 
 void
