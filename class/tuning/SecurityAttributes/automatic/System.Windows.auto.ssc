@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 468 methods
+# 469 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
