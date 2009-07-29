@@ -1,5 +1,9 @@
 2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* shape.cpp: Plug a leak.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: IMediaObject::EmitSafe (): use same refcounting semantics
 	as EventObject::Emit: unref the event args at the end of the Emit method.
 
