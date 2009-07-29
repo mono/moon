@@ -3145,6 +3145,9 @@ IMediaObject::EmitSafe (int event_id, EventArgs *args)
 	} else {
 		AddTickCallSafe (EmitListCallback);
 	}	
+	
+	if (args)
+		args->unref ();
 }
 
 void
