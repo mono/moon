@@ -269,7 +269,7 @@ Application::GetResourceAsBuffer (const char *resourceBase, const Uri *uri, int 
 char *
 Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 {
-	char *dirname, *path, *filename, *url;
+	char *dirname, *path, *filename;
 	unzFile zipfile;
 	struct stat st;
 	gpointer buf;
@@ -317,7 +317,6 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 		g_free (path);
 		return NULL;
 	}
-	
 	
 	// create and save the buffer to disk
 	if ((fd = open (path, O_WRONLY | O_CREAT | O_EXCL, 0600)) == -1) {
