@@ -3,6 +3,7 @@ using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Animation;
@@ -166,6 +167,27 @@ namespace MoonTest.System.Windows.Controls
 
 			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c desired");
 			Assert.AreEqual (new Size (25,33), new Size (c.ActualWidth,c.ActualHeight), "c actual2");
+		}
+
+		[TestMethod]
+		public void LoadTwiceDifferentInstance ()
+		{
+			string xaml = @"<Image xmlns=""http://schemas.microsoft.com/client/2007"" Width=""100"" Height=""100"" />";
+			Image i1 = (Image) XamlReader.Load (xaml);
+			Image i2 = (Image) XamlReader.Load (xaml);
+			Assert.AreNotSame (i1, i2, "Load twice");
+		}
+
+		[TestMethod]
+		public void FoundTwiceSameInstance ()
+		{
+			string xaml = @"<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Image x:Name=""a"" Width=""100"" Height=""100"" />
+</Canvas>";
+			Canvas c = (Canvas) XamlReader.Load (xaml);
+			Image i1 = (Image) c.FindName ("a");
+			Image i2 = (Image) c.FindName ("a");
+			Assert.AreSame (i1, i2, "Found twice");
 		}
 	}
 }
