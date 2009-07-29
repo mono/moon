@@ -614,8 +614,10 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	while (GetState () == AudioPlaying) {
 		if (current_frame == NULL) {
 			MediaFrame *frame = stream->PopFrame ();
-			if (frame != NULL)
+			if (frame != NULL) {
 				current_frame = new AudioFrame (frame);
+				frame->unref ();
+			}
 		}
 		
 		if (current_frame == NULL) {
