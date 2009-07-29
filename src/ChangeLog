@@ -1,5 +1,12 @@
 2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp:
+	* pipeline-asf.cpp: MmsPlaylistEntry::AddEntry (): add the entry to the
+	playlist before initializing it, since initializing it may end up opening
+	it right away and then it must be present in the playlist.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp: ASFDemuxer::Open: unref the streams we've created when
 	done with them.
 

@@ -1359,9 +1359,11 @@ MmsPlaylistEntry::AddEntry ()
 	
 	entry = new PlaylistEntry (playlist);
 	entry->SetIsLive (features & HttpStreamingBroadcast);
+	
+	playlist->AddEntry (entry);
+	
 	entry->InitializeWithSource (this);
 
-	playlist->AddEntry (entry);
 	
 	media->unref ();
 	mms_demuxer->unref ();
