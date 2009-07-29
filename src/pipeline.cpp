@@ -906,7 +906,7 @@ Media::SelectDemuxerAsync ()
 	
 	LOG_PIPELINE ("Media::SelectDemuxer (), id: %i opening demuxer %i (%s) [Done]\n", GET_OBJ_ID (this), GET_OBJ_ID (demuxer), demuxer->GetTypeName ());
 	
-	return false;
+	return demuxer != NULL && demuxer->IsOpened ();
 }
 
 bool

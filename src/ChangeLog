@@ -1,5 +1,11 @@
 2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Media::SelectDemuxerAsync (): minor performance improvement:
+	return true immediately if we've actually managed to open a demuxer instead of
+	enqueuing another call to SelectDemuxerAsync.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp:
 	* pipeline-asf.cpp: MmsPlaylistEntry::AddEntry (): add the entry to the
 	playlist before initializing it, since initializing it may end up opening
