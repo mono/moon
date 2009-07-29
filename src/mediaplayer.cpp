@@ -1026,7 +1026,6 @@ MediaPlayer::NotifySeek (guint64 pts)
 	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu, IsPlaying (): %i\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts, IsPlaying ());
 	VERIFY_MAIN_THREAD;
 
-	AudioSource *audio;
 	guint64 duration = GetDuration ();
 	
 	g_return_if_fail (GetCanSeek ());
