@@ -1,5 +1,10 @@
 2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.h: Make EventObject::GetObjectType non-virtual. No need
+	for a virtual method anymore, since we store the type on the object itself.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* application.cpp: unref the downloader when it has finished.
 
 2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>

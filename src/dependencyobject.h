@@ -161,7 +161,7 @@ public:
 	void SetObjectType (Type::Kind value) { object_type = value; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual Type::Kind GetObjectType () { return object_type; }
+	Type::Kind GetObjectType () { return object_type; }
 
 	const static int DestroyedEvent;
 	
