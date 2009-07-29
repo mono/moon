@@ -672,7 +672,7 @@ Media::RetryHttp (ErrorEventArgs *args)
 {
 	char *http_uri = NULL;
 	
-	printf ("Media::RetryHttp (), current uri: '%s'\n", uri);
+	LOG_PIPELINE ("Media::RetryHttp (), current uri: '%s'\n", uri);
 	
 	g_return_if_fail (uri != NULL);
 	g_return_if_fail (source != NULL);
@@ -697,7 +697,7 @@ Media::RetryHttp (ErrorEventArgs *args)
 	
 	http_retried = true;
 	
-	printf ("Media::RetryHttp (), new uri: '%s'\n", http_uri);
+	LOG_PIPELINE ("Media::RetryHttp (), new uri: '%s'\n", http_uri);
 	
 	g_free (uri);
 	uri = NULL;

@@ -1,5 +1,9 @@
 2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: printf -> LOG_PIPELINE.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mp3.cpp: Mp3Demuxer::ReadHeader: unref the stream we've created when
 	we're done with it.
 
