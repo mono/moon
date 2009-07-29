@@ -2635,10 +2635,9 @@ IMediaDemuxer::SeekAsync (guint64 pts)
 
 	if (!media->InMediaThread ()) {
 		EnqueueSeek (pts);
-		return;
+	} else {
+		SeekAsyncInternal (pts);
 	}
-	
-	SeekAsyncInternal (pts);
 
 	media->unref ();
 }
