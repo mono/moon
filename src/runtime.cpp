@@ -692,8 +692,12 @@ Surface::EmitError (int number, int code, const char *message)
 void
 Surface::Realloc ()
 {
-	if (toplevel)
-		toplevel->UpdateBounds();
+	for (int i = 0; i < layers->GetCount (); i++) {
+		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
+
+		layer->InvalidateMeasure ();
+		//layer->UpdateBounds();
+	}
 }
 
 void
@@ -721,6 +725,7 @@ Surface::IsTopLevel (UIElement* top)
 		return false;
 
 	bool ret = top == full_screen_message;
+
 	for (int i = 0; i < layers->GetCount () && !ret; i++)
 		ret = layers->GetValueAt (i)->AsUIElement () == top;
 
