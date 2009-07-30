@@ -402,7 +402,6 @@ private:
 
 	List* ElementPathToRoot (UIElement *source);
 	void GenerateFocusChangeEvents();
-	static void GenerateFocusChangeEventsTickCall (EventObject *sender);
 
 	void FindFirstCommonElement (List *l1, int *index1, List *l2, int *index2);
 	bool EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx);

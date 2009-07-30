@@ -262,52 +262,6 @@ EventObject::AddTickCallInternal (TickCallHandler handler)
 	timemanager->AddTickCall (handler, this);
 }
 
-struct AsyncEventData {
-       EventObject *o;
-       TickCallHandler handler;
-};
-
-void
-EventObject::AddAsyncEventCall (TickCallHandler handler)
-{
-       Surface *surface;
-       TimeManager *timemanager;
-       
-       surface = GetSurface ();
-       
-       if (surface == NULL)
-               surface = GetDeployment ()->GetSurface ();
-       
-       if (!surface) {
-               LOG_DP ("EventObject::AddAsyncEventCall (): Could not add async event call, no surface\n");
-               return;
-       }
-       
-       timemanager = surface->GetTimeManager ();
-       
-       if (!timemanager) {
-               LOG_DP ("EventObject::AddAsyncEventCall (): Could not add async event call, no time manager\n");
-               return;
-       }
-
-       AsyncEventData *s = new AsyncEventData ();
-       s->o = this;
-       s->handler = handler;
-       s->o->ref ();
-       timemanager->AddTimeout (G_PRIORITY_DEFAULT, 1, AddAsyncEventCallback, s);
-}
-
-gboolean
-EventObject::AddAsyncEventCallback (gpointer data)
-{
-       AsyncEventData *s = (AsyncEventData *) data;
-       s->handler (s->o);
-       s->o->unref ();
-       delete s;
-       return false;
-}
-
-
 Deployment *
 EventObject::GetDeployment ()
 {

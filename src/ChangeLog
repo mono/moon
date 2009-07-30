@@ -87,13 +87,6 @@
 	(TextBoxBase::OnCharacterKeyDown): Don't reset the IM context
 	here.
 
-2009-07-29  Alan McGovern  <amcgovern@novell.com>
-
-	* runtime.h:
-	* runtime.cpp: GotFocus/LostFocus events are actually standard
-	  asynchronous events - but they only start firing *after* the
-	  mouse has been clicked once.
-
 2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shape.cpp: Plug a leak.
