@@ -49,7 +49,7 @@
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />
     <ProjectReference type="Project" localcopy="True" refto="System.Windows" />
   </References>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
     <BuildFilesVar Name="system_windows_browser_sources" />
     <DeployFilesVar />
     <ResourcesVar />

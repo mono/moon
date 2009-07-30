@@ -83,7 +83,7 @@
     <File name="plugin-class.h.in" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" IsAutotoolsProject="True" RelativeConfigureInPath="..">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">
     <BuildFilesVar />
     <DeployFilesVar />
     <ResourcesVar />
