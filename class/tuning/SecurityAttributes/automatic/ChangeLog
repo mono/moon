@@ -1,7 +1,3 @@
-2009-07-29  Sebastien Pouliot  <sebastien@ximian.com> 
-
-	* mscorlib.auto.s[s]c: Regenerated for mono/mcs r138996
-
 2009-07-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.ssc: Add Mono.Helper.CheckFileIntegrity
