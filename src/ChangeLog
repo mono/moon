@@ -1,5 +1,9 @@
 2009-07-30  Andreia Gaita  <avidigal@novell.com>
 
+	* shape.cpp: use smart pointer to avoid unreffing by hand
+
+2009-07-30  Andreia Gaita  <avidigal@novell.com>
+
 	* timeline.cpp: leak fix
 
 2009-07-30  Andreia Gaita  <avidigal@novell.com>

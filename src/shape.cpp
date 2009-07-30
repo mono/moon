@@ -20,6 +20,7 @@
 #include "shape.h"
 #include "brush.h"
 #include "utils.h"
+#include "ptr.h"
 
 //
 // SL-Cairo convertion and helper routines
@@ -98,9 +99,7 @@ Shape::Shape ()
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 	cairo_matrix_init_identity (&stretch_transform);
 	
-	DoubleCollection *c = new DoubleCollection ();
-	SetStrokeDashArray (c);
-	c->unref ();
+	SetStrokeDashArray (OwnerPtr<DoubleCollection> (new DoubleCollection ()));
 }
 
 Shape::~Shape ()
