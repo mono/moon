@@ -80,6 +80,7 @@ libmoon_include_headers = 	\
 	popup.h			\
 	propertypath.h	\
 	provider.h		\
+	ptr.h		\
 	rect.h			\
 	region.h		\
 	resources.h		\

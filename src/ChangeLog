@@ -1,3 +1,8 @@
+2009-07-30  Andreia Gaita  <avidigal@novell.com>
+
+	* ptr.h: added RefPtr and OwnerPtr, smart refcounting pointer classes
+	* Makefile.am: updated
+
 2009-07-29  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp (ArrangeOverride): return the input now that it is
