@@ -795,6 +795,7 @@ FontFace::HasChar (gunichar unichar)
 void
 FontFace::GetExtents (double size, FontFaceExtents *extents)
 {
+#if 0
 	double scale = 1.0 / 64.0;
 	FT_Long thickness;
 	FT_Long position;
@@ -819,15 +820,28 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 	if (extents->underline_thickness < 1.0)
 		extents->underline_thickness = 1.0;
 	
-#if 1
 	extents->descent = FT_MulFix (face->descender, face->size->metrics.y_scale) * scale;
 	extents->ascent = FT_MulFix (face->ascender, face->size->metrics.y_scale) * scale;
 	extents->height = FT_MulFix (face->height, face->size->metrics.y_scale) * scale;
 #else
 	// this is an alternative way of calculating these metrics, might give us values a bit closer to Microsoft's
-	extents->descent = ((face->descender * 1.0) / face->units_per_EM) * size;
-	extents->ascent = ((face->ascender * 1.0) / face->units_per_EM) * size;
-	extents->height = ((face->height * 1.0) / face->units_per_EM) * size;
+	double scale = size / face->units_per_EM;
+	
+	extents->underline_thickness = face->underline_thickness * scale;
+	extents->underline_position = -face->underline_position * scale;
+	extents->underline_position += ((extents->underline_thickness + 1) / 2.0);
+	if (face->family_name && !strncmp (face->family_name, "Adobe ", 6)) {
+		extents->descent = face->bbox.yMin * scale;
+		extents->ascent = face->bbox.yMax * scale;
+		extents->height = extents->ascent - extents->descent;
+	} else {
+		extents->descent = face->descender * scale;
+		extents->ascent = face->ascender * scale;
+		extents->height = face->height * scale;
+	}
+	
+	if (extents->underline_thickness < 1.0)
+		extents->underline_thickness = 1.0;
 #endif
 }
 
@@ -1200,13 +1214,12 @@ IndexFontFile (FT_Library libft2, const char *name, const char *path)
 void
 FontManager::AddResource (const char *resource, const char *path)
 {
-	const char *cur_val;
 	FontIndex *index;
 	struct stat st;
 	
 	LOG_FONT (stderr, "Adding font resource '%s' at %s\n", resource, path);
 	
-	if ((cur_val = (const char *) g_hash_table_lookup (resources, resource)))
+	if ((index = (FontIndex *) g_hash_table_lookup (resources, resource)))
 		return;
 	
 	if (stat (path, &st) == -1)
