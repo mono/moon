@@ -471,6 +471,11 @@ FrameworkElement::Measure (Size availableSize)
 
 	domeasure |= last ? ((*last).width != availableSize.width) && ((*last).height != availableSize.height) : true;
 
+	if (GetVisibility () == VisibilityCollapsed) {
+		SetDesiredSize (Size (0,0));
+		return;
+	}
+
 	if (!domeasure)
 		return;
 
@@ -493,6 +498,7 @@ FrameworkElement::Measure (Size availableSize)
 
 	// postcondition the results
 	size = ApplySizeConstraints (size);
+
 	size = size.GrowBy (margin);
 	size = size.Min (availableSize);
 
@@ -548,6 +554,11 @@ FrameworkElement::Arrange (Rect finalRect)
 		g_warning ("invalid arguments to Arrange (%g,%g,%g,%g) Desired = (%g,%g)", finalRect.x, finalRect.y, finalRect.width, finalRect.height, desired.width, desired.height);
 		return;
 	}
+
+	if (GetVisibility () == VisibilityCollapsed) {
+		SetRenderSize (Size(0,0));
+		return;
+	}	
 
 	if (!doarrange)
 		return;

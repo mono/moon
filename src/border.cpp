@@ -78,7 +78,7 @@ Border::ArrangeOverride (Size finalSize)
 		arranged = ApplySizeConstraints (arranged);
 	}
 
-	return arranged;
+	return finalSize;
 }
 
 void 

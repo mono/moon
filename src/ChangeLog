@@ -1,3 +1,11 @@
+2009-07-29  Larry Ewing  <lewing@novell.com>
+
+	* border.cpp (ArrangeOverride): return the input now that it is
+	correctly sized.
+
+	* frameworkelement.cpp: short circuit Measure and Arrange if the
+	element is collapsed.
+
 2009-07-29  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxBase::OnKeyDown): Only reset the IM context
