@@ -103,21 +103,21 @@ char *parse_rfc_1945_token (char *input, char *c, char **end);
  * 
  * Note: the input string is modified.
  */
-char * parse_rfc_1945_quoted_string (char *input, char *c, char **end);
+char *parse_rfc_1945_quoted_string (char *input, char *c, char **end);
 
 G_END_DECLS
 
 class TextStream {
-protected:
+ protected:
 	char buffer[4096];
 	size_t buflen;
 	char *bufptr;
 	GIConv cd;
-
+	
 	char *textbuf;
 	char *textbufptr;
 	int textbufsize;
-
+	
 	int fd;
 	bool eof;
 	
@@ -125,8 +125,8 @@ protected:
 	
 	bool ReadBOM (bool force);
 	ssize_t ReadInternal (char *buf, ssize_t n);
-public:
 	
+ public:
 	TextStream ();
 	~TextStream ();
 	

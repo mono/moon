@@ -30,6 +30,7 @@
 
 #include <fontconfig/fontconfig.h>
 #include <fontconfig/fcfreetype.h>
+#include FT_TRUETYPE_TABLES_H
 #include FT_OUTLINE_H
 #include FT_SYSTEM_H
 #include FT_GLYPH_H
@@ -830,11 +831,21 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 	extents->underline_thickness = face->underline_thickness * scale;
 	extents->underline_position = -face->underline_position * scale;
 	extents->underline_position += ((extents->underline_thickness + 1) / 2.0);
-	if (face->family_name && !strncmp (face->family_name, "Adobe ", 6)) {
-		extents->descent = face->bbox.yMin * scale;
-		extents->ascent = face->bbox.yMax * scale;
-		extents->height = extents->ascent - extents->descent;
+	
+	if (FT_IS_SFNT (face)) {
+		TT_OS2 *table = (TT_OS2 *) FT_Get_Sfnt_Table (face, ft_sfnt_os2);
+		int height = table->usWinAscent + table->usWinDescent;
+		
+		// Use the OS/2 table's usWinAscent/Descent values since this
+		// is what Microsoft seems to use for their Silverlight
+		// implementation.
+		//
+		// See http://typophile.com/node/13081? for more information.
+		extents->height = MAX (face->height, height) * scale;
+		extents->descent = -(table->usWinDescent * scale);
+		extents->ascent = table->usWinAscent * scale;
 	} else {
+		// Fall back to the default FreeType2 behavior.
 		extents->descent = face->descender * scale;
 		extents->ascent = face->ascender * scale;
 		extents->height = face->height * scale;

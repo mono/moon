@@ -1,3 +1,13 @@
+2009-07-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (GetExtents): Much better fix than the
+	string-comparison hack. Poke at the TrueType/OpenType OS/2 table
+	and use the usWinAscent/usWinDescent values since this is what
+	most Windows applications (brokenly) use according to some info I
+	found on the web. Low and behold, this also makes the Adobe Caslon
+	Pro metrics work out exactly like they do in Silverlight, so I'm
+	guessing that the info I found is accurate :-)
+
 2009-07-30  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp (DoArrange): revert the parent invalidation change as it
