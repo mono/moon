@@ -86,7 +86,7 @@ Control::OnLoaded ()
 	if (e)
 		((Control *)e)->UpdateEnabled ();
 
-	FrameworkElement::OnLoaded ();
+	FrameworkElement::OnLoaded (); 
 }
 
 void
@@ -115,6 +115,9 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			}
 			ReleaseMouseCapture ();
 		}
+	} else if (args->GetId () == Control::HorizontalContentAlignmentProperty
+		   || args->GetId () == Control::VerticalContentAlignmentProperty) {
+		InvalidateArrange ();
 	}
 	NotifyListenersOfPropertyChange (args, error);
 }

@@ -1,5 +1,10 @@
 2009-07-30  Larry Ewing  <lewing@novell.com>
 
+	* control.cpp (OnPropertyChanged): update the layout if the
+	aligment changes.
+
+2009-07-30  Larry Ewing  <lewing@novell.com>
+
 	* uielement.cpp (DoArrange): remove the parent invalidation call
 	it shouldn't be required now and is contraindicated by DRT #501.
 
