@@ -1,3 +1,17 @@
+2009-07-30  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.cpp:
+	* textbox.cpp: TextBox and Popup should use AddAsyncEventCall
+
+	* runtime.cpp:
+	* dependencyobject.h:
+	* dependencyobject.cpp: Implement a new method for adding
+	  callbacks to invoke asynchronous events. They can't be
+	  invoked using the regular AddTickCall as that causes the
+	  ordering of mouse events and asynchronous events to be
+	  incorrect preventing drt 333, 476 and some others from
+	  passing.
+
 2009-07-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fontmanager.cpp (GetExtents): Now uses the alternative method of

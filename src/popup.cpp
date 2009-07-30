@@ -62,11 +62,11 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		// in SL.
 		if (args->GetNewValue () && args->GetNewValue ()->AsBool ()) {
 			Show (GetChild ());
-			AddTickCall (Popup::emit_opened);
+			AddAsyncEventCall (Popup::emit_opened);
 		}
 		else {
 			Hide (GetChild ());
-			AddTickCall (Popup::emit_closed);
+			AddAsyncEventCall (Popup::emit_closed);
 		}
 	} else if (args->GetId () == Popup::ChildProperty) {
 		if (args->GetOldValue () && !args->GetOldValue ()->GetIsNull ()) {

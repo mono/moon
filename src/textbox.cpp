@@ -1398,7 +1398,7 @@ void
 TextBoxBase::EmitSelectionChangedAsync ()
 {
 	if (IsLoaded () && (events_mask & SELECTION_CHANGED))
-		AddTickCall (TextBoxBase::emit_selection_changed);
+		AddAsyncEventCall (TextBoxBase::emit_selection_changed);
 	
 	emit &= ~SELECTION_CHANGED;
 }
@@ -1414,7 +1414,7 @@ void
 TextBoxBase::EmitTextChangedAsync ()
 {
 	if (IsLoaded () && (events_mask & TEXT_CHANGED))
-		AddTickCall (TextBoxBase::emit_text_changed);
+		AddAsyncEventCall (TextBoxBase::emit_text_changed);
 	
 	emit &= ~TEXT_CHANGED;
 }

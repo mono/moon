@@ -1894,7 +1894,7 @@ Surface::FocusElement (UIElement *focused)
 		return true;
 
 	if (FirstUserInitiatedEvent () && focus_changed_events->IsEmpty ())
-		AddTickCall (GenerateFocusChangeEventsTickCall);
+		AddAsyncEventCall (GenerateFocusChangeEventsTickCall);
 
 	focus_changed_events->Push (new FocusChangedNode (focused_element, focused));
 	focused_element = focused;

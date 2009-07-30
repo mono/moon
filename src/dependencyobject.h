@@ -157,6 +157,9 @@ public:
 	void AddTickCall (TickCallHandler handler);
 	void AddTickCallSafe (TickCallHandler handler);
 
+	static gboolean AddAsyncEventCallback (gpointer data);
+	void AddAsyncEventCall (TickCallHandler handler);
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetObjectType (Type::Kind value) { object_type = value; }
 
