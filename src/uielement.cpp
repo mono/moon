@@ -632,9 +632,12 @@ UIElement::DoArrange ()
 			return;
 	}
 	
+	if (parent && (!parent->Is (Type::CANVAS) || (IsLayoutContainer () || !last))) 
+		parent->InvalidateArrange ();
+ 
 	if (!last)
 		return;
-
+	
 	LayoutInformation::SetLastRenderSize (this, &previous_render);
 }
 

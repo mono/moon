@@ -1,5 +1,10 @@
 2009-07-30  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp (DoArrange): revert the parent invalidation change as it
+	did break things.
+
+2009-07-30  Larry Ewing  <lewing@novell.com>
+
 	* control.cpp (OnPropertyChanged): update the layout if the
 	aligment changes.
 
