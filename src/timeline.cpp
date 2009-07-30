@@ -24,6 +24,7 @@
 #include "uielement.h"
 #include "runtime.h"
 #include "deployment.h"
+#include "ptr.h"
 
 /* timeline */
 
@@ -178,7 +179,7 @@ TimelineGroup::AllocateClock ()
 	this->clock = group;
 
 	for (int i = 0; i < collection->GetCount (); i++)
-		group->AddChild (collection->GetValueAt (i)->AsTimeline ()->AllocateClock ());
+		group->AddChild (OwnerPtr<Clock> (collection->GetValueAt (i)->AsTimeline ()->AllocateClock ()));
 
 	group->AddHandler (Clock::CompletedEvent, clock_completed, this);
 

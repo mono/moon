@@ -1,5 +1,9 @@
 2009-07-30  Andreia Gaita  <avidigal@novell.com>
 
+	* timeline.cpp: leak fix
+
+2009-07-30  Andreia Gaita  <avidigal@novell.com>
+
 	* ptr.h: added RefPtr and OwnerPtr, smart refcounting pointer classes
 	* Makefile.am: updated
 
