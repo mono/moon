@@ -1,5 +1,9 @@
 2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp: Dispose: we need to unref and null out the application.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* error.cpp|h:
 	* downloader.cpp:
 	* eventargs.cpp|h: Set the object's type upon construction instead

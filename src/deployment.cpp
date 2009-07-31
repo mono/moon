@@ -395,8 +395,11 @@ Deployment::Dispose ()
 	
 	AbortAllDownloaders ();
 	
-	if (current_app != NULL)
+	if (current_app != NULL) {
 		current_app->Dispose ();
+		current_app->unref ();
+		current_app = NULL;
+	}
 		
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
 	if (domain != root_domain)
