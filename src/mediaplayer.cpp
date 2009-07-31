@@ -68,11 +68,11 @@ MediaPlayer::Dispose ()
 	
 	VERIFY_MAIN_THREAD;
 	
-	EventObject::Dispose ();
-	
 	Close ();
 	
 	element = NULL;
+	
+	EventObject::Dispose ();
 }
 
 AudioSource *
