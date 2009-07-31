@@ -1,8 +1,12 @@
 2009-07-30  Larry Ewing  <lewing@novell.com>
 
+	* layoutinformation.cpp: repair a merge bug.
+	
+2009-07-30  Larry Ewing  <lewing@novell.com>
+
 	* layoutinformation.cpp, layoutinformation.h: move layoutinformation
 	out of uielement.h.  Compute the layout clip on the fly.
-	
+
 	* border.cpp:
 	* dependencyproperty.g.cpp:
 	* frameworkelement.cpp:

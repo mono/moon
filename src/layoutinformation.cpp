@@ -41,4 +41,6 @@ LayoutInformation::GetClip (FrameworkElement *item)
 	
 	RectangleGeometry *geom = new RectangleGeometry ();
 	geom->SetRect (&composite);
+
+	return geom;
 }
