@@ -1,3 +1,8 @@
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Mark HitTest31b
+	as MoonlightBug.
+
 2009-07-30  Larry Ewing  <lewing@novell.com>
 
 	* System.Windows.Controls/PanelTest.cs: remove moonbug from

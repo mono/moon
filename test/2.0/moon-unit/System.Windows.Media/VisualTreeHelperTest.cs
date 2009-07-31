@@ -842,6 +842,7 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void HitTest31b()
 		{
 			Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
