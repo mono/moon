@@ -587,6 +587,7 @@ MediaPlayer::AdvanceFrame ()
 		if (target_pts == G_MAXUINT64) {
 			// This might happen if we've called Play on the audio source, but it hasn't actually played anything yet.
 			LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame (): invalid target pts from the audio stream.\n");
+			audio->unref ();
 			return;
 		}
 	} else {

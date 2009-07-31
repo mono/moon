@@ -1,5 +1,9 @@
 2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp: Plug a leak in one rare code-path.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaplayer.cpp: Close: dispose the AudioSource, it won't be used again.
 
 2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
