@@ -401,7 +401,8 @@ PlaylistEntry::BufferingProgressChangedHandler (Media *media, EventArgs *args)
 	
 	LOG_PLAYLIST ("PlaylistEntry::BufferingProgressChanged (%p, %p) %.2f\n", media, args, args ? ((ProgressEventArgs *) args)->progress : -1.0);
 	
-	g_return_if_fail (root != NULL);
+	if (root == NULL)
+		return; // this might happen if the media is still buffering and we're in the process of getting cleaned up
 	
 	if (args)
 		args->ref ();
