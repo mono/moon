@@ -1,3 +1,10 @@
+2009-07-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (GetExtents): Improved baseline alignment by
+	adjusting Descent if Height is larger than Ascent +
+	Descent. Especially visible with drt107's Deobfuscated Brauhaus 93
+	font rendering.
+
 2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: Dispose: we need to unref and null out the application.

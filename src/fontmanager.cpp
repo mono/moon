@@ -840,12 +840,23 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 		// is what Microsoft seems to use for their Silverlight
 		// implementation.
 		//
-		// See http://typophile.com/node/13081? for more information.
-		extents->height = MAX (face->height, height) * scale;
-		extents->descent = -(table->usWinDescent * scale);
-		extents->ascent = table->usWinAscent * scale;
+		// See http://typophile.com/node/13081 for more information.
+		if (face->height > height) {
+			// FreeType2's Height value is larger than usWinAscent
+			// + usWinDescent, so use it instead (probably 115% of
+			// the EM height? e.g. 2355 units?). This means that
+			// we have to adjust the Descent to be the difference
+			// between FreeType2's Height and the usWinAscent.
+			extents->descent = -(face->height - table->usWinAscent) * scale;
+			extents->ascent = table->usWinAscent * scale;
+			extents->height = face->height * scale;
+		} else {
+			extents->descent = -(table->usWinDescent * scale);
+			extents->ascent = table->usWinAscent * scale;
+			extents->height = height * scale;
+		}
 	} else {
-		// Fall back to the default FreeType2 behavior.
+		// Fall back to the default FreeType2 values.
 		extents->descent = face->descender * scale;
 		extents->ascent = face->ascender * scale;
 		extents->height = face->height * scale;
