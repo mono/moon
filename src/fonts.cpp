@@ -177,6 +177,23 @@ LoadPortableUserInterface (FontManager *manager, GPtrArray *faces, const char *l
 	guint lucida;
 	guint i, j;
 	
+	if (Deployment::GetCurrent ()->IsLoadedFromXap ()) {
+		// Silverlight 2.0 applications default to Verdana instead of Lucida Sans Unicode
+		if ((face = manager->OpenFont ("Verdana", stretch, weight, style)))
+			g_ptr_array_add (faces, face);
+	}
+	
+	// Load Lucida Sans and save the index because we use it later for face extents
+	families = default_fonts[0].families;
+	lucida = faces->len;
+	
+	for (j = 0; families[j]; j++) {
+		if ((face = manager->OpenFont (families[j], stretch, weight, style))) {
+			g_ptr_array_add (faces, face);
+			break;
+		}
+	}
+	
 	if (lang != NULL) {
 		// use the xml:lang tag to load the preferred default font first
 		for (i = 1; i < G_N_ELEMENTS (default_fonts); i++) {
@@ -196,17 +213,8 @@ LoadPortableUserInterface (FontManager *manager, GPtrArray *faces, const char *l
 		}
 	}
 	
-	if (Deployment::GetCurrent ()->IsLoadedFromXap ()) {
-		// Silverlight 2.0 applications default to Verdana instead of Lucida Sans Unicode
-		if ((face = manager->OpenFont ("Verdana", stretch, weight, style)))
-			g_ptr_array_add (faces, face);
-	}
-	
-	// save the index of the lucida font because we use it later for face extents
-	lucida = faces->len;
-	
-	// now load the remaining default font faces...
-	for (i = 0; i < G_N_ELEMENTS (default_fonts); i++) {
+	// Now load the remaining default font faces...
+	for (i = 1; i < G_N_ELEMENTS (default_fonts); i++) {
 		// avoid re-loading the preferred font face
 		if (i == preferred)
 			continue;
