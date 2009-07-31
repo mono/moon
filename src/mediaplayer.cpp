@@ -440,6 +440,7 @@ MediaPlayer::Close ()
 	mutex.Lock ();
 	if (audio_unlocked) {
 		AudioPlayer::Remove (audio_unlocked);
+		audio_unlocked->Dispose ();
 		audio_unlocked->unref ();
 		audio_unlocked = NULL;
 	}
