@@ -213,7 +213,7 @@ struct Addr2LineData {
 	gpointer base;
 };
 
-static Addr2LineData *addr2line_pipes = NULL;
+static __thread Addr2LineData *addr2line_pipes = NULL;
 
 static char*
 library_of_ip (gpointer ip, gpointer* base_address)
