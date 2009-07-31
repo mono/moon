@@ -113,16 +113,9 @@ Media::ShuttingDownHandler (Deployment *obj, EventArgs *args)
 void
 Media::Dispose ()
 {
-	LOG_PIPELINE ("Media::~Dispose (), id: %i\n", GET_OBJ_ID (this));
+	LOG_PIPELINE ("Media::Dispose (), id: %i\n", GET_OBJ_ID (this));
 
-	pthread_mutex_lock (&queue_mutex);
-	if (queued_requests != NULL) {
-		queued_requests->Clear (true);
-		delete queued_requests;
-		queued_requests = NULL;
-	}
-	pthread_cond_signal (&queue_condition);
-	pthread_mutex_unlock (&queue_mutex);
+	ClearQueue (true);
 	
 	if (!stopped && !InMediaThread ())
 		pthread_join (queue_thread, NULL);
@@ -1263,19 +1256,17 @@ Media::ClearQueue (bool delete_queue)
 void
 Media::StopThread ()
 {
-	LOG_PIPELINE ("Media::ClearQueue ().\n");
+	LOG_PIPELINE ("Media::StopThread ().\n");
 
 	if (stopped)
 		return;
 
 	stopping = true;
-	ClearQueue ();
-	pthread_mutex_lock (&queue_mutex);
-	pthread_cond_signal (&queue_condition);
-	pthread_mutex_unlock (&queue_mutex);
+	ClearQueue (true);
+	
 	pthread_join (queue_thread, NULL);
 
-	LOG_PIPELINE ("Media::ClearQueue () [Done]\n");
+	LOG_PIPELINE ("Media::StopThread () [Done]\n");
 }
 
 /*
