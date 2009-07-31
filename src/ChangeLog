@@ -1,7 +1,12 @@
 2009-07-30  Larry Ewing  <lewing@novell.com>
 
-	* layoutinformation.cpp: repair a merge bug.
+	* layoutinformation.cpp (GetClip): add a workaround for the panel
+	case while layoutinformation is refactored.
 	
+2009-07-30  Larry Ewing  <lewing@novell.com>
+
+	* layoutinformation.cpp: repair a merge bug.
+
 2009-07-30  Larry Ewing  <lewing@novell.com>
 
 	* layoutinformation.cpp, layoutinformation.h: move layoutinformation

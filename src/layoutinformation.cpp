@@ -27,13 +27,16 @@ LayoutInformation::GetClip (FrameworkElement *item)
 		
 		Rect relative = *GetLayoutSlot (element);
 		offset = offset + *local_offset;
-			relative.x -= offset.x;
-			relative.y -= offset.y;
-			relative = relative.GrowBy (-*element->GetMargin ());
-			
-			composite = composite.Intersection (relative);
-			
-			element = (FrameworkElement *)element->GetVisualParent ();
+		relative.x -= offset.x;
+		relative.y -= offset.y;
+		relative = relative.GrowBy (-*element->GetMargin ());
+		
+		composite = composite.Intersection (relative);
+		
+		element = (FrameworkElement *)element->GetVisualParent ();
+
+		if (element && element->Is (Type::CANVAS))
+			break;
 	}
 	
 	if (isinf (composite.width))
