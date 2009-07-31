@@ -372,7 +372,6 @@ Shape::Stroke (cairo_t *cr, bool do_op)
 void
 Shape::Clip (cairo_t *cr)
 {
-	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
 	Rect specified = Rect (0, 0, GetWidth (), GetHeight ());
 	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
 	UIElement *parent = GetVisualParent ();
@@ -407,11 +406,7 @@ Shape::Clip (cairo_t *cr)
 		}
 	}
 
-	if (!layout_clip)
-		return;
-
-	layout_clip->Draw (cr);
-	cairo_clip (cr);
+	RenderLayoutClip (cr);
 }
 
 //

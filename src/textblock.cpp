@@ -420,15 +420,11 @@ TextBlock::AddFontResource (const char *resource)
 void
 TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 {
-	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
-
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
-
-	if (layout_clip) {
-		layout_clip->Draw (cr);
-		cairo_clip (cr);
-	}
+	
+	if (!path_only)
+		RenderLayoutClip (cr);
 		
 	Paint (cr);
 

@@ -93,6 +93,20 @@ FrameworkElement::~FrameworkElement ()
 {
 }
 
+void
+FrameworkElement::RenderLayoutClip (cairo_t *cr)
+{
+	Geometry *geom = LayoutInformation::GetClip (this);
+	
+	if (!geom)
+		return;
+
+	geom->Draw (cr);
+	cairo_clip (cr);
+
+	geom->unref ();
+}
+
 Point
 FrameworkElement::GetTransformOrigin ()
 {
@@ -613,7 +627,9 @@ FrameworkElement::Arrange (Rect finalRect)
 		if (!parent || parent->Is (Type::CANVAS))
 			return;
 	}
-	Size old (GetActualWidth (), GetActualHeight ());
+	Size old_size (GetActualWidth (), GetActualHeight ());
+	//Point *old_offset  = LayoutInformation::GetVisualOffset (this);
+	ClearValue (LayoutInformation::VisualOffsetProperty);
 
 	if (in_layout && GetUseLayoutRounding ()) {
 		response.width = floor (response.width);
@@ -622,19 +638,21 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	SetActualWidth (response.width);
 	SetActualHeight (response.height);
+	
+	Point visual_offset (child_rect.x, child_rect.y);
 
 	if (GetVisualParent ()) {
 		switch (horiz) {
 		case HorizontalAlignmentLeft:
 			break;
 		case HorizontalAlignmentRight:
-			cairo_matrix_translate (&layout_xform, child_rect.width - response.width, 0);
+			visual_offset.x += child_rect.width - response.width;
 			break;
 		case HorizontalAlignmentCenter:
-			cairo_matrix_translate (&layout_xform, (child_rect.width  - response.width) * .5, 0);
+			visual_offset.x += (child_rect.width - response.width) * .5;
 			break;
 		default:
-			cairo_matrix_translate (&layout_xform, MAX ((child_rect.width  - response.width) * .5, 0), 0);
+			visual_offset.x += MAX ((child_rect.width  - response.width) * .5, 0);
 			break;
 		}
 		
@@ -642,32 +660,35 @@ FrameworkElement::Arrange (Rect finalRect)
 		case VerticalAlignmentTop:
 			break;
 		case VerticalAlignmentBottom:
-			cairo_matrix_translate (&layout_xform, 0, child_rect.height - response.height);
+			visual_offset.y += child_rect.height - response.height;
 			break;
 		case VerticalAlignmentCenter:
-			cairo_matrix_translate (&layout_xform, 0, (child_rect.height - response.height) * .5);
+			visual_offset.y += (child_rect.height - response.height) * .5;
 			break;
 		default:
-			cairo_matrix_translate (&layout_xform, 0, MAX ((child_rect.height - response.height) * .5, 0));
+			visual_offset.y += MAX ((child_rect.height - response.height) * .5, 0);
+
 			break;
 		}
 	}
 
+	cairo_matrix_init_translate (&layout_xform, visual_offset.x, visual_offset.y);
+	LayoutInformation::SetVisualOffset (this, &visual_offset);
 	SetRenderSize (response);
-	
-	cairo_matrix_t inverse_layout = layout_xform;
-	cairo_matrix_invert (&inverse_layout);
-	
-	Rect layout_clip = finalRect.Transform (&inverse_layout);
+						
+	Rect layout_clip = finalRect;
+	layout_clip.x -= visual_offset.x;
+	layout_clip.y -= visual_offset.y;
+
 	layout_clip = layout_clip.GrowBy (-margin);
 	RectangleGeometry *rectangle = new RectangleGeometry ();
 	rectangle->SetRect (&layout_clip);
 	LayoutInformation::SetLayoutClip (this, rectangle);
 	rectangle->unref ();
 	
-	if (old != response) {
+	if (old_size != response) { // || (old_offset && *old_offset != visual_offset)) {
 		if (!LayoutInformation::GetLastRenderSize (this))
-			LayoutInformation::SetLastRenderSize (this, &old);
+			LayoutInformation::SetLastRenderSize (this, &old_size);
 	}
 	// XXX what do we do with finalRect.x and y?
 	//printf ("\u231a");

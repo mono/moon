@@ -56,6 +56,7 @@ libmoon_include_headers = 	\
 	internal-downloader.h	\
 	keyboard.h		\
 	layout.h		\
+	layoutinformation.h	\
 	libmoon.h		\
 	list.h			\
 	media.h			\
@@ -161,6 +162,7 @@ libmoon_la_SOURCES = 		\
 	imagesource.cpp		\
 	keyboard.cpp		\
 	layout.cpp		\
+	layoutinformation.cpp	\
 	list.cpp		\
 	media.cpp		\
 	mediaelement.cpp	\

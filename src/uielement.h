@@ -23,6 +23,7 @@
 #include "region.h"
 #include "list.h"
 #include "size.h"
+#include "layoutinformation.h"
 
 #define QUANTUM_ALPHA 1
 
@@ -542,36 +543,4 @@ private:
 	cairo_matrix_t local_xform;
 };
 
-/* @IncludeInKinds,Namespace=System.Windows.Controls.Primitives,ManagedDependencyProperties=Manual */
-class LayoutInformation {
-public:
-	/* @PropertyType=Geometry,Attached,GenerateAccessors */
-	const static int LayoutClipProperty;
-	/* @PropertyType=Rect,Attached,GenerateAccessors */
-	const static int LayoutSlotProperty;
-	/* @PropertyType=Size,Attached,GenerateAccessors */
-	const static int PreviousConstraintProperty;
-	/* @PropertyType=Size,Attached,GenerateAccessors */
-	const static int FinalRectProperty;
-	/* @PropertyType=Size,Attached,GenerateAccessors */
-	const static int LastRenderSizeProperty;
-
-	static void SetLayoutClip (DependencyObject *item, Geometry *clip);
-	static Geometry* GetLayoutClip (DependencyObject *item);
-
-	static void SetLayoutSlot (DependencyObject *item, Rect *slot);
-	static Rect *GetLayoutSlot (DependencyObject *item);
-
-	static void SetPreviousConstraint (DependencyObject *item, Size *size);
-	static Size *GetPreviousConstraint (DependencyObject *item);
-
-	static void SetFinalRect (DependencyObject *item, Size *size);
-	static Size *GetFinalRect (DependencyObject *item);
-
-	static void SetLastRenderSize (DependencyObject *item, Size *size);
-	static Size *GetLastRenderSize (DependencyObject *item);
-
-	static void SetBounds (DependencyObject *item, Rect *bounds);
-	static Rect *GetBounds (DependencyObject *item);
-};
 #endif /* __MOON_UIELEMENT_H__ */

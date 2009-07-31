@@ -634,7 +634,7 @@ UIElement::DoArrange ()
 	
 	if (parent && (!parent->Is (Type::CANVAS) || (IsLayoutContainer () || !last))) 
 		parent->InvalidateArrange ();
- 
+
 	if (!last)
 		return;
 	

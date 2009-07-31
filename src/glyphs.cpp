@@ -398,11 +398,8 @@ Glyphs::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
-	if (layout_clip) {
-		layout_clip->Draw (cr);
-		cairo_clip (cr);
-	}
+	if (!path_only)
+		RenderLayoutClip (cr);
 
 	//Point p = GetOriginPoint ();
 	Rect area = Rect (left, top, 0, 0);

@@ -89,13 +89,10 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 
 	cairo_set_matrix (cr, &absolute_xform);
 	cairo_new_path (cr);
-
-	Geometry *clip = path_only ? NULL : LayoutInformation::GetLayoutClip (this);
-	if (clip) {
-		cairo_save (cr);
-		clip->Draw (cr);
-		cairo_clip (cr);
-	}	
+	
+	cairo_save (cr);
+	if (!path_only)
+		RenderLayoutClip (cr);
 
 	CornerRadius *round = GetCornerRadius ();
 	CornerRadius inner_adjusted = CornerRadius (0);
@@ -146,8 +143,7 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 			background->Fill (cr);
 	}
 	
-	if (clip)
-		cairo_restore (cr);
+	cairo_restore (cr);
 }
 
 void

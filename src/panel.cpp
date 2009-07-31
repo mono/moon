@@ -115,13 +115,8 @@ Panel::Render (cairo_t *cr, Region *region, bool path_only)
 	Rect area = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
 	
 	cairo_save (cr);
-	if (!path_only) {
-		Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
-		if (layout_clip) {
-			layout_clip->Draw (cr);
-			cairo_clip (cr);
-		}
-	}
+	if (!path_only) 
+		RenderLayoutClip (cr);
 
 	cairo_new_path (cr);
 	area.Draw (cr);

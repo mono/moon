@@ -340,7 +340,6 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_matrix_t matrix;
 	Rect image;
 	Rect paint;
-	Geometry *clip;
 
 	if (!source)
 		return;
@@ -377,11 +376,8 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	clip = LayoutInformation::GetLayoutClip (this);
-	if (clip) {
-		clip->Draw (cr);
-		cairo_clip (cr);
-	}	
+	if (!path_only)
+		RenderLayoutClip (cr);
 
 	paint.Draw (cr);
 	cairo_fill (cr);

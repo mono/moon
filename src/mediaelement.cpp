@@ -681,11 +681,8 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	if (IsPlaying ())
 		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
 
-	Geometry *clip = LayoutInformation::GetLayoutClip (this);
-	if (clip) {
-		clip->Draw (cr);
-		cairo_clip (cr);
-	}	
+	if (!path_only)
+		RenderLayoutClip (cr);
 
 	paint.Draw (cr);
 	cairo_fill (cr);

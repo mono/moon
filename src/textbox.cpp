@@ -32,6 +32,7 @@
 #include "utils.h"
 #include "uri.h"
 
+#include "geometry.h"
 
 //
 // TextBuffer
@@ -3379,9 +3380,21 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 }
 
 Size
+TextBoxView::ComputeActualSize ()
+{
+	Layout (Size (INFINITY, INFINITY));
+
+	Size actual (0,0);
+	layout->GetActualExtents (&actual.width, &actual.height);
+	
+	return actual;
+}
+
+Size
 TextBoxView::MeasureOverride (Size availableSize)
 {
 	Size desired = Size ();
+	
 	
 	Layout (availableSize);
 	
@@ -3395,11 +3408,14 @@ TextBoxView::ArrangeOverride (Size finalSize)
 {
 	Size arranged = Size ();
 	
+	
 	Layout (finalSize);
 	
 	layout->GetActualExtents (&arranged.width, &arranged.height);
 	
-	return arranged.Max (finalSize);
+	arranged = arranged.Max (finalSize);
+
+	return arranged;
 }
 
 void
@@ -3467,6 +3483,10 @@ TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
+
+	if (!path_only)
+		RenderLayoutClip (cr);
+
 	layout->SetAvailableWidth (renderSize.width);
 	Paint (cr);
 	cairo_restore (cr);

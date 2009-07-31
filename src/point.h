@@ -45,9 +45,14 @@ public:
 		return Point (x * v, y * v);
 	}
 
-	bool operator == (const Point &point)
+	bool operator == (const Point &point) const
 	{
 		return fabs (point.x-x) < DBL_EPSILON && fabs (point.y-y) < DBL_EPSILON;
+	}
+
+	bool operator != (const Point &point) const
+	{
+		return !(*this == point);
 	}
 
 	Point Transform (cairo_matrix_t *matrix);
