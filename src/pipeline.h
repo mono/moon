@@ -535,6 +535,7 @@ private:
 	void WorkerLoop ();
 	static void *WorkerLoop (void *data);
 	void StopThread (); // Stops the worker thread.
+	void ClearQueue (bool delete_queue);
 	
 	// Determines the container type and selects a demuxer. We have support for mp3 and asf demuxers.
 	// Also opens the demuxer.

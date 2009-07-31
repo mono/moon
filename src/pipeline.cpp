@@ -1222,6 +1222,12 @@ Media::WakeUp ()
 void
 Media::ClearQueue ()
 {
+	ClearQueue (false);
+}
+
+void
+Media::ClearQueue (bool delete_queue)
+{
 	LOG_PIPELINE ("Media::ClearQueue ().\n");
 	if (queued_requests != NULL) {
 		List::Node *next;
@@ -1231,6 +1237,11 @@ Media::ClearQueue ()
 		if (queued_requests != NULL) {
 			current = queued_requests->First ();
 			queued_requests->Clear (false);
+			if (delete_queue) {
+				delete queued_requests;
+				queued_requests = NULL;
+				pthread_cond_signal (&queue_condition);
+			}
 		}
 		pthread_mutex_unlock (&queue_mutex);
 		
