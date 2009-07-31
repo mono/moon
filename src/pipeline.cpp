@@ -1167,26 +1167,34 @@ Media::WorkerLoop ()
 	LOG_PIPELINE ("Media::WorkerLoop (): exiting.\n");
 }
 
-void
+bool
 Media::EnqueueWork (MediaClosure *closure, bool wakeup)
 {
+	bool result;
 	MediaWork *work;
 	
 	LOG_PIPELINE_EX ("Media::EnqueueWork (%p).\n", closure);
 
-	g_return_if_fail (closure != NULL);
+	g_return_val_if_fail (closure != NULL, false);
 	
 	work = new MediaWork (closure);
 	
 	pthread_mutex_lock (&queue_mutex);
 	
-	if (queued_requests != NULL)
+	if (queued_requests != NULL) {
 		queued_requests->Append (work);
+		result = true;
+	} else {
+		delete work;
+		result = false;
+	}
 
 	if (wakeup)
 		pthread_cond_signal (&queue_condition);
 	
 	pthread_mutex_unlock (&queue_mutex);
+	
+	return result;
 }
 
 MediaResult

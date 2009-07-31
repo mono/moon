@@ -567,7 +567,7 @@ public:
 	virtual void Dispose ();
 	
 	bool InMediaThread ();
-	void EnqueueWork (MediaClosure *closure, bool wakeup = true);
+	bool EnqueueWork (MediaClosure *closure, bool wakeup = true);
 	
 	// Calls obj->Dispose on the media thread.
 	void DisposeObject (EventObject *obj);
