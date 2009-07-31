@@ -15,10 +15,19 @@
 //
 // ErrorEventArgs
 //
-ErrorEventArgs::ErrorEventArgs (ErrorType type, int code, const char *msg)
+ErrorEventArgs::ErrorEventArgs (Type::Kind kind, ErrorType type, int code, const char *msg)
+	: EventArgs (kind)
 {
-	SetObjectType(Type::ERROREVENTARGS);
+	error_type = type;
+	error_code = code;
+	error_message = g_strdup (msg);
+	extended_message = NULL;
+	extended_code = 0;
+}
 
+ErrorEventArgs::ErrorEventArgs (ErrorType type, int code, const char *msg)
+	: EventArgs (Type::ERROREVENTARGS)
+{
 	error_type = type;
 	error_code = code;
 	error_message = g_strdup (msg);
@@ -27,9 +36,8 @@ ErrorEventArgs::ErrorEventArgs (ErrorType type, int code, const char *msg)
 }
 
 ErrorEventArgs::ErrorEventArgs (ErrorType type, int code, const char *msg, int extended_error_code, const char *extended_msg)
+	: EventArgs (Type::ERROREVENTARGS)
 {
-	SetObjectType(Type::ERROREVENTARGS);
-
 	error_type = type;
 	error_code = code;
 	error_message = g_strdup (msg);
@@ -49,9 +57,8 @@ ErrorEventArgs::~ErrorEventArgs ()
 //
 
 ImageErrorEventArgs::ImageErrorEventArgs (const char *msg)
-  : ErrorEventArgs (ImageError, 4001, msg)
+  : ErrorEventArgs (Type::IMAGEERROREVENTARGS, ImageError, 4001, msg)
 {
-	SetObjectType(Type::IMAGEERROREVENTARGS);
 }
 
 ImageErrorEventArgs::~ImageErrorEventArgs ()
@@ -66,9 +73,8 @@ ImageErrorEventArgs::~ImageErrorEventArgs ()
 ParserErrorEventArgs::ParserErrorEventArgs (const char *msg, const char *file,
 					    int line, int column, int error_code, 
 					    const char *element, const char *attribute)
-  : ErrorEventArgs (ParserError, error_code, msg)
+  : ErrorEventArgs (Type::PARSERERROREVENTARGS, ParserError, error_code, msg)
 {
-	SetObjectType(Type::PARSERERROREVENTARGS);
 	xml_attribute = g_strdup (attribute);
 	xml_element = g_strdup (element);
 	xaml_file = g_strdup (file);

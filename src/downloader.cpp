@@ -56,10 +56,9 @@
 //
 
 Downloader::Downloader ()
+	: DependencyObject (Type::DOWNLOADER)
 {
 	LOG_DOWNLOADER ("Downloader::Downloader ()\n");
-	
-	SetObjectType (Type::DOWNLOADER);
 
 	downloader_state = Downloader::create_state (this);
 	user_data = NULL;

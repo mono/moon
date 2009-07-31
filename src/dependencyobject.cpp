@@ -1783,20 +1783,19 @@ DependencyObject::collection_item_changed (EventObject *sender, EventArgs *args,
 }
 
 DependencyObject::DependencyObject ()
+	: EventObject (Type::DEPENDENCY_OBJECT)
 {
-	SetObjectType (Type::DEPENDENCY_OBJECT);
 	Initialize ();
 }
-/*
-DependencyObject::DependencyObject (Deployment *deployment)
-	: EventObject (deployment)
-{
-	SetObjectType (Type::DEPENDENCY_OBJECT);
-	Initialize ();
-}
-*/
+
 DependencyObject::DependencyObject (Deployment *deployment, Type::Kind object_type)
 	: EventObject (deployment, object_type)
+{
+	Initialize ();
+}
+
+DependencyObject::DependencyObject (Type::Kind object_type)
+	: EventObject (object_type)
 {
 	Initialize ();
 }

@@ -19,8 +19,13 @@
 #include "runtime.h"
 
 EventArgs::EventArgs ()
+	: DependencyObject (Type::EVENTARGS)
 {
-	SetObjectType(Type::EVENTARGS);
+}
+
+EventArgs::EventArgs (Type::Kind kind)
+	: DependencyObject (kind)
+{
 }
 
 EventArgs::~EventArgs ()
@@ -28,8 +33,8 @@ EventArgs::~EventArgs ()
 }
 
 RenderingEventArgs::RenderingEventArgs (TimeSpan renderingTime)
+	: EventArgs (Type::RENDERINGEVENTARGS)
 {
-	SetObjectType(Type::RENDERINGEVENTARGS);
 
 	this->renderingTime = renderingTime;
 }
@@ -47,9 +52,8 @@ RenderingEventArgs::GetRenderingTime ()
 
 
 CollectionChangedEventArgs::CollectionChangedEventArgs ()
+	: EventArgs (Type::COLLECTIONCHANGEDEVENTARGS)
 {
-	SetObjectType (Type::COLLECTIONCHANGEDEVENTARGS);
-
 	action = CollectionChangedActionAdd;
 	old_item = NULL;
 	new_item = NULL;
@@ -57,9 +61,8 @@ CollectionChangedEventArgs::CollectionChangedEventArgs ()
 }
 
 CollectionChangedEventArgs::CollectionChangedEventArgs (CollectionChangedAction action, Value *new_item, Value *old_item, int index)
+	: EventArgs (Type::COLLECTIONCHANGEDEVENTARGS)
 {
-	SetObjectType (Type::COLLECTIONCHANGEDEVENTARGS);
-
 	this->action = action;
 	this->new_item = new_item;
 	this->old_item = old_item;
@@ -119,16 +122,14 @@ CollectionChangedEventArgs::GetIndex ()
 }
 
 DownloadProgressEventArgs::DownloadProgressEventArgs (double progress)
+	: EventArgs (Type::DOWNLOADPROGRESSEVENTARGS)
 {
-	SetObjectType (Type::DOWNLOADPROGRESSEVENTARGS);
-
 	this->progress = progress;
 }
 
 DownloadProgressEventArgs::DownloadProgressEventArgs ()
+	: EventArgs (Type::DOWNLOADPROGRESSEVENTARGS)
 {
-	SetObjectType (Type::DOWNLOADPROGRESSEVENTARGS);
-
 	progress = 0.0;
 }
 
@@ -149,8 +150,8 @@ DownloadProgressEventArgs::GetProgress ()
 }
 
 ExceptionRoutedEventArgs::ExceptionRoutedEventArgs ()
+	: RoutedEventArgs (Type::EXCEPTIONROUTEDEVENTARGS)
 {
-	SetObjectType (Type::EXCEPTIONROUTEDEVENTARGS);
 }
 
 ExceptionRoutedEventArgs::~ExceptionRoutedEventArgs ()
@@ -158,9 +159,8 @@ ExceptionRoutedEventArgs::~ExceptionRoutedEventArgs ()
 }
 
 RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
+	: EventArgs (Type::ROUTEDEVENTARGS)
 {
-	SetObjectType (Type::ROUTEDEVENTARGS);
-
 	if (source)
 		source->ref ();
 	
@@ -169,10 +169,24 @@ RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
 }
 
 RoutedEventArgs::RoutedEventArgs ()
+	: EventArgs (Type::ROUTEDEVENTARGS)
 {
-	SetObjectType (Type::ROUTEDEVENTARGS);
-
 	source = NULL;
+	handled = false;
+}
+
+RoutedEventArgs::RoutedEventArgs (Type::Kind kind)
+	: EventArgs (kind)
+{
+	source = NULL;
+	handled = false;
+}
+
+RoutedEventArgs::RoutedEventArgs (DependencyObject *source, Type::Kind kind)
+{
+	if (source)
+		source->ref ();
+	this->source = source;
 	handled = false;
 }
 
@@ -211,14 +225,14 @@ RoutedEventArgs::SetSource (DependencyObject *el)
 }
 
 MouseEventArgs::MouseEventArgs (GdkEvent *event)
+	: RoutedEventArgs (Type::MOUSEEVENTARGS)
 {
-	SetObjectType (Type::MOUSEEVENTARGS);
 	this->event = gdk_event_copy (event);
 }
 
 MouseEventArgs::MouseEventArgs ()
+	: RoutedEventArgs (Type::MOUSEEVENTARGS)
 {
-	SetObjectType (Type::MOUSEEVENTARGS);
 	event = gdk_event_new (GDK_MOTION_NOTIFY);
 }
 
@@ -324,14 +338,14 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 }
 
 MouseWheelEventArgs::MouseWheelEventArgs (GdkEvent *event)
+	: RoutedEventArgs (Type::MOUSEWHEELEVENTARGS)
 {
-	SetObjectType (Type::MOUSEWHEELEVENTARGS);
 	this->event = gdk_event_copy (event);
 }
 
 MouseWheelEventArgs::MouseWheelEventArgs ()
+	: RoutedEventArgs (Type::MOUSEWHEELEVENTARGS)
 {
-	SetObjectType (Type::MOUSEWHEELEVENTARGS);
 	event = gdk_event_new (GDK_SCROLL);
 }
 
@@ -361,14 +375,14 @@ MouseWheelEventArgs::GetWheelDelta ()
 }
 
 KeyEventArgs::KeyEventArgs (GdkEventKey *event)
+	: RoutedEventArgs (Type::KEYEVENTARGS)
 {
-	SetObjectType (Type::KEYEVENTARGS);
 	this->event = (GdkEventKey *) gdk_event_copy ((GdkEvent *)event);
 }
 
 KeyEventArgs::KeyEventArgs ()
+	: RoutedEventArgs (Type::KEYEVENTARGS)
 {
-	SetObjectType (Type::KEYEVENTARGS);
 	event = (GdkEventKey *) gdk_event_new (GDK_KEY_PRESS);
 }
 

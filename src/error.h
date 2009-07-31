@@ -24,7 +24,8 @@ class ErrorEventArgs;
 class ErrorEventArgs : public EventArgs  {
 protected:
 	virtual ~ErrorEventArgs ();
-
+	ErrorEventArgs (Type::Kind kind, ErrorType type, int code, const char *msg);
+	
 public:
 	ErrorEventArgs (ErrorType type, int code, const char *msg);
 	ErrorEventArgs (ErrorType type, int code, const char *msg, int extended_code, const char *extended_msg);

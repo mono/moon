@@ -1,5 +1,16 @@
 2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* error.cpp|h:
+	* downloader.cpp:
+	* eventargs.cpp|h: Set the object's type upon construction instead
+	of using SetObjectType right after. This is useful when tracking
+	objects by type - the ctor also shows up.
+
+	* dependencyobject.cpp|h: Add a DependencyObject ctor that takes
+	a Type::Kind argument.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.cpp: Make the stacktrace pipes thread-local. This way
 	printing stacktraces from several threads at the same time doesn't
 	result in a big mess.

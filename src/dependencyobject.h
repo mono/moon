@@ -379,6 +379,7 @@ public:
 protected:
 	virtual ~DependencyObject ();
 	DependencyObject (Deployment *deployment, Type::Kind object_type = Type::DEPENDENCY_OBJECT);
+	DependencyObject (Type::Kind object_type);
 	
 	//
 	// Returns true if a value is valid.  If the value is invalid return false.

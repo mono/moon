@@ -35,6 +35,7 @@ public:
 
 protected:
 	virtual ~EventArgs ();
+	EventArgs (Type::Kind type);
 };
 
 /* @Namespace=None */
@@ -170,6 +171,8 @@ public:
 
 protected:
 	virtual ~RoutedEventArgs ();
+	RoutedEventArgs (DependencyObject *source, Type::Kind kind);
+	RoutedEventArgs (Type::Kind kind);
 	
 private:
 	DependencyObject *source;
