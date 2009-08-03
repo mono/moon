@@ -3536,9 +3536,11 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 		return;
 	}
 	
-	if (dirty)
+	if (dirty) {
+		InvalidateMeasure ();
 		UpdateBounds (true);
-	
+	}
+
 	Invalidate ();
 }
 
@@ -3620,6 +3622,7 @@ TextBoxView::SetTextBox (TextBoxBase *textbox)
 	}
 	
 	UpdateBounds (true);
+	InvalidateMeasure ();
 	Invalidate ();
 	dirty = true;
 }
