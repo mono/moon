@@ -12,6 +12,9 @@
 
 #include <config.h>
 
+#include <glib.h>
+#include <glib/gstdio.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -1067,6 +1070,7 @@ FontManager::FontManager ()
 		dpi = 72.0;
 	
 	FcPatternDestroy (pattern);
+	root = NULL;
 }
 
 FontManager::~FontManager ()
@@ -1074,6 +1078,11 @@ FontManager::~FontManager ()
 	g_hash_table_destroy (resources);
 	g_hash_table_destroy (faces);
 	FT_Done_FreeType (libft2);
+	
+	if (root) {
+		RemoveDir (root);
+		g_free (root);
+	}
 }
 
 static bool
@@ -1256,6 +1265,77 @@ FontManager::AddResource (const char *resource, const char *path)
 	
 	if (index)
 		g_hash_table_insert (resources, index->name, index);
+}
+
+void
+FontManager::AddResource (const char *resource, ManagedStreamCallbacks *stream)
+{
+	char buf[4096], *dirname, *path;
+	unzFile zipfile;
+	int total = 0;
+	int nread, fd;
+	
+	if (!root && !(root = CreateTempDir ("moonlight-fonts")))
+		return;
+	
+	if (!strncmp (resource, "font-source://", 14))
+		snprintf (buf, sizeof (buf), "%s.XXXXXX", resource + 14);
+	else
+		snprintf (buf, sizeof (buf), "%s.XXXXXX", resource);
+	
+	path = g_build_filename (root, buf, NULL);
+	
+	if ((fd = mkstemp (path)) == -1) {
+		g_free (path);
+		return;
+	}
+	
+	// write the managed stream to disk
+	while ((nread = stream->Read (stream, buf, total, sizeof (buf))) > 0) {
+		if (write_all (fd, buf, (size_t) nread) == -1) {
+			close (fd);
+			g_unlink (path);
+			g_free (path);
+			return;
+		}
+		
+		total += nread;
+	}
+	
+	close (fd);
+	
+	// check to see if the resource is zipped
+	if ((zipfile = unzOpen (path))) {
+		snprintf (buf, sizeof (buf), "%s.XXXXXX", resource);
+		dirname = g_build_filename (root, buf, NULL);
+		
+		// create a directory to contain our unzipped content
+		if (!MakeTempDir (dirname)) {
+			unzClose (zipfile);
+			g_free (dirname);
+			g_unlink (path);
+			g_free (path);
+			return;
+		}
+		
+		// unzip the contents
+		if (!ExtractAll (zipfile, dirname, false)) {
+			RemoveDir (dirname);
+			unzClose (zipfile);
+			g_free (dirname);
+			g_unlink (path);
+			g_free (path);
+			return;
+		}
+		
+		unzClose (zipfile);
+		g_unlink (path);
+		g_free (path);
+		
+		path = dirname;
+	}
+	
+	AddResource (resource, path);
 }
 
 static int

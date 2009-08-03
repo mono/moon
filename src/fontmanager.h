@@ -20,6 +20,7 @@
 #include "moon-path.h"
 #include "enums.h"
 
+struct ManagedStreamCallbacks;
 class FontManager;
 class FontFace;
 
@@ -87,6 +88,7 @@ class FontManager {
 	GHashTable *resources;
 	GHashTable *faces;
 	FT_Library libft2;
+	char *root;
 	double dpi;
 	
 	FontFace *OpenFontResource (const char *resource, const char *family, int index, FontStretches stretch, FontWeights weight, FontStyles style);
@@ -97,6 +99,7 @@ class FontManager {
 	FontManager ();
 	~FontManager ();
 	
+	void AddResource (const char *resource, ManagedStreamCallbacks *stream);
 	void AddResource (const char *resource, const char *path);
 	
 	FontFace *OpenFont (const char *name, FontStretches stretch, FontWeights weight, FontStyles style);

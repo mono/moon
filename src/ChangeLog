@@ -1,5 +1,8 @@
 2009-08-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* fontmanager.cpp (AddResource): Implemented a version of this
+	interface that can take a ManagedStreamCallbacks argument.
+
 	* application.cpp (GetResourceAsPath): If we are adding the X's
 	ourselves, use MakeTempDir() instead of CreateTempDir().
 
