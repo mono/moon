@@ -343,7 +343,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	
 	// create a directory to contain our unzipped content
 	dirname = g_strdup_printf ("%s.XXXXXX", path);
-	if (!CreateTempDir (dirname)) {
+	if (!MakeTempDir (dirname)) {
 		unzClose (zipfile);
 		g_free (dirname);
 		g_unlink (path);

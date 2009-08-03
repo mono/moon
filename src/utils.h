@@ -70,6 +70,7 @@ const char *CanonicalizeFilename (char *filename, int n, bool lower);
 bool ExtractFile (unzFile zip, int fd);
 bool ExtractAll (unzFile zip, const char *dir, bool lower);
 
+char *MakeTempDir (char *tmpdir);
 char *CreateTempDir (const char *filename);
 
 int RemoveDir (const char *dir);
