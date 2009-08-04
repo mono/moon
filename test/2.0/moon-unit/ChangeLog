@@ -1,5 +1,20 @@
 2009-08-04  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentPresenterTest.cs: Add some
+	  extra tests to make sure the link between DataContext and
+	  Content is understood correctly for ContentPresenter.
+
+	* System.Windows/FrameworkElementTest.cs: Add test to ensure
+	  that ContentControl.Content is not copied to the DataContext
+	  like ContentPresenter.Content is.
+
+	* System.Windows.Data/BindingTest.cs: Add two extra Binding
+	  tests to check that TwoWay bindings always have a path and
+	  also see what happens if a FrameworkElements DataContext is
+	  databound. In this case it uses the parents datacontext.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs:
 	* System.Windows.Controls/ContentPresenterTest.cs: Add extra
 	  tests to see how the DataContext property behaves.

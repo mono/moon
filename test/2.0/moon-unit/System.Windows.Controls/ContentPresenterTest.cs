@@ -177,17 +177,38 @@ namespace MoonTest.System.Windows.Controls {
 		[MoonlightBug]
 		public void DataContextTest5 ()
 		{
-			// When the ContentPresenter is in the tree, its DataContext gets reset when it's loaded
+			// When the ContentPresenter is in the tree, its DataContext gets set to ContentPresenter.Content
+			// when it is loaded
 			object o = new object ();
 			ContentPresenter c = new ContentPresenter { DataContext = o };
 			Assert.AreEqual (o, c.DataContext, "#1");
 			CreateAsyncTest (c,
-				() => Assert.IsNull (c.DataContext, "#2"),
+				() => {
+					Assert.IsNull (c.DataContext, "#2");
+					Assert.IsNull (c.ReadLocalValue (ContentPresenter.DataContextProperty), "#2b");
+				},
 				() => {
 					c.DataContext = o;
-					Assert.AreEqual (o, c.DataContext, "#3");
+					Assert.AreEqual (o, c.DataContext, "#2");
 				},
 				() => Assert.AreEqual (o, c.DataContext, "#4")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest5b ()
+		{
+			// When the ContentPresenter is in the tree, its DataContext gets set to ContentPresenter.Content
+			// when it is loaded
+			object o = new object ();
+			object content = new object ();
+			ContentPresenter c = new ContentPresenter { Content = content };
+			CreateAsyncTest (c,
+				() => {
+					Assert.AreEqual (content, c.DataContext, "#1");
+					Assert.AreEqual (content, c.ReadLocalValue (FrameworkElement.DataContextProperty), "#2");
+				}
 			);
 		}
 

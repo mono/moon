@@ -796,6 +796,19 @@ namespace MoonTest.System.Windows {
 		}
 		
 		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest3 ()
+		{
+			// Check that Content isn't automatically copied to 'DataContext'
+			// like it does in ContentPresenter
+			ContentControl c = new ContentControl ();
+			c.Content = "Hello";
+			CreateAsyncTest (c,
+				() => Assert.IsNull (c.DataContext, "#1")
+			);
+		}
+		
+		[TestMethod]
 		public void MeasureOverride ()
 		{
 			Border b = new Border ();

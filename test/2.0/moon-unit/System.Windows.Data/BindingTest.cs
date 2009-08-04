@@ -170,6 +170,21 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void BindDataContext ()
+		{
+			// Bind the DataContext of the FE to its DataContext
+			TextBlock block = new TextBlock ();
+			block.SetBinding (TextBlock.DataContextProperty, new Binding ());
+			CreateAsyncTest (block,
+				() => Assert.IsNull (block.DataContext, "#1"),
+				() => TestPanel.DataContext = "Hello",
+				() => Assert.AreEqual ("Hello", block.DataContext, "#2")
+			);
+		}
+
+		[TestMethod]
 		public void BindToText ()
 		{
 			Binding binding = new Binding ("");
@@ -826,6 +841,14 @@ namespace MoonTest.System.Windows.Data
             Assert.IsTrue(r.IsHitTestVisible, "#2");
             Assert.IsNotNull(bindingEx, "#3");
         }
+
+		[TestMethod]
+		[MoonlightBug]
+		public void TestTwoWayBinding11 ()
+		{
+			Rectangle r = new Rectangle();
+			Assert.Throws<ArgumentException> (() => r.SetBinding (Canvas.WidthProperty, new Binding { Mode = BindingMode.TwoWay }));
+		}
 
 		[TestMethod]
 		public void TestOnceOffBinding ()
