@@ -174,7 +174,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void DataContextTest5 ()
 		{
 			// When the ContentPresenter is in the tree, its DataContext gets set to ContentPresenter.Content

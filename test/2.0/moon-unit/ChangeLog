@@ -1,5 +1,11 @@
 2009-08-04  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentPresenterTest.cs:
+	  ContentPresenter.Content is copied to the datacontext when
+	  it is Loaded.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentPresenterTest.cs: Add some
 	  extra tests to make sure the link between DataContext and
 	  Content is understood correctly for ContentPresenter.

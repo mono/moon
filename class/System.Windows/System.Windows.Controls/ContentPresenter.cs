@@ -164,6 +164,12 @@ namespace System.Windows.Controls
 		{
 		}
 
+		internal override void InvokeLoaded ()
+		{
+			DataContext = Content is UIElement ? null : Content;
+			base.InvokeLoaded ();
+		}
+
 		protected override Size MeasureOverride (Size availableSize)
 		{
 			if (!hasContent)

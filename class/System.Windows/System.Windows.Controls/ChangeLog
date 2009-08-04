@@ -1,5 +1,10 @@
 2009-08-04  Alan McGovern  <amcgovern@novell.com>
 
+	* ContentPresenter.cs: ContentPresenter.Content is copied to
+	  the datacontext when it is Loaded.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
 	* ContentPresenter.cs: If ContentPresenter.Content was changed
 	  from one primitive value to another primitive value (i.e.
 	  non-UIElement) then the DataContext was not updated
