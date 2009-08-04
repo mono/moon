@@ -1,3 +1,11 @@
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: If ContentPresenter.Content was changed
+	  from one primitive value to another primitive value (i.e.
+	  non-UIElement) then the DataContext was not updated
+	  correctly. The DataContext is now kept in sync with the
+	  ContentProperty.
+
 2009-07-29  Alan McGovern  <amcgovern@novell.com>
 
 	* TextBox.cs:

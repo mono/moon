@@ -127,6 +127,39 @@ namespace MoonTest.System.Windows.Controls {
 				() => Assert.IsNull (c.DataContext)
 			);
 		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest2 ()
+		{
+			// Changing the content updates the datacontext
+			ContentPresenter c = new ContentPresenter ();
+			c.Content = new object ();
+			CreateAsyncTest (c,
+				() => {
+					Assert.AreEqual (c.Content, c.DataContext, "#1");
+					c.Content = new object ();
+				},
+				() => Assert.AreEqual (c.Content, c.DataContext, "#2")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("DataContext changed notifications are asynchronous")]
+		public void DataContextTest3 ()
+		{
+			// The property change notification should be asynchronous
+			ContentPresenter c = new ContentPresenter ();
+			c.Content = new object ();
+			CreateAsyncTest (c,
+				() => {
+					c.Content = new object ();
+					Assert.AreNotEqual (c.Content, c.DataContext, "#1");
+				},
+				() => Assert.AreEqual (c.Content, c.DataContext, "#2")
+			);
+		}
 		
 		[TestMethod]
 		[Asynchronous]

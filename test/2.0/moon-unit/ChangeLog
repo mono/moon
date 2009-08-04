@@ -1,3 +1,11 @@
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentPresenterTest.cs: If
+	  ContentPresenter.Content was changed from one primitive
+	  value to another primitive value (i.e. non-UIElement) then
+	  the DataContext was not updated correctly. The DataContext
+	  is now kept in sync with the ContentProperty.
+
 2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Media/VisualTreeHelperTest.cs: Mark HitTest31b

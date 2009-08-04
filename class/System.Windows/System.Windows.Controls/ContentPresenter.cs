@@ -104,9 +104,12 @@ namespace System.Windows.Controls
 			Debug.Assert(source != null, 
 				     "The source is not an instance of ContentPresenter!");
 
+			object newValue = e.NewValue;
+			source.DataContext = newValue is UIElement ? null : newValue;
+
 			// If the content is a UIElement, we have to clear the Template and wait for a re-render
 			// Otherwise we directly update the text in our textbox.
-			if (e.OldValue is UIElement || e.NewValue is UIElement) {
+			if (e.OldValue is UIElement || newValue is UIElement) {
 				source.InvalidateMeasure ();
 				source.hasContent = false;
 				source.SetContentRoot (null);
@@ -201,9 +204,6 @@ namespace System.Windows.Controls
 		{
 			if (newContentRoot == _contentRoot)
 				return;
-
-			if (!(Content is FrameworkElement))
-				DataContext = Content;
 			
 			if (_contentRoot != null) {
 				// clear the old content
