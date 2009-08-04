@@ -567,6 +567,7 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	SetObjectType (type);
 	SetDefaultStyleKey (type_info);
 	
+	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
 	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBoxBase::mouse_left_button_down, this);
 	AddHandler (UIElement::MouseLeftButtonUpEvent, TextBoxBase::mouse_left_button_up, this);
 	AddHandler (UIElement::MouseMoveEvent, TextBoxBase::mouse_move, this);
@@ -618,6 +619,7 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 
 TextBoxBase::~TextBoxBase ()
 {
+	RemoveHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
 	RemoveHandler (UIElement::MouseLeftButtonDownEvent, TextBoxBase::mouse_left_button_down, this);
 	RemoveHandler (UIElement::MouseLeftButtonUpEvent, TextBoxBase::mouse_left_button_up, this);
 	RemoveHandler (UIElement::MouseMoveEvent, TextBoxBase::mouse_move, this);
@@ -1916,9 +1918,8 @@ TextBoxBase::ResetIMContext ()
 void
 TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 {
-	GdkEventButton *event = (GdkEventButton *) args->GetEvent ();
-	int cursor, start, end;
 	double x, y;
+	int cursor;
 	
 	args->SetHandled (true);
 	Focus ();
@@ -1930,11 +1931,46 @@ TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 		
 		ResetIMContext ();
 		
-		switch (event->type) {
-		case GDK_3BUTTON_PRESS:
+		// Single-Click: cursor placement
+		captured = CaptureMouse ();
+		selecting = true;
+		
+		BatchPush ();
+		emit = NOTHING_CHANGED;
+		SetSelectionStart (cursor);
+		SetSelectionLength (0);
+		BatchPop ();
+		
+		SyncAndEmit ();
+	}
+}
+
+void
+TextBoxBase::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBoxBase *) closure)->OnMouseLeftButtonDown ((MouseEventArgs *) args);
+}
+
+void
+TextBoxBase::OnMouseLeftButtonMultiClick (MouseEventArgs *args)
+{
+	GdkEventButton *event = (GdkEventButton *) args->GetEvent ();
+	int cursor, start, end;
+	double x, y;
+	
+	args->SetHandled (true);
+	
+	if (view) {
+		args->GetPosition (view, &x, &y);
+		
+		cursor = view->GetCursorFromXY (x, y);
+		
+		ResetIMContext ();
+		
+		if (event->type == GDK_3BUTTON_PRESS) {
 			// Note: Silverlight doesn't implement this, but to
 			// be consistent with other TextEntry-type
-			// widgets, we will.
+			// widgets in Gtk+, we will.
 			//
 			// Triple-Click: select the line
 			if (captured)
@@ -1943,8 +1979,7 @@ TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 			end = CursorLineEnd (cursor, true);
 			selecting = false;
 			captured = false;
-			break;
-		case GDK_2BUTTON_PRESS:
+		} else {
 			// Double-Click: select the word
 			if (captured)
 				ReleaseMouseCapture ();
@@ -1952,14 +1987,6 @@ TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 			end = CursorNextWord (cursor);
 			selecting = false;
 			captured = false;
-			break;
-		case GDK_BUTTON_PRESS:
-		default:
-			// Single-Click: cursor placement
-			captured = CaptureMouse ();
-			start = end = cursor;
-			selecting = true;
-			break;
 		}
 		
 		BatchPush ();
@@ -1973,9 +2000,9 @@ TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 }
 
 void
-TextBoxBase::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure)
+TextBoxBase::mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBoxBase *) closure)->OnMouseLeftButtonDown ((MouseEventArgs *) args);
+	((TextBoxBase *) closure)->OnMouseLeftButtonMultiClick ((MouseEventArgs *) args);
 }
 
 void

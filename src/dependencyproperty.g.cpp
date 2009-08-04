@@ -26,6 +26,7 @@
 #include "geometry.h"
 #include "glyphs.h"
 #include "grid.h"
+#include "layoutinformation.h"
 #include "media.h"
 #include "mediaelement.h"
 #include "multiscaleimage.h"

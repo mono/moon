@@ -1,5 +1,19 @@
 2009-08-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBoxBase::OnMouseLeftButtonMultiClick): New
+	callback for the MultiClick event.
+	(TextBoxBase::OnMouseLeftButtonDown): No longer needs to handle
+	double and triple mouse clicks.
+
+	* uielement.h: Added a MosueLeftButtonMultiClickEvent.
+
+	* runtime.cpp (CreateArgsForEvent): Handle MultiClickEvent.
+	(HandleUIButtonPress): Handle 2 and 3 button mouse clicks.
+
+	* pipeline.h (IMediaObject): FrameNode's dtor needs to be virtual.
+
+2009-08-04  Jeffrey Stedfast  <fejj@novell.com>
+
 	* utils.cpp (write_all): Changed to just return int (-1 for fail,
 	0 for success).
 	(ExtractFile): Don't fsync(). Saves us a lot of time.

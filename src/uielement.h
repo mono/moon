@@ -497,7 +497,8 @@ public:
 	const static int GotFocusEvent;
 	const static int LostFocusEvent;
 	const static int LostMouseCaptureEvent;
-
+	
+	const static int MouseLeftButtonMultiClickEvent;
 	const static int MouseRightButtonDownEvent;
 	const static int MouseRightButtonUpEvent;
 	const static int MouseWheelEvent;
@@ -505,6 +506,7 @@ public:
 	// Helper method which checks recursively checks this element and its visual
 	// parents to see if any are loaded.
 	static bool IsSubtreeLoaded (UIElement *element);
+	
 protected:
 	virtual ~UIElement ();
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);

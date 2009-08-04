@@ -1231,6 +1231,7 @@ Surface::CreateArgsForEvent (int event_id, GdkEvent *event)
 		return new RoutedEventArgs ();
 	else if (event_id == UIElement::MouseLeaveEvent
 		 || event_id ==UIElement::MouseMoveEvent
+		 || event_id ==UIElement::MouseLeftButtonMultiClickEvent
 		 || event_id ==UIElement::MouseLeftButtonDownEvent
 		 || event_id ==UIElement::MouseLeftButtonUpEvent
 		 || event_id ==UIElement::MouseRightButtonDownEvent
@@ -1752,6 +1753,9 @@ Surface::HandleUIButtonRelease (GdkEventButton *event)
 gboolean
 Surface::HandleUIButtonPress (GdkEventButton *event)
 {
+	bool handled;
+	int event_id;
+	
 	active_window->GrabFocus ();
 	
 	if (event->button != 1 && event->button != 3)
@@ -1763,10 +1767,25 @@ Surface::HandleUIButtonPress (GdkEventButton *event)
 		gdk_event_free (mouse_event);
 	
 	mouse_event = gdk_event_copy ((GdkEvent *) event);
-
-	bool handled = HandleMouseEvent (event->button == 1 ? UIElement::MouseLeftButtonDownEvent : UIElement::MouseRightButtonDownEvent,
-					 true, true, true, mouse_event);
-
+	
+	switch (event->type) {
+	case GDK_3BUTTON_PRESS:
+	case GDK_2BUTTON_PRESS:
+		if (event->button != 1)
+			return false;
+		
+		handled = HandleMouseEvent (UIElement::MouseLeftButtonMultiClickEvent, false, false, true, mouse_event);
+		break;
+	default:
+		if (event->button == 1)
+			event_id = UIElement::MouseLeftButtonDownEvent;
+		else
+			event_id = UIElement::MouseRightButtonDownEvent;
+		
+		handled = HandleMouseEvent (event_id, true, true, true, mouse_event);
+		break;
+	}
+	
 	UpdateCursorFromInputList ();
 	SetUserInitiatedEvent (false);
 

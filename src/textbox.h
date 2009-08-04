@@ -163,9 +163,11 @@ class TextBoxBase : public Control, public ITextAttributes {
 	void OnFocusIn (EventArgs *args);
 	
 	// mouse events
+	static void mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure);
 	static void mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure);
 	static void mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure);
 	static void mouse_move (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnMouseLeftButtonMultiClick (MouseEventArgs *args);
 	void OnMouseLeftButtonDown (MouseEventArgs *args);
 	void OnMouseLeftButtonUp (MouseEventArgs *args);
 	void OnMouseMove (MouseEventArgs *args);

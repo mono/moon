@@ -874,16 +874,19 @@ private:
 	
 	class FrameNode : public List::Node {
 	public:
+		MediaFrame *frame;
+		
 		FrameNode (MediaFrame *f) : frame (f)
 		{
 			frame->ref ();
 		}
-		~FrameNode ()
+		
+		virtual ~FrameNode ()
 		{
 			frame->unref ();
 		}
-		MediaFrame *frame;
 	};
+	
 protected:
 	virtual ~IMediaDecoder () {}
 
