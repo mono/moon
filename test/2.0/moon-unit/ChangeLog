@@ -1,5 +1,11 @@
 2009-08-04  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Controls/ContentPresenterTest.cs: Add extra
+	  tests to see how the DataContext property behaves.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentPresenterTest.cs: If
 	  ContentPresenter.Content was changed from one primitive
 	  value to another primitive value (i.e. non-UIElement) then

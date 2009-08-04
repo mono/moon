@@ -160,7 +160,58 @@ namespace MoonTest.System.Windows.Controls {
 				() => Assert.AreEqual (c.Content, c.DataContext, "#2")
 			);
 		}
-		
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest4 ()
+		{
+			// When the ContentPresenter is not in the tree, the DataContext does not get reset
+			object o = new object ();
+			ContentPresenter c = new ContentPresenter { DataContext = o };
+			Enqueue (() => Assert.AreEqual(o, c.DataContext, "#1"));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void DataContextTest5 ()
+		{
+			// When the ContentPresenter is in the tree, its DataContext gets reset when it's loaded
+			object o = new object ();
+			ContentPresenter c = new ContentPresenter { DataContext = o };
+			Assert.AreEqual (o, c.DataContext, "#1");
+			CreateAsyncTest (c,
+				() => Assert.IsNull (c.DataContext, "#2"),
+				() => {
+					c.DataContext = o;
+					Assert.AreEqual (o, c.DataContext, "#3");
+				},
+				() => Assert.AreEqual (o, c.DataContext, "#4")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest6 ()
+		{
+			// When the ContentPresenter is in the tree, its DataContext is updated as expected
+			object o = new object ();
+			object o2 = new object();
+			ContentPresenter c = new ContentPresenter { DataContext = o };
+			Assert.AreEqual (o, c.DataContext, "#1");
+			CreateAsyncTest (c,
+				() => c.DataContext = o,
+				() => {
+					Assert.AreEqual (o, c.DataContext, "#3");
+					TestPanel.DataContext = o2;
+				},
+				() => Assert.AreEqual (o, c.DataContext, "#4"),
+				() => c.ClearValue (ContentPresenter.DataContextProperty),
+				() => Assert.AreEqual (o2, c.DataContext, "#5")
+			);
+		}
+
 		[TestMethod]
 		[Asynchronous]
 		public void NullContent ()

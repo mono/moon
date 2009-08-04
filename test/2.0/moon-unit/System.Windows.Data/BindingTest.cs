@@ -1027,6 +1027,30 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public void UpdateDataContext ()
+		{
+			string s = "Hello";
+			string s2 = "Goodbye";
+			TextBlock block = new TextBlock ();
+			
+
+			TestPanel.Children.Add (block);
+
+			foreach (BindingMode mode in new BindingMode [] { BindingMode.OneTime, BindingMode.OneWay }) {
+				Enqueue (() => block.SetBinding (TextBlock.TextProperty, new Binding { Mode = mode }));
+				Enqueue (() => TestPanel.DataContext = s);
+				Enqueue (() => Assert.AreEqual (s, block.Text, "#1"));
+				Enqueue (() => TestPanel.DataContext = s2);
+				Enqueue (() => Assert.AreEqual (s2, block.Text, "#2"));
+				Enqueue (() => TestPanel.DataContext = s);
+				Enqueue (() => Assert.AreEqual (s, block.Text, "#3"));
+			}
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
 		public void XamlCreateBinding()
 		{
 			object o = XamlReader.Load(
