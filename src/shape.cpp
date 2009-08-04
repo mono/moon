@@ -688,8 +688,14 @@ Shape::ArrangeOverride (Size finalSize)
 		arranged = ApplySizeConstraints (arranged);
 		    
 		extents = Rect (0,0, arranged.width, arranged.height);
-		UpdateBounds ();
-	}
+	} 
+	
+	// We need to clear any existing path so that it will be correctly
+	// rendered later
+	if (path)
+		moon_path_clear (path);
+
+	UpdateBounds ();
 
 	return arranged;
 }

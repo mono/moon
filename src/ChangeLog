@@ -1,5 +1,9 @@
 2009-08-03  Larry Ewing  <lewing@novell.com>
 
+	* shape.cpp (ArrangeOverride): clear the current path.
+
+2009-08-03  Larry Ewing  <lewing@novell.com>
+
 	* textbox.cpp (OnModelChanged): InvalidateMeasure when things
 	change.
 
