@@ -1,3 +1,8 @@
+2009-08-04  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (DoMeasure): invalidate up the tree more
+	agressively.  Fixes DRT #190 regression.
+
 2009-08-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxBase::OnMouseLeftButtonMultiClick): New

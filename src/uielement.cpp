@@ -550,6 +550,7 @@ UIElement::InvalidateMeasure ()
 	Surface *surface;
 	if ((surface = GetSurface ()))
 		surface->needs_measure = true;
+
 }
 
 void
@@ -584,7 +585,7 @@ UIElement::DoMeasure ()
 	}
 
 	// a canvas doesn't care about the child size changing like this
-	if (parent && (!parent->Is (Type::CANVAS) || (IsLayoutContainer () && !last)))
+	if (parent && (!parent->Is (Type::CANVAS) || IsLayoutContainer ()))
 		parent->InvalidateMeasure ();
 
 	dirty_flags &= ~DirtyMeasure;
