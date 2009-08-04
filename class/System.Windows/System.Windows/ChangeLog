@@ -1,5 +1,10 @@
 2009-08-04  Alan McGovern  <amcgovern@novell.com>
 
+	* FrameworkElement.cs: Fix a stupid regression from the last
+	  commit, 'existing' is not the same as the new value.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
 	* FrameworkElement.cs: TwoWay bindings must set a non-empty
 	  Path.
 

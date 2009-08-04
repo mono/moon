@@ -373,10 +373,12 @@ namespace System.Windows {
 				addingExpression = true;
 				value = expression.GetValue (dp);
 			} else if (existing != null) {
-				if (bindingExpression != null) {
-					if (bindingExpression.Binding.Mode == BindingMode.TwoWay)
-						bindingExpression.SetValue (value);
-					else if (!(bindingExpression.UpdatingSource && bindingExpression.Binding.Mode == BindingMode.OneWay)) {
+				if (existing is BindingExpressionBase) {
+					BindingExpressionBase beb = (BindingExpressionBase)existing;
+
+					if (beb.Binding.Mode == BindingMode.TwoWay)
+						beb.SetValue (value);
+					else if (!(beb.UpdatingSource && beb.Binding.Mode == BindingMode.OneWay)) {
 						RemoveExpression (dp);
 					}
 				}
