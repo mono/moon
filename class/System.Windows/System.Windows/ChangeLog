@@ -1,3 +1,8 @@
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: TwoWay bindings must set a non-empty
+	  Path.
+
 2009-07-29  Alan McGovern  <amcgovern@novell.com>
 
 	* UIElement.cs: When eventhandlers are being invoked on a

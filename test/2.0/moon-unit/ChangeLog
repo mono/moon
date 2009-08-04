@@ -1,5 +1,10 @@
 2009-08-04  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: TwoWay bindings must set
+	  a non-empty Path.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentPresenterTest.cs:
 	  ContentPresenter.Content is copied to the datacontext when
 	  it is Loaded.

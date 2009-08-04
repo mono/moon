@@ -355,6 +355,13 @@ namespace System.Windows {
 			bool addingExpression = false;
 			Expression existing;
 			Expression expression = value as Expression;
+			BindingExpressionBase bindingExpression = expression as BindingExpressionBase;
+			
+			if (bindingExpression != null) {
+				if (string.IsNullOrEmpty (bindingExpression.Binding.Path.Path) &&
+				    bindingExpression.Binding.Mode == BindingMode.TwoWay)
+					throw new ArgumentException ("TwoWay bindings require a non-empty Path");
+			}
 
 			expressions.TryGetValue (dp, out existing);
 			
@@ -366,12 +373,10 @@ namespace System.Windows {
 				addingExpression = true;
 				value = expression.GetValue (dp);
 			} else if (existing != null) {
-				if (existing is BindingExpressionBase) {
-					BindingExpressionBase beb = (BindingExpressionBase)existing;
-
-					if (beb.Binding.Mode == BindingMode.TwoWay)
-						beb.SetValue (value);
-					else if (!(beb.UpdatingSource && beb.Binding.Mode == BindingMode.OneWay)) {
+				if (bindingExpression != null) {
+					if (bindingExpression.Binding.Mode == BindingMode.TwoWay)
+						bindingExpression.SetValue (value);
+					else if (!(bindingExpression.UpdatingSource && bindingExpression.Binding.Mode == BindingMode.OneWay)) {
 						RemoveExpression (dp);
 					}
 				}

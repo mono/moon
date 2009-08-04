@@ -843,7 +843,6 @@ namespace MoonTest.System.Windows.Data
         }
 
 		[TestMethod]
-		[MoonlightBug]
 		public void TestTwoWayBinding11 ()
 		{
 			Rectangle r = new Rectangle();
