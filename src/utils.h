@@ -77,7 +77,7 @@ int RemoveDir (const char *dir);
 
 int CopyFileTo (const char *filename, int fd);
 
-ssize_t write_all (int fd, char *buf, size_t len);
+int write_all (int fd, char *buf, size_t len);
 
 cairo_t *measuring_context_create (void);
 void     measuring_context_destroy (cairo_t *cr);

@@ -1,3 +1,9 @@
+2009-08-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* utils.cpp (write_all): Changed to just return int (-1 for fail,
+	0 for success).
+	(ExtractFile): Don't fsync(). Saves us a lot of time.
+
 2009-08-03  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (ArrangeOverride): clear the current path.

@@ -228,7 +228,7 @@ g_ptr_array_insert (GPtrArray *array, guint index, void *item)
 	array->pdata[index] = item;
 }
 
-ssize_t
+int
 write_all (int fd, char *buf, size_t len)
 {
 	size_t nwritten = 0;
@@ -245,7 +245,7 @@ write_all (int fd, char *buf, size_t len)
 		nwritten += n;
 	} while (nwritten < len);
 	
-	return nwritten;
+	return 0;
 }
 
 const char *
@@ -287,7 +287,7 @@ ExtractFile (unzFile zip, int fd)
 		}
 	} while (nread > 0);
 	
-	if (nread != 0 || n == -1 || fsync (fd) == -1) {
+	if (nread != 0 || n == -1 /*|| fsync (fd) == -1*/) {
 		close (fd);
 		
 		return false;
