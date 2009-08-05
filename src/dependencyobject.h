@@ -154,8 +154,8 @@ public:
 	//  Only AddTickCallSafe is safe to call on threads other than the main thread,
 	//  and only if the type on which it is called overrides SetSurface and surrounds
 	//  the call to the base type's SetSurface with SetSurfaceLock/Unlock.
-	void AddTickCall (TickCallHandler handler);
-	void AddTickCallSafe (TickCallHandler handler);
+	void AddTickCall (TickCallHandler handler, EventObject *data = NULL);
+	void AddTickCallSafe (TickCallHandler handler, EventObject *data = NULL);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetObjectType (Type::Kind value) { object_type = value; }
@@ -168,7 +168,7 @@ public:
 	void unref_delayed ();
 	
 	EmitContext *StartEmit (int event_id);
-	bool DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata = NULL, bool only_unemitted = false);
+	bool DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
 	void FinishEmit (int event_id, EmitContext *ctx);
 	static gboolean EmitCallback (gpointer d);
 	
@@ -201,11 +201,13 @@ protected:
 	
 	// To enable scenarios like Emit ("Event", new EventArgs ())
 	// Emit will call unref on the calldata.
-	bool Emit (char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false);
-	bool Emit (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false);
+	bool Emit (char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
+	bool Emit (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
+
+	int GetEventGeneration (int event_id);
 
 private:
-	void AddTickCallInternal (TickCallHandler handler);
+	void AddTickCallInternal (TickCallHandler handler, EventObject *data = NULL);
 	void Initialize (Deployment *deployment, Type::Kind type);
 
 	EventLists *events;

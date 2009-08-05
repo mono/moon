@@ -1,3 +1,33 @@
+2009-08-05  Chris Toshok  <toshok@ximian.com>
+
+	* popup.cpp (class GenerationClosure): new closure for emiting the
+	Opened and Closed events.
+	(Popup::emit_opened, Popup::emit_closed): pass the generation from
+	the closure to ->Emit.
+	(Popup::OnPropertyChanged): for the tick call, pass a closure that
+	contains the current event generation.
+
+	* timemanager.h, timemanager.cpp (TimeManager::InvokeTickCalls):
+	factor out the loop for invoking tick calls here and call it from
+	the source tick method.
+
+	* window-gtk.cpp (MoonWindowGtk::button_press)
+	(MoonWindowGtk::button_release, MoonWindowGtk::scroll)
+	(MoonWindowGtk::motion_notify, MoonWindowGtk::crossing_notify)
+	(MoonWindowGtk::focus_in, MoonWindowGtk::focus_out)
+	(MoonWindowGtk::key_press, MoonWindowGtk::key_release): call
+	TimeManager::InvokeTickCalls from each of these methods before we
+	call the Surface::HandleUI* method.
+
+	* dependencyobject.h (class EventObject): make a couple of api
+	changes:
+	(AddTickCall*): add an "EventObject* data" parameter.  if it's
+	NULL, pass "this", so we have the current behavior.
+	(DoEmit/Emit): add a "starting_generation" optional argument.  if
+	it's supplied, we invoke only those handlers with tokens less than
+	the starting_generation (i.e. those handlers that were registered
+	before the event was generated.)
+
 2009-08-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxBase::OnPropertyChanged): Don't clear the

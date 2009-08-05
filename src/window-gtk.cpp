@@ -13,6 +13,7 @@
  
 #include "window-gtk.h"
 #include "deployment.h"
+#include "timemanager.h"
 
 MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent)
 	: MoonWindow (w, h)
@@ -424,8 +425,10 @@ MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer 
 	if (event->button != 1 && event->button != 3)
 		return false;
 
-	if (window->surface)
+	if (window->surface) {
+		window->surface->GetTimeManager()->InvokeTickCalls();
 		window->surface->HandleUIButtonPress (event);
+	}
 	
 	// If we don't support right clicks (i.e. inside the browser)
 	// return false here
@@ -444,8 +447,10 @@ MoonWindowGtk::button_release (GtkWidget *widget, GdkEventButton *event, gpointe
 
 	Deployment::SetCurrent (window->GetDeployment ());
 
-	if (window->surface)
+	if (window->surface) {
+		window->surface->GetTimeManager()->InvokeTickCalls();
 		window->surface->HandleUIButtonRelease (event);
+	}
 	// ignore HandleUIButtonRelease's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
@@ -458,8 +463,10 @@ MoonWindowGtk::scroll (GtkWidget *widget, GdkEventScroll *event, gpointer data)
 
 	Deployment::SetCurrent (window->GetDeployment ());
 
-	if (window->surface)
+	if (window->surface) {
+		window->surface->GetTimeManager()->InvokeTickCalls();
 		window->surface->HandleUIScroll (event);
+	}
 	// ignore HandleUIScroll's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
@@ -472,8 +479,10 @@ MoonWindowGtk::motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer
 
 	Deployment::SetCurrent (window->GetDeployment ());
 
-	if (window->surface)
+	if (window->surface) {
+		window->surface->GetTimeManager()->InvokeTickCalls();
 		window->surface->HandleUIMotion (event);
+	}
 	// ignore HandleUIMotion's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
@@ -486,7 +495,13 @@ MoonWindowGtk::crossing_notify (GtkWidget *widget, GdkEventCrossing *event, gpoi
 
 	Deployment::SetCurrent (window->GetDeployment ());
 
-	return window->surface ? window->surface->HandleUICrossing (event) : false;
+	if (window->surface) {
+		window->surface->GetTimeManager()->InvokeTickCalls();
+		window->surface->HandleUICrossing (event);
+		return true;
+	}
+
+	return false;
 }
 
 gboolean
@@ -496,7 +511,13 @@ MoonWindowGtk::focus_in (GtkWidget *widget, GdkEventFocus *event, gpointer user_
 
 	Deployment::SetCurrent (window->GetDeployment ());
 
-	return window->surface ? window->surface->HandleUIFocusIn (event) : false;
+	if (window->surface) {
+		window->surface->GetTimeManager()->InvokeTickCalls();
+		window->surface->HandleUIFocusIn (event);
+		return true;
+	}
+
+	return false;
 }
 
 gboolean
@@ -506,7 +527,14 @@ MoonWindowGtk::focus_out (GtkWidget *widget, GdkEventFocus *event, gpointer user
 
 	Deployment::SetCurrent (window->GetDeployment ());
 
-	return window->surface ? window->surface->HandleUIFocusOut (event) : false;
+
+	if (window->surface) {
+		window->surface->GetTimeManager()->InvokeTickCalls();
+		window->surface->HandleUIFocusOut (event);
+		return true;
+	}
+
+	return false;
 }
 
 gboolean
@@ -515,7 +543,14 @@ MoonWindowGtk::key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_d
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
 	Deployment::SetCurrent (window->GetDeployment ());
-	return window->surface ? window->surface->HandleUIKeyPress (event) : false;
+
+	if (window->surface) {
+		window->surface->GetTimeManager()->InvokeTickCalls();
+		window->surface->HandleUIKeyPress (event);
+		return true;
+	}
+
+	return false;
 }
 
 gboolean
@@ -524,7 +559,14 @@ MoonWindowGtk::key_release (GtkWidget *widget, GdkEventKey *event, gpointer user
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
 	Deployment::SetCurrent (window->GetDeployment ());
-	return window->surface ? window->surface->HandleUIKeyRelease (event) : false;
+
+	if (window->surface) {
+		window->surface->GetTimeManager()->InvokeTickCalls();
+		window->surface->HandleUIKeyRelease (event);
+		return true;
+	}
+
+	return false;
 }
 
 void

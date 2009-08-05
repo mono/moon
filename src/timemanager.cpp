@@ -181,6 +181,15 @@ TimeManager::InvokeTickCall ()
 	return true;
 }
 
+void
+TimeManager::InvokeTickCalls ()
+{
+	bool remaining_tick_calls = false;
+	do {
+		remaining_tick_calls = InvokeTickCall ();
+	} while (remaining_tick_calls);
+}
+
 guint
 TimeManager::AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpointer tick_data)
 {
@@ -360,10 +369,7 @@ TimeManager::SourceTick ()
 #endif
 
 	if (current_flags & TIME_MANAGER_TICK_CALL) {
-		bool remaining_tick_calls = false;
-		do {
-			remaining_tick_calls = InvokeTickCall ();
-		} while (remaining_tick_calls);
+		InvokeTickCalls ();
 	}
 
 	if (current_flags & TIME_MANAGER_UPDATE_CLOCKS) {

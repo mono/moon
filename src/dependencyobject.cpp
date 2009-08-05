@@ -201,7 +201,7 @@ EventObject::SetSurfaceUnlock ()
 }
 
 void
-EventObject::AddTickCallSafe (TickCallHandler handler)
+EventObject::AddTickCallSafe (TickCallHandler handler, EventObject *data)
 {
 	int result;
 	
@@ -216,13 +216,13 @@ EventObject::AddTickCallSafe (TickCallHandler handler)
 		return;
 	}
 
-	AddTickCallInternal (handler);
+	AddTickCallInternal (handler, data);
  	
 	pthread_rwlock_unlock (&surface_lock);
 }
 
 void
-EventObject::AddTickCall (TickCallHandler handler)
+EventObject::AddTickCall (TickCallHandler handler, EventObject *data)
 {
 	if (!Surface::InMainThread ()) {
 		g_warning ("EventObject::AddTickCall (): This method must not be called on any other than the main thread! Tick call won't be added.\n");
@@ -233,11 +233,11 @@ EventObject::AddTickCall (TickCallHandler handler)
 		return;
 	}
 	
-	AddTickCallInternal (handler);
+	AddTickCallInternal (handler, data);
 }
 
 void
-EventObject::AddTickCallInternal (TickCallHandler handler)
+EventObject::AddTickCallInternal (TickCallHandler handler, EventObject *data)
 {
 	Surface *surface;
 	TimeManager *timemanager;
@@ -259,7 +259,7 @@ EventObject::AddTickCallInternal (TickCallHandler handler)
 		return;
 	}
 
-	timemanager->AddTickCall (handler, this);
+	timemanager->AddTickCall (handler, data ? data : this);
 }
 
 Deployment *
@@ -723,8 +723,22 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 	}
 }
 
+int
+EventObject::GetEventGeneration (int event_id)
+{
+	if (GetType()->GetEventCount() <= 0) {
+		g_warning ("adding handler to event with id %d, which has not been registered\n", event_id);
+		return -1;
+	}
+	
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
+	
+	return events->lists [event_id].current_token;
+}
+
 bool
-EventObject::Emit (char *event_name, EventArgs *calldata, bool only_unemitted)
+EventObject::Emit (char *event_name, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {
 	Deployment *deployment = GetDeployment ();
 	if (deployment && deployment->isDead)
@@ -762,7 +776,7 @@ EventObject::EmitCallback (gpointer d)
 }
 
 bool
-EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
+EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {
 	if (IsDisposed ())
 		return false;
@@ -804,7 +818,7 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted)
 
 	EmitContext* ctx = StartEmit (event_id);
 
-	DoEmit (event_id, ctx, calldata, only_unemitted);
+	DoEmit (event_id, ctx, calldata, only_unemitted, starting_generation);
 
 	if (calldata)
 		calldata->unref ();
@@ -861,7 +875,7 @@ EventObject::StartEmit (int event_id)
 }
 
 bool
-EventObject::DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata, bool only_unemitted)
+EventObject::DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {
 	EventClosure *xaml_closure = NULL;
 
@@ -880,7 +894,8 @@ EventObject::DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata, bool o
 #endif
 
 		if (closure && closure->func
-		    && (!only_unemitted || closure->emit_count == 0)) {
+		    && (!only_unemitted || closure->emit_count == 0)
+		    && (starting_generation == -1 || closure->token < starting_generation)) {
 			closure->func (this, calldata, closure->data);
 			closure->emit_count ++;
 		}

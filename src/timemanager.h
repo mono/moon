@@ -45,6 +45,8 @@ public:
 	void NeedRedraw ();
 	void NeedClockTick ();
 
+	void InvokeTickCalls ();
+
 	/* @GenerateCBinding, GeneratePInvoke */
 	guint AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpointer timeout_data);
 	/* @GenerateCBinding, GeneratePInvoke */
