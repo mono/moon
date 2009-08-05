@@ -313,6 +313,7 @@ TextBlock::TextBlock ()
 	
 	downloaders = g_ptr_array_new ();
 	layout = new TextLayout ();
+	font_source = NULL;
 	source = NULL;
 	
 	actual_height = 0.0;
@@ -353,6 +354,11 @@ TextBlock::CleanupDownloaders (bool all)
 	} else {
 		source = NULL;
 	}
+	
+	if (all) {
+		g_free (font_source);
+		font_source = NULL;
+	}
 }
 
 void
@@ -378,6 +384,7 @@ TextBlock::SetFontSource (Downloader *downloader)
 	source = downloader;
 	
 	if (downloader) {
+		font_source = downloader->GetUri ()->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
 		AddFontSource (downloader);
 		return;
 	}
@@ -529,7 +536,6 @@ TextBlock::UpdateLayoutAttributes ()
 {
 	InlineCollection *inlines = GetInlines ();
 	TextLayoutAttributes *attrs;
-	char *font_source = NULL;
 	const char *text;
 	int length = 0;
 	Inline *item;
@@ -540,9 +546,6 @@ TextBlock::UpdateLayoutAttributes ()
 	runs = new List ();
 	
 	if (inlines != NULL) {
-		if (source)
-			font_source = source->GetUri ()->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
-		
 		for (int i = 0; i < inlines->GetCount (); i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
 			item->UpdateFontDescription (font_source, false);
@@ -572,8 +575,6 @@ TextBlock::UpdateLayoutAttributes ()
 		
 		if (inlines->GetCount () > 0)
 			was_set = true;
-		
-		g_free (font_source);
 	}
 	
 	layout->SetText (GetText (), length);
@@ -584,14 +585,10 @@ bool
 TextBlock::UpdateFontDescriptions (bool force)
 {
 	InlineCollection *inlines = GetInlines ();
-	char *font_source = NULL;
 	bool changed = false;
 	Inline *item;
 	
 	if (inlines != NULL) {
-		if (source)
-			font_source = source->GetUri ()->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
-		
 		for (int i = 0; i < inlines->GetCount (); i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
 			if (item->UpdateFontDescription (font_source, force))
@@ -600,8 +597,6 @@ TextBlock::UpdateFontDescriptions (bool force)
 		
 		if (changed)
 			layout->ResetState ();
-		
-		g_free (font_source);
 	}
 	
 	//ClearValue (TextBlock::ActualWidthProperty);
@@ -844,8 +839,17 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == TextBlock::PaddingProperty) {
 		dirty = true;
 	} else if (args->GetId () == TextBlock::FontSourceProperty) {
-		// FIXME: avoid crashing until this gets implemented (see DRT426-428)
-		g_warning ("TextBlock::FontSourceProperty is not implemented");
+		FontSource *source = args->GetNewValue () ? args->GetNewValue ()->AsFontSource () : NULL;
+		FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+		
+		g_free (font_source);
+		
+		if (source && source->stream) {
+			font_source = g_strdup_printf ("font-source://%p.%p", this, source);
+			manager->AddResource (font_source, source->stream);
+		} else {
+			font_source = NULL;
+		}
 	}
 	
 	if (invalidate) {
@@ -919,14 +923,7 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 			setvalue = true;
 		} else {
 			// likely a font property change...
-			char *font_source = NULL;
-			
-			if (source)
-				font_source = source->GetUri ()->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
-			
 			((Inline *) obj)->UpdateFontDescription (font_source, true);
-			
-			g_free (font_source);
 		}
 		
 		// All non-Foreground property changes require

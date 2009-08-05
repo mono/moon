@@ -179,6 +179,7 @@ class TextBlock : public FrameworkElement {
 	GPtrArray *downloaders;
 	Downloader *source;
 	TextLayout *layout;
+	char *font_source;
 	
 	double actual_height;
 	double actual_width;
@@ -209,23 +210,23 @@ class TextBlock : public FrameworkElement {
 	virtual ~TextBlock ();
 	
  public:
- 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
+	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
 	const static int FontFamilyProperty;
- 	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
+	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
 	const static int FontSizeProperty;
- 	/* @PropertyType=FontStretch,DefaultValue=FontStretch(TEXTBLOCK_FONT_STRETCH),GenerateAccessors */
+	/* @PropertyType=FontStretch,DefaultValue=FontStretch(TEXTBLOCK_FONT_STRETCH),GenerateAccessors */
 	const static int FontStretchProperty;
- 	/* @PropertyType=FontStyle,DefaultValue=FontStyle(TEXTBLOCK_FONT_STYLE),GenerateAccessors */
+	/* @PropertyType=FontStyle,DefaultValue=FontStyle(TEXTBLOCK_FONT_STYLE),GenerateAccessors */
 	const static int FontStyleProperty;
- 	/* @PropertyType=FontWeight,DefaultValue=FontWeight(TEXTBLOCK_FONT_WEIGHT),GenerateAccessors */
+	/* @PropertyType=FontWeight,DefaultValue=FontWeight(TEXTBLOCK_FONT_WEIGHT),GenerateAccessors */
 	const static int FontWeightProperty;
-	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors */
 	const static int FontSourceProperty;
- 	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
+	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
 	const static int ForegroundProperty;
- 	/* @PropertyType=InlineCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=InlineCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int InlinesProperty;
- 	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int TextProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
 	const static int LineHeightProperty;
@@ -235,9 +236,9 @@ class TextBlock : public FrameworkElement {
 	const static int PaddingProperty;
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0,GenerateAccessors */
 	const static int TextAlignmentProperty;
- 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
+	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
 	const static int TextDecorationsProperty;
- 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
+	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	const static int TextWrappingProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */

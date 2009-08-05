@@ -1,5 +1,23 @@
 2009-08-05  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBoxBase::OnPropertyChanged): Don't clear the
+	FontSource property when the FontFamily property changes.
+	(TextBox::OnPropertyChanged): Handle FontSource property changes.
+	(PasswordBox::OnPropertyChanged): Same.
+
+	* textblock.cpp (CleanupDownloaders): Free the font_source string
+	as well.
+	(SetFontSource): Update the font_source string based on the
+	downloader.
+	(UpdateLayoutAttributes): No longer need to get the font_source
+	string, we already have it.
+	(UpdateFontDescriptions): Same.
+	(OnCollectionItemChanged): Here too.
+	(OnPropertyChanged): Update the font_source string when the
+	FontSource property changes.
+
+2009-08-05  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp (OnMouseLeftButtonMultiClick): Don't poke at the raw
 	GdkEventButton structure, use the new MouseEventArgs accessors
 	instead.

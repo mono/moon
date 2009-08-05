@@ -130,6 +130,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	
 	TextFontDescription *font;
 	GPtrArray *downloaders;
+	char *font_source;
 	
 	TextBoxUndoStack *undo;
 	TextBoxUndoStack *redo;

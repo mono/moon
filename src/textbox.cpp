@@ -582,6 +582,7 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	font->SetSize (GetFontSize ());
 	
 	downloaders = g_ptr_array_new ();
+	font_source = NULL;
 	
 	contentElement = NULL;
 	
@@ -631,6 +632,7 @@ TextBoxBase::~TextBoxBase ()
 	
 	CleanupDownloaders ();
 	g_ptr_array_free (downloaders, true);
+	g_free (font_source);
 	
 	delete buffer;
 	delete undo;
@@ -2199,7 +2201,6 @@ TextBoxBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		int i;
 		
 		CleanupDownloaders ();
-		ClearFontSource ();
 		
 		if (family && family->source) {
 			families = g_strsplit (family->source, ",", -1);
@@ -2598,6 +2599,22 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetId () == TextBox::AcceptsReturnProperty) {
 		// update accepts_return state
 		accepts_return = args->GetNewValue ()->AsBool ();
+	} else if (args->GetId () == TextBox::CaretBrushProperty) {
+		// FIXME: if we want to be perfect, we could invalidate the
+		// blinking cursor rect if it is active... but is it that
+		// important?
+	} else if (args->GetId () == TextBox::FontSourceProperty) {
+		FontSource *source = args->GetNewValue () ? args->GetNewValue ()->AsFontSource () : NULL;
+		FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+		
+		g_free (font_source);
+		
+		if (source && source->stream) {
+			font_source = g_strdup_printf ("font-source://%p.%p", this, source);
+			manager->AddResource (font_source, source->stream);
+		} else {
+			font_source = NULL;
+		}
 	} else if (args->GetId () == TextBox::IsReadOnlyProperty) {
 		// update is_read_only state
 		is_read_only = args->GetNewValue ()->AsBool ();
@@ -2986,7 +3003,23 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
 	int length, start;
 	
-	if (args->GetId () == PasswordBox::MaxLengthProperty) {
+	if (args->GetId () == PasswordBox::CaretBrushProperty) {
+		// FIXME: if we want to be perfect, we could invalidate the
+		// blinking cursor rect if it is active... but is it that
+		// important?
+	} else if (args->GetId () == PasswordBox::FontSourceProperty) {
+		FontSource *source = args->GetNewValue () ? args->GetNewValue ()->AsFontSource () : NULL;
+		FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+		
+		g_free (font_source);
+		
+		if (source && source->stream) {
+			font_source = g_strdup_printf ("font-source://%p.%p", this, source);
+			manager->AddResource (font_source, source->stream);
+		} else {
+			font_source = NULL;
+		}
+	} else if (args->GetId () == PasswordBox::MaxLengthProperty) {
 		// update max_length state
 		max_length = args->GetNewValue()->AsInt32 ();
 	} else if (args->GetId () == PasswordBox::PasswordCharProperty) {
