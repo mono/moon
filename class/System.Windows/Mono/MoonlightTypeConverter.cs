@@ -89,6 +89,9 @@ namespace Mono {
 						return new GridLength (double.Parse (str_val), GridUnitType.Pixel);
 				}
 
+				if (destinationType == typeof (TimeSpan))
+					return TimeSpan.Parse (str_val);
+
 				if (destinationType == typeof (FontWeight))
 					return new FontWeight ((FontWeightKind) Enum.Parse (typeof (FontWeightKind), str_val, true));
 
