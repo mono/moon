@@ -1022,11 +1022,11 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 #if DEBUG
 		if (debug_flags & RUNTIME_DEBUG_LAYOUT) {
 			if (c < 128 && isprint ((int) c))
-				printf ("\tunichar = %c; btype = %s, new glyph = %s; cc = %d; isspace = %s\n", (char) c,
+				printf ("\tunichar = %c; btype = %s, new glyph = %s; cc = %d; ctype = %s\n", (char) c,
 					unicode_break_types[btype], new_glyph ? "true" : "false", unichar_combining_class (c),
 					unicode_char_types[ctype]);
 			else
-				printf ("\tunichar = 0x%.4X; btype = %s, new glyph = %s; cc = %d; isspace = %s\n", c,
+				printf ("\tunichar = 0x%.4X; btype = %s, new glyph = %s; cc = %d; ctype = %s\n", c,
 					unicode_break_types[btype], new_glyph ? "true" : "false", unichar_combining_class (c),
 					unicode_char_types[ctype]);
 		}
@@ -1911,7 +1911,7 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 		
 		x = offset.x + HorizontalAlignment (line->advance);
 		line->Render (cr, origin, x, y);
-		y += (double) line->height;
+		y += line->height;
 	}
 }
 
