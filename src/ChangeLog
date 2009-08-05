@@ -1,3 +1,13 @@
+2009-08-05  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (ElementRemoved): clear the desired size when
+	removing the element.
+
+	* layoutinformation.cpp: partially revert one of the workarounds.
+
+	* frameworkelement.cpp (Arrange): get the old_size from the
+	RenderSize not the ActualWidth.
+
 2009-08-05  Chris Toshok  <toshok@ximian.com>
 
 	* popup.cpp (class GenerationClosure): new closure for emiting the

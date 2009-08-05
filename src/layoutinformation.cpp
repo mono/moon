@@ -35,7 +35,7 @@ LayoutInformation::GetClip (FrameworkElement *item)
 		
 		element = (FrameworkElement *)element->GetVisualParent ();
 
-		if (element && (element->Is (Type::CANVAS) || element->Is (Type::CONTROL)))
+		if (element && (element->Is (Type::CANVAS) || element->Is (Type::USERCONTROL)))
 			break;
 	}
 	

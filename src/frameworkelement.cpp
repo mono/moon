@@ -627,7 +627,7 @@ FrameworkElement::Arrange (Rect finalRect)
 		if (!parent || parent->Is (Type::CANVAS))
 			return;
 	}
-	Size old_size (GetActualWidth (), GetActualHeight ());
+	Size old_size = GetRenderSize ();
 	//Point *old_offset  = LayoutInformation::GetVisualOffset (this);
 	ClearValue (LayoutInformation::VisualOffsetProperty);
 
@@ -769,7 +769,7 @@ FrameworkElement::UpdateLayout ()
 
 			if (child->dirty_flags & DirtyMeasure) {
 				UIElement *parent = child->GetVisualParent ();
-				if ((parent && !parent->Is (Type::CANVAS)) || child->IsContainer ()) {
+				if ((parent && !parent->Is (Type::CANVAS)) || IsLayoutContainer ()) {
 					measure_list->Append (new UIElementNode (child));
 					//g_warning ("adding %p, %s", child, child->GetTypeName ());
 				} else if (!measure_list->IsEmpty ()) {
