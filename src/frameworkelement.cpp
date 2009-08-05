@@ -769,7 +769,7 @@ FrameworkElement::UpdateLayout ()
 
 			if (child->dirty_flags & DirtyMeasure) {
 				UIElement *parent = child->GetVisualParent ();
-				if ((parent && !parent->Is (Type::CANVAS)) || IsLayoutContainer ()) {
+				if ((parent && !parent->Is (Type::CANVAS)) || child->IsContainer ()) {
 					measure_list->Append (new UIElementNode (child));
 					//g_warning ("adding %p, %s", child, child->GetTypeName ());
 				} else if (!measure_list->IsEmpty ()) {
