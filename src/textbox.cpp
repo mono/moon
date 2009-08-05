@@ -1954,7 +1954,6 @@ TextBoxBase::mouse_left_button_down (EventObject *sender, EventArgs *args, gpoin
 void
 TextBoxBase::OnMouseLeftButtonMultiClick (MouseEventArgs *args)
 {
-	GdkEventButton *event = (GdkEventButton *) args->GetEvent ();
 	int cursor, start, end;
 	double x, y;
 	
@@ -1967,7 +1966,7 @@ TextBoxBase::OnMouseLeftButtonMultiClick (MouseEventArgs *args)
 		
 		ResetIMContext ();
 		
-		if (event->type == GDK_3BUTTON_PRESS) {
+		if (args->GetClickCount () == 3) {
 			// Note: Silverlight doesn't implement this, but to
 			// be consistent with other TextEntry-type
 			// widgets in Gtk+, we will.

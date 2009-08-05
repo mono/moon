@@ -249,6 +249,36 @@ MouseEventArgs::GetState ()
 	return (int)state;
 }
 
+int
+MouseEventArgs::GetButton ()
+{
+	switch (event->type) {
+	case GDK_BUTTON_RELEASE:
+	case GDK_3BUTTON_PRESS:
+	case GDK_2BUTTON_PRESS:
+	case GDK_BUTTON_PRESS:
+		return ((GdkEventButton *) event)->button;
+		break;
+	default:
+		return 0;
+	}
+}
+
+int
+MouseEventArgs::GetClickCount ()
+{
+	switch (event->type) {
+	case GDK_3BUTTON_PRESS:
+		return 3;
+	case GDK_2BUTTON_PRESS:
+		return 2;
+	case GDK_BUTTON_PRESS:
+		return 1;
+	default:
+		return 0;
+	}
+}
+
 void
 MouseEventArgs::GetPosition (UIElement *relative_to, double *x, double *y)
 {

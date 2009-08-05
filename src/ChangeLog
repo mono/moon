@@ -1,3 +1,12 @@
+2009-08-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (OnMouseLeftButtonMultiClick): Don't poke at the raw
+	GdkEventButton structure, use the new MouseEventArgs accessors
+	instead.
+
+	* eventargs.cpp (GetButton): Get the id of the button pressed.
+	(GetClickCount): Get the number of clicks on the button.
+
 2009-08-05  Alan McGovern  <amcgovern@novell.com>
 
 	* panel.cpp: The LogicalParent needs to be set before the

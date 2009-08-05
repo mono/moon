@@ -227,6 +227,9 @@ public:
 	
 	int GetState ();
 	
+	int GetButton ();
+	int GetClickCount ();
+	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void GetPosition (UIElement *relative_to, double *x, double *y);
 	
@@ -235,11 +238,10 @@ public:
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPointCollection *GetStylusPoints (UIElement *ink_presenter);
-
+	
 protected:
 	virtual ~MouseEventArgs ();
 	
-
 private:
 	GdkEvent *event;
 };
