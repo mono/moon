@@ -49,16 +49,6 @@ namespace System.Windows {
 			DataContextProperty.AddPropertyChangeCallback (DataContextChanged);
 		}
 
-#if false
-		public static readonly DependencyProperty DataContextProperty =
-			DependencyProperty.RegisterCore ("DataContext", typeof (object), typeof (FrameworkElement),
-						     new PropertyMetadata (null, new PropertyChangedCallback (DataContextChanged)));
-
-		public object DataContext {
-			get { return GetValue (DataContextProperty); }
-			set { SetValue (DataContextProperty, value); }
-		}
-#endif
 		static void DataContextChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
 		{
 			(sender as FrameworkElement).OnDataContextChanged (args.OldValue, args.NewValue);
@@ -66,7 +56,7 @@ namespace System.Windows {
 
 		void OnDataContextChanged (object oldValue, object newValue)
 		{
-			// invalidate the bindings in our subtree
+			InvalidateLocalBindings ();
 			InvalidateSubtreeBindings ();
 		}
 
@@ -76,10 +66,8 @@ namespace System.Windows {
 				FrameworkElement obj = VisualTreeHelper.GetChild (this, c) as FrameworkElement;
 				if (obj == null)
 					continue;
-				if (obj.ReadLocalValue (FrameworkElement.DataContextProperty) == DependencyProperty.UnsetValue) {
-					obj.InvalidateLocalBindings ();
-					obj.InvalidateSubtreeBindings ();
-				}
+				obj.InvalidateLocalBindings ();
+				obj.InvalidateSubtreeBindings ();
 			}
 		}
 
@@ -122,7 +110,6 @@ namespace System.Windows {
 		 */
 		internal MeasureOverrideCallback measure_cb;
 		internal ArrangeOverrideCallback arrange_cb;
-		internal PropertyChangedCallback datacontext_changed_cb;
 
 		Dictionary<DependencyProperty, Expression> expressions = new Dictionary<DependencyProperty, Expression> ();
 
@@ -162,8 +149,6 @@ namespace System.Windows {
 			if (OverridesLayoutMethod ("ArrangeOverride"))
 				arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
 			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb);
-
-			datacontext_changed_cb = new PropertyChangedCallback (DataContextChanged);
 
 			// we always need to attach this event to allow for Controls to load their default style
 			Events.AddHandler (this, "Loaded", Events.loaded);
@@ -261,6 +246,7 @@ namespace System.Windows {
 		internal virtual void InvokeLoaded ()
 		{
 			InvalidateLocalBindings ();
+			InvalidateSubtreeBindings ();
 
 			// this event is special, in that it is a
 			// RoutedEvent that doesn't bubble, so we

@@ -72,8 +72,18 @@ namespace System.Windows.Data {
 				object source = null;
 				if (Binding.Source != null)
 					source = Binding.Source;
-				if (source == null && Target != null)
-					source = Target.DataContext;
+
+				// If DataContext is bound, then we need to read the parents datacontext or use null
+				if (source == null && Target != null) {
+					if (Property == FrameworkElement.DataContextProperty) {
+						FrameworkElement e = Target.Parent as FrameworkElement;
+						if (e != null) {
+							source = e.DataContext;
+						}
+					} else {
+						source = Target.DataContext;
+					}
+				}
 
 				// If the datasource has changed, disconnect from the old object and reconnect
 				// to the new one.
@@ -122,6 +132,7 @@ namespace System.Windows.Data {
 
 			if (cachedSource != null)
 				cachedSource.PropertyChanged -= PropertyChanged;
+			
 			cachedSource = null;
 		}
 		

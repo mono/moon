@@ -171,7 +171,6 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void BindDataContext ()
 		{
 			// Bind the DataContext of the FE to its DataContext
@@ -180,7 +179,10 @@ namespace MoonTest.System.Windows.Data
 			CreateAsyncTest (block,
 				() => Assert.IsNull (block.DataContext, "#1"),
 				() => TestPanel.DataContext = "Hello",
-				() => Assert.AreEqual ("Hello", block.DataContext, "#2")
+				() => {
+					Assert.AreEqual ("Hello", block.DataContext, "#2");
+					Assert.IsInstanceOfType<BindingExpressionBase> (block.ReadLocalValue (TextBlock.DataContextProperty), "#3");
+				}
 			);
 		}
 
@@ -1191,6 +1193,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public void XamlDataContext2 ()
 		{
 			Canvas c = (Canvas) XamlReader.Load (@"
@@ -1203,17 +1206,18 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		</TextBlock.DataContext>
 	</TextBlock>
 </Canvas>");
-			Assert.IsInstanceOfType (c.Children [0], typeof (TextBlock), "#1");
-			TextBlock block = (TextBlock) c.Children[0];
-			Assert.IsInstanceOfType (block.Foreground, typeof (SolidColorBrush), "#2");
 
-			SolidColorBrush brush = (SolidColorBrush) block.Foreground;
-			Assert.AreNotEqual (brush.Color, Colors.Blue, "#3");
-
-			TextBlock normal = new TextBlock ();
-			Assert.AreEqual (((SolidColorBrush) normal.Foreground).Color, brush.Color, "#4");
-
-			Assert.IsNotNull (block.DataContext, "#5");
+			CreateAsyncTest (c, 
+				() => {
+					Assert.IsInstanceOfType (c.Children [0], typeof (TextBlock), "#1");
+					TextBlock block = (TextBlock) c.Children [0];
+					Assert.IsInstanceOfType (block.Foreground, typeof (SolidColorBrush), "#2");
+	
+					SolidColorBrush brush = (SolidColorBrush) block.Foreground;
+					Assert.AreEqual (brush.Color, Colors.Blue, "#3");
+				}
+			);
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]

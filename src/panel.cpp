@@ -219,9 +219,9 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 			ElementRemoved (args->GetOldItem()->AsUIElement ());
 			// now fall thru to Add
 		case CollectionChangedActionAdd:
-			ElementAdded (args->GetNewItem()->AsUIElement ());
 			if (args->GetNewItem()->Is(Type::FRAMEWORKELEMENT))
 				args->GetNewItem()->AsFrameworkElement()->SetLogicalParent (this, &error /* XXX unused */);
+			ElementAdded (args->GetNewItem()->AsUIElement ());
 			break;
 		case CollectionChangedActionRemove:
 			if (args->GetOldItem()->Is(Type::FRAMEWORKELEMENT))

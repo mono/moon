@@ -1,3 +1,9 @@
+2009-08-05  Alan McGovern  <amcgovern@novell.com>
+
+	* panel.cpp: The LogicalParent needs to be set before the
+	  element is added, otherwise the Loaded event can be fired
+	  before LogicalParent is set.
+
 2009-08-04  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp (DoMeasure): invalidate up the tree more

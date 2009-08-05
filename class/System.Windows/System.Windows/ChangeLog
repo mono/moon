@@ -1,3 +1,10 @@
+2009-08-05  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: Whenever the datacontext changes on a
+	  FrameworkElement, the local bindings need to be invalidated.
+	  Whenever a framework element is loaded, the local bindings
+	  and subtree bindings need to be invalidated.
+
 2009-08-04  Alan McGovern  <amcgovern@novell.com>
 
 	* FrameworkElement.cs: Fix a stupid regression from the last
