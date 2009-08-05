@@ -43,7 +43,7 @@ namespace System.Windows.Markup
 			if (xaml.Length == 0)
 				return null;
 
-			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Assembly.GetCallingAssembly (), null, Deployment.Current.Surface.Native, PluginHost.Handle);
+			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Deployment.Current.EntryAssembly, null, Deployment.Current.Surface.Native, PluginHost.Handle);
 			
 			return loader.CreateObjectFromString (xaml, true);
 		}
@@ -51,7 +51,7 @@ namespace System.Windows.Markup
 		[EditorBrowsable (EditorBrowsableState.Never)]
 		public static object LoadWithInitialTemplateValidation (string xaml)
 		{
-			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Assembly.GetCallingAssembly (), null, Deployment.Current.Surface.Native, PluginHost.Handle);
+			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Deployment.Current.EntryAssembly, null, Deployment.Current.Surface.Native, PluginHost.Handle);
 			
 			return loader.CreateObjectFromString (xaml, true, true);
 		}
