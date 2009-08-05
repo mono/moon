@@ -615,6 +615,7 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	setvalue = true;
 	captured = false;
 	focused = false;
+	secret = false;
 	view = NULL;
 }
 
@@ -1547,14 +1548,15 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 		
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Delete => Cut
-			if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+			if (!secret && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
 				if (selection_cursor != selection_anchor) {
 					// copy selection to the clipboard and then cut
 					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
-					SetSelectedText ("");
-					handled = true;
 				}
 			}
+			
+			SetSelectedText ("");
+			handled = true;
 		} else {
 			handled = KeyPressDelete (modifiers);
 		}
@@ -1562,20 +1564,25 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 	case GDK_Insert:
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Insert => Paste
-			if (!is_read_only && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+			if (is_read_only)
+				break;
+			
+			if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
 				// paste clipboard contents to the buffer
 				gtk_clipboard_request_text (clipboard, TextBoxBase::paste, this);
-				handled = true;
 			}
+			
+			handled = true;
 		} else if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
 			// Control+Insert => Copy
-			if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+			if (!secret && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
 				if (selection_cursor != selection_anchor) {
 					// copy selection to the clipboard
 					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
 				}
-				handled = true;
 			}
+			
+			handled = true;
 		}
 		break;
 	case GDK_KP_Page_Down:
@@ -1622,34 +1629,43 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 			case GDK_C:
 			case GDK_c:
 				// Ctrl+C => Copy
-				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				if (!secret && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
 					if (selection_cursor != selection_anchor) {
 						// copy selection to the clipboard
 						gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
-						handled = true;
 					}
 				}
+				
+				handled = true;
 				break;
 			case GDK_X:
 			case GDK_x:
 				// Ctrl+X => Cut
-				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
-					if (selection_cursor != selection_anchor && !is_read_only) {
+				if (is_read_only)
+					break;
+				
+				if (!secret && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+					if (selection_cursor != selection_anchor) {
 						// copy selection to the clipboard and then cut
 						gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
-						SetSelectedText ("");
-						handled = true;
 					}
 				}
+				
+				SetSelectedText ("");
+				handled = true;
 				break;
 			case GDK_V:
 			case GDK_v:
 				// Ctrl+V => Paste
-				if (!is_read_only && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				if (is_read_only)
+					break;
+				
+				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
 					// paste clipboard contents to the buffer
 					gtk_clipboard_request_text (clipboard, TextBoxBase::paste, this);
-					handled = true;
 				}
+				
+				handled = true;
 				break;
 			case GDK_Y:
 			case GDK_y:
@@ -2891,6 +2907,7 @@ PasswordBox::PasswordBox ()
 	
 	Initialize (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox");
 	events_mask = TEXT_CHANGED;
+	secret = true;
 	
 	display = g_string_new ("");
 }

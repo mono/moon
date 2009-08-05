@@ -1,3 +1,9 @@
+2009-08-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::OnKeyDown): Cut and Copy operations
+	should not copy the text buffer to the clipboard if the contents
+	are secret.
+
 2009-08-05  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp (ElementRemoved): clear the desired size when

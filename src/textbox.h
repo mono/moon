@@ -151,6 +151,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	short setvalue:1;
 	short captured:1;
 	short focused:1;
+	short secret:1;
 	
 	short events_mask:2;
 	short emit:2;
