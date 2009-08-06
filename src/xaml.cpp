@@ -1797,7 +1797,7 @@ start_element_handler (void *data, const char *el, const char **attr)
 	// Now update our namespace
 	p->current_namespace = next_namespace;
 	
-	if (!p->current_namespace) {
+	if (!p->current_namespace && !p->InBufferingMode ()) {
 		if (name[1])
 			parser_error (p, name[1], NULL, -1, "No handlers available for namespace: '%s' (%s)\n", name[0], el);
 		else

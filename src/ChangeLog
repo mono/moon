@@ -1,5 +1,12 @@
 2009-08-06  Jackson Harper  <jackson@ximian.com>
 
+	* xaml.cpp: Its possible that a buffered element can add a new
+	namespace that start_element_handler will not know about, just
+	ignore this error and the namespace will be added when the buffer
+	is parsed.
+
+2009-08-06  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp: Handle null in the print_tree debug code. (This can
 	occur when loading a null template)
 
