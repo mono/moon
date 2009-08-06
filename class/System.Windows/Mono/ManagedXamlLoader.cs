@@ -1083,7 +1083,7 @@ namespace Mono.Xaml
 			error = null;
 			object obj_value = Value.ToObject (null, value_ptr);
 			SetterBase sb = target as SetterBase;
-
+			
 			try {
 				if (sb != null)
 					sb.IsSealed = false;
@@ -1120,7 +1120,8 @@ namespace Mono.Xaml
 					if (pi.PropertyType == typeof (Type)) {
 						Type t = TypeFromString (data, str_value);
 						if (t != null) {
-							pi.SetValue (target, t, null);
+							SetValue (data, target_data, pi, target, t);
+							// pi.SetValue (target, t, null);
 							return true;
 						}
 					}
@@ -1128,7 +1129,8 @@ namespace Mono.Xaml
 					if (pi.PropertyType == typeof (DependencyProperty)) {
 						DependencyProperty dp = DependencyPropertyFromString (data, target, target_parent_ptr, str_value);
 						if (dp != null) {
-							pi.SetValue (target, dp, null);
+							SetValue (data, target_data, pi, target, dp);
+							// pi.SetValue (target, dp, null);
 							return true;
 						}
 					}
@@ -1142,7 +1144,8 @@ namespace Mono.Xaml
 						if (!(obj_value is Binding))
 							return false;
 
-						pi.SetValue (target, obj_value, null);
+						// pi.SetValue (target, obj_value, null);
+						SetValue (data, target_data, pi, target, obj_value);
 						return true;
 					}
 
@@ -1155,7 +1158,8 @@ namespace Mono.Xaml
 						MarkupExpressionParser p = new MarkupExpressionParser (parent, "", data->parser, target_data);
 						obj_value = p.ParseExpression (ref str_value);
 						obj_value = ConvertType (pi, pi.PropertyType, obj_value);
-						pi.SetValue (target, obj_value, null);
+						// pi.SetValue (target, obj_value, null);
+						SetValue (data, target_data, pi, target, obj_value);
 						return true;
 					}
 
@@ -1170,13 +1174,24 @@ namespace Mono.Xaml
 				}
 
 				obj_value = ConvertType (pi, pi.PropertyType, obj_value);
-				pi.SetValue (target, obj_value, null);
+				// pi.SetValue (target, obj_value, null);
+				SetValue (data, target_data, pi, target, obj_value);
 
 			} finally {
 				if (sb != null)
 					sb.IsSealed = true;
 			}
 			return true;
+		}
+
+		private static unsafe void SetValue (XamlCallbackData *data, IntPtr target_data, PropertyInfo pi, object target, object value)
+		{
+			if (NativeMethods.xaml_is_property_set (data->parser, target_data, pi.Name))
+				throw new XamlParseException (2033, String.Format ("Cannot specify the value multiple times for property: {0}.", pi.Name));
+
+			pi.SetValue (target, value, null);
+
+			NativeMethods.xaml_mark_property_as_set (data->parser, target_data, pi.Name);
 		}
 
 		private static object ConvertType (MemberInfo pi, Type t, object value)

@@ -2400,5 +2400,14 @@ namespace Mono {
 			return s;
 		}
 
+		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool xaml_is_property_set (void *parser, void *element_instance, char *name);
+		public extern static bool xaml_is_property_set (IntPtr parser, IntPtr element_instance, string name);
+
+		[DllImport ("moon")]
+		// void xaml_mark_property_as_set (void *parser, void *element_instance, char *name);
+		public extern static void xaml_mark_property_as_set (IntPtr parser, IntPtr element_instance, string name);
+
 	}
 }

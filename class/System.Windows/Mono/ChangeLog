@@ -1,3 +1,9 @@
+2009-08-06  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Need to check/set whether a property has
+	been set before setting it in managed.
+	* GeneratedPInvokes.cs: regen
+
 2009-08-05  Jackson Harper  <jackson@ximian.com>
 
 	* MoonlightTypeConverter.cs: We need to handle TimeSpans here,

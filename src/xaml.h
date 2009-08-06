@@ -119,6 +119,10 @@ void*       xaml_get_template_parent (void *parser, void *element_instance);
 char*       xaml_get_element_key (void *parser, void *element_instance);
 /* @GeneratePInvoke */
 char*       xaml_get_element_name (void *parser, void *element_instance);
+/* @GeneratePInvoke */
+bool        xaml_is_property_set (void *parser, void *element_instance, char *name);
+/* @GeneratePInvoke */
+void        xaml_mark_property_as_set (void *parser, void *element_instance, char *name);
 
 G_END_DECLS
 

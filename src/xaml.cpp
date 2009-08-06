@@ -4393,7 +4393,6 @@ XamlElementInstanceManaged::AddChild (XamlParserInfo *p, XamlElementInstance *ch
 	}
 
 	p->loader->AddChild (p, p->GetTopElementPtr (), GetParentPointer (), false, info->xmlns, GetAsValue (), this, child->GetAsValue (), child);
-
 }
 
 void
@@ -5120,6 +5119,21 @@ xaml_get_element_name (void *parser, void *element_instance)
 	XamlElementInstance *item = (XamlElementInstance *) element_instance;
 	return g_strdup (item->element_name);
 }
+
+bool
+xaml_is_property_set (void *parser, void *element_instance, char *name)
+{
+	XamlElementInstance *item = (XamlElementInstance *) element_instance;
+	return item->IsPropertySet (name);
+}
+
+void
+xaml_mark_property_as_set (void *parser, void *element_instance, char *name)
+{
+	XamlElementInstance *item = (XamlElementInstance *) element_instance;
+	item->MarkPropertyAsSet (g_strdup (name));
+}
+
 
 void
 xaml_init (void)
