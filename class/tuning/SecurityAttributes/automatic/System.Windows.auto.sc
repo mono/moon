@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 534 methods needs to be decorated.
+# 537 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -141,6 +141,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::value_from_str_with_typename(System.String,System.String,System.String,System.IntPtr&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::xaml_is_property_set(System.IntPtr,System.IntPtr,System.String)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.AddChildCallback::Invoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.Boolean,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr,Mono.MoonError&)
@@ -1572,6 +1575,12 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::xaml_loader_set_callbacks(System.IntPtr,Mono.Xaml.XamlLoaderCallbacks)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::xaml_mark_property_as_set(System.IntPtr,System.IntPtr,System.String)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetValue(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Reflection.PropertyInfo,System.Object,System.Object)
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void System.IO.SimpleUnmanagedMemoryStream::.ctor(System.Byte*,System.Int64)

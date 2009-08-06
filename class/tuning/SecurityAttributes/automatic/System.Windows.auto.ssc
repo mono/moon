@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 469 methods
+# 472 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
@@ -145,6 +145,9 @@
 +SSC-M: System.Nullable`1<System.Boolean> System.Windows.Controls.OpenFileDialog::ShowDialog()
 +SSC-M: System.Void System.Windows.Controls.Panel::.ctor()
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::.ctor()
++SSC-M: System.Void System.Windows.Controls.PasswordBox::InvokeKeyDown(System.Windows.Input.KeyEventArgs)
++SSC-M: System.Void System.Windows.Controls.PasswordBox::OnKeyDown(System.Windows.Input.KeyEventArgs)
++SSC-M: System.Void System.Windows.Controls.PasswordBox::OnKeyUp(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::SelectAll()
 +SSC-M: System.Void System.Windows.Controls.Primitives.Popup::.ctor()
 +SSC-M: System.Void System.Windows.Controls.RowDefinition::.ctor()
