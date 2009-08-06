@@ -1,3 +1,8 @@
+2009-08-06  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Handle null in the print_tree debug code. (This can
+	occur when loading a null template)
+
 2009-08-05  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp (UpdateLayout): revert an accidental

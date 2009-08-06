@@ -2108,6 +2108,11 @@ print_tree (XamlElementInstance *el, int depth)
 	
 		const char *name = NULL;
 
+		if (!el) {
+			printf (" -null- \n");
+			return;
+		}
+
 		if (el->element_type == XamlElementInstance::ELEMENT && el->IsDependencyObject ())
 			name = el->GetAsDependencyObject ()->GetName ();
 		printf ("%s  (%s)  (%p) (%s)\n", el->element_name, name ? name : "-no name-", el->parent, el->element_type == XamlElementInstance::PROPERTY ? "PROPERTY" : "ELEMENT");
