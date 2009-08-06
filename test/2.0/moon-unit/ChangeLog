@@ -1,5 +1,10 @@
 2009-08-06  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/GridTestAuto.cs: Add some more tests
+	  for Auto/Star and Auto/Fixed combinations.
+
+2009-08-06  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp:
 	* System.Windows.Controls/GridTest.cs:
 	* System.Windows.Controls/GridTestAuto.cs: Add the first few

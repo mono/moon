@@ -253,5 +253,75 @@ namespace MoonTest.System.Windows.Controls
 				}
 			);
 		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void AutoAndFixedRows ()
+		{
+			Grid grid = new Grid ();
+
+			grid.AddColumns (new GridLength (50));
+			grid.AddRows (GridLength.Auto, GridLength.Auto, new GridLength (15), GridLength.Auto, GridLength.Auto);
+
+			grid.AddChild (new LayoutPoker { Width = 50, Height = 50 }, 0, 0, 3, 1);
+			grid.AddChild (new LayoutPoker { Width = 50, Height = 60 }, 1, 0, 3, 1);
+
+			// If an element spans multiple rows and one of them is *not* auto, it attempts to put itself
+			// entirely inside that row
+			CreateAsyncTest (grid,
+				() => {
+					grid.CheckRowHeights ("#1", 0, 0, 60, 0, 0);
+
+					// Forcing a maximum height on the fixed row makes it distribute
+					// remaining height among the 'auto' rows.
+					grid.RowDefinitions [2].MaxHeight = 15;
+				}, () => {
+					grid.CheckRowHeights ("#2", 6.25, 28.75, 15, 22.5, 0);
+
+					grid.RowDefinitions.Clear ();
+					grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto, new GridLength (15), GridLength.Auto);
+				}, () => {
+					grid.CheckRowHeights ("#3", 16.66, 16.66, 16.66, 60, 0);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void AutoAndStarRows ()
+		{
+			TestPanel.MaxHeight = 160;
+			Grid grid = new Grid ();
+
+			grid.AddColumns (new GridLength (50));
+			grid.AddRows (GridLength.Auto, GridLength.Auto, new GridLength (1, GridUnitType.Star), GridLength.Auto, GridLength.Auto);
+
+			grid.AddChild (new LayoutPoker { Width = 50, Height = 50 }, 0, 0, 3, 1);
+			grid.AddChild (new LayoutPoker { Width = 50, Height = 60 }, 1, 0, 3, 1);
+
+			// Elements will put themselves entirely inside a 'star' row if they can
+			CreateAsyncTest (grid,
+				() => {
+					grid.CheckRowHeights ("#1", 0, 0, 160, 0, 0);
+
+					// Forcing a maximum height on the star row doesn't spread
+					// remaining height among the auto rows.
+					grid.RowDefinitions [2].MaxHeight = 15;
+				}, () => {
+					grid.CheckRowHeights ("#2", 0, 0, 15, 0, 0);
+					
+					grid.RowDefinitions.Clear ();
+					grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto, new GridLength (1, GridUnitType.Star), GridLength.Auto);
+				}, () => {
+					grid.CheckRowHeights ("#3", 16.66, 16.66, 16.66, 110, 0);
+
+					grid.RowDefinitions [3].MaxHeight = 15;
+				}, () => {
+					grid.CheckRowHeights ("#3", 16.66, 16.66, 16.66, 15, 0);
+				}
+			);
+		}
 	}
 }
