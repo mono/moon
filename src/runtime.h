@@ -199,7 +199,7 @@ public:
 	bool FocusElement (UIElement *element);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool IsLoaded () { return toplevel != NULL; }
+	bool IsLoaded () { return toplevel != NULL && ticked_after_attach; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	static bool IsVersionSupported (const char *version);
@@ -362,7 +362,9 @@ private:
 	void UpdateFullScreen (bool value);
 	
 	TimeManager *time_manager;
-	
+	bool ticked_after_attach;
+	static void tick_after_attach_reached (EventObject *data);
+
 	int frames;
 	
 	GdkEvent *mouse_event;

@@ -231,11 +231,22 @@ TimeManager::AddTickCall (TickCallHandler func, EventObject *tick_data)
 #endif
 }
 
+struct TickCallFindData {
+	TickCallHandler func;
+	EventObject *data;
+};
+
 void
-TimeManager::RemoveTickCall (TickCallHandler func)
+TimeManager::RemoveTickCall (TickCallHandler func, EventObject *tick_data)
 {
+	TickCallFindData fd;
+
+	fd.func = func;
+	fd.data = tick_data;
+
 	tick_calls.Lock ();
-	List::Node * call = tick_calls.LinkedList ()->Find (find_tick_call, (void*)func);
+
+	List::Node * call = tick_calls.LinkedList ()->Find (find_tick_call, &fd);
 	if (call)
 		tick_calls.LinkedList ()->Remove (call);
 #if PUT_TIME_MANAGER_TO_SLEEP
@@ -251,9 +262,11 @@ TimeManager::RemoveTickCall (TickCallHandler func)
 bool
 find_tick_call (List::Node *node, void *data)
 {
-	if (((TickCall*)node)->func == data)
-		return true;
-	return false;
+	TickCall *tc = (TickCall*)node;
+	TickCallFindData *fd = (TickCallFindData*)data;
+
+	return (tc->func == fd->func &&
+		tc->data == fd->data);
 }
 
 void

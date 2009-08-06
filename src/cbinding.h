@@ -2684,7 +2684,7 @@ guint time_manager_add_timeout (TimeManager *instance, gint priority, guint ms_i
 int time_manager_get_maximum_refresh_rate (TimeManager *instance);
 
 /* @GeneratePInvoke */
-void time_manager_remove_tick_call (TimeManager *instance, TickCallHandler handler);
+void time_manager_remove_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
 
 void time_manager_remove_timeout (TimeManager *instance, guint timeout_id);
 

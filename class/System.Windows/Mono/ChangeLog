@@ -1,3 +1,7 @@
+2009-08-06  Chris Toshok  <toshok@ximian.com>
+
+	* GeneratedPInvokes.cs: regen.
+
 2009-08-06  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Need to check/set whether a property has

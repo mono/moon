@@ -40,7 +40,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void AddTickCall (TickCallHandler handler, EventObject *tick_data);
 	/* @GenerateCBinding,GeneratePInvoke */
-	void RemoveTickCall (TickCallHandler handler);
+	void RemoveTickCall (TickCallHandler handler, EventObject *tick_data);
 
 	void NeedRedraw ();
 	void NeedClockTick ();

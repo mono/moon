@@ -2011,8 +2011,8 @@ namespace Mono {
 		public extern static int time_manager_get_maximum_refresh_rate (IntPtr instance);
 
 		[DllImport ("moon")]
-		// void time_manager_remove_tick_call (TimeManager *instance, TickCallHandler handler);
-		public extern static void time_manager_remove_tick_call (IntPtr instance, TickCallHandler handler);
+		// void time_manager_remove_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
+		public extern static void time_manager_remove_tick_call (IntPtr instance, TickCallHandler handler, IntPtr tick_data);
 
 		[DllImport ("moon")]
 		// void time_manager_set_maximum_refresh_rate (TimeManager *instance, int hz);

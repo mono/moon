@@ -4796,12 +4796,12 @@ time_manager_get_maximum_refresh_rate (TimeManager *instance)
 
 
 void
-time_manager_remove_tick_call (TimeManager *instance, TickCallHandler handler)
+time_manager_remove_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RemoveTickCall (handler);
+	instance->RemoveTickCall (handler, tick_data);
 }
 
 

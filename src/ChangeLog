@@ -1,3 +1,21 @@
+2009-08-06  Chris Toshok  <toshok@ximian.com>
+
+	* timemanager.h|cpp (TimeManager::RemoveTickCall): this takes
+	another argument now (the data object passed to AddTickCall) so we
+	can differentiate callbacks properly.
+
+	* runtime.h|cpp (Surface::Attach): we don't return true from
+	IsLoaded until after the first tick, so that our measure pass has
+	been run (and contentpresenters are created for all content
+	controls.)  register the tick call here (after removing any that
+	may have already been added).
+	(Surface::tick_after_attach_reached): set ticked_after_attach to
+	true.
+	(Surface::IsLoaded): we require ticked_after_attach to be true
+	here.
+
+	* cbinding.h|cpp: regen.
+
 2009-08-06  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxBase::OnFocusOut): Instead of clearing the

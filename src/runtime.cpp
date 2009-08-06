@@ -299,6 +299,7 @@ Surface::Surface (MoonWindow *window)
 
 	time_manager = new TimeManager ();
 	time_manager->Start ();
+	ticked_after_attach = false;
 
 	fullscreen_window = NULL;
 	normal_window = active_window = window;
@@ -471,7 +472,7 @@ Surface::Attach (UIElement *element)
 		g_warning ("Surface::Attach (%p): current deployment is %p, surface deployment is %p\n", element, GetDeployment (), Deployment::GetCurrent ());
 #endif
 
-				
+
 	if (toplevel) {
 		toplevel->RemoveHandler (UIElement::LoadedEvent, toplevel_loaded, this);
 		DetachLayer (toplevel);
@@ -516,9 +517,6 @@ Surface::Attach (UIElement *element)
 		NameScope::SetNameScope (canvas, new NameScope());
 	}
 
-	toplevel = canvas;
-	AttachLayer (canvas);
-
 	// First time we connect the surface, start responding to events
 	if (first)
 		active_window->EnableEvents (first);
@@ -526,12 +524,25 @@ Surface::Attach (UIElement *element)
 	if (zombie)
 		return;
 
-	List *list = canvas->WalkTreeForLoaded (NULL);
-	canvas->PostSubtreeLoad (list);
-	// PostSubtreeLoad will take care of deleting the list for us.
+	toplevel = canvas;
+	AttachLayer (canvas);
 
 	this->ref ();
 	canvas->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify)event_object_unref);
+
+	ticked_after_attach = false;
+	time_manager->RemoveTickCall (tick_after_attach_reached, this);
+	time_manager->AddTickCall (tick_after_attach_reached, this);
+
+	List *list = canvas->WalkTreeForLoaded (NULL);
+	canvas->PostSubtreeLoad (list);
+	// PostSubtreeLoad will take care of deleting the list for us.
+}
+
+void
+Surface::tick_after_attach_reached (EventObject *data)
+{
+	((Surface*)data)->ticked_after_attach = true;
 }
 
 void
@@ -592,6 +603,7 @@ Surface::AttachLayer (UIElement *layer)
 
 	List *list = layer->WalkTreeForLoaded (NULL);
 	layer->PostSubtreeLoad (list);
+	// PostSubtreeLoad will take care of deleting the list for us.
 }
 
 void
