@@ -122,6 +122,7 @@ namespace System.Windows.Controls {
 				SetValue (TextProperty, value);
 			}
 		}
+		
 		public void Select (int start, int length)
 		{
 			if (start < 0)

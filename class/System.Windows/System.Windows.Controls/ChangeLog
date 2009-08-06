@@ -1,3 +1,8 @@
+2009-08-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* PasswordBox.cs: Sync'd with TextBox.cs for OnKeyUp/Down and
+	auto-scrolling.
+
 2009-08-04  Alan McGovern  <amcgovern@novell.com>
 
 	* ContentPresenter.cs: ContentPresenter.Content is copied to
