@@ -73,13 +73,15 @@ rating:4
 
 site:Grid Transition Rotator
 url:http://www.shinedraw.com/image-manipulation/flash-vs-silverlight-grid-transition-rotator/
-rating:0
- * Crashes on load
+rating:3
+ * Looks really good
+ * Flashes to a blank white canvas in between transitions
 
 site:Python WebIDE
 url:http://www.voidspace.org.uk/ironpython/webide/webide.html
-rating:4
+rating:3
  * Works!
+ * Cranks cpu to 100% using controls 
 
 site:Tic-Tac-Toe
 url:http://oldschooldotnet.blogspot.com/2009/01/tic-tac-toe-in-silverlight.html
@@ -88,21 +90,20 @@ rating:4
 
 site:Polyhedra
 url:http://www.picturespice.com/ps/Polyhedra/ClientBin/TestPage.html
-rating:3
- * animation works (a bit slow)
+rating:4
  * hyperlink button "Make a shape for real" does not work
 
 site:Custom Splash screen
 url:http://www.shinedraw.com/browser-integration/flash-vs-silverlight-custom-loading-splash-screen/
-rating:0
- * error in System.Windows: Error while loading the xh-Hant/System.Xml.Linq.resources.dll assembly.
+rating:2
+ * not implemented: (ErrorEventArgs.lineNumber) plugin-class.cpp:763
+ * not implemented: (ErrorEventArgs.methodName) plugin-class.cpp:776
 
 site: SilverTunes
 url:http://demo.componentone.com//Silverlight/SilverTunes/
-rating:1
- * The album covers don't render
- * typing in the search box crashes FF with SIGSEGV (bug 490233)
- * Leaks a tonne of memory when scrolling the album covers 
+rating:0
+ * Regression: Nothing appears at all
+ * Could not parse element Deployment.ExternalParts, attribute (null), error: Unknown element: Deployment.ExternalParts
 
 site:Metronome
 url:http://silverlightshow.net/showcase/SilverlightMetronome/SilverlightMetronome.html
@@ -111,8 +112,9 @@ rating:3
 
 site:FullSix
 url:http://www.fullsix.pt/tas/sbvideo/default.htm
-rating:0
- * crashes FF 
+rating:2
+ * Works pretty good
+ * Clicking on Stop will cause seg fault
 
 site:Futbol
 url:http://www.semgoksu.com/silverlight-futbol-oyunu-yazisi/503.aspx
