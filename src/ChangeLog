@@ -1,3 +1,11 @@
+2009-08-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::OnFocusOut): Instead of clearing the
+	selection, just set the selection to the cursor position. This
+	way, if the control gets programatically Focus()'d again, then the
+	cursor will be where it was just before the control lost
+	focus. Partial fix for drt 2003.
+
 2009-08-06  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|xaml.h: Add bindings for checking/setting whether a

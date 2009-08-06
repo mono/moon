@@ -2073,7 +2073,12 @@ TextBoxBase::mouse_move (EventObject *sender, EventArgs *args, gpointer closure)
 void
 TextBoxBase::OnFocusOut (EventArgs *args)
 {
-	ClearSelection (0);
+	BatchPush ();
+	emit = NOTHING_CHANGED;
+	SetSelectionStart (selection_cursor);
+	SetSelectionLength (0);
+	BatchPop ();
+	
 	SyncAndEmit ();
 	
 	focused = false;
