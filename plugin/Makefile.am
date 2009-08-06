@@ -98,9 +98,9 @@ dist-hook:
 	-cp $(srcdir)/moz-sdk/*.h $(distdir)/moz-sdk
 
 inst-%: $(OUTPUT_DIR)/%
-	-mkdir -p $(pkglibdir)/plugin/
-	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(pkglibdir)/plugin/$*
-	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(pkglibdir)/plugin/$*.mdb
+	-mkdir -p $(DESTDIR)$(pkglibdir)/plugin/
+	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(DESTDIR)$(pkglibdir)/plugin/$*
+	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(DESTDIR)$(pkglibdir)/plugin/$*.mdb
 
 
 # gross hack needed because of the way the bridges are located
