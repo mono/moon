@@ -1,3 +1,11 @@
+2009-08-06  Alan McGovern  <amcgovern@novell.com>
+
+	* moon-unit.mdp:
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs: Add the first few
+	  tests which attempt to figure out how GridLength.Auto
+	  actually distributes its values.
+
 2009-08-05  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Remove the MoonlightBug
