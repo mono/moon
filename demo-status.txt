@@ -1,7 +1,26 @@
 site:Channel9 Silverlight 2.0 player
 url:http://channel9.msdn.com/pdc2008/PC54
 rating:3
- * mostly works at this point
+ * User must install the Firefox "User Agent Switcher" plugin and change ua to IE
+ * Pausing, seeking works well
+ * Crashes unexpectedly after a long time of playing
+
+site:Hard Rock Memorablia
+url:http://memorabilia.hardrock.com
+rating:2
+ * List items on the left are placed on top of each other. Bug 503689
+
+site:Fox Movies
+url:http://silverlight.net/fox
+rating:4
+ * Looks good.
+ * Kind of choppy
+
+site:Smooth Streaming
+url:http://www.iis.net/extensions/SmoothStreaming
+rating:1
+ * Looks and sounds great
+ * Crashes firefox when you navigate away from the page Bug 528611
 
 site:Presidential Inauguration
 url:http://www.cnn.com/SPECIALS/2009/44.president/inauguration/themoment/
@@ -11,42 +30,41 @@ rating:3
 site:Photosynth
 url:http://photosynth.net/silverlight/photosynth.aspx?cid=d7d78324-ad5e-41ea-94dd-512580ed4393
 rating:1
-* No images appear Bug 503683
+ * No images appear Bug 503683
+ * Images don't unhighlight when another image is selected.
 
 site:Silverlight Stocks
 url:http://www.vadimv.com/
-rating:0
- * Crash in Isolated Storage
-
-site:Calculator
-url:http://silver.calcsharp.net/
-rating:1
- * Buttons (or menus not sure what they are) popup at 0,0 when moused over
+rating:2
+ * Super slow
+ * Maxes cpu at 100% Bug 528560
 
 site:Zoom Mosaic
 url:http://xaml.me/zoommosaic/
-rating:1
- * Seems to load but there's no image
+rating:0
+ * Crashes Firefox Bug 528570
+
+site:SmoothHD
+site:http://www.smoothhd.com
+rating:0
+ * No video appears
 
 site: Rad Media Player
 url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
 rating:1
- * Could not parse element Setter, attribute Value, error: Could not locate StaticResource TransparentColor for property value
+ * Error: Unknown attribute ContainerStyle on element ToolBarContainerStyle.
 
 site:Database Schema Editor
 url:http://www.dbschemaeditor.com/OnlineDB.aspx
-rating:2
- * Controls in dialogs not layed out properly
- * TextBoxes in dialogs do not get focus properly, can't see text or carat when typing sometimes
- * ComboBoxes pop up at 0,0
- 
+rating:1
+ * When creating a new table and columns, the select box for the column does not populate
+ * Types in the list are all OnlineDB.Backend.Entities.MetaEntities.DatabaseType
+ * If you click Add (to add column to table), you get seg fault
 
 site:Dr. Popper
 url:http://www.bluerosegames.com/brg/free-web-games/bubble-breaker.aspx
-rating:3
- * super slow when loading
- * Bubbles don't shake when you click to select them (single click)
- * Text on buttons are out of place Bug 503647
+rating:4
+ * Works great
 
 site:3D Image Rotation
 url:http://www.shinedraw.com/3d-illusion/flash-and-silverlight-3d-image-rotation/
@@ -78,11 +96,6 @@ site:Custom Splash screen
 url:http://www.shinedraw.com/browser-integration/flash-vs-silverlight-custom-loading-splash-screen/
 rating:0
  * error in System.Windows: Error while loading the xh-Hant/System.Xml.Linq.resources.dll assembly.
-
-site:Hard Rock Memorablia
-url:http://memorabilia.hardrock.com
-rating:2
- * List items on the left are placed on top of each other. Bug 503689
 
 site: SilverTunes
 url:http://demo.componentone.com//Silverlight/SilverTunes/
