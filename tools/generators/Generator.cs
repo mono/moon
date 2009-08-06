@@ -1046,7 +1046,9 @@ class Generator {
 		all_files.AddRange (Directory.GetFiles (srcdir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (asfdir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (plugindir, "*.h"));
-		
+
+		RemoveExcludedSrcFiles (srcdir, all_files);
+
 		Tokenizer tokenizer = new Tokenizer (all_files.ToArray ());
 		GlobalInfo all = new GlobalInfo ();
 		
@@ -2571,4 +2573,12 @@ class Generator {
 			text.AppendLine ();
 		}
 	}
+
+
+	static void RemoveExcludedSrcFiles (string srcdir, List<string> files)
+	{
+		files.Remove (Path.Combine (srcdir, "cbinding.h"));
+		files.Remove (Path.Combine (srcdir, "ptr.h"));
+	}
+
 }
