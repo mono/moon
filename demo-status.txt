@@ -45,19 +45,26 @@ rating:0
  * Crashes Firefox Bug 528570
 
 site:SmoothHD
-site:http://www.smoothhd.com
-rating:0
+url:http://www.smoothhd.com
+rating:1
  * No video appears
+ * Some controls are drawn incorrectly
 
 site: Rad Media Player
 url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
 rating:1
  * Error: Unknown attribute ContainerStyle on element ToolBarContainerStyle.
 
+site:Telerik
+url:http://demos.telerik.com/silverlight/default.aspx#Gauge/LinearGauge/Appearance
+rating:1
+ * Exception System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.ArgumentException: The DependencyProperty 'SelectedItems', whose property type is System.Collections.ObjectModel.ObservableCollection`1 can't be set to value whose type is Telerik.Windows.Controls.SelectionChanger`1System.Object, mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e
+ * System.Windows.Markup.XamlParseException: Unknown attribute ContainerStyle on element ToolBarContainerStyle
+
 site:Database Schema Editor
 url:http://www.dbschemaeditor.com/OnlineDB.aspx
 rating:1
- * When creating a new table and columns, the select box for the column does not populate
+ * When creating a new table and columns, the select box for the column does not populate Bug 528652
  * Types in the list are all OnlineDB.Backend.Entities.MetaEntities.DatabaseType
  * If you click Add (to add column to table), you get seg fault
 
@@ -81,7 +88,7 @@ site:Python WebIDE
 url:http://www.voidspace.org.uk/ironpython/webide/webide.html
 rating:3
  * Works!
- * Cranks cpu to 100% using controls 
+ * Cranks cpu to 100% using controls Bug 528653
 
 site:Tic-Tac-Toe
 url:http://oldschooldotnet.blogspot.com/2009/01/tic-tac-toe-in-silverlight.html
@@ -96,8 +103,7 @@ rating:4
 site:Custom Splash screen
 url:http://www.shinedraw.com/browser-integration/flash-vs-silverlight-custom-loading-splash-screen/
 rating:2
- * not implemented: (ErrorEventArgs.lineNumber) plugin-class.cpp:763
- * not implemented: (ErrorEventArgs.methodName) plugin-class.cpp:776
+ * The slash screen appears for a few seconds, then it goes blank
 
 site: SilverTunes
 url:http://demo.componentone.com//Silverlight/SilverTunes/
@@ -107,14 +113,15 @@ rating:0
 
 site:Metronome
 url:http://silverlightshow.net/showcase/SilverlightMetronome/SilverlightMetronome.html
-rating:3
- * No tooltips on start/stop button or on volume slider
+rating:0
+ * Regression: nothing appears anymore
+ * Could not parse element SolidColorBrush, attribute Color, error: Invalid attribute value {StaticResource PrimaryForeground} for property Color.
 
 site:FullSix
 url:http://www.fullsix.pt/tas/sbvideo/default.htm
 rating:2
  * Works pretty good
- * Clicking on Stop will cause seg fault
+ * Clicking on Stop will cause seg fault Bug 528656
 
 site:Futbol
 url:http://www.semgoksu.com/silverlight-futbol-oyunu-yazisi/503.aspx
@@ -124,41 +131,32 @@ rating:4
 site:Gantt Chart
 url:http://www.adefwebserver.com/DotNetNukeHELP/Misc/Silverlight/GanttChart/Default.aspx
 rating:2
- * clicking on a box in the chart throws error 
-
-site:Telerik
-url:http://demos.telerik.com/silverlight/default.aspx#Gauge/LinearGauge/Appearance
-rating:0
- * Exception System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.ArgumentException: The DependencyProperty 'SelectedItems', whose property type is System.Collections.ObjectModel.ObservableCollection`1 can't be set to value whose type is Telerik.Windows.Controls.SelectionChanger`1System.Object, mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e
+ * clicking on a box in the chart throws error Bug 528978
 
 site:Bashboard
 url:http://www.david-black.info/bashboard/default.aspx
-rating:0
- * Exception: at Codeplex.Dashboarding.DiamondSlider.Animate () [0x00000] at Codeplex.Dashboarding.Dashboard.Dashboard_Loaded (System.Object sender, System.Windows.RoutedEventArgs e) [0x00000] 
+rating:4
+ * Looks good!
+ * Bidirectional examples work great.
 
 site:Chart Designer
 url:http://www.visifire.com/silverlight_chart_designer.php
-rating:1
- * Chart doesn't show up
-
-site:KenKen
-url:http://www.free-online-kenken.co.uk/
-rating:0
- * Exception: at KenKen_SL.Page.LayoutRoot_MouseMove (System.Object sender, System.Windows.Input.MouseEventArgs e) [0x00000]
+rating:3
+ * Kind of slow.
+ * Refreshing the graph is slow.
+ * X Axis labels don't appear (should be Walmart, Exxon, Shell, BP, GM)
 
 site:Charts Gallery
 url:http://www.visifire.com/silverlight_charts_gallery.php
-rating:1
- * Click on one of the galleries (like 3D) and click on one of the examples, chart doesn't show up
- * Everything seems to parse fine but no UI shows up. 
+rating:3
+ * Site is a bit slow
+ * Some labels for the columns don't display properly
 
-site:Shock
-url:http://www.nokola.com/Shock/
+site:KenKen
+url:http://www.free-online-kenken.co.uk/
 rating:1
- * game starts up, goes full screen (and looks perfect). Clicking start launches the game, bug seems to bog down Firefox. 
- * An exception is thrown in managed in Shock.Globals:HideStartLevelInfo (null ref?)
- * The deployment is then disposed
- * A clock then ticks which results in a storyboard being started no the deployment which was just disposed. This causes a sigsegv as the surface is now null. 
+ * Can only drag number 4 to a square. 
+ * Cannot drag any other number at all
 
 site:Vector Space Zero
 url:http://www.ddtmm.com/vs0/
@@ -277,7 +275,7 @@ rating:1
 site:Positech 2000
 url:http://www.pay4foss.org/jumpstation/Positech2000/
 rating:3
- * text in the restart button is the wrong size
+ * text in the search and restart buttons is the wrong size
 
 site:3D Game of Life
 url:http://www.pay4foss.org/jumpstation/3DLifeGameOf/
@@ -288,11 +286,6 @@ site:Sudoku
 url:http://oldschooldotnet.blogspot.com/2009/03/sudoku-in-silverlight.html
 rating:3
  * Crashes when you click 'Done' button, otherwise works well
-
-site:Meta Ball Example
-url:http://www.magesi.ru/sl/ml/
-rating: 0
- * Insists on download codecs when they are already installed
 
 site:Rotating Space Rocks of DooM
 url:http://www.vertigo.com/downloads/Rocks/
