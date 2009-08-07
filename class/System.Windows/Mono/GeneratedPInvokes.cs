@@ -1359,12 +1359,12 @@ namespace Mono {
 		public extern static IntPtr multi_scale_sub_image_collection_new ();
 
 		[DllImport ("moon")]
-		// long multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance);
-		public extern static long multi_scale_tile_source_get_image_height (IntPtr instance);
+		// double multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance);
+		public extern static double multi_scale_tile_source_get_image_height (IntPtr instance);
 
 		[DllImport ("moon")]
-		// long multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance);
-		public extern static long multi_scale_tile_source_get_image_width (IntPtr instance);
+		// double multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance);
+		public extern static double multi_scale_tile_source_get_image_width (IntPtr instance);
 
 		[DllImport ("moon")]
 		// int multi_scale_tile_source_get_tile_height (MultiScaleTileSource *instance);
@@ -1391,12 +1391,12 @@ namespace Mono {
 		public extern static void multi_scale_tile_source_set_image_uri_func (IntPtr instance, Mono.ImageUriFunc func);
 
 		[DllImport ("moon")]
-		// void multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, long height);
-		public extern static void multi_scale_tile_source_set_image_height (IntPtr instance, long height);
+		// void multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, double height);
+		public extern static void multi_scale_tile_source_set_image_height (IntPtr instance, double height);
 
 		[DllImport ("moon")]
-		// void multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, long width);
-		public extern static void multi_scale_tile_source_set_image_width (IntPtr instance, long width);
+		// void multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, double width);
+		public extern static void multi_scale_tile_source_set_image_width (IntPtr instance, double width);
 
 		[DllImport ("moon")]
 		// void multi_scale_tile_source_set_tile_height (MultiScaleTileSource *instance, int height);

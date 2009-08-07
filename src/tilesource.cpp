@@ -22,26 +22,26 @@ MultiScaleTileSource::MultiScaleTileSource ()
 	invalidate_cb = NULL;
 }
 
-long 
+double
 MultiScaleTileSource::GetImageWidth ()
 {
 	return imageWidth;
 }
 
 void
-MultiScaleTileSource::SetImageWidth (long width)
+MultiScaleTileSource::SetImageWidth (double width)
 {
 	imageWidth = width;
 }
 
-long 
+double
 MultiScaleTileSource::GetImageHeight ()
 {
 	return imageHeight;
 }
 
 void
-MultiScaleTileSource::SetImageHeight (long height)
+MultiScaleTileSource::SetImageHeight (double height)
 {
 	imageHeight = height;
 }

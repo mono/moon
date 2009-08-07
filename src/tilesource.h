@@ -26,8 +26,8 @@ typedef void (*invalidate_tile_layer_func) (int level, int tilePositionX, int ti
 /* @CallInitialize */
 class MultiScaleTileSource : public DependencyObject {
  protected:
-	long imageWidth; //width of the DeepZoom Image
-	long imageHeight;
+	double imageWidth; //width of the DeepZoom Image
+	double imageHeight;
 	int tileWidth;	//width of the tiles
 	int tileHeight;
 	int tileOverlap; //how much the tiles overlap
@@ -44,14 +44,14 @@ class MultiScaleTileSource : public DependencyObject {
 	MultiScaleTileSource ();
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	long GetImageWidth ();
+	double GetImageWidth ();
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	void SetImageWidth (long width);
+	void SetImageWidth (double width);
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	long GetImageHeight ();
+	double GetImageHeight ();
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	void SetImageHeight (long height);
+	void SetImageHeight (double height);
 
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	int GetTileWidth ();

@@ -20,11 +20,11 @@ namespace System.Windows.Media
 	public abstract partial class MultiScaleTileSource : DependencyObject
 	{		
 		internal long ImageWidth {
-			get { return NativeMethods.multi_scale_tile_source_get_image_width (this.native); }
+			get { return (long)NativeMethods.multi_scale_tile_source_get_image_width (this.native); }
 			set { NativeMethods.multi_scale_tile_source_set_image_width (this.native, value); }
 		}
 		internal long ImageHeight {
-			get { return NativeMethods.multi_scale_tile_source_get_image_height (this.native); }
+			get { return (long)NativeMethods.multi_scale_tile_source_get_image_height (this.native); }
 			set { NativeMethods.multi_scale_tile_source_set_image_height (this.native, value); }
 		}
 		internal int TileWidth {

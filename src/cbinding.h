@@ -2034,10 +2034,10 @@ MultiScaleSubImageCollection *multi_scale_sub_image_collection_new (void);
  * MultiScaleTileSource
  **/
 /* @GeneratePInvoke */
-long multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance);
+double multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance);
 
 /* @GeneratePInvoke */
-long multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance);
+double multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance);
 
 /* @GeneratePInvoke */
 int multi_scale_tile_source_get_tile_height (MultiScaleTileSource *instance);
@@ -2058,10 +2058,10 @@ MultiScaleTileSource *multi_scale_tile_source_new (void);
 void multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_image_uri_func func);
 
 /* @GeneratePInvoke */
-void multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, long height);
+void multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, double height);
 
 /* @GeneratePInvoke */
-void multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, long width);
+void multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, double width);
 
 /* @GeneratePInvoke */
 void multi_scale_tile_source_set_tile_height (MultiScaleTileSource *instance, int height);

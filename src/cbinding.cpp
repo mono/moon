@@ -3298,23 +3298,23 @@ multi_scale_sub_image_collection_new (void)
 /**
  * MultiScaleTileSource
  **/
-long
+double
 multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance)
 {
 	if (instance == NULL)
 		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (long) 0;
+		return (double) 0;
 	
 	return instance->GetImageHeight ();
 }
 
 
-long
+double
 multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance)
 {
 	if (instance == NULL)
 		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (long) 0;
+		return (double) 0;
 	
 	return instance->GetImageWidth ();
 }
@@ -3381,7 +3381,7 @@ multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_
 
 
 void
-multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, long height)
+multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, double height)
 {
 	if (instance == NULL)
 		return;
@@ -3391,7 +3391,7 @@ multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, long h
 
 
 void
-multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, long width)
+multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, double width)
 {
 	if (instance == NULL)
 		return;

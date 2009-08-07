@@ -1,3 +1,7 @@
+2009-08-07  Andreia Gaita  <avidigal@novell.com>
+
+	* GeneratedPInvokes.cs: regen.
+
 2009-08-06  Chris Toshok  <toshok@ximian.com>
 
 	* GeneratedPInvokes.cs: regen.

@@ -42,6 +42,12 @@
 #define ENDTIMER(id,str)
 #endif
 
+
+inline
+guint64 pow2(int pow) {
+	return ((guint64) 1 << pow);
+}
+
 //Q(uad)Tree.
 struct QTree {
 	bool has_value;
@@ -62,9 +68,9 @@ qtree_new (void)
 }
 
 static QTreeNode*
-qtree_insert (QTree* root, int level, int x, int y)
+qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 {
-	if (x >= (1 << level) || y >= (1 << level)) {
+	if (x >= (pow2 (level)) || y >= (pow2 (level))) {
 		g_warning ("QuadTree index out of range.");
 		return NULL;
 	}
@@ -76,8 +82,8 @@ qtree_insert (QTree* root, int level, int x, int y)
 
 	QTreeNode *node = root;
 	while (level-- > 0) {
-		if (y < (1 << level)) {
-			if (x < (1 << level)) {
+		if (y < (pow2 (level))) {
+			if (x < (pow2 (level))) {
 				if (!node->l0) {
 					node->l0 = g_new0 (QTreeNode, 1);
 					node->l0->parent = node;
@@ -89,24 +95,24 @@ qtree_insert (QTree* root, int level, int x, int y)
 					node->l1->parent = node;
 				}
 				node = node->l1;
-				x -= (guint)(1 << level);
+				x -= (pow2 (level));
 			}
 		} else {
-			if (x < (1 << level)) {
+			if (x < (pow2 (level))) {
 				if (!node->l2) {
 					node->l2 = g_new0 (QTreeNode, 1);
 					node->l2->parent = node;
 				}
 				node = node->l2;
-				y -= (1 << level);
+				y -= (pow2 (level));
 			} else {
 				if (!node->l3) {
 					node->l3 = g_new0 (QTreeNode, 1);
 					node->l3->parent = node;
 				}
 				node = node->l3;
-				x -= (1 << level);
-				y -= (1 << level);
+				x -= (pow2 (level));
+				y -= (pow2 (level));
 			}
 		}
 	}
@@ -114,7 +120,7 @@ qtree_insert (QTree* root, int level, int x, int y)
 }
 
 static QTreeNode*
-qtree_insert_with_value (QTree* root, void *data, int level, int x, int y)
+qtree_insert_with_value (QTree* root, void *data, int level, guint64 x, guint64 y)
 {
 	QTreeNode *node = qtree_insert (root, level, x, y);
 	node->has_value = true;
@@ -125,9 +131,9 @@ qtree_insert_with_value (QTree* root, void *data, int level, int x, int y)
 
 
 static QTree *
-qtree_lookup (QTree* root, int level, int x, int y)
+qtree_lookup (QTree* root, int level, guint64 x, guint64 y)
 {
-	if (x >= (1 << level) || y >= (1 << level)) {
+	if (x >= (pow2 (level)) || y >= (pow2 (level))) {
 #if DEBUG
  		// we seem to run into an infinite loop sporadically here for drt #2014 completely spamming the test output.
  		// abort to get a stack trace. 
@@ -141,21 +147,21 @@ qtree_lookup (QTree* root, int level, int x, int y)
 		if (!root)
 			return NULL;
 
-		if (y < (1 << level)) {
-			if (x < (1 << level)) {
+		if (y < (pow2 (level))) {
+			if (x < (pow2 (level))) {
 				root = root->l0;
 			} else {
 				root = root->l1;
-				x -= (1 << level);
+				x -= (pow2 (level));
 			}
 		} else {
-			if (x < (1 << level)) {
+			if (x < (pow2 (level))) {
 				root = root->l2;
-				y -= (1 << level);
+				y -= (pow2 (level));
 			} else {
 				root = root->l3;
-				x -= (1 << level);
-				y -= (1 << level);
+				x -= (pow2 (level));
+				y -= (pow2 (level));
 			}
 		}
 	}
@@ -163,7 +169,7 @@ qtree_lookup (QTree* root, int level, int x, int y)
 }
 
 static void *
-qtree_lookup_data (QTree* root, int level, int x, int y)
+qtree_lookup_data (QTree* root, int level, guint64 x, guint64 y)
 {
 	QTree *node = qtree_lookup (root, level, x, y);
 	if (node)
@@ -184,7 +190,7 @@ qtree_remove_at (QTree* root, int level, int x, int y)
 #endif
 
 static bool
-qtree_has_value_at (QTree* root, int level, int x, int y)
+qtree_has_value_at (QTree* root, int level, guint64 x, guint64 y)
 {
 	QTree *node = qtree_lookup (root, level, x, y);
 	if (node)
@@ -522,11 +528,11 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			int tile_height = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileHeight (): source->GetTileHeight ();
 
 			//in msi relative coord
-			double v_tile_w = tile_width * (double)(guint)(1 << (layers - from_layer)) * sub_vp.width / sub_w;
-			double v_tile_h = tile_height * (double)(guint)(1 << (layers - from_layer)) * sub_vp.width / sub_w;
+			double v_tile_w = tile_width * (double) (pow2 (layers - from_layer)) * sub_vp.width / sub_w;
+			double v_tile_h = tile_height * (double)(pow2 (layers - from_layer)) * sub_vp.width / sub_w;
 			//LOG_MSI ("virtual tile size at layer %d; %fx%f\n", from_layer, v_tile_w, v_tile_h);
 
-			int i, j;
+			guint64 i, j;
 			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
 				for (j = (int)((MAX(msivp_oy, sub_vp.y) - sub_vp.y)/v_tile_h); j * v_tile_h < MIN(msivp_oy + msivp_w/msi_ar, sub_vp.y + sub_vp.width/sub_ar) - sub_vp.y;j++) {
 					count++;
@@ -537,8 +543,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						if ((image = (cairo_surface_t*)qtree_lookup_data (subimage_cache, from_layer, i, j)))
 							found ++;
 					} else if ((image = (cairo_surface_t*)qtree_lookup_data (shared_cache, from_layer,
-									  morton_x (sub_image->n) * (guint)(1 << from_layer) / tile_width,
-									  morton_y (sub_image->n) * (guint)(1 << from_layer) / tile_height)))
+									  morton_x (sub_image->n) * (pow2 (from_layer)) / tile_width,
+									  morton_y (sub_image->n) * (pow2 (from_layer)) / tile_height)))
 						found ++;
 
 					if (image && *(double*)(cairo_surface_get_user_data (image, &full_opacity_at_key)) > GetValue(MultiScaleImage::TileFadeProperty)->AsDouble ())
@@ -582,8 +588,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 				int tile_width = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ?sub_image->source->GetTileWidth () : source->GetTileWidth ();
 				int tile_height = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileHeight () : source->GetTileHeight ();
 
-				double v_tile_w = tile_width * (double)(guint)(1 << (layers - layer_to_render)) * sub_vp.width / sub_w;
-				double v_tile_h = tile_height * (double)(guint)(1 << (layers - layer_to_render)) * sub_vp.width / sub_w;
+				double v_tile_w = tile_width * (double)(pow2 (layers - layer_to_render)) * sub_vp.width / sub_w;
+				double v_tile_h = tile_height * (double)(pow2 (layers - layer_to_render)) * sub_vp.width / sub_w;
 
 				int i, j;
 				for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
@@ -597,8 +603,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 							shared_tile = true;
 
 							image = (cairo_surface_t*)qtree_lookup_data (shared_cache, layer_to_render,
-									morton_x(sub_image->n) * (guint)(1 << layer_to_render) / tile_width,
-									morton_y(sub_image->n) * (guint)(1 << layer_to_render) / tile_height);
+									morton_x(sub_image->n) * pow2 (layer_to_render) / tile_width,
+									morton_y(sub_image->n) * pow2 (layer_to_render) / tile_height);
 						}
 
 						if (!image)
@@ -608,8 +614,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						cairo_save (cr);
 
 						cairo_scale (cr,
-							     (guint)(1 << (layers - layer_to_render)),
-							     (guint)(1 << (layers - layer_to_render)));
+							     pow2 (layers - layer_to_render),
+							     pow2 (layers - layer_to_render));
 
 						cairo_translate (cr,
 								 i * tile_width,
@@ -617,8 +623,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 						if (shared_tile) {
 							cairo_translate (cr,
-									 (-morton_x(sub_image->n) * (guint)(1 << layer_to_render)) % tile_width,
-									 (-morton_y(sub_image->n) * (guint)(1 << layer_to_render)) % tile_height);
+									 (-morton_x(sub_image->n) * (pow2 (layer_to_render))) % tile_width,
+									 (-morton_y(sub_image->n) * (pow2 (layer_to_render))) % tile_height);
 
 						}
 
@@ -670,8 +676,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			int tile_width = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ?sub_image->source->GetTileWidth () : source->GetTileWidth ();
 			int tile_height = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileHeight (): source->GetTileHeight ();
 
-			double v_tile_w = tile_width * (double)(guint)(1 << (layers - from_layer)) * sub_vp.width / sub_w;
-			double v_tile_h = tile_height * (double)(guint)(1 << (layers - from_layer)) * sub_vp.width / sub_w;
+			double v_tile_w = tile_width * (double)(pow2 (layers - from_layer)) * sub_vp.width / sub_w;
+			double v_tile_h = tile_height * (double)(pow2 (layers - from_layer)) * sub_vp.width / sub_w;
 
 			int i, j;
 			for (i = (int)((MAX(msivp_ox, sub_vp.x) - sub_vp.x)/v_tile_w); i * v_tile_w < MIN(msivp_ox + msivp_w, sub_vp.x + sub_vp.width) - sub_vp.x;i++) {
@@ -683,15 +689,15 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 					Uri *tile = new Uri ();
 					if (from_layer <= dzits->GetMaxLevel ()) {
 						if (!qtree_has_value_at (shared_cache, from_layer,
-								morton_x(sub_image->n) * (guint)(1 << from_layer) / tile_width,
-								morton_y(sub_image->n) * (guint)(1 << from_layer) / tile_height)
+								morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
+								morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height)
 						    && source->get_tile_func (from_layer,
-									      morton_x(sub_image->n) * (guint)(1 << from_layer) / tile_width,
-									      morton_y(sub_image->n) * (guint)(1 << from_layer) / tile_height,
+									      morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
+									      morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height,
 									      tile, source))
 							DownloadTile (bitmapimagectx, tile, shared_index, from_layer,
-								      morton_x(sub_image->n) * (guint)(1 << from_layer) / tile_width,
-								      morton_y(sub_image->n) * (guint)(1 << from_layer) / tile_height);
+								      morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
+								      morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height);
 					} else {
 						if (!qtree_has_value_at (subimage_cache, from_layer, i, j)
 						    && source->get_tile_func (from_layer, i, j, tile, sub_image->source))
@@ -710,8 +716,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	double msi_w = GetActualWidth ();
 	double msi_h = GetActualHeight ();
 	double msi_ar = GetAspectRatio ();
-	double im_w = (double) source->GetImageWidth ();
-	double im_h = (double) source->GetImageHeight ();
+	double im_w = source->GetImageWidth ();
+	double im_h = source->GetImageHeight ();
 	int tile_width = source->GetTileWidth ();
 	int tile_height = source->GetTileHeight ();
 	double vp_ox = GetViewportOrigin()->x;
@@ -751,8 +757,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		bool blending = FALSE; //means at least a tile is not yet fully blended
 
 		//v_tile_X is the virtual tile size at this layer in relative coordinates
-		double v_tile_w = tile_width  * (double)(guint)(1 << (layers - from_layer)) / im_w;
-		double v_tile_h = tile_height * (double)(guint)(1 << (layers - from_layer)) / im_w;
+		double v_tile_w = tile_width  * (double)(pow2 (layers - from_layer)) / im_w;
+		double v_tile_h = tile_height * (double)(pow2 (layers - from_layer)) / im_w;
 
 		int i, j;
 		//This double loop iterate over the displayed part of the image and find all (i,j) being top-left corners of tiles
@@ -795,8 +801,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	int layer_to_render = from_layer;
 	while (from_layer >= 0 && layer_to_render <= to_layer) {
 		int i, j;
-		double v_tile_w = tile_width * (double)(guint)(1 << (layers - layer_to_render)) / im_w;
-		double v_tile_h = tile_height * (double)(guint)(1 << (layers - layer_to_render)) / im_w;
+		double v_tile_w = tile_width * (double)(pow2 (layers - layer_to_render)) / im_w;
+		double v_tile_h = tile_height * (double)(pow2 (layers - layer_to_render)) / im_w;
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
 				cairo_surface_t *image = (cairo_surface_t*)qtree_lookup_data (subimage_cache, layer_to_render, i, j);
@@ -806,7 +812,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				LOG_MSI ("rendering %d %d %d\n", layer_to_render, i, j);
 				cairo_save (cr);
 
-				cairo_scale (cr, (guint)(1 << (layers - layer_to_render)), (guint)(1 << (layers - layer_to_render))); //scale to image size
+				cairo_scale (cr, (pow2 (layers - layer_to_render)), (pow2 (layers - layer_to_render))); //scale to image size
 
 				cairo_translate (cr, i * tile_width, j * tile_height);
 
@@ -842,8 +848,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	while (from_layer < optimal_layer) {
 		from_layer ++;
 
-		double v_tile_w = tile_width * (double)(guint)(1 << (layers - from_layer)) / im_w;
-		double v_tile_h = tile_height * (double)(guint)(1 << (layers - from_layer)) / im_w;
+		double v_tile_w = tile_width * (double)(pow2 (layers - from_layer)) / im_w;
+		double v_tile_h = tile_height * (double)(pow2 (layers - from_layer)) / im_w;
 		int i, j;
 
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
