@@ -231,6 +231,7 @@ namespace MoonTest.System.Windows.Data
 		[TestMethod]
 		public void BindToText5 ()
 		{
+			// Fails in Silverlight 3
 			Binding binding = new Binding (" ");
 			binding.Source = "string";
 			TextProp prop = new TextProp ();
@@ -242,6 +243,7 @@ namespace MoonTest.System.Windows.Data
 		[TestMethod]
 		public void BindToText5b ()
 		{
+			// Fails in Silverlight 3
 			Binding binding = new Binding (" ");
 			binding.Source = "string";
 			TextProp prop = new TextProp { MyText = "test" };
@@ -254,6 +256,7 @@ namespace MoonTest.System.Windows.Data
 		[Asynchronous]
 		public void BindXaml ()
 		{
+			// Fails in Silverlight 3
 			Mono.Moonlight.BindingConverter c = new Mono.Moonlight.BindingConverter ();
 			Grid p = (Grid) c.Root;
 			Canvas canvas = (Canvas) p.Children [0];
@@ -524,7 +527,7 @@ namespace MoonTest.System.Windows.Data
 
 			Assert.Throws<MethodAccessException> (delegate {
 				rectangle.SetBinding (Shape.OpacityProperty, binding);
-			});
+			}); // Fails in Silverlight 3 (no exception thrown)
 		}
 
 		[TestMethod]
@@ -543,7 +546,7 @@ namespace MoonTest.System.Windows.Data
 			binding = new Binding ("Float");
 			Assert.Throws<MethodAccessException> (delegate {
 				rectangle.SetBinding(Shape.OpacityProperty, binding);
-			});
+			}); // Fails in Silverlight 3 (no exception thrown)
 		}
 
 		[TestMethod]
@@ -563,7 +566,7 @@ namespace MoonTest.System.Windows.Data
 			Binding b = new Binding ();
 			Assert.Throws<ArgumentException> (() => {
 				b.Path = new PropertyPath (Rectangle.OpacityProperty);
-			});
+			}); // Fails in Silverlight 3 (got System.Exception)
 		}
 		
 		[TestMethod]
@@ -598,6 +601,7 @@ namespace MoonTest.System.Windows.Data
 		[TestMethod]
 		public void SetBindingExpression()
 		{
+			// Fails in Silverlight 3
 			Binding b = new Binding("");
 			b.Source = "This is a string";
 
@@ -1556,6 +1560,7 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		[TestMethod]
 		public void XamlPropertyPathTest ()
 		{
+			// Fails in Silverlight 3
 			Mono.Moonlight.BindingConverter c = new Mono.Moonlight.BindingConverter ();
 			TextBlock a = (TextBlock) c.FindName ("a");
 			//Assert.IsInstanceOfType (a.ReadLocalValue (TextBlock.TextProperty), typeof (BindingExpressionBase));

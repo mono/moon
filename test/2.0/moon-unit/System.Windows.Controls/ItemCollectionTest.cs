@@ -86,7 +86,7 @@ namespace MoonTest.System.Windows.Controls {
 			ItemCollection c = GetCollection ();
 			Rectangle o = new Rectangle ();
 			c.Add (o);
-			Assert.Throws<InvalidOperationException> (() => c.Add (o));
+			Assert.Throws<InvalidOperationException> (() => c.Add (o)); // Fails in Silverlight 3
 		}
 		
 		[TestMethod]
@@ -184,7 +184,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual(1, ic.IndexOf(ic), "IndexOf");
 			Assert.AreEqual(-1, ic.IndexOf(c), "IndexOf-not in collection");
 
-			Assert.IsFalse(ic.IndexOf(a) >= 0, "IndexOf(object)");
+			Assert.IsFalse(ic.IndexOf(a) >= 0, "IndexOf(object)"); // Fails in Silverlight 3
 			Assert.IsFalse(ic.Contains(a), "Contains(object)");
 			Assert.IsFalse(ic.Contains(c), "Contains(moon)");
 
@@ -204,7 +204,7 @@ namespace MoonTest.System.Windows.Controls {
 			ItemCollection c = GetCollection ();
 			c.Add (0);
 
-			Assert.AreEqual (-1, c.IndexOf (0), "Does not contain '0'");
+			Assert.AreEqual (-1, c.IndexOf (0), "Does not contain '0'"); // Fails in Silverlight 3
 			Assert.AreEqual (0, c.IndexOf (c[0]), "Contains c [0]");
 		}
 
@@ -214,12 +214,13 @@ namespace MoonTest.System.Windows.Controls {
 			ItemCollection ic = GetCollection ();
 
 			ic.Add (5);
-			Assert.IsTrue (ic.IndexOf(5) == -1, "IndexOf(int)");
+			Assert.IsTrue (ic.IndexOf(5) == -1, "IndexOf(int)"); // Fails in Silverlight 3
 		}
 
 		[TestMethod]
 		public void Methods_Struct()
 		{
+			// Fails in Silverlight 3
 			S a = new S { Name = "A" };
 			S b = new S { Name = "B" };
 			S c = new S { Name = "C" };
@@ -271,7 +272,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual(1, ic.IndexOf(ic), "IndexOf");
 			Assert.AreEqual(-1, ic.IndexOf(c), "IndexOf-not in collection");
 
-			Assert.IsFalse(ic.IndexOf(a) >= 0, "IndexOf(point)");
+			Assert.IsFalse(ic.IndexOf(a) >= 0, "IndexOf(point)"); // Fails in Silverlight 3
 			Assert.IsFalse(ic.Contains(a), "Contains(point)");
 			Assert.IsFalse(ic.Contains(c), "Contains(point)");
 
@@ -370,7 +371,7 @@ namespace MoonTest.System.Windows.Controls {
 			ItemCollection ic = GetCollection ();
 			Assert.Throws<ArgumentException> (delegate {
 					ic.Remove (null);
-				}, "remove/null");
+				}, "remove/null"); // Fails in Silverlight 3
 		}
 
 		[TestMethod]
@@ -379,7 +380,7 @@ namespace MoonTest.System.Windows.Controls {
 			ItemCollection ic = GetCollection ();
 			Assert.Throws<ArgumentException> (delegate {
 					ic.IndexOf (null);
-				}, "indexof/null");
+				}, "indexof/null"); // Fails in Silverlight 3
 		}
 
 		[TestMethod]
@@ -388,7 +389,7 @@ namespace MoonTest.System.Windows.Controls {
 			ItemCollection ic = GetCollection ();
 			Assert.Throws<ArgumentException> (delegate {
 					ic.Contains (null);
-				}, "contains/null");
+				}, "contains/null"); // Fails in Silverlight 3
 		}
 		
 		[TestMethod]

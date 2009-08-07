@@ -210,7 +210,7 @@ namespace MoonTest.System.Windows.Controls {
 			ItemsControl c = new ItemsControl ();
 			TestPanel.Children.Add (c);
 			Enqueue (() => {
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (c), "#1");
+				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (c), "#1"); // Fails in Silverlight 3
 				ItemsPresenter itemsPresenter = (ItemsPresenter) VisualTreeHelper.GetChild (c, 0);
 				Assert.IsNotNull (itemsPresenter, "#2");
 
@@ -235,7 +235,7 @@ namespace MoonTest.System.Windows.Controls {
 			c.Items.Add (item);
 			Enqueue (() => {
 				ContentPresenter presenter = (ContentPresenter) VisualTreeHelper.GetParent ((Rectangle) item.Content);
-				Assert.IsNotNull (presenter, "#1");
+				Assert.IsNotNull (presenter, "#1"); // Fails in Silverlight 3
 
 				Grid grid = (Grid) VisualTreeHelper.GetParent (presenter);
 				Assert.IsNotNull (grid, "#2");
@@ -390,7 +390,7 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.IsInstanceOfType<ContentPresenter> (c.LastContainer, "#1");
 				item = (ContentPresenter) c.LastContainer;
 				Assert.AreEqual (content, item.Content, "#2");
-				Assert.IsNull (item.DataContext, "#3");
+				Assert.IsNull (item.DataContext, "#3"); // Fails in Silverlight 3
 				c.LastContainer = null;
 
 				content = "I'm a string";
@@ -556,7 +556,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (item.ContentTemplate, "#3");
 			box.PrepareContainerForItemOverride_ (item, null);
 			Assert.IsNull (item.Style, "#4");
-			Assert.IsNotNull (item.Content, "#5"); // What's this? A placeholder when using a null item?
+			Assert.IsNotNull (item.Content, "#5"); // What's this? A placeholder when using a null item? // Fails in Silverlight 3
 			Assert.IsNotNull (item.ContentTemplate, "#6");
 		}
 
@@ -607,7 +607,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (item.ContentTemplate, "#3");
 			box.PrepareContainerForItemOverride_ (item, null);
 			Assert.IsNull (item.Style, "#4");
-			Assert.IsNotNull (item.Content, "#5"); // What's this? A placeholder when using a null item?
+			Assert.IsNotNull (item.Content, "#5"); // What's this? A placeholder when using a null item? // Fails in Silverlight 3
 			Assert.IsNotNull (item.ContentTemplate, "#6");
 		}
 

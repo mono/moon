@@ -256,6 +256,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		[TestMethod]
 		public void IncreaseQuotaTo ()
 		{
+			// Fails in Silverlight 3
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
 
 			// LAMESPEC: documented as ArgumentOutOfRangeException on MSDN (reported)
@@ -272,6 +273,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		[TestMethod]
 		public void Quota ()
 		{
+			// Fails in Silverlight 3
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
 			Assert.IsTrue (isf.Quota > 0, "Quota");
 
@@ -285,6 +287,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		[TestMethod]
 		public void Remove ()
 		{
+			// Fails in Silverlight 3
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
 
 			isf.Remove ();

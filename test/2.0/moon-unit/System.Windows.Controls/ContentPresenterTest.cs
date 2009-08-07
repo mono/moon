@@ -399,7 +399,7 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.VisualChildren (presenter, "#3"); // No visual children
 
 				presenter.Measure (Size.Empty);
-				Assert.VisualChildren (presenter, "#4",
+				Assert.VisualChildren (presenter, "#4", // Fails in Silverlight 3
 					new VisualNode<Rectangle> ("#b")
 				);
 				Assert.IsNull (presenter.DataContext, "#5");

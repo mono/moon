@@ -125,6 +125,7 @@ namespace MoonTest.System.Net {
 		[TestMethod]
 		public void Accept ()
 		{
+			// Fails in Silverlight 3
 			ConcreteHttpWebRequest hwr = new ConcreteHttpWebRequest ();
 
 			Assert.IsNull (hwr.Accept, "Accept-get");
@@ -156,6 +157,7 @@ namespace MoonTest.System.Net {
 		[TestMethod]
 		public void ContentType ()
 		{
+			// Fails in Silverlight 3
 			ConcreteHttpWebRequest hwr = new ConcreteHttpWebRequest ();
 
 			Assert.IsNull (hwr.ContentType, "ContentType-get");

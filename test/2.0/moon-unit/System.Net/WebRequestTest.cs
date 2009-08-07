@@ -440,12 +440,14 @@ namespace MoonTest.System.Net {
 		[TestMethod]
 		public void Headers_HttpRequestHeader_GET ()
 		{
+			// Fails in Silverlight 3
 			Headers_HttpRequestHeader ("GET");
 		}
 
 		[TestMethod]
 		public void Headers_HttpRequestHeader_POST ()
 		{
+			// Fails in Silverlight 3
 			Headers_HttpRequestHeader ("POST");
 		}
 
@@ -482,12 +484,14 @@ namespace MoonTest.System.Net {
 		[TestMethod]
 		public void Headers_String_GET ()
 		{
+			// Fails in Silverlight 3
 			Headers_String ("GET");
 		}
 
 		[TestMethod]
 		public void Headers_String_POST ()
 		{
+			// Fails in Silverlight 3
 			Headers_String ("POST");
 		}
 

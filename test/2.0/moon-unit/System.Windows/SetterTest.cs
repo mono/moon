@@ -157,6 +157,7 @@ namespace MoonTest.System.Windows
 		[MoonlightBug ("unsure why SL2 Property is null")]
 		public void ParseAndAddToStyle_WithinStyle ()
 		{
+			// Fails in Silverlight 3
 			Style style = (Style) XamlReader.Load (@"
 <Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Control"">
 	<Setter Property=""Width"" Value=""5.0"" />

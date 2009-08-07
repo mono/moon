@@ -214,7 +214,7 @@ namespace MoonTest.System.Windows {
 			CreateAsyncTest (panel, () => {
 				GeneralTransform m = a.TransformToVisual (TestPanel);
 				Assert.IsTrue (m is MatrixTransform, "#1");
-				Assert.Matrix (((MatrixTransform) m).Matrix, 1, 0, 0, 1, 431, 0, "#2");
+				Assert.Matrix (((MatrixTransform) m).Matrix, 1, 0, 0, 1, 431, 0, "#2"); // Fails in Silverlight 3
 
 				m = TestPanel.TransformToVisual (a);
 				Assert.IsTrue (m is MatrixTransform, "#3");

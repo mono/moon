@@ -121,7 +121,7 @@ namespace MoonTest.System.Windows {
 				),
 				() => {
 					c.Content = new Rectangle ();
-					Assert.VisualChildren (c, "#3");
+					Assert.VisualChildren (c, "#3"); // Fails in Silverlight 3
 				}
 			);
 		}
@@ -154,7 +154,7 @@ namespace MoonTest.System.Windows {
 				),
 				() => {
 					c.Content = "I'm a string";
-					Assert.VisualChildren (c, "#3");
+					Assert.VisualChildren (c, "#3"); // Fails in Silverlight 3
 				}
 			);
 		}
@@ -187,7 +187,7 @@ namespace MoonTest.System.Windows {
 				),
 				() => {
 					c.Content = new Rectangle ();
-					Assert.VisualChildren (c, "#3");
+					Assert.VisualChildren (c, "#3"); // Fails in Silverlight 3
 				}
 			);
 		}
@@ -275,7 +275,7 @@ namespace MoonTest.System.Windows {
 				),
 				() => {
 					c.Content = new Rectangle ();
-					Assert.VisualChildren (c, "#3");
+					Assert.VisualChildren (c, "#3"); // Fails in Silverlight 3
 				},
 				() => Assert.VisualChildren (c, "#1",
 					new VisualNode<Grid> ("#a", g => gridB = g,
@@ -345,7 +345,7 @@ namespace MoonTest.System.Windows {
 			ConcreteFrameworkElement f = new ConcreteFrameworkElement ();
 			Assert.Throws<ArgumentException>(delegate {
 				f.Language = null;
-			}, "#1");
+			}, "#1"); // Fails in Silverlight 3 (got System.Exception)
 			Assert.Throws<ArgumentException>(delegate {
 				f.SetValue (FrameworkElement.LanguageProperty, null);
 			}, "#2");
@@ -792,7 +792,7 @@ namespace MoonTest.System.Windows {
 			ContentControl c = new ContentControl();
 			TestPanel.Children.Add (c);
 			c.DataContext = new Rectangle { Name = "Name" };
-			Assert.AreSame(c.DataContext, c.FindName ("Name"), "#1");
+			Assert.AreSame(c.DataContext, c.FindName ("Name"), "#1"); // Fails in Silverlight 3
 		}
 		
 		[TestMethod]
@@ -955,6 +955,7 @@ namespace MoonTest.System.Windows {
 		[MoonlightBug ("We don't validate when clearing the value")]
 		public void SetStyleTest ()
 		{
+			// Fails in Silverlight 3
 			Style s = new Style (typeof (ConcreteFrameworkElement));
 			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
 			c.Style = null;

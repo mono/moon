@@ -913,7 +913,7 @@ namespace MoonTest.System.Windows.Media
 
 			CreateAsyncTest(Root, delegate {
 				List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(.5, .5), Root).Cast<FrameworkElement>().ToList();
-				Assert.AreEqual(2, hits.Count, "#1");
+				Assert.AreEqual(2, hits.Count, "#1"); // Fails in Silverlight 3
 				Assert.AreEqual("A", hits[0].Name);
 			});
 		}

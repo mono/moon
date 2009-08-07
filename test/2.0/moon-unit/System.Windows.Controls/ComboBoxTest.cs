@@ -202,7 +202,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (b.SelectionBoxItemTemplate, "#7");
 			Assert.AreEqual (-1, b.SelectedIndex, "#8");
 			
-			Assert.AreEqual (ScrollViewer.GetHorizontalScrollBarVisibility (b), ScrollBarVisibility.Auto, "Horizontal Scroll Vis");
+			Assert.AreEqual (ScrollViewer.GetHorizontalScrollBarVisibility (b), ScrollBarVisibility.Auto, "Horizontal Scroll Vis"); // Fails in Silverlight 3
 			Assert.AreEqual (ScrollViewer.GetVerticalScrollBarVisibility (b), ScrollBarVisibility.Auto, "Vertical Scroll Vis");
 		}
 
@@ -280,7 +280,7 @@ namespace MoonTest.System.Windows.Controls {
 			b.SelectedItem = b.Items [0];
 			b.methods.Clear ();
 			b.Items.RemoveAt (0);
-			Assert.AreEqual (1, b.methods.Count, "#10");
+			Assert.AreEqual (1, b.methods.Count, "#10"); // Fails in Silverlight 3
 			Assert.AreEqual ("OnItemsChanged", b.methods [0].MethodName, "#11");
 			Assert.AreEqual (o, b.SelectedItem, "#12");
 			Assert.AreEqual (0, b.SelectedIndex, "#13");
@@ -314,6 +314,7 @@ namespace MoonTest.System.Windows.Controls {
 		[TestMethod]
 		public void ClearContainerForItemOverride2 ()
 		{
+			// Fails in Silverlight 3
 			FakeComboBox ic = new FakeComboBox ();
 			ListBoxItem item = new ListBoxItem ();
 			item.Content = new object ();
@@ -329,6 +330,7 @@ namespace MoonTest.System.Windows.Controls {
 		[TestMethod]
 		public void ClearContainerForItemOverride3 ()
 		{
+			// Fails in Silverlight 3
 			FakeComboBox ic = new FakeComboBox { ItemContainerStyle = new Style (typeof (ListBoxItem)) };
 			ListBoxItem item = new ListBoxItem ();
 			item.Content = new object ();
@@ -358,7 +360,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (listItem.Content, "#3");
 			Assert.IsNull (comboItem.Content, "#4");
 
-			Assert.IsFalse (listItem.IsSelected, "#5");
+			Assert.IsFalse (listItem.IsSelected, "#5"); // Fails in Silverlight 3
 			Assert.IsFalse (comboItem.IsSelected, "#6");
 		}
 
@@ -505,7 +507,7 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.IsNull (VisualTreeHelper.GetParent (item), "#11");
 				Assert.IsNotNull (VisualTreeHelper.GetParent (content), "#8");
 				Assert.IsInstanceOfType<ContentPresenter> (VisualTreeHelper.GetParent (content), "#8b");
-				Assert.AreEqual (item, content.Parent, "#9");
+				Assert.AreEqual (item, content.Parent, "#9"); // Fails in Silverlight 3
 				Assert.AreSame (box, item.Parent, "#10");
 				box.SelectedItem = null;
 			});
@@ -786,7 +788,7 @@ namespace MoonTest.System.Windows.Controls {
 			c.Items.RemoveAt (0);
 
 			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
-			Assert.AreEqual (1, c.methods.Count, "#1");
+			Assert.AreEqual (1, c.methods.Count, "#1"); // Fails in Silverlight 3
 			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
 			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
 
@@ -813,7 +815,7 @@ namespace MoonTest.System.Windows.Controls {
 			c.Items.RemoveAt (0);
 
 			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
-			Assert.AreEqual (1, c.methods.Count, "#1");
+			Assert.AreEqual (1, c.methods.Count, "#1"); // Fails in Silverlight 3
 			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
 			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
 
@@ -831,7 +833,7 @@ namespace MoonTest.System.Windows.Controls {
 			c.SelectedIndex = 0;
 
 			c.Items.RemoveAt (0);
-			Assert.AreEqual (0, c.SelectedIndex, "#10");
+			Assert.AreEqual (0, c.SelectedIndex, "#10"); // Fails in Silverlight 3
 			Assert.AreEqual (orig, c.SelectedItem, "#11");
 
 			Assert.IsNull (orig.Parent);
@@ -850,7 +852,7 @@ namespace MoonTest.System.Windows.Controls {
 			c.Items[0] = new object ();
 
 			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
-			Assert.AreEqual (3, c.methods.Count, "#1");
+			Assert.AreEqual (3, c.methods.Count, "#1"); // Fails in Silverlight 3
 			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
 			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams[0]).Action, "#3");
 
@@ -975,7 +977,7 @@ namespace MoonTest.System.Windows.Controls {
 					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [0].MethodName, "#1");
 					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [1].MethodName, "#2");
 					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [2].MethodName, "#3");
-					Assert.AreEqual ("SelectionChangedEvent", box.methods [3].MethodName, "#4");
+					Assert.AreEqual ("SelectionChangedEvent", box.methods [3].MethodName, "#4"); // Fails in Silverlight 3
 					Assert.AreEqual ("OnItemsChanged", box.methods [4].MethodName, "#5");
 					Assert.IsNull (box.SelectedItem, "#1");
 
@@ -1002,7 +1004,7 @@ namespace MoonTest.System.Windows.Controls {
 					box.methods.Clear ();
 					box.Items.Clear ();
 					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [0].MethodName, "#1");
-					Assert.AreEqual ("SelectionChangedEvent", box.methods [1].MethodName, "#4");
+					Assert.AreEqual ("SelectionChangedEvent", box.methods [1].MethodName, "#4"); // Fails in Silverlight 3
 					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [2].MethodName, "#2");
 					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [3].MethodName, "#3");
 

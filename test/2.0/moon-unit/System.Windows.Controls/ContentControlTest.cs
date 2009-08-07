@@ -91,6 +91,7 @@ namespace MoonTest.System.Windows.Controls {
 		[Asynchronous]
 		public void ChangeDefaultTemplate ()
 		{
+			// Fails in Silverlight 3
 			ContentControl c = (ContentControl) XamlReader.Load (@"
 <ContentControl xmlns=""http://schemas.microsoft.com/client/2007"">
     <ContentControl.Template>
@@ -249,6 +250,7 @@ namespace MoonTest.System.Windows.Controls {
 		[Asynchronous]
 		public void DataTemplateTest2 ()
 		{
+			// Fails in Silverlight 3
 			ContentControl c = new ContentControl ();
 			c.Content = new ConcreteFrameworkElement ();
 			c.ContentTemplate = new DataTemplate ();
@@ -630,7 +632,7 @@ namespace MoonTest.System.Windows.Controls {
 			c.Content = new Rectangle ();
 
 			// No children
-			Assert.VisualChildren (c, "#8");
+			Assert.VisualChildren (c, "#8"); // Fails in Silverlight 3
 			Assert.IsTrue (c.ApplyTemplate (), "#9");
 
 			// Templated contents have been attached
@@ -670,7 +672,7 @@ namespace MoonTest.System.Windows.Controls {
 					Assert.VisualChildren (c, "#3",
 						new VisualNode<ContentPresenter> ("#b", p => presenter = p, null)
 					);
-					Assert.AreNotSame (old, presenter, "#4");
+					Assert.AreNotSame (old, presenter, "#4"); // Fails in Silverlight 3
 					Assert.IsNull (presenter.DataContext, "#5");
 				}
 			);

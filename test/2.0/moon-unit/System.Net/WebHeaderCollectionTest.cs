@@ -63,6 +63,7 @@ namespace MoonTest.System.Net {
 		[TestMethod]
 		public void Items_Set_String ()
 		{
+			// Fails in Silverlight 3
 			WebHeaderCollection whc = new WebHeaderCollection ();
 			Assert.Throws<ArgumentNullException> (delegate {
 				whc [null] = "null";
@@ -145,6 +146,7 @@ namespace MoonTest.System.Net {
 		[TestMethod]
 		public void Items_Set_HttpRequestHeader ()
 		{
+			// Fails in Silverlight 3
 			WebHeaderCollection whc = new WebHeaderCollection ();
 			Assert.Throws<IndexOutOfRangeException> (delegate {
 				whc [(HttpRequestHeader) Int32.MinValue] = "invalid";

@@ -53,7 +53,7 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual(1, g.GetValue(Grid.ColumnSpanProperty), "#2");
 			Assert.AreEqual(0, g.GetValue(Grid.RowProperty), "#3");
 			Assert.AreEqual(1, g.GetValue(Grid.RowSpanProperty), "#4");
-			Assert.AreEqual(true, g.GetValue(Grid.ShowGridLinesProperty), "#5");
+			Assert.AreEqual(true, g.GetValue(Grid.ShowGridLinesProperty), "#5"); // Fails in Silverlight 3
 
 			Rectangle r1 = new Rectangle();
 			Rectangle r2 = new Rectangle();

@@ -55,7 +55,7 @@ namespace MoonTest.System.Windows
 		{
 			Style s = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""10""/></Style>");
 			Setter setter = (Setter) s.Setters [0];
-			Assert.IsNull (setter.Property, "#1");
+			Assert.IsNull (setter.Property, "#1"); // Fails in Silverlight 3
 			
 			new Setter (Button.WidthProperty, 10);
 			
@@ -168,7 +168,7 @@ namespace MoonTest.System.Windows
 			Assert.IsTrue (double.IsNaN (r.Width));
 
 			r.Style = style;
-			Assert.Throws (delegate { r.Style = style; }, typeof (Exception));
+			Assert.Throws (delegate { r.Style = style; }, typeof (Exception)); // Fails in Silverlight 3
 		}
 
 		[TestMethod]
@@ -349,7 +349,7 @@ namespace MoonTest.System.Windows
 
 			Assert.Throws<NullReferenceException>(delegate {
 				b.Style = s;
-			});
+			}); // Fails in Silverlight 3 (got InvalidOperationException)
 		}
 
 		[TestMethod]

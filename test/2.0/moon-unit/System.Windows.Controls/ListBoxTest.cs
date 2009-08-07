@@ -101,6 +101,7 @@ namespace MoonTest.System.Windows.Controls {
 		[Asynchronous]
 		public void AfterRender ()
 		{
+			// Fails in Silverlight 3
 			ListBox c = new ListBox ();
 			ListBoxItem item = new ListBoxItem {
 				Content = new Rectangle { Fill = new SolidColorBrush (Colors.Black), Width = 20, Height = 20 }
@@ -229,7 +230,7 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.IsNotNull (border2, "#10");
 
 				Console.WriteLine (VisualTreeHelper.GetParent (border2));
-				Assert.AreEqual (c, VisualTreeHelper.GetParent (border2), "#11");
+				Assert.AreEqual (c, VisualTreeHelper.GetParent (border2), "#11"); // Fails in Silverlight 3
 			});
 			EnqueueTestComplete ();
 		}
@@ -238,6 +239,7 @@ namespace MoonTest.System.Windows.Controls {
 		[Asynchronous]
 		public void AfterRender3 ()
 		{
+			// Fails in Silverlight 3
 			ListBox c = new ListBox ();
 			ListBoxItem item = new ListBoxItem { };
 			TestPanel.Children.Add (c);
@@ -296,6 +298,7 @@ namespace MoonTest.System.Windows.Controls {
 		[TestMethod]
 		public void ClearContainerForItemOverride2 ()
 		{
+			// Fails in Silverlight 3
 			ListBoxPoker ic = new ListBoxPoker ();
 			ListBoxItem item = new ListBoxItem ();
 			item.Content = new object ();
@@ -325,7 +328,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (listItem.Content, "#3");
 			Assert.IsNull (comboItem.Content, "#4");
 
-			Assert.IsFalse (listItem.IsSelected, "#5");
+			Assert.IsFalse (listItem.IsSelected, "#5"); // Fails in Silverlight 3
 			Assert.IsFalse (comboItem.IsSelected, "#6");
 		}
 
@@ -337,7 +340,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (lb.ReadLocalValue (ListBox.ItemContainerStyleProperty), DependencyProperty.UnsetValue, "ItemContainerStyle = Unset");
 
 			Assert.IsNull (lb.ItemTemplate, "ItemTemplate == null");
-			Assert.AreEqual (ScrollViewer.GetHorizontalScrollBarVisibility (lb), ScrollBarVisibility.Auto, "Horizontal Scroll Vis");
+			Assert.AreEqual (ScrollViewer.GetHorizontalScrollBarVisibility (lb), ScrollBarVisibility.Auto, "Horizontal Scroll Vis"); // Fails in Silverlight 3
 			Assert.AreEqual (ScrollViewer.GetVerticalScrollBarVisibility (lb), ScrollBarVisibility.Auto, "Vertical Scroll Vis");
 		}
 
@@ -480,13 +483,14 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (item.ContentTemplate, "#3");
 			box.Call_PrepareContainerForItemOverride (item, null);
 			Assert.IsNull (item.Style, "#4");
-			Assert.IsNotNull(item.Content, "#5"); // What's this? A placeholder when using a null item?
+			Assert.IsNotNull(item.Content, "#5"); // What's this? A placeholder when using a null item? // Fails in Silverlight 3
 			Assert.IsNotNull (item.ContentTemplate, "#6");
 		}
 
 		[TestMethod]
 		public void PrepareContainerForItemOverrideTest4 ()
 		{
+			// Fails in Silverlight 3
 			ListBoxPoker box = new ListBoxPoker { ItemContainerStyle = new Style (typeof (ListBoxItem)) };
 			box.ItemContainerStyle.Setters.Add (new Setter { Property = Canvas.LeftProperty, Value = 10.5 });
 			ComboBoxItem item = new ComboBoxItem ();
@@ -626,7 +630,7 @@ namespace MoonTest.System.Windows.Controls {
 			// The template from the attached Style has attached itself here.
 			CreateAsyncTest (box, () => {
 				Assert.VisualChildren (box, "#4",
-					new VisualNode<Border> ("#d",
+					new VisualNode<Border> ("#d", // Fails in Silverlight 3
 						new VisualNode<ScrollViewer> ("#e",
 							new VisualNode<Border> ("#f",
 								new VisualNode<Grid> ("#g", (VisualNode [ ]) null)

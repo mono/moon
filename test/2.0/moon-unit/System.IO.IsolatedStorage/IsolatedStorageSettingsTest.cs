@@ -185,6 +185,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		[TestMethod]
 		public void ApplicationSettingsTest ()
 		{
+			// Fails in Silverlight 3
 			CheckAll (IsolatedStorageSettings.ApplicationSettings);
 		}
 

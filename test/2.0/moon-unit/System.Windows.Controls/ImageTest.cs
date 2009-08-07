@@ -68,6 +68,7 @@ namespace MoonTest.System.Windows.Controls
 		[MoonlightBug]
 		public void LoadTest ()
 		{
+			// Fails in Silverlight 3
 			bool loaded = false;
 			bool failed = false;
 			double progress = 0.0;
@@ -107,6 +108,7 @@ namespace MoonTest.System.Windows.Controls
 		[MoonlightBug]
 		public void LoadTestCanvas ()
 		{
+			// Fails in Silverlight 3
 			bool loaded = false;
 			bool failed = false;
 			double progress = 0.0;

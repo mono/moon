@@ -75,7 +75,7 @@ namespace MoonTest.System.Windows
 					XamlReader.Load (@"<VisualState xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Name=""foo""><Storyboard /></VisualState>");
 				},
 				// "VisualState does not support Storyboard as content."
-				typeof (XamlParseException));
+				typeof (XamlParseException)); // Fails in Silverlight 3 (no exception)
 		}
 
 		[TestMethod]
