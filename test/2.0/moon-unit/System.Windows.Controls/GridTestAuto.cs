@@ -326,6 +326,37 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
+		public void AutoAndFixedRows3 ()
+		{
+			Grid grid = new Grid { Width = 10, Height = 10 };
+			grid.AddColumns (new GridLength (50), new GridLength (50));
+			grid.AddRows (new GridLength (20), new GridLength (20));
+
+			grid.AddChild (new MyContentControl (50, 50), 0, 1, 2, 1);
+
+			CreateAsyncTest (grid,
+				() => {
+					grid.CheckRowHeights ("#1", 20, 20);
+					grid.RowDefinitions.Insert (0, new RowDefinition { Height = GridLength.Auto });
+				}, () => {
+					grid.CheckRowHeights ("#2", 0, 50, 20);
+					grid.RowDefinitions [1].MaxHeight = 35;
+				}, () => {
+					grid.CheckRowHeights ("#3", 15, 35, 20);
+					grid.RowDefinitions [1].MaxHeight = 20;
+					grid.ChangeRowSpan (0, 4);
+				}, () => {
+					grid.CheckRowHeights ("#4", 0, 20, 30);
+					grid.AddRows (new GridLength (20));
+				}, () => {
+					grid.CheckRowHeights ("#5", 0, 20, 20, 20);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
 		public void AutoAndStarRows ()
 		{
 			TestPanel.MaxHeight = 160;
