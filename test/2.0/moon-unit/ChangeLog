@@ -1,3 +1,9 @@
+2009-08-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Add an extra test
+	  to ensure that the correct sizes are passed to the elements
+	  inside the grid when measuring.
+
 2009-08-06  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/GridTestAuto.cs: Add some more tests

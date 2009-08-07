@@ -66,6 +66,17 @@ namespace MoonTest.System.Windows.Controls
 			for (int i = 0; i < grid.RowDefinitions.Count; i++)
 				Assert.IsBetween (heights [i] - 0.1, heights [i] + 0.1, grid.RowDefinitions [i].ActualHeight, message + "." + i);
 		}
+
+		public static void CheckMeasureSizes (this Grid grid, string message, params Size [] sizes)
+		{
+			for (int i=0 ;i < grid.Children.Count; i++)
+			{
+				var poker = (MyContentControl) grid.Children [i];
+				if (!poker.MeasureOverrideArg.Equals (sizes [i]))
+					Assert.Fail ("{2}.{3} Expected measure argument to be {0} but was {1}", sizes [i], poker.MeasureOverrideArg, message, i);
+			}
+
+		}
 	}
 
 	public partial class GridTest
@@ -290,6 +301,31 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
+		public void AutoAndFixedRows2 ()
+		{
+			TestPanel.Width = 200;
+			TestPanel.Height = 1000;
+			Grid grid = new Grid {  };
+			grid.AddColumns (new GridLength (50), new GridLength (50), new GridLength (50));
+			grid.AddRows (new GridLength (30), new GridLength (40), GridLength.Auto, new GridLength (50));
+			grid.AddChild (new MyContentControl (600, 600), 0, 0, 4, 4);
+			grid.AddChild (new MyContentControl (80, 70), 0, 1, 1, 1);
+			grid.AddChild (new MyContentControl (50, 60), 1, 0, 1, 1);
+			grid.AddChild (new MyContentControl (10, 500), 1, 1, 1, 1);
+
+			CreateAsyncTest (grid, () => {
+				grid.CheckRowHeights ("#1", 190, 200, 0, 210);
+				grid.CheckMeasureSizes ("#2",
+											new Size (150, double.PositiveInfinity),
+											new Size (50, 30),
+											new Size (50, 40),
+											new Size (50, 40));
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
 		public void AutoAndStarRows ()
 		{
 			TestPanel.MaxHeight = 160;
@@ -322,6 +358,37 @@ namespace MoonTest.System.Windows.Controls
 					grid.CheckRowHeights ("#3", 16.66, 16.66, 16.66, 15, 0);
 				}
 			);
+		}
+	}
+
+	class MyContentControl : ContentControl
+	{
+		public Size MeasureOverrideArg;
+		public Size ArrangeOverrideArg;
+		public Size MeasureOverrideResult;
+		public Size ArrangeOverrideResult;
+
+		public MyContentControl ()
+		{
+		}
+
+		public MyContentControl (int width, int height)
+		{
+			Content = new Rectangle { Width = width, Height = height, Fill = new SolidColorBrush (Colors.Green) };
+		}
+		
+		protected override Size ArrangeOverride (Size finalSize)
+		{
+			ArrangeOverrideArg = finalSize;
+			ArrangeOverrideResult = base.ArrangeOverride (finalSize);
+			return ArrangeOverrideResult;
+		}
+
+		protected override Size MeasureOverride (Size availableSize)
+		{
+			MeasureOverrideArg = availableSize;
+			MeasureOverrideResult = base.MeasureOverride (availableSize);
+			return MeasureOverrideResult;
 		}
 	}
 }
