@@ -1,3 +1,12 @@
+2009-08-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes drt 337
+
+	* textbox.cpp (TextBox::OnPropertyChanged): If setting
+	SelectedText to "", don't emit TextChanged events if there was no
+	selection.
+	(PasswordBox::OnPropertyChanged): Same.
+
 2009-08-06  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.cpp (Surface::tick_after_attach_reached): the ordering

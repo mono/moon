@@ -2655,7 +2655,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (setvalue) {
 			Value *value = args->GetNewValue ();
 			const char *str = value && value->AsString () ? value->AsString () : "";
-			TextBoxUndoAction *action;
+			TextBoxUndoAction *action = NULL;
 			gunichar *text;
 			glong textlen;
 			
@@ -2668,23 +2668,25 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, textlen);
 					
 					buffer->Replace (start, length, text, textlen);
-				} else {
+				} else if (textlen > 0) {
 					// insert the text at the cursor
 					action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, textlen);
 					
 					buffer->Insert (start, text, textlen);
 				}
 				
-				undo->Push (action);
-				redo->Clear ();
 				g_free (text);
 				
-				emit |= TEXT_CHANGED;
-				
-				ClearSelection (start + textlen);
-				ResetIMContext ();
-				
-				SyncAndEmit ();
+				if (action != NULL) {
+					emit |= TEXT_CHANGED;
+					undo->Push (action);
+					redo->Clear ();
+					
+					ClearSelection (start + textlen);
+					ResetIMContext ();
+					
+					SyncAndEmit ();
+				}
 			} else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
@@ -3085,7 +3087,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		if (setvalue) {
 			Value *value = args->GetNewValue ();
 			const char *str = value && value->AsString () ? value->AsString () : "";
-			TextBoxUndoAction *action;
+			TextBoxUndoAction *action = NULL;
 			gunichar *text;
 			glong textlen;
 			
@@ -3098,23 +3100,26 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, textlen);
 					
 					buffer->Replace (start, length, text, textlen);
-				} else {
+				} else if (textlen > 0) {
 					// insert the text at the cursor
 					action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, textlen);
 					
 					buffer->Insert (start, text, textlen);
 				}
 				
-				undo->Push (action);
-				redo->Clear ();
 				g_free (text);
 				
-				ClearSelection (start + textlen);
-				emit |= TEXT_CHANGED;
-				SyncDisplayText ();
-				ResetIMContext ();
-				
-				SyncAndEmit ();
+				if (action != NULL) {
+					undo->Push (action);
+					redo->Clear ();
+					
+					ClearSelection (start + textlen);
+					emit |= TEXT_CHANGED;
+					SyncDisplayText ();
+					ResetIMContext ();
+					
+					SyncAndEmit ();
+				}
 			}
 		}
 	} else if (args->GetId () == PasswordBox::SelectionStartProperty) {

@@ -1968,6 +1968,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 	time_manager->InvokeTickCalls();
 
 	Key key = Keyboard::MapKeyValToKey (event->keyval);
+	
 	if (Keyboard::IsKeyPressed (key))
 		return true;
 	
