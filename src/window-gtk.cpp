@@ -425,10 +425,8 @@ MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer 
 	if (event->button != 1 && event->button != 3)
 		return false;
 
-	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
+	if (window->surface)
 		window->surface->HandleUIButtonPress (event);
-	}
 	
 	// If we don't support right clicks (i.e. inside the browser)
 	// return false here
@@ -447,10 +445,8 @@ MoonWindowGtk::button_release (GtkWidget *widget, GdkEventButton *event, gpointe
 
 	Deployment::SetCurrent (window->GetDeployment ());
 
-	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
+	if (window->surface)
 		window->surface->HandleUIButtonRelease (event);
-	}
 	// ignore HandleUIButtonRelease's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
@@ -463,10 +459,8 @@ MoonWindowGtk::scroll (GtkWidget *widget, GdkEventScroll *event, gpointer data)
 
 	Deployment::SetCurrent (window->GetDeployment ());
 
-	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
+	if (window->surface)
 		window->surface->HandleUIScroll (event);
-	}
 	// ignore HandleUIScroll's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
@@ -479,10 +473,8 @@ MoonWindowGtk::motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer
 
 	Deployment::SetCurrent (window->GetDeployment ());
 
-	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
+	if (window->surface)
 		window->surface->HandleUIMotion (event);
-	}
 	// ignore HandleUIMotion's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
@@ -496,7 +488,6 @@ MoonWindowGtk::crossing_notify (GtkWidget *widget, GdkEventCrossing *event, gpoi
 	Deployment::SetCurrent (window->GetDeployment ());
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
 		window->surface->HandleUICrossing (event);
 		return true;
 	}
@@ -512,7 +503,6 @@ MoonWindowGtk::focus_in (GtkWidget *widget, GdkEventFocus *event, gpointer user_
 	Deployment::SetCurrent (window->GetDeployment ());
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
 		window->surface->HandleUIFocusIn (event);
 		return true;
 	}
@@ -527,9 +517,7 @@ MoonWindowGtk::focus_out (GtkWidget *widget, GdkEventFocus *event, gpointer user
 
 	Deployment::SetCurrent (window->GetDeployment ());
 
-
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
 		window->surface->HandleUIFocusOut (event);
 		return true;
 	}
@@ -545,7 +533,6 @@ MoonWindowGtk::key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_d
 	Deployment::SetCurrent (window->GetDeployment ());
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
 		window->surface->HandleUIKeyPress (event);
 		return true;
 	}
@@ -561,7 +548,6 @@ MoonWindowGtk::key_release (GtkWidget *widget, GdkEventKey *event, gpointer user
 	Deployment::SetCurrent (window->GetDeployment ());
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
 		window->surface->HandleUIKeyRelease (event);
 		return true;
 	}

@@ -1720,6 +1720,8 @@ Surface::FullScreenKeyHandled (GdkEventKey *key)
 gboolean
 Surface::HandleUIFocusIn (GdkEventFocus *event)
 {
+	time_manager->InvokeTickCalls();
+
 	if (toplevel)
 		toplevel->EmitGotFocus ();
 
@@ -1729,6 +1731,8 @@ Surface::HandleUIFocusIn (GdkEventFocus *event)
 gboolean
 Surface::HandleUIFocusOut (GdkEventFocus *event)
 {
+	time_manager->InvokeTickCalls();
+
 	if (toplevel)
 		toplevel->EmitLostFocus ();
 
@@ -1738,6 +1742,8 @@ Surface::HandleUIFocusOut (GdkEventFocus *event)
 gboolean
 Surface::HandleUIButtonRelease (GdkEventButton *event)
 {
+	time_manager->InvokeTickCalls();
+
 	if (event->button != 1 && event->button != 3) {
 		return false;
 	}
@@ -1770,6 +1776,8 @@ Surface::HandleUIButtonPress (GdkEventButton *event)
 	
 	active_window->GrabFocus ();
 	
+	time_manager->InvokeTickCalls();
+
 	if (event->button != 1 && event->button != 3)
 		return false;
 
@@ -1807,6 +1815,8 @@ Surface::HandleUIButtonPress (GdkEventButton *event)
 gboolean
 Surface::HandleUIScroll (GdkEventScroll *event)
 {
+	time_manager->InvokeTickCalls();
+
 	if (mouse_event)
 		gdk_event_free (mouse_event);
 	
@@ -1824,6 +1834,8 @@ Surface::HandleUIScroll (GdkEventScroll *event)
 gboolean
 Surface::HandleUIMotion (GdkEventMotion *event)
 {
+	time_manager->InvokeTickCalls();
+
 	if (mouse_event)
 		gdk_event_free (mouse_event);
 	
@@ -1856,6 +1868,8 @@ gboolean
 Surface::HandleUICrossing (GdkEventCrossing *event)
 {
 	bool handled;
+
+	time_manager->InvokeTickCalls();
 
 	/* FIXME Disabling this for now... causes issues in ink journal
 	GdkWindow *active_gdk_window = active_window->GetGdkWindow ();
@@ -1950,6 +1964,8 @@ Surface::ElementPathToRoot (UIElement *source)
 gboolean 
 Surface::HandleUIKeyPress (GdkEventKey *event)
 {
+	time_manager->InvokeTickCalls();
+
 	Key key = Keyboard::MapKeyValToKey (event->keyval);
 	if (Keyboard::IsKeyPressed (key))
 		return true;
@@ -1993,6 +2009,8 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 gboolean 
 Surface::HandleUIKeyRelease (GdkEventKey *event)
 {
+	time_manager->InvokeTickCalls();
+
 	if (FullScreenKeyHandled (event))
 		return true;
 

@@ -1,5 +1,12 @@
 2009-08-06  Chris Toshok  <toshok@ximian.com>
 
+	* window-gtk.cpp: move the InvokeTickCalls from here...
+
+	* runtime.cpp: to the HandleUI* methods here, so they will be used
+	in both windowed and windowless codepaths.
+
+2009-08-06  Chris Toshok  <toshok@ximian.com>
+
 	* timemanager.h|cpp (TimeManager::RemoveTickCall): this takes
 	another argument now (the data object passed to AddTickCall) so we
 	can differentiate callbacks properly.
