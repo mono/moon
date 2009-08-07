@@ -13,7 +13,6 @@ novell_moonlight_xpi_CONTENTS =		\
 				$(top_builddir)/plugin/.libs/libmoonloaderxpi.so \
 				$(top_builddir)/plugin/.libs/libmoonpluginxpi.so \
 				$(top_builddir)/src/.libs/libmoonxpi.so \
-				$(top_builddir)/class/lib/2.1/Microsoft.VisualBasic.dll \
 				$(top_builddir)/class/lib/2.1/Mono.CompilerServices.SymbolWriter.dll \
 				$(top_builddir)/class/lib/2.1/mscorlib.dll \
 				$(top_builddir)/class/lib/2.1/System.Core.dll \
