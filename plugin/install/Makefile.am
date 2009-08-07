@@ -6,12 +6,28 @@ mono_libdir = `pkg-config --variable=libdir mono`
 mono_dlldir = `pkg-config --variable=prefix mono`/lib
 mono_sysconfdir = `pkg-config --variable=sysconfdir mono`
 
-novell_moonlight_xpi_CONTENTS =	$(srcdir)/install.rdf \
+novell_moonlight_xpi_CONTENTS =		\
+				$(srcdir)/install.rdf \
 				$(srcdir)/icon.png \
 				$(srcdir)/chrome.manifest \
 				$(top_builddir)/plugin/.libs/libmoonloaderxpi.so \
 				$(top_builddir)/plugin/.libs/libmoonpluginxpi.so \
-				$(top_builddir)/src/.libs/libmoonxpi.so
+				$(top_builddir)/src/.libs/libmoonxpi.so \
+				$(top_builddir)/class/lib/2.1/Microsoft.VisualBasic.dll \
+				$(top_builddir)/class/lib/2.1/Mono.CompilerServices.SymbolWriter.dll \
+				$(top_builddir)/class/lib/2.1/mscorlib.dll \
+				$(top_builddir)/class/lib/2.1/System.Core.dll \
+				$(top_builddir)/class/lib/2.1/System.dll \
+				$(top_builddir)/class/lib/2.1/System.Net.dll \
+				$(top_builddir)/class/lib/2.1/System.Runtime.Serialization.dll \
+				$(top_builddir)/class/lib/2.1/System.ServiceModel.dll \
+				$(top_builddir)/class/lib/2.1/System.ServiceModel.Web.dll \
+				$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll \
+				$(top_builddir)/class/lib/2.1/System.Windows.Controls.Data.dll \
+				$(top_builddir)/class/lib/2.1/System.Windows.Controls.dll \
+				$(top_builddir)/class/lib/2.1/System.Windows.dll \
+				$(top_builddir)/class/lib/2.1/System.Xml.dll \
+				$(top_builddir)/class/lib/2.1/System.Xml.Linq.dll
 
 if HAVE_GECKO_1_8
 novell_moonlight_xpi_CONTENTS += ../firefox/ff2/.libs/libmoonpluginxpi-ff2bridge.so
@@ -90,6 +106,7 @@ endif INCLUDE_BROWSER_MANAGED_CODE
 
 clean-local:
 	-rm -rf .xpinstall
+	-rm -f *.xpi
 
 EXTRA_DIST = install.rdf.in icon.png chrome.manifest
 DISTCLEANFILES = novell-moonlight.xpi
