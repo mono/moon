@@ -1,5 +1,11 @@
 2009-08-06  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (Surface::tick_after_attach_reached): the ordering
+	of code between this method and Surface::ToplevelLoaded is likely
+	still somewhat wrong, but moving the Emit here fixes drt #21.
+
+2009-08-06  Chris Toshok  <toshok@ximian.com>
+
 	* window-gtk.cpp: move the InvokeTickCalls from here...
 
 	* runtime.cpp: to the HandleUI* methods here, so they will be used

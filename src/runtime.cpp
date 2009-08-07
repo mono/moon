@@ -542,7 +542,10 @@ Surface::Attach (UIElement *element)
 void
 Surface::tick_after_attach_reached (EventObject *data)
 {
-	((Surface*)data)->ticked_after_attach = true;
+	Surface *surface = (Surface*)data;
+
+	surface->ticked_after_attach = true;
+	surface->Emit (Surface::LoadEvent);
 }
 
 void
@@ -557,8 +560,6 @@ Surface::ToplevelLoaded (UIElement *element)
 	if (element == toplevel) {
 		toplevel->RemoveHandler (UIElement::LoadedEvent, toplevel_loaded, this);
 
-		Emit (Surface::LoadEvent);
-	
 		if (active_window && active_window->HasFocus())
 			element->EmitGotFocus ();
 	
