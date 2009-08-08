@@ -3,19 +3,21 @@ assembly = System.Windows
 NET_2_1_ASSEMBLY_DEPS=-r:System.Runtime.Serialization.dll
 NET_3_0_ASSEMBLY_DEPS=
 
-if INCLUDE_BROWSER_MANAGED_CODE
+sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
+
 assemblysl = ../lib/2.1/$(assembly).dll
 assemblysl_raw = ../lib/2.1_raw/$(assembly).dll
-sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
-#BOOTSTRAP_FLAGS_2_1 ?= -r:../lib/2.1/System.Windows.Browser.dll
-BOOTSTRAP_FLAGS_2_1="-d:BOOTSTRAP"
-endif
 
-if INCLUDE_DESKTOP_MANAGED_CODE
+bootstrap_assemblysl = ../lib/2.1-bootstrap/$(assembly).dll
+bootstrap_assemblysl_raw = ../lib/2.1_raw-bootstrap/$(assembly).dll
+
+NONBOOTSTRAP_FLAGS_2_1= -r:../lib/2.1/System.Windows.Browser.dll -r:$(bootstrap_assemblysl)
+
 assemblydesktop = ../lib/moonlight/$(assembly).dll
-#BOOTSTRAP_FLAGS_DESKTOP ?= -r:../lib/moonlight/System.Windows.Browser.dll
-BOOTSTRAP_FLAGS_DESKTOP="-d:BOOTSTRAP"
-endif
+
+bootstrap_assemblydesktop = ../lib/moonlight-bootstrap/$(assembly).dll
+
+NONBOOTSTRAP_FLAGS_DESKTOP= -r:../lib/moonlight/System.Windows.Browser.dll -r:$(bootstrap_assemblydesktop)
 
 
 assemblies = $(assemblysl) $(assemblydesktop)
@@ -24,8 +26,8 @@ noinst_DATA = $(assemblies)
 
 CSCFLAGS = /codepage:65001 -d:SANITY -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -d:AGCLR -unsafe
 
-GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight -d:NET_3_0 $(BOOTSTRAP_FLAGS_DESKTOP)
-SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)  $(BOOTSTRAP_FLAGS_2_1)
+GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight -d:NET_3_0
+SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 MSRUNTIMECONTROLS=$(srcdir)/../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls
@@ -543,30 +545,44 @@ $(assembly).g.resources: $(XAML_RESOURCES_DEPS)
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
 	resgen2 $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
 
-$(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	-mkdir -p ../lib/2.1_raw
-	$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
-		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
-	sn -q -R $@ $(srcdir)/../mono.snk
-
 LINKER = ../lib/tuner/monolinker.exe
 
 LINKER_STEPS =	\
 	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
 
 LINKER_FLAGS =	\
-	-o ../lib/2.1/	\
-	-d ../lib/2.1/	\
-	-a $(assemblysl_raw)	\
 	-b true	\
 	-m secattrs ../tuning/SecurityAttributes
 
+$(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_2_1) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 \
+		-keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
+		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
+	sn -q -R $@ $(srcdir)/../mono.snk
+
 $(assemblysl): $(assemblysl_raw) $(sl_secattr)
-	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
+	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a $(assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) \
+	$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_DESKTOP) -target:library -out:$@ $(system_windows_sources) \
+	        -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources \
+	        -keyfile:$(srcdir)/../mono.snk
+
+bootstrap: $(bootstrap_assemblysl) $(bootstrap_assemblydesktop)
+
+$(bootstrap_assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	$(SMCS) -d:BOOTSTRAP $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub \
+		-delaysign+ -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
+	sn -q -R $@ $(srcdir)/../mono.snk
+
+$(bootstrap_assemblysl): $(bootstrap_assemblysl_raw) $(sl_secattr)
+	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1-bootstrap -d ../lib/2.1-bootstrap \
+		-a $(bootstrap_assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
+	sn -q -R $@ $(srcdir)/../mono.snk
+
+$(bootstrap_assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	$(GMCS) -d:BOOTSTRAP $(NET_3_0_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) \
 	        -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources \
 	        -keyfile:$(srcdir)/../mono.snk
 

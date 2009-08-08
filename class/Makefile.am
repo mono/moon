@@ -2,7 +2,7 @@ SUBDIRS = .
 if INCLUDE_BROWSER_MANAGED_CODE
 SUBDIRS += tuning
 endif
-SUBDIRS += System.Windows System.Windows.Browser System.Windows.Controls System.Windows.Controls.Data
+SUBDIRS += System.Windows.Browser System.Windows System.Windows.Controls System.Windows.Controls.Data
 
 if INCLUDE_BROWSER_MANAGED_CODE
 NET_1_1_ASSEMBLIES = Mono.Cecil.dll Mono.Cecil.Mdb.dll
@@ -19,27 +19,22 @@ EXTRA_DIST = mono.pub winfx3.pub msfinal.pub mono.snk silverlight.pub
 
 # this is gross, but we have a circular dependency between System.Windows.dll and System.Windows.Browser.dll.
 #
-all-local: make-moonlight-dir
-#	@(test ! -e lib/2.1/System.Windows.dll && bootstrap=1; \
-#	 if [ "x$${bootstrap}" = "x1" ]; then \
-#		echo Bootstrapping circular build; \
-#		$(MAKE) -C tuning && \
-#		BOOTSTRAP_FLAGS_2_1="-d:BOOTSTRAP" BOOTSTRAP_FLAGS_DESKTOP="-d:BOOTSTRAP" $(MAKE) -C System.Windows && \
-#		$(MAKE) -C System.Windows.Browser && \
-#		rm -f lib/2.1_raw/System.Windows.dll && \
-#		rm -f lib/moonlight/System.Windows.dll && \
-#		$(MAKE) -C System.Windows; \
-#	 fi)
+all-local: make-lib-directories
+	@echo Bootstrapping circular build;
+	$(MAKE) -C tuning
+	$(MAKE) -C System.Windows bootstrap
 
-if INCLUDE_DESKTOP_MANAGED_CODE
-make-moonlight-dir:
-	-mkdir -p lib/moonlight
-endif
+make-lib-directories:
+	@mkdir -p lib/2.1
+	@mkdir -p lib/2.1_raw
+	@mkdir -p lib/2.1-bootstrap
+	@mkdir -p lib/2.1_raw-bootstrap
+	@mkdir -p lib/moonlight
+	@mkdir -p lib/moonlight-bootstrap
+	@mkdir -p lib/tuner
 
 if INCLUDE_BROWSER_MANAGED_CODE
-$(LOCAL_ASSEMBLIES): $(MCS_ASSEMBLIES)
-	-mkdir -p lib/2.1
-	-mkdir -p lib/tuner
+$(LOCAL_ASSEMBLIES): make-lib-directories $(MCS_ASSEMBLIES)
 	for i in $(MCS_ASSEMBLIES); do cp $$i $$i.mdb lib/tuner/; done
 endif
 

@@ -14,7 +14,7 @@ assemblies = $(assemblysl) $(assemblydesktop)
 
 noinst_DATA = $(assemblies)
 
-CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -r:System.Windows -d:AGCLR -unsafe
+CSCFLAGS = /codepage:65001 -d:NET_1_1 -d:NET_2_0 -debug+ -noconfig -r:System -d:AGCLR -unsafe
 
 GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight
 SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe $(CSCFLAGS)
@@ -75,9 +75,8 @@ CLEANFILES =			\
 	TestResult-net_3_0.log	\
 	TestResult-net_3_0.xml
 
-$(assemblysl_raw): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/2.1/System.Windows.dll
-	-mkdir -p ../lib/2.1_raw
-	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1/System.Windows.dll -r:System.Core -r:System.Net -r:System.Xml -keyfile:$(srcdir)/../silverlight.pub -delaysign+
+$(assemblysl_raw): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll
+	$(SMCS) -target:library -out:$@ $(system_windows_browser_sources) -d:NET_2_1 -r:$(top_builddir)/class/lib/2.1-bootstrap/System.Windows.dll -r:System.Core -r:System.Net -r:System.Xml -keyfile:$(srcdir)/../silverlight.pub -delaysign+
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 LINKER = ../lib/tuner/monolinker.exe
@@ -96,8 +95,8 @@ $(assemblysl): $(assemblysl_raw) $(sl_secattr)
 	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
-$(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/moonlight/System.Windows.dll
-	$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -keyfile:$(srcdir)/../mono.snk
+$(assemblydesktop): $(system_windows_browser_sources) Makefile $(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll
+	$(GMCS) -target:library -out:$@ $(system_windows_browser_sources) -r:$(top_builddir)/class/lib/moonlight-bootstrap/System.Windows.dll -keyfile:$(srcdir)/../mono.snk
 
 clean-local:
 	-rm -rf $(assemblies) 
