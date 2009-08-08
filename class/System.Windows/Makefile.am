@@ -577,7 +577,7 @@ $(bootstrap_assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Re
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(bootstrap_assemblysl): $(bootstrap_assemblysl_raw) $(sl_secattr)
-	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1-bootstrap -d ../lib/2.1-bootstrap \
+	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1-bootstrap -d ../lib/2.1-bootstrap -d ../lib/2.1 \
 		-a $(bootstrap_assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
