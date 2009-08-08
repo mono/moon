@@ -12,10 +12,10 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media.Animation;
 using System.Windows.Automation.Peers; 
 using System.Security;
-#if notyet
+#if !BOOTSTRAP
 using System.Windows.Browser;
-#endif
- 
+#endif 
+
 namespace System.Windows.Controls
 {
     /// <summary> 
@@ -193,13 +193,13 @@ namespace System.Windows.Controls
             {
                 if (!string.IsNullOrEmpty(target))
                 { 
-#if notyet
+#if !BOOTSTRAP
                     HtmlPage.Window.Navigate(destination, target);
 #endif
                 }
                 else 
                 { 
-#if notyet
+#if !BOOTSTRAP
                     HtmlPage.Window.Navigate(destination, "_self");
 #endif
                 } 

@@ -1,3 +1,11 @@
+2009-08-08  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (all-local): pretty gross, but add an all-local
+	target that takes care of the initial circular build of
+	System.Windows.dll and System.Windows.Browser.dll, so we can build
+	a System.Windows.dll with a functioning HyperLinkButton (which
+	depends on S.W.B.dll).
+
 2009-07-02  Jb Evain  <jbevain@novell.com>
 
 	* Makefile.am: adjust to the linker and tuner build changes.

@@ -1,3 +1,10 @@
+2009-08-08  Chris Toshok  <toshok@ximian.com>
+
+	* ScriptableObjectWrapper.cs (ObjectFromValue<T>): add a check for
+	window objects (using a broken, inadequate check to see if they
+	have the "location" property), and return an HtmlWindow object in
+	that case.
+
 2009-07-27  Andreia Gaita  <avidigal@novell.com>
 
 	* HtmlElement.cs: fix InvokeInternal calls to call the proper overload

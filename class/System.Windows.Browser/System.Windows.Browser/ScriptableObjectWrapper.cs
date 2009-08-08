@@ -301,6 +301,9 @@ namespace System.Windows.Browser
 						else if (v.u.i32 == 1) //HtmlElement
 							return CreateInstance<HtmlElement> (v.u.p);
 					}
+					else if (NativeMethods.html_object_has_property (WebApplication.Current.PluginHandle, v.u.p, "location")) {
+						return CreateInstance<HtmlWindow> (v.u.p);
+					}
 					return CreateInstance<ScriptObject> (v.u.p);
 				} else
 					return v.u.p;
