@@ -86,7 +86,7 @@ LINKER_STEPS =	\
 
 LINKER_FLAGS =	\
 	-o ../lib/2.1/	\
-	-d ../lib/2.1/	\
+	-d ../lib/2.1/ -d ../lib/2.1-bootstrap \
 	-a $(assemblysl_raw)	\
 	-b true	\
 	-m secattrs ../tuning/SecurityAttributes
