@@ -11,13 +11,13 @@ assemblysl_raw = ../lib/2.1_raw/$(assembly).dll
 bootstrap_assemblysl = ../lib/2.1-bootstrap/$(assembly).dll
 bootstrap_assemblysl_raw = ../lib/2.1_raw-bootstrap/$(assembly).dll
 
-NONBOOTSTRAP_FLAGS_2_1= -r:../lib/2.1/System.Windows.Browser.dll -r:$(bootstrap_assemblysl)
+NONBOOTSTRAP_FLAGS_2_1= -r:../lib/2.1/System.Windows.Browser.dll
 
 assemblydesktop = ../lib/moonlight/$(assembly).dll
 
 bootstrap_assemblydesktop = ../lib/moonlight-bootstrap/$(assembly).dll
 
-NONBOOTSTRAP_FLAGS_DESKTOP= -r:../lib/moonlight/System.Windows.Browser.dll -r:$(bootstrap_assemblydesktop)
+NONBOOTSTRAP_FLAGS_DESKTOP= -r:../lib/moonlight/System.Windows.Browser.dll
 
 
 assemblies = $(assemblysl) $(assemblydesktop)
