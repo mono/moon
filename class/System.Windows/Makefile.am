@@ -7,12 +7,14 @@ if INCLUDE_BROWSER_MANAGED_CODE
 assemblysl = ../lib/2.1/$(assembly).dll
 assemblysl_raw = ../lib/2.1_raw/$(assembly).dll
 sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
-BOOTSTRAP_FLAGS_2_1 ?= -r:../lib/2.1/System.Windows.Browser.dll
+#BOOTSTRAP_FLAGS_2_1 ?= -r:../lib/2.1/System.Windows.Browser.dll
+BOOTSTRAP_FLAGS_2_1="-d:BOOTSTRAP"
 endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
 assemblydesktop = ../lib/moonlight/$(assembly).dll
-BOOTSTRAP_FLAGS_DESKTOP ?= -r:../lib/moonlight/System.Windows.Browser.dll
+#BOOTSTRAP_FLAGS_DESKTOP ?= -r:../lib/moonlight/System.Windows.Browser.dll
+BOOTSTRAP_FLAGS_DESKTOP="-d:BOOTSTRAP"
 endif
 
 

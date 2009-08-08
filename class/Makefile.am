@@ -20,17 +20,16 @@ EXTRA_DIST = mono.pub winfx3.pub msfinal.pub mono.snk silverlight.pub
 # this is gross, but we have a circular dependency between System.Windows.dll and System.Windows.Browser.dll.
 #
 all-local: make-moonlight-dir
-	@(test ! -e lib/2.1/System.Windows.dll && bootstrap=1; \
-	 if [ "x$${bootstrap}" = "x1" ]; then \
-		echo Bootstrapping circular build; \
-		$(MAKE) -C tuning && \
-		BOOTSTRAP_FLAGS_2_1="-d:BOOTSTRAP" BOOTSTRAP_FLAGS_DESKTOP="-d:BOOTSTRAP" $(MAKE) -C System.Windows && \
-		$(MAKE) -C System.Windows.Browser && \
-		rm -f lib/2.1/System.Windows.dll && \
-		rm -f lib/2.1_raw/System.Windows.dll && \
-		rm -f lib/moonlight/System.Windows.dll && \
-		$(MAKE) -C System.Windows; \
-	 fi)
+#	@(test ! -e lib/2.1/System.Windows.dll && bootstrap=1; \
+#	 if [ "x$${bootstrap}" = "x1" ]; then \
+#		echo Bootstrapping circular build; \
+#		$(MAKE) -C tuning && \
+#		BOOTSTRAP_FLAGS_2_1="-d:BOOTSTRAP" BOOTSTRAP_FLAGS_DESKTOP="-d:BOOTSTRAP" $(MAKE) -C System.Windows && \
+#		$(MAKE) -C System.Windows.Browser && \
+#		rm -f lib/2.1_raw/System.Windows.dll && \
+#		rm -f lib/moonlight/System.Windows.dll && \
+#		$(MAKE) -C System.Windows; \
+#	 fi)
 
 if INCLUDE_DESKTOP_MANAGED_CODE
 make-moonlight-dir:
