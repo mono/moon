@@ -40,7 +40,7 @@ Moonlight.Gtk.dll: $(moonlight_gtk_dll_CS) $(top_builddir)/class/lib/moonlight/S
 		-r:$(top_builddir)/class/lib/moonlight/System.Windows.dll \
 		$(moonlight_gtk_dll_CS)
 
-MONODOCER = MONO_PATH="../class/lib/3.0:$$MONO_PATH" monodocer
+MONODOCER = MONO_PATH="../class/lib/moonlight:$$MONO_PATH" monodocer
 moonlight-gtk.xml: Moonlight.Gtk.dll
 moonlight-gtk.tree: moonlight-gtk.zip
 moonlight-gtk.zip: Moonlight.Gtk.dll
