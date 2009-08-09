@@ -5,6 +5,7 @@ NET_3_0_ASSEMBLY_DEPS=
 
 sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
 
+if INCLUDE_BROWSER_MANAGED_CODE
 assemblysl = ../lib/2.1/$(assembly).dll
 assemblysl_raw = ../lib/2.1_raw/$(assembly).dll
 
@@ -12,13 +13,15 @@ bootstrap_assemblysl = ../lib/2.1-bootstrap/$(assembly).dll
 bootstrap_assemblysl_raw = ../lib/2.1_raw-bootstrap/$(assembly).dll
 
 NONBOOTSTRAP_FLAGS_2_1= -r:../lib/2.1/System.Windows.Browser.dll
+endif
 
+if INCLUDE_DESKTOP_MANAGED_CODE
 assemblydesktop = ../lib/moonlight/$(assembly).dll
 
 bootstrap_assemblydesktop = ../lib/moonlight-bootstrap/$(assembly).dll
 
 NONBOOTSTRAP_FLAGS_DESKTOP= -r:../lib/moonlight/System.Windows.Browser.dll
-
+endif
 
 assemblies = $(assemblysl) $(assemblydesktop)
 
