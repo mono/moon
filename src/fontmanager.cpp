@@ -1272,7 +1272,6 @@ FontManager::AddResource (const char *resource, ManagedStreamCallbacks *stream)
 {
 	char buf[4096], *dirname, *path;
 	unzFile zipfile;
-	int total = 0;
 	int nread, fd;
 	
 	if (!root && !(root = CreateTempDir ("moonlight-fonts")))
@@ -1289,17 +1288,16 @@ FontManager::AddResource (const char *resource, ManagedStreamCallbacks *stream)
 		g_free (path);
 		return;
 	}
-	
+
 	// write the managed stream to disk
-	while ((nread = stream->Read (stream, buf, total, sizeof (buf))) > 0) {
+	while ((nread = stream->Read (stream->handle, buf, 0, sizeof (buf))) > 0) {
+
 		if (write_all (fd, buf, (size_t) nread) == -1) {
 			close (fd);
 			g_unlink (path);
 			g_free (path);
 			return;
 		}
-		
-		total += nread;
 	}
 	
 	close (fd);

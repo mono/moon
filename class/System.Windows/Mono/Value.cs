@@ -54,12 +54,20 @@ namespace Mono {
 		public FontStretchKind stretch;
 	}
 
-#if false
-	// does not work
 	internal struct UnmanagedFontSource {
 		public IntPtr stream;
 	}
-#endif
+
+	internal struct UnmanagedStreamCallbacks {
+		public IntPtr handle;
+		public IntPtr CanSeek;
+		public IntPtr CanRead;
+		public IntPtr Length;
+		public IntPtr Position;
+		public IntPtr Read;
+		public IntPtr Write;
+		public IntPtr Seek;
+	}
 
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct UnmanagedPropertyPath {
@@ -234,8 +242,6 @@ namespace Mono {
 				return new FontWeight (weight == null ? FontWeightKind.Normal : weight->weight);
 			}
 
-#if false
-			// does not work, treat it like MANAGED for the time being
 			case Kind.FONTSOURCE: {
 				UnmanagedFontSource *source = (UnmanagedFontSource *) value->u.p;
 				ManagedStreamCallbacks callbacks;
@@ -248,7 +254,7 @@ namespace Mono {
 					
 				return new FontSource (wrapper.stream);
 			}
-#endif
+
 			case Kind.PROPERTYPATH: {
 				UnmanagedPropertyPath *propertypath = (UnmanagedPropertyPath *) value->u.p;
 				if (propertypath == null)
@@ -512,8 +518,7 @@ namespace Mono {
 					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontFamily));
 					Marshal.StructureToPtr (family, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
-#if false
-				// does not work, treat it as MANAGED for the time being
+
 				else if (v is FontSource) {
 					FontSource source = (FontSource) v;
 					
@@ -523,12 +528,13 @@ namespace Mono {
 						value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontSource));
 						UnmanagedFontSource *ufs = (UnmanagedFontSource *) value.u.p;
 						ManagedStreamCallbacks callbacks = source.wrapper.GetCallbacks ();
+						ufs->stream = Marshal.AllocHGlobal (sizeof (UnmanagedStreamCallbacks));
 						Marshal.StructureToPtr (callbacks, ufs->stream, false);
 					} else {
 						value.IsNull = true;
 					}
 				}
-#endif
+
 				else if (v is PropertyPath) {
 					PropertyPath propertypath = (PropertyPath) v;
 					value.k = Kind.PROPERTYPATH;

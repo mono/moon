@@ -1,3 +1,11 @@
+2009-08-08  Chris Toshok  <toshok@ximian.com>
+
+	* Value.cs: re-enable the now functioning FontSource marshalling.
+
+	* StreamWrapper.cs (StreamWrapper.Read): add spew on exceptions
+	here for the time being.  they helped track down problems in
+	fontmanager.cpp/Value.cs
+
 2009-08-07  Andreia Gaita  <avidigal@novell.com>
 
 	* GeneratedPInvokes.cs: regen.

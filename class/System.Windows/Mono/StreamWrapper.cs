@@ -79,9 +79,15 @@ namespace Mono
 		
 		public static int Read (IntPtr handle, [In (), Out (), MarshalAs (UnmanagedType.LPArray, SizeParamIndex=3)] byte [] buffer, int offset, int count)
 		{
-			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
-			int result = wrapper.stream.Read (buffer, offset, count);
-			return result;
+			try {
+				StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
+				int result = wrapper.stream.Read (buffer, offset, count);
+				return result;
+			}
+			catch (Exception e) {
+				Console.WriteLine (e);
+				return -1;
+			}
 		}
 		
 		public static void Write (IntPtr handle, [In (), Out (), MarshalAs (UnmanagedType.LPArray, SizeParamIndex=3)] byte [] buffer, int offset, int count)
