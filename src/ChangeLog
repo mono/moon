@@ -1,3 +1,11 @@
+2009-08-10  Andreia Gaita  <avidigal@novell.com>
+
+	* ptr.h: Rename OwnerPtr to DOPtr to make it clear it's a smart
+	pointer for DependencyObject.
+	* shape.cpp, timeline.cpp: Rename OwnerPtr to DOPtr
+	* multiscaleimage.[h|cpp]: Use DOPtr to store DOs and auto-release
+	them when destroying
+
 2009-08-10  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: A new measure pass should be made if

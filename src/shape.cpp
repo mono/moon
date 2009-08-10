@@ -99,7 +99,7 @@ Shape::Shape ()
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 	cairo_matrix_init_identity (&stretch_transform);
 	
-	SetStrokeDashArray (OwnerPtr<DoubleCollection> (new DoubleCollection ()));
+	SetStrokeDashArray (DOPtr<DoubleCollection> (new DoubleCollection ()));
 }
 
 Shape::~Shape ()

@@ -22,6 +22,7 @@
 #include "control.h"
 #include "media.h"
 #include "animation.h"
+#include "ptr.h"
 
 void multi_scale_image_handle_parsed (void *userdata);
 struct BitmapImageContext;
@@ -49,12 +50,12 @@ class MultiScaleImage : public MediaBase {
 	void RenderSingle (cairo_t *cr, Region *region);
 	void RenderCollection (cairo_t *cr, Region *region);
 
-	Storyboard *zoom_sb;
-	Storyboard *pan_sb;
-	Storyboard *fadein_sb;
-	DoubleAnimationUsingKeyFrames *zoom_animation;
-	PointAnimationUsingKeyFrames *pan_animation;
-	DoubleAnimation *fadein_animation;
+	DOPtr<Storyboard> zoom_sb;
+	DOPtr<Storyboard> pan_sb;
+	DOPtr<Storyboard> fadein_sb;
+	DOPtr<DoubleAnimationUsingKeyFrames> zoom_animation;
+	DOPtr<PointAnimationUsingKeyFrames> pan_animation;
+	DOPtr<DoubleAnimation> fadein_animation;
 
 	void SetIsDownloading (bool value);
 	void SetIsIdle (bool value);

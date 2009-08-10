@@ -269,12 +269,6 @@ MultiScaleImage::MultiScaleImage () :
 	subimages_sorted(false),
 	pending_motion_completed(false),
 	bitmapimages(NULL),
-	zoom_sb(NULL),
-	pan_sb(NULL),
-	fadein_sb(NULL),
-	zoom_animation(NULL),
-	pan_animation(NULL),
-	fadein_animation(NULL),
 	is_fading(false),
 	is_zooming(false),
 	is_panning(false)
@@ -298,25 +292,6 @@ MultiScaleImage::~MultiScaleImage ()
 	if (bitmapimages)
 		g_list_free (bitmapimages);
 	bitmapimages = NULL;
-
-	if (zoom_sb)
-		zoom_sb->unref();
-	zoom_sb = NULL;
-	if (pan_sb)
-		pan_sb->unref();
-	pan_sb = NULL;
-	if (fadein_sb)
-		fadein_sb->unref();
-	fadein_sb = NULL;
-	if (zoom_animation)
-		zoom_animation->unref();
-	zoom_animation = NULL;
-	if (pan_animation)
-		pan_animation->unref();
-	pan_animation = NULL;
-	if (fadein_animation)
-		fadein_animation->unref();
-	fadein_animation = NULL;
 }
 
 void
@@ -955,7 +930,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			fadein_animation = new DoubleAnimation ();
 			fadein_animation->SetDuration (Duration::FromSecondsFloat (0.5));
 			TimelineCollection *tlc = new TimelineCollection ();
-			tlc->Add (fadein_animation);
+			tlc->Add (static_cast<DoubleAnimation*> (fadein_animation));
 			fadein_sb->SetChildren(tlc);
 			fadein_sb->AddHandler (Storyboard::CompletedEvent, fade_finished, this);
 #if DEBUG
@@ -1235,14 +1210,14 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 		zoom_sb->AddHandler (Storyboard::CompletedEvent, zoom_finished, this);
 		zoom_animation = new DoubleAnimationUsingKeyFrames ();
 		zoom_animation->SetDuration (Duration::FromSeconds (4));
-		zoom_animation->SetKeyFrames (OwnerPtr<DoubleKeyFrameCollection> (new DoubleKeyFrameCollection ()));
-		OwnerPtr<SplineDoubleKeyFrame> keyframe (new SplineDoubleKeyFrame ());
-		keyframe->SetKeySpline (OwnerPtr<KeySpline> (new KeySpline (.05, .5, 0, 1.0)));
+		zoom_animation->SetKeyFrames (DOPtr<DoubleKeyFrameCollection> (new DoubleKeyFrameCollection ()));
+		DOPtr<SplineDoubleKeyFrame> keyframe (new SplineDoubleKeyFrame ());
+		keyframe->SetKeySpline (DOPtr<KeySpline> (new KeySpline (.05, .5, 0, 1.0)));
 		keyframe->SetKeyTime (KeyTime::FromPercent (1.0));
 		zoom_animation->GetKeyFrames ()->Add (static_cast<SplineDoubleKeyFrame*>(keyframe));
 
-		OwnerPtr<TimelineCollection> tlc (new TimelineCollection ());
-		tlc->Add (zoom_animation);
+		DOPtr<TimelineCollection> tlc (new TimelineCollection ());
+		tlc->Add (static_cast<DoubleAnimationUsingKeyFrames*>(zoom_animation));
 		zoom_sb->SetChildren(tlc);
 #if DEBUG
 		zoom_sb->SetName ("Multiscale Zoom");
@@ -1278,14 +1253,14 @@ MultiScaleImage::SetInternalViewportOrigin (Point* value)
 		pan_sb->AddHandler (Storyboard::CompletedEvent, pan_finished, this);
 		pan_animation = new PointAnimationUsingKeyFrames ();
 		pan_animation->SetDuration (Duration::FromSeconds (4));
-		pan_animation->SetKeyFrames (OwnerPtr<PointKeyFrameCollection> (new PointKeyFrameCollection ()));
+		pan_animation->SetKeyFrames (DOPtr<PointKeyFrameCollection> (new PointKeyFrameCollection ()));
 		SplinePointKeyFrame *keyframe = new SplinePointKeyFrame ();
-		keyframe->SetKeySpline (OwnerPtr<KeySpline> (new KeySpline (.05, .5, 0, 1.0)));
+		keyframe->SetKeySpline (DOPtr<KeySpline> (new KeySpline (.05, .5, 0, 1.0)));
 		keyframe->SetKeyTime (KeyTime::FromPercent (1.0));
 		pan_animation->GetKeyFrames ()->Add (keyframe);
 
 		TimelineCollection *tlc = new TimelineCollection ();
-		tlc->Add (pan_animation);
+		tlc->Add (static_cast<PointAnimationUsingKeyFrames*> (pan_animation));
 		pan_sb->SetChildren(tlc);
 #if DEBUG
 		pan_sb->SetName ("Multiscale Pan");

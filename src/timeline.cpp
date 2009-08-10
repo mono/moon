@@ -179,7 +179,7 @@ TimelineGroup::AllocateClock ()
 	this->clock = group;
 
 	for (int i = 0; i < collection->GetCount (); i++)
-		group->AddChild (OwnerPtr<Clock> (collection->GetValueAt (i)->AsTimeline ()->AllocateClock ()));
+		group->AddChild (DOPtr<Clock> (collection->GetValueAt (i)->AsTimeline ()->AllocateClock ()));
 
 	group->AddHandler (Clock::CompletedEvent, clock_completed, this);
 
