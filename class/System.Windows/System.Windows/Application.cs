@@ -368,13 +368,9 @@ namespace System.Windows {
 				resource = loc;
 			}
 
-			if (resource.Length == 0)
-				return null;
-
 			resource = resource [0] == '/' ? resource : string.Format ("/{0}", resource);
 			resource = Path.GetFullPath (resource);
 			resource = resource [0] == '/' ? resource.Substring (1) : resource;
-
 
 			try {
 				var manager = new ResourceManager (assembly_name + ".g", assembly) { IgnoreCase = true };
