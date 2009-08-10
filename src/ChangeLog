@@ -1,3 +1,9 @@
+2009-08-10  Andreia Gaita  <avidigal@novell.com>
+
+	* ptr.h: fix assignment operators, the copy by reference ones were
+	causing the pointer to be destroyed prematurely when assigning via
+	new ()
+
 2009-08-08  Chris Toshok  <toshok@ximian.com>
 
 	* fontmanager.cpp (FontManager::AddResource): pass stream->handle

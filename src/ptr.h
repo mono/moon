@@ -11,6 +11,8 @@
 
 #ifndef __MONO_PTR_H__
 #define __MONO_PTR_H__
+// debug
+#define ds(x)
 
 // to prevent unwanted assignments
 class PtrBase {
@@ -26,34 +28,61 @@ private:
 template<class T>
 class RefPtr : private PtrBase {
 public:
-	explicit RefPtr(T* ptr = 0);
-	RefPtr(const RefPtr& rhs);
-	~RefPtr() { if (value) value->unref(); }
+	RefPtr(T* ptr = 0) : value(ptr), initted(false) {
+		init();
+	}
+	RefPtr(const RefPtr& rhs) : value(rhs.get()), initted(false) {
+		init();
+	}
+	template<class U>
+	RefPtr(const RefPtr<U>& rhs) : value(rhs.get()), initted(false) {
+		init();
+	}
+	~RefPtr() {
+		ds(printf("~RefPtr %p %p %d\n", this, value, initted));
+		if (value && initted)
+			value->unref();
+	}
 	operator bool() const { return(value != 0); }
+
 	RefPtr& operator=(const RefPtr& rhs) {
 		if (value == rhs.value)
 			return *this;
 		T *old = value;
 		value = rhs.value;
-		if (value) value->ref();
+		init ();
 		if (old) old->unref();
 		return *this;
 	}
+
+	template<class U>
+	RefPtr& operator=(const RefPtr<U>& rhs) {
+		if (value == rhs.value)
+			return *this;
+		T *old = value;
+		value = rhs.value;
+		init ();
+		if (old) old->unref();
+		return *this;
+	}
+
+	T* get() const { return value; }
 	T* operator->() const { return value; }
 	T& operator*() const { return *value; }
+
+	operator T*() { return value; }
+
 private:
 	T *value;
+	bool initted;
+
+	void init() {
+		ds (printf("init %p %p\n", this, value));
+		if (!value)
+			return;
+		initted = true;
+	}
 };
-
-template<class T>
-RefPtr<T>::RefPtr(T* ptr) : value(ptr) {
-	if (value) value->ref();
-}
-
-template<class T>
-RefPtr<T>::RefPtr(const RefPtr& rhs) : value(rhs.value) {
-	if (value) value->ref();
-}
 
 
 /*************************************************************
@@ -63,18 +92,33 @@ RefPtr<T>::RefPtr(const RefPtr& rhs) : value(rhs.value) {
 template<class T>
 class OwnerPtr : private PtrBase {
 public:
-	OwnerPtr(T* ptr = 0);
-	OwnerPtr(const OwnerPtr& rhs);
-	~OwnerPtr() { if (value) value->unref(); }
-	operator bool() const { return(value != 0); }
-	OwnerPtr& operator=(const OwnerPtr& rhs) {
-		if (value == rhs.value)
-			return *this;
-		T *old = value;
-		value = rhs.value;
-		if (old) old->unref();
-		return *this;
+	OwnerPtr(T* ptr = 0) : value(ptr), initted(false) {
+		init();
 	}
+	OwnerPtr(const OwnerPtr& rhs) : value(rhs.get()), initted(false) {
+		init();
+	}
+	template<class U>
+	OwnerPtr(const OwnerPtr<U>& rhs) : value(rhs.get()), initted(false) {
+		init();
+	}
+	~OwnerPtr() {
+		ds (printf("~OwnerPtr %p %p %d\n", this, value, initted));
+		if (value && initted)
+			value->unref();
+	}
+	operator bool() const { return(value != 0); }
+
+	OwnerPtr* operator=(T* ptr) {
+		if (value == ptr)
+			return this;
+		T *old = value;
+		value = ptr;
+		init ();
+		if (old) old->unref();
+		return this;
+	}
+	T* get() const { return value; }
 	T* operator->() const { return value; }
 	T& operator*() const { return *value; }
 
@@ -82,14 +126,14 @@ public:
 
 private:
 	T *value;
+	bool initted;
+
+	void init() {
+		ds (printf("init %p %p\n", this, value));
+		if (!value)
+			return;
+		initted = true;
+	}
 };
-
-template<class T>
-OwnerPtr<T>::OwnerPtr(T* ptr) : value(ptr) {
-}
-
-template<class T>
-OwnerPtr<T>::OwnerPtr(const OwnerPtr& rhs) : value(rhs.value) {
-}
 
 #endif
