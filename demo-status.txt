@@ -108,14 +108,13 @@ rating:2
 site: SilverTunes
 url:http://demo.componentone.com//Silverlight/SilverTunes/
 rating:0
- * Regression: Nothing appears at all
+ * Uses 3.0 features
  * Could not parse element Deployment.ExternalParts, attribute (null), error: Unknown element: Deployment.ExternalParts
 
 site:Metronome
 url:http://silverlightshow.net/showcase/SilverlightMetronome/SilverlightMetronome.html
-rating:0
- * Regression: nothing appears anymore
- * Could not parse element SolidColorBrush, attribute Color, error: Invalid attribute value {StaticResource PrimaryForeground} for property Color.
+rating:4
+ * Works!
 
 site:FullSix
 url:http://www.fullsix.pt/tas/sbvideo/default.htm
