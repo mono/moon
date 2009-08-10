@@ -1,3 +1,10 @@
+2009-08-07  Larry Ewing  <lewing@novell.com>
+
+	* dirty.cpp (UpdateLayout): don't use the toplevel hack on
+	noncontainers.
+
+	Gets DRT #516 very close to passing slight layout problems left.
+
 2009-08-10  Andreia Gaita  <avidigal@novell.com>
 
 	Clock leak fixes (the splash and anything else that uses BeginStoryboard)

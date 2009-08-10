@@ -444,7 +444,7 @@ Surface::UpdateLayout ()
 		// size of the surface until it is moved to a proper location.
 		Size *last = LayoutInformation::GetPreviousConstraint (layer);
 		Size available = Size (active_window->GetWidth (), active_window->GetHeight ());
-		if (!last || (*last != available)) {
+		if (layer->IsContainer () && (!last || (*last != available))) {
 			layer->InvalidateMeasure ();
 			Size size(active_window->GetWidth (), active_window->GetHeight ());
 			LayoutInformation::SetPreviousConstraint (layer, &size);
