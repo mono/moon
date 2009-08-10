@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 537 methods needs to be decorated.
+# 539 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -196,6 +196,9 @@
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetAttachedProperty(Mono.Xaml.XamlCallbackData*,System.String,System.Object,System.IntPtr,System.String,System.String,Mono.Value*)
 
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetAttachedProperty(Mono.Xaml.XamlCallbackData*,System.String,System.Object,System.IntPtr,System.String,System.String,System.Object)
+
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetCollectionContentProperty(System.String,System.Object,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr)
 
@@ -206,7 +209,7 @@
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetEventReflection(Mono.Xaml.XamlCallbackData*,System.String,System.Object,System.String,System.String,Mono.Value*,System.String&)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetExpression(Mono.Xaml.XamlCallbackData*,System.Object,System.IntPtr,System.String,System.String,Mono.Value*)
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetExpression(Mono.Xaml.XamlCallbackData*,System.String,System.Object,System.IntPtr,Mono.Value*,System.String,System.String,System.String,Mono.Value*,System.IntPtr)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetObjectTextProperty(Mono.Xaml.XamlCallbackData*,System.String,System.Object,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr)
@@ -246,6 +249,12 @@
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::exponential_ease_ease_in_core(System.IntPtr,System.Double)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::multi_scale_tile_source_get_image_height(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::multi_scale_tile_source_get_image_width(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::power_ease_ease_in_core(System.IntPtr,System.Double)
@@ -354,12 +363,6 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::time_manager_get_maximum_refresh_rate(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Int64 Mono.NativeMethods::multi_scale_tile_source_get_image_height(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Int64 Mono.NativeMethods::multi_scale_tile_source_get_image_width(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int64 Mono.NativeMethods::rendering_event_args_get_rendering_time(System.IntPtr)
@@ -1403,13 +1406,13 @@
 +SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_invalidate_tile_layer(System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_height(System.IntPtr,System.Int64)
++SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_height(System.IntPtr,System.Double)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_uri_func(System.IntPtr,Mono.ImageUriFunc)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_width(System.IntPtr,System.Int64)
++SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_width(System.IntPtr,System.Double)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_tile_height(System.IntPtr,System.Int32)
@@ -1505,7 +1508,7 @@
 +SC-M: System.Void Mono.NativeMethods::time_manager_add_tick_call(System.IntPtr,Mono.TickCallHandler,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::time_manager_remove_tick_call(System.IntPtr,Mono.TickCallHandler)
++SC-M: System.Void Mono.NativeMethods::time_manager_remove_tick_call(System.IntPtr,Mono.TickCallHandler,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::time_manager_set_maximum_refresh_rate(System.IntPtr,System.Int32)
@@ -1578,6 +1581,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::xaml_mark_property_as_set(System.IntPtr,System.IntPtr,System.String)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetCLRPropertyFromString(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Object,System.Reflection.PropertyInfo,System.String,System.String&,System.IntPtr&)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetValue(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Reflection.PropertyInfo,System.Object,System.Object)

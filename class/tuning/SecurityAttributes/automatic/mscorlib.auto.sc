@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 536 methods needs to be decorated.
+# 526 methods needs to be decorated.
 
 # internal call
 +SC-M: Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::FindProxy(System.IntPtr)
@@ -827,13 +827,7 @@
 +SC-M: System.Reflection.ConstructorInfo System.MonoType::GetCorrespondingInflatedConstructor(System.Reflection.ConstructorInfo)
 
 # internal call
-+SC-M: System.Reflection.ConstructorInfo System.Reflection.MonoGenericClass::GetCorrespondingInflatedConstructor(System.Reflection.ConstructorInfo)
-
-# internal call
 +SC-M: System.Reflection.ConstructorInfo[] System.MonoType::GetConstructors_internal(System.Reflection.BindingFlags,System.Type)
-
-# internal call
-+SC-M: System.Reflection.ConstructorInfo[] System.Reflection.MonoGenericClass::GetConstructors_internal(System.Type)
 
 # internal call
 +SC-M: System.Reflection.Emit.UnmanagedMarshal System.Reflection.FieldInfo::GetUnmanagedMarshal()
@@ -851,19 +845,10 @@
 +SC-M: System.Reflection.EventInfo[] System.MonoType::GetEvents_internal(System.Reflection.BindingFlags,System.Type)
 
 # internal call
-+SC-M: System.Reflection.EventInfo[] System.Reflection.MonoGenericClass::GetEvents_internal(System.Type)
-
-# internal call
 +SC-M: System.Reflection.FieldInfo System.Reflection.FieldInfo::internal_from_handle_type(System.IntPtr,System.IntPtr)
 
 # internal call
-+SC-M: System.Reflection.FieldInfo System.Reflection.MonoGenericClass::GetCorrespondingInflatedField(System.String)
-
-# internal call
 +SC-M: System.Reflection.FieldInfo[] System.MonoType::GetFields_internal(System.Reflection.BindingFlags,System.Type)
-
-# internal call
-+SC-M: System.Reflection.FieldInfo[] System.Reflection.MonoGenericClass::GetFields_internal(System.Type)
 
 # internal call
 +SC-M: System.Reflection.GenericParameterAttributes System.Type::GetGenericParameterAttributes()
@@ -884,9 +869,6 @@
 +SC-M: System.Reflection.MethodInfo System.MonoType::GetCorrespondingInflatedMethod(System.Reflection.MethodInfo)
 
 # internal call
-+SC-M: System.Reflection.MethodInfo System.Reflection.MonoGenericClass::GetCorrespondingInflatedMethod(System.Reflection.MethodInfo)
-
-# internal call
 +SC-M: System.Reflection.MethodInfo System.Reflection.MonoMethod::GetGenericMethodDefinition_impl()
 
 # internal call
@@ -896,16 +878,10 @@
 +SC-M: System.Reflection.MethodInfo[] System.MonoType::GetMethodsByName(System.String,System.Reflection.BindingFlags,System.Boolean,System.Type)
 
 # internal call
-+SC-M: System.Reflection.MethodInfo[] System.Reflection.MonoGenericClass::GetMethods_internal(System.Type)
-
-# internal call
 +SC-M: System.Reflection.Module System.Reflection.Assembly::GetManifestModuleInternal()
 
 # internal call
 +SC-M: System.Reflection.Module System.Reflection.Emit.AssemblyBuilder::InternalAddModule(System.String)
-
-# internal call
-+SC-M: System.Reflection.MonoGenericClass[] System.Reflection.MonoGenericClass::GetInterfaces_internal()
 
 # internal call
 +SC-M: System.Reflection.MonoMethod System.Reflection.MonoMethod::get_base_definition(System.Reflection.MonoMethod)
@@ -1107,12 +1083,6 @@
 
 # internal call
 +SC-M: System.Type System.Reflection.MonoField::GetParentType(System.Boolean)
-
-# internal call
-+SC-M: System.Type System.Reflection.MonoGenericClass::GetParentType()
-
-# internal call
-+SC-M: System.Type System.Reflection.MonoGenericClass::InflateType_internal(System.Type)
 
 # internal call
 +SC-M: System.Type System.Runtime.Remoting.Proxies.RealProxy::InternalGetProxyType(System.Object)
