@@ -365,7 +365,8 @@ failed:
 	downloader->unref ();
 	downloader = NULL;
 
-	gdk_pixbuf_loader_close (loader, NULL);
+	if (loader)
+		gdk_pixbuf_loader_close (loader, NULL);
 	CleanupLoader ();
 
 	Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
@@ -376,6 +377,8 @@ void
 BitmapImage::PixmapComplete ()
 {
 	SetProgress (1.0);
+
+	if (!loader) goto failed;
 
 	gdk_pixbuf_loader_close (loader, error == NULL ? &error : NULL);
 
@@ -447,8 +450,14 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 		if (buffer[0] == 0x89)
 			loader = gdk_pixbuf_loader_new_with_type ("png", NULL);
 		// ff d8 ff e0 == jfif magic
-		if (buffer[0] == 0xff)
+		else if (buffer[0] == 0xff)
 			loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
+
+		else {
+			// Abort the download if we can't use the resource.
+			if (get_res_aborter)
+				get_res_aborter->Cancel ();
+		}
 	} else {
 		loader = gdk_pixbuf_loader_new ();
 	}
@@ -457,6 +466,7 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 void
 BitmapImage::PixbufWrite (gpointer buffer, gint32 offset, gint32 n)
 {
+
 	if (loader == NULL && offset == 0)
 		CreateLoader ((unsigned char *)buffer);
 

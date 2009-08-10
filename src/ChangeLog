@@ -1,3 +1,8 @@
+2009-08-10  Larry Ewing  <lewing@novell.com>
+
+	* bitmapimage.cpp (CreateLoader): if the image isn't a png or a
+	jpg abort the getresource call.
+
 2009-08-07  Larry Ewing  <lewing@novell.com>
 
 	* dirty.cpp (UpdateLayout): don't use the toplevel hack on
