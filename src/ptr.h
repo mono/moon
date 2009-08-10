@@ -14,11 +14,14 @@
 // debug
 #define ds(x)
 
+#include "debug.h"
+
 // to prevent unwanted assignments
 class PtrBase {
 private:
 	void operator==(const PtrBase &b) const;
 	void operator!=(const PtrBase &b) const;
+	operator Value();
 };
 
 /*************************************************************
@@ -31,6 +34,7 @@ public:
 	DOPtr(T* ptr = 0) : value(ptr), initted(false) {
 		init();
 	}
+
 	~DOPtr() {
 		ds (printf("~DOPtr %p %p %d\n", this, value, initted));
 		if (value && initted)
@@ -43,8 +47,9 @@ public:
 			return this;
 		T *old = value;
 		value = ptr;
+		if (old && initted) old->unref();
+		initted = false;
 		init ();
-		if (old) old->unref();
 		return this;
 	}
 	T* get() const { return value; }
@@ -52,6 +57,9 @@ public:
 	T& operator*() const { return *value; }
 
 	operator T*() { return value; }
+
+	template <class U>
+	operator U*() { return static_cast<U*> (value); }
 
 private:
 	T *value;

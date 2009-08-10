@@ -510,18 +510,6 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 	return true;
 }
 
-void
-Storyboard::TeardownClockGroup ()
-{
-	if (GetClock()) {
-		Clock *c = GetClock ();
-		ClockGroup *group = c->GetParentClock();
-		if (group)
-			group->RemoveChild (c);
-		clock = NULL;
-	}
-}
-
 bool
 Storyboard::BeginWithError (MoonError *error)
 {
@@ -643,6 +631,16 @@ BeginStoryboard::BeginStoryboard ()
 
 BeginStoryboard::~BeginStoryboard ()
 {
+}
+
+void
+BeginStoryboard::Dispose ()
+{
+	Storyboard *sb = GetStoryboard ();
+	if (sb) {
+		sb->StopWithError (NULL);
+	}
+	TriggerAction::Dispose ();
 }
 
 void

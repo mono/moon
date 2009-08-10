@@ -923,7 +923,6 @@ private:
 				      DependencyObject *targetObject, PropertyPath *targetPropertyPath,
 				      GHashTable *promoted_values,
 				      MoonError *error);
-	void TeardownClockGroup ();
 	Clock *root_clock;
 };
 
@@ -938,6 +937,7 @@ public:
 	BeginStoryboard ();
 	
 	virtual void Fire ();
+	virtual void Dispose ();
 	
 	//
 	// Property Accessors
