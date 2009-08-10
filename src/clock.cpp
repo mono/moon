@@ -791,5 +791,6 @@ ClockGroup::~ClockGroup ()
 		g_list_free_1 (node);
 		node = next;
 	}
+	child_clocks = NULL;
 }
 

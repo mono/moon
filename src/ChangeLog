@@ -1,3 +1,8 @@
+2009-08-10  Andreia Gaita  <avidigal@novell.com>
+
+	* clock.cpp: make sure child_clocks is null so no other dctors try
+	to call back and use it
+
 2009-08-10  Larry Ewing  <lewing@novell.com>
 
 	* bitmapimage.cpp (CreateLoader): if the image isn't a png or a
