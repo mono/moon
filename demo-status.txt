@@ -193,6 +193,7 @@ rating:1
 site:Rich Text Box Demo
 url:http://www.vectorlight.net/silverlight_rich_textbox_demo.aspx
 rating: 0
+ * Uses SL 3.0 features
  * nothing shows up
 
 site:Martimedia
