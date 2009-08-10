@@ -483,7 +483,7 @@ FrameworkElement::Measure (Size availableSize)
 	Size *last = LayoutInformation::GetPreviousConstraint (this);
 	bool domeasure = (this->dirty_flags & DirtyMeasure) > 0;
 
-	domeasure |= last ? ((*last).width != availableSize.width) && ((*last).height != availableSize.height) : true;
+	domeasure |= !last || last->width != availableSize.width || last->height != availableSize.height;
 
 	if (GetVisibility () == VisibilityCollapsed) {
 		SetDesiredSize (Size (0,0));

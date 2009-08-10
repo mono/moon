@@ -1,3 +1,9 @@
+2009-08-10  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: A new measure pass should be made if
+	  either the available width *or* available height has changed
+	  since the last measure pass.
+
 2009-08-10  Andreia Gaita  <avidigal@novell.com>
 
 	* ptr.h: fix assignment operators, the copy by reference ones were
