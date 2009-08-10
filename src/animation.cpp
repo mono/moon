@@ -147,7 +147,7 @@ AnimationStorage::ResetPropertyValue ()
 	if (nonResetableFlag)
 		return;
 
-	if (targetobj == NULL)
+	if (targetobj == NULL || targetprop == NULL)
 		return;
 	
 	if (timeline->GetTimelineStatus () != Timeline::TIMELINE_STATUS_OK)
@@ -155,9 +155,10 @@ AnimationStorage::ResetPropertyValue ()
 
 	Applier *applier = clock->GetTimeManager ()->GetApplier ();
 
-	applier->AddPropertyChange (targetobj, targetprop,
-				    stopValue ? new Value (*stopValue) : new Value (*baseValue),
-				    APPLIER_PRECEDENCE_ANIMATION_RESET);
+	if (applier)
+		applier->AddPropertyChange (targetobj, targetprop,
+			    stopValue ? new Value (*stopValue) : new Value (*baseValue),
+			    APPLIER_PRECEDENCE_ANIMATION_RESET);
 }
 
 void 

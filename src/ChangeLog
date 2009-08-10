@@ -1,5 +1,11 @@
 2009-08-10  Andreia Gaita  <avidigal@novell.com>
 
+	* animation.[h|cpp]: Check for valid applier before trying to use it,
+	it could be disposing, same for targetprop.
+	* timemanager.cpp: clear applier when disposing
+
+2009-08-10  Andreia Gaita  <avidigal@novell.com>
+
 	* ptr.h: Rename OwnerPtr to DOPtr to make it clear it's a smart
 	pointer for DependencyObject.
 	* shape.cpp, timeline.cpp: Rename OwnerPtr to DOPtr

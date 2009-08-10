@@ -122,6 +122,7 @@ TimeManager::~TimeManager ()
 	root_clock = NULL;
 
 	delete applier;
+	applier = NULL;
 
 	RemoveAllRegisteredTimeouts ();
 }
