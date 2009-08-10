@@ -1,3 +1,11 @@
+2009-08-10  Jackson Harper  <jackson@ximian.com>
+
+	* MarkupExpressionParser.cs:
+	* ManagedXamlLoader.cs: Allow markup on non FrameworkElement
+	objects.  StaticResources should work on non FEs and setting a
+	Binding that is of type Binding should work on non FEs.
+	- Make sure we unseal setters when setting properties.
+
 2009-08-08  Chris Toshok  <toshok@ximian.com>
 
 	* Value.cs: re-enable the now functioning FontSource marshalling.

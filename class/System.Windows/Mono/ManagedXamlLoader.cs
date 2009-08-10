@@ -336,31 +336,35 @@ namespace Mono.Xaml
 		}
 
 
-		private unsafe bool TrySetExpression (XamlCallbackData *data, object target, IntPtr target_data, string type_name, string name, Value* value_ptr)
+		private unsafe bool TrySetExpression (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, Value* target_parent_ptr, string type_name, string prop_xmlns, string name, Value* value_ptr, IntPtr value_data)
 		{
 			FrameworkElement dob = target as FrameworkElement;
 			object obj_value = Value.ToObject (null, value_ptr);
 			string str_value = obj_value as string;
 
-			if (str_value == null || dob == null)
+			if (str_value == null)
 				return false;
 			
 			if (!str_value.StartsWith ("{"))
 				return false;
 
-			MarkupExpressionParser p = new MarkupExpressionParser (dob, name, data->parser, target_data);
+			MarkupExpressionParser p = new MarkupExpressionParser (target, name, data->parser, target_data);
 			string expression = str_value;
 			object o = p.ParseExpression (ref expression);
 
 			if (o == null)
 				return false;
 
-			DependencyProperty prop = LookupDependencyPropertyForBinding (data, dob, type_name, name);
-			if (prop == null)
-				return false;
-
+			
 			if (o is Binding) {
 				Binding binding = o as Binding;
+				DependencyProperty prop = null;
+
+				if (dob != null)
+					prop = LookupDependencyPropertyForBinding (data, dob, type_name, name);
+
+				if (prop == null)
+					return false;
 
 				dob.SetBinding (prop, binding);
 				return true;
@@ -381,6 +385,14 @@ namespace Mono.Xaml
 				if (sourceProperty == null)
 					return false;
 
+				DependencyProperty prop = null;
+
+				if (dob != null)
+					prop = LookupDependencyPropertyForBinding (data, dob, type_name, name);
+
+				if (prop == null)
+					return false;
+
 				tb.TargetProperty = prop;
 				tb.Source = templateSourceObject as Control;
 				tb.SourceProperty = sourceProperty;
@@ -391,19 +403,34 @@ namespace Mono.Xaml
 			}
 			else {
 				// static resources fall into this
-				o = ConvertType (null, prop.PropertyType, o);
-				dob.SetValue (prop, o);
+
+				if (dob != null) {
+					DependencyProperty prop = LookupDependencyPropertyForBinding (data, dob, type_name, name);
+					if (prop == null)
+						return false;
+
+					o = ConvertType (null, prop.PropertyType, o);
+					dob.SetValue (prop, o);
+				} else {
+					if (IsAttachedProperty (name))
+						return TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, name, o);
+
+					PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+
+					o = ConvertType (null, pi.PropertyType, o);
+					SetValue (data, target_data, pi, target, o);
+					return true;
+				}
 			}
 
 			return true;
 		}
 
-		private unsafe bool TrySetAttachedProperty (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, string prop_xmlns, string name, Value* value_ptr)
+		private string GetNameForAttachedProperty (string xmlns, string prop_xmlns, string name, out string type_name)
 		{
 			string full_name = name;
 
 			int dot = name.IndexOf ('.');
-			string type_name = null;
 
 			if (dot >= 0) {
 				type_name = name.Substring (0, dot);
@@ -413,7 +440,38 @@ namespace Mono.Xaml
 						type_name = String.Concat (ns, ".", type_name);
 				}
 				name = name.Substring (++dot, name.Length - dot);
-			} else
+			} else {
+				type_name = null;
+				return null;
+			}
+
+			return name;
+		}
+
+		private unsafe bool TrySetAttachedProperty (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, string prop_xmlns, string name, Value* value_ptr)
+		{
+			string full_name = name;
+			string type_name = null;
+
+			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name);
+
+			if (name == null)
+				return false;
+
+			string error = null;
+			object o_value = GetObjectValue (target, target_data, name, data->parser, value_ptr, out error);
+			
+			return TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, full_name, o_value);
+		}
+
+		private unsafe bool TrySetAttachedProperty (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, string prop_xmlns, string name, object o_value)
+		{
+			string full_name = name;
+			string type_name = null;
+
+			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name);
+
+			if (name == null)
 				return false;
 
 			MethodInfo set_method = GetSetMethodForAttachedProperty (data->top_level, prop_xmlns, type_name, name);
@@ -428,8 +486,6 @@ namespace Mono.Xaml
 				return false;
 			}
 
-			string error = null;
-			object o_value = GetObjectValue (target, target_data, name, data->parser, value_ptr, out error);
 			MethodInfo get_method = set_method.DeclaringType.GetMethod (String.Concat ("Get", name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
 			//
@@ -703,7 +759,7 @@ namespace Mono.Xaml
 				name = name.Substring (++dot, name.Length - dot);
 			}
 
-			if (TrySetExpression (data, target, target_data, type_name, name, value_ptr))
+			if (TrySetExpression (data, xmlns, target, target_data, target_parent_ptr, type_name, prop_xmlns, full_name, value_ptr, value_data))
 				return true;
 
 			if (TrySetPropertyReflection (data, xmlns, target, target_data, target_parent_ptr, type_name, name, value_ptr, value_data, out error))
@@ -961,7 +1017,7 @@ namespace Mono.Xaml
 			return res;
 		}
 
-		private void SetCLRPropertyFromString (object target, PropertyInfo pi, string value, out string error, out IntPtr unmanaged_value)
+		private unsafe void SetCLRPropertyFromString (XamlCallbackData *data, IntPtr target_data, object target, PropertyInfo pi, string value, out string error, out IntPtr unmanaged_value)
 		{
 			unmanaged_value = IntPtr.Zero;
 			error = null;
@@ -985,7 +1041,7 @@ namespace Mono.Xaml
 
 			if (do_set) {
 				try {
-					pi.SetValue (target, new_value, null);
+					SetValue (data, target_data, pi, target, new_value); 
 					return;
 				} catch (Exception ex) {
 					error = ex.Message;
@@ -1082,116 +1138,114 @@ namespace Mono.Xaml
 		{
 			error = null;
 			object obj_value = Value.ToObject (null, value_ptr);
-			SetterBase sb = target as SetterBase;
 			
-			try {
-				if (sb != null)
-					sb.IsSealed = false;
-
-				if (obj_value is Binding && target is FrameworkElement) {
-					FrameworkElement fe = (FrameworkElement) target;
-					fe.SetBinding (DependencyProperty.Lookup (fe.GetKind (), pi.Name), (Binding) obj_value);
-					return true;
-				}
-
-				if (obj_value is StaticResource) {
-					StaticResource sr = (StaticResource)obj_value;
-					obj_value = "{StaticResource " + sr.ResourceKey + "}";
-				}
-
-				if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
-					// This case is handled in the AddChild code
-					return true;
-				}
-
-				if (typeof (ResourceDictionary).IsAssignableFrom (pi.PropertyType) && !(obj_value is ResourceDictionary)) {
-					// This case is handled in the AddChild code
-					return true;
-				}
-
-				string str_value = obj_value as string;
-				if (str_value != null) {
-					IntPtr unmanaged_value;
-
-					//
-					// HACK: This really shouldn't be here, but I don't want to bother putting it in Helper, because that
-					// code probably should be moved into this file
-					//
-					if (pi.PropertyType == typeof (Type)) {
-						Type t = TypeFromString (data, str_value);
-						if (t != null) {
-							SetValue (data, target_data, pi, target, t);
-							// pi.SetValue (target, t, null);
-							return true;
-						}
-					}
-
-					if (pi.PropertyType == typeof (DependencyProperty)) {
-						DependencyProperty dp = DependencyPropertyFromString (data, target, target_parent_ptr, str_value);
-						if (dp != null) {
-							SetValue (data, target_data, pi, target, dp);
-							// pi.SetValue (target, dp, null);
-							return true;
-						}
-					}
-
-					if (typeof (System.Windows.Data.Binding).IsAssignableFrom (pi.PropertyType) && MarkupExpressionParser.IsBinding (str_value)) {
-						MarkupExpressionParser p = new MarkupExpressionParser (null, pi.Name,  data->parser, target_data);
-
-						string expression = str_value;
-						obj_value = p.ParseExpression (ref expression);
-
-						if (!(obj_value is Binding))
-							return false;
-
-						// pi.SetValue (target, obj_value, null);
-						SetValue (data, target_data, pi, target, obj_value);
-						return true;
-					}
-
-					if (MarkupExpressionParser.IsStaticResource (str_value)) {
-						// FIXME: The NUnit tests show we need to use the parent of the target to resolve
-						// the StaticResource, but are there any cases where we should use the actual target?
-						DependencyObject parent = Value.ToObject (null, target_parent_ptr) as DependencyObject;
-						if (parent == null)
-							return false;
-						MarkupExpressionParser p = new MarkupExpressionParser (parent, "", data->parser, target_data);
-						obj_value = p.ParseExpression (ref str_value);
-						obj_value = ConvertType (pi, pi.PropertyType, obj_value);
-						// pi.SetValue (target, obj_value, null);
-						SetValue (data, target_data, pi, target, obj_value);
-						return true;
-					}
-
-					SetCLRPropertyFromString (target, pi, str_value, out error, out unmanaged_value);
-
-					if (error == null && unmanaged_value != IntPtr.Zero)
-						obj_value = Value.ToObject (null, unmanaged_value);
-					else
-						return error == null;
-				} else {
-					obj_value = Value.ToObject (pi.PropertyType, value_ptr);
-				}
-
-				obj_value = ConvertType (pi, pi.PropertyType, obj_value);
-				// pi.SetValue (target, obj_value, null);
-				SetValue (data, target_data, pi, target, obj_value);
-
-			} finally {
-				if (sb != null)
-					sb.IsSealed = true;
+			if (obj_value is Binding && target is FrameworkElement) {
+				FrameworkElement fe = (FrameworkElement) target;
+				fe.SetBinding (DependencyProperty.Lookup (fe.GetKind (), pi.Name), (Binding) obj_value);
+				return true;
 			}
+
+			if (obj_value is StaticResource) {
+				StaticResource sr = (StaticResource)obj_value;
+				obj_value = "{StaticResource " + sr.ResourceKey + "}";
+			}
+
+			if (typeof (IList).IsAssignableFrom (pi.PropertyType) && !(obj_value is IList)) {
+				// This case is handled in the AddChild code
+				return true;
+			}
+
+			if (typeof (ResourceDictionary).IsAssignableFrom (pi.PropertyType) && !(obj_value is ResourceDictionary)) {
+				// This case is handled in the AddChild code
+				return true;
+			}
+
+			string str_value = obj_value as string;
+			if (str_value != null) {
+				IntPtr unmanaged_value;
+
+				//
+				// HACK: This really shouldn't be here, but I don't want to bother putting it in Helper, because that
+				// code probably should be moved into this file
+				//
+				if (pi.PropertyType == typeof (Type)) {
+					Type t = TypeFromString (data, str_value);
+					if (t != null) {
+						SetValue (data, target_data, pi, target, t);
+						return true;
+					}
+				}
+
+				if (pi.PropertyType == typeof (DependencyProperty)) {
+					DependencyProperty dp = DependencyPropertyFromString (data, target, target_parent_ptr, str_value);
+					if (dp != null) {
+						SetValue (data, target_data, pi, target, dp);
+						return true;
+					}
+				}
+
+				if (typeof (System.Windows.Data.Binding).IsAssignableFrom (pi.PropertyType) && MarkupExpressionParser.IsBinding (str_value)) {
+					MarkupExpressionParser p = new MarkupExpressionParser (null, pi.Name,  data->parser, target_data);
+
+					string expression = str_value;
+					obj_value = p.ParseExpression (ref expression);
+
+					if (!(obj_value is Binding))
+						return false;
+
+					SetValue (data, target_data, pi, target, obj_value);
+					return true;
+				}
+
+				if (MarkupExpressionParser.IsStaticResource (str_value)) {
+					// FIXME: The NUnit tests show we need to use the parent of the target to resolve
+					// the StaticResource, but are there any cases where we should use the actual target?
+					DependencyObject parent = Value.ToObject (null, target_parent_ptr) as DependencyObject;
+					if (parent == null)
+						return false;
+					MarkupExpressionParser p = new MarkupExpressionParser (parent, "", data->parser, target_data);
+					obj_value = p.ParseExpression (ref str_value);
+					obj_value = ConvertType (pi, pi.PropertyType, obj_value);
+
+					SetValue (data, target_data, pi, target, obj_value);
+					return true;
+				}
+
+				SetCLRPropertyFromString (data, target_data, target, pi, str_value, out error, out unmanaged_value);
+
+				if (error == null && unmanaged_value != IntPtr.Zero)
+					obj_value = Value.ToObject (null, unmanaged_value);
+				else
+					return error == null;
+			} else {
+				obj_value = Value.ToObject (pi.PropertyType, value_ptr);
+			}
+
+			obj_value = ConvertType (pi, pi.PropertyType, obj_value);
+			SetValue (data, target_data, pi, target, obj_value);
+
 			return true;
 		}
 
 		private static unsafe void SetValue (XamlCallbackData *data, IntPtr target_data, PropertyInfo pi, object target, object value)
 		{
-			if (NativeMethods.xaml_is_property_set (data->parser, target_data, pi.Name))
-				throw new XamlParseException (2033, String.Format ("Cannot specify the value multiple times for property: {0}.", pi.Name));
+			SetterBase sb = target as SetterBase;
+			
+			if (sb != null)
+				sb.IsSealed = false;
 
-			pi.SetValue (target, value, null);
+			try {
+				if (NativeMethods.xaml_is_property_set (data->parser, target_data, pi.Name))
+					throw new XamlParseException (2033, String.Format ("Cannot specify the value multiple times for property: {0}.", pi.Name));
 
-			NativeMethods.xaml_mark_property_as_set (data->parser, target_data, pi.Name);
+				pi.SetValue (target, value, null);
+
+				NativeMethods.xaml_mark_property_as_set (data->parser, target_data, pi.Name);
+
+			} finally {
+				if (sb != null)
+					sb.IsSealed = true;
+			}
 		}
 
 		private static object ConvertType (MemberInfo pi, Type t, object value)

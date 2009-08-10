@@ -41,12 +41,12 @@ namespace Mono.Xaml {
 	internal class MarkupExpressionParser {
 
 		private bool parsingBinding;
-		private DependencyObject target;
+		private object target;
 		private string attribute_name;
 		private IntPtr parser;
 		private IntPtr target_data;
 
-		public MarkupExpressionParser (DependencyObject target, string attribute_name, IntPtr parser, IntPtr target_data)
+		public MarkupExpressionParser (object target, string attribute_name, IntPtr parser, IntPtr target_data)
 		{
 			this.target = target;
 			this.attribute_name = attribute_name;
@@ -163,7 +163,7 @@ namespace Mono.Xaml {
 			char next;
 			string name = GetNextPiece (ref expression, out next, true);
 
-			object o = LookupNamedResource (target, name);
+			object o = LookupNamedResource (null, name);
 
 #if !__TESTING
 			if (o == null)
