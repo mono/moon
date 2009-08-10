@@ -1,5 +1,9 @@
 2009-08-10  Jackson Harper  <jackson@ximian.com>
 
+	* MoonlightTypeConverter.cs: Allow the conversion from int->enum.
+
+2009-08-10  Jackson Harper  <jackson@ximian.com>
+
 	* MarkupExpressionParser.cs:
 	* ManagedXamlLoader.cs: Allow markup on non FrameworkElement
 	objects.  StaticResources should work on non FEs and setting a

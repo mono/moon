@@ -67,6 +67,9 @@ namespace Mono {
 			if (IsAssignableToIConvertible (sourceType) && IsAssignableToIConvertible (destinationType))
 				return true;
 
+			if (destinationType.IsEnum && Enum.GetUnderlyingType (destinationType).IsAssignableFrom (sourceType))
+				return true;
+
 			return base.CanConvertFrom (context, sourceType);
 		}
 
@@ -101,6 +104,9 @@ namespace Mono {
 				if (destinationType == typeof (FontStretch))
 					return new FontStretch ((FontStretchKind) Enum.Parse (typeof (FontStretchKind), str_val, true));
 			}
+
+			if (destinationType.IsEnum && Enum.IsDefined (destinationType, value))
+				return Enum.ToObject (destinationType, value);
 
 			if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
 				return new SolidColorBrush ((Color)value);
