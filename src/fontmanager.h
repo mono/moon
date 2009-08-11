@@ -99,8 +99,8 @@ class FontManager {
 	FontManager ();
 	~FontManager ();
 	
-	void AddResource (const char *resource, ManagedStreamCallbacks *stream);
 	void AddResource (const char *resource, const char *path);
+	char *AddResource (ManagedStreamCallbacks *stream);
 	
 	FontFace *OpenFont (const char *name, FontStretches stretch, FontWeights weight, FontStyles style);
 	FontFace *OpenFont (const char *name, int index);

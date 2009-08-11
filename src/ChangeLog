@@ -1,3 +1,21 @@
+2009-08-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::Paste): Change the multiline
+	truncation test to explicitly check for \r, \n and 0x2028 instead
+	of using g_unichar_type() which didn't return the expected values
+	for these characters. Partial fix for drt 2003.
+	(*Box::OnPropertyChanged): Updated for AddResource() API change.
+
+	* textblock.cpp (TextBlock::OnPropertyChanged): Updated for
+	AddResource() API change.
+
+	* fontmanager.cpp (AddResource): Instead of having our callers
+	generate a unique resource name, let us do it for them. Don't
+	bother using mkstemp()/mkdtemp() since our root dir is already
+	unique. Also fixed to reset the stream resource after consuming it
+	so that if multiple textblocks/boxes/etc reuse the FontSource,
+	things work properly. Partial fix for drt 444.
+
 2009-08-11  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.cpp: Controls aren't really auto-focused. What

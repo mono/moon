@@ -842,14 +842,16 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		FontSource *source = args->GetNewValue () ? args->GetNewValue ()->AsFontSource () : NULL;
 		FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 		
+		// FIXME: ideally we'd remove the old item from the cache (or,
+		// rather, 'unref' it since some other textblocks/boxes might
+		// still be using it).
+		
 		g_free (font_source);
 		
-		if (source && source->stream) {
-			font_source = g_strdup_printf ("font-source://%p.%p", this, source);
-			manager->AddResource (font_source, source->stream);
-		} else {
+		if (source && source->stream)
+			font_source = manager->AddResource (source->stream);
+		else
 			font_source = NULL;
-		}
 	}
 	
 	if (invalidate) {

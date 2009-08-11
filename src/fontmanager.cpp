@@ -1267,63 +1267,76 @@ FontManager::AddResource (const char *resource, const char *path)
 		g_hash_table_insert (resources, index->name, index);
 }
 
-void
-FontManager::AddResource (const char *resource, ManagedStreamCallbacks *stream)
+char *
+FontManager::AddResource (ManagedStreamCallbacks *stream)
 {
-	char buf[4096], *dirname, *path;
+	char buf[4096], *resource, *dirname, *path;
 	unzFile zipfile;
 	int nread, fd;
+	gint64 pos;
+	
+	if (!stream->CanRead (stream->handle))
+		return NULL;
 	
 	if (!root && !(root = CreateTempDir ("moonlight-fonts")))
-		return;
+		return NULL;
 	
-	if (!strncmp (resource, "font-source://", 14))
-		snprintf (buf, sizeof (buf), "%s.XXXXXX", resource + 14);
-	else
-		snprintf (buf, sizeof (buf), "%s.XXXXXX", resource);
+	// check if we've already added this resource
+	resource = g_strdup_printf ("font-source://%p", stream->handle);
+	if (g_hash_table_lookup (resources, resource) != NULL)
+		return resource;
 	
+	snprintf (buf, sizeof (buf), "%p", stream->handle);
 	path = g_build_filename (root, buf, NULL);
 	
-	if ((fd = mkstemp (path)) == -1) {
+	if ((fd = open (path, O_CREAT | O_EXCL | O_WRONLY, 0600)) == -1) {
+		g_free (resource);
 		g_free (path);
-		return;
+		return NULL;
 	}
-
+	
 	// write the managed stream to disk
+	pos = stream->Position (stream->handle);
 	while ((nread = stream->Read (stream->handle, buf, 0, sizeof (buf))) > 0) {
-
 		if (write_all (fd, buf, (size_t) nread) == -1) {
+			g_free (resource);
 			close (fd);
 			g_unlink (path);
 			g_free (path);
-			return;
+			return NULL;
 		}
 	}
+	
+	// reset the stream to the original state
+	if (stream->CanSeek (stream->handle) && pos != -1)
+		stream->Seek (stream->handle, pos, SEEK_SET);
 	
 	close (fd);
 	
 	// check to see if the resource is zipped
 	if ((zipfile = unzOpen (path))) {
-		snprintf (buf, sizeof (buf), "%s.XXXXXX", resource);
+		snprintf (buf, sizeof (buf), "%p.zip", stream->handle);
 		dirname = g_build_filename (root, buf, NULL);
 		
 		// create a directory to contain our unzipped content
-		if (!MakeTempDir (dirname)) {
+		if (mkdir (dirname, 0700) == -1) {
 			unzClose (zipfile);
+			g_free (resource);
 			g_free (dirname);
 			g_unlink (path);
 			g_free (path);
-			return;
+			return NULL;
 		}
 		
 		// unzip the contents
 		if (!ExtractAll (zipfile, dirname, false)) {
 			RemoveDir (dirname);
 			unzClose (zipfile);
+			g_free (resource);
 			g_free (dirname);
 			g_unlink (path);
 			g_free (path);
-			return;
+			return NULL;
 		}
 		
 		unzClose (zipfile);
@@ -1334,6 +1347,8 @@ FontManager::AddResource (const char *resource, ManagedStreamCallbacks *stream)
 	}
 	
 	AddResource (resource, path);
+	
+	return resource;
 }
 
 static int

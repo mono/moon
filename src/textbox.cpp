@@ -1471,7 +1471,7 @@ TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
 	if (!multiline) {
 		// only paste the content of the first line
 		for (i = 0; i < len; i++) {
-			if (g_unichar_type (text[i]) == G_UNICODE_LINE_SEPARATOR) {
+			if (text[i] == '\r' || text[i] == '\n' || text[i] == 0x2028) {
 				text = (gunichar *) g_realloc (text, UNICODE_LEN (i + 1));
 				text[i] = '\0';
 				len = i;
@@ -2628,14 +2628,16 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		FontSource *source = args->GetNewValue () ? args->GetNewValue ()->AsFontSource () : NULL;
 		FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 		
+		// FIXME: ideally we'd remove the old item from the cache (or,
+		// rather, 'unref' it since some other textblocks/boxes might
+		// still be using it).
+		
 		g_free (font_source);
 		
-		if (source && source->stream) {
-			font_source = g_strdup_printf ("font-source://%p.%p", this, source);
-			manager->AddResource (font_source, source->stream);
-		} else {
+		if (source && source->stream)
+			font_source = manager->AddResource (source->stream);
+		else
 			font_source = NULL;
-		}
 	} else if (args->GetId () == TextBox::IsReadOnlyProperty) {
 		// update is_read_only state
 		is_read_only = args->GetNewValue ()->AsBool ();
@@ -3035,14 +3037,16 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		FontSource *source = args->GetNewValue () ? args->GetNewValue ()->AsFontSource () : NULL;
 		FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 		
+		// FIXME: ideally we'd remove the old item from the cache (or,
+		// rather, 'unref' it since some other textblocks/boxes might
+		// still be using it).
+		
 		g_free (font_source);
 		
-		if (source && source->stream) {
-			font_source = g_strdup_printf ("font-source://%p.%p", this, source);
-			manager->AddResource (font_source, source->stream);
-		} else {
+		if (source && source->stream)
+			font_source = manager->AddResource (source->stream);
+		else
 			font_source = NULL;
-		}
 	} else if (args->GetId () == PasswordBox::MaxLengthProperty) {
 		// update max_length state
 		max_length = args->GetNewValue()->AsInt32 ();
