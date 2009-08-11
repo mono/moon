@@ -46,24 +46,11 @@ Clock*
 Timeline::AllocateClock ()
 {
 	clock = new Clock (this);
+
 	AttachCompletedHandler ();
 
 	return clock;
 }
-
-void
-Timeline::TeardownClock ()
-{
-	if (clock) {
-		ClockGroup *group = clock->GetParentClock();
-		if (group)
-			group->RemoveChild (clock);
-		else
-			clock->unref();
-		clock = NULL;
-	}
-}
-
 
 Clock*
 Timeline::GetClock ()
@@ -197,16 +184,6 @@ TimelineGroup::AllocateClock ()
 	group->AddHandler (Clock::CompletedEvent, clock_completed, this);
 
 	return group;
-}
-
-void
-TimelineGroup::TeardownClockGroup ()
-{
-	if (clock) {
-		ClockGroup *group = (ClockGroup *) clock;
-		group->Clear ();
-	}
-	TeardownClock ();
 }
 
 // Validate this TimelineGroup by validating all of it's children

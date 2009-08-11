@@ -230,7 +230,6 @@ public:
 	void SetParentClock (ClockGroup *parent) { parent_clock = parent; }
 	virtual void SetTimeManager (TimeManager *manager) { time_manager = manager; }
 	virtual void Reset ();
-	void Shutdown ();
 
 	// Events you can AddHandler to
 	const static int CurrentTimeInvalidatedEvent;
@@ -296,8 +295,6 @@ private:
 	// durations that aren't forever, this represents the time at
 	// which we'll hit our Fill.
 	TimeSpan fillTime;
-
-	bool shutting_down;
 };
 
 
@@ -324,7 +321,6 @@ public:
 	GList *child_clocks;
 
 	virtual void Reset ();
-	void Clear ();
 
 protected:
 	virtual ~ClockGroup ();
