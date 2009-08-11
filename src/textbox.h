@@ -250,8 +250,6 @@ class TextBoxBase : public Control, public ITextAttributes {
 	int GetCursor () { return selection_cursor; }
 	bool IsFocused () { return focused; }
 	
-	virtual void ClearFontSource () = 0;
-	
 	virtual const char *GetActualText () = 0;
 	
 	virtual void SetSelectedText (const char *text) = 0;
@@ -357,8 +355,6 @@ class TextBox : public TextBoxBase {
 	friend class TextBoxDynamicPropertyValueProvider;
 	
  protected:
-	virtual void ClearFontSource ();
-	
 	virtual const char *GetActualText () { return GetText (); }
 	
 	virtual void EmitSelectionChanged ();
@@ -494,8 +490,6 @@ class PasswordBox : public TextBoxBase {
 	//
 	// Protected Property Accessors
 	//
-	virtual void ClearFontSource ();
-	
 	virtual const char *GetActualText () { return GetPassword (); }
 	
 	virtual void SetSelectedText (const char *text);

@@ -1,3 +1,14 @@
+2009-08-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::OnPropertyChanged): Set the font_source on
+	the TextFontDescription as well as emitting an event so the view
+	knows it has to re-render. Improves drt 480.
+	(PasswordBox::OnPropertyChanged): Same.
+	(TextBox::ClearFontSource): Removed, not used.
+	(PasswordBox::ClearFontSource): Same.
+
+	r:toshok
+
 2009-08-11  Andreia Gaita  <avidigal@novell.com>
 
 	* runtime.cpp: TimeManager should be the last thing destroyed, other

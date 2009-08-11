@@ -2605,12 +2605,6 @@ TextBox::SyncText ()
 }
 
 void
-TextBox::ClearFontSource ()
-{
-	ClearValue (TextBox::FontSourceProperty);
-}
-
-void
 TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
@@ -2638,6 +2632,9 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			font_source = manager->AddResource (source->stream);
 		else
 			font_source = NULL;
+		
+		changed = TextBoxModelChangedFont;
+		font->SetSource (font_source);
 	} else if (args->GetId () == TextBox::IsReadOnlyProperty) {
 		// update is_read_only state
 		is_read_only = args->GetNewValue ()->AsBool ();
@@ -3018,12 +3015,6 @@ PasswordBox::GetDisplayText ()
 }
 
 void
-PasswordBox::ClearFontSource ()
-{
-	ClearValue (PasswordBox::FontSourceProperty);
-}
-
-void
 PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
@@ -3047,6 +3038,9 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			font_source = manager->AddResource (source->stream);
 		else
 			font_source = NULL;
+		
+		changed = TextBoxModelChangedFont;
+		font->SetSource (font_source);
 	} else if (args->GetId () == PasswordBox::MaxLengthProperty) {
 		// update max_length state
 		max_length = args->GetNewValue()->AsInt32 ();
