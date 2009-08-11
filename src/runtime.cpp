@@ -1997,7 +1997,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 		handled = EmitEventOnList (UIElement::KeyDownEvent, focus_to_root, (GdkEvent*)event, -1);
 		delete focus_to_root;
 	}
-	else {
+	else if (toplevel){
 		// in silverlight 1.0, key events are only ever delivered to the toplevel
 		toplevel->EmitKeyDown (event);
 		handled = true;

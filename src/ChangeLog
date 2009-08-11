@@ -1,3 +1,9 @@
+2009-08-11  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: Make HandleUIKeyPress do the same thing as
+	  HandleUIKeyRelease when there is no toplevel so it doesn't
+	  null deref. r: sde
+
 2009-08-10  Larry Ewing  <lewing@novell.com>
 
 	* bitmapimage.cpp (CreateLoader): if the image isn't a png or a
