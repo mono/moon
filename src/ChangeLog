@@ -1,3 +1,8 @@
+2009-08-11  Andreia Gaita  <avidigal@novell.com>
+
+	* runtime.cpp: TimeManager should be the last thing destroyed, other
+	objects might need to access it while disposing. r: alan
+
 2009-08-11  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: cast so the modulo operation opers on int,

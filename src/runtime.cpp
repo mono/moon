@@ -467,8 +467,8 @@ Surface::Attach (UIElement *element)
 		time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		time_manager->Stop ();
 		int maxframerate = time_manager->GetMaximumRefreshRate ();
-		time_manager->unref ();
 		toplevel->unref ();
+		time_manager->unref ();
 		time_manager = new TimeManager ();
 		time_manager->AddHandler (TimeManager::RenderEvent, render_cb, this);
 		time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
