@@ -36,6 +36,7 @@ using System.Windows.Markup;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Shapes;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -595,6 +596,39 @@ namespace MoonTest.System.Windows.Controls {
 				// This is probably a once off binding
 				() => Assert.IsInstanceOfType<BindingExpressionBase> (block.ReadLocalValue (TextBlock.TextProperty), "#6")
 			);
+		}
+		
+		[TestMethod]
+		[MoonlightBug]
+		public void VisualTreeTest3b ()
+		{
+			// Check whether the grid + TextBlock is reused or replaced
+			Grid grid = null;
+			TextBlock textBlock = null;
+			ContentControl c = new ContentControl ();
+
+			// If there is no control template, a Grid + TextBlock is
+			// appended.
+			c.Content = "I'm a string";
+			Assert.IsTrue (c.ApplyTemplate (), "#1");
+			Assert.VisualChildren (c, "#2",
+				new VisualNode<Grid> ("#a", g => grid = g,
+					new VisualNode<TextBlock> ("#b", b => textBlock = b)
+				)
+			);
+			Assert.IsNull (textBlock.DataContext, "#3");
+			Assert.AreEqual ("", textBlock.Text, "#4");
+
+			// Changing the content to anther non-UIElement does not change
+			// the grid/textblock instance
+			c.Content = "Other string";
+			Assert.IsFalse (c.ApplyTemplate (), "#5");
+			Assert.VisualChildren (c, "#6",
+				new VisualNode<Grid> ("#a", g => Assert.AreSame (g, grid, "#b"),
+					new VisualNode<TextBlock> ("#c", b => Assert.AreSame (textBlock, b))
+				)
+			);
+			Assert.AreEqual ("", textBlock.Text, "#7");
 		}
 		
 		[TestMethod]
