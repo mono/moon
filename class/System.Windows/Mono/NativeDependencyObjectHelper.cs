@@ -336,6 +336,7 @@ namespace Mono {
 			case Kind.SETTER: return new Setter (raw, false);
 			case Kind.SCALETRANSFORM: return new ScaleTransform (raw, false);
 			case Kind.SINEEASE: return new SineEase (raw, false);
+			case Kind.SKEWTRANSFORM: return new SkewTransform (raw, false);
 			case Kind.SOLIDCOLORBRUSH: return new SolidColorBrush (raw, false);
 			case Kind.SPLINECOLORKEYFRAME: return new SplineColorKeyFrame (raw, false);
 			case Kind.SPLINEDOUBLEKEYFRAME: return new SplineDoubleKeyFrame (raw, false);

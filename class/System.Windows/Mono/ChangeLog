@@ -1,3 +1,8 @@
+2009-08-11  Jackson Harper  <jackson@ximian.com>
+
+	* NativeDependencyObjectHelper.cs: Add SKEWTRANSFORM to the
+	switch.
+
 2009-08-10  Jackson Harper  <jackson@ximian.com>
 
 	* MarkupExpressionParser.cs:
