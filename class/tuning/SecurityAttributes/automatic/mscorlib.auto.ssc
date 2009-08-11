@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 651 methods
+# 649 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::BuildTailoringTables(System.Globalization.CultureInfo,Mono.Globalization.Unicode.TailoringInfo,Mono.Globalization.Unicode.Contraction[]&,Mono.Globalization.Unicode.Level2Map[]&)
@@ -405,12 +405,10 @@
 +SSC-M: System.Object System.Reflection.MonoField::GetValue(System.Object)
 +SSC-M: System.Void System.Reflection.MonoField::SetValue(System.Object,System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Globalization.CultureInfo)
 +SSC-M: System.Void System.Reflection.MonoGenericClass::initialize()
-+SSC-M: System.Type System.Reflection.MonoGenericClass::get_BaseType()
 +SSC-M: System.Reflection.MethodInfo[] System.Reflection.MonoGenericClass::GetMethods(System.Reflection.BindingFlags)
 +SSC-M: System.Reflection.ConstructorInfo[] System.Reflection.MonoGenericClass::GetConstructors(System.Reflection.BindingFlags)
 +SSC-M: System.Reflection.FieldInfo[] System.Reflection.MonoGenericClass::GetFields(System.Reflection.BindingFlags)
 +SSC-M: System.Reflection.PropertyInfo[] System.Reflection.MonoGenericClass::GetProperties(System.Reflection.BindingFlags)
-+SSC-M: System.Boolean System.Reflection.MonoGenericClass::IsAssignableFrom(System.Type)
 +SSC-M: System.Reflection.MethodInfo System.Reflection.MonoMethod::GetBaseDefinition()
 +SSC-M: System.Reflection.ParameterInfo System.Reflection.MonoMethod::get_ReturnParameter()
 +SSC-M: System.Type System.Reflection.MonoMethod::get_ReturnType()

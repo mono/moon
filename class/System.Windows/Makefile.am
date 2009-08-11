@@ -276,6 +276,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/SplineColorKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/SplinePointKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/TimelineCollection.cs		\
+	$(srcdir)/System.Windows/Analytics.cs					\
 	$(srcdir)/System.Windows/Application.cs					\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
@@ -308,6 +309,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/FontWeightKind.cs				\
 	$(srcdir)/System.Windows/FrameworkElement.cs				\
 	$(srcdir)/System.Windows/FrameworkTemplate.cs				\
+	$(srcdir)/System.Windows/GpuInformation.cs				\
 	$(srcdir)/System.Windows/GridLength.cs					\
 	$(srcdir)/System.Windows/GridUnitType.cs				\
 	$(srcdir)/System.Windows/HorizontalAlignment.cs				\

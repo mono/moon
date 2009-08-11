@@ -1,7 +1,5 @@
 //
-// BitmapImage.cs
-//
-// Copyright 2008 Novell, Inc.
+// Copyright 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -24,27 +22,38 @@
 //
 
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Resources;
-using System.IO;
-using System.Threading;
-using System.Net;
-using Mono;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
-namespace System.Windows.Media.Imaging
+namespace System.Windows
 {
-	public partial class BitmapSource : ImageSource
-	{
-		public void SetSource (Stream streamSource)
+
+	public class Analytics {
+
+		~Analytics ()
 		{
-			if (streamSource == null)
-				NativeMethods.bitmap_source_set_bitmap_data (native, IntPtr.Zero);
-			else {
-				NativeMethods.bitmap_image_pixbuf_write (native, Helper.StreamToIntPtr (streamSource), 0, (int) streamSource.Length);
-				NativeMethods.bitmap_image_pixmap_complete (native);
+		}
+
+		public float AverageProcessLoad {
+			get { return 0; }
+		}
+
+		public float AverageProcessorLoad {
+			get { return 0; }
+		}
+
+		public ReadOnlyCollection<GpuInformation> GpuCollection {
+			get {
+				List<GpuInformation> list = new List<GpuInformation>();
+
+				GpuInformation info = new GpuInformation ();
+				info.DeviceId = 0;
+				info.DriverVersion = "bogus";
+				info.VendorId = 0;
+
+				return new ReadOnlyCollection<GpuInformation>(list);
 			}
 		}
-                
 	}
 
 }

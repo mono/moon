@@ -1,3 +1,9 @@
+2009-08-10  Chris Toshok  <toshok@ximian.com>
+
+	* GpuInformation.cs: stub this SL3 class out.
+
+	* Analytics.cs: stub this SL3 class out.
+
 2009-08-05  Alan McGovern  <amcgovern@novell.com>
 
 	* FrameworkElement.cs: Whenever the datacontext changes on a
