@@ -1,3 +1,11 @@
+2009-08-10  Chris Toshok  <toshok@ximian.com>
+
+	* BrowserHttpWebRequestInternal.cs: make progress_delegate
+	internal so BrowserHttpWebRequest can set it.
+
+	* BrowserHttpWebRequest.cs (GetResponse): pass along our progress
+	delegate to the internal webrequest.
+
 2009-07-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ClientAccessPolicyParser.cs, FlashCrossDomainPolicyParser.cs:

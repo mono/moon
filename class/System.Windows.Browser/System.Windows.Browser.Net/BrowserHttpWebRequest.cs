@@ -144,6 +144,8 @@ namespace System.Windows.Browser.Net {
 				return async_result;
 			}
 
+			wreq.progress_delegate = progress_delegate;
+
 			return wreq.BeginGetResponse (new AsyncCallback (EndCallback), wreq);
 		}
 

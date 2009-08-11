@@ -61,8 +61,7 @@ namespace System.Windows.Browser.Net {
 
 		WebHeaderCollection headers;
  		
-		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in Systme.Net
- 		Delegate progress_delegate;
+		internal Delegate progress_delegate;
 
  		public BrowserHttpWebRequestInternal (Uri uri)
 		{
