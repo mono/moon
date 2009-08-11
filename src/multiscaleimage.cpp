@@ -598,8 +598,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 						if (shared_tile) {
 							cairo_translate (cr,
-									 (-morton_x(sub_image->n) * (pow2 (layer_to_render))) % tile_width,
-									 (-morton_y(sub_image->n) * (pow2 (layer_to_render))) % tile_height);
+									 (int)(-morton_x(sub_image->n) * (pow2 (layer_to_render))) % tile_width,
+									 (int)(-morton_y(sub_image->n) * (pow2 (layer_to_render))) % tile_height);
 
 						}
 

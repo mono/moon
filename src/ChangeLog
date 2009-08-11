@@ -1,3 +1,8 @@
+2009-08-11  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: cast so the modulo operation opers on int,
+	not guint64. Fix sharedtiles usage. r:shana, lewing
+
 2009-08-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxBase::Paste): Change the multiline
