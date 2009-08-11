@@ -16,6 +16,8 @@
 	so that if multiple textblocks/boxes/etc reuse the FontSource,
 	things work properly. Partial fix for drt 444.
 
+	r:lewing
+
 2009-08-11  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.cpp: Controls aren't really auto-focused. What
