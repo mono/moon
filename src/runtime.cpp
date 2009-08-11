@@ -427,20 +427,7 @@ Surface::SetCursor (MouseCursor new_cursor)
 void
 Surface::AutoFocus ()
 {
-	// Silverlight will do anything to ensure that a control *other* than the
-	// root element is focused. The usual rule of "only emit focus changed
-	// events during a user initiated event" is ignored and instead keeps
-	// trying to focus a child of the TopLevel until it is successful.
-	if (!focused_element || focused_element == GetToplevel ())
-		TabNavigationWalker::Focus (GetToplevel (), true);
-
 	GenerateFocusChangeEvents ();
-
-	// If the focused element was removed by a GotFocus event handler or if
-	// we failed to focus a child of the top level element, try again next
-	// tick.
-	if (!focused_element || focused_element == GetToplevel ())
-		AddTickCall (Surface::AutoFocusAsync);
 }
 
 void

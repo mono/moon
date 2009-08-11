@@ -1,5 +1,14 @@
 2009-08-11  Alan McGovern  <amcgovern@novell.com>
 
+	* runtime.cpp: Controls aren't really auto-focused. What
+	  happens is that when a focused control is removed from the
+	  live tree SL does not emit a LostFocus event and so when the
+	  control is added back into the tree it still thinks it has
+	  focus. This call is still needed as there can be pending
+	  GotFocus/LostFocus events waiting to be emitted. r: toshok.
+
+2009-08-11  Alan McGovern  <amcgovern@novell.com>
+
 	* runtime.cpp: Make HandleUIKeyPress do the same thing as
 	  HandleUIKeyRelease when there is no toplevel so it doesn't
 	  null deref. r: sde
