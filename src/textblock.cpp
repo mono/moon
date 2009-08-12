@@ -852,6 +852,9 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			font_source = manager->AddResource (source->stream);
 		else
 			font_source = NULL;
+
+		UpdateLayoutAttributes();
+		invalidate = false;
 	}
 	
 	if (invalidate) {

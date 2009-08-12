@@ -1297,6 +1297,10 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 	
 	// write the managed stream to disk
 	pos = stream->Position (stream->handle);
+
+	if (stream->CanSeek (stream->handle))
+		stream->Seek (stream->handle, 0, SEEK_SET);
+
 	while ((nread = stream->Read (stream->handle, buf, 0, sizeof (buf))) > 0) {
 		if (write_all (fd, buf, (size_t) nread) == -1) {
 			g_free (resource);

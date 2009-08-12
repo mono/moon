@@ -1,3 +1,15 @@
+2009-08-11  Chris Toshok  <toshok@ximian.com>
+
+	[ each of these changes fixes a line of text in drt 444 ]
+	* fontmanager.cpp (FontManager::AddResource): seek the stream to 0
+	before reading it.
+
+	* textblock.cpp (TextBlock::OnPropertyChanged): we need to call
+	UpdateLayoutAttributes if FontSource is changed, so that the
+	change propagates down to the inlines.
+
+	r: kangaroo
+
 2009-08-11  Larry Ewing  <lewing@novell.com>
 
 	* grid.cpp (MeasureOverride): adjust row definition values by
