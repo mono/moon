@@ -309,10 +309,12 @@ private:
 	void DownloadProgress ();
 	void ImageOpened ();
 	void ImageFailed ();
+	void SourcePixelDataChanged ();
 
 	static void download_progress (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void image_opened (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void source_pixel_data_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
  protected:
 	virtual ~ImageBrush ();

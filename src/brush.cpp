@@ -522,6 +522,7 @@ ImageBrush::Dispose ()
 		source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 		source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 		source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+		source->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
 	}
 
 	TileBrush::Dispose ();
@@ -552,6 +553,14 @@ ImageBrush::image_failed (EventObject *sender, EventArgs *calldata, gpointer clo
 }
 
 void
+ImageBrush::source_pixel_data_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	ImageBrush *media = (ImageBrush *) closure;
+
+	media->SourcePixelDataChanged ();
+}
+
+void
 ImageBrush::DownloadProgress ()
 {
 	BitmapImage *source = (BitmapImage *) GetImageSource ();
@@ -563,7 +572,7 @@ ImageBrush::DownloadProgress ()
 void
 ImageBrush::ImageOpened ()
 {
-	BitmapImage *source = (BitmapImage *) GetImageSource ();
+	BitmapImage *source = (BitmapImage*)GetImageSource ();
 
 	source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
@@ -573,13 +582,19 @@ ImageBrush::ImageOpened ()
 void
 ImageBrush::ImageFailed ()
 {
-	BitmapImage *source = (BitmapImage *) GetImageSource ();
+	BitmapImage *source = (BitmapImage*)GetImageSource ();
 
 	source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 
 	Emit (ImageFailedEvent, new ImageErrorEventArgs (NULL));
+}
+
+void
+ImageBrush::SourcePixelDataChanged ()
+{
+	NotifyListenersOfPropertyChange (Brush::ChangedProperty, NULL);
 }
 
 void
@@ -609,15 +624,22 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		ImageSource *source = args->GetNewValue () ? args->GetNewValue ()->AsImageSource () : NULL;
 		ImageSource *old = args->GetOldValue () ? args->GetOldValue ()->AsImageSource () : NULL;
 
+		if (old && old->Is(Type::BITMAPSOURCE)) {
+			old->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
+		}
+		if (source && source->Is(Type::BITMAPSOURCE)) {
+			source->AddHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
+		}
+
 		if (old && old->Is(Type::BITMAPIMAGE)) {
-			((BitmapImage *)old)->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+			old->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+			old->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+			old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
                 }
 		if (source && source->Is(Type::BITMAPIMAGE)) {
-			((BitmapImage *)source)->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-			((BitmapImage *)source)->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-			((BitmapImage *)source)->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 		}
         }
 

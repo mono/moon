@@ -1,3 +1,7 @@
+2009-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* GeneratedPInvokes.cs: regen.
+
 2009-08-12  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Handle converting ints to enum

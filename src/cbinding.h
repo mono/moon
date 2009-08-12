@@ -941,6 +941,9 @@ void bitmap_image_pixmap_complete (BitmapImage *instance);
 BitmapSource *bitmap_source_new (void);
 
 /* @GeneratePInvoke */
+gpointer bitmap_source_get_bitmap_data (BitmapSource *instance);
+
+/* @GeneratePInvoke */
 void bitmap_source_invalidate (BitmapSource *instance);
 
 /* @GeneratePInvoke */

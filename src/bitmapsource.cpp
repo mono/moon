@@ -66,6 +66,8 @@ BitmapSource::Invalidate ()
 		cairo_surface_destroy (image_surface);
 
 	image_surface = cairo_image_surface_create_for_data ((unsigned char *) GetBitmapData (), GetPixelFormat () == PixelFormatBgr32 ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, GetPixelWidth (), GetPixelHeight (), GetPixelWidth ()*4);
+
+	Emit (BitmapSource::PixelDataChangedEvent);
 }
 
 cairo_surface_t *

@@ -8,6 +8,23 @@
 	* multiscaleimage.cpp: restore the initial number of concurrent
 	downloaders, drt 2014 will require a proper fix.
 
+2009-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* media.h|cpp (class Image): if our source is a BitmapSource,
+	handle the PixelDataChangedEvent and Invalidate ourselves if it's
+	emitted.
+
+	* brush.h|cpp (class ImageBrush): if our source is a BitmapSource,
+	handle the PixelDataChangedEvent and notify our listeners to
+	redraw if it's emitted.
+
+	* bitmapsource.h|cpp (class BitmapSource): add an event so classes
+	using BitmapSources can be notified when the pixel data
+	changes (primarily for use with WriteableBitmap).  Emit it from
+	BitmapSource::Invalidate.
+
+	* type-generated.cpp, cbinding.h|cpp: regen
+	
 2009-08-11  Chris Toshok  <toshok@ximian.com>
 
 	[ each of these changes fixes a line of text in drt 444 ]

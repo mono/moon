@@ -38,12 +38,15 @@ class BitmapSource : public ImageSource {
 	const static int PixelHeightProperty;
  	/* @PropertyType=PixelFormat,DefaultValue=PixelFormatPbgra32,ManagedAccess=Internal,GenerateAccessors */
 	const static int PixelFormatProperty;
-	
+
+	const static int PixelDataChangedEvent;
+
 	virtual gint32 GetPixelWidth ();
 	virtual void SetPixelWidth (gint32 width);
 	virtual gint32 GetPixelHeight ();
 	virtual void SetPixelHeight (gint32 height);
 
+	/* @GenerateCBinding,GeneratePInvoke */
 	gpointer GetBitmapData ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetBitmapData (gpointer data);

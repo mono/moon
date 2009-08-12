@@ -535,6 +535,17 @@ bitmap_source_new (void)
 }
 
 
+gpointer
+bitmap_source_get_bitmap_data (BitmapSource *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (gpointer) 0;
+	
+	return instance->GetBitmapData ();
+}
+
+
 void
 bitmap_source_invalidate (BitmapSource *instance)
 {

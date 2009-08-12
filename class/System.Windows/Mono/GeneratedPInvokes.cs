@@ -252,6 +252,10 @@ namespace Mono {
 		public extern static IntPtr bitmap_source_new ();
 
 		[DllImport ("moon")]
+		// gpointer bitmap_source_get_bitmap_data (BitmapSource *instance);
+		public extern static IntPtr bitmap_source_get_bitmap_data (IntPtr instance);
+
+		[DllImport ("moon")]
 		// void bitmap_source_invalidate (BitmapSource *instance);
 		public extern static void bitmap_source_invalidate (IntPtr instance);
 

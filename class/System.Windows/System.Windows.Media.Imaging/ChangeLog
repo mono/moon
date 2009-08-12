@@ -1,3 +1,8 @@
+2009-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* WriteableBitmap.cs: track changes to the api from SL3 beta to
+	RTM.
+
 2009-08-10  Chris Toshok  <toshok@ximian.com>
 
 	* BitmapImage.cs: move SetSource from here...

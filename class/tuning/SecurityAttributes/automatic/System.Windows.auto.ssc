@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 472 methods
+# 469 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
@@ -328,13 +328,10 @@
 +SSC-M: System.Int32 System.Windows.Media.Imaging.DownloadProgressEventArgs::get_Progress()
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor()
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Windows.Media.Imaging.BitmapSource)
-+SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Int32,System.Int32,System.Windows.Media.PixelFormat)
-+SSC-M: System.Int32 System.Windows.Media.Imaging.WriteableBitmap::get_Item(System.Int32)
-+SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::set_Item(System.Int32,System.Int32)
++SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Int32,System.Int32)
++SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Finalize()
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Render(System.Windows.UIElement,System.Windows.Media.Transform)
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Invalidate()
-+SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Lock()
-+SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Unlock()
 +SSC-M: System.Void System.Windows.Media.LinearGradientBrush::.ctor()
 +SSC-M: System.Void System.Windows.Media.LineGeometry::.ctor()
 +SSC-M: System.Void System.Windows.Media.LineSegment::.ctor()

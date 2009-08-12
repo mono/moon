@@ -75,9 +75,10 @@
 #include "yuv-converter.h"
 
 const int Accessibility::PerformActionEvent = 1;
-const int BitmapImage::DownloadProgressEvent = 1;
-const int BitmapImage::ImageFailedEvent = 2;
-const int BitmapImage::ImageOpenedEvent = 3;
+const int BitmapImage::DownloadProgressEvent = 2;
+const int BitmapImage::ImageFailedEvent = 3;
+const int BitmapImage::ImageOpenedEvent = 4;
+const int BitmapSource::PixelDataChangedEvent = 1;
 const int Clock::CompletedEvent = 1;
 const int Clock::CurrentStateInvalidatedEvent = 2;
 const int Clock::CurrentTimeInvalidatedEvent = 3;
@@ -172,6 +173,7 @@ const int UIElement::UnloadedEvent = 17;
 
 const char *ACCESSIBILITY_Events [] = { "PerformAction", NULL };
 const char *BITMAPIMAGE_Events [] = { "DownloadProgress", "ImageFailed", "ImageOpened", NULL };
+const char *BITMAPSOURCE_Events [] = { "PixelDataChanged", NULL };
 const Type::Kind BOOL_Interfaces[] = { Type::ICOMPARABLE, Type::ICOMPARABLE_BOOL, Type::ICONVERTIBLE, Type::IEQUATABLE_BOOL };
 const Type::Kind CHAR_Interfaces[] = { Type::ICOMPARABLE, Type::ICOMPARABLE_CHAR, Type::ICONVERTIBLE, Type::IEQUATABLE_CHAR };
 const char *CLOCK_Events [] = { "Completed", "CurrentStateInvalidated", "CurrentTimeInvalidated", NULL };
@@ -232,8 +234,8 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::BACKEASE] = new Type (Type::BACKEASE, Type::EASINGFUNCTIONBASE, false, false, "BackEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) back_ease_new, NULL);
 	types [(int) Type::BEGINSTORYBOARD] = new Type (Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, false, "BeginStoryboard", 0, 1, NULL, 0, NULL, true, (create_inst_func *) begin_storyboard_new, "Storyboard");
 	types [(int) Type::BEZIERSEGMENT] = new Type (Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, false, "BezierSegment", 0, 1, NULL, 0, NULL, true, (create_inst_func *) bezier_segment_new, NULL);
-	types [(int) Type::BITMAPIMAGE] = new Type (Type::BITMAPIMAGE, Type::BITMAPSOURCE, false, false, "BitmapImage", 3, 4, BITMAPIMAGE_Events, 0, NULL, true, (create_inst_func *) bitmap_image_new, NULL);
-	types [(int) Type::BITMAPSOURCE] = new Type (Type::BITMAPSOURCE, Type::IMAGESOURCE, false, false, "BitmapSource", 0, 1, NULL, 0, NULL, true, (create_inst_func *) bitmap_source_new, NULL);
+	types [(int) Type::BITMAPIMAGE] = new Type (Type::BITMAPIMAGE, Type::BITMAPSOURCE, false, false, "BitmapImage", 3, 5, BITMAPIMAGE_Events, 0, NULL, true, (create_inst_func *) bitmap_image_new, NULL);
+	types [(int) Type::BITMAPSOURCE] = new Type (Type::BITMAPSOURCE, Type::IMAGESOURCE, false, false, "BitmapSource", 1, 2, BITMAPSOURCE_Events, 0, NULL, true, (create_inst_func *) bitmap_source_new, NULL);
 	types [(int) Type::BOOL] = new Type (Type::BOOL, Type::OBJECT, true, false, "bool", 0, 0, NULL, 4, BOOL_Interfaces, true, NULL, NULL);
 	types [(int) Type::BORDER] = new Type (Type::BORDER, Type::FRAMEWORKELEMENT, false, false, "Border", 0, 20, NULL, 0, NULL, true, (create_inst_func *) border_new, "Child");
 	types [(int) Type::BOUNCEEASE] = new Type (Type::BOUNCEEASE, Type::EASINGFUNCTIONBASE, false, false, "BounceEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) bounce_ease_new, NULL);
@@ -522,7 +524,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::VIDEOBRUSH] = new Type (Type::VIDEOBRUSH, Type::TILEBRUSH, false, false, "VideoBrush", 0, 1, NULL, 0, NULL, true, (create_inst_func *) video_brush_new, NULL);
 	types [(int) Type::VIDEOSTREAM] = new Type (Type::VIDEOSTREAM, Type::IMEDIASTREAM, false, false, "VideoStream", 0, 2, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::VISUALBRUSH] = new Type (Type::VISUALBRUSH, Type::TILEBRUSH, false, false, "VisualBrush", 0, 1, NULL, 0, NULL, true, (create_inst_func *) visual_brush_new, NULL);
-	types [(int) Type::WRITEABLEBITMAP] = new Type (Type::WRITEABLEBITMAP, Type::BITMAPSOURCE, false, false, "WriteableBitmap", 0, 1, NULL, 0, NULL, true, (create_inst_func *) writeable_bitmap_new, NULL);
+	types [(int) Type::WRITEABLEBITMAP] = new Type (Type::WRITEABLEBITMAP, Type::BITMAPSOURCE, false, false, "WriteableBitmap", 0, 2, NULL, 0, NULL, true, (create_inst_func *) writeable_bitmap_new, NULL);
 	types [(int) Type::XMLLANGUAGE] = new Type (Type::XMLLANGUAGE, Type::OBJECT, false, false, "System.Windows.Markup.XmlLanguage", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::YUVCONVERTER] = new Type (Type::YUVCONVERTER, Type::IIMAGECONVERTER, false, false, "YUVConverter", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::LASTTYPE] = new Type (Type::LASTTYPE, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL);
