@@ -95,6 +95,7 @@ namespace System.Windows.Controls
         public double ScrollableWidth 
         {
             get { return (double)GetValue(ScrollableWidthProperty); }
+	    internal set { SetValueImpl (ScrollableWidthProperty, value); }
         } 
         /// <summary>
         /// Identifies the ScrollableWidth dependency property.
@@ -172,7 +173,7 @@ namespace System.Windows.Controls
         public double ScrollableHeight
         { 
             get { return (double)GetValue(ScrollableHeightProperty); }
-            set { SetValueImpl (ScrollableHeightProperty, value); }
+            internal set { SetValueImpl (ScrollableHeightProperty, value); }
         }
         /// <summary> 
         /// Identifies the ScrollableHeight dependency property. 

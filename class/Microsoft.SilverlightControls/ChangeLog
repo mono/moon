@@ -1,3 +1,9 @@
+2009-08-12  Jackson Harper  <jackson@ximian.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Fix access modifiers
+	on these setters. Having the public setter was causing problems
+	with some auto generated xaml.
+
 2009-08-08  Chris Toshok  <toshok@ximian.com>
 
 	* RuntimeControls/SilverlightControls/HyperlinkButton.cs: enable
