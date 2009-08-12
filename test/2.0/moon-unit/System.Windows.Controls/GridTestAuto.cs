@@ -61,6 +61,15 @@ namespace MoonTest.System.Windows.Controls
 			Grid.SetColumnSpan ((FrameworkElement) grid.Children [childIndex], newColSpan);
 		}
 
+		public static void CheckDesired (this Grid grid, string message, params Size [] sizes)
+		{
+			for (int i = 0; i < grid.Children.Count; i++) {
+				var poker = (MyContentControl) grid.Children [i];
+				if (!poker.DesiredSize.Equals (sizes [i]))
+					Assert.Fail ("{2}.{3} Expected measure result to be {0} but was {1}", sizes [i], poker.DesiredSize, message, i);
+			}
+		}
+
 		public static void CheckRowHeights (this Grid grid, string message, params double [] heights)
 		{
 			for (int i = 0; i < grid.RowDefinitions.Count; i++)
@@ -77,10 +86,231 @@ namespace MoonTest.System.Windows.Controls
 			}
 
 		}
+
+		public static void CheckMeasureResult (this Grid grid, string message, params Size [] sizes)
+		{
+			for (int i = 0; i < grid.Children.Count; i++) {
+				var poker = (MyContentControl) grid.Children [i];
+				if (!poker.MeasureOverrideResult.Equals (sizes [i]))
+					Assert.Fail ("{2}.{3} Expected measure result to be {0} but was {1}", sizes [i], poker.MeasureOverrideResult, message, i);
+			}
+		}
 	}
 
 	public partial class GridTest
 	{
+		Size Infinity = new Size (double.PositiveInfinity, double.PositiveInfinity);
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void AutoMeasureUsesInfinity ()
+		{
+			Grid g = new Grid ();
+			var child = new MyContentControl (50, 50);
+			g.AddColumns (GridLength.Auto);
+			g.AddRows (GridLength.Auto, GridLength.Auto);
+			g.AddChild (child, 0, 0, 1, 1);
+
+			CreateAsyncTest (g,
+				() => {
+					Assert.AreEqual (Infinity, child.MeasureOverrideArg, "#1");
+
+					// Force a redraw
+					g.Children.Clear ();
+					g.Children.Add (child);
+					g.RowDefinitions [0].MaxHeight = 20;
+				}, () => {
+					Assert.AreEqual (Infinity, child.MeasureOverrideArg, "#2");
+				}
+			);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MeasureAutoRows ()
+		{
+			Grid grid = new Grid ();
+
+			grid.AddColumns (new GridLength (50), new GridLength (50));
+			grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto);
+
+			grid.AddChild (new MyContentControl { Width = 50, Height = 50 }, 0, 0, 2, 1);
+			grid.AddChild (new MyContentControl { Width = 50, Height = 60 }, 0, 1, 1, 1);
+
+			grid.Measure (new Size (0, 0));
+			grid.CheckMeasureSizes ("#1", new Size (50, 50), new Size (50, 60));
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#2");
+
+			grid.Measure (new Size (50, 40));
+			grid.CheckMeasureSizes ("#3", new Size (50, 50), new Size (50, 60));
+			Assert.AreEqual (new Size (50, 40), grid.DesiredSize, "#4");
+
+			grid.Measure (new Size (500, 400));
+			grid.CheckMeasureSizes ("#5", new Size (50, 50), new Size (50, 60));
+			Assert.AreEqual (new Size (100, 60), grid.DesiredSize, "#6");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MeasureAutoRows2 ()
+		{
+			double inf = double.PositiveInfinity;
+			Grid grid = new Grid ();
+
+			grid.AddColumns (new GridLength (50), new GridLength (50));
+			grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto);
+
+			MyContentControl c = new MyContentControl (50, 50);
+			grid.AddChild (c, 0, 0, 2, 1);
+			grid.AddChild (new MyContentControl (50, 60), 0, 1, 1, 1);
+			grid.AddChild (new MyContentControl (50, 20), 0, 1, 1, 1);
+
+			grid.Measure (new Size (500, 400));
+			grid.CheckMeasureSizes ("#1", new Size (50, inf), new Size (50, inf), new Size (50, inf));
+			Assert.AreEqual (new Size (100, 60), grid.DesiredSize, "#2");
+
+			grid.ChangeRow (2, 1);
+			grid.Measure (new Size (500, 400));
+			grid.CheckMeasureSizes ("#3", new Size (50, inf), new Size (50, inf), new Size (50, inf));
+			Assert.AreEqual (new Size (100, 80), grid.DesiredSize, "#4");
+
+			((FrameworkElement) c.Content).Height = 100;
+			grid.Measure (new Size (500, 400));
+			grid.CheckMeasureSizes ("#5", new Size (50, inf), new Size (50, inf), new Size (50, inf));
+			Assert.AreEqual (new Size (100, 100), grid.DesiredSize, "#6");
+
+			grid.ChangeRow (2, 2);
+			grid.Measure (new Size (500, 400));
+			grid.CheckMeasureSizes ("#7", new Size (50, inf), new Size (50, inf), new Size (50, inf));
+			Assert.AreEqual (new Size (100, 120), grid.DesiredSize, "#8");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void MeasureAutoRows3 ()
+		{
+			double inf = double.PositiveInfinity;
+			Grid grid = new Grid ();
+
+			grid.AddColumns (new GridLength (50), new GridLength (50));
+			grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto);
+
+			grid.AddChild (new MyContentControl (50, 50), 0, 1, 2, 1);
+			grid.AddChild (new MyContentControl (50, 60), 1, 1, 1, 1);
+			grid.AddChild (new MyContentControl (50, 70), 0, 1, 3, 1);
+
+			CreateAsyncTest (grid, () => {
+				grid.CheckRowHeights ("#1", 3.33, 63.33, 3.33);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void MeasureAutoRows4 ()
+		{
+			double inf = double.PositiveInfinity;
+			Grid grid = new Grid ();
+
+			grid.AddColumns (new GridLength (50), new GridLength (50));
+			grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto, GridLength.Auto, GridLength.Auto);
+
+			grid.AddChild (new MyContentControl (50, 30), 0, 1, 3, 1);
+			grid.AddChild (new MyContentControl (50, 90), 0, 1, 1, 1);
+			grid.AddChild (new MyContentControl (50, 50), 0, 1, 2, 1);
+
+			grid.AddChild (new MyContentControl (50, 70), 1, 1, 4, 1);
+			grid.AddChild (new MyContentControl (50, 120), 1, 1, 2, 1);
+			grid.AddChild (new MyContentControl (50, 30), 2, 1, 3, 1);
+
+			grid.AddChild (new MyContentControl (50, 10), 3, 1, 1, 1);
+			grid.AddChild (new MyContentControl (50, 50), 3, 1, 2, 1);
+			grid.AddChild (new MyContentControl (50, 80), 3, 1, 2, 1);
+
+			grid.AddChild (new MyContentControl (50, 20), 4, 1, 1, 1);
+
+			CreateAsyncTest (grid, () => {
+				grid.CheckRowHeights ("#1", 90, 60, 60, 35, 45);
+			});
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MeasureAutoAndFixedRows ()
+		{
+			Grid grid = new Grid {  };
+
+			grid.AddColumns (new GridLength (50), new GridLength (50));
+			grid.AddRows (new GridLength (20), new GridLength (20));
+			grid.AddChild (new MyContentControl (50, 50), 0, 1, 2, 1);
+			
+			grid.Measure (Infinity);
+			grid.CheckRowHeights ("#1", 20, 20);
+			grid.CheckMeasureSizes ("#2", new Size (50, 40));
+			Assert.AreEqual (new Size (100, 40), grid.DesiredSize, "#3");
+
+			grid.RowDefinitions [0].Height = new GridLength (30);
+			grid.Measure (Infinity);
+			grid.CheckRowHeights ("#4", 30, 20);
+			grid.CheckMeasureSizes ("#5", new Size (50, 50));
+			Assert.AreEqual (new Size (100, 50), grid.DesiredSize, "#6");
+
+			grid.RowDefinitions.Insert (0, new RowDefinition { Height = GridLength.Auto });
+			grid.Measure (Infinity);
+			grid.CheckRowHeights ("#7", double.PositiveInfinity, 30, 20);
+			grid.CheckMeasureSizes ("#8", new Size (50, double.PositiveInfinity));
+			Assert.AreEqual (new Size (100, 70), grid.DesiredSize, "#9");
+
+			grid.Children.Clear ();
+			grid.AddChild (new MyContentControl (50, 150), 0, 1, 2, 1);
+			grid.Measure (Infinity);
+			grid.CheckDesired ("#13", new Size (50, 150));
+			grid.CheckRowHeights ("#10", double.PositiveInfinity, 30, 20);
+			grid.CheckMeasureSizes ("#11", new Size (50, double.PositiveInfinity));
+			grid.CheckMeasureResult ("#12", new Size (50, 150));
+			Assert.AreEqual (new Size (100, 170), grid.DesiredSize, "#12");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MeasureAutoAndStarRows ()
+		{
+			double inf = double.PositiveInfinity;
+			Grid grid = new Grid ();
+
+			grid.AddColumns (new GridLength (50));
+			grid.AddRows (GridLength.Auto, GridLength.Auto, new GridLength (1, GridUnitType.Star), GridLength.Auto, GridLength.Auto);
+
+			grid.AddChild (new MyContentControl { Width = 50, Height = 50 }, 0, 0, 3, 1);
+			grid.AddChild (new MyContentControl { Width = 50, Height = 60 }, 1, 0, 3, 1);
+
+			grid.Measure (new Size (100, 100));
+			grid.CheckRowHeights ("#1", inf, inf, 100, inf, inf);
+			grid.CheckMeasureSizes ("#2", new Size (50, 50), new Size (50, 60));
+			Assert.AreEqual (new Size (50, 60), grid.DesiredSize, "#3");
+
+			grid.RowDefinitions [2].MaxHeight = 15;
+			grid.Measure (new Size (100, 100));
+			grid.CheckRowHeights ("#4", inf, inf, 15, inf, inf);
+			grid.CheckMeasureSizes ("#5", new Size (50, 50), new Size (50, 60));
+			Assert.AreEqual (new Size (50, 15), grid.DesiredSize, "#6");
+
+			grid.RowDefinitions.Clear ();
+			grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto, new GridLength (1, GridUnitType.Star), GridLength.Auto);
+			grid.Measure (new Size (100, 100));
+			grid.CheckRowHeights ("#7", inf, inf, inf, 50, inf);
+			grid.CheckMeasureSizes ("#8", new Size (50, 50), new Size (50, 60));
+			Assert.AreEqual (new Size (50, 77), grid.DesiredSize, "#9");
+
+			grid.RowDefinitions [3].MaxHeight = 15;
+			grid.Measure (new Size (100, 100));
+			grid.CheckRowHeights ("#10", inf, inf, inf, 15, inf);
+			grid.CheckMeasureSizes ("#11", new Size (50, 50), new Size (50, 60));
+			Assert.AreEqual (new Size (50, 65), grid.DesiredSize, "#12");
+		}
+
 		[TestMethod]
 		[Asynchronous]
 		public void AutoRows ()
