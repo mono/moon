@@ -1,5 +1,10 @@
 2009-08-12  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp: clear the cache on source change, cache a NULL
+	tile on downloader failure (fix drt 2014 for good).
+
+2009-08-12  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: restore the initial number of concurrent
 	downloaders, drt 2014 will require a proper fix.
 

@@ -349,11 +349,13 @@ MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile, int subimag
 	GList *list;
 	BitmapImageContext *ctx;
 	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next) {
-		if (ctx->bitmapimage->GetUriSource()->operator==(*tile)) {
-			LOG_MSI ("Tile %s is already being downloaded\n", tile->ToString ());
+		if (ctx->state != BitmapImageFree && ctx->bitmapimage->GetUriSource()->operator==(*tile)) {
+			//LOG_MSI ("Tile %s is already being downloaded\n", tile->ToString ());
 			return;
 		}
 	}
+
+	//LOG_MSI ("downloading tile %s\n", tile->ToString ());
 
 	bictx->state = BitmapImageBusy;
 	bictx->subimage = subimage;
@@ -1022,7 +1024,7 @@ MultiScaleImage::TileOpened (BitmapImage *bitmapimage)
 void
 tile_available (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	LOG_MSI ("Tile downloaded %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
+//	LOG_MSI ("Tile downloaded %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
 	((MultiScaleImage *)closure)->TileOpened ((BitmapImage *)sender);
 }
 
@@ -1031,7 +1033,12 @@ MultiScaleImage::TileFailed (BitmapImage *bitmapimage)
 {
 	BitmapImageContext *ctx = GetBitmapImageContext (bitmapimage);
 	ctx->state = BitmapImageFree;
-	g_hash_table_insert (cache, new Uri(*(ctx->bitmapimage->GetUriSource())), NULL);
+//	LOG_MSI ("caching a NULL for %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
+	QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &(ctx->subimage));
+	if (!subimage_cache)
+		g_hash_table_insert (cache, new int(ctx->subimage), (subimage_cache = qtree_new ()));
+	qtree_insert_with_value (subimage_cache, NULL, ctx->level, ctx->x, ctx->y);
+
 	GList *list;
 	bool is_downloading = false;
 	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
@@ -1044,7 +1051,7 @@ MultiScaleImage::TileFailed (BitmapImage *bitmapimage)
 void
 tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	LOG_MSI ("Failed to download tile %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
+//	LOG_MSI ("Failed to download tile %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
 	((MultiScaleImage *)closure)->TileFailed ((BitmapImage *)sender);
 }
 
@@ -1123,10 +1130,15 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 			}
 		}
 
-		//FIXME: On source change
-		// - abort all downloaders
-		// - invalidate the cache
-		// - invalidate the control
+		//FIXME: abort all downloaders
+
+		//Invalidate the whole cache
+		if (cache) {
+			g_hash_table_destroy (cache);
+			cache = g_hash_table_new_full (g_int_hash, g_int_equal, g_free, (GDestroyNotify)qtree_destroy);
+		}
+
+		Invalidate ();
 	}
 
 	if (args->GetProperty ()->GetOwnerType () != Type::MULTISCALEIMAGE) {
