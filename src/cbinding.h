@@ -754,6 +754,7 @@ struct XamlCallbackData;
 struct XamlLoaderCallbacks;
 
 typedef void ( * ApplyDefaultStyleCallback ) ( FrameworkElement * fwe , ManagedTypeInfo * key ) ;
+typedef UIElement * ( * GetDefaultTemplateRootCallback ) ( ContentControl * ctrl_ptr ) ;
 typedef void ( * ApplyStyleCallback ) ( FrameworkElement * fwe , Style * style ) ;
 typedef void * ( * ConvertKeyframeValueCallback ) ( int kind , DependencyProperty * property , Value * original , Value * converted ) ;
 typedef ManagedStreamCallbacks ( * GetResourceCallback ) ( const char * resourceBase , const char * name ) ;
@@ -812,7 +813,7 @@ Application *application_new (void);
 Application *application_get_current (void);
 
 /* @GeneratePInvoke */
-void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
+void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback, GetDefaultTemplateRootCallback get_default_template_root_cb);
 
 /* @GeneratePInvoke */
 void application_set_current (Application *current);

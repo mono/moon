@@ -25,6 +25,7 @@
 //
 
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 using Mono;
 
@@ -85,11 +86,36 @@ namespace System.Windows.Controls {
 			set { Mono.NativeMethods.content_control_set_content_sets_parent (native, value); }
 		}
 		
+		UIElement _fallbackRoot;
+
+		UIElement FallbackRoot {
+			get {
+				if (_fallbackRoot == null)
+					_fallbackRoot = CreateFallbackRoot ();
+				return _fallbackRoot;
+			}
+		}
+		
 		void Initialize ()
 		{
 			Events.AddHandler (this, "ContentChanged", content_changed);
 		}
 		
+		internal UIElement GetDefaultTemplateRoot ()
+		{
+			UIElement element = Content as UIElement;
+			return element == null ? FallbackRoot : element;
+		}
+		
+		internal static UIElement CreateFallbackRoot ()
+		{
+			Grid grid = new Grid ();
+			TextBlock block = new TextBlock ();
+			block.SetBinding (TextBlock.TextProperty, new Binding ());
+			grid.Children.Add (block);
+			return grid;
+		}
+
 		protected virtual void OnContentChanged (object oldContent, object newContent)
 		{
 			// no-op

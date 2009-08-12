@@ -83,12 +83,12 @@ application_get_current (void)
 
 
 void
-application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback)
+application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback, GetDefaultTemplateRootCallback get_default_template_root_cb)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RegisterCallbacks (apply_default_style_cb, apply_style_cb, get_resource_cb, convert_keyframe_callback);
+	instance->RegisterCallbacks (apply_default_style_cb, apply_style_cb, get_resource_cb, convert_keyframe_callback, get_default_template_root_cb);
 }
 
 

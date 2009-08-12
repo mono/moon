@@ -1,5 +1,22 @@
 2009-08-12  Alan McGovern  <amcgovern@novell.com>
 
+	* cbinding.h:
+	* cbinding.cpp: regen r: toshok
+
+	* control.h:
+	* application.h:
+	* application.cpp:
+	* contentcontrol.h:
+	* contentcontrol.cpp:
+	* frameworkelement.cpp: A ContentControl which has no Template
+	  needs to call into managed land to create a 'default
+	  template'. When the Content is a UIElement, the UIElement is
+	  used as the template root, otherwise a Grid + TextBlock
+	  (with Binding) is used. This is the same as what
+	  ContentPresenter does to its Content property. r: toshok
+
+2009-08-12  Alan McGovern  <amcgovern@novell.com>
+
 	* uielement.cpp: VisualParent should be set to null before
 	  invalidating the cache otherwise the element might be added
 	  to the dirty lists. This causes issues if the element is

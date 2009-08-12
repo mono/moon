@@ -196,8 +196,8 @@ namespace Mono {
 		public extern static IntPtr application_get_current ();
 
 		[DllImport ("moon")]
-		// void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
-		public extern static void application_register_callbacks (IntPtr instance, Mono.ApplyDefaultStyleCallback apply_default_style_cb, Mono.ApplyStyleCallback apply_style_cb, Mono.GetResourceCallback get_resource_cb, Mono.ConvertKeyframeValueCallback convert_keyframe_callback);
+		// void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback, GetDefaultTemplateRootCallback get_default_template_root_cb);
+		public extern static void application_register_callbacks (IntPtr instance, Mono.ApplyDefaultStyleCallback apply_default_style_cb, Mono.ApplyStyleCallback apply_style_cb, Mono.GetResourceCallback get_resource_cb, Mono.ConvertKeyframeValueCallback convert_keyframe_callback, Mono.GetDefaultTemplateRootCallback get_default_template_root_cb);
 
 		[DllImport ("moon")]
 		// void application_set_current (Application *current);

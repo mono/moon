@@ -462,11 +462,7 @@ FrameworkElement::Measure (Size availableSize)
 	//LOG_LAYOUT ("measuring %p %s %g,%g\n", this, GetTypeName (), availableSize.width, availableSize.height);
 	if (Is(Type::CONTROL)) {
 		Control *control = (Control*)this;
-
-		if (control->GetTemplate() && !control->GetSubtreeObject()) {
-			control->ApplyTemplate();
-			// XXX loaded event?
-		}
+		control->ApplyTemplate();
 	}
 
 	if (!IsLayoutContainer ()) {

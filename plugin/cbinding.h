@@ -754,6 +754,7 @@ struct XamlCallbackData;
 struct XamlLoaderCallbacks;
 
 typedef void ( * ApplyDefaultStyleCallback ) ( FrameworkElement * fwe , ManagedTypeInfo * key ) ;
+typedef UIElement * ( * GetDefaultTemplateRootCallback ) ( ContentControl * ctrl_ptr ) ;
 typedef void ( * ApplyStyleCallback ) ( FrameworkElement * fwe , Style * style ) ;
 typedef void * ( * ConvertKeyframeValueCallback ) ( int kind , DependencyProperty * property , Value * original , Value * converted ) ;
 typedef ManagedStreamCallbacks ( * GetResourceCallback ) ( const char * resourceBase , const char * name ) ;

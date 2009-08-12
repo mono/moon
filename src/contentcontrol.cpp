@@ -13,6 +13,7 @@
 
 #include <config.h>
 
+#include "application.h"
 #include "contentcontrol.h"
 
 
@@ -27,6 +28,24 @@ ContentControl::ContentControl ()
 
 ContentControl::~ContentControl ()
 {
+}
+
+bool
+ContentControl::ApplyTemplate ()
+{
+	if (GetTemplate () == NULL) {
+		Value *content = GetValue (ContentControl::ContentProperty);
+		if (!content || content->GetIsNull ())
+			return false;
+		UIElement *root = Application::GetCurrent ()->GetDefaultTemplateRoot (this);
+		if (root == template_root)
+			return false;
+		ElementAdded (root);
+		OnApplyTemplate ();
+		return true;
+	} else {
+		return Control::ApplyTemplate ();
+	}
 }
 
 void

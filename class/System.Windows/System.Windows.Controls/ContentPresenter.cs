@@ -58,16 +58,12 @@ namespace System.Windows.Controls
 	{ 
 		bool hasContent;
 		internal UIElement _contentRoot;
-		Grid _fallbackRoot;
-		TextBlock _fallbackText;
+		UIElement _fallbackRoot;
 
 		UIElement FallbackRoot {
 			get {
-				if (_fallbackRoot == null) {
-					_fallbackText = new TextBlock ();
-					_fallbackRoot = new Grid ();
-					_fallbackRoot.Children.Add (_fallbackText);
-				}
+				if (_fallbackRoot == null)
+					_fallbackRoot = ContentControl.CreateFallbackRoot ();
 				return _fallbackRoot;
 			}
 		}
@@ -191,19 +187,12 @@ namespace System.Windows.Controls
 			if (template != null)
 				content = template.LoadContent () ?? content;
 
-			UIElement newContentRoot = null;
-
 			// Add the new content
 			UIElement element = content as UIElement; 
-			if (element != null) {
-				newContentRoot = element;
-			}
-			else if (content != null) {
-				newContentRoot = FallbackRoot;
-				_fallbackText.Text = Content.ToString ();
-			}
+			if (element == null && content != null)
+				element = FallbackRoot;
 			
-			SetContentRoot (newContentRoot);
+			SetContentRoot (element);
 		}
 		
 		void SetContentRoot (UIElement newContentRoot)

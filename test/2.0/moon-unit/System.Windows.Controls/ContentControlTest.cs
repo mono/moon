@@ -516,7 +516,6 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void VisualTreeTest ()
 		{
 			ContentControl c = new ContentControl ();
@@ -539,7 +538,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void VisualTreeTest2 ()
 		{
 			ContentControl c = new ContentControl ();
@@ -566,7 +564,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void VisualTreeTest3 ()
 		{
 			ContentControl c = new ContentControl ();
@@ -599,7 +596,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void VisualTreeTest3b ()
 		{
 			// Check whether the grid + TextBlock is reused or replaced

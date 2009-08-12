@@ -36,6 +36,7 @@ Application::Application ()
 	resource_root = NULL;
 	
 	apply_default_style_cb = NULL;
+	get_default_template_root_cb = NULL;
 	apply_style_cb = NULL;
 	convert_keyframe_callback = NULL;
 	get_resource_cb = NULL;
@@ -65,9 +66,11 @@ void
 Application::RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb,
 				ApplyStyleCallback apply_style_cb,
 				GetResourceCallback get_resource_cb,
-				ConvertKeyframeValueCallback convert_keyframe_callback)
+				ConvertKeyframeValueCallback convert_keyframe_callback,
+				GetDefaultTemplateRootCallback get_default_template_root_cb)
 {
 	this->apply_default_style_cb = apply_default_style_cb;
+	this->get_default_template_root_cb = get_default_template_root_cb;
 	this->apply_style_cb = apply_style_cb;
 	this->convert_keyframe_callback = convert_keyframe_callback;
 	this->get_resource_cb = get_resource_cb;
@@ -78,6 +81,14 @@ Application::ApplyDefaultStyle (FrameworkElement *fwe, ManagedTypeInfo *key)
 {
 	if (apply_default_style_cb)
 		apply_default_style_cb (fwe, key);
+}
+
+UIElement *
+Application::GetDefaultTemplateRoot (ContentControl *ctrl)
+{
+	if (get_default_template_root_cb)
+		return get_default_template_root_cb (ctrl);
+	return NULL;
 }
 
 void

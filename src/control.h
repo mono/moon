@@ -62,7 +62,7 @@ public:
 	virtual bool Focus (bool recurse = true);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool ApplyTemplate ();
+	virtual bool ApplyTemplate ();
 	void ClearTemplate ();
 
 	/* @GenerateCBinding,GeneratePInvoke */

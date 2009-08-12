@@ -1,3 +1,12 @@
+2009-08-12  Alan McGovern  <amcgovern@novell.com>
+
+	* Application.cs: A ContentControl which has no Template needs
+	  to call into managed land to create a 'default template'.
+	  When the Content is a UIElement, the UIElement is used as
+	  the template root, otherwise a Grid + TextBlock (with
+	  Binding) is used. This is the same as what ContentPresenter
+	  does to its Content property. r: toshok
+
 2009-08-10  Chris Toshok  <toshok@ximian.com>
 
 	* GpuInformation.cs: stub this SL3 class out.

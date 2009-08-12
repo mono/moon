@@ -184,6 +184,9 @@ class TypeReference {
 			case "ConvertKeyframeValueCallback":
 				managed_type = "Mono.ConvertKeyframeValueCallback";
 				break;
+			case "GetDefaultTemplateRootCallback":
+				managed_type = "Mono.GetDefaultTemplateRootCallback";
+				break;
 			case "PropertyChangeHandler":
 				managed_type = "Mono.UnmanagedPropertyChangeHandler";
 				break;

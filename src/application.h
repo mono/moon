@@ -21,6 +21,8 @@
 /* @CBindingRequisite */
 typedef void (*ApplyDefaultStyleCallback)(FrameworkElement *fwe, ManagedTypeInfo *key);
 /* @CBindingRequisite */
+typedef UIElement* (*GetDefaultTemplateRootCallback)(ContentControl *ctrl_ptr);
+/* @CBindingRequisite */
 typedef void (*ApplyStyleCallback)(FrameworkElement *fwe, Style *style);
 /* @CBindingRequisite */
 typedef void *(*ConvertKeyframeValueCallback)(int kind, DependencyProperty *property, Value *original, Value *converted);
@@ -42,10 +44,11 @@ public:
 	Application ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
+	void RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback, GetDefaultTemplateRootCallback get_default_template_root_cb);
 	
 	void ApplyDefaultStyle (FrameworkElement *fwe, ManagedTypeInfo *key);
 	void ApplyStyle (FrameworkElement *fwe, Style *style);
+	UIElement *GetDefaultTemplateRoot (ContentControl *ctrl);
 	
 	void ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property, Value *original, Value *converted);
 	
@@ -71,6 +74,7 @@ private:
 	ApplyDefaultStyleCallback apply_default_style_cb;
 	ApplyStyleCallback apply_style_cb;
 	ConvertKeyframeValueCallback convert_keyframe_callback;
+	GetDefaultTemplateRootCallback get_default_template_root_cb;
 	GetResourceCallback get_resource_cb;
 	char *resource_root;
 };
