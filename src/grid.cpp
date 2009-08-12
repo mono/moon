@@ -121,9 +121,12 @@ Grid::MeasureOverride (Size availableSize)
 		GridLength* height = rowdef->GetHeight();
 
 		rowdef->SetActualHeight (0.0);
+		double value = height->val;
+		value = MIN (rowdef->GetMaxHeight (), value);
+		value = MAX (rowdef->GetMinHeight (), value);
 
 		if (height->type == GridUnitTypePixel)
-			rowdef->SetActualHeight (height->val);
+			rowdef->SetActualHeight (value);
 		if (height->type == GridUnitTypeStar)
 			total_stars.height += height->val;
 	}
@@ -133,9 +136,12 @@ Grid::MeasureOverride (Size availableSize)
 		GridLength *width = coldef->GetWidth ();
 
 		coldef->SetActualWidth (0.0);
+		double value = width->val;
+		value = MIN (coldef->GetMaxWidth (), value);
+		value = MAX (coldef->GetMinWidth (), value);
 
 		if (width->type == GridUnitTypePixel)
-			coldef->SetActualWidth (width->val);
+			coldef->SetActualWidth (value);
 		if (width->type == GridUnitTypeStar)
 			total_stars.width += width->val;
 	}

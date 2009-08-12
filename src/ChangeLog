@@ -1,3 +1,12 @@
+2009-08-11  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (MeasureOverride): adjust row definition values by
+	max/min values when building up the Actual sizes
+
+	Fixes DRT #319.
+
+	r: toshok
+
 2009-08-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBox::OnPropertyChanged): Set the font_source on
