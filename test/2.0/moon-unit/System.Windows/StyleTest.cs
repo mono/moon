@@ -90,6 +90,17 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void ApplyDefaultStyle3 ()
+		{
+			//  Default style is not applied during the measure phase
+			Slider s = new Slider ();
+			s.Measure (new Size (100, 100));
+			Assert.AreEqual (1, s.Maximum, "#1");
+			TestPanel.Children.Add (s);
+			Assert.AreEqual (10, s.Maximum, "#2");
+		}
+
+		[TestMethod]
 		public void Sealed ()
 		{
 			Style style = new Style (typeof (UIElement));
