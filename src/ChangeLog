@@ -1,3 +1,8 @@
+2009-08-12  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: restore the initial number of concurrent
+	downloaders, drt 2014 will require a proper fix.
+
 2009-08-11  Chris Toshok  <toshok@ximian.com>
 
 	[ each of these changes fixes a line of text in drt 444 ]

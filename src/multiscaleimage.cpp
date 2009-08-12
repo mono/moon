@@ -1051,7 +1051,7 @@ tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 BitmapImageContext *
 MultiScaleImage::GetFreeBitmapImageContext ()
 {
-	guint num_dl = 1;
+	guint num_dl = 6;
 	BitmapImageContext *ctx;
 	GList *list;
 	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
