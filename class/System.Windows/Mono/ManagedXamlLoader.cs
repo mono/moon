@@ -1257,6 +1257,17 @@ namespace Mono.Xaml
 			if (valueType == t)
 				return value;
 
+			try {
+				if (t.IsEnum) {
+					string str_value = value as string;
+					if (str_value != null)
+						return Enum.Parse (t, str_value, true);
+					if (Enum.IsDefined (t, value))
+						return Enum.ToObject (t, value);
+				}
+			} catch {
+			}
+
 			TypeConverter converter = Helper.GetConverterFor (pi, t);
 			if (converter == null) {
 				try {
@@ -1268,13 +1279,6 @@ namespace Mono.Xaml
 
 			if (converter != null && converter.CanConvertFrom (value.GetType ()))
 				return converter.ConvertFrom (value);
-
-			
-			try {
-				if (t.IsEnum && value is string)
-					return Enum.Parse (t, (string)value);
-			} catch {
-			}
 
 			try {
 				if (!valueType.IsSubclassOf (t))

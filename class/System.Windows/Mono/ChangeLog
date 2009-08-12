@@ -1,3 +1,9 @@
+2009-08-12  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Handle converting ints to enum
+	values. This is done in the parser instead of the converter
+	because data binding can't do this.
+	
 2009-08-11  Jackson Harper  <jackson@ximian.com>
 
 	* NativeDependencyObjectHelper.cs: Add SKEWTRANSFORM to the
