@@ -496,8 +496,8 @@ UIElement::ElementRemoved (UIElement *item)
 
 	if (GetSurface ())
 		GetSurface()->RemoveDirtyElement (item);
-	item->CacheInvalidateHint ();
 	item->SetVisualParent (NULL);
+	item->CacheInvalidateHint ();
 	item->ClearLoaded ();
 	
 	InvalidateMeasure ();

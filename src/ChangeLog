@@ -1,3 +1,11 @@
+2009-08-12  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.cpp: VisualParent should be set to null before
+	  invalidating the cache otherwise the element might be added
+	  to the dirty lists. This causes issues if the element is
+	  added back into the visual tree at a different level. r:
+	  lewing.
+
 2009-08-12  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: clear the cache on source change, cache a NULL
