@@ -25,6 +25,7 @@ BitmapSource::BitmapSource ()
 	image_surface = NULL;
 	native_surface = NULL;
 	data = NULL;
+	own_data = true;
 }
 
 BitmapSource::~BitmapSource ()
@@ -34,8 +35,8 @@ BitmapSource::~BitmapSource ()
 	if (native_surface)
 		cairo_surface_destroy (native_surface);
 
-	if (this->data)
-		g_free (this->data);
+	if (data && own_data)
+		g_free (data);
 }
 
 gpointer
@@ -45,10 +46,11 @@ BitmapSource::GetBitmapData ()
 }
 
 void
-BitmapSource::SetBitmapData (gpointer data)
+BitmapSource::SetBitmapData (gpointer data, bool own_data)
 {
-	if (this->data)
+	if (this->data && this->own_data)
 		g_free (this->data);
+	this->own_data = own_data;
 	this->data = data;
 }
 

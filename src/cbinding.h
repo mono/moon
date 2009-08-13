@@ -948,7 +948,7 @@ gpointer bitmap_source_get_bitmap_data (BitmapSource *instance);
 void bitmap_source_invalidate (BitmapSource *instance);
 
 /* @GeneratePInvoke */
-void bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data);
+void bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data, bool own);
 
 /**
  * Border

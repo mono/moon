@@ -22,7 +22,7 @@ class BitmapSource : public ImageSource {
  private:
 	cairo_surface_t *native_surface;
 	gpointer data;
-
+	bool own_data; // if true, we free in the dtor.
  protected:
 	cairo_surface_t *image_surface;
 
@@ -49,7 +49,7 @@ class BitmapSource : public ImageSource {
 	/* @GenerateCBinding,GeneratePInvoke */
 	gpointer GetBitmapData ();
 	/* @GenerateCBinding,GeneratePInvoke */
-	void SetBitmapData (gpointer data);
+	void SetBitmapData (gpointer data, bool own = true);
 	
 	PixelFormats GetPixelFormat ();
 	void SetPixelFormat (PixelFormats weight);

@@ -1,5 +1,15 @@
 2009-08-12  Chris Toshok  <toshok@ximian.com>
 
+	* WriteableBitmap.cs: we need to pin the pixel data in both ctors,
+	so factor that out into PinAndSetBitmapData.  Also, pass false to
+	bitmap_source_set_bitmap_data, so unmanaged won't free our buffer.
+	it's freed in our finalizer.  fixes the double free on shutdown.
+
+	* BitmapSource.cs (SetSource): pass true for @own to
+	bitmap_source_set_bitmap_data.
+
+2009-08-12  Chris Toshok  <toshok@ximian.com>
+
 	* WriteableBitmap.cs: track changes to the api from SL3 beta to
 	RTM.
 

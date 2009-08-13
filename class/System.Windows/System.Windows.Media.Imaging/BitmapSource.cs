@@ -38,7 +38,7 @@ namespace System.Windows.Media.Imaging
 		public void SetSource (Stream streamSource)
 		{
 			if (streamSource == null)
-				NativeMethods.bitmap_source_set_bitmap_data (native, IntPtr.Zero);
+				NativeMethods.bitmap_source_set_bitmap_data (native, IntPtr.Zero, true);
 			else {
 				NativeMethods.bitmap_image_pixbuf_write (native, Helper.StreamToIntPtr (streamSource), 0, (int) streamSource.Length);
 				NativeMethods.bitmap_image_pixmap_complete (native);

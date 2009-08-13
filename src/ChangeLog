@@ -1,3 +1,11 @@
+2009-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* bitmapsource.h|cpp (SetBitmapData): add an extra parameter
+	"own" (default: true) which, if true, causes the bitmap source to
+	free the bitmapdata when it's destroyed.
+
+	* cbinding.h|cpp: regen
+
 2009-08-13  Andreia Gaita  <avidigal@novell.com>
 
 	r: kangaroo

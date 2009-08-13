@@ -260,8 +260,8 @@ namespace Mono {
 		public extern static void bitmap_source_invalidate (IntPtr instance);
 
 		[DllImport ("moon")]
-		// void bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data);
-		public extern static void bitmap_source_set_bitmap_data (IntPtr instance, IntPtr data);
+		// void bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data, bool own);
+		public extern static void bitmap_source_set_bitmap_data (IntPtr instance, IntPtr data, [MarshalAs (UnmanagedType.U1)] bool own);
 
 		[DllImport ("moon")]
 		// Border *border_new ();

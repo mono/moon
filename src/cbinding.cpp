@@ -557,12 +557,12 @@ bitmap_source_invalidate (BitmapSource *instance)
 
 
 void
-bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data)
+bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data, bool own)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->SetBitmapData (data);
+	instance->SetBitmapData (data, own);
 }
 
 

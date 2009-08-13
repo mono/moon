@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 469 methods
+# 470 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
@@ -329,6 +329,7 @@
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor()
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Windows.Media.Imaging.BitmapSource)
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Int32,System.Int32)
++SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::PinAndSetBitmapData()
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Finalize()
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Render(System.Windows.UIElement,System.Windows.Media.Transform)
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Invalidate()

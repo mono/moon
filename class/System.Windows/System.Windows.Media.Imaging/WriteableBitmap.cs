@@ -63,6 +63,8 @@ namespace System.Windows.Media.Imaging
 			IntPtr bitmap_data = NativeMethods.bitmap_source_get_bitmap_data (source.native);
 			if (bitmap_data != IntPtr.Zero)
 				Marshal.Copy (bitmap_data, pixels, 0, pixels.Length);
+
+			PinAndSetBitmapData ();
 		}
 
 		public WriteableBitmap (int width, int height) : base (NativeMethods.writeable_bitmap_new (), true)
@@ -73,9 +75,14 @@ namespace System.Windows.Media.Imaging
 
 			pixels = new int[PixelWidth * PixelHeight];
 
+			PinAndSetBitmapData ();
+		}
+
+		void PinAndSetBitmapData ()
+		{
 			pixels_handle = GCHandle.Alloc(pixels, GCHandleType.Pinned); // pin it so it doesn't move
 
-			NativeMethods.bitmap_source_set_bitmap_data (native, pixels_handle.AddrOfPinnedObject());
+			NativeMethods.bitmap_source_set_bitmap_data (native, pixels_handle.AddrOfPinnedObject(), false);
 		}
 
 		~WriteableBitmap ()
