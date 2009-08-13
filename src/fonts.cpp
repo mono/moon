@@ -286,8 +286,10 @@ TextFont::Load (const TextFontDescription *desc)
 			g_hash_table_insert (loaded, families[i], GINT_TO_POINTER (true));
 		}
 	} else if (source) {
-		if ((face = manager->OpenFont (source, 0)))
+		if ((face = manager->OpenFont (source, 0))) {
 			g_ptr_array_add (faces, face);
+			master = 0;
+		}
 	}
 	
 	// always add PUI as fallback unless already added
