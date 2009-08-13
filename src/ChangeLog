@@ -6,6 +6,7 @@
 	r: andreia
 	
 2009-08-13  Jeffrey Stedfast  <fejj@novell.com>
+
 	* layout.cpp (TextLayoutGlyphCluster::Render): No-op if the
 	advance width is 0. Fixes test-videobrush-text.xaml to render all
 	of the runs.
