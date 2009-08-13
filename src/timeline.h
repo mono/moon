@@ -93,6 +93,7 @@ protected:
 	static void clock_completed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
 	Clock *clock;
+	void TeardownClock ();
 
 private:
  	bool had_parent;
@@ -136,6 +137,7 @@ public:
 	//
 	void SetChildren (TimelineCollection *children);
 	TimelineCollection *GetChildren ();
+	void TeardownClockGroup ();
 
 protected:
 	virtual ~TimelineGroup ();

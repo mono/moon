@@ -1,3 +1,18 @@
+2009-08-13  Andreia Gaita  <avidigal@novell.com>
+
+	Clock leak fixes (the splash and anything else that uses BeginStoryboard)
+
+	* animation.[h|cpp]: Fix leaks when shutting down BeginStoryboard
+	* timeline.[h|cpp]: Move Teardown methods from Storyboard to here
+	so that other types of timeline stop leaking clocks when shutting
+	down. If a timeline's clock has no parent, unref it to release the
+	circular reference.
+
+	* clock.[h|cpp]: Add Clear() method to clear child clocks when
+	shutting down a ClockGroup. On RemoveChild and when destroying,
+	set the child clock's parent to NULL. Add Shutdown() method to
+	fix circular references with timeline
+
 2009-08-12  Alan McGovern  <amcgovern@novell.com>
 
 	* cbinding.h:
