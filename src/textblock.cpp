@@ -506,6 +506,9 @@ TextBlock::MeasureOverride (Size availableSize)
 	SetActualHeight (desired.height);
 	SetActualWidth (desired.width);
 	
+	if (GetUseLayoutRounding ())
+		desired.width = ceil (desired.width);
+
 	desired = desired.Min (availableSize);
 	
 	return desired;

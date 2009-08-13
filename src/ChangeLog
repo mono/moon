@@ -1,5 +1,17 @@
 2009-08-13  Larry Ewing  <lewing@novell.com>
 
+	* textblock.cpp (MeasureOverride):
+	* textbox.cpp (MeasureOverride): ceil our measurement request when
+	layout rounding is being done so that we don't get rounded down
+	and forced to wrap.  More testing is in order but failure mode for
+	this is painful.
+
+	Fixes wrapping in Playboy and the chess final screen.
+
+	r: jeff
+	
+2009-08-13  Larry Ewing  <lewing@novell.com>
+
 	* timesource.h (MOON_PRIORITY_DEFAULT): lower our default priority
 	to idle so that firefox and gtk can process events without getting
 	starved.  Improved Quakelight and StrangeAttractor experience.

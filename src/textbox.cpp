@@ -3483,6 +3483,9 @@ TextBoxView::MeasureOverride (Size availableSize)
 	Layout (availableSize);
 	
 	layout->GetActualExtents (&desired.width, &desired.height);
+
+	if (GetUseLayoutRounding ())
+		desired.width = ceil (desired.width);
 	
 	return desired.Min (availableSize);
 }
