@@ -44,6 +44,16 @@ convert_gradient_spread_method (GradientSpreadMethod method)
 	}
 }
 
+static void
+brush_matrix_invert (cairo_matrix_t *matrix)
+{
+	cairo_status_t status = cairo_matrix_invert (matrix);
+	if (status != CAIRO_STATUS_SUCCESS) {
+		printf ("Moonlight: Error inverting matrix falling back\n");
+		cairo_matrix_init_identity (matrix);
+	}
+}
+
 //
 // Brush
 //
@@ -408,7 +418,7 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 		cairo_matrix_multiply (&matrix, &matrix, &offset_matrix);
 	}
 
-	cairo_matrix_invert (&matrix);
+	brush_matrix_invert (&matrix);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
 	bool only_start = (x0 == x1 && y0 == y1);
@@ -487,12 +497,8 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 		cairo_matrix_multiply (&matrix, &matrix, &offset_matrix);
 	}
 
-	cairo_status_t status = cairo_matrix_invert (&matrix);
-	if (status != CAIRO_STATUS_SUCCESS) {
-		printf ("Moonlight: Error inverting matrix falling back\n");
-		cairo_matrix_init_identity (&matrix);
-	}
-	
+	brush_matrix_invert (&matrix);
+
 	cairo_pattern_set_matrix (pattern, &matrix);
 	GradientBrush::SetupGradient (pattern, area);
 	
@@ -674,6 +680,13 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 	double sx = sw / width;
 	double sy = sh / height;
 
+
+	if (width == 0)
+		sx = 1.0;
+
+	if (height == 0)
+		sy = 1.0;
+
 	// Fill is the simplest case because AlignementX and AlignmentY don't matter in this case
 	if (stretch == StretchFill) {
 		// fill extents in both axes
@@ -741,7 +754,7 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 			cairo_matrix_t tm;
 			
 			transform->GetTransform (&tm);
-			cairo_matrix_invert (&tm);
+			brush_matrix_invert (&tm);
 			cairo_matrix_multiply (matrix, &tm, matrix);
 		}
 		
@@ -749,7 +762,7 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 			cairo_matrix_t tm;
 			
 			transform_get_absolute_transform (relative_transform, width, height, &tm);
-			cairo_matrix_invert (&tm);
+			brush_matrix_invert (&tm);
 			cairo_matrix_multiply (matrix, &tm, matrix);
 		}
 	}
