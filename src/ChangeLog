@@ -1,5 +1,17 @@
 2009-08-13  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (Layout): Make sure all attributes were able to load
+	their fonts. If not, we can't proceed. Fixes the NULL TextFont
+	crash in DrPopper.
+
+	* textblock.cpp (OnPropertyChanged): Instead of using
+	UpdateLayoutAttributes(), all we really need to do is call
+	UpdateFontDescriptions() when the FontSource changes.
+
+	r:toshok
+
+2009-08-13  Jeffrey Stedfast  <fejj@novell.com>
+
 	* fonts.cpp (TextFont::Load): When loading a font face from a
 	source w/o any families specified, make sure to set master=0 so
 	that we don't try to get extents from faces[-1].

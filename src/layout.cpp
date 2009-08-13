@@ -1419,6 +1419,28 @@ static LayoutWordCallback layout_word_behavior[] = {
 	layout_word_wrap
 };
 
+static bool
+validate_attrs (List *attributes)
+{
+	TextLayoutAttributes *attrs;
+	
+	// if no attributes or first attribute doesn't start at 0, we can't layout any text
+	if (!(attrs = (TextLayoutAttributes *) attributes->First ()) || attrs->start != 0)
+		return false;
+	
+	while (attrs != NULL) {
+		if (!attrs->Font ()) {
+			// we can't layout any text if any of the attributes
+			// weren't able to load their font
+			return false;
+		}
+		
+		attrs = (TextLayoutAttributes *) attrs->next;
+	}
+	
+	return true;
+}
+
 void
 TextLayout::Layout ()
 {
@@ -1444,7 +1466,7 @@ TextLayout::Layout ()
 	ClearLines ();
 	count = 0;
 	
-	if (!text || !(attrs = (TextLayoutAttributes *) attributes->First ()) || attrs->start != 0)
+	if (!text || !validate_attrs (attributes))
 		return;
 	
 	d(printf ("TextLayout::Layout(): wrap mode = %s, wrapping to %f pixels\n", wrap_modes[wrapping], max_width));
@@ -1456,6 +1478,7 @@ TextLayout::Layout ()
 	
 	layout_word = layout_word_behavior[wrapping];
 	
+	attrs = (TextLayoutAttributes *) attributes->First ();
 	line = new TextLayoutLine (this, 0, 0);
 	if (OverrideLineHeight ())
 		line->height = line_height;
