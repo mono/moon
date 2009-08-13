@@ -54,17 +54,23 @@ namespace System.Windows.Media
 				NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
 		}
 
-		public MultiScaleTileSource (int imageWidth, int imageHeight, int tileWidth, int tileHeight, int tileOverlap) : this ()
+		public MultiScaleTileSource (int imageWidth, int imageHeight, int tileWidth, int tileHeight, int tileOverlap) : this ((long)imageWidth, (long)imageHeight, tileWidth, tileHeight, tileOverlap)
 		{
-			ImageWidth = imageWidth;
-			ImageHeight = imageHeight;
-			TileWidth = tileWidth;
-			TileHeight = tileHeight;
-			TileOverlap = tileOverlap;
 		}
 
 		public MultiScaleTileSource (long imageWidth, long imageHeight, int tileWidth, int tileHeight, int tileOverlap) : this ()
 		{
+			if (imageWidth < 0)
+				throw new ArgumentException ("imageWidth is negative");
+			if (imageHeight < 0)
+				throw new ArgumentException ("imageHeight is negative");
+			if (tileWidth < 0)
+				throw new ArgumentException ("tileWidth is negative");
+			if (tileHeight < 0)
+				throw new ArgumentException ("tileHeight is negative");
+			if (tileOverlap < 0)
+				throw new ArgumentException ("tileOverlap is negative");
+				
 			ImageWidth = imageWidth;
 			ImageHeight = imageHeight;
 			TileWidth = tileWidth;

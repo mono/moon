@@ -1,3 +1,8 @@
+2009-08-13  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiScaleTileSource.cs : throw ArgumentException on negative ctor
+	args. Partly fix drt 874.
+
 2009-08-07  Andreia Gaita  <avidigal@novell.com>
 
 	* MultiScaleTileSource.cs: Fix cast
