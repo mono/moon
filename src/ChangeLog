@@ -1,5 +1,13 @@
 2009-08-13  Larry Ewing  <lewing@novell.com>
 
+	* timesource.h (MOON_PRIORITY_DEFAULT): lower our default priority
+	to idle so that firefox and gtk can process events without getting
+	starved.  Improved Quakelight and StrangeAttractor experience.
+
+	r: andreia
+	
+2009-08-13  Larry Ewing  <lewing@novell.com>
+
 	* src/brush.cpp: replace all cairo_matrix_invert calls with a
 	version that warns if it fails.
 
