@@ -153,7 +153,7 @@ namespace Mono {
 				return false;
 
 			byte [] hash = null;
-#if false
+#if true
 			RSA rsa = CryptoConvert.FromCapiKeyBlob (codec_public_key_blob);
 
 			byte [] signature = new byte [128];
