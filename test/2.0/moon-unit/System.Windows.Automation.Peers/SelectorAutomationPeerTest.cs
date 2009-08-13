@@ -34,7 +34,6 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Automation;
 
 using Microsoft.Silverlight.Testing;
 using Mono.Moonlight.UnitTesting;
@@ -43,7 +42,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Automation.Peers {
 
 	[TestClass]
-	public class SelectorAutomationPeerTest : FrameworkElementAutomationPeerTest {
+	public class SelectorAutomationPeerTest : ItemsControlAutomationPeerTest {
 
 		public class SelectorAutomationPeerConcrete : SelectorAutomationPeer, FrameworkElementAutomationPeerContract {
 			public SelectorAutomationPeerConcrete (SelectorConcrete owner)
@@ -226,7 +225,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		[Ignore("Uncomment when ScrollViewerPeer is implemented")]
 		public override void ContentTest ()
 		{
 			// Since SelectorConcrete uses ListBox as base class we 
@@ -282,7 +280,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		[SilverlightBug("A11y implementation doesn't work")]
 		public void ISelectionProvider_Methods ()
 		{
 			bool concreteLoaded = false;

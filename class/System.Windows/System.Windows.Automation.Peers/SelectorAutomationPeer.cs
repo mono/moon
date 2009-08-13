@@ -47,8 +47,17 @@ namespace System.Windows.Automation.Peers {
 					if (peer != null)
 						peer.RaiseAutomationEvent (AutomationEvents.SelectionItemPatternOnElementSelected);
 				}
-					
+
+				// NOTE: Not raising CanSelectMultiple nor IsSelectionRequired because value doesn't change
+
+				// Selection.SelectionProperty event
+				RaisePropertyChangedEvent (SelectionPatternIdentifiers.SelectionProperty,
+				                           GetProviderArrayFromPeer (oldSelectedPeer),
+							   GetProviderArrayFromPeer (GetSelectedAutomationPeer ()));
+				oldSelectedPeer = GetSelectedAutomationPeer ();
 			};
+
+			oldSelectedPeer = GetSelectedAutomationPeer ();
 		}
 
 		public override object GetPattern (PatternInterface pattern)
@@ -68,20 +77,7 @@ namespace System.Windows.Automation.Peers {
 
 		IRawElementProviderSimple[] ISelectionProvider.GetSelection ()
 		{
-			Selector selector = Owner as Selector;
-
-			if (selector.SelectedIndex == -1)
-				return null;
-
-			UIElement uielement = GetChildAtIndex (selector.SelectedIndex);
-			if (uielement == null)
-				return null;
-
-			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (uielement);
-			if (peer != null)
-				return new IRawElementProviderSimple [] { ProviderFromPeer (peer) };
-			
-			return null;
+			return GetProviderArrayFromPeer (GetSelectedAutomationPeer ());
 		}
 
 		bool ISelectionProvider.CanSelectMultiple {
@@ -94,5 +90,27 @@ namespace System.Windows.Automation.Peers {
 
 		#endregion
 
+		private AutomationPeer GetSelectedAutomationPeer ()
+		{
+			Selector selector = Owner as Selector;
+
+			if (selector.SelectedIndex == -1)
+				return null;
+
+			UIElement uielement = GetChildAtIndex (selector.SelectedIndex);
+			if (uielement == null)
+				return null;
+
+			return FrameworkElementAutomationPeer.CreatePeerForElement (uielement);
+		}
+
+		private IRawElementProviderSimple [] GetProviderArrayFromPeer (AutomationPeer peer)
+		{
+			if (peer != null)
+				return new IRawElementProviderSimple [] { ProviderFromPeer (peer) };
+			return null;
+		}
+
+		private AutomationPeer oldSelectedPeer;
 	}
 }

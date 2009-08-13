@@ -241,13 +241,13 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Reference to the horizontal ScrollBar child. 
         /// </summary>
-        private ScrollBar ElementHorizontalScrollBar { get; set; } 
+        internal ScrollBar ElementHorizontalScrollBar { get; private set; } 
         private const string ElementHorizontalScrollBarName = "HorizontalScrollBar";
 
         /// <summary> 
         /// Reference to the vertical ScrollBar child.
         /// </summary>
-        private ScrollBar ElementVerticalScrollBar { get; set; } 
+        internal ScrollBar ElementVerticalScrollBar { get; private set; } 
         private const string ElementVerticalScrollBarName = "VerticalScrollBar"; 
 
         /// <summary> 

@@ -42,7 +42,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Automation.Peers {
 
 	[TestClass]
-	public class SelectorItemAutomationPeerTest : FrameworkElementAutomationPeerTest {
+	public class SelectorItemAutomationPeerTest : ItemAutomationPeerTest {
 		
 		public class SelectorItemAutomationPeerConcrete : SelectorItemAutomationPeer, FrameworkElementAutomationPeerContract {
 			public SelectorItemAutomationPeerConcrete (UIElement owner)
@@ -219,8 +219,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			string itemType = "My Item Type";
 
 			fe.SetValue (AutomationProperties.ItemTypeProperty, itemType);
-			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType #1");
-			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore #1");
+			Assert.AreEqual (itemType, feap.GetItemType (), "GetItemType #1");
+			Assert.AreEqual (itemType, feap.GetItemTypeCore_ (), "GetItemTypeCore #1");
 
 			fe.SetValue (AutomationProperties.ItemTypeProperty, null);
 			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType #2");
@@ -364,7 +364,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		[SilverlightBug("A11y implementation doesn't work")]
+		[SilverlightBug(@"A11y implementation doesn't work: Fails ""IsSelected #2""")]
 		public virtual void ISelectionItemProvider_Methods ()
 		{
 			bool concreteLoaded = false;

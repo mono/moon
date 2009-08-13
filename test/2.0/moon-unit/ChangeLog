@@ -1,3 +1,25 @@
+2009-08-13  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: Files added to test ScrollBar and ScrollViewer.
+	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs: 
+	Tests updated to match changes in KB970363.
+	* System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: 
+	Subclassing ItemsControlAutomationPeerTest to match hierarchy.
+	* System.Windows.Automation.Peers/RangeBaseAutomationPeerTest.cs: 
+	Subclassing FrameworkElementAutomationPeerTest, testing events and
+	implementation in SL2
+	* System.Windows.Automation.Peers/ScrollViewerAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/ScrollBarAutomationPeerTest.cs: 
+	New tests.
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs: 
+	Poker class added. New test ContentTest, GetName.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	Subclassing ItemAutomationPeerTest to match hierarchy.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Null tests is virtual. New test HasKeyboardFocus. Updated IsOffScreen.
+	New EventsManager to test events in ML.
+
 2009-08-12  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ContentControlTest.cs: Remove

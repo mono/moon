@@ -27,8 +27,10 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -63,7 +65,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void Null ()
+		public virtual void Null ()
 		{
 			Assert.Throws<NullReferenceException> (delegate {
 				CreateConcreteFrameworkElementAutomationPeer (null);
@@ -526,29 +528,76 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore("This is working, but I can't test it because the green progressbar steals focus!")]
 		public virtual void HasKeyboardFocus ()
 		{
-			Enqueue (() => {
+			FrameworkElement concreteFrameworkElement = CreateConcreteFrameworkElement ();
+			Control control = concreteFrameworkElement as Control;
+
+			if (control == null) {
 				// Some FrameworkElement subclasses are sealed, so we are doing this.
 				AutomationPeer peer 
-					= FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+					= FrameworkElementAutomationPeer.CreatePeerForElement (concreteFrameworkElement);
 				FrameworkElementAutomationPeerContract feap
 					= peer as FrameworkElementAutomationPeerContract;
 				Assert.IsFalse (peer.HasKeyboardFocus (), "HasKeyboardFocus #0");
 				if (feap != null)
 					Assert.IsFalse (feap.HasKeyboardFocusCore_ (), "HasKeyboardFocusCore #0");
+			} else {
+				if (!control.IsTabStop || !control.IsEnabled)
+					return;
 
-				Control control = feap as Control;
-				if (control != null) {
-					control.Focus ();
+				bool controlLoaded = false;
+				bool panelLoaded = false;
+				bool focused = false;
+				control.Height = 30;
+				control.Loaded += (o, e) => { controlLoaded = true; };
+				control.GotFocus += (o, e) => { focused = true; };
+				control.LostFocus += (o, e) => { focused = false; };
 
+				StackPanel panel = new StackPanel ();
+				panel.Loaded += (o, e) => { panelLoaded = true; };
+
+				Control control1 = CreateConcreteFrameworkElement () as Control; // To allow raising LostFocus
+				control1.Height = 30;
+				
+				//control.TabIndex = 0;
+				//control1.TabIndex = 1;
+
+				bool control1Focused = false;
+				control1.GotFocus += (o, e) => control1Focused = true;
+
+				panel.Children.Add (control);
+				panel.Children.Add (control1);
+
+				TestPanel.Children.Add (panel);
+
+				EnqueueConditional (() => controlLoaded && panelLoaded, "ControlLoaded #0");
+				Enqueue (() => {
+					AutomationPeer peer 
+						= FrameworkElementAutomationPeer.CreatePeerForElement (concreteFrameworkElement);
+					Assert.IsFalse (peer.HasKeyboardFocus (), "HasKeyboardFocus #1");
+
+					control1.Focus ();
 					FocusManager.GetFocusedElement (); // To synchronize call
 
-					Assert.IsTrue (peer.HasKeyboardFocus (), "HasKeyboardFocus #1");
-					if (feap != null)
-						Assert.IsTrue (feap.HasKeyboardFocusCore_ (), "HasKeyboardFocusCore #1");
-				}
-			});
+					if (EventsManager.Instance.AutomationSingletonExists)
+						EventsManager.Instance.Reset ();
+
+					control.Focus ();
+					FocusManager.GetFocusedElement (); // To synchronize call
+
+					Assert.IsTrue (peer.HasKeyboardFocus (), "HasKeyboardFocus #2");
+
+					if (EventsManager.Instance.AutomationSingletonExists) {
+						AutomationPropertyEventTuple tuple
+							= EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.HasKeyboardFocusProperty);
+						Assert.IsNotNull (tuple, "Event #0");
+						Assert.IsTrue ((bool) tuple.NewValue, "Event #1");
+						Assert.IsFalse ((bool) tuple.OldValue, "Event #2");
+					}
+				});
+			}
 			EnqueueTestComplete ();
 		}
 
@@ -572,12 +621,21 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public virtual void IsOffScreen ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerPoker feap = new FrameworkElementAutomationPeerPoker (fe);
-			Assert.IsFalse (feap.IsOffscreen (), "IsOffScreen");
-			Assert.IsFalse (feap.IsOffscreenCore_ (), "IsOffScreenCore");
+			bool controlLoaded = false;
+			fe.Loaded += (o, e) => controlLoaded = true;
+			TestPanel.Children.Add (fe);
+			EnqueueConditional (() => controlLoaded, "ControlLoaded #0");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
+
+				Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #1");
+			});
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
@@ -837,7 +895,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				concrete.Width = 200;
 				concrete.Height = 350;
 			});
-			EnqueueConditional (() => concreteLayoutUpdated, "ConcreteLayoutUpdated #0");
+			EnqueueConditional (() => concreteLayoutUpdated || canvasLayoutUpdated, "ConcreteLayoutUpdated #0");
 			Enqueue (() => {
 				Rect boundingRectangle = bap.GetBoundingRectangle ();
 
@@ -886,7 +944,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		protected bool IsContentPropertyElement ()
 		{
-
 			UIElement uielement = CreateConcreteFrameworkElement ();
 
 			object[] attributes
@@ -907,14 +964,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			return true;
 		}
 
-		protected bool IsRunningMono ()
-		{
-			if (!systemWindowsLoaded)
-				LoadSystemWindows ();
-
-			return automationSingleton != null;
-		}
-
 		protected virtual FrameworkElement CreateConcreteFrameworkElement ()
 		{
 			return new ConcreteFrameworkElement ();
@@ -925,32 +974,150 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			return new FrameworkElementAutomationPeerPoker (element);
 		}
 
-		private void LoadSystemWindows ()
-		{
-			if (systemWindowsLoaded)
-				return;
-			systemWindowsLoaded = true;
-
-			// We try to load System.Windows to also listen for our internal events!
-			// "System.Windows, Version=3.0.0.0, Culture=neutral, PublicKeyToken=07 38 eb 9f 13 2e d7 56"
-			AssemblyName name = new AssemblyName ();
-			name.Name = "System.Windows";
-			name.Version = new Version (3, 0, 0, 0);
-			name.CultureInfo = new global::System.Globalization.CultureInfo (string.Empty);
-			name.SetPublicKeyToken (new byte[] {0x07, 0x38, 0xeb, 0x9f, 0x13, 0x2e, 0xd7, 0x56});
-			
-			Assembly assembly = Assembly.Load (name);
-			Type singletonType = assembly.GetType ("System.Windows.Automation.Peers.AutomationSingleton");
-			if (singletonType == null)
-				return;
-			
-			FieldInfo info = singletonType.GetField ("Instance", BindingFlags.Public | BindingFlags.Static);
-			automationSingleton = info.GetValue (null);
-
-			Console.WriteLine ("IS NULL;L??? {0}", automationSingleton == null);
+		internal class AutomationEventTuple {
+			public AutomationPeer Peer { get; set; } 
+			public AutomationEvents Event { get; set; }
 		}
 
-		private bool systemWindowsLoaded;
-		private object automationSingleton;
+		internal class AutomationPropertyEventTuple {
+			public AutomationPeer Peer { get; set; }
+			public AutomationProperty Property { get; set; }
+			public object OldValue { get; set; }
+			public object NewValue { get; set; }
+		}
+
+		internal class EventsManager {
+			public static readonly EventsManager Instance = new EventsManager ();
+
+			private EventsManager ()
+			{
+				properties = new List<AutomationPropertyEventTuple> ();
+				events = new List<AutomationEventTuple> ();
+
+				// We try to load System.Windows to also listen our internal events.
+				// "System.Windows, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756"
+				AssemblyName name = new AssemblyName ();
+				name.Name = "System.Windows";
+				name.Version = new Version (3, 0, 0, 0);
+				name.CultureInfo = new global::System.Globalization.CultureInfo (string.Empty);
+				name.SetPublicKeyToken (new byte[] {0x07, 0x38, 0xeb, 0x9f, 0x13, 0x2e, 0xd7, 0x56});
+			
+				Assembly assembly;
+				try {
+					assembly = Assembly.Load (name);
+				} catch (Exception) {
+					return;
+				}
+				singletonType = assembly.GetType ("System.Windows.Automation.Peers.AutomationSingleton");
+				if (singletonType == null)
+					return;
+
+				FieldInfo info = singletonType.GetField ("Instance", BindingFlags.Public | BindingFlags.Static);
+				automationSingleton = info.GetValue (null);
+
+				FieldInfo bridgeField =
+					singletonType.GetField ("accessibilityEnabled", BindingFlags.NonPublic | BindingFlags.Instance);
+				bridgeField.SetValue (automationSingleton, true);
+
+				AddEventHandler ("AutomationPropertyChanged", "AddPropertyEvent");
+				AddEventHandler ("AutomationEventRaised", "AddEvent");
+			}
+
+			public void Reset ()
+			{
+				events.Clear ();
+				properties.Clear ();
+			}
+
+			public AutomationEventTuple GetAutomationEventFrom (AutomationPeer peer, AutomationEvents evnt)
+			{
+				return (from e in events where e.Event == evnt select e).FirstOrDefault();
+			}
+
+			public AutomationPropertyEventTuple GetAutomationEventFrom (AutomationPeer peer, AutomationProperty property)
+			{
+				return (from e in properties where e.Property == property select e).FirstOrDefault();
+			}
+
+			public bool AutomationSingletonExists {
+				get { return automationSingleton != null; }
+			}
+
+			public void AddEvent (object obj)
+			{
+ 				events.Add (new AutomationEventTuple () {
+						Peer  = GetProperty<AutomationPeer> (obj, "Peer"),
+						Event = GetProperty<AutomationEvents> (obj, "Event")
+					}
+				);
+			}
+
+			public void AddPropertyEvent (object obj)
+			{
+ 				properties.Add (new AutomationPropertyEventTuple () {
+						Peer     = GetProperty<AutomationPeer> (obj, "Peer"),
+						Property = GetProperty<AutomationProperty> (obj, "Property"),
+						OldValue = GetProperty<object> (obj, "OldValue"),
+						NewValue = GetProperty<object> (obj, "NewValue"),
+					}
+				);
+			}
+
+			private void AddEventHandler (string eventName, string handlerName)
+			{
+				EventInfo propertyChangedEvent = singletonType.GetEvent (eventName);
+				Type delegateType = propertyChangedEvent.EventHandlerType;
+
+				MethodInfo addEventMethod = 
+					typeof (EventsManager).GetMethod (handlerName,
+					                                  new Type[] { typeof (object) });
+				DynamicMethod dynamicMethod 
+					= new DynamicMethod (string.Empty, 
+					                     null,
+							     GetDelegateParameterTypes (delegateType),
+							     typeof (EventsManager));
+				ILGenerator ilgen = dynamicMethod.GetILGenerator();
+				ilgen.Emit (OpCodes.Ldarg_0);
+				ilgen.Emit (OpCodes.Ldarg_2);
+        			ilgen.Emit (OpCodes.Callvirt, addEventMethod);
+				ilgen.Emit (OpCodes.Ret);
+
+				Delegate delegateEmitted = dynamicMethod.CreateDelegate (delegateType, this);
+
+				MethodInfo addHandler = propertyChangedEvent.GetAddMethod ();
+				addHandler.Invoke (automationSingleton, new object[] { delegateEmitted });
+			}
+
+			private Type[] GetDelegateParameterTypes (Type d)
+			{
+				MethodInfo invoke = d.GetMethod ("Invoke");
+				ParameterInfo[] parameters = invoke.GetParameters ();
+
+				Type[] typeParameters = new Type [parameters.Length + 1];
+				typeParameters [0] = typeof (EventsManager); 
+				for (int i = 0; i < parameters.Length; i++)
+					typeParameters [i + 1] = parameters [i].ParameterType;
+				return typeParameters;
+			}
+
+			private TResult GetProperty<TResult> (object reference,
+			                                      string propertyName)
+			{
+				PropertyInfo propertyInfo
+					= reference.GetType ().GetProperty (propertyName,
+			        	                                    BindingFlags.Public 
+									     | BindingFlags.Instance
+									     | BindingFlags.GetProperty);
+				if (propertyInfo == null)
+					throw new NotSupportedException (string.Format ("Property not found: {0} ", propertyName));
+
+				return (TResult) propertyInfo.GetValue (reference, null);
+			}
+
+			private List<AutomationEventTuple> events;
+			private List<AutomationPropertyEventTuple> properties;
+			private object automationSingleton;
+			private Type singletonType;
+		}
 	}
 }

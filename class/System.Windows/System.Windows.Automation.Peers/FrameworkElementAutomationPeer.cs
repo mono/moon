@@ -46,22 +46,21 @@ namespace System.Windows.Automation.Peers {
 			
 			// Default Automation events
 			owner.GotFocus += (o, a) => {
-				bool hasKeyboardFocus = HasKeyboardFocus ();
 				RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
-				                           !hasKeyboardFocus,
-				                           hasKeyboardFocus);
+				                           false,
+				                           true);
 			};
 			owner.LostFocus += (o, a) => {
-				bool hasKeyboardFocus = HasKeyboardFocus ();
 				RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
-				                           !hasKeyboardFocus,
-				                           hasKeyboardFocus);
+				                           true,
+				                           false);
 			};
 
 			owner.SizeChanged += (o, s) => {
+				Point location = GetLocation (owner);
 				RaisePropertyChangedEvent (AutomationElementIdentifiers.BoundingRectangleProperty, 
-				                           s.PreviousSize, 
-							   s.NewSize);
+				                           new Rect (0, 0, s.PreviousSize.Width, s.PreviousSize.Height), 
+							   new Rect (location.X, location.Y, s.NewSize.Width, s.NewSize.Height));
 			};
 
 			Control control = owner as Control;
@@ -314,9 +313,17 @@ namespace System.Windows.Automation.Peers {
 			return children;
 		}
 
+		internal Point GetLocation (FrameworkElement owner)
+		{
+			if (VisualTreeHelper.GetParent (owner) == null)
+				return new Point (0, 0);
+
+			return owner.TransformToVisual (Application.Current.RootVisual).Transform (new Point ());
+		}
+
 		internal Rect GetBoundingRectangleFrom (FrameworkElement owner)
 		{
-			Point location = owner.TransformToVisual (Application.Current.RootVisual).Transform (new Point ());
+			Point location = GetLocation (owner);
 			
 			double width = (double) owner.GetValue (FrameworkElement.WidthProperty);
 			double height = (double) owner.GetValue (FrameworkElement.HeightProperty);

@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Windows.Automation;
 using System.Windows.Automation.Provider;
@@ -39,6 +40,13 @@ namespace System.Windows.Automation.Peers {
 
 		private AutomationSingleton ()
 		{
+			// We are using a class variable to change it using reflection
+			// to allow testing events.
+#if MOON_A11Y_INTERNAL_HACK
+			accessibilityEnabled = Mono.A11yHelper.AccessibilityEnabled;
+#else
+			accessibilityEnabled = false;
+#endif
 		}
 
 		public event EventHandler<AutomationPropertyChangedEventArgs> AutomationPropertyChanged;
@@ -46,11 +54,7 @@ namespace System.Windows.Automation.Peers {
 		public event EventHandler<AutomationEventEventArgs> AutomationEventRaised;
 
 		public bool AccessibilityEnabled {
-			get {
-				// TODO: We should return true or false depending
-				// on whether a11y is enabled or not
-				return false;
-			}
+			get { return accessibilityEnabled; }
 		}
 		
 		#region Methods used to raise Automation Events
@@ -106,6 +110,8 @@ namespace System.Windows.Automation.Peers {
 		}
 
 		#endregion
+
+		private bool accessibilityEnabled;
 	}
 
 	internal class AutomationPropertyChangedEventArgs : EventArgs {

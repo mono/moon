@@ -101,7 +101,7 @@ namespace System.Windows.Automation.Peers {
 
 			ScrollViewerAutomationPeer[] scrollPeer
 				= children.OfType<ScrollViewerAutomationPeer> ().ToArray ();
-			if (scrollPeer != null)
+			if (scrollPeer != null && scrollPeer.Length > 0)
 				return (ScrollViewer) scrollPeer [0].Owner;
 
 			return null;

@@ -240,11 +240,12 @@ namespace System.Windows.Automation.Peers {
 		}
 
 		// Method used to cache main properties to RaisePropertyChanged when calling 
-		// InvalidatePeer. This method is called *once and only* by FrameworkElementAutomationPeer.CreatePeerForElement
+		// InvalidatePeer. This method is also called by FrameworkElementAutomationPeer.CreatePeerForElement
 		internal void CacheMainProperties ()
 		{
-			if (!AutomationSingleton.Instance.AccessibilityEnabled)
-				return;
+			// We are keeping a list of cached properties to raise events depending on the 
+			// accessibility status, because the bridge is loaded by request, ie,
+			// when an AT requests a11y information is loaded
 
 			if (cacheProperties == null) {
 				// Main properties defined in AutomationElementIdentifiers static fields
@@ -321,7 +322,9 @@ namespace System.Windows.Automation.Peers {
 
 		internal IAutomationCacheProperty GetCachedProperty (AutomationProperty property)
 		{
-			return cacheProperties.First (p => p.Property == property);
+			CacheMainProperties ();
+
+			return (from p in cacheProperties where p.Property == property select p).FirstOrDefault();
 		}
 
 		internal IEnumerable<IAutomationCacheProperty> CacheProperties {

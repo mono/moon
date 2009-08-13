@@ -66,8 +66,6 @@ namespace System.Windows.Automation.Peers {
 				return true;
 			}
 		}
-
-		private TResult oldValue;
 	}
 
 	internal class AutomationCachePeerProperty : AutomationCacheProperty<AutomationPeer>  {

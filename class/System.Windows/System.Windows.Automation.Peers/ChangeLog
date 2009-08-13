@@ -1,3 +1,26 @@
+2009-08-13  Mario Carrion  <mcarrion@novell.com>
+
+	* AutomationPeer.cs: Fixed NRE when requesting cached properties
+	by ATs.
+	* ItemAutomationPeer.cs: Updated to match SL2 implementation.
+	(Update KB970363)
+	* AutomationSingleton.cs: Using #if to enabled accessibility depending
+	on flag.
+	* SelectorAutomationPeer.cs: Raising Selection Pattern events:
+	Selection. Updated to match SL2.
+	* AutomationCacheProperty.cs: Removed private variable, not 
+	needed.
+	* RangeBaseAutomationPeer.cs: Raising Value pattern events: Value and
+	IsReadOnly.
+	* ScrollBarAutomationPeer.cs: Implementation to match SL2.
+	* ItemsControlAutomationPeer.cs: Fixed NRE.
+	* ScrollViewerAutomationPeer.cs: Implementation to match SL2.
+	* FrameworkElementAutomationPeer.cs: Raising HasKeyboardFocus events 
+	properly. New private method GetLocation used when raising 
+	BoundingRectangle event.
+
+	r:toshok
+
 2009-06-24  Brad Taylor  <brad@getcoded.net>
 
 	* RadioButtonAutomationpeer.cs: Implement automation peer for

@@ -1,3 +1,9 @@
+2009-08-13  Mario Carrion  <mcarrion@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Visibility properties
+	changed from private to internal: ElementHorizontalScrollBar and
+	ElementVerticalScrollBar.
+
 2009-08-12  Jackson Harper  <jackson@ximian.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs: Fix access modifiers
