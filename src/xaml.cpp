@@ -1683,7 +1683,10 @@ start_element (void *data, const char *el, const char **attr)
 				parser_error (p, el, NULL, 2018, "The element %s does not support attributes.", attr[0]);
 				return;
 			}
-
+			
+			if (prop_info && !strcmp (el, "TextBox.Text"))
+				prop_info->SetIsCDataVerbatim (true);
+			
 			if (!p->top_element) {
 				if (types->IsSubclassOf (prop_info->GetKind (), Type::COLLECTION)) {
 					XamlElementInstance *wrap = prop_info->CreateElementInstance (p);

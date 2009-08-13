@@ -1,3 +1,10 @@
+2009-08-13  Chris Toshok  <toshok@novell.com>
+
+	* xaml.cpp (start_element): If the element is a TextBox.Text
+	CDATA, treat it as verbatim. Partial fix for drt 2003.
+
+	r:jeff
+
 2009-08-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (Layout): Make sure all attributes were able to load
