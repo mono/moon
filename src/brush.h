@@ -355,6 +355,8 @@ cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int hei
 class VideoBrush : public TileBrush {
 	MediaElement *media;
 	
+	static void update_brush (EventObject *, EventArgs *, gpointer closure);
+	
  protected:
 	virtual ~VideoBrush ();
 	

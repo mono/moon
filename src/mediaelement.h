@@ -208,6 +208,7 @@ class MediaElement : public FrameworkElement {
 	const static int MediaFailedEvent;
 	// MediaOpened is raised when media is ready to play (we've already started playing, or, if AutoPlay is false, paused).
 	const static int MediaOpenedEvent;
+	const static int MediaInvalidatedEvent;
 	
 	virtual void SetSurface (Surface *surface);
 	
@@ -224,6 +225,8 @@ class MediaElement : public FrameworkElement {
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
+	void MediaInvalidate ();
+
 	void SetSource (Downloader *downloader, const char *PartName);
 	void SetUriSource (Uri *uri); // This is called from OnPropertyChanged
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */

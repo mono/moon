@@ -514,7 +514,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 		for (int i = 0; i < height; i++)
 			memcpy (rgb_buffer + stride * i, frame->buffer + i * width * 4, width * 4);
 		SetBit (RenderedFrame);
-		element->Invalidate ();
+		element->MediaInvalidate ();
 		return;
 	}
 	
@@ -531,7 +531,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 				    frame->srcSlideH, rgb_dest, rgb_stride);
 	
 	SetBit (RenderedFrame);
-	element->Invalidate ();
+	element->MediaInvalidate ();
 }
 
 #define LOG_RS(x)  \
@@ -782,7 +782,7 @@ MediaPlayer::LoadVideoFrame ()
 		LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (): rendering.\n");
 		RemoveBit (LoadFramePending);
 		RenderFrame (frame);
-		element->Invalidate ();
+		element->MediaInvalidate ();
 	} else {
 		AddTickCallSafe (LoadVideoFrameCallback);
 	}

@@ -898,6 +898,7 @@ VideoBrush::~VideoBrush ()
 {
 	if (media != NULL) {
 		media->RemovePropertyChangeListener (this);
+		media->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 		media->unref ();
 	}
 }
@@ -934,6 +935,7 @@ VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
 		if ((obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
 			obj->AddPropertyChangeListener (this);
 			media = (MediaElement *) obj;
+			media->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 			mplayer = media->GetMediaPlayer ();
 			obj->ref ();
 		} else if (obj == NULL) {
@@ -978,6 +980,7 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		
 		if (media != NULL) {
 			media->RemovePropertyChangeListener (this);
+			media->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 			media->unref ();
 			media = NULL;
 		}
@@ -985,6 +988,7 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (name && (obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
 			obj->AddPropertyChangeListener (this);
 			media = (MediaElement *) obj;
+			media->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 			obj->ref ();
 		} else {
 			// Note: This may have failed because the parser hasn't set the
@@ -1014,13 +1018,16 @@ VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *ob
 void
 VideoBrush::SetSource (MediaElement *source)
 {
-	if (source)
+	if (source) {
 		source->ref ();
+		source->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
+	}
 	
 	SetSourceName ("");
 	
 	if (media != NULL) {
 		media->RemovePropertyChangeListener (this);
+		media->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 		media->unref ();
 		media = NULL;
 	}
@@ -1042,6 +1049,13 @@ VideoBrush::IsAnimating ()
 		return true;
 
 	return TileBrush::IsAnimating ();
+}
+
+void
+VideoBrush::update_brush (EventObject *, EventArgs *, gpointer closure)
+{
+	VideoBrush *b = (VideoBrush*)closure;
+	b->NotifyListenersOfPropertyChange (Brush::ChangedProperty, NULL);
 }
 
 //

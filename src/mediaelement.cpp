@@ -1218,6 +1218,13 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 }
 
 void
+MediaElement::MediaInvalidate ()
+{
+	Emit (MediaInvalidatedEvent);
+	Invalidate ();
+}
+
+void
 MediaElement::SetUriSource (Uri *uri)
 {
 	LOG_MEDIAELEMENT ("MediaElement::SetUriSource ('%s')\n", uri->ToString ());
@@ -1473,6 +1480,7 @@ MediaElement::Seek (TimeSpan to)
 		
 		mplayer->NotifySeek (TimeSpan_ToPts (to));
 		playlist->SeekAsync (to);
+		Emit (MediaInvalidatedEvent);
 		Invalidate ();
 		
 		LOG_MEDIAELEMENT ("MediaElement::Seek (%llu = %llu ms) previous position: %llu\n", to, MilliSeconds_FromPts (to), previous_position);
