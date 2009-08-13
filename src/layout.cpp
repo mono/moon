@@ -1781,7 +1781,7 @@ TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttr
 	double y0;
 	Rect area;
 	
-	if (length == 0)
+	if (length == 0 || advance == 0.0)
 		return;
 	
 	// y is the baseline, set the origin to the top-left
