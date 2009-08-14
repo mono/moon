@@ -3123,13 +3123,16 @@ void
 IMediaObject::AddSafeHandler (int event_id, EventHandler handler, EventObject *context, bool invoke_on_main_thread)
 {
 	LOG_PIPELINE ("IMediaObject::AddSafeHandler (%i, %p, %p, %i)\n", event_id, handler, context, invoke_on_main_thread);
-	EventData *ed = new EventData (event_id, handler, context, invoke_on_main_thread);
+	EventData *ed;
 	
-	event_mutex.Lock ();
-	if (events == NULL)
-		events = new List ();
-	events->Append (ed);
-	event_mutex.Unlock ();
+	if (!IsDisposed ()) {
+		ed = new EventData (event_id, handler, context, invoke_on_main_thread);
+		event_mutex.Lock ();
+		if (events == NULL)
+			events = new List ();
+		events->Append (ed);
+		event_mutex.Unlock ();
+	}
 }
 
 void

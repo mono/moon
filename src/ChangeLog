@@ -1,5 +1,12 @@
 2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: IMediaObject::AddSafeHandler: don't add any handlers
+	if we've been disposed.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: IMediaObject::Dispose: clear the list of events
 	we were supposed to emit on the main thread.
 
