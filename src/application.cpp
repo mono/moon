@@ -332,6 +332,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 		}
 	} while (true);
 	
+	stream.Close (stream.handle);
 	close (fd);
 	
 	// check to see if the resource is zipped
