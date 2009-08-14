@@ -1000,6 +1000,7 @@ public:
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
 
 	bool HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
+	void AttachStorage (AnimationStorage* new_storage);
 	void DetachFromStorage ();
 
 	virtual void Stop ();

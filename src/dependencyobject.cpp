@@ -1897,10 +1897,9 @@ DependencyObject::clone_animation_storage (DependencyProperty *key, AnimationSto
 							      closure->new_do, key);
 
 	new_storage->FlagAsNonResetable();
-	new_storage->DetachTarget ();
 	new_storage->SetStopValue (storage->GetStopValue());
-
-	closure->new_do->AttachAnimationStorage (key, new_storage);
+	storage->DetachFromProperty ();
+	storage->GetClock()->AttachStorage (new_storage);
 }
 
 DependencyObject*

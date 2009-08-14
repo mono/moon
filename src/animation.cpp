@@ -311,6 +311,12 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 	return true;
 }
 
+void
+AnimationClock::AttachStorage (AnimationStorage* new_storage)
+{
+	storage = new_storage;
+}
+
 Value*
 AnimationClock::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestinationValue)
 {

@@ -1,3 +1,16 @@
+2009-08-14  Andreia Gaita  <avidigal@novell.com>
+
+	* dependencyobject.cpp (clone_animation_storage): detach the old
+	storage, and change the storage of the animation clock to point to
+	the newly cloned one - clocks only have a single storage reference,
+	so when they die they need to delete the storage, and when we're
+	cloning a storage, the clock remains the same, so it needs to get
+	updated too. Also, don't detach the new storage or call
+	AttachAnimationStorage manually, that's already	done in it's
+	constructor.
+
+	r: alan
+
 2009-08-13  Larry Ewing  <lewing@novell.com>
 
 	* usercontrol.cpp (MeasureOverride): don't constrain the results.
