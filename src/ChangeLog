@@ -1,5 +1,12 @@
 2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: IMediaObject::EmitSafe: unref the args in all code
+	paths.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: IMediaObject::AddSafeHandler: don't add any handlers
 	if we've been disposed.
 

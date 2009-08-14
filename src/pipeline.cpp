@@ -3162,7 +3162,7 @@ IMediaObject::EmitSafe (int event_id, EventArgs *args)
 	EmitData *emit;
 		
 	if (events == NULL)
-		return;
+		goto cleanup;
 		
 	// Create a list of all the events to emit
 	// don't keep the lock while emitting.
@@ -3204,6 +3204,7 @@ IMediaObject::EmitSafe (int event_id, EventArgs *args)
 		AddTickCallSafe (EmitListCallback);
 	}	
 	
+cleanup:
 	if (args)
 		args->unref ();
 }
