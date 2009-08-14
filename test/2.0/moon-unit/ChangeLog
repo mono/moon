@@ -1,3 +1,10 @@
+2009-08-14  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Go back to
+	  the old method of populating TextBlock.Text in the fallback
+	  display element in ContentPresenter. We can't safely use the
+	  correct method (a oneway binding) yet. r: lewing
+
 2009-08-13  Mario Carrion  <mcarrion@novell.com>
 
 	* moon-unit.csproj: Files added to test ScrollBar and ScrollViewer.

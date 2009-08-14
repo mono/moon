@@ -189,8 +189,16 @@ namespace System.Windows.Controls
 
 			// Add the new content
 			UIElement element = content as UIElement; 
-			if (element == null && content != null)
+			if (element == null && content != null) {
 				element = FallbackRoot;
+				// FIXME: Loaded event handlers are only invoked the first
+				// time a UIElement is loaded. They need to be re-invoked every
+				// time the element is removed from the live tree and added back
+				// in. This will cause the Bindings on FrameworkElements to be
+				// refreshed and remove the need for this hack. Normally Text is
+				// populated using a one-way binding.
+				((TextBlock) ((Grid)FallbackRoot).Children [0]).Text = content.ToString ();
+			}
 			
 			SetContentRoot (element);
 		}

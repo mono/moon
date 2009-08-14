@@ -1,3 +1,10 @@
+2009-08-14  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: Go back to the old method of populating
+	  TextBlock.Text in the fallback display element in
+	  ContentPresenter. We can't safely use the correct method (a
+	  oneway binding) yet. r: lewing
+
 2009-08-13  Larry Ewing  <lewing@novell.com>
 
 	* StackPanel.cs: rework the framework constraints based on drt

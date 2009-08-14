@@ -564,6 +564,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("Detailed comment in ContentPresenter.PrepareContentPresenter () explaining the issue")]
 		public void VisualTreeTest3 ()
 		{
 			ContentControl c = new ContentControl ();
