@@ -840,6 +840,8 @@ MmsSource::ReportStreamChange (gint32 reason)
 	current = new MmsPlaylistEntry (entry_media, this);
 	entry_media->unref ();
 	Unlock ();
+	
+	media->unref ();
 }
 
 void
@@ -866,13 +868,14 @@ void
 MmsSource::DownloadFailedHandler (Downloader *dl, EventArgs *args)
 {
 	Media *media = GetMediaReffed ();
-	
+	ErrorEventArgs *eea;
 	VERIFY_MAIN_THREAD;
 	
 	g_return_if_fail (media != NULL);
-	
-	media->RetryHttp (new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR"));
+	eea = new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR");
+	media->RetryHttp (eea);
 	media->unref ();
+	eea->unref ();
 }
 
 void
@@ -1577,6 +1580,7 @@ MmsDemuxer::OpenDemuxerAsyncInternal ()
 	
 	playlist = new Playlist (root, mms_source);
 	ReportOpenDemuxerCompleted ();
+	media->unref ();
 }
 
 MediaResult
