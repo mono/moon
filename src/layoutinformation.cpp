@@ -33,7 +33,7 @@ LayoutInformation::GetClip (FrameworkElement *item)
 		
 		composite = composite.Intersection (relative);
 		
-		if (element != last)
+		if (element != item)
 			break;
 
 		element = (FrameworkElement *)element->GetVisualParent ();
