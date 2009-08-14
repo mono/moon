@@ -3565,8 +3565,11 @@ void
 IMediaDecoder::Dispose ()
 {
 	if (stream != NULL) {
-		stream->unref ();
+		IMediaStream *s = stream;
 		stream = NULL;
+		s->Dispose ();
+		s->unref ();
+		s = NULL;
 	}
 
 	IMediaObject::Dispose ();
