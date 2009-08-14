@@ -85,8 +85,6 @@ UserControl::MeasureOverride (Size availableSize)
 
 	desired = desired.GrowBy (border);
 
-	desired = ApplySizeConstraints (desired);
-
 	return desired;
 }
 

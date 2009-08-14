@@ -1,3 +1,8 @@
+2009-08-13  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: rework the framework constraints based on drt
+	#417.
+
 2009-08-12  Alan McGovern  <amcgovern@novell.com>
 
 	* ContentControl.cs:

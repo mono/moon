@@ -1,5 +1,13 @@
 2009-08-13  Larry Ewing  <lewing@novell.com>
 
+	* usercontrol.cpp (MeasureOverride): don't constrain the results.
+
+	Fixes DRT #417
+
+	r: andreia
+
+2009-08-13  Larry Ewing  <lewing@novell.com>
+
 	* textblock.cpp (MeasureOverride):
 	* textbox.cpp (MeasureOverride): ceil our measurement request when
 	layout rounding is being done so that we don't get rounded down
