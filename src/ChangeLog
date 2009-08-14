@@ -1,3 +1,12 @@
+2009-08-14  Larry Ewing  <lewing@novell.com>
+
+	* media.cpp: always adjust our paint rectangle when Stretch !=
+	StretchNone.
+
+	Fixes DRT #516 and the regression in #422
+
+	r: toshok
+
 2009-08-14  Andreia Gaita  <avidigal@novell.com>
 
 	* dependencyobject.cpp: DetachTarget must never be used if the storage

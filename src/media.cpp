@@ -379,16 +379,12 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_save (cr);
 
 	image = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
-	paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	Size specified (GetActualWidth (), GetActualHeight ());
 
-	Size specified = Size (GetWidth (), GetHeight ());
-	if (GetVisualParent () && GetVisualParent()->Is (Type::CANVAS)) {
-		if (!isnan (specified.width))
-			paint.width = specified.width;
-		
-		if (!isnan (specified.height))
-			paint.height = specified.height;
-	}
+	if (GetStretch () != StretchNone)
+	        specified = ApplySizeConstraints (specified);
+
+	paint = Rect (0, 0, specified.width, specified.height);
 	pattern = cairo_pattern_create_for_surface (cairo_surface);
 	
 	image_brush_compute_pattern_matrix (&matrix, paint.width, paint.height, image.width, image.height, GetStretch (), 
