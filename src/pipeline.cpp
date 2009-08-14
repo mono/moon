@@ -113,6 +113,9 @@ Media::ShuttingDownHandler (Deployment *obj, EventArgs *args)
 void
 Media::Dispose ()
 {
+	IMediaSource *src;
+	IMediaDemuxer *dmx;
+	
 	LOG_PIPELINE ("Media::Dispose (), id: %i\n", GET_OBJ_ID (this));
 
 	ClearQueue (true);
@@ -125,16 +128,18 @@ Media::Dispose ()
 	g_free (uri);
 	uri = NULL;
 
-	if (source) {
-		source->Dispose ();
-		source->unref ();
-		source = NULL;
+	src = this->source;
+	this->source = NULL;
+	if (src) {
+		src->Dispose ();
+		src->unref ();
 	}
-	
-	if (demuxer) {
-		demuxer->Dispose ();
-		demuxer->unref ();
-		demuxer = NULL;
+
+	dmx = this->demuxer;
+	this->demuxer = NULL;	
+	if (dmx) {
+		dmx->Dispose ();
+		dmx->unref ();
 	}
 	
 	delete markers;
