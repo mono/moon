@@ -1,3 +1,10 @@
+2009-08-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* bitmapimage.h|cpp, multiscaliemage.cpp: abort downaloaders on 
+	source change. 
+	
+	r: lewing
+
 2009-08-14  Andreia Gaita  <avidigal@novell.com>
 
 	* dependencyobject.cpp (clone_animation_storage): detach the old

@@ -162,15 +162,22 @@ BitmapImage::~BitmapImage ()
 void
 BitmapImage::Dispose ()
 {
+	Abort ();
+	BitmapSource::Dispose ();
+}
+
+void
+BitmapImage::Abort ()
+{
 	if (downloader) {
 		CleanupDownloader ();
 		downloader->Abort ();
+		downloader->unref ();
+		downloader = NULL;
 	}
 
 	if (get_res_aborter)
-		get_res_aborter->Cancel ();
-
-	BitmapSource::Dispose ();
+		get_res_aborter->Cancel ();	
 }
 
 void
@@ -220,15 +227,7 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	if (args->GetId () == BitmapImage::UriSourceProperty) {
 		Uri *uri = args->GetNewValue () ? args->GetNewValue ()->AsUri () : NULL;
 
-		if (downloader) {
-			CleanupDownloader ();
-			downloader->Abort ();
-			downloader->unref ();
-			downloader = NULL;
-		}
-
-		if (get_res_aborter)
-			get_res_aborter->Cancel ();
+		Abort ();
 
 		if (Uri::IsNullOrEmpty (uri)) {
 			SetBitmapData (NULL);
@@ -245,10 +244,7 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 void
 BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_name)
 {
-	if (this->downloader != NULL) {
-		CleanupDownloader ();
-		this->downloader->unref ();
-	}
+	Abort ();
 	
 	this->downloader = downloader;
 	this->part_name = g_strdup (part_name);
@@ -419,13 +415,7 @@ failed:
 void
 BitmapImage::DownloaderFailed ()
 {
-	if (downloader) {
-		CleanupDownloader ();
-
-		downloader->unref ();
-		downloader = NULL;
-	}
-
+	Abort ();
 	Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
 }
 
@@ -453,11 +443,8 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 		else if (buffer[0] == 0xff)
 			loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
 
-		else {
-			// Abort the download if we can't use the resource.
-			if (get_res_aborter)
-				get_res_aborter->Cancel ();
-		}
+		else
+			Abort ();
 	} else {
 		loader = gdk_pixbuf_loader_new ();
 	}

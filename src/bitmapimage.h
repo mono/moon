@@ -68,6 +68,7 @@ class BitmapImage : public BitmapSource {
 	void DownloaderComplete ();
 	void DownloaderFailed ();
 	void UriSourceChanged ();
+	void Abort ();
 
 	static void uri_source_changed_callback (EventObject *user_data);
 	static void downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);

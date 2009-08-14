@@ -1117,6 +1117,12 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	}
 
 	if (args->GetId () == MultiScaleImage::SourceProperty) {
+		//abort all downloaders
+		BitmapImageContext *ctx;
+		GList *list;
+		for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
+			ctx->bitmapimage->Abort ();
+
 		source = NULL;
 		DeepZoomImageTileSource *newsource;
 		if (args->GetNewValue ()) {
@@ -1129,8 +1135,6 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 				EmitImageOpenSucceeded ();	
 			}
 		}
-
-		//FIXME: abort all downloaders
 
 		//Invalidate the whole cache
 		if (cache) {
