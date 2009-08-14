@@ -1,5 +1,11 @@
 2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: IMediaDemuxer::Dispose: add a missing unref.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: IMediaDemuxer::Dispose: store a copy of our instance
 	variables in local varaibles and clear out the instance variables
 	before unreffing them - prevents certain rare cases of infinite loops.

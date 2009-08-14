@@ -2441,6 +2441,10 @@ IMediaDemuxer::Dispose ()
 		source->unref ();
 		source = NULL;
 	}
+	if (pending_stream != NULL) {
+		pending_stream->unref ();
+		pending_stream = NULL;
+	}
 	opened = false;
 	IMediaObject::Dispose ();
 }
