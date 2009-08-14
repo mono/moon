@@ -1,5 +1,12 @@
 2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Add an invalid MediaResult value, so that MediaClosure
+	can detect if the callback has been called or not.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Media::DisposeObject: if we couldn't enqueue the
 	dispose on the media thread, call dispose directly.
 

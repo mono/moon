@@ -1906,7 +1906,7 @@ MediaClosure::MediaClosure (Media *media, MediaCallback *callback, MediaCallback
 	g_return_if_fail (callback != NULL);
 	g_return_if_fail (media != NULL);
 	
-	result = 0;
+	result = MEDIA_INVALID;
 	this->callback = callback;
 	this->finished = finished;
 	this->context = context;
@@ -1923,7 +1923,7 @@ MediaClosure::MediaClosure (Media *media, MediaCallback *callback, EventObject *
 	g_return_if_fail (callback != NULL);
 	g_return_if_fail (media != NULL);
 	
-	result = 0;
+	result = MEDIA_INVALID;
 	this->callback = callback;
 	this->finished = NULL;
 	this->context = context;

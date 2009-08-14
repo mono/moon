@@ -146,6 +146,7 @@ typedef gint32 MediaResult;
 // can't be done because of not enough data.
 // Note: this value must not be used for eof condition.
 #define MEDIA_NOT_ENOUGH_DATA ((MediaResult) 19)
+#define MEDIA_INVALID ((MediaResult) 0xFFFFFFFF)
 
 #define MEDIA_SUCCEEDED(x) (((x) <= 0))
 
@@ -180,6 +181,8 @@ public:
 	virtual void Dispose ();
 	
 	void Call (); // Calls the callback and stores the result in 'result', then calls the 'finished' callback
+	
+	bool CallExecuted () { return result != MEDIA_INVALID; }
 
 	MediaResult GetResult () { return result; }
 	Media *GetMedia () { return media; }
