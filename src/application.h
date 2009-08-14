@@ -70,7 +70,6 @@ protected:
 	virtual ~Application ();
 
 private:
-	gpointer GetResourceAsBuffer (const char *resourceBase, const Uri *uri, int *size);
 	ApplyDefaultStyleCallback apply_default_style_cb;
 	ApplyStyleCallback apply_style_cb;
 	ConvertKeyframeValueCallback convert_keyframe_callback;

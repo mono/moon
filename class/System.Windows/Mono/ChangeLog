@@ -1,3 +1,12 @@
+2009-08-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* StreamWrapper.cs: Added a Close() method so native code can
+	close the stream when it is done with it (needed to fix leaking of
+	Resource streams). Also simplified some of the methods by getting
+	rid of unneeded variables.
+
+	r:kangaroo
+
 2009-08-12  Alan McGovern  <amcgovern@novell.com>
 
 	* NativeMethods.cs:

@@ -27,16 +27,16 @@
 
 #include "utils.h"
 
-gpointer
-managed_stream_open_func (gpointer context, const char *filename, int mode)
+static gpointer
+managed_stream_open (gpointer context, const char *filename, int mode)
 {
 	// minizip expects to get a FILE* here, we'll just shuffle our context around.
 
 	return context;
 }
 
-unsigned long
-managed_stream_read_func (gpointer context, gpointer stream, void *buf, unsigned long size)
+static unsigned long
+managed_stream_read (gpointer context, gpointer stream, void *buf, unsigned long size)
 {
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
 	unsigned long left = size;
@@ -54,8 +54,8 @@ managed_stream_read_func (gpointer context, gpointer stream, void *buf, unsigned
 	return nread;
 }
 
-unsigned long
-managed_stream_write_func (gpointer context, gpointer stream, const void *buf, unsigned long size)
+static unsigned long
+managed_stream_write (gpointer context, gpointer stream, const void *buf, unsigned long size)
 {
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
 	unsigned long nwritten = 0;
@@ -72,16 +72,16 @@ managed_stream_write_func (gpointer context, gpointer stream, const void *buf, u
 	return nwritten;
 }
 
-long
-managed_stream_tell_func (gpointer context, gpointer stream)
+static long
+managed_stream_tell (gpointer context, gpointer stream)
 {
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
 
 	return s->Position (s->handle);
 }
 
-long
-managed_stream_seek_func (gpointer context, gpointer stream, unsigned long offset, int origin)
+static long
+managed_stream_seek (gpointer context, gpointer stream, unsigned long offset, int origin)
 {
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
 
@@ -90,11 +90,15 @@ managed_stream_seek_func (gpointer context, gpointer stream, unsigned long offse
 	return 0;
 }
 
-int managed_stream_close_func (gpointer context, gpointer stream) {
+static int
+managed_stream_close (gpointer context, gpointer stream)
+{
 	return 0;
 }
 
-int managed_stream_error_func (gpointer context, gpointer stream) {
+static int
+managed_stream_error (gpointer context, gpointer stream)
+{
 	return 0;
 }
 
@@ -107,13 +111,13 @@ managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCal
 
 	ret = FALSE;
 
-	funcs.zopen_file = managed_stream_open_func;
-	funcs.zread_file = managed_stream_read_func;
-	funcs.zwrite_file = managed_stream_write_func;
-	funcs.ztell_file = managed_stream_tell_func;
-	funcs.zseek_file = managed_stream_seek_func;
-	funcs.zclose_file = managed_stream_close_func;
-	funcs.zerror_file = managed_stream_error_func;
+	funcs.zopen_file = managed_stream_open;
+	funcs.zread_file = managed_stream_read;
+	funcs.zwrite_file = managed_stream_write;
+	funcs.ztell_file = managed_stream_tell;
+	funcs.zseek_file = managed_stream_seek;
+	funcs.zclose_file = managed_stream_close;
+	funcs.zerror_file = managed_stream_error;
 	funcs.opaque = source;
 
 	zipFile = unzOpen2 (NULL, &funcs);

@@ -1,3 +1,24 @@
+2009-08-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* application.cpp (GetResource): Close the stream when we're
+	done. Also changed to check write_cb exists before reading from
+	the stream - if the callback is NULL, don't even bother.
+	(GetResourceAsBuffer): Removed.
+	(GetResourceAsPath): Instead of calling GetResourceAsBuffer(), do
+	the streaming ourselves. Also return NULL if writing the stream to
+	disk fails.
+
+	* utils.cpp (managed_stream_open/read/write/etc): Changed to be
+	internal. These symbols don't need to be publicly exported.
+
+	* utils.h: Added a Stream_Close function signature to
+	ManagedStreamCallbacks.
+
+	* bitmapimage.cpp (resource_notify): Make static/internal - does
+	not need to be publicly exported.
+
+	r:kangaroo
+
 2009-08-14  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* bitmapimage.h|cpp, multiscaliemage.cpp: abort downaloaders on 
@@ -52,7 +73,7 @@
 	version that warns if it fails.
 
 	r: andreia
-	
+
 2009-08-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayoutGlyphCluster::Render): No-op if the

@@ -187,7 +187,18 @@ BitmapImage::uri_source_changed_callback (EventObject *user_data)
 	image->UriSourceChanged ();
 }
 
-void resource_notify (NotifyType type, gint64 args, gpointer user_data);
+static void
+resource_notify (NotifyType type, gint64 args, gpointer user_data)
+{
+	BitmapImage *media = (BitmapImage *) user_data;
+	
+	if (type == NotifyProgressChanged)
+		media->SetProgress ((double)(args)/100.0);
+	else if (type == NotifyFailed)
+		media->DownloaderFailed ();
+	else if (type == NotifyCompleted)
+		media->DownloaderComplete ();
+}
 
 void
 BitmapImage::UriSourceChanged ()
@@ -206,20 +217,6 @@ BitmapImage::UriSourceChanged ()
 		current->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, MediaPolicy, get_res_aborter, this);
 	}
 }
-
-void
-resource_notify (NotifyType type, gint64 args, gpointer user_data)
-{
-	BitmapImage *media = (BitmapImage *) user_data;
-
-	if (type == NotifyProgressChanged)
-		media->SetProgress ((double)(args)/100.0);
-	else if (type == NotifyFailed)
-		media->DownloaderFailed ();
-	else if (type == NotifyCompleted)
-		media->DownloaderComplete ();
-}
-
 
 void
 BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)

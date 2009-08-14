@@ -114,12 +114,12 @@ struct NotifyCtx {
 	WriteFunc write_cb;
 };
 
-void downloader_abort (gpointer data);
-void downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
-void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
-void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
-void downloader_write (void *data, gint32 offset, gint32 n, void *closure);
-void downloader_notify_size (gint64 size, gpointer closure);
+static void downloader_abort (gpointer data);
+static void downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
+static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+static void downloader_write (void *data, gint32 offset, gint32 n, void *closure);
+static void downloader_notify_size (gint64 size, gpointer closure);
 
 void
 Application::GetResource (const char *resourceBase, const Uri *uri,
@@ -136,28 +136,35 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 		char *url = uri->ToString ();
 		ManagedStreamCallbacks stream = get_resource_cb (resourceBase, url);
 		g_free (url);
+		
 		if (stream.handle) {
 			if (notify_cb) {
 				notify_cb (NotifyStarted, NULL, user_data);
 				notify_cb (NotifySize, stream.Length (stream.handle), user_data);
 			}
-
-			char buffer [1024];
-			if (stream.CanSeek (stream.handle) && stream.Position (stream.handle) != 0)
-				stream.Seek (stream.handle, 0, 0);
-	
-			gint32 nread;
-			gint32 offset = 0;
-			do {
-				nread = stream.Read (stream.handle, buffer, 0, 1024);
-				if (write_cb)
-					write_cb (buffer, offset, nread, user_data);
-				offset += nread;
-			} while (nread);
-
+			
+			if (write_cb) {
+				char buf[4096];
+				int offset = 0;
+				int nread;
+				
+				if (stream.CanSeek (stream.handle))
+					stream.Seek (stream.handle, 0, 0);
+				
+				do {
+					if ((nread = stream.Read (stream.handle, buf, 0, sizeof (buf))) <= 0)
+						break;
+					
+					write_cb (buf, offset, nread, user_data);
+					offset += nread;
+				} while (true);
+			}
+			
 			if (notify_cb)
 				notify_cb (NotifyCompleted, NULL, user_data);
-
+			
+			stream.Close (stream.handle);
+			
 			return;
 		}
 	}	
@@ -195,28 +202,28 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 	}
 }
 
-void
+static void
 downloader_notify_size (gint64 size, gpointer closure)
 {
 	NotifyCtx *ctx = (NotifyCtx *) closure;
 	ctx->notify_cb (NotifySize, size, ctx->user_data);
 }
 
-void
+static void
 downloader_write (void *data, gint32 offset, gint32 n, void *closure)
 {
 	NotifyCtx *ctx = (NotifyCtx *) closure;
 	ctx->write_cb (data, offset, n, ctx->user_data);
 }
 
-void
+static void
 downloader_abort (gpointer data)
 {
 	Downloader *dl = (Downloader *) data;
 	dl->Abort ();
 }
 
-void
+static void
 downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	NotifyCtx *ctx = (NotifyCtx *) closure;
@@ -224,7 +231,7 @@ downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer 
 	ctx->notify_cb (NotifyProgressChanged, (gint64) (100 * dl->GetDownloadProgress ()), ctx->user_data);
 }
 
-void
+static void
 downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	NotifyCtx *ctx = (NotifyCtx *) closure;
@@ -233,7 +240,7 @@ downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 	((Downloader *) sender)->unref_delayed ();
 }
 
-void
+static void
 downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	NotifyCtx *ctx = (NotifyCtx *) closure;
@@ -242,52 +249,19 @@ downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 	((Downloader *) sender)->unref_delayed ();
 }
 
-//compatibility function, act like the old get_resource_cb
-gpointer
-Application::GetResourceAsBuffer (const char *resourceBase, const Uri *uri, int *size)
-{
-	gpointer buffer = NULL;
-
-	if (!uri) {
-		g_warning ("Passing a null uri to Application::GetResource");
-		return NULL;
-	}
-
-	if (get_resource_cb && uri && !uri->isAbsolute) {
-		char *url = uri->ToString ();
-		ManagedStreamCallbacks stream = get_resource_cb (resourceBase, url);
-		g_free (url);
-
-		if (stream.handle) {
-
-			*size = stream.Length (stream.handle);
-			if (!size)
-				return NULL;
-
-			buffer = g_new (char, *size);
-
-			if (stream.CanSeek (stream.handle) && stream.Position (stream.handle) != 0)
-				stream.Seek (stream.handle, 0, 0);
-	
-			stream.Read (stream.handle, buffer, 0, *size);
-		}
-	}	
-	
-	return buffer;
-}
-
 //FIXME: nuke this!
 char *
 Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 {
-	char *dirname, *path, *filename;
+	char *dirname, *path, *filename, *url;
+	ManagedStreamCallbacks stream;
 	unzFile zipfile;
 	struct stat st;
-	gpointer buf;
-	int size;
+	char buf[4096];
+	int nread;
 	int fd;
 	
-	if (!get_resource_cb || !uri)
+	if (!get_resource_cb || !uri || uri->isAbsolute)
 		return NULL;
 	
 	if (!resource_root) {
@@ -323,27 +297,41 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	
 	g_free (dirname);
 	
-	// now we need to get the resource buffer and dump it to disk
-	if (!(buf = GetResourceAsBuffer (resourceBase, uri, &size))) {
+	url = uri->ToString ();
+	stream = get_resource_cb (resourceBase, url);
+	g_free (url);
+	
+	if (!stream.handle) {
 		g_free (path);
 		return NULL;
 	}
+	
+	// reset the stream to 0
+	if (stream.CanSeek (stream.handle))
+		stream.Seek (stream.handle, 0, SEEK_SET);
 	
 	// create and save the buffer to disk
 	if ((fd = open (path, O_WRONLY | O_CREAT | O_EXCL, 0600)) == -1) {
+		stream.Close (stream.handle);
 		g_free (path);
-		g_free (buf);
 		return NULL;
 	}
 	
-	if (write_all (fd, (char *) buf, (size_t) size) == -1) {
-		close (fd);
-		g_unlink (path);
-		g_free (path);
-		g_free (buf);
-	}
+	// write the stream to disk
+	do {
+		if ((nread = stream.Read (stream.handle, buf, 0, sizeof (buf))) <= 0)
+			break;
+		
+		if (write_all (fd, buf, (size_t) nread) == -1) {
+			stream.Close (stream.handle);
+			g_unlink (path);
+			g_free (path);
+			close (fd);
+			
+			return NULL;
+		}
+	} while (true);
 	
-	g_free (buf);
 	close (fd);
 	
 	// check to see if the resource is zipped
