@@ -1,5 +1,11 @@
 2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: MarkerStream::Dispose: call base class' Dispose.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp: Add a few missing unrefs.
 
 	r: andreia

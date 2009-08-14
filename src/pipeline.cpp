@@ -3768,6 +3768,8 @@ MarkerStream::Dispose ()
 		closure->unref ();
 		closure = NULL;
 	}
+	
+	IMediaStream::Dispose ();
 }
 
 void
