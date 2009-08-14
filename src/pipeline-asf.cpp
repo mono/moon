@@ -1083,7 +1083,22 @@ MmsPlaylistEntry::Dispose ()
 	if (demux != NULL)
 		demux->unref ();
 	
+	// This is a bit weird - in certain
+	// we can end up with a circular dependency between
+	// Media and MmsPlaylistEntry, where Media::Dispose
+	// isn't called. So if Media::Dispose hasn't been
+	// called, do it here, and only do it after our
+	// instance copy of the media is cleared out to 
+	// prevent infinite loops.
+	Media *m = GetMediaReffed ();
+	
 	IMediaSource::Dispose ();
+	
+	if (m != NULL) {
+		if (!m->IsDisposed ())
+			m->Dispose ();
+		m->unref ();
+	}
 }
 
 MediaResult

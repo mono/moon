@@ -1,5 +1,12 @@
 2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp: MmsPlaylistEntry::Dispose: break a circular
+	dependency between MmsPlaylistEntry and Media.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Media::Dispose: store a copy of our instance variables
 	in local variables and clear out the instance variables before
 	unreffing them - prevents certain rare cases of infinite loops.
