@@ -1,3 +1,12 @@
+2009-08-14  Andreia Gaita  <avidigal@novell.com>
+
+	* dependencyobject.cpp: DetachTarget must never be used if the storage
+	is going to be deleted, it breaks storage cleanup and causes
+	crashes later on. Move storage_hash cleanup to Dispose.
+	fixes crash on drt 109
+
+	r: toshok
+
 2009-08-14  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp (Arrange): apply the size constraints after

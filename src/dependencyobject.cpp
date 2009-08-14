@@ -1934,7 +1934,6 @@ DependencyObject::CloneCore (Types *types, DependencyObject* fromObj)
 static void
 detach_target_func (DependencyProperty *prop, AnimationStorage *storage, gpointer unused)
 {
-	storage->DetachTarget ();
 	delete storage;
 }
 
@@ -1947,7 +1946,6 @@ DependencyObject::~DependencyObject ()
 	g_free (resource_base);
 
 	if (storage_hash) {
-		g_hash_table_foreach (storage_hash, (GHFunc) detach_target_func, NULL);
 		g_hash_table_destroy (storage_hash);
 		storage_hash = NULL;
 	}
@@ -1983,6 +1981,10 @@ DependencyObject::Dispose ()
 		providers [i] = NULL;
 	}
 	
+	if (storage_hash) {
+		g_hash_table_foreach (storage_hash, (GHFunc) detach_target_func, NULL);
+	}
+
 	EventObject::Dispose ();
 }
 
