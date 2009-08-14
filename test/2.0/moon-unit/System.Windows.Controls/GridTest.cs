@@ -740,7 +740,6 @@ namespace MoonTest.System.Windows.Controls
 		// child2 and 3 are explicitly sized (width = 150 and 200, respectively)
 		//
 		[TestMethod]
-		[MoonlightBug]
 		public void ComplexLayout1 ()
 		{
 			Grid g = new Grid ();

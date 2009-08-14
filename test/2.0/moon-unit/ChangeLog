@@ -1,5 +1,14 @@
 2009-08-14  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs: Rewrite the size
+	  allocation code in grid to better match the microsoft
+	  implementation. It works much better for the pixel and auto
+	  cases, but still has some issues with star columns. r:
+	  lewing
+
+2009-08-14  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Media.Animation/StoryboardTest.cs: Disable
 	  StoryboardTest.Pause () for the moment as it flaps far too
 	  frequently. There are other tests on Storyboard.Pause that

@@ -126,10 +126,31 @@ class RowDefinitionCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetElementType () { return Type::ROWDEFINITION; }
 };
 
+struct Segment {
+	double max;
+	double min;
+	double size;
+	GridUnitType type;
+
+	Segment ();
+	Segment (double size, double max, double min, GridUnitType type);
+
+ private:
+	void Init (double size, double max, double min, GridUnitType type);
+};
 
 /* @Namespace=System.Windows.Controls */
 class Grid : public Panel {
 	Size magic;
+	int row_matrix_dim;
+	int col_matrix_dim;
+	Segment **row_matrix;
+	Segment **col_matrix;
+	
+	void AllocateGridSegments (int row_count, int col_count);
+	bool AssignSize (Segment **matrix, int start, int end, double *size, GridUnitType type);
+	void CreateMatrices (int row_count, int col_count);
+	void DestroyMatrices ();
 
  protected:
 	virtual ~Grid ();

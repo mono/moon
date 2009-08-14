@@ -102,9 +102,25 @@ namespace MoonTest.System.Windows.Controls
 		Size Infinity = new Size (double.PositiveInfinity, double.PositiveInfinity);
 
 		[TestMethod]
-		[Asynchronous]
 		[MoonlightBug]
-		public void AutoMeasureUsesInfinity ()
+		public void ChildInvalidatesGrid ()
+		{
+			var child = new MyContentControl (50, 50);
+			Grid grid = new Grid ();
+			grid.Children.Add (child);
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#1");
+
+			((FrameworkElement) child.Content).Height = 60;
+			((FrameworkElement) child.Content).Width = 10;
+
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (10, 60), grid.DesiredSize, "#2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void MeasureMaxAndMin ()
 		{
 			Grid g = new Grid ();
 			var child = new MyContentControl (50, 50);
@@ -127,7 +143,56 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[Asynchronous]
+		public void MeasureMaxAndMin2 ()
+		{
+			Grid g = new Grid ();
+			var child = new MyContentControl (50, 50);
+			g.AddColumns (new GridLength (50));
+			g.AddRows (new GridLength (50), new GridLength (50));
+			g.AddChild (child, 0, 0, 1, 1);
+
+			CreateAsyncTest (g,
+				() => {
+					Assert.AreEqual (new Size (50, 50), child.MeasureOverrideArg, "#1");
+
+					// Force a redraw
+					g.Children.Clear ();
+					g.Children.Add (child);
+					g.RowDefinitions [0].MaxHeight = 20;
+				}, () => {
+					Assert.AreEqual (new Size (50, 20), child.MeasureOverrideArg, "#2");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void MeasureMaxAndMin3 ()
+		{
+			Grid g = new Grid ();
+			var child = new MyContentControl (50, 50);
+			g.AddColumns (new GridLength (50));
+			g.AddRows (new GridLength (20), new GridLength (20));
+			g.AddChild (child, 0, 0, 2, 2);
+
+			g.RowDefinitions [0].MaxHeight = 5;
+			g.RowDefinitions [1].MaxHeight = 30;
+
+			CreateAsyncTest (g,
+				() => {
+					Assert.AreEqual (25, child.MeasureOverrideArg.Height, "#1");
+					g.RowDefinitions [0].MaxHeight = 10;
+				}, () => {
+					Assert.AreEqual (30, child.MeasureOverrideArg.Height, "#2");
+					g.RowDefinitions [0].MaxHeight = 20;
+				}, () => {
+					Assert.AreEqual (40, child.MeasureOverrideArg.Height, "#3");
+				}
+			);
+		}
+
+		[TestMethod]
 		public void MeasureAutoRows ()
 		{
 			Grid grid = new Grid ();
@@ -152,7 +217,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureAutoRows2 ()
 		{
 			double inf = double.PositiveInfinity;
@@ -175,6 +239,8 @@ namespace MoonTest.System.Windows.Controls
 			grid.CheckMeasureSizes ("#3", new Size (50, inf), new Size (50, inf), new Size (50, inf));
 			Assert.AreEqual (new Size (100, 80), grid.DesiredSize, "#4");
 
+			// FIXME: Hack to work around an invalidation issue with grid
+			grid.InvalidateMeasure ();
 			((FrameworkElement) c.Content).Height = 100;
 			grid.Measure (new Size (500, 400));
 			grid.CheckMeasureSizes ("#5", new Size (50, inf), new Size (50, inf), new Size (50, inf));
@@ -188,7 +254,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void MeasureAutoRows3 ()
 		{
 			double inf = double.PositiveInfinity;
@@ -208,7 +273,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void MeasureAutoRows4 ()
 		{
 			double inf = double.PositiveInfinity;
@@ -237,7 +301,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureAutoAndFixedRows ()
 		{
 			Grid grid = new Grid {  };
@@ -336,7 +399,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void AutoRows2 ()
 		{
 			// Start off with two elements in the first row with the smaller element having rowspan = 2
@@ -377,7 +439,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void AutoRows3 ()
 		{
 			// Start off with two elements in the first row with the larger element having rowspan = 2
@@ -409,7 +470,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void AutoRows4 ()
 		{
 			// See how rowspan = 3 affects this with 5 rows.
@@ -497,7 +557,6 @@ namespace MoonTest.System.Windows.Controls
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void AutoAndFixedRows ()
 		{
 			Grid grid = new Grid ();
@@ -530,7 +589,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void AutoAndFixedRows2 ()
 		{
 			TestPanel.Width = 200;
@@ -555,7 +613,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void AutoAndFixedRows3 ()
 		{
 			Grid grid = new Grid { Width = 10, Height = 10 };

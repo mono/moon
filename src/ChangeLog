@@ -1,3 +1,11 @@
+2009-08-14  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: Rewrite the size allocation code in grid to better
+	  match the microsoft implementation. It works much better for
+	  the pixel and auto cases, but still has some issues with
+	  star columns. r: lewing
+
 2009-08-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* application.cpp (GetResource): Close the stream when we're
