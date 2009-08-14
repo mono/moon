@@ -1437,6 +1437,7 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("This flaps a lot so disable it for now")]
 		public void Pause ()
 		{
 			Canvas c = new Canvas ();

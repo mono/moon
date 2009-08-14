@@ -1,5 +1,12 @@
 2009-08-14  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Disable
+	  StoryboardTest.Pause () for the moment as it flaps far too
+	  frequently. There are other tests on Storyboard.Pause that
+	  will fail if it regresses. r: rolf and jackson
+
+2009-08-14  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentControlTest.cs: Go back to
 	  the old method of populating TextBlock.Text in the fallback
 	  display element in ContentPresenter. We can't safely use the
