@@ -2428,12 +2428,14 @@ void
 IMediaDemuxer::Dispose ()
 {
 	if (streams != NULL) {
-		for (int i = 0; i < stream_count; i++) {
-			streams [i]->Dispose ();
-			streams [i]->unref ();
-		}
-		g_free (streams);
+		IMediaStream **tmp = streams;
+		int stream_count = this->stream_count;
 		streams = NULL;
+		for (int i = 0; i < stream_count; i++) {
+			tmp [i]->Dispose ();
+			tmp [i]->unref ();
+		}
+		g_free (tmp);
 	}
 	if (source) {
 		source->unref ();
