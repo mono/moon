@@ -33,6 +33,9 @@ LayoutInformation::GetClip (FrameworkElement *item)
 		
 		composite = composite.Intersection (relative);
 		
+		if (element != last)
+			break;
+
 		element = (FrameworkElement *)element->GetVisualParent ();
 
 		if (element && (element->Is (Type::CANVAS) || element->Is (Type::USERCONTROL)))

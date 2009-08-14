@@ -634,7 +634,8 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	SetActualWidth (response.width);
 	SetActualHeight (response.height);
-	
+
+	response = ApplySizeConstraints (response);
 	Point visual_offset (child_rect.x, child_rect.y);
 
 	if (GetVisualParent ()) {
