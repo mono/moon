@@ -3622,9 +3622,14 @@ IMediaDecoder::DecodeFrameCallback (MediaClosure *closure)
 void
 IMediaDecoder::DecodeFrameAsync (MediaFrame *frame)
 {
-	Media *media = GetMediaReffed ();
+	Media *media;
 
 	LOG_PIPELINE ("IMediaDecoder::DecodeFrameAsync (%p) %s\n", frame, (frame && frame->stream) ? frame->stream->GetStreamTypeName () : NULL);
+	
+	if (IsDisposed ())
+		return;
+	
+	media = GetMediaReffed ();
 	
 	g_return_if_fail (frame != NULL);
 	g_return_if_fail (media != NULL);
