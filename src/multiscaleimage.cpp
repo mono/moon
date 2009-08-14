@@ -230,6 +230,7 @@ struct BitmapImageContext
 	int level;
 	int x;
 	int y;
+	int retry;
 };
 
 #if 0
@@ -362,6 +363,7 @@ MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile, int subimag
 	bictx->level = level;
 	bictx->x = x;
 	bictx->y = y;
+	bictx->retry = 0;
 	SetIsDownloading (true);
 	bictx->bitmapimage->SetUriSource (tile);
 }
@@ -1032,18 +1034,24 @@ void
 MultiScaleImage::TileFailed (BitmapImage *bitmapimage)
 {
 	BitmapImageContext *ctx = GetBitmapImageContext (bitmapimage);
-	ctx->state = BitmapImageFree;
-//	LOG_MSI ("caching a NULL for %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
-	QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &(ctx->subimage));
-	if (!subimage_cache)
-		g_hash_table_insert (cache, new int(ctx->subimage), (subimage_cache = qtree_new ()));
-	qtree_insert_with_value (subimage_cache, NULL, ctx->level, ctx->x, ctx->y);
+	if (ctx->retry < 5) {
+		bitmapimage->SetUriSource (bitmapimage->GetUriSource ());
+		ctx->retry = ctx->retry + 1;
+	} else {
+		ctx->state = BitmapImageFree;
 
-	GList *list;
-	bool is_downloading = false;
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
-		is_downloading |= (ctx->state == BitmapImageBusy);
-	SetIsDownloading (is_downloading);
+		LOG_MSI ("caching a NULL for %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
+		QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &(ctx->subimage));
+		if (!subimage_cache)
+			g_hash_table_insert (cache, new int(ctx->subimage), (subimage_cache = qtree_new ()));
+		qtree_insert_with_value (subimage_cache, NULL, ctx->level, ctx->x, ctx->y);
+
+		GList *list;
+		bool is_downloading = false;
+		for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
+			is_downloading |= (ctx->state == BitmapImageBusy);
+		SetIsDownloading (is_downloading);
+	}
 	Invalidate ();
 	EmitImageFailed ();
 }

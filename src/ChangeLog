@@ -21,6 +21,10 @@
 
 2009-08-14  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp: retry downloading up to 5 times.
+
+2009-08-14  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* bitmapimage.h|cpp, multiscaliemage.cpp: abort downaloaders on 
 	source change. 
 	
