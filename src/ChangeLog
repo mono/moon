@@ -1,5 +1,12 @@
 2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: IMediaDecoder::Dispose: clear the list of pending
+	frames to decode.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: IMediaDecoder::Dispose: store a copy of our instance
 	variables in local variables and clear out the instance variables
 	before unreffing them - prevents certain rare cases of infinite loops.

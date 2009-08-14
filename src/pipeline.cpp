@@ -3572,6 +3572,8 @@ IMediaDecoder::Dispose ()
 		s = NULL;
 	}
 
+	queue.Clear (true);
+
 	IMediaObject::Dispose ();
 }
 
