@@ -2093,8 +2093,10 @@ void
 IMediaStream::Dispose ()
 {
 	if (decoder) {
-		decoder->unref ();
+		IMediaDecoder *d = decoder;
 		decoder = NULL;
+		d->Dispose ();
+		d->unref ();
 	}
 	g_free (extra_data);
 	extra_data = NULL;
