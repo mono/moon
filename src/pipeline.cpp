@@ -699,6 +699,7 @@ Media::RetryHttp (ErrorEventArgs *args)
 	
 	g_free (uri);
 	uri = NULL;
+	source->Dispose ();
 	source->unref ();
 	source = NULL;
 	initialized = false;

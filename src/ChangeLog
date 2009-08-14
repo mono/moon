@@ -1,5 +1,12 @@
 2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Media::RetryHttp: we need to Dispose the previous
+	source.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp: MmsPlaylistEntry::Dispose: break a circular
 	dependency between MmsPlaylistEntry and Media.
 
