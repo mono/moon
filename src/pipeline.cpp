@@ -3096,6 +3096,10 @@ IMediaObject::Dispose ()
 	event_mutex.Lock ();
 	delete events;
 	events = NULL;
+	if (emit_on_main_thread != NULL) {
+		delete emit_on_main_thread;
+		emit_on_main_thread = NULL;
+	}
 	event_mutex.Unlock ();
 	
 	EventObject::Dispose ();
