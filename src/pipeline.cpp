@@ -1207,7 +1207,7 @@ Media::DisposeObjectInternal (MediaClosure *closure)
 void
 Media::DisposeObject (EventObject *obj)
 {
-	MediaClosure *closure = new MediaClosure (this, DisposeObjectInternal, obj);
+	MediaDisposeObjectClosure *closure = new MediaDisposeObjectClosure (this, DisposeObjectInternal, obj);
 	if (!EnqueueWork (closure, true)) {
 #if DEBUG && SANITY
 		printf ("Media::DisposeObject (%p): Could not add callback to the media thread, calling Dispose directly.\n", obj);
@@ -1964,6 +1964,28 @@ MediaClosure::Call ()
 	
 	if (finished)
 		finished (this);
+}
+
+/*
+ * MediaDisposeObjectClosure
+ */
+MediaDisposeObjectClosure::MediaDisposeObjectClosure (Media *media, MediaCallback *callback, EventObject *context)
+	: MediaClosure (media, callback, context)
+{
+}
+
+void
+MediaDisposeObjectClosure::Dispose ()
+{
+	if (!CallExecuted ()) {
+		// we haven't been executed. do it now.
+#if SANITY && DEBUG
+		printf ("MediaDisposeObjectClosure::~MediaDisposeObjectClosure (): callback hasn't been executed, we'll do it now.\n");
+#endif
+		Call ();
+	}
+	
+	MediaClosure::Dispose ();
 }
 
 /*

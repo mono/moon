@@ -1,5 +1,12 @@
 2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp|h: Add a MediaDisposObjectClosure that ensures that
+	the closure is called.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Add an invalid MediaResult value, so that MediaClosure
 	can detect if the callback has been called or not.
 

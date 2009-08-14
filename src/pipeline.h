@@ -190,6 +190,15 @@ public:
 };
 
 /*
+ * MediaDisposeObjectClosure
+ */
+class MediaDisposeObjectClosure : public MediaClosure {
+public:
+	MediaDisposeObjectClosure (Media *media, MediaCallback *callback, EventObject *context);
+	virtual void Dispose ();
+};
+
+/*
  * MediaReportSeekCompletedClosure
  */
 class MediaReportSeekCompletedClosure : public MediaClosure {
