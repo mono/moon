@@ -1,3 +1,10 @@
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Media::DisposeObject: if we couldn't enqueue the
+	dispose on the media thread, call dispose directly.
+
+	r: andreia
+
 2009-08-14  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.h:

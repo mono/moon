@@ -1208,7 +1208,12 @@ void
 Media::DisposeObject (EventObject *obj)
 {
 	MediaClosure *closure = new MediaClosure (this, DisposeObjectInternal, obj);
-	EnqueueWork (closure, true);
+	if (!EnqueueWork (closure, true)) {
+#if DEBUG && SANITY
+		printf ("Media::DisposeObject (%p): Could not add callback to the media thread, calling Dispose directly.\n", obj);
+#endif
+		obj->Dispose ();
+	}
 	closure->unref ();
 }
 
