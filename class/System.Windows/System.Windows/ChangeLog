@@ -1,3 +1,16 @@
+2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* RoutedEventArgs.cs: Use toggle ref semantics.
+
+	* SizeChangedEventArgs.cs:
+	* ExceptionRoutedEventArgs.cs: Updated according to API changes in
+	RoutedEventArgs.
+
+	* DependencyObject.cs: Use FreeNativeWrapper instead of duplicating
+	code, and update according to INativeDependencyObjectWrapper changes.
+
+	r: andreia
+
 2009-08-12  Alan McGovern  <amcgovern@novell.com>
 
 	* Application.cs: A ContentControl which has no Template needs

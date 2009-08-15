@@ -36,8 +36,8 @@ namespace System.Windows.Input {
 		}
 
 		public bool Handled {
-			get { return NativeMethods.routed_event_args_get_handled (native); }
-			set { NativeMethods.routed_event_args_set_handled (native, value); }
+			get { return NativeMethods.routed_event_args_get_handled (NativeHandle); }
+			set { NativeMethods.routed_event_args_set_handled (NativeHandle, value); }
 		}
 	}
 }

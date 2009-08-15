@@ -58,6 +58,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Helper.PublicKey.cs					\
 	$(srcdir)/Mono/Hosting.cs						\
 	$(srcdir)/Mono/INativeDependencyObjectWrapper.cs			\
+	$(srcdir)/Mono/INativeEventObjectWrapper.cs			\
 	$(srcdir)/Mono/Kind.cs							\
 	$(srcdir)/Mono/ManagedType.cs						\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\

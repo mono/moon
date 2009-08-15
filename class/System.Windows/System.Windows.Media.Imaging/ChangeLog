@@ -1,3 +1,9 @@
+2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BitmapImage.cs: Updated according to API changes in RoutedEventArgs.
+
+	r: andreia
+
 2009-08-12  Chris Toshok  <toshok@ximian.com>
 
 	* WriteableBitmap.cs: we need to pin the pixel data in both ctors,

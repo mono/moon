@@ -1,3 +1,11 @@
+2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* TextChangedEventArgs.cs:
+	* TextBox.cs:
+	* PasswordBox.cs: Updated according to API changes in RoutedEventArgs.
+
+	r: andreia
+
 2009-08-14  Alan McGovern  <amcgovern@novell.com>
 
 	* ContentPresenter.cs: Go back to the old method of populating

@@ -1,3 +1,9 @@
+2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.ssc: Regenerated.
+
+	r: andreia
+
 2009-07-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.ssc: Add Mono.Helper.CheckFileIntegrity

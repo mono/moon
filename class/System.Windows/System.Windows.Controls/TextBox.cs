@@ -67,21 +67,21 @@ namespace System.Windows.Controls {
 		{
 			base.InvokeKeyDown (k);
 			if (!k.Handled)
-				NativeMethods.text_box_base_on_character_key_down (native, k.native);
+				NativeMethods.text_box_base_on_character_key_down (native, k.NativeHandle);
 		}
 		
 		protected override void OnKeyDown (KeyEventArgs k)
 		{
 			base.OnKeyDown (k);
 			if (!k.Handled)
-				NativeMethods.text_box_base_on_key_down (native, k.native);
+				NativeMethods.text_box_base_on_key_down (native, k.NativeHandle);
 		}
 		
 		protected override void OnKeyUp (KeyEventArgs k)
 		{
 			base.OnKeyUp (k);
 			if (!k.Handled)
-				NativeMethods.text_box_base_on_key_up (native, k.native);
+				NativeMethods.text_box_base_on_key_up (native, k.NativeHandle);
 		}
 		
 		protected override void OnMouseEnter (MouseEventArgs e)
@@ -215,7 +215,7 @@ namespace System.Windows.Controls {
 		static void selection_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			TextBox textbox = (TextBox) NativeDependencyObjectHelper.FromIntPtr (closure);
-			RoutedEventArgs args = new RoutedEventArgs (calldata);
+			RoutedEventArgs args = new RoutedEventArgs (calldata, false);
 			
 			textbox.InvokeSelectionChanged (args);
 		}

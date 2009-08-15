@@ -117,16 +117,7 @@ namespace System.Windows {
 
 		private void Free ()
 		{
-			if (_native != IntPtr.Zero) {
-				ToggleRef tref;
-				lock (NativeDependencyObjectHelper.objects) {
-					if (NativeDependencyObjectHelper.objects.TryGetValue (_native, out tref))
-						NativeDependencyObjectHelper.objects.Remove (_native);
-				}
-				if (tref != null)
-					tref.Free ();
-				GC.SuppressFinalize (this);
-			}
+			NativeDependencyObjectHelper.FreeNativeMapping (this);
 		}
 
 		static void ReinitializeStaticData ()
@@ -638,7 +629,7 @@ namespace System.Windows {
 			}
 		}
 
-		IntPtr INativeDependencyObjectWrapper.NativeHandle {
+		IntPtr INativeEventObjectWrapper.NativeHandle {
 			get { return NativeHandle; }
 			set { NativeHandle = value; }
 		}
@@ -668,7 +659,7 @@ namespace System.Windows {
 			NativeDependencyObjectHelper.ClearValue (this, dp);
 		}
 
-		Kind INativeDependencyObjectWrapper.GetKind ()
+		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return Kind.APPLICATION;
 		}

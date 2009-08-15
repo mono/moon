@@ -116,13 +116,13 @@ namespace Mono {
 		static void got_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			UIElement e = (UIElement)NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeGotFocus (new RoutedEventArgs (calldata));
+			e.InvokeGotFocus (new RoutedEventArgs (calldata, false));
 		}
 
 		static void lost_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			UIElement e = (UIElement)NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeLostFocus (new RoutedEventArgs (calldata));
+			e.InvokeLostFocus (new RoutedEventArgs (calldata, false));
 		}
 
 		static void lost_mouse_capture_callback (IntPtr target, IntPtr calldata, IntPtr closure)
@@ -250,12 +250,12 @@ namespace Mono {
 		
 		internal static void RaiseRoutedEvent (Delegate d, object sender, RoutedEventArgs e)
 		{
-			if (d == null || NativeMethods.routed_event_args_get_handled (e.native))
+			if (d == null || NativeMethods.routed_event_args_get_handled (e.NativeHandle))
 				return;
 
 			foreach (Delegate handler in d.GetInvocationList ()) {
 				handler.DynamicInvoke (sender, e);
-				if (NativeMethods.routed_event_args_get_handled (e.native))
+				if (NativeMethods.routed_event_args_get_handled (e.NativeHandle))
 					return;
 			}
 		}

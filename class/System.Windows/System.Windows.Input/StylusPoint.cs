@@ -45,7 +45,7 @@ namespace System.Windows.Input
 			X = x;
 			Y = y;
 		}
-
+		
 		public float PressureFactor {
 			get { return (float) ((INativeDependencyObjectWrapper)this).GetValue (PressureFactorProperty); }
 			set { ((INativeDependencyObjectWrapper)this).SetValue (PressureFactorProperty, value); }
@@ -86,7 +86,7 @@ namespace System.Windows.Input
 			}
 		}
 
-		IntPtr INativeDependencyObjectWrapper.NativeHandle {
+		IntPtr INativeEventObjectWrapper.NativeHandle {
 			get { return NativeHandle; }
 			set { NativeHandle = value; }
 		}
@@ -116,7 +116,7 @@ namespace System.Windows.Input
 			NativeDependencyObjectHelper.ClearValue (this, dp);
 		}
 
-		Kind INativeDependencyObjectWrapper.GetKind ()
+		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return Kind.STYLUSPOINT;
 		}

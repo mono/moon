@@ -1,3 +1,16 @@
+2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* StylusPoint.cs: Updated according to API changes in 
+	INativeDependencyObjectWrapper.
+
+	* StylusDevice.cs:
+	* MouseWheelEventArgs.cs:
+	* MouseEventArgs.cs:
+	* MouseButtonEventArgs.cs:
+	* KeyEventArgs.cs: Updated according to API changes in RoutedEventArgs.
+
+	r: andreia
+
 2009-05-25  Chris Toshok  <toshok@ximian.com>
 
 	* StylusPoint.cs: make this implement

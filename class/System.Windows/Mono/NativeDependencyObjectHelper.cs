@@ -162,7 +162,7 @@ namespace Mono {
 		internal static Dictionary<IntPtr, ToggleRef> objects = new Dictionary<IntPtr, ToggleRef> ();
 
 
-		public static void AddNativeMapping (IntPtr native, INativeDependencyObjectWrapper wrapper)
+		public static void AddNativeMapping (IntPtr native, INativeEventObjectWrapper wrapper)
 		{
 			if (native == IntPtr.Zero)
 				return;
@@ -171,10 +171,27 @@ namespace Mono {
 				// XXX shouldn't this be an error?
 				return;
 			}
-
+			
 			ToggleRef tref = new ToggleRef (wrapper);
 			objects[native] = tref;
 			tref.Initialize ();
+		}
+		
+		public static void FreeNativeMapping (INativeEventObjectWrapper wrapper)
+		{
+			ToggleRef tref;
+			IntPtr native = wrapper.NativeHandle;
+			
+			if (native == IntPtr.Zero)
+				return;
+			
+			lock (objects) {
+				if (objects.TryGetValue (native, out tref))
+					objects.Remove (native);
+			}
+			if (tref != null)
+				tref.Free ();
+			GC.SuppressFinalize (wrapper);
 		}
 
 		//
@@ -184,7 +201,7 @@ namespace Mono {
 		//    ToggleReferences (talk to Mike)
 		//
 		// 
-		internal static INativeDependencyObjectWrapper Lookup (Kind k, IntPtr ptr)
+		internal static INativeEventObjectWrapper Lookup (Kind k, IntPtr ptr)
 		{
 			if (ptr == IntPtr.Zero)
 				return null;
@@ -205,7 +222,7 @@ namespace Mono {
 			return wrapper;
 		}
 
-		internal static INativeDependencyObjectWrapper FromIntPtr (IntPtr ptr)
+		internal static INativeEventObjectWrapper FromIntPtr (IntPtr ptr)
 		{
 			if (ptr == IntPtr.Zero)
 				return null;
@@ -219,7 +236,7 @@ namespace Mono {
 		// This version only looks up the object, if it has not been exposed,
 		// we return null
 		//
-		internal static INativeDependencyObjectWrapper Lookup (IntPtr ptr)
+		internal static INativeEventObjectWrapper Lookup (IntPtr ptr)
 		{
 			if (ptr == IntPtr.Zero)
 				return null;

@@ -31,25 +31,25 @@ using Mono;
 namespace System.Windows.Input {
 
 	public sealed class KeyEventArgs : RoutedEventArgs {
-		internal KeyEventArgs (IntPtr raw) : base (raw)
+		internal KeyEventArgs (IntPtr raw) : base (raw, false)
 		{
 		}
 
-		internal KeyEventArgs () : base (NativeMethods.key_event_args_new ())
+		internal KeyEventArgs () : base (NativeMethods.key_event_args_new (), true)
 		{
 		}
 
 		public bool Handled {
-			get { return NativeMethods.routed_event_args_get_handled (native); }
-			set { NativeMethods.routed_event_args_set_handled (native, value); }
+			get { return NativeMethods.routed_event_args_get_handled (NativeHandle); }
+			set { NativeMethods.routed_event_args_set_handled (NativeHandle, value); }
 		}
 
 		public Key Key {
-			get { return (Key) NativeMethods.key_event_args_get_key (native); }
+			get { return (Key) NativeMethods.key_event_args_get_key (NativeHandle); }
 		}
 
 		public int PlatformKeyCode {
-			get { return NativeMethods.key_event_args_get_platform_key_code (native); }
+			get { return NativeMethods.key_event_args_get_platform_key_code (NativeHandle); }
 		}
 	}
 }

@@ -1,3 +1,25 @@
+2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* INativeEventObjectWrapper.cs: Refactored out EventObject code from
+	INativeDependencyObjectWrapper into INativeEventObjectWrapper.
+
+	* ToggleRef.cs: Change API to use INativeEventObjectWrapper instead
+	of INativeDependencyObjectWrapper.
+
+	* NativeDependencyObjectHelper.cs: Add a FreeNativeMapping method
+	and change method signatures to use INativeEventObjectWrapper instead
+	of INativeDependencyObjectWrapper whenever required.
+
+	* MarkupExpressionParser.cs: Update according to API changes in 
+	NativeDependencyObjectHelper.
+
+	* INativeDependencyObjectWrapper.cs: Make this interface inherit from
+	INativeEventObjectWrapper.
+
+	* Events.cs: Updated according to API changes in RoutedEventArgs.
+
+	r: andreia
+
 2009-08-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* StreamWrapper.cs: Added a Close() method so native code can

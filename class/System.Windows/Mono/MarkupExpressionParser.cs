@@ -209,7 +209,7 @@ namespace Mono.Xaml {
 			if (template == IntPtr.Zero)
 				return null;
 
-			INativeDependencyObjectWrapper dob = NativeDependencyObjectHelper.FromIntPtr (template);
+			INativeEventObjectWrapper dob = NativeDependencyObjectHelper.FromIntPtr (template);
 
 			return dob as FrameworkTemplate;
 		}

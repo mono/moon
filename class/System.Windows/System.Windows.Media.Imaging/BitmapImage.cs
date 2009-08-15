@@ -87,7 +87,7 @@ namespace System.Windows.Media.Imaging
 		
 		private static void image_opened_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
 			BitmapImage b = (BitmapImage) NativeDependencyObjectHelper.FromIntPtr (closure);
-                        b.RaiseImageOpened (new RoutedEventArgs (calldata));
+                        b.RaiseImageOpened (new RoutedEventArgs (calldata, false));
                 }
 
 		private void RaiseDownloadProgress (DownloadProgressEventArgs args) {

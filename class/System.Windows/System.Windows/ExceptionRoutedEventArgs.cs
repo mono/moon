@@ -41,7 +41,7 @@ namespace System.Windows
 			error_exception = ex;
 		}
 		
-		internal ExceptionRoutedEventArgs (IntPtr raw) : base (raw)
+		internal ExceptionRoutedEventArgs (IntPtr raw) : base (raw, false)
 		{
 		}
 

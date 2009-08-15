@@ -18,7 +18,7 @@
 +SSC-M: System.Object Mono.MoonlightTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
 +SSC-M: System.Object Mono.MoonlightValueConverter::Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
-+SSC-M: Mono.INativeDependencyObjectWrapper Mono.NativeDependencyObjectHelper::FromIntPtr(System.IntPtr)
++SSC-M: Mono.INativeEventObjectWrapper Mono.NativeDependencyObjectHelper::FromIntPtr(System.IntPtr)
 +SSC-M: System.String Mono.NativeMethods::plugin_instance_get_init_params(System.IntPtr)
 +SSC-M: System.String Mono.NativeMethods::plugin_instance_get_source(System.IntPtr)
 +SSC-M: System.String Mono.NativeMethods::plugin_instance_get_source_location(System.IntPtr)
@@ -70,8 +70,12 @@
 +SSC-M: System.Int32 Mono.StreamWrapper::Read(System.IntPtr,System.Byte[],System.Int32,System.Int32)
 +SSC-M: System.Void Mono.StreamWrapper::Write(System.IntPtr,System.Byte[],System.Int32,System.Int32)
 +SSC-M: System.Void Mono.StreamWrapper::Seek(System.IntPtr,System.Int64,System.IO.SeekOrigin)
+<<<<<<< HEAD:class/tuning/SecurityAttributes/automatic/System.Windows.auto.ssc
 +SSC-M: System.Void Mono.StreamWrapper::Close(System.IntPtr)
 +SSC-M: System.Void Mono.ToggleRef::.ctor(Mono.INativeDependencyObjectWrapper)
+=======
++SSC-M: System.Void Mono.ToggleRef::.ctor(Mono.INativeEventObjectWrapper)
+>>>>>>> In class/System.Windows::class/tuning/SecurityAttributes/automatic/System.Windows.auto.ssc
 +SSC-M: System.Void Mono.ToggleRef::Initialize()
 +SSC-M: System.Void Mono.ToggleRef::Free()
 +SSC-M: Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
@@ -430,9 +434,8 @@
 +SSC-M: System.Object System.Windows.ResourceDictionary::get_Item(System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Item(System.Object,System.Object)
 +SSC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Resources.StreamResourceInfo::FromFile(System.String)
-+SSC-M: System.Void System.Windows.RoutedEventArgs::.ctor(System.IntPtr)
++SSC-M: System.Void System.Windows.RoutedEventArgs::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Void System.Windows.RoutedEventArgs::.ctor()
-+SSC-M: System.Void System.Windows.RoutedEventArgs::Finalize()
 +SSC-M: System.Object System.Windows.RoutedEventArgs::get_OriginalSource()
 +SSC-M: System.Void System.Windows.RoutedEventArgs::set_OriginalSource(System.Object)
 +SSC-M: System.Void System.Windows.Setter::.ctor()

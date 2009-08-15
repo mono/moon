@@ -34,18 +34,18 @@ namespace System.Windows
 {
 	public class SizeChangedEventArgs : RoutedEventArgs
 	{
-		internal SizeChangedEventArgs () : base (NativeMethods.size_changed_event_args_new ())
+		internal SizeChangedEventArgs () : base (NativeMethods.size_changed_event_args_new (), true)
 		{
 		}
 
-		internal SizeChangedEventArgs (IntPtr raw) : base (raw)
+		internal SizeChangedEventArgs (IntPtr raw) : base (raw, false)
 		{
 		}
 
 		public Size NewSize {
 			get {
 				Size sz = new Size (0,0);
-				NativeMethods.size_changed_event_args_get_new_size (native, ref sz);
+				NativeMethods.size_changed_event_args_get_new_size (NativeHandle, ref sz);
 				return sz;
 			}
 		}
@@ -53,7 +53,7 @@ namespace System.Windows
 		public Size PreviousSize {
 			get {
 				Size sz = new Size (0,0);
-				NativeMethods.size_changed_event_args_get_prev_size (native, ref sz);
+				NativeMethods.size_changed_event_args_get_prev_size (NativeHandle, ref sz);
 				return sz;
 			}
 		}

@@ -51,7 +51,7 @@ namespace System.Windows {
 
 		[ThreadStatic] static private Dispatcher dispatcher;
 
-		IntPtr INativeDependencyObjectWrapper.NativeHandle {
+		IntPtr INativeEventObjectWrapper.NativeHandle {
 			get { return native; }
 			set { native = value; }
 		}
@@ -94,16 +94,7 @@ namespace System.Windows {
 
 		internal void Free ()
 		{
-			if (this.native != IntPtr.Zero) {
-				ToggleRef tref;
-				lock (NativeDependencyObjectHelper.objects) {
-					if (NativeDependencyObjectHelper.objects.TryGetValue (this.native, out tref))
-						NativeDependencyObjectHelper.objects.Remove (this.native);
-				}
-				if (tref != null)
-					tref.Free ();
-				GC.SuppressFinalize (this);
-			}
+			NativeDependencyObjectHelper.FreeNativeMapping (this);
 		}
 
 		~DependencyObject ()
@@ -187,7 +178,7 @@ namespace System.Windows {
 			return NativeDependencyObjectHelper.Lookup (k, o) as DependencyObject;
 		}
 
-		Kind INativeDependencyObjectWrapper.GetKind ()
+		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return GetKind ();
 		}
