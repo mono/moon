@@ -311,12 +311,6 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 	return true;
 }
 
-void
-AnimationClock::AttachStorage (AnimationStorage* new_storage)
-{
-	storage = new_storage;
-}
-
 Value*
 AnimationClock::GetCurrentValue (Value* defaultOriginValue, Value* defaultDestinationValue)
 {
@@ -412,6 +406,7 @@ Storyboard::~Storyboard ()
 	if (clock) {
 		//printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
 		StopWithError (/* ignore any error */ NULL);
+		TeardownClockGroup ();
 	}
 }
 
@@ -513,6 +508,18 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 	}
 	
 	return true;
+}
+
+void
+Storyboard::TeardownClockGroup ()
+{
+	if (GetClock()) {
+		Clock *c = GetClock ();
+		ClockGroup *group = c->GetParentClock();
+		if (group)
+			group->RemoveChild (c);
+		clock = NULL;
+	}
 }
 
 bool
@@ -636,16 +643,6 @@ BeginStoryboard::BeginStoryboard ()
 
 BeginStoryboard::~BeginStoryboard ()
 {
-}
-
-void
-BeginStoryboard::Dispose ()
-{
-	Storyboard *sb = GetStoryboard ();
-	if (sb) {
-		sb->StopWithError (NULL);
-	}
-	TriggerAction::Dispose ();
 }
 
 void

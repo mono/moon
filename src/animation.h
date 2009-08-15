@@ -923,6 +923,7 @@ private:
 				      DependencyObject *targetObject, PropertyPath *targetPropertyPath,
 				      GHashTable *promoted_values,
 				      MoonError *error);
+	void TeardownClockGroup ();
 	Clock *root_clock;
 };
 
@@ -937,7 +938,6 @@ public:
 	BeginStoryboard ();
 	
 	virtual void Fire ();
-	virtual void Dispose ();
 	
 	//
 	// Property Accessors
@@ -1000,7 +1000,6 @@ public:
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
 
 	bool HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
-	void AttachStorage (AnimationStorage* new_storage);
 	void DetachFromStorage ();
 
 	virtual void Stop ();

@@ -110,20 +110,10 @@ Clock::Clock (Timeline *tl)
 	begin_on_tick = false;
 	emit_completed = false;
 	has_completed = false;
-	shutting_down = false;
 }
 
 Clock::~Clock ()
 {
-	if (!shutting_down)
-		timeline->unref();
-}
-
-void
-Clock::Shutdown ()
-{
-	shutting_down = true;
-	parent_clock = NULL;
 	timeline->unref();
 }
 
@@ -611,7 +601,7 @@ Clock::Reset ()
 	is_paused = false;
 	is_seeking = false;
 	begin_pause_time = 
-	accumulated_pause_time = 0;
+		accumulated_pause_time = 0;
 	has_started = false;
 	was_stopped = false;
 	emit_completed = false;
@@ -661,7 +651,6 @@ void
 ClockGroup::RemoveChild (Clock *clock)
 {
 	child_clocks = g_list_remove (child_clocks, clock);
-	clock->SetParentClock (NULL);
 	clock->unref ();
 }
 
@@ -771,20 +760,13 @@ ClockGroup::Reset ()
 		((Clock*)l->data)->Reset();
 }
 
-void
-ClockGroup::Clear ()
-{
-	while (child_clocks != NULL)
-		RemoveChild ((Clock *) child_clocks->data);
-}
-
 ClockGroup::~ClockGroup ()
 {
 	GList *node = child_clocks;
 	GList *next;
+
 	while (node != NULL) {
 		Clock *clock = (Clock *) node->data;
-		clock->Shutdown ();
 		clock->unref ();
 
 		next = node->next;

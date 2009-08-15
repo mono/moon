@@ -7,15 +7,6 @@
 
 	r: toshok
 
-2009-08-14  Andreia Gaita  <avidigal@novell.com>
-
-	* dependencyobject.cpp: DetachTarget must never be used if the storage
-	is going to be deleted, it breaks storage cleanup and causes
-	crashes later on. Move storage_hash cleanup to Dispose.
-	fixes crash on drt 109
-
-	r: toshok
-
 2009-08-14  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp (Arrange): apply the size constraints after
@@ -188,19 +179,6 @@
 	
 	r: lewing
 
-2009-08-14  Andreia Gaita  <avidigal@novell.com>
-
-	* dependencyobject.cpp (clone_animation_storage): detach the old
-	storage, and change the storage of the animation clock to point to
-	the newly cloned one - clocks only have a single storage reference,
-	so when they die they need to delete the storage, and when we're
-	cloning a storage, the clock remains the same, so it needs to get
-	updated too. Also, don't detach the new storage or call
-	AttachAnimationStorage manually, that's already	done in it's
-	constructor.
-
-	r: alan
-
 2009-08-13  Larry Ewing  <lewing@novell.com>
 
 	* usercontrol.cpp (MeasureOverride): don't constrain the results.
@@ -285,23 +263,6 @@
 	free the bitmapdata when it's destroyed.
 
 	* cbinding.h|cpp: regen
-
-2009-08-13  Andreia Gaita  <avidigal@novell.com>
-
-	r: kangaroo
-
-	Clock leak fixes (the splash and anything else that uses BeginStoryboard)
-
-	* animation.[h|cpp]: Fix leaks when shutting down BeginStoryboard
-	* timeline.[h|cpp]: Move Teardown methods from Storyboard to here
-	so that other types of timeline stop leaking clocks when shutting
-	down. If a timeline's clock has no parent, unref it to release the
-	circular reference.
-
-	* clock.[h|cpp]: Add Clear() method to clear child clocks when
-	shutting down a ClockGroup. On RemoveChild and when destroying,
-	set the child clock's parent to NULL. Add Shutdown() method to
-	fix circular references with timeline
 
 2009-08-12  Alan McGovern  <amcgovern@novell.com>
 
