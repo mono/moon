@@ -1986,7 +1986,7 @@ MediaDisposeObjectClosure::Dispose ()
 	if (!CallExecuted ()) {
 		// we haven't been executed. do it now.
 #if SANITY && DEBUG
-		printf ("MediaDisposeObjectClosure::~MediaDisposeObjectClosure (): callback hasn't been executed, we'll do it now.\n");
+		LOG_PIPELINE ("MediaDisposeObjectClosure::~MediaDisposeObjectClosure (): callback hasn't been executed, we'll do it now.\n");
 #endif
 		Call ();
 	}
@@ -3082,7 +3082,7 @@ IMediaObject::Dispose ()
 	if (GetRefCount () != 0 && media != NULL && !media->InMediaThread ()) {
 		// if refcount != 0 we're not being called just before destruction, in which case we should
 		// only be on the media thread.
-		printf ("IMediaObject::Dispose (): this method should only be called from the media thread.\n");
+		LOG_PIPELINE ("IMediaObject::Dispose (): this method should only be called from the media thread.\n");
 	}
 #endif
 
