@@ -633,16 +633,16 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 		return;
 	
 	cairo_save (cr);
-	
 	cairo_set_matrix (cr, &absolute_xform);
-	
-	// if we're opaque, we can likely do this and hopefully get a
-	// speed up since the server won't have to blend.
-	//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
 	cairo_new_path (cr);
 	
-	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
-	Rect video = Rect (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
+        Size framework (GetActualWidth (), GetActualHeight ());
+	Rect video (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
+
+	if (stretch != StretchNone)
+		framework = ApplySizeConstraints (framework);
+
+	Rect paint (0, 0, framework.width, framework.height);
 
 	/*
 	if (absolute_xform.xy == 0 && absolute_xform.yx == 0) {
@@ -654,16 +654,7 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 		paint = paint.Transform (&inv);
 	}
 	*/
-	
-	Size specified = Size (GetWidth (), GetHeight ());
-	if (GetVisualParent () && GetVisualParent()->Is (Type::CANVAS)) {
-		if (!isnan (specified.width))
-			paint.width = specified.width;
-		
-		if (!isnan (specified.height))
-			paint.height = specified.height;
-	}
-	
+
 	image_brush_compute_pattern_matrix (&matrix, 
 					    paint.width, paint.height, 
 					    video.width, video.height,
@@ -672,12 +663,11 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	pattern = cairo_pattern_create_for_surface (surface);	
 	
-	
 	cairo_pattern_set_matrix (pattern, &matrix);
 		
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
-	
+
 	if (IsPlaying ())
 		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
 
@@ -685,8 +675,10 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 		RenderLayoutClip (cr);
 
 	paint.Draw (cr);
-	cairo_fill (cr);
-	
+
+	if (!path_only)
+		cairo_fill (cr);
+
 	cairo_restore (cr);
 }
 
