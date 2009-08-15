@@ -1,5 +1,13 @@
 2009-08-14  Larry Ewing  <lewing@novell.com>
 
+	* grid.cpp (MeasureOverride): properly use min and max.
+
+	Fixes regression in DRT #319 from new table code
+
+	r: kangaroo
+
+2009-08-14  Larry Ewing  <lewing@novell.com>
+
 	* media.cpp: always adjust our paint rectangle when Stretch !=
 	StretchNone.
 

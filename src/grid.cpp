@@ -126,9 +126,11 @@ Grid::MeasureOverride (Size availableSize)
 		GridLength* height = rowdef->GetHeight();
 
 		rowdef->SetActualHeight (INFINITY);
-		row_matrix [i][i] = Segment (0.0, rowdef->GetMaxHeight (), rowdef->GetMaxHeight (), height->type);
+		row_matrix [i][i] = Segment (0.0, rowdef->GetMaxHeight (), rowdef->GetMinHeight (), height->type);
 
 		double value = height->val;
+		value = MIN (rowdef->GetMaxHeight (), value);
+		value = MAX (rowdef->GetMinHeight (), value);
 		if (height->type == GridUnitTypePixel) {
 			row_matrix [i][i].size = value;
 			rowdef->SetActualHeight (value);
@@ -142,9 +144,12 @@ Grid::MeasureOverride (Size availableSize)
 		GridLength *width = coldef->GetWidth ();
 
 		coldef->SetActualWidth (INFINITY);
-		col_matrix [i][i] = Segment (0.0, coldef->GetMaxWidth (), coldef->GetMaxWidth (), width->type);
+		col_matrix [i][i] = Segment (0.0, coldef->GetMaxWidth (), coldef->GetMinWidth (), width->type);
 
 		double value = width->val;
+		value = MIN (coldef->GetMaxWidth (), value);
+		value = MAX (coldef->GetMinWidth (), value);
+
 		if (width->type == GridUnitTypePixel) {
 			col_matrix [i][i].size = value;
 			coldef->SetActualWidth (value);
