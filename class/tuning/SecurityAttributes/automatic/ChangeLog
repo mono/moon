@@ -1,3 +1,8 @@
+2009-08-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.ssc: Regenerated and removed merge failure
+	markers.
+
 2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.auto.ssc: Regenerated.

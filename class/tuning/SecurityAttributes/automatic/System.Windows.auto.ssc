@@ -70,12 +70,8 @@
 +SSC-M: System.Int32 Mono.StreamWrapper::Read(System.IntPtr,System.Byte[],System.Int32,System.Int32)
 +SSC-M: System.Void Mono.StreamWrapper::Write(System.IntPtr,System.Byte[],System.Int32,System.Int32)
 +SSC-M: System.Void Mono.StreamWrapper::Seek(System.IntPtr,System.Int64,System.IO.SeekOrigin)
-<<<<<<< HEAD:class/tuning/SecurityAttributes/automatic/System.Windows.auto.ssc
 +SSC-M: System.Void Mono.StreamWrapper::Close(System.IntPtr)
-+SSC-M: System.Void Mono.ToggleRef::.ctor(Mono.INativeDependencyObjectWrapper)
-=======
 +SSC-M: System.Void Mono.ToggleRef::.ctor(Mono.INativeEventObjectWrapper)
->>>>>>> In class/System.Windows::class/tuning/SecurityAttributes/automatic/System.Windows.auto.ssc
 +SSC-M: System.Void Mono.ToggleRef::Initialize()
 +SSC-M: System.Void Mono.ToggleRef::Free()
 +SSC-M: Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
@@ -436,6 +432,7 @@
 +SSC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Resources.StreamResourceInfo::FromFile(System.String)
 +SSC-M: System.Void System.Windows.RoutedEventArgs::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Void System.Windows.RoutedEventArgs::.ctor()
++SSC-M: Mono.Kind System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.GetKind()
 +SSC-M: System.Object System.Windows.RoutedEventArgs::get_OriginalSource()
 +SSC-M: System.Void System.Windows.RoutedEventArgs::set_OriginalSource(System.Object)
 +SSC-M: System.Void System.Windows.Setter::.ctor()

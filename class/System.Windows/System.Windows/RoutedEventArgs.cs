@@ -53,7 +53,7 @@ namespace System.Windows {
 		
 		Kind INativeEventObjectWrapper.GetKind ()
 		{
-			throw new NotSupportedException ();
+			return NativeMethods.event_object_get_object_type (_native);
 		}
 		
 		internal RoutedEventArgs (IntPtr raw, bool dropref)

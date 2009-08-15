@@ -1,3 +1,8 @@
+2009-08-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* RoutedEventArgs.cs: Fix GetKind to do what it should do and what
+	andreia actually reviewed.
+
 2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* RoutedEventArgs.cs: Use toggle ref semantics.
