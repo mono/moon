@@ -1,6 +1,6 @@
-AC_INIT([moonlight], [1.9.7])
+AC_INIT([moonlight], [1.99.1])
 
-AC_DEFINE([PREVIEW_VERSION], ["7"], "")
+AC_DEFINE([PREVIEW_VERSION], ["2b1"], "")
 
 AC_CONFIG_SRCDIR(README)
 AC_CANONICAL_SYSTEM
