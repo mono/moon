@@ -133,10 +133,10 @@ struct Segment {
 	GridUnitType type;
 
 	Segment ();
-	Segment (double size, double max, double min, GridUnitType type);
+	Segment (double size, double min, double max, GridUnitType type);
 
  private:
-	void Init (double size, double max, double min, GridUnitType type);
+	void Init (double size, double min, double max, GridUnitType type);
 };
 
 /* @Namespace=System.Windows.Controls */

@@ -126,7 +126,7 @@ Grid::MeasureOverride (Size availableSize)
 		GridLength* height = rowdef->GetHeight();
 
 		rowdef->SetActualHeight (INFINITY);
-		row_matrix [i][i] = Segment (0.0, rowdef->GetMaxHeight (), rowdef->GetMinHeight (), height->type);
+		row_matrix [i][i] = Segment (0.0, rowdef->GetMinHeight (), rowdef->GetMaxHeight (), height->type);
 
 		double value = height->val;
 		value = MIN (rowdef->GetMaxHeight (), value);
@@ -144,7 +144,7 @@ Grid::MeasureOverride (Size availableSize)
 		GridLength *width = coldef->GetWidth ();
 
 		coldef->SetActualWidth (INFINITY);
-		col_matrix [i][i] = Segment (0.0, coldef->GetMaxWidth (), coldef->GetMinWidth (), width->type);
+		col_matrix [i][i] = Segment (0.0, coldef->GetMinWidth (), coldef->GetMaxWidth (), width->type);
 
 		double value = width->val;
 		value = MIN (coldef->GetMaxWidth (), value);
@@ -694,16 +694,16 @@ RowDefinition::~RowDefinition ()
 
 Segment::Segment ()
 {
-	Init (0.0, INFINITY, 0.0, GridUnitTypePixel);
+	Init (0.0, 0.0, INFINITY, GridUnitTypePixel);
 }
 
-Segment::Segment (double size, double max, double min, GridUnitType type)
+Segment::Segment (double size, double min, double max, GridUnitType type)
 {
-	Init (size, max, min, type);
+	Init (size, min, max, type);
 }
 
 void
-Segment::Init (double size, double max, double min, GridUnitType type)
+Segment::Init (double size, double min, double max, GridUnitType type)
 {
 	this->size = size;
 	this->max = max;

@@ -1,3 +1,10 @@
+2009-08-17  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: Change the parameter order in the Segment
+	  constructors to be "value, min, max" to be consistent with
+	  how 'CLAMP' is usually defined. r: jackson
+
 2009-08-16  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (value_from_str_with_parser): fix the abundant memory
