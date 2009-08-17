@@ -1,3 +1,10 @@
+2009-08-17  Andreia Gaita  <avidigal@novell.com>
+
+	* ff3-dom.cpp: don't delete the wrapper, it's refcounted by gecko
+	and disposed when RemoveEventListener is called.
+
+	r: toshok
+
 2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ff3-http.cpp:
