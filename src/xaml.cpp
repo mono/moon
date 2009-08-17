@@ -3560,18 +3560,18 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::BRUSH:
 	case Type::SOLIDCOLORBRUSH: {
 		// Only solid color brushes can be specified using attribute syntax
-		SolidColorBrush *scb = new SolidColorBrush ();
 		Color *c = color_from_str (s);
 		
 		if (c == NULL)
 			break;
+
+		SolidColorBrush *scb = new SolidColorBrush ();
 		
 		scb->SetColor (c);
 		delete c;
 		
-		*v = new Value (scb);
+		*v = Value::CreateUnrefPtr (scb);
 		*v_set = true;
-		scb->unref ();
 		break;
 	}
 	case Type::POINT: {
@@ -3605,42 +3605,38 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		break;
 	}
 	case Type::URI: {
-		Uri *uri = new Uri ();
+		Uri uri;
 
-		if (!uri->Parse (s)) {
-			delete uri;
+		if (!uri.Parse (s)) {
 			break;
 		}
 
-		*v = new Value (*uri);
+		*v = new Value (uri);
 		*v_set = true;
-		delete uri;
 		break;
 	}
 	case Type::DOUBLE_COLLECTION: {
 		DoubleCollection *doubles = DoubleCollection::FromStr (s);
 		if (!doubles) {
-			*v = new Value (new DoubleCollection ());
+			*v = Value::CreateUnrefPtr (new DoubleCollection ());
 			*v_set = true;
 			break;
 		}
 
-		*v = new Value (doubles);
+		*v = Value::CreateUnrefPtr (doubles);
 		*v_set = true;
-		doubles->unref ();
 		break;
 	}
 	case Type::POINT_COLLECTION: {
 		PointCollection *points = PointCollection::FromStr (s);
 		if (!points) {
-			*v = new Value (new PointCollection ());
+			*v = Value::CreateUnrefPtr (new PointCollection ());
 			*v_set = true;
 			break;
 		}
 
-		*v = new Value (points);
+		*v = Value::CreateUnrefPtr (points);
 		*v_set = true;
-		points->unref ();
 		break;
 	}
 	case Type::TRANSFORMGROUP: {
@@ -3747,19 +3743,16 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	}
 	case Type::IMAGESOURCE:
 	case Type::BITMAPIMAGE: {
+		Uri uri;
+
+		if (!uri.Parse (s))
+			break;
+
 		BitmapImage *bi = new BitmapImage ();
 
-		Uri *uri = new Uri ();
+		bi->SetUriSource (&uri);
 
-		if (!uri->Parse (s)) {
-			delete uri;
-			break;
-		}
-
-		bi->SetUriSource (uri);
-		delete uri;
-
-		*v = new Value (bi); 
+		*v = Value::CreateUnrefPtr (bi); 
 		*v_set = true;
 
 		break;
@@ -3770,14 +3763,12 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		// Uri starting with a '/' in xaml are still relative to the source uri (as tested on SL :/ )
 		// MS DRT #511 tries to download "/sunset/sunset.xml", and it should be interpreted as a relative path.
 		// MS DRT #509 tries to download "/TestBins/TestResources/SeaDragon/Collection_20/Collection_20.xml", and it should be interpreted as an absolute path.
-		Uri *uri = new Uri ();
-		if (!uri->Parse (g_str_has_prefix (s, "/") ? s+1 : s)) {
-			delete uri;
+		Uri uri;
+		if (!uri.Parse (g_str_has_prefix (s, "/") ? s+1 : s))
 			break;
-		}
-		*v = new Value (new DeepZoomImageTileSource (uri));
+
+		*v = Value::CreateUnrefPtr (new DeepZoomImageTileSource (&uri));
 		*v_set = true;
-		delete uri;
 
 		break;
 	}
@@ -3811,9 +3802,9 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		break;
 	}
 	case Type::PROPERTYPATH: {
-		PropertyPath *path = new PropertyPath (s);
-		path->expanded_path = expand_property_path (p, path);
-		*v = new Value (*path);
+		PropertyPath path (s);
+		path.expanded_path = expand_property_path (p, &path);
+		*v = new Value (path);
 		*v_set = true;
 		break;
 	}

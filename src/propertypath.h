@@ -33,6 +33,13 @@ public:
 		this->property = NULL;
 	}
 
+	PropertyPath (const PropertyPath &path)
+	{
+		this->path = g_strdup (path.path);
+		this->expanded_path = g_strdup (path.expanded_path);
+		this->property = path.property;
+	}
+
 	~PropertyPath ()
 	{
 		g_free (path);

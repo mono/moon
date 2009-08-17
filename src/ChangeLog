@@ -1,5 +1,15 @@
 2009-08-16  Chris Toshok  <toshok@ximian.com>
 
+	* xaml.cpp (value_from_str_with_parser): fix the abundant memory
+	leaks in this method.
+
+	* propertypath.h (struct PropertyPath): add a copy constructor
+	here so the xaml.cpp changes work without crashing.
+
+	r: andreia
+
+2009-08-16  Chris Toshok  <toshok@ximian.com>
+
 	* xaml.cpp (value_from_str_with_parser): we were using the return
 	value from this method to be "v has been set to a value", but this
 	isn't enough state.  We also need to know if the
