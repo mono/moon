@@ -98,7 +98,7 @@ plugin_menu_about (PluginInstance *plugin)
 #if FINAL_RELEASE
 	gtk_about_dialog_set_website (about, "http://moonlight-project.com/");
 #else
-	gtk_about_dialog_set_website (about, "http://moonlight-project.com/Preview");
+	gtk_about_dialog_set_website (about, "http://moonlight-project.com/Beta");
 #endif
 
 	gtk_about_dialog_set_website_label (about, "Project Website");

@@ -1,3 +1,10 @@
+2009-08-16  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (plugin_menu_about): we aren't doing previews
+	anymore, we're doing betas.
+
+	r: andreia
+	
 2009-08-12  Alan McGovern  <amcgovern@novell.com>
 
 	* cbinding.h: regen r: toshok
