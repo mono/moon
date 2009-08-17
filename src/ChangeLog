@@ -1,5 +1,12 @@
 2009-08-15  Larry Ewing  <lewing@novell.com>
 
+	* mediaelement.cpp (Render): use the same logic we used in image
+	here to always adjust the paint rect when stretch != StretchNone.
+
+	r: andreia
+
+2009-08-15  Larry Ewing  <lewing@novell.com>
+
 	* shape.cpp (MeasureOverride): Stretch to the proper width when
 	available size in not infinite.  Avoid using infinite dimesions as
 	constraints for Uniform stretches.

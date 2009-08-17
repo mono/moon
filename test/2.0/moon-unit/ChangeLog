@@ -1,3 +1,8 @@
+2009-08-15  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Shapes/PathTest.cs: put the Path tests back into
+	compliance.
+
 2009-08-14  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/GridTest.cs:
