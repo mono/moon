@@ -98,7 +98,7 @@ static const char* default_namespace_names [] = {
 #define MC_IGNORABLE_NAMESPACE_URI "http://schemas.openxmlformats.org/markup-compatibility/2006"
 
 
-static bool value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop_name, const char *str, Value **v);
+static bool value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop_name, const char *str, Value **v, bool *v_set);
 static bool dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value, bool raise_errors);
 static bool set_managed_attached_property (XamlParserInfo *p, XamlElementInstance *item, XamlElementInstance *property, XamlElementInstance *value);
 static void dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, XamlElementInstance *child, bool fail_if_no_prop);
@@ -3344,17 +3344,22 @@ expand_property_path (XamlParserInfo *p, PropertyPath *path)
 bool
 value_from_str (Type::Kind type, const char *prop_name, const char *str, Value **v)
 {
-	return value_from_str_with_parser (NULL, type, prop_name, str, v);
+	bool v_set = false;
+
+	value_from_str_with_parser (NULL, type, prop_name, str, v, &v_set);
+
+	return v_set;
 }
 
 static bool
-value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop_name, const char *str, Value **v)
+value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop_name, const char *str, Value **v, bool *v_set)
 {
 	char *endptr;
 	*v = NULL;
 	
 	if (value_is_explicit_null (str)) {
 		*v = NULL;
+		*v_set = true;
 		return true;
 	}
 
@@ -3365,7 +3370,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	}
 	else {
 		// everything else depends on the string being stripped
-		g_strstrip (s);
+		s = g_strstrip (s);
 	}
 
 	switch (type) {
@@ -3374,6 +3379,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		// probe str to see if it's actually meant to be a
 		// specific type.  just assume it's a string.
 		*v = new Value (s);
+		*v_set = true;
 		break;
 	}
 
@@ -3390,10 +3396,8 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 			errno = 0;
 			l = strtol (s, &endptr, 10);
 
-			if (errno || endptr == s || *endptr || l > G_MAXINT32 || l < G_MININT32) {
-				g_free (s);
-				return false;
-			}
+			if (errno || endptr == s || *endptr || l > G_MAXINT32 || l < G_MININT32)
+				break;
 
 			if (l == 0)
 				b = false;
@@ -3402,6 +3406,7 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		}
 
 		*v = new Value (b);
+		*v_set = true;
 		break;
 	}
 	case Type::DOUBLE: {
@@ -3411,8 +3416,8 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		//
 		// FIXME: this causes a 2.0 unit test to fail (PrimitiveTest.ParseEmptyDouble)
 		if (IS_NULL_OR_EMPTY(s)) {
-			g_free(s);
-			return true;
+			g_free (s);
+			return false;
 		}
 
 		bool is_nan = false;
@@ -3428,13 +3433,12 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 			    && (!strcmp (prop_name, "Width") || !strcmp (prop_name, "Height"))
 			    && (!g_ascii_strcasecmp (s, "Auto") || is_nan))
 				d = NAN;
-			else {
-				g_free (s);
-				return false;
-			}
+			else
+				break;
 		}
 
 		*v = new Value (d);
+		*v_set = true;
 		break;
 	}
 	case Type::INT64: {
@@ -3443,51 +3447,46 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		errno = 0;
 		l = strtol (s, &endptr, 10);
 
-		if (errno || endptr == s) {
-			g_free (s);
-			return false;
-		}
+		if (errno || endptr == s)
+			break;
 
 		*v = new Value (l, Type::INT64);
+		*v_set = true;
 		break;
 	}
 	case Type::TIMESPAN: {
 		TimeSpan ts;
 
-		if (!time_span_from_str (s, &ts)) {
-			g_free (s);
-			return false;
-		}
+		if (!time_span_from_str (s, &ts))
+			break;
 
 		*v = new Value (ts, Type::TIMESPAN);
+		*v_set = true;
 		break;
 	}
 	case Type::INT32: {
 		int i;
 
-		if (IS_NULL_OR_EMPTY(s)) {
+		if (IS_NULL_OR_EMPTY(s))
 			i = 0;
-		}
 		else if (g_ascii_isalpha (s[0]) && prop_name) {
 			i = enums_str_to_int (prop_name, s);
 			if (i == -1) {
 //				g_warning ("'%s' enum is not valid on '%s' property", str, prop_name);
-				g_free (s);
-				return false;
+				break;
 			}
 		} else {
 			errno = 0;
 			long l = strtol (s, &endptr, 10);
 
-			if (errno || endptr == s) {
-				g_free (s);
-				return false;
-			}
+			if (errno || endptr == s)
+				break;
 
 			i = (int) l;
 		}
 
 		*v = new Value (i);
+		*v_set = true;
 		break;
 	}
 	case Type::CHAR: {
@@ -3495,70 +3494,67 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		const char *next;
 		
 		if ((int) unichar < 0)
-			return false;
+			break;
 		
 		if (!(next = g_utf8_next_char (str)) || *next != '\0')
-			return false;
+			break;
 		
 		*v = new Value (unichar, Type::CHAR);
+		*v_set = true;
 		break;
 	}
 	case Type::STRING: {
 		*v = new Value (str);
+		*v_set = true;
 		break;
 	}
 	case Type::COLOR: {
 		Color *c = color_from_str (s);
-		if (c == NULL) {
-			g_free (s);
-			return false;
-		}
+		if (c == NULL)
+			break;
 		*v = new Value (*c);
+		*v_set = true;
 		delete c;
 		break;
 	}
 	case Type::REPEATBEHAVIOR: {
 		RepeatBehavior rb = RepeatBehavior::Forever;
 
-		if (!repeat_behavior_from_str (s, &rb)) {
-			g_free (s);
-			return false;
-		}
+		if (!repeat_behavior_from_str (s, &rb))
+			break;
 
 		*v = new Value (rb);
+		*v_set = true;
 		break;
 	}
 	case Type::DURATION: {
 		Duration d = Duration::Forever;
 
-		if (!duration_from_str (s, &d)) {
-			g_free (s);
-			return false;
-		}
+		if (!duration_from_str (s, &d))
+			break;
 
 		*v = new Value (d);
+		*v_set = true;
 		break;
 	}
 	case Type::KEYTIME: {
 		KeyTime kt = KeyTime::Paced;
 
-		if (!keytime_from_str (s, &kt)) {
-			g_free (s);
-			return false;
-		}
+		if (!keytime_from_str (s, &kt))
+			break;
 
 		*v = new Value (kt);
+		*v_set = true;
 		break;
 	}
 	case Type::KEYSPLINE: {
 		KeySpline *ks;
 
-		if (!key_spline_from_str (s, &ks)) {
-			g_free (s);
-			return false;
-		}
+		if (!key_spline_from_str (s, &ks))
+			break;
 
 		*v = Value::CreateUnrefPtr (ks);
+		*v_set = true;
 		break;
 	}
 	case Type::BRUSH:
@@ -3567,99 +3563,93 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		SolidColorBrush *scb = new SolidColorBrush ();
 		Color *c = color_from_str (s);
 		
-		if (c == NULL) {
-			g_free (s);
-			return false;
-		}
+		if (c == NULL)
+			break;
 		
 		scb->SetColor (c);
 		delete c;
 		
 		*v = new Value (scb);
+		*v_set = true;
 		scb->unref ();
 		break;
 	}
 	case Type::POINT: {
 		Point p;
 
-		if (!Point::FromStr (s, &p)) {
-			g_free (s);
-			return false;
-		}
+		if (!Point::FromStr (s, &p))
+			break;
 
 		*v = new Value (p);
+		*v_set = true;
 		break;
 	}
 	case Type::SIZE: {
 		Size size;
 
-		if (!Size::FromStr (s, &size)) {
-			g_free (s);
-			return false;
-		}
+		if (!Size::FromStr (s, &size))
+			break;
 
 		*v = new Value (size);
+		*v_set = true;
 		break;
 	}
 	case Type::RECT: {
 		Rect rect;
 
-		if (!Rect::FromStr (s, &rect)) {
-			g_free (s);
-			return false;
-		}
+		if (!Rect::FromStr (s, &rect))
+			break;
 
 		*v = new Value (rect);
+		*v_set = true;
 		break;
 	}
 	case Type::URI: {
 		Uri *uri = new Uri ();
 
 		if (!uri->Parse (s)) {
-			g_free (s);
 			delete uri;
-			return false;
+			break;
 		}
 
 		*v = new Value (*uri);
+		*v_set = true;
 		delete uri;
 		break;
 	}
 	case Type::DOUBLE_COLLECTION: {
 		DoubleCollection *doubles = DoubleCollection::FromStr (s);
 		if (!doubles) {
-			g_free (s);
 			*v = new Value (new DoubleCollection ());
-			return true;
+			*v_set = true;
+			break;
 		}
 
 		*v = new Value (doubles);
+		*v_set = true;
 		doubles->unref ();
 		break;
 	}
 	case Type::POINT_COLLECTION: {
 		PointCollection *points = PointCollection::FromStr (s);
 		if (!points) {
-			g_free (s);
 			*v = new Value (new PointCollection ());
-			return true;
+			*v_set = true;
+			break;
 		}
 
 		*v = new Value (points);
+		*v_set = true;
 		points->unref ();
 		break;
 	}
 	case Type::TRANSFORMGROUP: {
-		if (IS_NULL_OR_EMPTY(s)) {
-			g_free (s);
-			return true;
-		}
+		if (IS_NULL_OR_EMPTY(s))
+			break;
 
 		Matrix *mv = matrix_from_str (s);
-		if (!mv) {
-			g_free (s);
-			return false;
-		}
+		if (!mv)
+			break;
 
 		TransformGroup *tg = new TransformGroup ();
 		MatrixTransform *t = new MatrixTransform ();
@@ -3669,35 +3659,34 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		t->unref ();
 
 		*v = new Value (tg);
+		*v_set = true;
 		tg->unref ();
 		mv->unref ();
 		break;
 	}
 	case Type::TRANSFORM:
 
-			if (!g_ascii_strcasecmp ("Identity", str)) {
-				*v = NULL;
-				return true;
-			}
+		if (!g_ascii_strcasecmp ("Identity", str)) {
+			*v = NULL;
+			*v_set = true;
+			break;
+		}
 
-			// Intentional fall through, you can create a matrix from a TRANSFORM property, but not using Identity
+		// Intentional fall through, you can create a matrix from a TRANSFORM property, but not using Identity
 	case Type::MATRIXTRANSFORM:
 	{
-		if (IS_NULL_OR_EMPTY(s)) {
-			g_free (s);
-			return true;
-		}
+		if (IS_NULL_OR_EMPTY(s))
+			break;
 
 		Matrix *mv = matrix_from_str (s);
-		if (!mv) {
-			g_free (s);
-			return false;
-		}
+		if (!mv)
+			break;
 
 		MatrixTransform *t = new MatrixTransform ();
 		t->SetValue (MatrixTransform::MatrixProperty, Value (mv));
 
 		*v = new Value (t);
+		*v_set = true;
 		t->unref ();
 		mv->unref ();
 		break;
@@ -3706,12 +3695,11 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::MATRIX: {
 		// note: unlike TRANSFORM this creates an empty, identity, matrix for an empty string
 		Matrix *matrix = matrix_from_str (s);
-		if (!matrix) {
-			g_free (s);
-			return false;
-		}
+		if (!matrix)
+			break;
 
 		*v = new Value (matrix);
+		*v_set = true;
 		matrix->unref ();
 		break;
 	}
@@ -3719,46 +3707,42 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::GEOMETRY: {
 		Geometry *geometry = geometry_from_str (s);
 
-		if (!geometry) {
-			g_free (s);
-			return false;
-		}
+		if (!geometry)
+			break;
 
 		*v = new Value (geometry);
+		*v_set = true;
 		geometry->unref ();
 		break;
 	}
 	case Type::THICKNESS: {
 		Thickness t;
 
-		if (!Thickness::FromStr (s, &t)) {
-			g_free (s);
-			return false;
-		}
+		if (!Thickness::FromStr (s, &t))
+			break;
 
 		*v = new Value (t);
+		*v_set = true;
 		break;
 	}
 	case Type::CORNERRADIUS: {
 		CornerRadius c;
 
-		if (!CornerRadius::FromStr (s, &c)) {
-			g_free (s);
-			return false;
-		}
+		if (!CornerRadius::FromStr (s, &c))
+			break;
 
 		*v = new Value (c);
+		*v_set = true;
 		break;
 	}
 	case Type::GRIDLENGTH: {
 		GridLength grid_length;
 
-		if (!grid_length_from_str (s, &grid_length)) {
-			g_free (s);
-			return false;
-		}
+		if (!grid_length_from_str (s, &grid_length))
+			break;
 
 		*v = new Value (grid_length);
+		*v_set = true;
 		break;
 	}
 	case Type::IMAGESOURCE:
@@ -3768,15 +3752,15 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		Uri *uri = new Uri ();
 
 		if (!uri->Parse (s)) {
-			g_free (s);
 			delete uri;
-			return false;
+			break;
 		}
 
 		bi->SetUriSource (uri);
 		delete uri;
 
 		*v = new Value (bi); 
+		*v_set = true;
 
 		break;
 	}
@@ -3788,51 +3772,56 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		// MS DRT #509 tries to download "/TestBins/TestResources/SeaDragon/Collection_20/Collection_20.xml", and it should be interpreted as an absolute path.
 		Uri *uri = new Uri ();
 		if (!uri->Parse (g_str_has_prefix (s, "/") ? s+1 : s)) {
-			g_free (s);
 			delete uri;
-			return false;
+			break;
 		}
 		*v = new Value (new DeepZoomImageTileSource (uri));
+		*v_set = true;
 		delete uri;
 
 		break;
 	}
 	case Type::FONTFAMILY: {
 		*v = new Value (FontFamily (s)); 
+		*v_set = true;
 		break;
 	}
 	case Type::FONTWEIGHT: {
 		int fw = enums_str_to_int ("FontWeight", s);
-		if (fw == -1)
-			return false;
-		*v = new Value (FontWeight ((FontWeights)fw));
+		if (fw != -1) {
+			*v = new Value (FontWeight ((FontWeights)fw));
+			*v_set = true;
+		}
 		break;
 	}
 	case Type::FONTSTYLE: {
 		int fs = enums_str_to_int ("FontStyle", s);
-		if (fs == -1)
-			return false;
-		*v = new Value (FontStyle ((FontStyles)fs));
+		if (fs != -1) {
+			*v = new Value (FontStyle ((FontStyles)fs));
+			*v_set = true;
+		}
 		break;
 	}
 	case Type::FONTSTRETCH: {
 		int fs = enums_str_to_int ("FontStretch", s);
-		if (fs == -1)
-			return false;
-		*v = new Value (FontStretch ((FontStretches)fs));
+		if (fs != -1) {
+			*v = new Value (FontStretch ((FontStretches)fs));
+			*v_set = true;
+		}
 		break;
 	}
 	case Type::PROPERTYPATH: {
 		PropertyPath *path = new PropertyPath (s);
 		path->expanded_path = expand_property_path (p, path);
 		*v = new Value (*path);
+		*v_set = true;
 		break;
 	}
 	default:
 		// we don't care about NULL or empty values
 		if (!IS_NULL_OR_EMPTY (s)) {
 			g_free (s);
-			return false;
+			return true;
 		}
 	}
 
@@ -4942,27 +4931,26 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			bool v_set = false;
 			char *attr_value = g_strdup (attr [i+1]);
 
-			bool need_setvalue = true;
 			bool need_managed = false;
-			if (attr[i+1][0] == '{' && attr[i+1][strlen(attr[i+1]) - 1] == '}') {
-				need_setvalue = true;
-				need_managed = true;
+			if (attr[i+1][0] == '{') {
+				if (attr[i+1][1] == '}') {
+					// {} is an escape sequence so you can have strings like {StaticResource}
+					char *nv = attr_value;
+					attr_value = g_strdup (attr_value + 2);
+					g_free (nv);
+				}
+				else if (attr[i+1][strlen(attr[i+1]) - 1] == '}') {
+					need_managed = true; 
+				}
 			}
 
-			if (!need_setvalue) {
-				g_free (attr_value);
-				continue;
+			if (!need_managed) {
+				if (!value_from_str_with_parser (p, prop->GetPropertyType(), prop->GetName(), attr_value, &v, &v_set)) {
+					delete v;
+					g_free (attr_value);
+					continue;
+				}
 			}
-
-			if ((attr_value [0] && attr_value [0] == '{') && (attr_value [1] && attr_value [1] == '}')) {
-				// {} is an escape sequence so you can have strings like {StaticResource}
-				char *nv = attr_value;
-				attr_value = g_strdup (attr_value + 2);
-				g_free (nv);
-			}
-
-			if (!v_set && !need_managed)
-				v_set = value_from_str_with_parser (p, prop->GetPropertyType(), prop->GetName(), attr_value, &v);
 
 			Type::Kind propKind = prop->GetPropertyType ();
 			Type::Kind itemKind = item->info->GetKind();
@@ -4970,7 +4958,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			if (need_managed || is_managed_kind (propKind) || types->Find (itemKind)->IsCustomType () || (v && is_managed_kind (v->GetKind ()))) {
 				bool str_value = false;
 				if (!v_set) {
-					v = new Value (g_strdup (attr [i + 1])); // Note that we passed the non escaped value, not attr_value
+					v = new Value (attr [i + 1]); // Note that we passed the non escaped value, not attr_value
 					v_set = true;
 					str_value = true;
 				}
@@ -4980,9 +4968,15 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 					g_free (attr_value);
 					continue;
 				} else {
-					if (str_value)
+					if (str_value) {
 						delete v;
-					v_set = value_from_str_with_parser (p, prop->GetPropertyType(), prop->GetName(), attr_value, &v);
+						v = NULL;
+					}
+					if (!value_from_str_with_parser (p, prop->GetPropertyType(), prop->GetName(), attr_value, &v, &v_set)) {
+						delete v;
+						g_free (attr_value);
+						continue;
+					}
 				}
 					
 			}
@@ -4999,7 +4993,6 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				parser_error (p, item->element_name, attr [i], err.code, err.message);
 			else
 				item->MarkPropertyAsSet (prop->GetName());				
-
 
 			delete v;
 			g_free (attr_value);

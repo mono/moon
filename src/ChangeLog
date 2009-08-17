@@ -1,3 +1,24 @@
+2009-08-16  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (value_from_str_with_parser): we were using the return
+	value from this method to be "v has been set to a value", but this
+	isn't enough state.  We also need to know if the
+	caller (dependency_object_set_attributes, specifically) should
+	continue on or skip the attribute after it's called us.  So, we
+	add a "bool *v_set" parameter, and change the return value to
+	"false = skip, true = continue processing."  We return false in
+	only 1 case right now, if a double-typed value is to be parsed
+	from an empty string.  This fixes the Klotski demo, which has
+	<TranslateTransform X=""> in its xaml. Also, fix the g_strstrip
+	usage to also deal properly with leading spaces, and stop
+	duplicating "g_free (s); return true;" - just break there, and let
+	the blanket free/return at the end of the method handle it.
+	(dependency_object_set_attributes): simplify the {} handling, and
+	stop leaking the string value of the attribute when we pass it to
+	managed.
+
+	r: andreia
+	
 2009-08-14  Larry Ewing  <lewing@novell.com>
 
 	* grid.cpp (MeasureOverride): properly use min and max.
