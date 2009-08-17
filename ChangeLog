@@ -1,3 +1,10 @@
+2009-08-16  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: add foreign to AM_INIT_AUTOMAKE so it stops
+	warning us about the gmake-isms.
+
+	r: andreia
+
 2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* moon.mds: For DEBUG builds do a minimal build.
