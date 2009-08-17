@@ -1,6 +1,13 @@
 2009-08-17  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.h:
+	* grid.cpp: When allocating sizes for rows/columns, clamp the
+	  sizes between the Min and Max values in a consistent manner.
+	  r: jackson
+
+2009-08-17  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
 	* grid.cpp: Change the parameter order in the Segment
 	  constructors to be "value, min, max" to be consistent with
 	  how 'CLAMP' is usually defined. r: jackson

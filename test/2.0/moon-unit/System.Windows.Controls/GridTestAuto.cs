@@ -376,6 +376,36 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		public void SizeExceedsBounds ()
+		{
+			Grid grid = new Grid ();
+			grid.RowDefinitions.Add (new RowDefinition { Height = new GridLength (50), MaxHeight = 40, MinHeight = 60 });
+			grid.AddChild (new MyContentControl (50, 50), 0, 0, 0, 0);
+			CreateAsyncTest (grid, () => {
+				Assert.AreEqual (60, grid.RowDefinitions [0].ActualHeight, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void SizeExceedsBounds2 ()
+		{
+			Grid grid = new Grid ();
+			grid.RowDefinitions.Add (new RowDefinition { Height = new GridLength (50), MaxHeight = 60, MinHeight = 40 });
+			grid.RowDefinitions.Add (new RowDefinition { Height = new GridLength (50), MaxHeight = 60, MinHeight = 40 });
+			grid.AddChild (new MyContentControl (100, 1000), 0, 0, 0, 0);
+			CreateAsyncTest (grid,
+				() => {
+					Assert.AreEqual (50, grid.RowDefinitions [0].ActualHeight, "#1");
+					grid.ChangeRowSpan (0, 2);
+				}, () => {
+					Assert.AreEqual (50, grid.RowDefinitions [0].ActualHeight, "#1");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void AutoRows ()
 		{
 			// This checks that rows expand to be large enough to hold the largest child

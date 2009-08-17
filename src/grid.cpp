@@ -35,6 +35,16 @@ Grid::~Grid ()
 	DestroyMatrices ();
 }
 
+double
+Grid::Clamp (double val, double min, double max)
+{
+	if (val < min)
+		return min;
+	else if (val > max)
+		return max;
+	return val;
+}
+
 void
 Grid::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
@@ -128,12 +138,9 @@ Grid::MeasureOverride (Size availableSize)
 		rowdef->SetActualHeight (INFINITY);
 		row_matrix [i][i] = Segment (0.0, rowdef->GetMinHeight (), rowdef->GetMaxHeight (), height->type);
 
-		double value = height->val;
-		value = MIN (rowdef->GetMaxHeight (), value);
-		value = MAX (rowdef->GetMinHeight (), value);
 		if (height->type == GridUnitTypePixel) {
-			row_matrix [i][i].size = value;
-			rowdef->SetActualHeight (value);
+			row_matrix [i][i].size = Grid::Clamp (height->val, row_matrix [i][i].min, row_matrix [i][i].max);
+			rowdef->SetActualHeight (row_matrix [i][i].size);
 		}
 		if (height->type == GridUnitTypeStar)
 			total_stars.height += height->val;
@@ -146,13 +153,9 @@ Grid::MeasureOverride (Size availableSize)
 		coldef->SetActualWidth (INFINITY);
 		col_matrix [i][i] = Segment (0.0, coldef->GetMinWidth (), coldef->GetMaxWidth (), width->type);
 
-		double value = width->val;
-		value = MIN (coldef->GetMaxWidth (), value);
-		value = MAX (coldef->GetMinWidth (), value);
-
 		if (width->type == GridUnitTypePixel) {
-			col_matrix [i][i].size = value;
-			coldef->SetActualWidth (value);
+			col_matrix [i][i].size = Grid::Clamp (width->val, col_matrix [i][i].min, col_matrix [i][i].max);
+			coldef->SetActualWidth (col_matrix [i][i].size);
 		}
 		if (width->type == GridUnitTypeStar)
 			total_stars.width += width->val;
@@ -184,9 +187,7 @@ Grid::MeasureOverride (Size availableSize)
 
 			switch (height->type) {
 			case GridUnitTypePixel:
-				value = height->val;
-				value = MAX (value, rowdef->GetMinHeight ());
-				value = MIN (value, rowdef->GetMaxHeight ());
+				value = Grid::Clamp (height->val, rowdef->GetMinHeight (), rowdef->GetMaxHeight ());
 				child_size.height += value;
 				pixels.height += height->val;
 				break;
@@ -207,9 +208,7 @@ Grid::MeasureOverride (Size availableSize)
 			
 			switch (width->type) {
 			case GridUnitTypePixel:
-				value = width->val;
-				value = MAX (value, coldef->GetMinWidth ());
-				value = MIN (value, coldef->GetMaxWidth ());
+				value = Grid::Clamp (width->val, coldef->GetMinWidth (), coldef->GetMaxWidth ());
 				child_size.width += value;
 				pixels.width += width->val;
 				break;
@@ -705,8 +704,9 @@ Segment::Segment (double size, double min, double max, GridUnitType type)
 void
 Segment::Init (double size, double min, double max, GridUnitType type)
 {
-	this->size = size;
 	this->max = max;
 	this->min = min;
 	this->type = type;
+	
+	this->size = Grid::Clamp (size, min, max);
 }

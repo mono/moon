@@ -1,3 +1,9 @@
+2009-08-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: When allocating
+	  sizes for rows/columns, clamp the sizes between the Min and
+	  Max values in a consistent manner. r: jackson
+
 2009-08-15  Larry Ewing  <lewing@novell.com>
 
 	* System.Windows.Shapes/PathTest.cs: put the Path tests back into

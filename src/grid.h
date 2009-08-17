@@ -210,6 +210,8 @@ class Grid : public Panel {
 
 	bool GetShowGridLines ();
 	void SetShowGridLines (bool value);
+	
+	static double Clamp (double val, double min, double max);
 };
 
 #endif /* __MOON_PANEL_H__ */
