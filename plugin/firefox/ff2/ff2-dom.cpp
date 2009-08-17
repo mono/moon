@@ -234,7 +234,6 @@ FF2BrowserBridge::HtmlObjectDetachEvent (NPP npp, const char *name, gpointer lis
 
 	wrapper->target->RemoveEventListener (NS_ConvertUTF8toUTF16 (name, strlen (name)), wrapper, PR_TRUE);
 	wrapper->callback = NULL;
-	delete wrapper;
 }
 
 static NPObject *
