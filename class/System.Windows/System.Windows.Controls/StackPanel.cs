@@ -30,8 +30,6 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public partial class StackPanel : Panel {
-		Size _desired = new Size ();
-
 		public static readonly DependencyProperty OrientationProperty = 
 		DependencyProperty.RegisterCore ("Orientation", typeof (Orientation), typeof (StackPanel), null);
 		public Orientation Orientation {
@@ -41,9 +39,10 @@ namespace System.Windows.Controls {
 
 		protected override sealed Size MeasureOverride (Size availableSize) {
 			Size result = new Size (0,0);
-			Size childAvailable = childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
+			Size childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
 
 			if (Orientation == Orientation.Vertical) {
+				childAvailable.Width = availableSize.Width;
 				if (!Double.IsNaN (this.Width))
 					childAvailable.Width = this.Width;
 
@@ -52,6 +51,7 @@ namespace System.Windows.Controls {
 			}
 
 			if (Orientation == Orientation.Horizontal) {
+				childAvailable.Height = availableSize.Height;
 				if (!Double.IsNaN (this.Height))
 					childAvailable.Height = this.Height;
 
@@ -122,7 +122,7 @@ namespace System.Windows.Controls {
 				}
 			}
 
-			return new Size (requested.Width, requested.Height);
+			return finalSize;
 		}
 	}
 }

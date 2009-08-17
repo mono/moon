@@ -1,3 +1,13 @@
+2009-08-15  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (MeasureOverride): Stretch to the proper width when
+	available size in not infinite.  Avoid using infinite dimesions as
+	constraints for Uniform stretches.
+
+	Fixes Header stretching in playboy an improves DRT #210.
+
+	r: jeff
+	
 2009-08-16  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (value_from_str_with_parser): fix the abundant memory

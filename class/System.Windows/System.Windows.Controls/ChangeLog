@@ -1,3 +1,12 @@
+2009-08-15  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: pass availableSize to the limited
+	dimension. 
+
+	Fixes the text layout in Memoriabilia.
+
+	r: jeff
+
 2009-08-14  Alan McGovern  <amcgovern@novell.com>
 
 	* ContentPresenter.cs: Go back to the old method of populating

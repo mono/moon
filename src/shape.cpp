@@ -561,9 +561,6 @@ Shape::ComputeActualSize ()
 	if (!GetSurface ()) //|| LayoutInformation::GetPreviousConstraint (this) != NULL)
 		return desired;
 
-	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE))
-		return desired;
-
 	if (shape_bounds.width <= 0 && shape_bounds.height <= 0)
 		return desired;
 
@@ -606,16 +603,17 @@ Shape::MeasureOverride (Size availableSize)
 	double sx = 0.0;
 	double sy = 0.0;
 
-	if (!GetVisualParent () || GetVisualParent()->Is (Type::CANVAS))
-		return FrameworkElement::MeasureOverride (availableSize);
-
 	if (GetStretch () == StretchNone)
-		return desired.Min (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height);
+		return ApplySizeConstraints (Size (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height));
 
+	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) {
+		desired = Size (0,0);
+	}
+	
 	/* don't stretch to infinite size */
-	if (isinf (desired.width))
+	if (isinf (availableSize.width))
 		desired.width = shape_bounds.width;
-	if (isinf (desired.height))
+	if (isinf (availableSize.height))
 		desired.height = shape_bounds.height;
 
 	/* compute the scaling */
@@ -623,21 +621,31 @@ Shape::MeasureOverride (Size availableSize)
 		sx = desired.width / shape_bounds.width;
 	if (shape_bounds.height > 0)
 		sy = desired.height / shape_bounds.height;
- 
+	
+	/* don't use infinite dimensions as constraints */
+	if (isinf (availableSize.width))
+		sx = sy;
+	if (isinf (availableSize.height))
+		sy = sx;
+	
         switch (GetStretch ()) {
 	case StretchUniform:
+		sx = sy = MIN (sx, sy);
+		break;
 	case StretchUniformToFill:
-		// FIXME why are uniform and uniformtofill the same in this case?
-		// and should we be clamping on the other side... ugh...
 		sx = sy = MAX (sx, sy);
-		desired = Size (shape_bounds.width * sx, shape_bounds.height * sy);
 		break;
 	case StretchFill:		
-		desired = desired.Min (shape_bounds.width, shape_bounds.height);
+		if (isinf (availableSize.width))
+			sx = 1.0;
+		if (isinf (availableSize.height))
+			sy = 1.0;
 		break;
 	}
 
-	return desired;
+	desired = Size (shape_bounds.width * sx, shape_bounds.height * sy);
+
+	return desired.Min (availableSize);
 }
 
 Size
