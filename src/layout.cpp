@@ -892,8 +892,11 @@ word_type_changed (WordType wtype, gunichar c, GUnicodeType ctype, GUnicodeBreak
 	switch (wtype) {
 	case WORD_TYPE_ALPHABETIC:
 		return type != WORD_TYPE_NUMERIC;
+#if 0
 	case WORD_TYPE_IDEOGRAPHIC:
+		// this fixes drt #411 but breaks drt #208. I can't win.
 		return type != WORD_TYPE_ALPHABETIC;
+#endif
 	default:
 		return true;
 	}
