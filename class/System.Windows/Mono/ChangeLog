@@ -1,3 +1,11 @@
+2009-08-18  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: The content property must be specified on
+	the type that contains the property, inheritance should be
+	ignored.
+
+	r:jeff
+
 2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* INativeEventObjectWrapper.cs: Refactored out EventObject code from

@@ -845,10 +845,8 @@ namespace Mono.Xaml
 					}
 
 					return true;
-				} catch (Exception e) {
-					// Fall through to string
-					Console.Error.WriteLine (e);
-					return false;
+				} catch (ArgumentException e) {
+					throw new XamlParseException (2273, "Elements in the same ResourceDictionary cannot have the same x:Key");
 				}
 			}
 
@@ -925,13 +923,10 @@ namespace Mono.Xaml
 			}
 
 			Type parent_type = parent.GetType ();
-			string content_property = GetContentPropertyName (parent_type);
-			if (content_property == null)
-				return false;
+			PropertyInfo pi = GetContentProperty (parent_type);
 
-			PropertyInfo pi = parent_type.GetProperty (content_property, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 			if (pi == null) {
-				Console.Error.WriteLine ("Unable to find content property {0} on type {1}", content_property, parent_type);
+				Console.Error.WriteLine ("Unable to find content property on type {0}", parent_type);
 				return false;
 			}
 
@@ -969,7 +964,6 @@ namespace Mono.Xaml
 				return SetPropertyFromValue (data, parent, parent_data, parent_parent_ptr, pi, child_ptr, child_data, out error);
 			} catch (Exception e) {
 				throw new XamlParseException (2010, String.Format ("{0} does not support {1} as content.", parent, child));
-				return false;
 			}
 		}
 
@@ -1395,6 +1389,36 @@ namespace Mono.Xaml
 		private static bool IsExplicitNull (string value)
 		{
 			 return Regex.IsMatch (value, "^{\\s*x:Null\\s*}");
+		}
+
+		private PropertyInfo GetContentProperty (Type t)
+		{
+			Type walk = t;
+			string content_property = null;
+
+			while (walk != null) {
+				content_property = GetContentPropertyNameForType (walk);
+				if (content_property != null)
+					break;
+				walk = walk.BaseType;
+			}
+
+			if (walk == null || content_property == null)
+				return null;
+
+			PropertyInfo pi = walk.GetProperty (content_property, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+			return pi;
+		}
+
+		private string GetContentPropertyNameForType (Type t)
+		{
+			object [] o = t.GetCustomAttributes (typeof (ContentPropertyAttribute), false);
+			
+			if (o.Length == 0)
+				return null;
+
+			ContentPropertyAttribute cpa = (ContentPropertyAttribute ) o [0];
+			return cpa.Name;
 		}
 
 		private string GetContentPropertyName (Type t)
