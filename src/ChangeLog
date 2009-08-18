@@ -3,6 +3,8 @@
 	* layout.cpp (word_type_changed): Partial revert for previous
 	commit as it broke drt #208.
 
+	r:toshok
+
 2009-08-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fixes for drt #411.
