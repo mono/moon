@@ -1,3 +1,9 @@
+2009-08-18  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: Allocate sizes of the grid segments in the correct
+	  order. r: shana
+
 2009-08-17  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.h:

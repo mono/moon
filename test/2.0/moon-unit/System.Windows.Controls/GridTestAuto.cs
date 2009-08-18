@@ -376,6 +376,67 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		public void RowspanAutoTest ()
+		{
+			// This test demonstrates the following rules:
+			// 1) Elements with RowSpan/ColSpan == 1 distribute their height first
+			// 2) The rest of the elements distribute height in LIFO order
+			Grid grid = new Grid ();
+			grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto);
+			grid.AddColumns (new GridLength (50));
+
+			var child50 = new MyContentControl (50, 50);
+			var child60 = new MyContentControl (50, 60);
+
+			grid.AddChild (child50, 0, 0, 1, 1);
+			grid.AddChild (child60, 0, 0, 1, 1);
+
+			CreateAsyncTest (grid,
+				() => {
+					// Check the initial values
+					grid.CheckRowHeights ("#1", 60, 0, 0);
+
+					// Now make the smaller element use rowspan = 2
+					Grid.SetRowSpan (child50, 2);
+				}, () => {
+					grid.CheckRowHeights ("#2", 60, 0, 0);
+
+					// Then make the larger element us rowspan = 2
+					Grid.SetRowSpan (child50, 1);
+					Grid.SetRowSpan (child60, 2);
+				}, () => {
+					grid.CheckRowHeights ("#3", 55, 5, 0);
+
+					// Swap the order in which they are added to the grid
+					grid.Children.Clear ();
+					grid.AddChild (child60, 0, 0, 2, 0);
+					grid.AddChild (child50, 0, 0, 1, 0);
+				}, () => {
+					// Swapping the order has no effect here
+					grid.CheckRowHeights ("#4", 55, 5, 0);
+
+					// Then give both rowspan = 2
+					Grid.SetRowSpan (child50, 2);
+				}, () => {
+					grid.CheckRowHeights ("#5", 30, 30, 0);
+
+					// Finally give the larger element rowspan = 3
+					Grid.SetRowSpan (child60, 3);
+				}, () => {
+					grid.CheckRowHeights ("#6", 28.333, 28.333, 3.333);
+
+					// Swap the order in which the elements are added again
+					grid.Children.Clear ();
+					grid.AddChild (child50, 0, 0, 2, 0);
+					grid.AddChild (child60, 0, 0, 3, 0);
+				}, () => {
+					grid.CheckRowHeights ("#7", 25, 25, 20);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void SizeExceedsBounds ()
 		{
 			Grid grid = new Grid ();
@@ -541,7 +602,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void AutoRows5 ()
 		{
 			Grid grid = new Grid ();

@@ -214,4 +214,18 @@ class Grid : public Panel {
 	static double Clamp (double val, double min, double max);
 };
 
+class GridNode : public List::Node {
+public:
+	int row;
+	int col;
+	double size;
+	Segment ** matrix;
+
+	GridNode (Segment **matrix, int row, int col, double size) {
+		this->matrix = matrix;
+		this->row = row;
+		this->col = col;
+		this->size = size;
+	}
+};
 #endif /* __MOON_PANEL_H__ */

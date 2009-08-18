@@ -162,6 +162,11 @@ Grid::MeasureOverride (Size availableSize)
 	}
 
 	magic = Size ();
+	List sizes;
+	GridNode *node;
+	GridNode *separator = new GridNode (NULL, 0, 0, 0);
+	sizes.Append (separator);
+
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
 		if (child->GetVisibility () != VisibilityVisible)
@@ -225,12 +230,27 @@ Grid::MeasureOverride (Size availableSize)
 
 		child->Measure (child_size);
 		Size desired = child->GetDesiredSize();
-		
-		row_matrix [row + rowspan - 1][row].size = MAX (row_matrix [row + rowspan - 1][row].size, desired.height);
-		col_matrix [col + colspan - 1][col].size = MAX (col_matrix [col + colspan - 1][col].size, desired.width);
-	}
 
-	AllocateGridSegments (row_count, col_count);
+		// Elements distribute their height based on two rules:
+		// 1) Elements with rowspan/colspan == 1 distribute their height first
+		// 2) Everything else distributes in a LIFO manner.
+		// As such, add all UIElements with rowspan/colspan == 1 after the separator in
+		// the list and everything else before it. Then to process, just keep popping
+		// elements off the end of the list.
+		node = new GridNode (row_matrix, row + rowspan - 1, row, desired.height);
+		sizes.InsertBefore (node, node->row == node->col ? separator->next : separator);
+		
+		node = new GridNode (col_matrix, col + colspan  - 1, col, desired.width);
+		sizes.InsertBefore (node, node->row == node->col ? separator->next : separator);
+	}
+	
+	sizes.Remove (separator);
+
+	while (GridNode *node= (GridNode *) sizes.Last ()) {
+		node->matrix [node->row][node->col].size = MAX (node->matrix [node->row][node->col].size, node->size);
+		AllocateGridSegments (row_count, col_count);
+		sizes.Remove (node);
+	}
 
 	Size grid_size;
 	for (int r = 0; r < row_count; r ++)
