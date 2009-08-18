@@ -1,3 +1,8 @@
+2009-08-18  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* moon-unit.mdp: Include System.Windows.Automation.Peers/
+	  files.
+
 2009-08-18  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/GridTestAuto.cs: Allocate sizes of

@@ -3,13 +3,15 @@
     <Configuration name="Debug" Optimize="false" DefineConstants="DEBUG;TRACE;SILVERLIGHT" NoStdLib="true" NoConfig="true" WarningLevel="4" ctype="DotNetProjectConfiguration">
       <Output directory="Bin/Debug" assembly="moon-unit.dll" />
       <Build debugmode="True" target="Library" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Clr_2_1" />
+      <Execution consolepause="True" runwithwarnings="True" runtime="MsNet" clr-version="Clr_2_1" />
+      <EnvironmentVariables />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG;TRACE;SILVERLIGHT" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" Optimize="true" DefineConstants="TRACE;SILVERLIGHT" NoStdLib="true" NoConfig="true" WarningLevel="4" ctype="DotNetProjectConfiguration">
       <Output directory="Bin/Release" assembly="dependency_properties" />
       <Build debugmode="True" target="Library" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Clr_2_1" />
+      <Execution consolepause="True" runwithwarnings="True" runtime="MsNet" clr-version="Clr_2_1" />
+      <EnvironmentVariables />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="TRACE;SILVERLIGHT" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
@@ -180,10 +182,37 @@
     <File name="System.Windows/VSMControl.xaml.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Media/DoubleCollectionTest.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Controls/GridTestAuto.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/AutomationControlTypeTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/AutomationEventsTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/AutomationOrientationTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/AutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/CheckBoxAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ImageAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ItemAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ListBoxAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ListBoxItemAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/MediaElementAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/PatternInterfaceTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/RadioButtonAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/RangeBaseAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/RepeatButtonAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ScrollBarAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ScrollViewerAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/SliderAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ThumbAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Automation.Peers/ToggleButtonAutomationPeerTest.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+    <ProjectReference type="Gac" localcopy="True" refto="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Project" localcopy="True" refto="System.Windows.Browser" />
     <ProjectReference type="Project" localcopy="True" refto="Microsoft.Silverlight.Testing" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
