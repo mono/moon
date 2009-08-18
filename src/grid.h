@@ -141,7 +141,6 @@ struct Segment {
 
 /* @Namespace=System.Windows.Controls */
 class Grid : public Panel {
-	Size magic;
 	int row_matrix_dim;
 	int col_matrix_dim;
 	Segment **row_matrix;

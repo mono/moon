@@ -1,6 +1,12 @@
 2009-08-18  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.h:
+	* grid.cpp: Remove the 'magic' size as size allocations are
+	  read from row_matrix/col_matrix now. r: kangaroo
+
+2009-08-18  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
 	* grid.cpp: Allocate sizes of the grid segments in the correct
 	  order. r: shana
 

@@ -161,7 +161,6 @@ Grid::MeasureOverride (Size availableSize)
 			total_stars.width += width->val;
 	}
 
-	magic = Size ();
 	List sizes;
 	GridNode *node;
 	GridNode *separator = new GridNode (NULL, 0, 0, 0);
@@ -263,12 +262,10 @@ Grid::MeasureOverride (Size availableSize)
 	results = results.Min (grid_size);
 
 	if (free_col) {
-		magic.width = columns->GetValueAt (0)->AsColumnDefinition ()->GetActualWidth ();
 		columns->unref ();
 	}
 
 	if (free_row) {
-		magic.height = rows->GetValueAt (0)->AsRowDefinition ()->GetActualHeight ();
 		rows->unref ();
 	}
 	// now choose whichever is smaller, our chosen size or the availableSize.
@@ -460,7 +457,6 @@ Grid::ArrangeOverride (Size finalSize)
 	if (col_count == 0) {
 		columns = new ColumnDefinitionCollection ();
 		ColumnDefinition *coldef = new ColumnDefinition ();
-		coldef->SetActualWidth (magic.width);
 		columns->Add (coldef);
 		coldef->unref ();
 		free_col = true;
@@ -470,7 +466,6 @@ Grid::ArrangeOverride (Size finalSize)
 	if (row_count == 0) {
 		rows = new RowDefinitionCollection ();
 		RowDefinition *rowdef = new RowDefinition ();
-		rowdef->SetActualHeight (magic.height);
 		rows->Add (rowdef);
 		rowdef->unref ();
 		free_row = true;
