@@ -374,6 +374,9 @@ TextLayout::SetMaxHeight (double height)
 bool
 TextLayout::SetMaxWidth (double width)
 {
+	if (width == 0.0)
+		width = INFINITY;
+	
 	if (max_width == width)
 		return false;
 	
@@ -878,28 +881,24 @@ word_type_changed (WordType wtype, gunichar c, GUnicodeType ctype, GUnicodeBreak
 {
 	WordType type;
 	
-	if (wtype == WORD_TYPE_ALPHABETIC && c >= '0' && c <= '9')
+	// compare this character's word-type against the current word-type
+	if ((type = word_type (ctype, btype)) == wtype)
 		return false;
 	
-	if ((type = word_type (ctype, btype)) != WORD_TYPE_UNKNOWN)
-		return type != wtype;
+	if (type == WORD_TYPE_UNKNOWN)
+		return false;
 	
-	switch (type) {
-	case WORD_TYPE_INSEPARABLE:
-		// only allow inseparables in an "inseparable" word.
-		return true;
-	case WORD_TYPE_NUMERIC:
-		// if btype is anything other than an infix, then the word
-		// type has changed.
-		if (btype != G_UNICODE_BREAK_INFIX_SEPARATOR)
-			return true;
-		break;
+	// word-types not identical... check if they are compatible
+	switch (wtype) {
+	case WORD_TYPE_ALPHABETIC:
+		return type != WORD_TYPE_NUMERIC;
+	case WORD_TYPE_IDEOGRAPHIC:
+		return type != WORD_TYPE_ALPHABETIC;
 	default:
-		break;
+		return true;
 	}
-	
-	return false;
 }
+
 
 /**
  * layout_word_wrap:
@@ -1063,7 +1062,7 @@ layout_word_wrap (LayoutWord *word, const char *in, const char *inend, double ma
 		
 		g_array_append_val (word->break_ops, op);
 		
-		if (!isinf (max_width) && word->line_advance >= max_width) {
+		if (!isinf (max_width) && word->line_advance > max_width) {
 			d(printf ("\tjust exceeded max width (%fpx): %s\n", max_width, debug->str));
 			wrap = true;
 			break;

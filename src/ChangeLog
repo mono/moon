@@ -1,3 +1,15 @@
+2009-08-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes for drt #411.
+
+	* layout.cpp (SetMaxWidth): If setting MaxWidth to 0, treat it as
+	infinite.
+	(word_type_changed): Allow alphabetic characters inside
+	ideographic words.
+	(layout_word_wrap): Allow line advance to equal max width.
+
+	r:toshok
+
 2009-08-18  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.h:
