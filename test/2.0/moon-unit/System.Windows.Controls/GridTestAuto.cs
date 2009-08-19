@@ -375,6 +375,82 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void MeasureStarRowsNoChild ()
+		{
+			// Measuring the rows initialises the sizes to Infinity for 'star' elements
+			double inf = double.PositiveInfinity;
+			Grid grid = new Grid ();
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.AddColumns (new GridLength (1, GridUnitType.Star));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
+			Assert.AreEqual (0, grid.ColumnDefinitions [0].ActualWidth, "#3");
+
+			// After measure
+			grid.Measure (Infinity);
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#4");
+			Assert.AreEqual (inf, grid.RowDefinitions [0].ActualHeight, "#5");
+			Assert.AreEqual (inf, grid.ColumnDefinitions [0].ActualWidth, "#6");
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#7");
+			Assert.AreEqual (inf, grid.RowDefinitions [0].ActualHeight, "#8");
+			Assert.AreEqual (inf, grid.ColumnDefinitions [0].ActualWidth, "#9");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MeasureStarRowsWithChild ()
+		{
+			// Measuring the rows initialises the sizes to Infinity for 'star' elements
+			double inf = double.PositiveInfinity;
+			Grid grid = new Grid ();
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
+
+			// After measure
+			grid.Measure (Infinity);
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#4");
+			Assert.AreEqual (inf, grid.RowDefinitions [0].ActualHeight, "#5");
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#7");
+			Assert.AreEqual (100, grid.RowDefinitions [0].ActualHeight, "#8");
+		}
+
+		[TestMethod]
+		public void MeasureStarRowsWithChild2 ()
+		{
+			// Measuring the rows initialises the sizes to Infinity for 'star' elements
+			double inf = double.PositiveInfinity;
+			Grid grid = new Grid ();
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			grid.CheckRowHeights ("#1", 0, 0);
+
+			// After measure
+			grid.Measure (Infinity);
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#4");
+			grid.CheckRowHeights ("#2", inf, inf);
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#7");
+			grid.CheckRowHeights ("#3", 50, 50);
+		}
+
+		[TestMethod]
 		[Asynchronous]
 		public void RowspanAutoTest ()
 		{
@@ -461,6 +537,63 @@ namespace MoonTest.System.Windows.Controls
 					grid.ChangeRowSpan (0, 2);
 				}, () => {
 					Assert.AreEqual (50, grid.RowDefinitions [0].ActualHeight, "#1");
+				}
+			);
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void StarRowsWithChild ()
+		{
+			// Measuring the rows initialises the sizes to Infinity for 'star' elements
+			double inf = double.PositiveInfinity;
+			Grid grid = new Grid ();
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
+
+			TestPanel.Height = 400;
+			CreateAsyncTest (grid,
+				() => {
+					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#4");
+					Assert.AreEqual (400, grid.RowDefinitions [0].ActualHeight, "#5");
+				}, () => {
+					grid.Measure (new Size (100, 100));
+					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#7");
+					Assert.AreEqual (100, grid.RowDefinitions [0].ActualHeight, "#8");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void StarRowsWithChild2 ()
+		{
+			double inf = double.PositiveInfinity;
+			Grid grid = new Grid ();
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			grid.CheckRowHeights ("#2", 0, 0);
+
+			TestPanel.Height = 400;
+			CreateAsyncTest (grid,
+				() => {
+					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+					grid.CheckRowHeights ("#4", 200, 200);
+
+					TestPanel.Width = 100;
+					TestPanel.Height = 100;
+				}, () => {
+					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#5");
+					grid.CheckRowHeights ("#6", 50, 50);
 				}
 			);
 		}
