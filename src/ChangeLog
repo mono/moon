@@ -1,3 +1,11 @@
+2009-08-19  Jackson Harper  <jackson@ximian.com>
+
+	* playlist.cpp: Its possible to queue an async operation and then
+	call Dispose before that operation has taken place. This patch
+	makes Playlist delay its unref and adds guards in its async
+	callback functions to avoid this. Fixes http://www.nederland24.nl/
+	r:spouliot
+	
 2009-08-18  Jackson Harper  <jackson@ximian.com>
 
 	* template.cpp: Remove not very helpful and somewhat scary looking

@@ -64,7 +64,7 @@ PlaylistNode::~PlaylistNode ()
  */
 
 PlaylistEntry::PlaylistEntry (Playlist *parent)
-	: EventObject (Type::PLAYLISTENTRY)
+	: EventObject (Type::PLAYLISTENTRY, false)
 {
 	LOG_PLAYLIST ("PlaylistEntry::PlaylistEntry (%p)\n", parent);
 
@@ -73,7 +73,7 @@ PlaylistEntry::PlaylistEntry (Playlist *parent)
 }
 
 PlaylistEntry::PlaylistEntry (Type::Kind kind, Playlist *parent)
-	: EventObject (kind)
+	: EventObject (kind, false)
 {
 	LOG_PLAYLIST ("PlaylistEntry::PlaylistEntry (%p)\n", parent);
 
@@ -83,7 +83,7 @@ PlaylistEntry::PlaylistEntry (Type::Kind kind, Playlist *parent)
 
 
 PlaylistEntry::PlaylistEntry (Type::Kind kind)
-	: EventObject (kind)
+	: EventObject (kind, false)
 {
 	LOG_PLAYLIST ("PlaylistEntry::PlaylistEntry ()\n");
 
@@ -1399,7 +1399,10 @@ PlaylistRoot::SeekCallback (EventObject *obj)
 	PlaylistRoot *playlist = (PlaylistRoot *) obj;
 	
 	LOG_PLAYLIST ("Playlist::SeekCallback () pts: %" G_GUINT64_FORMAT "\n", playlist->seek_pts);
-	
+
+	if (playlist->IsDisposed ())
+		return;
+
 	if (playlist->seek_pts != G_MAXUINT64) {
 		guint64 pts = playlist->seek_pts;
 		playlist->seek_pts = G_MAXUINT64;
@@ -1419,7 +1422,11 @@ void
 PlaylistRoot::PlayCallback (EventObject *obj)
 {
 	LOG_PLAYLIST ("Playlist::PlayCallback ()\n");
-	((PlaylistRoot *) obj)->Play ();
+
+	PlaylistRoot *root = (PlaylistRoot *) obj;
+	if (root->IsDisposed ())
+		return;
+	root->Play ();
 }
 
 void
@@ -1433,7 +1440,11 @@ void
 PlaylistRoot::PauseCallback (EventObject *obj)
 {
 	LOG_PLAYLIST ("Playlist::PauseCallback ()\n");
-	((PlaylistRoot *) obj)->Pause ();
+
+	PlaylistRoot *root = (PlaylistRoot *) obj;
+	if (root->IsDisposed ())
+		return;
+	root->Pause ();
 }
 
 void
@@ -1447,7 +1458,11 @@ void
 PlaylistRoot::OpenCallback (EventObject *obj)
 {
 	LOG_PLAYLIST ("Playlist::OpenCallback ()\n");
-	((PlaylistRoot *) obj)->Open ();
+
+	PlaylistRoot *root = (PlaylistRoot *) obj;
+	if (root->IsDisposed ())
+		return;
+	root->Open ();
 }
 
 void
@@ -1461,7 +1476,11 @@ void
 PlaylistRoot::StopCallback (EventObject *obj)
 {
 	LOG_PLAYLIST ("Playlist::StopCallback ()\n");
-	((PlaylistRoot *) obj)->Stop ();
+
+	PlaylistRoot *root = (PlaylistRoot *) obj;
+	if (root->IsDisposed ())
+		return;
+	root->Stop ();
 }
 
 void
