@@ -1,3 +1,8 @@
+2009-08-18  Jackson Harper  <jackson@ximian.com>
+
+	* template.cpp: Remove not very helpful and somewhat scary looking
+	debug spew. r:toshok
+
 2009-08-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (word_type_changed): Partial revert for previous

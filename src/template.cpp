@@ -83,7 +83,5 @@ DataTemplate::DataTemplate ()
 DependencyObject*
 DataTemplate::LoadContentWithError (MoonError *error)
 {
-	printf ("%p: LoadContentWithError (buffer = %s)\n", this, xaml_buffer);
-
 	return GetVisualTree (NULL);
 }
