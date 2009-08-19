@@ -16,6 +16,7 @@
 #include <glib/gstdio.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -38,6 +39,24 @@
 #include FT_SYSTEM_H
 #include FT_GLYPH_H
 
+
+//
+// OpenType's OS/2 fsSelection Table:
+//
+// http://www.microsoft.com/typography/otspec/os2.htm#fss
+//
+enum fsSelection {
+	fsSelectionItalic         = (1 << 0),
+	fsSelectionUnderscore     = (1 << 1),
+	fsSelectionNegative       = (1 << 2),
+	fsSelectionOutlined       = (1 << 3),
+	fsSelectionStrikeout      = (1 << 4),
+	fsSelectionBold           = (1 << 5),
+	fsSelectionRegular        = (1 << 6),
+	fsSelectionUseTypoMetrics = (1 << 7),
+	fsSelectionWWS            = (1 << 8),
+	fsSelectionOblique        = (1 << 9),
+};
 
 #define FONT_FACE_SIZE 41.0
 
@@ -799,65 +818,38 @@ FontFace::HasChar (gunichar unichar)
 void
 FontFace::GetExtents (double size, FontFaceExtents *extents)
 {
-#if 0
-	double scale = 1.0 / 64.0;
-	FT_Long thickness;
-	FT_Long position;
-	
-	if (size <= FONT_FACE_SIZE) {
-		if (cur_size != FONT_FACE_SIZE) {
-			FT_Set_Pixel_Sizes (face, 0, (int) FONT_FACE_SIZE);
-			cur_size = FONT_FACE_SIZE;
-		}
-		
-		scale *= (size / FONT_FACE_SIZE);
-	} else if (cur_size != size) {
-		FT_Set_Pixel_Sizes (face, 0, (int) size);
-		cur_size = size;
-	}
-	
-	thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
-	position = FT_MulFix (-face->underline_position, face->size->metrics.y_scale);
-	
-	extents->underline_thickness = thickness * scale;
-	extents->underline_position = (position * scale) + ((extents->underline_thickness + 1) / 2.0);
-	if (extents->underline_thickness < 1.0)
-		extents->underline_thickness = 1.0;
-	
-	extents->descent = FT_MulFix (face->descender, face->size->metrics.y_scale) * scale;
-	extents->ascent = FT_MulFix (face->ascender, face->size->metrics.y_scale) * scale;
-	extents->height = FT_MulFix (face->height, face->size->metrics.y_scale) * scale;
-#else
-	// this is an alternative way of calculating these metrics, might give us values a bit closer to Microsoft's
 	double scale = size / face->units_per_EM;
 	
-	extents->underline_thickness = face->underline_thickness * scale;
-	extents->underline_position = -face->underline_position * scale;
-	extents->underline_position += ((extents->underline_thickness + 1) / 2.0);
-	
 	if (FT_IS_SFNT (face)) {
-		TT_OS2 *table = (TT_OS2 *) FT_Get_Sfnt_Table (face, ft_sfnt_os2);
-		int height = table->usWinAscent + table->usWinDescent;
+		TT_HoriHeader *hhea = (TT_HoriHeader *) FT_Get_Sfnt_Table (face, ft_sfnt_hhea);
+		TT_OS2 *os2 = (TT_OS2 *) FT_Get_Sfnt_Table (face, ft_sfnt_os2);
+		int height, ascender, descender;
 		
-		// Use the OS/2 table's usWinAscent/Descent values since this
-		// is what Microsoft seems to use for their Silverlight
-		// implementation.
-		//
-		// See http://typophile.com/node/13081 for more information.
-		if (face->height > height) {
-			// FreeType2's Height value is larger than usWinAscent
-			// + usWinDescent, so use it instead (probably 115% of
-			// the EM height? e.g. 2355 units?). This means that
-			// we have to adjust the Descent to be the difference
-			// between FreeType2's Height and the usWinAscent.
-			extents->descent = -(face->height - table->usWinAscent) * scale;
-			extents->ascent = table->usWinAscent * scale;
-			extents->height = face->height * scale;
+		if (os2 && (os2->fsSelection & fsSelectionUseTypoMetrics)) {
+			// Use the typographic Ascender, Descender, and LineGap values for everything.
+			height = os2->sTypoAscender - os2->sTypoDescender + os2->sTypoLineGap;
+			descender = -os2->sTypoDescender;
+			ascender = os2->sTypoAscender;
 		} else {
-			extents->descent = -(table->usWinDescent * scale);
-			extents->ascent = table->usWinAscent * scale;
-			extents->height = height * scale;
+			// Calculate the LineSpacing for both the hhea table and the OS/2 table.
+			int hhea_height = hhea->Ascender + abs (hhea->Descender) + hhea->Line_Gap;
+			int os2_height = os2 ? (os2->usWinAscent + os2->usWinDescent) : 0;
+			
+			// The LineSpacing is the maximum of the two sumations.
+			height = MAX (hhea_height, os2_height);
+			
+			// If the OS/2 table exists, use usWinAscent as the
+			// ascender. Otherwise use hhea's Ascender value.
+			ascender = os2 ? os2->usWinAscent : hhea->Ascender;
+			
+			// The Descender becomes the difference between the
+			// LineSpacing and the Ascender.
+			descender = height - ascender;
 		}
+		
+		extents->descent = -descender * scale;
+		extents->ascent = ascender * scale;
+		extents->height = height * scale;
 	} else {
 		// Fall back to the default FreeType2 values.
 		extents->descent = face->descender * scale;
@@ -865,9 +857,12 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 		extents->height = face->height * scale;
 	}
 	
+	extents->underline_thickness = face->underline_thickness * scale;
+	extents->underline_position = -face->underline_position * scale;
+	extents->underline_position += ((extents->underline_thickness + 1) / 2.0);
+	
 	if (extents->underline_thickness < 1.0)
 		extents->underline_thickness = 1.0;
-#endif
 }
 
 double

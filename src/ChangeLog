@@ -1,3 +1,10 @@
+2009-08-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (FontFace::GetExtents): Updated to implement the
+	same algorithm used by Silverlight.
+
+	r:jackson
+
 2009-08-19  Jackson Harper  <jackson@ximian.com>
 
 	* playlist.cpp: Its possible to queue an async operation and then
