@@ -56,8 +56,6 @@ class Popup : public FrameworkElement {
 	const static int OpenedEvent;
 	const static int ClosedEvent;
  private:
- 	static void emit_opened (EventObject *sender);
-	static void emit_closed (EventObject *sender);
 	EVENTHANDLER (Popup, ShuttingDown, Deployment, EventArgs);
  	void Hide (UIElement *child);
  	void Show (UIElement *child);

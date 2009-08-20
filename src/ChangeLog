@@ -1,5 +1,19 @@
 2009-08-20  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.cpp (TextBoxBase::Emit*Async): Removed.
+	(TextBox::EmitSelectionChanged): Updated to use EmitAsync().
+	(TextBox::EmitTextChanged): Same.
+	(PasswordBox::EmitTextChanged): Same.
+
+	* popup.cpp (OnPropertyChanged): Use the new EmitAsync() method.
+
+	* dependencyobject.cpp (EventObject::EmitAsync): New method to
+	emit an event asynchronously.
+
+	r:alan
+
+2009-08-20  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp (emit_selection_changed): Pass along the generation
 	to the virtual EmitSelectionChanged() method.
 	(emit_text_changed): Same.

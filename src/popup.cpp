@@ -10,50 +10,6 @@
 
 #include "popup.h"
 #include "runtime.h"
-
-class GenerationClosure : public EventObject {
-public:
-	GenerationClosure (int generation, Popup *popup)
-	{
-		this->generation = generation;
-		this->popup = popup;
-
-		popup->ref ();
-	}
-
-	virtual ~GenerationClosure ()
-	{
-		popup->unref ();
-	}
-
-	int generation;
-	Popup *popup;
-};
-
-
-void
-Popup::emit_opened (EventObject *sender)
-{
-	GenerationClosure *closure = (GenerationClosure *)sender;
-	Popup * popup = closure->popup;
-	int generation = closure->generation;
-
-	closure->unref ();
-
-	popup->Emit (Popup::OpenedEvent, NULL, false, generation);
-}
-
-void
-Popup::emit_closed (EventObject *sender)
-{
-	GenerationClosure *closure = (GenerationClosure *)sender;
-	Popup * popup = closure->popup;
-	int generation = closure->generation;
-
-	closure->unref ();
-
-	popup->Emit (Popup::ClosedEvent, NULL, false, generation);
-}
 	
 Popup::Popup ()
 {
@@ -94,15 +50,13 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		// in SL.
 		if (args->GetNewValue () && args->GetNewValue ()->AsBool ()) {
 			Show (GetChild ());
-			AddTickCall (Popup::emit_opened,
-				     new GenerationClosure (GetEventGeneration (Popup::OpenedEvent),
-							    this));
+			
+			EmitAsync (Popup::OpenedEvent);
 		}
 		else {
 			Hide (GetChild ());
-			AddTickCall (Popup::emit_closed,
-				     new GenerationClosure (GetEventGeneration (Popup::ClosedEvent),
-							    this));
+			
+			EmitAsync (Popup::ClosedEvent);
 		}
 	} else if (args->GetId () == Popup::ChildProperty) {
 		if (args->GetOldValue () && !args->GetOldValue ()->GetIsNull ()) {

@@ -120,9 +120,6 @@ class TextBoxUndoStack;
 
 /* @Namespace=None */
 class TextBoxBase : public Control, public ITextAttributes {
-	static void emit_selection_changed (EventObject *calldata);
-	static void emit_text_changed (EventObject *calldata);
-	
  protected:
 	friend class TextBoxView;
 	
@@ -220,20 +217,14 @@ class TextBoxBase : public Control, public ITextAttributes {
 	
 	void EmitCursorPositionChanged (double height, double x, double y);
 	
-	virtual int SelectionChangedEventId () { return -1; }
-	virtual int TextChangedEventId () { return -1; }
-	
-	virtual void EmitSelectionChanged (int generation) { }
-	virtual void EmitTextChanged (int generation) = 0;
+	virtual void EmitSelectionChanged () { }
+	virtual void EmitTextChanged () = 0;
 	
 	virtual void SyncSelectedText () = 0;
 	virtual void SyncText () = 0;
 	
 	void BatchPush ();
 	void BatchPop ();
-	
-	void EmitSelectionChangedAsync ();
-	void EmitTextChangedAsync ();
 	
 	void SyncAndEmit (bool sync_text = true);
 	
@@ -360,11 +351,8 @@ class TextBox : public TextBoxBase {
  protected:
 	virtual const char *GetActualText () { return GetText (); }
 	
-	virtual int SelectionChangedEventId ();
-	virtual int TextChangedEventId ();
-	
-	virtual void EmitSelectionChanged (int generation);
-	virtual void EmitTextChanged (int generation);
+	virtual void EmitSelectionChanged ();
+	virtual void EmitTextChanged ();
 	
 	virtual void SyncSelectedText ();
 	virtual void SyncText ();
@@ -487,9 +475,7 @@ class PasswordBox : public TextBoxBase {
 	virtual int CursorNextWord (int cursor);
 	virtual int CursorPrevWord (int cursor);
 	
-	virtual int TextChangedEventId ();
-	
-	virtual void EmitTextChanged (int generation);
+	virtual void EmitTextChanged ();
 	
 	virtual void SyncSelectedText ();
 	virtual void SyncText ();

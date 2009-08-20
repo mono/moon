@@ -738,8 +738,28 @@ EventObject::GetEventGeneration (int event_id)
 }
 
 bool
-EventObject::Emit (char *event_name, EventArgs *calldata, bool only_unemitted, int starting_generation)
+EventObject::EmitAsync (const char *event_name, EventArgs *calldata, bool only_unemitted)
 {
+	Deployment *deployment = GetDeployment ();
+	int event_id;
+	
+	if (IsDisposed () || (deployment && deployment->isDead))
+		return false;
+	
+	if ((event_id = GetType()->LookupEvent (event_name)) == -1) {
+		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
+		return false;
+	}
+	
+	return EmitAsync (event_id, calldata, only_unemitted);
+}
+
+bool
+EventObject::Emit (const char *event_name, EventArgs *calldata, bool only_unemitted, int starting_generation)
+{
+	if (IsDisposed ())
+		return false;
+	
 	Deployment *deployment = GetDeployment ();
 	if (deployment && deployment->isDead)
 		return false;
@@ -751,7 +771,56 @@ EventObject::Emit (char *event_name, EventArgs *calldata, bool only_unemitted, i
 		return false;
 	}
 
-	return Emit (id, calldata, only_unemitted);
+	return Emit (id, calldata, only_unemitted, starting_generation);
+}
+
+class AsyncEventClosure : public EventObject {
+ public:
+	EventObject *sender;
+	EventArgs *args;
+	bool unemitted;
+	int generation;
+	int event_id;
+	
+	AsyncEventClosure (EventObject *sender, int event_id, EventArgs *args, bool unemitted, int generation)
+	{
+		this->sender = sender;
+		this->event_id = event_id;
+		this->args = args;
+		this->unemitted = unemitted;
+		this->generation = generation;
+		
+		sender->ref ();
+	}
+	
+ protected:
+	virtual ~AsyncEventClosure ()
+	{
+		sender->unref ();
+	}
+};
+
+void
+EventObject::emit_async (EventObject *calldata)
+{
+	AsyncEventClosure *async = (AsyncEventClosure *) calldata;
+	
+	async->sender->Emit (async->event_id, async->args, async->unemitted, async->generation);
+	
+	async->unref ();
+}
+
+bool
+EventObject::EmitAsync (int event_id, EventArgs *calldata, bool only_unemitted)
+{
+	Deployment *deployment = GetDeployment ();
+	
+	if (IsDisposed () || (deployment && deployment->isDead))
+		return false;
+	
+	AddTickCall (EventObject::emit_async, new AsyncEventClosure (this, event_id, calldata, only_unemitted, GetEventGeneration (event_id)));
+	
+	return true;
 }
 
 struct EmitData {

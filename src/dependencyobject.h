@@ -41,6 +41,7 @@ typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_dat
 
 class EventLists;
 
+
 // 
 // An EventObject starts out with a reference count of 1 (no need to
 // ref it after creation), and will be deleted once the count reaches
@@ -201,15 +202,20 @@ protected:
 	
 	// To enable scenarios like Emit ("Event", new EventArgs ())
 	// Emit will call unref on the calldata.
-	bool Emit (char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
+	bool Emit (const char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
 	bool Emit (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
-
+	
+	bool EmitAsync (const char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false);
+	bool EmitAsync (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false);
+	
 	int GetEventGeneration (int event_id);
 
 private:
 	void AddTickCallInternal (TickCallHandler handler, EventObject *data = NULL);
 	void Initialize (Deployment *deployment, Type::Kind type);
-
+	
+	static void emit_async (EventObject *calldata);
+	
 	EventLists *events;
 	Surface *surface; // TODO: Remove this (along with SetSurface)
 	Deployment *deployment;
