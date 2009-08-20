@@ -1,3 +1,9 @@
+2009-08-20  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Markup/XamlReaderTest.cs: Add additional test
+	  to see when SolidColorBrush supports text content and when
+	  it doesn't.
+
 2009-08-19  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/GridTestAuto.cs: Add the first batch

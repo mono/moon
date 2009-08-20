@@ -35,6 +35,7 @@ using System.Windows.Markup;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Media.Animation;
+using System.Windows.Media;
 
 namespace MoonTest.System.Windows.Markup {
 
@@ -83,6 +84,26 @@ namespace MoonTest.System.Windows.Markup {
 			Assert.IsNotNull (kf.Value, "#1");
 			Assert.AreEqual (0, Convert.ToInt32 (kf.Value), "#2");
 			Assert.IsInstanceOfType<uint> (kf.Value, "#3");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void SolidColorBrushWithContent ()
+		{
+			// You can't set a the Color of a solid color brush using raw text
+            Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
+<SolidColorBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">#C0C0C0</SolidColorBrush>"), "#1");
+
+			// But you can set it here... somehow!
+			var v = (DiscreteObjectKeyFrame)XamlReader.Load (@"
+<DiscreteObjectKeyFrame xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<DiscreteObjectKeyFrame.Value>
+		<SolidColorBrush>#C0C0C0</SolidColorBrush>
+	</DiscreteObjectKeyFrame.Value>
+</DiscreteObjectKeyFrame>
+");
+			Assert.IsInstanceOfType<SolidColorBrush> (v.Value, "#2");
+			Assert.AreEqual ("#FFC0C0C0", ((SolidColorBrush) v.Value).Color.ToString (), "#3");
 		}
 	}
 }
