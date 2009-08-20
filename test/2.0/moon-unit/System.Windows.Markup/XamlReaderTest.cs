@@ -160,7 +160,7 @@ namespace MoonTest.System.Windows.Markup {
 			//
 
 			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
-<Point xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">25,35</PointCollection>"), "#14");
+<Point xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">25,35</Point>"), "#14");
 
 			v = (DiscreteObjectKeyFrame)XamlReader.Load (@"
 <DiscreteObjectKeyFrame xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
