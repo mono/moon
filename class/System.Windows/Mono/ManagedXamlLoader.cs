@@ -370,6 +370,11 @@ namespace Mono.Xaml
 				return true;
 			}
 			else if (o is TemplateBindingExpression) {
+				// Applying a {TemplateBinding} to a DO which is not a FrameworkElement should silently discard
+				// the binding.
+				if (dob == null)
+					return true;
+
 				TemplateBindingExpression tb = o as TemplateBindingExpression;
 
 				IntPtr context = NativeMethods.xaml_loader_get_context (data->loader);
