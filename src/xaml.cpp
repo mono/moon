@@ -428,6 +428,13 @@ class XamlElementInstance : public List::Node {
 
 	virtual bool SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value);
 
+	void SetValue (Value *v)
+	{
+		if (value && cleanup_value)
+			delete value;
+		value = v;
+	}
+
 	virtual Value *GetAsValue ()
 	{
 		if (!value) {
@@ -1713,6 +1720,18 @@ start_element (void *data, const char *el, const char **attr)
 	}
 }
 
+static bool
+allow_value_from_str_in_flush (XamlParserInfo *p, XamlElementInstance *parent)
+{
+	if (parent == NULL || parent->element_type != XamlElementInstance::PROPERTY || parent->parent == NULL || !parent->parent->IsDependencyObject ())
+		return false;
+
+	if (parent->info->GetKind () == Type::OBJECT)
+		return true;
+
+	return false;
+}
+
 static void
 flush_char_data (XamlParserInfo *p)
 {
@@ -1728,6 +1747,13 @@ flush_char_data (XamlParserInfo *p)
 
 	if (p->current_element->element_type == XamlElementInstance::ELEMENT) {
 		if (!p->current_element->TrySetContentProperty (p, p->cdata->str) && p->cdata_content) {
+			if (allow_value_from_str_in_flush (p, p->current_element->parent)) {
+				Value *v;
+				if (value_from_str (p->current_element->info->GetKind (), NULL, p->cdata->str, &v)) {
+					p->current_element->SetValue (v);
+					goto cleanup;
+				}
+			}
 			parser_error (p, p->current_element->element_name, NULL, 2011,
 				      "%s does not support text content.", p->current_element->element_name);
 		}
@@ -1737,7 +1763,8 @@ flush_char_data (XamlParserInfo *p)
 				      "%s does not support text content.", p->current_element->element_name);
 		}
 	}
-	
+
+cleanup:
 	if (p->cdata) {
 		g_string_free (p->cdata, TRUE);
 		p->cdata_content = false;
@@ -2476,16 +2503,6 @@ XamlLoader::HydrateFromStringWithError (const char *xaml, Value *object, bool cr
 		MoonError::SetXamlPositionInfo (error, error_args->char_position, error_args->line_number);
 	}
 	return res;
-}
-
-int
-property_name_index (const char *p)
-{
-	for (int i = 0; p [i]; i++) {
-		if (p [i] == '.' && p [i + 1])
-			return i + 1;
-	}
-	return -1;
 }
 
 static int
@@ -4717,6 +4734,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 						res = false;
 						goto cleanup;
 					}
+					
 				} else {
 					if (!p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), NULL, prop_name [1], value->GetAsValue (), NULL)) {
 						if (raise_errors)

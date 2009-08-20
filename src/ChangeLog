@@ -1,3 +1,9 @@
+2009-08-20  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Setting OBJECT properties allows objects to be parsed
+	from strings that shouldn't normally be.  Such as SolidColorBrush
+	and PointCollection.
+
 2009-08-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fontmanager.cpp (FontFace::GetExtents): Updated to implement the
