@@ -1,5 +1,10 @@
 2009-08-20  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/GridTestAuto.cs: Add a missing
+	  [MoonlightBug].
+
+2009-08-20  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Applying a
 	  TemplateBinding to a non-framework element should silently
 	  discard the binding. r: jackson

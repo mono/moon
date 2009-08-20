@@ -427,6 +427,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void MeasureStarRowsWithChild2 ()
 		{
 			// Measuring the rows initialises the sizes to Infinity for 'star' elements
