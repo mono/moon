@@ -152,6 +152,26 @@ namespace MoonTest.System.Windows.Markup {
 			Assert.AreEqual (2, ((PointCollection) v.Value).Count, "#11");
 			Assert.AreEqual (new Point (25, 35), ((PointCollection) v.Value) [0], "#12");
 			Assert.AreEqual (new Point (39, 49), ((PointCollection) v.Value) [1], "#13");
+
+
+
+			//
+			// Point
+			//
+
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
+<Point xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">25,35</PointCollection>"), "#14");
+
+			v = (DiscreteObjectKeyFrame)XamlReader.Load (@"
+<DiscreteObjectKeyFrame xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<DiscreteObjectKeyFrame.Value>
+		<Point>25,35</Point>
+	</DiscreteObjectKeyFrame.Value>
+</DiscreteObjectKeyFrame>
+");
+			Assert.IsInstanceOfType<Point> (v.Value, "#15");
+			Assert.AreEqual (new Point (25, 35), v.Value, "#16");
+
 		}
 	}
 }
