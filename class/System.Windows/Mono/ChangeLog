@@ -1,3 +1,10 @@
+2009-08-20  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Supply the name and full name of the
+	property to TrySetExpression, use the name for everything but
+	attached properties.
+	r:alan
+
 2009-08-20  Alan McGovern  <amcgovern@novell.com>
 
 	* ManagedXamlLoader.cs:

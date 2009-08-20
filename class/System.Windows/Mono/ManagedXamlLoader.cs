@@ -336,7 +336,7 @@ namespace Mono.Xaml
 		}
 
 
-		private unsafe bool TrySetExpression (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, Value* target_parent_ptr, string type_name, string prop_xmlns, string name, Value* value_ptr, IntPtr value_data)
+		private unsafe bool TrySetExpression (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, Value* target_parent_ptr, string type_name, string prop_xmlns, string name, string full_name, Value* value_ptr, IntPtr value_data)
 		{
 			FrameworkElement dob = target as FrameworkElement;
 			object obj_value = Value.ToObject (null, value_ptr);
@@ -417,8 +417,8 @@ namespace Mono.Xaml
 					o = ConvertType (null, prop.PropertyType, o);
 					dob.SetValue (prop, o);
 				} else {
-					if (IsAttachedProperty (name))
-						return TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, name, o);
+					if (IsAttachedProperty (full_name))
+						return TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, full_name, o);
 
 					PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
@@ -764,7 +764,7 @@ namespace Mono.Xaml
 				name = name.Substring (++dot, name.Length - dot);
 			}
 
-			if (TrySetExpression (data, xmlns, target, target_data, target_parent_ptr, type_name, prop_xmlns, full_name, value_ptr, value_data))
+			if (TrySetExpression (data, xmlns, target, target_data, target_parent_ptr, type_name, prop_xmlns, name, full_name, value_ptr, value_data))
 				return true;
 
 			if (TrySetPropertyReflection (data, xmlns, target, target_data, target_parent_ptr, type_name, name, value_ptr, value_data, out error))
