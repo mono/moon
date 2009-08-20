@@ -1,3 +1,15 @@
+2009-08-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (emit_selection_changed): Pass along the generation
+	to the virtual EmitSelectionChanged() method.
+	(emit_text_changed): Same.
+	(EmitSelectionChangedAsync): Use a custom closure so that we can
+	capture the current event generation to use when we actuall emit
+	it later.
+	(EmitTextChangedAsync): Same.
+
+	r:toshok
+
 2009-08-20  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Setting OBJECT properties allows objects to be parsed

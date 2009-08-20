@@ -289,6 +289,30 @@ class TextBuffer {
 
 
 //
+// AsyncEventClosure
+//
+
+class AsyncEventClosure : public EventObject {
+ public:
+	TextBoxBase *textbox;
+	int generation;
+	
+	AsyncEventClosure (int generation, TextBoxBase *textbox)
+	{
+		this->generation = generation;
+		this->textbox = textbox;
+		
+		textbox->ref ();
+	}
+	
+	virtual ~AsyncEventClosure ()
+	{
+		textbox->unref ();
+	}
+};
+
+
+//
 // TextBoxUndoActions
 //
 
@@ -1394,33 +1418,45 @@ TextBoxBase::BatchPop ()
 }
 
 void
-TextBoxBase::emit_selection_changed (EventObject *sender)
+TextBoxBase::emit_selection_changed (EventObject *calldata)
 {
-	if (((TextBoxBase *) sender)->IsLoaded ())
-		((TextBoxBase *) sender)->EmitSelectionChanged ();
+	AsyncEventClosure *closure = (AsyncEventClosure *) calldata;
+	TextBoxBase *textbox = closure->textbox;
+	
+	if (textbox->IsLoaded ())
+		textbox->EmitSelectionChanged (closure->generation);
 }
 
 void
 TextBoxBase::EmitSelectionChangedAsync ()
 {
-	if (IsLoaded () && (events_mask & SELECTION_CHANGED))
-		AddTickCall (TextBoxBase::emit_selection_changed);
+	int event_id = SelectionChangedEventId ();
+	
+	if (event_id != -1 && IsLoaded () && (events_mask & SELECTION_CHANGED))
+		AddTickCall (TextBoxBase::emit_selection_changed,
+			     new AsyncEventClosure (GetEventGeneration (event_id), this));
 	
 	emit &= ~SELECTION_CHANGED;
 }
 
 void
-TextBoxBase::emit_text_changed (EventObject *sender)
+TextBoxBase::emit_text_changed (EventObject *calldata)
 {
-	if (((TextBoxBase *) sender)->IsLoaded ())
-		((TextBoxBase *) sender)->EmitTextChanged ();
+	AsyncEventClosure *closure = (AsyncEventClosure *) calldata;
+	TextBoxBase *textbox = closure->textbox;
+	
+	if (textbox->IsLoaded ())
+		textbox->EmitTextChanged (closure->generation);
 }
 
 void
 TextBoxBase::EmitTextChangedAsync ()
 {
-	if (IsLoaded () && (events_mask & TEXT_CHANGED))
-		AddTickCall (TextBoxBase::emit_text_changed);
+	int event_id = TextChangedEventId ();
+	
+	if (event_id != -1 && IsLoaded () && (events_mask & TEXT_CHANGED))
+		AddTickCall (TextBoxBase::emit_text_changed,
+			     new AsyncEventClosure (GetEventGeneration (event_id), this));
 	
 	emit &= ~TEXT_CHANGED;
 }
@@ -2562,16 +2598,28 @@ TextBox::TextBox ()
 	multiline = true;
 }
 
-void
-TextBox::EmitSelectionChanged ()
+int
+TextBox::SelectionChangedEventId ()
 {
-	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
+	return TextBox::SelectionChangedEvent;
+}
+
+int
+TextBox::TextChangedEventId ()
+{
+	return TextBox::TextChangedEvent;
 }
 
 void
-TextBox::EmitTextChanged ()
+TextBox::EmitSelectionChanged (int generation)
 {
-	Emit (TextBox::TextChangedEvent, new TextChangedEventArgs ());
+	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs (), false, generation);
+}
+
+void
+TextBox::EmitTextChanged (int generation)
+{
+	Emit (TextBox::TextChangedEvent, new TextChangedEventArgs (), false, generation);
 }
 
 void
@@ -2959,10 +3007,16 @@ PasswordBox::CursorPrevWord (int cursor)
 	return 0;
 }
 
-void
-PasswordBox::EmitTextChanged ()
+int
+PasswordBox::TextChangedEventId ()
 {
-	Emit (PasswordBox::PasswordChangedEvent, new RoutedEventArgs ());
+	return PasswordBox::PasswordChangedEvent;
+}
+
+void
+PasswordBox::EmitTextChanged (int generation)
+{
+	Emit (PasswordBox::PasswordChangedEvent, new RoutedEventArgs (), false, generation);
 }
 
 void
