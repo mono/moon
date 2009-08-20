@@ -87,7 +87,6 @@ namespace MoonTest.System.Windows.Markup {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void DiscreteObjectValuesWithContent ()
 		{
 
