@@ -88,8 +88,13 @@ namespace MoonTest.System.Windows.Markup {
 
 		[TestMethod]
 		[MoonlightBug]
-		public void SolidColorBrushWithContent ()
+		public void DiscreteObjectValuesWithContent ()
 		{
+
+			//
+			// SolidColorBrush
+			// 
+			
 			// You can't set a the Color of a solid color brush using raw text
             Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
 <SolidColorBrush xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">#C0C0C0</SolidColorBrush>"), "#1");
@@ -104,6 +109,49 @@ namespace MoonTest.System.Windows.Markup {
 ");
 			Assert.IsInstanceOfType<SolidColorBrush> (v.Value, "#2");
 			Assert.AreEqual ("#FFC0C0C0", ((SolidColorBrush) v.Value).Color.ToString (), "#3");
+
+
+			
+			// 
+			//  DoubleCollection
+			//
+
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
+<DoubleCollection xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">10,20</DoubleCollection>"), "#4");
+
+			
+			v = (DiscreteObjectKeyFrame)XamlReader.Load (@"
+<DiscreteObjectKeyFrame xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<DiscreteObjectKeyFrame.Value>
+		<DoubleCollection>10,20</DoubleCollection>
+	</DiscreteObjectKeyFrame.Value>
+</DiscreteObjectKeyFrame>
+");
+			Assert.IsInstanceOfType<DoubleCollection> (v.Value, "#5");
+			Assert.AreEqual (2, ((DoubleCollection) v.Value).Count, "#6");
+			Assert.AreEqual (10, ((DoubleCollection) v.Value) [0], "#7");
+			Assert.AreEqual (20, ((DoubleCollection) v.Value) [1], "#8");
+
+
+
+			//
+			// PointCollection
+			//
+
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
+<PointCollection xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">25,35 39,49</PointCollection>"), "#9");
+
+			v = (DiscreteObjectKeyFrame)XamlReader.Load (@"
+<DiscreteObjectKeyFrame xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<DiscreteObjectKeyFrame.Value>
+		<PointCollection>25,35 39,49</PointCollection>
+	</DiscreteObjectKeyFrame.Value>
+</DiscreteObjectKeyFrame>
+");
+			Assert.IsInstanceOfType<PointCollection> (v.Value, "#10");
+			Assert.AreEqual (2, ((PointCollection) v.Value).Count, "#11");
+			Assert.AreEqual (new Point (25, 35), ((PointCollection) v.Value) [0], "#12");
+			Assert.AreEqual (new Point (39, 49), ((PointCollection) v.Value) [1], "#13");
 		}
 	}
 }
