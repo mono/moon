@@ -1,5 +1,11 @@
 2009-08-21  Alan McGovern  <amcgovern@novell.com>
 
+	* control.cpp:
+	* template.cpp: Whenever any template is expanded, the
+	  template namescope should be locked. r: jackson
+
+2009-08-21  Alan McGovern  <amcgovern@novell.com>
+
 	* grid.cpp: When assigning sizes to grid segments, if the
 	  current UIElement spans across star segments, then extra
 	  height will only be assigned to those star segments.

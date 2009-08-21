@@ -187,7 +187,6 @@ Control::ApplyTemplate ()
 	if (!el)
 		return false;
 
-	NameScope::GetNameScope (el)->Lock ();
 	ElementAdded (el);
 
 	MoonError e;
