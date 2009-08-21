@@ -350,14 +350,14 @@ Grid::DestroyMatrices ()
 {
 	if (row_matrix != NULL) {
 		for (int i = 0; i < row_matrix_dim; i++)
-			delete row_matrix [i];
+			delete [] row_matrix [i];
 		delete [] row_matrix;
 		row_matrix = NULL;
 	}
 
 	if (col_matrix != NULL) {
 		for (int i = 0; i < col_matrix_dim; i++)
-			delete col_matrix [i];
+			delete [] col_matrix [i];
 		delete [] col_matrix;
 		col_matrix = NULL;
 	}
