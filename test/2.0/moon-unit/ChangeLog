@@ -1,3 +1,14 @@
+2009-08-21  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationPeerTest.cs: 
+	ListenerExists updated. Should be True when running on ML2.
+	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: 
+	  System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: 
+	Reverted because updated KB970363 pulled SL3 update,
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	Removed GetItemType_AttachedProperty, already defined in base class.
+
 2009-08-21  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/DataTemplateTests.cs: Add extra regression

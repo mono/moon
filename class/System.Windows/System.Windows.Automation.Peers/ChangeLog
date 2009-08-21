@@ -1,3 +1,8 @@
+2009-08-21  Mario Carrion  <mcarrion@novell.com>
+
+	* ItemAutomationPeer.cs: Reverted changed to handle update KB970363
+	(this update installed Silverlight 3 and is not backwards compatible)
+
 2009-08-13  Mario Carrion  <mcarrion@novell.com>
 
 	* AutomationPeer.cs: Fixed NRE when requesting cached properties

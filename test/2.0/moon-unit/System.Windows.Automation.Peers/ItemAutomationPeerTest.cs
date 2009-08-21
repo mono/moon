@@ -43,8 +43,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 	[TestClass]
 	public class ItemAutomationPeerTest : FrameworkElementAutomationPeerTest {
 
-		public class FrameworkElementPoker : FrameworkElement {
-			public FrameworkElementPoker ()
+		public class ConcreteContentControl : ContentControl {
+			public ConcreteContentControl ()
 				: base ()
 			{
 			}
@@ -195,15 +195,18 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void CtorDoesNotNeedAContentControl ()
+		public void CtorWantsAContentControl ()
 		{
-			ItemAutomationPeerPoker poker = new ItemAutomationPeerPoker (new Slider ());
+			// needs a ContentControl even if the ctor accept an UIElement
+			Assert.Throws<InvalidCastException> (delegate {
+				new ItemAutomationPeerPoker (new Slider ());
+			});
 		}
 
 		[TestMethod]
 		public void Protected ()
 		{
-			FrameworkElementPoker cc = new FrameworkElementPoker ();
+			ContentControl cc = new ContentControl ();
 			ItemAutomationPeerPoker iap = new ItemAutomationPeerPoker (cc);
 			Assert.AreEqual (String.Empty, iap.GetNameCore_ (), "GetNameCore");
 			Assert.AreEqual (String.Empty, iap.GetItemTypeCore_ (), "GetItemTypeCore");
@@ -223,8 +226,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			string itemType = "My Item Type";
 
 			fe.SetValue (AutomationProperties.ItemTypeProperty, itemType);
-			Assert.AreEqual (itemType, feap.GetItemType (), "GetItemType #1");
-			Assert.AreEqual (itemType, feap.GetItemTypeCore_ (), "GetItemTypeCore #1");
+			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType #1");
+			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore #1");
 
 			fe.SetValue (AutomationProperties.ItemTypeProperty, null);
 			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType #2");
@@ -291,22 +294,53 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		[MoonlightBug("We can't throw InvalidOperationException")]
-		public override void Null ()
+		[Asynchronous]
+		public override void ContentTest ()
 		{
-			Assert.Throws<InvalidOperationException> (delegate {
-				new ItemAutomationPeerPoker (null);
+			Assert.IsTrue (IsContentPropertyElement (), "ItemAutomation is ContentElement.");
+
+			bool contentControlLoaded = false;
+			ContentControl contentControl = CreateConcreteFrameworkElement () as ContentControl;
+			contentControl.Loaded += (o, e) => contentControlLoaded = true;
+			TestPanel.Children.Add (contentControl);
+
+			// StackPanel and two TextBlocks
+			bool stackPanelLoaded = false;
+			StackPanel stackPanel = new StackPanel ();
+			stackPanel.Children.Add (new TextBlock () { Text = "Text0" });
+			stackPanel.Children.Add (new TextBlock () { Text = "Text1" });
+			stackPanel.Loaded += (o, e) => stackPanelLoaded = true;
+
+			EnqueueConditional (() => contentControlLoaded, "ContentControlLoaded #0");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (contentControl);
+				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
+
+				Assert.IsNull (peer.GetChildren (), "GetChildren #0");
+				contentControl.Content = stackPanel;
 			});
+			EnqueueConditional (() => contentControlLoaded && stackPanelLoaded, "ContentControlLoaded #1");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (contentControl);
+				Assert.IsNotNull (peer.GetChildren (), "GetChildren #1");
+				Assert.AreEqual (2, peer.GetChildren ().Count, "GetChildren.Count #1");
+				// We add one TextBlock
+				stackPanel.Children.Add (new TextBlock () { Text = "Text2" });
+				Assert.IsNotNull (peer.GetChildren (), "GetChildren #2");
+				Assert.AreEqual (3, peer.GetChildren ().Count, "GetChildren.Count #2");
+			});
+			EnqueueTestComplete ();
 		}
+
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
-			return new FrameworkElementPoker ();
+			return new ConcreteContentControl ();
 		}
 
 		protected override FrameworkElementAutomationPeerContract CreateConcreteFrameworkElementAutomationPeer (FrameworkElement element)
 		{
-			return new ItemAutomationPeerPoker (element as FrameworkElementPoker);
+			return new ItemAutomationPeerPoker (element as ConcreteContentControl);
 		}
 	}
 }

@@ -32,22 +32,18 @@ using System.Windows.Media;
 namespace System.Windows.Automation.Peers {
 	public abstract class ItemAutomationPeer : FrameworkElementAutomationPeer {
 
-		protected ItemAutomationPeer (UIElement uielement) : base ((FrameworkElement) uielement)
+		protected ItemAutomationPeer (UIElement uielement) : base ((ContentControl) uielement)
 		{
 		}
 
 		protected override string GetNameCore ()
 		{
-			ContentControl contentControl = Owner as ContentControl;
-			if (contentControl == null)
-				return string.Empty;
-			else
-				return contentControl.Content as string ?? string.Empty;
+			return ((ContentControl) Owner).Content as string ?? string.Empty;
 		}
 
 		protected override string GetItemTypeCore ()
 		{
-			return base.GetItemTypeCore ();
+			return string.Empty;
 		}
 
 		protected ItemsControlAutomationPeer ItemsControlAutomationPeer {
@@ -72,8 +68,8 @@ namespace System.Windows.Automation.Peers {
 
 		internal override List<AutomationPeer> ChildrenCore {
 			get {
-				ContentControl owner = Owner as ContentControl;
-				if (owner == null || owner.Content == null || owner.Content is string)
+				ContentControl owner = (ContentControl) Owner;
+				if (owner.Content == null || owner.Content is string)
 					return null;
 				else
 					return base.ChildrenCore; 
