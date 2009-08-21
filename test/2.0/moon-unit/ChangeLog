@@ -1,5 +1,10 @@
 2009-08-21  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Whoops - nuke a
+	  Console.ReadLine that was accidently left in.
+
+2009-08-21  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Add the test which
 	  verifies the change in r140365.
 

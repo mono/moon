@@ -1139,7 +1139,6 @@ namespace MoonTest.System.Windows.Data
 </ContentControl>
 ");
 			control.Content = "Hello!";
-			Console.ReadLine ();
 			CreateAsyncTest (control, () => {
 				Border b = (Border) VisualTreeHelper.GetChild (control, 0);
 				Assert.AreEqual ("Hello!", ToolTipService.GetToolTip (b));
