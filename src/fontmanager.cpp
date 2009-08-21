@@ -1347,6 +1347,8 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 	
 	AddResource (resource, path);
 	
+	g_free (path);
+	
 	return resource;
 }
 

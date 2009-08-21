@@ -1,5 +1,15 @@
 2009-08-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* fontmanager.cpp (AddResource): Need to free the path string
+	before returning on success.
+
+	* frameworkelement.cpp (UpdateLayout): Modified outer-loop to not
+	leak the various lists.
+
+	r:toshok
+
+2009-08-21  Jeffrey Stedfast  <fejj@novell.com>
+
 	* grid.cpp (DestroyMatrices): Need to use delete[] to free the
 	matrices.
 

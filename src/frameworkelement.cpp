@@ -736,15 +736,20 @@ FrameworkElement::UpdateLayout ()
 	Surface *surface = element->GetSurface ();
 
         LOG_LAYOUT ("\nFrameworkElement::UpdateLayout: ");
+	List *measure_list = new List ();
+	List *arrange_list = new List ();
+	List *updated_list = new List ();
+	List *size_list = new List ();
 	bool updated = false;
 	int i = 0;
 	while (i < MAX_LAYOUT_PASSES) {
-		List *measure_list = new List ();
-		List *arrange_list = new List ();
-		List *updated_list = new List ();
-		List *size_list = new List ();
-		
 		LOG_LAYOUT ("\u267c");
+		
+		measure_list->Clear (true);
+		arrange_list->Clear (true);
+		updated_list->Clear (true);
+		size_list->Clear (true);
+		
 		i++;
 		DeepTreeWalker measure_walker (element);
 		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
@@ -759,7 +764,6 @@ FrameworkElement::UpdateLayout ()
 			}
 			
 			if ((child->flags & UIElement::RENDER_VISIBLE) == 0) {
-				
 				measure_walker.SkipBranch ();
 				continue;
 			}
@@ -792,6 +796,7 @@ FrameworkElement::UpdateLayout ()
 			if (updated)
 				updated_list->Append (new UIElementNode (child));
 		}
+		
 		if (!measure_list->IsEmpty ()) {
 			if (surface)
 				surface->needs_measure = false;
@@ -850,19 +855,13 @@ FrameworkElement::UpdateLayout ()
 				delete (node);
 			}
 			break;
-		} else {
-			delete measure_list;
-			delete arrange_list;
-			delete size_list;
-			delete updated_list;
-			break;
 		}
-		       
-		delete measure_list;
-		delete arrange_list;
-		delete size_list;
-		delete updated_list;
 	}
+	
+	delete measure_list;
+	delete arrange_list;
+	delete updated_list;
+	delete size_list;
 	
 	if (i >= MAX_LAYOUT_PASSES)  {
 		LOG_LAYOUT ("\n************** UpdateLayout Bailing Out after %d Passes *******************\n", i);
