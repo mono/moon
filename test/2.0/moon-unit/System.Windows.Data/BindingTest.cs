@@ -1121,6 +1121,30 @@ namespace MoonTest.System.Windows.Data
 			});
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void TemplateBindingOnTooltip ()
+		{
+			var control = (ContentControl) XamlReader.Load (
+@"	
+<ContentControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ContentControl.Template>
+		<ControlTemplate>
+			<Border ToolTipService.ToolTip=""{TemplateBinding Content}"">
+				
+			</Border>
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>
+");
+			control.Content = "Hello!";
+			Console.ReadLine ();
+			CreateAsyncTest (control, () => {
+				Border b = (Border) VisualTreeHelper.GetChild (control, 0);
+				Assert.AreEqual ("Hello!", ToolTipService.GetToolTip (b));
+			});
+		}
 
 		[TestMethod]
 		[Asynchronous]

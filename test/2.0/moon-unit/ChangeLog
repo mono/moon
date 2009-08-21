@@ -1,5 +1,10 @@
 2009-08-21  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Add the test which
+	  verifies the change in r140365.
+
+2009-08-21  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/GridTestAuto.cs: When assigning
 	  sizes to grid segments, if the current UIElement spans
 	  across star segments, then extra height will only be
