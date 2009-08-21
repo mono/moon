@@ -1,3 +1,10 @@
+2009-08-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* grid.cpp (DestroyMatrices): Need to use delete[] to free the
+	matrices.
+
+	r:toshok
+
 2009-08-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* uielement.cpp (GetTransformToUIElementWithError): Before
