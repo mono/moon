@@ -15,15 +15,6 @@
 
 	r:toshok
 
-2009-08-20  Jeffrey Stedfast  <fejj@novell.com>
-
-	* uielement.cpp (GetTransformToUIElementWithError): Before
-	calculating the matrix transform between the 2 elements, make sure
-	they are in their proper positions by forcing a dirty
-	pass. Completes the fixes for drt #2003.
-
-	r:kangaroo
-
 2009-08-21  Alan McGovern  <amcgovern@novell.com>
 
 	* control.cpp:
