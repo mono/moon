@@ -280,7 +280,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		[SilverlightBug("A11y implementation doesn't work")]
 		public void ISelectionProvider_Methods ()
 		{
 			bool concreteLoaded = false;

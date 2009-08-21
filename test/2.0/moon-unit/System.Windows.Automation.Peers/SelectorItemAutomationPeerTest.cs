@@ -208,6 +208,26 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		public override void GetItemType_AttachedProperty ()
+		{
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+
+			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType");
+			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore");
+
+			string itemType = "My Item Type";
+
+			fe.SetValue (AutomationProperties.ItemTypeProperty, itemType);
+			Assert.AreEqual (itemType, feap.GetItemType (), "GetItemType #1");
+			Assert.AreEqual (itemType, feap.GetItemTypeCore_ (), "GetItemTypeCore #1");
+
+			fe.SetValue (AutomationProperties.ItemTypeProperty, null);
+			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType #2");
+			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore #2");
+		}
+
+		[TestMethod]
 		public override void GetName_AttachedProperty0 ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
