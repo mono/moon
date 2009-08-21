@@ -812,6 +812,7 @@ UIElement::Focus (bool recurse)
 {
 	return false;
 }
+
 //
 // Queues the invalidate for the current region, performs any 
 // updates to the RenderTransform (optional) and queues a 
@@ -1394,7 +1395,10 @@ UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *e
 			return NULL;
 		}
 	}
-
+	
+	// Force a dirty pass to make sure the elements are in their proper positions.
+	GetSurface ()->ProcessDirtyElements ();
+	
 	cairo_matrix_t result;
 	// A = From, B = To, M = what we want
 	// A = M * B
