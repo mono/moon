@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
 				// This means we explicitly don't want to check the children of this node
 				if (nodes[i].Siblings == null)
-					return;
+					continue;
 
 				int children = VisualTreeHelper.GetChildrenCount (child);
 				if (children != nodes [i].Siblings.Length)
