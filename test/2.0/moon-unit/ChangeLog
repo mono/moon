@@ -1,5 +1,11 @@
 2009-08-21  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/ResourceDictionaryTest.cs: Add extra tests to
+	  see which elements can be added multiple times to the same
+	  RD and which elements can be added to multiple different RDs
+
+2009-08-21  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Whoops - nuke a
 	  Console.ReadLine that was accidently left in.
 
