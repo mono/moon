@@ -1,5 +1,10 @@
 2009-08-21  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/DataTemplateTests.cs: Add extra regression
+	  test for the change in r140417. 
+
+2009-08-21  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/ResourceDictionaryTest.cs: Add extra tests to
 	  see which elements can be added multiple times to the same
 	  RD and which elements can be added to multiple different RDs

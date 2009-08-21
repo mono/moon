@@ -73,5 +73,29 @@ namespace MoonTest.System.Windows
 				}
 			);
 		}
+
+		[TestMethod]
+		public void DataTemplateNamescopeTest ()
+		{
+			Grid grid = (Grid) XamlReader.Load (@"
+<Grid	xmlns=""http://schemas.microsoft.com/client/2007""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<Grid.Resources>
+		<DataTemplate x:Key=""Template"">
+			<Grid x:Name=""A"">
+				<Grid x:Name=""B"" />
+			</Grid>
+		</DataTemplate>
+	</Grid.Resources>
+</Grid>");
+			DataTemplate t = (DataTemplate)grid.Resources ["Template"];
+			Grid root = (Grid) t.LoadContent ();
+			Assert.AreEqual (root, root.FindName ("A"), "#1");
+			Assert.IsInstanceOfType<Grid> (root.FindName ("B"), "#2");
+
+			TestPanel.Children.Add (root);
+			Assert.IsNull (TestPanel.FindName ("A"), "#3");
+			Assert.IsNull (TestPanel.FindName ("B"), "#4");
+		}
 	}
 }
