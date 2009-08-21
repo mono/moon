@@ -283,6 +283,10 @@ Grid::AllocateGridSegments (int row_count, int col_count)
 
 		for (int row = count - 1; row >= 0; row--) {
 			for (int col = row; col >= 0; col--) {
+					bool spans_star = false;
+					for (int j = row; j >= col; j --)
+						spans_star |= matrix [j][j].type == GridUnitTypeStar;
+			
 				// This is the amount of pixels which must be available between the grid rows
 				// at index 'col' and 'row'. i.e. if 'row' == 0 and 'col' == 2, there must
 				// be at least 'matrix [row][col].size' pixels of height allocated between
@@ -303,9 +307,12 @@ Grid::AllocateGridSegments (int row_count, int col_count)
 					double additional = current - total_allocated;
 					// Note that multiple passes may be required at each level depending on whether or not
 					// the MaxHeight/MaxWidth value prevents the row/column from accepting the full contribution
-					while (AssignSize (matrix, col, row, &additional, GridUnitTypePixel)) { }
-					while (AssignSize (matrix, col, row, &additional, GridUnitTypeStar))  { }
-					while (AssignSize (matrix, col, row, &additional, GridUnitTypeAuto))  { }
+					if (spans_star) {
+						while (AssignSize (matrix, col, row, &additional, GridUnitTypeStar))  { }
+					} else {
+						while (AssignSize (matrix, col, row, &additional, GridUnitTypePixel)) { }
+						while (AssignSize (matrix, col, row, &additional, GridUnitTypeAuto))  { }
+					}
 				}
 			}
 		}
@@ -320,9 +327,6 @@ Grid::AssignSize (Segment **matrix, int start, int end, double *size, GridUnitTy
 	double contribution = *size;
 	
 	for (int i = start; i <= end; i++) {
-		// If we span across any star rows, Auto rows will not get any height assignment
-		if (type == GridUnitTypeAuto && matrix [i][i].type == GridUnitTypeStar)
-			return false;
 		if (matrix [i][i].type == type && matrix [i][i].size < matrix [i][i].max)
 			count++;
 	}
