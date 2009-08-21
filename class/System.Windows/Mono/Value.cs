@@ -67,6 +67,7 @@ namespace Mono {
 		public IntPtr Read;
 		public IntPtr Write;
 		public IntPtr Seek;
+		public IntPtr Close;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
