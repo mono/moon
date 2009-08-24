@@ -4875,6 +4875,7 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 	if (arg_count) {
 		for (guint32 i = 0; i < arg_count; i++)
 			NPN_ReleaseVariantValue (&npargs [i]);
+		delete [] npargs;
 	}
 
 	if (ret)
@@ -4920,6 +4921,7 @@ html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
 	if (arg_count) {
 		for (guint32 i = 0; i < arg_count; i++)
 			NPN_ReleaseVariantValue (&npargs [i]);
+		delete [] npargs;
 	}
 
 	if (ret)
@@ -4978,16 +4980,15 @@ html_object_retain (PluginInstance *plugin, NPObject *npobj)
 void
 browser_do_alert (PluginInstance *plugin, char *msg)
 {
-	NPVariant npresult;
-	NPVariant *npargs = new NPVariant [1];
+	NPVariant npresult, npargs;
 	NPObject *window = NULL;
 	NPP npp = plugin->GetInstance ();
 	NPIdentifier identifier = NPN_GetStringIdentifier ("alert");
 
 	NPN_GetValue (npp, NPNVWindowNPObject, &window);
-	string_to_npvariant (msg, &npargs [0]);
+	string_to_npvariant (msg, &npargs);
 
-	NPN_Invoke (npp, window, identifier, npargs, 1, &npresult);
+	NPN_Invoke (npp, window, identifier, &npargs, 1, &npresult);
 }
 
 
