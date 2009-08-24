@@ -43,7 +43,10 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void ListenerExists ()
 		{
-			Assert.IsFalse (AutomationPeer.ListenerExists ((AutomationEvents) Int32.MinValue), "Bad value");
+			if (FrameworkElementAutomationPeerTest.EventsManager.Instance.AutomationSingletonExists)
+				Assert.IsTrue (AutomationPeer.ListenerExists ((AutomationEvents) Int32.MinValue), "Bad value");
+			else
+				Assert.IsFalse (AutomationPeer.ListenerExists ((AutomationEvents) Int32.MinValue), "Bad value");
 		}
 
  		[TestMethod]

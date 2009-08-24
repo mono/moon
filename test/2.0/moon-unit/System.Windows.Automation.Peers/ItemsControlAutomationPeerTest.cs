@@ -220,17 +220,14 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("ItemsControl always returns valid children even when subclassing ItemsControl directly")]
+		[MoonlightBug("This is not yet working on Moonlight. (GetChildren #1)")]
 		public override void ContentTest ()
 		{
 			Assert.IsTrue (IsContentPropertyElement (), "ItemsControl ContentElement.");
 
 			bool concreteLoaded = false;
-			bool concreteLayoutUpdate = false;
-			bool layoutUpdated = false;
 			ItemsControlConcrete concrete = CreateConcreteFrameworkElement () as ItemsControlConcrete;
 			concrete.Loaded += (o, e) => concreteLoaded = true;
-			concrete.LayoutUpdated += (o, e) => concreteLayoutUpdate = true;
 			TestPanel.Children.Add (concrete);
 
 			// StackPanel with two TextBlocks
@@ -239,7 +236,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			stackPanel.Children.Add (new TextBlock () { Text = "Text0" });
 			stackPanel.Children.Add (new TextBlock () { Text = "Text1" });
 			stackPanel.Loaded += (o, e) => stackPanelLoaded = true;
-			stackPanel.LayoutUpdated += (o, e) => layoutUpdated = true;
 
 			EnqueueConditional (() => concreteLoaded, "ConcreteLoaded #0");
 			Enqueue (() => {
@@ -247,27 +243,18 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
 
 				Assert.IsNull (peer.GetChildren (), "GetChildren #0");
-				concreteLayoutUpdate = false;
 				concrete.Items.Add (stackPanel);
 				// Also one extra TextBlock
 				concrete.Items.Add (new TextBlock () { Text = "Text2" });
 			});
-			EnqueueConditional (() => concreteLoaded && stackPanelLoaded && concreteLayoutUpdate, "ConcreteLoaded #1");
+			EnqueueConditional (() => concreteLoaded && stackPanelLoaded, "ConcreteLoaded #1");
 			Enqueue (() => {
 				stackPanelLoaded = false;
 				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
-				List<AutomationPeer> children = peer.GetChildren ();
-				Assert.IsNotNull (children, "GetChildren #1");
-				Assert.AreEqual (0, children.Count, "GetChildren.Count #1");
-				layoutUpdated = false;
+				Assert.IsNull (peer.GetChildren (), "GetChildren #1");
+				// We add another TextBlock and nothing changes
 				stackPanel.Children.Add (new TextBlock () { Text = "Text3" });
-			});
-			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #1");
-			Enqueue (() => {
-				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
-				List<AutomationPeer> children = peer.GetChildren ();
-				Assert.IsNotNull (children, "GetChildren #2");
-				Assert.AreEqual (0, children.Count, "GetChildren.Count #2");
+				Assert.IsNull (peer.GetChildren (), "GetChildren #2");
 			});
 			EnqueueTestComplete ();
 		}
