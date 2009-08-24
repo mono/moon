@@ -1473,14 +1473,19 @@ void
 DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 {
 	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
+
 	NameScope *this_ns = NameScope::GetNameScope(this);
+	if (IsHydratedFromXaml () || this_ns == NULL || this_ns->GetTemporary ()) {
+		// Unregister in the parent scope
+	
+		const char *n = GetName();
+
+		if (n && strlen (n) > 0)
+			from_ns->UnregisterName (n);
+	}
+
 	if (this_ns && !this_ns->GetTemporary())
 		return;
-	
-	const char *n = GetName();
-	
-	if (n && strlen (n) > 0)
-		from_ns->UnregisterName (n);
 	
 	if (autocreate)
 		g_hash_table_foreach (autocreate->auto_values, unregister_depobj_names, from_ns);

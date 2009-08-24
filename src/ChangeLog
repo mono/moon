@@ -1,3 +1,8 @@
+2009-08-24  Jackson Harper  <jackson@ximian.com>
+
+	* dependencyobject.cpp: Hydrated objects are registered in their
+	parent namescope so we need to unregister them there also. r: toshok
+
 2009-08-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fontmanager.cpp (AddResource): Need to free the path string
