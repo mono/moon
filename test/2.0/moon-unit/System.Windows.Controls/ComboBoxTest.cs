@@ -40,6 +40,7 @@ using System.Windows.Media;
 using System.Text;
 using System.Windows.Media.Animation;
 using System.Windows.Controls.Primitives;
+using System.Windows.Markup;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -644,6 +645,50 @@ namespace MoonTest.System.Windows.Controls {
 			c.Items.Insert (0, new object ());
 			Assert.AreEqual (0, c.SelectedIndex, "#3");
 			Assert.AreEqual (c.Items[1], c.SelectedItem, "#4");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("Failing because we don't create the ListBoxItems until the popup is opened for the first time")]
+		public void ItemTemplateTest ()
+		{
+			ComboBox box = (ComboBox) XamlReader.Load(@"
+<ComboBox	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+			xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ComboBox.ItemTemplate>
+		<DataTemplate>
+			<TextBlock Text=""{Binding Name}"" />
+		</DataTemplate>
+	</ComboBox.ItemTemplate>
+</ComboBox>");
+			box.Items.Add (new object());
+			box.SelectedItem = box.Items[0];
+			
+			// Capture the contentpresenter from the ComboBoxs visual tree
+			// and check that it's using the ComboBox DataTemplate as its
+			// ContentTemplate.
+			CreateAsyncTest (box, () => {
+				Assert.AreEqual (box.Items [0], box.SelectionBoxItem, "#1");
+				Assert.AreEqual (box.ItemTemplate, box.SelectionBoxItemTemplate, "#2");
+				
+				ContentPresenter presenter = null;
+				Assert.VisualChildren (box,
+					new VisualNode<Grid> ("#a",
+						new VisualNode<Border> ("#b",
+							new VisualNode<Grid> ("#c",
+								new VisualNode<ToggleButton> ("#d", (VisualNode[]) null),
+								new VisualNode<ContentPresenter> ("#e", p => presenter = p, null)
+							)
+						),
+						new VisualNode<Rectangle> ("#f"),
+						new VisualNode<Rectangle> ("#g"),
+						new VisualNode<Popup> ("#h")
+					)
+				);
+
+				Assert.IsInstanceOfType<DataTemplate> (presenter.ReadLocalValue (ContentPresenter.ContentTemplateProperty), "#2");
+				Assert.AreEqual (box.ItemTemplate, presenter.ContentTemplate, "#3");
+			});
 		}
 		
 		[TestMethod]

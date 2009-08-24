@@ -222,7 +222,6 @@ namespace System.Windows.Controls
 			base.NotifyListItemClicked (listBoxItem);
 			IsDropDownOpen = false;
 			SelectedItem = listBoxItem.Item ?? listBoxItem;
-			UpdateDisplayedItem ();
 		}
 
 		internal override void NotifyListItemLoaded (ListBoxItem listBoxItem)
@@ -283,6 +282,9 @@ namespace System.Windows.Controls
 						IsDropDownOpen = false;
 				};
 			}
+			
+			UpdateVisualState (false);
+			UpdateDisplayedItem ();
 		}
 		
 		protected override AutomationPeer OnCreateAutomationPeer ()
@@ -381,7 +383,6 @@ namespace System.Windows.Controls
 
 		void UpdateDisplayedItem ()
 		{
-			object content = null;
 			Console.WriteLine ("Updating...");
 
 			// Can't do anything with no content presenter
@@ -393,10 +394,12 @@ namespace System.Windows.Controls
 			// Clear out any existing displayed item
 			if (DisplayedItem != null) {
 				Console.WriteLine ("Putting: {0} back into {1}", ItemDebugString (_contentPresenter.Content), DisplayedItem.Name);
-				content = _contentPresenter.Content;
+				SelectionBoxItem = _contentPresenter.Content;
 				_contentPresenter.Content = null;
-				DisplayedItem.Content = content;
+				DisplayedItem.Content = SelectionBoxItem;
 				DisplayedItem = null;
+				SelectionBoxItem = null;
+				SelectionBoxItemTemplate = null;
 			}
 			// If nothing is selected or popup is open bail out
 			if (SelectedItem == null || IsDropDownOpen) {
@@ -410,9 +413,11 @@ namespace System.Windows.Controls
 				return;
 			}
 			Console.WriteLine ("Displaying: {0} from {1}", ItemDebugString (DisplayedItem.Content), DisplayedItem.Name);
-			content = DisplayedItem.Content;
+			SelectionBoxItem = DisplayedItem.Content;
+			SelectionBoxItemTemplate = DisplayedItem.ContentTemplate;
 			DisplayedItem.Content = null;
-			_contentPresenter.Content = content;
+			_contentPresenter.Content = SelectionBoxItem;
+			_contentPresenter.ContentTemplate = SelectionBoxItemTemplate;
 		}
 		
 		void UpdatePopupSizeAndPosition ()

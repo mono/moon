@@ -1,3 +1,14 @@
+2009-08-24  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: 1) Update the
+	  DisplayedItem when the ComboBox template has been applied.
+	2) Correctly update the SelectionBoxItem and
+	  SelectionBoxItemTemplate variables aswell.
+	3) Ensure that the ItemTemplate applied to the selected
+	  ComboBoxItem is propagated to
+	  ContentPresenter.ContentTemplate
+	r: sde
+
 2009-08-21  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/DataTemplateTests.cs: Add extra regression
