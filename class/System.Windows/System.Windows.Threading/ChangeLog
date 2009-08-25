@@ -1,3 +1,8 @@
+2009-08-25  Jackson Harper  <jackson@ximian.com>
+
+	* Dispatcher.cs: This chunk is a little crashy when called from
+	the finalizer, ifdef it for now.  r: shana.
+
 2009-08-06  Chris Toshok  <toshok@ximian.com>
 
 	* Dispatcher.cs (Dispose): time_manager_remove_tick_call takes
