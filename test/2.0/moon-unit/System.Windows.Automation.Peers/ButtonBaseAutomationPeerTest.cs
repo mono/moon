@@ -30,6 +30,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
 
 using Mono.Moonlight.UnitTesting;
@@ -187,10 +188,14 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[Asynchronous]
 		public override void ContentTest ()
 		{
-			Assert.IsTrue (IsContentPropertyElement (), "ButtonBaseElement ContentElement.");
+			ContentTest ((ButtonBase) CreateConcreteFrameworkElement ());
+		}
+
+		protected void ContentTest (ButtonBase button)
+		{
+			Assert.IsTrue (IsContentPropertyElement (), "ButtonElement ContentElement.");
 
 			bool buttonLoaded = false;
-			ButtonBase button = CreateConcreteFrameworkElement () as ButtonBase;
 			button.Loaded += (o, e) => buttonLoaded = true;
 			TestPanel.Children.Add (button);
 
@@ -285,5 +290,25 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		{
 			return new ButtonBaseAutomationPeerPoker (element as ButtonBasePoker);
 		}
+
+		protected void Test_InvokeProvider_Events (ButtonBase element)
+		{
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (element);
+
+			IInvokeProvider provider
+				= (IInvokeProvider) peer.GetPattern (PatternInterface.Invoke);
+			Assert.IsNotNull (provider, "GetPattern #0");
+
+			EventsManager.Instance.Reset ();
+
+			AutomationEventTuple tuple
+				= EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.InvokePatternOnInvoked);
+			Assert.IsNull (tuple, "GetAutomationEventFrom #0");
+
+			provider.Invoke ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.InvokePatternOnInvoked);
+			Assert.IsNotNull (tuple, "GetAutomationEventFrom #1");
+		}
+
 	}
 }

@@ -28,6 +28,7 @@
 
 using System;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Automation.Provider;
 
 namespace System.Windows.Automation.Peers {
@@ -37,36 +38,36 @@ namespace System.Windows.Automation.Peers {
 		public HyperlinkButtonAutomationPeer (HyperlinkButton owner)
 			: base (owner)
 		{
+			owner.Click += (s, a) => {
+				RaiseAutomationEvent (AutomationEvents.InvokePatternOnInvoked);
+			};
 		}
 
-		[MonoTODO]
 		protected override AutomationControlType GetAutomationControlTypeCore ()
 		{
-			throw new NotImplementedException ();
+			return AutomationControlType.Hyperlink;
 		}
 
-		[MonoTODO]
-		protected override string GetNameCore ()
+		protected override string GetClassNameCore ()
 		{
-			throw new NotImplementedException ();
+			return "Hyperlink";
 		}
 
-		[MonoTODO]
-		public override object GetPattern (PatternInterface patternInterface)
-		{
-			throw new NotImplementedException ();
-		}
-
-		[MonoTODO]
 		protected override bool IsControlElementCore ()
 		{
-			throw new NotImplementedException ();
+			return true;
 		}
 
-		[MonoTODO]
 		void IInvokeProvider.Invoke ()
 		{
-			throw new NotImplementedException ();
+			((ButtonBase) Owner).OnClickInternal ();
+		}
+
+		public override object GetPattern (PatternInterface patternInterface)
+		{
+			if (patternInterface == PatternInterface.Invoke)
+				return this;
+			return base.GetPattern (patternInterface);
 		}
 	}
 }

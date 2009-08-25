@@ -1,3 +1,10 @@
+2009-08-25  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* RuntimeControls/SilverlightControls/HyperlinkButton.cs:
+	  Final implementation of HyperlinkButton (based on stub
+	  implementation from Olivier Dufour
+	  <olivier.duff@gmail.com>).
+
 2009-08-13  Mario Carrion  <mcarrion@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs: Visibility properties

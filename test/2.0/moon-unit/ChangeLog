@@ -1,3 +1,16 @@
+2009-08-25  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* moon-unit.mdp: Add new HyperLinkButtonAutomationPeerTest
+	  file.
+
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs:
+	  Event testing for derived classes of ButtonBase. Refactor
+	  ContentTest.
+
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs:
+	  Call the base method for testing events. Refactor
+	  ContentTest (code was duplicated with the base test).
+
 2009-08-25  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ComboBoxTest.cs: When an item is

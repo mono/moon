@@ -225,5 +225,10 @@ namespace System.Windows.Controls
                 return false;
             } 
         }
+
+        protected override AutomationPeer OnCreateAutomationPeer ()
+        {
+            return new HyperlinkButtonAutomationPeer (this);
+        }
     }
 } 
