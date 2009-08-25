@@ -1,3 +1,11 @@
+2009-08-25  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Rewrite the UpdateDisplayedItem method to fix
+	  rendering issues when an item is selected before the drop
+	  down list has been opened. Previously the selected item
+	  would not appear in the ComboBox as the currently displayed
+	  item. r: spouliot
+
 2009-08-24  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs: 1) Update the DisplayedItem when the ComboBox

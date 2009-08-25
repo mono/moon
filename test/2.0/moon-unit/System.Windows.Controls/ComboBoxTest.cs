@@ -156,6 +156,91 @@ namespace MoonTest.System.Windows.Controls {
 	[TestClass]
 	public partial class ComboBoxTest : SilverlightTest {
 
+		public void CheckComboBoxSelection (object add, object selected)
+		{
+			object expectedContent = null;
+			ComboBoxItem add_item = add as ComboBoxItem;
+
+			// If a ComboBoxItem is added to the control, we extract its Content and put it
+			// in the SelectionBoxItem property, so it will be null at the end. Otherwise
+			// it should be unchanged.
+			if (add_item != null)
+				expectedContent = add_item.Content is UIElement ? null : add_item.Content;
+
+			ComboBox box = new ComboBox ();
+			box.Items.Add (add);
+
+			box.SelectedIndex = 0;
+			CreateAsyncTest (box,
+				() => Assert.AreEqual (selected, box.SelectionBoxItem, "#1"),
+				() => box.IsDropDownOpen = true,
+				() => {
+					if (add is FrameworkElement)
+						Assert.IsNull (box.SelectionBoxItem, "#2a");
+					else
+						Assert.AreEqual (selected, box.SelectionBoxItem, "#2b");
+				},
+				() => box.IsDropDownOpen = false,
+				() => {
+					Assert.AreEqual (selected, box.SelectionBoxItem, "#3");
+					if (add_item != null)
+						Assert.AreEqual (expectedContent, ((ListBoxItem) add).Content, "#4");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void SelectionBoxItemTest ()
+		{
+			var o = new object ();
+			CheckComboBoxSelection (o, o);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void SelectionBoxItemTest2 ()
+		{
+			var o = new object ();
+			var item = new ComboBoxItem { Content = o };
+			CheckComboBoxSelection (item, o);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void SelectionBoxItemTest3 ()
+		{
+			var o = new object ();
+			var item = new ListBoxItem { Content = o };
+			CheckComboBoxSelection (item, item);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void SelectionBoxItemTest4 ()
+		{
+			var o = new Rectangle ();
+			CheckComboBoxSelection (o, o);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void SelectionBoxItemTest5 ()
+		{
+			var o = new Rectangle ();
+			var item = new ComboBoxItem { Content = o };
+			CheckComboBoxSelection (item, o);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void SelectionBoxItemTest6 ()
+		{
+			var o = new Rectangle ();
+			var item = new ListBoxItem { Content = o };
+			CheckComboBoxSelection (item, item);
+		}
+		
 		[TestMethod]
 		public void AddTest2 ()
 		{
@@ -484,7 +569,6 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ItemParentTest2b ()
 		{
 			bool loaded = false;
@@ -649,7 +733,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("Failing because we don't create the ListBoxItems until the popup is opened for the first time")]
 		public void ItemTemplateTest ()
 		{
 			ComboBox box = (ComboBox) XamlReader.Load(@"

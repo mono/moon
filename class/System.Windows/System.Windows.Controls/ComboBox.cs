@@ -111,8 +111,8 @@ namespace System.Windows.Controls
 		{
 			DefaultStyleKey = typeof (ComboBox);
 
-			Loaded += delegate { UpdateVisualState (false); UpdateDisplayedItem (); };
-			SelectionChanged += delegate { UpdateDisplayedItem (); };
+			Loaded += delegate { UpdateVisualState (false); UpdateDisplayedItem (SelectedItem); };
+			SelectionChanged += delegate { UpdateDisplayedItem (SelectedItem); };
 		}
 
 		#region Property Changed Handlers
@@ -145,7 +145,7 @@ namespace System.Windows.Controls
 				OnDropDownClosed (EventArgs.Empty);
 			}
 
-			UpdateDisplayedItem ();
+			UpdateDisplayedItem (open && SelectedItem is UIElement ? null : SelectedItem);
 			UpdateVisualState (true);
 		}
 
@@ -284,7 +284,7 @@ namespace System.Windows.Controls
 			}
 			
 			UpdateVisualState (false);
-			UpdateDisplayedItem ();
+			UpdateDisplayedItem (SelectedItem);
 		}
 		
 		protected override AutomationPeer OnCreateAutomationPeer ()
@@ -381,43 +381,49 @@ namespace System.Windows.Controls
 			}
 		}
 
-		void UpdateDisplayedItem ()
+		void UpdateDisplayedItem (object selectedItem)
 		{
-			Console.WriteLine ("Updating...");
+			object content;
 
 			// Can't do anything with no content presenter
-			if (_contentPresenter == null) {
-				Console.WriteLine ("Bailing out - no presenter");
+			if (_contentPresenter == null)
 				return;
-			}
-			
-			// Clear out any existing displayed item
+
+			// Return the currently displayed object (which is a UIElement)
+			// to its original container.
 			if (DisplayedItem != null) {
-				Console.WriteLine ("Putting: {0} back into {1}", ItemDebugString (_contentPresenter.Content), DisplayedItem.Name);
-				SelectionBoxItem = _contentPresenter.Content;
+				content = _contentPresenter.Content;
 				_contentPresenter.Content = null;
-				DisplayedItem.Content = SelectionBoxItem;
+				DisplayedItem.Content = content;
 				DisplayedItem = null;
+			}
+
+			if (selectedItem == null) {
+				_contentPresenter.Content = null;
+				_contentPresenter.ContentTemplate = null;
 				SelectionBoxItem = null;
 				SelectionBoxItemTemplate = null;
-			}
-			// If nothing is selected or popup is open bail out
-			if (SelectedItem == null || IsDropDownOpen) {
-				Console.WriteLine ("Bailing out: {0}/{1}", ItemDebugString (SelectedItem), IsDropDownOpen);
 				return;
 			}
-			_contentPresenter.Content = null;
+
+			// If the currently selected item is a ComboBoxItem (not ListBoxItem!), we
+			// display its Content instead of the CBI itself.
+			content = selectedItem;
+			if (content is ComboBoxItem)
+				content = ((ComboBoxItem) content).Content;
+
+			// Only allow DisplayedItem to be non-null if we physically move
+			// its content. This will only happen if DisplayedItem == SelectedItem
 			DisplayedItem = GetContainerItem (SelectedIndex) as ComboBoxItem;
-			if (DisplayedItem == null) {
-				Console.WriteLine ("** ERROR **: There should be one container for each item");
-				return;
-			}
-			Console.WriteLine ("Displaying: {0} from {1}", ItemDebugString (DisplayedItem.Content), DisplayedItem.Name);
-			SelectionBoxItem = DisplayedItem.Content;
-			SelectionBoxItemTemplate = DisplayedItem.ContentTemplate;
-			DisplayedItem.Content = null;
-			_contentPresenter.Content = SelectionBoxItem;
-			_contentPresenter.ContentTemplate = SelectionBoxItemTemplate;
+			if (DisplayedItem != null && content is UIElement)
+				DisplayedItem.Content = null;
+			else
+				DisplayedItem = null;
+
+			_contentPresenter.Content = content;
+			_contentPresenter.ContentTemplate = ItemTemplate;
+			SelectionBoxItem = content;
+			SelectionBoxItemTemplate = ItemTemplate;
 		}
 		
 		void UpdatePopupSizeAndPosition ()
