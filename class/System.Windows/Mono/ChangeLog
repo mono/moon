@@ -1,3 +1,14 @@
+2009-08-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Events.cs: Don't call Content.InvokeResize inside the loaded
+	callback. Doing so will cause infinite recursion if something
+	is added (hence loaded) in the plugin OnResize event.
+	Documentation states that "This event will occur upon initial 
+	loading of the Silverlight plug-in." and runtime.cpp does that.
+	[Fix crasher bug #504979 http://www.bennedik.de/Silverboard.html]
+
+	r: alan, jackson
+
 2009-08-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Value.cs: Add a Close function pointer to

@@ -141,8 +141,6 @@ namespace Mono {
 		{
 			FrameworkElement e = (FrameworkElement)NativeDependencyObjectHelper.FromIntPtr (closure);
 			e.InvokeLoaded ();
-			
-			Content.InvokeResize ();
 		}
 
 		static void mouse_leave_callback (IntPtr target, IntPtr calldata, IntPtr closure)
