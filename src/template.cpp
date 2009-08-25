@@ -42,6 +42,12 @@ FrameworkTemplate::SetXamlBuffer (XamlContext *xaml_context, const char *xaml_bu
 	this->xaml_context = xaml_context;
 }
 
+DependencyObject *
+FrameworkTemplate::GetVisualTree ()
+{
+	return GetVisualTree (NULL);
+}
+
 DependencyObject*
 FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 {
@@ -70,12 +76,6 @@ ControlTemplate::ControlTemplate ()
 	SetObjectType (Type::CONTROLTEMPLATE);
 }
 
-FrameworkElement *
-ControlTemplate::Apply (Control *control)
-{
-	return (FrameworkElement*)GetVisualTree (control);
-}
-
 DataTemplate::DataTemplate ()
 {
 	SetObjectType (Type::DATATEMPLATE);
@@ -85,4 +85,11 @@ DependencyObject*
 DataTemplate::LoadContentWithError (MoonError *error)
 {
 	return GetVisualTree (NULL);
+}
+
+DependencyObject *
+DataTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
+{
+	// DataTemplate ignores the source paramater and always uses null
+	return FrameworkTemplate::GetVisualTree (NULL);
 }

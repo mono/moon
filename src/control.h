@@ -175,9 +175,11 @@ public:
 protected:
 	virtual ~Control ();
 	UIElement *template_root;
+	bool ApplyTemplate (FrameworkTemplate *t);
+	bool ApplyTemplateRoot (UIElement *root);
 	
 private:
-	ControlTemplate *applied_template;
+	FrameworkTemplate *applied_template;
 	bool enabled_local;
 	bool enabled_parent;
 };

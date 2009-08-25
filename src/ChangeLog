@@ -1,3 +1,15 @@
+2009-08-25  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* template.h:
+	* control.cpp:
+	* template.cpp:
+	* contentcontrol.cpp: Add support for using
+	  ContentControl.ContentTemplate when it is available. If
+	  there is no Control.Template, ContentControl.ControlTemplate
+	  is used. If that isn't available, we call into managed code
+	  and get the fallback root. r: toshok
+
 2009-08-24  Jackson Harper  <jackson@ximian.com>
 
 	* dependencyobject.cpp: Hydrated objects are registered in their

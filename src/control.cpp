@@ -170,27 +170,36 @@ Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, Moon
 bool
 Control::ApplyTemplate ()
 {
-	if (applied_template == GetTemplate ())
+	return ApplyTemplate (GetTemplate ());
+}
+
+bool
+Control::ApplyTemplate (FrameworkTemplate *t)
+{
+	if (applied_template == t)
 		return false;
 
 	ClearTemplate ();
 
-	if (!GetTemplate())
+	if (!t)
 		return false;
 
-	//printf ("APPLYING TEMPLATE TO %s\n", GetTypeName());
-
-	applied_template = GetTemplate ();
+	applied_template = t;
 	applied_template->ref();
 
-	FrameworkElement *el = applied_template->Apply(this);
-	if (!el)
+	return ApplyTemplateRoot ((UIElement *) applied_template->GetVisualTree(this));
+}
+
+bool
+Control::ApplyTemplateRoot (UIElement *root)
+{
+	if (!root || root == template_root)
 		return false;
 
-	ElementAdded (el);
+	ElementAdded (root);
 
 	MoonError e;
-	template_root->SetParent (this, &e);
+	root->SetParent (this, &e);
 	OnApplyTemplate ();
 
 	return true;

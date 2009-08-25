@@ -33,19 +33,17 @@ ContentControl::~ContentControl ()
 bool
 ContentControl::ApplyTemplate ()
 {
-	if (GetTemplate () == NULL) {
-		Value *content = GetValue (ContentControl::ContentProperty);
-		if (!content || content->GetIsNull ())
-			return false;
-		UIElement *root = Application::GetCurrent ()->GetDefaultTemplateRoot (this);
-		if (root == template_root)
-			return false;
-		ElementAdded (root);
-		OnApplyTemplate ();
-		return true;
-	} else {
+	if (GetTemplate ())
 		return Control::ApplyTemplate ();
-	}
+
+	if (Control::ApplyTemplate (GetContentTemplate ()))
+		return true;
+
+	Value *content = GetValue (ContentControl::ContentProperty);
+	if (!content || content->GetIsNull ())
+		return false;
+
+	return ApplyTemplateRoot (Application::GetCurrent ()->GetDefaultTemplateRoot (this));
 }
 
 void

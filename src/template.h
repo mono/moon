@@ -28,7 +28,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkTemplate ();
 
-	DependencyObject *GetVisualTree (FrameworkElement *templateBindingSource);
+	DependencyObject *GetVisualTree ();
+	virtual DependencyObject *GetVisualTree (FrameworkElement *templateBindingSource);
 
 	void SetXamlBuffer (XamlContext *context, const char *buffer);
 
@@ -51,8 +52,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	ControlTemplate ();
 
-	FrameworkElement * Apply (Control *toControl);
-
 protected:
 	virtual ~ControlTemplate () {}
 };
@@ -68,7 +67,7 @@ public:
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject* LoadContentWithError (MoonError *error);
-
+	virtual DependencyObject *GetVisualTree (FrameworkElement *templateBindingSource);
 protected:
 	virtual ~DataTemplate () {}
 };
