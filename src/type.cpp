@@ -379,6 +379,17 @@ type_get_value_type (Type::Kind type)
 	return t->IsValueType ();
 }
 
+const char *
+type_get_name (Type::Kind type)
+{
+	Type *t = Type::Find (type);
+	
+	if (t == NULL)
+		return NULL;
+	
+	return t->GetName ();
+}
+
 bool
 type_is_dependency_object (Type::Kind type)
 {

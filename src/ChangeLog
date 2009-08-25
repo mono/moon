@@ -1,3 +1,9 @@
+2009-08-25  Jackson Harper  <jackson@ximian.com>
+
+	* type.cpp: Function was still in the header but somehow lost its
+	implementation.  We dont use it anywhere but its useful for
+	debugging. r: kangaroo
+
 2009-08-25  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h:
