@@ -58,6 +58,10 @@ namespace MoonTest.System.Windows.Controls {
 		public DependencyObject ContainerItem {
 			get; set;
 		}
+		public DependencyObject LastContainerItem {
+			get; set;
+		}
+		
 		public Popup TemplatePopup {
 			get { return (Popup) GetTemplateChild ("Popup"); }
 		}
@@ -94,6 +98,7 @@ namespace MoonTest.System.Windows.Controls {
 				return ContainerItem;
 			
 			methods.Add (new Value { ReturnValue = base.GetContainerForItemOverride () });
+			LastContainerItem = (DependencyObject) methods.Last ().ReturnValue;
 			return (DependencyObject) methods.Last ().ReturnValue;
 		}
 		
@@ -337,6 +342,39 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsTrue (b.SelectedItem is Rectangle, "#6");
 			b.SelectedItem = b.Items [1];
 			Assert.AreEqual (1, b.SelectedIndex, "#7");
+		}
+
+		[TestMethod]
+		public void IsSelectedTest ()
+		{
+			ComboBox box = new ComboBox ();
+			ListBoxItem item = new ComboBoxItem ();
+			box.Items.Add (item);
+			box.SelectedItem = item;
+			Assert.IsTrue (item.IsSelected, "#1");
+
+			box.Items.Clear ();
+			item = new ListBoxItem ();
+			box.Items.Add (item);
+			Assert.IsFalse (item.IsSelected, "#2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IsSelectedTest2 ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			box.Items.Add (new object ());
+			box.SelectedIndex = 0;
+
+			CreateAsyncTest (box,
+				() => box.ApplyTemplate (),
+				() => box.IsDropDownOpen =true,
+				() => {
+					ComboBoxItem item = (ComboBoxItem) box.LastContainerItem;
+					Assert.IsTrue (item.IsSelected, "#1");
+				}
+			);
 		}
 
 		[TestMethod]

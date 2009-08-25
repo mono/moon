@@ -1,5 +1,13 @@
 2009-08-25  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ComboBoxTest.cs: When an item is
+	  selected before the container item has been created, we need
+	  to set the 'IsSelected' flag on the container when it loads.
+	  Fixes the initial selection for both ComboBox and ListBox.
+	  r: jackson
+
+2009-08-25  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest.cs: Rewrite the
 	  UpdateDisplayedItem method to fix rendering issues when an
 	  item is selected before the drop down list has been opened.

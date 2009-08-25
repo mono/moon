@@ -135,13 +135,23 @@ namespace System.Windows.Controls.Primitives {
 		void OnSelectedItemChanged (object oldValue, object newValue)
 		{
 			if (oldValue != null) {
-				ListBoxItem oldItem = GetContainerItem (Items.IndexOf (oldValue));
+				ListBoxItem oldItem;
+				if (oldValue is ListBoxItem && IsItemItsOwnContainerOverride (oldValue))
+					oldItem = (ListBoxItem) oldValue;
+				else
+					oldItem = GetContainerItem (Items.IndexOf (oldValue));
+
 				if (oldItem != null)
 					oldItem.IsSelected = false;
 			}
 
 			if (newValue != null) {
-				ListBoxItem newItem = GetContainerItem (Items.IndexOf (newValue));
+				ListBoxItem newItem;
+				if (newValue is ListBoxItem && IsItemItsOwnContainerOverride (newValue))
+					newItem = (ListBoxItem) newValue;
+				else
+					newItem = GetContainerItem (Items.IndexOf (newValue));
+
 				if (newItem != null) {
 					newItem.IsSelected = true;
 					newItem.Focus ();
@@ -226,7 +236,10 @@ namespace System.Windows.Controls.Primitives {
 		
 		internal virtual void NotifyListItemLoaded (ListBoxItem listBoxItem)
 		{
-			
+			if (listBoxItem.Item == SelectedItem) {
+				listBoxItem.IsSelected = true;
+				listBoxItem.Focus ();
+			}
 		}
 		
 		internal virtual void NotifyListItemGotFocus(ListBoxItem listBoxItemNewFocus)

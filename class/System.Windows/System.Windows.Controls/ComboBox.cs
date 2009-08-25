@@ -224,17 +224,6 @@ namespace System.Windows.Controls
 			SelectedItem = listBoxItem.Item ?? listBoxItem;
 		}
 
-		internal override void NotifyListItemLoaded (ListBoxItem listBoxItem)
-		{
-			base.NotifyListItemLoaded (listBoxItem);
-			object item = listBoxItem.Item;
-			int index = Items.IndexOf (item);
-			if (index == FocusedIndex) {
-				listBoxItem.Focus ();
-				listBoxItem.ChangeVisualState ();
-			}
-		}
-
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
 			base.PrepareContainerForItemOverride (element, item);
