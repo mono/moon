@@ -279,10 +279,10 @@ Inline::DownloaderComplete (Downloader *downloader)
 }
 
 
-
 //
 // Run
 //
+
 bool
 Run::Equals (Inline *item)
 {
@@ -302,6 +302,7 @@ Run::Equals (Inline *item)
 	
 	return true;
 }
+
 
 //
 // TextBlock
@@ -434,7 +435,7 @@ TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 		RenderLayoutClip (cr);
 		
 	Paint (cr);
-
+	
 	cairo_restore (cr);
 }
 
@@ -465,8 +466,6 @@ TextBlock::GetTransformOrigin ()
 	return Point (actual_width * user_xform_origin->x, 
 		      actual_height * user_xform_origin->y);
 }
-
-
 
 Size
 TextBlock::ComputeActualSize ()
@@ -602,12 +601,12 @@ TextBlock::UpdateFontDescriptions (bool force)
 			layout->ResetState ();
 	}
 	
-	//ClearValue (TextBlock::ActualWidthProperty);
-	//ClearValue (TextBlock::ActualHeightProperty);
-	InvalidateMeasure ();
-	InvalidateArrange ();
-	UpdateBounds (true);
-	dirty = true;
+	if (changed) {
+		InvalidateMeasure ();
+		InvalidateArrange ();
+		UpdateBounds (true);
+		dirty = true;
+	}
 	
 	return changed;
 }
@@ -762,7 +761,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		*/
 		return;
 	}
-
+	
 	if (args->GetId () == TextBlock::FontFamilyProperty) {
 		FontFamily *family = args->GetNewValue () ? args->GetNewValue ()->AsFontFamily () : NULL;
 		char **families, *fragment;
