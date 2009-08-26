@@ -1,3 +1,7 @@
+2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* A11yHelper.cs: Fixed typos in last "a11y" commit.
+
 2009-08-26  Alan McGovern  <amcgovern@novell.com>
 
 	* Kind.cs: regen r: shana

@@ -2,8 +2,8 @@
 // A11yHelper.cs
 //
 // Contact:
-//   Mono-A11Y List (mono-a11y-UcXCGay8unphtSpnss9Awg@public.gmane.org)
-//   Moonlight List (moonlight-list-m0oaEdqWWQ8Czk1rzwDQAw@public.gmane.org)
+//   Mono-A11Y List (mono-a11y@forge.novell.com)
+//   Moonlight List (moonlight-list@lists.ximian.com)
 //
 // Copyright 2009 Novell, Inc.
 //
@@ -48,7 +48,7 @@ namespace Mono {
 			if (pos < 0)
 				return;
 
-			string load_location = Path.Combine (current_assembly_location.Substring (0, pos), "moonlight-a11y-Et1tbQHTxzrQT0dZR+AlfA@public.gmane.org");
+			string load_location = Path.Combine (current_assembly_location.Substring (0, pos), "moonlight-a11y@novell.com");
 			if (!Directory.Exists (load_location))
 				return;
 

@@ -1,3 +1,7 @@
+2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* security.c: Fixed typos in last "a11y" commit.
+
 2009-08-26  Chris Toshok  <toshok@ximian.com>
 
 	* textbox.cpp (TextBoxBase::SetSurface): only call
