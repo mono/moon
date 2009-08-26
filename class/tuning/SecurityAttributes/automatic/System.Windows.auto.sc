@@ -209,7 +209,7 @@
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetEventReflection(Mono.Xaml.XamlCallbackData*,System.String,System.Object,System.String,System.String,Mono.Value*,System.String&)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
-+SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetExpression(Mono.Xaml.XamlCallbackData*,System.String,System.Object,System.IntPtr,Mono.Value*,System.String,System.String,System.String,Mono.Value*,System.IntPtr)
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetExpression(Mono.Xaml.XamlCallbackData*,System.String,System.Object,System.IntPtr,Mono.Value*,System.String,System.String,System.String,System.String,Mono.Value*,System.IntPtr)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetObjectTextProperty(Mono.Xaml.XamlCallbackData*,System.String,System.Object,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr)

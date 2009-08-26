@@ -1,3 +1,8 @@
+2009-07-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.ssc: Update API change to Mono.Xaml.
+	ManagedXamlLoader.TrySetExpression
+
 2009-08-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.auto.ssc: Regenerated and removed merge failure

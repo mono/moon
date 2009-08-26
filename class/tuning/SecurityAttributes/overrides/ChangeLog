@@ -1,3 +1,8 @@
+2009-08-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Remove Mono.Helper.GCHandleInDomain since 
+	that method was removed some time ago.
+
 2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* System.Windows.manual: Add new methods of A11yHelper class.
