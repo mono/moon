@@ -5877,7 +5877,6 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_GetValue_Glyphs ()
         {
             Glyphs widget = new Glyphs ();
@@ -5906,11 +5905,11 @@ namespace MoonTest.System.Windows.Documents
             retval = widget.GetValue(Glyphs.OriginXProperty);
             Assert.IsNotNull(retval, "GetValue(Glyphs.OriginXProperty) should not have returned null");
             Assert.IsTrue(retval is double, "GetValue(Glyphs.OriginXProperty) is not of the correct type");
-            Assert.AreEqual((double) -3.40282346638529E+38, retval, "GetValue(Glyphs.OriginXProperty) does not match the default value");
+            Assert.AreEqual((float) -3.40282346638529E+38, (double) retval, "GetValue(Glyphs.OriginXProperty) does not match the default value");
             retval = widget.GetValue(Glyphs.OriginYProperty);
             Assert.IsNotNull(retval, "GetValue(Glyphs.OriginYProperty) should not have returned null");
             Assert.IsTrue(retval is double, "GetValue(Glyphs.OriginYProperty) is not of the correct type");
-            Assert.AreEqual((double) -3.40282346638529E+38, retval, "GetValue(Glyphs.OriginYProperty) does not match the default value");
+            Assert.AreEqual((float) -3.40282346638529E+38, (double) retval, "GetValue(Glyphs.OriginYProperty) does not match the default value");
             retval = widget.GetValue(Glyphs.FillProperty);
             Assert.IsNull(retval, "GetValue(Glyphs.FillProperty) should have returned null");
         }
@@ -6016,7 +6015,6 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_Glyphs ()
         {
             Glyphs widget = new Glyphs ();
@@ -6029,8 +6027,8 @@ namespace MoonTest.System.Windows.Documents
             Assert.AreEqual("", widget.FontUri.ToString (), "FontUri does not match the default value");
             Assert.AreEqual(StyleSimulations.None, widget.StyleSimulations, "StyleSimulations does not match the default value");
             Assert.AreEqual((double) 0, widget.FontRenderingEmSize, "FontRenderingEmSize does not match the default value");
-            Assert.AreEqual((double) -3.40282346638529E+38, widget.OriginX, "OriginX does not match the default value");
-            Assert.AreEqual((double) -3.40282346638529E+38, widget.OriginY, "OriginY does not match the default value");
+            Assert.AreEqual((float) -3.40282346638529E+38, (float) widget.OriginX, "OriginX does not match the default value");
+            Assert.AreEqual((float) -3.40282346638529E+38, (float) widget.OriginY, "OriginY does not match the default value");
             Assert.IsNull(widget.Fill, "Fill should have returned null");
             Assert.IsNotNull(widget.Triggers, "Triggers should not have returned null");
             Assert.IsTrue(widget.Triggers is TriggerCollection, "Triggers is not of the correct type");
