@@ -64,7 +64,8 @@ FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 
 		delete loader;
 
-		NameScope::GetNameScope (result)->Lock ();
+		if (result)
+			NameScope::GetNameScope (result)->Lock ();
 		return result;
 	}
 

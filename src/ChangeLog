@@ -1,3 +1,7 @@
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* template.cpp: NNull check 'result' before using it. r:shana
+
 2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* security.c: Mark MoonAtkBridge.dll as platform assembly.
