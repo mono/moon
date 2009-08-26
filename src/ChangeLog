@@ -1,3 +1,37 @@
+2009-08-26  Andreia Gaita  <avidigal@novell.com>
+
+	* animation.[h|cpp]: Redesign AnimationStorages. There's now 4
+	public methods that DOs and Clocks use to control an animation:
+	    - when a new storage is attached and there is already one on
+		the property, Disable removes the handlers from the previous
+		storage;
+	    - when a storage is detached, the previous one is enabled via
+		Enable, which attaches the handlers;
+	    - when a clock is stopped, it calls Stop, which detaches
+		everything and resets the property;
+	    - when cloning, SwitchTarget is used to replace the DO and its
+		handlers on the storage, to avoid having to clone all the
+		storages every time.
+
+	Storages are now only deleted when the clock stops, is destroyed
+	or when the DO they're attached to is destroyed. IsLonely was
+	removed (meaningless now), as well as the resettable flag (only
+	enabled animations reset)
+
+	* dependencyobject.[h|cpp]: a DO can have more than one animation
+	running on the same DP, and they need to be stored so that when a
+	DO is cloned, all running animations are updated to the new DO -
+	- this way, when they stop they update the current DO and not the
+	one they were originally attached to. This fixes the animation
+	problems on togglebuttons and other objects that have several
+	animations overlapping each other. The storage_hash now stores a
+	List* of AnimationStorage::Node objects with all existing animations
+	for every DP, and the animation storage cloning process doesn't clone
+	the storages, it merely creates a new List* with the existing storages
+	and updates them to the newly cloned DO.
+
+	r: alan
+
 2009-08-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fontmanager.cpp (AddResource): Need to free the path string

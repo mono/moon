@@ -419,7 +419,8 @@ private:
 
 	static void clone_local_value (DependencyProperty *key, Value *value, gpointer data);
 	static void clone_autocreated_value (DependencyProperty *key, Value *value, gpointer data);
-	static void clone_animation_storage (DependencyProperty *key, AnimationStorage *storage, gpointer data);
+	static void clone_animation_storage_list (DependencyProperty *key, List *list, gpointer data);
+	void CloneAnimationStorageList (DependencyProperty *key, List *list);
 
 	static gboolean dispose_value (gpointer key, gpointer value, gpointer data);
 
