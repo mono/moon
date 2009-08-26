@@ -8,3 +8,9 @@
 
 # this method reflects into GCHandle to avoid creating an exception every time we try a invalid handle
 +SC-M: System.Boolean Mono.Helper::GCHandleInDomain(System.IntPtr)
+
+# this method is called by the embedding API from moon
++SSC-M: System.IntPtr Mono.A11yHelper::GetAccessible()
+# this is called by the initialization of System.Windows assembly
++SSC-M: System.Void Mono.A11yHelper::Initialize()
+

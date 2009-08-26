@@ -19,6 +19,7 @@
     <File name="System.Windows/DependencyObject.g.cs" subtype="Code" buildaction="Compile" />
     <File name="Assembly/MonoTODOAttribute.cs" subtype="Code" buildaction="Compile" />
     <File name="Assembly/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Mono/A11yHelper.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/DispatcherTimer.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/EventHandlerList.cs" subtype="Code" buildaction="Compile" />
     <File name="Mono/Events.cs" subtype="Code" buildaction="Compile" />

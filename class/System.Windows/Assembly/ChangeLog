@@ -1,3 +1,8 @@
+2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* AssemblyInfo.cs: MoonAtkBridge needs to access internal API
+	  of SW.dll.
+
 2009-04-03  Aaron Bockover  <abockover@novell.com>
 
 	* AssemblyInfo.cs: gtksilver -> Moonlight.Gtk

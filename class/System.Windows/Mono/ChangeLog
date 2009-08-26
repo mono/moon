@@ -1,3 +1,11 @@
+2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* ApplicationLauncher.cs: Initialize A11y in SL >= 2.0 apps.
+
+	* A11yHelper.cs: New class with the purpose of looking for
+	  a11y assemblies dynamically. For now it only supports the
+	  extra XPI deployment.
+
 2009-08-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Events.cs: Don't call Content.InvokeResize inside the loaded

@@ -1,3 +1,9 @@
+2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* System.Windows.mdp: Add new file.
+
+	* Makefile.am: Pass a11y env var to CSCFLAGS.
+
 2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.mdp: Updated.

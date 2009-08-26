@@ -1,3 +1,7 @@
+2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* configure.ac: Detect env var that enables a11y.
+
 2009-08-16  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: add foreign to AM_INIT_AUTOMAKE so it stops

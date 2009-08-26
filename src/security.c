@@ -17,6 +17,31 @@
 
 static struct stat platform_stat;
 
+#if MOON_A11Y_INTERNAL_HACK_ENABLED
+static struct stat platform_a11y_stat;
+
+void
+a11y_stat_init (char *platform_dir)
+{
+	//please keep this lookup pattern in sync with the one in A11yHelper.cs (Initiailize() method)
+	const char* moonlight_at_novell = g_strrstr (platform_dir, "moonlight-Et1tbQHTxzrQT0dZR+AlfA@public.gmane.org");
+	if (moonlight_at_novell != NULL) {
+		const char* after = g_strdup ("moonlight-a11y-Et1tbQHTxzrQT0dZR+AlfA@public.gmane.org/components");
+		const char* before = g_strndup (platform_dir, 
+		                                strlen (platform_dir) - strlen (moonlight_at_novell));
+		const char* platform_a11y_dir = g_strconcat (before, after, NULL);
+
+		memset (&platform_a11y_stat, 0, sizeof (platform_a11y_stat));
+		stat (platform_a11y_dir, &platform_a11y_stat);
+		g_free (platform_a11y_dir);
+		g_free (before);
+		g_free (after);
+		moonlight_at_novell = NULL;
+	}
+}
+
+#endif
+
 const static char* platform_code_assemblies [] = {
 	"mscorlib.dll",
 	"System.dll",
@@ -40,6 +65,8 @@ determine_platform_image (const char *image_name)
 	struct stat info;
 	gchar *dir, *name;
 	unsigned int i;
+	struct stat the_platform_stat = platform_stat;
+	gboolean a11y = FALSE;
 
 	if (!image_name)
 		return FALSE;
@@ -51,20 +78,35 @@ determine_platform_image (const char *image_name)
 		return FALSE;
 	}
 
-	/* we avoid comparing strings, e.g. /opt/mono/lib/moon versus /opt/mono//lib/moon */
-	if ((platform_stat.st_mode != info.st_mode) ||
-		(platform_stat.st_ino != info.st_ino) ||
-		(platform_stat.st_dev != info.st_dev)) {
+	name = g_path_get_basename (image_name);
+	if (!name) {
 		g_free (dir);
+		return FALSE;
+	}
+	
+#if MOON_A11Y_INTERNAL_HACK_ENABLED
+	if (g_ascii_strcasecmp (name, "MoonAtkBridge.dll") == 0) {
+		the_platform_stat = platform_a11y_stat;
+		a11y = TRUE;
+	}
+#endif
+
+	/* we avoid comparing strings, e.g. /opt/mono/lib/moon versus /opt/mono//lib/moon */
+	if ((the_platform_stat.st_mode != info.st_mode) ||
+		(the_platform_stat.st_ino != info.st_ino) ||
+		(the_platform_stat.st_dev != info.st_dev)) {
+		g_free (dir);
+		g_free (name);
 		return FALSE;
 	}
 	g_free (dir);
 
-	/* we know the names of every platform assembly, because we ship them */
-	name = g_path_get_basename (image_name);
-	if (!name)
-		return FALSE;
+	if (a11y == TRUE){
+		g_free (name);
+		return TRUE;
+	}
 
+	/* we know the names of every platform assembly, because we ship them */
 	for (i = 0; i < G_N_ELEMENTS (platform_code_assemblies); i++) {
 		if (g_ascii_strcasecmp (name, platform_code_assemblies [i]) == 0) {
 			g_free (name);
@@ -88,7 +130,13 @@ security_enable_coreclr (const char *platform_dir)
 			   "you're doing!");
 	} else if (g_path_is_absolute (platform_dir)) {
 		memset (&platform_stat, 0, sizeof (platform_stat));
+
 		if (stat (platform_dir, &platform_stat) == 0) {
+
+#if MOON_A11Y_INTERNAL_HACK_ENABLED
+			a11y_stat_init (platform_dir);
+#endif
+
 			mono_security_enable_core_clr ();
 			mono_security_set_core_clr_platform_callback (determine_platform_image);
 		}

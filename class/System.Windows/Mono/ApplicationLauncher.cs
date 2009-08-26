@@ -44,6 +44,11 @@ namespace Mono {
 	/// </summary>	
 	class ApplicationLauncher {
 
+		static ApplicationLauncher ()
+		{
+			A11yHelper.Initialize ();
+		}
+
 		/// <summary>
 		///   Creates a new Loader for a XAML file.
 		/// </summary>

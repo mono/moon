@@ -1,3 +1,7 @@
+2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* security.c: Mark MoonAtkBridge.dll as platform assembly.
+
 2009-08-25  Chris Toshok  <toshok@ximian.com>
 
 	* control.cpp (Control::OnPropertyChanged): emit IsEnabledChanged
