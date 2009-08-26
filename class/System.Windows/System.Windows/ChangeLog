@@ -1,3 +1,11 @@
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* DataTemplate.cs:
+	* FrameworkTemplate.cs: Allow FrameworkTemplates to be
+	  expanded in managed code. Using that, expand the
+	  ItemsPanelTemplate in ItemsControl when it is available. r:
+	  toshok
+
 2009-08-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* RoutedEventArgs.cs: Fix GetKind to do what it should do and what

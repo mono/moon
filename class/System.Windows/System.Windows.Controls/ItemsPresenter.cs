@@ -32,16 +32,16 @@ namespace System.Windows.Controls
 {
 	public sealed class ItemsPresenter : FrameworkElement
 	{
-		internal StackPanel _elementRoot;
+		internal Panel _elementRoot;
 
 		public ItemsPresenter ()
 		{
 		}
 
-		protected override Size MeasureOverride (Size availableSize)
+		internal override void InvokeLoaded ()
 		{
+			base.InvokeLoaded ();
 			PreparePresenter ();
-			return base.MeasureOverride (availableSize);
 		}
 
 		void PreparePresenter ()
@@ -49,17 +49,28 @@ namespace System.Windows.Controls
 			if (_elementRoot != null)
 				return;
 
-			_elementRoot = new StackPanel ();
-
-			NativeMethods.uielement_element_added (native, _elementRoot.native);
-			NativeMethods.uielement_set_subtree_object (native, _elementRoot.native);
-
 			FrameworkElement parent = this;
 			while (parent != null && !(parent is ItemsControl))
 				parent = VisualTreeHelper.GetParent (parent) as FrameworkElement ?? parent.Parent as FrameworkElement ;
 
-			if (parent != null)
-				(parent as ItemsControl).SetItemsPresenter (this);
+			if (parent == null)
+				return;
+
+			ItemsControl c = (ItemsControl) parent;
+
+			if (c.ItemsPanel != null) {
+				DependencyObject root = c.ItemsPanel.GetVisualTree ();
+				if (root != null && !(root is Panel))
+					throw new InvalidOperationException ("The root element of an ItemsPanelTemplate must be a Panel subclass");
+				_elementRoot = (Panel) root;
+			}
+
+			if (_elementRoot == null)
+				_elementRoot = new StackPanel ();
+
+			NativeMethods.uielement_element_added (native, _elementRoot.native);
+			NativeMethods.uielement_set_subtree_object (native, _elementRoot.native);
+			c.SetItemsPresenter (this);
 		}
 	}
 }

@@ -1179,9 +1179,6 @@ double cursor_position_changed_event_args_get_cursor_y (CursorPositionChangedEve
 /* @GeneratePInvoke */
 DataTemplate *data_template_new (void);
 
-/* @GeneratePInvoke */
-DependencyObject *data_template_load_content_with_error (DataTemplate *instance, MoonError *error);
-
 /**
  * DeepZoomImageTileSource
  **/
@@ -1596,6 +1593,9 @@ void framework_element_set_logical_parent (FrameworkElement *instance, Dependenc
  **/
 /* @GeneratePInvoke */
 FrameworkTemplate *framework_template_new (void);
+
+/* @GeneratePInvoke */
+DependencyObject *framework_template_get_visual_tree (FrameworkTemplate *instance, FrameworkElement *templateBindingSource);
 
 /**
  * GeneralTransform

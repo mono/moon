@@ -31,5 +31,15 @@ using Mono;
 namespace System.Windows {
 
 	public abstract partial class FrameworkTemplate : DependencyObject {
+		internal DependencyObject GetVisualTree ()
+		{
+			return GetVisualTree (null);
+		}
+		
+		internal DependencyObject GetVisualTree (DependencyObject bindingSource)
+		{
+			IntPtr src = bindingSource == null ? IntPtr.Zero : bindingSource.native;
+			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.framework_template_get_visual_tree (native, src)) as DependencyObject;
+		}
 	}
 }

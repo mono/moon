@@ -1,5 +1,12 @@
 2009-08-26  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControl.cs:
+	* ItemsPresenter.cs: Allow FrameworkTemplates to be expanded
+	  in managed code. Using that, expand the ItemsPanelTemplate
+	  in ItemsControl when it is available. r: toshok
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
 	* ComboBox.cs: ComboBox and ListBox should behave the exact
 	  same way when a ListBoxItem is clicked, so share the
 	  implementation. r: jackson

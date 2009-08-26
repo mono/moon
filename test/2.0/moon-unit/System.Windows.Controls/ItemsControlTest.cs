@@ -420,6 +420,28 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public void ItemsPanelTemplateTest ()
+		{
+			ItemsControl c = (ItemsControl) XamlReader.Load (@"
+<ItemsControl xmlns=""http://schemas.microsoft.com/client/2007"">
+	<ItemsControl.ItemsPanel>
+		<ItemsPanelTemplate>
+			<Grid />
+		</ItemsPanelTemplate>
+	</ItemsControl.ItemsPanel>
+</ItemsControl>
+");
+			CreateAsyncTest (c, () => {
+				Assert.VisualChildren (c, "#2",
+					new VisualNode<ItemsPresenter> ("#a",
+						new VisualNode<Grid> ("#b")
+					)
+				);
+			});
+		}
+
+		[TestMethod]
 		public void OnItemsChanged_Null ()
 		{
 			ItemsControlPoker ic = new ItemsControlPoker ();

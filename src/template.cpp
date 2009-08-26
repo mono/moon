@@ -42,12 +42,6 @@ FrameworkTemplate::SetXamlBuffer (XamlContext *xaml_context, const char *xaml_bu
 	this->xaml_context = xaml_context;
 }
 
-DependencyObject *
-FrameworkTemplate::GetVisualTree ()
-{
-	return GetVisualTree (NULL);
-}
-
 DependencyObject*
 FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 {
@@ -80,12 +74,6 @@ ControlTemplate::ControlTemplate ()
 DataTemplate::DataTemplate ()
 {
 	SetObjectType (Type::DATATEMPLATE);
-}
-
-DependencyObject*
-DataTemplate::LoadContentWithError (MoonError *error)
-{
-	return GetVisualTree (NULL);
 }
 
 DependencyObject *

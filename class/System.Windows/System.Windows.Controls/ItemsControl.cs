@@ -198,7 +198,7 @@ namespace System.Windows.Controls {
 			
 			if (_presenter != null && _presenter._elementRoot != null) {
 
-				StackPanel panel = _presenter._elementRoot;
+				Panel panel = _presenter._elementRoot;
 	
 				switch (e.Action) {
 				case NotifyCollectionChangedAction.Reset:
@@ -242,7 +242,7 @@ namespace System.Windows.Controls {
 			if (_presenter == null || _presenter._elementRoot == null)
 				return;
 
-			StackPanel panel = _presenter._elementRoot;
+			Panel panel = _presenter._elementRoot;
 			for (int i = 0; i < newItems.Count; i ++) {
 				object item = newItems[i];
 				DependencyObject container = null;
@@ -273,7 +273,7 @@ namespace System.Windows.Controls {
 			if (_presenter == null || _presenter._elementRoot == null)
 				return;
 
-			StackPanel panel = _presenter._elementRoot;
+			Panel panel = _presenter._elementRoot;
 			while (count-- > 0) {
 				DependencyObject container = panel.Children [index + count];
 				object item = ContainerToItems [container];

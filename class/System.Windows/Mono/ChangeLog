@@ -1,3 +1,10 @@
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: Allow FrameworkTemplates to be
+	  expanded in managed code. Using that, expand the
+	  ItemsPanelTemplate in ItemsControl when it is available. r:
+	  toshok
+
 2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* A11yHelper.cs: Fixed typos in last "a11y" commit.

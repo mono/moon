@@ -1134,18 +1134,6 @@ data_template_new (void)
 }
 
 
-DependencyObject *
-data_template_load_content_with_error (DataTemplate *instance, MoonError *error)
-{
-	if (instance == NULL)
-		return NULL;
-	
-	if (error == NULL)
-		g_warning ("Moonlight: Called data_template_load_content_with_error () with error == NULL.");
-	return instance->LoadContentWithError (error);
-}
-
-
 /**
  * DeepZoomImageTileSource
  **/
@@ -2192,6 +2180,16 @@ FrameworkTemplate *
 framework_template_new (void)
 {
 	return new FrameworkTemplate ();
+}
+
+
+DependencyObject *
+framework_template_get_visual_tree (FrameworkTemplate *instance, FrameworkElement *templateBindingSource)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetVisualTree (templateBindingSource);
 }
 
 

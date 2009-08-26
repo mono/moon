@@ -482,9 +482,6 @@
 +SC-M: System.IntPtr Mono.NativeMethods::cursor_position_changed_event_args_new()
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::data_template_load_content_with_error_(System.IntPtr,Mono.MoonError&)
-
-# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::data_template_new()
 
 # p/invoke declaration
@@ -624,6 +621,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::framework_element_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::framework_template_get_visual_tree(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::framework_template_new()
