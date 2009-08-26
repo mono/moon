@@ -556,6 +556,13 @@ same_site_of_origin (const char *url1, const char *url2)
 	return result;
 }
 
+static bool
+parse_bool_arg (const char *arg)
+{
+	bool b;
+	return xaml_bool_from_str (arg, &b) && b;
+}
+
 void
 PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 {
@@ -595,7 +602,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			background = g_strdup (argv[i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "windowless")) {
-			windowless = !g_ascii_strcasecmp (argv [i], "true");
+			windowless = parse_bool_arg (argv [i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "maxFramerate")) {
 			maxFrameRate = atoi (argv [i]);
@@ -605,10 +612,10 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "enablehtmlaccess")) {
 			default_enable_html_access = false; // we're using the application value, not the default one
-			enable_html_access = !g_ascii_strcasecmp (argv [i], "true");
+			enable_html_access = parse_bool_arg (argv [i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "allowhtmlpopupwindow")) {
-			allow_html_popup_window = !g_ascii_strcasecmp (argv [i], "true");
+			allow_html_popup_window = parse_bool_arg (argv [i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "splashscreensource")) {
 			splashscreensource = g_strdup (argv [i]);

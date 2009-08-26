@@ -3368,6 +3368,36 @@ value_from_str (Type::Kind type, const char *prop_name, const char *str, Value *
 	return v_set;
 }
 
+bool
+xaml_bool_from_str (const char *s, bool *res)
+{
+	bool b;
+	char *endptr;
+
+	if (!g_ascii_strcasecmp ("true", s))
+		b = true;
+	else if (!g_ascii_strcasecmp ("false", s))
+		b = false;
+	else {
+		// Check if it's a string representing a decimal value
+		gint64 l;
+
+		errno = 0;
+		l = strtol (s, &endptr, 10);
+
+		if (errno || endptr == s || *endptr || l > G_MAXINT32 || l < G_MININT32)
+			return false;;
+
+		if (l == 0)
+			b = false;
+		else
+			b = true;
+	}
+
+	*res = b;
+	return true;
+}
+
 static bool
 value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop_name, const char *str, Value **v, bool *v_set)
 {
@@ -3402,25 +3432,9 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 
 	case Type::BOOL: {
 		bool b;
-		if (!g_ascii_strcasecmp ("true", s))
-			b = true;
-		else if (!g_ascii_strcasecmp ("false", s))
-			b = false;
-		else {
-			// Check if it's a string representing a decimal value
-			gint64 l;
 
-			errno = 0;
-			l = strtol (s, &endptr, 10);
-
-			if (errno || endptr == s || *endptr || l > G_MAXINT32 || l < G_MININT32)
-				break;
-
-			if (l == 0)
-				b = false;
-			else
-				b = true;
-		}
+		if (!xaml_bool_from_str (s, &b))
+			break;
 
 		*v = new Value (b);
 		*v_set = true;

@@ -1,3 +1,10 @@
+2009-08-26  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Expose a function for parsing bools so the plugin
+	code can use our bool parsing code. (Handle ints).
+
+	r: shana && kangaroo
+
 2009-08-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.cpp (TextBlock::UpdateFontDescriptions): Don't

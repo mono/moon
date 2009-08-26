@@ -100,6 +100,8 @@ void	    xaml_parse_xmlns (const char *xmlns, char **type_name, char **ns, char 
 
 bool        xaml_is_valid_event_name (Type::Kind kind, const char *name, bool allow_desktop_events);
 
+bool        xaml_bool_from_str (const char *s, bool *res);
+
 /* @GeneratePInvoke */
 XamlLoader *xaml_loader_new (const char *resourceBase, const char *filename, const char *str, Surface *surface);
 /* @GeneratePInvoke */
