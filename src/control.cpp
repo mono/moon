@@ -115,6 +115,7 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			}
 			ReleaseMouseCapture ();
 		}
+		Emit (IsEnabledChangedEvent);
 	} else if (args->GetId () == Control::HorizontalContentAlignmentProperty
 		   || args->GetId () == Control::VerticalContentAlignmentProperty) {
 		InvalidateArrange ();

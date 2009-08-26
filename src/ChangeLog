@@ -1,3 +1,14 @@
+2009-08-25  Chris Toshok  <toshok@ximian.com>
+
+	* control.cpp (Control::OnPropertyChanged): emit IsEnabledChanged
+	when IsEnabledProperty has changed.  we need to do it after the
+	focus handling has happened, though, as
+	FocusManager.GetFocusedElement() returns the currently focused
+	thing in handlers for IsEnabledChanged.  Fixes the rendering of
+	disabled elements in drt #432.
+
+	r: andreia
+	
 2009-08-26  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Expose a function for parsing bools so the plugin
