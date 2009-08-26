@@ -1962,19 +1962,30 @@ DependencyObject::clone_autocreated_value (DependencyProperty *key, Value *value
 }
 
 void
-DependencyObject::clone_animation_storage (DependencyProperty *key, AnimationStorage *storage, gpointer data)
+DependencyObject::clone_animation_storage_list (DependencyProperty *key, List *list, gpointer data)
 {
-	CloneClosure *closure = (CloneClosure*)data;
+	if (!list || list->IsEmpty ())
+		return;
+	DependencyObject *d = (DependencyObject*)data;
+	d->CloneAnimationStorageList (key, list);
+}
 
-	// we need to fake an AnimationStorage so that any newly created animations on this clone get the right 
-	AnimationStorage *new_storage = new AnimationStorage (storage->GetClock(), storage->GetTimeline(),
-							      closure->new_do, key);
+void
+DependencyObject::CloneAnimationStorageList (DependencyProperty *key, List *list)
+{
 
-	new_storage->FlagAsNonResetable();
-	new_storage->DetachTarget ();
-	new_storage->SetStopValue (storage->GetStopValue());
+	List *newlist = new List();
 
-	closure->new_do->AttachAnimationStorage (key, new_storage);
+	AnimationStorage::Node *node = (AnimationStorage::Node *) list->First ();
+	while (node) {
+		node->storage->SwitchTarget (this);
+		newlist->Append (node->Clone ());
+		node = (AnimationStorage::Node*)node->next;
+	}
+	delete list;
+	if (!storage_hash)
+		storage_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
+	g_hash_table_insert (storage_hash, key, newlist);
 }
 
 DependencyObject*
@@ -2002,15 +2013,20 @@ DependencyObject::CloneCore (Types *types, DependencyObject* fromObj)
 
 	g_hash_table_foreach (autocreate->auto_values, (GHFunc)DependencyObject::clone_autocreated_value, &closure);
 	g_hash_table_foreach (fromObj->local_values, (GHFunc)DependencyObject::clone_local_value, &closure);
-	if (fromObj->storage_hash)
-		g_hash_table_foreach (fromObj->storage_hash, (GHFunc)DependencyObject::clone_animation_storage, &closure);
+	if (fromObj->storage_hash) {
+		g_hash_table_foreach (fromObj->storage_hash, (GHFunc)DependencyObject::clone_animation_storage_list, this);
+	}
 }
 
 static void
-detach_target_func (DependencyProperty *prop, AnimationStorage *storage, gpointer unused)
+clear_storage_list (DependencyProperty *key, List *list, gpointer unused)
 {
-	storage->DetachTarget ();
-	delete storage;
+	List::Node *node = list->First ();
+	while (node) {
+		delete ((AnimationStorage::Node*)node)->storage;
+		node = node->next;
+	}
+	delete list;
 }
 
 DependencyObject::~DependencyObject ()
@@ -2022,9 +2038,10 @@ DependencyObject::~DependencyObject ()
 	g_free (resource_base);
 
 	if (storage_hash) {
-		g_hash_table_foreach (storage_hash, (GHFunc) detach_target_func, NULL);
-		g_hash_table_destroy (storage_hash);
+		GHashTable *tmphash = storage_hash; // animation storages may call back to DetachAnimationStorage
 		storage_hash = NULL;
+		g_hash_table_foreach (tmphash, (GHFunc)clear_storage_list, NULL);
+		g_hash_table_destroy (tmphash);
 	}
 }
 
@@ -2240,21 +2257,32 @@ DependencyObject::GetAnimationStorageFor (DependencyProperty *prop)
 	if (!storage_hash)
 		return NULL;
 
-	return (AnimationStorage *) g_hash_table_lookup (storage_hash, prop);
+	List *list = (List*) g_hash_table_lookup (storage_hash, prop);
+	if (!list || !list->IsEmpty ())
+		return NULL;
+
+	return ((AnimationStorage::Node *) list->Last())->storage;
 }
 
 AnimationStorage*
 DependencyObject::AttachAnimationStorage (DependencyProperty *prop, AnimationStorage *storage)
 {
+	AnimationStorage* attached_storage = NULL;
 	// Create hash on first access to save some mem
 	if (!storage_hash)
 		storage_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
 
-	AnimationStorage *attached_storage = (AnimationStorage *) g_hash_table_lookup (storage_hash, prop);
-	if (attached_storage)
-		attached_storage->DetachTarget ();
+	List *list = (List*) g_hash_table_lookup (storage_hash, prop);
+	if (!list) {
+		list = new List();
+		g_hash_table_insert (storage_hash, prop, list);
+	}
+	else if (!list->IsEmpty ()) {
+		attached_storage = ((AnimationStorage::Node*) list->Last())->storage;
+		attached_storage->Disable ();
+	}
 
-	g_hash_table_insert (storage_hash, prop, storage);
+	list->Append (new AnimationStorage::Node (prop, storage));
 	return attached_storage;
 }
 
@@ -2264,8 +2292,32 @@ DependencyObject::DetachAnimationStorage (DependencyProperty *prop, AnimationSto
 	if (!storage_hash)
 		return;
 
-	if (g_hash_table_lookup (storage_hash, prop) == storage)
-		g_hash_table_remove (storage_hash, prop);
+	List *list = (List *) g_hash_table_lookup (storage_hash, prop);
+	if (!list || list->IsEmpty ())
+		return;
+
+	// if the storage to be removed is the last one, activate the previous one (if any)
+	if (((AnimationStorage::Node*)list->Last ())->storage == storage) {
+		list->Remove (list->Last ());
+		if (!list->IsEmpty ()) {
+			((AnimationStorage::Node*)list->Last ())->storage->Enable ();
+		}
+
+	} else { // if there's more than one storage, that means the storage that was added after
+		// the one we're removing is configured to reset back to the value of the previous
+		// storage, so update the stop value so it resets back to the proper value
+		List::Node *node = list->First ();
+		while (node) {
+			if (((AnimationStorage::Node*)node)->storage == storage) {
+				List::Node *remove = node;
+				node = node->next;
+				((AnimationStorage::Node*)node)->storage->SetStopValue (storage->GetResetValue ());
+				list->Remove (remove);
+				break;
+			}
+			node = node->next;
+		}
+	}
 }
 
 //

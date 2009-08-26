@@ -61,14 +61,14 @@ still fire up after it's dead.
 
 AnimationStorage::AnimationStorage (AnimationClock *clock, Animation *timeline,
 				    DependencyObject *targetobj, DependencyProperty *targetprop)
+: baseValue(NULL), stopValue(NULL), disabled(false)
 {
-	this->nonResetableFlag = false;
 	this->clock = clock;
 	this->timeline = timeline;
 	this->targetobj = targetobj;
 	this->targetprop = targetprop;
 
-	clock->AddHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
+	AttachUpdateHandler ();
 	AttachTargetHandler ();
 
 	AnimationStorage *prev_storage = targetobj->AttachAnimationStorage (targetprop, this);
@@ -82,30 +82,7 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation *timeline,
 	if (prev_storage) {
 		Value *v = prev_storage->GetResetValue ();
 		stopValue = new Value (*v);
-		prev_storage->FlagAsNonResetable ();
-		delete prev_storage;
-	} else {
-		stopValue = NULL;
 	}
-}
-
-void
-AnimationStorage::target_object_destroyed (EventObject *, EventArgs *, gpointer closure)
-{
-	((AnimationStorage*)closure)->TargetObjectDestroyed ();
-}
-
-void
-AnimationStorage::TargetObjectDestroyed ()
-{
-	targetobj = NULL;
-	DetachUpdateHandler ();
-}
-
-void
-AnimationStorage::FlagAsNonResetable ()
-{
-	nonResetableFlag = true;
 }
 
 bool
@@ -120,92 +97,45 @@ AnimationStorage::IsCurrentStorage ()
 	return false;
 }
 
-void
-AnimationStorage::update_property_value (EventObject *, EventArgs *, gpointer closure)
-{
-	((AnimationStorage*)closure)->UpdatePropertyValue ();
-}
 
 void
-AnimationStorage::UpdatePropertyValue ()
+AnimationStorage::SwitchTarget (DependencyObject *target)
 {
-	if (targetobj == NULL)
-		return;
-
-	Value *current_value = clock->GetCurrentValue (baseValue, stopValue ? stopValue : baseValue);
-	if (current_value != NULL && timeline->GetTimelineStatus () == Timeline::TIMELINE_STATUS_OK) {
-		Applier *applier = clock->GetTimeManager ()->GetApplier ();
-		applier->AddPropertyChange (targetobj, targetprop, new Value (*current_value), APPLIER_PRECEDENCE_ANIMATION);
+	bool wasDisabled = disabled;
+	if (!disabled)
+		Disable ();
+	targetobj = target;
+	if (!wasDisabled) {
+		AttachTargetHandler ();
+		AttachUpdateHandler ();
 	}
-		
-	delete current_value;
+	disabled = wasDisabled;
 }
 
 void
-AnimationStorage::ResetPropertyValue ()
+AnimationStorage::Enable ()
 {
-	if (nonResetableFlag)
+	if (!disabled)
 		return;
 
-	if (targetobj == NULL || targetprop == NULL)
-		return;
-	
-	if (timeline->GetTimelineStatus () != Timeline::TIMELINE_STATUS_OK)
-		return;
-
-	Applier *applier = clock->GetTimeManager ()->GetApplier ();
-
-	if (applier)
-		applier->AddPropertyChange (targetobj, targetprop,
-			    stopValue ? new Value (*stopValue) : new Value (*baseValue),
-			    APPLIER_PRECEDENCE_ANIMATION_RESET);
-}
-
-void 
-AnimationStorage::DetachFromProperty (void)
-{
-	if (targetobj != NULL && targetprop != NULL) {
-		targetobj->DetachAnimationStorage (targetprop, this);
-		targetprop = NULL;
-	}
+	AttachTargetHandler ();
+	AttachUpdateHandler ();
+	disabled = false;
+	UpdatePropertyValue ();
 }
 
 void
-AnimationStorage::DetachTarget ()
+AnimationStorage::Disable ()
 {
 	DetachUpdateHandler ();
-	if (targetobj) {
-		DetachTargetHandler ();
-		targetobj = NULL;
-	}
+	DetachTargetHandler ();
+	disabled = true;
 }
 
 void
-AnimationStorage::DetachUpdateHandler ()
+AnimationStorage::Stop ()
 {
-	if (clock != NULL)
-		clock->RemoveHandler (Clock::CurrentTimeInvalidatedEvent, update_property_value, this);
-}
-
-void
-AnimationStorage::ReAttachUpdateHandler ()
-{
-	if (clock != NULL)
-		clock->AddHandler (Clock::CurrentTimeInvalidatedEvent, update_property_value, this);
-}
-
-void
-AnimationStorage::AttachTargetHandler ()
-{
-	if (!targetobj) return;
-	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
-}
-
-void
-AnimationStorage::DetachTargetHandler ()
-{
-	if (!targetobj) return;
-	targetobj->RemoveHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
+	ResetPropertyValue ();
 }
 
 Value*
@@ -228,27 +158,110 @@ AnimationStorage::SetStopValue (Value *value)
 	else
 		stopValue = NULL;
 }
+// End of public methods
 
-Value*
-AnimationStorage::GetStopValue ()
+// Private methods
+void
+AnimationStorage::target_object_destroyed (EventObject *, EventArgs *, gpointer closure)
 {
-	return stopValue;
+	((AnimationStorage*)closure)->TargetObjectDestroyed ();
 }
 
-AnimationClock*
-AnimationStorage::GetClock ()
+void
+AnimationStorage::TargetObjectDestroyed ()
 {
-	return clock;
+	DetachUpdateHandler ();
+	targetobj = NULL;
 }
 
-Animation*
-AnimationStorage::GetTimeline ()
+
+void
+AnimationStorage::update_property_value (EventObject *, EventArgs *, gpointer closure)
 {
-	return timeline;
+	((AnimationStorage*)closure)->UpdatePropertyValue ();
+}
+
+void
+AnimationStorage::UpdatePropertyValue ()
+{
+	if (!targetobj) return;
+
+	Value *current_value = clock->GetCurrentValue (baseValue, stopValue ? stopValue : baseValue);
+	if (current_value != NULL && timeline->GetTimelineStatus () == Timeline::TIMELINE_STATUS_OK) {
+		Applier *applier = clock->GetTimeManager ()->GetApplier ();
+		applier->AddPropertyChange (targetobj, targetprop, new Value (*current_value), APPLIER_PRECEDENCE_ANIMATION);
+	}
+
+	delete current_value;
+}
+
+void
+AnimationStorage::ResetPropertyValue ()
+{
+	if (disabled) return;
+
+	if (targetobj == NULL || targetprop == NULL)
+		return;
+
+	if (timeline->GetTimelineStatus () != Timeline::TIMELINE_STATUS_OK)
+		return;
+
+	Applier *applier = clock->GetTimeManager ()->GetApplier ();
+
+	if (applier)
+		applier->AddPropertyChange (targetobj, targetprop,
+			    new Value (*GetResetValue ()),
+			    APPLIER_PRECEDENCE_ANIMATION_RESET);
+}
+
+void
+AnimationStorage::DetachFromProperty ()
+{
+	if (targetobj == NULL || targetprop == NULL)
+		return;
+	targetobj->DetachAnimationStorage (targetprop, this);
+}
+
+void
+AnimationStorage::AttachUpdateHandler ()
+{
+	if (!clock) return;
+	clock->AddHandler (Clock::CurrentTimeInvalidatedEvent, update_property_value, this);
+}
+
+
+void
+AnimationStorage::DetachUpdateHandler ()
+{
+	if (disabled) return;
+	if (!clock) return;
+	clock->RemoveHandler (Clock::CurrentTimeInvalidatedEvent, update_property_value, this);
+}
+
+void
+AnimationStorage::AttachTargetHandler ()
+{
+	if (!targetobj) return;
+	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
+}
+
+void
+AnimationStorage::DetachTargetHandler ()
+{
+	if (disabled) return;
+	if (!targetobj) return;
+	targetobj->RemoveHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
 }
 
 AnimationStorage::~AnimationStorage ()
 {
+	DetachTargetHandler ();
+	DetachUpdateHandler ();
+	DetachFromProperty ();
+
+	if (clock != NULL)
+		clock->DetachStorage ();
+
 	if (baseValue) {
 		delete baseValue;
 		baseValue = NULL;
@@ -257,17 +270,6 @@ AnimationStorage::~AnimationStorage ()
 	if (stopValue) {
 		delete stopValue;
 		stopValue = NULL;
-	}
-
-	DetachUpdateHandler ();
-
-	if (targetobj != NULL) {
-		DetachTargetHandler ();
-		DetachFromProperty ();
-	}
-
-	if (clock != NULL) {
-		clock->DetachFromStorage ();
 	}
 }
 
@@ -280,7 +282,7 @@ AnimationClock::AnimationClock (Animation *timeline)
 	storage = NULL;
 }
 
-bool
+AnimationStorage *
 AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop)
 {
 	/* Before hooking up make sure that the values our animation generates
@@ -308,7 +310,7 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 	g_free (name);
 
 	storage = new AnimationStorage (this, timeline, targetobj, targetprop);
-	return true;
+	return storage;
 }
 
 Value*
@@ -321,10 +323,9 @@ void
 AnimationClock::Stop ()
 {
 	if (storage) {
-		storage->ResetPropertyValue ();
-		storage->DetachUpdateHandler ();
-		if (storage->IsCurrentStorage ())
-			storage->DetachFromProperty ();
+		storage->Stop ();
+		delete storage;
+		storage = NULL;
 	}
 
 	Clock::Stop ();
@@ -339,24 +340,13 @@ AnimationClock::Begin (TimeSpan parentTime)
 AnimationClock::~AnimationClock ()
 {
 	if (storage) {
-		
-		if (storage->IsLonely ())
-			delete storage;
-		else {
-			if (state == Clock::Stopped)
-				delete storage;
-			else {
-				if (storage->IsCurrentStorage ()) {
-					storage->DetachFromProperty ();
-					delete storage;
-				}
-			}
-		}
+		delete storage;
+		storage = NULL;
 	}
 }
 
 void
-AnimationClock::DetachFromStorage ()
+AnimationClock::DetachStorage ()
 {
 	storage = NULL;
 }
