@@ -27,6 +27,7 @@
 //
 
 using System.Collections.Specialized;
+using System.Windows.Input;
 
 namespace System.Windows.Controls.Primitives {
 	public abstract class Selector : ItemsControl {
@@ -234,7 +235,12 @@ namespace System.Windows.Controls.Primitives {
 		
 		internal virtual void NotifyListItemClicked(ListBoxItem listBoxItem) 
 		{
-			
+			if (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) {
+				if (SelectedItem == listBoxItem.Item)
+					SelectedItem = null;
+			} else {
+				SelectedItem = listBoxItem.Item;
+			}
 		}
 		
 		internal virtual void NotifyListItemLoaded (ListBoxItem listBoxItem)

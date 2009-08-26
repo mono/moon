@@ -1,5 +1,11 @@
 2009-08-26  Alan McGovern  <amcgovern@novell.com>
 
+	* ComboBox.cs: ComboBox and ListBox should behave the exact
+	  same way when a ListBoxItem is clicked, so share the
+	  implementation. r: jackson
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
 	* ComboBox.cs: ComboBox.IsSelectionActiveProperty and
 	  ListBox.IsSelectionActiveProperty are the same DP reference,
 	  so declare it on Selector and expose it in the subclasses.

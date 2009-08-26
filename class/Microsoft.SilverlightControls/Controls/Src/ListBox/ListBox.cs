@@ -257,30 +257,6 @@ namespace System.Windows.Controls
                 }
             } 
         }
-
-        /// <summary> 
-        /// Called by ListBoxItem instances when they are clicked.
-        /// </summary>
-        /// <param name="listBoxItem">The ListBoxItem.</param> 
-        internal override void NotifyListItemClicked(ListBoxItem listBoxItem) 
-        {
-            if (listBoxItem.IsSelected)
-            {
-                Console.WriteLine ("I'm already selected");
-                if (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) 
-                {
-                    Console.WriteLine ("Unselected");
-                    SelectedItem = null;
-                } 
-            } 
-            else
-            { 
-                Console.WriteLine ("Selecting: {0}/{1}", listBoxItem.Name, listBoxItem.Content);
-                object item = listBoxItem.Item;
-                SelectedItem = item;
-                ScrollIntoView(item); 
-            }
-        }
  
         /// <summary> 
         /// Called by ListBoxItem instances when they get focus

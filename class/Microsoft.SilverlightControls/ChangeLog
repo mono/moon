@@ -1,5 +1,11 @@
 2009-08-26  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ListBox/ListBox.cs: ComboBox and ListBox should
+	  behave the exact same way when a ListBoxItem is clicked, so
+	  share the implementation. r: jackson
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ListBox/ListBoxItem.cs: There's no reason for
 	  ChangeVisualState to be visible outside of the class. r:
 	  spouliot

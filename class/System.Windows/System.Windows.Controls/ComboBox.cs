@@ -215,14 +215,6 @@ namespace System.Windows.Controls
 			return item is ComboBoxItem;
 		}
 
-		internal override void NotifyListItemClicked (ListBoxItem listBoxItem)
-		{
-			Console.WriteLine ("List item clicked");
-			base.NotifyListItemClicked (listBoxItem);
-			IsDropDownOpen = false;
-			SelectedItem = listBoxItem.Item ?? listBoxItem;
-		}
-
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
 			base.PrepareContainerForItemOverride (element, item);
