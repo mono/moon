@@ -187,7 +187,7 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Changes the visual state by playing the appropriate Storyboard 
         /// </summary>
-        internal void ChangeVisualState()
+        void ChangeVisualState()
         {
             if (IsFocused) {
                 VisualStateManager.GoToState (this, "Focused", true);

@@ -1,5 +1,11 @@
 2009-08-26  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ListBox/ListBoxItem.cs: There's no reason for
+	  ChangeVisualState to be visible outside of the class. r:
+	  spouliot
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ListBox/ListBox.cs:
 	  ComboBox.IsSelectionActiveProperty and
 	  ListBox.IsSelectionActiveProperty are the same DP reference,
