@@ -1,3 +1,7 @@
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Kind.cs: regen r: shana
+
 2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* ApplicationLauncher.cs: Initialize A11y in SL >= 2.0 apps.

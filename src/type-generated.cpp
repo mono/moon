@@ -393,6 +393,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MEDIAATTRIBUTE_COLLECTION] = new Type (Type::MEDIAATTRIBUTE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "MediaAttributeCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) media_attribute_collection_new, NULL);
 	types [(int) Type::MEDIABASE] = new Type (Type::MEDIABASE, Type::FRAMEWORKELEMENT, false, false, "MediaBase", 1, 21, MEDIABASE_Events, 0, NULL, true, (create_inst_func *) media_base_new, NULL);
 	types [(int) Type::MEDIACLOSURE] = new Type (Type::MEDIACLOSURE, Type::EVENTOBJECT, false, false, "MediaClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MEDIADISPOSEOBJECTCLOSURE] = new Type (Type::MEDIADISPOSEOBJECTCLOSURE, Type::MEDIACLOSURE, false, false, "MediaDisposeObjectClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAELEMENT] = new Type (Type::MEDIAELEMENT, Type::FRAMEWORKELEMENT, false, false, "MediaElement", 8, 28, MEDIAELEMENT_Events, 0, NULL, true, (create_inst_func *) media_element_new, NULL);
 	types [(int) Type::MEDIAFRAME] = new Type (Type::MEDIAFRAME, Type::EVENTOBJECT, false, false, "MediaFrame", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAGETFRAMECLOSURE] = new Type (Type::MEDIAGETFRAMECLOSURE, Type::MEDIACLOSURE, false, false, "MediaGetFrameClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);

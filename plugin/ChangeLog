@@ -1,3 +1,7 @@
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h: regen r: shana
+
 2009-08-26  Jackson Harper  <jackson@ximian.com>
 
 	* plugin.cpp: Use the xaml function for parsing bools so things

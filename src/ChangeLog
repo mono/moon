@@ -1,3 +1,10 @@
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* type.h:
+	* value.h:
+	* cbinding.h:
+	* type-generated.cpp: regen r: shana
+
 2009-08-26  Andreia Gaita  <avidigal@novell.com>
 
 	* animation.[h|cpp]: Redesign AnimationStorages. There's now 4

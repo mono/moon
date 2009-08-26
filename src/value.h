@@ -186,6 +186,7 @@ class MediaAttribute;
 class MediaAttributeCollection;
 class MediaBase;
 class MediaClosure;
+class MediaDisposeObjectClosure;
 class MediaElement;
 class MediaFrame;
 class MediaGetFrameClosure;
@@ -547,6 +548,7 @@ public:
 	MediaAttributeCollection*                AsMediaAttributeCollection (Types *types = NULL) { checked_get_subclass (Type::MEDIAATTRIBUTE_COLLECTION, MediaAttributeCollection) }
 	MediaBase*                               AsMediaBase (Types *types = NULL) { checked_get_subclass (Type::MEDIABASE, MediaBase) }
 	MediaClosure*                            AsMediaClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIACLOSURE, MediaClosure) }
+	MediaDisposeObjectClosure*               AsMediaDisposeObjectClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIADISPOSEOBJECTCLOSURE, MediaDisposeObjectClosure) }
 	MediaElement*                            AsMediaElement (Types *types = NULL) { checked_get_subclass (Type::MEDIAELEMENT, MediaElement) }
 	MediaFrame*                              AsMediaFrame (Types *types = NULL) { checked_get_subclass (Type::MEDIAFRAME, MediaFrame) }
 	MediaGetFrameClosure*                    AsMediaGetFrameClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAGETFRAMECLOSURE, MediaGetFrameClosure) }
