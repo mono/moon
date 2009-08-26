@@ -669,8 +669,9 @@ void
 TextBoxBase::SetSurface (Surface *surface)
 {
 	Control::SetSurface (surface);
-	
-	gtk_im_context_set_client_window (im_ctx, GetGdkWindow (this));
+
+	if (surface)
+		gtk_im_context_set_client_window (im_ctx, GetGdkWindow (this));
 }
 
 void
