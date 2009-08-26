@@ -1,3 +1,21 @@
+2009-08-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* validators.cpp (FloatValidator): New validator to make sure a
+	value is within range for a float.
+
+	* glyphs.cpp: Get rid of origin_y_specified, origin_x, and
+	origin_y state variables. We can just query these on demand.
+	(Render): Simplified slightly.
+	(GetTransformOrigin): Get rid of unused variable.
+	(GetOriginPoint): Just use the ascender rather than the height and
+	the descender. Simpler that way.
+
+	* glyphs.h: Changed default OriginX and OriginY values to what
+	they should be according to the moon-unit tests (also makes drt
+	#246 pass).
+
+	r:toshok
+
 2009-08-26  Alan McGovern  <amcgovern@novell.com>
 
 	* cbinding.h:

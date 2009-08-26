@@ -27,6 +27,7 @@ public:
 	static ValueValidator BufferingTimeValidator;
 	static ValueValidator CornerRadiusValidator;
 	static ValueValidator CursorValidator;
+	static ValueValidator FloatValidator;
 	static ValueValidator PositiveIntValidator;
 	static ValueValidator IntGreaterThanZeroValidator;
 	static ValueValidator DoubleGreaterThanZeroValidator;

@@ -12,6 +12,8 @@
 
 #include <config.h>
 
+#include <math.h>
+
 #include "validators.h"
 #include "thickness.h"
 #include "cornerradius.h"
@@ -307,3 +309,23 @@ Validators::CrossDomainValidator (DependencyObject* instance, DependencyProperty
 	return true;
 }
 
+bool
+Validators::FloatValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	double d = value->AsDouble ();
+	
+	switch (fpclassify (d)) {
+	case FP_SUBNORMAL:
+	case FP_INFINITE:
+	case FP_NAN:
+		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value is out of range");
+		return false;
+	default:
+		if ((float) d < -HUGE || (float) d > HUGE) {
+			MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value is out of range");
+			return false;
+		}
+	}
+	
+	return true;
+}

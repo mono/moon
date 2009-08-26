@@ -38,14 +38,11 @@ class Glyphs : public FrameworkElement {
 	List *attrs;
 	Brush *fill;
 	
-	double origin_x;
-	double origin_y;
 	double height;
 	double width;
 	double left;
 	double top;
 	
-	int origin_y_specified:1;
 	int uri_changed:1;
 	int invalid:1;
 	int dirty:1;
@@ -74,9 +71,9 @@ class Glyphs : public FrameworkElement {
 	const static int FontUriProperty;
  	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int IndicesProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=-HUGE,Validator=FloatValidator,GenerateAccessors */
 	const static int OriginXProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=-HUGE,Validator=FloatValidator,GenerateAccessors */
 	const static int OriginYProperty;
  	/* @PropertyType=StyleSimulations,DefaultValue=StyleSimulationsNone,GenerateAccessors */
 	const static int StyleSimulationsProperty;

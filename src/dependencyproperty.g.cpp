@@ -171,8 +171,8 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::MEDIABASE, "DownloadProgress", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::GLYPHS, "UnicodeString", false, new Value (""), Type::STRING);
 	DependencyProperty::Register (this, Type::GLYPHS, "StyleSimulations", false, new Value (StyleSimulationsNone), Type::INT32);
-	DependencyProperty::Register (this, Type::GLYPHS, "OriginY", false, new Value (0.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::GLYPHS, "OriginX", false, new Value (0.0), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::GLYPHS, "OriginY", false, new Value (-HUGE), Type::DOUBLE, false, false, false, NULL, Validators::FloatValidator, NULL, false);
+	DependencyProperty::RegisterFull (this, Type::GLYPHS, "OriginX", false, new Value (-HUGE), Type::DOUBLE, false, false, false, NULL, Validators::FloatValidator, NULL, false);
 	DependencyProperty::Register (this, Type::GLYPHS, "Indices", false, new Value (""), Type::STRING);
 	DependencyProperty::RegisterFull (this, Type::GLYPHS, "FontUri", false, new Value (Uri()), Type::URI, false, false, false, NULL, Validators::NonNullValidator, NULL, false);
 	DependencyProperty::Register (this, Type::GLYPHS, "FontRenderingEmSize", false, new Value (0.0), Type::DOUBLE);
