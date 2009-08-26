@@ -367,7 +367,6 @@ public:
 
 	bool GetIsNull ();
 	void SetIsNull (bool isNull);
-	void Set (double value);
 
 	bool operator!= (const Value &v) const;
 	bool operator== (const Value &v) const;

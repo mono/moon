@@ -49,9 +49,9 @@ Validators::BalanceValidator (DependencyObject* instance, DependencyProperty *pr
 {
 	if (value) {
 		if (value->AsDouble () > 1.0) {
-			value->Set ((double) 1.0);
+			*value = Value(1.0);
 		} else if (value->AsDouble () < -1.0) {
-			value->Set ((double) -1.0);
+			*value = Value(-1.0);
 		}
 	}
 	
@@ -63,9 +63,9 @@ Validators::VolumeValidator (DependencyObject* instance, DependencyProperty *pro
 {
 	if (value) {
 		if (value->AsDouble () > 1.0) {
-			value->Set ((double) 1.0);
+			*value = Value (1.0);
 		} else if (value->AsDouble () < 0.0) {
-			value->Set ((double) 0.0);
+			*value = Value (0.0);
 		}
 	}
 	
@@ -77,7 +77,7 @@ Validators::CursorValidator (DependencyObject* instance, DependencyProperty *pro
 {
 	// If the value is null, it means the default cursor has been set.
 	if (value->GetIsNull ())
-		value = new Value ((int) MouseCursorDefault);
+		*value = Value ((int) MouseCursorDefault);
 
 	return true;
 }

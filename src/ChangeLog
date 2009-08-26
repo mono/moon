@@ -1,3 +1,15 @@
+2009-08-16  Chris Toshok  <toshok@ximian.com>
+
+	* value.h.in, value.cpp: remove Value::Set.  it's unnecessary.
+
+	* validators.cpp (Validators::BalanceValidator): use the
+	assignment operator instead of ::Set, which no longer exists.
+	(Validators::VolumeValidator): same.
+	(Validators::CursorValidator): don't assign the pointer, assign
+	the value.  This should have caused bugs...
+
+	r: jackson
+	
 2009-08-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* validators.cpp (FloatValidator): New validator to make sure a
