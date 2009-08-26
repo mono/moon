@@ -1389,6 +1389,27 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
 			EnqueueTestComplete ();
 		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ComplexTarget12 ()
+		{
+			bool complete = false;
+			Storyboard sb = (Storyboard) XamlReader.Load (
+@"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<DoubleAnimation Duration=""0:0:0.05"" Storyboard.TargetName=""target"" Storyboard.TargetProperty=""Top"" To=""50"" />
+</Storyboard>");
+			sb.Completed += delegate { complete = true; };
+			Canvas c = new Canvas ();
+			Storyboard.SetTarget (sb, c);
+			Enqueue (() => { TestPanel.Children.Add (c); TestPanel.Resources.Add ("a", sb); });
+			Enqueue (() => sb.Begin ());
+			EnqueueConditional (() => complete);
+			Enqueue (() => Assert.AreEqual (50.0, c.GetValue (Canvas.TopProperty)));
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
 		
 		[TestMethod]
 		[Asynchronous]

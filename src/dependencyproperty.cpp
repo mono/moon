@@ -359,6 +359,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 			break;
 		
 		default:
+			bool explicit_type = false;
 			expression_found = true;
 			start = inptr - 1;
 
@@ -384,6 +385,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 					// bug, we should too. Fixes http://silverlight.timovil.com and
 					// http://election.msn.com/podium08.aspx.
 					type = Type::Find ("TextBlock");
+					explicit_type = true;
 				} else {
 					const char *s = inptr;
 					if (*(inptr -1) == '\'' && !tick_open) {
@@ -391,6 +393,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 					}
 					name = g_strndup (start, s - start);
 					type = lookup_type (lu, name);
+					explicit_type = true;
 					g_free (name);
 				}
 				
@@ -411,6 +414,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 					goto error;
 			} else {
 				type = Type::Find (lu->GetObjectType ());
+				explicit_type = false;
 			}
 			
 			if ((*inptr != ')' && paren_open) || !type)
@@ -430,7 +434,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 				}
 			}
 			
-			if (res->IsAttached () && !paren_open)
+			if (res->IsAttached () && explicit_type && !paren_open)
 				goto error;
 			
 			g_free (name);

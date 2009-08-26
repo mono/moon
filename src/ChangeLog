@@ -68,6 +68,11 @@
 	
 2009-08-26  Jackson Harper  <jackson@ximian.com>
 
+	* dependencyproperty.cpp: Allow setting properties that are
+	attached on their owner type without parens. r: toshok
+
+2009-08-26  Jackson Harper  <jackson@ximian.com>
+
 	* xaml.cpp|h: Expose a function for parsing bools so the plugin
 	code can use our bool parsing code. (Handle ints).
 
