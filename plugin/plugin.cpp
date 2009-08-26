@@ -14,6 +14,7 @@
 #include <config.h>
 
 #include <glib.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <dlfcn.h>
 
@@ -1422,11 +1423,30 @@ PluginInstance::CrossDomainApplicationCheck (const char *source)
 }
 
 static bool
-is_xap (const char *path)
+is_xap (const char *fname)
 {
-	size_t n = strlen (path);
-	
-	return n > 4 && !g_ascii_strcasecmp (path + n - 4, ".xap");
+	// Check for the ZIP magic header
+
+	int fd;
+	int nread;
+	char buf[4];
+
+	if ((fd = open (fname, O_RDONLY)) == -1)
+		return false;
+
+	nread = read (fd, buf, 4);
+	if (nread != 4) {
+		close (fd);
+		return false;
+	}
+
+	if (buf [0] != 0x50 || buf [1] != 0x4B || buf [2] != 0x03 || buf [3] != 0x04) {
+		close (fd);
+		return false;
+	}
+
+	close (fd);
+	return true;
 }
 
 void
@@ -1454,7 +1474,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		Uri *uri = new Uri ();
 
 
-		if (uri->Parse (stream->url, false) && is_xap (uri->GetPath())) {
+		if (uri->Parse (stream->url, false) && is_xap (fname)) {
 			LoadXAP (stream->url, fname);
 		} else {
 			xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);

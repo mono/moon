@@ -1,3 +1,8 @@
+2009-08-26  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp: check for the zip file magic instead of using file
+	extension. r: toshok
+
 2009-08-26  Alan McGovern  <amcgovern@novell.com>
 
 	* cbinding.h: regen r: shana
