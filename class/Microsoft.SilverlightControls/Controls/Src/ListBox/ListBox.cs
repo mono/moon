@@ -40,12 +40,7 @@ namespace System.Windows.Controls
                 "ItemContainerStyle", typeof(Style), typeof(ListBox),
                 new PropertyMetadata(new PropertyChangedCallback(OnItemContainerStyleChanged))); 
 
-        /// <summary>
-        /// Identifies the IsSelectionActive dependency property. 
-        /// </summary>
-        public static readonly DependencyProperty IsSelectionActiveProperty = DependencyProperty.RegisterReadOnlyCore (
-            "IsSelectionActive", typeof(bool), typeof(ListBox), 
-            new PropertyMetadata(new PropertyChangedCallback(OnIsSelectionActiveChanged))); 
+        public static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
 
         /// <summary>
         /// Tracks the ListBoxItem that just lost focus. 
@@ -61,31 +56,7 @@ namespace System.Windows.Controls
         /// Tracks the index of the focused element.
         /// </summary>
         private int _focusedIndex = -1; 
- 
-        /// <summary>
-        /// Gets a value that indicates whether the keyboard focus is within the ListBox. 
-        /// </summary>
-        /// <param name="element">The element from which to read the attached property.</param>
-        /// <returns>Value of the property, true if the keyboard focus is within the Selector.</returns> 
-        public static bool GetIsSelectionActive(DependencyObject element)
-        {
-            if (null == element) 
-            { 
-                throw new ArgumentNullException("element");
-            } 
-            return (bool)element.GetValue(IsSelectionActiveProperty);
-        }
- 
-        /// <summary>
-        /// Sets a value that indicates whether the keyboard focus is within the ListBox.
-        /// </summary> 
-        /// <param name="element">The element on which to set the attached property.</param> 
-        /// <param name="value">The value to set.</param>
-        private static void SetIsSelectionActive(ListBox box, bool value) 
-        {
-            box.SetValueImpl (IsSelectionActiveProperty, value);
-        }
- 
+
         /// <summary> 
         /// Initializes a new instance of the ListBox class.
         /// </summary> 
@@ -217,7 +188,7 @@ namespace System.Windows.Controls
         /// <param name="e">The event data.</param> 
         protected override void OnGotFocus(RoutedEventArgs e) 
         {
-            SetIsSelectionActive(this, true); 
+            IsSelectionActive = true; 
         }
 
         /// <summary> 
@@ -226,7 +197,7 @@ namespace System.Windows.Controls
         /// <param name="e">The event data.</param> 
         protected override void OnLostFocus(RoutedEventArgs e) 
         {
-            SetIsSelectionActive(this, false); 
+            IsSelectionActive = false; 
             if (_suppressNextLostFocus)
             {
                 // Suppressed 
@@ -508,39 +479,6 @@ namespace System.Windows.Controls
                 } 
             }
         } 
-
-        /// <summary>
-        /// Implements the IsSelectionActive PropertyChangedCallback. 
-        /// </summary>
-        /// <param name="d">The DependencyObject for which the property changed.</param>
-        /// <param name="e">Provides data for DependencyPropertyChangedEventArgs.</param> 
-        private static void OnIsSelectionActiveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) 
-        {
-            ListBox listBox = d as ListBox; 
-            if (listBox == null)
-                return;
-            
-            Debug.Assert(typeof(bool).IsInstanceOfType(e.OldValue));
-            Debug.Assert(typeof(bool).IsInstanceOfType(e.NewValue)); 
-            listBox.OnIsSelectionActiveChanged((bool)e.OldValue, (bool)e.NewValue);
-        }
- 
-        /// <summary> 
-        /// Called when the IsSelectionActive property has changed.
-        /// </summary> 
-        /// <param name="oldValue">The value of the property before the change.</param>
-        /// <param name="newValue">The value of the property after the change.</param>
-        void OnIsSelectionActiveChanged(bool oldValue, bool newValue) 
-        {
-            if (null != SelectedItem) 
-            {
-                ListBoxItem selectedListBoxItem = GetContainerItem (Items.IndexOf (SelectedItem)); 
-                if (null != selectedListBoxItem)
-                {
-                    selectedListBoxItem.ChangeVisualState(); 
-                 }
-            }
-        }
 
         /// <summary>
         /// Indicate whether the orientation of the ListBox's items is vertical.

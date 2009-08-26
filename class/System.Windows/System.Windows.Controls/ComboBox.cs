@@ -51,8 +51,7 @@ namespace System.Windows.Controls
 								     ((ComboBox) sender).IsDropDownOpenChanged (sender, e);
 							     }));
 
-		public static readonly DependencyProperty IsSelectionActiveProperty =
-			DependencyProperty.RegisterCore ("IsSelectionActive", typeof (bool), typeof (ComboBox), null);
+		public static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
 
 		public static readonly DependencyProperty ItemContainerStyleProperty =
 			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);

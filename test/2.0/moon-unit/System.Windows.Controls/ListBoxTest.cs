@@ -369,6 +369,8 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsFalse ((bool) item.GetValue (ListBox.IsSelectionActiveProperty), "#3");
 			box.SelectedIndex = -1;
 			Assert.IsFalse ((bool) item.GetValue (ListBox.IsSelectionActiveProperty), "#4");
+			
+			Assert.AreSame (ComboBox.IsSelectionActiveProperty, ListBox.IsSelectionActiveProperty, "#5");
 		}
 
 		[TestMethod]

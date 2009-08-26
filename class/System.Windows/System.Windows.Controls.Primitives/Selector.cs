@@ -32,6 +32,9 @@ namespace System.Windows.Controls.Primitives {
 	public abstract class Selector : ItemsControl {
 		internal const string TemplateScrollViewerName = "ScrollViewer";
 
+		internal static readonly DependencyProperty IsSelectionActiveProperty =
+			DependencyProperty.RegisterReadOnlyCore ("IsSelectionActive", typeof(bool), typeof(Selector), null); 
+
 		public static readonly DependencyProperty SelectedIndexProperty =
 			DependencyProperty.RegisterCore ("SelectedIndex", typeof(int), typeof(Selector),
 						     new PropertyMetadata(-1, new PropertyChangedCallback(OnSelectedIndexChanged)));
@@ -64,9 +67,10 @@ namespace System.Windows.Controls.Primitives {
 		}
 
 		internal bool IsSelectionActive {
-			get; set;
+			get { return (bool) GetValue (IsSelectionActiveProperty); }
+			set { SetValueImpl (IsSelectionActiveProperty, value); }
 		}
-
+		
 		public int SelectedIndex {
 			get { return (int)GetValue(SelectedIndexProperty); }
 			set { SetValue (SelectedIndexProperty, value); }
@@ -175,8 +179,7 @@ namespace System.Windows.Controls.Primitives {
 			if (element == null)
 				throw new ArgumentNullException ("element");
 
-			Selector s = (element as Selector);
-			return s == null ? false : s.IsSelectionActive;
+			return (bool) element.GetValue (ListBox.IsSelectionActiveProperty);
 		}
 
 		protected override void ClearContainerForItemOverride (DependencyObject element, object item)

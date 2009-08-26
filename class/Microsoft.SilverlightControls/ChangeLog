@@ -1,3 +1,11 @@
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs:
+	  ComboBox.IsSelectionActiveProperty and
+	  ListBox.IsSelectionActiveProperty are the same DP reference,
+	  so declare it on Selector and expose it in the subclasses.
+	  Cleanup usage of this property aswell. r: spouliot
+
 2009-08-25  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* RuntimeControls/SilverlightControls/HyperlinkButton.cs:
