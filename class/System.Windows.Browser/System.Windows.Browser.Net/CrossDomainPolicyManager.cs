@@ -94,6 +94,17 @@ namespace System.Windows.Browser.Net {
 			return policy;
 		}
 
+		private static void AddPolicy (Uri responseUri, ICrossDomainPolicy policy)
+		{
+			string root = GetRoot (responseUri);
+			try {
+				policies.Add (root, policy);
+			}
+			catch (ArgumentException) {
+				// it's possible another request already added this root
+			}
+		}
+
 		public static ICrossDomainPolicy BuildSilverlightPolicy (HttpWebResponse response)
 		{
 			// return null if no Silverlight policy was found, since we offer a second chance with a flash policy
@@ -104,10 +115,10 @@ namespace System.Windows.Browser.Net {
 			try {
 				policy = ClientAccessPolicy.FromStream (response.GetResponseStream ());
 				if (policy != null)
-					policies.Add (GetRoot (response.ResponseUri), policy);
+					AddPolicy (response.ResponseUri, policy);
 			} catch (Exception ex) {
 				Console.WriteLine (String.Format ("CrossDomainAccessManager caught an exception while reading {0}: {1}", 
-					response.ResponseUri, ex.Message));
+					response.ResponseUri, ex));
 				// and ignore.
 			}
 			return policy;
@@ -121,7 +132,7 @@ namespace System.Windows.Browser.Net {
 					policy = FlashCrossDomainPolicy.FromStream (response.GetResponseStream ());
 				} catch (Exception ex) {
 					Console.WriteLine (String.Format ("CrossDomainAccessManager caught an exception while reading {0}: {1}", 
-						response.ResponseUri, ex.Message));
+						response.ResponseUri, ex));
 					// and ignore.
 				}
 				if (policy != null) {
@@ -136,7 +147,7 @@ namespace System.Windows.Browser.Net {
 			if (policy == null)
 				policy = no_access_policy;
 
-			policies.Add (GetRoot (response.ResponseUri), policy);
+			AddPolicy (response.ResponseUri, policy);
 			return policy;
 		}
 

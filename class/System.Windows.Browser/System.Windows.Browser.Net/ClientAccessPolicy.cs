@@ -86,17 +86,40 @@ namespace System.Windows.Browser.Net {
 			return false;
 		}
 
-		public override bool IsAllowed (Uri uri, params string [] headerKeys)
+		// note: tests show that it only applies to Silverlight policy (seems to work with Flash)
+		// and only if we're not granting full access (i.e. '/' with all subpaths)
+		// https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=466043
+		private bool CheckOriginalPath (Uri uri)
 		{
 			// Path Restriction for cross-domain requests
 			// http://msdn.microsoft.com/en-us/library/cc838250(VS.95).aspx
 			string original = uri.OriginalString;
+			// applies to the *path* only (not the query part)
+			int query = original.IndexOf ('?');
+			if (query != -1)
+				original = original.Substring (0, query);
+
 			if (original.Contains ('%') || original.Contains ("./") || original.Contains ("..")) {
-				// note: tests show that it only applies to Silverlight policy (seems to work with Flash)
-				// and only if we're not granting full access (i.e. '/' with all subpaths)
-				// https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=466043
-				return false;
+				// special case when no path restriction applies - i.e. the above characters are accepted by SL
+				if (AccessPolicyList.Count != 1)
+					return false;
+				AccessPolicy policy = AccessPolicyList [0];
+				if (policy.GrantedResources.Count != 1)
+					return false;
+				GrantTo gt = policy.GrantedResources [0];
+				if (gt.Resources.Count != 1)
+					return false;
+				Resource r = gt.Resources [0];
+				return (r.IncludeSubpaths && (r.Path == "/"));
 			}
+			return true;
+		}
+
+		public override bool IsAllowed (Uri uri, params string [] headerKeys)
+		{
+			// at this stage the URI has removed the "offending" characters so we need to look at the original
+			if (!CheckOriginalPath (uri)) 
+				return false;
 
 			foreach (AccessPolicy policy in AccessPolicyList) {
 				// does something allow our URI in this policy ?

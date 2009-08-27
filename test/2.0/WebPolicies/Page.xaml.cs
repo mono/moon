@@ -48,19 +48,6 @@ namespace WebPolicies {
 			}
 		}
 
-		// https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=466043
-		static string Unsure466043 (string status)
-		{
-			if (status == "OK") {
-				pass++;
-				return "PASS (OK)";
-			} else {
-				// should fail according to MSDN documentation
-				pass++;
-				return "PASS (" + status + " - not identical to SL2 ref: 466043)";
-			}
-		}
-
 		// TODO
 		// ? extend to POST (not just GET)
 		// ? support Headers
@@ -76,6 +63,9 @@ namespace WebPolicies {
 			{ "http://flash-1/test/../using-double-dot", CheckOk },
 			{ "http://flash-1/test/./using-single-dot", CheckOk },
 			{ "http://flash-1/test/using%20percent-sign", CheckOk },
+			{ "http://flash-1/test/path?query=../using-double-dot", CheckOk },
+			{ "http://flash-1/test/path?query=./using-single-dot", CheckOk },
+			{ "http://flash-1/test/path?query=using%20percent-sign", CheckOk },
 
 			{ "http://flash-2/test/allow-caller-domain-only-using-url", CheckSecurityException },
 			{ "http://flash-3/test/allow-caller-domain-only-using-ipaddress", CheckSecurityException },
@@ -105,12 +95,12 @@ namespace WebPolicies {
 			// silverlight-1 grant every path under /
 			{ "http://silverlight-1/test/allow-all-domains-simplest", CheckOk },
 			{ "http://silverlight-1/clientaccesspolicy.xml", CheckOk },				// we can get retrieve the policy
-			{ "http://silverlight-1/../using-double-dot", Unsure466043 },
-			{ "http://silverlight-1/./using-single-dot", Unsure466043 },
-			{ "http://silverlight-1/using%20percent-sign", Unsure466043 },
-			{ "http://silverlight-1/test/../using-double-dot", Unsure466043 },
-			{ "http://silverlight-1/test/./using-single-dot", Unsure466043 },
-			{ "http://silverlight-1/test/using%20percent-sign", Unsure466043 },
+			{ "http://silverlight-1/../using-double-dot", CheckOk },
+			{ "http://silverlight-1/./using-single-dot", CheckOk },
+			{ "http://silverlight-1/using%20percent-sign", CheckOk },
+			{ "http://silverlight-1/test/../using-double-dot", CheckOk },
+			{ "http://silverlight-1/test/./using-single-dot", CheckOk },
+			{ "http://silverlight-1/test/using%20percent-sign", CheckOk },
 			// silverlight-2 grant every path under "/test"
 			{ "http://silverlight-2/test/allow-all-domains-under-test", CheckOk },
 			{ "http://silverlight-2/test/", CheckOk },
@@ -122,6 +112,9 @@ namespace WebPolicies {
 			{ "http://silverlight-2/test/../using-double-dot", CheckSecurityException },
 			{ "http://silverlight-2/test/./using-single-dot", CheckSecurityException },
 			{ "http://silverlight-2/test/using%20percent-sign", CheckSecurityException },
+			{ "http://silverlight-2/test/path?query=../using-double-dot", CheckOk },		// invalid path characters in query
+			{ "http://silverlight-2/test/path?query=./using-single-dot", CheckOk },
+			{ "http://silverlight-2/test/path?query=using%20percent-sign", CheckOk },
 			// silverlight-3 grant every path under "/test/again"
 			{ "http://silverlight-3/test/again/allow-all-domains-under-test-again", CheckOk },
 			{ "http://silverlight-3/test/allow-all-domains-under-test", CheckSecurityException },

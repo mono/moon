@@ -1,3 +1,13 @@
+2009-08-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientAccessPolicy.cs: Fix the invalid path characters check in
+	the query part. Be more compatible with SL (to the extent we 
+	know) with the special case for unrestricted paths.
+	* CrossDomainPolicyManager.cs: Avoid displaying policies errors
+	on the console when it occurs from duplicate cached entries
+
+	re: alan
+
 2009-08-10  Chris Toshok  <toshok@ximian.com>
 
 	* BrowserHttpWebRequestInternal.cs: make progress_delegate
