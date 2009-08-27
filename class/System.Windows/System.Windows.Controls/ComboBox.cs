@@ -70,10 +70,6 @@ namespace System.Windows.Controls
 			get; set;
 		}
 		
-		object NothingSelectedFallback {
-			get; set;
-		}
-		
 		public bool IsDropDownOpen {
 			get { return (bool) GetValue (IsDropDownOpenProperty); }
 			set { SetValue (IsDropDownOpenProperty, value); }
@@ -115,10 +111,7 @@ namespace System.Windows.Controls
 			DefaultStyleKey = typeof (ComboBox);
 
 			Loaded += delegate { UpdateVisualState (false); UpdateDisplayedItem (SelectedItem); };
-			SelectionChanged += delegate {
-				if (!IsDropDownOpen)
-					UpdateDisplayedItem (SelectedItem);
-			};
+			SelectionChanged += delegate { UpdateDisplayedItem (SelectedItem); };
 		}
 
 		#region Property Changed Handlers
@@ -157,7 +150,7 @@ namespace System.Windows.Controls
 
 		void MaxDropDownHeightChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			UpdatePopupMaxHeight ();
+			UpdatePopupMaxHeight ((double) e.NewValue);
 		}
 
 		#endregion
@@ -245,12 +238,8 @@ namespace System.Windows.Controls
 			_dropDownToggle = GetTemplateChild ("DropDownToggle") as ToggleButton;
 			LayoutUpdated += delegate { UpdatePopupSizeAndPosition (); };
 
-			if (_contentPresenter != null) {
-				NothingSelectedFallback = _contentPresenter.Content;
-			}
-
 			if (_popup != null) {
-				UpdatePopupMaxHeight ();
+				UpdatePopupMaxHeight (MaxDropDownHeight);
 				_popup.CatchClickedOutside ();
 				_popup.ClickedOutside += delegate { 
 					IsDropDownOpen = false; 
@@ -316,9 +305,8 @@ namespace System.Windows.Controls
 		{
 			base.OnMouseLeftButtonDown (e);
 			if (!e.Handled) {
-				e.Handled = true;
+				Focus ();
 				IsSelectionActive = true;
-				IsDropDownOpen = !IsDropDownOpen;
 			}
 		}
 
@@ -391,7 +379,7 @@ namespace System.Windows.Controls
 			}
 
 			if (selectedItem == null) {
-				_contentPresenter.Content = NothingSelectedFallback;
+				_contentPresenter.Content = null;
 				_contentPresenter.ContentTemplate = null;
 				SelectionBoxItem = null;
 				SelectionBoxItemTemplate = null;
@@ -449,10 +437,9 @@ namespace System.Windows.Controls
 			}
 		}
 
-		void UpdatePopupMaxHeight ()
+		void UpdatePopupMaxHeight (double height)
 		{
 			if (_popup != null && _popup.Child is FrameworkElement) {
-				double height = Math.Min (MaxHeight - ActualHeight, MaxDropDownHeight);
 				((FrameworkElement) _popup.RealChild).MaxHeight = height;
 			}
 		}

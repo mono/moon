@@ -1,11 +1,7 @@
 2009-08-27  Alan McGovern  <amcgovern@novell.com>
 
-	* ComboBox.cs: 1) Only update the displayed item when the
-	  dropdown is closed.
-	2) Clicking on the ComboBox itself should toggle the dropdown
-	3) If nothing is selected we need to display the fallback item
-	  in the content presenter (default specified in generic.xaml)
-	  r: jackson
+	* ChangeLog:
+	* ComboBox.cs: revert my last commit, it was the wrong patch.
 
 2009-08-26  Alan McGovern  <amcgovern@novell.com>
 
