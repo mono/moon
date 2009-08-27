@@ -447,11 +447,19 @@ namespace System.Windows.Controls
 			if (bottom_right.Y > root.ActualHeight) {
 				_popup.VerticalOffset = -child.ActualHeight;
 			}
+			
+			// Silverlight does not resize its dropdown properly when the available height is altered.
+			// This means that if you open a dropdown while your browser window is small, you end up
+			// with a dropdown that is far too small forever. Instead of this we will resize the dropdown
+			// to a more usable height.
+			UpdatePopupMaxHeight (MaxDropDownHeight);
 		}
 
 		void UpdatePopupMaxHeight (double height)
 		{
 			if (_popup != null && _popup.Child is FrameworkElement) {
+				if (height == double.PositiveInfinity)
+					height = Application.Current.Host.Content.ActualHeight / 2.0;
 				((FrameworkElement) _popup.RealChild).MaxHeight = height;
 			}
 		}

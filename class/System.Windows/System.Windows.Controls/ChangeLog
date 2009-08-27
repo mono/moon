@@ -1,5 +1,11 @@
 2009-08-27  Alan McGovern  <amcgovern@novell.com>
 
+	* ComboBox.cs: Limit the dropdown height based on the
+	  available height and update the MaxHeight of the ComboBox
+	  dropdown when the available height changes. r: spouliot.
+
+2009-08-27  Alan McGovern  <amcgovern@novell.com>
+
 	* ComboBox.cs: 1) Only update the displayed item when the
 	  dropdown is closed.
 	2) Clicking on the ComboBox itself should toggle the dropdown
