@@ -1354,26 +1354,6 @@ namespace Mono {
 		public extern static IntPtr multi_scale_sub_image_collection_new ();
 
 		[DllImport ("moon")]
-		// double multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance);
-		public extern static double multi_scale_tile_source_get_image_height (IntPtr instance);
-
-		[DllImport ("moon")]
-		// double multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance);
-		public extern static double multi_scale_tile_source_get_image_width (IntPtr instance);
-
-		[DllImport ("moon")]
-		// int multi_scale_tile_source_get_tile_height (MultiScaleTileSource *instance);
-		public extern static int multi_scale_tile_source_get_tile_height (IntPtr instance);
-
-		[DllImport ("moon")]
-		// int multi_scale_tile_source_get_tile_overlap (MultiScaleTileSource *instance);
-		public extern static int multi_scale_tile_source_get_tile_overlap (IntPtr instance);
-
-		[DllImport ("moon")]
-		// int multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance);
-		public extern static int multi_scale_tile_source_get_tile_width (IntPtr instance);
-
-		[DllImport ("moon")]
 		// void multi_scale_tile_source_invalidate_tile_layer (MultiScaleTileSource *instance, int level, int tilePositionX, int tilePositionY, int tileLayer);
 		public extern static void multi_scale_tile_source_invalidate_tile_layer (IntPtr instance, int level, int tilePositionX, int tilePositionY, int tileLayer);
 
@@ -1384,26 +1364,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_image_uri_func func);
 		public extern static void multi_scale_tile_source_set_image_uri_func (IntPtr instance, Mono.ImageUriFunc func);
-
-		[DllImport ("moon")]
-		// void multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, double height);
-		public extern static void multi_scale_tile_source_set_image_height (IntPtr instance, double height);
-
-		[DllImport ("moon")]
-		// void multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, double width);
-		public extern static void multi_scale_tile_source_set_image_width (IntPtr instance, double width);
-
-		[DllImport ("moon")]
-		// void multi_scale_tile_source_set_tile_height (MultiScaleTileSource *instance, int height);
-		public extern static void multi_scale_tile_source_set_tile_height (IntPtr instance, int height);
-
-		[DllImport ("moon")]
-		// void multi_scale_tile_source_set_tile_overlap (MultiScaleTileSource *instance, int overlap);
-		public extern static void multi_scale_tile_source_set_tile_overlap (IntPtr instance, int overlap);
-
-		[DllImport ("moon")]
-		// void multi_scale_tile_source_set_tile_width (MultiScaleTileSource *instance, int width);
-		public extern static void multi_scale_tile_source_set_tile_width (IntPtr instance, int width);
 
 		[DllImport ("moon")]
 		// ObjectAnimationUsingKeyFrames *object_animation_using_key_frames_new ();

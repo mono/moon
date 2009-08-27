@@ -1502,6 +1502,39 @@ namespace System.Windows.Media {
 		}
 	}
 
+	partial class MultiScaleTileSource {
+		internal static readonly DependencyProperty ImageHeightProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "ImageHeight", typeof (double));
+		internal static readonly DependencyProperty ImageWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "ImageWidth", typeof (double));
+		internal static readonly DependencyProperty TileHeightProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "TileHeight", typeof (int));
+		internal static readonly DependencyProperty TileOverlapProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "TileOverlap", typeof (int));
+		internal static readonly DependencyProperty TileWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "TileWidth", typeof (int));
+
+		internal double ImageHeight {
+			get { return (double) GetValue (ImageHeightProperty); }
+			set { SetValue (ImageHeightProperty, value); }
+		}
+
+		internal double ImageWidth {
+			get { return (double) GetValue (ImageWidthProperty); }
+			set { SetValue (ImageWidthProperty, value); }
+		}
+
+		internal int TileHeight {
+			get { return (int) GetValue (TileHeightProperty); }
+			set { SetValue (TileHeightProperty, value); }
+		}
+
+		internal int TileOverlap {
+			get { return (int) GetValue (TileOverlapProperty); }
+			set { SetValue (TileOverlapProperty, value); }
+		}
+
+		internal int TileWidth {
+			get { return (int) GetValue (TileWidthProperty); }
+			set { SetValue (TileWidthProperty, value); }
+		}
+	}
+
 	partial class PathFigure {
 		public static readonly DependencyProperty IsClosedProperty = DependencyProperty.Lookup (Kind.PATHFIGURE, "IsClosed", typeof (bool));
 		public static readonly DependencyProperty IsFilledProperty = DependencyProperty.Lookup (Kind.PATHFIGURE, "IsFilled", typeof (bool));

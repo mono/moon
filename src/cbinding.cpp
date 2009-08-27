@@ -3307,61 +3307,6 @@ multi_scale_sub_image_collection_new (void)
 /**
  * MultiScaleTileSource
  **/
-double
-multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->GetImageHeight ();
-}
-
-
-double
-multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->GetImageWidth ();
-}
-
-
-int
-multi_scale_tile_source_get_tile_height (MultiScaleTileSource *instance)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
-	
-	return instance->GetTileHeight ();
-}
-
-
-int
-multi_scale_tile_source_get_tile_overlap (MultiScaleTileSource *instance)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
-	
-	return instance->GetTileOverlap ();
-}
-
-
-int
-multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
-	
-	return instance->GetTileWidth ();
-}
-
-
 void
 multi_scale_tile_source_invalidate_tile_layer (MultiScaleTileSource *instance, int level, int tilePositionX, int tilePositionY, int tileLayer)
 {
@@ -3386,56 +3331,6 @@ multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_
 		return;
 	
 	instance->set_image_uri_func (func);
-}
-
-
-void
-multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, double height)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetImageHeight (height);
-}
-
-
-void
-multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, double width)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetImageWidth (width);
-}
-
-
-void
-multi_scale_tile_source_set_tile_height (MultiScaleTileSource *instance, int height)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetTileHeight (height);
-}
-
-
-void
-multi_scale_tile_source_set_tile_overlap (MultiScaleTileSource *instance, int overlap)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetTileOverlap (overlap);
-}
-
-
-void
-multi_scale_tile_source_set_tile_width (MultiScaleTileSource *instance, int width)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetTileWidth (width);
 }
 
 
