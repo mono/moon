@@ -60,9 +60,9 @@ namespace System.Windows.Browser.Net {
 				{
 					int check_length = x.Length - 1;
 					if ((x.Length > 0) && (x [check_length] == '*'))
-						check_length--;
+						return (String.Compare (x, 0, y, 0, check_length, StringComparison.OrdinalIgnoreCase) == 0);
 
-					return (String.Compare (x, 0, y, 0, check_length, StringComparison.OrdinalIgnoreCase) == 0);
+					return (String.Compare (x, y, StringComparison.OrdinalIgnoreCase) == 0);
 				}
 
 				public int GetHashCode (string obj)

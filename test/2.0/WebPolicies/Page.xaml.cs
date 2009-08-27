@@ -85,6 +85,13 @@ namespace WebPolicies {
 			{ "http://flash-14/", CheckSecurityException },
 			// flash-15 has an invalid (but accepted) XML policy with whitespace preceding the XML declaration
 			{ "http://flash-15/", CheckOk },
+			// flash-16-21 (same as 4-9 except it use XML <site-control permitted-cross-domain-policies=X>
+			{ "http://flash-16/test/allow-all-domains-permitted-cross-domain-policies-none", CheckSecurityException },
+			{ "http://flash-17/test/allow-all-domains-permitted-cross-domain-policies-master-only", CheckOk },
+			{ "http://flash-18/test/allow-all-domains-permitted-cross-domain-policies-by-content-type", CheckSecurityException },
+			{ "http://flash-19/test/allow-all-domains-permitted-cross-domain-policies-by-ftp-filename", CheckOk },
+			{ "http://flash-20/test/allow-all-domains-permitted-cross-domain-policies-all", CheckOk },
+			{ "http://flash-21/test/allow-all-domains-permitted-cross-domain-policies-invalid-value", CheckSecurityException },
 
 			// add no policy test
 			// add redirection test (not allowed on policy files)

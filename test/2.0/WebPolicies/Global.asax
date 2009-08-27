@@ -203,6 +203,61 @@
 				FlashDefault (path);
 			}
 			break;
+		case "flash-16":
+			// Description:	allow all domains with site-control permitted-cross-domain-policie == none
+			// Result:	SecurityException
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><site-control permitted-cross-domain-policies='none' /><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				FlashDefault (path);
+			}
+			break;
+		case "flash-17":
+			// Description:	allow all domains with site-control permitted-cross-domain-policie == master-only
+			// Result:	OK
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><site-control permitted-cross-domain-policies='master-only' /><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				FlashDefault (path);
+			}
+			break;
+		case "flash-18":
+			// Description:	allow all domains with site-control permitted-cross-domain-policie == by-content-type
+			// Result:	SecurityException
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><site-control permitted-cross-domain-policies='by-content-type' /><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				FlashDefault (path);
+			}
+			break;
+		case "flash-19":
+			// Description:	allow all domains with site-control permitted-cross-domain-policie == by-ftp-filename
+			// Result:	OK
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><site-control permitted-cross-domain-policies='by-ftp-filename' /><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				FlashDefault (path);
+			}
+			break;
+		case "flash-20":
+			// Description:	allow all domains with site-control permitted-cross-domain-policie == all
+			// Result:	OK
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><site-control permitted-cross-domain-policies='all' /><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				FlashDefault (path);
+			}
+			break;
+		case "flash-21":
+			// Description:	allow all domains with site-control permitted-cross-domain-policie == invalid-value
+			// Result:	SecurityException
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><site-control permitted-cross-domain-policies='invalid-value' /><allow-access-from domain='*'/></cross-domain-policy>");
+			} else {
+				FlashDefault (path);
+			}
+			break;
+
 
 		case "silverlight-1":
 			// Description:	simplest, allow everything, silverlight policy

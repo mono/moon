@@ -1,3 +1,10 @@
+2009-08-27  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Global.asax, Page.xaml.cs: Add policies and test cases for
+	Flash policies using site-control permitted-cross-domain-policies
+
+	re: toshok
+
 2009-08-27  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Page.xaml.cs: Add test cases when invalid *path* characters are
