@@ -1,3 +1,11 @@
+2009-08-27  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* tilesource.h: rely on the generator for internal properties.
+
+	* tilesource,cpp:
+	* deepzoomimagetilesource.cpp: use the accesors instead of the
+	fields.
+
 2009-08-27  Andreia Gaita  <avidigal@novell.com>
 
 	* dependencyobject.cpp: list should only be cleared, not destroyed,

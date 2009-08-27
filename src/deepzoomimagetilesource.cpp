@@ -5,7 +5,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007,2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  *
@@ -253,9 +253,9 @@ LOG_MSI ("Parsing DeepZoom %s\n", filename);
 	fclose (f);
 
 	if (!info->isCollection) {
-		imageWidth = info->image_width;
-		imageHeight = info->image_height;
-		tileOverlap = info->overlap;
+		SetImageWidth (info->image_width);
+		SetImageHeight (info->image_height);
+		SetTileOverlap (info->overlap);
 		display_rects = info->display_rects;
 	} else {
 		subimages = info->sub_images;
@@ -263,7 +263,8 @@ LOG_MSI ("Parsing DeepZoom %s\n", filename);
 		maxLevel = info->max_level;
 	}
 
-	tileWidth = tileHeight = info->tile_size;
+	SetTileWidth (info->tile_size);
+	SetTileHeight (info->tile_size);
 	format = g_strdup (info->format);
 
 	parsed = true;
@@ -286,7 +287,7 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 		bool found = false;
 		int layers;
 		
-		frexp ((double) MAX (imageWidth, imageHeight), &layers);
+		frexp ((double) MAX (GetImageWidth (), GetImageHeight ()), &layers);
 
 		while ((cur = (DisplayRect*)g_list_nth_data (display_rects, i))) {
 			i++;
@@ -294,7 +295,7 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 			if (!(cur->min_level <= level && level <= cur->max_level))
 				continue;
 
-			int vtilesize = tileWidth * (layers + 1 - level);
+			int vtilesize = GetTileWidth () * (layers + 1 - level);
 			Rect virtualtile = Rect (x * vtilesize, y * vtilesize, vtilesize, vtilesize);
 			if (cur->rect.IntersectsWith (virtualtile)) {
 				found = true;
