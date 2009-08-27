@@ -1,3 +1,10 @@
+2009-08-26  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlParserInfo::ClearBuffer): set buffer to NULL after
+	we free it.
+
+	r: jackson
+
 2009-08-16  Chris Toshok  <toshok@ximian.com>
 
 	* value.h.in, value.cpp: remove Value::Set.  it's unnecessary.

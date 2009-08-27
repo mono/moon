@@ -677,6 +677,7 @@ class XamlParserInfo {
 
 		char* res = buffer->str;
 		g_string_free (buffer, FALSE);
+		buffer = NULL;
 		return res;
 	}
 
