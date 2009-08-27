@@ -1,3 +1,8 @@
+2009-08-27  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+        * System.Windows.Automation.Peers/HyperlinkButtonAutomationPeerTest.cs:
+        Add new file, forgotten in commit r140650.
+
 2009-08-26  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemsControlTest.cs: Allow
