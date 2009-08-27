@@ -1982,7 +1982,7 @@ DependencyObject::CloneAnimationStorageList (DependencyProperty *key, List *list
 		newlist->Append (node->Clone ());
 		node = (AnimationStorage::Node*)node->next;
 	}
-	delete list;
+	list->Clear (true);
 	if (!storage_hash)
 		storage_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
 	g_hash_table_insert (storage_hash, key, newlist);
