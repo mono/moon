@@ -48,7 +48,22 @@ namespace System.Windows.Automation.Peers {
 
 		void ISelectionItemProvider.AddToSelection ()
 		{
-			((ISelectionItemProvider) this).Select ();
+			if (!IsEnabled ())
+				throw new ElementNotEnabledException ();
+
+			ISelectionProvider selectionProvider = SelectionProvider;
+			if (selectionProvider == null)
+				return;
+
+			ISelectionItemProvider selectionItemProvider = (ISelectionItemProvider) this;
+			if (!selectionProvider.CanSelectMultiple) {
+				IRawElementProviderSimple[] selection = selectionProvider.GetSelection ();
+				if (selection == null || selection.Length == 0)
+					selectionItemProvider.Select ();
+				else
+					throw new InvalidOperationException ();
+			} else
+				selectionItemProvider.Select ();
 		}
 
 		void ISelectionItemProvider.RemoveFromSelection ()
@@ -69,9 +84,6 @@ namespace System.Windows.Automation.Peers {
 				throw new ElementNotEnabledException ();
 
 			Selector control = SelectorOwner;
-			if (control.SelectedIndex != -1)
-				throw new InvalidOperationException ();
-
 			if (control != null)
 				control.SelectedItem = Item;
 		}
@@ -97,6 +109,19 @@ namespace System.Windows.Automation.Peers {
 					return ItemsControlAutomationPeer.Owner as Selector;
 				else
 					return null;
+			}
+		}
+
+		private ISelectionProvider SelectionProvider {
+			get {
+				Selector selectorOwner = SelectorOwner;
+				if (selectorOwner == null)
+					return null;
+				AutomationPeer peer 
+					= FrameworkElementAutomationPeer.CreatePeerForElement (selectorOwner);
+				if (peer == null)
+					return null;
+				return peer.GetPattern (PatternInterface.Selection) as ISelectionProvider ;
 			}
 		}
 

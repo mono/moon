@@ -1,3 +1,11 @@
+2009-08-28   Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: HyperlinkButtonAutomationPeerTest.cs added.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	Testing ISelectionItemProvider methods and events.
+
+	r: alan
+
 2009-08-28  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/DataTemplateTests.cs: ContentControl is not

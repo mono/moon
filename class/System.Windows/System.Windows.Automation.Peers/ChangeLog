@@ -1,3 +1,10 @@
+2009-08-28  Mario Carrion  <mcarrion@novell.com>
+
+	* SelectorItemAutomationPeer.cs: New property SelectionProvider. Fixed
+	SelectionItemProvider implementation.
+
+	r: alan
+
 2009-08-25  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* HyperlinkButtonAutomationPeer.cs: Final implementation of
