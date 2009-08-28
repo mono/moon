@@ -1129,6 +1129,8 @@ PluginInstance::SetPageURL ()
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, guint16 *stype)
 {
+	Deployment::SetCurrent (deployment);
+	
 	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p)\n", type, stream, seekable, stype));
 
 	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {

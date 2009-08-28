@@ -1,3 +1,9 @@
+2009-08-27  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::NewStream): set the current deployment here.
+
+	r: kangaroo
+	
 2009-08-26  Jackson Harper  <jackson@ximian.com>
 
 	* plugin.cpp: check for the zip file magic instead of using file
