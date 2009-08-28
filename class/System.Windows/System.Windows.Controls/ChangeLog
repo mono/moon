@@ -1,3 +1,12 @@
+2009-08-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBox.cs: Implement OnMouseLeftButtonDown/Up(), OnMouseMove()
+	and update OnGot/LostFocus() to call native methods.
+
+	* PasswordBox.cs: Same.
+
+	r:alan
+
 2009-08-27  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs: Limit the dropdown height based on the

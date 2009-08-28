@@ -1892,12 +1892,32 @@ namespace Mono {
 		public extern static void text_box_base_on_character_key_down (IntPtr instance, IntPtr args);
 
 		[DllImport ("moon")]
+		// void text_box_base_on_got_focus (TextBoxBase *instance, RoutedEventArgs *args);
+		public extern static void text_box_base_on_got_focus (IntPtr instance, IntPtr args);
+
+		[DllImport ("moon")]
 		// void text_box_base_on_key_down (TextBoxBase *instance, KeyEventArgs *args);
 		public extern static void text_box_base_on_key_down (IntPtr instance, IntPtr args);
 
 		[DllImport ("moon")]
 		// void text_box_base_on_key_up (TextBoxBase *instance, KeyEventArgs *args);
 		public extern static void text_box_base_on_key_up (IntPtr instance, IntPtr args);
+
+		[DllImport ("moon")]
+		// void text_box_base_on_lost_focus (TextBoxBase *instance, RoutedEventArgs *args);
+		public extern static void text_box_base_on_lost_focus (IntPtr instance, IntPtr args);
+
+		[DllImport ("moon")]
+		// void text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseEventArgs *args);
+		public extern static void text_box_base_on_mouse_left_button_down (IntPtr instance, IntPtr args);
+
+		[DllImport ("moon")]
+		// void text_box_base_on_mouse_left_button_up (TextBoxBase *instance, MouseEventArgs *args);
+		public extern static void text_box_base_on_mouse_left_button_up (IntPtr instance, IntPtr args);
+
+		[DllImport ("moon")]
+		// void text_box_base_on_mouse_move (TextBoxBase *instance, MouseEventArgs *args);
+		public extern static void text_box_base_on_mouse_move (IntPtr instance, IntPtr args);
 
 		[DllImport ("moon")]
 		// void text_box_base_select_all (TextBoxBase *instance);

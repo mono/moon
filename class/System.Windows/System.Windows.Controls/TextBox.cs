@@ -66,13 +66,18 @@ namespace System.Windows.Controls {
 		internal override void InvokeKeyDown (KeyEventArgs k)
 		{
 			base.InvokeKeyDown (k);
+			
 			if (!k.Handled)
 				NativeMethods.text_box_base_on_character_key_down (native, k.NativeHandle);
 		}
 		
 		protected override void OnKeyDown (KeyEventArgs k)
 		{
+			// Chain up to our parent first, so that TabNavigation
+			// works as well as allowing developers to filter our
+			// input.
 			base.OnKeyDown (k);
+			
 			if (!k.Handled)
 				NativeMethods.text_box_base_on_key_down (native, k.NativeHandle);
 		}
@@ -80,8 +85,31 @@ namespace System.Windows.Controls {
 		protected override void OnKeyUp (KeyEventArgs k)
 		{
 			base.OnKeyUp (k);
+			
 			if (!k.Handled)
 				NativeMethods.text_box_base_on_key_up (native, k.NativeHandle);
+		}
+		
+		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
+		{
+			if (!e.Handled)
+				NativeMethods.text_box_base_on_mouse_left_button_down (native, e.NativeHandle);
+			
+			base.OnMouseLeftButtonDown (e);
+		}
+		
+		protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e)
+		{
+			if (!e.Handled)
+				NativeMethods.text_box_base_on_mouse_left_button_up (native, e.NativeHandle);
+			
+			base.OnMouseLeftButtonUp (e);
+		}
+		
+		protected override void OnMouseMove (MouseEventArgs e)
+		{
+			NativeMethods.text_box_base_on_mouse_move (native, e.NativeHandle);
+			base.OnMouseMove (e);
 		}
 		
 		protected override void OnMouseEnter (MouseEventArgs e)
@@ -102,6 +130,7 @@ namespace System.Windows.Controls {
 		{
 			IsFocused = true;
 			base.OnGotFocus (e);
+			NativeMethods.text_box_base_on_got_focus (native, e.NativeHandle);
 			ChangeVisualState ();
 		}
 		
@@ -109,9 +138,10 @@ namespace System.Windows.Controls {
 		{
 			IsFocused = false;
 			base.OnLostFocus (e);
+			NativeMethods.text_box_base_on_lost_focus (native, e.NativeHandle);
 			ChangeVisualState ();
 		}
-
+		
 		public string Text {
 			get {
 				return (string)GetValue (TextProperty) ?? "";
