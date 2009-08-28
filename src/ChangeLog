@@ -1,3 +1,14 @@
+2009-08-28  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* control.cpp:
+	* contentcontrol.cpp: ContentControl is not in charge of
+	  expanding its content template, the users of ContentControl
+	  have to do that. When applying a ControlTemplate, if it
+	  expands to an empty element or one which is not a UIElement,
+	  we ignore the template and instead apply the default
+	  element. r: toshok
+
 2009-08-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxBase::Initialize): Don't listen for Focus or

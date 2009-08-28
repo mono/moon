@@ -33,17 +33,22 @@ ContentControl::~ContentControl ()
 bool
 ContentControl::ApplyTemplate ()
 {
-	if (GetTemplate ())
-		return Control::ApplyTemplate ();
-
-	if (Control::ApplyTemplate (GetContentTemplate ()))
-		return true;
-
+	// If the Template has been applied (or already applied) we will get a
+	// return code of TemplateStatusApplied or TemplateStatusAlreadyApplied.
+	// Otherwise we get TemplateStatusNotApplied and we should apply the
+	// default root
+	TemplateStatus status = Control::ApplyTemplate (GetTemplate ());
+	if (status != TemplateStatusNotApplied) {
+		// Return 'true' if the template was actually applied. If it was
+		// already there, we return false.
+		return status == TemplateStatusApplied;
+	}
 	Value *content = GetValue (ContentControl::ContentProperty);
 	if (!content || content->GetIsNull ())
 		return false;
 
-	return ApplyTemplateRoot (Application::GetCurrent ()->GetDefaultTemplateRoot (this));
+	status = ApplyTemplateRoot (Application::GetCurrent ()->GetDefaultTemplateRoot (this));
+	return status == TemplateStatusApplied;
 }
 
 void

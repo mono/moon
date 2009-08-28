@@ -29,6 +29,12 @@
 #define CONTROL_FONT_WEIGHT  FontWeightsNormal
 #define CONTROL_FONT_STYLE   FontStylesNormal
 
+enum TemplateStatus {
+	TemplateStatusApplied,
+	TemplateStatusAlreadyApplied,
+	TemplateStatusNotApplied
+};
+
 //
 // Control Class
 //
@@ -175,8 +181,8 @@ public:
 protected:
 	virtual ~Control ();
 	UIElement *template_root;
-	bool ApplyTemplate (FrameworkTemplate *t);
-	bool ApplyTemplateRoot (UIElement *root);
+	TemplateStatus ApplyTemplate (FrameworkTemplate *t);
+	TemplateStatus ApplyTemplateRoot (UIElement *root);
 	
 private:
 	FrameworkTemplate *applied_template;

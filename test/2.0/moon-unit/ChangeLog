@@ -1,3 +1,12 @@
+2009-08-28  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DataTemplateTests.cs: ContentControl is not
+	  in charge of expanding its content template, the users of
+	  ContentControl have to do that. When applying a
+	  ControlTemplate, if it expands to an empty element or one
+	  which is not a UIElement, we ignore the template and instead
+	  apply the default element. r: toshok
+
 2009-08-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/WebFlashPolicyTest.cs: Add test case for FILE/HTTP 

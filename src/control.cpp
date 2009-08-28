@@ -171,31 +171,44 @@ Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, Moon
 bool
 Control::ApplyTemplate ()
 {
-	return ApplyTemplate (GetTemplate ());
+	return ApplyTemplate (GetTemplate ()) == TemplateStatusApplied;
 }
 
-bool
+TemplateStatus
 Control::ApplyTemplate (FrameworkTemplate *t)
 {
+	// If the template is null, we won't apply it
+	if (!t)
+		return TemplateStatusNotApplied;
+
 	if (applied_template == t)
-		return false;
+		return TemplateStatusAlreadyApplied;
 
 	ClearTemplate ();
-
-	if (!t)
-		return false;
 
 	applied_template = t;
 	applied_template->ref();
 
-	return ApplyTemplateRoot ((UIElement *) applied_template->GetVisualTree(this));
+	// If the template expands to an element which is *not* a UIElement
+	// we don't apply the template.
+	DependencyObject *root = applied_template->GetVisualTree (this);
+	if (root && !root->Is (Type::UIELEMENT)) {
+		g_warning ("Control::ApplyTemplate (FrameworkTemplate*) Template root was not a UIElement");
+		root->unref ();
+		return TemplateStatusNotApplied;
+	}
+	return ApplyTemplateRoot ((UIElement *) root);
 }
 
-bool
+TemplateStatus
 Control::ApplyTemplateRoot (UIElement *root)
 {
-	if (!root || root == template_root)
-		return false;
+	// If the template root is null, we treat the template as
+	// not being applied
+	if (!root)
+		return TemplateStatusNotApplied;
+	if (root == template_root)
+		return TemplateStatusAlreadyApplied;
 
 	ElementAdded (root);
 
@@ -203,7 +216,7 @@ Control::ApplyTemplateRoot (UIElement *root)
 	root->SetParent (this, &e);
 	OnApplyTemplate ();
 
-	return true;
+	return TemplateStatusApplied;
 }
 
 void
