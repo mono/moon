@@ -1,3 +1,11 @@
+2009-08-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* FlashCrossDomainPolicy.cs: Secure policy (default) means that
+	only https:// apps can access https:// urls. However file:// apps
+	can still access http:// urls.
+
+	re: jackson
+
 2009-08-27  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* BaseDomainPolicy.cs: Fix comparison of header values so that

@@ -30,16 +30,18 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Windows;
 using System.Windows.Browser.Net;
 using System.Xml;
 
 using Mono.Moonlight.UnitTesting;
+using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.Security {
 
 	[TestClass]
-	public class WebFlashPolicyTest {
+	public class WebFlashPolicyTest : SilverlightTest {
 
 		static FlashCrossDomainPolicy GetPolicy (string policy)
 		{
@@ -167,6 +169,62 @@ namespace MoonTest.Security {
 
 			FlashCrossDomainPolicy.ApplicationUri = http;
 			Assert.IsTrue (cdp.IsAllowed (new Uri ("http://www.host.com"), null), "http / http");
+		}
+
+		private void FlashCrossDomainSecure (string url, bool pass)
+		{
+			switch (Application.Current.Host.Source.Scheme) {
+			case "file":
+			case "http":
+				break;
+			default:
+				// don't execute this test for https (or any other except file and http)
+				return;
+			}
+
+			DownloadStringCompletedEventArgs resultArgs = null;
+			WebClient downloadClient = new WebClient ();
+			bool downloadComplete = false;
+
+			downloadClient.DownloadStringCompleted += delegate (object sender, DownloadStringCompletedEventArgs e) {
+				resultArgs = e;
+				downloadComplete = true;
+
+			};
+
+			Enqueue (() => downloadClient.DownloadStringAsync (new Uri (url)));
+			EnqueueConditional (() => downloadComplete);
+
+			Enqueue (() => {
+				if (pass) {
+					string errorMessage = (resultArgs.Error != null) ? resultArgs.Error.Message : String.Empty;
+					Assert.IsNull (resultArgs.Error, "There was an error while attempting to download the string: " + errorMessage);
+				} else {
+					Assert.IsNotNull (resultArgs.Error, "Anticipated error did not occur");
+				}
+			});
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void FileToHTTPFlashCrossDomainTest()
+		{
+			// a FILE:// application can access an HTTP:// URL when policy specify Secure=true (default)
+			// Note: this works because we can retrieve http://api.flickr.com/crossdomain.xml and 
+			// because http://api.flickr.com/clientaccesspolicy.xml does not exists
+			FlashCrossDomainSecure ("http://api.flickr.com/services/rest", true);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void FileToHTTPSFlashCrossDomainTest ()
+		{
+			// a FILE:// application CANNOT access an HTTPS:// URL when policy specify Secure=true (default)
+			// Note: this works because we can retrieve https://www.twitter.com/crossdomain.xml and 
+			// because https://www.twitter.com/clientaccesspolicy.xml does not exists
+			FlashCrossDomainSecure ("https://www.twitter.com", false);
 		}
 	}
 }

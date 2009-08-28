@@ -1,3 +1,11 @@
+2009-08-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/WebFlashPolicyTest.cs: Add test case for FILE/HTTP 
+	and FILE/HTTPS with "well known" secure policies. Based on
+	patch received from Stephen A. Jazdzewski.
+
+	re: jackson
+
 2009-08-27  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/WebBasePolicyTest.cs: New. Common tests for both Flash 

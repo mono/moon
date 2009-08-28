@@ -97,9 +97,12 @@ namespace System.Windows.Browser.Net {
 					return false;
 
 				// if Secure is false then it allows applications from HTTP to download data from HTTPS servers
+				if (!Secure)
+					return true;
 				// if Secure is true then only application on HTTPS servers can access data on HTTPS servers
-				if (Secure && (uri.Scheme != ApplicationUri.Scheme))
-					return false;
+				if (ApplicationUri.Scheme == Uri.UriSchemeHttps)
+					return (uri.Scheme == Uri.UriSchemeHttps);
+				// otherwize FILE/HTTP applications can access HTTP uris
 				return true;
 			}
 		}
