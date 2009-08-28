@@ -76,6 +76,8 @@ namespace System.Windows
 			script_object = value as ScriptObject;
 			if (script_object != null) {
 				value = script_object.ManagedObject;
+				if (value == null && type == typeof(HtmlElement))
+					value = new HtmlElement (script_object.Handle);
 				ret = value;
 				if (value.GetType () == type)
 					return true;

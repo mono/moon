@@ -1,3 +1,13 @@
+2009-08-27  Chris Toshok  <toshok@ximian.com>
+
+	* ScriptableObjectGenerator.cs (TryChangeType): the ScriptObject
+	might not correspond to a managed object at all.  If it doesn't,
+	it will have a null ManagedObject property.  In this case, if
+	we're expecting an HtmlElement, just create an HtmlElement from
+	the script object's Handle.  Fixes the Html5Canvas demo.
+
+	r: andreia
+
 2009-08-08  Chris Toshok  <toshok@ximian.com>
 
 	* WebApplication.cs: remove an unnecessary "using System.Windows;"
