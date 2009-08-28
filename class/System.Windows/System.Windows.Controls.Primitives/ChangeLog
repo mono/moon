@@ -1,5 +1,10 @@
 2009-08-28  Alan McGovern  <amcgovern@novell.com>
 
+	* Popup.cs: Need to null check the catcher when trying to
+	  update it. r: spouliot.
+
+2009-08-28  Alan McGovern  <amcgovern@novell.com>
+
 	* Popup.cs: Updating the catcher from the LayoutUpdated event
 	  leads to an infinite loop. Just update it when it's opened.
 	  r: jeff

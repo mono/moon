@@ -116,6 +116,9 @@ namespace System.Windows.Controls.Primitives {
 
 		void UpdateCatcher ()
 		{
+			if (_clickCatcher == null)
+				return;
+			
 			try {
 				GeneralTransform xform = Application.Current.RootVisual.TransformToVisual (this);
 				
