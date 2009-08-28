@@ -4523,6 +4523,16 @@ text_box_base_on_character_key_down (TextBoxBase *instance, KeyEventArgs *args)
 
 
 void
+text_box_base_on_got_focus (TextBoxBase *instance, RoutedEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnGotFocus (args);
+}
+
+
+void
 text_box_base_on_key_down (TextBoxBase *instance, KeyEventArgs *args)
 {
 	if (instance == NULL)
@@ -4539,6 +4549,46 @@ text_box_base_on_key_up (TextBoxBase *instance, KeyEventArgs *args)
 		return;
 	
 	instance->OnKeyUp (args);
+}
+
+
+void
+text_box_base_on_lost_focus (TextBoxBase *instance, RoutedEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnLostFocus (args);
+}
+
+
+void
+text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnMouseLeftButtonDown (args);
+}
+
+
+void
+text_box_base_on_mouse_left_button_up (TextBoxBase *instance, MouseEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnMouseLeftButtonUp (args);
+}
+
+
+void
+text_box_base_on_mouse_move (TextBoxBase *instance, MouseEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnMouseMove (args);
 }
 
 

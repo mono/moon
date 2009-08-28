@@ -1,3 +1,14 @@
+2009-08-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::Initialize): Don't listen for Focus or
+	Mouse events anymore (except the special internal MultiClick
+	event). Managed code will now call our public On$Event() methods
+	when appropriate.
+	(TextBoxBase::OnKeyUp): Don't ever set args.Handled to
+	true. Doesn't seem like SL ever does.
+
+	r:alan
+
 2009-08-27  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* tilesource.h: rely on the generator for internal properties.

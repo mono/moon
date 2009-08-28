@@ -592,11 +592,6 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	SetDefaultStyleKey (type_info);
 	
 	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
-	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBoxBase::mouse_left_button_down, this);
-	AddHandler (UIElement::MouseLeftButtonUpEvent, TextBoxBase::mouse_left_button_up, this);
-	AddHandler (UIElement::MouseMoveEvent, TextBoxBase::mouse_move, this);
-	AddHandler (UIElement::LostFocusEvent, TextBoxBase::focus_out, this);
-	AddHandler (UIElement::GotFocusEvent, TextBoxBase::focus_in, this);
 	
 	font = new TextFontDescription ();
 	font->SetFamily (GetFontFamily ()->source);
@@ -646,11 +641,6 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 TextBoxBase::~TextBoxBase ()
 {
 	RemoveHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
-	RemoveHandler (UIElement::MouseLeftButtonDownEvent, TextBoxBase::mouse_left_button_down, this);
-	RemoveHandler (UIElement::MouseLeftButtonUpEvent, TextBoxBase::mouse_left_button_up, this);
-	RemoveHandler (UIElement::MouseMoveEvent, TextBoxBase::mouse_move, this);
-	RemoveHandler (UIElement::LostFocusEvent, TextBoxBase::focus_out, this);
-	RemoveHandler (UIElement::GotFocusEvent, TextBoxBase::focus_in, this);
 	
 	ResetIMContext ();
 	g_object_unref (im_ctx);
@@ -1748,8 +1738,6 @@ TextBoxBase::OnKeyUp (KeyEventArgs *args)
 	if (!is_read_only) {
 		if (gtk_im_context_filter_keypress (im_ctx, args->GetEvent ()))
 			need_im_reset = true;
-		
-		args->SetHandled (true);
 	}
 }
 
@@ -1962,12 +1950,6 @@ TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 }
 
 void
-TextBoxBase::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxBase *) closure)->OnMouseLeftButtonDown ((MouseEventArgs *) args);
-}
-
-void
 TextBoxBase::OnMouseLeftButtonMultiClick (MouseEventArgs *args)
 {
 	int cursor, start, end;
@@ -2032,12 +2014,6 @@ TextBoxBase::OnMouseLeftButtonUp (MouseEventArgs *args)
 }
 
 void
-TextBoxBase::mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxBase *) closure)->OnMouseLeftButtonUp ((MouseEventArgs *) args);
-}
-
-void
 TextBoxBase::OnMouseMove (MouseEventArgs *args)
 {
 	int anchor = selection_anchor;
@@ -2063,13 +2039,7 @@ TextBoxBase::OnMouseMove (MouseEventArgs *args)
 }
 
 void
-TextBoxBase::mouse_move (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxBase *) closure)->OnMouseMove ((MouseEventArgs *) args);
-}
-
-void
-TextBoxBase::OnFocusOut (EventArgs *args)
+TextBoxBase::OnLostFocus (RoutedEventArgs *args)
 {
 	BatchPush ();
 	emit = NOTHING_CHANGED;
@@ -2082,7 +2052,7 @@ TextBoxBase::OnFocusOut (EventArgs *args)
 	focused = false;
 	
 	if (view)
-		view->OnFocusOut ();
+		view->OnLostFocus ();
 	
 	if (!is_read_only) {
 		gtk_im_context_focus_out (im_ctx);
@@ -2091,29 +2061,17 @@ TextBoxBase::OnFocusOut (EventArgs *args)
 }
 
 void
-TextBoxBase::focus_out (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxBase *) closure)->OnFocusOut (args);
-}
-
-void
-TextBoxBase::OnFocusIn (EventArgs *args)
+TextBoxBase::OnGotFocus (RoutedEventArgs *args)
 {
 	focused = true;
 	
 	if (view)
-		view->OnFocusIn ();
+		view->OnGotFocus ();
 	
 	if (!is_read_only) {
 		gtk_im_context_focus_in (im_ctx);
 		need_im_reset = true;
 	}
-}
-
-void
-TextBoxBase::focus_in (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxBase *) closure)->OnFocusIn (args);
 }
 
 void
@@ -3636,13 +3594,13 @@ TextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closu
 }
 
 void
-TextBoxView::OnFocusOut ()
+TextBoxView::OnLostFocus ()
 {
 	EndCursorBlink ();
 }
 
 void
-TextBoxView::OnFocusIn ()
+TextBoxView::OnGotFocus ()
 {
 	ResetCursorBlink (false);
 }

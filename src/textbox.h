@@ -155,21 +155,9 @@ class TextBoxBase : public Control, public ITextAttributes {
 	
 	short batch;
 	
-	// focus in/out events
-	static void focus_out (EventObject *sender, EventArgs *args, gpointer closure);
-	static void focus_in (EventObject *sender, EventArgs *args, gpointer closure);
-	void OnFocusOut (EventArgs *args);
-	void OnFocusIn (EventArgs *args);
-	
-	// mouse events
+	// internal mouse events
 	static void mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure);
-	static void mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure);
-	static void mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure);
-	static void mouse_move (EventObject *sender, EventArgs *args, gpointer closure);
 	void OnMouseLeftButtonMultiClick (MouseEventArgs *args);
-	void OnMouseLeftButtonDown (MouseEventArgs *args);
-	void OnMouseLeftButtonUp (MouseEventArgs *args);
-	void OnMouseMove (MouseEventArgs *args);
 	
 	// GtkIMContext events
 	static gboolean delete_surrounding (GtkIMContext *context, int offset, int n_chars, gpointer user_data);
@@ -302,11 +290,23 @@ class TextBoxBase : public Control, public ITextAttributes {
 	}
 	
 	/* @GenerateCBinding,GeneratePInvoke */
+	void OnMouseLeftButtonDown (MouseEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnMouseLeftButtonUp (MouseEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnMouseMove (MouseEventArgs *args);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void OnKeyDown (KeyEventArgs *args);
 	/* @GenerateCBinding,GeneratePInvoke */
 	void OnCharacterKeyDown (KeyEventArgs *args);
 	/* @GenerateCBinding,GeneratePInvoke */
 	void OnKeyUp (KeyEventArgs *args);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnGotFocus (RoutedEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnLostFocus (RoutedEventArgs *args);
 	
 	//
 	// Undo/Redo Operations
@@ -628,8 +628,8 @@ class TextBoxView : public FrameworkElement {
 	int GetCursorFromXY (double x, double y);
 	Rect GetCursor () { return cursor; }
 	
-	void OnFocusOut ();
-	void OnFocusIn ();
+	void OnLostFocus ();
+	void OnGotFocus ();
 	
 	//
 	// Property Accessors

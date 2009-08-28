@@ -2585,10 +2585,25 @@ TextBox *text_box_new (void);
 void text_box_base_on_character_key_down (TextBoxBase *instance, KeyEventArgs *args);
 
 /* @GeneratePInvoke */
+void text_box_base_on_got_focus (TextBoxBase *instance, RoutedEventArgs *args);
+
+/* @GeneratePInvoke */
 void text_box_base_on_key_down (TextBoxBase *instance, KeyEventArgs *args);
 
 /* @GeneratePInvoke */
 void text_box_base_on_key_up (TextBoxBase *instance, KeyEventArgs *args);
+
+/* @GeneratePInvoke */
+void text_box_base_on_lost_focus (TextBoxBase *instance, RoutedEventArgs *args);
+
+/* @GeneratePInvoke */
+void text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseEventArgs *args);
+
+/* @GeneratePInvoke */
+void text_box_base_on_mouse_left_button_up (TextBoxBase *instance, MouseEventArgs *args);
+
+/* @GeneratePInvoke */
+void text_box_base_on_mouse_move (TextBoxBase *instance, MouseEventArgs *args);
 
 /* @GeneratePInvoke */
 void text_box_base_select_all (TextBoxBase *instance);
