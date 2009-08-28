@@ -1,3 +1,9 @@
+2009-08-28  Alan McGovern  <amcgovern@novell.com>
+
+	* Popup.cs: Updating the catcher from the LayoutUpdated event
+	  leads to an infinite loop. Just update it when it's opened.
+	  r: jeff
+
 2009-08-26  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: ComboBox and ListBox should behave the exact

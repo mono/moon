@@ -82,6 +82,7 @@ namespace System.Windows.Controls.Primitives {
 		
 		void InvokeOpened ()
 		{
+			UpdateCatcher ();
 			EventHandler h = (EventHandler) EventList [OpenedEvent];
 			if (h != null)
 				h (this, EventArgs.Empty);
@@ -111,8 +112,6 @@ namespace System.Windows.Controls.Primitives {
 				if (h != null)
 					h (this, EventArgs.Empty);
 			};
-
-			_clickCatcher.LayoutUpdated += delegate { UpdateCatcher (); };
 		}
 
 		void UpdateCatcher ()
