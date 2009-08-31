@@ -532,8 +532,10 @@ print_reftrace (const char * act, const char * typname, int refcount, bool keep)
 				frame->name = g_strdup (ret);
 				g_free (ret);
 				frame->type = MONO;
-			} else
+			} else {
+				delete frame;
 				continue;
+			}
 		} else {
 
 			char * demangled = cplus_demangle (framename, 0);

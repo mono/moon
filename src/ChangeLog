@@ -1,3 +1,10 @@
+2009-08-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* debug.cpp: Delete frame if we're not using it in the loop
+	* resources.cpp: Don't leak Value instance on error
+
+	re: kangaroo
+
 2009-08-30  Andreia Gaita  <avidigal@novell.com>
 
 	* textblock.cpp: drop the run reference, it's already reffed on the

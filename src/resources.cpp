@@ -128,8 +128,6 @@ ResourceDictionary::Remove (const char *key)
 bool
 ResourceDictionary::Set (const char *key, Value *value)
 {
-	Value *v = new Value (*value);
-
 	/* check if the item exists first */
 	Value* orig_value;
 	gpointer orig_key;
@@ -138,6 +136,8 @@ ResourceDictionary::Set (const char *key, Value *value)
 					  &orig_key, (gpointer*)&orig_value)) {
 		return false;
 	}
+
+	Value *v = new Value (*value);
 
 	from_resource_dictionary_api = true;
 	Collection::Remove (orig_value);
