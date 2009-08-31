@@ -1,3 +1,8 @@
+2009-08-31  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs:
+	  Remove moonlight bug from test which is passing. r: jeff
+
 2009-08-28   Mario Carrion  <mcarrion@novell.com>
 
 	* moon-unit.csproj: HyperlinkButtonAutomationPeerTest.cs added.

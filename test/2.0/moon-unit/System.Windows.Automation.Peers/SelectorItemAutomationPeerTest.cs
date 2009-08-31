@@ -445,7 +445,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("Test not passing. Events are not raised")]
 		public virtual void ISelectionItemProvider_Events ()
 		{
 			if (!EventsManager.Instance.AutomationSingletonExists) {
