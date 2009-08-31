@@ -309,6 +309,8 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 
 	g_free (name);
 
+	if (storage)
+		delete storage;
 	storage = new AnimationStorage (this, timeline, targetobj, targetprop);
 	return storage;
 }
@@ -394,9 +396,7 @@ Storyboard::Storyboard ()
 Storyboard::~Storyboard ()
 {
 	if (clock) {
-		//printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
 		StopWithError (/* ignore any error */ NULL);
-		TeardownClockGroup ();
 	}
 }
 
@@ -500,18 +500,6 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 	return true;
 }
 
-void
-Storyboard::TeardownClockGroup ()
-{
-	if (GetClock()) {
-		Clock *c = GetClock ();
-		ClockGroup *group = c->GetParentClock();
-		if (group)
-			group->RemoveChild (c);
-		clock = NULL;
-	}
-}
-
 bool
 Storyboard::BeginWithError (MoonError *error)
 {
@@ -519,13 +507,13 @@ Storyboard::BeginWithError (MoonError *error)
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Begin a Storyboard which is not the root Storyboard.");
 		return false;
 	}
-	
+
 	/* destroy the clock hierarchy and recreate it to restart.
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
 	if (clock) {
 		DetachCompletedHandler ();
-		TeardownClockGroup ();
+		clock->Dispose ();
 	}
 
 	if (Validate () == false)
@@ -534,24 +522,25 @@ Storyboard::BeginWithError (MoonError *error)
 	// This creates the clock tree for the hierarchy.  if a
 	// Timeline A is a child of TimelineGroup B, then Clock cA
 	// will be a child of ClockGroup cB.
-	Clock *root_clock = AllocateClock ();
+	AllocateClock ();
 	char *name = g_strdup_printf ("Storyboard, named '%s'", GetName());
-	root_clock->SetValue (DependencyObject::NameProperty, name);
+	clock->SetValue (DependencyObject::NameProperty, name);
 	g_free (name);
+
 
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.
 	GHashTable *promoted_values = g_hash_table_new (g_direct_hash, g_direct_equal);
-	if (!HookupAnimationsRecurse (root_clock, NULL, NULL, promoted_values, error)) {
+	if (!HookupAnimationsRecurse (clock, NULL, NULL, promoted_values, error)) {
 		g_hash_table_destroy (promoted_values);
 		return false;
 	}
 	g_hash_table_destroy (promoted_values);
 
-	Deployment::GetCurrent()->GetSurface()->GetTimeManager()->AddClock (root_clock);
+	Deployment::GetCurrent()->GetSurface()->GetTimeManager()->AddClock (clock);
 
 	if (GetBeginTime() == 0)
-		root_clock->BeginOnTick ();
+		clock->BeginOnTick ();
 
 	return true;
 }
@@ -622,7 +611,7 @@ Storyboard::StopWithError (MoonError *error)
 	if (clock) {
 		DetachCompletedHandler ();
 		clock->Stop ();
-		TeardownClockGroup ();
+		clock->Dispose ();
 	}
 }
 

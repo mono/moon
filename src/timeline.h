@@ -82,6 +82,8 @@ public:
 	// events
 	const static int CompletedEvent;
 
+	virtual void TeardownClock ();
+
 protected:
 	virtual ~Timeline ();
 
@@ -204,14 +206,12 @@ public:
 	void Restart ();
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
+	virtual void TeardownClock ();
 
 protected:
-	virtual ~DispatcherTimer ();
-
 	virtual void OnClockCompleted ();
 
 private:
-	Clock *root_clock;
 	bool stopped;
 	bool started;
 };

@@ -46,28 +46,17 @@ typedef void (*ClockFunc)(Clock*);
 void
 clock_list_foreach (GList *clock_list, ClockFunc func)
 {
-	ClockNode *list, *tail, *next;
-	GList *n;
-	
-	list = NULL;
-	tail = (ClockNode *) &list;
-	
-	for (n = clock_list; n != NULL; n = n->next) {
-		tail->next = g_new (ClockNode, 1);
-		tail = tail->next;
-		
-		tail->clock = (Clock *) n->data;
-		tail->clock->ref ();
-		tail->next = NULL;
+	GList *list = NULL, *tail = NULL;
+	for (GList *l = clock_list; l; l = l->next) {
+		list = g_list_prepend (list, l->data);
+		if (!tail) tail = list;
+		((Clock*)l->data)->ref();
 	}
-	
-	while (list != NULL) {
-		func (list->clock);
-		list->clock->unref ();
-		next = list->next;
-		g_free (list);
-		list = next;
+	for (GList *node = tail;node;node = node->prev) {
+		func ((Clock*)node->data);
+		((Clock*)node->data)->unref ();
 	}
+	g_list_free (list);
 }
 
 static void
@@ -115,6 +104,15 @@ Clock::Clock (Timeline *tl)
 Clock::~Clock ()
 {
 	timeline->unref();
+}
+
+void
+Clock::Dispose ()
+{
+	if (!IsDisposed ()) {
+		DependencyObject::Dispose ();
+		GetTimeline()->TeardownClock ();
+	}
 }
 
 Duration
@@ -601,7 +599,7 @@ Clock::Reset ()
 	is_paused = false;
 	is_seeking = false;
 	begin_pause_time = 
-		accumulated_pause_time = 0;
+	accumulated_pause_time = 0;
 	has_started = false;
 	was_stopped = false;
 	emit_completed = false;
@@ -620,7 +618,6 @@ ClockGroup::ClockGroup (TimelineGroup *timeline, bool timemanager_clockgroup)
 {
 	SetObjectType (Type::CLOCKGROUP);
 
-	this->timeline = timeline;
 	this->timemanager_clockgroup = timemanager_clockgroup;
 
 	child_clocks = NULL;
@@ -651,6 +648,8 @@ void
 ClockGroup::RemoveChild (Clock *clock)
 {
 	child_clocks = g_list_remove (child_clocks, clock);
+	clock->SetTimeManager (NULL);
+	clock->SetParentClock (NULL);
 	clock->unref ();
 }
 
@@ -762,16 +761,16 @@ ClockGroup::Reset ()
 
 ClockGroup::~ClockGroup ()
 {
-	GList *node = child_clocks;
-	GList *next;
-
-	while (node != NULL) {
-		Clock *clock = (Clock *) node->data;
-		clock->unref ();
-
-		next = node->next;
-		g_list_free_1 (node);
-		node = next;
-	}
 }
 
+void
+ClockGroup::Dispose ()
+{
+	GList *node = child_clocks;
+	while (node) {
+		Clock *clock = (Clock*)node->data;
+		node = node->next;
+		clock->Dispose ();
+	}
+	Clock::Dispose ();
+}

@@ -7,6 +7,35 @@
 
 2009-08-30  Andreia Gaita  <avidigal@novell.com>
 
+	clock leak fixes.
+
+	* animation.[h|cpp]: rename TeardownClockGroup to TeardownClock and
+	move it to the Timeline class so all timelines can clear their clocks.
+	Removed private root_clock, all timelines should use the timeline
+	clock variable
+
+	* timeline.[h|cpp]: TeardownClock removes the clock from the parent
+	ClockGroup and clears the ref on the clock so it can be destroyed
+	(which in turn will release the ref on the timeline so it too gets
+	destroyed).
+	DispatcherTimer doesn't have to destroy it's clock, the timeline
+	dispose takes care of that. Added TeardownClock for DispatcherTimer
+	so it stops the clock before disposing.
+	Removed private root_clock, all timelines should use the timeline
+	clock variable
+
+	* clock.[h|cpp]: Added Dispose to Clock and ClockGroup. The
+	group Dispose goes down the hierarchy of clocks and starts clearing
+	clocks (via timeline TeardownClock) from bottom to top, so
+	everything is guaranteed to die before the root clock gets
+	destroyed.
+
+	* timemanager.cpp: Dispose root clock before releasing it
+
+	r: toshok
+
+2009-08-30  Andreia Gaita  <avidigal@novell.com>
+
 	* textblock.cpp: drop the run reference, it's already reffed on the
 	collection
 

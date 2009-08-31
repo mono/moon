@@ -236,6 +236,8 @@ public:
 	const static int CurrentStateInvalidatedEvent;
 	const static int CompletedEvent;
 
+	virtual void Dispose ();
+
 protected:
 	virtual ~Clock ();
 
@@ -322,11 +324,12 @@ public:
 
 	virtual void Reset ();
 
+	virtual void Dispose ();
+
 protected:
 	virtual ~ClockGroup ();
 
 private:
-	TimelineGroup *timeline;
 	bool timemanager_clockgroup;
 };
 

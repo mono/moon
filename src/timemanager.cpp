@@ -115,6 +115,8 @@ TimeManager::~TimeManager ()
 	source->unref ();
 	source = NULL;
 
+	root_clock->Dispose ();
+
 	timeline->unref ();
 	timeline = NULL;
 
@@ -301,7 +303,6 @@ static void
 spaces (int n)
 {
 	while (n--) putchar (' ');
-
 }
 
 static void

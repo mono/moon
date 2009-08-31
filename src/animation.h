@@ -923,8 +923,6 @@ private:
 				      DependencyObject *targetObject, PropertyPath *targetPropertyPath,
 				      GHashTable *promoted_values,
 				      MoonError *error);
-	void TeardownClockGroup ();
-	Clock *root_clock;
 };
 
 /* @Namespace=System.Windows.Media.Animation */

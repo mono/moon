@@ -159,6 +159,20 @@ Timeline::OnClockCompleted ()
 	Emit (Timeline::CompletedEvent);
 }
 
+void
+Timeline::TeardownClock ()
+{
+	if (clock) {
+		DetachCompletedHandler ();
+		Clock *c = clock;
+		ClockGroup *group = c->GetParentClock();
+		if (group)
+			group->RemoveChild (c);
+		clock = NULL;
+		c->unref ();
+	}
+}
+
 /* timeline group */
 
 TimelineGroup::TimelineGroup ()
@@ -173,17 +187,14 @@ TimelineGroup::~TimelineGroup ()
 Clock *
 TimelineGroup::AllocateClock ()
 {
+	clock = new ClockGroup (this);
 	TimelineCollection *collection = GetChildren ();
-	ClockGroup *group = new ClockGroup (this);
-
-	this->clock = group;
 
 	for (int i = 0; i < collection->GetCount (); i++)
-		group->AddChild (DOPtr<Clock> (collection->GetValueAt (i)->AsTimeline ()->AllocateClock ()));
+		((ClockGroup*)clock)->AddChild (collection->GetValueAt (i)->AsTimeline ()->AllocateClock ());
 
-	group->AddHandler (Clock::CompletedEvent, clock_completed, this);
-
-	return group;
+	AttachCompletedHandler ();
+	return clock;
 }
 
 // Validate this TimelineGroup by validating all of it's children
@@ -314,7 +325,7 @@ DispatcherTimer::DispatcherTimer ()
 {
 	SetObjectType (Type::DISPATCHERTIMER);
 
-	root_clock = NULL;
+	clock = NULL;
 	stopped = false;
 	started = false;
 }
@@ -327,26 +338,26 @@ DispatcherTimer::Start ()
 
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 
-	if (root_clock) {
-		root_clock->Reset ();
-		root_clock->BeginOnTick ();
-		root_clock->SetRootParentTime (surface->GetTimeManager()->GetCurrentTime());
+	if (clock) {
+		clock->Reset ();
+		clock->BeginOnTick ();
+		clock->SetRootParentTime (surface->GetTimeManager()->GetCurrentTime());
 	} else {
-		root_clock = AllocateClock ();
+		AllocateClock ();
 		char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
-		root_clock->SetValue (DependencyObject::NameProperty, name);
+		clock->SetValue (DependencyObject::NameProperty, name);
 		g_free (name);
 
-		surface->GetTimeManager()->AddClock (root_clock);
+		surface->GetTimeManager()->AddClock (clock);
 
-		root_clock->BeginOnTick ();
+		clock->BeginOnTick ();
 	}
 }
 
 void
 DispatcherTimer::Stop ()
 {
-	root_clock->Stop ();
+	clock->Stop ();
 	stopped = true;
 	started = false;
 }
@@ -356,10 +367,10 @@ DispatcherTimer::Restart ()
 {
 	started = false;
 	stopped = false;
-	root_clock->Reset ();
-	TimeSpan time = root_clock->GetParentClock()->GetCurrentTime();
-	root_clock->SetRootParentTime (time);
-	root_clock->Begin (time);
+	clock->Reset ();
+	TimeSpan time = clock->GetParentClock()->GetCurrentTime();
+	clock->SetRootParentTime (time);
+	clock->Begin (time);
 }
 
 void
@@ -383,13 +394,11 @@ DispatcherTimer::GetNaturalDurationCore (Clock *clock)
 	return Duration::FromSeconds (0);
 }
 
-DispatcherTimer::~DispatcherTimer ()
+void
+DispatcherTimer::TeardownClock ()
 {
-	if (root_clock) {
+	if (clock) {
 		Stop ();
-		if (root_clock->GetParentClock())
-			root_clock->GetParentClock()->RemoveChild (root_clock);
-		root_clock->unref ();
-		root_clock = NULL;
+		Timeline::TeardownClock ();
 	}
 }
