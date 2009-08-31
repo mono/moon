@@ -1,3 +1,10 @@
+2009-08-30  Andreia Gaita  <avidigal@novell.com>
+
+	* textblock.cpp: drop the run reference, it's already reffed on the
+	collection
+
+	r: toshok
+
 2009-08-28  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h:
