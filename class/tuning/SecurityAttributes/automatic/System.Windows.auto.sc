@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 540 methods needs to be decorated.
+# 535 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -251,12 +251,6 @@
 +SC-M: System.Double Mono.NativeMethods::exponential_ease_ease_in_core(System.IntPtr,System.Double)
 
 # p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::multi_scale_tile_source_get_image_height(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::multi_scale_tile_source_get_image_width(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::power_ease_ease_in_core(System.IntPtr,System.Double)
 
 # p/invoke declaration
@@ -342,15 +336,6 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::mouse_wheel_event_args_get_wheel_delta(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::multi_scale_tile_source_get_tile_height(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::multi_scale_tile_source_get_tile_overlap(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::multi_scale_tile_source_get_tile_width(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::plugin_instance_get_actual_height(System.IntPtr)
@@ -1409,22 +1394,7 @@
 +SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_invalidate_tile_layer(System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_height(System.IntPtr,System.Double)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_uri_func(System.IntPtr,Mono.ImageUriFunc)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_width(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_tile_height(System.IntPtr,System.Int32)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_tile_overlap(System.IntPtr,System.Int32)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_tile_width(System.IntPtr,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::plugin_instance_report_exception(System.IntPtr,System.String,System.String,System.String[],System.Int32)
@@ -1499,10 +1469,25 @@
 +SC-M: System.Void Mono.NativeMethods::text_box_base_on_character_key_down(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::text_box_base_on_got_focus(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::text_box_base_on_key_down(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::text_box_base_on_key_up(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::text_box_base_on_lost_focus(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::text_box_base_on_mouse_left_button_down(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::text_box_base_on_mouse_left_button_up(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::text_box_base_on_mouse_move(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::text_box_base_select_all(System.IntPtr)

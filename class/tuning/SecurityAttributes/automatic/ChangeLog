@@ -1,3 +1,10 @@
+2009-08-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.s[s]c: Update for changes on 
+	MultiScaleTileSource, PasswordBox and TextBox
+
+	re: kangaroo
+
 2009-08-26  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.sc:
