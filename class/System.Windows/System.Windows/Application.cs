@@ -104,6 +104,9 @@ namespace System.Windows {
 			} catch {
 			}
 
+			foreach (KeyValuePair<Assembly, ResourceDictionary> kv in assemblyToGenericXaml)
+				kv.Value.Clear ();
+			assemblyToGenericXaml.Clear ();
 			root_visual = null;
 			Application.Current = null;
 
