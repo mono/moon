@@ -1,3 +1,12 @@
+2009-09-01  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp: clear LastRenderSize before we emit so
+	that we don't end up in a possible recursion.
+
+	Fixes http://www.worldwidetelescope.org/webclient/
+	
+	r: toshok
+
 2009-09-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* xaml.cpp: Fix DRT355 (broken at r140756) to report the "right"
