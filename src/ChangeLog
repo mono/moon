@@ -1,3 +1,10 @@
+2009-09-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* uielement.cpp (UIElement::Paint): Don't leak a copy of the 
+	region when *not* using FTB rendering.
+
+	r: jeff
+
 2009-09-01  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp: clear LastRenderSize before we emit so

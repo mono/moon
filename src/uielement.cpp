@@ -1282,9 +1282,9 @@ UIElement::Paint (cairo_t *ctx,  Region *region, cairo_matrix_t *xform)
 
 	bool did_front_to_back = false;
 	List *render_list = new List ();
-	Region *copy = new Region (region);
 
 	if (moonlight_flags & RUNTIME_INIT_RENDER_FRONT_TO_BACK) {
+		Region *copy = new Region (region);
 		FrontToBack (copy, render_list);
 		
 		if (!render_list->IsEmpty ()) {
