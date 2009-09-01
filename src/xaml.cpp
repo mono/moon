@@ -1595,6 +1595,9 @@ expat_parser_error (XamlParserInfo *p, XML_Error expat_error)
 	case XML_ERROR_NO_ELEMENTS:
 		parser_error (p, NULL, NULL, 7000, "unexpected end of input");
 		break;
+	case XML_ERROR_SYNTAX:
+		parser_error (p, NULL, NULL, 2103, "syntax error");
+		break;
 	default:
 		parser_error (p, NULL, NULL, expat_error, "Unhandled XML error %s", XML_ErrorString (expat_error));
 		break;

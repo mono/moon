@@ -1,3 +1,10 @@
+2009-09-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* xaml.cpp: Fix DRT355 (broken at r140756) to report the "right"
+	error code when an invalid xap file is encoutered.
+
+	re: jackson
+
 2009-08-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* debug.cpp: Delete frame if we're not using it in the loop
