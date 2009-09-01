@@ -1,5 +1,12 @@
 2009-09-01  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (TextLayoutGlyphCluster::Render): If the background
+	brush is null, don't bother drawing a background.
+
+	r: lewing
+
+2009-09-01  Jeffrey Stedfast  <fejj@novell.com>
+
 	* layout.cpp (TextLayoutGlyphCluster::Render): If the Foreground
 	brush is null, don't render the text.
 

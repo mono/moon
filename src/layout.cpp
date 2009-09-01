@@ -1792,7 +1792,7 @@ TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttr
 	// set y0 to the baseline relative to the translation matrix
 	y0 = font->Ascender ();
 	
-	if (selected) {
+	if (selected && (brush = attrs->Background (true))) {
 		area = Rect (origin.x, origin.y, advance, font->Height ());
 		
 		// extend the selection background by the width of a SPACE if it includes CRLF
@@ -1808,7 +1808,6 @@ TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttr
 		}
 		
 		// render the selection background
-		brush = attrs->Background (true);
 		brush->SetupBrush (cr, area);
 		cairo_new_path (cr);
 		cairo_rectangle (cr, area.x, area.y, area.width, area.height);
