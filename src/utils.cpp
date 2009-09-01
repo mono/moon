@@ -484,8 +484,10 @@ CopyFileTo (const char *filename, int fd)
 	ssize_t nread;
 	int in;
 	
-	if ((in = open (filename, O_RDONLY)) == -1)
+	if ((in = open (filename, O_RDONLY)) == -1) {
+		close (fd);
 		return -1;
+	}
 	
 	do {
 		do {

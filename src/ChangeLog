@@ -1,3 +1,10 @@
+2009-09-01  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* utils.cpp (CopyFileTo): Close the destination file handle if 
+	the source (filename) cannot be opened.
+
+	r: jeff
+
 2009-09-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* uielement.cpp (UIElement::Paint): Don't leak a copy of the 
