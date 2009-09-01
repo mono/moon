@@ -1,3 +1,30 @@
+2009-08-27  Chris Toshok  <toshok@ximian.com>
+    
+    	* ManagedXamlLoader.cs (ManagedXamlLoader.LookupType): rework this
+    	pretty substantially.  If we're given an assembly name, load that
+    	assembly and look up the type there.  If we're only given the type
+    	name, we need to iterate over the assemblies that the deployment
+    	contains, looking for them there.
+    
+    	A slightly more controversial is that apparently it's valid to do
+    	this: <UserControl x:Class="Some.Type"/> where Some.Type is
+    	private.
+    
+    	http://www.propserv.otago.ac.nz/imap/ makes use of both of these
+    	features. The private type it loads is
+    	Microsoft.VirtualEarth.MapControl.Core.DragRectangle, which is
+    	defined thusly:
+    
+    	.class private auto ansi beforefieldinit DragRectangle
+                extends
+	[System.Windows]System.Windows.Controls.UserControl
+
+	jackson - We restrict these private lookups to lookup only, it is
+	illegal to create an internal type in the parser, it only works
+	while hydrating because the type is already created.
+
+	r: jackson/toshok
+
 2009-08-26  Alan McGovern  <amcgovern@novell.com>
 
 	* GeneratedPInvokes.cs: Allow FrameworkTemplates to be

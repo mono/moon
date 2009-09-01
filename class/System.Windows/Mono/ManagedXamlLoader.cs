@@ -203,6 +203,12 @@ namespace Mono.Xaml
 			}
 
 			if (create) {
+
+				if (!type.IsPublic) {
+					value = Value.Empty;
+					throw new XamlParseException ("Attempting to create a private type");
+				}
+
 				object res = null;
 				try {
 					res = Activator.CreateInstance (type);
@@ -975,45 +981,44 @@ namespace Mono.Xaml
 		private unsafe Type LookupType (Value* top_level, string assembly_name, string full_name)
 		{
 			Type res = null;
-			bool explicit_assembly = assembly_name != null;
 
-			do {
-				if (assembly_name == null && !TryGetDefaultAssemblyName (top_level, out assembly_name)) {
-					Console.Error.WriteLine ("unable to find the assembly name for the target type.");
-					break;
-				}
+			if (assembly_name != null) {
+
+				// if we're given an explicit assembly
+				// name, try and load it, then get the
+				// type from just that assembly
 
 				Assembly assembly = null;
-				if (LoadAssembly (assembly_name, out assembly) != AssemblyLoadResult.Success) {
-					Console.Error.WriteLine ("unable to load assembly for target type.");
-					break;
-				}
-
-				res = assembly.GetType (full_name);
-				if (res == null && explicit_assembly && TryGetDefaultAssemblyName (top_level, out assembly_name)) {
-					if (LoadAssembly (assembly_name, out assembly) != AssemblyLoadResult.Success) {
-						Console.Error.WriteLine ("unable to load default assembly for target type.");
-						break;
-					}
+				if (LoadAssembly (assembly_name, out assembly) == AssemblyLoadResult.Success) {
 					res = assembly.GetType (full_name);
 					if (res != null)
-						Console.Error.WriteLine ("type:  {0}  base:  {1}", res, res.BaseType);
-					if (res != null && !res.IsPublic)
-						res = null;
+						return res;
+				}
+				else {
+					Console.Error.WriteLine ("unable to load assembly for target type.");
+				}
+			}
+			else {
+
+				// if we're not given an explicit
+				// assembly name, loop over all
+				// assemblies specified in
+				// Deployment.Parts looking for the
+				// type.
+				foreach (Assembly a in Deployment.Current.Assemblies) {
+					res = a.GetType (full_name);
+					if (res != null)
+						return res;
 				}
 
-				if (res == null && !explicit_assembly) {
-					assembly = typeof (DependencyObject).Assembly;
-					res = assembly.GetType (full_name);
-					if (res != null && !res.IsPublic)
-						res = null;
-				}
-			} while (false);
+				Assembly assembly = typeof (DependencyObject).Assembly;
+				res = assembly.GetType (full_name);
+				if (res != null && res.IsPublic)
+					return res;
 
-			if (res == null)
-				res = Application.GetComponentTypeFromName (full_name);
+			}
 
-			return res;
+			return Application.GetComponentTypeFromName (full_name);
 		}
 
 		private unsafe void SetCLRPropertyFromString (XamlCallbackData *data, IntPtr target_data, object target, PropertyInfo pi, string value, out string error, out IntPtr unmanaged_value)
