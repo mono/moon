@@ -156,6 +156,18 @@ namespace MoonTest.Misc.Parsing
 		}
 	}
 
+	internal class ParsingPrivateControl : UserControl {
+		
+	}
+
+	public class ParsingPrivateControlWxClass : Canvas {
+
+		public ParsingPrivateControlWxClass ()
+		{
+			Application.LoadComponent (this, new Uri ("/moon-unit;component/misc/Parsing/MiscParsingPrivateControl.xaml", UriKind.Relative));
+		}
+	}
+
 	[TestClass]
 	public class MiscParsingTest : SilverlightTest
 	{
@@ -428,28 +440,17 @@ namespace MoonTest.Misc.Parsing
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Multiple children for a setter value")]
-		public void MultipleChildrenOnSetterValue ()
+		public void PrivateType ()
 		{
-			var c = XamlReader.Load (@"<Canvas
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    Width=""400"" Height=""300"">
-    <Canvas.Resources>
-	<Style TargetType=""Canvas"" x:Key=""CanvasStyle"">
-	    <Setter Property=""Children"">
-		<Setter.Value>
-		    <Rectangle Width=""400"" Height=""300"" Fill=""Blue"" />
-                    <Rectangle Width=""300"" Height=""200"" Fill=""Green"" />
-		    <Rectangle Width=""200"" Height=""100"" Fill=""Red"" />
-		    <Rectangle Width=""100"" Height=""50"" Fill=""Yellow"" />
-		</Setter.Value>
-	    </Setter>
-	</Style>
-    </Canvas.Resources>
+			Assert.Throws<XamlParseException> (() => XamlReader.Load (@"<c:ParsingPrivateControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+							   	    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+								    xmlns:c=""clr-namespace:MoonTest.Misc.Parsing;assembly=moon-unit"">"));
+		}
 
-    <Canvas x:Name=""foo"" Style=""{StaticResource CanvasStyle}"" />
-</Canvas>");
+		[TestMethod]
+		public void PrivateTypeInXClass ()
+		{
+			Assert.Throws<XamlParseException> (() => new ParsingPrivateControlWxClass ());
 		}
 	}
 }

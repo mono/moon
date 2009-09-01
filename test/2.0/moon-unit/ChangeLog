@@ -1,3 +1,10 @@
+2009-09-01  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/MiscParsing.cs:
+	* misc/Parsing/MiscParsingPrivateControl.xaml: New tests for
+	loading internal types.
+	- Remove unused test for feature that doesnt work on SL
+
 2009-08-31  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs:

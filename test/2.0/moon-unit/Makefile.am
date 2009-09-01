@@ -52,6 +52,7 @@ XAML_RESOURCES= \
 	-res:misc/Parsing/MiscParsingCanvas.xaml,misc/Parsing/MiscParsingCanvas.xaml	\
 	-res:misc/Parsing/MiscParsingEvent.xaml,misc/Parsing/MiscParsingEvent.xaml	\
 	-res:misc/Parsing/MiscParsingManagedAttachedProp.xaml,misc/Parsing/MiscParsingManagedAttachedProp.xaml	\
+	-res:misc/Parsing/MiscParsingPrivateControl.xaml,misc/Parsing/MiscParsingPrivateControl.xaml	\
 	-res:misc/Parsing/MiscParsingTestPage.xaml,misc/Parsing/MiscParsingTestPage.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_A1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_A1.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_A2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_A2.xaml	\
