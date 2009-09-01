@@ -1816,8 +1816,10 @@ TextLayoutGlyphCluster::Render (cairo_t *cr, const Point &origin, TextLayoutAttr
 	}
 	
 	// setup the foreground brush
+	if (!(brush = attrs->Foreground (selected)))
+		return;
+	
 	area = Rect (origin.x, origin.y, advance, font->Height ());
-	brush = attrs->Foreground (selected);
 	brush->SetupBrush (cr, area);
 	cairo_new_path (cr);
 	

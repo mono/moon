@@ -1,3 +1,10 @@
+2009-09-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayoutGlyphCluster::Render): If the Foreground
+	brush is null, don't render the text.
+
+	r: spouliot
+
 2009-09-01  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* utils.cpp (CopyFileTo): Close the destination file handle if 
