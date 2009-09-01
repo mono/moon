@@ -160,11 +160,15 @@ namespace MoonTest.Misc.Parsing
 		
 	}
 
-	public class ParsingPrivateControlWxClass : Canvas {
+	internal class ParsingPrivateControlWxClass : UserControl {
 
 		public ParsingPrivateControlWxClass ()
 		{
 			Application.LoadComponent (this, new Uri ("/moon-unit;component/misc/Parsing/MiscParsingPrivateControl.xaml", UriKind.Relative));
+		}
+
+		public UIElement TheContent {
+			get { return Content; }
 		}
 	}
 
@@ -450,7 +454,10 @@ namespace MoonTest.Misc.Parsing
 		[TestMethod]
 		public void PrivateTypeInXClass ()
 		{
-			Assert.Throws<XamlParseException> (() => new ParsingPrivateControlWxClass ());
+			var c = new ParsingPrivateControlWxClass ();
+
+			Assert.IsNotNull (c.TheContent, "1");
+			Assert.AreEqual (typeof (Border), c.TheContent.GetType (), "2");
 		}
 	}
 }
