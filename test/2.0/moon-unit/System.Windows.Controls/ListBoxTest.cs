@@ -168,6 +168,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[Asynchronous]
+		[Ignore ("This should throw an InvalidOperationException but SL throws a WrappedException containing the InvalidOperationException")]
 		public override void GetInvalidContainerItemTest ()
 		{
 			base.GetInvalidContainerItemTest ();

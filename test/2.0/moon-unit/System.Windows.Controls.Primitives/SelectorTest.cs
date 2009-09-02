@@ -121,7 +121,6 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 
 		[TestMethod]
 		[Asynchronous]
-		[Ignore ("This should throw an InvalidOperationException but SL throws a WrappedException containing the InvalidOperationException")]
 		public virtual void GetInvalidContainerItemTest ()
 		{
 			IPoker box = CurrentControl;
