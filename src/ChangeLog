@@ -1,3 +1,12 @@
+2009-09-02  Jackson Harper  <jackson@ximian.com>
+
+	* dependencyproperty.cpp: If the explicitly mentioned type does
+	not contain the property, try looking for the property on the
+	current lookup obejct.  Allows things like (UIElement.Height) on a
+	Grid object.
+
+	r: shana
+
 2009-09-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textblock.cpp (TextBlock::OnCollectionChanged): Explicitly call

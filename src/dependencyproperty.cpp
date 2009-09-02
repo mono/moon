@@ -421,11 +421,14 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 				goto error;
 
 			name = g_strndup (start, inptr - start);
-			if (!(res = DependencyProperty::GetDependencyProperty (type->GetKind (), name))) {
+			if (!(res = DependencyProperty::GetDependencyProperty (type->GetKind (), name)) && lu)
+				res = DependencyProperty::GetDependencyProperty (lu->GetType ()->GetKind (), name);
+
+			if (!res) {
 				g_free (name);
 				goto error;
 			}
-			
+
 			if (!res->IsAttached () && !lu->Is (type->GetKind ())) {
 				// We try to be gracefull here and do something smart...
 				if (!(res = DependencyProperty::GetDependencyProperty (lu->GetObjectType (), name))) {
