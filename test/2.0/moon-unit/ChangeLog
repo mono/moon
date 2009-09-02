@@ -1,3 +1,10 @@
+2009-09-02  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Test for
+	feature mentioned in bug #521663. Allows look ups of properties
+	on the supplied object instead of just the type.  Note that the
+	value doesnt seem to get update (on SL or ML).
+
 2009-09-02  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ListBoxTest.cs:

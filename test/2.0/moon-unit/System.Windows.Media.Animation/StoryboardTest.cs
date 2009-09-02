@@ -1410,7 +1410,28 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
 			EnqueueTestComplete ();
 		}
-		
+
+		[TestMethod]
+		[Asynchronous]
+		public void ComplexTarget13 ()
+		{
+			bool complete = false;
+			Storyboard sb = (Storyboard) XamlReader.Load (
+@"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<DoubleAnimation Duration=""0:0:0.05"" Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(UIElement.Height)"" To=""50"" />
+</Storyboard>");
+			sb.Completed += delegate { complete = true; };
+			Rectangle g = new Rectangle ();
+			Storyboard.SetTarget (sb, g);
+			Enqueue (() => { TestPanel.Children.Add (g); TestPanel.Resources.Add ("a", sb); });
+			Enqueue (() => sb.Begin ());
+			EnqueueConditional (() => complete);
+			Enqueue (() => Assert.AreEqual (Double.NaN, g.GetValue (Rectangle.HeightProperty)));
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+
 		[TestMethod]
 		[Asynchronous]
 		[Ignore ("This flaps on x86")]
