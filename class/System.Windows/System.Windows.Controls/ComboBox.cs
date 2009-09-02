@@ -114,7 +114,7 @@ namespace System.Windows.Controls
 		{
 			DefaultStyleKey = typeof (ComboBox);
 
-			Loaded += delegate { UpdateVisualState (false); UpdateDisplayedItem (SelectedItem); };
+			Loaded += delegate { UpdateVisualState (false); };
 			SelectionChanged += delegate {
 				if (!IsDropDownOpen)
 					UpdateDisplayedItem (SelectedItem);
@@ -228,9 +228,6 @@ namespace System.Windows.Controls
 			ListBoxItem cb = (ListBoxItem) element;
 			cb.Item = item;
 			cb.Style = ItemContainerStyle;
-			cb.ContentTemplate = ItemTemplate;
-			if (element != item)
-				cb.Content = item;
 			cb.ParentSelector = this;
 		}
 
@@ -385,10 +382,10 @@ namespace System.Windows.Controls
 			// to its original container.
 			if (DisplayedItem != null) {
 				content = _contentPresenter.Content;
-				_contentPresenter.Content = null;
 				DisplayedItem.Content = content;
 				DisplayedItem = null;
 			}
+			_contentPresenter.Content = null;
 
 			if (selectedItem == null) {
 				_contentPresenter.Content = NothingSelectedFallback;
@@ -407,15 +404,28 @@ namespace System.Windows.Controls
 			// Only allow DisplayedItem to be non-null if we physically move
 			// its content. This will only happen if DisplayedItem == SelectedItem
 			DisplayedItem = GetContainerItem (SelectedIndex) as ComboBoxItem;
-			if (DisplayedItem != null && content is UIElement)
-				DisplayedItem.Content = null;
-			else
-				DisplayedItem = null;
 
-			_contentPresenter.Content = content;
-			_contentPresenter.ContentTemplate = ItemTemplate;
 			SelectionBoxItem = content;
 			SelectionBoxItemTemplate = ItemTemplate;
+
+			// If displayed item is avaiable, we can get the right template from there. Otherwise
+			// we need to create a container, read the template and destroy it.
+			if (DisplayedItem != null) {
+				SelectionBoxItemTemplate = DisplayedItem.ContentTemplate;
+				if (content is UIElement)
+					DisplayedItem.Content = null;
+				else
+					DisplayedItem = null;
+			} else {
+				ComboBoxItem container = (ComboBoxItem) GetContainerForItemOverride ();
+				container.ContentSetsParent = false;
+				PrepareContainerForItemOverride (container, content);
+				SelectionBoxItemTemplate = container.ContentTemplate;
+				ClearContainerForItemOverride (container, content);
+			}
+
+			_contentPresenter.Content = SelectionBoxItem;
+			_contentPresenter.ContentTemplate = SelectionBoxItemTemplate;
 		}
 		
 		void UpdatePopupSizeAndPosition ()

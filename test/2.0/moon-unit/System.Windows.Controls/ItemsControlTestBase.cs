@@ -34,6 +34,7 @@ namespace MoonTest.System.Windows.Controls
 		string DisplayMemberPath { get; set; }
 		ItemCollection Items { get; }
 		IEnumerable ItemsSource { get; set; }
+		DataTemplate ItemTemplate { get; set; }
 		object SelectedItem { get; set; }
 		int SelectedIndex { get; set;  }
 		Style Style { get; set; }
@@ -201,6 +202,22 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public virtual void DisplayMemberPathTest ()
+		{
+			// Check if 'DisplayMemberPath' is used when a UIElement
+			// is added to the ItemsCollection
+			ItemsControl c = (ItemsControl)CurrentControl;
+			CurrentControl.DisplayMemberPath = "Width";
+
+			TestPanel.Children.Add (c);
+			Enqueue (() => c.ItemTemplate = null);
+			Enqueue (() => c.ApplyTemplate ());
+			Enqueue (() => c.Items.Add (new Rectangle { Width = 10 }));
+			// Validation is performed in the subclasses
+		}
+
+		[TestMethod]
 		public virtual void GetContainerForItemOverride ()
 		{
 			IPoker p = CurrentControl;
@@ -239,6 +256,44 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsFalse (ic.IsItemItsOwnContainerOverride_ (new OpenFileDialog ()), "OpenFileDialog");
 			Assert.IsFalse (ic.IsItemItsOwnContainerOverride_ (ic.Items), "ItemCollection");
 			Assert.IsFalse (ic.IsItemItsOwnContainerOverride_ (new RowDefinition ()), "RowDefinition");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void ItemTemplateTest3 ()
+		{
+			ItemsControl box = (ItemsControl) CurrentControl;
+
+			CurrentControl.ItemTemplate = null;
+
+			TestPanel.Children.Add (box);
+			Enqueue (() => CurrentControl.DisplayMemberPath = "Test");
+			Enqueue (() => box.ApplyTemplate ());
+			Enqueue (() => CurrentControl.Items.Add (new object ()));
+			// Subclasses do the validation
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void ItemTemplateTest4 ()
+		{
+			ItemsControl box = (ItemsControl) CurrentControl;
+
+			CurrentControl.ItemTemplate = null;
+			CurrentControl.DisplayMemberPath = "Test";
+			CurrentControl.Items.Add (new ListBoxItem ());
+			CurrentControl.Items.Add (new ComboBoxItem ());
+
+			TestPanel.Children.Add (box);
+			EnqueueWaitLoaded (box, "#loaded");
+			Enqueue (() => box.ApplyTemplate ());
+			Enqueue (() => {
+				ListBoxItem item = (ListBoxItem) CurrentControl.Items [0];
+				ComboBoxItem item2 = (ComboBoxItem) CurrentControl.Items [1];
+				Assert.IsNull (item.ContentTemplate, "#1");
+				Assert.IsNull (item2.ContentTemplate, "#2");
+			});
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]

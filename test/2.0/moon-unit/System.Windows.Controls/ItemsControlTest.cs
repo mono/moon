@@ -217,6 +217,16 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
+		[Asynchronous]
+		public override void DisplayMemberPathTest ()
+		{
+			// ItemsControl allows any UIElement to be a valid container
+			// so this test doesn't make sense for this control as it
+			// just checks that DisplayMemberPath is ignored when a UIElement
+			// is added to the control.
+			EnqueueTestComplete ();
+		}
+
 		public override void GetContainerForItemOverride2 ()
 		{
 			base.GetContainerForItemOverride2 ();
@@ -246,8 +256,22 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new ContentControl ()), "ContentControl");
 		}
 
+		[Asynchronous]
+		public override void ItemTemplateTest3 ()
+		{
+			base.ItemTemplateTest3 ();
+			Enqueue (() => {
+				ContentPresenter p = (ContentPresenter) CurrentControl.LastCreatedContainer;
+				Assert.IsNotNull (p.ContentTemplate, "#content");
+			});
+			EnqueueTestComplete ();
+		}
 
-
+		[MoonlightBug]
+		public override void ItemTemplateTest4 ()
+		{
+			base.ItemTemplateTest4 ();
+		}
 
 
 		[TestMethod]

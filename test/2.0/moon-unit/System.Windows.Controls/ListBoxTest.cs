@@ -142,6 +142,18 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
+		[Asynchronous]
+		public override void DisplayMemberPathTest ()
+		{
+			base.DisplayMemberPathTest ();
+			ItemsControl c = (ItemsControl) CurrentControl;
+			Enqueue (() => {
+				ListBoxItem item = (ListBoxItem) CurrentControl.LastCreatedContainer;
+				Assert.IsNull (item.ContentTemplate, "#template");
+			});
+			EnqueueTestComplete ();
+		}
+
 		public override void GetContainerForItemOverride2 ()
 		{
 			base.GetContainerForItemOverride2 ();
@@ -202,6 +214,22 @@ namespace MoonTest.System.Windows.Controls {
 			base.IsItemItsOwnContainerTest ();
 			Assert.IsTrue (CurrentControl.IsItemItsOwnContainerOverride_ (new ComboBoxItem ()));
 			Assert.IsTrue (CurrentControl.IsItemItsOwnContainerOverride_ (new ListBoxItem ()));
+		}
+
+		[Asynchronous]
+		public override void ItemTemplateTest3 ()
+		{
+			base.ItemTemplateTest3 ();
+			Enqueue (() => {
+				CurrentControl.SelectedIndex = 0;
+			});
+			Enqueue (() => {
+				ListBoxItem c = (ListBoxItem) CurrentControl.LastCreatedContainer;
+				Assert.AreSame (c, CurrentControl.LastPreparedContainer, "#prepared");
+				Assert.IsNull (CurrentControl.LastClearedContainer, "#cleared");
+				Assert.IsNotNull (c.ContentTemplate, "#content");
+			});
+			EnqueueTestComplete ();
 		}
 
 		[MoonlightBug]

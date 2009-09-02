@@ -1,3 +1,11 @@
+2009-09-02  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Only clear the selected item if its visual
+	  container exists. If the visual container does *not* exist
+	  then the container is just being created as part of
+	  PrepareContainerForItemOverride in ComboBox so we can get
+	  the correct ItemTemplate. r: toshok
+
 2009-08-28  Alan McGovern  <amcgovern@novell.com>
 
 	* Popup.cs: Need to null check the catcher when trying to

@@ -344,7 +344,6 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public virtual void PrepareContainerForItemOverride_defaults ()
 		{
 			IPoker poker = CurrentControl;

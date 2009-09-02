@@ -373,5 +373,14 @@ namespace MoonTest.System.Windows
 	" + template + datatemplate + @"
 </ContentControl>");
 		}
+
+		public static DataTemplate Create (string content)
+		{
+			return (DataTemplate) XamlReader.Load (@"
+<DataTemplate xmlns=""http://schemas.microsoft.com/client/2007""
+            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	" + content + @"
+</DataTemplate>");
+		}
     }
 }

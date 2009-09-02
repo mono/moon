@@ -192,7 +192,7 @@ namespace System.Windows.Controls.Primitives {
 			ListBoxItem lbItem = (ListBoxItem) element;
 			lbItem.Content = null;
 			lbItem.IsSelected = false;
-			if (SelectedItem == item)
+			if (SelectedItem == item && GetContainerItem (SelectedIndex) != null)
 				SelectedItem = null;
 		}
 

@@ -1,5 +1,14 @@
 2009-09-02  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControl.cs: Support for DisplayMemberPath should be
+	  implemented by creating a DataTemplate which instantiates a
+	  TextBlock with a {Binding} on it. This requires us to clear
+	  the container *before* removing it from the panel. r: toshok
+
+	* ComboBox.cs: Add support for DisplayMemberPath r: toshok
+
+2009-09-02  Alan McGovern  <amcgovern@novell.com>
+
 	* ContentPresenter.cs: If ContentPresenter.Content is a
 	  UIElement, we clear the value of the DataContext, otherwise
 	  we copy the Content to it. r: jeff

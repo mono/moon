@@ -200,6 +200,19 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
+		[Asynchronous]
+		public override void DisplayMemberPathTest ()
+		{
+			base.DisplayMemberPathTest ();
+			ComboBox c = (ComboBox) CurrentControl;
+			Enqueue (() => c.SelectedIndex = 0);
+			Enqueue (() => {
+				ComboBoxItem item = (ComboBoxItem) CurrentControl.LastCreatedContainer;
+				Assert.IsNull (item.ContentTemplate, "#template");
+			});
+			EnqueueTestComplete ();
+		}
+
 		public override void GetContainerForItemOverride2 ()
 		{
 			base.GetContainerForItemOverride2 ();
@@ -289,6 +302,19 @@ namespace MoonTest.System.Windows.Controls {
 			);
 		}
 
+		[Asynchronous]
+		public override void ItemTemplateTest3 ()
+		{
+			base.ItemTemplateTest3 ();
+			Enqueue (() => CurrentControl.SelectedIndex = 0);
+			Enqueue (() => {
+				ComboBoxItem c = (ComboBoxItem) CurrentControl.LastCreatedContainer;
+				Assert.IsNotNull (c.ContentTemplate, "#content");
+				Assert.AreSame (CurrentControl.LastCreatedContainer, CurrentControl.LastPreparedContainer, "#prepared");
+				Assert.AreSame (CurrentControl.LastCreatedContainer, CurrentControl.LastClearedContainer, "#cleared");
+			});
+			EnqueueTestComplete ();
+		}
 
 		public void CheckComboBoxSelection (object add, object selected)
 		{

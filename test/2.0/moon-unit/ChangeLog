@@ -1,5 +1,21 @@
 2009-09-02  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ItemsControlTestBase.cs: Add extra
+	  tests to ensure the DisplayMemberPath template is used in
+	  the right places. Remove [MoonlightBug] from tests which are
+	  passing now. r: toshok
+
+	* System.Windows.Controls.Primitives/SelectorTest.cs: Remove
+	  [MoonlightBug] from tests which are passing now. r: toshok
+
+	* System.Windows/DataTemplateTests.cs: Add a helper method to
+	  easily create a DataTemplate in code. r: toshok
+
+2009-09-02  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentPresenterTest.cs: If
 	  ContentPresenter.Content is a UIElement, we clear the value
 	  of the DataContext, otherwise we copy the Content to it. r:
