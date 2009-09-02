@@ -1,5 +1,12 @@
 2009-09-02  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentPresenterTest.cs: If
+	  ContentPresenter.Content is a UIElement, we clear the value
+	  of the DataContext, otherwise we copy the Content to it. r:
+	  jeff
+
+2009-09-02  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ListBoxTest.cs:
 	* System.Windows.Controls/ComboBoxTest.cs:
 	* System.Windows.Controls.Primitives/SelectorTest.cs: The

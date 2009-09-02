@@ -1,3 +1,9 @@
+2009-09-02  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: If ContentPresenter.Content is a
+	  UIElement, we clear the value of the DataContext, otherwise
+	  we copy the Content to it. r: jeff
+
 2009-08-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TextBox.cs: Implement OnMouseLeftButtonDown/Up(), OnMouseMove()

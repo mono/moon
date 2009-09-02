@@ -118,13 +118,21 @@ namespace MoonTest.System.Windows.Controls {
 	<Rectangle />
 </ContentPresenter>");
  			Assert.IsNull (c.DataContext);
+			Assert.AreEqual (DependencyProperty.UnsetValue, c.ReadLocalValue (ContentPresenter.DataContextProperty), "unset 1");
 			c.Content = new Rectangle ();
 			Assert.IsNull (c.DataContext);
+			Assert.AreEqual (DependencyProperty.UnsetValue, c.ReadLocalValue (ContentPresenter.DataContextProperty), "unset 2");
 
 			CreateAsyncTest (c,
-				() => Assert.IsNull (c.DataContext),
+				() => {
+					Assert.IsNull (c.DataContext);
+					Assert.AreEqual (DependencyProperty.UnsetValue, c.ReadLocalValue (ContentPresenter.DataContextProperty), "unset 3");
+				},
 				() => c.Content = new Rectangle (),
-				() => Assert.IsNull (c.DataContext)
+				() => {
+					Assert.AreEqual (DependencyProperty.UnsetValue, c.ReadLocalValue (ContentPresenter.DataContextProperty), "unset 4");
+					Assert.IsNull (c.DataContext);
+				}
 			);
 		}
 
@@ -138,9 +146,13 @@ namespace MoonTest.System.Windows.Controls {
 			CreateAsyncTest (c,
 				() => {
 					Assert.AreEqual (c.Content, c.DataContext, "#1");
+					Assert.AreEqual (c.Content, c.ReadLocalValue (ContentPresenter.DataContextProperty), "#1b");
 					c.Content = new object ();
 				},
-				() => Assert.AreEqual (c.Content, c.DataContext, "#2")
+				() => {
+					Assert.AreEqual (c.Content, c.DataContext, "#2");
+					Assert.AreEqual (c.Content, c.ReadLocalValue (ContentPresenter.DataContextProperty), "#2b");
+				}
 			);
 		}
 
@@ -188,7 +200,8 @@ namespace MoonTest.System.Windows.Controls {
 				},
 				() => {
 					c.DataContext = o;
-					Assert.AreEqual (o, c.DataContext, "#2");
+					Assert.AreEqual (o, c.DataContext, "#3");
+					Assert.AreEqual (o, c.ReadLocalValue (ContentPresenter.DataContextProperty), "#3b");
 				},
 				() => Assert.AreEqual (o, c.DataContext, "#4")
 			);
@@ -231,6 +244,7 @@ namespace MoonTest.System.Windows.Controls {
 				() => Assert.AreEqual (o2, c.DataContext, "#5")
 			);
 		}
+
 
 		[TestMethod]
 		[Asynchronous]

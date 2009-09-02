@@ -101,7 +101,10 @@ namespace System.Windows.Controls
 				     "The source is not an instance of ContentPresenter!");
 
 			object newValue = e.NewValue;
-			source.DataContext = newValue is UIElement ? null : newValue;
+			if (newValue is UIElement)
+				source.ClearValue (ContentPresenter.DataContextProperty);
+			else
+				source.DataContext = newValue;
 
 			// If the content is a UIElement, we have to clear the Template and wait for a re-render
 			// Otherwise we directly update the text in our textbox.
@@ -162,7 +165,10 @@ namespace System.Windows.Controls
 
 		internal override void InvokeLoaded ()
 		{
-			DataContext = Content is UIElement ? null : Content;
+			if (Content is UIElement)
+				ClearValue (ContentPresenter.DataContextProperty);
+			else
+				DataContext = Content;
 			base.InvokeLoaded ();
 		}
 
