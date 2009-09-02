@@ -1395,11 +1395,6 @@ UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *e
 		}
 	}
 	
-	// Note: TransformToVisual() synchronously forces a layout
-	// pass so that it can get the expected transformation matrix
-	// for the element.
-	GetSurface ()->ProcessDirtyElements ();
-	
 	cairo_matrix_t result;
 	// A = From, B = To, M = what we want
 	// A = M * B

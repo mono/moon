@@ -6,14 +6,6 @@
 
 	r: lewing
 
-2009-09-02  Jeffrey Stedfast  <fejj@novell.com>
-
-	* uielement.cpp (GetTransformToUIElementWithError): Process dirty
-	elements before getting the transform matrix so that any pending
-	layout changes get flushed first.
-
-	r: lewing
-
 2009-09-02  Jackson Harper  <jackson@ximian.com>
 
 	* dependencyproperty.cpp: If the explicitly mentioned type does
