@@ -2036,13 +2036,6 @@ DependencyObject::~DependencyObject ()
 	delete[] providers;
 	providers = NULL;
 	g_free (resource_base);
-
-	if (storage_hash) {
-		GHashTable *tmphash = storage_hash; // animation storages may call back to DetachAnimationStorage
-		storage_hash = NULL;
-		g_hash_table_foreach (tmphash, (GHFunc)clear_storage_list, NULL);
-		g_hash_table_destroy (tmphash);
-	}
 }
 
 static void
@@ -2075,6 +2068,13 @@ DependencyObject::Dispose ()
 		providers [i] = NULL;
 	}
 	
+	if (storage_hash) {
+		GHashTable *tmphash = storage_hash; // animation storages may call back to DetachAnimationStorage
+		storage_hash = NULL;
+		g_hash_table_foreach (tmphash, (GHFunc)clear_storage_list, NULL);
+		g_hash_table_destroy (tmphash);
+	}
+
 	EventObject::Dispose ();
 }
 

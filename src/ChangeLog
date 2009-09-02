@@ -1,3 +1,11 @@
+2009-09-02  Andreia Gaita  <avidigal@novell.com>
+
+	* dependencyobject.cpp: move the storage cleanup to Dispose, they
+	will need to invoke handlers and other things that require the
+	object to still be alive. fixes crash on drt 109
+
+	r: lewing
+
 2009-09-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* uielement.cpp (GetTransformToUIElementWithError): Process dirty
