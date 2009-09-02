@@ -192,7 +192,7 @@ class TextBlock : public FrameworkElement {
 	void Paint (cairo_t *cr);
 	
 	char *GetTextInternal (InlineCollection *inlines);
-	bool SetTextInternal (const char *text);
+	void SetTextInternal (const char *text);
 	
 	void AddFontResource (const char *resource);
 	void AddFontSource (Downloader *downloader);

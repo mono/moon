@@ -1,3 +1,18 @@
+2009-09-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (TextBlock::OnCollectionChanged): Explicitly call
+	UpdateLayoutAttributes(). We can't rely on it being called as a
+	result of setting the Text property since the overall Text
+	property value might not have changed.
+	(TextBlock::OnCollectionItemChanged): Same here.
+	(TextBlock::OnPropertyChanged): Same for when the Inlines property
+	changes. In the FontSource case, don't set invalidate to
+	false. Also set dirty to true.
+	(SetTextInternal): Changed to return void, no need to return bool
+	anymore.
+
+	r: alan
+
 2009-09-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (TextLayoutGlyphCluster::Render): If the background

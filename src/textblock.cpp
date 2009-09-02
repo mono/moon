@@ -473,7 +473,6 @@ TextBlock::ComputeActualSize ()
 	Thickness padding = *GetPadding ();
 	Size result = FrameworkElement::ComputeActualSize ();
 	
-	//if (dirty) {
 	if (!LayoutInformation::GetPreviousConstraint (this)) {
 		Size constraint = Size (INFINITY, INFINITY);
 		
@@ -482,7 +481,6 @@ TextBlock::ComputeActualSize ()
 		constraint = constraint.GrowBy (-padding);
 		Layout (constraint);
 	}
-	//}
 	
 	result = Size (actual_width, actual_height);
 	result = result.GrowBy (padding);
@@ -703,7 +701,7 @@ TextBlock::GetTextInternal (InlineCollection *inlines)
 	return str;
 }
 
-bool
+void
 TextBlock::SetTextInternal (const char *text)
 {
 	InlineCollection *inlines;
@@ -730,8 +728,6 @@ TextBlock::SetTextInternal (const char *text)
 	}
 	
 	setvalue = true;
-	
-	return true;
 }
 
 void
@@ -802,13 +798,9 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			// result of a change to the TextBlock.Text property
 			const char *text = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
 			
-			if (!SetTextInternal (text)) {
-				// no change so nothing to invalidate
-				invalidate = false;
-			} else {
-				UpdateLayoutAttributes ();
-				dirty = true;
-			}
+			SetTextInternal (text);
+			UpdateLayoutAttributes ();
+			dirty = true;
 		} else {
 			// result of a change to the TextBlock.Inlines property
 			UpdateLayoutAttributes ();
@@ -824,13 +816,14 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			InlineCollection *inlines = args->GetNewValue() ? args->GetNewValue()->AsInlineCollection () : NULL;
 			
 			setvalue = false;
-			// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
 			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 			setvalue = true;
 			
+			UpdateLayoutAttributes ();
 			dirty = true;
 		} else {
-			// result of a change to the TextBlock.Text property
+			// this should be the result of Inlines being autocreated
+			UpdateLayoutAttributes ();
 			invalidate = false;
 		}
 	} else if (args->GetId () == TextBlock::LineStackingStrategyProperty) {
@@ -856,8 +849,8 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		else
 			font_source = NULL;
 		
-		UpdateFontDescriptions (false);
-		invalidate = false;
+		UpdateFontDescriptions (true);
+		dirty = true;
 	}
 	
 	if (invalidate) {
@@ -902,10 +895,10 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 	}
 	
 	setvalue = false;
-	// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
 	SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 	setvalue = true;
 	
+	UpdateLayoutAttributes ();
 	InvalidateMeasure ();
 	InvalidateArrange ();
 	UpdateBounds (true);
@@ -926,9 +919,10 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 		if (args->GetId () == Run::TextProperty) {
 			// update our TextProperty
 			setvalue = false;
-			// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
 			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 			setvalue = true;
+			
+			UpdateLayoutAttributes ();
 		} else {
 			// likely a font property change...
 			((Inline *) obj)->UpdateFontDescription (font_source, true);
