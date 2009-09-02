@@ -59,5 +59,14 @@ namespace Microsoft.Silverlight.Testing
             EnqueueCallback(() => TestPanel.Children.Remove(element));
             EnqueueTestComplete();
         }
+
+		protected virtual void EnqueueWaitLoaded (FrameworkElement frameworkElement, string message)
+		{
+			bool loaded = false;
+			frameworkElement.Loaded += (o, e) => {
+				loaded = true;
+			};
+			EnqueueConditional (() => loaded, message);
+		}
     }
 }

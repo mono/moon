@@ -41,16 +41,18 @@ using System.Text;
 using System.Windows.Media.Animation;
 using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
+using MoonTest.System.Windows.Controls.Primitives;
 
 namespace MoonTest.System.Windows.Controls {
 
-	public struct Value {
+	public struct Value
+	{
 		public string MethodName;
 		public object [] MethodParams;
 		public object ReturnValue;
 	}
 
-	public class FakeComboBox : ComboBox {
+	public class ComboBoxPoker : ComboBox, IPoker {
 		public List<Value> methods = new List<Value> ();
 
 		public bool CallBaseOnDropDown { get; set; }
@@ -58,7 +60,16 @@ namespace MoonTest.System.Windows.Controls {
 		public DependencyObject ContainerItem {
 			get; set;
 		}
-		public DependencyObject LastContainerItem {
+		public DependencyObject LastClearedContainer {
+			get; set;
+		}
+		public DependencyObject LastCreatedContainer {
+			get; set;
+		}
+		public DependencyObject LastPreparedContainer {
+			get; set;
+		}
+		public object LastPreparedItem {
 			get; set;
 		}
 		
@@ -66,7 +77,7 @@ namespace MoonTest.System.Windows.Controls {
 			get { return (Popup) GetTemplateChild ("Popup"); }
 		}
 		
-		public FakeComboBox ()
+		public ComboBoxPoker ()
 		{
 			CallBaseOnItemsChanged = true;
 			CallBaseOnDropDown = true;
@@ -81,25 +92,28 @@ namespace MoonTest.System.Windows.Controls {
 			return (Size) methods.Last ().ReturnValue;
 		}
 
-		public void ClearContainerForItemOverride_ (global::System.Windows.DependencyObject element, object item)
+		public void ClearContainerForItemOverride_ (DependencyObject element, object item)
 		{
 			ClearContainerForItemOverride (element, item);
 		}
 
-		protected override void ClearContainerForItemOverride (global::System.Windows.DependencyObject element, object item)
+		protected override void ClearContainerForItemOverride (DependencyObject element, object item)
 		{
+			LastClearedContainer = element;
 			methods.Add (new Value { MethodName = "ClearContainerForItemOverride", MethodParams = new object [] { element, item } });
 			base.ClearContainerForItemOverride (element, item);
 		}
 
-		protected override global::System.Windows.DependencyObject GetContainerForItemOverride ()
+		public DependencyObject GetContainerForItemOverride_ ()
 		{
-			if (ContainerItem != null)
-				return ContainerItem;
-			
-			methods.Add (new Value { ReturnValue = base.GetContainerForItemOverride () });
-			LastContainerItem = (DependencyObject) methods.Last ().ReturnValue;
-			return (DependencyObject) methods.Last ().ReturnValue;
+			return GetContainerForItemOverride ();
+		}
+
+		protected override DependencyObject GetContainerForItemOverride ()
+		{
+			LastCreatedContainer = ContainerItem ?? base.GetContainerForItemOverride ();
+			methods.Add (new Value { ReturnValue = LastCreatedContainer });
+			return LastCreatedContainer;
 		}
 		
 		public bool IsItemItsOwnContainerOverride_ (object item)
@@ -112,7 +126,7 @@ namespace MoonTest.System.Windows.Controls {
 			return base.IsItemItsOwnContainerOverride (item);
 		}
 
-		protected override global::System.Windows.Size MeasureOverride (global::System.Windows.Size availableSize)
+		protected override Size MeasureOverride (Size availableSize)
 		{
 			return base.MeasureOverride (availableSize);
 		}
@@ -151,15 +165,129 @@ namespace MoonTest.System.Windows.Controls {
 			PrepareContainerForItemOverride (element, item);
 		}
 
-		protected override void PrepareContainerForItemOverride (global::System.Windows.DependencyObject element, object item)
+		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
+			LastPreparedItem = item;
+			LastPreparedContainer = element;
 			methods.Add (new Value { MethodName = "PrepareContainerForItemOverride", MethodParams = new object [] { element, item } });
 			base.PrepareContainerForItemOverride (element, item);
 		}
 	}
 
 	[TestClass]
-	public partial class ComboBoxTest : SilverlightTest {
+	public partial class ComboBoxTest : SelectorTest {
+		protected override IPoker CreateControl ()
+		{
+			return new ComboBoxPoker ();
+		}
+		protected override object CreateContainer ()
+		{
+			return new ComboBoxItem ();
+		}
+
+		[Asynchronous]
+		public override void ContainerItemTest2 ()
+		{
+			base.ContainerItemTest2 ();
+			IPoker c = CurrentControl;
+			Enqueue (() => ((ComboBox) c).IsDropDownOpen = true);
+			Enqueue (() => {
+				Assert.IsInstanceOfType<ComboBoxItem> (c.LastCreatedContainer, "#1");
+				ComboBoxItem lbi = (ComboBoxItem) c.LastCreatedContainer;
+				Assert.AreEqual (lbi.Content, c.LastPreparedItem, "#2");
+				Assert.AreEqual (lbi.DataContext, c.LastPreparedItem, "#3");
+			});
+			EnqueueTestComplete ();
+		}
+
+		public override void GetContainerForItemOverride2 ()
+		{
+			base.GetContainerForItemOverride2 ();
+			Assert.IsInstanceOfType<ComboBoxItem> (CurrentControl.LastCreatedContainer, "#1");
+			ComboBoxItem c = (ComboBoxItem) CurrentControl.LastCreatedContainer;
+			Assert.IsNull (c.Style, "null style");
+			Assert.IsFalse (c.IsSelected, "Selected");
+			Assert.IsNull (c.Content, "content is null");
+		}
+
+		public override void GetContainerForItemOverride3 ()
+		{
+			base.GetContainerForItemOverride3 ();
+			Assert.IsNull (((ComboBoxItem) CurrentControl.LastCreatedContainer).Style, "#1");
+		}
+
+		[Asynchronous]
+		public override void GetContainerForItemOverride10 ()
+		{
+			base.GetContainerForItemOverride10 ();
+			ComboBox box = (ComboBox) CurrentControl;
+
+			Enqueue (() => box.IsDropDownOpen = true);
+			Enqueue (() => box.Items.Add ("Test"));
+			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
+		public override void GetInvalidContainerItemTest ()
+		{
+			base.GetInvalidContainerItemTest ();
+			ComboBox box = (ComboBox)CurrentControl;
+			Enqueue (() => box.IsDropDownOpen = true);
+			Enqueue (() => {
+				try {
+					box.Items.Add ("New Item");
+					Assert.Fail ("An exception should be thrown");
+				} catch (Exception ex) {
+					// Have to return a UIElement subclass, should throw InvalidOperationException i think
+					Assert.AreEqual ("WrappedException", ex.GetType ().Name, "Exception type");
+				}
+			});
+			EnqueueTestComplete ();
+		}
+
+		public override void IsItemItsOwnContainerTest ()
+		{
+			base.IsItemItsOwnContainerTest ();
+			Assert.IsTrue (CurrentControl.IsItemItsOwnContainerOverride_ (new ComboBoxItem ()));
+			Assert.IsFalse (CurrentControl.IsItemItsOwnContainerOverride_ (new ListBoxItem ()));
+		}
+
+		[MoonlightBug]
+		public override void IsSelectedTest ()
+		{
+			base.IsSelectedTest ();
+		}
+
+		[Asynchronous]
+		public override void IsSelectedTest4 ()
+		{
+			base.IsSelectedTest4 ();
+			IPoker box = CurrentControl;
+			Enqueue (() => {
+				Assert.AreEqual (2, box.SelectedIndex);
+				Assert.IsNotNull (box.SelectedItem);
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void IsSelectedTestComboBox ()
+		{
+			ComboBoxPoker box = (ComboBoxPoker) CurrentControl;
+			box.Items.Add (new object ());
+			box.SelectedIndex = 0;
+
+			CreateAsyncTest ((FrameworkElement) box,
+				() => box.ApplyTemplate (),
+				() => box.IsDropDownOpen = true,
+				() => {
+					ComboBoxItem item = (ComboBoxItem) box.LastCreatedContainer;
+					Assert.IsTrue (item.IsSelected, "#1");
+				}
+			);
+		}
+
 
 		public void CheckComboBoxSelection (object add, object selected)
 		{
@@ -245,11 +373,11 @@ namespace MoonTest.System.Windows.Controls {
 			var item = new ListBoxItem { Content = o };
 			CheckComboBoxSelection (item, item);
 		}
-		
+
 		[TestMethod]
 		public void AddTest2 ()
 		{
-			FakeComboBox c = new FakeComboBox ();
+			ComboBoxPoker c = new ComboBoxPoker ();
 			Assert.AreEqual (-1, c.SelectedIndex);
 
 			c.Items.Add (new object ());
@@ -259,11 +387,11 @@ namespace MoonTest.System.Windows.Controls {
 			c.Items.Add (new object ());
 			Assert.AreEqual (0, c.SelectedIndex);
 		}
-		
+
 		[TestMethod]
 		public void ClearTest ()
 		{
-			FakeComboBox c = new FakeComboBox ();
+			ComboBoxPoker c = new ComboBoxPoker ();
 			c.Items.Add (new object ());
 			c.Items.Add (new object ());
 			c.Items.Add (new object ());
@@ -292,7 +420,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (b.SelectionBoxItem, "#6");
 			Assert.IsNull (b.SelectionBoxItemTemplate, "#7");
 			Assert.AreEqual (-1, b.SelectedIndex, "#8");
-			
+
 			Assert.AreEqual (ScrollViewer.GetHorizontalScrollBarVisibility (b), ScrollBarVisibility.Auto, "Horizontal Scroll Vis"); // Fails in Silverlight 3
 			Assert.AreEqual (ScrollViewer.GetVerticalScrollBarVisibility (b), ScrollBarVisibility.Auto, "Vertical Scroll Vis");
 		}
@@ -301,7 +429,7 @@ namespace MoonTest.System.Windows.Controls {
 		public void InsertTest ()
 		{
 			object orig = new object ();
-			FakeComboBox c = new FakeComboBox ();
+			ComboBoxPoker c = new ComboBoxPoker ();
 			c.Items.Add (orig);
 			c.SelectedIndex = 0;
 			c.methods.Clear ();
@@ -316,7 +444,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (1, c.SelectedIndex, "#8");
 			Assert.AreEqual (orig, c.SelectedItem, "#9");
 		}
-		
+
 		[TestMethod]
 		public void InvalidValues ()
 		{
@@ -345,42 +473,9 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		public void IsSelectedTest ()
-		{
-			ComboBox box = new ComboBox ();
-			ListBoxItem item = new ComboBoxItem ();
-			box.Items.Add (item);
-			box.SelectedItem = item;
-			Assert.IsTrue (item.IsSelected, "#1");
-
-			box.Items.Clear ();
-			item = new ListBoxItem ();
-			box.Items.Add (item);
-			Assert.IsFalse (item.IsSelected, "#2");
-		}
-
-		[TestMethod]
-		[Asynchronous]
-		public void IsSelectedTest2 ()
-		{
-			FakeComboBox box = new FakeComboBox ();
-			box.Items.Add (new object ());
-			box.SelectedIndex = 0;
-
-			CreateAsyncTest (box,
-				() => box.ApplyTemplate (),
-				() => box.IsDropDownOpen =true,
-				() => {
-					ComboBoxItem item = (ComboBoxItem) box.LastContainerItem;
-					Assert.IsTrue (item.IsSelected, "#1");
-				}
-			);
-		}
-
-		[TestMethod]
 		public void TestOverrides ()
 		{
-			FakeComboBox b = new FakeComboBox ();
+			ComboBoxPoker b = new ComboBoxPoker ();
 			object o = new object ();
 			b.Items.Add (o);
 			Assert.AreEqual (0, b.Items.IndexOf (b.Items [0]), "#0");
@@ -413,11 +508,11 @@ namespace MoonTest.System.Windows.Controls {
 		[TestMethod]
 		public void AddTest ()
 		{
-			FakeComboBox box = new FakeComboBox ();
+			ComboBoxPoker box = new ComboBoxPoker ();
 			box.Items.Add ("blah");
 			Assert.AreEqual (1, box.methods.Count, "#1");
 			Assert.AreEqual ("OnItemsChanged", box.methods [0].MethodName, "#2");
-			NotifyCollectionChangedEventArgs e = (NotifyCollectionChangedEventArgs) box.methods [0].MethodParams[0];
+			NotifyCollectionChangedEventArgs e = (NotifyCollectionChangedEventArgs) box.methods [0].MethodParams [0];
 			Assert.AreEqual (null, e.OldItems, "#3");
 			Assert.AreEqual (-1, e.OldStartingIndex, "#4");
 			Assert.IsNotNull (e.NewItems, "#5");
@@ -425,116 +520,14 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual ("blah", e.NewItems [0], "#7");
 			Assert.AreEqual (0, e.NewStartingIndex, "#8");
 		}
-		
-		[TestMethod]
-		public void ClearContainerForItemOverride ()
-		{
-			FakeComboBox ic = new FakeComboBox ();
-			Assert.Throws<NullReferenceException> (() => ic.ClearContainerForItemOverride_ (null, null));
-			Assert.Throws<NullReferenceException> (() => ic.ClearContainerForItemOverride_ (null, new object ()));
-			Assert.Throws<InvalidCastException> (() => ic.ClearContainerForItemOverride_ (ic, null));
-		}
-
-		[TestMethod]
-		public void ClearContainerForItemOverride2 ()
-		{
-			// Fails in Silverlight 3
-			FakeComboBox ic = new FakeComboBox ();
-			ListBoxItem item = new ListBoxItem ();
-			item.Content = new object ();
-			item.ContentTemplate = new DataTemplate ();
-			item.Style = new Style (typeof (ListBoxItem));
-			ic.ClearContainerForItemOverride_ (item, item);
-			Assert.IsNull (item.Content);
-			Assert.IsNotNull (item.Style);
-			Assert.IsNotNull (item.ContentTemplate);
-			ic.ClearContainerForItemOverride_ (item, null);
-		}
-
-		[TestMethod]
-		public void ClearContainerForItemOverride3 ()
-		{
-			// Fails in Silverlight 3
-			FakeComboBox ic = new FakeComboBox { ItemContainerStyle = new Style (typeof (ListBoxItem)) };
-			ListBoxItem item = new ListBoxItem ();
-			item.Content = new object ();
-			item.ContentTemplate = new DataTemplate ();
-			item.Style = ic.ItemContainerStyle;
-			ic.ClearContainerForItemOverride_ (item, item);
-			Assert.IsNull (item.Content);
-			Assert.IsNotNull (item.Style);
-			Assert.IsNotNull (item.ContentTemplate);
-			ic.ClearContainerForItemOverride_ (item, null);
-		}
-
-		[TestMethod]
-		public void ClearContainerForItemOverride4 ()
-		{
-			FakeComboBox box = new FakeComboBox ();
-
-			ListBoxItem listItem = new ListBoxItem { Content = "Content", IsSelected = true };
-			ComboBoxItem comboItem = new ComboBoxItem { Content = "Content", IsSelected = true };
-
-			Assert.Throws<NullReferenceException> (() => box.ClearContainerForItemOverride_ (null, null), "#1");
-			Assert.Throws<InvalidCastException> (() => box.ClearContainerForItemOverride_ (new Rectangle (), null), "#2");
-
-			box.ClearContainerForItemOverride_ (listItem, null);
-			box.ClearContainerForItemOverride_ (comboItem, null);
-
-			Assert.IsNull (listItem.Content, "#3");
-			Assert.IsNull (comboItem.Content, "#4");
-
-			Assert.IsFalse (listItem.IsSelected, "#5"); // Fails in Silverlight 3
-			Assert.IsFalse (comboItem.IsSelected, "#6");
-		}
-
-		[TestMethod]
-		[Asynchronous]
-		[Ignore ("Throws an internal exception of type MS.Internal.WrappedException. Can/should we replicate this?")]
-		public void ContainerItemTest ()
-		{
-			FakeComboBox box = new FakeComboBox ();
-			box.ApplyTemplate ();
-			box.ContainerItem = new Storyboard ();
-			CreateAsyncTest (box,
-				() => box.IsDropDownOpen = true,
-				() => Assert.Throws<Exception> (() => box.Items.Add (new object ()))
-			);
-		}
 
 		class ConcreteFrameworkElement : FrameworkElement { }
 
 		[TestMethod]
 		[Asynchronous]
-		public void ContainerItemTest2 ()
-		{
-			FakeComboBox box = new FakeComboBox ();
-			box.ApplyTemplate ();
-			box.ContainerItem = new ConcreteFrameworkElement (); 
-			CreateAsyncTest (box,
-				() => box.IsDropDownOpen = true,
-				() => Assert.Throws<InvalidCastException> (() => box.Items.Add (new object ()))
-			);
-		}
-
-		[TestMethod]
-		[Asynchronous]
-		public void ContainerItemTest3 ()
-		{
-			FakeComboBox box = new FakeComboBox ();
-			box.ApplyTemplate ();
-			box.ContainerItem = new ListBoxItem ();
-			CreateAsyncTest (box,
-				() => box.IsDropDownOpen = true,
-				() => box.Items.Add (new object ())
-			);
-		}
-
-		[TestMethod]
-		[Asynchronous]
 		public void ContainerItemTest4 ()
 		{
-			FakeComboBox box = new FakeComboBox ();
+			ComboBoxPoker box = new ComboBoxPoker ();
 			box.ApplyTemplate ();
 			box.ContainerItem = new Rectangle ();
 			CreateAsyncTest (box,
@@ -548,15 +541,17 @@ namespace MoonTest.System.Windows.Controls {
 		[Ignore ("Throws an internal exception of type MS.Internal.WrappedException. Can/should we replicate this?")]
 		public void ContainerItemTest5 ()
 		{
-			FakeComboBox box = new FakeComboBox ();
+			ComboBoxPoker box = new ComboBoxPoker ();
 			box.ApplyTemplate ();
 			box.ContainerItem = new ComboBoxItem ();
 			CreateAsyncTest (box,
 				() => box.IsDropDownOpen = true,
 				() => {
-					box.Items.Add (new object ()); },
+					box.Items.Add (new object ());
+				},
 				() => {
-					box.Items.Add (new object ()); }
+					box.Items.Add (new object ());
+				}
 			);
 		}
 
@@ -604,7 +599,7 @@ namespace MoonTest.System.Windows.Controls {
 			});
 			EnqueueTestComplete ();
 		}
-		
+
 		[TestMethod]
 		[Asynchronous]
 		public void ItemParentTest2b ()
@@ -616,7 +611,7 @@ namespace MoonTest.System.Windows.Controls {
 			box.Items.Add (item);
 			box.SelectedIndex = 0;
 			box.Loaded += (o, e) => loaded = true;
-			
+
 			TestPanel.Children.Add (box);
 
 			Assert.IsNull (VisualTreeHelper.GetParent (item), "#1");
@@ -670,7 +665,7 @@ namespace MoonTest.System.Windows.Controls {
 		void AssertItemHasPresenter (ComboBox box, ComboBoxItem item)
 		{
 			Assert.AreEqual (box, item.Parent, "#a");
-			Assert.VisualParent (item, new VisualNode<StackPanel>("#b"));
+			Assert.VisualParent (item, new VisualNode<StackPanel> ("#b"));
 			Assert.VisualChildren (item,
 				new VisualNode<Grid> ("#c",
 					new VisualNode<Rectangle> ("#c1"),
@@ -719,7 +714,7 @@ namespace MoonTest.System.Windows.Controls {
 				Width = 100,
 				Height = 50
 			};
-			FakeComboBox box = new FakeComboBox { Width = 50, Height = 50 };
+			ComboBoxPoker box = new ComboBoxPoker { Width = 50, Height = 50 };
 			ComboBoxItem item = new ComboBoxItem { Content = content };
 			StringBuilder sb = new StringBuilder ();
 			box.DropDownOpened += delegate { opened = true; };
@@ -729,7 +724,7 @@ namespace MoonTest.System.Windows.Controls {
 			box.Loaded += delegate { loaded = true; };
 			TestPanel.Children.Add (box);
 
-			
+
 			EnqueueConditional (() => loaded);
 			Enqueue (() => box.ApplyTemplate ());
 			Enqueue (() => box.IsDropDownOpen = true);
@@ -744,7 +739,7 @@ namespace MoonTest.System.Windows.Controls {
 
 			Enqueue (() => box.IsDropDownOpen = false);
 			EnqueueConditional (() => !opened, "#5");
-			
+
 			Enqueue (() => Assert.IsNotNull (VisualTreeHelper.GetParent (item), "#6"));
 			Enqueue (() => Assert.IsInstanceOfType<StackPanel> (VisualTreeHelper.GetParent (item), "#6b"));
 			Enqueue (() => Assert.AreSame (box, item.Parent, "#7"));
@@ -756,24 +751,24 @@ namespace MoonTest.System.Windows.Controls {
 		public void ItemsChangedTest ()
 		{
 			// Are SelectedItem and SelectedIndex updated in the base method or before it's invoked?
-			FakeComboBox c = new FakeComboBox { CallBaseOnItemsChanged = false };
+			ComboBoxPoker c = new ComboBoxPoker { CallBaseOnItemsChanged = false };
 			c.Items.Add (new object ());
 			c.methods.Clear ();
 
 			c.SelectedItem = c.Items [0];
 			Assert.AreEqual (0, c.SelectedIndex, "#1");
-			Assert.AreEqual (c.Items[0], c.SelectedItem, "#2");
+			Assert.AreEqual (c.Items [0], c.SelectedItem, "#2");
 
 			c.Items.Insert (0, new object ());
 			Assert.AreEqual (0, c.SelectedIndex, "#3");
-			Assert.AreEqual (c.Items[1], c.SelectedItem, "#4");
+			Assert.AreEqual (c.Items [1], c.SelectedItem, "#4");
 		}
 
 		[TestMethod]
 		[Asynchronous]
 		public void ItemTemplateTest ()
 		{
-			ComboBox box = (ComboBox) XamlReader.Load(@"
+			ComboBox box = (ComboBox) XamlReader.Load (@"
 <ComboBox	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
 			xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 	<ComboBox.ItemTemplate>
@@ -782,22 +777,22 @@ namespace MoonTest.System.Windows.Controls {
 		</DataTemplate>
 	</ComboBox.ItemTemplate>
 </ComboBox>");
-			box.Items.Add (new object());
-			box.SelectedItem = box.Items[0];
-			
+			box.Items.Add (new object ());
+			box.SelectedItem = box.Items [0];
+
 			// Capture the contentpresenter from the ComboBoxs visual tree
 			// and check that it's using the ComboBox DataTemplate as its
 			// ContentTemplate.
 			CreateAsyncTest (box, () => {
 				Assert.AreEqual (box.Items [0], box.SelectionBoxItem, "#1");
 				Assert.AreEqual (box.ItemTemplate, box.SelectionBoxItemTemplate, "#2");
-				
+
 				ContentPresenter presenter = null;
 				Assert.VisualChildren (box,
 					new VisualNode<Grid> ("#a",
 						new VisualNode<Border> ("#b",
 							new VisualNode<Grid> ("#c",
-								new VisualNode<ToggleButton> ("#d", (VisualNode[]) null),
+								new VisualNode<ToggleButton> ("#d", (VisualNode []) null),
 								new VisualNode<ContentPresenter> ("#e", p => presenter = p, null)
 							)
 						),
@@ -811,7 +806,7 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.AreEqual (box.ItemTemplate, presenter.ContentTemplate, "#3");
 			});
 		}
-		
+
 		[TestMethod]
 		[Asynchronous]
 		public void FocusTest ()
@@ -828,13 +823,13 @@ namespace MoonTest.System.Windows.Controls {
 				() => Assert.IsFalse (ComboBox.GetIsSelectionActive (box), "#3")
 			);
 		}
-		
+
 		[TestMethod]
 		[Asynchronous]
 		public void OnDropDownMethodsTest ()
 		{
 			bool opened = false;
-			FakeComboBox box = new FakeComboBox { CallBaseOnDropDown = false };
+			ComboBoxPoker box = new ComboBoxPoker { CallBaseOnDropDown = false };
 			TestPanel.Children.Add (box);
 
 			box.DropDownOpened += delegate { opened = true; };
@@ -853,99 +848,12 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
-		[TestMethod]
-		public void OwnContainerTest ()
-		{
-			FakeComboBox box = new FakeComboBox ();
-			Assert.IsFalse (box.IsItemItsOwnContainerOverride_ (null), "#1");
-			Assert.IsFalse (box.IsItemItsOwnContainerOverride_ (new object ()), "#2");
-			Assert.IsFalse (box.IsItemItsOwnContainerOverride_ (new ListBoxItem ()), "#3");
-			Assert.IsTrue (box.IsItemItsOwnContainerOverride_ (new ComboBoxItem ()), "#4");
-			Assert.IsFalse (box.IsItemItsOwnContainerOverride_ (new Rectangle ()), "#5");
-		}
-		
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest ()
-		{
-			FakeComboBox box = new FakeComboBox ();
-			Assert.Throws <NullReferenceException> (() => box.PrepareContainerForItemOverride_ (null, null));
-		}
 
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest2 ()
-		{
-			FakeComboBox box = new FakeComboBox ();
-			Assert.Throws<InvalidCastException> (() => box.PrepareContainerForItemOverride_ (new Rectangle (), null));
-		}
-
-		[TestMethod]
-		[MoonlightBug]
-		public void PrepareContainerForItemOverrideTest3 ()
-		{
-			FakeComboBox box = new FakeComboBox ();
-			ComboBoxItem item = new ComboBoxItem ();
-			Assert.IsNull (item.Style, "#1");
-			Assert.IsNull (item.Content, "#2");
-			Assert.IsNull (item.ContentTemplate, "#3");
-			box.PrepareContainerForItemOverride_ (item, null);
-			Assert.IsNull (item.Style, "#4");
-			Assert.IsNull (item.Content, "#5");
-			Assert.IsNotNull (item.ContentTemplate, "#6");
-		}
-
-		[TestMethod]
-		[MoonlightBug]
-		public void PrepareContainerForItemOverrideTest4 ()
-		{
-			FakeComboBox box = new FakeComboBox { ItemContainerStyle = new Style (typeof (ListBoxItem)) };
-			box.ItemContainerStyle.Setters.Add (new Setter { Property = Canvas.LeftProperty, Value = 10.5 });
-			ComboBoxItem item = new ComboBoxItem ();
-			Assert.IsNull (item.Style, "#1");
-			Assert.IsNull (item.Content, "#2");
-			Assert.IsNull (item.ContentTemplate, "#3");
-
-			box.PrepareContainerForItemOverride_ (item, null);
-
-			Assert.AreSame (box.ItemContainerStyle, item.Style, "#4");
-			Assert.IsNull (item.Content, "#5");
-			Assert.IsNotNull (item.ContentTemplate, "#6");
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest5 ()
-		{
-			FakeComboBox box = new FakeComboBox ();
-			ComboBoxItem item = new ComboBoxItem ();
-			box.PrepareContainerForItemOverride_ (item, item);
-			Assert.IsNull (item.Content);
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest6 ()
-		{
-			Rectangle rect = new Rectangle ();
-			FakeComboBox box = new FakeComboBox ();
-			ComboBoxItem item = new ComboBoxItem ();
-			Assert.IsNull (item.Content, "#1");
-			box.PrepareContainerForItemOverride_ (item, rect);
-			Assert.AreSame (item.Content, rect, "#2");
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest7 ()
-		{
-			Rectangle rect = new Rectangle ();
-			FakeComboBox box = new FakeComboBox ();
-			box.Items.Add (rect);
-			ComboBoxItem item = new ComboBoxItem ();
-			Assert.Throws<InvalidOperationException> (() => box.PrepareContainerForItemOverride_ (item, rect), "#2");
-		}
-		
 		[TestMethod]
 		public void RemoveTest ()
 		{
 			object orig = new object ();
-			FakeComboBox c = new FakeComboBox ();
+			ComboBoxPoker c = new ComboBoxPoker ();
 			c.Items.Add (orig);
 			c.Items.Add (new object ());
 			c.SelectedIndex = 0;
@@ -971,7 +879,7 @@ namespace MoonTest.System.Windows.Controls {
 		public void RemoveTest2 ()
 		{
 			object orig = new object ();
-			FakeComboBox c = new FakeComboBox ();
+			ComboBoxPoker c = new ComboBoxPoker ();
 			c.Items.Add (orig);
 			c.Items.Add (new object ());
 			c.Items.Add (new object ());
@@ -989,12 +897,12 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (0, c.SelectedIndex, "#8");
 			Assert.AreEqual (orig, c.SelectedItem, "#9");
 		}
-		
+
 		[TestMethod]
 		public void RemoveTest3 ()
 		{
 			Rectangle orig = new Rectangle ();
-			FakeComboBox c = new FakeComboBox ();
+			ComboBoxPoker c = new ComboBoxPoker ();
 			c.Items.Add (orig);
 			c.SelectedIndex = 0;
 
@@ -1010,17 +918,17 @@ namespace MoonTest.System.Windows.Controls {
 		public void ReplaceTest ()
 		{
 			object orig = new object ();
-			FakeComboBox c = new FakeComboBox ();
+			ComboBoxPoker c = new ComboBoxPoker ();
 			c.Items.Add (orig);
 			c.SelectedIndex = 0;
 			c.methods.Clear ();
 
-			c.Items[0] = new object ();
+			c.Items [0] = new object ();
 
 			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
 			Assert.AreEqual (3, c.methods.Count, "#1"); // Fails in Silverlight 3
 			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
-			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams[0]).Action, "#3");
+			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
 
 			Assert.AreEqual ("OnItemsChanged", c.methods [1].MethodName, "#4");
 			Assert.AreEqual (NotifyCollectionChangedAction.Add, ((NotifyCollectionChangedEventArgs) c.methods [1].MethodParams [0]).Action, "#5");
@@ -1032,11 +940,11 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (1, c.SelectedIndex, "#8");
 			Assert.AreEqual (orig, c.SelectedItem, "#9");
 		}
-		
+
 		[TestMethod]
 		public void SelectedItemTest ()
 		{
-			FakeComboBox box = new FakeComboBox ();
+			ComboBoxPoker box = new ComboBoxPoker ();
 			Assert.AreEqual (-1, box.SelectedIndex, "#1");
 			Assert.AreEqual (null, box.SelectedItem, "#2");
 
@@ -1076,11 +984,11 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual ("SelectionChangedEvent", box.methods [i++].MethodName, "#14." + i);
 			Assert.AreEqual ("SelectionChangedEvent", box.methods [i++].MethodName, "#14." + i);
 		}
-		
+
 		[TestMethod]
 		public void SelectedItemTest2 ()
 		{
-			FakeComboBox box = new FakeComboBox ();
+			ComboBoxPoker box = new ComboBoxPoker ();
 			object o = new object ();
 			box.Items.Add (o);
 			box.SelectedItem = o;
@@ -1091,11 +999,11 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (null, box.SelectedItem, "#3");
 			Assert.AreEqual (-1, box.SelectedIndex, "#4");
 		}
-		
+
 		[TestMethod]
 		public void SelectedItemTest3 ()
 		{
-			FakeComboBox box = new FakeComboBox ();
+			ComboBoxPoker box = new ComboBoxPoker ();
 			object o = new object ();
 			box.Items.Add (o);
 			box.SelectedItem = o;
@@ -1105,28 +1013,28 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual ("SelectionChangedEvent", box.methods [0].MethodName, "#2");
 			Assert.AreEqual (null, box.SelectedItem, "#3");
 			Assert.AreEqual (-1, box.SelectedIndex, "#4");
-			SelectionChangedEventArgs e = (SelectionChangedEventArgs)box.methods[0].ReturnValue;
+			SelectionChangedEventArgs e = (SelectionChangedEventArgs) box.methods [0].ReturnValue;
 			Assert.AreEqual (o, e.RemovedItems [0], "#5");
 			Assert.AreEqual (0, e.AddedItems.Count, "#6");
 		}
-		
-        [TestMethod]
-        public void SelectedItemTest4 ()
-        {
-            bool changed = false;
-            ComboBox box = new ComboBox();
-            box.SelectionChanged += delegate { changed = true; };
-            box.Items.Add(new object());
-            Assert.IsFalse(changed, "#1");
-            box.SelectedItem = box.Items[0];
-            Assert.IsTrue(changed, "#2");
-        }
+
+		[TestMethod]
+		public void SelectedItemTest4 ()
+		{
+			bool changed = false;
+			ComboBox box = new ComboBox ();
+			box.SelectionChanged += delegate { changed = true; };
+			box.Items.Add (new object ());
+			Assert.IsFalse (changed, "#1");
+			box.SelectedItem = box.Items [0];
+			Assert.IsTrue (changed, "#2");
+		}
 
 		[TestMethod]
 		[Asynchronous]
 		public void SelectThenClear ()
 		{
-			FakeComboBox box = new FakeComboBox ();
+			ComboBoxPoker box = new ComboBoxPoker ();
 			CreateAsyncTest (box,
 				() => box.ApplyTemplate (),
 				() => {
@@ -1155,7 +1063,7 @@ namespace MoonTest.System.Windows.Controls {
 		[Asynchronous]
 		public void SelectThenClear2 ()
 		{
-			FakeComboBox box = new FakeComboBox ();
+			ComboBoxPoker box = new ComboBoxPoker ();
 			CreateAsyncTest (box,
 				() => box.ApplyTemplate (),
 				() => {
@@ -1177,7 +1085,7 @@ namespace MoonTest.System.Windows.Controls {
 				}
 			);
 		}
-		
+
 		[TestMethod]
 		[MoonlightBug ("This hits a corner case involving the default style not being applied by moonlight but it is on silverlight")]
 		public void TemplateClosesDropdown ()
