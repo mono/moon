@@ -140,7 +140,26 @@ DeepZoomImageTileSource::DeepZoomImageTileSource (Uri *uri, bool nested)
 {
 	Init ();
 	this->nested = nested;
-	SetValue (DeepZoomImageTileSource::UriSourceProperty, new Value (*uri));
+	strip_and_set_uri (uri);
+}
+
+//this is only meant to be used at construct time, if the uri is set from xaml, or using new DeepZoomImageTileSource (Uri)
+// drt511 shows the new DeepZoomImageTileSource (Uri) behavior
+// drt509 shows that sources set by setting the DP shouldn't be stripped
+// http://www.silverlightshow.net/showcase/deepzoom/TestPage.html creates from xaml, and need ot be stripped
+
+void
+DeepZoomImageTileSource::strip_and_set_uri (Uri *uri)
+{
+	if (!uri)
+		return;
+	char *s = uri->ToString ();
+	Uri stripped = Uri ();
+	if (g_str_has_prefix (s, "/"))
+		stripped.Parse (s + 1);
+	else
+		stripped.Parse (s);
+	SetValue (DeepZoomImageTileSource::UriSourceProperty, new Value (stripped));	
 }
 
 DeepZoomImageTileSource::~DeepZoomImageTileSource ()

@@ -3795,13 +3795,9 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::MULTISCALETILESOURCE:
 	case Type::DEEPZOOMIMAGETILESOURCE: {
 		// As far as I know the only thing you can create here is a URI based DeepZoomImageTileSource
-		// Uri starting with a '/' in xaml are still relative to the source uri (as tested on SL :/ )
-		// MS DRT #511 tries to download "/sunset/sunset.xml", and it should be interpreted as a relative path.
-		// MS DRT #509 tries to download "/TestBins/TestResources/SeaDragon/Collection_20/Collection_20.xml", and it should be interpreted as an absolute path.
 		Uri uri;
-		if (!uri.Parse (g_str_has_prefix (s, "/") ? s+1 : s))
+		if (!uri.Parse (s))
 			break;
-
 		*v = Value::CreateUnrefPtr (new DeepZoomImageTileSource (&uri));
 		*v_set = true;
 

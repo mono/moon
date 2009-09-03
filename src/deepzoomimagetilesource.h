@@ -48,6 +48,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	bool isCollection;
 	int maxLevel;
+	void strip_and_set_uri (Uri *uri);
 
  protected:
 	virtual ~DeepZoomImageTileSource ();
@@ -59,8 +60,8 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DeepZoomImageTileSource ();
-
 	DeepZoomImageTileSource (Uri *uri, bool nested = false);
+
 	void Download ();
 	bool GetTileLayer (int level, int x, int y, Uri *uri);
 	bool IsDownloaded () {return downloaded; }
