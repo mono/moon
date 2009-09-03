@@ -1,3 +1,18 @@
+2009-09-03  Mario Carrion  <mcarrion@novell.com>
+
+	* ItemAutomationPeer.cs: New internal properties: RealItem and 
+	RealItemsControlAutomationPeer.
+	* SelectorAutomationPeer.cs: Raising Selection and SelectionItem events.
+	Fixed GetSelectedAutomationPeer. Property overridden:
+	ScrollPatternImplementor
+	* ItemsControlAutomationPeer.cs: ChildrenCore returns only ListBoxItems:
+	ItemsControl.Items. New virtual property ScrollPatternImplementor.
+	* SelectorItemAutomationPeer.cs: Now keeping a local copy of parent: 
+	selector. Raising SelectionItem events. Property overridden: 
+	RealItemsControlAutomationPeer.
+
+	r: alan
+
 2009-08-28  Mario Carrion  <mcarrion@novell.com>
 
 	* SelectorItemAutomationPeer.cs: New property SelectionProvider. Fixed

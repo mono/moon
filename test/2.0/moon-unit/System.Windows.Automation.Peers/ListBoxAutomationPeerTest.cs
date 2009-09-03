@@ -202,64 +202,16 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
+		public override void ContentTest_ScrollViewer ()
+		{
+			ContentTest_Template (new ListBoxConcrete ());
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public override void ContentTest ()
 		{
-			Assert.IsTrue (IsContentPropertyElement (), "ListBox ContentElement.");
-
-			bool concreteLoaded = false;
-			bool concreteLayoutUpdate = false;
-			ListBoxConcrete concrete = CreateConcreteFrameworkElement () as ListBoxConcrete;
-			concrete.Width = 300;
-			concrete.Height = 300;
-			concrete.Loaded += (o, e) => concreteLoaded = true;
-			concrete.LayoutUpdated += (o, e) => concreteLayoutUpdate = true;
-			TestPanel.Children.Add (concrete);
-
-			// StackPanel with two TextBlocks
-			bool stackPanelLoaded = false;
-			StackPanel stackPanel = new StackPanel ();
-			stackPanel.Children.Add (new TextBlock () { Text = "Text0" });
-			stackPanel.Children.Add (new TextBlock () { Text = "Text1" });
-			stackPanel.Loaded += (o, e) => stackPanelLoaded = true;
-
-			EnqueueConditional (() => concreteLoaded, "ConcreteLoaded #0");
-			Enqueue (() => {
-				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
-				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
-
-				Assert.IsNull (peer.GetChildren (), "GetChildren #0");
-
-				concreteLayoutUpdate = false;
-				concrete.Items.Add (stackPanel);
-				// Also one extra TextBlock
-				concrete.Items.Add (new TextBlock () { Text = "Text2" });
-			});
-			EnqueueConditional (() => concreteLoaded && stackPanelLoaded && concreteLayoutUpdate, "ConcreteLoaded #1");
-			Enqueue (() => {
-				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
-				Assert.IsNotNull (peer.GetChildren (), "GetChildren #1");
-
-				// Is 2 because StackPanel is wrapped into 1 ListBoxItem
-				Assert.AreEqual (2, peer.GetChildren ().Count, "GetChildren.Count #1");
-				// We add another TextBlock
-				concreteLayoutUpdate = false;
-				stackPanel.Children.Add (new TextBlock () { Text = "Text3" });
-				Assert.AreEqual (2, peer.GetChildren ().Count, "GetChildren.Count #2");
-				concrete.Items.Add (new TextBlock () { Text = "Text4" });
-				Assert.AreEqual (3, peer.GetChildren ().Count, "GetChildren.Count #3");
-				concreteLayoutUpdate = false;
-			});
-			// Let's add more children in order to show scrollbars
-			EnqueueConditional (() => concreteLoaded && stackPanelLoaded && concreteLayoutUpdate, "ConcreteLoaded #2");
-			Enqueue (() => {
-				for (int child = 0; child < 10; child++)
-					concrete.Items.Add (new TextBlock () { Text = string.Format ("Child: {0}", child) });
-				
-				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
-				Assert.IsNotNull (peer.GetChildren (), "GetChildren #2");
-				Assert.AreEqual (13, peer.GetChildren ().Count, "GetChildren.Count #4");
-			});
-			EnqueueTestComplete ();
+			ContentTest_Template (new ListBoxConcrete () { Template = null });
 		}
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()

@@ -1,3 +1,18 @@
+2009-09-03  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ListBoxAutomationPeerTest.cs: 
+	Tests added for testing content when Template is null and not null.
+	* System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: 
+	Tests added for testing content when Template is null and not null,
+	testing events.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	Testing events.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Fixed GetAutomationEventFrom and GetAutomationEventFrom, new internal
+	class to get Peer from provider.
+
+	r: alan
+
 2009-09-03  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ListBoxTest.cs:

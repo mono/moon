@@ -1,3 +1,11 @@
+2009-09-03  Mario Carrion  <mcarrion@novell.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs: New internal event
+	ParentSelectorChanged, raised when internal parentSelector
+	changes.
+
+	r: alan
+
 2009-09-03  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ListBox/ListBox.cs: ItemContainerStyle should

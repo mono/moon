@@ -34,6 +34,28 @@ namespace System.Windows.Automation.Peers {
 
 		protected SelectorItemAutomationPeer (UIElement uielement) : base (uielement)
 		{
+			ListBoxItem listboxitem = uielement as ListBoxItem;
+			if (listboxitem != null) {
+				// SelectionItem Pattern Automation Events
+				// - SelectionContainerProperty
+				listboxitem.ParentSelectorChanged += (o, e) => {
+					AutomationPeer oldSelectorPeer = null;
+					AutomationPeer newSelectorPeer = null;
+
+					if (selector != null)
+						oldSelectorPeer 
+							= FrameworkElementAutomationPeer.CreatePeerForElement (selector);
+					if (listboxitem.ParentSelector != null)
+						newSelectorPeer 
+							= FrameworkElementAutomationPeer.CreatePeerForElement (listboxitem.ParentSelector);
+
+					RaisePropertyChangedEvent (SelectionItemPatternIdentifiers.SelectionContainerProperty,
+					                           ProviderFromPeer (oldSelectorPeer),
+								   ProviderFromPeer (newSelectorPeer));
+					selector = listboxitem.ParentSelector;
+				};
+				selector = listboxitem.ParentSelector;
+			}
 		}
 
 		public override object GetPattern (PatternInterface patternInterface)
@@ -73,9 +95,8 @@ namespace System.Windows.Automation.Peers {
 			if (!((ISelectionItemProvider) this).IsSelected)
 				return;
 
-			Selector control = SelectorOwner;
-			if (control != null)
-				control.SelectedIndex = -1;
+			if (selector != null)
+				selector.SelectedIndex = -1;
 		}
 
 		void ISelectionItemProvider.Select ()
@@ -83,15 +104,16 @@ namespace System.Windows.Automation.Peers {
 			if (!IsEnabled ())
 				throw new ElementNotEnabledException ();
 
-			Selector control = SelectorOwner;
-			if (control != null)
-				control.SelectedItem = Item;
+			if (selector != null)
+				selector.SelectedItem = Item;
 		}
 
 		bool ISelectionItemProvider.IsSelected {
 			get {
-				Selector control = SelectorOwner;
-				return control != null && Item.Equals (control.SelectedItem);
+				ListBoxItem item = Owner as ListBoxItem;
+				return selector != null 
+				       && item != null
+				       && item.IsSelected;
 			}
 		}
 
@@ -103,28 +125,29 @@ namespace System.Windows.Automation.Peers {
 
 		#region Private fields
 
-		private Selector SelectorOwner {
-			get {
-				if (ItemsControlAutomationPeer != null)
-					return ItemsControlAutomationPeer.Owner as Selector;
-				else
-					return null;
-			}
-		}
-
 		private ISelectionProvider SelectionProvider {
 			get {
-				Selector selectorOwner = SelectorOwner;
-				if (selectorOwner == null)
+				if (selector == null)
 					return null;
 				AutomationPeer peer 
-					= FrameworkElementAutomationPeer.CreatePeerForElement (selectorOwner);
+					= FrameworkElementAutomationPeer.CreatePeerForElement (selector);
 				if (peer == null)
 					return null;
-				return peer.GetPattern (PatternInterface.Selection) as ISelectionProvider ;
+				return peer.GetPattern (PatternInterface.Selection) as ISelectionProvider;
 			}
 		}
 
 		#endregion
+
+		internal override ItemsControlAutomationPeer RealItemsControlAutomationPeer {
+			get { 
+				if (selector == null)
+					return null;
+				
+				return FrameworkElementAutomationPeer.CreatePeerForElement (selector) as ItemsControlAutomationPeer;
+			}
+		}
+
+		private Selector selector;
 	}
 }

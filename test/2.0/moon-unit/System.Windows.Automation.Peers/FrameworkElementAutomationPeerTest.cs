@@ -1031,12 +1031,12 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			public AutomationEventTuple GetAutomationEventFrom (AutomationPeer peer, AutomationEvents evnt)
 			{
-				return (from e in events where e.Event == evnt select e).FirstOrDefault();
+				return (from e in events where e.Event == evnt && peer == e.Peer select e).FirstOrDefault();
 			}
 
 			public AutomationPropertyEventTuple GetAutomationEventFrom (AutomationPeer peer, AutomationProperty property)
 			{
-				return (from e in properties where e.Property == property select e).FirstOrDefault();
+				return (from e in properties where e.Property == property && peer == e.Peer select e).FirstOrDefault();
 			}
 
 			public bool AutomationSingletonExists {
@@ -1118,6 +1118,19 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			private List<AutomationPropertyEventTuple> properties;
 			private object automationSingleton;
 			private Type singletonType;
+		}
+
+		internal class PeerFromProvider : FrameworkElementAutomationPeer {
+
+			public PeerFromProvider () : base (new Button ()) 
+			{
+			}
+
+			public AutomationPeer GetPeerFromProvider (IRawElementProviderSimple provider)
+			{
+				return PeerFromProvider (provider);
+			}
+
 		}
 	}
 }

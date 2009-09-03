@@ -64,7 +64,20 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Identifies the parent ListBox.
         /// </summary> 
-        internal Selector ParentSelector { get; set; }
+        internal Selector ParentSelector { 
+		get { return parentSelector; }
+		set { 
+			if (parentSelector == value)
+				return;
+
+			parentSelector = value;
+			// Used to raise UIA event
+			if (ParentSelectorChanged != null)
+				ParentSelectorChanged (this, EventArgs.Empty);
+		}
+	}
+	private Selector parentSelector;
+	internal event EventHandler ParentSelectorChanged; 
 
         internal bool IsFocused { get; set; }
 

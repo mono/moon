@@ -47,23 +47,11 @@ namespace System.Windows.Automation.Peers {
 		}
 
 		protected ItemsControlAutomationPeer ItemsControlAutomationPeer {
-			get { 
-				FrameworkElement frameworkElement = Owner as FrameworkElement;
-				if (frameworkElement == null || frameworkElement.Parent == null) 
-					return null;
-
-				UIElement parent = frameworkElement.Parent as UIElement;
-				if (parent == null)
-					return null;
-
-				AutomationPeer peer 
-					= FrameworkElementAutomationPeer.CreatePeerForElement (parent);
-				return peer as ItemsControlAutomationPeer; 
-			}
+			get { return RealItemsControlAutomationPeer; }
 		}
 
 		protected object Item {
-			get { return Owner; }
+			get { return RealItem; }
 		}
 
 		internal override List<AutomationPeer> ChildrenCore {
@@ -74,6 +62,17 @@ namespace System.Windows.Automation.Peers {
 				else
 					return base.ChildrenCore; 
 			}
+		}
+
+		internal object RealItem {
+			get {
+				ListBoxItem item = Owner as ListBoxItem;
+				return item == null ? Owner : item.Item;
+			}
+		}
+
+		internal virtual ItemsControlAutomationPeer RealItemsControlAutomationPeer {
+			get { return null; }
 		}
 
 	}
