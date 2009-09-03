@@ -1885,13 +1885,13 @@ PluginInstance::SetMaxFrameRate (int value)
 gint32
 PluginInstance::GetActualHeight ()
 {
-	return surface ? surface->GetWindow()->GetHeight() : 0;
+	return surface && surface->GetWindow () ? surface->GetWindow()->GetHeight() : 0;
 }
 
 gint32
 PluginInstance::GetActualWidth ()
 {
-	return surface ? surface->GetWindow()->GetWidth() : 0;
+	return surface && surface->GetWindow () ? surface->GetWindow()->GetWidth() : 0;
 }
 
 MoonlightScriptControlObject *

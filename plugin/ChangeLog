@@ -1,3 +1,8 @@
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
+	* plugin.cpp: It's possible that window will be null, so check
+	  it exists before using it. r: toshok
+
 2009-08-27  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::NewStream): set the current deployment here.
