@@ -39,7 +39,7 @@ namespace System.Windows.Controls {
 			IsEnabledProperty.AddPropertyChangeCallback (OnIsEnabledPropertyChanged);
 		}
 		
-		private void Initialize ()
+		internal virtual void Initialize ()
 		{
 			// hook up the TemplateApplied callback so we
 			// can notify controls when their template has

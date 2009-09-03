@@ -250,14 +250,8 @@ namespace System.Windows.Controls {
 	}
 
 	partial class TextBox {
-		public TextBox () : base (NativeMethods.text_box_new (), true)
-		{
-			Initialize ();
-		}
-		internal TextBox (IntPtr raw, bool dropref) : base (raw, dropref)
-		{
-			Initialize ();
-		}
+		public TextBox () : base (NativeMethods.text_box_new (), true) {}
+		internal TextBox (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class UIElementCollection {

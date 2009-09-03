@@ -1,3 +1,7 @@
+2009-09-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.h: Nuke the CallInitialize metadata from TextBox.
+
 2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.h: drop the GenrateJSBinding attributes

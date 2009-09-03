@@ -52,8 +52,10 @@ namespace System.Windows.Controls
 			get; set;
 		}
 		
-		void Initialize ()
+		internal override void Initialize ()
 		{
+			base.Initialize ();
+			
 			CursorPositionChanged += OnCursorPositionChanged;
 			IsEnabledChanged += delegate { ChangeVisualState (); };
 			Loaded += delegate { ChangeVisualState (); };
