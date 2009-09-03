@@ -197,6 +197,18 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
+		[MoonlightBug]
+		public override void IsSelectedTest ()
+		{
+			base.IsSelectedTest ();
+		}
+
+		[MoonlightBug]
+		public override void IsSelectedTest2 ()
+		{
+			base.IsSelectedTest2 ();
+		}
+
 		[Asynchronous]
 		public override void IsSelectedTest4 ()
 		{

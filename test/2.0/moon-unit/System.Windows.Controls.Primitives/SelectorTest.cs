@@ -150,30 +150,35 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		public virtual void IsSelectedTest ()
 		{
 			IPoker box = CurrentControl;
-			ListBoxItem item = new ListBoxItem ();
-			box.Items.Add (item);
-			box.SelectedItem = item;
-			Assert.IsTrue (item.IsSelected, "#1");
+			foreach (ListBoxItem i in new ListBoxItem [] { new ListBoxItem (), new ComboBoxItem () }) {
+				ListBoxItem item = i;
 
-			box.Items.Clear ();
-			item = new ListBoxItem ();
-			box.Items.Add (item);
-			Assert.IsFalse (item.IsSelected, "#2");
+				box.Items.Add (item);
+				box.SelectedItem = item;
+				Assert.IsTrue (item.IsSelected, "#1");
+
+				box.Items.Remove (item);
+				Assert.IsTrue (item.IsSelected, "#2");
+
+				box.Items.Add (item);
+				box.SelectedItem = item;
+				box.Items.Clear ();
+				Assert.IsTrue (item.IsSelected, "#3");
+			}
 		}
 
 		[TestMethod]
 		public virtual void IsSelectedTest2 ()
 		{
-			IPoker box = CurrentControl;
-			ListBoxItem item = new ComboBoxItem ();
-			box.Items.Add (item);
-			box.SelectedItem = item;
-			Assert.IsTrue (item.IsSelected, "#1");
+			// Add a ListBoxItem/ComboBoxItem which has IsSelected set to true
+			foreach (var item in new ListBoxItem [] { new ListBoxItem (), new ComboBoxItem () }) {
+				item.IsSelected = true;
+				CurrentControl.Items.Add (item);
+				Assert.AreEqual (0, CurrentControl.SelectedIndex, "#1");
+				Assert.AreEqual (item, CurrentControl.SelectedItem, "#2");
 
-			box.Items.Clear ();
-			item = new ListBoxItem ();
-			box.Items.Add (item);
-			Assert.IsFalse (item.IsSelected, "#2");
+				CurrentControl.Items.Clear ();
+			}
 		}
 
 		[TestMethod]

@@ -1,3 +1,13 @@
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls.Primitives/SelectorTest.cs: Add some
+	  more tests for IsSelected/SelectedIndex/SelectedObject. We
+	  should wait til we're implementing SL3 behaviours before
+	  fixing these tests as there's a bug in Silverlight 2.0 which
+	  makes it very hard to figure out what's going on. r: toshok
+
 2009-09-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Add CrossDomainPolicyManager.cs to the build
