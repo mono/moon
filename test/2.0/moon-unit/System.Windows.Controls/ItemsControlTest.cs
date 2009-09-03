@@ -190,6 +190,12 @@ namespace MoonTest.System.Windows.Controls {
 			get { throw new NotSupportedException ("Don't use this"); }
 			set { throw new NotSupportedException ("Don't use this"); }
 		}
+
+		Style IPoker.ItemContainerStyle
+		{
+			get { throw new NotSupportedException (); }
+			set { throw new NotSupportedException (); }
+		}
 	}
 	
 	[TestClass]

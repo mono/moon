@@ -33,6 +33,7 @@ namespace MoonTest.System.Windows.Controls
 
 		string DisplayMemberPath { get; set; }
 		ItemCollection Items { get; }
+		Style ItemContainerStyle { get; set; }
 		IEnumerable ItemsSource { get; set; }
 		DataTemplate ItemTemplate { get; set; }
 		object SelectedItem { get; set; }

@@ -404,5 +404,30 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 
 			Assert.AreEqual (element.ReadLocalValue (ContentControl.ContentProperty), item, "binding is unset");
 		}
+
+		[TestMethod]
+		public virtual void StyleExistsOnContainer ()
+		{
+			ListBoxItem item = null;
+
+			item = new ListBoxItem ();
+			CurrentControl.PrepareContainerForItemOverride_ (item, new object ());
+			Assert.IsUnset (item, ListBoxItem.StyleProperty, "#1");
+
+			CurrentControl.ItemContainerStyle = null;
+			item = new ListBoxItem ();
+			CurrentControl.PrepareContainerForItemOverride_ (item, new object ());
+			Assert.IsUnset (item, ListBoxItem.StyleProperty, "#2");
+
+			CurrentControl.ItemContainerStyle = new Style (typeof (ListBoxItem));
+			item = new ListBoxItem ();
+			CurrentControl.PrepareContainerForItemOverride_ (item, new object ());
+			Assert.AreEqual (CurrentControl.ItemContainerStyle, item.ReadLocalValue (ListBoxItem.StyleProperty), "#3");
+
+			Style containerStyle = new Style (typeof (ListBoxItem));
+			item = new ListBoxItem { Style = containerStyle };
+			CurrentControl.PrepareContainerForItemOverride_ (item, new object ());
+			Assert.AreEqual (containerStyle, item.ReadLocalValue (ListBoxItem.StyleProperty), "#4");
+		}
 	}
 }

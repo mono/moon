@@ -111,7 +111,8 @@ namespace System.Windows.Controls
         {
             base.PrepareContainerForItemOverride(element, item);
             ListBoxItem lbi = (ListBoxItem) element;
-            lbi.Style = ItemContainerStyle;
+            if (lbi.Style == null && ItemContainerStyle != null)
+                lbi.Style = ItemContainerStyle;
         }
 
         /// <summary> 

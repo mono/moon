@@ -219,7 +219,8 @@ namespace System.Windows.Controls
 		{
 			base.PrepareContainerForItemOverride (element, item);
 			ListBoxItem cb = (ListBoxItem) element;
-			cb.Style = ItemContainerStyle;
+			if (cb.Style == null && ItemContainerStyle != null)
+				cb.Style = ItemContainerStyle;
 		}
 
 		public override void OnApplyTemplate ()

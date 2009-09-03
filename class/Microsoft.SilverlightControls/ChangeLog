@@ -1,5 +1,11 @@
 2009-09-03  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ListBox/ListBox.cs: ItemContainerStyle should
+	  only be copied to the container if it is non-null and there
+	  is no existing style.
+
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ListBox/ListBox.cs: Remove code duplication -
 	  DisplayMemberPath handling should only exist in
 	  ItemsControl. This fixes DisplayMemberPath handling for
