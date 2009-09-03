@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 472 methods
+# 473 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
@@ -74,6 +74,7 @@
 +SSC-M: System.Void Mono.ToggleRef::Initialize()
 +SSC-M: System.Void Mono.ToggleRef::Free()
 +SSC-M: Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
++SSC-M: System.IntPtr Mono.UnmanagedUri::FromUri(System.Uri)
 +SSC-M: System.Object Mono.Value::ToObject(System.Type,System.IntPtr)
 +SSC-M: Mono.Value Mono.Value::FromObject(System.Object,System.Boolean)
 +SSC-M: System.IntPtr Mono.Value::StringToIntPtr(System.String)
