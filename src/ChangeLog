@@ -1,5 +1,9 @@
 2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h: drop the GenrateJSBinding attributes
+
+2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* xaml.cpp:
 	* deepzoomimagetilesource.h|cpp: remove a hack in the parser, and
 	move it to the DZITS ctor. DRTs (509 and 511) and some sites shows

@@ -130,23 +130,19 @@ class MultiScaleImage : public MediaBase {
 	//
 	// Methods
 	//
-	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	void ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
 	/* @GenerateCBinding,GeneratePInvoke */
 	Point ElementToLogicalPoint (Point elementPoint);
 	/* @GenerateCBinding,GeneratePInvoke */
 	Point LogicalToElementPoint (Point logicalPoint);
 
-	/* @GenerateJSBinding */
 	MultiScaleSubImage *GetIthSubImage (int index);
 	// There is no documentation in MSDN for this method, it only shows up in a few tests.
-	/* @GenerateJSBinding */
 	int LogicalToElementX (int x, int y);
 	// There is no documentation in MSDN for this method, it only shows up in a few tests.
-	/* @GenerateJSBinding */
 	int LogicalToElementY (int x, int y);
 	// There is no documentation in MSDN for this method, it only shows up in a few tests.
-	/* @GenerateJSBinding */
 	int GetSubImageCount ();
 	
 	//
