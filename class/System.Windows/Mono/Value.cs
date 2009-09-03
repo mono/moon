@@ -102,6 +102,29 @@ namespace Mono {
 		public IntPtr query;
 		public IntPtr fragment;
 		public IntPtr originalString;
+
+		public unsafe static IntPtr FromUri (Uri managed_uri)
+		{
+			IntPtr uri = Marshal.AllocHGlobal (sizeof (UnmanagedUri));
+	
+			UnmanagedUri *uuri = (UnmanagedUri*)uri;
+			uuri->scheme = IntPtr.Zero;
+			uuri->user = IntPtr.Zero;
+			uuri->auth = IntPtr.Zero;
+			uuri->passwd = IntPtr.Zero;
+			uuri->host = IntPtr.Zero;
+			uuri->path = IntPtr.Zero;
+			uuri->_params = IntPtr.Zero;
+			uuri->query = IntPtr.Zero;
+			uuri->fragment = IntPtr.Zero;
+			uuri->originalString = IntPtr.Zero;
+	
+			NativeMethods.uri_parse (uri, managed_uri.OriginalString, false);
+	
+			uuri->isAbsolute = managed_uri.IsAbsoluteUri;
+
+			return uri;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -553,23 +576,7 @@ namespace Mono {
 					Uri uri = (Uri) v;
 
 					value.k = Kind.URI;
-					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedUri));
-
-					UnmanagedUri *uuri = (UnmanagedUri*)value.u.p;
-					uuri->scheme = IntPtr.Zero;
-					uuri->user = IntPtr.Zero;
-					uuri->auth = IntPtr.Zero;
-					uuri->passwd = IntPtr.Zero;
-					uuri->host = IntPtr.Zero;
-					uuri->path = IntPtr.Zero;
-					uuri->_params = IntPtr.Zero;
-					uuri->query = IntPtr.Zero;
-					uuri->fragment = IntPtr.Zero;
-					uuri->originalString = IntPtr.Zero;
-
-					NativeMethods.uri_parse (value.u.p, uri.OriginalString, false);
-
-					uuri->isAbsolute = uri.IsAbsoluteUri;
+					value.u.p = UnmanagedUri.FromUri (uri);
 				}
 				else if (v is XmlLanguage) {
 					XmlLanguage lang = (XmlLanguage) v;

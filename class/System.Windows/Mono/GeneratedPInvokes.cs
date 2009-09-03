@@ -540,6 +540,10 @@ namespace Mono {
 		public extern static IntPtr deep_zoom_image_tile_source_new ();
 
 		[DllImport ("moon")]
+		// void deep_zoom_image_tile_source_strip_and_set_uri (DeepZoomImageTileSource *instance, Uri *uri);
+		public extern static void deep_zoom_image_tile_source_strip_and_set_uri (IntPtr instance, IntPtr uri);
+
+		[DllImport ("moon")]
 		// void dependency_object_add_property_change_handler (DependencyObject *instance, DependencyProperty *property, PropertyChangeHandler cb, gpointer closure);
 		public extern static void dependency_object_add_property_change_handler (IntPtr instance, IntPtr property, Mono.UnmanagedPropertyChangeHandler cb, IntPtr closure);
 

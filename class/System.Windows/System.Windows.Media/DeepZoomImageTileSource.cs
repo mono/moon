@@ -4,7 +4,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2008 Novell, Inc. (http://www.novell.com)
+ * Copyright 2008-2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -22,7 +22,14 @@ namespace System.Windows.Media
 	{
 		public DeepZoomImageTileSource (Uri sourceUri) : this ()
 		{
-			UriSource = sourceUri;
+			if (sourceUri == null)
+				return;
+
+			IntPtr uuri = UnmanagedUri.FromUri (sourceUri);
+	
+			NativeMethods.deep_zoom_image_tile_source_strip_and_set_uri (native, uuri);
+
+			Marshal.FreeHGlobal (uuri);
 		}
 
 		protected override void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources)

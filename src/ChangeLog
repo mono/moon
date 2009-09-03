@@ -4,6 +4,10 @@
 
 2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* deepzoomimagetilesource.h: add Generate* attributes
+
+2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.h: drop the GenrateJSBinding attributes
 
 2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>

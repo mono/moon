@@ -1144,6 +1144,16 @@ deep_zoom_image_tile_source_new (void)
 }
 
 
+void
+deep_zoom_image_tile_source_strip_and_set_uri (DeepZoomImageTileSource *instance, Uri *uri)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->strip_and_set_uri (uri);
+}
+
+
 /**
  * DependencyObject
  **/

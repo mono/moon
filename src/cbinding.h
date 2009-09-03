@@ -1185,6 +1185,9 @@ DataTemplate *data_template_new (void);
 /* @GeneratePInvoke */
 DeepZoomImageTileSource *deep_zoom_image_tile_source_new (void);
 
+/* @GeneratePInvoke */
+void deep_zoom_image_tile_source_strip_and_set_uri (DeepZoomImageTileSource *instance, Uri *uri);
+
 /**
  * DependencyObject
  **/

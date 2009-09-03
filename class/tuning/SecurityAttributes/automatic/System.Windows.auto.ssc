@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 471 methods
+# 472 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
@@ -317,6 +317,7 @@
 +SSC-M: System.Void System.Windows.Media.CompositionTarget::add_Rendering(System.EventHandler)
 +SSC-M: System.Void System.Windows.Media.CompositionTarget::remove_Rendering(System.EventHandler)
 +SSC-M: System.Void System.Windows.Media.DeepZoomImageTileSource::.ctor()
++SSC-M: System.Void System.Windows.Media.DeepZoomImageTileSource::.ctor(System.Uri)
 +SSC-M: System.Void System.Windows.Media.DoubleCollection::.ctor()
 +SSC-M: System.Void System.Windows.Media.EllipseGeometry::.ctor()
 +SSC-M: System.Void System.Windows.Media.GeneralTransform::.ctor()

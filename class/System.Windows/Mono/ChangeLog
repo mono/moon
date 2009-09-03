@@ -1,3 +1,8 @@
+2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* Value.cs: static UnmanagedUri.FromUri () method. used in Value
+	and DZITS.cs
+
 2009-08-27  Chris Toshok  <toshok@ximian.com>
     
     	* ManagedXamlLoader.cs (ManagedXamlLoader.LookupType): rework this
