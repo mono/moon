@@ -59,7 +59,6 @@
 			// Result:	SecurityException
 			// Notes:	works only if UserHostName returns the name, not the IP address
 			if (path == "crossdomain.xml") {
-				Console.WriteLine ("FLASH-2: using UserHostName {0}", Context.Request.UserHostName);
 				string s = String.Format ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='{0}'/></cross-domain-policy>", 
 					Context.Request.UserHostName);
 				Response.Write (s);
@@ -257,6 +256,15 @@
 				FlashDefault (path);
 			}
 			break;
+		case "flash-22":
+			// Description:	allow domain name using host name (MS docs says only '*' is allowed)
+			// Result:	SecurityException
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='policy-client'/></cross-domain-policy>");
+			} else {
+				FlashDefault (path);
+			}
+			break;
 
 
 		case "silverlight-1":
@@ -296,7 +304,6 @@
 	</cross-domain-access>
 </access-policy>");
 			} else {
-Console.WriteLine ("{0} : {1}", SERVER_NAME, path);
 				Default (path);
 			}
 			break;
@@ -379,6 +386,153 @@ Console.WriteLine ("{0} : {1}", SERVER_NAME, path);
 		<policy>
 			<allow-from>
 				<domain uri='*'/>
+			</allow-from>
+			<grant-to>
+				<resource path='/' include-subpaths='true'/>
+			</grant-to>
+		</policy>
+	</cross-domain-access>
+</access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-8":
+			// Description:	give access only to 'policy-client' (missing scheme)
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?>
+<access-policy>
+	<cross-domain-access>
+		<policy>
+			<allow-from>
+				<domain uri='policy-client'/>
+			</allow-from>
+			<grant-to>
+				<resource path='/' include-subpaths='true'/>
+			</grant-to>
+		</policy>
+	</cross-domain-access>
+</access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-9":
+			// Description:	give access only to 'http://policy-client'
+			// Result:	OK
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?>
+<access-policy>
+	<cross-domain-access>
+		<policy>
+			<allow-from>
+				<domain uri='http://policy-client'/>
+			</allow-from>
+			<grant-to>
+				<resource path='/' include-subpaths='true'/>
+			</grant-to>
+		</policy>
+	</cross-domain-access>
+</access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-10":
+			// Description:	give access only to 'http://policy-client:80' (default port)
+			// Result:	OK
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?>
+<access-policy>
+	<cross-domain-access>
+		<policy>
+			<allow-from>
+				<domain uri='http://policy-client:80'/>
+			</allow-from>
+			<grant-to>
+				<resource path='/' include-subpaths='true'/>
+			</grant-to>
+		</policy>
+	</cross-domain-access>
+</access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-11":
+			// Description:	give access only to 'http://policy-client:8080' (alternate port)
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?>
+<access-policy>
+	<cross-domain-access>
+		<policy>
+			<allow-from>
+				<domain uri='http://policy-client:8080'/>
+			</allow-from>
+			<grant-to>
+				<resource path='/' include-subpaths='true'/>
+			</grant-to>
+		</policy>
+	</cross-domain-access>
+</access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-12":
+			// Description:	give access only to 'https://policy-client'
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?>
+<access-policy>
+	<cross-domain-access>
+		<policy>
+			<allow-from>
+				<domain uri='https://policy-client'/>
+			</allow-from>
+			<grant-to>
+				<resource path='/' include-subpaths='true'/>
+			</grant-to>
+		</policy>
+	</cross-domain-access>
+</access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-13":
+			// Description:	give access only to 'http://policy-client/WebPolicies.html' (full path)
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?>
+<access-policy>
+	<cross-domain-access>
+		<policy>
+			<allow-from>
+				<domain uri='http://policy-client/WebPolicies.html'/>
+			</allow-from>
+			<grant-to>
+				<resource path='/' include-subpaths='true'/>
+			</grant-to>
+		</policy>
+	</cross-domain-access>
+</access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-14":
+			// Description:	give access only to 'unexisting-client'
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?>
+<access-policy>
+	<cross-domain-access>
+		<policy>
+			<allow-from>
+				<domain uri='http://unexisting-client'/>
 			</allow-from>
 			<grant-to>
 				<resource path='/' include-subpaths='true'/>

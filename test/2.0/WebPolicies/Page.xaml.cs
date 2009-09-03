@@ -92,6 +92,8 @@ namespace WebPolicies {
 			{ "http://flash-19/test/allow-all-domains-permitted-cross-domain-policies-by-ftp-filename", CheckOk },
 			{ "http://flash-20/test/allow-all-domains-permitted-cross-domain-policies-all", CheckOk },
 			{ "http://flash-21/test/allow-all-domains-permitted-cross-domain-policies-invalid-value", CheckSecurityException },
+			// another test where we check Domain!="*" using policy-client
+			{ "http://flash-22/test/allow-caller-domain-policy-client", CheckSecurityException },
 
 			// add no policy test
 			// add redirection test (not allowed on policy files)
@@ -143,6 +145,14 @@ namespace WebPolicies {
 			{ "http://silverlight-6/test/file", CheckSecurityException },				// fail because "" is invalid
 			// silverlight-7 has an invalid (but accepted) XML policy with whitespace preceding the XML declaration
 			{ "http://silverlight-7/", CheckOk },
+			// test cases where Domain!='*'
+			{ "http://silverlight-8/", CheckSecurityException },	// policy-client (without scheme) is invalid
+			{ "http://silverlight-9/", CheckOk },			// http://polici-client == OK
+			{ "http://silverlight-10/", CheckOk },			// http://polici-client:80 (default port) == OK
+			{ "http://silverlight-11/", CheckSecurityException },	// http://polici-client:8080 (port) is invalid
+			{ "http://silverlight-12/", CheckSecurityException },	// https://polici-client is invalid (from http)
+			{ "http://silverlight-13/", CheckSecurityException },	// http://polici-client/WebPolicies.html is invalid
+			{ "http://silverlight-14/", CheckSecurityException },	// another http host
 
 			// add redirection test (not allowed on policy files)
 			// return some binary file

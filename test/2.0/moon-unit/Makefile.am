@@ -84,6 +84,7 @@ SOURCES= \
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/BaseDomainPolicy.cs	\
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicy.cs	\
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicyParser.cs	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/CrossDomainPolicyManager.cs	\
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicy.cs	\
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicyParser.cs	\
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ICrossDomainPolicy.cs

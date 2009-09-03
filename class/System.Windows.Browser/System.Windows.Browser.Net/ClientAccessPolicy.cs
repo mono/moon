@@ -177,7 +177,9 @@ namespace System.Windows.Browser.Net {
 				// check domains
 				if (AllowAnyDomain)
 					return true;
-				if (Domains.All (domain => domain.DnsSafeHost != uri.DnsSafeHost))
+
+				string app_root = CrossDomainPolicyManager.GetRoot (ApplicationUri);
+				if (Domains.All (domain => domain.ToString () != app_root))
 					return false;
 				return true;
 			}

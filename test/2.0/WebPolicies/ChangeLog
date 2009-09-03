@@ -1,3 +1,10 @@
+2009-09-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Global.asax, Page.xaml.cs: Add policies and test cases for
+	Silverlight <domain uri='X'> and one for Flash where Domain!='*'
+
+	r: andreia
+
 2009-08-27  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Global.asax, Page.xaml.cs: Add policies and test cases for

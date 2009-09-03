@@ -44,6 +44,14 @@ namespace System.Windows.Browser.Net {
 
 	static class CrossDomainPolicyManager {
 
+		public static string GetRoot (Uri uri)
+		{
+			if ((uri.Scheme == "http" && uri.Port == 80) || (uri.Scheme == "https" && uri.Port == 443) || (uri.Port == -1))
+				return String.Format ("{0}://{1}/", uri.Scheme, uri.DnsSafeHost);
+			else
+				return String.Format ("{0}://{1}:{2}/", uri.Scheme, uri.DnsSafeHost, uri.Port);
+		}
+#if !TEST
 		public const string ClientAccessPolicyFile = "/clientaccesspolicy.xml";
 		public const string CrossDomainFile = "/crossdomain.xml";
 
@@ -56,14 +64,6 @@ namespace System.Windows.Browser.Net {
 		static internal ICrossDomainPolicy PolicyDownloadPolicy = new PolicyDownloadPolicy ();
 		static ICrossDomainPolicy site_of_origin_policy = new SiteOfOriginPolicy ();
 		static ICrossDomainPolicy no_access_policy = new NoAccessPolicy ();
-
-		public static string GetRoot (Uri uri)
-		{
-			if ((uri.Scheme == "http" && uri.Port == 80) || (uri.Scheme == "https" && uri.Port == 443) || (uri.Port == -1))
-				return String.Format ("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
-			else
-				return String.Format ("{0}://{1}:{2}", uri.Scheme, uri.DnsSafeHost, uri.Port);
-		}
 
 		static Uri GetRootUri (Uri uri)
 		{
@@ -272,6 +272,7 @@ namespace System.Windows.Browser.Net {
 			// does the policy allows access ?
 			return policy.IsAllowed (ip);
 		}
+#endif
 	}
 }
 

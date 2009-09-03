@@ -1,3 +1,13 @@
+2009-09-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientAccessPolicy.cs: Fix Domain comparison when the value
+	differs from '*'
+	* CrossDomainPolicyManager.cs: Expose GetRoot for the unit tests
+	* FlashCrossDomainPolicy.cs: Only support Domain='*' like SL does
+	and fix Secure property on AllowHttpRequestHeadersFrom
+
+	r: andreia
+
 2009-08-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* FlashCrossDomainPolicy.cs: Secure policy (default) means that
