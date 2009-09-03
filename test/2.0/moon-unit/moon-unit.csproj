@@ -168,9 +168,11 @@
     <Compile Include="System.Windows.Controls\ControlTemplateTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTest.cs" />
     <Compile Include="System.Windows.Controls\GridTest.cs" />
+    <Compile Include="System.Windows.Controls\GridTestAuto.cs" />
     <Compile Include="System.Windows.Controls\ImageTest.cs" />
     <Compile Include="System.Windows.Controls\InkPresenterTest.cs" />
     <Compile Include="System.Windows.Controls\ItemCollectionTest.cs" />
+    <Compile Include="System.Windows.Controls\ItemsControlTestBase.cs" />
     <Compile Include="System.Windows.Controls\ItemsControlTest.cs" />
     <Compile Include="System.Windows.Controls\ListBoxTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.cs" />
