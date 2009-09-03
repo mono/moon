@@ -186,14 +186,22 @@ namespace System.Windows.Controls.Primitives {
 		protected override void ClearContainerForItemOverride (DependencyObject element, object item)
 		{
 			base.ClearContainerForItemOverride (element, item);
-			if (element == null)
-				throw new NullReferenceException ();
-			
 			ListBoxItem lbItem = (ListBoxItem) element;
 			lbItem.Content = null;
 			lbItem.IsSelected = false;
+			lbItem.ParentSelector = null;
 			if (SelectedItem == item && GetContainerItem (SelectedIndex) != null)
 				SelectedItem = null;
+		}
+
+		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
+		{
+			base.PrepareContainerForItemOverride (element, item);
+			ListBoxItem listBoxItem = (ListBoxItem) element; 
+			listBoxItem.ParentSelector = this; 
+			listBoxItem.Item = item;
+			if (listBoxItem.IsSelected && GetContainerItem (SelectedIndex) != null)
+				SelectedItem = item;
 		}
 
 		public override void OnApplyTemplate ()

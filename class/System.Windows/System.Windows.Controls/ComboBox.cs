@@ -204,13 +204,6 @@ namespace System.Windows.Controls
 		{
 			return base.ArrangeOverride (arrangeBounds);
 		}
-		
-		protected override void ClearContainerForItemOverride (DependencyObject element, object item)
-		{
-			base.ClearContainerForItemOverride (element, item);
-			ListBoxItem cb = (ListBoxItem) element;
-			cb.ParentSelector = null;
-		}
 
 		protected override DependencyObject GetContainerForItemOverride ()
 		{
@@ -226,9 +219,7 @@ namespace System.Windows.Controls
 		{
 			base.PrepareContainerForItemOverride (element, item);
 			ListBoxItem cb = (ListBoxItem) element;
-			cb.Item = item;
 			cb.Style = ItemContainerStyle;
-			cb.ParentSelector = this;
 		}
 
 		public override void OnApplyTemplate ()

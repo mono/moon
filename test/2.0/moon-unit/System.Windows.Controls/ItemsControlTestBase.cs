@@ -218,6 +218,22 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public virtual void DisplayMemberPathTest2 ()
+		{
+			// Check if 'DisplayMemberPath' is used when a UIElement
+			// is added to the ItemsCollection
+			ItemsControl c = (ItemsControl) CurrentControl;
+			CurrentControl.DisplayMemberPath = "Width";
+
+			TestPanel.Children.Add (c);
+			Enqueue (() => c.ItemTemplate = null);
+			Enqueue (() => c.ApplyTemplate ());
+			Enqueue (() => c.Items.Add (new object ()));
+			// Validation is performed in the subclasses
+		}
+
+		[TestMethod]
 		public virtual void GetContainerForItemOverride ()
 		{
 			IPoker p = CurrentControl;

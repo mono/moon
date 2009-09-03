@@ -232,12 +232,6 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
-		[MoonlightBug]
-		public override void PrepareContainerForItemOverride_DisplayMemberPath ()
-		{
-			base.PrepareContainerForItemOverride_DisplayMemberPath ();
-		}
-
 		class ListBoxItemSubclass : ListBoxItem { }
 
 		[TestMethod]

@@ -109,6 +109,22 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			p.ClearContainerForItemOverride_ (item, null);
 		}
 
+		[Asynchronous]
+		public override void DisplayMemberPathTest2 ()
+		{
+			base.DisplayMemberPathTest2 ();
+			Enqueue (() => { if (CurrentControl is ComboBox)((ComboBox) CurrentControl).IsDropDownOpen = true; });
+			Enqueue (() => {
+				var p = (ListBoxItem) CurrentControl.LastCreatedContainer;
+				Assert.AreEqual (CurrentControl.LastPreparedItem, p.Content, "#content is item");
+				Assert.AreEqual (p.Content, p.ReadLocalValue (ListBoxItem.ContentProperty), "#content is local");
+				Assert.AreEqual (CurrentControl.LastPreparedItem, p.DataContext, "#datacontext is item");
+				Assert.AreEqual (p.DataContext, p.ReadLocalValue (ListBoxItem.DataContextProperty), "#datacontext is local");
+				Assert.IsNotNull (p.ContentTemplate, "#ContentTemplate has been set");
+			});
+			EnqueueTestComplete ();
+		}
+
 		[TestMethod]
 		public virtual void GetContainerForItemOverride3 ()
 		{

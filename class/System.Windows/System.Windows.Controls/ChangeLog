@@ -1,3 +1,9 @@
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Remove code duplication - DisplayMemberPath
+	  handling should only exist in ItemsControl. This fixes
+	  DisplayMemberPath handling for ListBox too. r: sde
+
 2009-09-02  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs: Support for DisplayMemberPath should be

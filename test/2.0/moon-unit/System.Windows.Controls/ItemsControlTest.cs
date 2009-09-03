@@ -227,6 +227,21 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
+		[Asynchronous]
+		public override void DisplayMemberPathTest2 ()
+		{
+			base.DisplayMemberPathTest2 ();
+			Enqueue (() => {
+				var p = (ContentPresenter) CurrentControl.LastCreatedContainer;
+				Assert.AreEqual (CurrentControl.LastPreparedItem, p.Content, "#content is item");
+				Assert.AreEqual (p.Content, p.ReadLocalValue (ContentPresenter.ContentProperty), "#content is local");
+				Assert.AreEqual (CurrentControl.LastPreparedItem, p.DataContext, "#datacontext is item");
+				Assert.AreEqual (p.DataContext, p.ReadLocalValue (ContentPresenter.DataContextProperty), "#datacontext is local");
+				Assert.IsNotNull (p.ContentTemplate, "#ContentTemplate has been set");
+			});
+			EnqueueTestComplete ();
+		}
+
 		public override void GetContainerForItemOverride2 ()
 		{
 			base.GetContainerForItemOverride2 ();

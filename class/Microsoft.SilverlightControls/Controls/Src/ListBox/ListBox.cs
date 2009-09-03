@@ -110,77 +110,9 @@ namespace System.Windows.Controls
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item) 
         {
             base.PrepareContainerForItemOverride(element, item);
-            ListBoxItem listBoxItem = (ListBoxItem) element; 
-            Debug.Assert(null != listBoxItem);
-            // Prepare the ListBoxItem state
-            listBoxItem.ParentSelector = this; 
-            // Prepare the ListBoxItem wrapper 
-            bool setContent = true;
-            listBoxItem.Item = item;
-            if (listBoxItem != item) 
-            {
-                // If not a ListBoxItem, propagate the ListBox's ItemTemplate
-                if (null != ItemTemplate) 
-                {
-                    // ItemsControl owns recreating containers if ItemTemplate ever changes
-                    listBoxItem.ContentTemplate = ItemTemplate; 
-                } 
-#if !WPF
-                else if (!string.IsNullOrEmpty(DisplayMemberPath)) 
-                {
-                    // Create a binding for displaying the DisplayMemberPath (which always renders as a string)
-                    Binding binding = new Binding(DisplayMemberPath); 
-                    binding.Converter = new DisplayMemberValueConverter();
-                    listBoxItem.SetBinding(ContentControl.ContentProperty, binding);
-                    setContent = false; 
-                } 
-#endif
-                // Push the item into the ListBoxItem container 
-                if (setContent)
-                { 
-                    listBoxItem.Content = item;
-                }
-            } 
-            // Apply ItemContainerStyle
-            if ((null != ItemContainerStyle) && (null == listBoxItem.Style)) 
-            {
-                // Silverlight does not support cascading styles, so only use ItemContainerStyle
-                // if a style is not already set on the ListBoxItem 
-                listBoxItem.Style = ItemContainerStyle;
-            }
-            // If IsSelected, select the new item 
-            if (listBoxItem.IsSelected) 
-            {
-                SelectedItem = listBoxItem.Item; 
-            }
+            ListBoxItem lbi = (ListBoxItem) element;
+            lbi.Style = ItemContainerStyle;
         }
-
-        /// <summary> 
-        /// Undoes the effects of PrepareContainerForItemOverride.
-        /// </summary>
-        /// <param name="element">The container element.</param> 
-        /// <param name="item">The item.</param> 
-        protected override void ClearContainerForItemOverride(DependencyObject element, object item)
-        { 
-            base.ClearContainerForItemOverride(element, item);
-            ListBoxItem listBoxItem = element as ListBoxItem;
-            Debug.Assert(null != listBoxItem); 
-#if !WPF
-            // Silverlight bug workaround
-            if (null == item) 
-            { 
-                item = listBoxItem.Item;
-            } 
-#endif
-            // If necessary, unselect the selected item that is being removed
-            if (listBoxItem.Item == SelectedItem) 
-            {
-                SelectedItem = null;
-            } 
-            // Clear the ListBoxItem state 
-            listBoxItem.IsSelected = false;
-            listBoxItem.ParentSelector = null; 
-        } 
 
         /// <summary> 
         /// Called when the control got focus.
