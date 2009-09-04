@@ -1,3 +1,12 @@
+2009-09-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Global.asax, Page.xaml.cs, README: Append .moonlight.test to
+	all domain names so we can (soon :) add test cases using 
+	wildcards in domain names and use SSL (with a single, wildcard,
+	certificate instead of one-per-host)
+
+	r: sde
+
 2009-09-04  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Global.asax, Page.xaml.cs: Add policies and test cases for

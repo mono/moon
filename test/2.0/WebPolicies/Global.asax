@@ -33,7 +33,7 @@
 		string path = Context.Request.Path.Substring (1);
 
 		switch (SERVER_NAME) {
-		case "policy-client":
+		case "policy-client.moonlight.test":
 			switch (path) {
 			case "WebPolicies.html":
 			case "WebPolicies.xap":
@@ -45,7 +45,7 @@
 			}
 			break;
 
-		case "flash-1":
+		case "flash-1.moonlight.test":
 			// Description:	simplest flash policy
 			// Result:	OK
 			if (path == "crossdomain.xml") {
@@ -54,7 +54,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-2":
+		case "flash-2.moonlight.test":
 			// Description:	allow domain name using host name (MS docs says only '*' is allowed)
 			// Result:	SecurityException
 			// Notes:	works only if UserHostName returns the name, not the IP address
@@ -66,7 +66,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-3":
+		case "flash-3.moonlight.test":
 			// Description:	allow domain name using host IP address (MS docs says only '*' is allowed)
 			// Result:	SecurityException
 			if (path == "crossdomain.xml") {
@@ -77,7 +77,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-4":
+		case "flash-4.moonlight.test":
 			// Description:	allow all domains with X-Permitted-Cross-Domain-Policies == none
 			// Result:	SecurityException
 			if (path == "crossdomain.xml") {
@@ -87,7 +87,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-5":
+		case "flash-5.moonlight.test":
 			// Description:	allow all domains with X-Permitted-Cross-Domain-Policies == master-only
 			// Result:	OK
 			if (path == "crossdomain.xml") {
@@ -97,7 +97,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-6":
+		case "flash-6.moonlight.test":
 			// Description:	allow all domains with X-Permitted-Cross-Domain-Policies == by-content-type
 			// Result:	SecurityException
 			if (path == "crossdomain.xml") {
@@ -107,7 +107,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-7":
+		case "flash-7.moonlight.test":
 			// Description:	allow all domains with X-Permitted-Cross-Domain-Policies == by-ftp-filename
 			// Result:	OK
 			if (path == "crossdomain.xml") {
@@ -117,7 +117,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-8":
+		case "flash-8.moonlight.test":
 			// Description:	allow all domains with X-Permitted-Cross-Domain-Policies == all
 			// Result:	OK
 			if (path == "crossdomain.xml") {
@@ -127,7 +127,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-9":
+		case "flash-9.moonlight.test":
 			// Description:	allow all domains with X-Permitted-Cross-Domain-Policies == invalid-value
 			// Result:	SecurityException
 			if (path == "crossdomain.xml") {
@@ -137,7 +137,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-10":
+		case "flash-10.moonlight.test":
 			// Description:	allow all with DTD
 			// Result:	OK
 			if (path == "crossdomain.xml") {
@@ -150,7 +150,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-11":
+		case "flash-11.moonlight.test":
 			// Description:	allow all with secure == true
 			// Result:	OK
 			if (path == "crossdomain.xml") {
@@ -163,7 +163,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-12":
+		case "flash-12.moonlight.test":
 			// Description:	allow all with secure == false
 			// Result:	OK
 			if (path == "crossdomain.xml") {
@@ -176,7 +176,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-13":
+		case "flash-13.moonlight.test":
 			// Description:	allow all with secure == invalid-value
 			// Result:	SecurityException
 			if (path == "crossdomain.xml") {
@@ -189,11 +189,11 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-14":
+		case "flash-14.moonlight.test":
 			// Description:	no policy (404)
 			NotFound ();
 			break;
-		case "flash-15":
+		case "flash-15.moonlight.test":
 			// Description:	simplest flash policy with some spaces before the XML (technically invalid XML)
 			// Result:	OK
 			if (path == "crossdomain.xml") {
@@ -202,7 +202,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-16":
+		case "flash-16.moonlight.test":
 			// Description:	allow all domains with site-control permitted-cross-domain-policie == none
 			// Result:	SecurityException
 			if (path == "crossdomain.xml") {
@@ -211,7 +211,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-17":
+		case "flash-17.moonlight.test":
 			// Description:	allow all domains with site-control permitted-cross-domain-policie == master-only
 			// Result:	OK
 			if (path == "crossdomain.xml") {
@@ -220,7 +220,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-18":
+		case "flash-18.moonlight.test":
 			// Description:	allow all domains with site-control permitted-cross-domain-policie == by-content-type
 			// Result:	SecurityException
 			if (path == "crossdomain.xml") {
@@ -229,7 +229,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-19":
+		case "flash-19.moonlight.test":
 			// Description:	allow all domains with site-control permitted-cross-domain-policie == by-ftp-filename
 			// Result:	OK
 			if (path == "crossdomain.xml") {
@@ -238,7 +238,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-20":
+		case "flash-20.moonlight.test":
 			// Description:	allow all domains with site-control permitted-cross-domain-policie == all
 			// Result:	OK
 			if (path == "crossdomain.xml") {
@@ -247,7 +247,7 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-21":
+		case "flash-21.moonlight.test":
 			// Description:	allow all domains with site-control permitted-cross-domain-policie == invalid-value
 			// Result:	SecurityException
 			if (path == "crossdomain.xml") {
@@ -256,18 +256,18 @@
 				FlashDefault (path);
 			}
 			break;
-		case "flash-22":
+		case "flash-22.moonlight.test":
 			// Description:	allow domain name using host name (MS docs says only '*' is allowed)
 			// Result:	SecurityException
 			if (path == "crossdomain.xml") {
-				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='policy-client'/></cross-domain-policy>");
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='policy-client.moonlight.test'/></cross-domain-policy>");
 			} else {
 				FlashDefault (path);
 			}
 			break;
 
 
-		case "silverlight-1":
+		case "silverlight-1.moonlight.test":
 			// Description:	simplest, allow everything, silverlight policy
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -287,7 +287,7 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-2":
+		case "silverlight-2.moonlight.test":
 			// Description:	Allow everything under /test
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -307,7 +307,7 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-3":
+		case "silverlight-3.moonlight.test":
 			// Description:	simplest silverlight policy
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -327,7 +327,7 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-4":
+		case "silverlight-4.moonlight.test":
 			// Description:	grant / but no subpaths
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -347,7 +347,7 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-5":
+		case "silverlight-5.moonlight.test":
 			// Description:	grant everything under ""
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -362,7 +362,7 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-6":
+		case "silverlight-6.moonlight.test":
 			// Description:	grant everything under "" or "/test"
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -377,7 +377,7 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-7":
+		case "silverlight-7.moonlight.test":
 			// Description:	simplest silverlight policy with some spaces before the XML (technically invalid XML)
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"  <?xml version='1.0'?>
@@ -397,8 +397,8 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-8":
-			// Description:	give access only to 'policy-client' (missing scheme)
+		case "silverlight-8.moonlight.test":
+			// Description:	give access only to 'policy-client.moonlight.test' (missing scheme)
 			// Result:	SecurityException
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -406,7 +406,7 @@
 	<cross-domain-access>
 		<policy>
 			<allow-from>
-				<domain uri='policy-client'/>
+				<domain uri='policy-client.moonlight.test'/>
 			</allow-from>
 			<grant-to>
 				<resource path='/' include-subpaths='true'/>
@@ -418,8 +418,8 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-9":
-			// Description:	give access only to 'http://policy-client'
+		case "silverlight-9.moonlight.test":
+			// Description:	give access only to 'http://policy-client.moonlight.test'
 			// Result:	OK
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -427,7 +427,7 @@
 	<cross-domain-access>
 		<policy>
 			<allow-from>
-				<domain uri='http://policy-client'/>
+				<domain uri='http://policy-client.moonlight.test'/>
 			</allow-from>
 			<grant-to>
 				<resource path='/' include-subpaths='true'/>
@@ -439,8 +439,8 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-10":
-			// Description:	give access only to 'http://policy-client:80' (default port)
+		case "silverlight-10.moonlight.test":
+			// Description:	give access only to 'http://policy-client.moonlight.test:80' (default port)
 			// Result:	OK
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -448,7 +448,7 @@
 	<cross-domain-access>
 		<policy>
 			<allow-from>
-				<domain uri='http://policy-client:80'/>
+				<domain uri='http://policy-client.moonlight.test:80'/>
 			</allow-from>
 			<grant-to>
 				<resource path='/' include-subpaths='true'/>
@@ -460,8 +460,8 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-11":
-			// Description:	give access only to 'http://policy-client:8080' (alternate port)
+		case "silverlight-11.moonlight.test":
+			// Description:	give access only to 'http://policy-client.moonlight.test:8080' (alternate port)
 			// Result:	SecurityException
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -469,7 +469,7 @@
 	<cross-domain-access>
 		<policy>
 			<allow-from>
-				<domain uri='http://policy-client:8080'/>
+				<domain uri='http://policy-client.moonlight.test:8080'/>
 			</allow-from>
 			<grant-to>
 				<resource path='/' include-subpaths='true'/>
@@ -481,8 +481,8 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-12":
-			// Description:	give access only to 'https://policy-client'
+		case "silverlight-12.moonlight.test":
+			// Description:	give access only to 'https://policy-client.moonlight.test'
 			// Result:	SecurityException
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -490,7 +490,7 @@
 	<cross-domain-access>
 		<policy>
 			<allow-from>
-				<domain uri='https://policy-client'/>
+				<domain uri='https://policy-client.moonlight.test'/>
 			</allow-from>
 			<grant-to>
 				<resource path='/' include-subpaths='true'/>
@@ -502,8 +502,8 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-13":
-			// Description:	give access only to 'http://policy-client/WebPolicies.html' (full path)
+		case "silverlight-13.moonlight.test":
+			// Description:	give access only to 'http://policy-client.moonlight.test/WebPolicies.html' (full path)
 			// Result:	SecurityException
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -511,7 +511,7 @@
 	<cross-domain-access>
 		<policy>
 			<allow-from>
-				<domain uri='http://policy-client/WebPolicies.html'/>
+				<domain uri='http://policy-client.moonlight.test/WebPolicies.html'/>
 			</allow-from>
 			<grant-to>
 				<resource path='/' include-subpaths='true'/>
@@ -523,8 +523,8 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-14":
-			// Description:	give access only to 'unexisting-client'
+		case "silverlight-14.moonlight.test":
+			// Description:	give access only to 'unexisting-client.moonlight.test'
 			// Result:	SecurityException
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -532,7 +532,7 @@
 	<cross-domain-access>
 		<policy>
 			<allow-from>
-				<domain uri='http://unexisting-client'/>
+				<domain uri='http://unexisting-client.moonlight.test'/>
 			</allow-from>
 			<grant-to>
 				<resource path='/' include-subpaths='true'/>
@@ -544,8 +544,8 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-15":
-			// Description:	give access only to 'http://policy-client/WebPolicies.xap' (xap full path)
+		case "silverlight-15.moonlight.test":
+			// Description:	give access only to 'http://policy-client.moonlight.test/WebPolicies.xap' (xap full path)
 			// Result:	OK
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -553,7 +553,7 @@
 	<cross-domain-access>
 		<policy>
 			<allow-from>
-				<domain uri='http://policy-client/WebPolicies.xap'/>
+				<domain uri='http://policy-client.moonlight.test/WebPolicies.xap'/>
 			</allow-from>
 			<grant-to>
 				<resource path='/' include-subpaths='true'/>
@@ -566,7 +566,7 @@
 			}
 			break;
 		case "silverlight-16":
-			// Description:	give access only to 'http://policy-client/WebPolicies' (xap partial path)
+			// Description:	give access only to 'http://policy-client.moonlight.test/WebPolicies' (xap partial path)
 			// Result:	SecurityException
 			if (path == "clientaccesspolicy.xml") {
 				Response.Write (@"<?xml version='1.0'?>
@@ -574,7 +574,7 @@
 	<cross-domain-access>
 		<policy>
 			<allow-from>
-				<domain uri='http://policy-client/WebPolicies'/>
+				<domain uri='http://policy-client.moonlight.test/WebPolicies'/>
 			</allow-from>
 			<grant-to>
 				<resource path='/' include-subpaths='true'/>
