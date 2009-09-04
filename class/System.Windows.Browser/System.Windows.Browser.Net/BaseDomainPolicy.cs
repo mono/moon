@@ -45,12 +45,29 @@ namespace System.Windows.Browser.Net {
 
 	abstract class BaseDomainPolicy : ICrossDomainPolicy {
 #if TEST
-		static public Uri ApplicationUri { get; set; }
+		static Uri app;
+
+		static public Uri ApplicationUri { 
+			get { return app; }
+			set {
+				app = value;
+				root = null;
+			}
+		}
 #else
 		static public Uri ApplicationUri {
 			get { return PluginHost.SourceUri; }
 		}
 #endif
+		static string root;
+
+		static public string ApplicationRoot {
+			get {
+				if (root == null)
+					root = CrossDomainPolicyManager.GetRoot (ApplicationUri);
+				return root;
+			}
+		}
 
 		public class Headers {
 

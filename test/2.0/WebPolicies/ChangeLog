@@ -1,3 +1,11 @@
+2009-09-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Global.asax, Page.xaml.cs: Add policies and test cases for
+	Silverlight policy domain using the XAP url (OK) and a partial
+	url (invalid)
+
+	r: lewing, sde
+
 2009-09-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Global.asax, Page.xaml.cs: Add policies and test cases for

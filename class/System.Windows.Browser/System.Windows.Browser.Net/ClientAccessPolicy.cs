@@ -178,10 +178,20 @@ namespace System.Windows.Browser.Net {
 				if (AllowAnyDomain)
 					return true;
 
-				string app_root = CrossDomainPolicyManager.GetRoot (ApplicationUri);
-				if (Domains.All (domain => domain.ToString () != app_root))
+				if (Domains.All (domain => !CheckDomainUri (domain)))
 					return false;
 				return true;
+			}
+
+			static bool CheckDomainUri (Uri policy)
+			{
+				// if no local path is part of the policy domain then we compare to the root
+				if (policy.LocalPath == "/")
+					return (policy.ToString () == ApplicationRoot);
+				// otherwise the path must match
+				if (policy.LocalPath != ApplicationUri.LocalPath)
+					return false;
+				return (CrossDomainPolicyManager.GetRoot (policy) == ApplicationRoot);
 			}
 		}
 

@@ -153,6 +153,8 @@ namespace WebPolicies {
 			{ "http://silverlight-12/", CheckSecurityException },	// https://polici-client is invalid (from http)
 			{ "http://silverlight-13/", CheckSecurityException },	// http://polici-client/WebPolicies.html is invalid
 			{ "http://silverlight-14/", CheckSecurityException },	// another http host
+			{ "http://silverlight-15/", CheckOk },			// http://polici-client/WebPolicies.xap == OK
+			{ "http://silverlight-16/", CheckSecurityException },	// http://polici-client/WebPolicies is invalid
 
 			// add redirection test (not allowed on policy files)
 			// return some binary file

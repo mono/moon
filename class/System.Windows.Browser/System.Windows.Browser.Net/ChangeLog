@@ -1,3 +1,13 @@
+2009-09-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BaseDomainPolicy.cs: Add ApplicationRoot property and null the
+	value when changing ApplicationUri (happens only when executing
+	unit tests - but pretty important for them)
+	* ClientAccessPolicy.cs: The Domain URI LocalPath (when provided) 
+	restriction is based on	the XAP (not the html) file
+
+	r: sde
+
 2009-09-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ClientAccessPolicy.cs: Fix Domain comparison when the value

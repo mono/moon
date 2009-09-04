@@ -544,6 +544,48 @@
 				Default (path);
 			}
 			break;
+		case "silverlight-15":
+			// Description:	give access only to 'http://policy-client/WebPolicies.xap' (xap full path)
+			// Result:	OK
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?>
+<access-policy>
+	<cross-domain-access>
+		<policy>
+			<allow-from>
+				<domain uri='http://policy-client/WebPolicies.xap'/>
+			</allow-from>
+			<grant-to>
+				<resource path='/' include-subpaths='true'/>
+			</grant-to>
+		</policy>
+	</cross-domain-access>
+</access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-16":
+			// Description:	give access only to 'http://policy-client/WebPolicies' (xap partial path)
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?>
+<access-policy>
+	<cross-domain-access>
+		<policy>
+			<allow-from>
+				<domain uri='http://policy-client/WebPolicies'/>
+			</allow-from>
+			<grant-to>
+				<resource path='/' include-subpaths='true'/>
+			</grant-to>
+		</policy>
+	</cross-domain-access>
+</access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
 
 		default:
 			string s = String.Format ("<h1>Unknown server name: {0}</h1>", SERVER_NAME);
