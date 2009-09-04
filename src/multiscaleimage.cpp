@@ -1128,8 +1128,10 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 		//abort all downloaders
 		BitmapImageContext *ctx;
 		GList *list;
-		for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
+		for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next) {
 			ctx->bitmapimage->Abort ();
+			ctx->state = BitmapImageFree;
+		}
 
 		source = NULL;
 		DeepZoomImageTileSource *newsource;

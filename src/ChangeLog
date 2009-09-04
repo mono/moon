@@ -1,3 +1,10 @@
+2009-09-04  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: on source change, don't only Abort() the
+	dlders, but also reset the internal state of the dlders to Free
+
+	r: alan
+
 2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: reset the Viewport to its default values
