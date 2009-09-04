@@ -1,5 +1,12 @@
 2009-09-04  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* utils.h|cpp: add a void* arg to the Cancellable api
+
+	* application.cpp:  remove the downloader notifications on 
+	Cancel ().
+
+2009-09-04  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: on source change, don't only Abort() the
 	dlders, but also reset the internal state of the dlders to Free
 

@@ -128,19 +128,19 @@ class TextStream {
 	ssize_t Read (char *buf, size_t n);
 };
 
-typedef void (*CancelCallback) (gpointer user_data);
+typedef void (*CancelCallback) (gpointer user_data, void *context);
 
 class Cancellable {
  private:
 	CancelCallback cancel_cb;
 	Downloader *downloader;
-	
+	void *context;
  public:
 	Cancellable ();
 	~Cancellable ();
 
 	void Cancel ();
-	void SetCancelFuncAndData (CancelCallback cb, Downloader *user_data);
+	void SetCancelFuncAndData (CancelCallback cb, Downloader *user_data, void *context);
 };
 
 #endif /* __UTILS_H__ */

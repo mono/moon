@@ -114,7 +114,7 @@ struct NotifyCtx {
 	WriteFunc write_cb;
 };
 
-static void downloader_abort (gpointer data);
+static void downloader_abort (gpointer data, void *ctx);
 static void downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -187,7 +187,7 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 	}
 
 	if (cancellable) {
-		cancellable->SetCancelFuncAndData (downloader_abort, downloader);
+		cancellable->SetCancelFuncAndData (downloader_abort, downloader, ctx);
 	}
 
 	if (downloader->Completed ()) {
@@ -217,9 +217,13 @@ downloader_write (void *data, gint32 offset, gint32 n, void *closure)
 }
 
 static void
-downloader_abort (gpointer data)
+downloader_abort (gpointer data, void *ctx)
 {
 	Downloader *dl = (Downloader *) data;
+	NotifyCtx *nc = (NotifyCtx *)ctx;
+	dl->RemoveHandler (Downloader::DownloadProgressChangedEvent, downloader_progress_changed, nc);
+	dl->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, nc);
+	dl->RemoveHandler (Downloader::CompletedEvent, downloader_complete, nc);
 	dl->Abort ();
 }
 

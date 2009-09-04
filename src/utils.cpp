@@ -984,13 +984,14 @@ void
 Cancellable::Cancel ()
 {
 	if (cancel_cb)
-		cancel_cb (downloader);
+		cancel_cb (downloader, context);
 }
 
 void
-Cancellable::SetCancelFuncAndData (CancelCallback cb, Downloader *downloader)
+Cancellable::SetCancelFuncAndData (CancelCallback cb, Downloader *downloader, void *_context)
 {
 	cancel_cb = cb;
+	context = _context;
 	if (this->downloader)
 		this->downloader->unref ();
 	this->downloader = downloader;
