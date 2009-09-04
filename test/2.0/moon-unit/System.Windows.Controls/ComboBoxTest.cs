@@ -1128,5 +1128,81 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsTrue (box.ApplyTemplate (), "#1");
 			Assert.IsFalse (box.IsDropDownOpen, "#2");
 		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void XamlSelectedIndex ()
+		{
+			var c = (ComboBox)XamlReader.Load (@"
+<ComboBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" SelectedIndex=""1"">
+	<Rectangle />
+	<Ellipse />
+</ComboBox>
+");
+			Assert.AreEqual (1, c.SelectedIndex, "#1");
+			Assert.AreEqual (c.Items [1], c.SelectedItem, "#2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void XamlSelectedIndex2 ()
+		{
+			Assert.Throws<XamlParseException> (() => XamlReader.Load (@"
+<ComboBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" SelectedIndex=""2"">
+	<Rectangle />
+	<Ellipse />
+</ComboBox>
+"));
+
+			Assert.Throws<XamlParseException> (() => XamlReader.Load (@"
+<ComboBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" SelectedIndex=""0"" />
+"));
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void XamlSelectedIndex3 ()
+		{
+			var panel = (StackPanel)XamlReader.Load(@"
+<StackPanel xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+			xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+			xmlns:clr=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit""
+			xmlns:system=""clr-namespace:System;assembly=mscorlib"">
+	<StackPanel.Resources>
+		<clr:ObjectCollection x:Key=""collection"">
+			<system:String>String 1</system:String>
+			<system:String>String 2</system:String>
+		</clr:ObjectCollection>
+	</StackPanel.Resources>
+	<ComboBox SelectedIndex=""1"" ItemsSource=""{StaticResource collection}"">
+	</ComboBox>
+</StackPanel>
+");
+			Assert.AreEqual (1, (int) panel.Children [0].GetValue (ComboBox.SelectedIndexProperty), "#1");
+			Assert.AreEqual ("String 2", panel.Children [0].GetValue (ComboBox.SelectedItemProperty), "#2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void XamlSelectedIndex4 ()
+		{
+			var panel = (StackPanel) XamlReader.Load (@"
+<StackPanel xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+			xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+			xmlns:clr=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit""
+			xmlns:system=""clr-namespace:System;assembly=mscorlib"">
+	<StackPanel.Resources>
+		<clr:ObjectCollection x:Key=""collection"">
+			<Rectangle />
+			<Ellipse />
+		</clr:ObjectCollection>
+	</StackPanel.Resources>
+	<ComboBox SelectedIndex=""1"" ItemsSource=""{StaticResource collection}"">
+	</ComboBox>
+</StackPanel>
+");
+			Assert.AreEqual (1, (int) panel.Children [0].GetValue (ComboBox.SelectedIndexProperty), "#1");
+			Assert.IsInstanceOfType<Ellipse> (panel.Children [0].GetValue (ComboBox.SelectedItemProperty), "#2");
+		}
 	}
 }
