@@ -1,6 +1,3 @@
-XXXX
-XXXX
-XXXX
 2009-09-04  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: on source change, don't only Abort() the
