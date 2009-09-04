@@ -774,6 +774,9 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	cairo_translate (cr, -vp_ox, -vp_oy);
 	cairo_scale (cr, 1.0 / im_w, 1.0 / im_w);
 
+	cairo_rectangle (cr, 0, 0, im_w, im_h); // clip to image bounds
+        cairo_clip (cr);
+
 	LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 
 	double fade = GetValue (MultiScaleImage::TileFadeProperty)->AsDouble();
