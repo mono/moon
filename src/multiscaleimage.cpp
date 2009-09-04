@@ -1144,6 +1144,12 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 			}
 		}
 
+		//Reset the viewport
+		ClearValue (MultiScaleImage::InternalViewportWidthProperty, true);
+		ClearValue (MultiScaleImage::InternalViewportOriginProperty, true);
+		//SetValue (MultiScaleImage::ViewportOriginProperty, Deployment::GetCurrent ()->GetTypes ()->GetProperty (MultiScaleImage::ViewportOriginProperty)->GetDefaultValue());
+		//SetValue (MultiScaleImage::ViewportWidthProperty, Deployment::GetCurrent ()->GetTypes ()->GetProperty (MultiScaleImage::ViewportWidthProperty)->GetDefaultValue());
+
 		//Invalidate the whole cache
 		if (cache) {
 			g_hash_table_destroy (cache);

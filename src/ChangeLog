@@ -1,3 +1,10 @@
+2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: reset the Viewport to its default values
+	on source change. Eventually fixes drt#511.
+
+	r:lewing
+
 2009-09-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.h: Nuke the CallInitialize metadata from TextBox.
