@@ -222,11 +222,16 @@ namespace System.Windows.Controls.Primitives {
 		{
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
-				// Ensure we don't fire a SelectionChanged event when we're just updating the index
-				Changing = true;
-				if (e.NewStartingIndex <= SelectedIndex)
-					SelectedIndex ++;
-				Changing = false;
+				ListBoxItem item = e.NewItems [0] as ListBoxItem;
+				if (item != null && item.IsSelected) {
+					SelectedItem = item;
+				} else {
+					// Ensure we don't fire a SelectionChanged event when we're just updating the index
+					Changing = true;
+					if (e.NewStartingIndex <= SelectedIndex)
+						SelectedIndex ++;
+					Changing = false;
+				}
 				break;
 			case NotifyCollectionChangedAction.Reset:
 				SelectedIndex = -1;

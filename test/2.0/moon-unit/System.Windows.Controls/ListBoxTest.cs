@@ -203,12 +203,6 @@ namespace MoonTest.System.Windows.Controls {
 			base.IsSelectedTest ();
 		}
 
-		[MoonlightBug]
-		public override void IsSelectedTest2 ()
-		{
-			base.IsSelectedTest2 ();
-		}
-
 		[Asynchronous]
 		public override void IsSelectedTest4 ()
 		{

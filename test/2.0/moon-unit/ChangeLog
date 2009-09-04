@@ -1,5 +1,12 @@
 2009-09-04  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs: If a ListBoxItem
+	  with IsSelected = true is added to a Selector, that value is
+	  respected and SelectedItem/Index is updated. r: sde
+
+2009-09-04  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest.cs: Add tests for
 	  setting ComboBox.SelectedIndex from xaml. r: sde
 
