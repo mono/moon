@@ -24,7 +24,6 @@
 #include "animation.h"
 #include "ptr.h"
 
-void multi_scale_image_handle_parsed (void *userdata);
 struct BitmapImageContext;
 
 /* @Namespace=System.Windows.Controls */
@@ -33,7 +32,6 @@ class MultiScaleImage : public MediaBase {
 
 	GHashTable *cache;
 	bool cache_contains (Uri* filename, bool check_empty_tile);
-	MultiScaleTileSource *source;
 	bool subimages_sorted;
 	bool pending_motion_completed;
 
@@ -72,6 +70,7 @@ class MultiScaleImage : public MediaBase {
 
 	double GetInternalViewportWidth ();
 	void SetInternalViewportWidth (double width);
+
 
 	double zoom_target;
 	Point pan_target;
@@ -185,6 +184,9 @@ class MultiScaleImage : public MediaBase {
 
 	BitmapImageContext *GetFreeBitmapImageContext ();
 	void DownloadTile (BitmapImageContext *ctx, Uri *tile, int subimage, int level, int x, int y);
+
+	void OnSourcePropertyChanged ();
+
 
 	void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer);
 };

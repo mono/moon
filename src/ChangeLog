@@ -1,3 +1,12 @@
+2009-09-05  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h|cpp: code reshuffling and refactoring. Move
+	the OnSourcePropertyChanged handling outside of OnPropertyChanged.
+	No longer keep a source instance variable, as we can get it with
+	GetSource ().
+
+	r: jackson
+
 2009-09-04  Larry Ewing  <lewing@novell.com>
 
 	* multiscaleimage.cpp (RenderSingle): clip our rendering to the
