@@ -289,30 +289,6 @@ class TextBuffer {
 
 
 //
-// AsyncEventClosure
-//
-
-class AsyncEventClosure : public EventObject {
- public:
-	TextBoxBase *textbox;
-	int generation;
-	
-	AsyncEventClosure (int generation, TextBoxBase *textbox)
-	{
-		this->generation = generation;
-		this->textbox = textbox;
-		
-		textbox->ref ();
-	}
-	
-	virtual ~AsyncEventClosure ()
-	{
-		textbox->unref ();
-	}
-};
-
-
-//
 // TextBoxUndoActions
 //
 
