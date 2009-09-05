@@ -167,10 +167,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	void Commit (const char *str);
 	bool RetrieveSurrounding ();
 	
-	// keypress events
-	static void key_down (EventObject *sender, EventArgs *args, void *closure);
-	static void key_up (EventObject *sender, EventArgs *args, void *closure);
-	
+	// GtkClipboard callbacks
 	static void paste (GtkClipboard *clipboard, const char *text, gpointer closure);
 	void Paste (GtkClipboard *clipboard, const char *text);
 	
