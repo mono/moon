@@ -20,7 +20,7 @@
 #include "downloader.h"
 #include "uri.h"
 
-typedef void (*parsed_cb) (void *userdata);
+typedef void (*msi_cb) (void *userdata);
 
 /* @Version=2,Namespace=System.Windows.Media */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
@@ -28,8 +28,9 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	Downloader* downloader;
 
-	parsed_cb parsed_callback;
-	parsed_cb failed_callback;
+	msi_cb parsed_callback;
+	msi_cb failed_callback;
+	msi_cb sourcechanged_callback;
 	void *cb_userdata;
 
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -70,10 +71,11 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	bool IsParsed () {return parsed; }
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
-	void set_parsed_cb (parsed_cb callback, parsed_cb f_callback, void *userdata)
+	void set_callbacks (msi_cb parsed, msi_cb failed, msi_cb source_changed, void *userdata)
 	{
-		parsed_callback = callback;
-		failed_callback = f_callback;
+		parsed_callback = parsed;
+		failed_callback = failed;
+		sourcechanged_callback = source_changed;
 		cb_userdata = userdata;
 	}
 

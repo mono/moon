@@ -432,6 +432,13 @@ multi_scale_image_handle_dz_failed (void *userdata)
 }
 
 static void
+multi_scale_image_handle_dz_urisource_changed (void *userdata)
+{
+	MultiScaleImage *msi = (MultiScaleImage*)userdata;
+	msi->OnSourcePropertyChanged ();
+}
+
+static void
 multi_scale_subimage_handle_failed (void *userdata)
 {
 	MultiScaleImage *msi = (MultiScaleImage*)userdata;
@@ -660,7 +667,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	if (source->GetImageWidth () < 0 && !is_collection) {
 		LOG_MSI ("nothing to render so far...\n");
 		if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
-			((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_dz_parsed, multi_scale_image_handle_dz_failed, this);
+			((DeepZoomImageTileSource*)source)->set_callbacks (multi_scale_image_handle_dz_parsed, multi_scale_image_handle_dz_failed, multi_scale_image_handle_dz_urisource_changed, this);
 			((DeepZoomImageTileSource*)source)->Download ();
 		}
 		return;
@@ -896,7 +903,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			//if the subimage is unparsed, trigger the download
 			if (from_layer > dzits->GetMaxLevel () && !((DeepZoomImageTileSource *)sub_image->source)->IsDownloaded () ) {
-				((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_subimage_handle_parsed, multi_scale_subimage_handle_failed, this);
+				((DeepZoomImageTileSource*)sub_image->source)->set_callbacks (multi_scale_subimage_handle_parsed, multi_scale_subimage_handle_failed, NULL, this);
 				((DeepZoomImageTileSource*)sub_image->source)->Download ();
 				break;
 			}

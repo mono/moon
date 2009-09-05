@@ -1,5 +1,14 @@
 2009-09-05  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp:
+	* deepzoomimagetilesource.h|cpp: do the same cleaning suffs (clearing
+	the cache, aborting the downloaders, invalidating, etc...) on dzits 
+	urisource changed that is done on msi sourcechanged.
+
+	r: shana
+
+2009-09-05  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.h|cpp: code reshuffling and refactoring. Move
 	the OnSourcePropertyChanged handling outside of OnPropertyChanged.
 	No longer keep a source instance variable, as we can get it with

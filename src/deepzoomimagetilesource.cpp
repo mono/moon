@@ -126,6 +126,7 @@ DeepZoomImageTileSource::Init ()
 	display_rects = NULL;
 	parsed_callback = NULL;	
 	failed_callback = NULL;
+	sourcechanged_callback = NULL;
 	isCollection = false;
 	subimages = NULL;
 	nested = false;
@@ -374,6 +375,8 @@ DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args, Moon
 			downloaded = false;
 			Download ();
 		}
+		if (sourcechanged_callback)
+			sourcechanged_callback (cb_userdata);
 	}
 
 	if (args->GetProperty ()->GetOwnerType () != Type::DEEPZOOMIMAGETILESOURCE) {
