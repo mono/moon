@@ -64,8 +64,6 @@ namespace Mono {
 		}
 		
 		internal static UnmanagedEventHandler binding_validation_error = CreateSafeHandler (binding_validation_error_callback);
-		internal static UnmanagedEventHandler current_state_changing = CreateSafeHandler (current_state_changing_callback);
-		internal static UnmanagedEventHandler current_state_changed = CreateSafeHandler (current_state_changed_callback);
 		internal static UnmanagedEventHandler mouse_motion = CreateSafeHandler (mouse_motion_notify_callback);
 		internal static UnmanagedEventHandler mouse_left_button_down = CreateSafeHandler (mouse_left_button_down_callback);
 		internal static UnmanagedEventHandler mouse_left_button_up = CreateSafeHandler (mouse_left_button_up_callback);
@@ -101,18 +99,6 @@ namespace Mono {
 			throw new NotImplementedException ();
 		}
 
-		static void current_state_changing_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			VisualStateGroup e = (VisualStateGroup) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.RaiseCurrentStateChanging (new VisualStateChangedEventArgs (calldata));
-		}
-		
-		static void current_state_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			VisualStateGroup e = (VisualStateGroup) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.RaiseCurrentStateChanged (new VisualStateChangedEventArgs (calldata));
-		}
-		
 		static void got_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			UIElement e = (UIElement)NativeDependencyObjectHelper.FromIntPtr (closure);

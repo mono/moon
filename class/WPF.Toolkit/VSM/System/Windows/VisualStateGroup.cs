@@ -146,56 +146,31 @@ namespace System.Windows
             }
         }
 
-		internal void RaiseCurrentStateChanging(FrameworkElement element, VisualState oldState, VisualState newState, Control control)
-		{
-			RaiseCurrentStateChanging (new VisualStateChangedEventArgs(oldState, newState, control));
-		}
+        internal void RaiseCurrentStateChanging(FrameworkElement element, VisualState oldState, VisualState newState, Control control)
+        {
+            if (CurrentStateChanging != null)
+            {
+                CurrentStateChanging(element, new VisualStateChangedEventArgs(oldState, newState, control));
+            }
+        }
 
-		internal void RaiseCurrentStateChanged(FrameworkElement element, VisualState oldState, VisualState newState, Control control)
-		{
-			RaiseCurrentStateChanged(new VisualStateChangedEventArgs(oldState, newState, control));
-		}
-
-		internal void RaiseCurrentStateChanging (VisualStateChangedEventArgs e)
-		{
-			EventHandler<VisualStateChangedEventArgs> h = (EventHandler<VisualStateChangedEventArgs>) EventList [CurrentStateChangingEvent];
-			if (h != null)
-				h (this, e);
-		}
-
-		internal void RaiseCurrentStateChanged (VisualStateChangedEventArgs e)
-		{
-			EventHandler<VisualStateChangedEventArgs> h = (EventHandler<VisualStateChangedEventArgs>) EventList [CurrentStateChangedEvent];
-			if (h != null)
-				h (this, e);
-		}
-
-		static object CurrentStateChangingEvent = new object ();
-		static object CurrentStateChangedEvent = new object ();
+        internal void RaiseCurrentStateChanged(FrameworkElement element, VisualState oldState, VisualState newState, Control control)
+        {
+            if (CurrentStateChanged != null)
+            {
+                CurrentStateChanged(element, new VisualStateChangedEventArgs(oldState, newState, control));
+            }
+        }
 
         /// <summary>
         ///     Raised when transition begins
         /// </summary>
-		public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanging {
-			add {
-				RegisterEvent (CurrentStateChangingEvent, "CurrentStateChanging", Events.current_state_changing, value);
-			}
-			remove {
-				UnregisterEvent (CurrentStateChangingEvent, "CurrentStateChanging", Events.current_state_changing, value);
-			}
-		}
+        public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanged;
 
         /// <summary>
         ///     Raised when transition ends and new state storyboard begins.
         /// </summary>
-		public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanged {
-			add {
-				RegisterEvent (CurrentStateChangedEvent, "CurrentStateChanged", Events.current_state_changed, value);
-			}
-			remove {
-				UnregisterEvent (CurrentStateChangedEvent, "CurrentStateChanged", Events.current_state_changed, value);
-			}
-		}
+        public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanging;
 
 
         private Collection<Storyboard> _currentStoryboards;

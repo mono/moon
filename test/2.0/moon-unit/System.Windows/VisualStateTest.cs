@@ -42,24 +42,6 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
-		public void AddRemoveHandlerTest ()
-		{
-			// This test spews errors to the terminal but doesn't throw exceptions
-			// Only remove the moonlight bug when this is fixed.
-			// Event lookup of event 'CurrentStateChanging' in type 'object' failed.
-			// Event lookup of event 'CurrentStateChanging' in (more exactly) type 'EventObject' failed.
-			// Event lookup of event 'CurrentStateChanging' in (more exactly) type 'DependencyObject' failed.
-			// Event lookup of event 'CurrentStateChanging' in (more exactly) type 'System.Windows.VisualStateGroup' failed.
-			VisualStateGroup g = new VisualStateGroup ();
-			g.CurrentStateChanged += delegate { };
-			g.CurrentStateChanged -= delegate { };
-			
-			g.CurrentStateChanging += delegate { };
-			g.CurrentStateChanging -= delegate { };
-		}
-
-		[TestMethod]
 		public void TestParse ()
 		{
 			VisualState vs = (VisualState)XamlReader.Load (@"<vsm:VisualState xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:vsm=""clr-namespace:System.Windows;assembly=System.Windows"" x:Name=""foo""><Storyboard /></vsm:VisualState>");

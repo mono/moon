@@ -1,3 +1,11 @@
+2009-09-04  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows/VisualStateTest.cs: remove AddRemoveHandlerTest
+	as it's useless now that the condition which necessitated it has
+	been fixed.
+
+	r: andreia
+
 2009-09-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moon-unit.csproj: Add missing tests to the project file
