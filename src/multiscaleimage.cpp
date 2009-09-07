@@ -130,8 +130,6 @@ qtree_insert_with_value (QTree* root, void *data, int level, guint64 x, guint64 
 	return node;
 }
 
-
-
 static QTree *
 qtree_lookup (QTree* root, int level, guint64 x, guint64 y)
 {
@@ -174,22 +172,35 @@ static void *
 qtree_lookup_data (QTree* root, int level, guint64 x, guint64 y)
 {
 	QTree *node = qtree_lookup (root, level, x, y);
-	if (node)
+	if (node && node->has_value)
 		return node->data;
 	return NULL;
 }
 
-#if 0
 static void
-qtree_remove_at (QTree* root, int level, int x, int y)
+qtree_remove (QTree* node, int depth)
+{
+	if (node && node->has_value) {
+		node->has_value = false;
+		cairo_surface_destroy ((cairo_surface_t*)node->data);
+	}	
+
+	if (depth <= 0)
+		return;
+
+	qtree_remove (node->l0, depth - 1);
+	qtree_remove (node->l1, depth - 1);
+	qtree_remove (node->l2, depth - 1);
+	qtree_remove (node->l3, depth - 1);
+
+}
+
+static void
+qtree_remove_at (QTree* root, int level, int x, int y, int depth)
 {
 	QTree* node = qtree_lookup (root, level, x, y);
-	if (node) {
-		cairo_surface_destroy ((cairo_surface_t*)node->data);
-		node->has_value = false;
-	}
+	qtree_remove (node, depth);
 }
-#endif
 
 static bool
 qtree_has_value_at (QTree* root, int level, guint64 x, guint64 y)
@@ -1391,12 +1402,16 @@ MultiScaleImage::GetSubImageCount ()
 void
 MultiScaleImage::InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
 {
-	//invaldate the full cache for now
-	LOG_MSI ("InvalidateTileLayer: Invalidating the full cache\n");
-	if (cache) {
-		g_hash_table_destroy (cache);
-		cache = g_hash_table_new_full (g_int_hash, g_int_equal, g_free, (GDestroyNotify)qtree_destroy);
+	if (GetSource ()->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+		g_warning ("calling InvalidateTileLayer on DeepZoom Images makes no sense\n");
+		return;
 	}
+
+	int index = -1;
+	QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &index);
+	if (subimage_cache)
+		qtree_remove_at (subimage_cache, level, tilePositionX, tilePositionY, tileLayer);
+
 	Invalidate ();
 }
 

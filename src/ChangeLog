@@ -1,3 +1,10 @@
+2009-09-07  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: InvalidateTileLayer no longer invalidate the
+	full cache, but only the requested tiles.
+
+	r: shana
+
 2009-09-05  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp:
