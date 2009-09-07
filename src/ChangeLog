@@ -3,6 +3,8 @@
 	* multiscaleimage.cpp: the tileLayer parameter is not the number 
 	of layers to invalidate.
 
+	r: shana
+
 2009-09-07  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: InvalidateTileLayer no longer invalidate the
