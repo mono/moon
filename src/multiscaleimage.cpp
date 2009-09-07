@@ -1048,8 +1048,8 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 
 	double fade = GetValue (MultiScaleImage::TileFadeProperty)->AsDouble();
-	int layer_to_render = from_layer;
-	while (from_layer >= 0 && layer_to_render <= to_layer) {
+	int layer_to_render = MAX (0, from_layer);
+	while (layer_to_render <= to_layer) {
 		int i, j;
 		double v_tile_w = tile_width * (double)(pow2 (layers - layer_to_render)) / im_w;
 		double v_tile_h = tile_height * (double)(pow2 (layers - layer_to_render)) / im_w;
@@ -1410,7 +1410,7 @@ MultiScaleImage::InvalidateTileLayer (int level, int tilePositionX, int tilePosi
 	int index = -1;
 	QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &index);
 	if (subimage_cache)
-		qtree_remove_at (subimage_cache, level, tilePositionX, tilePositionY, tileLayer);
+		qtree_remove_at (subimage_cache, level, tilePositionX, tilePositionY, 0);
 
 	Invalidate ();
 }

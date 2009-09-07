@@ -1,5 +1,10 @@
 2009-09-07  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.cpp: the tileLayer parameter is not the number 
+	of layers to invalidate.
+
+2009-09-07  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: InvalidateTileLayer no longer invalidate the
 	full cache, but only the requested tiles.
 
