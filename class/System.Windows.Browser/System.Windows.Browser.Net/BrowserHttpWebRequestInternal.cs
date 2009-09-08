@@ -89,10 +89,11 @@ namespace System.Windows.Browser.Net {
 			if (async_result != null)
 				async_result.Dispose ();
 
-			if (native == IntPtr.Zero)
-				return;
-
-			NativeMethods.downloader_request_free (native);
+			if (native != IntPtr.Zero)
+				NativeMethods.downloader_request_free (native);
+			
+			if (downloader != IntPtr.Zero)
+				NativeMethods.event_object_unref (downloader);
 		}
 
 		public override WebHeaderCollection Headers {

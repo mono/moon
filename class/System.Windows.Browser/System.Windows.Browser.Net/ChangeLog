@@ -1,3 +1,10 @@
+2009-09-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BrowserHttpWebRequestInternal.cs: Unref the downloader we created
+	upon destruction.
+
+	r: sde
+
 2009-09-04  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* BaseDomainPolicy.cs: Add ApplicationRoot property and null the
