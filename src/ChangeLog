@@ -1,3 +1,10 @@
+2009-09-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* downloader.cpp: Skip redirection check if the source url is a
+	local file.
+
+	r: sde
+
 2009-09-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* bitmapimage.cpp: CreateLoader: we were relying on an DownloadFailed

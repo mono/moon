@@ -249,7 +249,8 @@ Downloader::CheckRedirectionPolicy (const char *url)
 		return false;
 
 	// if the (original) source is relative then the (final) 'url' will be the absolute version of the uri
-	if (!source->IsAbsolute ())
+	// or if the source scheme is "file" then no server is present for redirecting the url somewhere else
+	if (!source->IsAbsolute () || source->IsScheme ("file"))
 		return true;
 
 	char *strsrc = source->ToString ();
