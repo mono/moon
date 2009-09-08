@@ -1625,10 +1625,6 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 {
 	int p;
 
-	// if they're both NULL, get out of here.
-	if (!old_provider_value && !new_provider_value)
-		return;
-
 	// first we look for a value higher in precedence for this property
 	for (p = providerPrecedence - 1; p >= PropertyPrecedence_Highest; p --) {
 		if (providers[p] && providers[p]->GetPropertyValue (property)) {
@@ -1645,17 +1641,17 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 	if (!old_provider_value || !new_provider_value) {
 		Value *lower_priority_value = GetValue (property, (PropertyPrecedence)(providerPrecedence + 1));
 
-		if (old_provider_value == NULL) {
-			// we're changing from the old value (from a lower
-			// priority provider) to @new_provider_value.
-			old_value = lower_priority_value;
-			new_value = new_provider_value;
-		}
-		else if (new_provider_value == NULL) {
+		if (new_provider_value == NULL) {
 			// we're changing from @old_provider_value to whatever the
 			// value lower on the priority list is.
 			old_value = old_provider_value;
 			new_value = lower_priority_value;
+		}
+		else if (old_provider_value == NULL) {
+			// we're changing from the old value (from a lower
+			// priority provider) to @new_provider_value.
+			old_value = lower_priority_value;
+			new_value = new_provider_value;
 		}
 	}
 	else {
@@ -1774,13 +1770,8 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 		if (property->IsAutoCreated ())
 			old_local_value = autocreate->ReadLocalValue (property);
 	
-	if (old_local_value == NULL) {
-		// there wasn't a local value set.  don't do anything
-		return;
-	}
-
 	// detach from the existing value
-	if (old_local_value->Is (Type::DEPENDENCY_OBJECT)) {
+	if (old_local_value != NULL && old_local_value->Is (Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = old_local_value->AsDependencyObject();
 
 		if (dob != NULL) {
