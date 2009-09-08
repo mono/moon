@@ -1,3 +1,15 @@
+2009-09-08  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* downloader.h|.cpp: new MsiPolicy, like MediaPolicy but doesn't allow
+	redirections (drt 874)
+
+	* bitmapimage.h|bitmapimage.cpp: new SetDownloadPolicy () to override the
+	bitmapimage policy;
+
+	* multiscaleimage.cpp: use MsiPolicy, fixes drt 874.
+
+	r: spouliot
+
 2009-09-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* downloader.cpp: Skip redirection check if the source url is a

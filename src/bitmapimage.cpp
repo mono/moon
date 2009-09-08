@@ -146,6 +146,7 @@ BitmapImage::BitmapImage ()
 	error = NULL;
 	part_name = NULL;
 	get_res_aborter = NULL;
+	policy = MediaPolicy;
 }
 
 BitmapImage::~BitmapImage ()
@@ -214,7 +215,7 @@ BitmapImage::UriSourceChanged ()
 
 	if (current && uri) {
 		get_res_aborter = new Cancellable ();
-		current->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, MediaPolicy, get_res_aborter, this);
+		current->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, policy, get_res_aborter, this);
 	}
 }
 
@@ -257,7 +258,7 @@ BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_n
 	} else {
 		if (!downloader->Started ()) {
 			if (uri)
-				downloader->Open ("GET", uri, MediaPolicy);
+				downloader->Open ("GET", uri, policy);
 			downloader->SetStreamFunctions (pixbuf_write, NULL, this);
 			downloader->Send ();
 		}

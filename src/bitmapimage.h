@@ -29,6 +29,7 @@ class BitmapImage : public BitmapSource {
 	GError *error;
 	char *part_name;
 	Cancellable *get_res_aborter;
+	DownloaderAccessPolicy policy;
 
  protected:
 	virtual ~BitmapImage ();
@@ -48,6 +49,11 @@ class BitmapImage : public BitmapSource {
 	
 	void SetProgress (double progress);
 	double GetProgress ();
+
+	void SetDownloadPolicy (DownloaderAccessPolicy dlpolicy)
+	{ 
+		policy = dlpolicy;
+	}
 	
 	void CleanupLoader ();
 	void CreateLoader (unsigned char *buffer);

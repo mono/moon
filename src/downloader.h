@@ -67,6 +67,7 @@ enum DownloaderAccessPolicy {
 	XamlPolicy,
 	FontPolicy,
 	StreamingPolicy,
+	MsiPolicy,
 	NoPolicy
 };
 

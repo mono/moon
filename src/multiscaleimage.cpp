@@ -389,6 +389,7 @@ MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile, int subimag
 	bictx->y = y;
 	bictx->retry = 0;
 	SetIsDownloading (true);
+	bictx->bitmapimage->SetDownloadPolicy (MsiPolicy);
 	bictx->bitmapimage->SetUriSource (tile);
 }
 

@@ -279,6 +279,7 @@ Downloader::CheckRedirectionPolicy (const char *url)
 			break;
 		case XamlPolicy:
 		case FontPolicy:
+		case MsiPolicy:
 		case StreamingPolicy:
 			// Redirection NOT allowed
 			break;
@@ -327,6 +328,7 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		if (!same_domain (target, source))
 			retval = false;
 		break;
+	case MsiPolicy:
 	case MediaPolicy: //Media, images, ASX
 		//Allowed schemes: http, https, file
 		if (!target->IsScheme ("http") && !target->IsScheme ("https") && !target->IsScheme ("file"))
