@@ -183,8 +183,7 @@ namespace System.Windows.Browser.Net {
 						v.Scheme = "file";
 						break;
 					default:
-						// FIXME: other, more complex, wildcards needs to be supported
-						v.Domains.Add (new Uri (d));
+						v.Domains.Add (d);
 						break;
 					}
 					reader.Skip ();

@@ -1,3 +1,12 @@
+2009-09-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientAccessPolicy.cs: Add support for a single wildcard at the
+	start of the host name.
+	* ClientAccessPolicyParser.cs: Keep URI as string (instead of Uri)
+	so we can process a wildcard in the host name later.
+
+	re: jackson
+
 2009-09-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* BrowserHttpWebRequestInternal.cs: Unref the downloader we created

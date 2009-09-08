@@ -93,7 +93,8 @@ namespace WebPolicies {
 			{ "http://flash-20.moonlight.test/test/allow-all-domains-permitted-cross-domain-policies-all", CheckOk },
 			{ "http://flash-21.moonlight.test/test/allow-all-domains-permitted-cross-domain-policies-invalid-value", CheckSecurityException },
 			// another test where we check Domain!="*" using policy-client
-			{ "http://flash-22.moonlight.test/test/allow-caller-domain-policy-client", CheckSecurityException },
+			{ "http://flash-22.moonlight.test/test/allow-caller-domain-policy-client", CheckSecurityException },	// fully named
+			{ "http://flash-23.moonlight.test/test/allow-caller-domain-wildcard", CheckSecurityException },		// using wildcard *
 
 			// add no policy test
 			// add redirection test (not allowed on policy files)
@@ -146,15 +147,29 @@ namespace WebPolicies {
 			// silverlight-7 has an invalid (but accepted) XML policy with whitespace preceding the XML declaration
 			{ "http://silverlight-7.moonlight.test/", CheckOk },
 			// test cases where Domain!='*'
-			{ "http://silverlight-8.moonlight.test/", CheckSecurityException },	// policy-client (without scheme) is invalid
-			{ "http://silverlight-9.moonlight.test/", CheckOk },			// http://polici-client == OK
-			{ "http://silverlight-10.moonlight.test/", CheckOk },			// http://polici-client:80 (default port) == OK
-			{ "http://silverlight-11.moonlight.test/", CheckSecurityException },	// http://polici-client:8080 (port) is invalid
-			{ "http://silverlight-12.moonlight.test/", CheckSecurityException },	// https://polici-client is invalid (from http)
-			{ "http://silverlight-13.moonlight.test/", CheckSecurityException },	// http://polici-client/WebPolicies.html is invalid
+			{ "http://silverlight-8.moonlight.test/", CheckSecurityException },	//  (without scheme) is invalid
+			{ "http://silverlight-9.moonlight.test/", CheckOk },			// http://policy-client == OK
+			{ "http://silverlight-9.moonlight.test/test/file", CheckOk },		// http://policy-client == OK
+			{ "http://silverlight-10.moonlight.test/", CheckOk },			// http://policy-client:80 (default port) == OK
+			{ "http://silverlight-10.moonlight.test/test/file", CheckOk },		// http://policy-client:80 (default port) == OK
+			{ "http://silverlight-11.moonlight.test/", CheckSecurityException },	// http://policy-client:8080 (port) is invalid
+			{ "http://silverlight-12.moonlight.test/", CheckSecurityException },	// https://policy-client is invalid (from http)
+			{ "http://silverlight-13.moonlight.test/", CheckSecurityException },	// http://policy-client/WebPolicies.html is invalid
 			{ "http://silverlight-14.moonlight.test/", CheckSecurityException },	// another http host
-			{ "http://silverlight-15.moonlight.test/", CheckOk },			// http://polici-client/WebPolicies.xap == OK
-			{ "http://silverlight-16.moonlight.test/", CheckSecurityException },	// http://polici-client/WebPolicies is invalid
+			{ "http://silverlight-15.moonlight.test/", CheckOk },			// http://policy-client/WebPolicies.xap == OK
+			{ "http://silverlight-16.moonlight.test/", CheckSecurityException },	// http://policy-client/WebPolicies is invalid
+			// test cases with wildcards
+			{ "http://silverlight-17.moonlight.test/", CheckOk },				// http://*.moonlight.test/ == OK
+			{ "http://silverlight-17.moonlight.test/test/file", CheckOk },			// http://*.moonlight.test/ == OK
+			{ "http://silverlight-17.moonlight.test:80/test/file", CheckOk },		// http://*.moonlight.test:80/ == OK
+			{ "http://silverlight-17.moonlight.test:8080/", CheckSecurityException },	// http://*.moonlight.test:8080/ is invalid
+			{ "http://silverlight-18.moonlight.test/", CheckSecurityException },		// http://policy-client.*.test/ is invalid
+			{ "http://silverlight-19.moonlight.test/", CheckSecurityException },		// http://policy-client.moonlight.*/ is invalid
+			{ "http://silverlight-20.moonlight.test/", CheckSecurityException },		// http://*-client.moonlight.test/ is invalid
+			{ "http://silverlight-21.moonlight.test/", CheckSecurityException },		// http://*.moonlight.test/test/file is invalid
+			{ "http://silverlight-21.moonlight.test/test/file", CheckSecurityException },	// http://*.moonlight.test/test/file is invalid
+			{ "http://silverlight-22.moonlight.test/file#fragment", CheckSecurityException },	// wildcard with fragment
+			{ "http://silverlight-23.moonlight.test/file?query", CheckSecurityException },		// wildcard with query
 
 			// add redirection test (not allowed on policy files)
 			// return some binary file

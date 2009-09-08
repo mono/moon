@@ -1,3 +1,10 @@
+2009-09-08  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Global.asax, Page.xaml.cs: Add policies and test cases for
+	using wildcards in policies' host names.
+
+	re: jackson
+
 2009-09-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Global.asax, Page.xaml.cs, README: Append .moonlight.test to

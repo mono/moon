@@ -142,14 +142,14 @@ namespace System.Windows.Browser.Net {
 
 			public AllowFrom ()
 			{
-				Domains = new List<Uri> ();
+				Domains = new List<string> ();
 				HttpRequestHeaders = new Headers ();
 				Scheme = String.Empty;
 			}
 
 			public bool AllowAnyDomain { get; set; }
 
-			public List<Uri> Domains { get; private set; }
+			public List<string> Domains { get; private set; }
 
 			public Headers HttpRequestHeaders { get; private set; }
 
@@ -183,15 +183,40 @@ namespace System.Windows.Browser.Net {
 				return true;
 			}
 
-			static bool CheckDomainUri (Uri policy)
+			static bool CheckDomainUri (string policy)
 			{
-				// if no local path is part of the policy domain then we compare to the root
-				if (policy.LocalPath == "/")
-					return (policy.ToString () == ApplicationRoot);
-				// otherwise the path must match
-				if (policy.LocalPath != ApplicationUri.LocalPath)
+				Uri uri;
+				if (Uri.TryCreate (policy, UriKind.Absolute, out uri)) {
+					// if no local path is part of the policy domain then we compare to the root
+					if (uri.LocalPath == "/")
+						return (uri.ToString () == ApplicationRoot);
+					// otherwise the path must match
+					if (uri.LocalPath != ApplicationUri.LocalPath)
+						return false;
+					return (CrossDomainPolicyManager.GetRoot (uri) == ApplicationRoot);
+				}
+
+				// SL policies supports a * wildcard at the start of their host name (but not elsewhere)
+
+				// check for matching protocol
+				if (!policy.StartsWith (ApplicationUri.Scheme))
 					return false;
-				return (CrossDomainPolicyManager.GetRoot (policy) == ApplicationRoot);
+				// check for the wirld card immediately after the scheme
+				if (policy.IndexOf ("://*.", ApplicationUri.Scheme.Length) != ApplicationUri.Scheme.Length)
+					return false;
+				// remove *. from uri
+				policy = policy.Remove (ApplicationUri.Scheme.Length + 3, 2);
+				// create Uri - without the *. it should be a valid one
+				if (!Uri.TryCreate (policy, UriKind.Absolute, out uri))
+					return false;
+				// path must be "empty" and query and fragment (really) empty
+				if ((uri.LocalPath != "/") || !String.IsNullOrEmpty (uri.Query) || !String.IsNullOrEmpty (uri.Fragment))
+					return false;
+				// port must match
+				if (ApplicationUri.Port != uri.Port)
+					return false;
+				// the application uri host must end with the policy host name
+				return ApplicationUri.DnsSafeHost.EndsWith (uri.DnsSafeHost);
 			}
 		}
 
@@ -248,4 +273,5 @@ namespace System.Windows.Browser.Net {
 }
 
 #endif
+
 

@@ -265,6 +265,15 @@
 				FlashDefault (path);
 			}
 			break;
+		case "flash-23.moonlight.test":
+			// Description:	allow domain name using partial (wildcard) host name (MS docs says only '*' is allowed)
+			// Result:	SecurityException
+			if (path == "crossdomain.xml") {
+				Response.Write ("<?xml version='1.0'?><cross-domain-policy><allow-access-from domain='*.moonlight.test'/></cross-domain-policy>");
+			} else {
+				FlashDefault (path);
+			}
+			break;
 
 
 		case "silverlight-1.moonlight.test":
@@ -565,7 +574,7 @@
 				Default (path);
 			}
 			break;
-		case "silverlight-16":
+		case "silverlight-16.moonlight.test":
 			// Description:	give access only to 'http://policy-client.moonlight.test/WebPolicies' (xap partial path)
 			// Result:	SecurityException
 			if (path == "clientaccesspolicy.xml") {
@@ -582,6 +591,90 @@
 		</policy>
 	</cross-domain-access>
 </access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-17.moonlight.test":
+			// Description:	give access only to 'http://*.moonlight.test/' (wildcard host)
+			// Result:	OK
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy>
+					<allow-from><domain uri='http://*.moonlight.test/'/></allow-from>
+					<grant-to><resource path='/' include-subpaths='true'/></grant-to>
+				</policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-18.moonlight.test":
+			// Description:	give access only to 'http://policy-client.*.test/' (wildcard domain)
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy>
+					<allow-from><domain uri='http://policy-client.*.test/'/></allow-from>
+					<grant-to><resource path='/' include-subpaths='true'/></grant-to>
+				</policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-19.moonlight.test":
+			// Description:	give access only to 'http://policy-client.moonlight.*/' (wildcard root)
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy>
+					<allow-from><domain uri='http://policy-client.moonlight.*/'/></allow-from>
+					<grant-to><resource path='/' include-subpaths='true'/></grant-to>
+				</policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-20.moonlight.test":
+			// Description:	give access only to 'http://*-client.moonlight.test/' (partial host wildcard)
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy>
+					<allow-from><domain uri='http://*-client.moonlight.test/'/></allow-from>
+					<grant-to><resource path='/' include-subpaths='true'/></grant-to>
+				</policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-21.moonlight.test":
+			// Description:	give access only to 'http://*.moonlight.test/test/file' (wildcard + path)
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy>
+					<allow-from><domain uri='http://*.moonlight.test/test/file'/></allow-from>
+					<grant-to><resource path='/' include-subpaths='true'/></grant-to>
+				</policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-22.moonlight.test":
+			// Description:	give access only to 'http://*.moonlight.test/file#fragment' (wildcard + fragment)
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy>
+					<allow-from><domain uri='http://*.moonlight.test/file#fragment'/></allow-from>
+					<grant-to><resource path='/' include-subpaths='true'/></grant-to>
+				</policy></cross-domain-access></access-policy>");
+			} else {
+				Default (path);
+			}
+			break;
+		case "silverlight-23.moonlight.test":
+			// Description:	give access only to 'http://*.moonlight.test/file?query' (wildcard + query)
+			// Result:	SecurityException
+			if (path == "clientaccesspolicy.xml") {
+				Response.Write (@"<?xml version='1.0'?><access-policy><cross-domain-access><policy>
+					<allow-from><domain uri='http://*.moonlight.test/file?query'/></allow-from>
+					<grant-to><resource path='/' include-subpaths='true'/></grant-to>
+				</policy></cross-domain-access></access-policy>");
 			} else {
 				Default (path);
 			}
