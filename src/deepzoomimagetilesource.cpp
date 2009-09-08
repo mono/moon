@@ -14,7 +14,6 @@
 #include <config.h>
 
 #include <stdio.h>
-#include <expat.h>
 #include <math.h>
 
 #include "debug.h"
@@ -112,13 +111,11 @@ get_tile_layer (int level, int x, int y, Uri *uri, void *userdata)
 	return ((DeepZoomImageTileSource *)userdata)->GetTileLayer (level, x, y, uri);
 }
 
-
 void
 DeepZoomImageTileSource::Init ()
 {
 	SetObjectType (Type::DEEPZOOMIMAGETILESOURCE);
 
-	downloader = NULL;
 	downloaded = false;
 	parsed = false;
 	format = NULL;
@@ -130,6 +127,8 @@ DeepZoomImageTileSource::Init ()
 	isCollection = false;
 	subimages = NULL;
 	nested = false;
+	get_resource_aborter = NULL;
+	parser = NULL;
 }
 
 DeepZoomImageTileSource::DeepZoomImageTileSource ()
@@ -165,136 +164,17 @@ DeepZoomImageTileSource::strip_and_set_uri (Uri *uri)
 
 DeepZoomImageTileSource::~DeepZoomImageTileSource ()
 {
-	if (downloader) {
-		downloader->Abort ();
-		downloader->unref ();
-	}		
+	Abort ();
 }
 
 void
-DeepZoomImageTileSource::Download ()
+DeepZoomImageTileSource::Abort ()
 {
-	LOG_MSI ("DZITS::Download ()\n");
-	if (downloaded)
-		return;
-	char *stringuri;
-	Value *value = GetValue (DeepZoomImageTileSource::UriSourceProperty);
-	Uri *uri = value ? GetValue (DeepZoomImageTileSource::UriSourceProperty)->AsUri () : NULL;
-	if (uri && (stringuri = uri->ToString ())) {
-		downloaded = true;
-		download_uri (stringuri);
-		g_free (stringuri);
-	}
-}
-
-void 
-DeepZoomImageTileSource::download_uri (const char* url)
-{
-	Uri *uri = new Uri ();
-
-	Surface *surface = GetSurface ();
-
-	if (!surface)
-		surface = this->GetDeployment()->GetSurface ();
-
-	if (!surface)
-		return;
-	
-//	if (g_str_has_prefix (url, "/"))
-//		url++;
-
-	if (!(uri->Parse (url)))
-		return;
-	
-	if (!downloader)
-		downloader = surface->CreateDownloader ();
-	
-	if (!downloader)
-		return;
-
-	LOG_MSI ("DZITS: download_uri (%s)\n", uri->ToString ());
-
-	downloader->Open ("GET", uri, NoPolicy);
-	
-	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-	downloader->AddHandler (downloader->DownloadFailedEvent, downloader_failed, this);
-
-	downloader->Send ();
-
-	if (downloader->Started () || downloader->Completed ()) {
-		if (downloader->Completed ())
-			DownloaderComplete ();
-	} else 
-		downloader->Send ();
-	delete uri;
-}
-
-void
-DeepZoomImageTileSource::DownloaderComplete ()
-{
-	char *filename;
-	
-	if (!(filename = downloader->GetDownloadedFilename (NULL)))
-		return;
-	
-	Parse (filename);
-	
-	g_free (filename);
-}
-
-void
-DeepZoomImageTileSource::Parse (const char* filename)
-{
-#define BUFFSIZE	1024
-
-LOG_MSI ("Parsing DeepZoom %s\n", filename);
-	XML_Parser p = XML_ParserCreate (NULL);
-	XML_SetElementHandler (p, start_element, end_element);
-	DZParserinfo *info = new DZParserinfo ();
-	info->source = this;
-
-	XML_SetUserData (p, info);
-
-	FILE *f = fopen (filename, "r");
-	int done = 0;
-	char buffer[BUFFSIZE];
-	while (!done && !info->error) {
-		int len = fread (buffer, 1, BUFFSIZE, f);
-		if (ferror(f)) {
-			printf ("Read error\n");
-			done = 1;
-		}
-		done = feof (f);
-		if (!XML_Parse (p, buffer, len, done)) {
-			printf ("Parser error at line %d:\n%s\n", (int)XML_GetCurrentLineNumber (p), XML_ErrorString(XML_GetErrorCode(p)));
-			done = 1;
-		}
-	}
-	fclose (f);
-
-	if (!info->isCollection) {
-		SetImageWidth (info->image_width);
-		SetImageHeight (info->image_height);
-		SetTileOverlap (info->overlap);
-		display_rects = info->display_rects;
-	} else {
-		subimages = info->sub_images;
-		isCollection = info->isCollection;
-		maxLevel = info->max_level;
-	}
-
-	SetTileWidth (info->tile_size);
-	SetTileHeight (info->tile_size);
-	format = g_strdup (info->format);
-
-	parsed = true;
-
-LOG_MSI ("Done parsing...\n");
-
-	XML_ParserFree (p);
-
-	if (parsed_callback)
-		parsed_callback (cb_userdata);
+	if (get_resource_aborter)
+		get_resource_aborter->Cancel ();
+	if (parser)
+		XML_ParserFree (parser);
+	parser = NULL;
 }
 
 bool
@@ -351,32 +231,126 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 	return true;
 }
 
-void
-DeepZoomImageTileSource::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
+static void
+resource_notify (NotifyType type, gint64 args, gpointer user_data)
 {
-	LOG_MSI ("DL failed\n");
-	DeepZoomImageTileSource *obj = (DeepZoomImageTileSource *) closure;
-	if (obj->failed_callback)
-		obj->failed_callback (obj->cb_userdata);
+	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *)user_data;
+	if (type == NotifyFailed)
+		dzits->DownloaderFailed ();
+	else if (type == NotifyCompleted)
+		dzits->DownloaderComplete ();
+}
+
+static void
+dz_write (void *buffer, gint32 offset, gint32 n, gpointer data)
+{
+	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *) data;
+	dzits->XmlWrite ((char *) buffer, offset, n);
 }
 
 void
-DeepZoomImageTileSource::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
+DeepZoomImageTileSource::XmlWrite (char* buffer, gint32 offset, gint32 n)
 {
-	LOG_MSI ("DZITS::dl_complete\n");
-	((DeepZoomImageTileSource *) closure)->DownloaderComplete ();
+	if (offset == 0) {
+		//Init xml parser
+		LOG_MSI ("Start parsing DeepZoom\n");
+		parser = XML_ParserCreate (NULL);
+		XML_SetElementHandler (parser, start_element, end_element);
+		DZParserinfo *info = new DZParserinfo ();
+		info->source = this;
+		XML_SetUserData (parser, info);
+	}
+
+	if (!XML_Parse (parser, buffer, n, 0)) {
+		printf ("Parser error at line %d:\n%s\n", (int)XML_GetCurrentLineNumber (parser), XML_ErrorString(XML_GetErrorCode(parser)));
+		Abort ();
+		DownloaderFailed ();
+	}
+}
+
+void
+DeepZoomImageTileSource::Download ()
+{
+	LOG_MSI ("DZITS::Download ()\n");
+	if (downloaded)
+		return;
+
+	Application *current = Application::GetCurrent ();
+	Uri *uri = GetUriSource ();
+
+	if (current && uri) {
+		downloaded = true;
+		get_resource_aborter = new Cancellable ();
+		current->GetResource (GetResourceBase(), uri, resource_notify, dz_write, MediaPolicy, get_resource_aborter, this);
+	}
+}
+
+void
+DeepZoomImageTileSource::DownloaderComplete ()
+{
+	//set isFinal for the parser to complete
+	if (!XML_Parse (parser, NULL, 0, 1)) {
+		printf ("Parser error at line %d:\n%s\n", (int)XML_GetCurrentLineNumber (parser), XML_ErrorString(XML_GetErrorCode(parser)));
+		Abort ();
+		DownloaderFailed ();
+		return;
+	}
+
+	DZParserinfo *info = (DZParserinfo *)XML_GetUserData (parser);
+
+	if (!info->isCollection) {
+		SetImageWidth (info->image_width);
+		SetImageHeight (info->image_height);
+		SetTileOverlap (info->overlap);
+		display_rects = info->display_rects;
+	} else {
+		subimages = info->sub_images;
+		isCollection = info->isCollection;
+		maxLevel = info->max_level;
+	}
+
+	SetTileWidth (info->tile_size);
+	SetTileHeight (info->tile_size);
+	format = g_strdup (info->format);
+
+	parsed = true;
+
+	LOG_MSI ("Done parsing...\n");
+
+	XML_ParserFree (parser);
+	parser = NULL;
+
+	if (parsed_callback)
+		parsed_callback (cb_userdata);
+}
+
+void
+DeepZoomImageTileSource::DownloaderFailed ()
+{
+	LOG_MSI ("DZITS::dl failed\n");
+	if (failed_callback)
+		failed_callback (cb_userdata);
+}
+
+void
+DeepZoomImageTileSource::UriSourceChanged ()
+{
+	parsed = false;
+	downloaded = false;
+	if (!nested) {
+		Download ();
+	}	
+		
+	if (sourcechanged_callback)
+		sourcechanged_callback (cb_userdata);
 }
 
 void
 DeepZoomImageTileSource::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == DeepZoomImageTileSource::UriSourceProperty) {
-		if (!nested) {
-			downloaded = false;
-			Download ();
-		}
-		if (sourcechanged_callback)
-			sourcechanged_callback (cb_userdata);
+		Abort ();
+		UriSourceChanged ();
 	}
 
 	if (args->GetProperty ()->GetOwnerType () != Type::DEEPZOOMIMAGETILESOURCE) {
