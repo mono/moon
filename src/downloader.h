@@ -251,6 +251,8 @@ class IDownloader {
 	Deployment *deployment;
 
  public:
+	virtual ~IDownloader () {};
+
 	virtual void Abort () = 0;
 	virtual const bool IsAborted () = 0;
 	Deployment *GetDeployment () { return deployment; }

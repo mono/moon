@@ -1,3 +1,9 @@
+2009-09-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* downloader.h, layout.h, list.h: Add missing virtual destructors
+
+	r: toshok
+
 2009-09-08  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* downloader.h|.cpp: new MsiPolicy, like MediaPolicy but doesn't allow

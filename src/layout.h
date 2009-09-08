@@ -26,6 +26,7 @@ class TextLayout;
 
 class ITextAttributes {
  public:
+	virtual ~ITextAttributes () {};
 	virtual TextFontDescription *FontDescription () = 0;
 	virtual TextDecorations Decorations () = 0;
 	virtual Brush *Background (bool selected) = 0;

@@ -39,7 +39,7 @@ protected:
 public:
 	// constructors
 	List ();
-	~List ();
+	virtual ~List ();
 	
 	// properties
 	Node *First ();
