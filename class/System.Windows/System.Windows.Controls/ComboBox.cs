@@ -269,7 +269,7 @@ namespace System.Windows.Controls
 		
 		protected override AutomationPeer OnCreateAutomationPeer ()
 		{
-			throw new NotImplementedException ();
+			return new ComboBoxAutomationPeer (this);
 		}
 		
 		protected override void OnGotFocus (RoutedEventArgs e)

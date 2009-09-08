@@ -225,19 +225,19 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		public virtual void ContentTest_ScrollViewer ()
+		public virtual void ContentTest_NoTemplate ()
 		{
-			ContentTest_Template (new SelectorConcrete ());
+			ContentTest_Template (new SelectorConcrete () { Template = null });
 		}
 
 		[TestMethod]
 		[Asynchronous]
 		public override void ContentTest ()
 		{
-			ContentTest_Template (new SelectorConcrete () { Template = null });
+			ContentTest_Template (new SelectorConcrete ());
 		}
 
-		protected void ContentTest_Template (Selector concrete)
+		protected virtual void ContentTest_Template (Selector concrete)
 		{
 			// We are going to add a lot of elements to show the scrollbars
 			// notice we are using default Template
@@ -286,7 +286,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		[Asynchronous]
 		[SilverlightBug("A11y implementation doesn't work")]
-		public void ISelectionProvider_Methods ()
+		public virtual void ISelectionProvider_Methods ()
 		{
 			bool concreteLoaded = false;
 			Selector selector = CreateConcreteFrameworkElement () as Selector;
@@ -338,7 +338,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		public void ISelectionProvider_Events ()
+		public virtual void ISelectionProvider_Events ()
 		{
 			if (!EventsManager.Instance.AutomationSingletonExists) {
 				EnqueueTestComplete ();

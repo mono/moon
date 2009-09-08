@@ -1,3 +1,13 @@
+2009-09-08  Mario Carrion  <mcarrion@novell.com>
+
+	* ComboBoxAutomationPeer.cs: New file.
+	* ItemsControlAutomationPeer.cs: Moved ChildrenCore content to
+	GetChildrenCore, no need to use ChildrenCore.
+	* FrameworkElementAutomationPeer.cs: Catching exception when calling
+	TransformToVisual.
+
+	r: toshok
+
 2009-09-03  Mario Carrion  <mcarrion@novell.com>
 
 	* ItemAutomationPeer.cs: New internal properties: RealItem and 

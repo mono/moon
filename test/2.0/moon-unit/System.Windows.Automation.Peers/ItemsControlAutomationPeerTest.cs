@@ -220,7 +220,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("This is not yet working on Moonlight. (GetChildren #1)")]
 		public override void ContentTest ()
 		{
 			Assert.IsTrue (IsContentPropertyElement (), "ItemsControl ContentElement.");
@@ -238,6 +237,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			stackPanel.Loaded += (o, e) => stackPanelLoaded = true;
 
 			EnqueueConditional (() => concreteLoaded, "ConcreteLoaded #0");
+			Enqueue (() => concrete.ApplyTemplate ());
 			Enqueue (() => {
 				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
 				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
@@ -255,6 +255,54 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				// We add another TextBlock and nothing changes
 				stackPanel.Children.Add (new TextBlock () { Text = "Text3" });
 				Assert.IsNull (peer.GetChildren (), "GetChildren #2");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void StructureChanged_Events ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			bool concreteLoaded = false;
+			ItemsControl concrete = CreateConcreteFrameworkElement () as ItemsControl;
+			concrete.Loaded += (o, e) => concreteLoaded = true;
+			TestPanel.Children.Add (concrete);
+
+			EnqueueConditional (() => concreteLoaded, "ConcreteLoaded #0");
+			Enqueue (() => concrete.ApplyTemplate ());
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
+				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement #0");
+				AutomationEventTuple tuple
+					= EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNull (tuple, "GetAutomationEventFrom #0");
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				concrete.Items.Add (new ListBoxItem () { Content = "Item 0" });
+			});
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
+				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement #1");
+				AutomationEventTuple tuple
+					= EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "GetAutomationEventFrom #1");
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				concrete.Items.RemoveAt (0);
+			});
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
+				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement #2");
+				AutomationEventTuple tuple
+					= EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "GetAutomationEventFrom #2");
 			});
 			EnqueueTestComplete ();
 		}

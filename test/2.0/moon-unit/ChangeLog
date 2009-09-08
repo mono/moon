@@ -1,3 +1,17 @@
+2009-09-08  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: New file added ComboBoxAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: 
+	* System.Windows.Automation.Peers/ListBoxAutomationPeerTest.cs: 
+	ContentTest_ScrollViewer renamed to ContentTest, and ContentTest 
+	renamed to ContentTest_Template.
+	* System.Windows.Automation.Peers/ComboBoxAutomationPeerTest.cs: New
+	file.
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs: 
+	ContentTest passes. New test StructureChanged_Events.
+
+	r: toshok
+
 2009-09-04  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows/VisualStateTest.cs: remove AddRemoveHandlerTest

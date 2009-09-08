@@ -318,7 +318,14 @@ namespace System.Windows.Automation.Peers {
 			if (VisualTreeHelper.GetParent (owner) == null)
 				return new Point (0, 0);
 
-			return owner.TransformToVisual (Application.Current.RootVisual).Transform (new Point ());
+			Point point = new Point (0, 0);
+			try { 
+				// This happens when an item is not visible yet but exists, for 
+				// example ListBoxItems in ComboBox when Template is not null
+				point = owner.TransformToVisual (Application.Current.RootVisual).Transform (new Point ());
+			} catch (ArgumentException) { }
+
+			return point;
 		}
 
 		internal Rect GetBoundingRectangleFrom (FrameworkElement owner)

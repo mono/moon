@@ -55,25 +55,23 @@ namespace System.Windows.Automation.Peers {
 
 		protected override List<AutomationPeer> GetChildrenCore ()
 		{
-			return ChildrenCore;
+			ItemsControl itemsControl = (ItemsControl) Owner;
+			if (itemsControl.Items.Count == 0)
+				return null;
+				
+			List<AutomationPeer> children = new List<AutomationPeer> ();
+			for (int index = 0; index < itemsControl.Items.Count; index++) {
+				ListBoxItem item = itemsControl.GetContainerItem (index);
+				if (item == null)
+					return null;
+				children.Add (FrameworkElementAutomationPeer.CreatePeerForElement (item));
+			}
+
+			return children;
 		}
 
 		internal virtual ScrollViewer ScrollPatternImplementor {
 			get { return null; }
-		}
-
-		internal override List<AutomationPeer> ChildrenCore {
-			get { 
-				ItemsControl itemsControl = (ItemsControl) Owner;
-				if (itemsControl.Items.Count == 0)
-					return null;
-					
-				List<AutomationPeer> children = new List<AutomationPeer> ();
-				for (int index = 0; index < itemsControl.Items.Count; index++)
-					children.Add (FrameworkElementAutomationPeer.CreatePeerForElement (itemsControl.GetContainerItem (index)));
-
-				return children;
-			}
 		}
 	}
 
