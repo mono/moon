@@ -1,5 +1,12 @@
 2009-09-08  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* deepzoomimagetilesource.cpp: don't render if any MSI extends
+	is 0. avoid rendering an extra layer in some cases.
+
+	r: rolf
+
+2009-09-08  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* deepzoomimagetilesource.h|cpp: replace downloader usage by
 	Application::GetResource (). Parses the xml stream as it comes,
 	instead of all at once.

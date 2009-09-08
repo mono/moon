@@ -971,17 +971,18 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	double vp_oy = GetViewportOrigin()->y;
 	double vp_w = GetViewportWidth ();
 
+	if (msi_w <= 0.0 || msi_h <= 0.0)
+		return; //invisible widget, nothing to render
+
+	//Number of layers in the MSI, aka the lowest powerof2 that's bigger than width and height
 	int layers;
-
-	if (msi_w <= 0.0 && msi_h <= 0.0)
-		return;
-
 	if (frexp (MAX (im_w, im_h), &layers) == 0.5)
 		layers --;
 
 	//optimal layer for this... aka "best viewed at"
 	int optimal_layer;
-	frexp (msi_w / (vp_w * MIN (1.0, msi_ar))  , &optimal_layer);
+	if (frexp (msi_w / (vp_w * MIN (1.0, msi_ar))  , &optimal_layer) == 0.5)
+		optimal_layer--;
 	optimal_layer = MIN (optimal_layer, layers);
 	LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
