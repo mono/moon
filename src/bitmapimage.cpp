@@ -440,8 +440,10 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 		else if (buffer[0] == 0xff)
 			loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
 
-		else
+		else {
 			Abort ();
+			Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
+		}
 	} else {
 		loader = gdk_pixbuf_loader_new ();
 	}

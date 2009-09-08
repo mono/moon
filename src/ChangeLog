@@ -1,3 +1,11 @@
+2009-09-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* bitmapimage.cpp: CreateLoader: we were relying on an DownloadFailed
+	event from the downloader after cancelling a resource request, this 
+	is no longer true, so emit ImageFailed manually after calling Abort.
+
+	r: sde
+
 2009-09-08  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* deepzoomimagetilesource.cpp: don't render if any MSI extends
