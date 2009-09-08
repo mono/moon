@@ -259,6 +259,12 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Test_InvokeProvider_Events ((ButtonBase)CreateConcreteFrameworkElement ());
 		}
 
+		[TestMethod]
+		public void IInvokeProvider_Invoke ()
+		{
+			Test_InvokeProvider_Invoke (CreateConcreteFrameworkElement () as ButtonBase);
+		}
+
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
 			return new HyperlinkButton ();

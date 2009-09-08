@@ -27,9 +27,11 @@
 //
 
 using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
-using System.Windows.Controls.Primitives;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -37,18 +39,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Windows.Automation.Peers {
 
 	[TestClass]
-	public class RepeatButtonAutomationPeerTest {
+	public class RepeatButtonAutomationPeerTest : ButtonBaseAutomationPeerTest {
 
 		[TestMethod]
-		public void Null ()
-		{
-			Assert.Throws<NullReferenceException> (delegate {
-				new RepeatButtonAutomationPeer (null);
-			});
-		}
-
-		[TestMethod]
-		public void Public ()
+		public override void GetPattern ()
 		{
 			RepeatButtonAutomationPeer rbap = new RepeatButtonAutomationPeer (new RepeatButton ());
 			Assert.AreEqual (AutomationControlType.Button, rbap.GetAutomationControlType (), "GetAutomationControlType");
@@ -71,21 +65,50 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsNull (rbap.GetPattern (PatternInterface.Transform), "Transform");
 			Assert.IsNull (rbap.GetPattern (PatternInterface.Value), "Value");
 			Assert.IsNull (rbap.GetPattern (PatternInterface.Window), "Window");
+
+			Assert.IsNotNull (rbap.GetPattern (PatternInterface.Invoke), "Invoke #1");
 		}
 
 		[TestMethod]
-		public void Invoke ()
+		public override void GetClassName ()
 		{
-			IInvokeProvider ip = new RepeatButtonAutomationPeer (new RepeatButton ());
-			ip.Invoke ();
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
+			Assert.AreEqual ("RepeatButton", feap.GetClassName (), "GetClassNameCore");
+			Assert.AreEqual ("RepeatButton", feap.GetClassNameCore_ (), "GetClassNameCoreCore");
 		}
 
-		public class RepeatButtonAutomationPeerPoker : RepeatButtonAutomationPeer {
+		[TestMethod]
+		public override void GetAutomationControlType ()
+		{
+			RepeatButtonAutomationPeerPoker bapp = new RepeatButtonAutomationPeerPoker (new RepeatButton ());
+			Assert.AreEqual (AutomationControlType.Button, bapp.GetAutomationControlType (), "GetAutomationControlType");
+			Assert.AreEqual (AutomationControlType.Button, bapp.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
+		}
+
+		[TestMethod]
+		public void IInvokeProvider_Invoke ()
+		{
+			Test_InvokeProvider_Invoke (CreateConcreteFrameworkElement () as ButtonBase);
+		}
+
+		[TestMethod]
+		public void InvokeProvider_Events ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			Test_InvokeProvider_Events ((ButtonBase) CreateConcreteFrameworkElement ());
+		}
+
+		public class RepeatButtonAutomationPeerPoker : RepeatButtonAutomationPeer, FrameworkElementAutomationPeerContract {
 
 			public RepeatButtonAutomationPeerPoker (RepeatButton owner)
 				: base (owner)
 			{
 			}
+
+			#region Overridden methods
 
 			public AutomationControlType GetAutomationControlTypeCore_ ()
 			{
@@ -96,14 +119,127 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			{
 				return base.GetClassNameCore ();
 			}
+
+			#endregion
+
+			#region FrameworkElementAutomationPeerContract Members
+
+			public AutomationPeer GetLabeledByCore_ ()
+			{
+				return base.GetLabeledByCore ();
+			}
+
+			public string GetNameCore_ ()
+			{
+				return base.GetNameCore ();
+			}
+
+			public bool IsContentElementCore_ ()
+			{
+				return base.IsContentElementCore ();
+			}
+
+			public bool IsControlElementCore_ ()
+			{
+				return base.IsControlElementCore ();
+			}
+
+			public string GetAcceleratorKeyCore_ ()
+			{
+				return base.GetAcceleratorKeyCore ();
+			}
+
+			public string GetAccessKeyCore_ ()
+			{
+				return base.GetAccessKeyCore ();
+			}
+
+			public string GetAutomationIdCore_ ()
+			{
+				return base.GetAutomationIdCore ();
+			}
+
+			public global::System.Windows.Rect GetBoundingRectangleCore_ ()
+			{
+				return base.GetBoundingRectangleCore ();
+			}
+
+			public global::System.Collections.Generic.List<AutomationPeer> GetChildrenCore_ ()
+			{
+				return base.GetChildrenCore ();
+			}
+
+			public global::System.Windows.Point GetClickablePointCore_ ()
+			{
+				return base.GetClickablePointCore ();
+			}
+
+			public string GetHelpTextCore_ ()
+			{
+				return base.GetHelpTextCore ();
+			}
+
+			public string GetItemStatusCore_ ()
+			{
+				return base.GetItemStatusCore ();
+			}
+
+			public string GetItemTypeCore_ ()
+			{
+				return base.GetItemTypeCore ();
+			}
+
+			public string GetLocalizedControlTypeCore_ ()
+			{
+				return base.GetLocalizedControlTypeCore ();
+			}
+
+			public AutomationOrientation GetOrientationCore_ ()
+			{
+				return base.GetOrientationCore ();
+			}
+
+			public bool HasKeyboardFocusCore_ ()
+			{
+				return base.HasKeyboardFocusCore ();
+			}
+
+			public bool IsEnabledCore_ ()
+			{
+				return base.IsEnabledCore ();
+			}
+
+			public bool IsKeyboardFocusableCore_ ()
+			{
+				return base.IsKeyboardFocusableCore ();
+			}
+
+			public bool IsOffscreenCore_ ()
+			{
+				return base.IsOffscreenCore ();
+			}
+
+			public bool IsPasswordCore_ ()
+			{
+				return base.IsPasswordCore ();
+			}
+
+			public bool IsRequiredForFormCore_ ()
+			{
+				return base.IsRequiredForFormCore ();
+			}
+
+			#endregion
 		}
 
-		[TestMethod]
-		public void Protected ()
+		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
-			RepeatButtonAutomationPeerPoker rbap = new RepeatButtonAutomationPeerPoker (new RepeatButton ());
-			Assert.AreEqual (AutomationControlType.Button, rbap.GetAutomationControlTypeCore_ (), "GetAutomationControlType");
-			Assert.AreEqual ("RepeatButton", rbap.GetClassNameCore_ (), "GetClassName");
+			return new RepeatButton ();
+		}
+
+		protected override FrameworkElementAutomationPeerContract CreateConcreteFrameworkElementAutomationPeer (FrameworkElement element)
+		{
+			return new RepeatButtonAutomationPeerPoker (element as RepeatButton);
 		}
 	}
 }

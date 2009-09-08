@@ -1,5 +1,17 @@
 2009-09-08  Mario Carrion  <mcarrion@novell.com>
 
+	* System.Windows.Automation.Peers/HyperlinkButtonAutomationPeerTest.cs: 
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs: 
+	Using base method to test invoke pattern.
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs: 
+	New method Test_InvokeProvider_Invoke.
+	* System.Windows.Automation.Peers/RepeatButtonAutomationPeerTest.cs: 
+	New file added.
+
+	r: spouliot
+
+2009-09-08  Mario Carrion  <mcarrion@novell.com>
+
 	* moon-unit.csproj: New file added ComboBoxAutomationPeerTest.cs.
 	* System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: 
 	* System.Windows.Automation.Peers/ListBoxAutomationPeerTest.cs: 

@@ -29,6 +29,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
@@ -308,6 +309,28 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			provider.Invoke ();
 			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.InvokePatternOnInvoked);
 			Assert.IsNotNull (tuple, "GetAutomationEventFrom #1");
+		}
+
+		protected void Test_InvokeProvider_Invoke (ButtonBase button)
+		{
+			AutomationPeer peer
+				= FrameworkElementAutomationPeer.CreatePeerForElement (button);
+			IInvokeProvider invoke = peer.GetPattern (PatternInterface.Invoke) as IInvokeProvider;
+			Assert.IsNotNull (invoke, "InvokeProvider is null");
+
+			invoke.Invoke ();
+			button.IsEnabled = false;
+
+			try {
+				invoke.Invoke ();
+				Assert.Fail ("Should throw ElementNotEnabledException");
+			} catch (ElementNotEnabledException) {
+			} catch (Exception) {
+				Assert.Fail ("Should ONLY throw ElementNotEnabledException");
+			}
+
+			button.IsEnabled = true;
+			invoke.Invoke ();
 		}
 
 	}

@@ -1,5 +1,14 @@
 2009-09-08  Mario Carrion  <mcarrion@novell.com>
 
+	* RepeatButtonAutomationPeer.cs: Raising InvokePatternOnInvoked. 
+	IInvokeProvider.Invoke implementation.
+	* HyperlinkButtonAutomationPeer.cs: Throwing ElementNotEnabledException
+	when not enabled.
+
+	r: spouliot
+
+2009-09-08  Mario Carrion  <mcarrion@novell.com>
+
 	* ComboBoxAutomationPeer.cs: New file.
 	* ItemsControlAutomationPeer.cs: Moved ChildrenCore content to
 	GetChildrenCore, no need to use ChildrenCore.

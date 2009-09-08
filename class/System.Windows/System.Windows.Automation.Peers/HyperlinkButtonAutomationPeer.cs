@@ -29,6 +29,7 @@
 using System;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Automation;
 using System.Windows.Automation.Provider;
 
 namespace System.Windows.Automation.Peers {
@@ -60,6 +61,9 @@ namespace System.Windows.Automation.Peers {
 
 		void IInvokeProvider.Invoke ()
 		{
+			if (!IsEnabled ())
+				throw new ElementNotEnabledException ();
+
 			((ButtonBase) Owner).OnClickInternal ();
 		}
 

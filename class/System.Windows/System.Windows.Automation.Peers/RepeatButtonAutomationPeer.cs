@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
@@ -38,6 +39,9 @@ namespace System.Windows.Automation.Peers {
 		public RepeatButtonAutomationPeer (RepeatButton owner)
 			: base (owner)
 		{
+			owner.Click += (s, a) => { 
+				RaiseAutomationEvent (AutomationEvents.InvokePatternOnInvoked); 
+			};
 		}
 
 		protected override AutomationControlType GetAutomationControlTypeCore ()
@@ -54,12 +58,15 @@ namespace System.Windows.Automation.Peers {
 		{
 			if (patternInterface == PatternInterface.Invoke)
 				return this;
-			return null;
+			return base.GetPattern (patternInterface);
 		}
 
-		[MonoTODO]
 		void IInvokeProvider.Invoke ()
 		{
+			if (!IsEnabled ())
+				throw new ElementNotEnabledException ();
+
+        		((ButtonBase) Owner).OnClickInternal ();
 		}
 	}
 }

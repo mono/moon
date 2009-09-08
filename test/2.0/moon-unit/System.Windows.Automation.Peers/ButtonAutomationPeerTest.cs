@@ -231,12 +231,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void IInvokeProvider_Invoke ()
 		{
-			AutomationPeer peer 
-				= FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
-			IInvokeProvider invoke = peer.GetPattern (PatternInterface.Invoke) as IInvokeProvider;
-			Assert.IsNotNull (invoke, "InvokeProvider is null");
-
-			invoke.Invoke ();
+			Test_InvokeProvider_Invoke (CreateConcreteFrameworkElement () as ButtonBase);
 		}
 
 		[TestMethod]
