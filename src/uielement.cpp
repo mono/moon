@@ -28,6 +28,7 @@
 #include "media.h"
 #include "resources.h"
 #include "popup.h"
+#include "provider.h"
 
 //#define DEBUG_INVALIDATE 0
 #define MIN_FRONT_TO_BACK_COUNT 25
@@ -512,8 +513,10 @@ UIElement::ElementAdded (UIElement *item)
 	item->UpdateTotalHitTestVisibility ();
 	//item->UpdateBounds (true);
 	item->Invalidate ();
-	
+
 	if (0 != (flags & (UIElement::IS_LOADED | UIElement::PENDING_LOADED))) {
+		InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (item);
+
 		bool delay = false;
 		List *load_list = item->WalkTreeForLoaded (&delay);
 
@@ -812,6 +815,7 @@ UIElement::Focus (bool recurse)
 {
 	return false;
 }
+
 //
 // Queues the invalidate for the current region, performs any 
 // updates to the RenderTransform (optional) and queues a 

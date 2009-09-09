@@ -4,6 +4,55 @@
 
 	r: toshok
 
+2009-09-08  Chris Toshok  <toshok@ximian.com>
+
+	* provider.cpp (StylePropertyValueProvider::SealStyle): pass true
+	for ProviderValueChanged's @set_parent.
+	(InheritedPropertyValueProvider::PropagateInheritedProperty): pass
+	true in the visual walking case, and false in the
+	textblock->inline case.
+	(PROP_ADD): pass true.
+	(AutoCreatePropertyValueProvider::GetPropertyValue): pass true.
+	(InheritedPropertyValueProvider::PropagateInheritedProperty):
+	do a deep traversal of the tree, looking for children who have a
+	mapped property from the changed one (MapPropertyToDescendant
+	returns NULL if there's no mapping).  Once we find a suitable
+	descendant, call ProviderValueChanged on it with "true" for
+	notify_listeners.  This will take care of notifying further down
+	the tree if need be, and we can skip that branch.  For textblocks
+	we also have to iterate over the inlines to propagate the property
+	change notification.
+	(InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree):
+	traverse the entire subtree looking for classes which can inherit
+	properties from above them.  when we find one, get the inherited
+	value.  if it's non-null, notify that the property has changed,
+	and keep trace of this property (we only notify once for a given
+	subtree, since the normal ProviderValueChanged notifications will
+	handle the rest for that property.)
+	(walk_tree): this recursive function does the bulk of the work for
+	::PropagateInheritedPropertiesOnAddingToTree
+
+	* dependencyobject.h|cpp (DependencyObject::ProviderValueChanged):
+	add an additional argument (set_parent), which is true for every
+	instant except when TextBox is propagating inherited brushes to
+	its constituent inlines.  In this case, the textbox is still the
+	parent of the brush.  At least for the time being.  In a perfect
+	world all the changed handling would live in the leaf
+	nodes (i.e. in the Inlines themselves)
+	(DependencyObject::ClearValue): track api change
+	(DependencyObject::SetValueWithErrorImpl): same.
+	(DependencyObject::GetValue): add an overload for allowing both
+	starting and ending precedences, and implement the other two
+	overloads in terms of it.
+	(DependencyObject::GetValueSkippingPrecedence): remove, no longer
+	used.
+
+	* uielement.cpp (UIElement::ElementAdded): propagate all
+	inheritable properties into the subtree we're adding, before
+	calling Loaded.
+
+	r: andreia
+	
 2009-09-08  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* downloader.h|.cpp: new MsiPolicy, like MediaPolicy but doesn't allow

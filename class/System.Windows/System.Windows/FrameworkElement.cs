@@ -314,10 +314,6 @@ namespace System.Windows {
 		{
 			RemoveExpression (dp);
 			base.ClearValueImpl (dp);
-			if (dp == FrameworkElement.DataContextProperty) {
-				InvalidateLocalBindings ();
-				InvalidateSubtreeBindings ();
-			}
 		}
 		
 		internal void RaiseBindingValidationError (ValidationErrorEventArgs e)
@@ -387,11 +383,6 @@ namespace System.Windows {
 					throw;
 				else
 					base.SetValueImpl (dp, dp.DefaultValue);
-			}
-			
-			if (dp == FrameworkElement.DataContextProperty) {
-				InvalidateLocalBindings ();
-				InvalidateSubtreeBindings ();
 			}
 		}
 

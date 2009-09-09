@@ -1350,7 +1350,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		if (new_value)
 			g_hash_table_insert (local_values, property, new_value);
 		
-		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, error);
+		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, true, error);
 		
 		if (current_value)
 			delete current_value;
@@ -1555,27 +1555,19 @@ DependencyObject::GetValue (int id)
 Value *
 DependencyObject::GetValue (DependencyProperty *property)
 {
-	return GetValue (property, PropertyPrecedence_Highest);
+	return GetValue (property, PropertyPrecedence_Highest, PropertyPrecedence_Lowest);
 }
 
 Value *
 DependencyObject::GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence)
 {
-	for (int i = startingAtPrecedence; i < PropertyPrecedence_Count; i ++) {
-		if (!providers[i])
-			continue;
-		Value *value = providers[i]->GetPropertyValue (property);
-		if (value) return value;
-	}
-	return NULL;
+	return GetValue (property, startingAtPrecedence, PropertyPrecedence_Lowest);
 }
 
 Value *
-DependencyObject::GetValueSkippingPrecedence (DependencyProperty *property, PropertyPrecedence toSkip)
+DependencyObject::GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence, PropertyPrecedence endingAtPrecedence)
 {
-	for (int i = 0; i < PropertyPrecedence_Count; i ++) {
-		if (i == toSkip)
-			continue;
+	for (int i = startingAtPrecedence; i <= endingAtPrecedence; i ++) {
 		if (!providers[i])
 			continue;
 		Value *value = providers[i]->GetPropertyValue (property);
@@ -1621,7 +1613,7 @@ void
 DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 					DependencyProperty *property,
 					Value *old_provider_value, Value *new_provider_value,
-					bool notify_listeners, MoonError *error)
+					bool notify_listeners, bool set_parent, MoonError *error)
 {
 	int p;
 
@@ -1675,7 +1667,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		// we also need to audit other "typeof (object)" DP's
 		// to make sure they set parent when they should (and
 		// don't when they shouldn't.)
-		bool setsParent = !property->IsCustom ();
+		bool setsParent = set_parent && !property->IsCustom ();
 
 		if (old_value && old_value->Is (Type::DEPENDENCY_OBJECT))
 			old_as_dep = old_value->AsDependencyObject ();
@@ -1742,6 +1734,10 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 				PropertyChangeHandler callback = property->GetChangedCallback ();
 				callback (this, &args, error, NULL);
 			}
+
+
+			if (InheritedPropertyValueProvider::IsPropertyInherited (property->GetId ()))
+				InheritedPropertyValueProvider::PropagateInheritedProperty (this, property, old_value, new_value);
 		}
  	}
 }
@@ -1799,7 +1795,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 			providers[p]->RecomputePropertyValue (property);
 	}
 
-	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners, error);
+	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners, true, error);
 	
 	delete old_local_value;
 }

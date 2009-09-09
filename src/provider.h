@@ -13,8 +13,11 @@
 
 #include <glib.h>
 
+#include "type.h"
+
 class DependencyObject;
 class DependencyProperty;
+class UIElement;
 class Surface;
 class Style;
 struct Value;
@@ -32,7 +35,8 @@ enum PropertyPrecedence {
 
 	PropertyPrecedence_Count,
 
-	PropertyPrecedence_Highest = PropertyPrecedence_LocalValue
+	PropertyPrecedence_Highest = PropertyPrecedence_LocalValue,
+	PropertyPrecedence_Lowest = PropertyPrecedence_AutoCreate,
 };
 
 class PropertyValueProvider {
@@ -80,6 +84,29 @@ public:
 	virtual ~InheritedPropertyValueProvider () { };
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
+
+	static bool IsPropertyInherited (int propertyId);
+
+
+	// this method is used when a property changes on object @obj,
+	// and that notification needs to propagate down the tree
+	static void PropagateInheritedProperty (DependencyObject *obj, DependencyProperty *property, Value *old_value, Value *new_value);
+
+	// this method is used when you add a subtree into a
+	// pre-existing tree.  it propagates all inheritable
+	// properties throughout the tree
+	static void PropagateInheritedPropertiesOnAddingToTree (UIElement *subtreeRoot);
+private:
+
+	// given a dependency property and a descendent, this maps the
+	// property to whatever corresponds to that property on the
+	// descendent.
+	//
+	// i.e. Control::ForegroundProperty + Type::TEXTBLOCK = TextBlock::ForegroundProperty
+	//
+	static DependencyProperty* MapPropertyToDescendant (Types *types,
+							    DependencyProperty *property,
+							    Type::Kind descendantKind);
 };
 
 class DefaultValuePropertyValueProvider : public PropertyValueProvider {

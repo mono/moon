@@ -172,51 +172,12 @@ StylePropertyValueProvider::SealStyle (Style *style)
 		g_hash_table_insert (style_hash, setter_property, setter);
 
 		MoonError error;
-		obj->ProviderValueChanged (precedence, setter_property, NULL, setter_value, true, &error);
+		obj->ProviderValueChanged (precedence, setter_property, NULL, setter_value, true, true, &error);
 	}
 
 	delete iter;
 }
 
-
-static bool
-IsPropertyInherited (int propertyId)
-{
-#define PROP_CTI(p) G_STMT_START { \
-	if (propertyId == Control::p) return true; \
-	if (propertyId == TextBlock::p) return true; \
-	if (propertyId == Inline::p) return true; \
-	} G_STMT_END
-		
-#define PROP_F(p) G_STMT_START { \
-	if (propertyId == FrameworkElement::p) return true; \
-	} G_STMT_END
-
-#define PROP_U(p) G_STMT_START { \
-	if (propertyId == UIElement::p) return true; \
-        } G_STMT_END
-
-#define PROP_I(p) G_STMT_START { \
-	if (propertyId == Inline::p) return true; \
-	} G_STMT_END
-
-	PROP_CTI (ForegroundProperty);
-	PROP_CTI (FontFamilyProperty);
-	PROP_CTI (FontStretchProperty);
-	PROP_CTI (FontStyleProperty);
-	PROP_CTI (FontWeightProperty);
-	PROP_CTI (FontSizeProperty);
-
-	PROP_U (UseLayoutRoundingProperty);
-
-	PROP_F (LanguageProperty);
-	PROP_F (DataContextProperty);
-
-	PROP_I (LanguageProperty);
-	PROP_I (TextDecorationsProperty);
-
-	return false;
-}
 
 //
 // InheritedPropertyValueProvider
@@ -323,6 +284,235 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 }
 
 
+bool
+InheritedPropertyValueProvider::IsPropertyInherited (int propertyId)
+{
+#define PROP_CTI(p) G_STMT_START { \
+	if (propertyId == Control::p) return true; \
+	if (propertyId == TextBlock::p) return true; \
+	if (propertyId == Inline::p) return true; \
+	} G_STMT_END
+		
+#define PROP_F(p) G_STMT_START { \
+	if (propertyId == FrameworkElement::p) return true; \
+	} G_STMT_END
+
+#define PROP_U(p) G_STMT_START { \
+	if (propertyId == UIElement::p) return true; \
+        } G_STMT_END
+
+#define PROP_I(p) G_STMT_START { \
+	if (propertyId == Inline::p) return true; \
+	} G_STMT_END
+
+	PROP_CTI (ForegroundProperty);
+	PROP_CTI (FontFamilyProperty);
+	PROP_CTI (FontStretchProperty);
+	PROP_CTI (FontStyleProperty);
+	PROP_CTI (FontWeightProperty);
+	PROP_CTI (FontSizeProperty);
+
+	PROP_U (UseLayoutRoundingProperty);
+
+	PROP_F (LanguageProperty);
+	PROP_F (DataContextProperty);
+
+	PROP_I (LanguageProperty);
+	PROP_I (TextDecorationsProperty);
+
+	return false;
+}
+
+DependencyProperty*
+InheritedPropertyValueProvider::MapPropertyToDescendant (Types *types,
+							 DependencyProperty *property,
+							 Type::Kind descendantKind)
+{
+#define PROPAGATE_C_CT(p) G_STMT_START {				\
+		if (property->GetId() == Control::p) {			\
+			if (types->IsSubclassOf (descendantKind, Type::CONTROL)) \
+				return types->GetProperty (Control::p); \
+			else if (types->IsSubclassOf (descendantKind, Type::TEXTBLOCK)) \
+				return types->GetProperty (TextBlock::p); \
+		}							\
+	} G_STMT_END
+
+#define PROPAGATE_T_I(p) G_STMT_START {					\
+		if (property->GetId() == TextBlock::p) {		\
+			/* we don't need the check here since we can do it once above all the PROPAGATE_I below */ \
+			/*if (types->IsSubclassOf (descendantKind, Type::INLINE))*/ \
+				return types->GetProperty (Inline::p); \
+		}							\
+	} G_STMT_END
+
+	if (types->IsSubclassOf (property->GetOwnerType(), Type::CONTROL)) {
+		PROPAGATE_C_CT (ForegroundProperty);
+		PROPAGATE_C_CT (FontFamilyProperty);
+		PROPAGATE_C_CT (FontStretchProperty);
+		PROPAGATE_C_CT (FontStyleProperty);
+		PROPAGATE_C_CT (FontWeightProperty);
+		PROPAGATE_C_CT (FontSizeProperty);
+	}
+
+	if (types->IsSubclassOf (property->GetOwnerType(), Type::TEXTBLOCK)) {
+		if (types->IsSubclassOf (descendantKind, Type::INLINE)) {
+			PROPAGATE_T_I (ForegroundProperty);
+			PROPAGATE_T_I (FontFamilyProperty);
+			PROPAGATE_T_I (FontStretchProperty);
+			PROPAGATE_T_I (FontStyleProperty);
+			PROPAGATE_T_I (FontWeightProperty);
+			PROPAGATE_T_I (FontSizeProperty);
+
+			PROPAGATE_T_I (LanguageProperty);
+			PROPAGATE_T_I (TextDecorationsProperty);
+		}
+	}
+
+	if (types->IsSubclassOf (property->GetOwnerType(), Type::FRAMEWORKELEMENT)) {
+		if (types->IsSubclassOf (descendantKind, Type::FRAMEWORKELEMENT)) {
+			if (property->GetId() == FrameworkElement::LanguageProperty
+			    || property->GetId() == FrameworkElement::DataContextProperty)
+				return property;
+		}
+	}
+
+	if (types->IsSubclassOf (property->GetOwnerType(), Type::UIELEMENT)) {
+		if (types->IsSubclassOf (descendantKind, Type::UIELEMENT)) {
+			if (property->GetId() == UIElement::UseLayoutRoundingProperty)
+				return property;
+		}
+	}
+
+	return NULL;
+}
+
+void
+InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *obj, DependencyProperty *property, Value *old_value, Value *new_value)
+{
+	Types *types = obj->GetDeployment ()->GetTypes ();
+
+	if (types->IsSubclassOf (obj->GetObjectType(), Type::TEXTBLOCK)) {
+		InlineCollection *inlines = ((TextBlock*)obj)->GetInlines();
+
+		// lift this out of the loop since we know all
+		// elements of InlinesProperty will be inlines.
+		DependencyProperty *child_property = MapPropertyToDescendant (types, property, Type::INLINE);
+		if (!child_property)
+			return;
+
+		for (int i = 0; i < inlines->GetCount (); i++) {
+			Inline *item = inlines->GetValueAt (i)->AsInline ();
+
+			MoonError error;
+
+			item->ProviderValueChanged (PropertyPrecedence_Inherited, child_property,
+						    old_value, new_value, false, false, &error);
+
+			if (error.number) {
+				// FIXME: what do we do here?  I'm guessing we continue propagating?
+			}
+		}
+
+	}
+	else {
+		// for inherited properties, we need to walk down the
+		// subtree and call ProviderValueChanged on all
+		// elements that can inherit the property.
+		DeepTreeWalker walker ((UIElement*)obj, types);
+
+		walker.Step (); // skip obj
+
+		while (UIElement *element = walker.Step ()) {
+			DependencyProperty *child_property = MapPropertyToDescendant (types, property, element->GetObjectType());
+			if (!child_property)
+				continue;
+
+			MoonError error;
+
+			element->ProviderValueChanged (PropertyPrecedence_Inherited, child_property,
+						       old_value, new_value, true, true, &error);
+
+			if (error.number) {
+				// FIXME: what do we do here?  I'm guessing we continue propagating?
+			}
+
+			walker.SkipBranch ();
+		}
+	}
+}
+
+#define FOREGROUND_PROP     (1<<0)
+#define FONTFAMILY_PROP     (1<<1)
+#define FONTSTRETCH_PROP    (1<<2)
+#define FONTSTYLE_PROP      (1<<3)
+#define FONTWEIGHT_PROP     (1<<4)
+#define FONTSIZE_PROP       (1<<5)
+#define LANGUAGE_PROP       (1<<6)
+#define DATACONTEXT_PROP    (1<<7)
+#define LAYOUTROUNDING_PROP (1<<8)
+
+#define HAS_SEEN(s,p)  (((s) & (p))!=0)
+#define SEEN(s,p)      ((s)|=(p))
+
+#define PROP_ADD(p,s) G_STMT_START {					\
+	if (!HAS_SEEN (seen, s)) {					\
+		DependencyProperty *property = types->GetProperty (p);		\
+		Value *v = element->GetValue (property, PropertyPrecedence_Inherited, PropertyPrecedence_Inherited); \
+		if (v != NULL) {					\
+			element->ProviderValueChanged (PropertyPrecedence_Inherited, property, \
+						       NULL, v,		\
+						       true, true, &error); \
+			SEEN (seen, s);					\
+		}							\
+	}								\
+	} G_STMT_END
+
+static void
+walk_tree (Types *types, UIElement *element, guint32 seen)
+{
+	MoonError error;
+
+	if (types->IsSubclassOf (element->GetObjectType (), Type::CONTROL)) {
+		PROP_ADD (Control::ForegroundProperty, FOREGROUND_PROP);
+		PROP_ADD (Control::FontFamilyProperty, FONTFAMILY_PROP);
+		PROP_ADD (Control::FontStretchProperty, FONTSTRETCH_PROP);
+		PROP_ADD (Control::FontStyleProperty, FONTSTYLE_PROP);
+		PROP_ADD (Control::FontWeightProperty, FONTWEIGHT_PROP);
+		PROP_ADD (Control::FontSizeProperty, FONTSIZE_PROP);
+	}
+
+	if (types->IsSubclassOf (element->GetObjectType (), Type::TEXTBLOCK)) {
+		PROP_ADD (TextBlock::ForegroundProperty, FOREGROUND_PROP);
+		PROP_ADD (TextBlock::FontFamilyProperty, FONTFAMILY_PROP);
+		PROP_ADD (TextBlock::FontStretchProperty, FONTSTRETCH_PROP);
+		PROP_ADD (TextBlock::FontStyleProperty, FONTSTYLE_PROP);
+		PROP_ADD (TextBlock::FontWeightProperty, FONTWEIGHT_PROP);
+		PROP_ADD (TextBlock::FontSizeProperty, FONTSIZE_PROP);
+	}
+
+	if (types->IsSubclassOf (element->GetObjectType (), Type::FRAMEWORKELEMENT)) {
+		PROP_ADD (FrameworkElement::LanguageProperty, LANGUAGE_PROP);
+		PROP_ADD (FrameworkElement::DataContextProperty, DATACONTEXT_PROP);
+	}
+
+	
+	PROP_ADD (UIElement::UseLayoutRoundingProperty, LAYOUTROUNDING_PROP);
+
+	VisualTreeWalker walker ((UIElement*)element, Logical, types);
+
+	while (UIElement *child = walker.Step ())
+		walk_tree (types, child, seen);
+
+}
+
+void
+InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (UIElement *subtreeRoot)
+{
+	Types *types = subtreeRoot->GetDeployment ()->GetTypes ();
+
+	walk_tree (types, subtreeRoot, 0);
+}
+
 //
 // DefaultPropertyValueProvider
 //
@@ -404,7 +594,7 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	g_hash_table_insert (auto_values, property, value);
 	
 	MoonError error;
-	obj->ProviderValueChanged (precedence, property, NULL, value, false, &error);
+	obj->ProviderValueChanged (precedence, property, NULL, value, false, true, &error);
 	
 	return value;
 }

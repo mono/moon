@@ -263,9 +263,9 @@ public:
 	virtual Value *GetValue (DependencyProperty *property);
 	Value *GetValue (int id);
 
-	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners, MoonError *error);
+	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners, bool set_parent, MoonError *error);
 	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence);
-	Value *GetValueSkippingPrecedence (DependencyProperty *property, PropertyPrecedence toSkip);
+	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence, PropertyPrecedence endingAtPrecedence);
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *ReadLocalValueWithError (DependencyProperty *property, MoonError *error);

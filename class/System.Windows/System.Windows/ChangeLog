@@ -1,3 +1,12 @@
+2009-09-08  Chris Toshok  <toshok@ximian.com>
+
+	* FrameworkElement.cs (ClearValue): we don't need to special-case
+	DataContext here.  the normal property changed mechanism is good
+	enough.
+	(SetValueImpl): same here.
+
+	r: andreia
+
 2009-08-30  Andreia Gaita  <avidigal@novell.com>
 
 	* Application.cs: release all the leaking resources
