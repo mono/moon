@@ -229,7 +229,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void IInvokeProvider_Invoke ()
 		{
 			Test_InvokeProvider_Invoke (CreateConcreteFrameworkElement () as ButtonBase);

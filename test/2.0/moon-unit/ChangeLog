@@ -1,3 +1,8 @@
+2009-09-09  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs: 
+	Removed MoonligthBug.
+
 2009-09-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/MiscTest.cs: Add test cases for internal calls

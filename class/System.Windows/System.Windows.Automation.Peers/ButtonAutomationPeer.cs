@@ -47,6 +47,9 @@ namespace System.Windows.Automation.Peers
 
 		void IInvokeProvider.Invoke ()
 		{
+			if (!IsEnabled ())
+				throw new ElementNotEnabledException ();
+
 			((Button) Owner).OnClickInternal ();
 		}
 	}
