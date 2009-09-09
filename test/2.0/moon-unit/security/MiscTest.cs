@@ -27,10 +27,22 @@
 //
 
 using System;
+using System.Security;
+using System.Runtime.CompilerServices;
 using System.Windows;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+// this icall exists on both mono and sl
+// note: CSC prefer this type when compiling this assembly, while SMCS prefers the original type from mscorlib.dll
+namespace System.Runtime.CompilerServices {
+	public class RuntimeHelpers {
+
+		[MethodImpl (MethodImplOptions.InternalCall)]
+		public static extern object GetObjectValue (object obj);
+	}
+}
 
 namespace MoonTest.Security {
 
@@ -65,6 +77,24 @@ namespace MoonTest.Security {
 			// critical type
 			AppDomainManager [,] adm = new AppDomainManager [0, 0];
 			Assert.IsNotNull (adm, "AppDomainManager[,]");
+		}
+
+		[TestMethod]
+		[ExpectedException (typeof (SecurityException))]
+		[MoonlightBug ("smcs compiles this as using mscorlib, while csc compile this using the newly defined type")]
+		public void RedefineNonCriticalInternalCall ()
+		{
+			RuntimeHelpers.GetObjectValue (null);
+		}
+
+		[MethodImpl (MethodImplOptions.InternalCall)]
+		static extern void NonExistingInternalCall ();
+
+		[TestMethod]
+		[ExpectedException (typeof (SecurityException))]
+		public void DefineNonExistingInternalCall ()
+		{
+			NonExistingInternalCall ();
 		}
 	}
 }

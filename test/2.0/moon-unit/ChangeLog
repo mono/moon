@@ -1,3 +1,9 @@
+2009-09-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/MiscTest.cs: Add test cases for internal calls
+
+	r: kumpera
+
 2009-09-08  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs:
