@@ -334,7 +334,6 @@ class XamlElementInfo {
 	virtual XamlElementInstance *CreatePropertyElementInstance (XamlParserInfo *p, const char *name) = 0;
 };
 
-
 class XamlElementInstance : public List::Node {
 
  protected:
@@ -398,7 +397,6 @@ class XamlElementInstance : public List::Node {
 			g_free ((void*) element_name);
 	}
 
-	
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) = 0;
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value) = 0;
 	virtual void AddChild (XamlParserInfo *p, XamlElementInstance *child) = 0;
@@ -1249,8 +1247,6 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 	{
 		return is_dependency_object;
 	}
-
-	virtual bool SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value);
 
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value);
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char* value);
@@ -4013,7 +4009,7 @@ XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, c
 		return false;
 
 	Value v = Value (value);
-	if (!p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, GetAsValue (), this, GetParentPointer (), NULL, name, &v, NULL)) {
+	if (!p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, name, &v, NULL)) {
 		return false;
 	}
 	return true;
@@ -4445,19 +4441,6 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char
 	return false;
 }
 
-bool
-XamlElementInstanceManaged::SetUnknownAttribute (XamlParserInfo *p, const char* name, const char* value)
-{
-	if (!p->loader)
-		return false;
-
-	Value v = Value (value);
-	if (!p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), NULL, name, &v, NULL)) {
-		return false;
-	}
-	return true;
-}
-
 XamlElementInstance *
 XamlElementInfoImportedManaged::CreateElementInstance (XamlParserInfo *p)
 {
@@ -4865,6 +4848,7 @@ static void
 dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, const char **attr)
 {
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	GList *delay_att = NULL;
 
 	for (int i = 0; attr [i]; i += 2) {
 
@@ -4879,8 +4863,16 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 		if (attr_name [1]) {
 			XamlNamespace *ns = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, attr_name [0]);
 
-			if (!ns)
+			if (ns != x_namespace) {
+				delay_att = g_list_append (delay_att, GINT_TO_POINTER (i));
+				g_strfreev (attr_name);
+				continue;
+			}
+
+			if (!ns) {
+				g_strfreev (attr_name);
 				return parser_error (p, item->element_name, attr[i], 5055, "undeclared prefix");
+			}
 
 			ns->SetAttribute (p, item, attr_name [1], attr [i + 1]);
 
@@ -4929,6 +4921,8 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 				if (!item->GetAsDependencyObject ()->SetName (attr [i+1], scope)) {
 					parser_error (p, item->element_name, NULL, 2028,
 						      "The name already exists in the tree: %s.", attr [i+1]);
+					g_free (atchname);
+					g_list_free (delay_att);
 					return;
 				}
 				continue;
@@ -4937,16 +4931,16 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			if (prop->IsReadOnly ()) {
 				parser_error (p, item->element_name, NULL, 2014,
 					      "The attribute %s is read only and cannot be set.", prop->GetName ());
-				if (atchname)
-					g_free (atchname);
+				g_free (atchname);
+				g_list_free (delay_att);
 				return;
 			} 
 
 			if (item->IsPropertySet (prop->GetName())) {
 				parser_error (p, item->element_name, attr [i], 2033,
 					      "Cannot specify the value multiple times for property: %s.", prop->GetName ());
-				if (atchname)
-					g_free (atchname);
+				g_free (atchname);
+				g_list_free (delay_att);
 				return;
 			}
 
@@ -5005,8 +4999,11 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			}
 
 			if (!v_set && !value_is_explicit_null (attr [i + 1])) { // Check the non escaped value
-				g_free (attr_value);
 				parser_error (p, item->element_name, attr [i], 2024, "Invalid attribute value %s for property %s.", attr [i+1], attr [i]);
+
+				g_free (attr_value);
+				g_free (atchname);
+				g_list_free (delay_att);
 				return;
 			}
 
@@ -5020,25 +5017,57 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			delete v;
 			g_free (attr_value);
 		} else {
-			if (!item->SetUnknownAttribute (p, attr [i], attr [i + 1])) {
-				if (atchname)
-					g_free (atchname);
-
-				if (getenv ("MOON_NOFAIL_MISSING_PROPS")) {
-					printf ("Missing property %s on %s is being set to %s\n", attr [i], item->element_name, attr [i + 1]);
-					continue;
-				}
-				
-				parser_error (p, item->element_name, attr [i], 2012,
-						"Unknown attribute %s on element %s.",
-						attr [i], item->element_name);
-				return;
-			}
+			delay_att = g_list_append (delay_att, GINT_TO_POINTER (i));
 		}
 
 		if (atchname)
 			g_free (atchname);
 	}
+
+	GList *walk = g_list_first (delay_att);
+	while (walk) {
+		int i = GPOINTER_TO_INT (walk->data);
+
+		if (p->error_args)
+			return;
+
+		char **attr_name = g_strsplit (attr [i], "|", -1);
+
+		if (attr_name [1]) {
+			XamlNamespace *ns = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, attr_name [0]);
+
+			if (ns == x_namespace) {
+				// Skip these, they are handled earlier
+				g_strfreev (attr_name);
+				walk = walk->prev;
+			}
+
+			if (!ns) {
+				g_strfreev (attr_name);
+				parser_error (p, item->element_name, attr[i], 5055, "undeclared prefix");
+				break;
+			}
+
+			ns->SetAttribute (p, item, attr_name [1], attr [i + 1]);
+
+			g_strfreev (attr_name);
+
+			// Setting managed attributes can cause errors galore
+			if (p->error_args)
+				break;
+		} else {
+			if (!item->SetUnknownAttribute (p, attr [i], attr [i + 1])) {
+				parser_error (p, item->element_name, attr [i], 2012,
+						"Unknown attribute %s on element %s.",
+						attr [i], item->element_name);
+				break;
+			}
+		}
+
+		walk = walk->next;
+	}
+
+	g_list_free (delay_att);
 }
 
 

@@ -1,3 +1,16 @@
+2009-09-09  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: When we are setting attributes we want to set
+	everything with a backing dependency property before we set things
+	that require managed. We also delay the setting of attributes with
+	an explicit managed namespace reference.  NOTE: We dont delay
+	setting attributes that have a DP but are forced into managed
+	because of their type.
+	- We can share SetUnknownAttribute functions because the default
+	xmlns is inited to NULL.
+
+	r: rolf
+
 2009-09-09  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: Clear () the SubImagesCollection on 
