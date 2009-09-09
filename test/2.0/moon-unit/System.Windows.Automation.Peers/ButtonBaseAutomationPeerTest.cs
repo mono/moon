@@ -321,13 +321,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			invoke.Invoke ();
 			button.IsEnabled = false;
 
-			try {
-				invoke.Invoke ();
-				Assert.Fail ("Should throw ElementNotEnabledException");
-			} catch (ElementNotEnabledException) {
-			} catch (Exception) {
-				Assert.Fail ("Should ONLY throw ElementNotEnabledException");
-			}
+			Assert.Throws<ElementNotEnabledException> (() => invoke.Invoke ());
 
 			button.IsEnabled = true;
 			invoke.Invoke ();
