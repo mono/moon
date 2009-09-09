@@ -129,7 +129,7 @@ namespace Moonlight.Gtk
 				throw new ArgumentNullException ("xaml");
 			}
             
-			Deployment.Current.InitializeDeployment ();
+			Deployment.Current.InitializeDeployment (null, null);
             
 			DependencyObject toplevel = CreateElementFromString (xaml, true);
     
@@ -171,7 +171,7 @@ namespace Moonlight.Gtk
 				throw new ArgumentNullException ("xapPath");
 			}
             
-			Deployment.Current.InitializeDeployment (IntPtr.Zero, xapPath);
+			Deployment.Current.InitializeDeployment (IntPtr.Zero, xapPath, null, null);
 
 			// we don't Attach() here because CreateFromXap has already done that for us.
 		}

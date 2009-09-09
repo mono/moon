@@ -27,9 +27,11 @@
 //
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Threading;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Interop;
@@ -178,16 +180,40 @@ namespace System.Windows {
 			}
 		}
 
-		internal bool InitializeDeployment () {
+		internal bool InitializeDeployment (string culture, string uiCulture) {
 			TerminateCurrentApplication ();
+
+			try {
+				if (culture != null)
+					Thread.CurrentThread.CurrentCulture = new CultureInfo (culture);
+				if (uiCulture != null)
+					Thread.CurrentThread.CurrentUICulture = new CultureInfo (uiCulture);
+			}
+			catch (Exception e) {
+				// 2105 is required by the Localization drt (#352)
+				throw new MoonException (2105, e.Message);
+			}
+
 			EntryPointType = "System.Windows.Application";
 			EntryPointAssembly = typeof (Application).Assembly.GetName ().Name;
 			EntryAssembly = typeof (Application).Assembly;
 			return LoadAssemblies ();
 		}
 			
-		internal bool InitializeDeployment (IntPtr plugin, string xapPath) {
+		internal bool InitializeDeployment (IntPtr plugin, string xapPath, string culture, string uiCulture) {
 			TerminateCurrentApplication ();
+
+			try {
+				if (culture != null)
+					Thread.CurrentThread.CurrentCulture = new CultureInfo (culture);
+				if (uiCulture != null)
+					Thread.CurrentThread.CurrentUICulture = new CultureInfo (uiCulture);
+			}
+			catch (Exception e) {
+				// 2105 is required by the Localization drt (#352)
+				throw new MoonException (2105, e.Message);
+			}
+
 			InitializePluginHost (plugin);
 			ExtractXap (xapPath);
 			ReadManifest ();

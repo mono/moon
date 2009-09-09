@@ -394,6 +394,8 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	splashscreensource = NULL;
 	background = NULL;
 	id = NULL;
+	culture = NULL;
+	uiCulture = NULL;
 
 	windowless = false;
 	cross_domain_app = false;		// false, since embedded xaml (in html) won't load anything (to change this value)
@@ -469,6 +471,11 @@ PluginInstance::~PluginInstance ()
 
 	g_free (background);
 	g_free (id);
+	g_free (onSourceDownloadProgressChanged);
+	g_free (onSourceDownloadComplete);
+	g_free (splashscreensource);
+	g_free (culture);
+	g_free (uiCulture);
 	g_free (initParams);
 	delete xaml_loader;
 
@@ -626,6 +633,12 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "onSourceDownloadComplete")) {
 			onSourceDownloadComplete = g_strdup (argv [i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "culture")) {
+			culture = g_strdup (argv[i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "uiCulture")) {
+			uiCulture = g_strdup (argv[i]);
 		}
 		else {
 		  //fprintf (stderr, "unhandled attribute %s='%s' in PluginInstance::Initialize\n", argn[i], argv[i]);
@@ -2209,8 +2222,8 @@ PluginInstance::InitializePluginAppDomain ()
 		}
 		
 		moon_load_xaml  = MonoGetMethodFromName (app_launcher, "CreateXamlLoader", -1);
-		moon_initialize_deployment_xap   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 2);
-		moon_initialize_deployment_xaml   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 0);
+		moon_initialize_deployment_xap   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 4);
+		moon_initialize_deployment_xaml   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 2);
 		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication", -1);
 
 		if (moon_load_xaml == NULL || moon_initialize_deployment_xap == NULL || moon_initialize_deployment_xaml == NULL || moon_destroy_application == NULL) {
@@ -2310,17 +2323,21 @@ PluginInstance::ManagedInitializeDeployment (const char *file)
 		return NULL;
 
 	PluginInstance *this_obj = this;
-	void *params [2];
+	void *params [4];
 	MonoObject *ret;
 	MonoObject *exc = NULL;
 
 	Deployment::SetCurrent (deployment);
 
-	params [0] = &this_obj;
 	if (file != NULL) {
+		params [0] = &this_obj;
 		params [1] = mono_string_new (mono_domain_get (), file);
+		params [2] = culture ? mono_string_new (mono_domain_get (), culture) : NULL;
+		params [3] = uiCulture ? mono_string_new (mono_domain_get (), uiCulture) : NULL;
 		ret = mono_runtime_invoke (moon_initialize_deployment_xap, NULL, params, &exc);
 	} else {
+		params [0] = culture ? mono_string_new (mono_domain_get (), culture) : NULL;
+		params [1] = uiCulture ? mono_string_new (mono_domain_get (), uiCulture) : NULL;
 		ret = mono_runtime_invoke (moon_initialize_deployment_xaml, NULL, params, &exc);
 	}
 	

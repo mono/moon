@@ -1,3 +1,19 @@
+2009-09-09  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::PluginInstance): init
+	culture/uiculture to null.
+	(PluginInstance::~PluginInstance): free culture/uiculture, and
+	also plug a leak by freeing onSourceDownloadProgressChanged,
+	onSourceDownloadComplete, and splashscreensource.
+	(PluginInstance::Initialize): parse culture/uiculture <param>
+	tags.
+	(PluginInstance::InitializePluginAppDomain): track change to
+	InitializeDeployment argcount
+	(PluginInstance::ManagedInitializeDeployment): add
+	culture/uiculture args when calling the managed methods.
+
+	r: andreia
+
 2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* plugin-class.cpp|.g.cpp.in|.h.in: no longer auto generate bindings

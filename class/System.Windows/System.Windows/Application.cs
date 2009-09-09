@@ -589,7 +589,7 @@ namespace System.Windows {
 		{
 			try {
 				Application app = Application.Current;
-				string unmanaged_report = ex.Message;
+				string unmanaged_report = ex.ToString();
 
 				if (app != null && app.UnhandledException != null) {
 					ApplicationUnhandledExceptionEventArgs args = new ApplicationUnhandledExceptionEventArgs (ex, false);

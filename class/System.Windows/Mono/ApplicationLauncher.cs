@@ -62,14 +62,14 @@ namespace Mono {
 		/// <summary>
 		///   Loads the Application contained in the XAP file into the current AppDomain
 		/// </summary>
-		public static bool InitializeDeployment (IntPtr plugin, string xapFile)
+		public static bool InitializeDeployment (IntPtr plugin, string xapFile, string culture, string uiCulture)
 		{
-			return Deployment.Current.InitializeDeployment (plugin, xapFile);
+			return Deployment.Current.InitializeDeployment (plugin, xapFile, culture, uiCulture);
 		}
 		
-		public static bool InitializeDeployment ()
+		public static bool InitializeDeployment (string culture, string uiCulture)
 		{
-			return Deployment.Current.InitializeDeployment ();
+			return Deployment.Current.InitializeDeployment (culture, uiCulture);
 		}
 
 		/// <summary>

@@ -203,6 +203,9 @@ class PluginInstance
 	char *onSourceDownloadProgressChanged;
 	char *onSourceDownloadComplete;
 
+	char *culture;
+	char *uiCulture;
+
 	int source_size;
 
 	bool windowless;

@@ -1,3 +1,10 @@
+2009-09-09  Chris Toshok  <toshok@ximian.com>
+
+	* ApplicationLauncher.cs: the two InitializeDeployment methods
+	both take culture/uiculture names now.
+
+	r: andreia
+
 2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* Value.cs: static UnmanagedUri.FromUri () method. used in Value

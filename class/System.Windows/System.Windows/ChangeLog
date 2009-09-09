@@ -1,3 +1,19 @@
+2009-09-09  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs (InitializeDeployment): add both culture/uiCulture
+	parameters, and if they're non-null initialize
+	Thread.CurrentThread.CurrentCulture/CurrentUICulture respectively.
+	If there's an exception, rethrow as a MoonException so the error
+	code of 2105 gets transmitted to the plugin (which is needed by
+	drt 352.)
+
+	* Application.cs (OnUnhandledException): we can't just use
+	ex.Message here, we have to use the full string, since drt 352 is
+	actually matching on the exception type name, which isn't included
+	in the message.
+
+	r: andreia
+
 2009-09-08  Chris Toshok  <toshok@ximian.com>
 
 	* FrameworkElement.cs (ClearValue): we don't need to special-case
