@@ -1,3 +1,12 @@
+2009-09-09  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: Clear () the SubImagesCollection on 
+	source changed. Speed things up when reusing the same MSI
+	over and over with different sources. drt #2004 is now passing
+	every times.
+
+	r: rolf
+
 2009-09-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* downloader.h, layout.h, list.h: Add missing virtual destructors

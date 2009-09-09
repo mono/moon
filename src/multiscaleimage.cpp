@@ -1158,6 +1158,9 @@ MultiScaleImage::OnSourcePropertyChanged ()
 		cache = g_hash_table_new_full (g_int_hash, g_int_equal, g_free, (GDestroyNotify)qtree_destroy);
 	}
 
+	//Reset the subimages
+	GetSubImages()->Clear ();
+
 	//register the callback for InvalidateTileLayers
 	if (GetSource ())
 		GetSource ()->set_invalidate_tile_layer_func (multi_scale_image_invalidate_tile_layer, this);
