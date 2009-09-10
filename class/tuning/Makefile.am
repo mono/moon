@@ -9,7 +9,8 @@ TUNER_DESCS =	\
 	$(srcdir)/Descriptors/System.xml	\
 	$(srcdir)/Descriptors/System.Net.xml	\
 	$(srcdir)/Descriptors/System.Xml.xml	\
-	$(srcdir)/Descriptors/System.ServiceModel.xml
+	$(srcdir)/Descriptors/System.ServiceModel.xml	\
+	$(srcdir)/Descriptors/a11y.xml
 
 SECURITY_ATTRIBUTES_INFO = \
 	SecurityAttributes/mscorlib.secattr \

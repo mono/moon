@@ -1,3 +1,13 @@
+2009-09-10  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* Descriptors/a11y.xml: new file that contains the internal
+	API used by the MoonAtkBridge (and gtk-sharp for moon, which
+	is compiled under the same assembly).
+	* Makefile.am: Add the new descriptor file to the build, to be
+	consumed by the linker.
+
+	r: spouliot
+
 2009-07-15  Jb Evain  <jbevain@novell.com>
 
 	* masterinfos/*.info: update masterinfos generated
