@@ -1,3 +1,11 @@
+2009-09-10  Larry Ewing  <lewing@novell.com>
+
+	* multiscaleimage.cpp (RenderSingle): work around the cairo
+	limitations by doing the viewport/msi intersection and clipping in
+	viewport space.
+
+	r: sde
+
 2009-09-10  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: drop 3 useless lines (the cairocontext we

@@ -1035,22 +1035,27 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 
 
 	cairo_save (cr);
+	cairo_matrix_t render_xform;
+	cairo_matrix_init_identity (&render_xform);
+	cairo_matrix_scale (&render_xform, msi_w / vp_w, msi_w / vp_w);
+	cairo_matrix_translate (&render_xform, -vp_ox, -vp_oy);
+	cairo_matrix_scale (&render_xform, 1.0 / im_w, 1.0 / im_w);
 
-	cairo_scale (cr, msi_w / vp_w, msi_w / vp_w); //scale to viewport
-	cairo_translate (cr, -vp_ox, -vp_oy);
-	cairo_scale (cr, 1.0 / im_w, 1.0 / im_w);
-	
-	//there's a cairo issue resulting in an empty clip extents for huge values
-	//drt 2013 and 2014 have tilesource of 1<<30x1<<30 and 1<<31x1<<31
-	//so, don't clip for those big values, even if we leak a bit for the lowest tiles (due to cairo blurring on upscale)
-	//printout illustrating the bug ! (ouch)
-	//clip extents 0.500000000000 0.500000000000 0.500000238419 0.500000238419
-	//clipping to 0, 0, 1.000000 1.000000
-	//clip extents after clipping 0.500000000000 0.500000000000 0.500000000000 0.500000000000
-	if (im_w < 1<<16 && im_h < 1<<16) {
-		cairo_rectangle (cr, 0, 0, im_w, im_h); // clip to image bounds
-		cairo_clip (cr);
-	}
+	/*
+	 * here we want to clip to the bounds of the image to ensure we don't
+	 * have scaling artifacts on the edges but the image potentially has bounds
+	 * larger that cairo can handle right now so we transform the image
+	 * bounds to the viewport coordinate space and do intersection and clipping
+	 * there to work around the cairo coordinate limitations.
+	 */
+	Rect vp_bounds (0, 0, msi_w, msi_h);
+	Rect im_bounds (0, 0, im_w, im_h);
+	im_bounds = im_bounds.Transform (&render_xform);
+	Rect render_region = vp_bounds.Intersection (im_bounds);
+	render_region.Draw (cr);
+	cairo_clip (cr);
+
+	cairo_transform (cr, &render_xform);
 
 	LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 
