@@ -1036,16 +1036,21 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 
 	cairo_save (cr);
 
-	cairo_rectangle (cr, 0, 0, msi_w, msi_h);
-	cairo_clip (cr);
-	cairo_paint (cr);
-
 	cairo_scale (cr, msi_w / vp_w, msi_w / vp_w); //scale to viewport
 	cairo_translate (cr, -vp_ox, -vp_oy);
 	cairo_scale (cr, 1.0 / im_w, 1.0 / im_w);
-
-	cairo_rectangle (cr, 0, 0, im_w, im_h); // clip to image bounds
-        cairo_clip (cr);
+	
+	//there's a cairo issue resulting in an empty clip extents for huge values
+	//drt 2013 and 2014 have tilesource of 1<<30x1<<30 and 1<<31x1<<31
+	//so, don't clip for those big values, even if we leak a bit for the lowest tiles (due to cairo blurring on upscale)
+	//printout illustrating the bug ! (ouch)
+	//clip extents 0.500000000000 0.500000000000 0.500000238419 0.500000238419
+	//clipping to 0, 0, 1.000000 1.000000
+	//clip extents after clipping 0.500000000000 0.500000000000 0.500000000000 0.500000000000
+	if (im_w < 1<<16 && im_h < 1<<16) {
+		cairo_rectangle (cr, 0, 0, im_w, im_h); // clip to image bounds
+		cairo_clip (cr);
+	}
 
 	LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 

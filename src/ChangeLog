@@ -1,3 +1,14 @@
+2009-09-10  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: drop 3 useless lines (the cairocontext we
+	receive on Render is already clipped to the control size.
+	Wrap the clipping to image size in a conditional to avoid clipping
+	with really huge rectangles. That it a bug in cairo, as shown in 
+	drt 2013, 2014. In those cases, the rendering will (visually) leak
+	for the low order layers.
+
+	r: spouliot
+
 2009-09-09  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: When we are setting attributes we want to set
