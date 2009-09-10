@@ -49,6 +49,26 @@ namespace System.Windows.Automation.Peers {
 				                           e.OldValue, 
 							   e.NewValue);
 			};
+			owner.UIAPropertyChanged += (o, e) => {
+				AutomationProperty property = null;
+				switch (e.Change) {
+				case RangeBase.Change.Large: 
+					property = RangeValuePatternIdentifiers.LargeChangeProperty;
+					break;
+				case RangeBase.Change.Small: 
+					property = RangeValuePatternIdentifiers.SmallChangeProperty;
+					break;
+				case RangeBase.Change.Maximum: 
+					property = RangeValuePatternIdentifiers.MaximumProperty;
+					break;
+				case RangeBase.Change.Minimum: 
+					property = RangeValuePatternIdentifiers.MinimumProperty;
+					break;
+				}
+				RaisePropertyChangedEvent (property,
+				                           e.OldValue, 
+							   e.NewValue);
+			};
 		}
 
 		public override object GetPattern (PatternInterface patternInterface)

@@ -1,3 +1,14 @@
+2009-09-10  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: New file added ProgressBarAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/RangeBaseAutomationPeerTest.cs: 
+	Testing RangeValue Pattern events: Maximum, Minimum, LargeChange
+	and SmallChange.
+	* System.Windows.Automation.Peers/ProgressBarAutomationPeerTest.cs: 
+	New test.
+
+	r: toshok
+
 2009-09-09  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs: 

@@ -140,6 +140,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/ListBoxItemAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/MediaElementAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/PatternInterface.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/ProgressBarAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RadioButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RangeBaseAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RepeatButtonAutomationPeer.cs	\

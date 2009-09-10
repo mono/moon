@@ -1,3 +1,13 @@
+2009-09-10  Mario Carrion  <mcarrion@novell.com>
+
+	* RuntimeControls/SilverlightControls/ProgressBar.cs: Method
+	overridden OnCreateAutomationPeer.
+	* RuntimeControls/SilverlightControls/Primitives/RangeBase.cs: 
+	Raising new internal event: UIAPropertyChanged, to raise
+	RangeValue pattern UIA events.
+
+	r: toshok
+
 2009-09-03  Mario Carrion  <mcarrion@novell.com>
 
 	* Controls/Src/ListBox/ListBoxItem.cs: New internal event

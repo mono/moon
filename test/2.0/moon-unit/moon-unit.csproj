@@ -140,6 +140,7 @@
     <Compile Include="System.Windows.Automation.Peers\ListBoxItemAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\MediaElementAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\PatternInterfaceTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ProgressBarAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RadioButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RangeBaseAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RepeatButtonAutomationPeerTest.cs" />

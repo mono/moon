@@ -1,3 +1,9 @@
+2009-09-10  Mario Carrion  <mcarrion@novell.com>
+
+	* RangeBaseAutomationPeer.cs: Using RangeBase.UIAPropertyChanged to
+	raise RangeValue Pattern events.
+	* ProgressBarAutomationPeer.cs: New file.
+
 2009-09-09  Mario Carrion  <mcarrion@novell.com>
 
 	* ButtonAutomationPeer.cs: Throwing ElementNotEnabledException when

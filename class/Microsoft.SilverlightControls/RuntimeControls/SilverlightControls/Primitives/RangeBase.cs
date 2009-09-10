@@ -92,10 +92,14 @@ namespace System.Windows.Controls.Primitives
             if (range._levelsFromRootCall == 0)
             {
                 range.OnMinimumChanged((double)e.OldValue, (double)e.NewValue); 
+		// UIA event
+		range.RaiseChangeEvent (Change.Minimum, (double)e.OldValue, (double)e.NewValue);
                 double maximum = range.Maximum;
                 if (range._initialMax != maximum)
                 { 
                     range.OnMaximumChanged(range._initialMax, maximum); 
+		    // UIA event
+		    range.RaiseChangeEvent(Change.Maximum, range._initialMax, maximum);
                 }
                 double value = range.Value; 
                 if (range._initialVal != value)
@@ -169,7 +173,10 @@ namespace System.Windows.Controls.Primitives
                 double maximum = range.Maximum; 
                 if (range._initialMax != maximum) 
                 {
-                    range.OnMaximumChanged(range._initialMax, maximum); 
+                    range.OnMaximumChanged(range._initialMax, maximum);
+		
+		    // UIA event
+		    range.RaiseChangeEvent(Change.Maximum, range._initialMax, maximum);
                 }
                 double value = range.Value;
                 if (range._initialVal != value) 
@@ -217,6 +224,9 @@ namespace System.Windows.Controls.Primitives
             { 
                 throw new ArgumentException();
             }
+
+	    // UIA event
+	    range.RaiseChangeEvent (Change.Large, (double) e.OldValue, (double) e.NewValue);
         } 
         #endregion LargeChange
 
@@ -256,6 +266,9 @@ namespace System.Windows.Controls.Primitives
             { 
                 throw new ArgumentException();
             }
+
+	    // UIA event
+	    range.RaiseChangeEvent (Change.Small, (double) e.OldValue, (double) e.NewValue);
         } 
         #endregion SmallChange 
 
@@ -465,5 +478,33 @@ namespace System.Windows.Controls.Primitives
         /// Format string for RangeBase
         /// </summary> 
         private const string FormatString = "{0} Minimum:{1} Maximum:{2} Value:{3}"; 
+
+	#region UIA Events
+
+	internal void RaiseChangeEvent (Change change, double oldValue, double newValue)
+	{
+		if (UIAPropertyChanged != null)
+			UIAPropertyChanged (this,
+			                    new ChangeEventArgs () { Change   = change,
+					                             OldValue = oldValue,
+								     NewValue = newValue });
+	}
+
+	internal event EventHandler<ChangeEventArgs> UIAPropertyChanged;
+
+	internal class ChangeEventArgs : EventArgs {
+		public Change Change { get; set; }
+		public double OldValue { get; set; }
+		public double NewValue { get; set; }
+	}
+
+	internal enum Change {
+		Large,
+		Small,
+		Maximum,
+		Minimum
+	};
+
+	#endregion
     }
 } 
