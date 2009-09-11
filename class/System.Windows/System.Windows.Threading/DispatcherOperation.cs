@@ -29,7 +29,7 @@ using System.Reflection;
 namespace System.Windows.Threading {
 
 	[CLSCompliant (false)]
-	public class DispatcherOperation {
+	public sealed class DispatcherOperation {
 		Delegate d;
 		object[] args;
 

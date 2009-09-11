@@ -31,7 +31,7 @@ using System;
 
 namespace System.Windows.Media
 {
-	public class TimelineMarkerRoutedEventArgs : RoutedEventArgs
+	public sealed class TimelineMarkerRoutedEventArgs : RoutedEventArgs
 	{
 		private TimelineMarker marker;
 		

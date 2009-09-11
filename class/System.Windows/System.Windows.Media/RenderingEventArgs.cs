@@ -15,7 +15,7 @@ using Mono;
 
 namespace System.Windows.Media
 {	
-	public class RenderingEventArgs : EventArgs
+	public sealed class RenderingEventArgs : EventArgs
 	{
 		internal IntPtr native;
 

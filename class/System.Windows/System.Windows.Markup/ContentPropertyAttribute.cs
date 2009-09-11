@@ -32,7 +32,7 @@ using System;
 namespace System.Windows.Markup {
 
 	[AttributeUsage (AttributeTargets.Class, AllowMultiple=false, Inherited=true)]
-	public class ContentPropertyAttribute : Attribute {
+	public sealed class ContentPropertyAttribute : Attribute {
 		string name;
 		
 		public ContentPropertyAttribute ()

@@ -27,7 +27,7 @@ using Mono;
 
 namespace System.Windows.Media.Imaging {
 
-	public class DownloadProgressEventArgs : EventArgs {
+	public sealed class DownloadProgressEventArgs : EventArgs {
 		internal IntPtr native;
 
 		internal DownloadProgressEventArgs (IntPtr raw)
