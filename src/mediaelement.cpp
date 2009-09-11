@@ -251,13 +251,11 @@ MediaElement::SetMarkerTimeout (bool start)
 	if (start) {
 		if (marker_timeout == 0) {
 			marker_timeout = tm->AddTimeout (MOON_PRIORITY_DEFAULT, 33, MarkerTimeout, this);
-			ref (); // add a ref to self
 		}
 	} else { // stop
 		if (marker_timeout != 0) {
 			tm->RemoveTimeout (marker_timeout);
 			marker_timeout = 0;
-			unref_delayed (); // unref self. Since this might be the last ref to ourselves, use a delayed unref to unwind the stack first.
 		}
 	}
 }

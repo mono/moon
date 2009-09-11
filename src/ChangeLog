@@ -1,5 +1,12 @@
 2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: Dont ref/unref around the MarkerTimeout tick call,
+	it should be safe since the tick call is removed upon destruction.
+
+	r: spouliot
+
+2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.cpp|h: Make AudioPlayer refcounted, and shutdown when the
 	AudioPlayer is disposed due to refcounting reaching 0. This way
 	we can keep the instance lock for as little time as possible
