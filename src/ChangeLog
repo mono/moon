@@ -25,6 +25,14 @@
 
 2009-09-11  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* multiscaleimage.h|.cpp: DownloadTile () now takes a user_data
+	pointer instead of subcache, layer, x and y. Avoids some tree waliking
+	in the cache trees.
+
+	r: spouliot
+
+2009-09-11  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* multiscaleimage.cpp: QTree: remove the QTreeNode alias, fix 
 	qtree_remove to take guint64 indices, qtree_next_sibling for 
 	future usage.

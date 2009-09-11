@@ -183,7 +183,8 @@ class MultiScaleImage : public MediaBase {
 	const static int ViewportChangedEvent;
 
 	BitmapImageContext *GetFreeBitmapImageContext ();
-	void DownloadTile (BitmapImageContext *ctx, Uri *tile, int subimage, int level, int x, int y);
+	void DownloadTile (BitmapImageContext *ctx, Uri *tile, void *user_data);
+	void HandleDzParsed ();
 
 	void OnSourcePropertyChanged ();
 

@@ -71,6 +71,9 @@ static QTree*
 qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 {
 	if (x >= (pow2 (level)) || y >= (pow2 (level))) {
+#if DEBUG
+		abort ();
+#endif
 		g_warning ("QuadTree index out of range.");
 		return NULL;
 	}
@@ -120,11 +123,21 @@ qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 }
 
 static QTree*
+qtree_set_value (QTree* node, void *data)
+{
+	//FIXME: the destroy method should be a ctor argument
+	if (node->has_value)
+		cairo_surface_destroy ((cairo_surface_t*)node->data);
+
+	node->has_value = true;
+	node->data = data;	
+}
+
+static QTree*
 qtree_insert_with_value (QTree* root, void *data, int level, guint64 x, guint64 y)
 {
 	QTree *node = qtree_insert (root, level, x, y);
-	node->has_value = true;
-	node->data = data;
+	qtree_set_value (node, data);
 	return node;
 }
 
@@ -250,12 +263,18 @@ qtree_remove_at (QTree* root, int level, guint64 x, guint64 y, int depth)
 	qtree_remove (node, depth);
 }
 
+static inline bool
+qtree_has_value (QTree* node)
+{
+	return node->has_value;	
+}
+
 static bool
 qtree_has_value_at (QTree* root, int level, guint64 x, guint64 y)
 {
 	QTree *node = qtree_lookup (root, level, x, y);
 	if (node)
-		return node->has_value;
+		return qtree_has_value (node);
 	return false;
 }
 
@@ -290,10 +309,7 @@ struct BitmapImageContext
 {
 	BitmapImageStatus state;
 	BitmapImage *bitmapimage;
-	int subimage;
-	int level;
-	int x;
-	int y;
+	QTree *node;
 	int retry;
 };
 
@@ -417,7 +433,7 @@ MultiScaleImage::LogicalToElementPoint (Point logicalPoint)
 }
 
 void
-MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile, int subimage, int level, int x, int y)
+MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile, void *user_data)
 {
 	GList *list;
 	BitmapImageContext *ctx;
@@ -431,10 +447,7 @@ MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile, int subimag
 	//LOG_MSI ("downloading tile %s\n", tile->ToString ());
 
 	bictx->state = BitmapImageBusy;
-	bictx->subimage = subimage;
-	bictx->level = level;
-	bictx->x = x;
-	bictx->y = y;
+	bictx->node = (QTree *)user_data;
 	bictx->retry = 0;
 	SetIsDownloading (true);
 	bictx->bitmapimage->SetDownloadPolicy (MsiPolicy);
@@ -446,12 +459,18 @@ void
 multi_scale_image_handle_dz_parsed (void *userdata)
 {
 	MultiScaleImage *msi = (MultiScaleImage*)userdata;
+	msi->HandleDzParsed ();
+}
+
+void
+MultiScaleImage::HandleDzParsed ()
+{
 	//if the source is a collection, fill the subimages list
-	MultiScaleTileSource *source = msi->GetSource ();
-	MultiScaleSubImageCollection *subs = msi->GetSubImages ();
+	MultiScaleTileSource *source = GetSource ();
+	MultiScaleSubImageCollection *subs = GetSubImages ();
 
 	if (source->GetImageWidth () >= 0 && source->GetImageHeight () >= 0)
-		msi->SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)source->GetImageWidth () / (double)source->GetImageHeight ()));
+		SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)source->GetImageWidth () / (double)source->GetImageHeight ()));
 
 	DeepZoomImageTileSource *dsource;
        
@@ -461,26 +480,34 @@ multi_scale_image_handle_dz_parsed (void *userdata)
 		MultiScaleSubImage *si;
 		for (i = 0; (si = (MultiScaleSubImage*)g_list_nth_data (dsource->subimages, i)); i++) {
 			if (!subs)
-				msi->SetValue (MultiScaleImage::SubImagesProperty, new MultiScaleSubImageCollection ());
+				SetValue (MultiScaleImage::SubImagesProperty, new MultiScaleSubImageCollection ());
 
 			subs->Add (si);
 		}
 	}
-	msi->Invalidate ();
+	Invalidate ();
 
-	//try to get the first tiles
-	BitmapImageContext *bitmapimagectx;
-	int layer = 0;
 	//Get the first tiles
-	while ((bitmapimagectx = msi->GetFreeBitmapImageContext ())) {
+	BitmapImageContext *bitmapimagectx;
+
+	int shared_index = -1;
+
+	QTree *shared_cache = (QTree*)g_hash_table_lookup (cache, &shared_index);
+	if (!shared_cache)
+		g_hash_table_insert (cache, new int(shared_index), (shared_cache = qtree_new ()));
+
+	int layer = 0;
+	while ((bitmapimagectx = GetFreeBitmapImageContext ())) {
 		Uri *tile = new Uri ();
-		if (source->get_tile_func (layer, 0, 0, tile, source))
-			msi->DownloadTile (bitmapimagectx, tile, -1, layer, 0, 0);
+		if (source->get_tile_func (layer, 0, 0, tile, source)) {
+			QTree *node = qtree_insert (shared_cache, layer, 0, 0);
+			DownloadTile (bitmapimagectx, tile, node);
+		}
 		delete tile;
 		layer ++;
 	}
 
-	msi->EmitImageOpenSucceeded ();
+	EmitImageOpenSucceeded ();
 }
 
 //multi_scale_image_handle_dz_failes is only used for DeepZoom sources
@@ -609,10 +636,7 @@ MultiScaleImage::TileFailed (BitmapImage *bitmapimage)
 		ctx->state = BitmapImageFree;
 
 		LOG_MSI ("caching a NULL for %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
-		QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &(ctx->subimage));
-		if (!subimage_cache)
-			g_hash_table_insert (cache, new int(ctx->subimage), (subimage_cache = qtree_new ()));
-		qtree_insert_with_value (subimage_cache, NULL, ctx->level, ctx->x, ctx->y);
+		qtree_set_value (ctx->node, NULL);
 
 		GList *list;
 		bool is_downloading = false;
@@ -704,10 +728,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 
 		cairo_surface_set_user_data (surface, &full_opacity_at_key, to, g_free);
 		LOG_MSI ("caching %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
-		QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &(ctx->subimage));
-		if (!subimage_cache)
-			g_hash_table_insert (cache, new int(ctx->subimage), (subimage_cache = qtree_new ()));
-		qtree_insert_with_value (subimage_cache, surface, ctx->level, ctx->x, ctx->y);
+		qtree_set_value (ctx->node, surface);
 
 		ctx->bitmapimage->SetUriSource (NULL);
 		ctx->state = BitmapImageFree;
@@ -983,20 +1004,21 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						break;
 					Uri *tile = new Uri ();
 					if (from_layer <= dzits->GetMaxLevel ()) {
-						if (!qtree_has_value_at (shared_cache, from_layer,
-								morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
-								morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height)
+						QTree *node = qtree_insert (shared_cache,
+									    from_layer,
+									    morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
+									    morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height);
+						if (!qtree_has_value (node)
 						    && dzits->get_tile_func (from_layer,
 									      morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
 									      morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height,
 									      tile, dzits))
-							DownloadTile (bitmapimagectx, tile, shared_index, from_layer,
-								      morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
-								      morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height);
+							DownloadTile (bitmapimagectx, tile, node);
 					} else {
-						if (!qtree_has_value_at (subimage_cache, from_layer, i, j)
+						QTree *node = qtree_insert (subimage_cache, from_layer, i, j);
+						if (!qtree_has_value (node)
 						    && dzits->get_tile_func (from_layer, i, j, tile, sub_image->source))
-							DownloadTile (bitmapimagectx, tile, index, from_layer, i, j);
+							DownloadTile (bitmapimagectx, tile, node);
 					}
 					delete tile;
 				}
@@ -1169,11 +1191,12 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 				if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
 					return;
 				Uri *tile = new Uri ();
-				if (!qtree_has_value_at (subimage_cache, from_layer, i, j)) {
+				QTree *node = qtree_insert (subimage_cache, from_layer, i, j);
+				if (!qtree_has_value (node)) {
 					if (source->get_tile_func (from_layer, i, j, tile, source))
-						DownloadTile (bitmapimagectx, tile, index, from_layer, i, j);
+						DownloadTile (bitmapimagectx, tile, node);
 					else
-						qtree_insert_with_value (subimage_cache, NULL, from_layer, i, j);
+						qtree_set_value (node, NULL);
 				}
 				delete tile;
 			}
