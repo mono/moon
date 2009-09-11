@@ -234,7 +234,7 @@ class AudioSources {
 #endif
 };
 
-class AudioPlayer {
+class AudioPlayer : public EventObject {
 	// our AudioPlayer instance
 	static AudioPlayer *instance;
 	static pthread_mutex_t instance_mutex;
@@ -246,6 +246,7 @@ class AudioPlayer {
 	void RemoveImpl (AudioSource *node);
 	void ShutdownImpl ();
 	
+	static AudioPlayer *GetInstance ();
  protected:
 	// The list of all the audio sources.
 	// This is protected so that derived classes can enumerate the sources,
@@ -254,6 +255,7 @@ class AudioPlayer {
 	
 	AudioPlayer () {}
 	virtual ~AudioPlayer () {}
+	virtual void Dispose ();
 	
 	// called after the node has been created and added to the list of sources
 	virtual void AddInternal (AudioSource *node) = 0;

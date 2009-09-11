@@ -1,3 +1,21 @@
+2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp|h: Make AudioPlayer refcounted, and shutdown when the
+	AudioPlayer is disposed due to refcounting reaching 0. This way
+	we can keep the instance lock for as little time as possible
+	(to do the ref), instead of during the entire Add/Remove calls,
+	which may end up deadlocking deep inside pulse in rare circumstances
+	(we try to add an audio source on one thread(requires a global pa lock)
+	when removing another audio source on another thread as a response to
+	an event from pa which may already have the global pa lock).
+
+	* type.h:
+	* value.h:
+	* cbinding.h:
+	* type-generated.cpp: Regenerated
+
+	r: sde
+
 2009-09-11  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: QTree: remove the QTreeNode alias, fix 

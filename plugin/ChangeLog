@@ -1,3 +1,9 @@
+2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
+	r: sde
+
 2009-09-10  Jackson Harper  <jackson@ximian.com>
 
 	* plugin.cpp: Add some namescope info to the debugging tree

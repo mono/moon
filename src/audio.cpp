@@ -939,9 +939,22 @@ AudioSources::Length ()
 AudioPlayer * AudioPlayer::instance = NULL;
 pthread_mutex_t AudioPlayer::instance_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+AudioPlayer *
+AudioPlayer::GetInstance ()
+{
+	AudioPlayer *result;
+	pthread_mutex_lock (&instance_mutex);
+	result = instance;
+	if (result)
+		result->ref ();
+	pthread_mutex_unlock (&instance_mutex);
+	return result;
+}
+
 AudioSource *
 AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 {
+	AudioPlayer *inst;
 	AudioSource *result = NULL;
 	
 	LOG_AUDIO ("AudioPlayer::Add (%p)\n", mplayer);
@@ -954,9 +967,15 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 	pthread_mutex_lock (&instance_mutex);
 	if (instance == NULL)
 		instance = CreatePlayer ();
-	if (instance != NULL)
-		result = instance->AddImpl (mplayer, stream);
+	inst = instance;
+	if (inst)
+		inst->ref ();
 	pthread_mutex_unlock (&instance_mutex);
+	
+	if (inst != NULL) {
+		result = inst->AddImpl (mplayer, stream);
+		inst->unref ();
+	}
 	
 	return result;
 }
@@ -964,13 +983,15 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 void
 AudioPlayer::Remove (AudioSource *source)
 {
+	AudioPlayer *inst;
+	
 	LOG_AUDIO ("AudioPlayer::Remove (%p)\n", source);
 	
-	pthread_mutex_lock (&instance_mutex);
-	if (instance != NULL)
-		instance->RemoveImpl (source);
-
-	pthread_mutex_unlock (&instance_mutex);
+	inst = GetInstance ();
+	if (inst != NULL) {
+		inst->RemoveImpl (source);
+		inst->unref ();
+	}
 }
 
 void
@@ -983,8 +1004,7 @@ AudioPlayer::Shutdown ()
 	if (instance != NULL) {
 		player = instance;
 		instance = NULL;
-		player->ShutdownImpl ();
-		delete player;
+		player->unref ();
 	}
 	pthread_mutex_unlock (&instance_mutex);
 }
@@ -1015,8 +1035,7 @@ AudioPlayer::CreatePlayer ()
 	if (result != NULL) {
 		if (!result->Initialize ()) {
 			LOG_AUDIO ("AudioPlayer: Failed initialization.\n");
-			result->ShutdownImpl ();
-			delete result;
+			result->unref ();
 			result = NULL;
 		} else {
 			return result;
@@ -1080,6 +1099,15 @@ AudioPlayer::RemoveImpl (AudioSource *node)
 		node->Close ();
 	}
 	node->unref ();
+}
+
+void
+AudioPlayer::Dispose ()
+{
+	if (!IsDisposed ())
+		ShutdownImpl ();
+	
+	EventObject::Dispose ();
 }
 
 void
