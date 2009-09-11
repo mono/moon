@@ -33,7 +33,7 @@ using System.Windows.Controls;
 
 namespace System.Windows
 {
-	public sealed class PropertyPathConverter : TypeConverter
+	public class PropertyPathConverter : TypeConverter
 	{
 		public PropertyPathConverter ()
 		{

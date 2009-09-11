@@ -32,7 +32,7 @@ using Mono;
 
 namespace System.Windows
 {
-	public class SizeChangedEventArgs : RoutedEventArgs
+	public sealed class SizeChangedEventArgs : RoutedEventArgs
 	{
 		internal SizeChangedEventArgs () : base (NativeMethods.size_changed_event_args_new (), true)
 		{

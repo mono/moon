@@ -29,7 +29,7 @@ using System.Windows;
 using System.Collections.Generic;
 
 namespace System.Windows {
-	public sealed class ApplicationUnhandledExceptionEventArgs : EventArgs {
+	public class ApplicationUnhandledExceptionEventArgs : EventArgs {
 		internal Exception ex;
 		bool handled;
 		

@@ -233,21 +233,21 @@ namespace System.Windows {
 			for (int i = 0; i < ExternalParts.Count; i++) {
 				ExtensionPart ext = ExternalParts[i] as ExtensionPart;
 
-				try {
-					if (ext != null) {
+				if (ext != null) {
+					try {
 						// TODO These ExternalPart assemblies should really be placed in
 						// a global long term cache but simply make sure we load them for now
 						Console.WriteLine ("Attempting To Load ExternalPart {0}", ext.Source);
 
 						HttpWebRequest req = (HttpWebRequest) WebRequest.Create (ext.Source);
 						req.BeginGetResponse (AssemblyGetResponse, req);
-
+						
 						pending_assemblies++;
+					} catch (Exception e) {
+						// FIXME this is probably not the right exception id and message 
+						// but at least pass it up
+						throw new MoonException (2105, string.Format ("Error while loading the '{0}' ExternalPart: {1}", ext.Source, e.Message));
 					}
-				} catch (Exception e) {
-					// FIXME this is probably not the right exception id and message 
-					// but at least pass it up
-					throw new MoonException (2105, string.Format ("Error while loading the '{0}' ExternalPart: {1}", source, e.Message));
 				}
 			}
 

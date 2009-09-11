@@ -1,5 +1,21 @@
 2009-09-11  Larry Ewing  <lewing@novell.com>
 
+	* ApplicationUnhandledExceptionEventArgs.cs:
+	* PropertyPathConverter.cs:
+	* SizeChangedEventArgs.cs:
+	* StyleTypedPropertyAttribute.cs: make sure the we have the right
+	seal on these classes
+
+	r: toshok
+	
+2009-09-11  Larry Ewing  <lewing@novell.com>
+
+	* Deployment.cs: add a missing mid commit edit.
+
+	r: jeff
+	
+2009-09-11  Larry Ewing  <lewing@novell.com>
+
 	* Deployment.cs: (LoadAssemblies): go ahead and load ExternalParts
 	as assemblies.  This lacks the intended caching but will allow
 	some more sl3 applications to run.
