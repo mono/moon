@@ -44,7 +44,7 @@
 #if SANITY
 #define VERIFY_MAIN_THREAD \
 	if (!Surface::InMainThread ()) {	\
-		printf ("Moonlight: This method should be only be called from the main thread (%s)\n", __PRETTY_FUNCTION__);	\
+		printf ("Moonlight: This method should only be called from the main thread (%s)\n", __PRETTY_FUNCTION__);	\
 		print_stack_trace (); \
 	}
 #else

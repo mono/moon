@@ -1,5 +1,9 @@
 2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.h: Fix typo in sanity message.
+
+2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.cpp: WriteFull: have a local copy of the stream pointer,
 	it may get changed on the main thread.
 
