@@ -292,6 +292,8 @@ namespace Mono {
 			case Kind.ELLIPSE: return new Ellipse (raw, false);
 			case Kind.EVENTTRIGGER: return new EventTrigger (raw, false);
 			case Kind.EXPONENTIALEASE: return new ExponentialEase (raw, false);
+			case Kind.EXTENSIONPART: return new ExtensionPart (raw, false);
+			case Kind.EXTERNALPART_COLLECTION: return new ExternalPartCollection (raw, false);
 			case Kind.GEOMETRY_COLLECTION: return new GeometryCollection (raw, false);
 			case Kind.GEOMETRYGROUP: return new GeometryGroup (raw, false);
 			case Kind.GLYPHS: return new Glyphs (raw, false);
@@ -320,6 +322,7 @@ namespace Mono {
 			case Kind.MULTISCALESUBIMAGE_COLLECTION: return new MultiScaleSubImageCollection (raw, false);
 			case Kind.OBJECTANIMATIONUSINGKEYFRAMES: return new ObjectAnimationUsingKeyFrames (raw, false);
 			case Kind.OBJECTKEYFRAME_COLLECTION : return new ObjectKeyFrameCollection (raw, false);
+			case Kind.OUTOFBROWSERSETTINGS: return new OutOfBrowserSettings (raw, false);
 			case Kind.PASSWORDBOX: return new PasswordBox (raw, false);
 			case Kind.PATHFIGURE_COLLECTION: return new PathFigureCollection (raw, false);
 			case Kind.PATHFIGURE: return new PathFigure (raw, false);

@@ -1,3 +1,11 @@
+2009-09-11  Larry Ewing  <lewing@novell.com>
+
+	* deployment.cpp, deployment.h: add OutOfBrowserSettings,
+	ExternalPartCollection, ExternalPart and ExtensionPart to allow
+	more SL 3 compat.
+
+	r: toshok
+
 2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* audio.cpp|h: Add AudioSource::GetMediaPlayerReffed and use it

@@ -34,7 +34,6 @@ protected:
 	virtual ~AssemblyPart ();
 };
 
-
 /* @Namespace=System.Windows */
 class AssemblyPartCollection : public DependencyObjectCollection {
 public:
@@ -48,6 +47,65 @@ protected:
 };
 
 /* @Namespace=System.Windows */
+class ExternalPart : public DependencyObject {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ExternalPart ();
+
+protected:
+	virtual ~ExternalPart ();
+};
+
+/* @Namespace=System.Windows */
+class ExtensionPart : public DependencyObject {
+public:
+	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors,DefaultValue=Uri() */
+	const static int SourceProperty;
+
+	void SetSource (Uri *value);
+	Uri* GetSource ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	ExtensionPart ();
+
+protected:
+	virtual ~ExtensionPart ();
+};
+
+/* @Namespace=System.Windows */
+class ExternalPartCollection : public DependencyObjectCollection {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ExternalPartCollection ();
+
+	virtual Type::Kind GetElementType () { return Type::EXTERNALPART; }
+
+protected:
+	virtual ~ExternalPartCollection ();
+};
+
+/* @Namespace=System.Windows */
+class OutOfBrowserSettings : public DependencyObject {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	OutOfBrowserSettings ();
+
+	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,Validator=NonNullValidator,GenerateAccessors */
+	const static int BlurbProperty;	
+	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+	const static int EnableGPUAccelerationProperty;
+	
+	const char *GetBlurb ();
+	void SetBlurb (const char *blurb);
+
+	bool GetEnableGPUAcceleration ();
+	void SetEnableGPUAcceleration (bool enable);
+
+protected:
+	virtual ~OutOfBrowserSettings ();
+};
+
+/* @Namespace=System.Windows */
 class Deployment : public DependencyObject {
 public:
  	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal,GenerateAccessors,Validator=CrossDomainValidator */
@@ -56,6 +114,10 @@ public:
 	const static int EntryPointAssemblyProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
 	const static int EntryPointTypeProperty;
+	/* @PropertyType=ExternalPartCollection,AutoCreateValue,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int ExternalPartsProperty;
+	/* @PropertyType=OutOfBrowserSettings,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int OutOfBrowserSettingsPropery;
  	/* @PropertyType=AssemblyPartCollection,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int PartsProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
@@ -76,6 +138,12 @@ public:
 	
 	AssemblyPartCollection *GetParts ();
 	void SetParts (AssemblyPartCollection *col);
+
+	ExternalPartCollection *GetExternalParts ();
+	void SetExternalParts (ExternalPartCollection *col);
+
+	OutOfBrowserSettings *GetOutOfBrowserSettings ();
+	void SetOutOfBrowserSettings (OutOfBrowserSettings *oob);
 
 	void Reinitialize ();
 

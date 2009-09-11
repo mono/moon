@@ -56,6 +56,21 @@ namespace System.Windows {
 		internal EventTrigger (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class ExtensionPart {
+		public ExtensionPart () : base (NativeMethods.extension_part_new (), true) {}
+		internal ExtensionPart (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class ExternalPart {
+		public ExternalPart () : base (NativeMethods.external_part_new (), true) {}
+		internal ExternalPart (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class ExternalPartCollection {
+		public ExternalPartCollection () : base (NativeMethods.external_part_collection_new (), true) {}
+		internal ExternalPartCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class FrameworkElement {
 		protected FrameworkElement () : base (NativeMethods.framework_element_new (), true)
 		{
@@ -70,6 +85,11 @@ namespace System.Windows {
 	partial class FrameworkTemplate {
 		protected FrameworkTemplate () : base (NativeMethods.framework_template_new (), true) {}
 		internal FrameworkTemplate (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class OutOfBrowserSettings {
+		public OutOfBrowserSettings () : base (NativeMethods.out_of_browser_settings_new (), true) {}
+		internal OutOfBrowserSettings (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class PresentationFrameworkCollection<T> {

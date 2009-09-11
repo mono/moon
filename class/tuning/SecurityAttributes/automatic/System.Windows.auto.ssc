@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 473 methods
+# 477 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
@@ -205,6 +205,9 @@
 +SSC-M: System.Void System.Windows.Documents.Run::.ctor()
 +SSC-M: System.Void System.Windows.EventTrigger::.ctor()
 +SSC-M: System.Windows.ExceptionRoutedEventArgs System.Windows.ExceptionRoutedEventArgs::FromErrorEventArgs(System.IntPtr)
++SSC-M: System.Void System.Windows.ExtensionPart::.ctor()
++SSC-M: System.Void System.Windows.ExternalPart::.ctor()
++SSC-M: System.Void System.Windows.ExternalPartCollection::.ctor()
 +SSC-M: System.Void System.Windows.FrameworkElement::.ctor()
 +SSC-M: System.Void System.Windows.FrameworkElement::Initialize()
 +SSC-M: System.Windows.Size System.Windows.FrameworkElement::MeasureOverride(System.Windows.Size)
@@ -405,6 +408,7 @@
 +SSC-M: System.Windows.DependencyObject System.Windows.Media.VisualTreeHelper::GetParent(System.Windows.DependencyObject)
 +SSC-M: System.Collections.Generic.IEnumerable`1<System.Windows.UIElement> System.Windows.Media.VisualTreeHelper::FindElementsInHostCoordinates(System.Windows.Point,System.Windows.UIElement)
 +SSC-M: System.Collections.Generic.IEnumerable`1<System.Windows.UIElement> System.Windows.Media.VisualTreeHelper::FindElementsInHostCoordinates(System.Windows.Rect,System.Windows.UIElement)
++SSC-M: System.Void System.Windows.OutOfBrowserSettings::.ctor()
 +SSC-M: System.Collections.IEnumerator System.Windows.PresentationFrameworkCollection`1::System.Collections.IEnumerable.GetEnumerator()
 +SSC-M: System.Int32 System.Windows.PresentationFrameworkCollection`1::get_Count()
 +SSC-M: System.Collections.Generic.IEnumerator`1<T> System.Windows.PresentationFrameworkCollection`1::GetEnumerator()

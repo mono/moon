@@ -2066,6 +2066,16 @@ exponential_ease_new (void)
 
 
 /**
+ * ExtensionPart
+ **/
+ExtensionPart *
+extension_part_new (void)
+{
+	return new ExtensionPart ();
+}
+
+
+/**
  * ExternalDecoder
  **/
 ExternalDecoder *
@@ -2106,6 +2116,26 @@ external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value)
 		return;
 	
 	instance->SetCanSeek (value);
+}
+
+
+/**
+ * ExternalPart
+ **/
+ExternalPart *
+external_part_new (void)
+{
+	return new ExternalPart ();
+}
+
+
+/**
+ * ExternalPartCollection
+ **/
+ExternalPartCollection *
+external_part_collection_new (void)
+{
+	return new ExternalPartCollection ();
 }
 
 
@@ -3381,6 +3411,16 @@ ObjectKeyFrameCollection *
 object_key_frame_collection_new (void)
 {
 	return new ObjectKeyFrameCollection ();
+}
+
+
+/**
+ * OutOfBrowserSettings
+ **/
+OutOfBrowserSettings *
+out_of_browser_settings_new (void)
+{
+	return new OutOfBrowserSettings ();
 }
 
 

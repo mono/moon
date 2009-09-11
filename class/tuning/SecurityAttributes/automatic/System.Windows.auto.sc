@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 537 methods needs to be decorated.
+# 541 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -602,6 +602,15 @@
 +SC-M: System.IntPtr Mono.NativeMethods::exponential_ease_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::extension_part_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::external_part_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::external_part_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::framework_element_get_logical_parent(System.IntPtr)
 
 # p/invoke declaration
@@ -792,6 +801,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::open_file_dialog_show(System.String,System.Boolean,System.String,System.Int32)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::out_of_browser_settings_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::panel_new()

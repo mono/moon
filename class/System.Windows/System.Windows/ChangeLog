@@ -1,3 +1,15 @@
+2009-09-11  Larry Ewing  <lewing@novell.com>
+
+	* Deployment.cs: (LoadAssemblies): go ahead and load ExternalParts
+	as assemblies.  This lacks the intended caching but will allow
+	some more sl3 applications to run.
+
+	* ExternalPartCollection.cs:
+	* ExternalPart.cs:
+	* ExtensionPart.cs: add new classes.
+
+	r: toshok
+
 2009-09-09  Chris Toshok  <toshok@ximian.com>
 
 	* Deployment.cs (InitializeDeployment): add both culture/uiCulture

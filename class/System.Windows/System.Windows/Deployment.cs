@@ -229,7 +229,28 @@ namespace System.Windows {
 			assemblies.Add (typeof (Application).Assembly);
 			
 			pending_assemblies = Parts != null ? Parts.Count : 0;
-			
+
+			for (int i = 0; i < ExternalParts.Count; i++) {
+				ExtensionPart ext = ExternalParts[i] as ExtensionPart;
+
+				try {
+					if (ext != null) {
+						// TODO These ExternalPart assemblies should really be placed in
+						// a global long term cache but simply make sure we load them for now
+						Console.WriteLine ("Attempting To Load ExternalPart {0}", ext.Source);
+
+						HttpWebRequest req = (HttpWebRequest) WebRequest.Create (ext.Source);
+						req.BeginGetResponse (AssemblyGetResponse, req);
+
+						pending_assemblies++;
+					}
+				} catch (Exception e) {
+					// FIXME this is probably not the right exception id and message 
+					// but at least pass it up
+					throw new MoonException (2105, string.Format ("Error while loading the '{0}' ExternalPart: {1}", source, e.Message));
+				}
+			}
+
 			for (int i = 0; Parts != null && i < Parts.Count; i++) {
 				var source = Parts [i].Source;
 
@@ -267,7 +288,7 @@ namespace System.Windows {
 			}
 
 			// unmanaged (JS/XAML only) applications can go directly to create the application
-			return (Parts == null) ? CreateApplication () : true;
+			return pending_assemblies == 0 ? CreateApplication () : true;
 		}
 
 		// note: throwing MoonException from here is NOT ok since this code is called async

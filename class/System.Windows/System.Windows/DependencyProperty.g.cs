@@ -29,6 +29,7 @@ namespace System.Windows {
 		public static readonly DependencyProperty EntryPointAssemblyProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "EntryPointAssembly", typeof (string));
 		public static readonly DependencyProperty EntryPointTypeProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "EntryPointType", typeof (string));
 		public static readonly DependencyProperty ExternalCallersFromCrossDomainProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "ExternalCallersFromCrossDomain", typeof (CrossDomainAccess));
+		public static readonly DependencyProperty ExternalPartsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "ExternalParts", typeof (ExternalPartCollection));
 		public static readonly DependencyProperty PartsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Parts", typeof (AssemblyPartCollection));
 		public static readonly DependencyProperty RuntimeVersionProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "RuntimeVersion", typeof (string));
 		internal static readonly DependencyProperty SurfaceProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Surface", typeof (Surface));
@@ -46,6 +47,11 @@ namespace System.Windows {
 		public CrossDomainAccess ExternalCallersFromCrossDomain {
 			get { return (CrossDomainAccess) GetValue (ExternalCallersFromCrossDomainProperty); }
 			internal set { SetValue (ExternalCallersFromCrossDomainProperty, value); }
+		}
+
+		public ExternalPartCollection ExternalParts {
+			get { return (ExternalPartCollection) GetValue (ExternalPartsProperty); }
+			internal set { SetValue (ExternalPartsProperty, value); }
 		}
 
 		public AssemblyPartCollection Parts {
@@ -76,6 +82,15 @@ namespace System.Windows {
 		public RoutedEvent RoutedEvent {
 			get { return (RoutedEvent) GetValue (RoutedEventProperty); }
 			set { SetValue (RoutedEventProperty, value); }
+		}
+	}
+
+	partial class ExtensionPart {
+		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.EXTENSIONPART, "Source", typeof (Uri));
+
+		public Uri Source {
+			get { return (Uri) GetValue (SourceProperty); }
+			set { SetValue (SourceProperty, value); }
 		}
 	}
 
@@ -191,6 +206,21 @@ namespace System.Windows {
 		public double Width {
 			get { return (double) GetValue (WidthProperty); }
 			set { SetValue (WidthProperty, value); }
+		}
+	}
+
+	partial class OutOfBrowserSettings {
+		public static readonly DependencyProperty BlurbProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "Blurb", typeof (string));
+		public static readonly DependencyProperty EnableGPUAccelerationProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "EnableGPUAcceleration", typeof (bool));
+
+		public string Blurb {
+			get { return (string) GetValue (BlurbProperty); }
+			set { SetValue (BlurbProperty, value); }
+		}
+
+		public bool EnableGPUAcceleration {
+			get { return (bool) GetValue (EnableGPUAccelerationProperty); }
+			set { SetValue (EnableGPUAccelerationProperty, value); }
 		}
 	}
 

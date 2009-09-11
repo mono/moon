@@ -302,8 +302,11 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::EVENTTRIGGER] = new Type (Type::EVENTTRIGGER, Type::TRIGGERBASE, false, false, "EventTrigger", 0, 1, NULL, 0, NULL, true, (create_inst_func *) event_trigger_new, "Actions");
 	types [(int) Type::EXCEPTIONROUTEDEVENTARGS] = new Type (Type::EXCEPTIONROUTEDEVENTARGS, Type::ROUTEDEVENTARGS, false, false, "ExceptionRoutedEventArgs", 0, 1, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::EXPONENTIALEASE] = new Type (Type::EXPONENTIALEASE, Type::EASINGFUNCTIONBASE, false, false, "ExponentialEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) exponential_ease_new, NULL);
+	types [(int) Type::EXTENSIONPART] = new Type (Type::EXTENSIONPART, Type::DEPENDENCY_OBJECT, false, false, "ExtensionPart", 0, 1, NULL, 0, NULL, true, (create_inst_func *) extension_part_new, NULL);
 	types [(int) Type::EXTERNALDECODER] = new Type (Type::EXTERNALDECODER, Type::IMEDIADECODER, false, false, "ExternalDecoder", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::EXTERNALDEMUXER] = new Type (Type::EXTERNALDEMUXER, Type::IMEDIADEMUXER, false, false, "ExternalDemuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::EXTERNALPART] = new Type (Type::EXTERNALPART, Type::DEPENDENCY_OBJECT, false, false, "ExternalPart", 0, 1, NULL, 0, NULL, true, (create_inst_func *) external_part_new, NULL);
+	types [(int) Type::EXTERNALPART_COLLECTION] = new Type (Type::EXTERNALPART_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "ExternalPartCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) external_part_collection_new, NULL);
 	types [(int) Type::FFMPEGDECODER] = new Type (Type::FFMPEGDECODER, Type::IMEDIADECODER, false, false, "FfmpegDecoder", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::FFMPEGDEMUXER] = new Type (Type::FFMPEGDEMUXER, Type::IMEDIADEMUXER, false, false, "FfmpegDemuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::FILEDOWNLOADER] = new Type (Type::FILEDOWNLOADER, Type::INTERNALDOWNLOADER, false, false, "FileDownloader", 0, 1, NULL, 0, NULL, false, NULL, NULL);
@@ -424,6 +427,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::OBJECTANIMATIONUSINGKEYFRAMES] = new Type (Type::OBJECTANIMATIONUSINGKEYFRAMES, Type::ANIMATION, false, false, "ObjectAnimationUsingKeyFrames", 0, 2, NULL, 0, NULL, true, (create_inst_func *) object_animation_using_key_frames_new, "KeyFrames");
 	types [(int) Type::OBJECTKEYFRAME] = new Type (Type::OBJECTKEYFRAME, Type::KEYFRAME, false, false, "ObjectKeyFrame", 0, 1, NULL, 0, NULL, false, (create_inst_func *) object_key_frame_new, NULL);
 	types [(int) Type::OBJECTKEYFRAME_COLLECTION] = new Type (Type::OBJECTKEYFRAME_COLLECTION, Type::KEYFRAME_COLLECTION, false, false, "ObjectKeyFrameCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) object_key_frame_collection_new, NULL);
+	types [(int) Type::OUTOFBROWSERSETTINGS] = new Type (Type::OUTOFBROWSERSETTINGS, Type::DEPENDENCY_OBJECT, false, false, "OutOfBrowserSettings", 0, 1, NULL, 0, NULL, true, (create_inst_func *) out_of_browser_settings_new, NULL);
 	types [(int) Type::PANEL] = new Type (Type::PANEL, Type::FRAMEWORKELEMENT, false, false, "Panel", 0, 20, NULL, 0, NULL, false, (create_inst_func *) panel_new, "Children");
 	types [(int) Type::PARALLELTIMELINE] = new Type (Type::PARALLELTIMELINE, Type::TIMELINEGROUP, false, false, "ParallelTimeline", 0, 2, NULL, 0, NULL, true, (create_inst_func *) parallel_timeline_new, NULL);
 	types [(int) Type::PARSERERROREVENTARGS] = new Type (Type::PARSERERROREVENTARGS, Type::ERROREVENTARGS, false, false, "ParserErrorEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);

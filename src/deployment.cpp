@@ -649,3 +649,44 @@ AssemblyPartCollection::AssemblyPartCollection ()
 AssemblyPartCollection::~AssemblyPartCollection ()
 {
 }
+
+/*
+ * ExtensionPart
+ */
+
+ExtensionPart::ExtensionPart ()
+{
+	SetObjectType (Type::EXTENSIONPART);
+}
+
+ExtensionPart::~ExtensionPart ()
+{
+}
+
+ExternalPart::ExternalPart ()
+{
+	SetObjectType (Type::EXTERNALPART);
+}
+
+ExternalPart::~ExternalPart ()
+{
+}
+
+ExternalPartCollection::ExternalPartCollection ()
+{
+	SetObjectType (Type::EXTERNALPART_COLLECTION);
+}
+
+ExternalPartCollection::~ExternalPartCollection ()
+{
+}
+
+/* OutOfBrowserSettings */
+OutOfBrowserSettings::OutOfBrowserSettings ()
+{
+	SetObjectType (Type::OUTOFBROWSERSETTINGS);
+}
+
+OutOfBrowserSettings::~OutOfBrowserSettings ()
+{
+}

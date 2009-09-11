@@ -1005,12 +1005,24 @@ namespace Mono {
 		public extern static IntPtr exponential_ease_new ();
 
 		[DllImport ("moon")]
+		// ExtensionPart *extension_part_new ();
+		public extern static IntPtr extension_part_new ();
+
+		[DllImport ("moon")]
 		// gint32 external_demuxer_add_stream (ExternalDemuxer *instance, IMediaStream *stream);
 		public extern static int external_demuxer_add_stream (IntPtr instance, IntPtr stream);
 
 		[DllImport ("moon")]
 		// void external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value);
 		public extern static void external_demuxer_set_can_seek (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
+
+		[DllImport ("moon")]
+		// ExternalPart *external_part_new ();
+		public extern static IntPtr external_part_new ();
+
+		[DllImport ("moon")]
+		// ExternalPartCollection *external_part_collection_new ();
+		public extern static IntPtr external_part_collection_new ();
 
 		[DllImport ("moon")]
 		// Size framework_element_arrange_override (FrameworkElement *instance, Size finalSize);
@@ -1380,6 +1392,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// ObjectKeyFrameCollection *object_key_frame_collection_new ();
 		public extern static IntPtr object_key_frame_collection_new ();
+
+		[DllImport ("moon")]
+		// OutOfBrowserSettings *out_of_browser_settings_new ();
+		public extern static IntPtr out_of_browser_settings_new ();
 
 		[DllImport ("moon")]
 		// Panel *panel_new ();

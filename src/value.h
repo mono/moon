@@ -130,8 +130,11 @@ class EventObject;
 class EventTrigger;
 class ExceptionRoutedEventArgs;
 class ExponentialEase;
+class ExtensionPart;
 class ExternalDecoder;
 class ExternalDemuxer;
+class ExternalPart;
+class ExternalPartCollection;
 class FfmpegDecoder;
 class FfmpegDemuxer;
 class FileDownloader;
@@ -215,6 +218,7 @@ class NullDecoder;
 class ObjectAnimationUsingKeyFrames;
 class ObjectKeyFrame;
 class ObjectKeyFrameCollection;
+class OutOfBrowserSettings;
 class Panel;
 class ParallelTimeline;
 class ParserErrorEventArgs;
@@ -494,8 +498,11 @@ public:
 	EventTrigger*                            AsEventTrigger (Types *types = NULL) { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
 	ExceptionRoutedEventArgs*                AsExceptionRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::EXCEPTIONROUTEDEVENTARGS, ExceptionRoutedEventArgs) }
 	ExponentialEase*                         AsExponentialEase (Types *types = NULL) { checked_get_subclass (Type::EXPONENTIALEASE, ExponentialEase) }
+	ExtensionPart*                           AsExtensionPart (Types *types = NULL) { checked_get_subclass (Type::EXTENSIONPART, ExtensionPart) }
 	ExternalDecoder*                         AsExternalDecoder (Types *types = NULL) { checked_get_subclass (Type::EXTERNALDECODER, ExternalDecoder) }
 	ExternalDemuxer*                         AsExternalDemuxer (Types *types = NULL) { checked_get_subclass (Type::EXTERNALDEMUXER, ExternalDemuxer) }
+	ExternalPart*                            AsExternalPart (Types *types = NULL) { checked_get_subclass (Type::EXTERNALPART, ExternalPart) }
+	ExternalPartCollection*                  AsExternalPartCollection (Types *types = NULL) { checked_get_subclass (Type::EXTERNALPART_COLLECTION, ExternalPartCollection) }
 	FfmpegDecoder*                           AsFfmpegDecoder (Types *types = NULL) { checked_get_subclass (Type::FFMPEGDECODER, FfmpegDecoder) }
 	FfmpegDemuxer*                           AsFfmpegDemuxer (Types *types = NULL) { checked_get_subclass (Type::FFMPEGDEMUXER, FfmpegDemuxer) }
 	FileDownloader*                          AsFileDownloader (Types *types = NULL) { checked_get_subclass (Type::FILEDOWNLOADER, FileDownloader) }
@@ -579,6 +586,7 @@ public:
 	ObjectAnimationUsingKeyFrames*           AsObjectAnimationUsingKeyFrames (Types *types = NULL) { checked_get_subclass (Type::OBJECTANIMATIONUSINGKEYFRAMES, ObjectAnimationUsingKeyFrames) }
 	ObjectKeyFrame*                          AsObjectKeyFrame (Types *types = NULL) { checked_get_subclass (Type::OBJECTKEYFRAME, ObjectKeyFrame) }
 	ObjectKeyFrameCollection*                AsObjectKeyFrameCollection (Types *types = NULL) { checked_get_subclass (Type::OBJECTKEYFRAME_COLLECTION, ObjectKeyFrameCollection) }
+	OutOfBrowserSettings*                    AsOutOfBrowserSettings (Types *types = NULL) { checked_get_subclass (Type::OUTOFBROWSERSETTINGS, OutOfBrowserSettings) }
 	Panel*                                   AsPanel (Types *types = NULL) { checked_get_subclass (Type::PANEL, Panel) }
 	ParallelTimeline*                        AsParallelTimeline (Types *types = NULL) { checked_get_subclass (Type::PARALLELTIMELINE, ParallelTimeline) }
 	ParserErrorEventArgs*                    AsParserErrorEventArgs (Types *types = NULL) { checked_get_subclass (Type::PARSERERROREVENTARGS, ParserErrorEventArgs) }

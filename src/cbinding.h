@@ -87,8 +87,11 @@ class EventObject;
 class EventTrigger;
 class ExceptionRoutedEventArgs;
 class ExponentialEase;
+class ExtensionPart;
 class ExternalDecoder;
 class ExternalDemuxer;
+class ExternalPart;
+class ExternalPartCollection;
 class FfmpegDecoder;
 class FfmpegDemuxer;
 class FileDownloader;
@@ -172,6 +175,7 @@ class NullDecoder;
 class ObjectAnimationUsingKeyFrames;
 class ObjectKeyFrame;
 class ObjectKeyFrameCollection;
+class OutOfBrowserSettings;
 class Panel;
 class ParallelTimeline;
 class ParserErrorEventArgs;
@@ -374,9 +378,12 @@ class EventObject;
 class EventTrigger;
 class ExceptionRoutedEventArgs;
 class ExponentialEase;
+class ExtensionPart;
 class ExternalDecoder;
 class ExternalDecoderInfo;
 class ExternalDemuxer;
+class ExternalPart;
+class ExternalPartCollection;
 class FfmpegDecoder;
 class FfmpegDecoderInfo;
 class FfmpegDemuxer;
@@ -486,6 +493,7 @@ class ObjectAnimationUsingKeyFrames;
 class ObjectKeyFrame;
 class ObjectKeyFrameCollection;
 class ObjectTracker;
+class OutOfBrowserSettings;
 class Panel;
 class ParallelTimeline;
 class ParserErrorEventArgs;
@@ -1552,6 +1560,12 @@ double exponential_ease_ease_in_core (ExponentialEase *instance, double normaliz
 ExponentialEase *exponential_ease_new (void);
 
 /**
+ * ExtensionPart
+ **/
+/* @GeneratePInvoke */
+ExtensionPart *extension_part_new (void);
+
+/**
  * ExternalDecoder
  **/
 ExternalDecoder *external_decoder_new (Media *media, IMediaStream *stream, void *instance, const char *name, ExternalDecoder_DecodeFrameAsyncCallback decode_frame_async, ExternalDecoder_OpenDecoderAsyncCallback open_decoder_async, ExternalDecoder_CleanupCallback cleanup, ExternalDecoder_CleanStateCallback clean_state, ExternalDecoder_HasDelayedFrameCallback has_delayed_frame, ExternalDecoder_DisposeCallback dispose, ExternalDecoder_DtorCallback dtor);
@@ -1569,6 +1583,18 @@ gint32 external_demuxer_add_stream (ExternalDemuxer *instance, IMediaStream *str
 
 /* @GeneratePInvoke */
 void external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value);
+
+/**
+ * ExternalPart
+ **/
+/* @GeneratePInvoke */
+ExternalPart *external_part_new (void);
+
+/**
+ * ExternalPartCollection
+ **/
+/* @GeneratePInvoke */
+ExternalPartCollection *external_part_collection_new (void);
 
 /**
  * FrameworkElement
@@ -2078,6 +2104,12 @@ ObjectKeyFrame *object_key_frame_new (void);
  **/
 /* @GeneratePInvoke */
 ObjectKeyFrameCollection *object_key_frame_collection_new (void);
+
+/**
+ * OutOfBrowserSettings
+ **/
+/* @GeneratePInvoke */
+OutOfBrowserSettings *out_of_browser_settings_new (void);
 
 /**
  * Panel

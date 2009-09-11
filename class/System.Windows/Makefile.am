@@ -308,6 +308,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ExceptionRoutedEventArgs.cs			\
 	$(srcdir)/System.Windows/ExceptionRoutedEventHandler.cs			\
 	$(srcdir)/System.Windows/Expression.cs					\
+	$(srcdir)/System.Windows/ExtensionPart.cs				\
+	$(srcdir)/System.Windows/ExternalPart.cs				\
+	$(srcdir)/System.Windows/ExternalPartCollection.cs			\
 	$(srcdir)/System.Windows/EventTrigger.cs				\
 	$(srcdir)/System.Windows/FontStretch.cs					\
 	$(srcdir)/System.Windows/FontStretchKind.cs				\
@@ -328,6 +331,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/MessageBox.cs					\
 	$(srcdir)/System.Windows/MessageBoxButton.cs				\
 	$(srcdir)/System.Windows/MessageBoxResult.cs				\
+	$(srcdir)/System.Windows/OutOfBrowserSettings.cs			\
 	$(srcdir)/System.Windows/Point.cs					\
 	$(srcdir)/System.Windows/PresentationFrameworkCollection.cs		\
 	$(srcdir)/System.Windows/PropertyChangedCallback.cs			\
