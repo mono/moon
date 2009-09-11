@@ -1,3 +1,7 @@
+2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* StylusPoint.cs: Add a FIXME.
+
 2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* StylusPoint.cs: Updated according to API changes in 

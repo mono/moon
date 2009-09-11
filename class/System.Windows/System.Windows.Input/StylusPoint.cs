@@ -35,6 +35,9 @@ namespace System.Windows.Input
 {
 	public struct StylusPoint : INativeDependencyObjectWrapper
 	{
+		// FIXME: we shouldn't implement INativeDependencyObjectWrapper and have toggle ref behaviour,
+		// since a struct can't have a destructor, we'll always end up leaking the native object.
+		// The right thing to do is probably to just have a managed struct with no native representation.
 		internal StylusPoint (IntPtr raw)
 		{
 			NativeHandle = raw;
