@@ -19,7 +19,7 @@ namespace System.Windows
     ///     A group of mutually exclusive visual states.
     /// </summary>
     [ContentProperty("States")]
-    public class VisualStateGroup : DependencyObject
+    public sealed class VisualStateGroup : DependencyObject
     {
         /// <summary>
         ///     The Name of the VisualStateGroup.

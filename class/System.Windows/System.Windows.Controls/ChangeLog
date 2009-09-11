@@ -1,3 +1,9 @@
+2009-09-11  Larry Ewing  <lewing@novell.com>
+
+	* TextChangedEventArgs.cs: 
+	* MultiScaleImage.cs: 
+	* MultiScaleSubImage.cs: add missing seal to classes.
+
 2009-09-08  Mario Carrion  <mcarrion@novell.com>
 
 	* ComboBox.cs: Method overridden OnCreateAutomationPeer.

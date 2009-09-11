@@ -29,7 +29,7 @@ using System;
 using System.Windows;
 
 namespace System.Windows.Controls {
-	public class TextChangedEventArgs : RoutedEventArgs {
+	public sealed class TextChangedEventArgs : RoutedEventArgs {
 		internal TextChangedEventArgs (IntPtr raw) : base (raw, false)
 		{
 		}

@@ -27,7 +27,7 @@ using System;
 
 namespace System.Windows.Controls
 {	
-	public partial class MultiScaleSubImage : DependencyObject
+	public sealed partial class MultiScaleSubImage : DependencyObject
 	{
 	}
 }

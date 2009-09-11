@@ -30,7 +30,7 @@ using System.Windows.Media;
 
 namespace System.Windows.Controls {
 
-	public partial class MultiScaleImage : FrameworkElement {
+	public sealed partial class MultiScaleImage : FrameworkElement {
 	
 		ReadOnlyCollection<MultiScaleSubImage> subimages;
 		
