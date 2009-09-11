@@ -477,6 +477,7 @@ PluginInstance::~PluginInstance ()
 	g_free (culture);
 	g_free (uiCulture);
 	g_free (initParams);
+	g_free (vm_missing_file);
 	delete xaml_loader;
 
 #if PLUGIN_SL_2_0
@@ -1699,7 +1700,9 @@ PluginInstance::LoadSplash ()
 	if (splashscreensource != NULL) {
 		char *pos = strchr (splashscreensource, '#');
 		if (pos) {
-			splashscreensource = pos+1;
+			char *original = splashscreensource;
+			splashscreensource = g_strdup (pos + 1);
+			g_free (original);
 			loading_splash = true;
 			UpdateSourceByReference (splashscreensource);
 			FlushSplash ();

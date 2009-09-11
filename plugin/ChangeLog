@@ -1,3 +1,11 @@
+2009-09-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp: Fix regression/crash on DRT455 since 
+	splashscreensource is now freed. Add missing g_free on 
+	vm_missing_file
+
+	r: sde
+
 2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* cbinding.h: Regenerated.
