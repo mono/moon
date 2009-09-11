@@ -1,5 +1,12 @@
 2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio-alsa.cpp: AlsaSource::InitializeInternal: make sure we unref
+	the audio stream in all code paths.
+
+	r: spouliot
+
+2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: Dont ref/unref around the MarkerTimeout tick call,
 	it should be safe since the tick call is removed upon destruction.
 

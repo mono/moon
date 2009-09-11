@@ -157,6 +157,7 @@ AlsaSource::~AlsaSource ()
 bool
 AlsaSource::InitializeInternal ()
 {
+	bool res = false;
 	int result;
 	AudioStream *stream = GetStreamReffed ();
 	
@@ -165,7 +166,7 @@ AlsaSource::InitializeInternal ()
 	if (stream == NULL) {
 		// Shouldn't really happen, but handle this case anyway.
 		LOG_AUDIO ("AlsaSource::Initialize (): trying to initialize an audio device, but there's no audio to play.\n");
-		return false;
+		goto cleanup;
 	}
 		
 	// Open a pcm device
@@ -173,21 +174,21 @@ AlsaSource::InitializeInternal ()
 	if (result != 0) {
 		LOG_AUDIO ("AlsaSource::Initialize (): cannot open audio device: %s\n", snd_strerror (result));
 		pcm = NULL;
-		return false;
+		goto cleanup;
 	}
 
 	// Configure the hardware
 	if (!SetupHW ()) {
 		LOG_AUDIO ("AlsaSource::Initialize (): could not configure hardware for audio playback\n");
 		Close ();
-		return false;
+		goto cleanup;
 	}
 	
 	result = snd_pcm_get_params (pcm, &buffer_size, &period_size);
 	if (result != 0) {
 		LOG_AUDIO ("AlsaSource::Initialize (): error while getting parameters: %s\n", snd_strerror (result));
 		Close ();
-		return false;
+		goto cleanup;
 	}
 
 	// Get the file descriptors to poll on
@@ -195,19 +196,26 @@ AlsaSource::InitializeInternal ()
 	if (ndfs <= 0) {
 		LOG_AUDIO ("AlsaSource::Initialize(): Unable to initialize audio for playback (could not get poll descriptor count).\n");
 		Close ();
-		return false;
+		goto cleanup;
 	}
 
 	udfs = (pollfd *) g_malloc0 (sizeof (pollfd) * ndfs);
 	if (snd_pcm_poll_descriptors (pcm, udfs, ndfs) < 0) {
 		LOG_AUDIO ("AlsaSource::Initialize (): Unable to initialize audio for playback (could not get poll descriptors).\n");
 		Close ();
-		return false;
+		goto cleanup;
 	}
 	
 	LOG_AUDIO ("AlsaSource::Initialize (%p): Succeeded. Buffer size: %lu, period size: %lu\n", this, buffer_size, period_size);
+
+	res = true;
 	
-	return true;
+cleanup:
+
+	if (stream)
+		stream->unref ();
+
+	return res;
 }
 
 bool
