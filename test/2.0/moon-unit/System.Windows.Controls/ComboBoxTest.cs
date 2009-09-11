@@ -1124,7 +1124,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlSelectedIndex ()
 		{
 			var c = (ComboBox)XamlReader.Load (@"
@@ -1138,7 +1137,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("Combobox does not throw an argument out of range exception")]
 		public void XamlSelectedIndex2 ()
 		{
 			Assert.Throws<XamlParseException> (() => XamlReader.Load (@"
@@ -1154,7 +1153,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlSelectedIndex3 ()
 		{
 			var panel = (StackPanel)XamlReader.Load(@"
@@ -1177,7 +1175,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlSelectedIndex4 ()
 		{
 			var panel = (StackPanel) XamlReader.Load (@"
