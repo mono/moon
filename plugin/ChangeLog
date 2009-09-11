@@ -1,5 +1,11 @@
 2009-09-10  Jackson Harper  <jackson@ximian.com>
 
+	* plugin.cpp: Add some namescope info to the debugging tree
+
+	r: spouliot
+
+2009-09-10  Jackson Harper  <jackson@ximian.com>
+
 	* plugin.cpp|h: Update signature on SetProperty
 
 2009-09-09  Chris Toshok  <toshok@ximian.com>

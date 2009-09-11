@@ -73,7 +73,7 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 	DependencyObject *dobj;
 	const char *str = NULL;
 	char *buf = NULL;
-	
+
 	if (value && value->Is (Type::DEPENDENCY_OBJECT)) {
 		dobj = value->AsDependencyObject ();
 		
@@ -88,7 +88,7 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 			reflect_dependency_object_in_tree (dobj, store, node, true);
 		return;
 	}
-	
+
 	if (value != NULL) {
 		Type *type = Type::Find (value->GetKind ());
 		type_name = type->GetName ();
@@ -305,6 +305,38 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 
 		reflect_value (store, &subobject_iter, "Visual Child", NULL, &v);
 	}
+
+	if (obj->Is (Type::NAMESCOPE)) {
+		NameScope *scope = (NameScope *) obj;
+
+		GHashTable *names = scope->GetNames ();
+		if (names && g_hash_table_size (names) > 0) {
+			GtkTreeIter elements_iter;
+
+			GHashTableIter table_iter;
+			gpointer key, value;
+
+			g_hash_table_iter_init (&table_iter, names);
+			while (g_hash_table_iter_next (&table_iter, &key, &value)) {
+				char *name = (char *) key;
+				DependencyObject *dob = (DependencyObject *) value;
+				
+				char *markup = g_strdup_printf (" <b>%s</b>", name);
+
+				gtk_tree_store_append (store, &elements_iter, node);
+
+				gtk_tree_store_set (store, &elements_iter,
+						COL_NAME, markup,
+						COL_TYPE_NAME, dob->GetType ()->GetName (),
+						COL_VALUE, "",
+						COL_ELEMENT_PTR, dob,
+						-1);
+
+				g_free (markup);
+			}
+		}
+	}
+
 }
 
 static void

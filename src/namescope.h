@@ -58,6 +58,8 @@ class NameScope : public DependencyObject {
 	static void SetNameScope (DependencyObject *obj, NameScope *scope);
 
 	void Dump();
+
+	GHashTable *GetNames () { return names; }
 };
 
 #endif /* __MOON_NAMESCOPE_H__ */
