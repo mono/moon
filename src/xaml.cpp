@@ -120,6 +120,7 @@ enum BufferMode {
 	BUFFER_MODE_IGNORE
 };
 
+
 class XamlNamespace {
  public:
 	const char *name;
@@ -334,12 +335,49 @@ class XamlElementInfo {
 	virtual XamlElementInstance *CreatePropertyElementInstance (XamlParserInfo *p, const char *name) = 0;
 };
 
+
+struct DelayedProperty {
+	char *xmlns;
+	char *name;
+	Value *value;
+
+	DelayedProperty (const char *xmlns, const char *name, const Value *value)
+	{
+		this->xmlns = g_strdup (xmlns);
+		this->name = g_strdup (name);
+		this->value = new Value (*value);
+	}
+
+	~DelayedProperty ()
+	{
+		g_free (xmlns);
+		g_free (name);
+		delete value;
+	}
+};
+
+static void
+free_property_list (GSList *list)
+{
+	GSList *walk = list;
+
+	while (walk) {
+		DelayedProperty *prop = (DelayedProperty *) walk->data;
+
+		delete prop;
+		walk = walk->next;
+	}
+
+	g_slist_free (list);
+}
+
 class XamlElementInstance : public List::Node {
 
  protected:
 	DependencyObject *item;
 	Value *value;
 	bool cleanup_value;
+	GSList *delayed_properties;
 
  public:
 	const char *element_name;
@@ -374,6 +412,7 @@ class XamlElementInstance : public List::Node {
 		this->x_name = NULL;
 		this->cleanup_value = true;
 		this->requires_managed = requires_managed;
+		this->delayed_properties = NULL;
 		
 		children = new List ();
 	}
@@ -395,6 +434,8 @@ class XamlElementInstance : public List::Node {
 
 		if (element_name && element_type == PROPERTY)
 			g_free ((void*) element_name);
+
+		free_property_list (delayed_properties);
 	}
 
 	virtual bool SetProperty (XamlParserInfo *p, XamlElementInstance *property, XamlElementInstance *value) = 0;
@@ -475,6 +516,15 @@ class XamlElementInstance : public List::Node {
 
 	virtual XamlElementInfo* FindPropertyElement (XamlParserInfo *p, const char *el, const char *dot);
 
+	void SetDelayedProperties (XamlParserInfo *p);
+
+	void DelaySetProperty (const char *xmlns, const char *name, const Value *value)
+	{
+		DelayedProperty *prop = new DelayedProperty (xmlns, name, value);
+
+		delayed_properties = g_slist_append (delayed_properties, prop);
+	}
+	
 	bool IsPropertySet (const char *name)
 	{
 		if (!set_properties)
@@ -1394,11 +1444,11 @@ XamlLoader::GetContentPropertyName (void *p, Value *top_level, Value *object)
 }
 
 bool
-XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char* prop_xmlns, const char *name, Value *value, void* value_data)
+XamlLoader::SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char* prop_xmlns, const char *name, Value *value, void* value_data, int flags)
 {
 	if (callbacks.set_property) {
 		MoonError error;
-		XamlCallbackData data = XamlCallbackData (this, p, top_level);
+		XamlCallbackData data = XamlCallbackData (this, p, top_level, flags);
 		bool res = callbacks.set_property (&data, xmlns, target, target_data, target_parent, prop_xmlns, name, value, value_data, &error);
 
 		if (error.number != MoonError::NO_ERROR) {
@@ -1941,6 +1991,8 @@ end_element_handler (void *data, const char *el)
 
 	switch (p->current_element->element_type) {
 	case XamlElementInstance::ELEMENT:
+
+		p->current_element->SetDelayedProperties (p);
 		flush_char_data (p);
 
 		// according to http://blogs.msdn.com/devdave/archive/2008/10/11/control-lifecycle.aspx
@@ -4015,6 +4067,26 @@ XamlElementInstance::SetUnknownAttribute (XamlParserInfo *p, const char *name, c
 	return true;
 }
 
+void
+XamlElementInstance::SetDelayedProperties (XamlParserInfo *p)
+{
+	GSList *walk = delayed_properties;
+
+	while (walk) {
+		DelayedProperty *prop = (DelayedProperty *) walk->data;
+
+		if (!p->loader->SetProperty (p, p->GetTopElementPtr (), info->xmlns, GetAsValue (), this, GetParentPointer (), prop->xmlns, prop->name, prop->value, NULL, XamlCallbackData::SETTING_DELAYED_PROPERTY)) {
+			parser_error (p, element_name, prop->name, 2012,
+					"Unknown property %s on element %s.",
+					prop->name, element_name);
+			return;
+		}
+
+		walk = walk->next;
+	}
+		
+}
+
 XamlElementInfo *
 XamlElementInstance::FindPropertyElement (XamlParserInfo *p, const char *el, const char *dot)
 {
@@ -4980,6 +5052,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 					str_value = true;
 				}
 
+//				printf ("setting managed property: %s::%s to %s=%s\n", dep->GetType ()->GetName (), prop->GetName (), attr [i], attr [i + 1]);
 				if (p->loader->SetProperty (p, p->GetTopElementPtr (), NULL, item->GetAsValue (), item, item->GetParentPointer (), NULL, g_strdup (attr [i]), v, NULL)) {
 					delete v;
 					g_free (attr_value);
@@ -5182,6 +5255,12 @@ xaml_mark_property_as_set (void *parser, void *element_instance, char *name)
 	item->MarkPropertyAsSet (g_strdup (name));
 }
 
+void
+xaml_delay_set_property (void *parser, void *element_instance, const char *xmlns, const char *name, const Value *value)
+{
+	XamlElementInstance *item = (XamlElementInstance *) element_instance;
+	item->DelaySetProperty (xmlns, name, value);
+}
 
 void
 xaml_init (void)

@@ -2388,5 +2388,9 @@ namespace Mono {
 		// void xaml_mark_property_as_set (void *parser, void *element_instance, char *name);
 		public extern static void xaml_mark_property_as_set (IntPtr parser, IntPtr element_instance, string name);
 
+		[DllImport ("moon")]
+		// void xaml_delay_set_property (void *parser, void *element_instance, const char *xmlns, const char *name, const Value *value);
+		public extern static void xaml_delay_set_property (IntPtr parser, IntPtr element_instance, string xmlns, string name, ref Value value);
+
 	}
 }

@@ -1,3 +1,13 @@
+2009-09-10  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Add flags to the callback data
+	- Add a pinvoke function that allows propertys to be delayed in
+	their set call until after the element is fully parsed.  This
+	allows things like adding elements to a Selector and setting its
+	index in xaml.
+
+	r: spouliot
+	
 2009-09-10  Larry Ewing  <lewing@novell.com>
 
 	* multiscaleimage.cpp (RenderSingle): work around the cairo

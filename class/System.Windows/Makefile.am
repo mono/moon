@@ -78,6 +78,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/NativeDependencyObjectHelper.cs				\
 	$(srcdir)/Mono/NativeMethods.cs						\
 	$(srcdir)/Mono/Report.cs						\
+	$(srcdir)/Mono/SetPropertyDelayedAttribute.cs				\
 	$(srcdir)/Mono/StaticResource.cs					\
 	$(srcdir)/Mono/StreamCallbacks.cs					\
 	$(srcdir)/Mono/StreamWrapper.cs						\

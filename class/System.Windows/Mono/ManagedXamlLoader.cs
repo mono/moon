@@ -1142,7 +1142,18 @@ namespace Mono.Xaml
 		{
 			error = null;
 			object obj_value = Value.ToObject (null, value_ptr);
+
 			
+
+			if (pi.GetCustomAttributes (typeof (SetPropertyDelayedAttribute), true).Length > 0) {
+				if ((data->flags & XamlCallbackFlags.SettingDelayedProperty) == 0) {
+					Value v = *value_ptr;
+					NativeMethods.xaml_delay_set_property (data->parser, target_data, null, pi.Name, ref v);
+					return true;
+				}
+			}
+
+
 			if (obj_value is Binding && target is FrameworkElement) {
 				FrameworkElement fe = (FrameworkElement) target;
 				fe.SetBinding (DependencyProperty.Lookup (fe.GetKind (), pi.Name), (Binding) obj_value);
@@ -1168,6 +1179,7 @@ namespace Mono.Xaml
 			if (str_value != null) {
 				IntPtr unmanaged_value;
 
+				
 				//
 				// HACK: This really shouldn't be here, but I don't want to bother putting it in Helper, because that
 				// code probably should be moved into this file

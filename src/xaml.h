@@ -26,14 +26,22 @@ struct XamlCallbackData {
 	void *loader;
 	void *parser;
 	Value *top_level;
+	int flags;
 
-	XamlCallbackData (void *loader, void *parser, Value *top_level)
+	XamlCallbackData (void *loader, void *parser, Value *top_level, int flags = 0)
 	{
 		this->loader = loader;
 		this->parser = parser;
 		this->top_level = top_level;
+		this->flags = flags;
 	}
+
+	enum XamlCallbackFlagsEnum {
+		NONE,
+		SETTING_DELAYED_PROPERTY = 2
+	};
 };
+
 
 typedef bool (*xaml_lookup_object_callback) (XamlCallbackData *data, Value *parent, const char *xmlns, const char *name, bool create, bool is_property, Value *value, MoonError *error);
 typedef void (*xaml_create_gchandle_callback) ();
@@ -125,6 +133,8 @@ char*       xaml_get_element_name (void *parser, void *element_instance);
 bool        xaml_is_property_set (void *parser, void *element_instance, char *name);
 /* @GeneratePInvoke */
 void        xaml_mark_property_as_set (void *parser, void *element_instance, char *name);
+/* @GeneratePInvoke */
+void        xaml_delay_set_property (void *parser, void *element_instance, const char *xmlns, const char *name, const Value *value);
 
 G_END_DECLS
 
@@ -176,7 +186,7 @@ class XamlLoader {
 	virtual bool LoadVM ();
 
 	virtual bool LookupObject (void *p, Value* top_element, Value* parent, const char* xmlns, const char* name, bool create, bool is_property, Value *value);
-	virtual bool SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value *value, void *value_data);
+	virtual bool SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value *value, void *value_data, int flags = 0);
 	virtual bool AddChild (void *p, Value *top_level, Value *parent_parent, bool parent_is_property, const char* parent_xmlns, Value *parent, void *parent_data, Value *child, void *child_data);
 
 	virtual const char *GetContentPropertyName (void *p, Value *top_level, Value *object);

@@ -1,3 +1,11 @@
+2009-09-10  Jackson Harper  <jackson@ximian.com>
+
+	* Selector.cs: Add the SetAttributeDelayed attribute to the
+	selected index property. This allows you to add children to a
+	selector and set its initial selected index in xaml.
+
+	r: spouliot
+
 2009-09-04  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: If a ListBoxItem with IsSelected = true is

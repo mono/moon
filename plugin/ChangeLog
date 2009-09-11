@@ -1,3 +1,7 @@
+2009-09-10  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: Update signature on SetProperty
+
 2009-09-09  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::PluginInstance): init

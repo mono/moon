@@ -71,7 +71,8 @@ namespace System.Windows.Controls.Primitives {
 			get { return (bool) GetValue (IsSelectionActiveProperty); }
 			set { SetValueImpl (IsSelectionActiveProperty, value); }
 		}
-		
+
+		[Mono.Xaml.SetPropertyDelayed]
 		public int SelectedIndex {
 			get { return (int)GetValue(SelectedIndexProperty); }
 			set { SetValue (SelectedIndexProperty, value); }

@@ -1,5 +1,5 @@
 //
-// ManagedXamlLoader.cs
+// XamlLoaderCallbacks.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -57,8 +57,15 @@ namespace Mono.Xaml
 		public IntPtr loader;
 		public IntPtr parser;
 		public Value *top_level;
+		public XamlCallbackFlags flags;
 	}
 
+	[Flags]
+	internal enum XamlCallbackFlags {
+		None,
+		SettingDelayedProperty = 2
+	}
+	
 	internal enum AssemblyLoadResult
 	{
 		Success = -1,
