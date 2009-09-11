@@ -1,5 +1,11 @@
 2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp: Add a null check.
+
+	r: spouliot
+
+2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.h: Fix typo in sanity message.
 
 2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>

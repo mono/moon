@@ -466,10 +466,14 @@ void
 ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 {
 	//printf ("ASFDemuxer::ReadFrame (%p).\n", frame);
-	ASFFrameReader *reader = this->reader->GetFrameReader (stream_to_asf_index [stream->index]);
+	ASFFrameReader *reader = NULL;
 	MediaFrame *frame;
 	MediaResult result;
 	
+	g_return_if_fail (this->reader != NULL);
+	
+	reader = this->reader->GetFrameReader (stream_to_asf_index [stream->index]);
+
 	g_return_if_fail (reader != NULL);
 	
 	result = reader->Advance ();
