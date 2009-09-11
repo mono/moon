@@ -61,15 +61,13 @@ struct QTree {
 	QTree* parent;
 };
 
-typedef QTree QTreeNode;
-
 static QTree*
 qtree_new (void)
 {
 	return g_new0 (QTree, 1);
 }
 
-static QTreeNode*
+static QTree*
 qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 {
 	if (x >= (pow2 (level)) || y >= (pow2 (level))) {
@@ -82,18 +80,18 @@ qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 		return NULL;
 	}
 
-	QTreeNode *node = root;
+	QTree *node = root;
 	while (level-- > 0) {
 		if (y < (pow2 (level))) {
 			if (x < (pow2 (level))) {
 				if (!node->l0) {
-					node->l0 = g_new0 (QTreeNode, 1);
+					node->l0 = g_new0 (QTree, 1);
 					node->l0->parent = node;
 				}
 				node = node->l0;
 			} else {
 				if (!node->l1) {
-					node->l1 = g_new0 (QTreeNode, 1);
+					node->l1 = g_new0 (QTree, 1);
 					node->l1->parent = node;
 				}
 				node = node->l1;
@@ -102,14 +100,14 @@ qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 		} else {
 			if (x < (pow2 (level))) {
 				if (!node->l2) {
-					node->l2 = g_new0 (QTreeNode, 1);
+					node->l2 = g_new0 (QTree, 1);
 					node->l2->parent = node;
 				}
 				node = node->l2;
 				y -= (pow2 (level));
 			} else {
 				if (!node->l3) {
-					node->l3 = g_new0 (QTreeNode, 1);
+					node->l3 = g_new0 (QTree, 1);
 					node->l3->parent = node;
 				}
 				node = node->l3;
@@ -121,10 +119,10 @@ qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 	return node;
 }
 
-static QTreeNode*
+static QTree*
 qtree_insert_with_value (QTree* root, void *data, int level, guint64 x, guint64 y)
 {
-	QTreeNode *node = qtree_insert (root, level, x, y);
+	QTree *node = qtree_insert (root, level, x, y);
 	node->has_value = true;
 	node->data = data;
 	return node;
@@ -177,6 +175,56 @@ qtree_lookup_data (QTree* root, int level, guint64 x, guint64 y)
 	return NULL;
 }
 
+//FIXME: merge qtree_next_sibling and _qtree_next_sibling in a single
+//function, with an elegant loop to avoid recursion.
+static QTree*
+_qtree_next_sibling (QTree *node, guint64 *i, guint64 *j, int l)
+{
+	if (!node) {
+#if DEBUG
+		abort ();
+#endif
+		g_warning ("Empty node");
+		return NULL;
+	}
+
+	if (!node->parent) //no parent, we're probably at the root
+		return NULL;
+	
+	if (node == node->parent->l0) {
+		*i += pow2 (l);
+		return node->parent->l1;
+	}
+	if (node == node->parent->l1) {
+		*i -= pow2 (l);
+		*j += pow2 (l);
+		return node->parent->l2;
+	}
+	if (node == node->parent->l2) {
+		*i += pow2 (l);
+		return node->parent->l3;
+	}
+	if (node == node->parent->l3) {
+		*i -= pow2 (l);
+		*j -= pow2 (l);
+		QTree *next_parent = _qtree_next_sibling (node->parent, i, j, l + 1);
+		if (!next_parent)
+			return NULL;
+		return next_parent->l0;
+	}
+#if DEBUG
+	abort ();
+#endif
+	g_warning ("Broken parent link, this is bad");
+	return NULL;
+}
+
+static QTree*
+qtree_next_sibling (QTree *node, guint64 *i, guint64 *j)
+{
+	return _qtree_next_sibling (node, i, j, 0);
+}
+
 static void
 qtree_remove (QTree* node, int depth)
 {
@@ -196,7 +244,7 @@ qtree_remove (QTree* node, int depth)
 }
 
 static void
-qtree_remove_at (QTree* root, int level, int x, int y, int depth)
+qtree_remove_at (QTree* root, int level, guint64 x, guint64 y, int depth)
 {
 	QTree* node = qtree_lookup (root, level, x, y);
 	qtree_remove (node, depth);
