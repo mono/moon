@@ -1,5 +1,13 @@
 2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio.cpp|h: Add AudioSource::GetMediaPlayerReffed and use it
+	wherever we used to access the field directly. Fixes a very rare
+	multi-thread issue.
+
+	r: spouliot
+
+2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp: Add a null check.
 
 	r: spouliot

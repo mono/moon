@@ -119,6 +119,19 @@ AudioSource::Dispose ()
 	EventObject::Dispose ();
 }
 
+MediaPlayer *
+AudioSource::GetMediaPlayerReffed ()
+{
+	MediaPlayer *result = NULL;
+	Lock ();
+	if (mplayer != NULL) {
+		result = mplayer;
+		result->ref ();
+	}
+	Unlock ();
+	return result;
+}
+
 void
 AudioSource::Lock ()
 {
@@ -272,7 +285,8 @@ AudioSource::SetState (AudioState value)
 {
 	AudioState old_state;
 	bool changed = false;
-	
+	bool audio_failed = false;
+		
 	Lock ();
 	if (state != value) {
 		if (state == AudioError) {
@@ -282,10 +296,18 @@ AudioSource::SetState (AudioState value)
 			state = value;
 			changed = true;
 			if (value == AudioError)
-				mplayer->AudioFailed (this);
+				audio_failed = true;
 		}
 	}
 	Unlock ();
+	
+	if (audio_failed) {
+		MediaPlayer *mplayer = GetMediaPlayerReffed ();
+		if (mplayer != NULL) {
+			mplayer->AudioFailed (this);
+			mplayer->unref ();
+		}
+	}
 	
 	LOG_AUDIO_EX ("AudioSource::SetState (%s), old state: %s, changed: %i\n", GetStateName (value), GetStateName (old_state), changed);
 	
@@ -470,20 +492,31 @@ AudioSource::Pause ()
 void
 AudioSource::Underflowed ()
 {
+	MediaPlayer *mplayer;
 	LOG_AUDIO ("AudioSource::Underflowed (), state: %s, flags: %s\n", GetStateName (GetState ()), GetFlagNames (flags));
 	
+	if (IsDisposed ())
+		return;
+	
 	SetCurrentDeployment (false);
+	
+	mplayer = GetMediaPlayerReffed ();
 	
 	if (GetState () == AudioPlaying) {
 		if (GetFlag (AudioEOF)) {
 			Stop ();
 			SetFlag (AudioEnded, true);
-			mplayer->AudioFinished ();
+			if (mplayer != NULL)
+				mplayer->AudioFinished ();
 		} else if (IsQueueEmpty ()) {
 			SetFlag (AudioWaiting, true);
-			mplayer->SetBufferUnderflow ();
+			if (mplayer != NULL)
+				mplayer->SetBufferUnderflow ();
 		}
 	}
+	
+	if (mplayer != NULL)
+		mplayer->unref ();
 }
 
 bool

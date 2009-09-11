@@ -93,6 +93,8 @@ class AudioSource : public EventObject {
 	void Lock ();
 	void Unlock ();
 	
+	MediaPlayer *GetMediaPlayerReffed ();
+	
 	EVENTHANDLER (AudioSource, FirstFrameEnqueued, EventObject, EventArgs);
 	
 #ifdef DUMP_AUDIO
