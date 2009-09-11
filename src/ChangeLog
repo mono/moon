@@ -1,5 +1,12 @@
 2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio.cpp: WriteFull: have a local copy of the stream pointer,
+	it may get changed on the main thread.
+
+	r: spouliot
+
+2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio-alsa.cpp: AlsaSource::InitializeInternal: make sure we unref
 	the audio stream in all code paths.
 

@@ -552,6 +552,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	gint32 value;
 	guint64 last_frame_pts = 0; // The pts of the last frame which was used to write samples
 	guint64 last_frame_samples = 0; // Samples written from the last frame
+	IMediaStream *stream;
 	
 	SetCurrentDeployment (false);
 	
@@ -571,9 +572,15 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 		SetState (AudioError);
 		return 0;
 	}
-
+	
+	stream = GetStreamReffed ();
+	if (stream == NULL) {
+		LOG_AUDIO ("AudioSource::WriteFull (): no stream.\n");
+		return 0;
+	}
+	
 	Lock ();
-			
+	
 	volume = this->volume * 8192;
 	balance = this->balance;
 	muted = false; //this->muted;
@@ -764,6 +771,9 @@ cleanup:
 	}
 	
 	Unlock ();
+	
+	if (stream)
+		stream->unref ();
 	
 	return result;
 }
