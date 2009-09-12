@@ -262,6 +262,8 @@ namespace System.Windows {
 						try {
 							Assembly asm = Assembly.LoadFrom (filename);
 							AssemblyRegister (asm);
+							if (pending_assemblies == 0)
+								return true;
 						} catch (FileNotFoundException) {
 							try_downloading = true;
 						}
