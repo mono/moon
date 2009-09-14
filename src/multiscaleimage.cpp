@@ -5,7 +5,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2008 Novell, Inc. (http://www.novell.com)
+ * Copyright 2008-2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  */
@@ -122,7 +122,7 @@ qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 	return node;
 }
 
-static QTree*
+static void
 qtree_set_value (QTree* node, void *data)
 {
 	//FIXME: the destroy method should be a ctor argument
@@ -131,14 +131,6 @@ qtree_set_value (QTree* node, void *data)
 
 	node->has_value = true;
 	node->data = data;	
-}
-
-static QTree*
-qtree_insert_with_value (QTree* root, void *data, int level, guint64 x, guint64 y)
-{
-	QTree *node = qtree_insert (root, level, x, y);
-	qtree_set_value (node, data);
-	return node;
 }
 
 static QTree *
@@ -267,15 +259,6 @@ static inline bool
 qtree_has_value (QTree* node)
 {
 	return node->has_value;	
-}
-
-static bool
-qtree_has_value_at (QTree* root, int level, guint64 x, guint64 y)
-{
-	QTree *node = qtree_lookup (root, level, x, y);
-	if (node)
-		return qtree_has_value (node);
-	return false;
 }
 
 static void
@@ -454,14 +437,7 @@ MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile, void *user_
 	bictx->bitmapimage->SetUriSource (tile);
 }
 
-//multi_scale_image_handle_dz_parsed is only used for DeepZoom sources
-void
-multi_scale_image_handle_dz_parsed (void *userdata)
-{
-	MultiScaleImage *msi = (MultiScaleImage*)userdata;
-	msi->HandleDzParsed ();
-}
-
+//Only used for DeepZoom sources
 void
 MultiScaleImage::HandleDzParsed ()
 {
@@ -510,35 +486,6 @@ MultiScaleImage::HandleDzParsed ()
 	EmitImageOpenSucceeded ();
 }
 
-//multi_scale_image_handle_dz_failes is only used for DeepZoom sources
-static void
-multi_scale_image_handle_dz_failed (void *userdata)
-{
-	MultiScaleImage *msi = (MultiScaleImage*)userdata;
-	msi->EmitImageOpenFailed ();
-}
-
-static void
-multi_scale_image_handle_dz_urisource_changed (void *userdata)
-{
-	MultiScaleImage *msi = (MultiScaleImage*)userdata;
-	msi->OnSourcePropertyChanged ();
-}
-
-static void
-multi_scale_subimage_handle_failed (void *userdata)
-{
-	MultiScaleImage *msi = (MultiScaleImage*)userdata;
-	msi->EmitImageFailed ();
-}
-
-void
-multi_scale_subimage_handle_parsed (void *userdata)
-{
-	MultiScaleImage *msi = (MultiScaleImage*)userdata;
-	msi->Invalidate ();
-}
-
 static void
 fade_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
@@ -582,20 +529,6 @@ MultiScaleImage::PanFinished ()
 	is_panning = false;
 	if (!is_fading && !is_zooming && !is_panning)
 		EmitMotionFinished ();
-}
-
-static void
-motion_finished_delayed (EventObject *sender)
-{
-	LOG_MSI ("MSI::motion_finished_delayed ()\n");
-	((MultiScaleImage *) sender)->EmitMotionFinished ();
-}
-
-void
-multi_scale_image_invalidate_tile_layer (int level, int tilePositionX, int tilePositionY, int tileLayer, void *userdata)
-{
-	MultiScaleImage *msi = (MultiScaleImage *)userdata;
-	msi->InvalidateTileLayer (level, tilePositionX, tilePositionY, tileLayer);
 }
 
 void
@@ -748,7 +681,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 	if (source->GetImageWidth () < 0 && !is_collection) {
 		LOG_MSI ("nothing to render so far...\n");
 		if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
-			((DeepZoomImageTileSource*)source)->set_callbacks (multi_scale_image_handle_dz_parsed, multi_scale_image_handle_dz_failed, multi_scale_image_handle_dz_urisource_changed, this);
+			((DeepZoomImageTileSource*)source)->set_callbacks (multi_scale_image_handle_dz_parsed, multi_scale_image_emit_image_open_failed, multi_scale_image_on_source_property_changed, this);
 			((DeepZoomImageTileSource*)source)->Download ();
 		}
 		return;
@@ -984,7 +917,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			//if the subimage is unparsed, trigger the download
 			if (from_layer > dzits->GetMaxLevel () && !((DeepZoomImageTileSource *)sub_image->source)->IsDownloaded () ) {
-				((DeepZoomImageTileSource*)sub_image->source)->set_callbacks (multi_scale_subimage_handle_parsed, multi_scale_subimage_handle_failed, NULL, this);
+				((DeepZoomImageTileSource*)sub_image->source)->set_callbacks ((void(*)(MultiScaleImage*))uielement_invalidate, multi_scale_image_emit_image_failed, NULL, this);
 				((DeepZoomImageTileSource*)sub_image->source)->Download ();
 				break;
 			}
@@ -1219,7 +1152,7 @@ MultiScaleImage::OnSourcePropertyChanged ()
 	if (GetSource ()) {
 		if (GetSource ()->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
 			if ((newsource = GetValue (MultiScaleImage::SourceProperty)->AsDeepZoomImageTileSource ())) {
-				newsource->set_callbacks (multi_scale_image_handle_dz_parsed, multi_scale_image_handle_dz_failed, multi_scale_image_handle_dz_urisource_changed, this);
+				newsource->set_callbacks (multi_scale_image_handle_dz_parsed, multi_scale_image_emit_image_open_failed, multi_scale_image_on_source_property_changed, this);
 				newsource->Download ();
 			}
 		} else {
@@ -1357,7 +1290,7 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 {
 	if (!GetUseSprings ()) {
 		if (!pending_motion_completed) {
-			AddTickCall (motion_finished_delayed);
+			AddTickCall ((TickCallHandler)multi_scale_image_emit_motion_finished);
 			pending_motion_completed = true;
 		}
 		SetValue (MultiScaleImage::InternalViewportWidthProperty, Value (value));
@@ -1400,7 +1333,7 @@ MultiScaleImage::SetInternalViewportOrigin (Point* value)
 {
 	if (!GetUseSprings ()) {
 		if (!pending_motion_completed) {
-			AddTickCall (motion_finished_delayed);
+			AddTickCall ((TickCallHandler)multi_scale_image_emit_motion_finished);
 			pending_motion_completed = true;
 		}
 		SetValue (MultiScaleImage::InternalViewportOriginProperty, Value (*value));

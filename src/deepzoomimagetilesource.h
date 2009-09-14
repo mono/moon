@@ -5,7 +5,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -21,7 +21,7 @@
 #include "downloader.h"
 #include "uri.h"
 
-typedef void (*msi_cb) (void *userdata);
+typedef void (*msi_cb) (MultiScaleImage *msi);
 
 /* @Version=2,Namespace=System.Windows.Media */
 class DeepZoomImageTileSource : public MultiScaleTileSource {
@@ -29,7 +29,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	msi_cb parsed_callback;
 	msi_cb failed_callback;
 	msi_cb sourcechanged_callback;
-	void *cb_userdata;
+	MultiScaleImage *cb_userdata;
 
 	bool downloaded;
 	bool parsed;
@@ -73,7 +73,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 
 	void XmlWrite (char* buffer, gint32 offset, gint32 n);
 
-	void set_callbacks (msi_cb parsed, msi_cb failed, msi_cb source_changed, void *userdata)
+	void set_callbacks (msi_cb parsed, msi_cb failed, msi_cb source_changed, MultiScaleImage *userdata)
 	{
 		parsed_callback = parsed;
 		failed_callback = failed;

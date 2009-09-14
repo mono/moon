@@ -5,7 +5,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  */
@@ -84,8 +84,11 @@ class MultiScaleImage : public MediaBase {
 
  public:
 	void EmitImageOpenSucceeded ();
+	/* @GenerateCBinding */
 	void EmitMotionFinished ();
+	/* @GenerateCBinding */
 	void EmitImageFailed ();
+	/* @GenerateCBinding */
 	void EmitImageOpenFailed ();
 	void FadeFinished ();
 	void ZoomFinished ();
@@ -184,11 +187,13 @@ class MultiScaleImage : public MediaBase {
 
 	BitmapImageContext *GetFreeBitmapImageContext ();
 	void DownloadTile (BitmapImageContext *ctx, Uri *tile, void *user_data);
+	/* @GenerateCBinding */
 	void HandleDzParsed ();
 
+	/* @GenerateCBinding */
 	void OnSourcePropertyChanged ();
 
-
+	/* @GenerateCBinding */
 	void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer);
 };
 

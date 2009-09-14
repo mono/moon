@@ -35,11 +35,11 @@ void
 MultiScaleTileSource::InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
 {
 	if (invalidate_cb)
-		invalidate_cb (level, tilePositionX, tilePositionY, tileLayer, invalidate_data);
+		invalidate_cb (invalidate_data, level, tilePositionX, tilePositionY, tileLayer);
 }
 
 void
-MultiScaleTileSource::set_invalidate_tile_layer_func (invalidate_tile_layer_func func, void *user_data)
+MultiScaleTileSource::set_invalidate_tile_layer_func (invalidate_tile_layer_func func, MultiScaleImage *user_data)
 {
 	invalidate_cb = func;
 	invalidate_data = user_data;

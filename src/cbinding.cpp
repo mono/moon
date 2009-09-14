@@ -3286,6 +3286,56 @@ multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point ele
 }
 
 
+void
+multi_scale_image_emit_image_failed (MultiScaleImage *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->EmitImageFailed ();
+}
+
+
+void
+multi_scale_image_emit_image_open_failed (MultiScaleImage *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->EmitImageOpenFailed ();
+}
+
+
+void
+multi_scale_image_emit_motion_finished (MultiScaleImage *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->EmitMotionFinished ();
+}
+
+
+void
+multi_scale_image_handle_dz_parsed (MultiScaleImage *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->HandleDzParsed ();
+}
+
+
+void
+multi_scale_image_invalidate_tile_layer (MultiScaleImage *instance, int level, int tilePositionX, int tilePositionY, int tileLayer)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->InvalidateTileLayer (level, tilePositionX, tilePositionY, tileLayer);
+}
+
+
 Point
 multi_scale_image_logical_to_element_point (MultiScaleImage *instance, Point logicalPoint)
 {
@@ -3300,6 +3350,16 @@ MultiScaleImage *
 multi_scale_image_new (void)
 {
 	return new MultiScaleImage ();
+}
+
+
+void
+multi_scale_image_on_source_property_changed (MultiScaleImage *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnSourcePropertyChanged ();
 }
 
 
@@ -5080,6 +5140,16 @@ uielement_get_visual_parent (UIElement *instance)
 		return NULL;
 	
 	return instance->GetVisualParent ();
+}
+
+
+void
+uielement_invalidate (UIElement *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Invalidate ();
 }
 
 

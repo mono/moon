@@ -1,3 +1,15 @@
+2009-09-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* deepzoomimagetilesource.h:
+	* multiscaleimage.h|cpp:
+	* tilesource.h|cpp:
+	* uielement.h: drop some manually written cbindings in favor of
+	generated ones.
+
+	* cbinding.h|cpp: regen
+
+	r: rolf
+
 2009-09-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* audio.cpp: It should be safe to delete audio sources on any

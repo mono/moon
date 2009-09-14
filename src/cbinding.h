@@ -2047,11 +2047,23 @@ MouseWheelEventArgs *mouse_wheel_event_args_new (void);
 /* @GeneratePInvoke */
 Point multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point elementPoint);
 
+void multi_scale_image_emit_image_failed (MultiScaleImage *instance);
+
+void multi_scale_image_emit_image_open_failed (MultiScaleImage *instance);
+
+void multi_scale_image_emit_motion_finished (MultiScaleImage *instance);
+
+void multi_scale_image_handle_dz_parsed (MultiScaleImage *instance);
+
+void multi_scale_image_invalidate_tile_layer (MultiScaleImage *instance, int level, int tilePositionX, int tilePositionY, int tileLayer);
+
 /* @GeneratePInvoke */
 Point multi_scale_image_logical_to_element_point (MultiScaleImage *instance, Point logicalPoint);
 
 /* @GeneratePInvoke */
 MultiScaleImage *multi_scale_image_new (void);
+
+void multi_scale_image_on_source_property_changed (MultiScaleImage *instance);
 
 /* @GeneratePInvoke */
 void multi_scale_image_zoom_about_logical_point (MultiScaleImage *instance, double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
@@ -2824,6 +2836,8 @@ GeneralTransform *uielement_get_transform_to_uielement_with_error (UIElement *in
 
 /* @GeneratePInvoke */
 UIElement *uielement_get_visual_parent (UIElement *instance);
+
+void uielement_invalidate (UIElement *instance);
 
 /* @GeneratePInvoke */
 void uielement_invalidate_arrange (UIElement *instance);
