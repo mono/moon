@@ -540,24 +540,6 @@ class XamlElementInstance : public List::Node {
 
 		g_hash_table_insert (set_properties, (void *) name, GINT_TO_POINTER (TRUE));
 	}
-
-	void ClearSetProperties ()
-	{
-		if (!set_properties)
-			return;
-
-#if GLIB_CHECK_VERSION(2,12,0)
-		if (glib_check_version (2,12,0))
-			g_hash_table_remove_all (set_properties);
-		else
-#endif
-		{
-			// this will cause the hash table to be recreated the
-			// next time a property is set.
-			g_hash_table_destroy (set_properties);
-			set_properties = NULL;
-		}
-	}
 };
 
 void 
@@ -2901,46 +2883,6 @@ more_points_available (char **in)
 	return (g_ascii_isdigit (*inptr) || *inptr == '.' || *inptr == '-' || *inptr == '+');
 }
 
-Point *
-get_point_array (char *in, GSList *pl, int *count, bool relative, Point *cp, Point *last)
-{
-	int c = *count;
-
-	while (more_points_available (&in)) {
-		Point *n = new Point ();
-		
-		if (!get_point (n, &in)) {
-			delete n;
-			break;
-		}
-		
-		advance (&in);
-		
-		if (relative) make_relative (cp, n);
-
-		pl = g_slist_append (pl, n);
-		c++;
-	}
-
-	Point *t;
-	Point *pts = new Point [c];
-	for (int i = 0; i < c; i++) {
-		t = (Point *) pl->data;
-		pts [i].x = t->x;
-		pts [i].y = t->y;
-
-		// locally allocated points needs to be deleted
-		if (i >= *count)
-			delete t;
-		pl = pl->next;
-	}
-
-	last = &pts [c - 1];
-	*count = c;
-
-	return pts;
-}
-
 Geometry *
 geometry_from_str (const char *str)
 {
@@ -3897,47 +3839,6 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 
 	g_free (s);
 	return true;
-}
-
-void
-convert_value_type (Type::Kind desired_kind, const char *prop_name, Value **value)
-{
-	Value *v = *value;
-
-	if (desired_kind != Type::STRING && v->GetKind () == Type::STRING) {
-		if (value_from_str (desired_kind, prop_name, v->AsString (), value)) {
-			delete v;
-			return;
-		}
-		*value = v;
-	}
-
-	if (desired_kind == Type::DOUBLE) {
-		switch (v->GetKind ()) {
-		case Type::INT32:
-			*value = new Value ((double) v->AsInt32 ());
-			delete v;
-			break;
-		case Type::INT64:
-			*value = new Value ((double) v->AsInt64 ());
-			delete v;
-			break;
-		case Type::UINT32:
-			*value = new Value ((double) v->AsUInt32 ());
-			delete v;
-			break;
-		case Type::UINT64:
-			*value = new Value ((double) v->AsUInt64 ());
-			delete v;
-			break;
-		default:
-			break;
-		}
-	}
-
-	//
-	// To be continued
-	//
 }
 
 bool
