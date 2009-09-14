@@ -38,6 +38,20 @@ enum TreeColumns {
 static void reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store,
 					       GtkTreeIter *node, bool node_is_self);
 
+struct AddNamescopeItemData {
+	GtkTreeStore *store;
+	GtkTreeIter *node;
+
+	AddNamescopeItemData (GtkTreeStore *store, GtkTreeIter *node)
+	{
+		this->store = store;
+		this->node = node;
+	}
+};
+
+static void
+add_namescope_item (gpointer key, gpointer value, gpointer user_data);
+
 static char *
 timespan_to_str (TimeSpan ts)
 {
@@ -311,32 +325,37 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 
 		GHashTable *names = scope->GetNames ();
 		if (names && g_hash_table_size (names) > 0) {
-			GtkTreeIter elements_iter;
-
-			GHashTableIter table_iter;
-			gpointer key, value;
-
-			g_hash_table_iter_init (&table_iter, names);
-			while (g_hash_table_iter_next (&table_iter, &key, &value)) {
-				char *name = (char *) key;
-				DependencyObject *dob = (DependencyObject *) value;
-				
-				char *markup = g_strdup_printf (" <b>%s</b>", name);
-
-				gtk_tree_store_append (store, &elements_iter, node);
-
-				gtk_tree_store_set (store, &elements_iter,
-						COL_NAME, markup,
-						COL_TYPE_NAME, dob->GetType ()->GetName (),
-						COL_VALUE, "",
-						COL_ELEMENT_PTR, dob,
-						-1);
-
-				g_free (markup);
-			}
+			
+			AddNamescopeItemData *anid = new AddNamescopeItemData (store, node);
+			
+			g_hash_table_foreach (names, add_namescope_item, anid);
+			delete anid;
 		}
 	}
 
+}
+
+static void
+add_namescope_item (gpointer key, gpointer value, gpointer user_data)
+{
+	AddNamescopeItemData *anid = (AddNamescopeItemData *) user_data;
+	GtkTreeStore *store = (GtkTreeStore *) user_data;
+	char *name = (char *) key;
+	DependencyObject *dob = (DependencyObject *) value;
+
+	GtkTreeIter elements_iter;
+	gtk_tree_store_append (anid->store, &elements_iter, anid->node);
+	
+	char *markup = g_strdup_printf (" <b>%s</b>", name);
+
+	gtk_tree_store_set (anid->store, &elements_iter,
+			COL_NAME, markup,
+			COL_TYPE_NAME, dob->GetType ()->GetName (),
+			COL_VALUE, "",
+			COL_ELEMENT_PTR, dob,
+			-1);
+
+	g_free (markup);
 }
 
 static void
