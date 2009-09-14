@@ -1,3 +1,8 @@
+2009-09-14  Chris Toshok  <toshok@ximian.com>
+
+	* ImageBrush.cs (InvokeImageFailed): we need to create the
+	exceptionroutedeventargs from the calldata.
+
 2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* DeepZoomImageTileSource.cs: use the same code path as the native

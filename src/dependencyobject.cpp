@@ -1233,11 +1233,12 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 		}
 		
 		if (!Type::IsAssignableFrom (property->GetPropertyType(), value->GetKind())) {
-			MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
-					   g_strdup_printf ("DependencyObject::SetValue, value cannot be assigned to the "
+			char *error_msg = g_strdup_printf ("DependencyObject::SetValue, value cannot be assigned to the "
 							    "property %s::%s (property has type '%s', value has type '%s')",
 							    GetTypeName (), property->GetName(), Type::Find (property->GetPropertyType())->GetName (),
-							    Type::Find (value->GetKind ())->GetName ()));
+							   Type::Find (value->GetKind ())->GetName ());
+			MoonError::FillIn (error, MoonError::ARGUMENT, 1001, error_msg);
+			g_free (error_msg);
 			return false;
 		}
 	} else {
@@ -1246,9 +1247,10 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 		// built-in types for null Types registered on the
 		// managed side has their own check there.
 		if (!CanPropertyBeSetToNull (property)) {
-			MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
-					   g_strdup_printf ("Can not set a non-nullable scalar type to NULL (property: %s)",
-							    property->GetName()));
+			char *error_msg = g_strdup_printf ("Can not set a non-nullable scalar type to NULL (property: %s)",
+							   property->GetName());
+			MoonError::FillIn (error, MoonError::ARGUMENT, 1001, error_msg);
+			g_free (error_msg);
 			return false;
 		}
 	}
@@ -1314,7 +1316,9 @@ bool
 DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (is_frozen) {
-		MoonError::FillIn (error, MoonError::UNAUTHORIZED_ACCESS, g_strdup_printf ("Cannot set value for property '%s' on frozen DependencyObject '%s'", property->GetName(), GetTypeName()));
+		char *error_msg = g_strdup_printf ("Cannot set value for property '%s' on frozen DependencyObject '%s'", property->GetName(), GetTypeName());
+		MoonError::FillIn (error, MoonError::UNAUTHORIZED_ACCESS, error_msg);
+		g_free (error_msg);
 		return false;
 	}
 	
@@ -1430,9 +1434,9 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 			DependencyObject *o = to_ns->FindName (n);
 			if (o) {
 				if (o != this) {
-					MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
-							   g_strdup_printf ("The name already exists in the tree: %s.",
-								    n));
+					char *error_msg = g_strdup_printf ("The name already exists in the tree: %s.", n);
+					MoonError::FillIn (error, MoonError::ARGUMENT, 2028, error_msg);
+					g_free (error_msg);
 					return;
 				}
 			}
@@ -1527,7 +1531,9 @@ DependencyObject::ReadLocalValueWithError (DependencyProperty *property, MoonErr
 {
 	if (!HasProperty (Type::INVALID, property, true)) {
 		Type *pt = Type::Find (property->GetOwnerType ());
-		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ()));
+		char *error_msg = g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ());
+		MoonError::FillIn (error, MoonError::EXCEPTION, error_msg);
+		g_free (error_msg);
 		return NULL;
 	}
 	return ReadLocalValue (property);
@@ -1538,7 +1544,9 @@ DependencyObject::GetValueWithError (Type::Kind whatami, DependencyProperty *pro
 {
 	if (!HasProperty (whatami, property, true)) {
 		Type *pt = Type::Find (property->GetOwnerType ());
-		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ()));
+		char *error_msg = g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ());
+		MoonError::FillIn (error, MoonError::EXCEPTION, error_msg);
+		g_free (error_msg);
 		return NULL;
 	}
 	return GetValue (property);
@@ -1603,7 +1611,9 @@ DependencyObject::GetValueNoDefaultWithError (DependencyProperty *property, Moon
 {
 	if (!HasProperty (Type::INVALID, property, true)) {
 		Type *pt = Type::Find (property->GetOwnerType ());
-		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ()));
+		char *error_msg = g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ());
+		MoonError::FillIn (error, MoonError::EXCEPTION, error_msg);
+		g_free (error_msg);
 		return NULL;
 	}
 	return GetValueNoDefault (property);	
@@ -2412,7 +2422,8 @@ DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 							DependencyObject *existing_obj = parent_scope->FindName (name);
 							if (existing_obj != this) {
 								if (existing_obj) {
-									MoonError::FillIn (error, MoonError::ARGUMENT, g_strdup_printf ("name `%s' is already registered in new parent namescope.", name));
+									char *error_msg = g_strdup_printf ("name `%s' is already registered in new parent namescope.", name);
+									MoonError::FillIn (error, MoonError::ARGUMENT, error_msg);
 									return;
 								}
 								parent_scope->RegisterName (name, this);

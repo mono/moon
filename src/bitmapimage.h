@@ -26,7 +26,7 @@ class BitmapImage : public BitmapSource {
  private:
 	Downloader *downloader;
 	GdkPixbufLoader *loader;
-	GError *error;
+	GError *gerror;
 	char *part_name;
 	Cancellable *get_res_aborter;
 	DownloaderAccessPolicy policy;

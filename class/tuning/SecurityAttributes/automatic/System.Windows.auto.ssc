@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 477 methods
+# 478 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
@@ -15,6 +15,7 @@
 +SSC-M: System.Void Mono.MoonError::.ctor(System.Exception)
 +SSC-M: System.String Mono.MoonError::get_Message()
 +SSC-M: System.Void Mono.MoonError::Dispose()
++SSC-M: Mono.MoonError Mono.MoonError::FromIntPtr(System.IntPtr)
 +SSC-M: System.Object Mono.MoonlightTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
 +SSC-M: System.Object Mono.MoonlightValueConverter::Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)

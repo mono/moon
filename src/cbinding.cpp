@@ -25,7 +25,6 @@
 #include "deployment.h"
 #include "downloader.h"
 #include "easing.h"
-#include "error.h"
 #include "eventargs.h"
 #include "frameworkelement.h"
 #include "geometry.h"
@@ -1916,6 +1915,17 @@ error_event_args_get_error_type (ErrorEventArgs *instance)
 		return (int) 0;
 	
 	return instance->GetErrorType ();
+}
+
+
+gpointer
+error_event_args_get_moon_error (ErrorEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (gpointer) 0;
+	
+	return instance->GetMoonError ();
 }
 
 

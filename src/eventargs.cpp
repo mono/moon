@@ -149,15 +149,6 @@ DownloadProgressEventArgs::GetProgress ()
 	return progress;
 }
 
-ExceptionRoutedEventArgs::ExceptionRoutedEventArgs ()
-	: RoutedEventArgs (Type::EXCEPTIONROUTEDEVENTARGS)
-{
-}
-
-ExceptionRoutedEventArgs::~ExceptionRoutedEventArgs ()
-{
-}
-
 RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
 	: EventArgs (Type::ROUTEDEVENTARGS)
 {
@@ -482,4 +473,78 @@ gunichar
 KeyEventArgs::GetUnicode ()
 {
 	return gdk_keyval_to_unicode (event->keyval);
+}
+
+
+//
+// ErrorEventArgs
+//
+ErrorEventArgs::ErrorEventArgs (Type::Kind kind, ErrorEventArgsType type, const MoonError error)
+{
+	Initialize (kind, type, error, 0, NULL);
+}
+
+ErrorEventArgs::ErrorEventArgs (ErrorEventArgsType type, MoonError error)
+{
+	Initialize (Type::ERROREVENTARGS, type, error, 0, NULL);
+}
+
+ErrorEventArgs::ErrorEventArgs (ErrorEventArgsType type, MoonError error, int extended_error_code, const char *extended_msg)
+{
+	Initialize (Type::ERROREVENTARGS, type, error, extended_error_code, extended_msg);
+}
+
+void
+ErrorEventArgs::Initialize (Type::Kind kind, ErrorEventArgsType type, const MoonError &error, int extended_error_code, const char *extended_msg)
+{
+	SetObjectType (kind);
+	error_type = type;
+	this->error = new MoonError (error);
+	extended_message = g_strdup (extended_msg);
+	extended_code = extended_error_code;
+}
+
+ErrorEventArgs::~ErrorEventArgs ()
+{
+	delete error;
+	g_free (extended_message);
+}
+
+
+//
+// ImageErrorEventArgs
+//
+
+ImageErrorEventArgs::ImageErrorEventArgs (MoonError error)
+  : ErrorEventArgs (Type::IMAGEERROREVENTARGS, ImageError, error)
+{
+}
+
+ImageErrorEventArgs::~ImageErrorEventArgs ()
+{
+}
+
+
+//
+//
+// ParserErrorEventArgs
+//
+
+ParserErrorEventArgs::ParserErrorEventArgs (const char *msg, const char *file,
+					    int line, int column, int error_code, 
+					    const char *element, const char *attribute)
+  : ErrorEventArgs (Type::PARSERERROREVENTARGS, ParserError, MoonError (MoonError::XAML_PARSE_EXCEPTION, error_code, msg))
+{
+	xml_attribute = g_strdup (attribute);
+	xml_element = g_strdup (element);
+	xaml_file = g_strdup (file);
+	char_position = column;
+	line_number = line;
+}
+
+ParserErrorEventArgs::~ParserErrorEventArgs ()
+{
+	g_free (xaml_file);
+	g_free (xml_element);
+	g_free (xml_attribute);
 }

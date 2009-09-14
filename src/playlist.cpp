@@ -368,7 +368,7 @@ PlaylistEntry::CurrentStateChangedHandler (Media *media, EventArgs *args)
 void
 PlaylistEntry::MediaErrorHandler (Media *media, ErrorEventArgs *args)
 {
-	LOG_PLAYLIST ("PlaylistEntry::MediaErrorHandler (%p, %p): %s '%s'\n", media, args, GetFullSourceName (), args ? args->error_message : "?");
+	LOG_PLAYLIST ("PlaylistEntry::MediaErrorHandler (%p, %p): %s '%s'\n", media, args, GetFullSourceName (), args ? args->GetErrorMessage() : "?");
 	
 	g_return_if_fail (parent != NULL);
 	
@@ -1109,7 +1109,7 @@ Playlist::OnEntryFailed (ErrorEventArgs *args)
 	bool fatal = true;
 	PlaylistRoot *root = GetRoot ();
 	
-	LOG_PLAYLIST ("Playlist::OnEntryFailed () extended_code: %i is_single_file: %i\n", args ? args->extended_code : 0, is_single_file);
+	LOG_PLAYLIST ("Playlist::OnEntryFailed () extended_code: %i is_single_file: %i\n", args ? args->GetExtendedCode() : 0, is_single_file);
 	
 	g_return_if_fail (root != NULL);
 	
@@ -1122,7 +1122,7 @@ Playlist::OnEntryFailed (ErrorEventArgs *args)
 		// check if we're in a playlist
 		if (GetMedia () != NULL && GetMedia ()->GetDemuxer () != NULL && GetMedia ()->GetDemuxer ()->GetObjectType () == Type::ASXDEMUXER) {
 			// we're a playlist
-			if (args->extended_code == MEDIA_UNKNOWN_CODEC) {
+			if (args->GetExtendedCode() == MEDIA_UNKNOWN_CODEC) {
 				fatal = false;
 			} else {
 				fatal = true;
@@ -1253,7 +1253,8 @@ Playlist::ReplaceCurrentEntry (Playlist *pl)
 		e = e->GetParent ();
 		
 		if (counter > 5) {
-			ErrorEventArgs *args = new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR");
+			ErrorEventArgs *args = new ErrorEventArgs (MediaError,
+								   MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR"));
 			OnEntryFailed (args);
 			args->unref ();
 			return false;
@@ -1722,13 +1723,14 @@ duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 	p = str;
 
 	if (!g_ascii_isdigit (*p)) {
-		parser->ParsingError (new ErrorEventArgs (MediaError, 2210, "AG_E_INVALID_ARGUMENT"));
+		parser->ParsingError (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 2210, "AG_E_INVALID_ARGUMENT")));
 		return false;
 	}
 
 	for (int i = 0; i < 3; i++) {
 		if (!parse_int (&p, end, &values [i])) {
-			parser->ParsingError (new ErrorEventArgs (MediaError, 2210, "AG_E_INVALID_ARGUMENT"));
+			parser->ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 2210, "AG_E_INVALID_ARGUMENT")));
 			return false;
 		}
 		counter++;
@@ -1745,7 +1747,7 @@ duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 			digits--;
 		}
 		if (counter == 3 && *p != 0 && !g_ascii_isdigit (*p)) {
-			parser->ParsingError (new ErrorEventArgs (MediaError, 2210, "AG_E_INVALID_ARGUMENT"));
+			parser->ParsingError (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 2210, "AG_E_INVALID_ARGUMENT")));
 			return false;
 		}
 	}
@@ -1764,7 +1766,7 @@ duration_from_asx_str (PlaylistParser *parser, const char *str, Duration **res)
 		hh = values [0];
 		break;
 	default:
-		parser->ParsingError (new ErrorEventArgs (MediaError, 2210, "AG_E_INVALID_ARGUMENT"));
+		parser->ParsingError (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 2210, "AG_E_INVALID_ARGUMENT")));
 		return false;		
 	}
 
@@ -1794,12 +1796,12 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 	switch (kind) {
 	case PlaylistKind::Abstract:
 		if (attrs != NULL && attrs [0] != NULL)
-			ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+			ParsingError (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 		break;
 	case PlaylistKind::Asx:
 		// Here the kind stack should be: Root+Asx
 		if (kind_stack->Length () != 2 || !AssertParentKind (PlaylistKind::Root)) {
-			ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
+			ParsingError (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 3008, "ASX parse error")));
 			return;
 		}
 
@@ -1812,24 +1814,30 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 				} else if (str_match (attrs [i+1], "3.0")) {
 					playlist_version = 3;
 				} else {
-					ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
+					ParsingError (new ErrorEventArgs (MediaError,
+									  MoonError (MoonError::EXCEPTION, 3008, "ASX parse error")));
 				}
 			} else if (str_match (attrs [i], "BANNERBAR")) {
-				ParsingError (new ErrorEventArgs (MediaError, 3007, "Unsupported ASX attribute"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3007, "Unsupported ASX attribute")));
 			} else if (str_match (attrs [i], "PREVIEWMODE")) {
-				ParsingError (new ErrorEventArgs (MediaError, 3007, "Unsupported ASX attribute"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3007, "Unsupported ASX attribute")));
 			} else {
-				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 			}
 		}
 		break;
 	case PlaylistKind::Author:
 		if (attrs != NULL && attrs [0] != NULL)
-			ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+			ParsingError (new ErrorEventArgs (MediaError,
+							  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 		break;
 	case PlaylistKind::Banner:
 		if (attrs != NULL && attrs [0] != NULL)
-			ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+			ParsingError (new ErrorEventArgs (MediaError,
+							  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 		break;
 	case PlaylistKind::Base:
 		if (!AssertParentKind (PlaylistKind::Asx | PlaylistKind::Entry))
@@ -1856,19 +1864,22 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 						GetCurrentContent ()->SetBase (uri);
 					} else {
 						delete uri;
-						ParsingError (new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR"));
+						ParsingError (new ErrorEventArgs (MediaError,
+										  MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR")));
 					}
 					uri = NULL;
 				}
 			} else {
-				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 				break;
 			}
 		}
 		break;
 	case PlaylistKind::Copyright:
 		if (attrs != NULL && attrs [0] != NULL)
-			ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+			ParsingError (new ErrorEventArgs (MediaError,
+							  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 		break;
 	case PlaylistKind::Duration: {
 		Duration *dur;
@@ -1881,7 +1892,8 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 					}
 				}
 			} else {
-				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 				break;
 			}
 		}
@@ -1897,14 +1909,17 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 				} else if (str_match (attrs [i+1], "NO")) {
 					client_skip = false;
 				} else {
-					ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
+					ParsingError (new ErrorEventArgs (MediaError,
+									  MoonError (MoonError::EXCEPTION, 3008, "ASX parse error")));
 					break;
 				}
 			} else if (str_match (attrs [i], "SKIPIFREF")) {
-				ParsingError (new ErrorEventArgs (MediaError, 3007, "Unsupported ASX attribute"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3007, "Unsupported ASX attribute")));
 				break;
 			} else {
-				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 				break;
 			}
 		}
@@ -1924,7 +1939,8 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 			//} else if (str_match (attrs [i], "CLIENTBIND")) {
 			//	// TODO: What do we do with this value?
 			} else {
-				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 				break;
 			}
 		}
@@ -1934,7 +1950,8 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 			if (!uri->Parse (href)) {
 				delete uri;
 				uri = NULL;
-				ParsingError (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 1001, "AG_E_UNKNOWN_ERROR")));
 			}
 		}
 
@@ -1948,7 +1965,8 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 	}
 	case PlaylistKind::LogUrl:
 		if (attrs != NULL && attrs [0] != NULL)
-			ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+			ParsingError (new ErrorEventArgs (MediaError,
+							  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 		break;
 	case PlaylistKind::MoreInfo:
 		for (int i = 0; attrs [i] != NULL; i += 2) {
@@ -1959,7 +1977,8 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 				if (GetCurrentEntry () != NULL)
 					GetCurrentEntry ()->SetInfoTarget (attrs [i+1]);
 			} else {
-				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 				break;
 			}
 		}
@@ -1975,7 +1994,8 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 					}
 				}
 			} else {
-				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 				break;
 			}
 		}
@@ -1991,12 +2011,14 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 						GetCurrentEntry ()->SetSourceName (uri);
 					} else {
 						delete uri;
-						ParsingError (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
+						ParsingError (new ErrorEventArgs (MediaError,
+										  MoonError (MoonError::EXCEPTION, 1001, "AG_E_UNKNOWN_ERROR")));
 					}
 					uri = NULL;
 				}
 			} else {
-				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 				break;
 			}
 		}
@@ -2012,7 +2034,8 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 			} else if (str_match (attrs [i], "value")) {
 				value = attrs [i + 1];
 			} else {
-				ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 				break;
 			}
 		}
@@ -2030,19 +2053,22 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 	}
 	case PlaylistKind::Title:
 		if (attrs != NULL && attrs [0] != NULL)
-			ParsingError (new ErrorEventArgs (MediaError, 3005, "Invalid ASX attribute"));
+			ParsingError (new ErrorEventArgs (MediaError,
+							  MoonError (MoonError::EXCEPTION, 3005, "Invalid ASX attribute")));
 		break;
 	case PlaylistKind::StartMarker:
 	case PlaylistKind::EndMarker:
 	case PlaylistKind::Repeat:
 	case PlaylistKind::Event:
-		ParsingError (new ErrorEventArgs (MediaError, 3006, "Unsupported ASX element"));
+		ParsingError (new ErrorEventArgs (MediaError,
+						  MoonError (MoonError::EXCEPTION, 3006, "Unsupported ASX element")));
 		break;
 	case PlaylistKind::Root:
 	case PlaylistKind::Unknown:
 	default:
 		LOG_PLAYLIST ("PlaylistParser::OnStartElement ('%s', %p): Unknown kind: %d\n", name, attrs, kind);
-		ParsingError (new ErrorEventArgs (MediaError, 3004, "Invalid ASX element"));
+		ParsingError (new ErrorEventArgs (MediaError,
+						  MoonError (MoonError::EXCEPTION, 3004, "Invalid ASX element")));
 		break;
 	}
 }
@@ -2091,7 +2117,8 @@ PlaylistParser::OnASXEndElement (const char *name)
 		if (!AssertParentKind (PlaylistKind::Asx))
 			break;
 		if (!is_all_whitespace (current_text)) {
-			ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
+			ParsingError (new ErrorEventArgs (MediaError,
+							  MoonError (MoonError::EXCEPTION, 3008, "ASX parse error")));
 		}
 		break;
 	case PlaylistKind::EntryRef:
@@ -2102,7 +2129,8 @@ PlaylistParser::OnASXEndElement (const char *name)
 		if (!AssertParentKind (PlaylistKind::Entry | PlaylistKind::Ref))
 			break;
 		if (!is_all_whitespace (current_text)) {
-			ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
+			ParsingError (new ErrorEventArgs (MediaError,
+							  MoonError (MoonError::EXCEPTION, 3008, "ASX parse error")));
 		}
 		break;
 	case PlaylistKind::Title:
@@ -2121,26 +2149,30 @@ PlaylistParser::OnASXEndElement (const char *name)
 		if (!AssertParentKind (PlaylistKind::Entry))
 			break;
 		if (!is_all_whitespace (current_text)) {
-			ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
+			ParsingError (new ErrorEventArgs (MediaError,
+							  MoonError (MoonError::EXCEPTION, 3008, "ASX parse error")));
 		}
 		break;
 	case PlaylistKind::MoreInfo:
 		if (!AssertParentKind (PlaylistKind::Asx | PlaylistKind::Entry))
 			break;
 		if (!is_all_whitespace (current_text)) {
-			ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
+			ParsingError (new ErrorEventArgs (MediaError,
+							  MoonError (MoonError::EXCEPTION, 3008, "ASX parse error")));
 		}
 		break;
 	case PlaylistKind::Param:
 		if (!AssertParentKind (PlaylistKind::Asx | PlaylistKind::Entry))
 			break;
 		if (!is_all_whitespace (current_text)) {
-			ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
+			ParsingError (new ErrorEventArgs (MediaError,
+							  MoonError (MoonError::EXCEPTION, 3008, "ASX parse error")));
 		}
 		break;
 	default:
 		LOG_PLAYLIST ("PlaylistParser::OnEndElement ('%s'): Unknown kind %d.\n", name, kind);
-		ParsingError (new ErrorEventArgs (MediaError, 3004, "Invalid ASX element"));
+		ParsingError (new ErrorEventArgs (MediaError,
+						  MoonError (MoonError::EXCEPTION, 3004, "Invalid ASX element")));
 		break;
 	}
 	
@@ -2438,14 +2470,17 @@ PlaylistParser::ParseASX3 ()
 			
 			switch (XML_GetErrorCode (internal->parser)) {
 			case XML_ERROR_NO_ELEMENTS:
-				ParsingError (new ErrorEventArgs (MediaError, 7000, "unexpected end of input"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 7000, "unexpected end of input")));
 				return false;
 			case XML_ERROR_DUPLICATE_ATTRIBUTE:
-				ParsingError (new ErrorEventArgs (MediaError, 7031, "wfc: unique attribute spec"));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 7031, "wfc: unique attribute spec")));
 				return false;
 			case XML_ERROR_INVALID_TOKEN:
 				// save error args in case the error fixing fails (in which case we want this error, not the error the error fixing caused)
-				error_args = new ErrorEventArgs (MediaError, 7007, "quote expected");
+				error_args = new ErrorEventArgs (MediaError,
+								 MoonError (MoonError::EXCEPTION, 7007, "quote expected"));
 				if (TryFixError ((gint8 *) buffer, bytes_read))
 					return true;
 				// fall through
@@ -2453,7 +2488,8 @@ PlaylistParser::ParseASX3 ()
 				char *msg = g_strdup_printf ("%s %d (%d, %d)", 
 					XML_ErrorString (XML_GetErrorCode (internal->parser)), (int) XML_GetErrorCode (internal->parser),
 					(int) XML_GetCurrentLineNumber (internal->parser), (int) XML_GetCurrentColumnNumber (internal->parser));
-				ParsingError (new ErrorEventArgs (MediaError, 3000, msg));
+				ParsingError (new ErrorEventArgs (MediaError,
+								  MoonError (MoonError::EXCEPTION, 3000, msg)));
 				g_free (msg);
 				return false;
 			}
@@ -2525,7 +2561,8 @@ PlaylistParser::AssertParentKind (int kind)
 	if (GetParentKind () & kind)
 		return true;
 
-	ParsingError (new ErrorEventArgs (MediaError, 3008, "ASX parse error"));
+	ParsingError (new ErrorEventArgs (MediaError,
+					  MoonError (MoonError::EXCEPTION, 3008, "ASX parse error")));
 	
 	return false;
 }
@@ -2533,7 +2570,7 @@ PlaylistParser::AssertParentKind (int kind)
 void
 PlaylistParser::ParsingError (ErrorEventArgs *args)
 {
-	LOG_PLAYLIST ("PlaylistParser::ParsingError (%s)\n", args->error_message);
+	LOG_PLAYLIST ("PlaylistParser::ParsingError (%s)\n", args->GetErrorMessage());
 	
 	XML_StopParser (internal->parser, false);
 	if (error_args) {

@@ -128,7 +128,6 @@ class EventArgs;
 class EventListenerProxy;
 class EventObject;
 class EventTrigger;
-class ExceptionRoutedEventArgs;
 class ExponentialEase;
 class ExtensionPart;
 class ExternalDecoder;
@@ -496,7 +495,6 @@ public:
 	EventListenerProxy*                      AsEventListenerProxy (Types *types = NULL) { checked_get_subclass (Type::EVENTLISTENERPROXY, EventListenerProxy) }
 	EventObject*                             AsEventObject (Types *types = NULL) { checked_get_subclass (Type::EVENTOBJECT, EventObject) }
 	EventTrigger*                            AsEventTrigger (Types *types = NULL) { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
-	ExceptionRoutedEventArgs*                AsExceptionRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::EXCEPTIONROUTEDEVENTARGS, ExceptionRoutedEventArgs) }
 	ExponentialEase*                         AsExponentialEase (Types *types = NULL) { checked_get_subclass (Type::EXPONENTIALEASE, ExponentialEase) }
 	ExtensionPart*                           AsExtensionPart (Types *types = NULL) { checked_get_subclass (Type::EXTENSIONPART, ExtensionPart) }
 	ExternalDecoder*                         AsExternalDecoder (Types *types = NULL) { checked_get_subclass (Type::EXTERNALDECODER, ExternalDecoder) }

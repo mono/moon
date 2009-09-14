@@ -308,7 +308,7 @@ class ImageBrush : public TileBrush {
 private:
 	void DownloadProgress ();
 	void ImageOpened ();
-	void ImageFailed ();
+	void ImageFailed (ImageErrorEventArgs *args);
 	void SourcePixelDataChanged ();
 
 	static void download_progress (EventObject *sender, EventArgs *calldata, gpointer closure);

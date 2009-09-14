@@ -940,6 +940,10 @@ namespace Mono {
 		public extern static int error_event_args_get_error_type (IntPtr instance);
 
 		[DllImport ("moon")]
+		// gpointer error_event_args_get_moon_error (ErrorEventArgs *instance);
+		public extern static IntPtr error_event_args_get_moon_error (IntPtr instance);
+
+		[DllImport ("moon")]
 		// int event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
 		public extern static int event_object_add_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data, IntPtr data_dtor);
 

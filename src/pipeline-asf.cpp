@@ -876,7 +876,7 @@ MmsSource::DownloadFailedHandler (Downloader *dl, EventArgs *args)
 	VERIFY_MAIN_THREAD;
 	
 	g_return_if_fail (media != NULL);
-	eea = new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR");
+	eea = new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR"));
 	media->RetryHttp (eea);
 	media->unref ();
 	eea->unref ();

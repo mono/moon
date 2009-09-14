@@ -50,8 +50,10 @@ namespace System.Windows.Media {
 		private void InvokeImageFailed (IntPtr calldata)
 		{
 			EventHandler<ExceptionRoutedEventArgs> h = (EventHandler<ExceptionRoutedEventArgs>) EventList [ImageFailedEvent];
-			if (h != null)
-				h (this, new ExceptionRoutedEventArgs (calldata));
+			if (h != null) {
+				// note that we get an ImageErrorEventArgs here in the calldata, not an ExceptionRoutedEventArgs.
+				h (this, ExceptionRoutedEventArgs.FromErrorEventArgs (calldata));
+			}
 		}
 	}
 }

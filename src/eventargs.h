@@ -18,6 +18,7 @@
 #include "dependencyobject.h"
 #include "keyboard.h"
 #include "enums.h"
+#include "error.h"
 
 class StylusInfo;
 class StylusPointCollection;
@@ -180,16 +181,6 @@ private:
 };
 
 /* @Namespace=None */
-class ExceptionRoutedEventArgs : public RoutedEventArgs {
- protected:
-	virtual ~ExceptionRoutedEventArgs ();
-	
- public:
-	ExceptionRoutedEventArgs ();
-};
-
-
-/* @Namespace=None */
 class KeyEventArgs : public RoutedEventArgs {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
@@ -263,6 +254,70 @@ protected:
 	
 private:
 	GdkEvent *event;
+};
+
+
+/* @Namespace=None,ManagedDependencyProperties=None */
+class ErrorEventArgs : public EventArgs  {
+private:
+	MoonError *error;
+	void Initialize (Type::Kind kind, ErrorEventArgsType type, const MoonError &error, int extended_error_code, const char *extended_msg);
+	int extended_code;
+	char *extended_message;
+	ErrorEventArgsType error_type;
+
+protected:
+	virtual ~ErrorEventArgs ();
+	ErrorEventArgs (Type::Kind kind, ErrorEventArgsType type, const MoonError error);
+	
+public:
+	ErrorEventArgs (ErrorEventArgsType type, MoonError error);
+	ErrorEventArgs (ErrorEventArgsType type, MoonError error, int extended_code, const char *extended_msg);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	gpointer GetMoonError () { return error; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetErrorMessage () { return error->message; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetErrorCode () { return error->code; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetErrorType () { return error_type; }
+
+	// To match SL behaviour we need to match SL error messages, which aren't all that helpful
+	// This is here to keep extra error information we have, 
+	// but don't want to report to the user.
+	// extended_code:
+	//  3 (MEDIA_UNKNOWN_CODEC): used by playlist to determine if we should raise a MediaFailed event or just continue to play the next entry.
+	int GetExtendedCode () { return extended_code; }
+	const char *GetExtendedMessage () { return extended_message; }
+};
+
+/* @Namespace=None,ManagedDependencyProperties=None */
+class ImageErrorEventArgs : public ErrorEventArgs {
+public:
+	ImageErrorEventArgs (MoonError error);
+
+protected:
+	virtual ~ImageErrorEventArgs ();
+
+};
+
+/* @Namespace=None,ManagedDependencyProperties=None */
+class ParserErrorEventArgs : public ErrorEventArgs {
+protected:
+	virtual ~ParserErrorEventArgs ();
+
+public:
+	ParserErrorEventArgs (const char *msg, const char *file,
+			      int line, int column, int error_code, 
+			      const char *element, const char *attribute);
+	
+	int char_position;
+	int line_number;
+	char *xaml_file;
+	char *xml_element;
+	char *xml_attribute;
 };
 
 #endif /* __EVENTARGS_H__ */

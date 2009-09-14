@@ -143,7 +143,7 @@ BitmapImage::BitmapImage ()
 	SetObjectType (Type::BITMAPIMAGE);
 	downloader = NULL;
 	loader = NULL;
-	error = NULL;
+	gerror = NULL;
 	part_name = NULL;
 	get_res_aborter = NULL;
 	policy = MediaPolicy;
@@ -306,6 +306,8 @@ BitmapImage::DownloaderProgressChanged ()
 void
 BitmapImage::DownloaderComplete ()
 {
+	MoonError moon_error;
+
 	if (downloader)
 		CleanupDownloader ();
 
@@ -317,7 +319,10 @@ BitmapImage::DownloaderComplete ()
 		if (filename == NULL) {
 			guchar *buffer = (guchar *)downloader->GetBuffer ();
 
-			if (buffer == NULL) goto failed;
+			if (buffer == NULL) {
+				MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, "downloader buffer was NULL");
+				goto failed;
+			}
 
 			PixbufWrite (buffer, 0, downloader->GetSize ());
 		} else {
@@ -326,8 +331,10 @@ BitmapImage::DownloaderComplete ()
 			ssize_t n;
 			int fd;
 
-			if ((fd = open (filename, O_RDONLY)) == -1)
+			if ((fd = open (filename, O_RDONLY)) == -1) {
+				MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, "failed to open file");
 				goto failed;
+			}
 	
 			do {
 				do {
@@ -339,11 +346,14 @@ BitmapImage::DownloaderComplete ()
 				PixbufWrite (b, offset, n);
 
 				offset += n;
-			} while (n > 0 && !error);
+			} while (n > 0 && !gerror);
 
 			close (fd);
 
-			if (error) goto failed;
+			if (gerror) {
+				MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, gerror->message);
+				goto failed;
+			}
 		}
 	}
 
@@ -363,25 +373,33 @@ failed:
 		gdk_pixbuf_loader_close (loader, NULL);
 	CleanupLoader ();
 
-	Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (moon_error));
 }
 
 
 void
 BitmapImage::PixmapComplete ()
 {
+	MoonError moon_error;
+
 	SetProgress (1.0);
 
 	if (!loader) goto failed;
 
-	gdk_pixbuf_loader_close (loader, error == NULL ? &error : NULL);
+	gdk_pixbuf_loader_close (loader, gerror == NULL ? &gerror : NULL);
 
-	if (error) goto failed;
+	if (gerror) {
+		MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, gerror->message);
+		goto failed;
+	}
 
 	{
 		GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
 		
-		if (pixbuf == NULL) goto failed;
+		if (pixbuf == NULL) {
+			MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, "failed to create image data");
+			goto failed;
+		}
 
 		SetPixelWidth (gdk_pixbuf_get_width (pixbuf));
 		SetPixelHeight (gdk_pixbuf_get_height (pixbuf));
@@ -398,23 +416,24 @@ BitmapImage::PixmapComplete ()
 
 		g_object_unref (loader);
 		loader = NULL;
+
+		Emit (ImageOpenedEvent, new RoutedEventArgs ());
+
+		return;
 	}
-
-	Emit (ImageOpenedEvent, new RoutedEventArgs ());
-
-	return;
 
 failed:
 	CleanupLoader ();
 
-	Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (moon_error));
 }
 
 void
 BitmapImage::DownloaderFailed ()
 {
 	Abort ();
-	Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "downloader failed")));
+
 }
 
 void
@@ -424,9 +443,9 @@ BitmapImage::CleanupLoader ()
 		g_object_unref (loader);
 		loader = NULL;
 	}
-	if (error) {
-		g_error_free (error);
-		error = NULL;
+	if (gerror) {
+		g_error_free (gerror);
+		gerror = NULL;
 	}
 }
 
@@ -443,7 +462,7 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 
 		else {
 			Abort ();
-			Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
+			Emit (ImageFailedEvent, new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "unsupported image type")));
 		}
 	} else {
 		loader = gdk_pixbuf_loader_new ();
@@ -457,8 +476,8 @@ BitmapImage::PixbufWrite (gpointer buffer, gint32 offset, gint32 n)
 	if (loader == NULL && offset == 0)
 		CreateLoader ((unsigned char *)buffer);
 
-	if (loader != NULL && error == NULL) {
-		gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), (const guchar *)buffer, n, &error);
+	if (loader != NULL && gerror == NULL) {
+		gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), (const guchar *)buffer, n, &gerror);
 	}
 }
 

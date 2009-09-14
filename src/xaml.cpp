@@ -2491,7 +2491,7 @@ XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_name
 		printf ("Could not parse element %s, attribute %s, error: %s\n",
 			error_args->xml_element,
 			error_args->xml_attribute,
-			error_args->error_message);
+			error_args->GetErrorMessage());
 	}
 	
 	if (p)
@@ -2510,10 +2510,8 @@ Value *
 XamlLoader::CreateFromFileWithError (const char *xaml_file, bool create_namescope, Type::Kind *element_type, MoonError *error)
 {
 	Value *res = CreateFromFile (xaml_file, create_namescope, element_type);
-	if (error_args && error_args->error_code != -1) {
-		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
-		MoonError::SetXamlPositionInfo (error, error_args->char_position, error_args->line_number);
-	}
+	if (error_args && error_args->GetErrorCode () != -1)
+		MoonError::FillIn (error, error_args);
 	return res;
 }
 
@@ -2521,10 +2519,8 @@ Value *
 XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error)
 {
 	Value *res = CreateFromString (xaml, create_namescope, validate_templates, element_type);
-	if (error_args && error_args->error_code != -1) {
-		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
-		MoonError::SetXamlPositionInfo (error, error_args->char_position, error_args->line_number);
-	}
+	if (error_args && error_args->GetErrorCode () != -1)
+		MoonError::FillIn (error, error_args);
 	return res;
 }
 
@@ -2532,10 +2528,8 @@ Value *
 XamlLoader::HydrateFromStringWithError (const char *xaml, Value *object, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error)
 {
 	Value *res = HydrateFromString (xaml, object, create_namescope, validate_templates, element_type);
-	if (error_args && error_args->error_code != -1) {
-		MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, g_strdup (error_args->error_message));
-		MoonError::SetXamlPositionInfo (error, error_args->char_position, error_args->line_number);
-	}
+	if (error_args && error_args->GetErrorCode () != -1)
+		MoonError::FillIn (error, error_args);
 	return res;
 }
 

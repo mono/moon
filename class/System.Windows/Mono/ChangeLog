@@ -1,3 +1,11 @@
+2009-09-14  Chris Toshok  <toshok@ximian.com>
+
+	* MoonError.cs (FromIntPtr): new method, marshal it from
+	unmanaged, and dup the string.
+
+	* NativeMethods.cs (CreateManagedException): actually return the
+	exception object, don't throw it here.
+
 2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Kind.cs: Regenerated.

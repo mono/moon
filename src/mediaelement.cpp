@@ -1131,7 +1131,7 @@ MediaElement::CurrentStateChangedHandler (PlaylistRoot *playlist, EventArgs *arg
 void
 MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s\n", GetStateName (state), args ? args->error_message : NULL);
+	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s\n", GetStateName (state), args ? args->GetErrorMessage() : NULL);
 	VERIFY_MAIN_THREAD;
 	
 	if (state == MediaStateError)
@@ -1587,8 +1587,8 @@ void
 MediaElement::ReportErrorOccurred (const char *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::ReportErrorOccurred ('%s')\n", args);
-	
-	ErrorEventArgs *eea = new ErrorEventArgs (MediaError, 3001, args);
+
+	ErrorEventArgs *eea = new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 3001, g_strdup (args)));
 	ReportErrorOccurred (eea);
 	eea->unref ();
 }

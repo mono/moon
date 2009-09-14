@@ -121,7 +121,7 @@ namespace Mono {
 		 * Add annotations (@GeneratePInvoke) to your C/C++ methods to generate the P/Invokes.
 		 * 
 		 */
-		private static Exception CreateManagedException (MoonError err)
+		internal static Exception CreateManagedException (MoonError err)
 		{
 			string msg = err.Message;
 			Exception ex = null;
@@ -130,31 +130,31 @@ namespace Mono {
 				// We need to get this before calling Dispose.
 				ex = err.GCHandle.Target as Exception;
 			}
-			
+
 			err.Dispose ();
 			
 			switch (err.Number) {
 			case 1:
 			default:
-				throw new Exception (msg);
+				return new Exception (msg);
 			case 2:
-				throw new ArgumentException (msg);
+				return new ArgumentException (msg);
 			case 3:
-				throw new ArgumentNullException (msg);
+				return new ArgumentNullException (msg);
 			case 4:
-				throw new ArgumentOutOfRangeException (msg);
+				return new ArgumentOutOfRangeException (msg);
 			case 5:
-				throw new InvalidOperationException (msg);
+				return new InvalidOperationException (msg);
 			case 6:
-				throw new XamlParseException (err.LineNumber, err.CharPosition, msg);
+				return new XamlParseException (err.LineNumber, err.CharPosition, msg);
 			case 7:
-				throw new UnauthorizedAccessException (msg);
+				return new UnauthorizedAccessException (msg);
 			case 8:
-				throw new ExecutionEngineException (msg);
+				return new ExecutionEngineException (msg);
 			case 9:
 				if (ex != null)
-					throw ex;
-				throw new Exception (msg);
+					return ex;
+				return new Exception (msg);
 			}
 		}
 

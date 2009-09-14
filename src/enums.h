@@ -13,7 +13,7 @@
 
 #include <glib.h>
 
-enum ErrorType {
+enum ErrorEventArgsType {
 	NoError,
 	UnknownError,
 	InitializeError,

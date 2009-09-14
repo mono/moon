@@ -516,7 +516,7 @@ ASFParser::GetLastError ()
 const char *
 ASFParser::GetLastErrorStr ()
 {
-	return error ? error->error_message : "";
+	return error ? error->GetErrorMessage() : "";
 }
 
 void
@@ -543,7 +543,7 @@ ASFParser::AddError (MediaResult code, char *msg)
 	fprintf (stdout, "ASF error: %s.\n", msg);
 	
 	if (error == NULL && media)
-		media->ReportErrorOccurred (new ErrorEventArgs (MediaError, 4001, msg));
+		media->ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, msg)));
 
 	g_free (msg);
 }

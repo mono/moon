@@ -687,8 +687,8 @@ Surface::EmitError (ErrorEventArgs *args)
 void
 Surface::EmitError (int number, int code, const char *message)
 {
-	ErrorEventArgs *args = new ErrorEventArgs ((ErrorType)number, code, message);
-	Emit (ErrorEvent, args);
+	EmitError (new ErrorEventArgs ((ErrorEventArgsType)number,
+				       MoonError (MoonError::EXCEPTION, code, message)));
 }
 
 void

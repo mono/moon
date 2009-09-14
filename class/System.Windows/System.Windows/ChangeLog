@@ -1,3 +1,11 @@
+2009-09-14  Chris Toshok  <toshok@ximian.com>
+
+	* ExceptionRoutedEventArgs.cs (ctor): add an internal ctor that
+	takes a MoonError, filling in error_exception using
+	NativeMethod.CreateManagedException.
+	(FromErrorEventArgs): get the unmanaged MoonError from the event
+	args and create the ExceptionRoutedEventArgs from it.
+
 2009-09-12  Chris Toshok  <toshok@ximian.com>
 
 	* Deployment.cs (LoadAssemblies): if we have loaded the last

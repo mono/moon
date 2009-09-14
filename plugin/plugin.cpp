@@ -1621,7 +1621,8 @@ PluginInstance::network_error_tickcall (EventObject *data)
 	PluginClosure *closure = (PluginClosure*)data;
 	Surface *s = closure->plugin->GetSurface();
 
-	s->EmitError (new ErrorEventArgs (RuntimeError, 2104, "Failed to download silverlight application."));
+	s->EmitError (new ErrorEventArgs (RuntimeError,
+					  MoonError (MoonError::EXCEPTION, 2104, "Failed to download silverlight application.")));
 }
 
 void
@@ -1630,7 +1631,8 @@ PluginInstance::splashscreen_error_tickcall (EventObject *data)
 	PluginClosure *closure = (PluginClosure*)data;
 	Surface *s = closure->plugin->GetSurface();
 	
-	s->EmitError (new ErrorEventArgs (RuntimeError, 2108, "Failed to download the splash screen"));
+	s->EmitError (new ErrorEventArgs (RuntimeError,
+					  MoonError (MoonError::EXCEPTION, 2108, "Failed to download the splash screen")));
 	closure->plugin->is_splash = false;
 
 	// we need this check beccause the plugin might have been
@@ -2035,7 +2037,7 @@ PluginXamlLoader::TryLoad (int *error)
 	}
 	
 	if (!element) {
-		if (error_args && error_args->error_code != -1) {
+		if (error_args && error_args->GetErrorCode() != -1) {
 			d(printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (error: %s attr=%s)\n",
 				  GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (),
 				  error_args->xml_element, error_args->xml_attribute));
@@ -2059,7 +2061,8 @@ PluginXamlLoader::TryLoad (int *error)
 	if (!t) {
 		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass Canvas, it is an unregistered type\n"));
 		element->unref ();
-		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "Failed to initialize the application's root visual"));
+		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError,
+							      MoonError (MoonError::EXCEPTION, 2101, "Failed to initialize the application's root visual")));
 		return NULL;
 	}
 
@@ -2067,7 +2070,8 @@ PluginXamlLoader::TryLoad (int *error)
 		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass of Panel, it is a %s\n",
 			  element->GetTypeName ()));
 		element->unref ();
-		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "Failed to initialize the application's root visual"));
+		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError,
+							      MoonError (MoonError::EXCEPTION, 2101, "Failed to initialize the application's root visual")));
 		return NULL;
 	}
 	
@@ -2267,7 +2271,9 @@ PluginInstance::ManagedExceptionToErrorEventArgs (MonoObject *exc)
 		errorCode = *(int*) mono_object_unbox (ret);
 	}
 	
-	return new ErrorEventArgs (RuntimeError, errorCode, message);
+	// FIXME: we need to figure out what type of exception it is
+	// and map it to the right MoonError::ExceptionType enum
+	return new ErrorEventArgs (RuntimeError, MoonError (MoonError::EXCEPTION, errorCode, message));
 }
 
 gpointer

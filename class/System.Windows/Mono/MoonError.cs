@@ -61,7 +61,7 @@ namespace Mono
 		}
 
 		public string Message {
-			get { return message == IntPtr.Zero ? null : Marshal.PtrToStringAnsi (message); }
+			get { return message == IntPtr.Zero ? null : Marshal.PtrToStringAuto (message); }
 		}
 		
 		public IntPtr GCHandlePtr {
@@ -109,6 +109,21 @@ namespace Mono
 				char_position = -1;
 				line_number = -1;
 			}
+		}
+
+		public static MoonError FromIntPtr (IntPtr moon_error)
+		{
+			MoonError err = (MoonError)Marshal.PtrToStructure (moon_error, typeof (MoonError));
+			if (err.message != IntPtr.Zero) {
+				string msg = Marshal.PtrToStringAuto (err.message);
+
+				byte [] bytes = System.Text.Encoding.UTF8.GetBytes (msg);
+				err.message = Marshal.AllocHGlobal (bytes.Length + 1);
+				Marshal.Copy (bytes, 0, err.message, bytes.Length);
+				Marshal.WriteByte (err.message, bytes.Length, 0);
+			}
+
+			return err;
 		}
 	}
 }

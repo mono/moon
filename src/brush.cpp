@@ -555,7 +555,7 @@ ImageBrush::image_failed (EventObject *sender, EventArgs *calldata, gpointer clo
 {
 	ImageBrush *media = (ImageBrush *) closure;
 
-	media->ImageFailed ();
+	media->ImageFailed ((ImageErrorEventArgs*) calldata);
 }
 
 void
@@ -586,7 +586,7 @@ ImageBrush::ImageOpened ()
 }
 
 void
-ImageBrush::ImageFailed ()
+ImageBrush::ImageFailed (ImageErrorEventArgs *args)
 {
 	BitmapImage *source = (BitmapImage*)GetImageSource ();
 
@@ -594,7 +594,8 @@ ImageBrush::ImageFailed ()
 	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 
-	Emit (ImageFailedEvent, new ImageErrorEventArgs (NULL));
+	args->ref (); // to counter the unref in Emit
+	Emit (ImageFailedEvent, args);
 }
 
 void

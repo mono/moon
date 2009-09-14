@@ -85,7 +85,6 @@ class EventArgs;
 class EventListenerProxy;
 class EventObject;
 class EventTrigger;
-class ExceptionRoutedEventArgs;
 class ExponentialEase;
 class ExtensionPart;
 class ExternalDecoder;
@@ -376,7 +375,6 @@ class EventArgs;
 class EventListenerProxy;
 class EventObject;
 class EventTrigger;
-class ExceptionRoutedEventArgs;
 class ExponentialEase;
 class ExtensionPart;
 class ExternalDecoder;
@@ -1507,6 +1505,9 @@ const char *error_event_args_get_error_message (ErrorEventArgs *instance);
 
 /* @GeneratePInvoke */
 int error_event_args_get_error_type (ErrorEventArgs *instance);
+
+/* @GeneratePInvoke */
+gpointer error_event_args_get_moon_error (ErrorEventArgs *instance);
 
 /**
  * EventObject

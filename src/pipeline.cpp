@@ -489,10 +489,10 @@ Media::ReportOpenDecoderCompleted (IMediaDecoder *decoder)
 void
 Media::ReportErrorOccurred (ErrorEventArgs *args)
 {
-	LOG_PIPELINE ("Media::ReportErrorOccurred (%p %s)\n", args, args == NULL ? NULL : args->error_message);
+	LOG_PIPELINE ("Media::ReportErrorOccurred (%p %s)\n", args, args == NULL ? NULL : args->GetErrorMessage());
 	
 	if (args) {
-		fprintf (stderr, "Moonlight: %s %i %s %s\n", enums_int_to_str ("ErrorType", args->error_type), args->error_code, args->error_message, args->extended_message);
+		fprintf (stderr, "Moonlight: %s %i %s %s\n", enums_int_to_str ("ErrorType", args->GetErrorType()), args->GetErrorCode(), args->GetErrorMessage(), args->GetExtendedMessage());
 	} else {
 		fprintf (stderr, "Moonlight: Unspecified media error.\n");
 	}
@@ -508,7 +508,7 @@ Media::ReportErrorOccurred (const char *message)
 {
 	LOG_PIPELINE ("Media::ReportErrorOccurred (%s)\n", message);
 	
-	ReportErrorOccurred (new ErrorEventArgs (MediaError, 3001, message));
+	ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 3001, message)));
 }
 
 void
@@ -636,7 +636,8 @@ Media::Initialize (const char *uri)
 		if (dl->GetFailedMessage () == NULL) {
 			Initialize (dl, NULL);
 		} else {
-			ReportErrorOccurred (new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR"));
+			ReportErrorOccurred (new ErrorEventArgs (MediaError,
+								 MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR")));
 		}
 			
 		dl->unref ();
@@ -882,7 +883,9 @@ Media::SelectDemuxerAsync ()
 				}
 			}
 			char *msg = g_strdup_printf ("No demuxers registered to handle the media source '%s'.", source_name);
-			ReportErrorOccurred (new ErrorEventArgs (MediaError, 3001, "AG_E_INVALID_FILE_FORMAT", MEDIA_UNKNOWN_CODEC, msg));
+			ReportErrorOccurred (new ErrorEventArgs (MediaError,
+								 MoonError (MoonError::EXCEPTION, 3001, "AG_E_INVALID_FILE_FORMAT"),
+								 MEDIA_UNKNOWN_CODEC, msg));
 			g_free (msg);
 			return false;
 		}
@@ -980,7 +983,8 @@ Media::SelectDecodersAsync ()
 		decoder = stream->GetDecoder ();
 		
 		if (decoder == NULL) {
-			ReportErrorOccurred (new ErrorEventArgs (MediaError, 3001, "AG_E_INVALID_FILE_FORMAT"));
+			ReportErrorOccurred (new ErrorEventArgs (MediaError,
+								 MoonError (MoonError::EXCEPTION, 3001, "AG_E_INVALID_FILE_FORMAT")));
 			return false;
 		}
 		
@@ -1817,7 +1821,7 @@ ProgressiveSource::DownloadFailed ()
 {
 	LOG_PIPELINE ("ProgressiveSource::DownloadFailed ().\n");
 	
-	ReportErrorOccurred (new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR"));
+	ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR")));
 }
 
 void

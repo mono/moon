@@ -271,7 +271,7 @@ Image::image_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Image *media = (Image *) closure;
 
-	media->ImageFailed ();
+	media->ImageFailed ((ImageErrorEventArgs*)calldata);
 }
 
 void
@@ -309,7 +309,7 @@ Image::ImageOpened ()
 }
 
 void
-Image::ImageFailed ()
+Image::ImageFailed (ImageErrorEventArgs *args)
 {
 	BitmapSource *source = (BitmapSource*) GetSource ();
 
@@ -325,7 +325,8 @@ Image::ImageFailed ()
 	UpdateBounds ();
 	Invalidate ();
 
-	Emit (ImageFailedEvent, new ImageErrorEventArgs (NULL));
+	args->ref (); // to counter the unref in Emit
+	Emit (ImageFailedEvent, args);
 }
 
 void

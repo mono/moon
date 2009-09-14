@@ -155,7 +155,7 @@ CodecDownloader::DownloadFailed (EventObject *sender, EventArgs *args)
 		: "add-on software."); 
 
 	SetHeader ((const gchar *)msg);
-	SetMessage (eea->error_message);
+	SetMessage (eea->GetErrorMessage());
 
 	ToggleProgress (false);
 

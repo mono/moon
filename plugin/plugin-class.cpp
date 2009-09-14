@@ -740,11 +740,11 @@ MoonlightErrorEventArgs::GetProperty (int id, NPIdentifier name, NPVariant *resu
 
 	switch (id) {
 	case MoonId_ErrorCode:
-		INT32_TO_NPVARIANT (args->error_code, *result);
+		INT32_TO_NPVARIANT (args->GetErrorCode(), *result);
 		return true;
 
 	case MoonId_ErrorType:
-		switch (args->error_type) {
+		switch (args->GetErrorType()) {
 		case NoError:          string_to_npvariant ("NoError", result); break;
 		case UnknownError:     string_to_npvariant ("UnknownError", result); break;
 		case InitializeError:  string_to_npvariant ("InitializeError", result); break;
@@ -757,10 +757,10 @@ MoonlightErrorEventArgs::GetProperty (int id, NPIdentifier name, NPVariant *resu
 		}
 		return true;
 	case MoonId_ErrorMessage:
-		string_to_npvariant (args->error_message, result);
+		string_to_npvariant (args->GetErrorMessage(), result);
 		return true;
 	case MoonId_LineNumber:
-		if (args->error_type == ParserError) {
+		if (args->GetErrorType() == ParserError) {
 			INT32_TO_NPVARIANT (((ParserErrorEventArgs*)args)->line_number, *result);
 		} else {
 			DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.lineNumber");
@@ -768,7 +768,7 @@ MoonlightErrorEventArgs::GetProperty (int id, NPIdentifier name, NPVariant *resu
 		}
 		return true;
 	case MoonId_CharPosition:
-		if (args->error_type == ParserError) {
+		if (args->GetErrorType() == ParserError) {
 			INT32_TO_NPVARIANT (((ParserErrorEventArgs*)args)->char_position, *result);
 		} else {
 			DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.charPosition");
@@ -780,7 +780,7 @@ MoonlightErrorEventArgs::GetProperty (int id, NPIdentifier name, NPVariant *resu
 		NULL_TO_NPVARIANT (*result);
 		return true;
 	case MoonId_XamlFile:
-		if (args->error_type == ParserError) {
+		if (args->GetErrorType() == ParserError) {
 			string_to_npvariant (((ParserErrorEventArgs*)args)->xaml_file, result);
 		} else {
 			DEBUG_WARN_NOTIMPLEMENTED ("ErrorEventArgs.xamlFile");

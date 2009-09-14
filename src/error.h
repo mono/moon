@@ -18,66 +18,12 @@ class ErrorEventArgs;
 
 
 #include "enums.h"
-#include "eventargs.h"
 
-/* @Namespace=None,ManagedDependencyProperties=None */
-class ErrorEventArgs : public EventArgs  {
-protected:
-	virtual ~ErrorEventArgs ();
-	ErrorEventArgs (Type::Kind kind, ErrorType type, int code, const char *msg);
-	
-public:
-	ErrorEventArgs (ErrorType type, int code, const char *msg);
-	ErrorEventArgs (ErrorType type, int code, const char *msg, int extended_code, const char *extended_msg);
-
-	int error_code;
-	char *error_message;
-	ErrorType error_type;
-	// To match SL behaviour we need to match SL error messages, which aren't all that helpful
-	// This is here to keep extra error information we have, 
-	// but don't want to report to the user.
-	// extended_code:
-	//  3 (MEDIA_UNKNOWN_CODEC): used by playlist to determine if we should raise a MediaFailed event or just continue to play the next entry.
-	int extended_code;
-	char *extended_message;
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	const char *GetErrorMessage () { return error_message; }
-	/* @GenerateCBinding,GeneratePInvoke */
-	int GetErrorCode () { return error_code; }
-	/* @GenerateCBinding,GeneratePInvoke */
-	int GetErrorType () { return error_type; }	
-};
-
-/* @Namespace=None,ManagedDependencyProperties=None */
-class ImageErrorEventArgs : public ErrorEventArgs {
-protected:
-	virtual ~ImageErrorEventArgs ();
-
-public:
-	ImageErrorEventArgs (const char *msg);
-};
-
-/* @Namespace=None,ManagedDependencyProperties=None */
-class ParserErrorEventArgs : public ErrorEventArgs {
-protected:
-	virtual ~ParserErrorEventArgs ();
-
-public:
-	ParserErrorEventArgs (const char *msg, const char *file,
-			      int line, int column, int error_code, 
-			      const char *element, const char *attribute);
-	
-	int char_position;
-	int line_number;
-	char *xaml_file;
-	char *xml_element;
-	char *xml_attribute;
-};
+class ParserErrorEventArgs;
 
 class MoonError {
 public:
-	enum ErrorType {
+	enum ExceptionType {
 		NO_ERROR = 0,
 		EXCEPTION = 1,
 		ARGUMENT = 2,
@@ -91,7 +37,7 @@ public:
 	};
 
 	// non-zero if an error occurred.
-	ErrorType number;
+	ExceptionType number;
 
 	// the silverlight error code
 	int code;
@@ -100,8 +46,6 @@ public:
 	int char_position;
 	int line_number;
 
-	// the caller of the method which returned the error must call Dispose to free this value
-	// (only necessary if there were any errors)
 	char *message;
 
 	// managed code has thrown an exception, we store a gchandle
@@ -109,17 +53,17 @@ public:
 	void* gchandle_ptr;
 	
 	MoonError ();
+	MoonError (ExceptionType type, int code, const char *message);
 	~MoonError ();
-	
+
+	MoonError (const MoonError &e);
+	MoonError& operator= (const MoonError& other);
+
 	void Clear ();
 	
-	static void FillIn (MoonError *error, ErrorType type, int code, char *message /* this message must be allocated using glib methods */);
-  	static void FillIn (MoonError *error, ErrorType type, int code, const char *message);
-
-	static void FillIn (MoonError *error, ErrorType type, char *message /* this message must be allocated using glib methods */);
-  	static void FillIn (MoonError *error, ErrorType type, const char *message);
-
-	static void SetXamlPositionInfo (MoonError *error, int char_position, int line_number);
+  	static void FillIn (MoonError *error, ExceptionType type, int code, const char *message);
+  	static void FillIn (MoonError *error, ExceptionType type, const char *message);
+	static void FillIn (MoonError *error, ParserErrorEventArgs *error_args);
 };
 
 #endif /* __MOON_ERROR_H__ */

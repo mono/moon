@@ -29,6 +29,7 @@
 using System;
 
 using Mono;
+using System.Runtime.InteropServices;
 
 namespace System.Windows
 {
@@ -36,11 +37,16 @@ namespace System.Windows
 	{
 		private Exception error_exception;
 		
-		internal ExceptionRoutedEventArgs (Exception ex) : base ()
+		internal ExceptionRoutedEventArgs (Exception ex)
 		{
 			error_exception = ex;
 		}
-		
+
+		internal ExceptionRoutedEventArgs (MoonError err)
+		{
+			error_exception = NativeMethods.CreateManagedException (err);
+		}
+
 		internal ExceptionRoutedEventArgs (IntPtr raw) : base (raw, false)
 		{
 		}
@@ -51,11 +57,10 @@ namespace System.Windows
 		
 		internal static ExceptionRoutedEventArgs FromErrorEventArgs (IntPtr raw)
 		{
-			string msg = NativeMethods.error_event_args_get_error_message (raw);
-			int code = NativeMethods.error_event_args_get_error_code (raw);
-			int type = NativeMethods.error_event_args_get_error_type (raw);
-			
-			return new ExceptionRoutedEventArgs (new Exception (msg)); // TODO: find out which kind of exception we need to create here
+			IntPtr moon_error = NativeMethods.error_event_args_get_moon_error (raw);
+			MoonError err = MoonError.FromIntPtr (moon_error);
+
+			return new ExceptionRoutedEventArgs (err);
 		}
 	}
 }
