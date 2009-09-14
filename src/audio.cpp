@@ -44,7 +44,7 @@ AudioSource::AudioFrame::~AudioFrame ()
  */
 
 AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream)
-	: EventObject (Type::AUDIOSOURCE)
+	: EventObject (Type::AUDIOSOURCE, true)
 {
 	pthread_mutexattr_t attribs;
 	
