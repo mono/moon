@@ -123,7 +123,8 @@ dyn_snd_asoundlib_version *                  d_snd_asoundlib_version = NULL;
  * AlsaSource
  */
  
-AlsaSource::AlsaSource (AlsaPlayer *player, MediaPlayer *mplayer, AudioStream *stream) : AudioSource (player, mplayer, stream)
+AlsaSource::AlsaSource (AlsaPlayer *player, MediaPlayer *mplayer, AudioStream *stream)
+	: AudioSource (player, mplayer, stream), mutex (true)
 {
 	LOG_ALSA ("AlsaSource::AlsaSource (%p, %p)\n", player, stream);
 	
@@ -139,29 +140,41 @@ AlsaSource::AlsaSource (AlsaPlayer *player, MediaPlayer *mplayer, AudioStream *s
 	
 	started = false;
 	drop_pending = false;
+	initialized = false;
 }
 
 AlsaSource::~AlsaSource ()
 {
 	LOG_ALSA ("AlsaSource::~AlsaSource ()\n");
 
-	if (pcm != NULL) {
-		snd_pcm_close (pcm);
-		pcm = NULL;
-	}
-	
-	g_free (udfs);
-	udfs = NULL;
+	CloseAlsa ();
 }
 
 bool
 AlsaSource::InitializeInternal ()
 {
+	LOG_AUDIO ("AlsaSource::InitializeInternal ()\n");
+	// this is a no-op, initialization is done when needed.
+	return true;
+}
+
+bool
+AlsaSource::InitializeAlsa ()
+{
 	bool res = false;
 	int result;
-	AudioStream *stream = GetStreamReffed ();
+	AudioStream *stream = NULL;
 	
-	LOG_AUDIO ("AlsaSource::Initialize (%p)\n", this);
+	LOG_AUDIO ("AlsaSource::InitializeAlsa (%p) initialized: %i\n", this, initialized);
+	
+	mutex.Lock ();
+	
+	if (initialized) {
+		result = true;
+		goto cleanup;
+	}
+	
+	stream = GetStreamReffed ();
 		
 	if (stream == NULL) {
 		// Shouldn't really happen, but handle this case anyway.
@@ -209,8 +222,11 @@ AlsaSource::InitializeInternal ()
 	LOG_AUDIO ("AlsaSource::Initialize (%p): Succeeded. Buffer size: %lu, period size: %lu\n", this, buffer_size, period_size);
 
 	res = true;
+	initialized = true;
 	
 cleanup:
+
+	mutex.Unlock ();
 
 	if (stream)
 		stream->unref ();
@@ -379,25 +395,33 @@ cleanup:
 void
 AlsaSource::StateChanged (AudioState old_state)
 {
+	if (GetState () == AudioPlaying)
+		InitializeAlsa ();
 	player->UpdatePollList ();
 }
 
 void
 AlsaSource::Played ()
 {
+	InitializeAlsa ();
 	player->UpdatePollList ();
 }
 
 void
 AlsaSource::Paused ()
 {
+	mutex.Lock ();
 	drop_pending = true;
+	mutex.Unlock ();
 }
 
 void
 AlsaSource::Stopped ()
 {
+	CloseAlsa ();
+	mutex.Lock ();
 	drop_pending = true;
+	mutex.Unlock ();
 }
 
 void
@@ -407,25 +431,45 @@ AlsaSource::DropAlsa ()
 	
 	LOG_ALSA ("AlsaSource::DropAlsa ()\n");
 	
+	mutex.Lock ();
 	drop_pending = false;
 	
-	if (snd_pcm_state (pcm) == SND_PCM_STATE_RUNNING) {
+	if (pcm != NULL && snd_pcm_state (pcm) == SND_PCM_STATE_RUNNING) {
 		err = snd_pcm_drop (pcm);
 		if (err < 0)
 			LOG_AUDIO ("AlsaSource::DropAlsa (): Could not stop/drain pcm: %s\n", snd_strerror (err)); 
 	}
+	mutex.Unlock ();
 }
 
 void
 AlsaSource::CloseInternal ()
 {
+	CloseAlsa ();
+}
+
+void
+AlsaSource::CloseAlsa ()
+{
+	mutex.Lock ();
+	if (pcm != NULL) {
+		snd_pcm_close (pcm);
+		pcm = NULL;
+	}
+	
+	g_free (udfs);
+	udfs = NULL;
+	
+	initialized = false;
+	started = false;
+	mutex.Unlock ();
 }
 
 bool
 AlsaSource::WriteRW ()
 {
 	snd_pcm_sframes_t avail;
-	snd_pcm_sframes_t commitres;
+	snd_pcm_sframes_t commitres = 0;
 	guint32 frames;
 	void *buffer;
 	int err = 0;
@@ -444,7 +488,10 @@ AlsaSource::WriteRW ()
 	
 	frames = Write (buffer, (guint32) avail);
 
-	commitres = snd_pcm_writei (pcm, buffer, frames);
+	mutex.Lock ();
+	if (initialized)
+		commitres = snd_pcm_writei (pcm, buffer, frames);
+	mutex.Unlock ();
 	
 	g_free (buffer);
 	
@@ -470,7 +517,7 @@ AlsaSource::WriteMmap ()
 	snd_pcm_uframes_t offset = 0;
 	snd_pcm_uframes_t frames;
 	snd_pcm_sframes_t available_samples;
-	snd_pcm_sframes_t commitres;
+	snd_pcm_sframes_t commitres = 0;
 	guint32 channels = GetChannels ();
 	int err = 0;
 	AudioData *data [channels + 1];
@@ -492,11 +539,15 @@ AlsaSource::WriteMmap ()
 	
 	frames = available_samples;
 	
+	mutex.Lock ();
+	if (!initialized)
+		goto cleanup;
+		
 	err = snd_pcm_mmap_begin (pcm, (const snd_pcm_channel_area_t** ) &areas, &offset, &frames);
 	if (err < 0) {
 		if (!XrunRecovery (err)) {
 			LOG_AUDIO ("AudioPlayer: could not get mmapped memory: %s\n", snd_strerror (err));
-			return false;
+			goto cleanup;
 		}
 		started = false;
 	}
@@ -525,10 +576,15 @@ AlsaSource::WriteMmap ()
 	if (commitres < 0 || (snd_pcm_uframes_t) commitres != frames) {
 		if (!XrunRecovery (commitres >= 0 ? -EPIPE : commitres)) {
 			LOG_AUDIO ("AudioPlayer: could not commit mmapped memory: %s\n", snd_strerror(err));
-			return false;
+			commitres = 0; // so that we end up returning false
+			goto cleanup;
 		}
 		started = false;
 	}
+
+cleanup:
+
+	mutex.Unlock ();
 
 	return commitres > 0;
 }
@@ -548,22 +604,34 @@ AlsaSource::XrunRecovery (int err)
 	switch (err) {
 	case -EPIPE: // under-run
 		Underflowed ();
-		err = snd_pcm_prepare (pcm);
-		if (err < 0)
-			LOG_AUDIO ("AlsaPlayer: Can't recover from underrun, prepare failed: %s.\n", snd_strerror (err));
+		mutex.Lock ();
+		if (initialized) {
+			err = snd_pcm_prepare (pcm);
+			if (err < 0) {
+				LOG_AUDIO ("AlsaPlayer: Can't recover from underrun, prepare failed: %s.\n", snd_strerror (err));
+			}
+		} else {
+			LOG_AUDIO ("AlsaPlayer: Can't recover from underrun, pcm has been closed.\n");
+		}
+		mutex.Unlock ();
 		break;
 	case -ESTRPIPE:
-		while ((err = snd_pcm_resume (pcm)) == -EAGAIN) {
-			LOG_AUDIO ("XrunRecovery: waiting for resume\n");
-			sleep (1); // wait until the suspend flag is released
+		mutex.Lock ();
+		if (initialized) {
+			while ((err = snd_pcm_resume (pcm)) == -EAGAIN) {
+				LOG_AUDIO ("XrunRecovery: waiting for resume\n");
+				sleep (1); // wait until the suspend flag is released
+			}
+			if (err < 0) {
+				err = snd_pcm_prepare (pcm);
+				if (err < 0) {
+					LOG_AUDIO ("AlsaPlayer: Can't recover from suspend, prepare failed: %s.\n", snd_strerror (err));
+				}
+			}
+		} else {
+			LOG_AUDIO ("AlsaPlayer: Can't recover from suspend, pcm has been closed.\n");
 		}
-		if (err >= 0)
-			break;
-
-		err = snd_pcm_prepare (pcm);
-		if (err < 0)
-			LOG_AUDIO ("AlsaPlayer: Can't recover from suspend, prepare failed: %s.\n", snd_strerror (err));
-
+		mutex.Unlock ();
 		break;
 	default:
 		LOG_AUDIO ("AlsaPlayer: Can't recover from underrun: %s\n", snd_strerror (err));
@@ -576,9 +644,22 @@ AlsaSource::XrunRecovery (int err)
 bool
 AlsaSource::PreparePcm (snd_pcm_sframes_t *avail)
 {
-	int err;
-	snd_pcm_state_t state = snd_pcm_state (pcm);
+	int err = 0;
+	bool closed = false;
+	snd_pcm_state_t state;
+	
+	mutex.Lock ();
+	if (initialized) {
+		state = snd_pcm_state (pcm);
+	} else {
+		LOG_ALSA ("AlsaSource::PreparePcm (): pcm has been closed.\n");
+		closed = true;
+	}
+	mutex.Unlock ();
 			
+	if (closed)
+		return false;
+		
 	switch (state) {
 	case SND_PCM_STATE_XRUN:
 		LOG_ALSA ("AlsaSource::PreparePcm (): SND_PCM_STATE_XRUN.\n");
@@ -609,7 +690,17 @@ AlsaSource::PreparePcm (snd_pcm_sframes_t *avail)
 		return false;
 	}
 	
-	*avail = snd_pcm_avail_update (pcm);
+	err = 0;
+	mutex.Lock ();
+	if (initialized) {
+		*avail = snd_pcm_avail_update (pcm);
+	} else {
+		closed = true;
+	}
+	mutex.Unlock ();
+	
+	if (closed)
+		return false;
 
 	if (*avail < 0) {
 		if (!XrunRecovery (*avail))
@@ -622,7 +713,18 @@ AlsaSource::PreparePcm (snd_pcm_sframes_t *avail)
 	if ((snd_pcm_uframes_t) *avail < period_size) {
 		if (!started) {
 			LOG_ALSA ("AlsaSource::PreparePcm (): starting pcm (period size: %li, available: %li)\n", period_size, *avail);
-			err = snd_pcm_start (pcm);
+
+			mutex.Lock ();
+			if (initialized) {
+				err = snd_pcm_start (pcm);
+			} else {
+				closed = true;
+			}
+			mutex.Unlock ();
+			
+			if (closed)
+				return false;
+
 			if (err < 0) {
 				LOG_AUDIO ("AlsaPlayer: Could not start pcm: %s\n", snd_strerror (err));
 				return false;
@@ -645,15 +747,31 @@ AlsaSource::GetDelayInternal ()
 	snd_pcm_sframes_t delay;
 	int err;
 	guint64 result;
+	bool update_error = false;
+	bool not_initialized = false;
 	
-	err = snd_pcm_avail_update (pcm);
+	mutex.Lock ();
+	if (!initialized) {
+		not_initialized = true;
+	} else {
+		err = snd_pcm_avail_update (pcm);
 	
-	if (err < 0) {
-		LOG_AUDIO ("AlsaSource::GetDelayInternal (): Could not update delay (%s)\n", snd_strerror (err));
+		if (err < 0) {
+			LOG_AUDIO ("AlsaSource::GetDelayInternal (): Could not update delay (%s)\n", snd_strerror (err));
+			update_error = true;
+		} else {
+			err = snd_pcm_delay (pcm, &delay);
+		}
+	}
+	mutex.Unlock ();
+	
+	if (not_initialized) {
+		LOG_AUDIO ("AlsaSource::GetDelayInternal (): pcm has been closed.\n");
 		return G_MAXUINT64;
 	}
 	
-	err = snd_pcm_delay (pcm, &delay);
+	if (update_error)
+		return G_MAXUINT64;
 	
 	if (err < 0) {
 		LOG_AUDIO ("AlsaSource::GetDelayInternal (): Could not get delay (%s)\n", snd_strerror (err));

@@ -20,6 +20,7 @@
 #include <asoundlib.h>
 
 #include "audio.h"
+#include "mutex.h"
 
 class AlsaPlayer;
 
@@ -29,6 +30,9 @@ class AlsaSource : public AudioSource {
 	snd_pcm_uframes_t period_size;
 	snd_pcm_uframes_t buffer_size;
 	
+	Mutex mutex;
+	
+	bool initialized;
 	bool mmap;
 	bool started;
 	bool drop_pending;
@@ -45,6 +49,9 @@ class AlsaSource : public AudioSource {
 	bool WriteMmap ();
 
 	void Drain ();
+
+	bool InitializeAlsa ();
+	void CloseAlsa ();
 
  protected:
 	virtual ~AlsaSource ();

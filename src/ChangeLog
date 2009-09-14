@@ -1,3 +1,13 @@
+2009-09-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio-alsa.cpp|h:
+	* audio-pulse.cpp|h: Delay pulse/alsa initialization until we actually
+	need to play something, and clean up when we stop playing audio.
+
+	* mutex.h: Add support for recursive mutexes.
+
+	r: geoff
+
 2009-09-14  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* deepzoomimagetilesource.h:

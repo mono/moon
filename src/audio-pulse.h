@@ -28,7 +28,6 @@ class PulseSource: public AudioSource {
 	bool is_ready;
 	bool initialized;
 	bool play_pending;
-	bool closed;
 	
 	void PACork (bool cork);
 	void PATrigger ();
@@ -42,6 +41,7 @@ class PulseSource: public AudioSource {
 	static void OnStateChanged (pa_stream *pulse_stream, void *userdata);
 	
 	bool InitializePA ();
+	void ClosePA ();
 	void WriteAvailable ();
 	
 	pa_stream_state_t GetPAState (pa_stream *pulse_stream = NULL);
