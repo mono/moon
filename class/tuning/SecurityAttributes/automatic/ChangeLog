@@ -1,3 +1,9 @@
+2009-09-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.s[s]c: Add MessageBox.Show support
+
+	r: toshok
+
 2009-08-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.s[s]c: Update for changes on 

@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 542 methods needs to be decorated.
+# 543 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -333,6 +333,9 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::keyboard_get_modifiers()
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::message_box_show(System.String,System.String,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::mouse_wheel_event_args_get_wheel_delta(System.IntPtr)

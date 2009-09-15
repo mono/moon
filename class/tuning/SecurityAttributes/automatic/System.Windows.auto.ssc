@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 478 methods
+# 479 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
@@ -409,6 +409,7 @@
 +SSC-M: System.Windows.DependencyObject System.Windows.Media.VisualTreeHelper::GetParent(System.Windows.DependencyObject)
 +SSC-M: System.Collections.Generic.IEnumerable`1<System.Windows.UIElement> System.Windows.Media.VisualTreeHelper::FindElementsInHostCoordinates(System.Windows.Point,System.Windows.UIElement)
 +SSC-M: System.Collections.Generic.IEnumerable`1<System.Windows.UIElement> System.Windows.Media.VisualTreeHelper::FindElementsInHostCoordinates(System.Windows.Rect,System.Windows.UIElement)
++SSC-M: System.Windows.MessageBoxResult System.Windows.MessageBox::Show(System.String,System.String,System.Windows.MessageBoxButton)
 +SSC-M: System.Void System.Windows.OutOfBrowserSettings::.ctor()
 +SSC-M: System.Collections.IEnumerator System.Windows.PresentationFrameworkCollection`1::System.Collections.IEnumerable.GetEnumerator()
 +SSC-M: System.Int32 System.Windows.PresentationFrameworkCollection`1::get_Count()

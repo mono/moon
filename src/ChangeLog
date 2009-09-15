@@ -1,3 +1,10 @@
+2009-09-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* messagebox.cpp|h: New. MessageBox implementation
+	* Makefile.am: Add new files to the build
+
+	r: toshok
+
 2009-09-15  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: set the surface pointer to NULL after

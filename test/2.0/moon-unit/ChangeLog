@@ -1,3 +1,9 @@
+2009-09-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows/MessageBoxTest.cs: New. Unit tests for MessageBox
+
+	r: toshok
+
 2009-09-10  Mario Carrion  <mcarrion@novell.com>
 
 	* moon-unit.csproj: New file added ProgressBarAutomationPeerTest.cs.

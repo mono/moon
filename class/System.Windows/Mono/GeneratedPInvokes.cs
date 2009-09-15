@@ -2281,6 +2281,10 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
+		// int message_box_show (const char *caption, const char *text, int buttons);
+		public extern static int message_box_show (string caption, string text, int buttons);
+
+		[DllImport ("moon")]
 		// void runtime_init_desktop ();
 		public extern static void runtime_init_desktop ();
 

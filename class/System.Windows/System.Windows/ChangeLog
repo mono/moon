@@ -1,3 +1,9 @@
+2009-09-15  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* MessageBox.cs: Implemented
+
+	r: toshok
+
 2009-09-14  Chris Toshok  <toshok@ximian.com>
 
 	* ExceptionRoutedEventArgs.cs (ctor): add an internal ctor that

@@ -1,3 +1,9 @@
+2009-09-15  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* GeneratedPInvokes.cs: Regenerated
+
+	r: toshok
+
 2009-09-14  Chris Toshok  <toshok@ximian.com>
 
 	* MoonError.cs (FromIntPtr): new method, marshal it from
