@@ -93,12 +93,12 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "TileFade", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::MULTISCALEIMAGE, "SubImages", false, NULL, Type::MULTISCALESUBIMAGE_COLLECTION, false, true, false, NULL, NULL, AutoCreators::default_autocreator, false);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "Source", false, Type::MULTISCALETILESOURCE);
-	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "IsIdle", false, new Value (true), Type::BOOL);
-	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "IsDownloading", false, new Value (false), Type::BOOL);
+	DependencyProperty::RegisterFull (this, Type::MULTISCALEIMAGE, "IsIdle", false, new Value (true), Type::BOOL, false, true, false, NULL, NULL, NULL, false);
+	DependencyProperty::RegisterFull (this, Type::MULTISCALEIMAGE, "IsDownloading", false, new Value (false), Type::BOOL, false, true, false, NULL, NULL, NULL, false);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "InternalViewportWidth", false, new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "InternalViewportOrigin", false, new Value (Point(0,0)), Type::POINT);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "BlurFactor", false, new Value (1.0), Type::DOUBLE);
-	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "AspectRatio", false, new Value (1.0), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::MULTISCALEIMAGE, "AspectRatio", false, new Value (1.0), Type::DOUBLE, false, true, false, NULL, NULL, NULL, false);
 	DependencyProperty::Register (this, Type::MULTISCALEIMAGE, "AllowDownloading", false, new Value (true), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::IMAGE, "Source", false, NULL, Type::IMAGESOURCE, false, false, false, NULL, NULL, Image::CreateDefaultImageSource, false);
 	DependencyProperty::Register (this, Type::USERCONTROL, "Content", false, Type::UIELEMENT);
@@ -144,7 +144,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Markers", false, NULL, Type::TIMELINEMARKER_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "IsMuted", false, new Value (false), Type::BOOL);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "DroppedFramesPerSecond", false, new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL, NULL, false);
-	DependencyProperty::Register (this, Type::MEDIAELEMENT, "DownloadProgress", false, new Value (0.0), Type::DOUBLE);
+	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "DownloadProgress", false, new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "DownloadProgressOffset", false, new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "CurrentState", false, new Value (MediaStateClosed), Type::INT32, false, true, false, NULL, NULL, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "CanSeek", false, new Value (false), Type::BOOL, false, true, false, NULL, NULL, NULL, false);

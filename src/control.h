@@ -161,7 +161,7 @@ public:
 	const static int HorizontalContentAlignmentProperty;
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int IsEnabledProperty;
-	/* @PropertyType=bool,DefaultValue=false,Attached,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=false,ManagedAccess=Internal,Attached,GenerateAccessors */
 	const static int IsTemplateItemProperty;
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int IsTabStopProperty;

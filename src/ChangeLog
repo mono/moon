@@ -1,3 +1,12 @@
+2009-09-15  Larry Ewing  <lewing@novell.com>
+
+	* control.h: Mark IsTemplateItem as internal.
+
+	* mediaelement.h: mark DownloadProgress as readonly.
+
+	* multiscaleimage.h: make AspectRatio, IsDownloading and IsIdle
+	readonly.
+
 2009-09-15  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* messagebox.cpp|h: New. MessageBox implementation

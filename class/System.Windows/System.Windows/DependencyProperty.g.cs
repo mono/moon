@@ -411,7 +411,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty HorizontalContentAlignmentProperty = DependencyProperty.Lookup (Kind.CONTROL, "HorizontalContentAlignment", typeof (HorizontalAlignment));
 		public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsEnabled", typeof (bool));
 		public static readonly DependencyProperty IsTabStopProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsTabStop", typeof (bool));
-		public static readonly DependencyProperty IsTemplateItemProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsTemplateItem", typeof (bool));
+		internal static readonly DependencyProperty IsTemplateItemProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsTemplateItem", typeof (bool));
 		public static readonly DependencyProperty PaddingProperty = DependencyProperty.Lookup (Kind.CONTROL, "Padding", typeof (Thickness));
 		public static readonly DependencyProperty TabIndexProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabIndex", typeof (int));
 		public static readonly DependencyProperty TabNavigationProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabNavigation", typeof (KeyboardNavigationMode));
@@ -632,7 +632,6 @@ namespace System.Windows.Controls {
 
 		public double DownloadProgress {
 			get { return (double) GetValue (DownloadProgressProperty); }
-			set { SetValue (DownloadProgressProperty, value); }
 		}
 
 		public double DroppedFramesPerSecond {
@@ -708,7 +707,6 @@ namespace System.Windows.Controls {
 
 		public double AspectRatio {
 			get { return (double) GetValue (AspectRatioProperty); }
-			set { SetValue (AspectRatioProperty, value); }
 		}
 
 		public double BlurFactor {
@@ -718,12 +716,10 @@ namespace System.Windows.Controls {
 
 		public bool IsDownloading {
 			get { return (bool) GetValue (IsDownloadingProperty); }
-			set { SetValue (IsDownloadingProperty, value); }
 		}
 
 		public bool IsIdle {
 			get { return (bool) GetValue (IsIdleProperty); }
-			set { SetValue (IsIdleProperty, value); }
 		}
 
 		public MultiScaleTileSource Source {

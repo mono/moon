@@ -2263,6 +2263,10 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
+		// int message_box_show (const char *caption, const char *text, int buttons);
+		public extern static int message_box_show (string caption, string text, int buttons);
+
+		[DllImport ("moon")]
 		// char* *open_file_dialog_show (const char *title, bool multsel, const char *filter, int idx);
 		public extern static IntPtr open_file_dialog_show (string title, [MarshalAs (UnmanagedType.U1)] bool multsel, string filter, int idx);
 
@@ -2279,10 +2283,6 @@ namespace Mono {
 			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
 			return s;
 		}
-
-		[DllImport ("moon")]
-		// int message_box_show (const char *caption, const char *text, int buttons);
-		public extern static int message_box_show (string caption, string text, int buttons);
 
 		[DllImport ("moon")]
 		// void runtime_init_desktop ();
