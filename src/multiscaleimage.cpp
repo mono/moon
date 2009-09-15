@@ -126,7 +126,7 @@ static void
 qtree_set_value (QTree* node, void *data)
 {
 	//FIXME: the destroy method should be a ctor argument
-	if (node->has_value)
+	if (node->has_value && node->data)
 		cairo_surface_destroy ((cairo_surface_t*)node->data);
 
 	node->has_value = true;
@@ -235,7 +235,10 @@ qtree_remove (QTree* node, int depth)
 {
 	if (node && node->has_value) {
 		node->has_value = false;
-		cairo_surface_destroy ((cairo_surface_t*)node->data);
+		if (node->data) {
+			cairo_surface_destroy ((cairo_surface_t*)node->data);
+			node->data = NULL;
+		}
 	}	
 
 	if (depth <= 0)
@@ -268,8 +271,10 @@ qtree_destroy (QTree *root)
 		return;
 
 	//FIXME: the destroy func should be a qtree ctor option
-	if (root->data)
+	if (root->data) {
 		cairo_surface_destroy ((cairo_surface_t*)(root->data));
+		root->data = NULL;
+	}
 
 	qtree_destroy (root->l0);
 	qtree_destroy (root->l1);

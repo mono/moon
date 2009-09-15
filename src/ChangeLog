@@ -1,3 +1,10 @@
+2009-09-15  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: set the surface pointer to NULL after
+	destroying.
+
+	r: spouliot
+
 2009-09-14  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XamlLoader::CreateFromFileWithError): use the new
