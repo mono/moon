@@ -32,6 +32,11 @@ G_BEGIN_DECLS
 #define MESSAGE_BOX_RESULT_YES		6
 #define MESSAGE_BOX_RESULT_NO		7
 
+// older gtk+ (like 2.8 used in SLED10) don't support icon-less GTK_MESSAGE_OTHER
+#ifndef GTK_MESSAGE_OTHER
+	#define GTK_MESSAGE_OTHER	GTK_MESSAGE_INFO
+#endif
+
 /* @GeneratePInvoke */
 int message_box_show (const char *caption, const char* text, int buttons);
 
