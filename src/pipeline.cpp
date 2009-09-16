@@ -747,7 +747,7 @@ Media::OpenInternal ()
 
 	if (in_open_internal) {
 		LOG_PIPELINE ("Media::OpenInteral (): recursive.\n");
-		MediaClosure *closure = new MediaClosure (this, OpenInternal, this);
+		MediaClosure *closure = new MediaClosure (this, OpenInternal, this, "Media::OpenInternal");
 		EnqueueWork (closure);
 		closure->unref ();
 		return;
@@ -830,7 +830,7 @@ Media::SelectDemuxerAsync ()
 				// We need to try again later.
 				LOG_PIPELINE ("Media::SelectDemuxer (): We don't have enough data yet.\n");
 				
-				MediaClosure *closure = new MediaClosure (this, OpenInternal, this);
+				MediaClosure *closure = new MediaClosure (this, OpenInternal, this, "Media::OpenInternal");
 				EnqueueWork (closure, false);
 				closure->unref ();
 
@@ -852,7 +852,7 @@ Media::SelectDemuxerAsync ()
 			if (result == MEDIA_NOT_ENOUGH_DATA) {
 				LOG_PIPELINE ("Media::SelectDemuxer (): '%s' can't determine whether it can handle the media or not due to not enough data being available yet.\n", demuxerInfo->GetName ());
 				
-				MediaClosure *closure = new MediaClosure (this, OpenInternal, this);
+				MediaClosure *closure = new MediaClosure (this, OpenInternal, this, "Media::OpenInternal");
 				EnqueueWork (closure, false);
 				closure->unref ();
 				
@@ -1015,7 +1015,7 @@ Media::SelectDecodersAsync ()
 		}
 		
 		if (decoder->IsOpening ()) {
-			MediaClosure *closure = new MediaClosure (this, OpenInternal, this);
+			MediaClosure *closure = new MediaClosure (this, OpenInternal, this, "Media::OpenInternal");
 			EnqueueWork (closure, false);
 			closure->unref ();
 			return false;
@@ -1910,38 +1910,35 @@ MemorySource::PeekInternal (void *buffer, guint32 n)
  * MediaClosure
  */ 
 
-MediaClosure::MediaClosure (Media *media, MediaCallback *callback, MediaCallback *finished, EventObject *context)
+MediaClosure::MediaClosure (Media *media, MediaCallback *callback, EventObject *context, const char *description)
 	: EventObject (Type::MEDIACLOSURE, true)
 {
-	g_return_if_fail (callback != NULL);
-	g_return_if_fail (media != NULL);
-	
-	result = MEDIA_INVALID;
-	this->callback = callback;
-	this->finished = finished;
-	this->context = context;
-	if (this->context)
-		this->context->ref ();
-	this->media = media;
-	if (this->media)
-		this->media->ref ();
+	Init (media, callback, context);
+	this->description = description;
 }
 
-MediaClosure::MediaClosure (Media *media, MediaCallback *callback, EventObject *context)
-	: EventObject (Type::MEDIACLOSURE, true)
+MediaClosure::MediaClosure (Type::Kind object_kind, Media *media, MediaCallback *callback, EventObject *context)
+	: EventObject (object_kind, true)
 {
-	g_return_if_fail (callback != NULL);
-	g_return_if_fail (media != NULL);
-	
+	Init (media, callback, context);
+}
+
+void
+MediaClosure::Init (Media *media, MediaCallback *callback, EventObject *context)
+{
 	result = MEDIA_INVALID;
+	description = NULL;
 	this->callback = callback;
-	this->finished = NULL;
 	this->context = context;
 	if (this->context)
 		this->context->ref ();
 	this->media = media;
 	if (this->media)
 		this->media->ref ();
+	
+	// put checks at the end so that fields are still initialized, since we can't abort construction.
+	g_return_if_fail (callback != NULL);
+	g_return_if_fail (media != NULL);
 }
 
 void
@@ -1958,7 +1955,6 @@ MediaClosure::Dispose ()
 	}
 	
 	callback = NULL;
-	finished = NULL;
 	
 	EventObject::Dispose ();
 }
@@ -1971,16 +1967,13 @@ MediaClosure::Call ()
 	} else {
 		result = MEDIA_NO_CALLBACK;
 	}
-	
-	if (finished)
-		finished (this);
 }
 
 /*
  * MediaDisposeObjectClosure
  */
 MediaDisposeObjectClosure::MediaDisposeObjectClosure (Media *media, MediaCallback *callback, EventObject *context)
-	: MediaClosure (media, callback, context)
+	: MediaClosure (Type::MEDIADISPOSEOBJECTCLOSURE, media, callback, context)
 {
 }
 
@@ -2002,7 +1995,7 @@ MediaDisposeObjectClosure::Dispose ()
  * MediaSeekClosure
  */
 MediaSeekClosure::MediaSeekClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, guint64 pts)
-	: MediaClosure (media, callback, context)
+	: MediaClosure (Type::MEDIASEEKCLOSURE, media, callback, context)
 {
 	this->pts = pts;
 }
@@ -2012,7 +2005,7 @@ MediaSeekClosure::MediaSeekClosure (Media *media, MediaCallback *callback, IMedi
  */
 
 MediaReportSeekCompletedClosure::MediaReportSeekCompletedClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, guint64 pts)
-	: MediaClosure (media, callback, context)
+	: MediaClosure (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, media, callback, context)
 {
 	g_return_if_fail (context != NULL);
 	
@@ -2034,7 +2027,7 @@ MediaReportSeekCompletedClosure::Dispose ()
  */
 
 MediaGetFrameClosure::MediaGetFrameClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, IMediaStream *stream)
-	: MediaClosure (media, callback, context)
+	: MediaClosure (Type::MEDIAGETFRAMECLOSURE, media, callback, context)
 {
 	this->stream = NULL;
 	
@@ -2474,7 +2467,7 @@ IMediaDemuxer::EnqueueOpen ()
 	
 	LOG_PIPELINE ("IMediaDemuxer::EnqueueOpen ()\n");
 	
-	closure = new MediaClosure (media, OpenCallback, this);
+	closure = new MediaClosure (media, OpenCallback, this, "IMediaDemuxer::OpenCallback");
 	media->EnqueueWork (closure, false);
 	closure->unref ();
 	media->unref ();
@@ -2713,7 +2706,7 @@ IMediaDemuxer::FillBuffers ()
 	
 	g_return_if_fail (media != NULL);
 	
-	closure = new MediaClosure (media, FillBuffersCallback, this);
+	closure = new MediaClosure (media, FillBuffersCallback, this, "IMediaDemuxer::FillBuffersCallback");
 	media->EnqueueWork (closure);
 	closure->unref ();
 	media->unref ();
@@ -3644,7 +3637,7 @@ IMediaDecoder::DecodeFrameAsync (MediaFrame *frame)
 	g_return_if_fail (media != NULL);
 	
 	if (!media->InMediaThread ()) {
-		MediaClosure *closure = new MediaClosure (media, DecodeFrameCallback, this);
+		MediaClosure *closure = new MediaClosure (media, DecodeFrameCallback, this, "IMediaDecoder::DecodeFrameCallback");
 		queue.Push (new FrameNode (frame));
 		media->EnqueueWork (closure);
 		closure->unref ();
@@ -3745,7 +3738,7 @@ VideoStream::Dispose ()
  */
 
 MediaMarkerFoundClosure::MediaMarkerFoundClosure (Media *media, MediaCallback *callback, MediaElement *context)
-	: MediaClosure (media, callback, context)
+	: MediaClosure (Type::MEDIAMARKERFOUNDCLOSURE, media, callback, context)
 {
 	marker = NULL;
 }

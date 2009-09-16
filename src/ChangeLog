@@ -1,3 +1,11 @@
+2009-09-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: MediaClosure: remove the 'finished' field (never used)
+	and add a 'description' field to ease understanding of what is going
+	on in the pipeline.
+
+	r: sde
+
 2009-09-15  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* messagebox.h: Workaround old gtk+ lacking GTK_MESSAGE_OTHER

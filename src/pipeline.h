@@ -170,14 +170,15 @@ private:
 
 	Media *media;
 	EventObject *context; // The property of whoever creates the closure.
-	MediaCallback *finished; // Calls this method after calling base class 'callback'
+	const char *description;
+	void Init (Media *media, MediaCallback *callback, EventObject *context);
 	
 protected:
 	virtual ~MediaClosure () {}
+	MediaClosure (Type::Kind object_type, Media *media, MediaCallback *callback, EventObject *context);
 	
 public:
-	MediaClosure (Media *media, MediaCallback *callback, MediaCallback *finished, EventObject *context);
-	MediaClosure (Media *media, MediaCallback *callback, EventObject *context);
+	MediaClosure (Media *media, MediaCallback *callback, EventObject *context, const char *description);
 	virtual void Dispose ();
 	
 	void Call (); // Calls the callback and stores the result in 'result', then calls the 'finished' callback
@@ -187,6 +188,7 @@ public:
 	MediaResult GetResult () { return result; }
 	Media *GetMedia () { return media; }
 	EventObject *GetContext () { return context; }
+	const char *GetDescription () { return description != NULL ? description : GetTypeName (); }
 };
 
 /*
