@@ -1,6 +1,6 @@
-AC_INIT([moonlight], [1.99.1.99])
+AC_INIT([moonlight], [1.99.4.99])
 
-AC_DEFINE([PREVIEW_VERSION], ["7"], "")
+AC_DEFINE([PREVIEW_VERSION], ["8"], "")
 
 AC_CONFIG_SRCDIR(README)
 AC_CANONICAL_SYSTEM
@@ -105,6 +105,8 @@ AC_SUBST(PLUGIN_XPI_LIBS)
 
 LOADER_LIBS="$GLIB_LIBS"
 AC_SUBST(LOADER_LIBS)
+
+DOCDIR=$(pkg-config --variable=sourcesdir monodoc)
 
 # this hack will be dropped once we get this working:
 # http://www.mono-project.com/Moonlight/SecurityStatus#Assembly_Loading
