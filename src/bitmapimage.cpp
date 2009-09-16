@@ -157,6 +157,9 @@ BitmapImage::~BitmapImage ()
 	if (part_name)
 		g_free (part_name);
 
+	if (get_res_aborter)
+		delete get_res_aborter;
+
 	CleanupLoader ();
 }
 
@@ -214,6 +217,8 @@ BitmapImage::UriSourceChanged ()
 	}
 
 	if (current && uri) {
+		if (get_res_aborter)
+			delete get_res_aborter;
 		get_res_aborter = new Cancellable ();
 		current->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, policy, get_res_aborter, this);
 	}
