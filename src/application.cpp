@@ -276,7 +276,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	
 	// construct the path name for this resource
 	filename = uri->ToString ();
-	CanonicalizeFilename (filename, -1, true);
+	CanonicalizeFilename (filename, -1, CanonModeResource);
 	if (uri->GetQuery () != NULL) {
 		char *sc = strchr (filename, ';');
 		if (sc)
@@ -356,7 +356,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	}
 	
 	// unzip the contents
-	if (!ExtractAll (zipfile, dirname, true)) {
+	if (!ExtractAll (zipfile, dirname, CanonModeResource)) {
 		RemoveDir (dirname);
 		unzClose (zipfile);
 		g_free (dirname);

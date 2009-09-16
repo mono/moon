@@ -53,10 +53,16 @@ G_GNUC_INTERNAL void g_ptr_array_insert (GPtrArray *array, guint index, void *it
 
 G_GNUC_INTERNAL void g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item);
 
-const char *CanonicalizeFilename (char *filename, int n, bool lower);
+enum CanonMode {
+	CanonModeNone,
+	CanonModeXap,
+	CanonModeResource
+};
+
+const char *CanonicalizeFilename (char *filename, int n, CanonMode mode);
 
 bool ExtractFile (unzFile zip, int fd);
-bool ExtractAll (unzFile zip, const char *dir, bool lower);
+bool ExtractAll (unzFile zip, const char *dir, CanonMode mode);
 
 char *MakeTempDir (char *tmpdir);
 char *CreateTempDir (const char *filename);

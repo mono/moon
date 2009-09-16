@@ -40,9 +40,7 @@ Xap::Unpack (const char *fname)
 		return NULL;
 	}
 	
-	// FIXME: at some point we'll want to pass 'true' here (as part of the
-	// fix for case-insensitive resource access)
-	if (!ExtractAll (zipfile, xap_dir, false)) {
+	if (!ExtractAll (zipfile, xap_dir, CanonModeXap)) {
 		RemoveDir (xap_dir);
 		unzClose (zipfile);
 		g_free (xap_dir);
@@ -76,7 +74,7 @@ xap_create_from_file (XamlLoader *loader, const char *filename)
 		return NULL;
 
 	// Load the AppManifest file
-	char *manifest = g_build_filename (xap_dir, "AppManifest.xaml", NULL);
+	char *manifest = g_build_filename (xap_dir, "appmanifest.xaml", NULL);
 	element = loader->CreateDependencyObjectFromFile (manifest, false, &element_type);
 	g_free (manifest);
 

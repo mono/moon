@@ -81,8 +81,6 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 #if DEBUG
 		printf ("Moonlight: Enabling MONO_DEBUG=keep-delegates.\n");
 		g_setenv ("MONO_DEBUG", "keep-delegates", false);
-		printf ("Moonlight: Enabling MONO_IOMAP=case.\n");
-		g_setenv ("MONO_IOMAP", "case", false);
 #endif
 
 		mono_config_parse (NULL);

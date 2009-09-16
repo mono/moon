@@ -1328,7 +1328,7 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 		}
 		
 		// unzip the contents
-		if (!ExtractAll (zipfile, dirname, false)) {
+		if (!ExtractAll (zipfile, dirname, CanonModeNone)) {
 			RemoveDir (dirname);
 			unzClose (zipfile);
 			g_free (resource);

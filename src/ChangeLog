@@ -1,3 +1,24 @@
+2009-09-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* deployment.cpp (Initialize): Disable MONO_IOMAP=case.
+
+	* application.cpp (GetResourceAsPath): ExtractAll using
+	CanonModeResource (everything gets lowercased).
+
+	* xap.cpp (Unpack): ExtractAll using CanonModeXap (everything but
+	.dll's get lowercased).
+	(xap_create_from_file): Canonicalize the AppManifest.xaml file
+	name.
+
+	* utils.cpp (CanonicalizeFilename): Now takes a tri-state mode
+	argument to specify whether it is canonicalizing a Xap file, a
+	resource name, or just fixing path separators. When in Xap mode,
+	don't downcase Dll base names.
+	(ExtractAll): When extracting a Xap, symlink a fully lowercased
+	filename to the unmodified .dll name.
+
+	r: spouliot
+
 2009-09-16  Larry Ewing  <lewing@novell.com>
 
 	* style.h: make IsSealed field internal. 
