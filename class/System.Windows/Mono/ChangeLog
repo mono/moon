@@ -1,3 +1,10 @@
+2009-09-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Helper.cs (CanonicalizeAssemblyPath): New helper function.
+	(CanonicalizeResourceName): Same.
+
+	r: spouliot
+
 2009-09-15  Sebastien Pouliot  <sebastien at ximian.com>
 
 	* GeneratedPInvokes.cs: Regenerated

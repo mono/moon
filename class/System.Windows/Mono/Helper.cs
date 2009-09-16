@@ -28,6 +28,8 @@
 //
 
 using System;
+using System.Text;
+using System.Globalization;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -42,7 +44,7 @@ using Mono.Security.Cryptography;
 namespace Mono {
 
 	internal static partial class Helper {
-		internal static System.Globalization.CultureInfo DefaultCulture = System.Globalization.CultureInfo.GetCultureInfo ("en-US");
+		internal static CultureInfo DefaultCulture = CultureInfo.GetCultureInfo ("en-US");
 		
 		public static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
 		{
@@ -113,6 +115,43 @@ namespace Mono {
 			} while (nread != 0);
 
 			return buf;
+		}
+		
+		static void CanonicalizeName (StringBuilder sb, string str, int n)
+		{
+			// Fix path separators and capitalization
+			for (int i = 0; i < n; i++) {
+				if (str[i] != '\\')
+					sb.Append (Char.ToLower (str[i], CultureInfo.InvariantCulture));
+				else
+					sb.Append ('/');
+			}
+		}
+		
+		public static string CanonicalizeAssemblyPath (string path)
+		{
+			StringBuilder sb = new StringBuilder (path.Length);
+			int i;
+			
+			for (i = path.Length; i > 0; i--) {
+				if (path[i - 1] == '/' || path[i - 1] == '\\')
+					break;
+			}
+			
+			CanonicalizeName (sb, path, i);
+			
+			sb.Append (path, i, path.Length - i);
+			
+			return sb.ToString ();
+		}
+		
+		public static string CanonicalizeResourceName (string resource)
+		{
+			StringBuilder sb = new StringBuilder (resource.Length);
+			
+			CanonicalizeName (sb, resource, resource.Length);
+			
+			return sb.ToString ();
 		}
 
 #if NET_2_1
