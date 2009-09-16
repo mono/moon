@@ -34,7 +34,7 @@ G_BEGIN_DECLS
 
 // older gtk+ (like 2.8 used in SLED10) don't support icon-less GTK_MESSAGE_OTHER
 #ifndef GTK_MESSAGE_OTHER
-	#define GTK_MESSAGE_OTHER	GTK_MESSAGE_INFO
+#define GTK_MESSAGE_OTHER	GTK_MESSAGE_INFO
 #endif
 
 /* @GeneratePInvoke */

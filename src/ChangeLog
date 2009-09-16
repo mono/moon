@@ -1,3 +1,9 @@
+2009-09-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* messagebox.h: Remove tab to please the generator
+
+	r: lewing
+
 2009-09-16  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* deepzoomimagetilesource.cpp: don't leak get_resource_aborter
