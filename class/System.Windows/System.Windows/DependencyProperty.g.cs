@@ -243,7 +243,7 @@ namespace System.Windows {
 	}
 
 	partial class Style {
-		public static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.STYLE, "IsSealed", typeof (bool));
+		internal static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.STYLE, "IsSealed", typeof (bool));
 		private static readonly DependencyProperty SettersProperty = DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
 		internal static readonly DependencyProperty TargetTypeProperty = DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (System.Type));
 

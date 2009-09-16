@@ -1,3 +1,7 @@
+2009-09-16  Larry Ewing  <lewing@novell.com>
+
+	* style.h: make IsSealed field internal. 
+
 2009-09-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* messagebox.h: Remove tab to please the generator
