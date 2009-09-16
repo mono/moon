@@ -1,3 +1,8 @@
+2009-09-16  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* Descriptors/a11y.xml: Sort types (regenerated from new
+	changes in the tuner).
+
 2009-09-10  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* Descriptors/a11y.xml: new file that contains the internal
