@@ -120,7 +120,7 @@ public:
 	const static int OutOfBrowserSettingsPropery;
  	/* @PropertyType=AssemblyPartCollection,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int PartsProperty;
- 	/* @PropertyType=string,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=string,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int RuntimeVersionProperty;
  	/* @PropertyType=Surface,ManagedAccess=Internal,GenerateAccessors */
 	const static int SurfaceProperty;
@@ -144,7 +144,10 @@ public:
 
 	OutOfBrowserSettings *GetOutOfBrowserSettings ();
 	void SetOutOfBrowserSettings (OutOfBrowserSettings *oob);
-
+	
+	void SetRuntimeVersion (const char *version);
+	const char *GetRuntimeVersion ();
+	
 	void Reinitialize ();
 
 	Application* GetCurrentApplication ();

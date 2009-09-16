@@ -4159,6 +4159,19 @@ Deployment::SetSurface (Surface *value)
 	SetValue (Deployment::SurfaceProperty, Value::CreateUnrefPtr (value));
 }
 
+const char *
+Deployment::GetRuntimeVersion ()
+{
+	Value *value = GetValue (Deployment::RuntimeVersionProperty);
+	return value ? value->AsString () : NULL;
+}
+
+void
+Deployment::SetRuntimeVersion (const char *value)
+{
+	SetValue (Deployment::RuntimeVersionProperty, Value (value));
+}
+
 AssemblyPartCollection *
 Deployment::GetParts ()
 {

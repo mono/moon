@@ -1,3 +1,9 @@
+2009-09-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (Properties): Display the RuntimeVersion attribute.
+
+	r:toshok
+
 2009-09-14  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (MoonlightErrorEventArgs::GetProperty): use

@@ -299,7 +299,7 @@ PluginInstance::Properties ()
 	table_add (table, "Width:", 0, row++);
 	table_add (table, "Height:", 0, row++);
 	table_add (table, "Background:", 0, row++);
-	table_add (table, "Kind:", 0, row++);
+	table_add (table, "RuntimeVersion:", 0, row++);
 	table_add (table, "Windowless:", 0, row++);
 	table_add (table, "MaxFrameRate:", 0, row++);
 	table_add (table, "Codecs:", 0, row++);
@@ -311,7 +311,17 @@ PluginInstance::Properties ()
 	snprintf (buffer, sizeof (buffer), "%dpx", GetActualHeight ());
 	table_add (table, buffer, 1, row++);
 	table_add (table, background, 1, row++);
-	table_add (table, xaml_loader == NULL ? "(Unknown)" : (xaml_loader->IsManaged () ? "1.1 (XAML + Managed Code)" : "1.0 (Pure XAML)"), 1, row++);
+	if (!xaml_loader || xaml_loader->IsManaged ()) {
+		Deployment *deployment = GetDeployment ();
+		
+		if (deployment && deployment->GetRuntimeVersion ()) {
+			table_add (table, deployment->GetRuntimeVersion (), 1, row++);
+		} else {
+			table_add (table, "(Unknown)", 1, row++);
+		}
+	} else {
+		table_add (table, "1.0 (Pure XAML)", 1, row++);
+	}
 	table_add (table, windowless ? "yes" : "no", 1, row++);
 	snprintf (buffer, sizeof (buffer), "%i", maxFrameRate);
 	table_add (table, buffer, 1, row++);
