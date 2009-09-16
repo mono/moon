@@ -1641,14 +1641,36 @@ ProgressiveSource::Dispose ()
 	uri = NULL;
 	
 	if (cancellable) {
-		cancellable->Cancel ();
-		delete cancellable;
-		cancellable = NULL;
+		if (Surface::InMainThread ()) {
+			delete_cancellable (this);
+		} else {
+			// we have to cancel/delete he cancellable on the main thread
+			// it may end up doing a lot of stuff, including calling into
+			// mozilla.
+				
+			// The tick call will ref us until the callback has been called.
+			// Note that it may cause a warning to be printed
+			// in ref () (reffing an object with a refcount of 0). 
+			// TODO: find a way to avoid the warning in this case, imho this is
+			// a valid case of reffing an object with a refcount of 0.
+			AddTickCallSafe (delete_cancellable);
+		}
 	}
 	
 	CloseWriteFile ();
 	
 	FileSource::Dispose ();
+}
+
+void
+ProgressiveSource::delete_cancellable (EventObject *data)
+{
+	ProgressiveSource *src = (ProgressiveSource *) data;
+	if (src->cancellable) {
+		src->cancellable->Cancel ();
+		delete src->cancellable;
+		src->cancellable = NULL;
+	}
 }
 
 MediaResult

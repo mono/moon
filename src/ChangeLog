@@ -1,5 +1,12 @@
 2009-09-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp|h: ProgressiveSource::Dispose: we can only abort the 
+	resource loader from the main thread.
+
+	r: sde
+
+2009-09-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* ChangeLog:
 	* bitmapimage.cpp: don't leak get_res_aborter.
 

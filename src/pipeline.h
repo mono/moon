@@ -1136,7 +1136,8 @@ private:
 
 	static void data_write (void *data, gint32 offset, gint32 n, void *closure);
 	static void notify_func (NotifyType type, gint64 args, void *closure);
-
+	static void delete_cancellable (EventObject *data);
+	
 	void Notify (NotifyType, gint64 args);
 
 	void DownloadComplete ();
