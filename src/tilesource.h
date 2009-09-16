@@ -35,6 +35,8 @@ class MultiScaleTileSource : public DependencyObject {
 	const static int TileHeightProperty;
 	/* @PropertyType=gint32,Version=2.0,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Internal */
 	const static int TileOverlapProperty;
+	/* @PropertyType=TimeSpan,Version=2.0,DefaultValue=(gint64) TimeSpan_FromSecondsFloat (0.5)\,Type::TIMESPAN,GenerateAccessors,GenerateManagedAccessors,ManagedAccess=Protected,ManagedFieldAccess=Private */
+	const static int TileBlendTimeProperty;
 
 	virtual ~MultiScaleTileSource () {}
 
@@ -61,6 +63,9 @@ class MultiScaleTileSource : public DependencyObject {
 
 	int GetTileOverlap ();
 	void SetTileOverlap (int overlap);
+
+	TimeSpan GetTileBlendTime ();
+	void SetTileBlendTime (TimeSpan time);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void set_image_uri_func (get_image_uri_func func);

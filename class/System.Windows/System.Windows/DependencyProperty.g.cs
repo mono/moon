@@ -1531,6 +1531,7 @@ namespace System.Windows.Media {
 	partial class MultiScaleTileSource {
 		internal static readonly DependencyProperty ImageHeightProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "ImageHeight", typeof (double));
 		internal static readonly DependencyProperty ImageWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "ImageWidth", typeof (double));
+		private static readonly DependencyProperty TileBlendTimeProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "TileBlendTime", typeof (TimeSpan));
 		internal static readonly DependencyProperty TileHeightProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "TileHeight", typeof (int));
 		internal static readonly DependencyProperty TileOverlapProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "TileOverlap", typeof (int));
 		internal static readonly DependencyProperty TileWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "TileWidth", typeof (int));
@@ -1543,6 +1544,11 @@ namespace System.Windows.Media {
 		internal double ImageWidth {
 			get { return (double) GetValue (ImageWidthProperty); }
 			set { SetValue (ImageWidthProperty, value); }
+		}
+
+		protected TimeSpan TileBlendTime {
+			get { return (TimeSpan) GetValue (TileBlendTimeProperty); }
+			set { SetValue (TileBlendTimeProperty, value); }
 		}
 
 		internal int TileHeight {

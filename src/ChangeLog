@@ -21,6 +21,17 @@
 
 2009-09-16  Larry Ewing  <lewing@novell.com>
 
+	* tilesource.h: make tileblendtime unamanaged so we can use it
+	when creating the fade animation.
+	
+	* multiscaleimage.cpp (Render): use the duration from the
+	tilesource for the fade animation.  This probably needs to listen
+	to change events but more testing is required.
+
+	r: toshok
+	
+2009-09-16  Larry Ewing  <lewing@novell.com>
+
 	* style.h: make IsSealed field internal. 
 
 2009-09-16  Sebastien Pouliot  <sebastien@ximian.com>

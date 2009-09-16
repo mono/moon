@@ -641,6 +641,12 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	LOG_MSI ("MSI::Render\n");
 
+	MultiScaleTileSource *source = GetSource ();
+	if (!source) {
+		LOG_MSI ("no sources set, nothing to render\n");
+		return;	
+	}
+
 	//Process the downloaded tile
 	GList *list;
 	BitmapImageContext *ctx;
@@ -659,7 +665,7 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 			fadein_sb->SetManualTarget (this);
 			fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("(MultiScaleImage.TileFade)"));
 			fadein_animation = new DoubleAnimation ();
-			fadein_animation->SetDuration (Duration::FromSecondsFloat (0.5));
+			fadein_animation->SetDuration (Duration (source->GetTileBlendTime ()));
 			TimelineCollection *tlc = new TimelineCollection ();
 			tlc->Add (static_cast<DoubleAnimation*> (fadein_animation));
 			fadein_sb->SetChildren(tlc);
@@ -686,12 +692,6 @@ MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
 
 		ctx->bitmapimage->SetUriSource (NULL);
 		ctx->state = BitmapImageFree;
-	}
-
-	MultiScaleTileSource *source = GetSource ();
-	if (!source) {
-		LOG_MSI ("no sources set, nothing to render\n");
-		return;	
 	}
 
 	bool is_collection = source &&

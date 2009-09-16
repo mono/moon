@@ -19,11 +19,6 @@ namespace System.Windows.Media
 {	
 	public abstract partial class MultiScaleTileSource : DependencyObject
 	{		
-		protected TimeSpan TileBlendTime {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
-		}
-		
 		System.Runtime.InteropServices.GCHandle handle;
 		void Initialize ()
 		{
