@@ -363,12 +363,10 @@ MultiScaleImage::MultiScaleImage () :
 
 MultiScaleImage::~MultiScaleImage ()
 {
+	StopDownloading ();
 	if (cache)
 		g_hash_table_destroy (cache);
 	cache = NULL;
-	if (bitmapimages)
-		g_list_free (bitmapimages);
-	bitmapimages = NULL;
 }
 
 void
@@ -595,6 +593,24 @@ MultiScaleImage::GetBitmapImageContext (BitmapImage *bitmapimage)
 		if (ctx->bitmapimage == bitmapimage)
 			return ctx;
 	return NULL;
+}
+
+void
+MultiScaleImage::StopDownloading ()
+{
+	BitmapImageContext *ctx;
+	GList *list;
+	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next) {
+		ctx->bitmapimage->Abort ();
+		ctx->bitmapimage->Dispose ();
+		ctx->bitmapimage->unref ();
+		ctx->state = BitmapImageFree;
+		delete ctx;
+	}	
+
+	if (bitmapimages)
+		g_list_free (bitmapimages);
+	bitmapimages = NULL;
 }
 
 BitmapImageContext *
@@ -1146,12 +1162,7 @@ void
 MultiScaleImage::OnSourcePropertyChanged ()
 {
 	//abort all downloaders
-	BitmapImageContext *ctx;
-	GList *list;
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next) {
-		ctx->bitmapimage->Abort ();
-		ctx->state = BitmapImageFree;
-	}
+	StopDownloading ();
 
 	DeepZoomImageTileSource *newsource;
 	if (GetSource ()) {
@@ -1190,8 +1201,12 @@ MultiScaleImage::OnSourcePropertyChanged ()
 void
 MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
-	if (args->GetId () == MultiScaleImage::AllowDownloadingProperty && args->GetNewValue () && args->GetNewValue()->AsBool ())
-		Invalidate();
+	if (args->GetId () == MultiScaleImage::AllowDownloadingProperty) {
+		if (args->GetNewValue()->AsBool ())
+			Invalidate();
+		else
+			StopDownloading ();
+	}
 
 	if (args->GetId () == MultiScaleImage::InternalViewportOriginProperty) {
 		Emit (MultiScaleImage::ViewportChangedEvent);
@@ -1430,6 +1445,8 @@ MultiScaleImage::InvalidateTileLayer (int level, int tilePositionX, int tilePosi
 		g_warning ("calling InvalidateTileLayer on DeepZoom Images makes no sense\n");
 		return;
 	}
+
+	StopDownloading ();
 
 	int index = -1;
 	QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &index);

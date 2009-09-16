@@ -186,6 +186,7 @@ class MultiScaleImage : public MediaBase {
 	const static int ViewportChangedEvent;
 
 	BitmapImageContext *GetFreeBitmapImageContext ();
+	void StopDownloading ();
 	void DownloadTile (BitmapImageContext *ctx, Uri *tile, void *user_data);
 	/* @GenerateCBinding */
 	void HandleDzParsed ();

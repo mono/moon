@@ -1,3 +1,11 @@
+2009-09-16  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h|cpp: StopDownloading () abort and clean the
+	downloaders. Call it from the dtor, InvalidateTileLayer and
+	OnSourcePropertyChanged. Should prevent drt874 from randomly failing.
+
+	r: rolf
+
 2009-09-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: MediaClosure: remove the 'finished' field (never used)
