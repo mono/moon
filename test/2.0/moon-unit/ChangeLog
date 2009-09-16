@@ -1,3 +1,12 @@
+2009-09-16  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: Testing
+	GetParent when Template exists and doesn't exist.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	New test GetParent.
+
+	r: toshok
+
 2009-09-16  Brad Taylor  <brad@getcoded.net>
 
 	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 

@@ -1,3 +1,10 @@
+2009-09-16  Mario Carrion  <mcarrion@novell.com>
+
+	* FrameworkElementAutomationPeer.cs: Fixed GetParent when control's
+	parent is not a control that returns a peer.
+
+	r: toshok
+
 2009-09-16  Brad Taylor  <brad@getcoded.net>
 
 	* AutomationSingleton.cs: Query AccessibilityEnabled later in the init

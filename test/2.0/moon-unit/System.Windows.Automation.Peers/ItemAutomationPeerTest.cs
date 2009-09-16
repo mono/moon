@@ -332,6 +332,84 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			EnqueueTestComplete ();
 		}
 
+		public class MyListBox : ListBox {
+			public ScrollViewer GetScrollViewer ()
+			{
+				return GetTemplateChild ("ScrollViewer") as ScrollViewer;
+			}
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void GetParentTest ()
+		{
+			TestGetParent (new MyListBox ());
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void GetParentTest_NoTemplate ()
+		{
+			TestGetParent (new MyListBox () { Template = null });
+		}
+
+		protected void TestGetParent (MyListBox listbox)
+		{
+			listbox.Width = 100;
+			listbox.Height = 100;
+			bool layoutUpdated = false;
+			bool loaded = false;
+			listbox.LayoutUpdated += (o, e) => layoutUpdated = true;
+			listbox.Loaded += (o, e) => loaded = true;
+
+			TestPanel.Children.Add (listbox);
+			AutomationPeer peer = null;
+			AutomationPeer peerParent = null;
+			ListBoxItem item0 = null;
+			ListBoxItem item1 = null;
+			List<AutomationPeer> children = null;
+
+			EnqueueConditional (() => loaded, "Loaded #0");
+			Enqueue (() => {
+				item0 = new ListBoxItem () { Content = "Item 0" };
+				item1 = new ListBoxItem () { Content = "Item 1" };
+
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (listbox);
+				Assert.IsNotNull (peer, "CreatePeerForElement #0");
+				Assert.IsNull (peer.GetChildren (), "GetChildren #1");
+
+				listbox.Items.Add (item0);
+				listbox.Items.Add (item1);
+
+				children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #2");
+				Assert.AreEqual (2, children.Count, "GetChildren #3");
+
+				if (listbox.Template == null)
+					peerParent = peer;
+				else {
+					// When default Template is used the Parent is the ScrollViewer 
+					// not the ListBox
+					ScrollViewer viewer = listbox.GetScrollViewer ();
+					Assert.IsNotNull (viewer, "Missing ScrollViewer");
+					if (viewer != null)
+						peerParent = FrameworkElementAutomationPeer.CreatePeerForElement (viewer);
+				}
+
+				Assert.AreEqual (peerParent, children[0].GetParent (), "GetParent #1");
+				Assert.AreEqual (peerParent, children[1].GetParent (), "GetParent #2");
+
+				layoutUpdated = false;
+				listbox.Items.Remove (item1);
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #0");
+			Enqueue (() => {
+				Assert.IsNull (children [1].GetParent (), "GetParent #2");
+				Assert.IsNotNull (peer.GetChildren (), "GetChildren #4");
+				Assert.AreEqual (1, peer.GetChildren ().Count, "GetChildren #5");
+			});
+			EnqueueTestComplete ();
+		}
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{

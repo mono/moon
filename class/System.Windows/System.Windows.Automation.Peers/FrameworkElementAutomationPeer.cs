@@ -259,7 +259,14 @@ namespace System.Windows.Automation.Peers {
 				return null;
 
 			// Some parents don't return an Automation Peer (for example: Border or Panel subclasses)
-			return FrameworkElementAutomationPeer.FromElement (parent);
+			// We need to create the Peer because some Peers return children that don't
+			// necesarily return this peer when calling GetParent 
+			// (for example: ListBox when Template is not null)
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (parent);
+			if (peer == null)
+				return GetParentPeer (parent);
+			else
+				return peer;
 		}
 
 		#endregion

@@ -853,6 +853,120 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				"FrameworkElementAutomationPeer is not ContentElement. Override this method");
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public virtual void GetParentTest ()
+		{
+			bool layoutUpdated = false;
+			bool loaded = false;
+
+			Button button = new Button ();
+			button.Width = 30;
+			button.Height = 30;
+			button.LayoutUpdated += (o, e) => layoutUpdated = true;
+			button.Loaded += (o, e) => loaded = true;
+			FrameworkElement concrete = CreateConcreteFrameworkElement ();
+			concrete.Width = 20;
+			concrete.Height = 10;
+			button.Content = concrete;
+
+			TestPanel.Children.Add (button);
+
+			AutomationPeer buttonPeer = null;
+			AutomationPeer concretePeer = null;
+			StackPanel firstPanel = null;
+			StackPanel secondPanel = null;
+
+			EnqueueConditional (() => loaded, "Loaded #0");
+			Enqueue (() => {
+				buttonPeer = FrameworkElementAutomationPeer.CreatePeerForElement (button);
+				concretePeer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
+
+				Assert.IsNotNull (buttonPeer, "CreatePeerForElement #0");
+				Assert.IsNotNull (concretePeer, "CreatePeerForElement #1");
+
+				Assert.IsNotNull (buttonPeer.GetChildren (), "GetChildren #0");
+
+				Assert.IsNotNull (concretePeer.GetParent (), "GetParent #1");
+				Assert.AreEqual (buttonPeer, concretePeer.GetParent (), "GetParent #2");
+
+				Assert.AreEqual (button, concrete.Parent, "Parent #0");
+
+				layoutUpdated = false;
+				button.Content = null;
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #0");
+			Enqueue (() => {
+				Assert.IsNull (buttonPeer.GetChildren (), "GetChildren #1");
+				Assert.IsNull (concretePeer.GetParent (), "GetParent #3");
+				Assert.IsNull (concrete.Parent, "Parent #1");
+
+				// We add a new stack panel, the visual hierarchy will be:
+				// ScrollViewer
+				// - StackPanel
+				firstPanel = new StackPanel ();
+
+				layoutUpdated = false;
+				button.Content = firstPanel;
+				Assert.AreEqual (button, firstPanel.Parent, "Parent #2");
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #1");
+			Enqueue (() => {
+				Assert.IsNull (buttonPeer.GetChildren (), "GetChildren #2");
+				Assert.IsNull (concretePeer.GetParent (), "GetParent #4");
+				Assert.IsNull (concrete.Parent, "Parent #3");
+
+				// We add the concrete into the new stack panel, the visual hierarchy will be:
+				// ScrollViewer
+				// - StackPanel
+				// -- Concrete
+				layoutUpdated = false;
+				firstPanel.Children.Add (concrete);
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #2");
+			Enqueue (() => {
+				Assert.IsNotNull (buttonPeer.GetChildren (), "GetChildren #3");
+				Assert.IsNotNull (concretePeer.GetParent (), "GetParent #5");
+				Assert.AreEqual (buttonPeer, concretePeer.GetParent (), "GetParent #6");
+				Assert.AreEqual (firstPanel, concrete.Parent, "Parent #4");
+
+				// We remove the concrete and because we are going to add a stackpanel into 
+				// the stackpanel this shouldn't change the peers, the visual hierarchy will be:
+				// ScrollViewer
+				// - StackPanel
+				// -- StackPanel
+				layoutUpdated = false;
+				firstPanel.Children.Remove (concrete);
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #3");
+			Enqueue (() => {
+				Assert.IsNull (buttonPeer.GetChildren (), "GetChildren #4");
+				Assert.IsNull (concretePeer.GetParent (), "GetParent #7");
+				Assert.IsNull (concrete.Parent, "Parent #5");
+
+				secondPanel = new StackPanel ();
+				layoutUpdated = false;
+				firstPanel.Children.Add (secondPanel);
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #4");
+			Enqueue (() => {
+				Assert.IsNull (buttonPeer.GetChildren (), "GetChildren #4");
+				Assert.IsNull (concretePeer.GetParent (), "GetParent #7");
+
+				layoutUpdated = false;
+				secondPanel.Children.Add (concrete);
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #5");
+			Enqueue (() => {
+				Assert.IsNotNull (buttonPeer.GetChildren (), "GetChildren #5");
+				Assert.IsNotNull (concretePeer.GetParent (), "GetParent #8");
+				Assert.AreEqual (buttonPeer, concretePeer.GetParent (), "GetParent #9");
+				Assert.AreEqual (firstPanel, secondPanel.Parent, "Parent #6");
+				Assert.AreEqual (secondPanel, concrete.Parent, "Parent #7");
+			});
+			EnqueueTestComplete ();
+		}
+
 		// All "visible" controls must override GetBoundingRectangle and call this method
 		protected void TestLocationAndSize ()
 		{
