@@ -7,8 +7,9 @@ rating:3
 
 site:Hard Rock Memorablia
 url:http://memorabilia.hardrock.com
-rating:2
- * List items on the left are placed on top of each other. Bug 503689
+rating:4
+ * looks great!
+ * kind of slow
 
 site:Fox Movies
 url:http://silverlight.net/fox
@@ -86,9 +87,8 @@ rating:3
 
 site:Python WebIDE
 url:http://www.voidspace.org.uk/ironpython/webide/webide.html
-rating:3
- * Works!
- * Cranks cpu to 100% using controls Bug 528653
+rating:4
+ * Works great!
 
 site:Tic-Tac-Toe
 url:http://oldschooldotnet.blogspot.com/2009/01/tic-tac-toe-in-silverlight.html
@@ -118,9 +118,8 @@ rating:4
 
 site:FullSix
 url:http://www.fullsix.pt/tas/sbvideo/default.htm
-rating:2
- * Works pretty good
- * Clicking on Stop will cause seg fault Bug 528656
+rating:4
+ * Works really well
 
 site:Futbol
 url:http://www.semgoksu.com/silverlight-futbol-oyunu-yazisi/503.aspx
@@ -159,8 +158,8 @@ rating:1
 
 site:Vector Space Zero
 url:http://www.ddtmm.com/vs0/
-rating:0 
- * Crashes on coded download
+rating:2 
+ * ArithmeticException:NAN in System.Math.Sign(Single value) after your first crash
 
 site:Geometry
 url:http://geometry.osenkov.com/
@@ -169,8 +168,8 @@ rating:2
 
 site:Google Image Memory Game
 url:http://www.markbetz.net/sl/gmemory
-rating:3
- * Backs of cards don't show
+rating:4
+ * Works
 
 site:Silverlight 2 Media Player Markers
 url:http://joel.neubeck.net/2008/06/sl2b2-media-player-markers/
