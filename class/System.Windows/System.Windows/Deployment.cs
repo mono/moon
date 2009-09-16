@@ -143,7 +143,7 @@ namespace System.Windows {
 
 		internal void ReadManifest () {
 			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (null, Surface.Native, PluginHost.Handle);
-			string app_manifest = Path.Combine (XapDir, "AppManifest.xaml");
+			string app_manifest = Path.Combine (XapDir, "appmanifest.xaml");
 
 			if (!File.Exists (app_manifest))
 				throw new MoonException(2103, "Invalid or malformed application: Check manifest");
@@ -256,7 +256,8 @@ namespace System.Windows {
 
 				try {
 					bool try_downloading = false;
-					string filename = Path.GetFullPath (Path.Combine (XapDir, source));
+					string canon = Helper.CanonicalizeAssemblyPath (source);
+					string filename = Path.GetFullPath (Path.Combine (XapDir, canon));
 					// note: the content of the AssemblyManifest.xaml file is untrusted
 					if (filename.StartsWith (XapDir)) {
 						try {

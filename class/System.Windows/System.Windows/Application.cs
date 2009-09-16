@@ -37,6 +37,7 @@ using System.Windows.Resources;
 using System.Windows.Interop;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Resources;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -395,7 +396,9 @@ namespace System.Windows {
 			} catch {}
 
 			try {
-				string res_file = Path.Combine (Deployment.Current.XapDir, resource);
+				// Canonicalize the resource name the same way we do on the unmanaged side.
+				string canon = Helper.CanonicalizeResourceName (resource);
+				string res_file = Path.Combine (Deployment.Current.XapDir, canon);
 				if (File.Exists (res_file))
 					return StreamResourceInfo.FromFile (res_file);
 			} catch {}
