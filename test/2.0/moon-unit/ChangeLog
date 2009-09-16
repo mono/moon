@@ -1,3 +1,10 @@
+2009-09-16  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Use new API to force the generation of events.
+
+	r: toshok
+
 2009-09-15  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows/MessageBoxTest.cs: New. Unit tests for MessageBox

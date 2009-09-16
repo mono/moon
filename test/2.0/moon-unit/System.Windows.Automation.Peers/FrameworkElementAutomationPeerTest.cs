@@ -1015,9 +1015,9 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				FieldInfo info = singletonType.GetField ("Instance", BindingFlags.Public | BindingFlags.Static);
 				automationSingleton = info.GetValue (null);
 
-				FieldInfo bridgeField =
-					singletonType.GetField ("accessibilityEnabled", BindingFlags.NonPublic | BindingFlags.Instance);
-				bridgeField.SetValue (automationSingleton, true);
+				singletonType.GetMethod ("ForceAccessibilityEnabled",
+				                         BindingFlags.NonPublic | BindingFlags.Instance)
+				             .Invoke (automationSingleton, null);
 
 				AddEventHandler ("AutomationPropertyChanged", "AddPropertyEvent");
 				AddEventHandler ("AutomationEventRaised", "AddEvent");

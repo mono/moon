@@ -1,3 +1,10 @@
+2009-09-16  Brad Taylor  <brad@getcoded.net>
+
+	* AutomationSingleton.cs: Query AccessibilityEnabled later in the init
+	process so that the value is set.
+	
+	r: toshok
+
 2009-09-10  Mario Carrion  <mcarrion@novell.com>
 
 	* RangeBaseAutomationPeer.cs: Using RangeBase.UIAPropertyChanged to

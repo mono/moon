@@ -40,13 +40,6 @@ namespace System.Windows.Automation.Peers {
 
 		private AutomationSingleton ()
 		{
-			// We are using a class variable to change it using reflection
-			// to allow testing events.
-#if MOON_A11Y_INTERNAL_HACK
-			accessibilityEnabled = Mono.A11yHelper.AccessibilityEnabled;
-#else
-			accessibilityEnabled = false;
-#endif
 		}
 
 		public event EventHandler<AutomationPropertyChangedEventArgs> AutomationPropertyChanged;
@@ -54,7 +47,23 @@ namespace System.Windows.Automation.Peers {
 		public event EventHandler<AutomationEventEventArgs> AutomationEventRaised;
 
 		public bool AccessibilityEnabled {
-			get { return accessibilityEnabled; }
+			get {
+				if (forceAccessibilityEnabled)
+					return true;
+
+#if MOON_A11Y_INTERNAL_HACK
+				return Mono.A11yHelper.AccessibilityEnabled;
+#else
+				return false;
+#endif
+			}
+		}
+
+		// XXX: This should only be used for automated testing to force
+		// events to be fired without the Bridge.
+		internal void ForceAccessibilityEnabled ()
+		{
+			forceAccessibilityEnabled = true;
 		}
 		
 		#region Methods used to raise Automation Events
@@ -111,7 +120,7 @@ namespace System.Windows.Automation.Peers {
 
 		#endregion
 
-		private bool accessibilityEnabled;
+		private bool forceAccessibilityEnabled;
 	}
 
 	internal class AutomationPropertyChangedEventArgs : EventArgs {
