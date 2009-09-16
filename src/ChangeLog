@@ -1,3 +1,10 @@
+2009-09-16  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* deepzoomimagetilesource.cpp: don't leak get_resource_aborter
+	or format
+
+	r: sde
+
 2009-09-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp|h: ProgressiveSource::Dispose: we can only abort the 

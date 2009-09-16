@@ -165,6 +165,8 @@ DeepZoomImageTileSource::strip_and_set_uri (Uri *uri)
 DeepZoomImageTileSource::~DeepZoomImageTileSource ()
 {
 	Abort ();
+	g_free (format);
+	delete get_resource_aborter;
 }
 
 void
@@ -280,6 +282,8 @@ DeepZoomImageTileSource::Download ()
 
 	if (current && uri) {
 		downloaded = true;
+		if (get_resource_aborter)
+			delete get_resource_aborter;
 		get_resource_aborter = new Cancellable ();
 		current->GetResource (GetResourceBase(), uri, resource_notify, dz_write, MediaPolicy, get_resource_aborter, this);
 	}
