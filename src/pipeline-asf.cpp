@@ -68,7 +68,7 @@ ASFDemuxer::SeekAsyncInternal (guint64 pts)
 	LOG_PIPELINE ("ASFDemuxer::Seek (%" G_GUINT64_FORMAT ")\n", pts);
 	
 	g_return_if_fail (reader != NULL);
-	g_return_if_fail (InMediaThread ());
+	g_return_if_fail (Media::InMediaThread ());
 	
 	result = reader->Seek (pts);
 	

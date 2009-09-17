@@ -279,10 +279,13 @@ EventObject::GetDeployment ()
 }
 
 void
-EventObject::SetCurrentDeployment (bool domain)
+EventObject::SetCurrentDeployment (bool domain, bool register_thread)
 {	
-	if (deployment != NULL)
+	if (deployment != NULL) {
+		if (register_thread)
+			Deployment::RegisterThread (deployment);
 		Deployment::SetCurrent (deployment, domain);
+	}
 }
 
 Surface *

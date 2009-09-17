@@ -42,6 +42,7 @@
 #include "pipeline-asf.h"
 #include "playlist.h"
 #include "deployment.h"
+#include "timesource.h"
 
 /*
  * Media
@@ -53,17 +54,14 @@ bool Media::registered_ms_codecs = false;
 DemuxerInfo *Media::registered_demuxers = NULL;
 DecoderInfo *Media::registered_decoders = NULL;
 ConverterInfo *Media::registered_converters = NULL;
-gint32 Media::media_thread_count = 0;
 
 Media::Media (PlaylistRoot *root)
 	: IMediaObject (Type::MEDIA, this)
 {
-	pthread_attr_t attribs;
+	int result;
 	
 	LOG_PIPELINE ("Media::Media (), id: %i\n", GET_OBJ_ID (this));
 
-	queued_requests = new List ();
-	
 	playlist = root;
 	buffering_time = 0;
 	file = NULL;
@@ -72,42 +70,22 @@ Media::Media (PlaylistRoot *root)
 	demuxer = NULL;
 	markers = NULL;
 
+	is_disposed = false;
 	initialized = false;	
 	opened = false;
 	opening = false;
 	stopping = false;
-	stopped = false;
 	error_reported = false;
 	buffering_enabled = false;
 	in_open_internal = false;
 	http_retried = false;
 	download_progress = 0.0;
 	buffering_progress = 0.0;
-
-	// Last thing we do is to start up the media thread.
-	// TODO: only start up if we actually get work.
-	pthread_attr_init (&attribs);
-	pthread_attr_setdetachstate (&attribs, PTHREAD_CREATE_JOINABLE);	
-	pthread_mutex_init (&queue_mutex, NULL);
-	pthread_cond_init (&queue_condition, NULL);
-	pthread_create (&queue_thread, &attribs, WorkerLoop, this); 	
-	pthread_attr_destroy (&attribs);
-
-	GetDeployment ()->AddHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, this);
 }
 
 Media::~Media ()
 {
 	LOG_PIPELINE ("Media::~Media (), id: %i\n", GET_OBJ_ID (this));
-	pthread_mutex_destroy (&queue_mutex);
-	pthread_cond_destroy (&queue_condition);
-}
-
-void
-Media::ShuttingDownHandler (Deployment *obj, EventArgs *args)
-{
-	VERIFY_MAIN_THREAD;
-	StopThread ();
 }
 
 void
@@ -118,10 +96,11 @@ Media::Dispose ()
 	
 	LOG_PIPELINE ("Media::Dispose (), id: %i\n", GET_OBJ_ID (this));
 
-	ClearQueue (true);
+	mutex.Lock ();
+	is_disposed = true;
+	mutex.Unlock ();
 	
-	if (!stopped && !InMediaThread ())
-		pthread_join (queue_thread, NULL);
+	ClearQueue ();
 		
 	g_free (file);
 	file = NULL;
@@ -145,21 +124,7 @@ Media::Dispose ()
 	delete markers;
 	markers = NULL;
 	
-	if (Surface::InMainThread ()) {
-		RemoveShuttingDownHandler (this);
-	} else {
-		AddTickCallSafe (RemoveShuttingDownHandler);
-	}
-
 	IMediaObject::Dispose ();
-}
-
-void
-Media::RemoveShuttingDownHandler (EventObject *obj)
-{
-	VERIFY_MAIN_THREAD;
-	// event handling must be done on the main thread
-	obj->GetDeployment ()->RemoveHandler (Deployment::ShuttingDownEvent, ShuttingDownCallback, obj);
 }
 
 bool
@@ -223,9 +188,9 @@ Media::SetBufferingEnabled (bool value)
 void
 Media::SetBufferingTime (guint64 buffering_time)
 {
-	pthread_mutex_lock (&queue_mutex);
+	mutex.Lock ();
 	this->buffering_time = buffering_time;
-	pthread_mutex_unlock (&queue_mutex);
+	mutex.Unlock ();
 	
 	if (demuxer != NULL)
 		demuxer->FillBuffers ();
@@ -235,9 +200,9 @@ guint64
 Media::GetBufferingTime ()
 {
 	guint64 result;
-	pthread_mutex_lock (&queue_mutex);
+	mutex.Lock ();
 	result = buffering_time;
-	pthread_mutex_unlock (&queue_mutex);
+	mutex.Unlock ();
 	return result;
 }
 
@@ -340,6 +305,8 @@ Media::Initialize ()
 	
 	Media::RegisterDecoder (new PassThroughDecoderInfo ());
 	Media::RegisterDecoder (new NullDecoderInfo ());
+	
+	MediaThreadPool::Initialize ();
 }
 
 void
@@ -349,6 +316,10 @@ Media::Shutdown ()
 
 	MediaInfo *current;
 	MediaInfo *next;
+	
+	// Make sure all threads are stopped
+	AudioPlayer::Shutdown ();
+	MediaThreadPool::Shutdown ();
 	
 	current = registered_decoders;
 	while (current != NULL) {
@@ -374,9 +345,6 @@ Media::Shutdown ()
 	}
 	registered_converters = NULL;
 
-	// Make sure all threads are stopped
-	AudioPlayer::Shutdown ();
-
 	LOG_PIPELINE ("Media::Shutdown () [Done]\n");
 }
 
@@ -400,7 +368,7 @@ Media::Warning (MediaResult result, const char *format, ...)
 bool
 Media::InMediaThread ()
 {
-	return pthread_equal (queue_thread, pthread_self ());
+	return MediaThreadPool::IsThreadPoolThread ();
 }
 
 void
@@ -457,6 +425,7 @@ Media::ReportSeekCompleted (guint64 pts)
 	LOG_PIPELINE ("Media::ReportSeekCompleted (%llu), id: %i\n", pts, GET_OBJ_ID (this));
 	
 	buffering_progress = 0;
+	ClearQueue ();
 	EmitSafe (SeekCompletedEvent);
 }
 
@@ -1103,108 +1072,28 @@ Media::SelectDecodersAsync ()
 	return false;
 }
 
-void * 
-Media::WorkerLoop (void *data)
-{
-	Media *media = (Media *) data;
-	
-	g_atomic_int_exchange_and_add (&media_thread_count, 1);
-	
-	LOG_PIPELINE ("Media::WorkerLoop (%p id: %i). New media thread. Current media thread count: %i\n", media, GET_OBJ_ID (media), media_thread_count);
-	
-	media->WorkerLoop ();
-	
-	g_atomic_int_dec_and_test (&media_thread_count);
-	
-	LOG_PIPELINE ("Media::WorkerLoop (%p id: %i). Stopped media thread. Current media thread count: %i\n", media, GET_OBJ_ID (media), media_thread_count);
-	
-	return NULL;
-}
-
-void
-Media::WorkerLoop ()
-{
-	MediaResult result = MEDIA_SUCCESS;
-	
-	LOG_PIPELINE ("Media::WorkerLoop ().\n");
-
-	// This works since we have 1 thread per Media.
-	// When each thread may process work for > 1 Media, 
-	// we need to set the deployment before processing
-	// each each work item.
-	Deployment::RegisterThread (GetDeployment ());
-	Deployment::SetCurrent (GetDeployment ());
-	
-	while (queued_requests != NULL && !stopping) {
-		MediaWork *node = NULL;
-		
-		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (%p): entering mutex.\n", this);
-		
-		// Wait until we have something in the queue
-		pthread_mutex_lock (&queue_mutex);
-
-		if (queued_requests != NULL && !stopping && queued_requests->IsEmpty ())
-			pthread_cond_wait (&queue_condition, &queue_mutex);
-		
-		if (queued_requests != NULL) {
-			node = (MediaWork *) queued_requests->First ();
-			if (node != NULL)
-				queued_requests->Unlink (node);
-		}
-		
-		pthread_mutex_unlock (&queue_mutex);
-		
-		if (queued_requests == NULL || stopping) {
-			LOG_FRAMEREADERLOOP ("Media::WorkerLoop (%p): exiting.\n", this);
-			break;
-		}
-								
-		if (node == NULL)
-			continue; // Found nothing, continue waiting.
-
-		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (%p): got a node, there are %d nodes left.\n", this, queued_requests->Length ());
-		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (%p): processing node %p.\n", this, node);
-		
-		node->closure->Call ();
-		
-		LOG_FRAMEREADERLOOP ("Media::WorkerLoop (%p): processed node %p, result: %i.\n", this, node, result);
-		
-		delete node;
-	}
-	
-	stopped = true;
-
-	LOG_PIPELINE ("Media::WorkerLoop (): exiting.\n");
-}
-
 bool
 Media::EnqueueWork (MediaClosure *closure, bool wakeup)
 {
-	bool result;
-	MediaWork *work;
+	bool disposed;
 	
 	LOG_PIPELINE_EX ("Media::EnqueueWork (%p).\n", closure);
 
 	g_return_val_if_fail (closure != NULL, false);
+	g_return_val_if_fail (!IsDisposed (), false);
 	
-	work = new MediaWork (closure);
+	mutex.Lock ();
+	disposed = this->is_disposed;
+	mutex.Unlock ();
 	
-	pthread_mutex_lock (&queue_mutex);
-	
-	if (queued_requests != NULL) {
-		queued_requests->Append (work);
-		result = true;
-	} else {
-		delete work;
-		result = false;
+	if (disposed) {
+		LOG_PIPELINE ("Media::EnqueueWork (): disposed: %i, work not added\n", disposed);
+		return false;
 	}
-
-	if (wakeup)
-		pthread_cond_signal (&queue_condition);
 	
-	pthread_mutex_unlock (&queue_mutex);
+	MediaThreadPool::AddWork (closure, wakeup);
 	
-	return result;
+	return true;
 }
 
 MediaResult
@@ -1230,66 +1119,14 @@ Media::DisposeObject (EventObject *obj)
 void
 Media::WakeUp ()
 {
-	pthread_mutex_lock (&queue_mutex);
-	pthread_cond_signal (&queue_condition);
-	pthread_mutex_unlock (&queue_mutex);
+	MediaThreadPool::WakeUp ();
 }
 
 void
 Media::ClearQueue ()
 {
-	ClearQueue (false);
-}
-
-void
-Media::ClearQueue (bool delete_queue)
-{
 	LOG_PIPELINE ("Media::ClearQueue ().\n");
-	if (queued_requests != NULL) {
-		List::Node *next;
-		List::Node *current = NULL;
-
-		pthread_mutex_lock (&queue_mutex);
-		if (queued_requests != NULL) {
-			current = queued_requests->First ();
-			queued_requests->Clear (false);
-			if (delete_queue) {
-				delete queued_requests;
-				queued_requests = NULL;
-				pthread_cond_signal (&queue_condition);
-			}
-		}
-		pthread_mutex_unlock (&queue_mutex);
-		
-		// We have to delete the list nodes with the
-		// queue mutex unlocked, due to refcounting
-		// (our node's (MediaWork) dtor will cause unrefs,
-		// which may cause other dtors to be called,
-		// eventually ending up calling Dispose on this
-		// Media instance, which will try to lock again
-		// and therefore deadlock)
-		while (current != NULL) {
-			next = current->next;
-			delete current;
-			current = next;
-		}
-	}
-}
-
-void
-Media::StopThread ()
-{
-	LOG_PIPELINE ("Media::StopThread ().\n");
-
-	if (stopped)
-		return;
-
-	stopping = true;
-	ClearQueue (true);
-	
-	pthread_join (queue_thread, NULL);
-
-	LOG_PIPELINE ("Media::StopThread () [Done]\n");
+	MediaThreadPool::RemoveWork (this);
 }
 
 /*
@@ -1929,6 +1766,299 @@ MemorySource::PeekInternal (void *buffer, guint32 n)
 }
 
 /*
+ * MediaThreadPool
+ */
+
+pthread_mutex_t MediaThreadPool::mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t MediaThreadPool::condition = PTHREAD_COND_INITIALIZER;
+int MediaThreadPool::count = 0;
+pthread_t *MediaThreadPool::threads = NULL;
+Media **MediaThreadPool::medias = NULL;
+bool MediaThreadPool::shutting_down = false;
+List MediaThreadPool::queue;
+bool *MediaThreadPool::valid = NULL;
+
+void
+MediaThreadPool::AddWork (MediaClosure *closure, bool wakeup)
+{
+	pthread_attr_t attribs;
+	int result = 0;
+	
+	pthread_mutex_lock (&mutex);
+	
+	if (shutting_down) {
+		LOG_PIPELINE ("Moonlight: could not execute closure because we're shutting down.\n");
+	} else {
+		queue.Append (new MediaWork (closure));
+		
+		// check if all threads are busy with other Media objects
+		bool spawn = true;
+		if (count == 0) {
+			spawn = true;
+		} else if (count < 4 /* max 4 threads for now */) {
+			Media *media = closure->GetMedia ();
+			for (int i = 0; i < count; i++) {
+				if (medias [i] == NULL || medias [i] == media) {
+					spawn = false; // there is a thread working on this media or not working at all.
+					break;
+				}
+			}
+		} else {
+			spawn = false;
+		}
+		
+		if (spawn) {
+			int prev_count = count;
+			
+			count++; // start up another thread.
+			
+			LOG_FRAMEREADERLOOP ("MediaThreadPool::AddWork (): spawning a new thread (we'll now have %i thread(s))\n", count);
+			
+			threads = (pthread_t *) g_realloc (threads, sizeof (pthread_t) * count);
+			medias = (Media **) g_realloc (medias, sizeof (Media *) * count);
+			valid = (bool *) g_realloc (valid, sizeof (bool) * count);
+			
+			for (int i = prev_count; i < count && result == 0; i++) {
+				valid [i] = false;
+				medias [i] = NULL;
+				
+				pthread_attr_init (&attribs);
+				pthread_attr_setdetachstate (&attribs, PTHREAD_CREATE_JOINABLE);
+				result = pthread_create (&threads [i], &attribs, WorkerLoop, NULL);
+				pthread_attr_destroy (&attribs);
+				
+				if (result != 0) {
+					fprintf (stderr, "Moonlight: could not create media thread: %s (%i)\n", strerror (result), result);
+				} else {
+					valid [i] = true;
+				}
+			}
+		}
+
+		LOG_FRAMEREADERLOOP ("MediaThreadLoop::AddWork () got %s %p for media %p (%i) on deployment %p, there are %d nodes left.\n", 
+			closure->GetDescription (), closure, closure->GetMedia (), GET_OBJ_ID (closure->GetMedia ()), closure->GetDeployment (), queue.Length ());
+		
+		if (wakeup)
+			pthread_cond_signal (&condition);
+	}
+	pthread_mutex_unlock (&mutex);
+}
+
+void
+MediaThreadPool::RemoveWork (Media *media)
+{
+	LOG_PIPELINE ("MediaThreadPool::RemoveWork (%p = %i)\n", media, GET_OBJ_ID (media));
+	
+	List::Node *next;
+	List::Node *first = NULL;
+	List::Node *last = NULL;
+	List::Node *current = NULL;
+	int counter = 0;
+	
+	pthread_mutex_lock (&mutex);
+
+	// create a list of nodes to delete
+	current = queue.First ();
+	while (current != NULL) {
+		next = current->next; // retrieve next before Unlinking
+		if (((MediaWork *) current)->closure->GetMedia () == media) {
+			queue.Unlink (current);
+			if (first == NULL) {
+				first = current;
+			} else {
+				last->next = current;
+			}
+			last = current;
+			counter++;
+			break;
+		}
+		current = next;
+	}
+	
+	pthread_mutex_unlock (&mutex);
+
+	// We have to delete the list nodes with the
+	// queue mutex unlocked, due to refcounting
+	// (our node's (MediaWork) dtor will cause unrefs,
+	// which may cause other dtors to be called,
+	// eventually ending up wanting to lock the mutex
+	// again).
+	
+	current = first;
+	while (current != NULL) {
+		next = current->next;
+		delete current;
+		current = next;
+	}
+}
+
+void
+MediaThreadPool::WakeUp ()
+{
+	LOG_FRAMEREADERLOOP ("MediaThreadPool::WakeUp ()\n");
+	
+	pthread_mutex_lock (&mutex);
+	pthread_cond_signal (&condition);
+	pthread_mutex_unlock (&mutex);
+}
+
+bool
+MediaThreadPool::IsThreadPoolThread ()
+{
+	bool result = false;
+	pthread_mutex_lock (&mutex);
+	for (int i = 0; i < count; i++) {
+		if (pthread_equal (pthread_self (), threads [i])) {
+			result = true;
+			break;
+		}
+	}
+	pthread_mutex_unlock (&mutex);
+	return true;
+}
+
+void
+MediaThreadPool::Initialize ()
+{
+	LOG_PIPELINE ("MediaThreadPool::Initialize ()\n");
+	VERIFY_MAIN_THREAD;
+	
+	shutting_down = false; // this may be true if the user closed a moonlight-tab (we'd shutdown), then opened another moonlight-tab.
+}
+
+void
+MediaThreadPool::Shutdown ()
+{
+	List::Node *current;
+	List::Node *next;
+	
+	LOG_PIPELINE ("MediaThreadPool::Shutdown (), we have %i thread(s) to shut down\n", count);
+	
+	VERIFY_MAIN_THREAD;
+	
+	g_return_if_fail (!shutting_down);
+	
+	pthread_mutex_lock (&mutex);
+	
+	shutting_down = true;
+	pthread_cond_broadcast (&condition);
+	
+	for (int i = 0; i < count; i++) {
+		if (!valid [i])
+			continue;
+		
+		pthread_mutex_unlock (&mutex);
+		pthread_join (threads [i], NULL);
+		pthread_mutex_lock (&mutex);
+	}
+	
+	g_free (threads);
+	threads = NULL;
+	g_free (valid);
+	valid = NULL;
+	g_free (medias);
+	medias = NULL;
+	
+	current = queue.First ();
+	queue.Clear (false);
+	
+	count = 0;
+	
+	pthread_mutex_unlock (&mutex);
+	
+	// deleting a node can have side-effects, so we first copy the list of nodes, 
+	// clear the original and loop over the copy while deleting the nodes.
+	// this prevents any reentering issues while deleting nodes.
+	while (current != NULL) {
+		next = current->next;
+		delete current;
+		current = next;
+	}
+	
+	LOG_PIPELINE ("MediaThreadPool::Shutdown () [Completed]\n");	
+}
+
+void *
+MediaThreadPool::WorkerLoop (void *data)
+{
+	MediaWork *node = NULL;
+	Media *media = NULL;
+	int self_index = -1;
+	
+	pthread_mutex_lock (&mutex);
+	for (int i = 0; i < count; i++) {
+		if (pthread_equal (threads [i], pthread_self ())) {
+			self_index = i;
+			break;
+		}
+	}
+	pthread_mutex_unlock (&mutex);
+	
+	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %u: Started thread with index %i.\n", (int) pthread_self (), self_index);
+	
+	g_return_val_if_fail (self_index >= 0, NULL);
+	
+	while (!shutting_down) {
+		pthread_mutex_lock (&mutex);
+		
+		medias [self_index] = NULL;
+		
+		node = (MediaWork *) queue.First ();
+		
+		while (node != NULL) {
+			media = node->closure->GetMedia ();
+			
+			for (int i = 0; i < count; i++) {
+				if (medias [i] == media) {
+					// another thread is working for the same media object.
+					// we need to find something else to do.
+					media = NULL;
+					break;
+				}
+			}
+			
+			if (media != NULL)
+				break;
+			
+			node = (MediaWork *) node->next;
+		}
+		
+		if (node == NULL) {
+			pthread_cond_wait (&condition, &mutex);
+		} else {
+			queue.Unlink (node);
+		}
+		
+		if (node != NULL)
+			medias [self_index] = media;
+		
+		pthread_mutex_unlock (&mutex);
+		
+		if (node == NULL)
+			continue;
+		
+		media->SetCurrentDeployment (true, true);
+
+		LOG_FRAMEREADERLOOP ("MediaThreadLoop::WorkerLoop () %u: got %s %p for media %p on deployment %p, there are %d nodes left.\n", (int) pthread_self (), node->closure->GetDescription (), node, media, media->GetDeployment (), queue.Length ());
+		
+		node->closure->Call ();
+		
+		LOG_FRAMEREADERLOOP ("MediaThreadLoop::WorkerLoop () %u: processed node %p\n", (int) pthread_self (), node);
+		
+		delete node;
+	}
+	
+	pthread_mutex_lock (&mutex);
+	medias [self_index] = NULL;
+	pthread_mutex_unlock (&mutex);
+	
+	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %u: Exited (index: %i).\n", (int) pthread_self (), self_index);
+	
+	return NULL;
+}
+
+
+/*
  * MediaClosure
  */ 
 
@@ -2194,6 +2324,7 @@ IMediaStream::GetStreamTypeName ()
 void
 IMediaStream::ReportSeekCompleted ()
 {
+	LOG_PIPELINE ("IMediaStream::ReportSeekCompleted ()\n");
 	ClearQueue ();
 	if (decoder != NULL)
 		decoder->ReportSeekCompleted ();
@@ -2306,10 +2437,12 @@ void
 IMediaStream::EnqueueFrame (MediaFrame *frame)
 {
 	bool first = false;
-	Media *media = GetMediaReffed ();
+	Media *media;
 	
+	g_return_if_fail (Media::InMediaThread ());
+	
+	media = GetMediaReffed ();
 	g_return_if_fail (media != NULL);
-	g_return_if_fail (media->InMediaThread ());
 	
 	queue.Lock ();
 	if (first_pts == G_MAXUINT64)
@@ -2585,17 +2718,19 @@ IMediaDemuxer::EnqueueReportSeekCompleted (guint64 pts)
 void
 IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 {
-	Media *media = GetMediaReffed ();
+	Media *media;
 
 	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%llu)\n", pts);
 	
-	g_return_if_fail (media != NULL);
-	
-	if (!media->InMediaThread ()) {
+	if (!Media::InMediaThread ()) {
 		EnqueueReportSeekCompleted (pts);
-		media->unref ();
 		return;
 	}
+	
+	media = GetMediaReffed ();
+	
+	g_return_if_fail (media != NULL);
+	
 	
 	for (int i = 0; i < GetStreamCount (); i++) {
 		IMediaStream *stream = GetStream (i);
@@ -2609,7 +2744,14 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 	media->ReportSeekCompleted (pts);
 	media->unref ();
 	
+	if (pending_stream) {
+		pending_stream->unref ();
+		pending_stream = NULL;
+	}
+	
 	FillBuffers ();
+	
+	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%llu) [Done]\n", pts);
 }
 
 void
@@ -2653,22 +2795,25 @@ IMediaDemuxer::EnqueueGetFrame (IMediaStream *stream)
 void
 IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 {
-	Media *media = GetMediaReffed ();
+	Media *media;
 	
-	g_return_if_fail (stream != NULL);
-	g_return_if_fail (media != NULL);
-	g_return_if_fail (pending_stream == NULL); // we can't be waiting for another frame.
+	LOG_PIPELINE ("IMediaDemuxer::GetFrameAsync (%p) %s InMediaThread: %i\n", stream, stream->GetStreamTypeName (), Media::InMediaThread ());
 	
-	LOG_PIPELINE ("IMediaDemuxer::GetFrameAsync (%p) %s InMediaThread: %i\n", stream, stream->GetStreamTypeName (), media->InMediaThread ());
-	
-	if (!media->InMediaThread ()) {
+	if (!Media::InMediaThread ()) {
 		EnqueueGetFrame (stream);
 		return;
 	}
 	
-	pending_stream = stream;
-	pending_stream->ref ();
-	GetFrameAsyncInternal (stream);
+	media = GetMediaReffed ();
+	
+	g_return_if_fail (media != NULL);
+	
+	if (stream != NULL && pending_stream == NULL) {
+		pending_stream = stream;
+		pending_stream->ref ();
+		GetFrameAsyncInternal (stream);
+	}
+
 	media->unref ();
 }
 
@@ -2676,7 +2821,7 @@ MediaResult
 IMediaDemuxer::SeekCallback (MediaClosure *closure)
 {
 	MediaSeekClosure *seek = (MediaSeekClosure *) closure;
-	seek->GetDemuxer ()->SeekAsync (seek->GetPts ());
+	seek->GetDemuxer ()->SeekAsyncInternal (seek->GetPts ());
 	return MEDIA_SUCCESS;
 }
 
@@ -2697,19 +2842,13 @@ IMediaDemuxer::EnqueueSeek (guint64 pts)
 void
 IMediaDemuxer::SeekAsync (guint64 pts)
 {
-	Media *media = GetMediaReffed ();
-	
-	g_return_if_fail (media != NULL);
-
 	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (%llu)\n", pts);
 
-	if (!media->InMediaThread ()) {
-		EnqueueSeek (pts);
-	} else {
-		SeekAsyncInternal (pts);
-	}
-
-	media->unref ();
+	if (IsDisposed ())
+		return;
+		
+	// we need to run this on the media thread, not the main thread.
+	EnqueueSeek (pts);
 }
 
 MediaResult
@@ -2749,9 +2888,12 @@ IMediaDemuxer::FillBuffersInternal ()
 	
 	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %llu = %llu ms, pending_stream: %i %s\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, MilliSeconds_FromPts (buffering_time), GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetStreamTypeName () : "NULL");
 
+	if (IsDisposed ())
+		goto cleanup;
+
 	// If we're waiting for something, there's nothing to do here.
 	if (pending_stream != NULL)
-		return;
+		goto cleanup;
 
 	// Find the stream with the smallest buffered size, and request a frame from that stream.
 	g_return_if_fail (media != NULL);
@@ -2814,7 +2956,9 @@ IMediaDemuxer::FillBuffersInternal ()
 		}
 	}
 
-	media->unref ();
+cleanup:
+	if (media)
+		media->unref ();
 	
 	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal () [Done]. BufferedSize: %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (GetBufferedSize ()));
 }
@@ -2962,7 +3106,6 @@ void
 MediaFrame::Dispose ()
 {
 	IMediaDecoder *decoder;
-	Media *media;
 	
 #if SANITY
 	// We can be called either on the main thread just before destruction
@@ -2971,13 +3114,11 @@ MediaFrame::Dispose ()
 	// media thread.
 	
 	if (GetRefCount () != 0 && stream != NULL) {
-		media = stream->GetMediaReffed ();
-		if (media != NULL && !media->InMediaThread ()) {
+		if (!Media::InMediaThread ()) {
 			// if refcount != 0 we're not being called just before destruction, in which case we should
 			// only be on the media thread.
 			printf ("MediaFrame::Dispose (): this method should only be called from the media thread.\n");
 		}
-		media->unref ();
 	}
 #endif
 	
@@ -3098,7 +3239,7 @@ IMediaObject::Dispose ()
 	// (in which case there are no races since the code which unreffed us
 	// is the only code which knows about us), or at any time from the
 	// media thread.
-	if (GetRefCount () != 0 && media != NULL && !media->InMediaThread ()) {
+	if (GetRefCount () != 0 && !Media::InMediaThread ()) {
 		// if refcount != 0 we're not being called just before destruction, in which case we should
 		// only be on the media thread.
 		LOG_PIPELINE ("IMediaObject::Dispose (): this method should only be called from the media thread.\n");
@@ -3122,20 +3263,6 @@ IMediaObject::Dispose ()
 	event_mutex.Unlock ();
 	
 	EventObject::Dispose ();
-}
-
-bool
-IMediaObject::InMediaThread ()
-{
-	bool result = true;
-#if SANITY
-	Media *media = GetMediaReffed ();
-	if (media != NULL) {
-		result = media->InMediaThread ();
-		media->unref ();
-	}
-#endif
-	return result;
 }
 
 void
@@ -3653,12 +3780,13 @@ IMediaDecoder::DecodeFrameAsync (MediaFrame *frame)
 	if (IsDisposed ())
 		return;
 	
+	g_return_if_fail (frame != NULL);
+	
 	media = GetMediaReffed ();
 	
-	g_return_if_fail (frame != NULL);
 	g_return_if_fail (media != NULL);
 	
-	if (!media->InMediaThread ()) {
+	if (!Media::InMediaThread ()) {
 		MediaClosure *closure = new MediaClosure (media, DecodeFrameCallback, this, "IMediaDecoder::DecodeFrameCallback");
 		queue.Push (new FrameNode (frame));
 		media->EnqueueWork (closure);

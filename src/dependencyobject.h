@@ -181,7 +181,7 @@ public:
 	bool IsMultiThreadedSafe () { return (flags & MultiThreadedSafe) != 0; }
 	
 	Deployment *GetDeployment ();
-	void SetCurrentDeployment (bool domain = true);
+	void SetCurrentDeployment (bool domain = true, bool register_thread = false);
 
 #if SANITY
 	Deployment *GetUnsafeDeployment () { return deployment; } // a public deployment getter for sanity checking without the warnings in GetDeployment.

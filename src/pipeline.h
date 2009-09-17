@@ -389,8 +389,6 @@ public:
 	void AddSafeHandler (int event_id, EventHandler handler, EventObject *context, bool invoke_on_main_thread = true);
 	void RemoveSafeHandlers (EventObject *context);
 	void EmitSafe (int event_id, EventArgs *args = NULL);
-	
-	bool InMediaThread ();
 };
 
 class IMediaStream : public IMediaObject {
@@ -516,13 +514,10 @@ private:
 	static bool registering_ms_codecs;
 	static bool registered_ms_codecs;
 
-	List *queued_requests;
-	pthread_t queue_thread;
-	pthread_cond_t queue_condition;
-	pthread_mutex_t queue_mutex;
+	Mutex mutex;
 	
-	guint64 buffering_time;
-
+	guint64 buffering_time; // Access must be protected with mutex.
+	bool is_disposed; // Access must be protected with mutex. This is used to ensure that we don't add work to the thread pool after having been disposed.
 	char *uri;
 	char *file;
 	IMediaSource *source;
@@ -532,7 +527,6 @@ private:
 	bool opened;
 	bool opening;
 	bool stopping;
-	bool stopped; // If the worker thread has been stopped.
 	bool error_reported; // If an error has been reported.
 	bool buffering_enabled;
 	bool in_open_internal; // detect recursive calls to OpenInternal
@@ -542,15 +536,6 @@ private:
 	
 	PlaylistRoot *playlist;
 
-	//	Called on another thread, loops the queue of requested frames 
-	//	and calls GetNextFrame and FrameReadCallback.
-	//	If there are any requests for audio frames in the queue
-	//	they are always (and all of them) satisfied before any video frame request.
-	void WorkerLoop ();
-	static void *WorkerLoop (void *data);
-	void StopThread (); // Stops the worker thread.
-	void ClearQueue (bool delete_queue);
-	
 	// Determines the container type and selects a demuxer. We have support for mp3 and asf demuxers.
 	// Also opens the demuxer.
 	// This method is supposed to be called multiple times, until either 'error_reported' is true or this method
@@ -569,9 +554,6 @@ private:
 	static MediaResult OpenInternal (MediaClosure *closure);
 	static MediaResult DisposeObjectInternal (MediaClosure *closure);
 
-	EVENTHANDLER (Media, ShuttingDown, Deployment, EventArgs); // Not thread-safe
-
-	static void RemoveShuttingDownHandler (EventObject *obj); // must run on main thread
 protected:
 	virtual ~Media ();
 
@@ -580,7 +562,7 @@ public:
 	
 	virtual void Dispose ();
 	
-	bool InMediaThread ();
+	static bool InMediaThread ();
 	bool EnqueueWork (MediaClosure *closure, bool wakeup = true);
 	
 	// Calls obj->Dispose on the media thread.
@@ -671,8 +653,39 @@ public:
 	
 	static void Initialize ();
 	static void Shutdown ();
+};
 
-	static gint32 media_thread_count;
+/*
+ * MediaThreadPool
+ *
+ * The most important requirement for the thread pool is that it never executes several work items for a single Media instance simultaneously.
+ * It accomplishes this by having a list of Media instances which is currently being worked on, and whenever a thread is free, it finds work for
+ * a Media instance which is not in the list.
+ */ 
+class MediaThreadPool {
+private:
+	static pthread_mutex_t mutex;
+	static pthread_cond_t condition;
+
+	static int count; // the number of created threads 
+	static pthread_t *threads; // array of threads
+	static bool *valid; // specifies which thread indices are valid.
+	static Media **medias; // array of medias currently being worked on (indices corresponds to the threads array). Only one media can be worked on at the same time.
+	static bool shutting_down; // flag telling if we're shutting down (in which case no new threads should be created) - it's also used to check if we've been shut down already (i.e. it's not set to false when the shutdown has finished).
+	static List queue;
+	
+	static void *WorkerLoop (void *data);
+	
+public:
+	// Removes all enqueued work for the specified media.
+	static void RemoveWork (Media *media);
+	static void AddWork (MediaClosure *closure, bool wakeup);
+	static void WakeUp ();
+	static void Initialize ();
+	static void Shutdown ();
+
+	// this method checks if the current thread is a thread-pool thread
+	static bool IsThreadPoolThread ();
 };
  
 class MediaFrame : public EventObject {
