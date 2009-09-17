@@ -1,3 +1,13 @@
+2009-09-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* audit.cs/sh: New. Tool to update audit data files based on any
+	[SecuritySafeCritical] methods that were modified since the last
+	review.
+	* Makefile.am: Build audit.exe
+	* README: Updated for the audit tool
+
+	r: jb
+
 2009-06-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* detect-sc.cs: Mark non-visible, non-virtual or abstract icalls

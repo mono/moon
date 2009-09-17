@@ -30,6 +30,13 @@ merge.exe
 	the right [SecurityCritical] or [SecuritySafeCritical] attributes
 	into the platform assemblies.
 
+audit.exe
+
+	Detect new or updated [SecuritySafeCritical] methods in the 
+	platform assemblies. Comments can be added when the method was
+	reviewed - e.g. reviewer name and some useful notes for future
+	reviewers
+
 Note: the tools are not meant to be installed on the end-users system.
 They are only needed at build-time.
 
@@ -55,3 +62,10 @@ FILES
 
 	Merged files, from the above sources, that are consumed by the
 	tuner.
+
+/audit/*.audit
+
+	Audit data files. Auditor can add comments, while the audit.exe
+	tool will update the files when new or updated SSC methods are
+	detected.
+

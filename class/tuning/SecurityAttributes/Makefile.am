@@ -58,7 +58,7 @@ SECURITY_ATTRIBUTES_COMPATIBILITY_INFO= \
 
 SECATTRS = $(SECURITY_ATTRIBUTES_AUTOMATIC_INFO) $(SECURITY_ATTRIBUTES_MANUAL_INFO) $(SECURITY_ATTRIBUTES_COMPATIBILITY_INFO)
 
-EXTRA_DIST = $(SECATTRS) $(securitymodel_sources) find-sc.cs detect-sc.cs detect-ssc.cs merge.cs
+EXTRA_DIST = $(SECATTRS) $(securitymodel_sources) find-sc.cs detect-sc.cs detect-ssc.cs merge.cs audit.cs
 
 MERGED_SECURITY_ATTRIBUTES_INFO = \
 	mscorlib.secattr \
@@ -73,7 +73,7 @@ MERGED_SECURITY_ATTRIBUTES_INFO = \
 	System.Xml.secattr \
 	Microsoft.VisualBasic.secattr
 
-all: merge.exe $(MERGED_SECURITY_ATTRIBUTES_INFO)
+all: merge.exe $(MERGED_SECURITY_ATTRIBUTES_INFO) audit.exe
 
 Moonlight.SecurityModel.dll: $(securitymodel_sources)
 	gmcs $(CECIL) -debug -r:System.Core.dll -t:library -out:$@ $(securitymodel_sources)
@@ -106,6 +106,9 @@ validate: find-sc.exe
 	mkdir -p moonlight
 	mono find-sc.exe $(MOONLIGHT_PLATFORM_CODE) moonlight
 	diff -u compatibility moonlight
+
+audit.exe: $(srcdir)/audit.cs Moonlight.SecurityModel.dll
+	gmcs $(srcdir)/audit.cs -debug -out:$@ $(LIBS)
 
 clean-data:
 	rm -f *.secattr
