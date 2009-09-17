@@ -1,5 +1,21 @@
 2009-09-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml.cpp: Honor the debug configuration option instead of enabling it
+	all the time.
+
+	* glyphs.cpp: Move debug code into conditional expression.
+
+	* debug.h: DEBUG is resolved to nothing at all in release builds, so
+	when checking if debug is defined in complex expressions we need to
+	use 'defined (DEBUG)', since otherwise the expression becomes bogus.
+	Also Move #include "runtime.h" outside of the conditional code, this
+	way we don't have different include requirements in other headers
+	depending on debug/release configuration.
+
+	r: sde
+
+2009-09-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp|h: SetCurrentDeployment: add a parameter
 	specifying whether the current thread should be registered with the
 	deployment or not.

@@ -11,16 +11,16 @@
 #ifndef __MOONLIGHT_DEBUG_H__
 #define __MOONLIGHT_DEBUG_H__
 
-#if DEBUG || LOGGING
+#if defined (DEBUG) || LOGGING
 
 #include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "runtime.h"
-
 #endif /* DEBUG || LOGGING */
+
+#include "runtime.h"
 
 /*
  * Stacktrace (debug) stuff
@@ -143,13 +143,13 @@ G_END_DECLS
 
 #endif /* LOGGING */
 
-#if SANITY && DEBUG
+#if SANITY && defined (DEBUG)
 G_BEGIN_DECLS
 void moonlight_install_signal_handlers ();
 G_END_DECLS
 #else
 #define moonlight_install_signal_handlers() 
-#endif
+#endif /* SANITY */
 
 #endif /* __MOONLIGHT_DEBUG_H */
 

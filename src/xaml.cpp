@@ -13,10 +13,6 @@
 
 #include <config.h>
 
-#ifndef DEBUG
-#define DEBUG
-#endif
-
 #include <glib.h>
 #include <string.h>
 #include <malloc.h>

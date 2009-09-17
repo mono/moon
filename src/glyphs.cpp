@@ -594,7 +594,7 @@ Glyphs::SetIndicesInternal (const char *in)
 			
 			if (*inptr != ':') {
 				// invalid cluster
-				print_parse_error (in, inptr, "expected ':'");
+				d(print_parse_error (in, inptr, "expected ':'"));
 				delete glyph;
 				return;
 			}
