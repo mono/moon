@@ -1,3 +1,9 @@
+2009-09-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBox.cs: Override ArrangeOverride() and simply chain up.
+
+	r:toshok
+
 2009-09-14  Chris Toshok  <toshok@ximian.com>
 
 	* Image.cs (InvokeImageFailed): we need to create the
