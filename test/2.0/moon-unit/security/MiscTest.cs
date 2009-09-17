@@ -58,13 +58,27 @@ namespace MoonTest.Security {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("actually it looks like a SL bug")]
+		// reported as https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=490406
 		[ExpectedException (typeof (TypeLoadException))]
 		public void Array_Critical ()
 		{
+			// exception occurs before reaching the code (JIT time) and the harness consider this a success
+			Assert.IsFalse (true, "This fails before the method is executed");
 			// critical type
 			AppDomainManager [] adm = new AppDomainManager [0];
 			Assert.IsNotNull (adm, "AppDomainManager[]");
+		}
+
+		[TestMethod]
+		public void CreateInstance_Critical ()
+		{
+			Type t = typeof (AppDomainManager);
+			Assert.IsNotNull (Array.CreateInstance (t, 1), "Array.CreateInstance-1");
+			Assert.IsNotNull (Array.CreateInstance (t, 2, 2), "Array.CreateInstance-2");
+
+			Assert.IsNotNull (Activator.CreateInstance (t.MakeArrayType (1), 1), "Activator.CreateInstance-1");
+			Assert.IsNotNull (Activator.CreateInstance (t.MakeArrayType (2), 2, 2), "Activator.CreateInstance-2");
 		}
 
 		[TestMethod]
@@ -76,6 +90,18 @@ namespace MoonTest.Security {
 
 			// critical type
 			AppDomainManager [,] adm = new AppDomainManager [0, 0];
+			Assert.IsNotNull (adm, "AppDomainManager[,]");
+		}
+
+		[TestMethod]
+		public void JaggedArrays ()
+		{
+			// transparent type
+			FrameworkElement [][] fe = new FrameworkElement [0][];
+			Assert.IsNotNull (fe, "FrameworkElement[,]");
+
+			// critical type
+			AppDomainManager [][] adm = new AppDomainManager [0][];
 			Assert.IsNotNull (adm, "AppDomainManager[,]");
 		}
 

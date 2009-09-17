@@ -1,3 +1,14 @@
+2009-09-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/MiscTest.cs:Add more test cases for creating arrays of 
+	[SecurityCritical] types.
+	* security/WebFlashPolicyTest.cs: Ignore tests that depends on 
+	sites outside our control.
+	* System.Windows.Media.Imaging/BitmapImageTest.cs: Add test case
+	where UriSource is called twice (helped me find a leak)
+
+	r: rolf
+
 2009-09-16  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: Testing

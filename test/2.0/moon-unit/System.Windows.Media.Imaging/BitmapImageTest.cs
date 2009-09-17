@@ -41,6 +41,7 @@ namespace MoonTest.System.Windows.Media.Imaging {
 			Assert.IsTrue (image.Source is BitmapImage, "#2");
 			Assert.AreEqual (string.Empty, ((BitmapImage)image.Source).UriSource.ToString (), "#3");
 		}
+
 		[TestMethod]
 		public void EmptyUriInCtor ()
 		{
@@ -53,6 +54,15 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		public void BadUriSetUriSource ()
 		{
 			BitmapImage bitmap = new BitmapImage ();
+			bitmap.UriSource = badUri;
+		}
+
+		[TestMethod]
+		public void BadUriSetUriSourceTwice ()
+		{
+			BitmapImage bitmap = new BitmapImage ();
+			bitmap.UriSource = badUri;
+			// call into BitmapImage::UriSourceChanged twice (leaks)
 			bitmap.UriSource = badUri;
 		}
 		

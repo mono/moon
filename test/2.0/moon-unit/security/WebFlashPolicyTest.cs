@@ -209,6 +209,7 @@ namespace MoonTest.Security {
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("Depending on outside site(s) is bound to fail too often")]
 		public void FileToHTTPFlashCrossDomainTest()
 		{
 			// a FILE:// application can access an HTTP:// URL when policy specify Secure=true (default)
@@ -219,6 +220,7 @@ namespace MoonTest.Security {
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("Depending on outside site(s) is bound to fail too often")]
 		public void FileToHTTPSFlashCrossDomainTest ()
 		{
 			// a FILE:// application CANNOT access an HTTPS:// URL when policy specify Secure=true (default)
