@@ -98,7 +98,7 @@ rating:4
 site:Polyhedra
 url:http://www.picturespice.com/ps/Polyhedra/ClientBin/TestPage.html
 rating:4
- * hyperlink button "Make a shape for real" does not work
+ * Works!
 
 site:Custom Splash screen
 url:http://www.shinedraw.com/browser-integration/flash-vs-silverlight-custom-loading-splash-screen/
@@ -163,8 +163,9 @@ rating:2
 
 site:Geometry
 url:http://geometry.osenkov.com/
-rating:2
- * works, very sluggish and jerky
+rating:0
+ * Uses SL 3.0 features (Deployment.OutOfBrowserSettings)
+ * nothing shows up
 
 site:Google Image Memory Game
 url:http://www.markbetz.net/sl/gmemory
@@ -179,15 +180,8 @@ rating:2
 
 site: Pale2
 url:http://helen.org.ua/caramel/
-rating: 2
- * Might be some layout issues, some of the controls seem to overlap slightly but haven't compared to what it looks like on Windows 
-
-site:Weather Widget
-url:http://silverlight.net/samples/sl2/weatherwidget/run/default.html 
-rating:1
- * WCF EXCEPTION: System.InvalidOperationException: Cross domain web service access to http://a4472706772.api.wxbug.net/weatherservice.asmx is not allowed
- * at System.ServiceModel.Channels.HttpRequestChannel.ProcessRequest (System.ServiceModel.Channels.Message message, TimeSpan timeout) [0x00290] in /home/lewing/Desktop/Source/mcs/class/System.ServiceModel/System.ServiceModel.Channels/HttpRequestChannel.cs:195
- * System.ServiceModel.ClientBase<TChannel>: web service invocation is successfully done (operationCompletedCallback may not be). ClientBase<TChannel> caught an error during operationCompletedCallback: System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.InvalidOperationException: Cross domain web service access to http://a4472706772.api.wxbug.net/weatherservice.asmx is not allowed 
+rating: 3
+ * Works but scrollbar on textbox does not allow reading all the text
 
 site:Rich Text Box Demo
 url:http://www.vectorlight.net/silverlight_rich_textbox_demo.aspx
@@ -202,16 +196,8 @@ rating:1
 
 site:robozzle
 url:http://robozzle.com
-rating:1
- * missing a lot of items
- * Grid isn't displaying properly 
- * Cross Domain Access Manager rejected 'http://www.robozzle.com/RobozzleService.svc' with headers content-type,SOAPAction 
- * Exception in async operation: System.InvalidOperationException: Cross domain web service access to http://www.robozzle.com/RobozzleService.svc is not allowed
-
-site:Power Arrow
-url:http://itouchfuture.cn/lab/powerarrow/
-rating:1
- * loads fine, nothing renders
+rating:3
+ * Works - but very slow
 
 site: Life 
 url:http://www.life-silverlight.com/
@@ -289,7 +275,7 @@ rating:3
 site:Rotating Space Rocks of DooM
 url:http://www.vertigo.com/downloads/Rocks/
 rating:0
- * Repeatedly downloads codecs
+ * 403 on URL
 
 site:Bigsby DevDays09
 url:http://devdays09.bigsby.eu/
