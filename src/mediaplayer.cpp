@@ -1152,6 +1152,7 @@ MediaPlayer::GetVolume ()
 	
 	VERIFY_MAIN_THREAD;
 	
+	audio = GetAudio ();
 	if (audio) {
 		result = audio->GetVolume ();
 		audio->unref ();
