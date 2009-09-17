@@ -1,3 +1,21 @@
+2009-09-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs (.ctor): Don't hook up
+	our own event handlers for OnKeyDown and OnMouseLeftButtonDown,
+	instead override the existing methods.
+	(InvalidateScrollInfo): Added missing method which updates
+	ScrollableWidth/HeightProperty values.
+	(MeasureOverride): Moved setting of ScrollableWidth/HeightProperty
+	to InvalidateScrollInfo() like it's supposed to be (according to
+	MSDN docs). Also removed duplicate setting of
+	ViewportWidth/HeightProperty since they are set in
+	UpdateFromChild() already.
+	(OnScrollInfoDependencyPropertyChanged): New callback for the 6
+	properties that require a call to InvalidateScrollInfo() on
+	changes.
+
+	r:toshok
+
 2009-09-10  Mario Carrion  <mcarrion@novell.com>
 
 	* RuntimeControls/SilverlightControls/ProgressBar.cs: Method

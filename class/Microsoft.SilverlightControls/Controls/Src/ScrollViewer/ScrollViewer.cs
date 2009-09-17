@@ -70,8 +70,7 @@ namespace System.Windows.Controls
         /// </summary>
         public static readonly DependencyProperty HorizontalOffsetProperty = DependencyProperty.RegisterReadOnlyCore ( 
             "HorizontalOffset", typeof(double), typeof(ScrollViewer), 
-            null);
-//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
+            new PropertyMetadata(new PropertyChangedCallback(OnScrollInfoDependencyPropertyChanged)));
  
         /// <summary>
         /// Gets the value of the viewport width of the content.
@@ -86,8 +85,7 @@ namespace System.Windows.Controls
         /// </summary>
         public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.RegisterReadOnlyCore (
             "ViewportWidth", typeof(double), typeof(ScrollViewer), 
-            null);
-//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
+            new PropertyMetadata(new PropertyChangedCallback(OnScrollInfoDependencyPropertyChanged)));
 
         /// <summary> 
         /// Gets the value of the scrollable width of the content. 
@@ -118,8 +116,7 @@ namespace System.Windows.Controls
         /// </summary>
         public static readonly DependencyProperty ExtentWidthProperty = DependencyProperty.RegisterReadOnlyCore (
             "ExtentWidth", typeof(double), typeof(ScrollViewer), 
-            null);
-//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
+            new PropertyMetadata(new PropertyChangedCallback(OnScrollInfoDependencyPropertyChanged)));
 
         /// <summary>
         /// Gets a value that indicates whether the horizontal ScrollBar is visible. 
@@ -148,8 +145,7 @@ namespace System.Windows.Controls
         /// </summary> 
         public static readonly DependencyProperty VerticalOffsetProperty = DependencyProperty.RegisterReadOnlyCore (
             "VerticalOffset", typeof(double), typeof(ScrollViewer), 
-            null);
-//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
+            new PropertyMetadata(new PropertyChangedCallback(OnScrollInfoDependencyPropertyChanged)));
 
         /// <summary> 
         /// Gets the value of the viewport height of the content.
@@ -164,8 +160,7 @@ namespace System.Windows.Controls
         /// </summary> 
         public static readonly DependencyProperty ViewportHeightProperty = DependencyProperty.RegisterReadOnlyCore (
             "ViewportHeight", typeof(double), typeof(ScrollViewer),
-            null);
-//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
+            new PropertyMetadata(new PropertyChangedCallback(OnScrollInfoDependencyPropertyChanged)));
  
         /// <summary>
         /// Gets the value of the scrollable height of the content. 
@@ -196,8 +191,7 @@ namespace System.Windows.Controls
         /// </summary> 
         public static readonly DependencyProperty ExtentHeightProperty = DependencyProperty.RegisterReadOnlyCore (
             "ExtentHeight", typeof(double), typeof(ScrollViewer),
-            null);
-//            new PropertyMetadata(new PropertyChangedCallback(OnReadOnlyDependencyPropertyChanged))); 
+            new PropertyMetadata(new PropertyChangedCallback(OnScrollInfoDependencyPropertyChanged)));
  
         /// <summary>
         /// Gets a value that indicates whether the vertical ScrollBar is visible.
@@ -326,14 +320,6 @@ namespace System.Windows.Controls
             // DirectionalNavigation not supported by Silverlight
             IsTabStop = true; 
 #endif
-            KeyDown += delegate(object sender, KeyEventArgs e)
-            { 
-                OnKeyDown(e);
-            };
-            MouseLeftButtonDown += delegate(object sender, MouseButtonEventArgs e) 
-            { 
-                OnMouseLeftButtonDown(e);
-            }; 
         }
 
 #if WPF 
@@ -403,9 +389,8 @@ namespace System.Windows.Controls
                         case ScrollBarVisibility.Auto: 
                             horizontalVisibility = ElementScrollContentPresenter.ExtentWidth <= ElementScrollContentPresenter.ViewportWidth ? Visibility.Collapsed : Visibility.Visible;
                             break;
-                    } 
-                    SetValueImpl (ViewportWidthProperty, ElementScrollContentPresenter.ViewportWidth); 
-                    SetValueImpl (ScrollableWidthProperty, Math.Max(0, ElementScrollContentPresenter.ExtentWidth - ElementScrollContentPresenter.ViewportWidth));
+                    }
+		    
                     SetValueImpl (ComputedHorizontalScrollBarVisibilityProperty, horizontalVisibility); 
 
                     // Update vertical ScrollBar
@@ -424,8 +409,7 @@ namespace System.Windows.Controls
                             verticalVisibility = ElementScrollContentPresenter.ExtentHeight <= ElementScrollContentPresenter.ViewportHeight ? Visibility.Collapsed : Visibility.Visible; 
                             break; 
                     }
-                    SetValueImpl (ViewportHeightProperty, ElementScrollContentPresenter.ViewportHeight); 
-                    ScrollableHeight = Math.Max(0, ElementScrollContentPresenter.ExtentHeight - ElementScrollContentPresenter.ViewportHeight);
+		    
                     SetValueImpl (ComputedVerticalScrollBarVisibilityProperty, verticalVisibility);
                 } 
                 finally
@@ -544,7 +528,7 @@ namespace System.Windows.Controls
         /// Responds to the KeyDown event. 
         /// </summary> 
         /// <param name="e">Provides data for KeyEventArgs.</param>
-        private void OnKeyDown(KeyEventArgs e) 
+        protected override void OnKeyDown(KeyEventArgs e) 
         {
             if (!e.Handled)
             { 
@@ -598,20 +582,24 @@ namespace System.Windows.Controls
                         e.Handled = true; 
                     } 
                 }
-            } 
+            }
+
+            base.OnKeyDown (e);
         }
 
         /// <summary> 
         /// Called when the user presses the left mouse button over the ListBoxItem.
         /// </summary>
         /// <param name="e">The event data.</param> 
-        private void OnMouseLeftButtonDown(MouseButtonEventArgs e) 
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) 
         {
             // Set focus to the ScrollViewer to capture key input for scrolling 
             if (!e.Handled && Focus())
             {
                 e.Handled = true; 
             }
+	    
+            base.OnMouseLeftButtonDown (e);
         }
  
         /// <summary> 
@@ -697,6 +685,19 @@ namespace System.Windows.Controls
             } 
         } 
 #endif
+        
+        private static void OnScrollInfoDependencyPropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ScrollViewer scrollViewer = d as ScrollViewer;
+            
+            scrollViewer.InvalidateScrollInfo ();
+        }
+        
+        public void InvalidateScrollInfo ()
+        {
+            SetValueImpl (ScrollableHeightProperty, Math.Max(0, ExtentHeight - ViewportHeight));
+            SetValueImpl (ScrollableWidthProperty, Math.Max(0, ExtentWidth - ViewportWidth));
+        }
 
 	protected override AutomationPeer OnCreateAutomationPeer ()
 	{
