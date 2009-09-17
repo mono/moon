@@ -1244,7 +1244,7 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	}
 
 	if (args->GetProperty ()->GetOwnerType () != Type::MULTISCALEIMAGE) {
-		DependencyObject::OnPropertyChanged (args, error);
+		MediaBase::OnPropertyChanged (args, error);
 		return;
 	}
 	

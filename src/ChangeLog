@@ -1,3 +1,10 @@
+2009-09-16  Larry Ewing  <lewing@novell.com>
+
+	* multiscaleimage.cpp (OnPropertyChanged): chain up to MediaBase
+	not DependencyObject so that property changes actually work.
+
+	r: kangaroo
+
 2009-09-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* deployment.cpp (Initialize): Disable MONO_IOMAP=case.
