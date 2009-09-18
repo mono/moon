@@ -222,6 +222,7 @@ namespace System.Windows {
 			public CollectionIterator(Type type, IntPtr native_iter)
 			{
 				this.native_iter = native_iter;
+				this.type = type;
 			}
 			
 			public bool MoveNext ()

@@ -1,3 +1,11 @@
+2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* PresentationFrameworkCollection.cs (CollectionIterator.ctor):
+	set this.type to the passed type argument. We need this for later
+	to ensure that we get the expected object type back out again.
+
+	r:spouliot
+
 2009-09-18  Jackson Harper  <jackson@ximian.com>
 
 	* DependencyProperty.g.cs:
