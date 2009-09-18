@@ -1,3 +1,9 @@
+2009-09-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* IsolatedStorageSettings.cs: Removed unused variable.
+
+	r:kangaroo
+
 2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* IsolatedStorageSettings.cs: If the serializer can't deserialize the

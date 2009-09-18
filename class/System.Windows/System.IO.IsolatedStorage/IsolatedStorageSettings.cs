@@ -71,7 +71,7 @@ namespace System.IO.IsolatedStorage {
 					DataContractSerializer reader = new DataContractSerializer (typeof (Dictionary<string, object>));
 					try {
 						settings = (Dictionary<string, object>) reader.ReadObject (fs);
-					} catch (Xml.XmlException ex) {
+					} catch (Xml.XmlException) {
 						settings = new Dictionary<string, object> ();
 					}
 				}
