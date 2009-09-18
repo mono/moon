@@ -51,7 +51,7 @@ namespace System.Windows.Threading {
 			}
 		}
 
-		internal string ToString ()
+		internal string GetDebugString ()
 		{
 			return (d != null && d.Method != null ? d.Method.ToString () : "null") + " (" + (args != null ? args.ToString () : "null") + ")";
 		}

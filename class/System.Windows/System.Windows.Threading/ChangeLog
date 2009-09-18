@@ -1,3 +1,12 @@
+2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Dispatcher.cs: Updated for DispatcherOperation API change.
+
+	* DispatcherOperation.cs (ToString): Renamed to not clash with
+	object.ToString().
+
+	r:kangaroo
+
 2009-08-25  Jackson Harper  <jackson@ximian.com>
 
 	* Dispatcher.cs: This chunk is a little crashy when called from

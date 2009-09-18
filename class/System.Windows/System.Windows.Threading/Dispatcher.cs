@@ -68,7 +68,7 @@ namespace System.Windows.Threading {
 				if (queuedOperations.Count > 0) {
 					Console.WriteLine ("Dispatcher was destroyed with " + queuedOperations.Count + " call to be processed");
 					foreach (DispatcherOperation op in queuedOperations) {
-						Console.WriteLine (op.ToString ());
+						Console.WriteLine (op.GetDebugString ());
 					}
 				}
 #endif
