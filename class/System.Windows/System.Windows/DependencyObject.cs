@@ -49,8 +49,6 @@ namespace System.Windows {
 			}
 		}
 
-		[ThreadStatic] static private Dispatcher dispatcher;
-
 		IntPtr INativeEventObjectWrapper.NativeHandle {
 			get { return native; }
 			set { native = value; }

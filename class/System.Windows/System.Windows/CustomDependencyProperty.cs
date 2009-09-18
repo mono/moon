@@ -34,19 +34,12 @@ namespace System.Windows
 {
 	internal class CustomDependencyProperty : DependencyProperty
 	{		
-	
-		private string name;
-		private ManagedType owner_type;
-		private ManagedType property_type;
 		private PropertyMetadata type_metadata;
 		private	UnmanagedPropertyChangeHandler property_changed_handler;
 		
 		public CustomDependencyProperty (IntPtr handle, string name, ManagedType propertyType, ManagedType ownerType, PropertyMetadata typeMetadata)
 			: base (handle, propertyType.type, ownerType.type, name)
 		{
-			this.name = name;	
-			this.owner_type = ownerType;
-			this.property_type = propertyType;
 			this.type_metadata = typeMetadata;
 		}
 		

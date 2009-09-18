@@ -1,3 +1,15 @@
+2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* CustomDependencyProperty.cs: Get rid of unused member variables.
+
+	* StartupEventArgs.cs: Removed unused variable.
+
+	* Deployment.cs: Removed unused variable.
+
+	* Application.cs: Removed unused variable.
+
+	r:kangaroo
+
 2009-09-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Deployment.cs (ReadManifest): Canonicalize the AppManifest.xaml

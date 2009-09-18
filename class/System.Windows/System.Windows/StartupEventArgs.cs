@@ -39,7 +39,6 @@ namespace System.Windows {
 			get {
 				if (PluginHost.Handle != IntPtr.Zero && init_params == null) {
 					char [] param_separator = new char [] { ',' };
-					char [] value_separator = new char [] { '=' };
 					
 					string param_string = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);
 					init_params = new Dictionary<string,string> ();

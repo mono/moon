@@ -285,7 +285,7 @@ namespace System.Windows {
 					info = GetResourceStream (new Uri (string.Format ("/{0};component/themes/generic.xaml",
 											  type.Assembly.GetName().Name), UriKind.Relative));
 				}
-				catch (Exception e) {
+				catch {
 					Console.WriteLine ("no generic.xaml for assembly {0}", type.Assembly.GetName().Name);
 				}
 				

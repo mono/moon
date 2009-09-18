@@ -406,7 +406,7 @@ namespace System.Windows {
 
 			try {
 				instance = (Application) Activator.CreateInstance (entry_type);
-			} catch (Exception e) {
+			} catch {
 				EmitError (2103, String.Format ("Error while creating the instance of type {0}", entry_type));
 				return false;
 			}
