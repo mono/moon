@@ -77,7 +77,6 @@ namespace System.Windows.Controls {
 			DefaultStyleKey = typeof (ItemsControl);
 		}
 
-		bool loaded = false;
 		internal override void InvokeLoaded ()
 		{
 			base.InvokeLoaded ();

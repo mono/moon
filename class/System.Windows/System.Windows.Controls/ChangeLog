@@ -1,3 +1,12 @@
+2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ItemsControl.cs: Removed unused loaded variable.
+
+	* ComboBox.cs: Mark IsSelectionActiveProperty as 'new' to silence
+	compiler warnings. Removed unused function and member variable.
+
+	r:kangaroo
+
 2009-09-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TextBox.cs: Override ArrangeOverride() and simply chain up.

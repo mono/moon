@@ -51,7 +51,7 @@ namespace System.Windows.Controls
 								     ((ComboBox) sender).IsDropDownOpenChanged (sender, e);
 							     }));
 
-		public static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
+		public new static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
 
 		public static readonly DependencyProperty ItemContainerStyleProperty =
 			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);
@@ -230,7 +230,6 @@ namespace System.Windows.Controls
 			
 			_contentPresenter = GetTemplateChild ("ContentPresenter") as ContentPresenter;
 			_popup = GetTemplateChild ("Popup") as Popup;
-			_contentPresenterBorder = GetTemplateChild ("ContentPresenterBorder") as FrameworkElement;
 			_dropDownToggle = GetTemplateChild ("DropDownToggle") as ToggleButton;
 			LayoutUpdated += delegate { UpdatePopupSizeAndPosition (); };
 
@@ -465,20 +464,9 @@ namespace System.Windows.Controls
 				((FrameworkElement) _popup.RealChild).MaxHeight = height;
 			}
 		}
-
-		private string ItemDebugString (object item)
-		{
-			if (item == null)
-				return "<NULL>";
-			FrameworkElement element = item as FrameworkElement;
-			if (element != null)
-				return element.Name;
-			return item.ToString ();
-		}
 		
 		ContentPresenter _contentPresenter;
 		Popup _popup;
-		FrameworkElement _contentPresenterBorder;
 		ToggleButton _dropDownToggle;
 
 		bool isMouseOver;
