@@ -1,3 +1,10 @@
+2009-09-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mms-downloader.cpp: Remove old debugging code that was stripping out
+	everything after a ? in a url.
+
+	r: sde
+
 2009-09-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml.cpp: Honor the debug configuration option instead of enabling it

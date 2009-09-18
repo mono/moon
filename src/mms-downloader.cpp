@@ -189,12 +189,6 @@ MmsDownloader::Open (const char *verb, const char *uri)
 	g_return_if_fail (strncmp (uri, "mms://", 6) == 0);
 
 	this->uri = g_strdup_printf ("http://%s", uri + 6);
-	for (int i = 0;  this->uri [i] != 0; i++) {
-		if (this->uri [i] == '?') {
-			this->uri [i] = 0;
-			break;
-		}
-	}
 
 	dl->OpenInitialize ();
 	dl->SetRequireCustomHeaderSupport (true);
