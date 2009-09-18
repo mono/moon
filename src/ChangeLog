@@ -1,5 +1,16 @@
 2009-09-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: When filling buffers, treat a buffering_time of 0 as a
+	buffering_time of 1 ms, otherwise we'll do nothing at all since we have
+	the requested amount of buffer (nothing at all), but buffering progress
+	is is still at 0% (since we didn't buffer anything). Don't change the
+	buffering progress calculation, since playback would fail (there would
+	be nothing to play).
+
+	r: sde
+
+2009-09-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mms-downloader.cpp: Remove old debugging code that was stripping out
 	everything after a ? in a url.
 

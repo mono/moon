@@ -2886,7 +2886,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	int ended = 0;
 	int media_streams = 0;
 	
-	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %llu = %llu ms, pending_stream: %i %s\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, MilliSeconds_FromPts (buffering_time), GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetStreamTypeName () : "NULL");
+	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %llu = %llu ms, pending_stream: %i %s\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, media != NULL ? MilliSeconds_FromPts (media->GetBufferingTime ()) : -1, GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetStreamTypeName () : "NULL");
 
 	if (IsDisposed ())
 		goto cleanup;
@@ -2900,6 +2900,13 @@ IMediaDemuxer::FillBuffersInternal ()
 	
 	buffering_time = media->GetBufferingTime ();
 	
+	if (buffering_time == 0) {
+		// Play as soon as possible.
+		// However we still need something in the buffer, at least one frame, oherwise the buffering progress
+		// will stay at 0%, so up the buffering time to 1 ms. This way we'll reach 100% buffering progress when
+		// all streams have 1 frame queued.
+		buffering_time = 1;
+	}
 
 	for (int i = 0; i < GetStreamCount (); i++) {
 		IMediaDecoder *decoder = NULL;
