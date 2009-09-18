@@ -1502,13 +1502,11 @@ MmsPlaylistEntry::WritePacket (void *buf, gint32 n)
 	LOG_PIPELINE_ASF ("MmsPlaylistEntry::WritePacket (%p, %i), write_count: %lld\n", buf, n, write_count + 1);
 	VERIFY_MAIN_THREAD;
 
-	g_return_if_fail (media != NULL);
-
-	write_count++;
-	
 	media = GetMediaReffed ();
 	
 	g_return_if_fail (media != NULL);
+
+	write_count++;
 	
 	asf_parser = GetParserReffed ();
 	
