@@ -1,3 +1,9 @@
+2009-09-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Popup.cs: Removed unused variable.
+
+	r:kangaroo
+
 2009-09-10  Jackson Harper  <jackson@ximian.com>
 
 	* Selector.cs: Add the SetAttributeDelayed attribute to the

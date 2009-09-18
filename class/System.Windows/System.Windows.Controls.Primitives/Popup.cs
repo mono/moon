@@ -123,7 +123,7 @@ namespace System.Windows.Controls.Primitives {
 				GeneralTransform xform = Application.Current.RootVisual.TransformToVisual (this);
 				
 				_clickCatcher.RenderTransform = (Transform)xform;
-			} catch (System.ArgumentException e) {
+			} catch (ArgumentException) {
 				// Drop errors looking up the transform
 			}
 
